@@ -177,3 +177,142 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.mobile-nav .mo
 @media (prefers-reduced-motion: reduce) {
   [data-sig-sheet] { animation-name: sig-fade-in; animation-duration: var(--sig-dur-state, 180ms); }
 }
+
+/* ── Components ──────────────────────────────────────────────────────────── */
+/* sig-components.tsx and sig-overlays.tsx. Rows, cards and pills reuse the sg-* rules in signature.module.css; the
+ * pieces below are new and read only --sig-* tokens. Phone first; 44px targets; caps labels follow the one caps
+ * exception (12px, weight 600, ≥4.5:1, never the only carrier of meaning). */
+
+/* A list row that is a button looks and presses like a link row. */
+.sig-row-button:not(#sig) { width: 100%; margin: 0; border: 0; background: none; font: inherit; text-align: left; cursor: pointer; }
+
+/* Tabs: band pills (on deep) and a page segmented control (on the sheet). */
+.sig-tabs ul { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; overflow-x: auto; scrollbar-width: none; }
+.sig-tabs li { flex: none; }
+.sig-tabs a {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border-radius: var(--sig-radius-pill, 999px);
+  font: var(--sig-type-link, 500 .9375rem/1.25rem sans-serif); text-decoration: none; white-space: nowrap;
+}
+.sig-tabs a em { padding: 1px 7px; border-radius: 999px; font-style: normal; font-size: .8125rem; font-variant-numeric: tabular-nums; }
+.sig-tabs[data-variant="band"] a { background: rgba(255, 255, 255, .1); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12); color: rgba(255, 255, 255, .86); }
+.sig-tabs[data-variant="band"] a em { background: rgba(255, 255, 255, .14); color: #FFFFFF; }
+.sig-tabs[data-variant="band"] a[aria-current="page"] { background: #FFFFFF; box-shadow: none; color: var(--sig-deep, #0D3634); }
+.sig-tabs[data-variant="band"] a[aria-current="page"] em { background: var(--sig-done-wash, #E2F1ED); color: var(--sig-deep, #0D3634); }
+.sig-tabs[data-variant="page"] ul { gap: 2px; padding: 3px; border-radius: 14px; background: var(--sig-track, #EEECE7); }
+.sig-tabs[data-variant="page"] li { flex: 1 0 auto; }
+.sig-tabs[data-variant="page"] a { justify-content: center; width: 100%; min-height: 40px; border-radius: 11px; color: var(--sig-ink-2, #5F625E); }
+.sig-tabs[data-variant="page"] a em { background: rgba(22, 28, 27, .06); color: var(--sig-ink-2, #5F625E); }
+.sig-tabs[data-variant="page"] a[aria-current="page"] { background: var(--sig-card, #FFFFFF); color: var(--sig-ink, #161C1B); box-shadow: 0 1px 2px rgba(22, 28, 27, .08); }
+
+/* Banner: tone wash, tone edge, ink title. */
+.sig-banner { display: flex; gap: 12px; padding: 16px 18px; border-radius: var(--sig-radius-list, 18px); background: var(--sig-info-wash, #EFEDE8); box-shadow: inset 0 0 0 1px var(--sig-info-line, #E3DFD8); color: var(--sig-ink, #161C1B); }
+.sig-banner[data-tone="review"] { background: var(--sig-review-wash, #FBEFDC); box-shadow: inset 0 0 0 1px var(--sig-review-line, #F2E4CD); }
+.sig-banner[data-tone="urgent"] { background: var(--sig-urgent-wash, #FBEDEC); box-shadow: inset 0 0 0 1px var(--sig-urgent-line, rgba(163, 39, 26, .3)); }
+.sig-banner[data-tone="done"] { background: var(--sig-done-wash, #E2F1ED); box-shadow: inset 0 0 0 1px var(--sig-done-line, #C8DCD6); }
+.sig-banner__icon { flex: none; display: inline-flex; padding-top: 1px; color: var(--sig-info-ink, #55585A); }
+.sig-banner[data-tone="review"] .sig-banner__icon { color: var(--sig-review-ink, #8A5208); }
+.sig-banner[data-tone="urgent"] .sig-banner__icon { color: var(--sig-urgent-ink, #A3271A); }
+.sig-banner[data-tone="done"] .sig-banner__icon { color: var(--sig-done-ink, #0A5753); }
+.sig-banner__copy { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.sig-banner__copy strong { font: 500 1rem/1.3125rem var(--sig-font, sans-serif); }
+.sig-banner__copy p { margin: 0; font: var(--sig-type-callout, 400 .9375rem/1.3125rem sans-serif); color: var(--sig-ink-2, #5F625E); }
+.sig-banner__action { margin-top: 6px; }
+
+/* Empty state: a 56px icon tile, a title, a line, the next step. */
+.sig-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 32px 24px; text-align: center; color: var(--sig-ink, #161C1B); }
+.sig-empty__tile { display: inline-flex; width: 56px; height: 56px; align-items: center; justify-content: center; margin-bottom: 6px; border-radius: 16px; background: var(--sig-done-wash, #E2F1ED); color: var(--sig-deep, #0D3634); }
+.sig-empty strong { font: 500 1.0625rem/1.375rem var(--sig-font, sans-serif); }
+.sig-empty p { max-width: 32ch; margin: 0; font: var(--sig-type-callout, 400 .9375rem/1.3125rem sans-serif); color: var(--sig-ink-3, #6F6C66); text-wrap: balance; }
+.sig-empty__action { margin-top: 10px; }
+
+/* Avatar: photo or deep-teal initials on the mint wash. */
+.sig-avatar { flex: none; display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%; background: var(--sig-done-wash, #E2F1ED); color: var(--sig-deep, #0D3634); font: 600 min(.875rem, 16px)/1 var(--sig-font, sans-serif); letter-spacing: .04em; }
+.sig-avatar[data-size="32"] { width: 32px; height: 32px; font-size: min(.75rem, 14px); }
+.sig-avatar[data-size="56"] { width: 56px; height: 56px; font-size: min(1.125rem, 20px); }
+.sig-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Skeleton: track-coloured bars with a slow sheen; static under reduced motion. */
+.sig-skeleton { display: flex; align-items: center; gap: 14px; padding: 16px 18px; }
+.sig-skeleton__tile { flex: none; width: 42px; height: 42px; border-radius: var(--sig-radius-tile, 13px); }
+.sig-skeleton__lines { display: flex; flex: 1; flex-direction: column; gap: 8px; }
+.sig-skeleton__lines > span { height: 12px; border-radius: 6px; }
+.sig-skeleton__lines > span:first-child { width: 62%; height: 14px; }
+.sig-skeleton__lines > span:nth-child(n + 3) { width: 40%; }
+.sig-skeleton__tile, .sig-skeleton__lines > span {
+  background: linear-gradient(90deg, var(--sig-track, #EEECE7) 0%, #F6F5F1 50%, var(--sig-track, #EEECE7) 100%) 0 0 / 200% 100%;
+  animation: sig-sheen 1.4s linear infinite;
+}
+@keyframes sig-sheen { to { background-position: -200% 0; } }
+
+/* Fields: the sign-in card style for every form. One white card; each field a row with a caps label above the
+ * control; hairlines between; the focused field gets the ink ring inside the card. */
+.sig-fieldgroup { min-width: 0; margin: 0; padding: 0; border: 0; }
+.sig-fieldgroup__legend { margin: 0 0 10px; padding: 0 4px; font: var(--sig-type-caps, 600 .75rem/1rem sans-serif); letter-spacing: .13em; text-transform: uppercase; color: var(--sig-ink-2, #5F625E); }
+.sig-fieldgroup__card { overflow: hidden; border-radius: var(--sig-radius-card, 22px); background: var(--sig-card, #FFFFFF); box-shadow: var(--sig-shadow-card, inset 0 0 0 1px rgba(22, 28, 27, .06)); }
+.sig-field { position: relative; padding: 14px 18px 12px; }
+.sig-field + .sig-field { box-shadow: inset 0 1px 0 var(--sig-rule, #E8E5DF); }
+.sig-field:focus-within { box-shadow: inset 0 0 0 2px var(--sig-focus, #161C1B); }
+.sig-field[data-invalid] { box-shadow: inset 0 0 0 1.5px var(--sig-urgent-ink, #A3271A); }
+.sig-field__label { display: block; font: var(--sig-type-caps, 600 .75rem/1rem sans-serif); letter-spacing: .12em; text-transform: uppercase; color: var(--sig-ink-3, #6F6C66); }
+.sig-field :is(input, select, textarea) {
+  box-sizing: border-box; display: block; width: 100%; min-height: 44px; margin: 4px 0 0; padding: 8px 0; border: 0; border-radius: 0;
+  background: transparent; color: var(--sig-ink, #161C1B); font: 400 1.0625rem/1.5rem var(--sig-font, sans-serif); outline: none;
+}
+.sig-field textarea { min-height: 96px; resize: vertical; }
+.sig-field :is(input, textarea)::placeholder { color: var(--sig-ink-3, #6F6C66); }
+.sig-field :is(input, select, textarea):disabled { color: var(--sig-ink-3, #6F6C66); }
+.sig-field__hint, .sig-field__error { margin: 4px 0 0; font: var(--sig-type-row-sub, 400 .9375rem/1.25rem sans-serif); }
+.sig-field__hint { color: var(--sig-ink-3, #6F6C66); }
+.sig-field__error { color: var(--sig-urgent-ink, #A3271A); }
+
+/* Sheet: bottom-anchored on phones, centred panel from 768px. The dialog fills the viewport so a tap outside the
+ * panel lands on it and closes. */
+.sig-sheet { box-sizing: border-box; width: 100%; max-width: none; height: 100%; max-height: none; margin: 0; padding: 0; border: 0; background: transparent; overflow: hidden; }
+.sig-sheet::backdrop { background: rgba(9, 22, 21, .42); }
+.sig-sheet[open] { display: flex; align-items: flex-end; justify-content: center; }
+.sig-sheet__panel {
+  box-sizing: border-box; width: 100%; max-width: 560px; max-height: calc(100% - 48px); overflow: auto;
+  padding: 8px 20px calc(24px + env(safe-area-inset-bottom, 0px)); border-radius: var(--sig-radius-sheet, 28px) var(--sig-radius-sheet, 28px) 0 0;
+  background: var(--sig-page, #F7F6F3); box-shadow: var(--sig-shadow-sheet, 0 -10px 40px rgba(10, 22, 21, .18)); color: var(--sig-ink, #161C1B);
+  animation: sig-sheet-rise var(--sig-dur-sheet, 280ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)) backwards;
+}
+.sig-sheet[open]::backdrop { animation: sig-fade-in var(--sig-dur-sheet, 280ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)); }
+.sig-sheet__handle { display: block; width: 36px; height: 5px; margin: 0 auto 8px; border-radius: 3px; background: var(--sig-edge, #E3DFD8); }
+.sig-sheet__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; }
+.sig-sheet__head h2 { margin: 0; font: 500 1.1875rem/1.5rem var(--sig-font, sans-serif); }
+.sig-sheet__close, .sig-toast__close { flex: none; display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; margin: 0 -10px 0 0; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--sig-ink-2, #5F625E); cursor: pointer; }
+.sig-sheet__body { padding-top: 8px; }
+@media (min-width: 768px) {
+  .sig-sheet[open] { align-items: center; }
+  .sig-sheet__panel { border-radius: var(--sig-radius-sheet, 28px); padding-bottom: 24px; }
+  .sig-sheet__handle { display: none; }
+}
+
+/* Toast: dark pill above the tab bar (the band's deep teal), white text, mint Undo. */
+.sig-toast {
+  position: fixed; z-index: 60; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 4px;
+  box-sizing: border-box; width: min(calc(100% - 32px), 480px); min-height: 52px; padding: 4px 4px 4px 18px; border-radius: 16px;
+  background: var(--sig-deep, #0D3634); color: #FFFFFF; box-shadow: 0 12px 32px -12px rgba(9, 22, 21, .45);
+  transform: translateX(-50%); animation: sig-toast-in var(--sig-dur-state, 180ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)) backwards;
+}
+@keyframes sig-toast-in { from { opacity: 0; transform: translate(-50%, 8px); } }
+.sig-toast__message { flex: 1; min-width: 0; margin: 0; font: var(--sig-type-callout, 400 .9375rem/1.3125rem sans-serif); }
+.sig-toast__action { flex: none; min-height: 44px; padding: 0 12px; border: 0; border-radius: 12px; background: none; color: var(--sig-mint, #A9E2DA); font: 600 .9375rem/1 var(--sig-font, sans-serif); cursor: pointer; }
+.sig-toast__close { margin: 0; color: rgba(255, 255, 255, .78); }
+@media (min-width: 1024px) { .sig-toast { bottom: 24px; } }
+
+/* Focus for the new pieces: ink on light, white on the toast. */
+:is(.sig-tabs a, .sig-sheet__close, .sig-row-button):focus-visible { outline: 2px solid var(--sig-surface-ring, var(--sig-focus, #161C1B)); outline-offset: 2px; }
+.sig-tabs[data-variant="page"] a:focus-visible { outline-offset: -2px; }
+.sig-tabs[data-variant="band"] a:focus-visible { outline-color: var(--sig-focus-on-dark, #FFFFFF); }
+.sig-toast :is(button):focus-visible { outline: 2px solid var(--sig-focus-on-dark, #FFFFFF); outline-offset: -2px; }
+
+/* Press for the new pieces outside a data-sig-surface (inside one, the shared wash already applies). */
+:is(.sig-tabs a, .sig-sheet__close, .sig-toast button):active { opacity: .64; transition-duration: 0s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sig-sheet__panel { animation-name: sig-fade-in; }
+  .sig-toast { animation-name: sig-toast-fade; }
+  .sig-skeleton__tile, .sig-skeleton__lines > span { animation: none; }
+}
+@keyframes sig-toast-fade { from { opacity: 0; } }

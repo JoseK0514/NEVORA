@@ -21,13 +21,13 @@
 .mtEntries :global(.employee-time-entry > summary)::-webkit-details-marker { display: none; }
 @media (hover: hover) { .mtEntries :global(.employee-time-entry > summary:hover):not(#mt):not(#mt) { background: #FAFAF8; } }
 .mtEntries :global(.employee-time-entry-date):not(#mt):not(#mt) { display: flex; flex-direction: column; width: auto; height: auto; padding: 0; border: 0; border-radius: 0; background: none; color: var(--sg-ink); box-shadow: none; }
-.mtEntries :global(.employee-time-entry-date span):not(#mt):not(#mt) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
+.mtEntries :global(.employee-time-entry-date span):not(#mt):not(#mt) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
 .mtEntries :global(.employee-time-entry-date b):not(#mt):not(#mt) { margin-top: 2px; font: 300 1.75rem/1.875rem var(--sg-display); letter-spacing: -.03em; }
 .mtEntries :global(.employee-time-entry-label):not(#mt):not(#mt) { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .mtEntries :global(.employee-time-entry-label strong):not(#mt):not(#mt) { font: 500 1.0625rem/1.375rem var(--sg-font); color: var(--sg-ink); }
 .mtEntries :global(.employee-time-entry-label small):not(#mt):not(#mt) { display: flex; align-items: center; gap: 4px; font: 400 .9375rem/1.25rem var(--sg-font); color: var(--sg-ink-2); }
 .mtEntries :global(.employee-time-entry-total):not(#mt):not(#mt) { display: flex; flex-direction: column; align-items: flex-end; font: 300 1.25rem/1.5rem var(--sg-display); color: var(--sg-ink); font-variant-numeric: tabular-nums; }
-.mtEntries :global(.employee-time-entry-total small):not(#mt):not(#mt) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
+.mtEntries :global(.employee-time-entry-total small):not(#mt):not(#mt) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
 .mtEntries :global(.employee-time-disclosure):not(#mt):not(#mt) { color: var(--sig-glyph, #8A8378); }
 .mtEntries :global(.employee-time-punches):not(#mt):not(#mt) { margin: 0 14px 0 18px; padding: 6px 0 14px; border-top: 1px solid var(--sg-rule); background: none; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
 .mtEntries :global(.employee-time-punches dl > div):not(#mt):not(#mt) { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border: 0; }
@@ -50,7 +50,7 @@
  * carry a status pill. Same form, fields, labels and classes as before. */
 .mtPanel :global(.employee-time-correction-form):not(#mt):not(#mt) { display: flex; flex-direction: column; gap: 14px; margin: 12px 0 0; padding: 18px; border: 0; border-radius: 22px; background: var(--sg-card); box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .06), 0 1px 1px rgba(22, 28, 27, .03), 0 18px 36px -24px rgba(13, 54, 52, .3); }
 .mtCorrections :global(.employee-time-correction-form):not(#mt):not(#mt) { box-shadow: inset 0 0 0 1px var(--sg-rule); background: #FCFBF9; }
-.mtPanel :global(.employee-time-correction-form > label):not(#mt):not(#mt) { display: flex; flex-direction: column; gap: 6px; font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
+.mtPanel :global(.employee-time-correction-form > label):not(#mt):not(#mt) { display: flex; flex-direction: column; gap: 6px; font: 600 .75rem/1rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
 .mtPanel :global(.employee-time-correction-form :is(select, textarea, input:not([type="datetime-local"]))):not(#mt):not(#mt) { width: 100%; min-width: 0; min-height: 48px; padding: 0 14px; border: 0; border-radius: 14px; background: var(--sg-page); box-shadow: inset 0 0 0 1px var(--sg-rule); color: var(--sg-ink); font: 500 1rem/1.25rem var(--sg-font); letter-spacing: 0; text-transform: none; font-variant-numeric: tabular-nums; }
 .mtPanel :global(.employee-time-correction-form textarea):not(#mt):not(#mt) { min-height: 88px; padding: 12px 14px; font-weight: 400; resize: vertical; }
 .mtPanel :global(.employee-time-correction-form :is(select, input, textarea)):focus-visible:not(#mt):not(#mt) { outline: 2px solid var(--sg-ink); outline-offset: 1px; }
@@ -58,7 +58,7 @@
 .mtPanel :global(.correction-comparison > div):not(#mt):not(#mt) { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; }
 .mtPanel :global(.correction-comparison > div + div):not(#mt):not(#mt) { border-left: 1px solid var(--sg-rule); background: #F2F8F6; }
 .mtPanel :global(.correction-comparison > div:nth-child(3)):not(#mt):not(#mt) { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--sg-rule); background: #FBF4EA; }
-.mtPanel :global(.correction-comparison small):not(#mt):not(#mt) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
+.mtPanel :global(.correction-comparison small):not(#mt):not(#mt) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
 .mtPanel :global(.correction-comparison > div + div > small:first-child):not(#mt):not(#mt) { color: var(--sg-teal); }
 .mtPanel :global(.correction-comparison > div > small + strong + small):not(#mt):not(#mt), .mtPanel :global(.correction-comparison strong + small):not(#mt):not(#mt) { font: 400 .8125rem/1.125rem var(--sg-font); letter-spacing: 0; text-transform: none; color: var(--sg-ink-3); }
 .mtPanel :global(.correction-comparison strong):not(#mt):not(#mt) { font: 300 1.1875rem/1.5rem var(--sg-display); letter-spacing: -.01em; color: var(--sg-ink); font-variant-numeric: tabular-nums; }
@@ -115,7 +115,7 @@
 .mtCorrections :global(.employee-correction-history):not(#mt):not(#mt) { margin: 16px 16px 0; border-radius: 22px; box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .06), 0 16px 36px -22px rgba(13, 54, 52, .24); }
 .mtCorrections :global(.employee-correction-history-row):not(#mt):not(#mt) { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: start; gap: 4px 14px; padding: 18px; }
 .mtCorrections :global(.employee-correction-day):not(#mt):not(#mt) { display: flex; flex-direction: column; align-items: center; padding-top: 2px; }
-.mtCorrections :global(.employee-correction-day small):not(#mt):not(#mt) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
+.mtCorrections :global(.employee-correction-day small):not(#mt):not(#mt) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
 .mtCorrections :global(.employee-correction-day b):not(#mt):not(#mt) { margin-top: 2px; font: 300 1.75rem/1.875rem var(--sg-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
 .mtCorrections :global(.employee-correction-change):not(#mt):not(#mt) { gap: 8px; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-3); font-variant-numeric: tabular-nums; }
 .mtCorrections :global(.employee-correction-change b):not(#mt):not(#mt) { font: 300 1.25rem/1.5rem var(--sg-display); letter-spacing: -.015em; color: var(--sg-ink); }

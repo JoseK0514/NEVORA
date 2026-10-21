@@ -2,7 +2,7 @@
 .ctTicket:not(#ct):not(#ct) { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr); align-items: center; gap: 0; padding: 18px 18px 0; border-radius: 20px; background: var(--sg-card, #FFFFFF); box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .07), 0 14px 30px -22px rgba(13, 54, 52, .28); }
 .ctHalf:not(#ct):not(#ct) { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 4px; margin: -4px; border-radius: 14px; cursor: pointer; font-size: inherit; letter-spacing: 0; text-transform: none; color: inherit; }
 .ctHalf:last-of-type:not(#ct):not(#ct) { align-items: flex-end; text-align: right; }
-.ctHalf small:not(#ct):not(#ct) { font: 600 .6875rem/.875rem var(--sg-font, system-ui); letter-spacing: .14em; text-transform: uppercase; color: var(--sg-ink-3, #6F6C66); }
+.ctHalf small:not(#ct):not(#ct) { font: 600 .75rem/1rem var(--sg-font, system-ui); letter-spacing: .14em; text-transform: uppercase; color: var(--sg-ink-3, #6F6C66); }
 .ctHalf:last-of-type small:not(#ct):not(#ct) { color: var(--sg-teal, #0B6E69); }
 .ctHalf b:not(#ct):not(#ct) { margin-top: 8px; font: 200 2.5rem/2.625rem var(--sg-display, system-ui); letter-spacing: -.04em; color: var(--sg-ink, #161C1B); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .ctHalf b em:not(#ct):not(#ct) { margin-left: 4px; font-style: normal; font-weight: 400; font-size: .9375rem; letter-spacing: 0; color: var(--sg-ink-3, #6F6C66); }

@@ -40,12 +40,12 @@
 @media (hover: hover) { .r6Row:hover:not(#r6), .r6LinkRow:hover:not(#r6) { background: #FAFAF8; } }
 .r6Row:focus-visible:not(#r6), .r6LinkRow:focus-visible:not(#r6) { outline-offset: -3px; border-radius: 18px; }
 .r6Day:not(#r6) { flex: none; display: flex; flex-direction: column; width: 2.5rem; }
-.r6Day small:not(#r6) { font: 600 .6875rem/.875rem var(--r6-font); letter-spacing: .12em; text-transform: uppercase; color: var(--r6-ink-3); }
+.r6Day small:not(#r6) { font: 600 .75rem/1rem var(--r6-font); letter-spacing: .12em; text-transform: uppercase; color: var(--r6-ink-3); }
 .r6Day strong:not(#r6) { margin-top: 2px; font: 300 1.75rem/1.875rem var(--r6-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
 .r6Copy:not(#r6), .r6LinkRow > span:not(#r6) { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
 .r6Copy strong:not(#r6), .r6LinkRow b:not(#r6) { font: 500 1.0625rem/1.375rem var(--r6-font); letter-spacing: -.012em; color: var(--r6-ink); }
 .r6Copy span:not(#r6), .r6LinkRow small:not(#r6) { font: 400 .9375rem/1.25rem var(--r6-font); color: var(--r6-ink-2); }
-.r6State:not(#r6) { flex: none; font: 600 .6875rem/.875rem var(--r6-font); letter-spacing: .12em; text-transform: uppercase; }
+.r6State:not(#r6) { flex: none; font: 600 .75rem/1rem var(--r6-font); letter-spacing: .12em; text-transform: uppercase; }
 .r6Wait:not(#r6) { color: var(--r6-amber); } .r6Good:not(#r6) { color: var(--r6-teal); } .r6No:not(#r6) { color: var(--r6-red); } .r6Quiet:not(#r6) { color: var(--r6-ink-3); }
 .r6Chevron:not(#r6) { flex: none; fill: none; stroke: var(--sig-glyph, #8A8378); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .r6None:not(#r6) { padding: 20px 18px; font: 400 .9375rem/1.3125rem var(--r6-font); color: var(--r6-ink-3); }

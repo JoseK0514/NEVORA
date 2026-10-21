@@ -11,10 +11,16 @@ import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
 import { PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr/PencilSimple";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
+import { TrayIcon } from "@phosphor-icons/react/dist/ssr/Tray";
+import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
+import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { SectionTabs } from "@/components/section-tabs";
 import { SigBand, SigChevron, SigDay, SigHead, SigLinkRow, SigPage } from "@/components/signature/signature";
 import { SigButton, SigPendingLabel } from "@/components/signature/sig-button";
 import { EmployeeSubmitButton } from "@/components/employee-submit-button";
+import { SigAvatar, SigBanner, SigCard, SigCardRow, SigEmpty, SigField, SigFieldGroup, SigList, SigPill, SigRow, SigSkeleton, SigTabs } from "@/components/signature/sig-components";
+import { SigSheet, SigToast } from "@/components/signature/sig-overlays";
 import timeStyles from "@/components/employee-time-signature.module.css";
 import offStyles from "@/app/app/requests/time-off-signature.module.css";
 
@@ -61,6 +67,8 @@ export function SignaturePreview() {
   const [pendingDemo, setPendingDemo] = useState(false);
   const [saved, setSaved] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
   const tryPending = () => {
@@ -239,6 +247,46 @@ export function SignaturePreview() {
           <p className="sg-card-foot"><CalendarBlankIcon size={18} aria-hidden="true" />Helper: one date and the hours you need away</p>
         </div>
         <div className="sg-alert"><strong>Error, block</strong>Your request wasn’t sent. Check your connection and send it again.</div>
+        {/* ── Component set ─────────────────────────────────────────────────── */}
+        <SigHead id="sgp-set" title="Component set" aside="sig-components.tsx · sig-overlays.tsx" />
+        <div className="sgp-pad sgp-stack">
+          <SigTabs label="Page tabs, fictional" items={[{ href: `${here}#sgp-set`, label: "Mine", current: true, count: 3 }, { href: `${here}?tab=new#sgp-set`, label: "New" }, { href: `${here}?tab=team#sgp-set`, label: "Team" }]} />
+        </div>
+        <SigList label="SigList, fictional">
+          <SigRow href={`${here}#sgp-set`} leading={<SigAvatar name="Jordan Vega" />} title="Jordan Vega" sub="Swap request · Nov 3" trailing={<SigPill tone="amber">Waiting</SigPill>} />
+          <SigRow onClick={() => setToast("Refreshed just now.")} leading={<SigAvatar name="Priya Shah" size={40} />} title="Button row" sub="Shows a toast" />
+          <SigRow title="Plain row" sub="No action" />
+        </SigList>
+        <SigCard flush label="SigCard, fictional" head={<><span className="sg-tile"><AirplaneIcon size={20} aria-hidden="true" /></span><span className="sg-copy"><b>SigCard</b><span>Head, rows and foot</span></span><SigPill tone="teal">Approved</SigPill></>}
+          foot={<><BellIcon size={18} aria-hidden="true" />Foot: one quiet note</>}>
+          <SigCardRow leading={<SigDay top="Nov" day={14} />} title="Part of a day" pill={<SigPill>Withdrawn</SigPill>} lines={["Fri, Nov 14 · 1:00 – 3:00 PM"]} />
+        </SigCard>
+        <div className="sgp-pad sgp-stack">
+          <SigBanner tone="info" icon={<InfoIcon size={20} />} title="Info banner">Your manager publishes next week on Friday.</SigBanner>
+          <SigBanner tone="review" icon={<WarningCircleIcon size={20} />} title="Review banner" action={<SigButton variant="link">Review the change</SigButton>}>Your Tuesday shift moved to 9:00 AM.</SigBanner>
+          <SigBanner tone="urgent" icon={<WarningCircleIcon size={20} />} title="Not sent">Check your connection and send it again.</SigBanner>
+          <SigBanner tone="done" icon={<CheckCircleIcon size={20} />} title="Request sent">You will hear back by Friday.</SigBanner>
+        </div>
+        <div className="sg-card"><SigEmpty icon={<TrayIcon size={26} />} title="No requests yet" action={<SigButton variant="secondary" href={`${here}#sgp-set`}>Request time off</SigButton>}>Time off and swaps you send show up here.</SigEmpty></div>
+        <div className="sg-card" aria-busy="true" aria-label="Loading example"><SigSkeleton tile /><SigSkeleton tile lines={2} /></div>
+        <div className="sgp-pad">
+          <SigFieldGroup legend="SigFieldGroup">
+            <SigField id="sgp-f-name" label="Preferred name" hint="Shown to your team"><input defaultValue="Alex" /></SigField>
+            <SigField id="sgp-f-phone" label="Mobile number" error="Enter a 10-digit number"><input type="tel" defaultValue="555 01" /></SigField>
+            <SigField id="sgp-f-shift" label="Usual shift"><select defaultValue="day"><option value="day">Day</option><option value="night">Night</option></select></SigField>
+          </SigFieldGroup>
+        </div>
+        <div className="sgp-pad sgp-stack">
+          <SigButton variant="secondary" onClick={() => setSheetOpen(true)}>Open a sheet</SigButton>
+          <SigButton variant="secondary" onClick={() => setToast("Request withdrawn.")}>Show a toast</SigButton>
+        </div>
+        <SigSheet open={sheetOpen} onClose={() => setSheetOpen(false)} title="Filter shifts">
+          <SigFieldGroup>
+            <SigField id="sgp-s-where" label="Location"><select defaultValue="north"><option value="north">Northside</option><option value="east">Eastgate</option></select></SigField>
+          </SigFieldGroup>
+          <div className="sgp-stack sgp-sheet-actions"><SigButton onClick={() => setSheetOpen(false)}>Show shifts</SigButton></div>
+        </SigSheet>
+        {toast ? <SigToast message={toast} action={{ label: "Undo", onClick: () => setToast(null) }} onDismiss={() => setToast(null)} /> : null}
         <p className="sg-after">Fictional data. Nothing on this page reaches a live record.</p>
       </SigPage>
     </main>

@@ -134,7 +134,7 @@
   .mark { width: 300px; right: -70px; bottom: -40px; }
   .logo { height: 14px; }
   .when { margin: 0; padding: 14px 0 0; }
-  .location { font-size: 0.6875rem; padding: 6px 12px 6px 9px; }
+  .location { font-size: 0.75rem; padding: 6px 12px 6px 9px; }
   .clock { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-top: 10px; }
   .clock time { font-size: 3.75rem; letter-spacing: -.04em; gap: 6px; }
   .clock time > span { font-size: 1.125rem; }

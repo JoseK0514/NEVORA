@@ -34,6 +34,9 @@ html body .sgp .page-frame:not(#sgp) { display: block; min-width: 0; margin: 0 a
 .sgp .sgp-help:not(#sgp) { margin: -6px 0 0; font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-3); }
 .sgp .sg-card + .sg-alert:not(#sgp) { margin-top: 12px; }
 .sgp .sgp-times > :first-child:not(#sgp) { padding-top: 20px; }
+.sgp .sgp-stack:not(#sgp) { display: flex; flex-direction: column; gap: 12px; }
+.sgp .sgp-pad + .sg-list:not(#sgp), .sgp .sg-list + .sg-card:not(#sgp), .sgp .sgp-pad + .sg-card:not(#sgp), .sgp .sg-card + .sgp-pad:not(#sgp) { margin-top: 12px; }
+.sgp-sheet-actions { margin-top: 20px; }
 @media (min-width: 768px) {
   .sgp .sgp-band-host:not(#sgp), .sgp .sgp-form-host:not(#sgp) { margin-inline: 0; }
 }

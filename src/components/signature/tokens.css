@@ -86,7 +86,7 @@
   --sig-tracking-button:         0;                                              /* signature.module.css:136 (none set) */
   --sig-type-caps:               600 .75rem/1rem var(--sig-font);                /* tracked caps label, 12/16, uppercase | signature.module.css:48 (.sgHead h2), :25, :96 */
   --sig-tracking-caps:           .13em;                                          /* signature.module.css:48 */
-  --sig-type-caps-sm:            600 .6875rem/.875rem var(--sig-font);           /* small caps (day, ticket, pair), 11/14, uppercase | signature.module.css:123 (.sg-day small) */
+  --sig-type-caps-sm:            600 .75rem/1rem var(--sig-font);               /* small caps (day, ticket, pair), raised 11 → 12/16 (the one caps exception: 12px minimum) */
   --sig-tracking-caps-sm:        .12em;                                          /* signature.module.css:123 */
   --sig-type-pill:               500 .8125rem/1 var(--sig-font);                 /* status pill, 13 | signature.module.css:113 (.sg-pill) */
   --sig-tracking-pill:           .01em;                                          /* signature.module.css:113 */

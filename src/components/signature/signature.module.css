@@ -33,7 +33,7 @@
 .sgBand :global(.sg-pair):not(#sg) { display: grid; grid-template-columns: 1fr 1fr; margin-top: 22px; border-top: 1px solid rgba(255, 255, 255, .14); }
 .sgBand :global(.sg-pair > div):not(#sg) { min-width: 0; padding-top: 14px; }
 .sgBand :global(.sg-pair > div + div):not(#sg) { padding-left: 18px; border-left: 1px solid rgba(255, 255, 255, .14); }
-.sgBand :global(.sg-pair dt):not(#sg) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .13em; text-transform: uppercase; color: rgba(255, 255, 255, .6); }
+.sgBand :global(.sg-pair dt):not(#sg) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .13em; text-transform: uppercase; color: rgba(255, 255, 255, .6); }
 .sgBand :global(.sg-pair dd):not(#sg) { margin: 6px 0 0; }
 .sgDurHero:not(#sg) { display: block; margin-top: 12px; font: 200 3.375rem/3.5rem var(--sg-display); letter-spacing: -.04em; font-variant-numeric: tabular-nums; color: #FFFFFF; word-spacing: .1em; }
 .sgDurPair:not(#sg) { display: block; font: 300 1.75rem/2rem var(--sg-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; color: #FFFFFF; word-spacing: .05em; }
@@ -126,14 +126,14 @@
 .sgRoot :global(.sg-t1):not(#sg) { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; }
 .sgRoot :global(.sg-t1 > b):not(#sg) { font: 500 1.0625rem/1.375rem var(--sg-font); letter-spacing: -.012em; color: var(--sg-ink); }
 .sgRoot :global(.sg-day):not(#sg) { flex: none; width: auto; min-width: 42px; text-align: center; }
-.sgRoot :global(.sg-day small):not(#sg) { display: block; font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
+.sgRoot :global(.sg-day small):not(#sg) { display: block; font: 600 .75rem/1rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
 .sgRoot :global(.sg-day strong):not(#sg) { display: block; margin-top: 2px; font: 300 1.75rem/1.875rem var(--sg-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; color: var(--sg-ink); }
 .sgRoot :global(.sg-time):not(#sg), .sgRoot :global(.sg-copy > .sg-time):not(#sg) { font: 300 1.3125rem/1.625rem var(--sg-display); letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--sg-ink); }
 .sgRoot :global(.sg-ticket):not(#sg) { display: grid; grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr); align-items: center; padding: 22px 20px; }
 .sgRoot :global(.sg-card-head + .sg-ticket):not(#sg) { padding-top: 6px; }
 .sgRoot :global(.sg-ticket > :is(div, label, section)):not(#sg) { position: relative; display: flex; flex-direction: column; min-width: 0; border-radius: 14px; }
 .sgRoot :global(.sg-ticket > :is(div, label, section):last-child):not(#sg) { align-items: flex-end; text-align: right; }
-.sgRoot :global(.sg-ticket small):not(#sg) { font: 600 .6875rem/.875rem var(--sg-font); letter-spacing: .14em; text-transform: uppercase; color: var(--sg-ink-3); }
+.sgRoot :global(.sg-ticket small):not(#sg) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .14em; text-transform: uppercase; color: var(--sg-ink-3); }
 .sgRoot :global(.sg-ticket b):not(#sg) { margin: 8px 0 6px; font: 200 3.5rem/3.375rem var(--sg-display); letter-spacing: -.045em; font-variant-numeric: tabular-nums; color: var(--sg-ink); }
 /* Empty figure ("—"): ink-3, 5.3:1 on the white card (the faint grey was 2.0:1). */
 .sgRoot :global(.sg-ticket b[data-empty]):not(#sg) { color: var(--sig-ink-3, #6F6C66); }
