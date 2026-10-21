@@ -35,7 +35,9 @@ export function SectionTabs({ group, pathname }: { group: SectionTabGroup; pathn
     return () => { observer?.disconnect(); row.removeEventListener("scroll", edges); window.removeEventListener("resize", edges); };
   }, [pathname]);
   return <nav className="section-tabs" aria-label={`${group.label} pages`}>
-    <div className="section-tabs-track" ref={track}>
+    {/* A tab reached with the keyboard comes fully out from under the edge fade (scroll-margin-inline clears it). */}
+    <div className="section-tabs-track" ref={track}
+      onFocus={event => { const tab = (event.target as HTMLElement).closest(".section-tab"); tab?.scrollIntoView({ block: "nearest", inline: "nearest" }); }}>
       {group.items.map(item => <Link key={item.href} href={item.href} className="section-tab"
         aria-current={item.href === pathname ? "page" : undefined}>{item.label}</Link>)}
     </div>
