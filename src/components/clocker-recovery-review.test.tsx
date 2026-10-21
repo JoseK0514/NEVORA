@@ -2,7 +2,7 @@ import {afterEach, beforeEach, expect, it, vi} from 'vitest';
 
 const hooks = vi.hoisted(() => ({
   states: [] as unknown[], refs: [] as {current: unknown}[],
-  effects: [] as (() => void | (() => void))[], stateIndex: 0, refIndex: 0,
+  effects: [] as (() => void | (() => void))[], stateIndex: 0, refIndex: 0, server: false,
 }));
 vi.mock('react', async original => ({
   ...await original<Record<string, unknown>>(),
@@ -17,7 +17,7 @@ vi.mock('react', async original => ({
   },
   useEffect: (effect: () => void | (() => void)) => {hooks.effects.push(effect);},
   useId: () => 'reference-fixture',
-  useSyncExternalStore: (_subscribe: unknown, snapshot: () => unknown) => snapshot(),
+  useSyncExternalStore: (_subscribe: unknown, snapshot: () => unknown, serverSnapshot?: () => unknown) => hooks.server&&serverSnapshot?serverSnapshot():snapshot(),
 }));
 vi.mock('gsap', () => ({default: {registerPlugin: () => {}}}));
 vi.mock('@gsap/react', () => ({useGSAP: () => {}}));
@@ -52,7 +52,7 @@ const second = 'bb8a042e-044c-4205-9aab-23a87511e789';
 const requests: string[] = [];
 let dispose: (() => void) | void;
 beforeEach(() => {
-  hooks.states = []; hooks.refs = []; requests.length = 0;
+  hooks.states = []; hooks.refs = []; hooks.server=false; requests.length = 0;
   vi.stubGlobal('window', new EventTarget());
   vi.stubGlobal('document', Object.assign(new EventTarget(), {visibilityState: 'visible'}));
   vi.stubGlobal('navigator', {onLine: true});
@@ -68,6 +68,20 @@ beforeEach(() => {
 });
 afterEach(() => {dispose?.(); dispose = undefined; vi.unstubAllGlobals();});
 const observed = () => hooks.states.some(value => value && typeof value === 'object' && 'state' in value && value.state === 'ready');
+
+it('withholds receipt submission until hydration even with a valid reference and initialized controller', async () => {
+  hooks.server=true;
+  change(first);
+  const view=render();
+  expect(find(view,'fieldset')?.props.disabled).toBe(true);
+  expect(find(find(view,'form'),'button')?.props.disabled).toBe(true);
+  submit();
+  await Promise.resolve();await Promise.resolve();
+  expect(requests).toEqual([]);
+  hooks.server=false;
+  submit();
+  await vi.waitFor(()=>expect(requests).toEqual([first]));
+});
 
 it('editing a reference retires its receipt before a lifecycle refresh can read it again', async () => {
   change(first); submit();

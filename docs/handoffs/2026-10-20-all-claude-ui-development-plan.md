@@ -99,6 +99,21 @@ The view now preserves removed-schedule and review-unavailable wording. Two new
 regressions failed before the fix; all 30 Home view tests then passed. The browser
 scenario's original removed-schedule assertion is retained.
 
+Tablet Home exposed dark breadcrumb text on the teal header; the scoped header
+rule now keeps those labels white. Phone/tablet Home scenarios then passed. The
+desktop hierarchy check measures the actual shift card boundary, preserving DOM
+order and visual priority without mistaking its padded content for the card edge.
+
+Whole Phase D passed 85 checks before finding that its held-JavaScript scenario
+expected a recovery form through the new Company Access barrier. The driver now
+requires the fresh-access placeholder, no reference field, no receipt button and
+no receipt API request while initialization is held, then retains every real
+receipt journey after scripts resume. A separate component regression verifies
+disabled controls, no pre-hydration request even with a valid reference and an
+initialized controller, and successful submission after hydration (4 tests pass).
+The Updates disclosure uses the same bounded visible-render wait as Actions;
+native Enter/Space, independent open states, focus and every row remain asserted.
+
 PR16: https://github.com/JoseK0514/NEVORA/pull/16. The final merge gate is all
 mandatory hosted checks on the combined candidate, plus reconciliation with the
 current development head. Production, independent acceptance and physical-device
