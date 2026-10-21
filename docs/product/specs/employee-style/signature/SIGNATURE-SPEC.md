@@ -328,6 +328,8 @@ its own before/after screenshots.
 - **Λ mark:** an SVG pinned bottom-right, behind the content. The large stroke fills `#164B48` (`--sig-mark`); the small
   triangle fills sky `#35B6EC` (`--sig-sky`). Width 280px on the shared frame, 330px on Home, 300px on Schedule and
   Requests; offset about -90px right, -6px bottom. The Clocker mark is 420px at 55% opacity.
+- **Wordmark:** the shared `BrandWordmark` component (`src/components/brand-mark.tsx`), never an image file. Navy on
+  light surfaces, white on the deep band, with the cyan A kept in both. Sign-in and the Clocker's deep side use it.
 - **Grain:** a 160px SVG fractal-noise tile (`--sig-grain`) at 7% opacity, `mix-blend-mode: overlay`. The sign-in
   panel uses its own heavier grain (180px tile, 55% opacity); see conflicts.
 - **Padding on phones:** 22 / 24 / 62 on the shared frame (`.sgBand`); 18 / 24 / 58 on Home, Schedule and Requests.
