@@ -3,7 +3,7 @@ import { Client } from 'pg';
 import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { fixtureTrace, sqlDiagnostic } from './sql-diagnostics.mts';
+import { fixtureTrace, sqlDiagnostic } from './sql-diagnostics.mjs';
 
 const migrations = new Map(readdirSync('db/migrations').filter(file => file.endsWith('.sql')).map(file =>
   [createHash('sha256').update(readFileSync(join('db/migrations', file))).digest('hex'), file]));

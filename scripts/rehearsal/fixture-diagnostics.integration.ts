@@ -2,7 +2,7 @@ import { it, expect } from 'vitest';
 import { createPunchFixture } from '../../src/test/integration/clocker-punch-fixture';
 import { createDisposableFoundationDatabase } from '../../src/test/integration/local-postgres';
 import { ClockerPinError, pinBatch } from '../../src/lib/clocker/pin-authority.server';
-import { fixtureTrace } from './sql-diagnostics.mts';
+import { fixtureTrace } from './sql-diagnostics.mjs';
 
 it.each([1, 2])('initializes and disposes actual Clocker/Company Access fixture, attempt %i', async attempt => {
   const f = await createPunchFixture({ companyAccess: true, breaks: true });

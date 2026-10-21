@@ -28,9 +28,9 @@
 
 ## Tasks
 
-1. [ ] Inventory all current remote branches, merge ancestry and overlaps. Record each as included, superseded/contained, or held with a reason.
-2. [ ] Merge the PR16 rehearsal source, latest auth/components/dark UI, Manager and confirmation fixes, PR18 backend, D4/preview/runbook and test/CI repairs. Inspect each conflict and preserve both intended behaviors.
-3. [ ] Complete integration seams: canonical0034/0035 classification, matching EN/ES busy copy and source inventory/update instructions. Add regression checks for any new logic.
+1. [x] Inventory all current remote branches, merge ancestry and overlaps. Record each as included, superseded/contained, or held with a reason.
+2. [x] Merge the PR16 rehearsal source, latest auth/components/dark UI, Manager and confirmation fixes, PR18 backend, D4/preview/runbook and test/CI repairs. Inspect each conflict and preserve both intended behaviors.
+3. [x] Complete integration seams: canonical0034/0035 classification, matching EN/ES busy copy and source inventory/update instructions. Add regression checks for any new logic.
 4. [ ] Install locked dependencies, run full unit/type/lint/build and relevant migration/source/release checks; exercise affected isolated database/browser checks. Retain exact commands, failures and cleanup evidence.
 5. [ ] Obtain a fresh review, address material integration findings, fetch source heads again, publish a reviewable integration PR and merge the authorized result into development. Verify remote development and unchanged main, deployment hold and retained source coverage.
 
@@ -44,3 +44,6 @@
 - Ruling: Timecards keeps PR16's later read-sequence, finite-expiry, inactive-view and stale-response controls. These already preserve unchanged background selections; pause still clears private notes rather than reviving unverified drafts from the older Manager refresh implementation.
 - Ruling: preserve newer held-response Home/attendance evidence, cancellation accounting and shared rendered-contrast checks while retaining stronger rendered-control geometry and diagnostic records from older followups. Do not restore older pre-Signature markup.
 - Focused verification:29 checks ran;26 passed. D4 classification/drift checks failed for missing0034/0035, and the error retry unit harness needs the newly integrated router dependency. These are the next integration fixes.
+- Focused fixes: canonical0034/0035 and bilingual busy-budget page copy added; retry harness updated for the router. All31 focused assertions pass across7 files. Later combined lint/type failures were duplicate Home helper import and .mts specifiers in root-scoped diagnostic tests; both corrected without exclusions.
+- Final source assembly also contains the later clean-UI/browser diagnostic repairs at0affe6ec, profile9935bad0, and inspection/SaaS planning documents33a71167/13f0ba64/145fa06e. The43-head disposition inventory retains historical evidence and held bootstrap/prototype work without activating it. Its5 negative/positive checks and live head/ancestry check pass.
+- Fresh checks so far: lint and root typecheck pass; rehearsal safety17/17; release-engineering69/69; passkey PostgreSQL34/34 with owned cluster stopped. Full unit/SQL/browser/build verification remains in progress. The first browser invocation correctly refused uncommitted source and stopped its owned cluster; retry only after this source checkpoint is committed.

@@ -8,7 +8,6 @@ import {randomUUID,createHash} from 'node:crypto';
 import {hashPassword} from '../src/lib/auth/password.ts';
 import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
-import {fulfillHeldResponse} from './browser-held-response.mjs';
 
 // Shared by H06 and its controlled browser scheduling regression.
 export async function waitForFreshHome(page, freshLocation){
