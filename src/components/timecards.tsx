@@ -261,13 +261,13 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   // UX4: a #timecard-ID link (the Inbox's "Review timecard") opens that person's timecard once its card is in.
   const openedFragment=useRef('');
   useEffect(()=>{
-    if(!manager||!cards.length)return;
+    if(!manager||!currentActor||data?.state!=='ready')return;
     let fragment='';try{fragment=decodeURIComponent(window.location.hash.slice(1));}catch{return;}
     if(!fragment.startsWith('timecard-')||openedFragment.current===fragment)return;
     const id=fragment.slice('timecard-'.length);
-    if(!cards.some(item=>item.card.employeeId===id))return;
+    if(!data.cards.some(item=>item.card.employeeId===id))return;
     openedFragment.current=fragment;setOpenId(id);
-  },[manager,cards]);
+  },[manager,currentActor,data]);
   const [showNoTime,setShowNoTime]=useState(false);
   useEffect(()=>{
     if(!manager||typeof window.matchMedia!=='function')return;
