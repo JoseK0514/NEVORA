@@ -108,12 +108,14 @@ export default async function NewShiftPage({
     </div></ScopedReadFrame>;
   }
   const workspace = await getWorkspace();
-  const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
+  const todayDate = businessDate(new Date(), workspace.timeZone);
+  const currentWeek = weekStartFor(todayDate);
   const weekStart = params.week && isValidWeekStart(params.week) ? params.week : currentWeek;
+  // UX3: the day you came from, else today when it falls in this week, else the week's Monday.
   const date =
     params.date && isDateInWeek(params.date, weekStart)
       ? params.date
-      : weekStart;
+      : isDateInWeek(todayDate, weekStart) ? todayDate : weekStart;
   const weekEnd = addDays(weekStart, 6);
 
   const access=await readOperationalAuthority(proof);
