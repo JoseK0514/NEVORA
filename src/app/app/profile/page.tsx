@@ -14,6 +14,8 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import './profile.css';
 import {PageBand} from '@/components/kit/kit';
 import {ManagerProfilePage} from '@/components/manager-profile/manager-profile';
+export const metadata = { title: "Profile" };
+
 export default async function ProfilePage(){
  const proof=await requireSessionMutationProof();if(['OWNER','MANAGER'].includes(proof.employee.role))return <ManagerProfilePage proof={proof}/>;if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))redirect('/app');
  const authority=employeeViewAuthority(proof,'profile');

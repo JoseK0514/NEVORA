@@ -2,6 +2,7 @@
 import {useEffect,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
 import {useTopBarSlot} from './clean/top-bar-slot';
+import {isPopoverOpen} from './kit/popover-open';
 import type React from 'react';
 import type {CSSProperties} from 'react';
 import Link from 'next/link';
@@ -64,7 +65,7 @@ function presetPeriods(today?:string):Record<'week'|'month',Period>|null{
   return {week:{startDate:monday.toString(),endDate:monday.add({days:6}).toString()},month:{startDate:day.subtract({days:29}).toString(),endDate:today}};}catch{return null;}
 }
 const samePeriod=(a:Period,b:Period)=>a.startDate===b.startDate&&a.endDate===b.endDate;
-const closeMenu=(id:string)=>{try{const menu=document.getElementById?.(id);if(menu?.matches?.(':popover-open'))menu.hidePopover();}catch{/* No popover support: nothing is open. */}};
+const closeMenu=(id:string)=>{try{const menu=document.getElementById?.(id);if(isPopoverOpen(menu))menu.hidePopover();}catch{/* No popover support: nothing is open. */}};
 
 /** Recorded time per day of the period, clipped the same way the report clips each location. Decoration data only:
  * every value is also written out for screen readers. Null when a day can't be computed. */
@@ -88,6 +89,8 @@ const shortDay=(date:string)=>keepWhole(new Intl.DateTimeFormat('en-US',{month:'
 
 /** The Health-style bars. aria-hidden: the list after it says the same numbers in words. */
 function Plot({days}:{days:{date:string;minutes:number}[]}){
+ // Review fix (13/50): a period with nothing recorded showed a scaled 0–2h grid with no bars.
+ if(!days.some(day=>day.minutes>0))return <p className="cm-chart__empty" role="status">No recorded time in this period.</p>;
  const most=Math.max(0,...days.map(day=>day.minutes));
  const top=Math.max(2,Math.ceil(most/120)*2);
  const dense=days.length>7;

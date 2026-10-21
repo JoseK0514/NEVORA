@@ -98,10 +98,12 @@ export default async function NewShiftPage({
   const workspace = await getWorkspace();
   const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
   const weekStart = params.week && isValidWeekStart(params.week) ? params.week : currentWeek;
+  // Review fix (QA 48/50): with no date in the link, the form opens on today — not Monday, already past midweek.
+  const businessToday = businessDate(new Date(), workspace.timeZone);
   const date =
     params.date && isDateInWeek(params.date, weekStart)
       ? params.date
-      : weekStart;
+      : isDateInWeek(businessToday, weekStart) ? businessToday : weekStart;
   const weekEnd = addDays(weekStart, 6);
 
   const [employees, locations, positions] = await Promise.all([

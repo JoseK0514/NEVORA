@@ -99,6 +99,8 @@ function validWeek(value?: string) {
   );
 }
 
+export const metadata = { title: "Schedule" };
+
 export default async function SchedulePage({
   searchParams,
 }: {

@@ -199,6 +199,14 @@ const short = (iso: string, timeZone: string) => clock(iso, timeZone).replace(":
 const working = (shift: TodayShift) => shift.status === "clocked_in" || shift.status === "on_break";
 const later = (shift: TodayShift) => shift.status === "upcoming" || shift.status === "starting";
 
+/** "in at 9:02 AM" — or, for a punch open since before today, "in since Sun 12:28 AM", so a stale clock-in is
+ * visible instead of looking fresh (reviews 10, 11 and 50 of 50). */
+function sinceLabel(iso: string, timeZone: string) {
+  const day = (value: Date) => new Intl.DateTimeFormat("en-CA", { timeZone, dateStyle: "short" }).format(value);
+  if (day(new Date(iso)) === day(new Date())) return `in at ${clock(iso, timeZone)}`;
+  return `in since ${new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short" }).format(new Date(iso))} ${clock(iso, timeZone)}`;
+}
+
 /** Who is working now and who starts later today, from the published-shift snapshot. */
 function PeopleCards({ today, monitor, monitorPending = false, refreshing, onRetry, timeZone, offline = false, paused = false }: { today: Today | null; monitor: ClockMonitor | null; monitorPending?: boolean; refreshing: boolean; onRetry?: () => void; timeZone: string; offline?: boolean; paused?: boolean }) {
   if (!today || today.state !== "ready") {
@@ -217,7 +225,9 @@ function PeopleCards({ today, monitor, monitorPending = false, refreshing, onRet
   const shiftFor = (employeeId: string) => today.shifts.find(shift => shift.employeeId === employeeId && working(shift));
   const now = today.shifts.filter(working);
   const count = open ? open.length : now.length || today.counts.clockedIn;
-  const next = today.shifts.filter(later).sort((a, b) => a.startAt.localeCompare(b.startAt));
+  // Review fix (11/50): someone who clocked in early for a later shift showed in Working now AND Later today.
+  const workingIds = new Set(open ? open.map(person => person.employeeId) : now.map(shift => shift.employeeId));
+  const next = today.shifts.filter(later).filter(shift => !workingIds.has(shift.employeeId)).sort((a, b) => a.startAt.localeCompare(b.startAt));
   return <>
     <Card id="home-working" title={<>Working now<span className="cm-count">{count}</span></>}
       foot={<Freshness>Updated <time dateTime={today.observedAt}>{clock(today.observedAt, timeZone)}</time></Freshness>}>
@@ -226,12 +236,12 @@ function PeopleCards({ today, monitor, monitorPending = false, refreshing, onRet
       </div> : open && open.length ? <Rows label="Working now">
         {open.map(person => { const shift = shiftFor(person.employeeId); return <Row key={person.timeEntryId}
           leading={<Avatar initials={initials(person.employeeName)} />} title={person.employeeName}
-          meta={`${person.locationName}\u00a0· ${person.state === "ON_BREAK" ? "on break" : `in at ${clock(person.clockInAt, timeZone)}`}`}
+          meta={`${person.locationName}\u00a0· ${person.state === "ON_BREAK" ? "on break" : sinceLabel(person.clockInAt, timeZone)}`}
           trailing={shift ? `until ${short(shift.endAt, timeZone)}` : undefined} />; })}
       </Rows> : now.length ? <Rows label="Working now">
         {now.map(shift => <Row key={shift.id}
           leading={<Avatar initials={initials(shift.employeeName)} />} title={shift.employeeName}
-          meta={`${shift.locationName}\u00a0· ${shift.status === "on_break" ? "on break" : shift.firstClockInAt ? `in at ${clock(shift.firstClockInAt, timeZone)}` : "clocked in"}`}
+          meta={`${shift.locationName}\u00a0· ${shift.status === "on_break" ? "on break" : shift.firstClockInAt ? sinceLabel(shift.firstClockInAt, timeZone) : "clocked in"}`}
           trailing={`until ${short(shift.endAt, timeZone)}`} />)}
       </Rows> : <CardBody><p className="premium-note">{!open && today.counts.clockedIn
         // A snapshot can carry counts without its shift list; the count is still true.
@@ -243,7 +253,7 @@ function PeopleCards({ today, monitor, monitorPending = false, refreshing, onRet
           leading={<Avatar initials={initials(shift.employeeName)} />} title={shift.employeeName} meta={shift.locationName}
           trailing={`${short(shift.startAt, timeZone)} – ${short(shift.endAt, timeZone)}`} />)}
         {/* Final re-pass P3: the count says 6, so the rest are one step away. */}
-        {next.length > 4 ? <li className="cm-later-more"><Link className="nv-row" href="/app/schedule">{`Show ${next.length - 4} more`}</Link></li> : null}
+        {next.length > 4 ? <li className="cm-later-more"><Link className="nv-row" href="/app/schedule" aria-label={`Show ${next.length - 4} more in Schedule`}>{`Show ${next.length - 4} more`}</Link></li> : null}
       </Rows>
     </Card> : null}
   </>;

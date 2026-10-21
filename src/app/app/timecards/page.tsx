@@ -8,6 +8,8 @@ import {PageBand} from '@/components/kit/kit';
 import {addDays,weekStartFor} from '@/lib/date-utils';
 
 const periodLabel=(start:string,end:string)=>{const f=(d:string)=>new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(`${d}T12:00:00Z`));return `${f(start)} – ${f(end)}`;};
+export const metadata = { title: "Timecards" };
+
 export default async function TimecardsPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
   const session=await requireSession(),workspace=await getWorkspace(),params=await searchParams;
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();

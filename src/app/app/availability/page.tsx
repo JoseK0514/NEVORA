@@ -97,6 +97,8 @@ function submissionStatusCopy(status: AvailabilitySubmissionStatus, hasDeadline 
   };
 }
 
+export const metadata = { title: "Availability" };
+
 export default async function AvailabilityPage({
   searchParams,
 }: {

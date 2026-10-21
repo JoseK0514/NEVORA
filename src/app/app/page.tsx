@@ -36,6 +36,8 @@ function validWeek(value?: string) {
   );
 }
 
+export const metadata = { title: { absolute: "Home · NEVORA" } };
+
 export default async function DashboardPage({
   searchParams,
 }: {

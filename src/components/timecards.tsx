@@ -120,31 +120,46 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   const clearBatch=useCallback(()=>{setSelected([]);setReview(null);setConfirmed(false);setOutcomes(null);},[]);
   const invalidate=useCallback(()=>{generation.current++;request.current?.abort();if(expires.current)clearTimeout(expires.current);expires.current=null;source.current=null;validUntil.current=0;},[]);
   const expireProtected=useCallback(()=>{invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setMessage('Timecards expired. Refresh a current protected snapshot.');},[invalidate,clearBatch]);
-  const refresh=useCallback(async(selected:Period)=>{
+  const refresh=useCallback(async(selected:Period,background=false)=>{
     if(document.visibilityState==='hidden'||!navigator.onLine)return;
     setPaused(false);setSignInRequired(false);setFailed(false);
-    invalidate();const own=generation.current,started=performance.now();const abort=new AbortController();request.current=abort;
-    clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(true);setMessage('Checking period timecards…');
+    // Review fix (23/26/32/38 of 50): a background poll refreshes in place. The shown snapshot, the selection and
+    // any typed notes stay until the new read lands. A Refresh the user asks for still demands a fresh selection and
+    // review (clearBatch), and a change of period or actor starts from a blank list, exactly as before.
+    const previous=source.current;
+    const samePeriod=!!previous&&previous.actorId===actorId&&previous.period.startDate===selected.startDate&&previous.period.endDate===selected.endDate;
+    if(samePeriod){request.current?.abort();generation.current++;if(!background)clearBatch();}
+    else{invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});}
+    const own=generation.current,started=performance.now();const abort=new AbortController();request.current=abort;
+    setBusy(true);setMessage('Checking period timecards…');
     try{
       const response=await fetch('/api/timecards',{method:'POST',cache:'no-store',credentials:'same-origin',signal:abort.signal,
         headers:{'content-type':'application/json','x-nevora-timecards':'1','x-nevora-actor':actorId},body:JSON.stringify(selected)});
       if(own!==generation.current)return;
-      if(response.status===401||response.status===403){commandRef.current=null;setPending(null);setNotes({});setSignInRequired(true);setMessage(response.status===401?'Your session ended. Sign in again to view your timecards.':'Your access changed. Sign in again to check your timecards.');return;}
+      if(response.status===401||response.status===403){commandRef.current=null;setPending(null);if(expires.current)clearTimeout(expires.current);expires.current=null;source.current=null;validUntil.current=0;clearBatch();setSnapshotActor(null);setData(null);setNotes({});setSignInRequired(true);setMessage(response.status===401?'Your session ended. Sign in again to view your timecards.':'Your access changed. Sign in again to check your timecards.');return;}
       if(!response.ok)throw new Error('Unavailable');
       const next=parseCurrentTimecards(await response.json(),selected),remaining=next.validForMs-(performance.now()-started);
       if(remaining<1)throw Error('Expired snapshot');
       if(own!==generation.current)return;
       validUntil.current=started+next.validForMs;source.current={period:selected,actorId,cards:next.cards};
-      expires.current=setTimeout(expireProtected,remaining);
-      setSnapshotActor(actorId);setData(next);setMessage(`${next.cards.length} ${next.cards.length===1?'timecard':'timecards'} in this period.`);
+      if(expires.current)clearTimeout(expires.current);expires.current=setTimeout(expireProtected,remaining);
+      setSnapshotActor(actorId);setData(next);
+      // A prepared review stays only while it still matches the cards on screen; anything stale must be re-reviewed.
+      setReview(current=>current&&reviewIsCurrent(current,selected,actorId,next.cards)?current:null);setMessage(`${next.cards.length} ${next.cards.length===1?'timecard':'timecards'} in this period.`);
     }catch{if(own===generation.current&&!abort.signal.aborted)setFailed(navigator.onLine);if(own===generation.current&&!abort.signal.aborted)setMessage(navigator.onLine?'Couldn’t load timecards. Check your connection, then try again.':'You’re offline. Reconnect to see timecards.');}
     finally{if(own===generation.current)setBusy(false);}
   },[actorId,invalidate,clearBatch,expireProtected]);
   useEffect(()=>{
     if(previousActor.current!==actorId){commandRef.current=null;setPending(null);}previousActor.current=actorId;
     let active=false;
-    const clear=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;active=false;invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setPaused(true);setMessage(navigator.onLine?'Timecards paused. Return to this window to check the current period.':'You’re offline. Reconnect to see timecards.');};
-    const sync=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||active))return;clear();active=document.visibilityState!=='hidden'&&navigator.onLine;if(active)void refresh(period);};
+    // Privacy pause, as before the review: on blur, hidden, closing or offline, private rows leave the screen.
+    // What survives the pause now (reviews 23/26/32/38 of 50): typed reopen notes and the open card id, so coming
+    // back restores your work; and a 30s background poll no longer pauses at all — it refreshes in place.
+    const clear=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;active=false;invalidate();clearBatch();setSnapshotActor(null);setData(null);setBusy(false);setPaused(true);setMessage(navigator.onLine?'Timecards paused. Return to this window to check the current period.':'You’re offline. Reconnect to see timecards.');};
+    const sync=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||active))return;
+      const visible=document.visibilityState!=='hidden'&&navigator.onLine;
+      if(!visible){clear();return;}
+      active=true;setPaused(false);void refresh(period,true);};
     const account=()=>{commandRef.current=null;setPending(null);sync();};
     document.addEventListener('visibilitychange',sync);window.addEventListener('pagehide',clear);window.addEventListener('pageshow',sync);
     window.addEventListener('blur',clear);window.addEventListener('offline',clear);window.addEventListener('online',sync);window.addEventListener('focus',sync);window.addEventListener('storage',account);

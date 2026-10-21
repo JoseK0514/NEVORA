@@ -482,11 +482,13 @@ function wideSubscribe(change: () => void) {
 
 /** The desktop detail pane: the selected row's facts and its one action, which opens the full review. */
 function InboxDetail({ entry, sheet = false }: { entry: InboxEntry; sheet?: boolean }) {
-  return <section className="nv-card inbox-detail" aria-labelledby="inbox-detail-title"
+  // Review fix (33/50): the phone sheet renders while the pane exists too; distinct ids keep the page valid.
+  const titleId = sheet ? "inbox-sheet-title" : "inbox-detail-title";
+  return <section className="nv-card inbox-detail" aria-labelledby={titleId}
     onKeyDown={event => {
       if (sheet) return;
       // Escape, or Shift+Tab from the heading, goes back to the selected row (IS-P4-06).
-      const back = event.key === "Escape" || (event.key === "Tab" && event.shiftKey && event.target === document.getElementById("inbox-detail-title"));
+      const back = event.key === "Escape" || (event.key === "Tab" && event.shiftKey && event.target === document.getElementById(titleId));
       if (!back) return;
       const row = document.querySelector<HTMLElement>(`[data-inbox-key="${CSS.escape(entry.key)}"]`);
       if (!row) return;
@@ -497,7 +499,7 @@ function InboxDetail({ entry, sheet = false }: { entry: InboxEntry; sheet?: bool
     <div className="inbox-detail__head">
       {entry.leading}
       <div className="inbox-detail__heading">
-        <h2 className="inbox-detail__title" id="inbox-detail-title" tabIndex={-1}>{entry.title}</h2>
+        <h2 className="inbox-detail__title" id={titleId} tabIndex={-1}>{entry.title}</h2>
         {entry.meta && entry.paneMeta !== false ? <p className="inbox-detail__meta">{entry.meta}</p> : null}
       </div>
     </div>
@@ -518,9 +520,9 @@ function ItemSheet({ entry, onClose }: { entry: InboxEntry; onClose: () => void 
   useEffect(() => {
     const element = dialog.current;
     if (element && !element.open) element.showModal();
-    document.getElementById("inbox-detail-title")?.focus({ preventScroll: true });
+    document.getElementById("inbox-sheet-title")?.focus({ preventScroll: true });
   }, []);
-  return <dialog ref={dialog} className="cm-sheet" aria-labelledby="inbox-detail-title" onClose={onClose}
+  return <dialog ref={dialog} className="cm-sheet" aria-labelledby="inbox-sheet-title" onClose={onClose}
     onClick={event => { if (event.target === event.currentTarget) event.currentTarget.close(); }}>
     <div className="cm-sheet__bar"><span className="cm-sheet__grab" aria-hidden="true" />
       <form method="dialog"><button type="submit" className="cm-sheet__done">Done</button></form></div>

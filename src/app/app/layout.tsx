@@ -34,6 +34,8 @@ import { wordPreset } from "@/lib/workspace-presentation/words";
 import { DEFAULT_TOKENS } from "@/lib/workspace-presentation/derive";
 
 export const metadata: Metadata = {
+  // Review fix (23/24 of 50): one title per page, so tab changes are announced and tabs are tellable apart.
+  title: { template: "%s · NEVORA", default: "NEVORA" },
   manifest: "/fuel-portal.webmanifest",
   appleWebApp: { capable: true, title: "NEVORA" },
   icons: { apple: [{ url: "/icons/fuel-apple-180.png", sizes: "180x180", type: "image/png" }] },

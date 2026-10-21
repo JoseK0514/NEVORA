@@ -28,3 +28,31 @@ this branch asks for its exit round; they are out of date. Phase 3, Wave C and E
 The mockup's Inbox item (no clock-in) offers "Edit shift". `TodayShift.id` comes from `schedule_publication_revision_shifts`
 (the published snapshot), so it can't open `/app/schedule/edit?shiftId=…`. If the Today read can also return the live shift's
 id (for example `shiftId`), the Inbox will add that action. Until then it offers Open/Review timecard and View profile.
+
+## From the 50-review inspection (Oct 21) — backend contracts and fixes for Codex
+
+UI can't fix these; each is written up in `scratchpad/review50/reports/` (reviewer number in brackets).
+
+1. **Profile read always fails** for Owner and Manager: `/api/management/profile` returns `read_failed`; the error is
+   discarded at `management-profile.server.ts:41`. [10, 47]
+2. **Sign-in and activation hardening**: no rate limit on login or activation; unknown IDs answer faster; a redirect
+   reveals unclaimed IDs; employee ID + phone claims an account with no invite token or expiry. Wave C's
+   `claude/auth-premium` reworks activation — coordinate there. [40, 41]
+3. **Server logging and error references**: `src` has no logging; 43 routes return bare 503s. [45]
+4. **Idempotent time-off decisions and versioned Publish/shift edits** (lost responses show "wasn't saved" after
+   saving; "Publish anyway" overwrites unseen changes). [45]
+5. **Scale caps**: the 500/1000-row caps blank Home and the Inbox at ~250 employees; the badge triggers full
+   action-center rebuilds (~95 round trips per Home view); `time_entries` reads lack time bounds and indexes. [43, 44]
+6. **Structured action items** (person, place, time, message key) instead of parseable English; location scope applied
+   on every read (today only 4); server-computed Needs-you count. [43]
+7. **Unplanned-location coverage**: a not-started location emits a 00:00–24:00 gap every day, inflating Schedule and
+   Home counts (West Office). Either suppress for `not_started` or mark the gap all-day. The UI now renders such
+   blocks as "All day". [48, 50]
+8. **Payroll export**: period total includes breaks under one earnings code; split paid/unpaid and daily/weekly for
+   overtime; mark recorded breaks paid or unpaid. Risks to confirm with counsel. [6, 7]
+9. **Timecards Role column**: punch positions are empty for drafts; expose the employee's role (or scheduled
+   position) in the timecards read. [12, 47]
+10. **Acknowledgement counts** for manager Updates rows ("X of Y acknowledged"). [13]
+11. **Schedule 500s**: a DB statement timeout fails the whole page render; degrade per-read. [48, 49]
+12. **Push payloads**: 20 events all read "review your pending task"; say what happened (no pay data), EN/ES, and set
+    the app badge. [8]

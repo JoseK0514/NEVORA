@@ -1195,3 +1195,26 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
     html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.wa-chips, .wc-pills, .wa-segments) { animation: cm-track-fade linear both; animation-timeline: scroll(self inline); }
   }
 }
+
+/* ===== 50-review fixes (Oct 21) ===== */
+/* Review 25/50: Windows High Contrast stripped the box-shadow underlines and tinted fills that mark the selected
+ * tab, filter, sidebar page, week day and timeline bar. Outlines and borders survive forced colors. */
+@media (forced-colors: active) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.nv-filter[aria-pressed="true"], .nv-filter[aria-current="page"], .wa-chip[aria-pressed="true"], .wa-segment[aria-selected="true"], .cm-tc-tabs button[aria-pressed="true"], .updates-filters > button[aria-pressed="true"], [class*="notification-inbox-module"][class*="__filters"] > button[aria-pressed="true"], .section-tab[aria-current="page"], .schedule-location-control .segmented.cm-locations > a.selected):not(#cm-hc) { outline: 2px solid CanvasText; outline-offset: -2px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .sidebar .nav-link.active:not(#cm-hc) { outline: 2px solid CanvasText; outline-offset: -2px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-week__day[aria-pressed="true"] > b:not(#cm-hc) { outline: 2px solid CanvasText; outline-offset: 2px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timeline__bar:not(#cm-hc) { border: 2px solid CanvasText; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timeline__bar[data-kind="missed"]:not(#cm-hc) { border-style: dashed; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-block:not(#cm-hc) { border: 1px solid CanvasText; }
+}
+/* Review 25/50: the timeline's "later" (1.27:1) and "missed" (2.3:1) bars get a 3:1 boundary. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timeline__bar[data-kind="later"]:not(#cm-nt) { box-shadow: inset 0 0 0 1px #767674; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-timeline__bar[data-kind="missed"]:not(#cm-nt) { box-shadow: inset 0 0 0 1px #C0362C; }
+@media (prefers-reduced-motion: reduce) {
+  /* Review 26/50: the kit's 0ms catch-all ran the success toast's long fade to its end frame, so confirmations
+   * never appeared; and the More sheet still slid. Both go still instead. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-toast:not(#cm-rm) { animation: none !important; opacity: 1 !important; transform: none !important; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) #manager-more-navigation:not(#cm-rm) { transition: none !important; animation: none !important; transform: none !important; }
+}
+/* Review QA 47/50: anchors opened under the sticky header landed past their heading. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is([id^="rules-"], .manager-issue-target):not(#cm-anchor) { scroll-margin-top: 76px; }
