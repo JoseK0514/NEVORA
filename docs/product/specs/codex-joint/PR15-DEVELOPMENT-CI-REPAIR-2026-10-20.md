@@ -193,6 +193,23 @@ report keyboard/scroll checks passed28. A separate local static HTTP/WebKit
 navigation probe recorded zero errors in30 routed and30 unrouted iterations;
 that probe does not establish closure of the real Next application failure.
 
+The next account diagnostic reproduced WebKit errors in the Manager switch and
+late-commit cases. The stacks identify React's error reporting and Next's
+development diagnostic fetch, while the hydration diff identifies screenshot
+caret style injection. The login helper now waits for its new page's network
+settlement before closing it. Manager switch capture waits for actual old-row
+detachment and settlement, preserves the caret style, and denies either app error
+screen. The late-commit case also settles before teardown and denies error screens.
+These are candidate lifecycle repairs; runtime errors still fail the entire gate.
+
+D2 reached58 passing checks, then its Manager navigation exceeded a15second
+global-network-idle deadline despite successful Attendance reads. It now requires
+DOM readiness and HTTP success, then the same actual decision button must become
+actionable. All command identity, recovery, rollback and persisted-history checks
+remain. Home's prepared first Chromium320 cell passed its complete scenario; the
+run was then explicitly terminated with owned cleanup to investigate the new
+account findings. It is incomplete evidence and cannot satisfy the Home gate.
+
 Each SQL run starts a new owned local PostgreSQL16.15 cluster. Notifications and
 external delivery are disabled. Completed runners closed their owned clusters.
 Browser verification uses the existing pinned Playwright1.62.1 and axe4.11.0,

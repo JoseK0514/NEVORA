@@ -105,7 +105,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    const c=await context(browser,{width:390,height:844});await login(c,'QAOWNER');
    try{
     const page=await c.newPage();page.setDefaultTimeout(15000);watch(page);
-    await page.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});await page.bringToFront();
+    const attendanceNavigation=await page.goto(app.url+'/app?view=attendance',{waitUntil:'domcontentloaded'});assert(attendanceNavigation?.ok());await page.bringToFront();
     const commands=[];
     await page.route('**/api/manager/time-corrections',async route=>{
      if(route.request().method()!=='POST')return route.continue();
