@@ -65,7 +65,11 @@ it("shows weekly hours against target and flags hours over the limit", () => {
   const withHours = (hours: RosterEmployee["hours"]) => html(undefined, [{ ...employees[0], hours }]);
   expect(withHours({ week: 12, target: 30, maximum: 40 })).toContain("12 of 30h target");
   expect(withHours({ week: 12, target: null, maximum: 40 })).toContain("12 of 40h limit");
-  expect(withHours({ week: 44, target: 30, maximum: 40 })).toContain("Over 40h limit");
+  expect(withHours({ week: 44, target: 30, maximum: 40 })).toContain("4h over the 40h limit");
+  // MK3 / PD3: the visible label says how far over and which limit, not "over limit".
+  expect(withHours({ week: 56, target: null, maximum: 40 })).toContain(" · 16h over 40h");
+  expect(withHours({ week: 42.5, target: null, maximum: 40 })).toContain("2.5h over 40h");
+  expect(withHours({ week: 56, target: null, maximum: 40 })).not.toContain("over limit");
   expect(html()).not.toContain("mws-hours");
   expect(withHours({ week: 12, target: 30, maximum: 40 })).toContain("12h assigned this week");
 });
