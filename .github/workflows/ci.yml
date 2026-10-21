@@ -375,8 +375,9 @@ jobs:
       - name: Home fresh-generation scheduling regression
         if: ${{ matrix.suite == 'home' }}
         env:
+          NODE_ENV: test
           HOME_READINESS_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence
-        run: node --import tsx scripts/phase-e-home-held-response.check.mjs
+        run: node --import ./scripts/qa-server-context.mjs --import tsx scripts/phase-e-home-held-response.check.mjs
       - name: Install PostgreSQL test runtime
         shell: bash
         run: |

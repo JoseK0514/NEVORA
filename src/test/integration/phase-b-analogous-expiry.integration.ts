@@ -1,6 +1,7 @@
 import { Client } from 'pg';
 import { expect, it } from 'vitest';
 import { createDisposableFoundationDatabase } from './local-postgres';
+import {installFixtureCompanyAccess} from './fixture-company-access';
 import { updatePosition } from '../../lib/data/positions';
 import { updateLocation } from '../../lib/data/locations';
 import { saveWorkspaceProfile } from '../../lib/data/workspaces';
@@ -29,6 +30,7 @@ for (const scenario of scenarios) for (const expires of [false, true]) {
         INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('fr-owner','loc-1'),('fr-worker','loc-1');
         INSERT INTO positions(id,workspace_id,name) VALUES('fr-position','workspace-fuel','Original position');`);
       await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'fr-owner',clock_timestamp()+interval '1 day')", [proof.sessionTokenHash]);
+      await installFixtureCompanyAccess(db.executor);
       const self = scenario.startsWith('self-'), target = self ? 'fr-owner' : 'fr-worker';
       const [reviewed] = await q<{ updatedAt: string }>('SELECT updated_at::text AS "updatedAt" FROM employees WHERE id=$1', [target]);
       const [positionReview] = await q<{ updatedAt: string }>('SELECT updated_at::text AS "updatedAt" FROM positions WHERE id=$1', ['fr-position']);

@@ -4,6 +4,7 @@ import { Client } from 'pg';
 import { expect, it, vi } from 'vitest';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 import { createDisposableFoundationDatabase } from './local-postgres';
+import {installFixtureCompanyAccess} from './fixture-company-access';
 import { withOwnedTestResources } from './owned-test-resources';
 
 // Keep action, civil conversion, repository, SQL guards and PostgreSQL real.
@@ -26,6 +27,7 @@ vi.mock('next/navigation', () => ({ redirect: (destination: string) => { throw O
 import { setAvailabilityDeadlineAction } from '../../app/app/schedule/actions';
 
 import { getWorkspace, WorkspaceTimezoneLockedError } from '../../lib/data/workspaces';
+import {saveWorkspaceProfile as saveWorkspaceProfileWithProof} from '../../lib/data/workspaces';
 
 const week = '2030-10-07';
 function form(local = '2030-10-06T09:00') {
@@ -40,6 +42,7 @@ async function fixture() {
       INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) VALUES('normal','manager',1,'08:00','12:00');
       INSERT INTO notifications(id,employee_id,type,title,body,source_kind,source_id,source_version,push_state,environment,effective_version,purpose,due_at,expires_at,urgency,event_key)
       VALUES('reminder','manager','TEST','Test','Test','AVAILABILITY','2030-10-07','old','pending','test','old','REMINDER','2030-10-01T12:00Z','2030-10-06T12:00Z','normal','fixture-reminder');`, values: [] });
+    await installFixtureCompanyAccess(database.executor);
     transport.executor = database.executor;
     return database;
   } catch (error) { await database.dispose(); throw error; }
@@ -53,16 +56,16 @@ it('deadline action rejects a timezone edit between conversion read and reposito
   const database = await fixture(); const db = database.executor;
   try {
     let read = false;
-    transport.executor = { transaction: db.transaction, query: async <T>(statement: SqlStatement) => {
-      const result = await db.query<T>(statement);
-      if (!read && statement.text.includes('FROM workspaces')) {
+    transport.executor = { query: db.query, transaction: async statements => {
+      if (!read && statements.some(statement => /INSERT INTO schedule_week_settings/.test(statement.text))) {
         read = true;
         await saveWorkspaceProfile({ name: 'Edited', timeZone: 'Asia/Tokyo', actorEmployeeId: 'owner' }, db);
       }
-      return result;
+      return db.transaction(statements);
     } };
     await expect(setAvailabilityDeadlineAction(form())).rejects.toMatchObject({ destination: '/app/schedule?week=2030-10-07&error=DEADLINE_WORKSPACE_CHANGED&availabilityDeadline=2030-10-06T09%3A00' });
     await noWrite(db);
+    expect(read).toBe(true);
     expect((await getWorkspace(db)).timeZone).toBe('Asia/Tokyo');
   } finally { await database.dispose(); }
 });
@@ -72,13 +75,14 @@ it('deadline action commits first and blocks the racing timezone edit until its 
     const writer = new Client({ connectionString: database.connectionString, statement_timeout: 5000 }); defer(() => writer.end());
     const editor = new Client({ connectionString: database.connectionString, statement_timeout: 5000 }); defer(() => editor.end());
     await writer.connect(); await editor.connect();
+    const editorProof=await fixtureProof(db,'owner');
     let release!: () => void; const released = new Promise<void>(resolve => { release = resolve; });
     let reached!: () => void; const barrier = new Promise<void>(resolve => { reached = resolve; });
     const execute = async (client: Client, statements: readonly SqlStatement[], pause = false) => {
       await client.query('BEGIN');
       try { const results = []; for (const statement of statements) {
         results.push((await client.query(statement.text, [...statement.values])).rows);
-        if (pause && statement.text.includes('AS workspace_guard')) { reached(); await released; }
+        if (pause && statements.some(item=>/INSERT INTO schedule_week_settings/.test(item.text)) && statement.text.includes('AS workspace_guard')) { reached(); await released; }
       } await client.query('COMMIT'); return results; }
       catch (error) { await client.query('ROLLBACK'); throw error; }
     };
@@ -89,7 +93,7 @@ it('deadline action commits first and blocks the racing timezone edit until its 
     write = setAvailabilityDeadlineAction(form()).catch(error => error);
     await Promise.race([barrier, write.then(() => { throw new Error('Missed writer barrier'); })]);
     const pid = (await editor.query('SELECT pg_backend_pid() AS pid')).rows[0].pid;
-    edit = saveWorkspaceProfile({ name: 'Edited', timeZone: 'Asia/Tokyo', actorEmployeeId: 'owner' }, editorExecutor).catch(error => error);
+    edit = saveWorkspaceProfileWithProof({ name: 'Edited', timeZone: 'Asia/Tokyo', actorEmployeeId: 'owner', proof:editorProof }, editorExecutor).catch(error => error);
     let blocked = false;
     for (let attempt = 0; attempt < 100 && !blocked; attempt++) blocked = (await db.query<{ blocked: boolean }>({ text: 'SELECT cardinality(pg_blocking_pids($1))>0 AS blocked', values: [pid] }))[0].blocked;
     expect(blocked).toBe(true); release();
@@ -122,8 +126,10 @@ it.each(['2030-11-03T01:30','2030-03-10T02:30','2030-02-30T09:00'])('invalid dea
 it('late deadline cancellation failure rolls back the deadline and seeded availability together', async () => {
   const database = await fixture(); const db = database.executor;
   try {
-    transport.executor = { query: db.query, transaction: statements => db.transaction([...statements, { text: 'SELECT 1/0', values: [] }]) };
+    let injected=false;
+    transport.executor = { query: db.query, transaction: statements => {if(!statements.some(statement=>/INSERT INTO schedule_week_settings/.test(statement.text)))return db.transaction(statements);injected=true;return db.transaction([...statements, { text: 'SELECT 1/0', values: [] }]);} };
     await expect(setAvailabilityDeadlineAction(form())).rejects.toMatchObject({ code: '22012' });
     await noWrite(db);
+    expect(injected).toBe(true);
   } finally { await database.dispose(); }
 });

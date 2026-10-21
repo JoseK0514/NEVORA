@@ -164,13 +164,34 @@ it('closes a connected worker when backend PID lookup fails', async () => {
 
 import { getWorkspace, workspaceReadGuard, WorkspaceTimezoneLockedError } from '../../lib/data/workspaces';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
+import {installFixtureCompanyAccess} from './fixture-company-access';
 async function workspaceFixture() {
  const db=await createDisposableFoundationDatabase({mode:'current-runtime'});
  try {
  await db.executor.query({text:"UPDATE workspaces SET name='Northside Services',time_zone='America/New_York'; INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Test','Owner','555','OWNER','loc-1'),('manager','Test','Manager','556','MANAGER','loc-1');",values:[]});
+ await installFixtureCompanyAccess(db.executor);
  return db;
  } catch(error) {await db.dispose();throw error;}
 }
+it('fixture adoption never restores a revoked Manager or grants a new Manager Company access',async()=>{
+ const db=await workspaceFixture();
+ try{
+  const {readOwnerOperationalScope,assignOperationalScope,readOperationalAuthority,withOperationalCompany}=await import('../../lib/company-access/operational-scope.server');
+  const owner=await fixtureProof(db.executor,'owner');
+  const current=await readOwnerOperationalScope(owner,'manager',db.executor);
+  if(current.state!=='ready')throw Error('Missing owned scope fixture');
+  const revision=current.data.current;
+  expect(await assignOperationalScope(owner,'manager',{action:'REVOKE',operationId:crypto.randomUUID(),expectedEmployeeVersion:revision.employeeUpdatedAt,expectedRoleGeneration:revision.roleGeneration,expectedScopeRevision:revision.scopeRevision},db.executor)).toMatchObject({state:'saved'});
+  await db.executor.query({text:"INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('new-manager','New','Fictional','NONE','MANAGER','loc-1')",values:[]});
+  for(const id of ['manager','new-manager']){
+   const proof=await fixtureProof(db.executor,id);
+   expect(await readOperationalAuthority(proof,db.executor)).toMatchObject({state:'ready',scope:null});
+   let reads=0;
+   expect(await withOperationalCompany(proof,async()=>{reads++;return 'private';},db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+   expect(reads).toBe(0);
+  }
+ }finally{await db.dispose();}
+});
 it('workspace profile enforces active Owner and permits normal availability and unchanged timezone name edits',async()=>{
  const db=await workspaceFixture();const q=(text:string)=>db.executor.query({text,values:[]});
  try {
@@ -428,8 +449,10 @@ it('position publication atomicity preserves create edit clear history and rejec
  expect(await q('SELECT position_id FROM shifts')).toEqual([{position_id:'cashier'}]);
  const before=await q('SELECT row_to_json(s) AS row FROM shifts s');
  const beforeRevisions=await q('SELECT count(*)::integer AS count FROM schedule_publication_revisions');
- const rollback:SqlExecutor={query:db.executor.query.bind(db.executor),transaction:statements=>db.executor.transaction([...statements,{text:"SELECT 'injected-task7-rollback'::integer",values:[]}])};
+ let rollbackInjected=false;
+ const rollback:SqlExecutor={query:db.executor.query.bind(db.executor),transaction:statements=>{if(!statements.some(statement=>/\bUPDATE shifts\b/.test(statement.text)))return db.executor.transaction(statements);rollbackInjected=true;return db.executor.transaction([...statements,{text:"SELECT 'injected-task7-rollback'::integer",values:[]}]);}};
  await expect(updateShift({...base,shiftId:id,positionId:'barista'},rollback)).rejects.toThrow('injected-task7-rollback');
+ expect(rollbackInjected).toBe(true);
  expect(await q('SELECT row_to_json(s) AS row FROM shifts s')).toEqual(before);
  expect(await q('SELECT count(*)::integer AS count FROM schedule_publication_revisions')).toEqual(beforeRevisions);
  expect((await q('SELECT count(*)::integer AS count FROM notifications'))[0].count).toBe(count);
@@ -516,6 +539,7 @@ describe('notification workspace policy',()=>{
   const db=await createDisposableFoundationDatabase({mode:'current-runtime'});
   try{
    await db.executor.query({text:"UPDATE workspaces SET time_zone='Asia/Tokyo'; INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('notify-test','Test','Worker','555','EMPLOYEE','loc-1'); INSERT INTO schedule_week_settings(week_start,availability_deadline,updated_by) VALUES('2030-09-30','2030-10-06T21:00Z','notify-test')",values:[]});
+   await installFixtureCompanyAccess(db.executor);
    const {loadWorkspaceNotificationConfig}=await import('../../lib/notifications/config');
    const {sqlNotificationStateRepository}=await import('../../lib/data/notification-state');
    const {notificationIntentStatements}=await import('../../lib/data/notifications');
@@ -545,6 +569,7 @@ describe('notification workspace policy',()=>{
   const db=await createDisposableFoundationDatabase({mode:'current-runtime'});
   try{
    await db.executor.query({text:"UPDATE workspaces SET time_zone='America/New_York'; INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('notify-test','Test','Worker','555','EMPLOYEE','loc-1'); INSERT INTO employee_location_eligibility VALUES('notify-test','loc-1'); INSERT INTO schedules(id,location_id,week_start,created_by,status) VALUES('notify-schedule','loc-1','2030-10-07','notify-test','PUBLISHED'); INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('notify-shift','notify-schedule','notify-test','2030-10-11','09:00','17:00'); INSERT INTO shift_callouts(id,shift_id,employee_id,status,reason_code) VALUES('notify-callout','notify-shift','notify-test','APPROVED','ILLNESS')",values:[]});
+   await installFixtureCompanyAccess(db.executor);
    const {loadWorkspaceNotificationConfig}=await import('../../lib/notifications/config');
    const {sqlNotificationStateRepository}=await import('../../lib/data/notification-state');
    const {destinationForSource}=await import('../../lib/notifications/destinations');
@@ -618,7 +643,7 @@ it("Task 9 atomic profile and coverage quotas persist, retain history, reject gr
         { ...profile, actorEmployeeId: "sam", positionIds: ["p2"] },
         db.executor,
       ),
-    ).rejects.toThrow("Manager or Owner");
+    ).rejects.toThrow('operational_authorization');
     await saveEmployeeSchedulingProfile(
       { ...profile, positionIds: [], eligibleLocationIds: [] },
       db.executor,
@@ -709,7 +734,8 @@ it("Task 9 atomic profile and coverage quotas persist, retain history, reject gr
         },
         db.executor,
       ),
-    ).rejects.toThrow("management_authorization");
+    ).rejects.toThrow('operational_authorization');
+    expect(await q('SELECT * FROM coverage_window_position_requirements WHERE coverage_window_id=$1',[windowId])).toEqual([]);
   } finally {
     await db.dispose();
   }
@@ -1055,8 +1081,10 @@ it.each([1,3,5,20])('Task 11 separate generic SQL workspace supports exactly %i 
     expect(config).toMatchObject({workspace:{id:'cooperative-cedar'},policy:{timeZone:'America/New_York'},deliveryEnabled:false,testDeliveryEnabled:false});
     expect((await sqlNotificationStateRepository(db.executor,config.workspace).recipientAccess('cedar-worker'))?.allowedLocationIds).toHaveLength(count);
     const before=await q('SELECT row_to_json(n)::text AS row FROM notifications n ORDER BY id');
-    const fail:SqlExecutor={query:db.executor.query.bind(db.executor),transaction:statements=>db.executor.transaction([...statements,{text:"SELECT 'task11_atomic_notification_rollback'::integer",values:[]}])};
+    let injected=false;
+    const fail:SqlExecutor={query:db.executor.query.bind(db.executor),transaction:statements=>{if(!statements.some(statement=>/\bUPDATE shifts\b/.test(statement.text)))return db.executor.transaction(statements);injected=true;return db.executor.transaction([...statements,{text:"SELECT 'task11_atomic_notification_rollback'::integer",values:[]}]);}};
     await expect(updateShift({shiftId,employeeId:'cedar-worker',date:candidate.date,startTime:'09:00',endTime:'12:00',positionId:finishing.id,isDesignatedLead:true,actorEmployeeId:'cedar-owner'},fail)).rejects.toThrow('task11_atomic_notification_rollback');
+    expect(injected).toBe(true);
     expect(await q('SELECT row_to_json(n)::text AS row FROM notifications n ORDER BY id')).toEqual(before);
     expect((await listWeekShifts({weekStart:'2030-10-07'},db.executor))[0].startTime).toBe('08:00');
     expect((await readNotificationWeekState(['2030-10-07'],db.executor)).revisions).toHaveLength(1);

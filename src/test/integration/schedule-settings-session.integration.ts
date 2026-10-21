@@ -24,6 +24,7 @@ import { requireSessionMutationProof } from '../../lib/auth/session';
 import type { SessionMutationProof } from '../../lib/shift-changes/types';
 import { generateWeekDraft } from '../../lib/data/schedule-generation';
 import { createDisposableFoundationDatabase } from './local-postgres';
+import {installFixtureCompanyAccess} from './fixture-company-access';
 import { withOwnedTestResources } from './owned-test-resources';
 
 const operations = ['SAVE', 'ADD', 'QUOTAS', 'DELETE'] as const;
@@ -31,14 +32,14 @@ type Operation = typeof operations[number];
 const hash = createHash('sha256').update('owned-settings-current-session').digest('hex');
 let database: Awaited<ReturnType<typeof createDisposableFoundationDatabase>>;
 const q = (text: string, values: readonly unknown[] = []) => database.executor.query<Record<string, unknown>>({ text, values });
-const snapshot = async () => (await q(`SELECT jsonb_build_object(
+const snapshot = async () => { await installFixtureCompanyAccess(database.executor); return (await q(`SELECT jsonb_build_object(
  'staffing',(SELECT jsonb_agg(to_jsonb(t) ORDER BY location_id) FROM location_staffing_settings t),
  'hours',(SELECT jsonb_agg(to_jsonb(t) ORDER BY employee_id) FROM employee_scheduling_settings t),
  'windows',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM location_coverage_windows t),
  'quotas',(SELECT jsonb_agg(to_jsonb(t) ORDER BY coverage_window_id,position_id) FROM coverage_window_position_requirements t),
  'shifts',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM shifts t),
  'history',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM schedule_publication_revision_shifts t),
- 'notifications',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM notifications t)) state`))[0].state;
+ 'notifications',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM notifications t)) state`))[0].state; };
 beforeAll(async () => { database = await createDisposableFoundationDatabase({ mode: 'current-runtime' }); });
 afterAll(async () => { await database?.dispose(); });
 beforeEach(async () => {
@@ -71,6 +72,7 @@ function form(operation: Operation) {
 }
 const outcome = <T,>(promise: Promise<T>) => promise.then(value => ({ value, error: undefined }), error => ({ value: undefined, error }));
 async function action(operation: Operation) {
+  await installFixtureCompanyAccess(database.executor);
   const data = form(operation);
   return outcome<unknown>(operation === 'SAVE' ? actions.saveScheduleHealthSettingsFormAction(data)
     : operation === 'ADD' ? actions.addCoverageWindowFormAction(data)
@@ -136,7 +138,8 @@ it('actual Save rolls back staffing and hours together when the hour write fails
   } finally { await q('DROP TRIGGER b05_hours_fault ON employee_scheduling_settings; DROP FUNCTION b05_fail_hours()'); }
 });
 
-async function controlled(defer: (cleanup: () => void | Promise<unknown>) => void, pause: (statement: SqlStatement) => boolean = () => false) {
+async function controlled(defer: (cleanup: () => void | Promise<unknown>) => void, pause: (statement: SqlStatement) => boolean = () => false, mutationOnly = false) {
+  await installFixtureCompanyAccess(database.executor);
   const client = new Client({ connectionString: database.connectionString, statement_timeout: 5000 });
   await client.connect(); defer(() => client.end());
   const pid = Number((await client.query('SELECT pg_backend_pid() pid')).rows[0].pid);
@@ -145,12 +148,13 @@ async function controlled(defer: (cleanup: () => void | Promise<unknown>) => voi
   const released = new Promise<void>(resolve => { release = resolve; });
   defer(() => release());
   const executor: SqlExecutor = { query: database.executor.query, transaction: async statements => {
+    const mutation = statements.some(statement => /^\s*(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\b/.test(statement.text));
     await client.query('BEGIN');
     try {
       const results = [];
       for (const statement of statements) {
         results.push((await client.query(statement.text, [...statement.values])).rows);
-        if (!paused && pause(statement)) { paused = true; reached(); await released; }
+        if (!paused && (!mutationOnly || mutation) && pause(statement)) { paused = true; reached(); await released; }
       }
       await client.query('COMMIT'); return results;
     } catch (error) { await client.query('ROLLBACK'); throw error; }
@@ -192,7 +196,7 @@ it.each(operations.flatMap(operation => ['session', 'input'].map(lock => ({ oper
 it.each(operations.flatMap(operation => ['logout-first', 'write-first'].map(order => ({ operation, order }))))('actual $operation / $order serializes logout and mutation', async ({ operation, order }) => {
   const before = await snapshot();
   await withOwnedTestResources(async defer => {
-    const writer = await controlled(defer, s => order === 'write-first' && s.text.includes('management_authorization'));
+    const writer = await controlled(defer, s => order === 'write-first' && s.text.includes('management_authorization'), true);
     const logout = await controlled(defer, s => order === 'logout-first' && s.text.startsWith('DELETE FROM employee_sessions'));
     const deleting = () => logout.executor.transaction([{text:'DELETE FROM employee_sessions WHERE token_hash=$1',values:[hash]}]);
     context.executor = writer.executor;
@@ -220,6 +224,7 @@ it.each(operations.flatMap(operation => ['logout-first', 'write-first'].map(orde
 });
 
 async function repositoryWrite(operation: Operation, proof: SessionMutationProof, executor: SqlExecutor = database.executor) {
+  await installFixtureCompanyAccess(database.executor);
   return operation === 'SAVE' ? health.saveScheduleHealthSettings({ staffingSettings: [{locationId:'loc-1',minimumStaffPerShift:3,requiresDesignatedLead:false}], hourTargets: [{employeeId:'worker',targetWeeklyHours:25,maximumWeeklyHours:32}], proof }, executor)
     : operation === 'ADD' ? health.createCoverageWindow({locationId:'loc-1',dayOfWeek:2,startTime:'08:00',endTime:'12:00',actorEmployeeId:'owner',positionRequirements:[{positionId:'p1',quantity:4}],proof}, executor)
     : operation === 'QUOTAS' ? health.replaceCoverageWindowPositionRequirements({windowId:'window',actorEmployeeId:'owner',requirements:[{positionId:'p1',quantity:4}],proof}, executor)
@@ -230,7 +235,7 @@ it.each(operations.flatMap(operation => ['missing', 'malformed', 'unknown-hash',
   const proof = kind === 'missing' ? undefined : kind === 'malformed' ? {...valid,sessionTokenHash:'FORGED'}
     : kind === 'unknown-hash' ? {...valid,sessionTokenHash:'b'.repeat(64)}
     : {...valid,employee:{...valid.employee,id:'other'}};
-  await expect(repositoryWrite(operation, proof as SessionMutationProof)).rejects.toThrow('management_authorization');
+  await expect(repositoryWrite(operation, proof as SessionMutationProof)).rejects.toThrow(/^(?:management|operational)_authorization$/);
   expect(await snapshot()).toEqual(before);
 });
 
@@ -315,7 +320,7 @@ it.each(operations.flatMap(operation => ['generation-first', 'settings-first'].m
 it.each(operations)('actual %s rolls back expiry during a later SQL write lock wait', async operation => {
   const before = await snapshot();
   await withOwnedTestResources(async defer => {
-    const writer = await controlled(defer, s => s.text.includes('management_authorization'));
+    const writer = await controlled(defer, s => s.text.includes('management_authorization'), true);
     const blocker = await controlled(defer);
     await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '800 milliseconds' WHERE token_hash=$1", [hash]);
     context.executor = writer.executor;
@@ -343,6 +348,6 @@ it.each(['revoked','expired','foreign','inactive','demoted'])('native Remove red
   }};
   const result=await action('DELETE');
   expect(await snapshot()).toEqual(before); expect(invalidated).toBe(true);
-  expect(result.error).toMatchObject({destination:kind==='demoted'?'/app':'/login'});
+  expect(result.error).toMatchObject({destination:'/app/schedule/settings?error=ACCESS_DENIED'});
   expect(result.value).toBeUndefined();
 });

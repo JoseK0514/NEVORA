@@ -14,8 +14,8 @@ const modes={migrations:['node_modules/vitest/vitest.mjs','run','--config','vite
   corrections:['node_modules/vitest/vitest.mjs','run','--config','vitest.corrections-integration.config.mts'],
   payroll:['node_modules/vitest/vitest.mjs','run','--config','vitest.payroll-export-integration.config.mts'],
   reports:['node_modules/vitest/vitest.mjs','run','--config','vitest.reports-integration.config.mts'],
-  remediation:['--import','tsx','scripts/phase-d-remediation-qa.mjs'],
-  browser:['--import','tsx','scripts/phase-d-browser-qa.mjs']};
+  remediation:['--import','./scripts/qa-server-context.mjs','--import','tsx','scripts/phase-d-remediation-qa.mjs'],
+  browser:['--import','./scripts/qa-server-context.mjs','--import','tsx','scripts/phase-d-browser-qa.mjs']};
 if(!Object.hasOwn(modes,mode))throw new Error('Unknown owned Phase D test mode');
 const bin=process.env.NEVORA_TEST_PG_BIN;
 if(!bin||!existsSync(join(bin,'initdb'))||!existsSync(join(bin,'pg_ctl')))throw new Error('Select an existing local PostgreSQL runtime with NEVORA_TEST_PG_BIN.');
@@ -28,7 +28,7 @@ try{
   run('initdb',['-D',data,'-U','nevora_d','--auth-local=trust','--auth-host=trust','--encoding=UTF8','--no-locale']);
   run('pg_ctl',['-D',data,'-l',join(owned,'postgres.log'),'-w','start','-o',`-h 127.0.0.1 -p ${port} -k ${owned}`]);started=true;
   console.log('[Phase D] Owned loopback PostgreSQL; fictional data only.');
-  const env={...process.env,FUEL_TEST_DATABASE_URL:`postgresql://nevora_d@127.0.0.1:${port}/${['browser','remediation'].includes(mode)?'nevora_exchange_test_':'nevora_foundation_test_'}d_${marker.slice(0,12)}`,FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN:'yes'};
+  const env={...process.env,NODE_ENV:'test',FUEL_TEST_DATABASE_URL:`postgresql://nevora_d@127.0.0.1:${port}/${['browser','remediation'].includes(mode)?'nevora_exchange_test_':'nevora_foundation_test_'}d_${marker.slice(0,12)}`,FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN:'yes'};
   delete env.DATABASE_URL;
   const result=spawnSync(process.execPath,modes[mode],{env,stdio:'inherit'});process.exitCode=result.status??1;
 }finally{

@@ -308,7 +308,7 @@ export function assertSourceUnchanged(source, custody) {
 }
 export function safeEnvironment(env = process.env) {
   const keys = ['PATH', 'HOME', 'TMPDIR', 'USER', 'LOGNAME', 'NEVORA_TEST_PG_BIN', 'NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE', 'NEVORA_AXE_RUNTIME_FILE', 'PLAYWRIGHT_BROWSERS_PATH'];
-  return { ...Object.fromEntries(keys.filter(key => env[key] !== undefined).map(key => [key, env[key]])), CI: '1', NEXT_TELEMETRY_DISABLED: '1', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false' };
+  return { ...Object.fromEntries(keys.filter(key => env[key] !== undefined).map(key => [key, env[key]])), NODE_ENV: 'test', CI: '1', NEXT_TELEMETRY_DISABLED: '1', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false' };
 }
 export function assertOwnedFixture(env = process.env) {
   if (env.DATABASE_URL !== undefined) throw Error('Unset DATABASE_URL before owned Phase E verification');
@@ -448,7 +448,7 @@ async function runOwned(mode, suite, source, custody, evidence) {
       const childEnv = { ...env, FUEL_TEST_DATABASE_URL: `postgresql://nevora_e@127.0.0.1:${port}/${prefix}e_${ownerId.slice(0, 12)}_s${mode === 'sql' ? suites.indexOf(item) : 0}`, PHASE_E_SQL_SUITE: item };
       const output = join(evidence, 'sql-' + item + '.json');
       rmSync(mode === 'sql' ? output : join(evidence, 'browser-report.json'), { force: true });
-      const args = mode === 'sql' ? sqlCommand(item, evidence).slice(1) : ['--import', 'tsx', 'scripts/phase-e-browser-qa.mjs', '--suite', item];
+      const args = mode === 'sql' ? sqlCommand(item, evidence).slice(1) : ['--import', fileURLToPath(new URL('./qa-server-context.mjs', import.meta.url)), '--import', 'tsx', 'scripts/phase-e-browser-qa.mjs', '--suite', item];
       controller.signal.throwIfAborted();
       const result = await superviseOwnedChild({ command: process.execPath, args, cwd: source, env: childEnv, ownerId, timeoutMs: ownedExecutionTimeout(mode, item), signal: controller.signal });
       const record = { suite: item, command: [process.execPath, ...args], exitCode: result.status ?? 1, checks: [], resources: result.resources, observationFailure: result.observationFailure }; report.results.push(record);

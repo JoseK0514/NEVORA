@@ -12,6 +12,7 @@ import { createDisposableGenerationDatabase } from './local-postgres';
 import { generateWeekDraft, readGenerationSnapshot } from '../../lib/data/schedule-generation';
 import { GenerationConflictError, readGenerationSource } from '../../lib/data/generation-guards';
 import { clearGenerationExclusion } from '../../lib/data/generation-exclusions';
+import { instrumentGeneration } from './generation-instrumentation';
 
 import { withOwnedTestResources } from './owned-test-resources';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
@@ -37,7 +38,7 @@ const request = {
     locationIds: ['loc-1']
   }
 };
-const run = (input = request, executor = database.executor) => generateWeekDraft(input, executor);
+const run = (input = request, executor = database.executor) => generateWeekDraft(input, instrumentGeneration(executor, database.executor));
 const source = async () => (await readGenerationSource(database.executor)).source;
 const rows = () => q('SELECT to_jsonb(t) row FROM shifts t ORDER BY id');
 const schedules = () => q('SELECT to_jsonb(t) row FROM schedules t ORDER BY id');
@@ -157,7 +158,7 @@ it.each(['missing', 'worker', 'inactive'])('rejects forged/nonmanager/inactive a
     ...request,
     proof: managementProof(actor === 'inactive' ? 'manager' : actor),
     actorEmployeeId: actor === 'inactive' ? 'manager' : actor
-  })).rejects.toThrow('active Owner or Manager');
+  })).rejects.toThrow('operational_authorization');
   expect(await rows()).toEqual([]);
   expect(await schedules()).toEqual([]);
 });
@@ -167,7 +168,7 @@ it('rejects inactive workspace and non-Monday scope', async () => {
     weekStart: '2030-10-08'
   })).rejects.toThrow();
   await q('UPDATE workspaces SET active=false');
-  await expect(run()).rejects.toThrow('active Owner or Manager');
+  await expect(run()).rejects.toThrow('operational_authorization');
 });
 it('single location honors cross-location and foreign-owning-week business-date maximum', async () => {
   await manual('foreign', 'loc-2', '2030-09-30', '2030-10-08', '08:00', '12:00');
@@ -273,9 +274,15 @@ it('verified no-op still rejects actor revocation or publication racing its fina
       return database.executor.transaction(s);
     }
   };
-  await expect(run(request, revoked)).rejects.toThrow('active Owner or Manager');
+  await expect(run(request, revoked)).rejects.toThrow('operational_authorization');
   expect(await rows()).toEqual(before);
-  await q("UPDATE employees SET active=true WHERE id='manager'");
+  await q("UPDATE employees SET active=true WHERE id='manager'; INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('scope-owner','Fictional','Owner','NONE','OWNER','loc-1')");
+  const {readOwnerOperationalScope,assignOperationalScope}=await import('../../lib/company-access/operational-scope.server');
+  const owner=await fixtureProof(database.executor,'scope-owner');
+  const current=await readOwnerOperationalScope(owner,'manager',database.executor);
+  if(current.state!=='ready')throw Error('Missing owned scope context');
+  const target=current.data.current;
+  expect(await assignOperationalScope(owner,'manager',{action:'ASSIGN',operationId:crypto.randomUUID(),expectedEmployeeVersion:target.employeeUpdatedAt,expectedRoleGeneration:target.roleGeneration,expectedScopeRevision:target.scopeRevision,scope:{mode:'COMPANY',locationIds:[]}},database.executor)).toMatchObject({state:'saved'});
   first = true;
   let publisherState: Awaited<ReturnType<typeof rows>> = [];
   const published: SqlExecutor = {
@@ -420,7 +427,7 @@ async function heldExecutor(defer: (cleanup: () => void | Promise<unknown>) => v
         const results = [];
         for (const s of statements) {
           results.push((await client.query(s.text, [...s.values])).rows);
-          if (!paused && hold(s)) {
+          if (!paused && statements.some(item=>item.text.includes('generation_source_conflict')||/^\s*(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\b/.test(item.text)) && hold(s)) {
             paused = true;
             reached();
             await released;
@@ -467,11 +474,14 @@ it.each(['profile', 'membership', 'membership-insert', 'normal-availability-inse
   let reads = 0;
   await withOwnedTestResources(async defer => {
     const generation = await heldExecutor(defer, s => order === 'generation-first' && s.text.includes('generation_source_conflict'));
+    let writing:Promise<unknown>|undefined;
     const counted: SqlExecutor = {
       ...generation.executor,
       query: async <T,>(s: SqlStatement) => {
         reads++;
-        return generation.executor.query<T>(s);
+        const result=await generation.executor.query<T>(s);
+        if(kind==='profile'&&order==='writer-first'&&!writing){writing=write();defer(()=>writing);await writer.ready;}
+        return result;
       }
     };
     const writer = await heldExecutor(defer, s => order === 'writer-first' && (kind === 'profile' ? s.text.includes('FROM employees') && s.text.includes('FOR UPDATE') : true));
@@ -482,9 +492,7 @@ it.each(['profile', 'membership', 'membership-insert', 'normal-availability-inse
       eligibleLocationIds: ['loc-2']
     }, writer.executor) : writer.executor.transaction([statement]);
     if (order === 'writer-first') {
-      const writing = write();
-      defer(() => writing);
-      await writer.ready;
+      if(kind!=='profile'){writing=write();defer(()=>writing);await writer.ready;}
       const generating = run(request, counted);
       defer(() => generating);
       defer(() => writer.release());
@@ -766,7 +774,6 @@ const remainingWriters = [
   { kind: 'readiness-removal', sql: "DELETE FROM location_staffing_settings WHERE location_id='loc-1'", added: 0 },
   { kind: 'readiness-insert', sql: "INSERT INTO location_staffing_settings(location_id,minimum_staff_per_shift,requires_designated_lead) VALUES('loc-1',1,false)", added: 1 },
   { kind: 'coverage-insert', sql: "INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES('inserted-window','loc-1',1,'08:00','12:00')", added: 1 },
-  { kind: 'workspace-zone', sql: "UPDATE workspaces SET time_zone='America/New_York'", added: 1 },
   { kind: 'maximum-insert', sql: "INSERT INTO employee_scheduling_settings(employee_id,maximum_weekly_hours) VALUES('worker',0)", added: 0 },
   { kind: 'maximum-change', sql: "UPDATE employee_scheduling_settings SET maximum_weekly_hours=0 WHERE employee_id='worker'", added: 0 },
   { kind: 'coverage-change', sql: "UPDATE location_coverage_windows SET end_time='10:00'", added: 1 },
@@ -811,6 +818,37 @@ it.each(remainingWriters.flatMap(item => ['writer-first', 'generation-first'].ma
     // Readiness removal is fixture state, restore it for the next existing test.
     await q("INSERT INTO location_staffing_settings(location_id,minimum_staff_per_shift,requires_designated_lead) VALUES('loc-1',1,false) ON CONFLICT DO NOTHING");
   });
+
+it.each(['writer-first','generation-first'])('fences a workspace-zone change / %s at the actual PostgreSQL lock boundary',async order=>{
+  const solving=vi.spyOn(planner,'planWeek');let reads=0;
+  await withOwnedTestResources(async defer=>{
+    const generation=await heldExecutor(defer,s=>order==='generation-first'&&s.text.includes('generation_source_conflict'));
+    const writer=await heldExecutor(defer,()=>order==='writer-first');
+    let introduced=false;
+    const executor:SqlExecutor={query:async<T>(statement:SqlStatement)=>{reads++;return generation.executor.query<T>(statement);},transaction:async statements=>{
+      if(introduced)return generation.executor.transaction(statements);
+      introduced=true;
+      const writing=()=>writer.executor.transaction([{text:"UPDATE workspaces SET time_zone='America/New_York'",values:[]}]);
+      if(order==='writer-first') {
+        const changing=writing();defer(()=>changing);await writer.ready;
+        const committing=generation.executor.transaction(statements).then(result=>({result}),error=>({error}));defer(()=>committing);
+        await observeBlocked(generation.pid);writer.release();await changing;
+        const settled=await committing;if('error'in settled)throw settled.error;return settled.result;
+      }
+      const committing=generation.executor.transaction(statements);defer(()=>committing);await generation.ready;
+      const changing=writing();defer(()=>changing);
+      await observeBlocked(writer.pid);generation.release();
+      const result=await committing;await changing;return result;
+    }};
+    await expect(run(request,executor)).rejects.toThrow('operational_authorization');
+    expect(introduced).toBe(true);
+    expect(reads).toBe(order==='writer-first'?2:1);
+    expect(solving).toHaveBeenCalledTimes(order==='writer-first'?2:1);
+    expect(await q("SELECT count(*)::integer n FROM shifts WHERE assignment_origin='GENERATED'")).toEqual([{n:1}]);
+    expect(await q('SELECT time_zone FROM workspaces')).toEqual([{time_zone:'America/New_York'}]);
+    expect(await q('SELECT id FROM notifications')).toEqual([]);
+  });
+});
 
 it.each(['time', 'location', 'position', 'future-week'])('an exclusion does not reserve unrelated material %s demand', async kind => {
   if (kind === 'position') await q("INSERT INTO positions(id,workspace_id,name) VALUES('p','workspace-fuel','Old position'),('new-p','workspace-fuel','New position'); INSERT INTO employee_positions VALUES('worker','p'),('worker','new-p'); INSERT INTO coverage_window_position_requirements VALUES('window','p',1)");

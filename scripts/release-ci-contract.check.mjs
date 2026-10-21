@@ -59,7 +59,7 @@ test('five bounded leaves retain strict current-source aggregation and unique ra
  assert(execute && verify);
  assert.equal(execute.if,undefined);assert.equal(verify.if,undefined);
  assert(leaf.steps.indexOf(execute)<leaf.steps.indexOf(verify));
- const home=leaf.steps.filter(step=>step.run==='node --import tsx scripts/phase-e-home-held-response.check.mjs');
+ const home=leaf.steps.filter(step=>step.run==='node --import ./scripts/qa-server-context.mjs --import tsx scripts/phase-e-home-held-response.check.mjs');
  assert.equal(home.length,1);assert.equal(home[0].if,"${{ matrix.suite == 'home' }}");
  const upload=leaf.steps.find(step=>step.uses?.startsWith('actions/upload-artifact@'));
  assert.equal(upload.if,'always()');

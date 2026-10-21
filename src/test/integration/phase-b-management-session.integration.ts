@@ -15,6 +15,7 @@ vi.mock('@/lib/data/notification-transactions', async original => ({ ...await or
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 vi.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
 import { createDisposableFoundationDatabase } from './local-postgres';
+import {installFixtureCompanyAccess} from './fixture-company-access';
 import * as actions from '../../app/app/settings/actions';
 import { createShiftAction, setAvailabilityDeadlineAction } from '../../app/app/schedule/actions';
 
@@ -32,6 +33,7 @@ it.each(cases)('actual $key action rejects a session revoked after entry authori
     await db.executor.query({ text: "INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('owner','Fictional','Owner','5550000001','OWNER','loc-1'); INSERT INTO positions(id,workspace_id,name) VALUES('p1','workspace-fuel','Original Position');", values: [] });
     const token = 'owned-phase-b-owner-session', hash = createHash('sha256').update(token).digest('hex');
     await db.executor.query({ text: "INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'owner',clock_timestamp()+interval '1 day')", values: [hash] });
+    await installFixtureCompanyAccess(db.executor);
     context.cookies.set('fuel_session', token);
     const reviewedVersion = test.key === 'updateLocation'
       ? (await db.executor.query<{ updatedAt: string }>({ text: "SELECT updated_at::text AS \"updatedAt\" FROM locations WHERE id='loc-1'", values: [] }))[0].updatedAt
