@@ -538,3 +538,38 @@ full lockfile audits report zero vulnerabilities. Local installed Next/Vitest
 remain the earlier versions, so these lightweight checks are not execution proof
 of the patched runtime. Full fresh cloud installation and every mandatory check
 on the published dependency candidate remain required. Production stays held.
+
+## Clocker device dialog hydration
+
+The patched-runtime full run 39834916398 at `c9f71141` / merge `f7a8942f`
+passed Phase E SQL and D1.3's 46 browser checks. Whole Phase D passed 82 Chromium
+checks, then timed out filling Device name after Add device was clicked. The
+failure screenshot shows the correct Clocker devices page with no open dialog;
+the accessible field label agrees with the driver. Remaining jobs were cancelled
+to save runner minutes. This run is not successful verification.
+
+The server rendered Add device enabled before its client dialog handlers were
+available. Two new server-rendering regressions failed on that behavior before
+the correction. All device dialog entry buttons now wait for hydration using the
+same external-store pattern as existing recovery controls. The active-location
+restrictions, native dialog behavior, form fields, timeout and setup-code
+assertions remain. All five existing component tests are preserved; all seven
+component tests and scoped lint pass locally using the previously installed
+runner. No local framework server or browser suite was started.
+
+Focused cloud run 39836578478 on diagnostic source `47735441` tests actual delayed
+JavaScript in Chromium and WebKit, then requires the enabled native Add device
+button to open the correct dialog, accept name/location, cancel, and open again
+from the keyboard without runtime errors. The source uses the same dependency
+patch and component correction. It is supporting evidence only; the complete
+matching-source mandatory workflow remains required after the final correction.
+
+That focused run passed: each engine held 30 actual JavaScript requests, observed
+the disabled Add device button and no dialog, then filled the native name and
+location controls after release. Cancel and keyboard reopening passed; runtime
+errors were empty. Both browsers and the owned app closed; source was clean and
+unchanged. The component bytes match the correction being integrated. Results
+are in the run's `development-ci-probe-47735441b6ba199426b4d5c4b1a23bf95fa9700b-home-trace`
+artifact, `diagnostic-home-trace/probe-report.json`. The probe workflow and entry
+point remain excluded from the integration PR. Every mandatory final-source
+check is still required.

@@ -56,3 +56,22 @@ it('escapes device and location values rather than inserting markup', () => {
   expect(html).not.toContain('<img src=x>');
   expect(html).toContain('&lt;script&gt;device&lt;/script&gt;');
 });
+
+function expectDisabled(html: string, label: string) {
+  const tag = [...html.matchAll(/<button\b[^>]*>[\s\S]*?<\/button>/g)].map(match => match[0])
+    .find(button => button.replace(/<[^>]*>/g, '') === label);
+  expect(tag, label).toBeDefined();
+  expect(tag, label).toMatch(/^<button\b[^>]*\bdisabled=""/);
+}
+
+it('withholds device dialog actions until their handlers are hydrated', () => {
+  const html = render([device('fictional-tablet', 'UNREGISTERED')]);
+  for (const label of ['Add device', 'Rename', 'New setup code', 'Revoke access']) {
+    expectDisabled(html, label);
+  }
+});
+
+it('withholds the empty-list registration action until hydration', () => {
+  const html = render([]);
+  expectDisabled(html, 'Add your first device');
+});
