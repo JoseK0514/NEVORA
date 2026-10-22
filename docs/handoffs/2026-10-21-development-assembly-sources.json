@@ -7,7 +7,7 @@
   "sources": [
     {
       "branch": "codex/browser-probe-20261022",
-      "sha": "f2f957cb3da0fcec49992523317f2a6e9ffed689",
+      "sha": "684dfbea8429ff0b9dabcee6be5248072cac296f",
       "disposition": "reference",
       "reason": "Reference branch for isolated CI diagnosis: exact browser failures, types, D2 fixture lifetimes and Clocker setup. Not a development integration or acceptance run; its probe-only workflow and entry points are not merged. Required source-bound verification remains on the integration PR."
     },
