@@ -57,7 +57,7 @@ jobs:
       - name: Complete D2 correction, recovery and identity-boundary browser cases
         if: ${{ matrix.target == 'd2' }}
         run: npm run test:phase-d2:corrections-ui
-      - name: Home WebKit320 lifecycle diagnosis in three fresh applications
+      - name: Shared-server Home WebKit320/375/430 lifecycle diagnosis
         if: ${{ matrix.target == 'home-trace' }}
         run: node scripts/phase-d-owned.mjs contrast-probe
       - name: Strict mirror custody and release-engineering regressions
