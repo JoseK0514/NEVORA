@@ -1,7 +1,7 @@
 # Owner AI manager implementation plan
 
 **Goal:** Build the first executable increment of Jose's Owner-only senior operations advisor.
-**Architecture:** Authorized database context and explicit saved priorities feed a bounded provider-independent investigation service. OpenAI is an optional configured adapter. The UI presents current evidence, conversation and connection state.
+**Architecture:** Authorized database context and explicit saved priorities feed a bounded provider-independent investigation service. Neon AI Gateway is the preferred configured adapter, with optional direct OpenAI. The UI presents current evidence, conversation and connection state.
 **Spec:** `docs/superpowers/specs/2026-10-22-owner-advisor-design.md`
 **Tech stack:** Existing Next 16/React 19/TypeScript/PostgreSQL/Vitest and native fetch; no new dependencies.
 
@@ -16,11 +16,11 @@
 
 ## Task 1: secure investigation backend
 
-- [ ] Own `src/lib/owner-advisor/**`, `src/app/api/owner/advisor/**`, `db/migrations/0036_owner_advisor.sql`, canonical migration classification/disposable literal and backend integration tests.
-- [ ] Define/export typed client contracts; preserve clean separation of provider, tools, persistence, HTTP and authorization.
-- [ ] Write and observe failing behavior tests, then implement feature/config gates, bounded Responses tool loop, real investigation tools, authority revalidation, owner-scoped persistence and atomic usage reservation.
-- [ ] Verify mocked provider scenarios and real disposable PostgreSQL cases; commit only owned files. Report exact commands and evidence.
-- [ ] Review task for spec and code quality; fix material findings before task 2.
+- [x] Own `src/lib/owner-advisor/**`, `src/app/api/owner/advisor/**`, `db/migrations/0036_owner_advisor.sql`, canonical migration classification/disposable literal and backend integration tests.
+- [x] Define/export typed client contracts; preserve clean separation of provider, tools, persistence, HTTP and authorization.
+- [x] Write and observe failing behavior tests, then implement feature/config gates, bounded Responses tool loop, real investigation tools, authority revalidation, owner-scoped persistence and atomic usage reservation.
+- [x] Verify mocked provider scenarios and real disposable PostgreSQL cases; commit only owned files. Report exact commands and evidence.
+- [x] Review task for spec and code quality; fix material findings before task 2. Approved at `22b5fdc2`; 23 focused and 19 owned PostgreSQL checks, TypeScript and lint passed.
 
 ## Task 2: Owner UI and discovery
 
