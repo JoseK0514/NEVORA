@@ -19,9 +19,9 @@ export default async function ReportsPage({searchParams}:{searchParams:Promise<{
   const access=await withOperationalCompany(await requireSessionMutationProof(),async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title="Reports unavailable" reason={access.reason}/>;
   const workspace=await getWorkspace(),params=await searchParams;
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
-  // QA r3: the default is last week, Monday to Sunday (the Week preset).
-  const lastMonday=today.subtract({days:today.dayOfWeek-1+7});
-  let period={startDate:lastMonday.toString(),endDate:lastMonday.add({days:6}).toString()};
+  // MK5 / PD4: the default is this week so far, Monday to today (the This week preset); Last week is one tap away.
+  const monday=today.subtract({days:today.dayOfWeek-1});
+  let period={startDate:monday.toString(),endDate:today.toString()};
   try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current period. */}
   // v3: Reports renders the navigation bar (More, period, Export), the segmented periods and the content after the title.
   return <ScopedReadFrame observation={access}><ReportsEntrance><PageBand title="Insights" summary="Recorded hours, time off and approvals for the period"/>

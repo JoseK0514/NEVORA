@@ -3,7 +3,7 @@ import Link from "next/link";
 import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 
 import { useEffect, useLayoutEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
-import { AirplaneTiltIcon, ArrowsClockwiseIcon, CalendarXIcon, UserCheckIcon, UserMinusIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
+import { AirplaneTiltIcon, ArrowsClockwiseIcon, CalendarXIcon, WalletIcon, UserCheckIcon, UserMinusIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { Avatar, Button, Card, CardBody, Freshness, KitLink, KitStack, PageBand, Row, Rows, Tile } from "@/components/kit/kit";
 import { CLOCK_IN, presentItem } from "@/lib/action-center/present";
 import { useToday } from "./manager-today";
@@ -13,8 +13,10 @@ import { withoutSetupItems } from "@/lib/action-center/setup";
 import { needsYou, needsYouSentence, type NeedsYou } from "@/lib/action-center/needs-you";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
-import type { ClockMonitor } from "@/lib/time-clock";
+import type { ClockMonitor, ClockMonitorEmployee } from "@/lib/time-clock";
 import { useClockMonitor } from "./clean/use-clock-monitor";
+import { keepWhole } from "@/lib/keep-whole";
+import type { NextPay } from "./payroll/my-pay";
 
 /* Manager and Owner Home, rebuilt for the clean Manager app (v3, approved Oct 19; spec in
  * docs/product/specs/clean-manager/spec.md). One job: what needs me now, and how today is going.
@@ -41,6 +43,8 @@ export type PremiumHomeProps = {
   setup?: ReactNode;
   /** When the Owner setup card lists the setup items, they leave Planning. */
   setupHoldsItems?: boolean;
+  /** MK1: the next payday from My pay's pay schedule; Home shows it as one Coming up row. */
+  nextPay?: NextPay;
 };
 
 const clock = (iso: string, timeZone: string) => {
@@ -89,7 +93,7 @@ export type PremiumHomeSurfaceProps = PremiumHomeProps & {
 };
 
 /** Presentation only, so the fictional preview can show Home without a session. */
-export function PremiumHomeSurface({ dateLabel, timeZone, setup, setupHoldsItems = false, today, monitor = null, monitorPending = false, todayRefreshing = false, onRetryToday,
+export function PremiumHomeSurface({ dateLabel, timeZone, setup, setupHoldsItems = false, nextPay = null, today, monitor = null, monitorPending = false, todayRefreshing = false, onRetryToday,
   actions, actionsConnection, onRetryActions, liveReaders, offline = false }: PremiumHomeSurfaceProps) {
   const readyToday = today?.state === "ready" ? today : null;
   // r4 QA: Home remembers whether the Owner setup card shows, so the next route placeholder starts with its shape.
@@ -140,11 +144,12 @@ export function PremiumHomeSurface({ dateLabel, timeZone, setup, setupHoldsItems
       {setup ? <div className="cm-home__setup">{setup}</div> : null}
       <div className="cm-home__now" ref={nowColumn}>
         {value ? <NeedsYouCard value={value} timeZone={timeZone} /> : <PendingCard connection={offline ? "offline" : actionsConnection} onRetry={retryAll} />}
+        {nextPay ? <ComingUpCard nextPay={nextPay} /> : null}
       </div>
       <div className="cm-home__people">
         <PeopleCards today={today} monitor={monitor} monitorPending={monitorPending} refreshing={todayRefreshing} onRetry={onRetryToday} timeZone={timeZone} offline={offline} paused={actionsConnection === "paused"} />
       </div>
-      {readyToday && readyToday.shifts.length ? <div className="cm-home__timeline"><ShiftTimeline today={readyToday} timeZone={timeZone} /></div> : null}
+      {readyToday && (readyToday.shifts.length || (monitor?.state === "ready" && monitor.employees.length)) ? <div className="cm-home__timeline"><ShiftTimeline today={readyToday} monitor={monitor} timeZone={timeZone} /></div> : null}
     </KitStack>
   </div>;
 }
@@ -180,9 +185,23 @@ function NeedsYouCard({ value, timeZone }: { value: NeedsYou; timeZone: string }
       {otherUrgent.length ? <Row href="/app/inbox?filter=now" leading={<Tile tone="urgent"><WarningCircleIcon size={20} weight="fill" /></Tile>}
         title="Urgent" trailing={<span className="cm-row-count">{otherUrgent.length}</span>}
         label={`${plural(otherUrgent.length, "urgent item", "urgent items").replace("\u00a0", " ")}, open in Inbox`} /> : null}
-      {requests.length ? <Row href="/app/inbox?filter=requests" leading={<span className="cm-tile-tint"><Tile tone="neutral">{oneRequest?.type === "TIME_OFF" ? <AirplaneTiltIcon size={20} weight="fill" /> : <UserCheckIcon size={20} weight="fill" />}</Tile></span>}
+      {requests.length ? <Row href="/app/inbox?filter=requests" leading={<Tile tone="neutral">{oneRequest?.type === "TIME_OFF" ? <AirplaneTiltIcon size={20} weight="fill" /> : <UserCheckIcon size={20} weight="fill" />}</Tile>}
         title={oneRequest ? (oneRequest.type === "TIME_OFF" ? "Time-off request" : oneRequest.type === "EXCHANGE" ? "Shift change request" : "Can’t-work report") : "Requests"} meta={requestMeta} trailing={<span className="cm-row-count">{requests.length}</span>}
         label={`${plural(requests.length, "request", "requests").replace("\u00a0", " ")} waiting, open in Inbox`} /> : null}
+    </Rows>
+  </Card>;
+}
+
+/** MK1 (the UI part): one dated row for the next payday, from the date My pay already shows. Payroll runs and deadlines
+ * join it once their wording is approved. */
+function ComingUpCard({ nextPay }: { nextPay: NonNullable<NextPay> }) {
+  const day = new Date(`${nextPay.payday}T12:00:00Z`);
+  const date = new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(day);
+  const when = nextPay.daysUntil === 0 ? "today" : nextPay.daysUntil === 1 ? "tomorrow" : `in ${nextPay.daysUntil} days`;
+  return <Card id="home-coming-up" title="Coming up">
+    <Rows label="Coming up">
+      <Row href="/app/my-pay" leading={<Tile tone="neutral"><WalletIcon size={20} weight="fill" /></Tile>} title="Next payday" meta={keepWhole(date)} trailing={when}
+        label={`Next payday, ${date}, ${when}, open My pay`} />
     </Rows>
   </Card>;
 }
@@ -259,34 +278,80 @@ function PeopleCards({ today, monitor, monitorPending = false, refreshing, onRet
   </>;
 }
 
-/** Desktop only: today's shifts on one timeline. Bars are decoration; each row's name and times are text. */
-function ShiftTimeline({ today, timeZone }: { today: Extract<Today, { state: "ready" }>; timeZone: string }) {
-  const starts = today.shifts.map(shift => Date.parse(shift.startAt)), ends = today.shifts.map(shift => Date.parse(shift.endAt));
+/** One timeline row: the planned shift (if any) and the time recorded so far (if any), in epoch milliseconds. */
+export type TimelineLane = {
+  key: string; name: string; planned: { from: number; to: number } | null; recorded: { from: number; to: number } | null;
+  /** in: on the clock now · done: clocked in and finished · later: starts later · missed: no clock-in · unscheduled: on the clock with no shift today. */
+  kind: "in" | "done" | "later" | "missed" | "unscheduled"; clockedInAt: string | null; shift: TodayShift | null;
+};
+
+/** UI-1 / PD2 / UX6: the day as planned and as recorded. Someone the clock-in read lists as working is never drawn as
+ * "No clock-in", even when they clocked in outside their planned hours; their recorded time runs from the clock-in to now.
+ * People on the clock with no shift today get their own row. The axis always includes now. */
+export function timelineLanes(today: Extract<Today, { state: "ready" }>, monitor: ClockMonitor | null) {
+  const now = Date.parse(today.observedAt);
+  const open = new Map((monitor?.state === "ready" ? monitor.employees : []).map(person => [person.employeeId, person]));
+  const clocks = new Map<string, ClockMonitorEmployee>();
+  const matched = new Set<string>();
+  for (const person of open.values()) {
+    const candidates = today.shifts.filter(shift => shift.employeeId === person.employeeId && shift.locationId === person.locationId && shift.status !== "done");
+    const punch = Date.parse(person.clockInAt);
+    const distance = (shift: TodayShift) => Math.max(Date.parse(shift.startAt) - punch, punch - Date.parse(shift.endAt), 0);
+    const shift = candidates.find(working) ?? candidates.sort((a, b) => distance(a) - distance(b) || a.startAt.localeCompare(b.startAt))[0];
+    if (shift) { clocks.set(shift.id, person); matched.add(person.timeEntryId); }
+  }
+  const lanes: TimelineLane[] = [...today.shifts].sort((a, b) => a.startAt.localeCompare(b.startAt)).map(shift => {
+    const planned = { from: Date.parse(shift.startAt), to: Date.parse(shift.endAt) };
+    const clock = clocks.get(shift.id);
+    const clockedInAt = clock?.clockInAt ?? (working(shift) ? shift.firstClockInAt : null);
+    const recorded = clockedInAt && (working(shift) || clock) ? { from: Math.min(Date.parse(clockedInAt), now), to: now } : null;
+    const kind: TimelineLane["kind"] = working(shift) || clock ? "in" : shift.status === "done" ? "done" : later(shift) ? "later" : "missed";
+    return { key: shift.id, name: shift.employeeName, planned, recorded, kind, clockedInAt: kind === "done" ? shift.firstClockInAt : clockedInAt, shift };
+  });
+  for (const person of open.values()) if (!matched.has(person.timeEntryId)) lanes.push({ key: `open:${person.timeEntryId}`, name: person.employeeName, planned: null,
+    recorded: { from: Math.min(Date.parse(person.clockInAt), now), to: now }, kind: "unscheduled", clockedInAt: person.clockInAt, shift: null });
   const hour = 3_600_000;
-  const from = Math.floor(Math.min(...starts) / hour) * hour, to = Math.ceil(Math.max(...ends) / hour) * hour;
+  const times = lanes.flatMap(lane => [lane.planned?.from, lane.planned?.to, lane.recorded?.from]).filter((time): time is number => Number.isFinite(time));
+  // From the earliest start or clock-in (or now) to the latest end, or the hour after now, whichever is later.
+  const from = Math.floor(Math.min(now, ...times) / hour) * hour;
+  const to = Math.max(Math.ceil(Math.max(...times, now) / hour) * hour, Math.floor(now / hour) * hour + hour);
+  return { lanes, from, to, now };
+}
+
+/** Desktop only: today's shifts on one timeline. Bars are decoration; each row's name and times are text. */
+function ShiftTimeline({ today, monitor, timeZone }: { today: Extract<Today, { state: "ready" }>; monitor: ClockMonitor | null; timeZone: string }) {
+  const { lanes, from, to, now } = timelineLanes(today, monitor);
+  const hour = 3_600_000;
   const span = Math.max(to - from, hour);
   const at = (time: number) => `${(((time - from) / span) * 100).toFixed(2)}%`;
-  const now = Date.parse(today.observedAt);
+  const width = (range: { from: number; to: number }) => `calc(${at(range.to)} - ${at(range.from)})`;
   // Whole-hour ticks, at most about seven of them.
   const step = Math.max(1, Math.ceil(span / hour / 6)) * hour;
   const ticks = Array.from({ length: Math.floor(span / step) + 1 }, (_, i) => from + step * i);
-  const kind = (shift: TodayShift) => working(shift) || shift.status === "done" ? "in" : later(shift) ? "later" : "missed";
+  const said = (lane: TimelineLane) => {
+    const planned = lane.shift ? `, ${clock(lane.shift.startAt, timeZone)} to ${clock(lane.shift.endAt, timeZone)}` : ", no shift today";
+    const state = lane.kind === "in" || lane.kind === "unscheduled" ? (lane.clockedInAt ? `, clocked in at ${clock(lane.clockedInAt, timeZone)}` : ", clocked in")
+      : lane.kind === "done" ? ", clocked in" : lane.kind === "later" ? ", later today" : `, no ${CLOCK_IN}`;
+    return planned + state;
+  };
+  const recording = lanes.some(lane => lane.recorded);
   return <Card id="home-timeline" title="Shifts today" meta={<span className="cm-count">{today.shifts.length}</span>}>
     <div className="cm-timeline">
       <div className="cm-timeline__axis" aria-hidden="true"><span />
         <span className="cm-timeline__track">{ticks.map((tick, i) => <span key={i} style={{ left: at(tick) }}>{clock(new Date(tick).toISOString(), timeZone).replace(":00", "")}</span>)}</span>
       </div>
       <ul className="cm-timeline__rows" aria-label="Shifts today">
-        {[...today.shifts].sort((a, b) => a.startAt.localeCompare(b.startAt)).map(shift => <li key={shift.id} className="cm-timeline__row">
-          <span className="cm-timeline__name">{shift.employeeName}<span className="sr-only">{`, ${clock(shift.startAt, timeZone)} to ${clock(shift.endAt, timeZone)}, ${kind(shift) === "in" ? "clocked in" : kind(shift) === "later" ? "later today" : `no ${CLOCK_IN}`}`}</span></span>
+        {lanes.map(lane => <li key={lane.key} className="cm-timeline__row">
+          <span className="cm-timeline__name">{lane.name}<span className="sr-only">{said(lane)}</span></span>
           <span className="cm-timeline__track" aria-hidden="true">
             {ticks.map((tick, i) => <i key={i} className="cm-timeline__grid" style={{ left: at(tick) }} />)}
-            <i className="cm-timeline__bar" data-kind={kind(shift)} style={{ left: at(Date.parse(shift.startAt)), width: `calc(${at(Date.parse(shift.endAt))} - ${at(Date.parse(shift.startAt))})` }} />
-            {now >= from && now <= to ? <i className="cm-timeline__now" style={{ left: at(now) }} /> : null}
+            {lane.planned ? <i className="cm-timeline__bar" data-kind={lane.kind === "in" ? "planned" : lane.kind === "done" ? "in" : lane.kind} style={{ left: at(lane.planned.from), width: width(lane.planned) }} /> : null}
+            {lane.recorded ? <i className="cm-timeline__bar" data-kind="recorded" style={{ left: at(lane.recorded.from), width: width(lane.recorded) }} /> : null}
+            <i className="cm-timeline__now" style={{ left: at(now) }} />
           </span>
         </li>)}
       </ul>
-      <p className="cm-timeline__key" aria-hidden="true"><span data-kind="in">Clocked in</span><span data-kind="missed">No {CLOCK_IN}</span><span data-kind="later">Later today</span><span data-kind="now">Now, {clock(today.observedAt, timeZone)}</span></p>
+      <p className="cm-timeline__key" aria-hidden="true"><span data-kind="in">Clocked in</span>{recording ? <span data-kind="planned">Planned</span> : null}<span data-kind="missed">No {CLOCK_IN}</span><span data-kind="later">Later today</span><span data-kind="now">Now, {clock(today.observedAt, timeZone)}</span></p>
     </div>
   </Card>;
 }

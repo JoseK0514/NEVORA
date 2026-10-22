@@ -2,9 +2,45 @@
   "schema": 1,
   "repository": "JoseK0514/NEVORA",
   "target": "development",
-  "assemblyBranch": "codex/release-assembly-20261021",
+  "assemblyBranch": "codex/ui-quick-wins-integration-20261021",
   "observedAt": "2026-10-21",
   "sources": [
+    {
+      "branch": "claude/bold-joliot-ec227c",
+      "sha": "3c281cdb09bc2912e6ab007714e482ec02649dc9",
+      "disposition": "held",
+      "reason": "Older Phase C browser drivers and a Clocker component label change; excluded from this bounded UI integration pending comparison with current drivers."
+    },
+    {
+      "branch": "claude/business-foundations",
+      "sha": "cb35605b33e6151125518ecfa45de3735d708105",
+      "disposition": "held",
+      "reason": "Optional bilingual public landing and business notes are retained separately while the R1 release checks are completed."
+    },
+    {
+      "branch": "claude/clean-manager-docs",
+      "sha": "44a8b751cb1c51ce297d26fc9c1af77d964c94eb",
+      "disposition": "reference",
+      "reason": "All 31 added spec/mockup files are byte-identical in the included Claude handoff at 0c365e5a; no separate historical merge is needed."
+    },
+    {
+      "branch": "claude/codex-handoff-20261021",
+      "sha": "0c365e5a434cd5ff59ea41b0a2d60fb5cdd633ad",
+      "disposition": "included",
+      "reason": "Claude handoff, gap reviews and UI design record integrated without application changes."
+    },
+    {
+      "branch": "claude/upscale-quick-wins",
+      "sha": "56334f0b81a67f85d8ca464cc01aa067d2fd8724",
+      "disposition": "included",
+      "reason": "Owner/Manager quick wins reconciled with current development, preserving newer recovery/privacy behavior and the held My pay redesign."
+    },
+    {
+      "branch": "codex/release-assembly-20261021",
+      "sha": "290ce8909ad65495726a17f649c10131d9e227eb",
+      "disposition": "included",
+      "reason": "Previously verified assembly merged through PR21 into development f27216df; retained as an incorporated source."
+    },
     {
       "branch": "FIXING-RELEASE-DEV-NEVORA",
       "sha": "b5f474e3861b8b3ec6c83289c7dc82095921b671",

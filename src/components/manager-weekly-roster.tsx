@@ -75,8 +75,10 @@ function OpenBlock({ open }: { open: RosterOpenShift }) {
 /** Weekly hours across all locations against the person's target and limit, said in words. */
 function hoursText(hours: NonNullable<RosterEmployee["hours"]>) {
   const over = hours.week > hours.maximum;
-  return over ? `Over ${hours.maximum}h limit` : hours.target !== null ? `${hours.week} of ${hours.target}h target` : `${hours.week} of ${hours.maximum}h limit`;
+  return over ? `${overBy(hours)} over the ${hours.maximum}h limit` : hours.target !== null ? `${hours.week} of ${hours.target}h target` : `${hours.week} of ${hours.maximum}h limit`;
 }
+/** MK3 / PD3: how far over the person's weekly limit, from the hours the grid already has ("16h", "2.5h"). */
+const overBy = (hours: NonNullable<RosterEmployee["hours"]>) => `${Number((hours.week - hours.maximum).toFixed(1))}h`;
 
 export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZone, locationId, openShifts = [], absences = { state: "unavailable", reason: "read_failed" }, footnote, controls, notices }: {
   employees: RosterEmployee[];
@@ -170,7 +172,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
         <Avatar initials={initials(employee.name)} />
         <span className="cm-person__text">
           <span className="cm-person__name">{employee.name}</span>
-          <span className="cm-person__sub" aria-hidden="true" title={employee.hours ? hoursText(employee.hours) : undefined}>{week}h{over ? <em> · over limit</em> : null}</span>
+          <span className="cm-person__sub" aria-hidden="true" title={employee.hours ? hoursText(employee.hours) : undefined}>{week}h{over && employee.hours ? <em>{` · ${overBy(employee.hours)} over ${employee.hours.maximum}h`}</em> : null}</span>
           <span className="sr-only">{week}h assigned this week</span>
           {employee.hours ? <span className="sr-only mws-hours" data-over={over || undefined}>{`, ${hoursText(employee.hours)}`}</span> : null}
           {!shown(employee).length ? <span className="sr-only">{focus === "all" ? ", No assignments this week" : ", No assignments on this day"}</span> : null}

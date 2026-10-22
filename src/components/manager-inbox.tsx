@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useToday } from "./manager-today";
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowsClockwiseIcon, ArrowsLeftRightIcon, CalendarBlankIcon, CaretDownIcon, CaretRightIcon, ClockIcon, UserCheckIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
+import { ArrowsClockwiseIcon, ArrowsLeftRightIcon, CalendarBlankIcon, CaretDownIcon, CaretRightIcon, ChatTextIcon, ClockIcon, PhoneIcon, UserCheckIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from "./manager-action-center";
 import { actionCenterNavigation } from "./action-center-navigation";
 import { EmptyState } from "./empty-state";
@@ -47,7 +47,14 @@ type InboxEntry = {
   trailing?: ReactNode; trailingTone?: "urgent" | "review";
   /** Detail pane only: labelled facts and one plain sentence on what to do. */
   facts?: [string, ReactNode][]; note?: string; secondary?: { href: string; label: string }[]; paneMeta?: boolean;
+  /** PD5: a phone number the manager already sees on Team, so a no-clock-in can be answered with Call or Text. */
+  contact?: { phone: string; name: string };
 };
+
+/** Phone numbers by employee ID, from the Team directory the viewer can already read (company-wide Managers and Owners). */
+const Phones = createContext<Readonly<Record<string, string>>>({});
+/** "tel:" and "sms:" take digits and a leading plus only. */
+const dialable = (phone: string) => phone.trim().replace(/(?!^\+)[^\d]/g, "");
 
 /** Desktop list and detail (Phase 4): the row a wide screen has selected, and how to select one. */
 const Selection = createContext<{ selected: string | null; select: (entry: InboxEntry, event: MouseEvent<HTMLAnchorElement>) => void } | null>(null);
@@ -153,7 +160,7 @@ function lateBy(shift: TodayShift, observedAt: string | undefined) {
   return h ? (m ? `${h}h ${m}m` : `${h}h`) : `${m}m`;
 }
 
-function shiftEntry(shift: TodayShift, timeZone: string, observedAt?: string, showPlace = true): InboxEntry {
+export function shiftEntry(shift: TodayShift, timeZone: string, observedAt?: string, showPlace = true, phone?: string): InboxEntry {
   const running = shift.status === "not_clocked_in";
   const href = running ? `/app/employees/${encodeURIComponent(shift.employeeId)}` : `/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`;
   const action = running ? "Contact" : "Review timecard";
@@ -169,7 +176,9 @@ function shiftEntry(shift: TodayShift, timeZone: string, observedAt?: string, sh
     // TCD-08: the pane says each thing once: the pill is the condition, the facts are when and where, the note is what to do.
     paneMeta: false,
     facts: [["Shift", <span key="t" className="nv-keep">{keepWhole(`${clock(shift.startAt, timeZone)} – ${clock(shift.endAt, timeZone)}`)}</span>], ["Location", shift.locationName],
-      ...(shift.positionName ? [["Role", shift.positionName] as [string, ReactNode]] : [])],
+      ...(shift.positionName ? [["Role", shift.positionName] as [string, ReactNode]] : []),
+      ...(phone && dialable(phone) ? [["Phone", <a key="p" className="nv-link nv-keep" href={`tel:${dialable(phone)}`}>{phone}</a>] as [string, ReactNode]] : [])],
+    ...(phone && dialable(phone) ? { contact: { phone: dialable(phone), name: shift.employeeName } } : {}),
     note: running ? "Check in with them, or look at the Clocker." : "Check the timecard before you approve it.",
     // v3: the shift and the person are one step from here too.
     secondary: [
@@ -180,7 +189,8 @@ function shiftEntry(shift: TodayShift, timeZone: string, observedAt?: string, sh
 }
 
 function ShiftRow({ shift, timeZone, observedAt, showPlace }: { shift: TodayShift; timeZone: string; observedAt?: string; showPlace?: boolean }) {
-  return <KitRow entry={shiftEntry(shift, timeZone, observedAt, showPlace)} />;
+  const phones = useContext(Phones);
+  return <KitRow entry={shiftEntry(shift, timeZone, observedAt, showPlace, phones[shift.employeeId])} />;
 }
 
 /** A coverage gap shown under "Open shifts today": the place is the title, the time the detail. */
@@ -242,7 +252,11 @@ function Section({ id, title, count, note, children }: { id: string; title: stri
   </Card>;
 }
 
-export function ManagerInbox({ weekStart, actorId, timeZone }: { weekStart: string; actorId: string; timeZone: string }) {
+export function ManagerInbox({ phones = {}, ...props }: { weekStart: string; actorId: string; timeZone: string; phones?: Readonly<Record<string, string>> }) {
+  return <Phones.Provider value={phones}><InboxView {...props} /></Phones.Provider>;
+}
+
+function InboxView({ weekStart, actorId, timeZone }: { weekStart: string; actorId: string; timeZone: string }) {
   const { snapshot, connection, refresh } = useActionCenter(weekStart, actorId);
   const { snapshot: today, refresh: refreshToday } = useToday();
   // W2: ?filter= is the source of truth, so Back from a review restores it.
@@ -255,6 +269,7 @@ export function ManagerInbox({ weekStart, actorId, timeZone }: { weekStart: stri
 export function InboxSurface({ snapshot, today = null, connection, onRefresh: refresh, timeZone, initialFilter = "all" }: {
   snapshot: ActionCenter | null; today?: Today | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string; initialFilter?: InboxFilter;
 }) {
+  const phones = useContext(Phones);
   const [filter, setFilter] = useState<InboxFilter>(initialFilter);
   // Phase 4: on a wide screen the Inbox is a list with a detail pane. The URL keeps the selection, so Back from a review restores it.
   const wide = useSyncExternalStore(wideSubscribe, () => window.matchMedia(WIDE).matches, () => false);
@@ -299,7 +314,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const show = (group: InboxFilter) => filter === "all" || filter === group;
   // The rows on screen, in order; the pane shows the selected one, or the first. The pane keeps an item's full title.
   const entries: InboxEntry[] = value ? [
-    ...(show("now") ? [...value.noClockIn.map(shift => shiftEntry(shift, timeZone, ready?.observedAt)), ...value.now.map(item => itemEntry(item, false, filter, timeZone))] : []),
+    ...(show("now") ? [...value.noClockIn.map(shift => shiftEntry(shift, timeZone, ready?.observedAt, true, phones[shift.employeeId])), ...value.now.map(item => itemEntry(item, false, filter, timeZone))] : []),
     ...(show("requests") ? value.requests.map(item => itemEntry(item, false, filter, timeZone)) : []),
     ...(show("planning") ? [...value.planning.map(item => itemEntry(item, false, filter, timeZone)), ...value.past.map(item => itemEntry(item, true, filter, timeZone))] : []),
   ] : [];
@@ -481,7 +496,7 @@ function wideSubscribe(change: () => void) {
 }
 
 /** The desktop detail pane: the selected row's facts and its one action, which opens the full review. */
-function InboxDetail({ entry, sheet = false }: { entry: InboxEntry; sheet?: boolean }) {
+export function InboxDetail({ entry, sheet = false }: { entry: InboxEntry; sheet?: boolean }) {
   // Review fix (33/50): the phone sheet renders while the pane exists too; distinct ids keep the page valid.
   const titleId = sheet ? "inbox-sheet-title" : "inbox-detail-title";
   return <section className="nv-card inbox-detail" aria-labelledby={titleId}
@@ -508,6 +523,10 @@ function InboxDetail({ entry, sheet = false }: { entry: InboxEntry; sheet?: bool
     {entry.note ? <p className="inbox-detail__note">{entry.note}</p> : null}
     <div className="inbox-detail__actions">
       <Button href={entry.href}>{entry.action}</Button>
+      {entry.contact ? <>
+        <a className="nv-btn" data-kind="secondary" href={`tel:${entry.contact.phone}`} aria-label={`Call ${entry.contact.name}`}><PhoneIcon size={18} aria-hidden="true" />Call</a>
+        <a className="nv-btn" data-kind="secondary" href={`sms:${entry.contact.phone}`} aria-label={`Text ${entry.contact.name}`}><ChatTextIcon size={18} aria-hidden="true" />Text</a>
+      </> : null}
       {entry.secondary?.map(link => <Link key={link.href} className="nv-btn" data-kind="secondary" href={link.href}>{link.label}</Link>)}
     </div>
   </section>;

@@ -108,14 +108,14 @@ export default async function NewShiftPage({
     </div></ScopedReadFrame>;
   }
   const workspace = await getWorkspace();
-  const currentWeek = weekStartFor(businessDate(new Date(), workspace.timeZone));
+  const todayDate = businessDate(new Date(), workspace.timeZone);
+  const currentWeek = weekStartFor(todayDate);
   const weekStart = params.week && isValidWeekStart(params.week) ? params.week : currentWeek;
-  // Review fix (QA 48/50): with no date in the link, the form opens on today — not Monday, already past midweek.
-  const businessToday = businessDate(new Date(), workspace.timeZone);
+  // UX3: the day you came from, else today when it falls in this week, else the week's Monday.
   const date =
     params.date && isDateInWeek(params.date, weekStart)
       ? params.date
-      : isDateInWeek(businessToday, weekStart) ? businessToday : weekStart;
+      : isDateInWeek(todayDate, weekStart) ? todayDate : weekStart;
   const weekEnd = addDays(weekStart, 6);
 
   const access=await readOperationalAuthority(proof);

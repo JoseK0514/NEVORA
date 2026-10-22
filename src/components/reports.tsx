@@ -53,16 +53,18 @@ const cardTone:Record<string,KitTone>={DRAFT:'neutral',APPROVED:'done',FINALIZED
 const requestTone=(status:string):KitTone=>/approv|complet|fill/i.test(status)?'done':/declin|reject|cancel|withdr/i.test(status)?'neutral':/pend|wait|review|open/i.test(status)?'review':'neutral';
 const timecardsHref=(period:Period)=>`/app/timecards?start=${period.startDate}&end=${period.endDate}`;
 
-/** v3 periods: Week and Month are the last 7 and 30 days ending today (the page's existing default is the first);
- * Custom is the existing 1 to 31 day form. Each one is the same report read for a different period. */
-type Mode='week'|'month'|'custom';
-const MODES:{mode:Mode;short:string;long:string}[]=[{mode:'week',short:'Week',long:'Last week'},{mode:'month',short:'Month',long:'Last 30 days'},{mode:'custom',short:'Custom',long:'Custom period'}];
-function presetPeriods(today?:string):Record<'week'|'month',Period>|null{
+/** v3 periods: This week (Monday to today, the page's default since MK5/PD4), Last week (the last full Monday to Sunday)
+ * and Month (the last 30 days ending today); Custom is the existing 1 to 31 day form. Each one is the same report read
+ * for a different period. */
+type Mode='now'|'week'|'month'|'custom';
+const MODES:{mode:Mode;short:string;long:string}[]=[{mode:'now',short:'This week',long:'This week so far'},{mode:'week',short:'Last week',long:'Last week'},{mode:'month',short:'Month',long:'Last 30 days'},{mode:'custom',short:'Custom',long:'Custom period'}];
+export function presetPeriods(today?:string):Record<'now'|'week'|'month',Period>|null{
  if(!today)return null;
  try{const day=Temporal.PlainDate.from(today);
-  // QA r3: Week is the last full Monday to Sunday, as Timecards counts weeks (the mockup's "Last week").
-  const monday=day.subtract({days:day.dayOfWeek-1+7});
-  return {week:{startDate:monday.toString(),endDate:monday.add({days:6}).toString()},month:{startDate:day.subtract({days:29}).toString(),endDate:today}};}catch{return null;}
+  const thisMonday=day.subtract({days:day.dayOfWeek-1});
+  // QA r3: Last week is the last full Monday to Sunday, as Timecards counts weeks.
+  const monday=thisMonday.subtract({days:7});
+  return {now:{startDate:thisMonday.toString(),endDate:today},week:{startDate:monday.toString(),endDate:monday.add({days:6}).toString()},month:{startDate:day.subtract({days:29}).toString(),endDate:today}};}catch{return null;}
 }
 const samePeriod=(a:Period,b:Period)=>a.startDate===b.startDate&&a.endDate===b.endDate;
 const closeMenu=(id:string)=>{try{const menu=document.getElementById?.(id);if(isPopoverOpen(menu))menu.hidePopover();}catch{/* No popover support: nothing is open. */}};
@@ -139,7 +141,9 @@ function timeOffDays(report:PeriodReports){
  }
  return days;
 }
-export function ReportsView({report,state}:{report:PeriodReports|null;state:State}){
+export function ReportsView({report,state,onThisWeek}:{report:PeriodReports|null;state:State;
+ /** MK5 / PD4: when this period has no recorded time and isn't this week, the chart offers this week instead. */
+ onThisWeek?:()=>void}){
  const content=useRef<HTMLDivElement>(null);
  useEffect(()=>{
   const media=window.matchMedia('print');
@@ -183,7 +187,12 @@ export function ReportsView({report,state}:{report:PeriodReports|null;state:Stat
      <p className="cm-chart__cap">Recorded time</p>
      <Total nanoseconds={report.summary.recordedNanoseconds}/>
      <p className="cm-chart__range">{rangeText(report.period)}</p>
-     {days?<Plot days={days}/>:null}
+     {/* MK5 / PD4: a period with no recorded time says so in the chart, instead of an empty frame. */}
+     {report.summary.recordedNanoseconds==='0'?<div className="cm-chart__empty">
+      <p className="cm-chart__empty-title">No recorded time in this period</p>
+      {toFinish?<p><Link className="nv-link" href={href}>{`${plural(toFinish,'timecard isn’t','timecards aren’t')} finished yet`}</Link></p>:null}
+      {onThisWeek?<p><button type="button" className="nv-link cm-chart__empty-link" onClick={onThisWeek}>See this week so far</button></p>:null}
+     </div>:days?<Plot days={days}/>:null}
     </div>
    </Card>
    <Card id="report-people" title="Hours by person" meta={people?<KitLink href={href} label={`All ${people} timecards`}>All {people}</KitLink>:undefined}>
@@ -286,7 +295,7 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
  // IS-B26: an export failure comes into view above the tab bar.
  useEffect(()=>{if(notice&&notice!==PERIOD_ERROR)document.getElementById?.('report-export-error')?.scrollIntoView?.({block:'nearest'});},[notice]);
  const presets=presetPeriods(today);
- const preset:Mode=presets&&samePeriod(period,presets.week)?'week':presets&&samePeriod(period,presets.month)?'month':'custom';
+ const preset:Mode=presets&&samePeriod(period,presets.now)?'now':presets&&samePeriod(period,presets.week)?'week':presets&&samePeriod(period,presets.month)?'month':'custom';
  const mode:Mode=custom?'custom':preset;
  const current=MODES.find(item=>item.mode===mode)!;
  const choose=(next:Mode)=>{
@@ -338,7 +347,7 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
      </div>
     </section>:null}
     {notice&&notice!==PERIOD_ERROR&&<p className="wb-error" id="report-export-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true"/><span>{notice}</span></p>}
-    <ReportsView report={report} state={state}/>
+    <ReportsView report={report} state={state} onThisWeek={presets&&mode!=='now'?()=>choose('now'):undefined}/>
     <p className="cm-page-foot"><span>{keepWhole(rangeText(period))}{report?<> · {timeZoneLabel(report.timeZone)}</>:null}</span><button type="button" className="cm-refresh" aria-label="Refresh" aria-busy={busy||undefined} onClick={()=>reloadRef.current()}><ArrowsClockwiseIcon size={16} aria-hidden="true"/>Refresh</button></p>
    </div>
   </div>
