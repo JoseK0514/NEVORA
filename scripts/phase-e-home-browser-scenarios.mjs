@@ -39,6 +39,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const scenario=await seedOwnedScenario(app.database.executor,label,index+14),actor=scenario.actors[0],q=(text,values=[])=>app.database.executor.query({text,values});
  const checks=[],runtimeErrors=[],screenshots=[],details={stage:'Task11 developer verification',engine,width,actor,checks,screenshots,runtimeErrors};let stage='seed',binding,homeResponse,managerContext,manager;
  cellRuntimeErrors.setStageReader(()=>stage);
+ page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({stage,name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]')});});
  details.lifecycleTrace=[];
  const trace=sample=>{if(details.lifecycleTrace.length===160)details.lifecycleTrace.shift();details.lifecycleTrace.push({at:Date.now(),stage,...sample});};
  await page.exposeBinding('__nevoraHomeLifecycle',(_source,sample)=>trace(sample));
@@ -52,7 +53,6 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const notificationTrace=(event,request)=>{const route=new URL(request.url()).pathname;if(['/api/notifications','/api/employee/my-time'].includes(route))trace({event,route,method:request.method(),navigation:request.isNavigationRequest()});};
  const notificationStart=request=>notificationTrace('notification-start',request),notificationFinish=request=>notificationTrace('notification-finished',request),notificationFailed=request=>notificationTrace('notification-failed',request),nativeError=()=>trace({event:'pageerror'});
  page.on('request',notificationStart);page.on('requestfinished',notificationFinish);page.on('requestfailed',notificationFailed);page.on('pageerror',nativeError);
- page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({stage,name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]')});});
  page.on('request',request=>{if(new URL(request.url()).pathname==='/api/employee/home')binding=request.headers()['x-nevora-home'];});
  const shot=async name=>{const path=join(evidenceDirectory,`home-task11-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
  const next=()=>page.locator('[aria-labelledby="employee-reviewed-next-heading"]');

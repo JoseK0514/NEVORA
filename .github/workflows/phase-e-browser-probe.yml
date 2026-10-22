@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        target: [home]
+        target: [readiness]
     env:
       PHASE_E_EXPECTED_SHA: ${{ github.sha }}
       PHASE_D2_CORRECTIONS_EXPECTED_SHA: ${{ github.sha }}
@@ -34,6 +34,9 @@ jobs:
           echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/diagnostic-${{ matrix.target }}" >> "$GITHUB_ENV"
           echo "PHASE_D2_CORRECTIONS_EVIDENCE_DIR=$RUNNER_TEMP/diagnostic-d2" >> "$GITHUB_ENV"
           echo "PHASE_C_EVIDENCE_DIR=$RUNNER_TEMP/diagnostic-clocker-browser" >> "$GITHUB_ENV"
+      - name: Runtime observer registration regression
+        if: ${{ matrix.target == 'readiness' }}
+        run: npx --no-install vitest run src/test/phase-e-browser-runtime.test.ts
       - name: Install pinned browser runtime
         run: |
           PW_ROOT="$GITHUB_WORKSPACE/tools/ci-browser-runtime"
@@ -47,6 +50,7 @@ jobs:
         timeout-minutes: 8
         run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
       - name: Install scratch PostgreSQL runtime
+        if: ${{ matrix.target != 'readiness' }}
         run: |
           sudo apt-get update
           sudo apt-get install --yes postgresql-16
@@ -55,7 +59,7 @@ jobs:
         if: ${{ matrix.target == 'home' }}
         run: node scripts/phase-e-owned.mjs browser --suite home
       - name: Actual Home and independent recorded-time readiness controls
-        if: ${{ matrix.target == 'home' }}
+        if: ${{ matrix.target == 'home' || matrix.target == 'readiness' }}
         env:
           NODE_ENV: test
           HOME_READINESS_EVIDENCE_DIR: ${{ runner.temp }}/diagnostic-home-readiness
