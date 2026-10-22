@@ -57,7 +57,8 @@ export function createAdvisorController(
     generation = 0,
     contentVersion = 0,
     latest = -Infinity,
-    authority: string | null = null;
+    authority: string | null = null,
+    draftRevision: number | null = null;
   let read: AbortController | undefined,
     operation: AbortController | undefined,
     poll: ReturnType<typeof setTimeout> | undefined,
@@ -74,6 +75,7 @@ export function createAdvisorController(
     message = "View paused. Return while online to refresh your access.",
   ) {
     generation++;
+    draftRevision = null;
     read?.abort();
     operation?.abort();
     read = undefined;
@@ -146,6 +148,11 @@ export function createAdvisorController(
         loading: false,
         uncertain: false,
         ...(!v.dirty ? { priorities: result.profile.priorities } : {}),
+        ...(v.dirty &&
+        v.busy !== "save" &&
+        result.profile.revision !== draftRevision
+          ? { conflict: true, message: errors.conflict }
+          : {}),
       });
       return true;
     } catch {
@@ -227,6 +234,7 @@ export function createAdvisorController(
       if (epoch !== generation || paused || stopped) return;
       controller.signal.throwIfAborted();
       if (!authorized) throw Error("Fresh access required");
+      if (result.state === "saved") draftRevision = result.profile.revision;
       if (result.state === "answered")
         publish({
           answer: result.answer,
@@ -291,9 +299,13 @@ export function createAdvisorController(
       publish({ question });
     },
     editPriorities(priorities: string) {
+      // Editing captures a base; only explicit conflict review may advance it.
+      if (!v.dirty) draftRevision = v.snapshot?.profile.revision ?? null;
       publish({ priorities, dirty: true });
     },
     reviewConflict() {
+      if (!v.conflict || !v.snapshot) return;
+      draftRevision = v.snapshot.profile.revision;
       publish({
         conflict: false,
         message:
@@ -314,11 +326,17 @@ export function createAdvisorController(
       });
     },
     save() {
-      if (v.conflict || v.priorities.length > 2000) return Promise.resolve();
+      if (
+        !v.dirty ||
+        draftRevision === null ||
+        v.conflict ||
+        v.priorities.length > 2000
+      )
+        return Promise.resolve();
       return submit({
         op: "save_priorities",
         requestId: crypto.randomUUID(),
-        expectedRevision: v.snapshot?.profile.revision ?? 0,
+        expectedRevision: draftRevision,
         priorities: v.priorities,
       });
     },

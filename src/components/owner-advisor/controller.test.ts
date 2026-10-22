@@ -232,3 +232,97 @@ it("does not regress a newer saved revision observed by the post-save authority 
   expect(state?.conflict).toBe(true);
   c.stop();
 });
+it("requires explicit review when a refresh observes a changed revision before Save", async () => {
+  vi.useFakeTimers();
+  let state: AdvisorView | undefined;
+  let revision = 1;
+  let savedText = "original";
+  const posts: unknown[] = [];
+  const c = createAdvisorController(
+    (v) => (state = v),
+    async (_url, init) => {
+      if (init?.method === "POST") {
+        posts.push(JSON.parse(String(init.body)));
+        revision++;
+        savedText = "my unsaved edit";
+        return Response.json({
+          ...snap(),
+          state: "saved",
+          profile: { priorities: savedText, revision },
+        });
+      }
+      return Response.json({
+        ...snap(),
+        profile: { priorities: savedText, revision },
+      });
+    },
+  );
+  c.start();
+  await vi.advanceTimersByTimeAsync(0);
+  c.editPriorities("my unsaved edit");
+  revision = 2;
+  savedText = "other saved edit";
+  await c.refresh();
+  expect(state?.priorities).toBe("my unsaved edit");
+  expect(state?.snapshot?.profile.priorities).toBe("other saved edit");
+  expect(state?.conflict).toBe(true);
+  await c.save();
+  expect(posts).toEqual([]);
+  expect(savedText).toBe("other saved edit");
+  c.reviewConflict();
+  await c.save();
+  expect(posts).toEqual([
+    expect.objectContaining({
+      op: "save_priorities",
+      expectedRevision: 2,
+      priorities: "my unsaved edit",
+    }),
+  ]);
+  expect(state?.conflict).toBe(false);
+  expect(state?.dirty).toBe(false);
+  c.stop();
+});
+it("a review acknowledges only that revision and another refresh requires review again", async () => {
+  vi.useFakeTimers();
+  let state: AdvisorView | undefined;
+  let revision = 1;
+  const posts: unknown[] = [];
+  const c = createAdvisorController(
+    (v) => (state = v),
+    async (_url, init) => {
+      if (init?.method === "POST") {
+        posts.push(JSON.parse(String(init.body)));
+        return Response.json({
+          ...snap(),
+          state: "saved",
+          profile: { priorities: "my draft", revision: ++revision },
+        });
+      }
+      return Response.json({
+        ...snap(),
+        profile: { priorities: "saved revision " + revision, revision },
+      });
+    },
+  );
+  c.start();
+  await vi.advanceTimersByTimeAsync(0);
+  c.editPriorities("my draft");
+  revision = 2;
+  await c.refresh();
+  c.reviewConflict();
+  expect(state?.conflict).toBe(false);
+  revision = 3;
+  await c.refresh();
+  expect(state?.priorities).toBe("my draft");
+  expect(state?.snapshot?.profile.priorities).toBe("saved revision 3");
+  expect(state?.conflict).toBe(true);
+  await c.save();
+  expect(posts).toEqual([]);
+  expect(revision).toBe(3);
+  c.reviewConflict();
+  await c.save();
+  expect(posts).toEqual([
+    expect.objectContaining({ expectedRevision: 3, priorities: "my draft" }),
+  ]);
+  c.stop();
+});

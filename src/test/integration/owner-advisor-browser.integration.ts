@@ -251,7 +251,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               );
               expect(otherSave.status()).toBe(200);
               await page
-                .getByRole("button", { name: "Save priorities", exact: true })
+                .getByRole("button", { name: "Refresh history", exact: true })
                 .click();
               await page
                 .getByRole("heading", {
@@ -267,6 +267,56 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
                   .getByLabel("Your priorities", { exact: true })
                   .inputValue(),
               ).toBe("Unsaved review");
+              expect(
+                await page
+                  .getByRole("button", { name: "Save priorities", exact: true })
+                  .isDisabled(),
+              ).toBe(true);
+              await page
+                .getByRole("button", {
+                  name: "I’ve reviewed the saved priorities",
+                  exact: true,
+                })
+                .click();
+              expect(
+                await page
+                  .getByRole("button", { name: "Save priorities", exact: true })
+                  .isEnabled(),
+              ).toBe(true);
+              const reviewed = await otherSave.json();
+              const laterSave = await context.request.post(
+                origin + "/api/owner/advisor",
+                {
+                  headers: { "x-nevora-owner-advisor": "1", Origin: origin },
+                  data: {
+                    op: "save_priorities",
+                    requestId: crypto.randomUUID(),
+                    expectedRevision: reviewed.profile.revision,
+                    priorities: "Changed after review",
+                  },
+                },
+              );
+              expect(laterSave.status()).toBe(200);
+              await page
+                .getByRole("button", { name: "Refresh history", exact: true })
+                .click();
+              await page
+                .getByText("Changed after review", { exact: true })
+                .waitFor();
+              expect(
+                await page
+                  .getByLabel("Your priorities", { exact: true })
+                  .inputValue(),
+              ).toBe("Unsaved review");
+              expect(
+                await page
+                  .getByRole("button", { name: "Save priorities", exact: true })
+                  .isDisabled(),
+              ).toBe(true);
+              await page.screenshot({
+                path: resolve(evidence, engine + "-priority-review.png"),
+                fullPage: true,
+              });
               await page
                 .getByRole("button", {
                   name: "I’ve reviewed the saved priorities",
@@ -281,7 +331,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
                 .waitFor();
               checks.push(
                 engine +
-                  ": real concurrent priority revision conflict preserves edit and requires review",
+                  ": real pre-save revision drift and post-review drift each block Save and preserve draft until explicit review",
               );
               await page.evaluate(() =>
                 window.dispatchEvent(new Event("blur")),
