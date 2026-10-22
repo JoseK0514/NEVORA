@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
-import {waitForCalendarCopyReady} from './browser-render-readiness.mjs';
+import {waitForCalendarCopyReady,waitForReviewedTimeOff} from './browser-render-readiness.mjs';
 import {captureSource,assertSourceUnchanged,externalEvidence} from './phase-e-owned.mjs';
 
 const source=resolve(process.cwd()),custody=captureSource(source,process.env.PHASE_E_EXPECTED_SHA);
@@ -26,7 +26,14 @@ for(const engine of ['chromium','webkit']){
    result.observations.push({phase:'Feedback focused, real CSS animation paused',settled});assert.equal(settled,false);
    await page.evaluate(()=>{const animations=document.querySelector('button').getAnimations();if(animations.length!==1)throw Error('Expected controlled CSS animation');animations[0].finish();});
    await waiting;await page.getByRole('button',{name:'Copy link',exact:true}).click();
-   assert.equal(await page.evaluate(()=>window.fixtureClicks),1);result.observations.push({phase:'Animation completed, native click received',settled,clicks:1});result.status='passed';
+   assert.equal(await page.evaluate(()=>window.fixtureClicks),1);result.observations.push({phase:'Animation completed, native click received',settled,clicks:1});
+   await page.setContent('<main data-nv-page><article id="request-fictional-review">Waiting</article></main>');
+   let reviewSettled=false;const reviewed=waitForReviewedTimeOff(page,'fictional-review').then(()=>{reviewSettled=true;});
+   await render();result.observations.push({phase:'Reviewed navigation without fresh decision view',settled:reviewSettled});assert.equal(reviewSettled,false);
+   await page.evaluate(()=>document.querySelector('main').insertAdjacentHTML('beforeend','<div role="status"><p>Decision saved</p></div>'));await render();
+   result.observations.push({phase:'Decision notice with stale pending request',settled:reviewSettled});assert.equal(reviewSettled,false);
+   await page.evaluate(()=>document.getElementById('request-fictional-review').remove());await reviewed;
+   result.observations.push({phase:'Fresh decision notice and pending request removed',settled:reviewSettled});assert.equal(reviewSettled,true);result.status='passed';
   }catch(error){result.failure={name:error.name,message:error instanceof assert.AssertionError?error.message:'Controlled feedback readiness failed'};process.exitCode=1;}
   finally{await context?.close();}
  }}finally{await browser.close();for(const result of results.filter(item=>item.engine===engine))result.browserClosed=!browser.isConnected();}

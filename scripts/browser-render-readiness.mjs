@@ -12,6 +12,13 @@ export async function waitForCalendarCopyReady(page, noticeText) {
   await ready.dispose();
 }
 
+export async function waitForReviewedTimeOff(page, requestId) {
+  const ready = await page.waitForFunction(id =>
+    [...document.querySelectorAll('[data-nv-page] [role="status"] p')].some(element => element.textContent === 'Decision saved') &&
+    !document.getElementById('request-' + id), requestId);
+  await ready.dispose();
+}
+
 export async function waitForSheetEntrance(page) {
   const selector = '[data-sig-sheet]';
   await page.locator(selector).first().waitFor({state: 'visible'});
