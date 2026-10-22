@@ -180,6 +180,57 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               checks.push(
                 engine + ": draft survives proactive authority refresh",
               );
+              const beforeConflict = await context.request.get(
+                origin + "/api/owner/advisor",
+                { headers: { "x-nevora-owner-advisor": "1" } },
+              );
+              const conflictSnapshot = await beforeConflict.json();
+              const otherSave = await context.request.post(
+                origin + "/api/owner/advisor",
+                {
+                  headers: { "x-nevora-owner-advisor": "1", Origin: origin },
+                  data: {
+                    op: "save_priorities",
+                    requestId: crypto.randomUUID(),
+                    expectedRevision: conflictSnapshot.profile.revision,
+                    priorities: "Other Owner edit",
+                  },
+                },
+              );
+              expect(otherSave.status()).toBe(200);
+              await page
+                .getByRole("button", { name: "Save priorities", exact: true })
+                .click();
+              await page
+                .getByRole("heading", {
+                  name: "Currently saved priorities",
+                  exact: true,
+                })
+                .waitFor();
+              await page
+                .getByText("Other Owner edit", { exact: true })
+                .waitFor();
+              expect(
+                await page
+                  .getByLabel("Your priorities", { exact: true })
+                  .inputValue(),
+              ).toBe("Unsaved review");
+              await page
+                .getByRole("button", {
+                  name: "I’ve reviewed the saved priorities",
+                  exact: true,
+                })
+                .click();
+              await page
+                .getByRole("button", { name: "Save priorities", exact: true })
+                .click();
+              await page
+                .getByText("Priorities saved.", { exact: true })
+                .waitFor();
+              checks.push(
+                engine +
+                  ": real concurrent priority revision conflict preserves edit and requires review",
+              );
               await page.evaluate(() =>
                 window.dispatchEvent(new Event("blur")),
               );
