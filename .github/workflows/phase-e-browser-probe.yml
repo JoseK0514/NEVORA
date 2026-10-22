@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        target: [home-trace, clocker-browser]
+        target: [home]
     env:
       PHASE_E_EXPECTED_SHA: ${{ github.sha }}
       PHASE_D2_CORRECTIONS_EXPECTED_SHA: ${{ github.sha }}
@@ -54,6 +54,12 @@ jobs:
       - name: Full shared-server Home matrix with actual authenticated arrival
         if: ${{ matrix.target == 'home' }}
         run: node scripts/phase-e-owned.mjs browser --suite home
+      - name: Actual Home and independent recorded-time readiness controls
+        if: ${{ matrix.target == 'home' }}
+        env:
+          NODE_ENV: test
+          HOME_READINESS_EVIDENCE_DIR: ${{ runner.temp }}/diagnostic-home-readiness
+        run: node --import ./scripts/qa-server-context.mjs --import tsx scripts/phase-e-home-held-response.check.mjs
       - name: Complete D2 correction, recovery and identity-boundary browser cases
         if: ${{ matrix.target == 'd2' }}
         run: npm run test:phase-d2:corrections-ui

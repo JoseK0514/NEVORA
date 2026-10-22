@@ -23,6 +23,16 @@ export async function waitForFreshHome(page, freshLocation){
  },freshLocation,{timeout:15000});
 }
 
+export async function waitForRecordedTimeReady(page, expectedState){
+ const ready=await page.waitForFunction(expected=>{
+  const root=document.querySelector('aside[aria-label="Own recorded time"]');
+  const button=root?.querySelector('button[aria-label="Refresh recorded time"]');
+  if(button&&!button.disabled&&root.querySelector('.employee-time-badge')?.getAttribute('data-state')===expected)return {state:expected,refreshEnabled:true};
+  return false;
+ },expectedState);
+ try{return await ready.jsonValue();}finally{await ready.dispose();}
+}
+
 // Actual authenticated persisted Task11 Home journeys with canonical communication sources.
 export async function runScenario({app,browser,context,page,engine,width,evidenceDirectory,axeFile,runtimeErrors:cellRuntimeErrors}){
  const label=`H${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
@@ -39,7 +49,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   for(const event of ['DOMContentLoaded','visibilitychange'])document.addEventListener(event,()=>sample(event));
   sample('document-created');
  });
- const notificationTrace=(event,request)=>{if(new URL(request.url()).pathname==='/api/notifications')trace({event,method:request.method(),navigation:request.isNavigationRequest()});};
+ const notificationTrace=(event,request)=>{const route=new URL(request.url()).pathname;if(['/api/notifications','/api/employee/my-time'].includes(route))trace({event,route,method:request.method(),navigation:request.isNavigationRequest()});};
  const notificationStart=request=>notificationTrace('notification-start',request),notificationFinish=request=>notificationTrace('notification-finished',request),notificationFailed=request=>notificationTrace('notification-failed',request),nativeError=()=>trace({event:'pageerror'});
  page.on('request',notificationStart);page.on('requestfinished',notificationFinish);page.on('requestfailed',notificationFailed);page.on('pageerror',nativeError);
  page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({stage,name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]')});});
@@ -328,7 +338,11 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');
  }finally{bellHold.release();await bellHold.done;await page.unroute(bellHold.path,bellHold.handler);page.off('request',observeBell);}
  checks.push('H11 duplicate foreground focus/pageshow retains one actual held authorized notification read; its returned current count is required');
- await ready();const early=gate('**/api/employee/my-time');await page.route(early.path,early.handler);await page.getByRole('button',{name:'Refresh recorded time',exact:true}).click();await early.seen;
+ await page.bringToFront();await ready();await waitForRecordedTimeReady(page,'OFF_CLOCK');
+ const earlyRefresh=recorded().getByRole('button',{name:'Refresh recorded time',exact:true});await earlyRefresh.focus();
+ details.earlyTimeBaseline=await waitForRecordedTimeReady(page,'OFF_CLOCK');
+ assert.deepEqual(details.earlyTimeBaseline,{state:'OFF_CLOCK',refreshEnabled:true});
+ const early=gate('**/api/employee/my-time');await page.route(early.path,early.handler);await earlyRefresh.click();await early.seen;
  await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');
  const earlyNavigation=await page.goto(app.url+'/app/schedule?week='+scenario.week,{waitUntil:'domcontentloaded'});assert(earlyNavigation?.ok());await page.getByRole('heading',{name:'My schedule',exact:true}).waitFor();
  await page.locator('.portal-notification-bell[data-state="ready"]').waitFor();
