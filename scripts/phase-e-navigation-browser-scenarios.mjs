@@ -9,11 +9,21 @@ import {waitForSheetEntrance} from './browser-render-readiness.mjs';
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,axeFile,runtimeErrors:cellRuntimeErrors}){
  let stage='seed';cellRuntimeErrors.setStageReader(()=>stage);
  const tabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',backTabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
- const checks=[],contrast=[],focusTrace=[],expiryRecovery=[],runtimeErrors=[],prefix=`navigation-${engine}-${width}`,headers={};
+ const checks=[],contrast=[],focusTrace=[],expiryRecovery=[],runtimeErrors=[],loginAttempts=[],prefix=`navigation-${engine}-${width}`,headers={};
  const q=(text,values=[])=>app.database.executor.query({text,values});
  page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]').replace(/[A-Za-z0-9_-]{40,}/g,'[long value]'),path:new URL(page.url()).pathname.replace(/\/api\/calendar\/[^/]+/g,'/api/calendar/[redacted]'),lastCompleted:checks.at(-1),stack:error.stack?.replace(/https?:[^\s)]+/g,'[URL]').replace(/[A-Za-z0-9_-]{40,}/g,'[long value]')});});
  page.on('request',request=>{const path=new URL(request.url()).pathname;if(path.startsWith('/api/employee/')||path==='/api/notifications')headers[path]=request.headers()['x-nevora-employee-view'];});
- async function login(id){await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click()]);await page.waitForLoadState('networkidle');}
+ async function login(id){
+  const attempt={outcome:'started'};loginAttempts.push(attempt);
+  try{
+   await page.bringToFront();await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
+   await Promise.all([page.waitForURL(u=>u.pathname==='/app',{waitUntil:'commit'}),page.getByRole('button',{name:'Sign in',exact:true}).click()]);
+   await page.locator('.app-shell.nevora-portal').waitFor();await page.waitForLoadState('networkidle');attempt.outcome='ready';
+  }catch(error){
+   const url=new URL(page.url()),code=url.searchParams.get('error');attempt.outcome='failed';attempt.route=['/login','/app'].includes(url.pathname)?url.pathname:'other';attempt.error=['busy','invalid','missing','locked'].includes(code)?code:code?'other':null;
+   await page.screenshot({path:join(evidenceDirectory,`${prefix}-login-failure.png`),timeout:5000}).catch(()=>{});throw error;
+  }
+ }
  async function settle(){await page.waitForLoadState('networkidle');}
  async function nav(href,keyboard=false){
   const mobile=await page.locator('.mobile-nav').isVisible();
@@ -252,7 +262,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   }
   checks.push('long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance');
   await screenshot('final');
-  await writeFile(join(evidenceDirectory,prefix+'-report.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
+  await writeFile(join(evidenceDirectory,prefix+'-report.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,loginAttempts,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
   return {checks};
- }catch(error){await screenshot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,prefix+'-report.json'),JSON.stringify({engine,width,status:'failed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,error:String(error)},null,2));throw error;}
+ }catch(error){await screenshot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,prefix+'-report.json'),JSON.stringify({engine,width,status:'failed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,loginAttempts,error:String(error)},null,2));throw error;}
 }

@@ -7,9 +7,9 @@
   "sources": [
     {
       "branch": "codex/browser-probe-20261022",
-      "sha": "c1c10a67934f1698c587cd051cd67241b1cda269",
+      "sha": "19b615864328739bcd511f976624aa5712e0a658",
       "disposition": "reference",
-      "reason": "Optional cloud diagnostic from the published CI candidate, capturing exact WebKit contrast nodes and repeated isolated WebKit 375 cases without rerunning the full workflow. Not a development integration or acceptance run; its probe-only workflow and entry point are not merged."
+      "reason": "Optional cloud diagnostics from the published CI candidate: exact/repeated WebKit contrast, then focused Home, missing-time readiness and Navigation sign-in verification before another full workflow. Not a development integration or acceptance run; its probe-only workflow and entry points are not merged."
     },
     {
       "branch": "NEVORA-50-inspectors",

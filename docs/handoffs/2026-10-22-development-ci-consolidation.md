@@ -254,3 +254,95 @@ entrance animation. The controlled paused samples were 0.727373 (normal motion)
 and 0.871027 (reduced motion), and both stayed pending until actually played.
 This is diagnostic proof only; the corrected
 development candidate still requires all 12 mandatory jobs and 70 Phase E cells.
+
+## In-process dependency copy
+
+Run 39803771982 on merge `616b8baa` failed Home before any browser launch or
+cell execution. Its supervisor receipt independently observed PID 5802 with the
+same birth, parent and process group but a changed command hash. The expected
+hash `26eb8f31…` exactly matches the owning Node browser-driver command; the
+observed hash `cd018fd3…` exactly matches the fixture's `cp -R` command and its
+captured mirror path. This proves the fork/exec startup observation race on the
+long-running dependency copy, without recording command arguments in artifacts.
+
+The fixture now copies dependencies with Node's in-process `cpSync`, using
+recursive copy, verbatim relative symlinks and optional filesystem reflinks.
+The complete process supervisor and all identity/ancestry/marker/signal checks
+remain unchanged. The regression failed with the existing external helper and
+passes with real nested files, executable modes, relative links, independent
+bytes and missing-source refusal. Four focused copy/path tests and scoped lint
+pass. All heavy verification remains in GitHub Actions; the current run is being
+collected before publishing another combined correction.
+API semantics: [Node 24 filesystem copy](https://nodejs.org/docs/latest-v24.x/api/fs.html#fscpsyncsrc-dest-options).
+
+## Remediation landing-read readiness
+
+The same run passed whole Phase D, all 14 account-replacement remediation cases
+(both engines, zero runtime errors), and all six missing-context functional cases.
+The missing-context report then failed its unchanged runtime-error gate on three
+WebKit native fetch errors: Manager today, action-center and clock-monitor. Its
+context helper returned at the login URL transition, before those landing reads
+completed, then the case navigated to Attendance. The helper now observes the
+three actual read responses before sign-in submission, requires status 200 and
+completed response bodies, records their bounded paths/statuses, and waits for
+the rendered authenticated shell and network idle before returning. No runtime
+error is ignored, and the canonical successor, stale-baseline, history, 409 refusal
+and immutable-leaf assertions remain. D2 and Clocker browser steps did not execute
+after the remediation failure; final matching-source execution is still required.
+
+Navigation in that run passed the formerly failing WebKit 375 contrast cell, then
+WebKit 390 timed out in its old login helper waiting for the page `load` event.
+Runtime errors were empty and all prior authority/account-replacement checks
+had passed. It now uses the same navigation commit, authenticated shell and
+network-idle login contract already proven by Communications/Calendar, with
+bounded route/error-enum and pre-issuance screenshot diagnostics on failure.
+Its timeout, role/view-binding checks and persisted workflow assertions remain.
+
+Optional run 39807029737 on reference probe `0a300352` exercises the complete
+Home matrix with in-process dependency copy, followed by the missing-context
+case with its actual three-response landing barrier. Probe-only modes/workflow
+remain excluded from the integration PR. Results still need collection before
+the next combined development candidate and its complete mandatory verification.
+
+The full run finished failed at 15:50:30 UTC with validation, all three SQL jobs,
+Communications14, Calendar14 and Attention14 passed. The three primary failures
+above caused both downstream gates to fail. It is supporting evidence only.
+Optional Navigation probe `3190f661`, run 39809005671, exercises the actual
+WebKit390 sign-in/account/authorization/form-persistence journey with the updated
+login helper while the Home/missing-context diagnostic continues separately.
+
+That Navigation probe passed all 21 checks, all five sign-ins reached the current
+authenticated shell, runtime errors were zero, the app closed and source was
+unchanged. The focused Home run passed twelve cells and reached WebKit1024's
+final complete-zero sign-in, where the same legacy `load` wait timed out with
+runtime errors empty. Its H11 held notification and early-navigation assertions
+had already passed in that cell. Home now uses commit/shell/network-idle sign-in
+with bounded diagnostics too; no timeout increase. The missing probe exposed an
+incorrect GET-only matcher in the new barrier: Action Center uses POST for its
+read. The matcher now uses GET/POST/GET as implemented by the three components,
+records each successful completed response independently, and preserves all
+functional/runtime assertions. Reference probe `5f0515e2` targets the remaining
+Home WebKit1024/1440 cells and the corrected missing-context case before final
+publication. No failed diagnostic is counted as acceptance.
+
+Probe 39810397969 passed Home WebKit1024 (all 15 journey checks, errors zero),
+and the corrected missing-context suite passed all six checks across both engines,
+zero runtime errors, with six successful completed GET/POST/GET responses.
+Home WebKit1440 failed its initial loading assertion: the new login helper waited
+for network idle while H01 deliberately held the Home response, spending the
+client's existing ten-second read deadline. Its screenshot shows the correct
+unavailable state after expiry, not private facts. H01 now ends sign-in readiness
+at commit plus rendered authenticated shell and then checks the actual held
+loading state; subsequent sign-ins still require network idle. Every loading,
+private-row, recorded-time and release assertion remains. Reference `19b61586`
+repeats only the two final Home sizes; passed missing-time checks will next run
+again within full mandatory CI. Diagnostic screenshot globs now select only
+scenario output files, excluding copied application assets.
+
+Run 39811827659 on `19b61586` passed both final Home sizes, all 15 journey checks
+per cell, zero runtime errors, source unchanged and both owned applications closed.
+The candidate's Home/Navigation/missing-context drivers, dependency copier,
+notification bell and sheet readiness helper exactly match that probe source.
+All 52 branch heads are reconciled after fetching origin; scoped lint and
+whitespace checks pass. The corrections are being published together to PR23;
+only its following complete, matching-source mandatory CI can certify the result.
