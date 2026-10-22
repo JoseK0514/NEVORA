@@ -206,8 +206,17 @@ try{
       await op.goto(app.url+'/app/employees/'+id+'/clocker-pin');await op.getByLabel('New PIN',{exact:true}).fill(pin);await op.getByLabel('Confirm PIN',{exact:true}).fill(pin);await op.getByRole('button',{name:'Save PIN',exact:true}).click();await op.getByRole('status').filter({hasText:'PIN saved'}).waitFor();await op.waitForLoadState('networkidle');
     }
     const devicesNavigation=await op.goto(app.url+'/app/settings/clocker',{waitUntil:'domcontentloaded'});assert(devicesNavigation?.ok());await op.getByRole('heading',{name:'Clocker devices',exact:true}).waitFor();await op.getByRole('button',{name:'Add device',exact:true}).click();const dialog=op.getByRole('dialog');await dialog.getByLabel('Device name',{exact:true}).fill('UX5 '+engine+' tablet');await dialog.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await dialog.getByRole('button',{name:'Create setup code',exact:true}).click();await dialog.waitFor({state:'hidden'});
-    const setupCode=await op.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();await cp.goto(app.url+'/clocker/2');await cp.getByRole('textbox',{name:'Setup code',exact:true}).fill(setupCode);await cp.getByRole('button',{name:'Connect tablet',exact:true}).click();
-    async function pin(value){await cp.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await cp.waitForFunction(()=>{const i=document.querySelector('input[name=pin]');return i&&!i.matches(':disabled');});for(const digit of value)await cp.getByRole('button',{name:'Number '+digit,exact:true}).click();await cp.getByRole('button',{name:'Continue',exact:true}).click();}
+    const clockerEvidence={engine,pinAttempts:[],responses:[]};(report.clockerSetup??=[]).push(clockerEvidence);
+    cp.on('response',response=>{if(new URL(response.url()).pathname!=='/api/clocker/2/pin')return;let action;try{action=response.request().postDataJSON()?.action;}catch{}if(clockerEvidence.responses.length===50)clockerEvidence.responses.shift();clockerEvidence.responses.push({action:['clear','verify','status'].includes(action)?action:'other',status:response.status()});});
+    const setupCode=await op.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();currentPage=cp;await cp.goto(app.url+'/clocker/2');await cp.getByRole('textbox',{name:'Setup code',exact:true}).fill(setupCode);await cp.getByRole('button',{name:'Connect tablet',exact:true}).click();
+    async function pin(value){
+      currentPage=cp;await cp.bringToFront();await cp.waitForFunction(()=>document.hasFocus()&&document.visibilityState==='visible'&&navigator.onLine);
+      await cp.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await cp.waitForFunction(()=>{const i=document.querySelector('input[name=pin]');return i&&!i.matches(':disabled');});
+      const attempt=await cp.evaluate(()=>({focused:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine}));clockerEvidence.pinAttempts.push(attempt);
+      for(const digit of value)await cp.getByRole('button',{name:'Number '+digit,exact:true}).click();
+      attempt.enteredDigits=await cp.locator('input[name=pin]').evaluate(input=>input.value.length);assert.equal(attempt.enteredDigits,4);
+      await cp.getByRole('button',{name:'Continue',exact:true}).click();attempt.submitted=true;
+    }
     await pin(pinA);await cp.getByRole('button',{name:'Clock In',exact:true}).waitFor();let dropped=false;
     await cp.route('**/api/clocker/2/punch',async route=>{if(!dropped&&route.request().postDataJSON()?.operation==='execute'){dropped=true;assert.equal((await route.fetch()).status(),200);await route.abort('failed');}else await route.continue();});
     await cp.getByRole('button',{name:'Clock In',exact:true}).click();await cp.getByRole('button',{name:'Check Action Status',exact:true}).waitFor();assert(dropped);
@@ -286,7 +295,10 @@ try{
     await q('TRUNCATE timecard_revisions');
   }
 }catch(error){
-  if(currentPage)await currentPage.screenshot({path:join(evidence,'recovery-failure.png'),fullPage:true}).catch(()=>{});
+  if(currentPage){
+    report.failurePage=await currentPage.evaluate(()=>({path:location.pathname.replace(/[A-Za-z0-9_-]{32,}/g,'[opaque]'),focused:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine,clockerPin:document.querySelector('[data-clocker-pin]')?.getAttribute('data-clocker-pin'),alerts:document.querySelectorAll('[role=alert]').length})).catch(()=>({state:'unavailable'}));
+    await currentPage.screenshot({path:join(evidence,'recovery-failure.png'),fullPage:true,mask:[currentPage.locator('input,textarea')]}).catch(()=>{});
+  }
   if(app){
     try{
       report.databaseWaits=await app.database.executor.query({text:"SELECT state,wait_event_type,wait_event,count(*)::int AS connections FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() GROUP BY state,wait_event_type,wait_event",values:[]});

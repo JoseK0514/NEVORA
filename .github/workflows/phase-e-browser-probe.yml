@@ -13,11 +13,12 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        target: [home-trace]
+        target: [whole-d]
     env:
       PHASE_E_EXPECTED_SHA: ${{ github.sha }}
       PHASE_D2_CORRECTIONS_EXPECTED_SHA: ${{ github.sha }}
       PHASE_C_EXPECTED_SHA: ${{ github.sha }}
+      PHASE_D_EXPECTED_SHA: ${{ github.sha }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -34,6 +35,7 @@ jobs:
           echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/diagnostic-${{ matrix.target }}" >> "$GITHUB_ENV"
           echo "PHASE_D2_CORRECTIONS_EVIDENCE_DIR=$RUNNER_TEMP/diagnostic-d2" >> "$GITHUB_ENV"
           echo "PHASE_C_EVIDENCE_DIR=$RUNNER_TEMP/diagnostic-clocker-browser" >> "$GITHUB_ENV"
+          echo "PHASE_D_EVIDENCE_DIR=$RUNNER_TEMP/diagnostic-whole-d" >> "$GITHUB_ENV"
       - name: Runtime observer registration regression
         if: ${{ matrix.target == 'readiness' }}
         run: npx --no-install vitest run src/test/phase-e-browser-runtime.test.ts
@@ -68,10 +70,14 @@ jobs:
         if: ${{ matrix.target == 'd2' }}
         run: npm run test:phase-d2:corrections-ui
       - name: Controlled feedback and reviewed-view readiness regressions
+        if: ${{ matrix.target == 'home-trace' }}
         run: node scripts/browser-render-readiness.check.mjs
       - name: Navigation WebKit390 fresh authorized decision before account switch
         if: ${{ matrix.target == 'home-trace' }}
         run: node scripts/phase-d-owned.mjs contrast-probe
+      - name: Complete Phase D both engines with actual tablet foreground precondition
+        if: ${{ matrix.target == 'whole-d' }}
+        run: node scripts/phase-d-owned.mjs browser
       - name: Strict mirror custody and release-engineering regressions
         if: ${{ matrix.target == 'clocker' }}
         run: |
