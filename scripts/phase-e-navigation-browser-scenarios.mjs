@@ -4,6 +4,7 @@ import {join} from 'node:path';
 import {Client} from 'pg';
 import {seedOwnedScenario,seedOwnedScenarioOwner,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {interceptedInboxResponse,withActorRole} from './phase-e-navigation-request.mjs';
+import {waitForSheetEntrance} from './browser-render-readiness.mjs';
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,axeFile,runtimeErrors:cellRuntimeErrors}){
  let stage='seed';cellRuntimeErrors.setStageReader(()=>stage);
@@ -44,9 +45,9 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  const refreshNotifications=()=>notifications().locator('header').getByRole('button');
  async function screenshot(name){await page.screenshot({path:join(evidenceDirectory,`${prefix}-${name}.png`),fullPage:true});}
  async function accessibility(name){
-  const expectedTitle={'Requests hub':'NEVORA',Profile:'Profile · NEVORA',Notifications:'Notifications · NEVORA'}[name];assert(expectedTitle,'Known page title contract');await page.waitForFunction(title=>document.title===title,expectedTitle);await page.addScriptTag({path:axeFile});
+  const expectedTitle={'Requests hub':'NEVORA',Profile:'Profile · NEVORA',Notifications:'Notifications · NEVORA'}[name];assert(expectedTitle,'Known page title contract');await page.waitForFunction(title=>document.title===title,expectedTitle);const entrance=name==='Requests hub'?await waitForSheetEntrance(page):undefined;await page.addScriptTag({path:axeFile});
   const violations=await page.evaluate(async()=> (await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}})).violations.map(v=>({id:v.id,nodes:v.nodes.slice(0,20).map(node=>({target:node.target.map(selector=>String(selector).replace(/https?:[^\s)]+/g,'[URL]').replace(/[A-Za-z0-9_-]{32,}/g,'[OPAQUE]')),contrast:[...node.any,...node.all,...node.none].filter(check=>check.id==='color-contrast').map(check=>({foreground:check.data?.fgColor,background:check.data?.bgColor,ratio:check.data?.contrastRatio,expected:check.data?.expectedContrastRatio}))}))})));
-  await writeFile(join(evidenceDirectory,`navigation-${engine}-${width}-${name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}-axe-report.json`),JSON.stringify({engine,width,page:name,violations},null,2));
+  await writeFile(join(evidenceDirectory,`navigation-${engine}-${width}-${name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}-axe-report.json`),JSON.stringify({engine,width,page:name,entrance,violations},null,2));
   assert.deepEqual(violations,[],name+' accessibility');checks.push(name+' axe WCAG A/AA');
  }
  async function contrastStates(){

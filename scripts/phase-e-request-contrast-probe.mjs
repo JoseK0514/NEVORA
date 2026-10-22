@@ -1,5 +1,5 @@
 import {createRequire} from 'node:module';
-import {mkdir,writeFile} from 'node:fs/promises';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
 import assert from 'node:assert/strict';
 import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
@@ -9,6 +9,7 @@ import {observeBrowserCell} from './phase-e-browser-qa.mjs';
 import {verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
 import {captureSource,assertSourceUnchanged,externalEvidence} from './phase-e-owned.mjs';
 import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
+import {waitForSheetEntrance} from './browser-render-readiness.mjs';
 
 const source=resolve(process.cwd()),custody=captureSource(source,process.env.PHASE_E_EXPECTED_SHA),evidence=externalEvidence(source,process.env.PHASE_E_EVIDENCE_DIR);
 const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json')),pw=runtime('playwright'),axeFile=runtime.resolve('axe-core/axe.min.js');
@@ -18,6 +19,28 @@ await writeFile(join(evidence,'source-manifest.json'),JSON.stringify(custody,nul
 let browser;
 try{
  browser=await pw.webkit.launch({headless:true});const navigationDiagnosticVerified=(await verifyNavigationFetchDiagnostic(browser)).verified;
+ // Exercise the actual approved stylesheet in a controlled document. A paused,
+ // partially faded sheet must keep the audit waiting in both motion modes.
+ const motionContext=await browser.newContext();report.renderReadinessRegression=[];
+ try{
+  const motionPage=await motionContext.newPage();motionPage.setDefaultTimeout(15000);
+  const css=await readFile(resolve('src/components/signature/components.css'),'utf8');
+  for(const reducedMotion of ['no-preference','reduce']){
+   await motionPage.emulateMedia({reducedMotion});
+   await motionPage.setContent('<style>'+css+'</style><div data-sig-sheet>Fictional sheet</div>');
+   const paused=await motionPage.locator('[data-sig-sheet]').evaluate(element=>{
+    const animation=element.getAnimations()[0];animation.pause();animation.currentTime=70;
+    return {name:animation.animationName,opacity:Number(getComputedStyle(element).opacity)};
+   });
+   assert(paused.opacity>0&&paused.opacity<1);
+   let resolved=false;const pending=waitForSheetEntrance(motionPage).then(result=>{resolved=true;return result;});
+   await motionPage.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+   assert.equal(resolved,false,'Entrance wait must not resolve while the real animation is paused');
+   await motionPage.locator('[data-sig-sheet]').evaluate(element=>element.getAnimations()[0].play());
+   const result=await pending;assert(result.before[0].opacity<1);assert.equal(result.after[0].opacity,1);
+   report.renderReadinessRegression.push({reducedMotion,paused,...result});
+  }
+ }finally{await motionContext.close();}
  for(let index=0;index<7;index++){
   const directory=join(evidence,'case-'+index);await mkdir(directory,{recursive:true});
   const record={suite:'navigation',engine:'webkit',width:375,index,status:'failed',checks:[],errors:[]};report.cases.push(record);
