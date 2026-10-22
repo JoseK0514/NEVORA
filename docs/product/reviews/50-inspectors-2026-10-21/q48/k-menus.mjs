@@ -1,0 +1,18 @@
+import { start, go, shot, BASE } from "./h.mjs";
+const w = Number(process.argv[2]);
+const { b, p, log } = await start("AUDIT-M", w, { touch: true });
+const layers = () => p.evaluate(() => [...document.querySelectorAll("[role=dialog],dialog[open],[role=menu],[popover],[role=listbox],.nevora-action-menu-popover")].filter(e => e.getClientRects().length).map(e => { const r = e.getBoundingClientRect(); return `${e.tagName} role=${e.getAttribute("role")} label=${e.getAttribute("aria-label")} [${Math.round(r.x)},${Math.round(r.y)} ${Math.round(r.width)}x${Math.round(r.height)}] :: ${e.innerText.replace(/\s+/g, " ").slice(0, 300)}`; }));
+await go(p, "/app/reports");
+const per = p.getByRole("button", { name: /Report period/ }).filter({ visible: true }).first();
+console.log("period attrs", await per.evaluate(e => [e.getAttribute("aria-expanded"), e.getAttribute("aria-haspopup")]).catch(e => "none"));
+await per.click(); await p.waitForTimeout(500); console.log("PERIOD", await layers()); await shot(p, `insights-period-${w}`);
+await p.keyboard.press("Escape"); await p.waitForTimeout(300); console.log("after esc", (await layers()).length, "focus", await p.evaluate(() => document.activeElement.getAttribute("aria-label") || document.activeElement.innerText.slice(0, 30)));
+const ex = p.getByRole("button", { name: /^Export/ }).filter({ visible: true }).first();
+await ex.click(); await p.waitForTimeout(500); console.log("EXPORT", await layers()); await shot(p, `insights-export-${w}`);
+await p.keyboard.press("Escape"); await p.waitForTimeout(300);
+await go(p, "/app/timecards");
+const pick = p.locator("header button, main button").filter({ hasText: /week|Oct/ }).filter({ visible: true }).first();
+console.log("picker btn", await pick.innerText().catch(() => "none"));
+await pick.click().catch(e => console.log("pick err", String(e).slice(0, 80))); await p.waitForTimeout(600); console.log("PICKER", await layers()); await shot(p, `tc-picker-${w}`);
+console.log("blocked", log.blocked, log.pageerr);
+await b.close();

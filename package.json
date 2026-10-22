@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "check:development-sources": "node scripts/development-source-inventory.mjs",
+    "check:inspection-evidence": "node scripts/inspection-evidence.mjs",
     "test": "vitest run",
     "test:dev:production": "node scripts/verify-dev-production-absence.mjs",
     "setup:company": "node --import tsx scripts/setup-company.mts",

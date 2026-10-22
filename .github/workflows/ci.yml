@@ -34,6 +34,10 @@ jobs:
         run: npm ci
       - name: Unit tests
         run: npm test -- --maxWorkers=1
+      - name: Inspector archive custody (not findings acceptance)
+        run: |
+          node --test scripts/inspection-evidence.check.mjs scripts/development-source-inventory.check.mjs
+          npm run check:inspection-evidence
       - name: Notification and foundation configuration regressions
         run: |
           npm run test:notifications:qa

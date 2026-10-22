@@ -1,0 +1,13 @@
+import { start, go, shot, BASE } from "./h.mjs";
+const w = Number(process.argv[2]);
+const { b, p, log } = await start("AUDIT-M", w, { touch: true });
+const main = async () => (await p.locator("main").first().innerText()).replace(/\s+/g, " ");
+await go(p, "/app/employees");
+await p.locator("main select").first().selectOption({ label: "Lead" }); await p.waitForTimeout(2500);
+console.log("filter lead", p.url().replace(BASE, ""), (await main()).slice(150, 400));
+const q = p.locator("main input[name=q]"); await q.fill("zzzz"); await p.waitForTimeout(2500);
+console.log("typed zzzz", p.url().replace(BASE, ""), (await main()).slice(150, 450));
+await q.press("Enter"); await p.waitForTimeout(2500);
+console.log("enter zzzz", p.url().replace(BASE, ""), (await main()).slice(150, 450)); await shot(p, `team-empty-${w}`);
+console.log("blocked", log.blocked, log.pageerr);
+await b.close();

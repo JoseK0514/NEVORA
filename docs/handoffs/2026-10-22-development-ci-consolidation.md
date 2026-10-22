@@ -731,3 +731,29 @@ launchServer/connect, Chromium7 then WebKit7 matrix with the enhanced diagnostic
 Its optional job budget is 50 minutes, matching the unchanged mandatory Home
 budget; no mandatory assertion, timeout or test is modified. Its result remains
 pending and cannot substitute for all required final-source jobs.
+
+## Approved inspector preparation joins the same PR
+
+Source reconciliation discovered `codex/inspectors-ci-20261022` at `ef5212dd`.
+Jose's approval was verified from the human turns in the existing "Find COO
+status" chat (01a13d55-8ffc-7143-b994-4f8e00036472): preserve the reports in the
+next CI candidate, verify the combined result, and leave recoverable branch
+cleanup until after development integration. This does not add production
+authorization or permission to accept historical findings without evidence.
+
+PR23 now incorporates that exact preparation branch. Its 409 archive files remain
+byte-identical to original `39ee9d1d`, with current custody checks added to
+validate; archived probes are data and are never executed. The existing CI
+consolidation, patched dependencies, all mandatory jobs, assertions and timeouts
+are retained. The source inventory conflict keeps PR23 as the assembly, the
+current development base, the current diagnostic reference, and the inspector
+branch as included. Its retirement plan remains PREPARED_NOT_EXECUTED and needs
+fresh owner/head reconciliation before its separate cleanup operation.
+
+All 17 archive/inventory behavioral checks pass locally. The new bounded native
+login diagnostic has a passing privacy regression (17 diagnostic checks total),
+and all 167 runtime/navigation observer regressions pass. These small local
+checks use the existing installed runner; full patched-runtime verification
+remains on fresh GitHub-hosted Ubuntu. The earlier Home stall is not declared
+fixed from a successful diagnostic replay, and no retry, cookie shortcut,
+runtime-error exemption or larger mandatory timeout has been added.
