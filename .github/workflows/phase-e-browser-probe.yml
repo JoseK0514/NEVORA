@@ -5,12 +5,9 @@ on:
 permissions:
   contents: read
 jobs:
-  home-signin-diagnostic:
+  typecheck-diagnostic:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-    env:
-      PHASE_E_EXPECTED_SHA: ${{ github.sha }}
-      PHASE_D_EXPECTED_SHA: ${{ github.sha }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -22,38 +19,9 @@ jobs:
           node-version: 24.19.0
           cache: npm
       - run: npm ci
-      - name: Install pinned browser runtime
+      - name: Typecheck the corrected real dependency-copy regression
+        run: npm run typecheck
+      - name: Verify source is unchanged
         run: |
-          PW_ROOT="$GITHUB_WORKSPACE/tools/ci-browser-runtime"
-          npm ci --prefix "$PW_ROOT" --no-audit --no-fund
-          npm audit --prefix "$PW_ROOT" --audit-level=high
-          echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
-          echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
-          echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/phase-e-focused-probe" >> "$GITHUB_ENV"
-      - name: Prefer existing official Ubuntu archive
-        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
-      - name: Install WebKit
-        timeout-minutes: 8
-        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps webkit'
-      - name: Install scratch PostgreSQL runtime
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes postgresql-16
-          echo "NEVORA_TEST_PG_BIN=/usr/lib/postgresql/16/bin" >> "$GITHUB_ENV"
-      - name: Repeat Home WebKit 430 with bounded sign-in request and navigation receipts
-        run: node scripts/phase-d-owned.mjs contrast-probe
-      - name: Upload diagnostics; this run cannot certify the development candidate
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: development-ci-probe-${{ github.sha }}
-          path: |
-            ${{ runner.temp }}/phase-e-focused-probe/**/*-report.json
-            ${{ runner.temp }}/phase-e-focused-probe/**/home-task11-*-checks.json
-            ${{ runner.temp }}/phase-e-focused-probe/**/home-task11-*-failure.json
-            ${{ runner.temp }}/phase-e-focused-probe/*.json
-            ${{ runner.temp }}/phase-e-focused-probe/case-*/*.png
-            ${{ runner.temp }}/phase-e-focused-probe/**/ownership.json
-            ${{ runner.temp }}/phase-e-focused-probe/**/source-manifest.json
-          if-no-files-found: error
-          retention-days: 14
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
