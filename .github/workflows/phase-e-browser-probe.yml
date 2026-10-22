@@ -1,0 +1,57 @@
+name: Phase E contrast diagnostic
+on:
+  push:
+    branches: [codex/browser-probe-20261022]
+permissions:
+  contents: read
+jobs:
+  navigation-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PHASE_E_EXPECTED_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - run: npm ci
+      - name: Install pinned browser runtime
+        run: |
+          PW_ROOT="$GITHUB_WORKSPACE/tools/ci-browser-runtime"
+          npm ci --prefix "$PW_ROOT" --no-audit --no-fund
+          npm audit --prefix "$PW_ROOT" --audit-level=high
+          echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+          echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
+          echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/phase-e-contrast-probe" >> "$GITHUB_ENV"
+      - name: Prefer existing official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
+      - name: Install Chromium and WebKit
+        timeout-minutes: 8
+        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+      - name: Install scratch PostgreSQL runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-16
+          echo "NEVORA_TEST_PG_BIN=/usr/lib/postgresql/16/bin" >> "$GITHUB_ENV"
+      - name: Diagnose exact-source Navigation in disposable owned data
+        run: node scripts/phase-e-owned.mjs browser --suite navigation
+      - name: Upload diagnostics; this run cannot certify the development candidate
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase-e-contrast-probe-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/phase-e-contrast-probe/*-report.json
+            ${{ runner.temp }}/phase-e-contrast-probe/navigation-*.png
+            ${{ runner.temp }}/phase-e-contrast-probe/source-manifest.json
+            ${{ runner.temp }}/phase-e-contrast-probe/owned-postgres-*/ownership.json
+            ${{ runner.temp }}/phase-e-contrast-probe/owned-next-*/ownership.json
+            ${{ runner.temp }}/phase-e-contrast-probe/owned-next-*/source-manifest.json
+          if-no-files-found: error
+          retention-days: 14
