@@ -26,14 +26,14 @@
 
 - [x] Own page/components/CSS and minimal navigation/Home integration; consume Task 1 contracts without weakening server authority.
 - [x] Implement briefing, conversation, saved priorities and clear pending/error/disconnected states with current design system. Default off, Owner only.
-- [ ] Verify rendering/interaction tests, keyboard, narrow widths, source links, state retirement and owned browser journeys. 53 focused tests pass; browser run2 passed 18 groups. Jose authorized remaining local commits; final browser rerun is in progress at application commit `577fc0ac`.
-- [ ] Review task; fix material findings.
+- [x] Verify rendering/interaction tests, keyboard, narrow widths, source links, state retirement and owned browser journeys. 55 focused tests and 18 final owned Chromium/WebKit groups passed at `f67ad18d` after red/green conflict regressions; local commits explicitly authorized.
+- [x] Review task; fix material findings. Final lost-update finding closed after red/green regressions and exact-source browser proof; scoped review APPROVE/WATCH with no blockers.
 
 ## Task 3: whole-feature validation and handoff
 
-- [ ] Run appropriate focused regressions, typecheck, lint, optimized build, real SQL integration and owned browser checks. Record exact source and limits of evidence.
-- [ ] Obtain fresh-context whole-branch code review; resolve material findings.
-- [ ] Finish handoff with completed functionality, activation settings, remaining autonomous-management roadmap, verification and production hold. Preserve the reviewable local branch; publishing/integration require the applicable authorization and are separate from local commit permission.
+- [x] Run appropriate focused regressions, typecheck, lint, optimized build, real SQL integration and owned browser checks. Final default suite 9343 passed/801 existing skips; full lint/type/build passed. Backend 19 real SQL checks map to unchanged backend bytes. Root personally used the fictional Owner demo.
+- [x] Obtain fresh-context whole-branch code review; resolve material findings. Original review and superseding approval preserved in `docs/reviews/2026-10-22-owner-advisor-engineering.md`.
+- [x] Finish handoff with completed functionality, activation settings, remaining autonomous-management roadmap, verification and production hold. Preserve the reviewable local branch; publishing/integration require the applicable authorization and are separate from local commit permission.
 
 ## Review focus
 
