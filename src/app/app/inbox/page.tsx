@@ -20,8 +20,9 @@ export default async function InboxPage() {
   // PD5: Call and Text on a shift with no clock-in use the phone numbers this viewer already sees on Team. Only the
   // company-wide directory carries them; a location-scoped Manager, or a failed read, simply gets no Call or Text.
   const directory = await readOperationalDirectory(await requireSessionMutationProof()).catch(() => null);
-  const phones = directory?.state === "ready" && directory.data.mode === "COMPANY"
-    ? Object.fromEntries(directory.data.employees.filter(employee => employee.active && employee.phone).map(employee => [employee.id, employee.phone]))
+  const contacts = directory?.state === "ready" && directory.data.mode === "COMPANY"
+    ? { observation: { authority: directory.authority, observedAt: directory.observedAt, validForMs: directory.validForMs },
+        phones: Object.fromEntries(directory.data.employees.filter(employee => employee.active && employee.phone).map(employee => [employee.id, employee.phone])) }
     : undefined;
-  return <ManagerInbox weekStart={weekStart} actorId={session.id} timeZone={workspace.timeZone} phones={phones} />;
+  return <ManagerInbox weekStart={weekStart} actorId={session.id} timeZone={workspace.timeZone} contacts={contacts} />;
 }

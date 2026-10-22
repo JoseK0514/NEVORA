@@ -88,16 +88,30 @@ it("Codex's optional request facts fill the pane; the decision stays on the full
 
 it('offers Call and Text on a shift with no clock-in when Team has the number, and opens that timecard (PD5)', async () => {
   const {shiftEntry, InboxDetail} = await import('./manager-inbox');
+  const {ScopedReadFrame} = await import('./company-access/scoped-read-frame');
+  const observation = {authority:'fictional-company',observedAt:'2026-10-16T20:00:00Z',validForMs:15000};
   const shift = {id: 's1', employeeId: 'AUDIT-M', employeeName: 'Morgan Rivera', locationId: 'main', locationName: 'Main Office', positionName: null,
     startAt: '2026-10-16T11:00:00Z', endAt: '2026-10-16T19:00:00Z', status: 'no_punches' as const, firstClockInAt: null, late: false};
-  const detail = (phone?: string) => renderToStaticMarkup(createElement(InboxDetail, {entry: shiftEntry(shift, 'America/Puerto_Rico', '2026-10-16T20:00:00Z', true, phone)}));
+  const detail = (phone?: string) => {
+    const entry=shiftEntry(shift, 'America/Puerto_Rico', '2026-10-16T20:00:00Z', true, phone, observation);
+    const element=InboxDetail({entry});
+    if(entry.contact){
+      expect(element.type).toBe(ScopedReadFrame);
+      expect(element.props.observation).toEqual(observation);
+      return renderToStaticMarkup(element.props.children);
+    }
+    return renderToStaticMarkup(element);
+  };
   const output = detail('(787) 555-0142');
   expect(output).toContain('href="/app/timecards#timecard-AUDIT-M"');
   expect(output).toContain('href="tel:7875550142"');
   expect(output).toContain('href="sms:7875550142"');
   expect(output).toContain('aria-label="Call Morgan Rivera"');
   expect(output).toContain('(787) 555-0142');
-  expect(renderToStaticMarkup(createElement(InboxDetail, {entry: shiftEntry({...shift, status: 'not_clocked_in'}, 'America/Puerto_Rico', '2026-10-16T12:00:00Z', true, '+1 787 555 0142')}))).toContain('href="tel:+17875550142"');
+  const running=InboxDetail({entry:shiftEntry({...shift,status:'not_clocked_in'},'America/Puerto_Rico','2026-10-16T12:00:00Z',true,'+1 787 555 0142',observation)});
+  expect(running.type).toBe(ScopedReadFrame);
+  expect(renderToStaticMarkup(running.props.children)).toContain('href="tel:+17875550142"');
+  expect(renderToStaticMarkup(createElement(InboxDetail,{entry:shiftEntry(shift,'America/Puerto_Rico',observation.observedAt,true,'+1 787 555 0142')}))).not.toMatch(/tel:|sms:|555/);
   // No number (a location-scoped Manager, or none on file): no Call or Text.
   expect(detail()).not.toMatch(/tel:|sms:/);
 });

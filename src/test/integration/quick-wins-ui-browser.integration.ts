@@ -19,7 +19,7 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
   try {
     const q = (text: string, values: unknown[] = []) => app.database.executor.query({ text, values });
     await seedOwnedApp(app.database.executor);
-    await q("INSERT INTO employees(id,first_name,last_name,role,primary_location_id) VALUES('QW-MANAGER','Fictional','Manager','MANAGER','loc-1')");
+    await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('QW-MANAGER','Fictional','Manager','2025550141','MANAGER','loc-1')");
     await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)', ['QW-MANAGER', await hashPassword(TEST_PASSWORD)]);
     await assignOwnedManagerCompanyAccess(app.database.executor, 'QW-MANAGER');
     await q("INSERT INTO clocker_devices(id,location_id,name) VALUES('quick-wins-device','loc-1','Fictional quick wins tablet')");
@@ -29,10 +29,16 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
       const browser = await runtime[engine].launch({ headless: true }); browsers.push(browser);
       for (const actor of ['QAOWNER', 'QW-MANAGER']) {
         const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block' });
-        await context.route('**/*', async (route: { request(): { url(): string }; abort(reason?: string): Promise<void>; continue(): Promise<void> }) => {
+        let holdRefresh = false;
+        const pendingRefresh: (() => void)[] = [];
+        const releaseRefresh = () => { holdRefresh = false; pendingRefresh.splice(0).forEach(release => release()); };
+        await context.route('**/*', async (route: { request(): { url(): string; headers(): Record<string, string> }; abort(reason?: string): Promise<void>; continue(): Promise<void> }) => {
           const url = new URL(route.request().url());
           if (['http:', 'https:'].includes(url.protocol) && url.origin !== origin) await route.abort('blockedbyclient');
-          else await route.continue();
+          else {
+            if (holdRefresh && url.pathname === '/app/inbox' && route.request().headers().rsc === '1') await new Promise<void>(release => pendingRefresh.push(release));
+            await route.continue();
+          }
         });
         const page = await context.newPage();
         page.setDefaultTimeout(15000);
@@ -94,10 +100,34 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
             } else await page.locator('main').getByRole('heading', { level: 1 }).first().waitFor();
             checks.push(engine + ': ' + actor + ' Settings route ' + path);
           }
+          if (engine === 'chromium' && actor === 'QAOWNER') {
+            await context.route('**/api/manager/today', async (route: { fulfill(options: unknown): Promise<void> }) => {
+              const now = Date.now(), observedAt = new Date(now).toISOString();
+              const shift = { id: 'quick-wins-contact', employeeId: 'QW-MANAGER', employeeName: 'Fictional Manager', locationId: 'loc-1', locationName: 'Northside Main Office', positionName: null,
+                startAt: new Date(now - 3600000).toISOString(), endAt: new Date(now + 3600000).toISOString(), status: 'not_clocked_in', firstClockInAt: null, late: false };
+              await route.fulfill({ status: 200, json: { state: 'ready', observedAt, validForMs: 60000, timeZone: 'America/Puerto_Rico', today: observedAt.slice(0, 10), counts: { scheduled: 1, clockedIn: 0, late: 0, notClockedIn: 1 }, shifts: [shift], missed: [shift] } });
+            });
+            await page.goto(origin + '/app/inbox?item=shift%3Aquick-wins-contact');
+            const call = page.getByRole('link', { name: 'Call Fictional Manager', exact: true });
+            await call.waitFor();
+            holdRefresh = true;
+            await call.waitFor({ state: 'detached', timeout: 20000 });
+            expect(await page.getByRole('link', { name: 'Text Fictional Manager', exact: true }).count()).toBe(0);
+            releaseRefresh();
+            await call.waitFor();
+            holdRefresh = true;
+            await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+            await call.waitFor({ state: 'detached' });
+            await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+            expect(await call.count()).toBe(0);
+            releaseRefresh();
+            await call.waitFor();
+            checks.push('chromium: real directory contacts expire and clear on blur; fresh authority and RSC restore them; controlled Today response only');
+          }
         } catch (error) {
           await page.screenshot({ path: output + '/' + engine + '-' + actor + '-failure.png', fullPage: true }).catch(() => {});
           throw error;
-        } finally { await context.close(); }
+        } finally { releaseRefresh(); await context.close(); }
       }
     }
     expect(errors).toEqual([]);
