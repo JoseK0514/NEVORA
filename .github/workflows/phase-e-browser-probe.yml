@@ -5,7 +5,7 @@ on:
 permissions:
   contents: read
 jobs:
-  home-and-missing-diagnostic:
+  navigation-390-diagnostic:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
@@ -30,22 +30,18 @@ jobs:
           echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
           echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
           echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/phase-e-focused-probe" >> "$GITHUB_ENV"
-          echo "PHASE_D_REMEDIATION_EVIDENCE_DIR=$RUNNER_TEMP/phase-d-missing-probe" >> "$GITHUB_ENV"
       - name: Prefer existing official Ubuntu archive
         run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
-      - name: Install Chromium and WebKit
+      - name: Install WebKit
         timeout-minutes: 8
-        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps webkit'
       - name: Install scratch PostgreSQL runtime
         run: |
           sudo apt-get update
           sudo apt-get install --yes postgresql-16
           echo "NEVORA_TEST_PG_BIN=/usr/lib/postgresql/16/bin" >> "$GITHUB_ENV"
-      - name: Full Home matrix with strict supervision and in-process copy
-        run: node scripts/phase-e-owned.mjs browser --suite home
-      - name: Missing-context remediation with actual Manager landing-read barrier
-        if: ${{ always() }}
-        run: node scripts/phase-d-owned.mjs missing-probe
+      - name: Focused Navigation WebKit 390 with current sign-in readiness
+        run: node scripts/phase-d-owned.mjs contrast-probe
       - name: Upload diagnostics; this run cannot certify the development candidate
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -54,10 +50,8 @@ jobs:
           path: |
             ${{ runner.temp }}/phase-e-focused-probe/**/*-report.json
             ${{ runner.temp }}/phase-e-focused-probe/*.json
-            ${{ runner.temp }}/phase-e-focused-probe/*.png
+            ${{ runner.temp }}/phase-e-focused-probe/**/*.png
             ${{ runner.temp }}/phase-e-focused-probe/**/ownership.json
             ${{ runner.temp }}/phase-e-focused-probe/**/source-manifest.json
-            ${{ runner.temp }}/phase-d-missing-probe/**/*.json
-            ${{ runner.temp }}/phase-d-missing-probe/**/*.png
           if-no-files-found: error
           retention-days: 14
