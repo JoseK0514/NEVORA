@@ -38,6 +38,17 @@ export async function assignOwnedManagerCompanyAccess(executor:SqlExecutor,emplo
   return result.receipt;
 }
 
+export async function seedOwnedScenarioOwner(executor: SqlExecutor, label: string) {
+  if (!/^[A-Z0-9]+$/.test(label)) throw new Error('Use an explicit fictional scenario name');
+  const employeeId = `QA-${label}-OWNER`;
+  await executor.transaction([
+    {text: "INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,'Fictional',$2,'555-0100','OWNER','loc-1')", values: [employeeId, `${label} Owner`]},
+    {text: 'INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) SELECT $1,password_hash,false FROM employee_credentials WHERE employee_id=$2', values: [employeeId, 'QAOWNER']},
+    {text: "INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES($1,'loc-1'),($1,'loc-2')", values: [employeeId]},
+  ]);
+  return employeeId;
+}
+
 export async function seedOwnedScenario(executor: SqlExecutor, label: string, offset: number) {
   if (!/^[A-Z0-9]+$/.test(label)) throw new Error('Use an explicit fictional scenario name');
   const q = (text: string, values: readonly unknown[] = []) => executor.query({ text, values });

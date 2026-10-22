@@ -4,7 +4,8 @@ import {previewCommunicationAudience,executeCommunicationCommand,communicationAu
 import type {CommunicationDraft} from '../../lib/communications/types';
 import {Client} from 'pg';
 import {createDisposableFoundationDatabase} from './local-postgres';
-import {seedOwnedApp,seedOwnedScenario} from './owned-app-fixture';
+import {seedOwnedApp,seedOwnedScenario,seedOwnedScenarioOwner} from './owned-app-fixture';
+import {consumeLoginAttempt} from '../../lib/auth/login-limits';
 import {readEmployeeHome,homeAuthority} from '../../lib/data/employee-home.server';
 import {readEmployeeWeeklyReview} from '../../lib/data/employee-weekly-review.server';
 import {acknowledgeScheduleWeek} from '../../lib/data/acknowledgements';
@@ -23,6 +24,15 @@ beforeEach(async()=>{
  await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) VALUES('home-leave',$1,'2030-11-01','2030-11-01','APPROVED','PRIVATE OWN REASON'),('foreign-leave',$2,'2030-11-02','2030-11-02','APPROVED','OTHER PRIVATE REASON')",fixture.actors.slice(0,2));
 });
 afterEach(async()=>{await db?.dispose();});
+it('fictional browser-cell Owners retain independent real sign-in budgets without disabling rate limits',async()=>{
+ const first=await seedOwnedScenarioOwner(db.executor,'HSQL1'),second=await seedOwnedScenarioOwner(db.executor,'HSQL2');
+ expect(first).not.toBe(second);
+ expect(await q("SELECT id,role FROM employees WHERE id=ANY($1::text[]) ORDER BY id",[[first,second]])).toEqual([{id:first,role:'OWNER'},{id:second,role:'OWNER'}]);
+ expect(await q('SELECT employee_id FROM employee_credentials WHERE employee_id=ANY($1::text[]) AND password_hash=(SELECT password_hash FROM employee_credentials WHERE employee_id=$2) ORDER BY employee_id',[[first,second],'QAOWNER'])).toEqual([{employee_id:first},{employee_id:second}]);
+ for(let attempt=0;attempt<10;attempt++)expect(await consumeLoginAttempt(first,db.executor)).toBe(true);
+ expect(await consumeLoginAttempt(first,db.executor)).toBe(false);
+ expect(await consumeLoginAttempt(second,db.executor)).toBe(true);
+});
 it('actual six-source PARTIAL Home retains distant published Next Shift and current-week publication notice',async()=>{
  const r=await home();expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{authority:homeAuthority(proof),publicationState:'partial',nextShift:{shiftId:fixture.sourceId},sources:{schedule:{state:'partial'},acknowledgements:{state:'complete'},exchanges:{state:'complete'},timeOff:{state:'complete'},ownTime:{state:'complete'},communications:{state:'complete'}}}});
  if(!('snapshot' in r))throw Error('No Home');expect(r.snapshot.attention.some(i=>i.ref.kind==='SCHEDULE'&&i.required)).toBe(true);expect(r.snapshot.attention.some(i=>i.ref.id==='home-leave')).toBe(true);
@@ -273,7 +283,7 @@ it('communication cap sentinel retains known rows and never claims complete',asy
    {text:"INSERT INTO communication_lifecycle(id,workspace_id,communication_id,revision_id,actor_employee_id,kind) VALUES($1,$2,$3,$4,$5,'PUBLISHED')",values:[randomUUID(),revision.workspaceId,id,revisionId,ownerProof.employee.id]});
  }
  await db.executor.transaction(statements);
- expect((await q("SELECT count(*)::int AS n FROM communications WHERE state='PUBLISHED'"))[0].n).toBe(101);
+ expect(await q("SELECT count(*)::int AS n FROM communications WHERE state='PUBLISHED'")).toEqual([{n:101}]);
  const r=await home();expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{communications:{state:'partial',reason:'source_cap'}}}});if('snapshot' in r)expect(r.snapshot.attention.filter(row=>row.ref.kind==='COMMUNICATION')).toHaveLength(100);
 },30000);
 it('shift reassignment during final Home wait revokes current grant without backfilling the replacement',async()=>{

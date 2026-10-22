@@ -30,7 +30,7 @@ before assembly. The existing source inventory remains the scope authority.
 - [x] Preserve mandatory SQL/browser coverage, source custody and final evidence
   rejection; reduce duplicate and obsolete candidate executions.
 - [x] Run affected lightweight regressions and scoped lint; inspect the diff.
-- [ ] Publish one development PR, triggering one full cloud CI run.
+- [x] Publish development PR 23; each corrected commit supersedes its older run.
 - [ ] Record actual full-cloud results; failed/skipped/cancelled is not acceptance.
 
 ## Boundaries and ownership
@@ -105,3 +105,29 @@ The updated 51-source reconciliation passes. The existing Clocker component
 contract and the corrected trigger cases pass 25 selected tests; scoped lint
 and whitespace checks pass. A single corrected PR candidate supersedes the
 unfinished first run; its full fresh verification remains required.
+
+## Shared sign-in fixture isolation
+
+The next run, 39784597895 on `1d73100d`, reproduced the Communications WebKit
+430 seed timeout. Its screenshot shows the actual sign-in rate-limit message;
+the runtime error list is empty. The ten-attempt, fifteen-minute account limit
+explains why the shared QAOWNER account fails at cell eleven when the suite
+finishes that portion inside one bucket, but passes across a bucket boundary.
+Each Home, Communications and Navigation browser cell now receives its own
+fictional Owner with real credentials and ordinary authorization. The production
+limiter is unchanged. A real PostgreSQL regression verifies distinct Owner
+identities and credentials, ten accepted attempts, rejection of the eleventh,
+and an independent first attempt for the next Owner.
+
+Home and Attendance in that run also failed before execution: the Ubuntu mirror
+download took more than the existing eight-minute browser installation bound.
+Those are setup failures, not successful test execution. No test or setup timeout
+is extended. The affected runtime diagnostic regressions pass 141/141 locally,
+and scoped lint passes; SQL and all browser cells still require cloud execution.
+
+That run passed all 9,307 unit cases (with the pre-existing 801 skips), then
+typecheck found an untyped aggregate count in the new cap fixture. The count
+assertion now compares the complete returned row without accessing an unknown
+property. Navigation reached the clean Requests hub, then waited for the obsolete
+global document title. Its accessibility checks now require each route's actual
+metadata title before running the same complete axe rule set.

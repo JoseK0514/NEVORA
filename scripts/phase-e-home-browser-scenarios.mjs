@@ -6,7 +6,7 @@ import {writeFile} from 'node:fs/promises';
 import {Client} from 'pg';
 import {randomUUID,createHash} from 'node:crypto';
 import {hashPassword} from '../src/lib/auth/password.ts';
-import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
+import {seedOwnedScenario,seedOwnedScenarioOwner,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
 
 // Shared by H06 and its controlled browser scheduling regression.
@@ -114,9 +114,10 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  assert.equal(await items().count(),homeResponse.snapshot.attention.length);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);for(const item of homeResponse.snapshot.attention.filter(item=>item.ref.kind==='SCHEDULE'))assert(await page.locator(`[data-home-group] time[datetime="${item.ref.id}"]`).isVisible());assert.equal(await page.locator('[data-home-group] small').filter({hasText:'Recorded '}).count(),homeResponse.snapshot.attention.filter(item=>item.ref.kind!=='SCHEDULE').length);const leave=homeResponse.snapshot.attention.filter(item=>item.ref.kind==='TIME_OFF');assert.equal(new Set(leave.map(item=>item.label)).size,7);for(const item of leave)assert(await page.getByText(item.label,{exact:true}).isVisible());await shot('show-all');
  checks.push('H02 actual separate Actions/Updates membership and available native keyboard disclosures expose every returned item; weekly reviews show their own week and distinct time-off periods remain distinguishable; Home has canonical review links and no compact consent or Mark read');
  stage='canonical-communications';
- managerContext=await browser.newContext({viewport:{width,height:900}});await managerContext.route('**/*',route=>new URL(route.request().url()).origin===new URL(app.url).origin?route.continue():route.abort());manager=await managerContext.newPage();await login(manager,'QAOWNER');
- const [ownerSession]=await q('SELECT token_hash FROM employee_sessions WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 1',['QAOWNER']);
- const owner={employee:{id:'QAOWNER'},sessionTokenHash:ownerSession.token_hash};
+ const ownerId=await seedOwnedScenarioOwner(app.database.executor,label);
+ managerContext=await browser.newContext({viewport:{width,height:900}});await managerContext.route('**/*',route=>new URL(route.request().url()).origin===new URL(app.url).origin?route.continue():route.abort());manager=await managerContext.newPage();await login(manager,ownerId);
+ const [ownerSession]=await q('SELECT token_hash FROM employee_sessions WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 1',[ownerId]);
+ const owner={employee:{id:ownerId},sessionTokenHash:ownerSession.token_hash};
  const [session]=await q('SELECT token_hash FROM employee_sessions WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 1',[actor]);
  const self={employee:{id:actor,firstName:'Fictional',lastName:'Self',role:'LEAD',primaryLocationId:'loc-1'},sessionTokenHash:session.token_hash};
  // Public lifetime header is derived only from this fixture's actual SQL session;

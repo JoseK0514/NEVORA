@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {join} from 'node:path';
 import {writeFile} from 'node:fs/promises';
-import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
+import {seedOwnedScenario,seedOwnedScenarioOwner,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
 import {businessDate} from '../src/lib/business-time.ts';
 import {weekStartFor} from '../src/lib/date-utils.ts';
@@ -27,7 +27,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   const captureRead=response=>{const path=new URL(response.url()).pathname;if(managerReads.includes(path)&&!firstReads.has(path))firstReads.set(path,response);};
   manager.on('response',captureRead);
   try{
-   await login(manager,'QAOWNER');
+   await login(manager,await seedOwnedScenarioOwner(app.database.executor,label));
    await Promise.all(managerReads.map(async path=>{
     try{const response=firstReads.get(path)??await manager.waitForResponse(response=>new URL(response.url()).pathname===path);bootstrapReceipt.authenticated.push({path,status:response.status()});await saveBootstrap();assert.equal(response.status(),200,'Current Owner dashboard read succeeds');}
     catch(error){bootstrapReceipt.authenticated.push({path,failure:safeBrowserFailure(error).summary});await saveBootstrap();throw error;}
