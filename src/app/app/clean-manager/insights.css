@@ -174,6 +174,24 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-insights__detail .wb-insights-grid { gap: 20px; }
 }
 
+/* MK5 / PD4: four periods (This week · Last week · Month · Custom) fit one line from 320px at normal text size. */
+@media (max-width: 360px) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-insights__seg-item { padding: 0 2px; letter-spacing: -.2px; }
+}
+
+/* MK5 / PD4: a period with no recorded time: one centred line on a single baseline, where the bars would be. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-chart__empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 150px; margin-top: 16px; padding: 12px 8px;
+  border-bottom: 1px solid var(--cm-sep); text-align: center; font: 400 .9375rem/1.25rem var(--cm-sys); color: var(--cm-label-2);
+}
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-chart__empty p { margin: 0; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-chart__empty-title { color: var(--cm-label); font-weight: 500; }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-chart__empty :is(a, button) { display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; border: 0; background: none; color: var(--cm-tint); font: inherit; cursor: pointer; }
+@media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-chart__empty { min-height: 200px; font-size: .84375rem; line-height: 1.125rem; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-chart__empty :is(a, button) { min-height: 32px; }
+}
+
 /* ---------- The bars (both widths; sizes above) ---------- */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(.cm-insights, .cm-insights-bar) .cm-chart__plot {
   position: relative; display: grid; grid-template-columns: repeat(var(--cm-bars, 7), minmax(0, 1fr)) 1.75rem; grid-template-rows: minmax(0, 1fr); align-items: end; column-gap: 10px;

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>More · Manager</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F2F4F3}
+a{color:#077572;text-decoration:none}a:hover{color:#055C5A}
+.card{background:#FFFFFF;border-radius:20px;box-shadow:0 1px 2px rgba(16,40,38,.05),0 6px 18px rgba(16,40,38,.05)}
+.gh{margin:18px 4px 8px;font-size:15px;font-weight:600;color:#5F666A}
+.it{display:flex;align-items:center;gap:14px;height:52px;padding:0 16px;color:#16191C;font-size:17px;text-decoration:none;position:relative}
+.it+.it::before{content:"";position:absolute;top:0;left:54px;right:0;height:1px;background:#E8ECEB}
+.it:hover{color:#16191C}
+.it svg{color:#1C4A47;flex:none}
+.it em{font-style:normal;margin-left:auto;font-size:15px;color:#5F666A}
+</style>
+</helmet>
+<div style="width: 390px; height: 960px; position: relative; overflow: hidden; background: #F2F4F3; font-family: Inter, system-ui, sans-serif; color: #16191C; font-feature-settings: 'tnum' 1, 'cv11' 1; -webkit-font-smoothing: antialiased">
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(#1C4A47 0 300px, #F2F4F3 300px); padding: 84px 20px 0; color: #FFFFFF">
+    <div style="font-size: 30px; font-weight: 600; letter-spacing: -0.025em">Good evening</div>
+  </div>
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(12,18,20,.42)"></div>
+
+  <div role="dialog" aria-modal="true" aria-label="More navigation" style="position: absolute; left: 0; right: 0; bottom: 0; top: 44px; background: #F2F4F3; border-radius: 24px 24px 0 0; padding: 8px 16px 0; display: flex; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,.16)">
+    <span aria-hidden="true" style="width: 36px; height: 5px; border-radius: 3px; background: #CDD2D0; align-self: center; margin-bottom: 8px"></span>
+    <div style="display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 4px">
+      <h2 style="margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.015em">More</h2>
+      <a href="Home-Manager.dc.html" style="display: inline-flex; align-items: center; height: 44px; font-size: 17px; font-weight: 600">Done</a>
+    </div>
+    <label style="display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px; margin-top: 8px; background: #FFFFFF; border-radius: 12px; box-shadow: 0 1px 2px rgba(16,40,38,.05)">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#5F666A" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m20 20-4.2-4.2"></path></svg>
+      <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search pages, people and actions</span>
+      <input type="search" placeholder="Search" style="flex: 1; border: 0; outline: none; font: inherit; font-size: 17px; background: transparent; min-width: 0">
+    </label>
+
+    <div style="flex: 1; overflow: hidden">
+      <p class="gh">Time and pay</p>
+      <nav class="card" aria-label="Time and pay">
+        <a class="it" href="Timecards.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>Timecards</a>
+        <a class="it" href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"></path></svg>Time exports</a>
+        <a class="it" href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="4.5" width="15" height="15" rx="3"></rect><path d="m8.5 12 2.5 2.5 4.5-5"></path></svg>Attendance</a>
+        <a class="it" href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M5 19V11M10 19V6M15 19v-6M20 19V9"></path></svg>Insights</a>
+      </nav>
+
+      <p class="gh">Scheduling</p>
+      <nav class="card" aria-label="Scheduling">
+        <a class="it" href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"></rect><rect x="13" y="4" width="7" height="7" rx="1.5"></rect><rect x="4" y="13" width="7" height="7" rx="1.5"></rect><rect x="13" y="13" width="7" height="7" rx="1.5"></rect></svg>Templates</a>
+        <a class="it" href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"></path><circle cx="15" cy="7" r="2"></circle><circle cx="9" cy="17" r="2"></circle></svg>Scheduling rules</a>
+      </nav>
+
+      <p class="gh">Team</p>
+      <nav class="card" aria-label="Team support and updates">
+        <a class="it" href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10v4h3l6 4V6L7 10z"></path><path d="M16.5 9a4 4 0 0 1 0 6"></path></svg>Updates</a>
+        <a class="it" href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8.5" cy="15.5" r="3.5"></circle><path d="m11 13 8-8M16 8l2 2"></path></svg>Help someone sign in</a>
+        <a class="it" href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.5"></path><path d="M4 4v4.5h4.5M12 8v4l3 2"></path></svg>Find a Clocker action</a>
+      </nav>
+
+      <p class="gh">You</p>
+      <nav class="card" aria-label="You">
+        <a class="it" href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5h9l3 3V20.5H6z"></path><path d="M9 11h6M9 15h6" stroke-linecap="round"></path></svg>My pay<em>Only you</em></a>
+        <a class="it" href="#" style="color: #A3361F"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: #A3361F"><path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h9"></path></svg>Sign out</a>
+      </nav>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":960}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

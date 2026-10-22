@@ -12,6 +12,7 @@ import './manager-home-gusto.css';
 import type { ReactNode } from 'react';
 import type { ClockMonitor } from '@/lib/time-clock';
 import { PremiumHomeLive, PremiumHomeSurface, type PremiumHomeWeek } from './premium-home';
+import type { NextPay } from './payroll/my-pay';
 import { Avatar, Card, CardBody, FilterPills, KitLink, MetaParts, PageBand, Row, Rows, StatGrid, Status, Tile } from './kit/kit';
 import { presentItem } from '@/lib/action-center/present';
 import { CalendarBlankIcon, CalendarCheckIcon } from '@phosphor-icons/react/ssr';
@@ -67,6 +68,8 @@ export type DashboardRevisionItem = {
 } | null;
 
 type Props = {
+  /** MK1: the next payday from My pay's pay schedule, for Home's Coming up row. */
+  nextPay?: NextPay;
   /** Display-only compositions can supply prepared panels without mounting readers. */
   overviewSlots?: { actions: ReactNode; activity: ReactNode; today?: ReactNode; setup?: ReactNode; /** Fictional snapshots for the premium Home preview. */ snapshots?: { today: Today; actions: ActionCenter; monitor?: ClockMonitor } };
   /** Workspace date for the Home band, e.g. "Sunday, October 18". */
@@ -200,7 +203,7 @@ function PremiumOverview(props: Props) {
     today={slots.snapshots.today} monitor={slots.snapshots.monitor ?? null} actions={slots.snapshots.actions} actionsConnection="ready" />;
   return <SharedHomeRead key={`${props.actorId}:${props.weekStart}`} live weekStart={props.weekStart} actorId={props.actorId ?? ''}
     owner={props.role === 'OWNER'} initialItems={props.managerActions}>
-    <PremiumHomeLive {...common} setup={props.role === 'OWNER' ? <OwnerSetupRowLive locationCount={props.totalLocations}/> : null} />
+    <PremiumHomeLive {...common} nextPay={props.nextPay ?? null} setup={props.role === 'OWNER' ? <OwnerSetupRowLive locationCount={props.totalLocations}/> : null} />
   </SharedHomeRead>;
 }
 

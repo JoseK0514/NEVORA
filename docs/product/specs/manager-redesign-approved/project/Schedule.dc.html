@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Schedule</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F2F4F3}
+a{color:#077572;text-decoration:none}a:hover{color:#055C5A}
+.wm{height:13px;width:auto;display:block;filter:invert(1) hue-rotate(180deg) brightness(1.15);mix-blend-mode:screen}
+.ib{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border:0;background:transparent;color:#FFFFFF;border-radius:12px;position:relative;padding:0}
+.pip{position:absolute;top:10px;right:10px;width:8px;height:8px;border-radius:4px;background:#F08A6E;box-shadow:0 0 0 2px #1C4A47}
+.eb{margin:0;font-size:15px;font-weight:500;color:#A9C9C5}
+.pill{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:19px;border:0;font-family:inherit;font-size:15px;font-weight:500;background:rgba(255,255,255,.1);color:#E3EFEE;white-space:nowrap;cursor:pointer}
+.card{background:#FFFFFF;border-radius:20px;box-shadow:0 1px 2px rgba(16,40,38,.05),0 8px 24px rgba(16,40,38,.06)}
+.ch{display:flex;justify-content:space-between;align-items:center;padding:20px 20px 8px}
+.ch h2{margin:0;font-size:15px;line-height:20px;font-weight:600;color:#16191C}
+.ch span{font-size:15px;color:#5F666A}
+.pl{display:inline-flex;align-items:center;height:24px;padding:0 12px;border-radius:12px;font-size:15px;font-weight:500;white-space:nowrap}
+.d{width:40px;height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:0;background:transparent;font-family:inherit;padding:0;color:#16191C;cursor:pointer}
+.d small{font-size:15px;font-weight:500;color:#5F666A;letter-spacing:.02em}
+.d b{width:34px;height:34px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500}
+.sf{display:flex;gap:14px;padding:14px 18px;position:relative}
+.sf+.sf::before{content:"";position:absolute;top:0;left:18px;right:0;height:1px;background:#E8ECEB}
+.tm{width:64px;flex:none;font-size:15px;line-height:20px;font-weight:600}
+.tm span{display:block;font-weight:400;color:#5F666A}
+.t{margin:0;font-size:17px;line-height:22px;font-weight:500;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere}
+.s{margin:2px 0 0;font-size:15px;line-height:20px;color:#5F666A}
+.cta{display:flex;align-items:center;justify-content:center;gap:8px;height:50px;border-radius:15px;background:#077572;color:#FFFFFF;font-size:16px;font-weight:600}
+.cta:hover{color:#FFFFFF;background:#163C3A}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:54px;padding:0 18px;border-radius:16px;font-size:17px;font-weight:600;font-family:inherit;border:0;box-sizing:border-box;cursor:pointer}
+.tabs{position:absolute;left:0;right:0;bottom:0;height:84px;background:rgba(255,255,255,.97);border-top:1px solid #E8ECEB;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:0 6px 30px;box-sizing:border-box}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:13px;font-weight:500;color:#5F666A;text-decoration:none;position:relative;letter-spacing:.01em}
+.tab:hover{color:#16191C}
+.tab.on{color:#077572;font-weight:600}
+.tab.on svg{background:#DCEDE9;border-radius:15px;padding:3px 16px;box-sizing:content-box}
+.badge{position:absolute;top:1px;left:calc(50% + 8px);min-width:17px;height:17px;border-radius:9px;background:#077572;color:#FFFFFF;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;padding:0 5px;box-sizing:border-box;box-shadow:0 0 0 2px #FFFFFF}
+</style>
+</helmet>
+<div style="width: 390px; height: 1000px; position: relative; overflow: hidden; background: #F2F4F3; font-family: Inter, system-ui, sans-serif; color: #16191C; font-feature-settings: 'tnum' 1, 'cv11' 1; -webkit-font-smoothing: antialiased">
+
+  <header style="background: #1C4A47; color: #FFFFFF; padding: 6px 8px 56px 20px; position: relative; overflow: hidden">
+    <svg aria-hidden="true" width="260" height="260" viewBox="0 0 260 260" fill="none" style="position: absolute; right: -96px; top: 60px; opacity: .06"><path d="M130 20 240 230H20z" stroke="#FFFFFF" stroke-width="2"></path><path d="M130 70 205 210H55z" stroke="#FFFFFF" stroke-width="2"></path></svg>
+    <div style="display: flex; align-items: center; justify-content: space-between; height: 52px; position: relative">
+      <div style="display: flex; align-items: baseline; gap: 10px">
+        <img class="wm" src="/_blob/8150cd17908e50b6f4fc7d90effeebd5" alt="NEVORA">
+        <span style="font-size: 15px; color: #A9C9C5">Workforce</span>
+      </div>
+      <div style="display: flex">
+        <button class="ib" aria-label="Search"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m20 20-4.2-4.2"></path></svg></button>
+        <button class="ib" aria-label="Notifications, 2 unread"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"></path><path d="M10 20.5a2 2 0 0 0 4 0"></path></svg><span class="pip"></span></button>
+      </div>
+    </div>
+    <div style="padding: 14px 12px 0 0; position: relative">
+      <div style="display: flex; align-items: center; margin-left: -12px">
+        <button class="ib" aria-label="Previous week" style="width: 36px; color: #A9C9C5"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg></button>
+        <p class="eb">Oct 12 – 18, 2026</p>
+        <button class="ib" aria-label="Next week" style="width: 36px; color: #A9C9C5"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></button>
+      </div>
+      <h1 style="margin: 0; font-size: 30px; line-height: 36px; font-weight: 600; letter-spacing: -0.025em">Schedule</h1>
+      <p style="margin: 6px 0 0; font-size: 16px; line-height: 22px; color: #D3E6E3">Main Office is live. West Office is a draft.</p>
+    </div>
+    <div role="tablist" aria-label="Location" style="display: flex; gap: 8px; margin-top: 20px; position: relative">
+      <button class="pill" role="tab" aria-selected="true" style="background: #FFFFFF; color: #1C4A47; font-weight: 600">All</button>
+      <button class="pill" role="tab" aria-selected="false"><span aria-hidden="true" style="width: 7px; height: 7px; border-radius: 4px; background: #7FD6A8"></span>Main Office</button>
+      <button class="pill" role="tab" aria-selected="false"><span aria-hidden="true" style="width: 7px; height: 7px; border-radius: 4px; box-shadow: inset 0 0 0 1.5px #B9D3D0"></span>West Office</button>
+    </div>
+  </header>
+
+  <main style="margin-top: -32px; padding: 0 16px 200px; display: flex; flex-direction: column; gap: 14px; position: relative">
+    <div class="card" role="tablist" aria-label="Day" style="display: flex; justify-content: space-between; padding: 8px">
+      <button class="d" role="tab" aria-selected="false" style="width: 50px"><small>ALL</small><b style="font-size: 15px; font-weight: 600; width: 50px; border-radius: 12px; background: #F2F4F5">Week</b></button>
+      <button class="d" role="tab" aria-selected="false"><small>M</small><b>12</b></button>
+      <button class="d" role="tab" aria-selected="false"><small>T</small><b>13</b></button>
+      <button class="d" role="tab" aria-selected="false"><small>W</small><b>14</b></button>
+      <button class="d" role="tab" aria-selected="false"><small>T</small><b>15</b></button>
+      <button class="d" role="tab" aria-selected="false"><small>F</small><b>16</b></button>
+      <button class="d" role="tab" aria-selected="false"><small>S</small><b>17</b></button>
+      <button class="d" role="tab" aria-selected="true"><small style="color: #1C4A47">S</small><b style="background: #1C4A47; color: #FFFFFF; font-weight: 600">18</b></button>
+    </div>
+
+    <section aria-labelledby="next-h" class="card" style="padding: 18px; display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; align-items: center; gap: 8px">
+        <span class="pl" style="background: #FDF1DC; color: #8A5300">Next up</span>
+        <span style="font-size: 15px; color: #5F666A">West Office</span>
+      </div>
+      <div>
+        <h2 id="next-h" style="margin: 0; font-size: 19px; line-height: 25px; font-weight: 600; letter-spacing: -0.012em">Publish West Office</h2>
+        <p class="s" style="margin-top: 4px">Employees there can’t see this week yet.</p>
+      </div>
+      <a class="cta" href="#">Review and publish<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></a>
+    </section>
+
+    <section aria-labelledby="day-h" class="card">
+      <div class="ch"><h2 id="day-h">Sunday · 3 working</h2><span>24h</span></div>
+      <div class="sf">
+        <div class="tm">7:00 AM<span>3:00 PM</span></div>
+        <span aria-hidden="true" style="width: 3px; border-radius: 2px; background: #077572; flex: none"></span>
+        <div style="flex: 1; min-width: 0"><p class="t">Morgan Rivera</p><p class="s">Customer Support</p></div>
+        <span class="pl" style="background: #FDF1DC; color: #8A5300; align-self: center">56h</span>
+      </div>
+      <div class="sf">
+        <div class="tm">8:00 AM<span>4:00 PM</span></div>
+        <span aria-hidden="true" style="width: 3px; border-radius: 2px; background: #077572; flex: none"></span>
+        <div style="flex: 1; min-width: 0"><p class="t">Alexandra Rivera</p><p class="s">Customer Support</p></div>
+        <span class="pl" style="background: #FDF1DC; color: #8A5300; align-self: center">56h</span>
+      </div>
+      <div class="sf">
+        <div class="tm">8:00 AM<span>4:00 PM</span></div>
+        <span aria-hidden="true" style="width: 3px; border-radius: 2px; background: #077572; flex: none"></span>
+        <div style="flex: 1; min-width: 0"><p class="t">María José Rivera Santiago With A Long Name</p><p class="s">Customer Support</p></div>
+        <span class="pl" style="background: #FDF1DC; color: #8A5300; align-self: center">56h</span>
+      </div>
+      <details style="border-top: 1px solid #E8ECEB">
+        <summary style="list-style: none; display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 18px; cursor: pointer">
+          <span style="flex: 1; font-size: 15px; font-weight: 500; color: #3E4347">7 not working today</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9AA0A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+        </summary>
+      </details>
+    </section>
+    <p style="margin: -2px 4px 0; font-size: 15px; line-height: 19px; color: #5F666A">Amber hours mean over the 40h weekly limit.</p>
+  </main>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 84px; padding: 12px 16px 16px; background: linear-gradient(rgba(242,244,243,0), #F2F4F3 18px); display: flex; gap: 12px">
+    <button class="btn" aria-label="Schedule tools: templates, copy week, rules, print" style="background: #FFFFFF; color: #16191C; box-shadow: inset 0 0 0 1px #D9DDE0; width: 54px; padding: 0">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5.5" cy="12" r="1.7"></circle><circle cx="12" cy="12" r="1.7"></circle><circle cx="18.5" cy="12" r="1.7"></circle></svg></button>
+    <button class="btn" style="background: #FFFFFF; color: #16191C; box-shadow: inset 0 0 0 1px #D9DDE0; flex: 1">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add shift</button>
+  </div>
+
+  <nav class="tabs" aria-label="Main">
+    <a class="tab" href="Home-Manager.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20H4z"></path><path d="M10 20v-5h4v5"></path></svg>Home</a>
+    <a class="tab on" href="Schedule.dc.html" aria-current="page"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.8 2.5a.9.9 0 0 1 .9.9v.9h6.6v-.9a.9.9 0 1 1 1.8 0v.9h.9A2.5 2.5 0 0 1 20.5 6.8v12.7a2.5 2.5 0 0 1-2.5 2.5H6a2.5 2.5 0 0 1-2.5-2.5V6.8A2.5 2.5 0 0 1 6 4.3h.9v-.9a.9.9 0 0 1 .9-.9zM5.3 10v9.5c0 .4.3.7.7.7h12c.4 0 .7-.3.7-.7V10z"></path></svg>Schedule</a>
+    <a class="tab" href="Inbox.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 13.5 6.5 5h11L20 13.5V19H4z"></path><path d="M4 13.5h4.5l1 2h5l1-2H20"></path></svg>Inbox<span class="badge" aria-label="4 need you">4</span></a>
+    <a class="tab" href="Team.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="3.5"></circle><path d="M3 19c.8-3 3.2-4.5 6-4.5s5.2 1.5 6 4.5"></path><path d="M15.5 5.6a3.5 3.5 0 0 1 0 6.8M17.5 14.8c1.7.6 2.9 2 3.5 4.2"></path></svg>Team</a>
+    <a class="tab" href="More-Manager.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5.5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18.5" cy="12" r="1.6"></circle></svg>More</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

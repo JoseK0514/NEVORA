@@ -1,0 +1,31 @@
+/* Mock-only additions; on build these move into src/app/login/auth-signature.css. */
+.ap .act-lead { margin-top: 12px; font: 400 1.0625rem/1.5625rem var(--sys); letter-spacing: -.2px; color: var(--ink-2); }
+.ap .ap-eyebrow + .ap-title { margin-top: 18px; }
+.ap .act-invite { display: flex; align-items: center; gap: 14px; margin-top: 24px; padding: 14px 16px; border-radius: 16px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3DFD8, 0 12px 26px -22px rgba(13,54,52,.35); }
+.ap .act-invite__tile { display: grid; place-items: center; width: 44px; height: 44px; flex: none; border-radius: 13px; background: #E3F0EC; color: #0D3634; }
+.ap .act-invite__text { display: grid; gap: 1px; flex: 1; min-width: 0; }
+.ap .act-invite__text b { font: 600 .9375rem/1.3 var(--sys); color: var(--ink); }
+.ap .act-invite__text small { font: 400 .875rem/1.35 var(--sys); color: var(--ink-2); }
+.ap .act-invite__ok { flex: none; color: #0B6E69; }
+.ap .act-spin { width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid #C8DCD6; border-top-color: #0D3634; animation: actSpin .9s linear infinite; }
+@keyframes actSpin { to { transform: rotate(360deg); } }
+.ap .act-form { margin-top: 24px; }
+.ap .ap-field[data-invalid] .ap-box { border-color: #A43836; box-shadow: 0 0 0 1px #A43836; }
+.ap .act-state { margin-top: 28px; padding: 22px 22px 24px; border-radius: 18px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3DFD8, 0 14px 30px -24px rgba(13,54,52,.32); }
+.ap .act-state__orb { display: grid; place-items: center; width: 56px; height: 56px; margin-bottom: 16px; border-radius: 50%; background: #E3F0EC; color: #0D3634; }
+.ap .act-state[data-tone=warn] .act-state__orb { background: #FBEFDC; color: #8A5208; }
+.ap .act-state h2 { font: 500 1.125rem/1.4 var(--sys); letter-spacing: -.2px; color: var(--ink); }
+.ap .act-state p { margin-top: 8px; font: 400 .9375rem/1.5 var(--sys); color: var(--ink-2); }
+.ap .act-signin { margin-top: 20px; width: 100%; }
+.ap .act-links { margin-top: 20px; }
+.ap .act-seal { display: grid; place-items: center; width: 76px; height: 76px; margin: 10px 0 30px 10px; border-radius: 50%; background: #0D3634; color: #FFFFFF; box-shadow: 0 0 0 10px #E2F1ED; }
+.ap .act-id { margin-top: 28px; padding: 16px 18px 18px; border-radius: 18px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3DFD8, 0 14px 30px -24px rgba(13,54,52,.32); }
+.ap .act-id__label { display: block; font: 600 .75rem/1.3 var(--sys); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+.ap .act-id__row { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.ap .act-id__value { flex: 1; min-width: 0; height: 52px; padding: 0; border: 0; background: transparent; font: 300 2.25rem/1 var(--sys); letter-spacing: .02em; color: var(--ink); font-variant-numeric: tabular-nums; outline: none; }
+.ap .act-id__copy { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border: 0; border-radius: 999px; background: #E3F0EC; color: #0A5753; font: 600 .875rem/1 var(--sys); cursor: pointer; }
+.ap .act-go { margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-decoration: none; }
+@media (max-width: 767px) { .ap .act-lead { font-size: 1rem; } .ap .act-id__value { font-size: 2rem; } }
+.ap .ap-back + .ap-eyebrow { margin-top: 28px; }
+.ap .act-links .ap-link { display: inline-flex; align-items: center; min-height: 44px; }
+.ap .act-state + .act-signin { margin-top: 16px; }

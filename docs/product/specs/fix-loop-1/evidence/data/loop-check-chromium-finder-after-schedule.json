@@ -1,0 +1,44 @@
+[
+ {
+  "id": "L9 390: field border teal while the input has focus",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "border": "rgb(7, 117, 114)",
+   "shadow": "rgb(7, 117, 114) 0px 0px 0px 1px",
+   "active": "INPUT"
+  }
+ },
+ {
+  "id": "L9 390: Tab to Clear: field border not teal, Clear ring 2px at -2px inside its 44px target",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "inHeader": true,
+   "name": "Clear search",
+   "focusVisible": true,
+   "outline": "solid 2px rgb(7, 117, 114)",
+   "offset": "-2px",
+   "box": {
+    "w": 44,
+    "h": 44
+   },
+   "fieldBorder": "rgba(0, 0, 0, 0)",
+   "fieldShadow": "none",
+   "accent": "rgb(7, 117, 114)"
+  }
+ },
+ {
+  "id": "L11 390: a real Tab press puts a visible (accent) ring on Close",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "inHeader": true,
+   "name": "Close search",
+   "text": "Close",
+   "focusVisible": true,
+   "outline": "solid 2px rgb(7, 117, 114)",
+   "offset": "2px"
+  }
+ }
+]

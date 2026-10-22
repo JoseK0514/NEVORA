@@ -160,6 +160,12 @@ it('counts Need review as the Inbox does, names the reason on the row and keeps 
  expect(rendered).not.toMatch(/Approve timecard|Finalize period/);
  expect(rendered).not.toContain('Each card commits separately');
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').disabled).toBe(true);
+ // UI-9: the two people with no time yet share one row, the Role column shows because a punch names one, and the row opens in place.
+ expect(rendered).toContain('2 people with no time yet');
+ expect(rendered).toContain('>Role</th>');
+ expect(rendered).not.toContain('Select PRIVATE E2');
+ (control(n=>n.type==='button'&&n.props.className==='cm-tc-idle__open').onClick as ()=>void)();
+ expect(html()).not.toContain('people with no time yet');
  check('Select PRIVATE E2');click('Review selected timecards');
  expect(html()).toContain('Each card commits separately; a stopped set leaves remaining cards unsubmitted. Approval never automatically finalizes time.');
  expect(html()).toContain('I reviewed this exact selected set and its recorded time for approval.');
@@ -168,6 +174,9 @@ it('counts Need review as the Inbox does, names the reason on the row and keeps 
 it('approves from the clean detail sheet with the exact current revision and clears its private content on blur',async()=>{
  transport('unknown');await mount();
  expect(html()).not.toContain('Approve timecard');
+ // UI-9: no punch names a role, so the Role column goes; no one has time yet, so nothing folds.
+ expect(html()).not.toContain('>Role</th>');
+ expect(html()).not.toContain('people with no time yet');
  const person=control(n=>n.type==='button'&&n.props.className==='cm-tc-person');
  (person.onClick as ()=>void)();
  expect(html()).toContain('Approve timecard');

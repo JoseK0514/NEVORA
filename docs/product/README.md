@@ -71,8 +71,20 @@ in [TEAM-RULES.md](TEAM-RULES.md).
     the end of each `spec.md`);
   - the D4 ring is the first desktop item next cycle;
   - the sticky save bar is its own item.
-- Next: apply the review's required changes, then the UI Engineer builds in a
-  worktree:
-  - run 1: phone search, the setup card, and polish without phones;
-  - run 2: foundations.
-- Then design review and Checkpoint 3.
+- Build (UI Engineer, in worktrees): run 1 (phone search, the setup card,
+  polish A1, A2, B1, B2 and C1) and run 2 (foundations). Each has a
+  `build-report.md` in its spec folder.
+- Review: [build-review-cycle1-ui.md](build-review-cycle1-ui.md),
+  [build-review-cycle1-ux.md](build-review-cycle1-ux.md) and the Product
+  Designer's sign-off [build-review-cycle1.md](build-review-cycle1.md)
+  (search, setup card and polish 15/16; foundations 13/16). One fix loop:
+  [specs/fix-loop-1/build-report.md](specs/fix-loop-1/build-report.md).
+  Eight items passed; two (Reports alignment and the desktop setup card
+  padding) became follow-ups.
+- **Checkpoint 3 approved (2026-10-17):** fix 9 (finder focus rings) and fix
+  10 (logo chip 18px from the wordmark) kept. Committed on
+  `NEVORA-UI-READINESS` as 3d945d5 (code) and 18dd36a (team docs), not
+  pushed. D5 amended to one 44px phone button height.
+- Still open: Jose's device pass (A3 Back matrix, iOS swipe-back, the Android
+  tap-outside crash, C2 shortcuts, VoiceOver), about 45 minutes, before any
+  release. Follow-ups are listed in `build-review-cycle1.md`.

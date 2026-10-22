@@ -1,0 +1,2540 @@
+[
+ {
+  "view": "owner-_app",
+  "path": "/app",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_inbox",
+  "path": "/app/inbox",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": true,
+  "documentWidth": 399,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": false
+ },
+ {
+  "view": "owner-_app_schedule",
+  "path": "/app/schedule",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_schedule_new",
+  "path": "/app/schedule/new",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_schedule_coverage",
+  "path": "/app/schedule/coverage",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_schedule_templates",
+  "path": "/app/schedule/templates",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_schedule_settings",
+  "path": "/app/schedule/settings",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_availability",
+  "path": "/app/availability",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": true,
+  "documentWidth": 430,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": false
+ },
+ {
+  "view": "owner-_app_exchange",
+  "path": "/app/exchange",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_requests",
+  "path": "/app/requests",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_updates",
+  "path": "/app/updates",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_updates_compose",
+  "path": "/app/updates/compose",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_employees",
+  "path": "/app/employees",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_employees_new",
+  "path": "/app/employees/new",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_employees_AUDIT_E",
+  "path": "/app/employees/AUDIT-E",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_timecards",
+  "path": "/app/timecards",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_reports",
+  "path": "/app/reports",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_payroll_export",
+  "path": "/app/payroll-export",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [
+   "section.payroll-export-module__P3R5jq__card.payroll-export-module__P3R5jq__employeeCard \"Choose finalized employeesOct 11, 2026 –\" 368/356 x 3483/3483"
+  ],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": false
+ },
+ {
+  "view": "owner-_app_notifications",
+  "path": "/app/notifications",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_clocker_recovery",
+  "path": "/app/clocker-recovery",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_account_recovery",
+  "path": "/app/account-recovery",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_settings",
+  "path": "/app/settings",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_settings_workspace",
+  "path": "/app/settings/workspace",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_settings_locations",
+  "path": "/app/settings/locations",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_settings_positions",
+  "path": "/app/settings/positions",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [
+   "section.positions-catalog \"Position catalogSelect a position to edi\" 407/358 x 935/935"
+  ],
+  "newlyPastEdge": [
+   "button \"Inactive0\" right 423"
+  ],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": false
+ },
+ {
+  "view": "owner-_app_settings_breaks",
+  "path": "/app/settings/breaks",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [
+   "section.clocker-break-types-module__uIqK2a__catalog \"Configured break types\" 421/356 x 623/623"
+  ],
+  "newlyPastEdge": [
+   "button \"Archived0\" right 438"
+  ],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": false
+ },
+ {
+  "view": "owner-_app_settings_clocker",
+  "path": "/app/settings/clocker",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 391,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_settings_company_policies",
+  "path": "/app/settings/company-policies",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "owner-_app_settings_branding",
+  "path": "/app/settings/branding",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": true,
+  "documentWidth": 505,
+  "newlyClipped": [],
+  "newlyPastEdge": [
+   "th \"Needs\" right 432",
+   "span.brand-check \"4.5:1, passes\" right 424",
+   "span.brand-check \"4.5:1, passes\" right 424",
+   "span.brand-check \"4.5:1, passes\" right 424",
+   "span.brand-check \"4.5:1, passes\" right 424",
+   "span.brand-check \"4.5:1, passes\" right 424",
+   "span.brand-check \"4.5:1, passes\" right 424",
+   "span.brand-check \"7:1, passes\" right 397",
+   "span.brand-check \"4.5:1, passes\" right 424",
+   "span.brand-check \"3:1, passes\" right 397",
+   "span.brand-check \"3:1, passes\" right 397",
+   "button \"Clocker\" right 502",
+   "span \"More\" right 400",
+   "p.brand-preview-note \"The header, buttons and links follow you\" right 505"
+  ],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": false
+ },
+ {
+  "view": "owner-_app_settings_features",
+  "path": "/app/settings/features",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": true,
+  "documentWidth": 403,
+  "newlyClipped": [],
+  "newlyPastEdge": [
+   "span.features-switch-label \"On\" right 399",
+   "span.features-switch-label \"On\" right 399",
+   "span.features-switch-label \"On\" right 399",
+   "span.features-switch-label \"On\" right 399",
+   "span.features-switch-label \"On\" right 399"
+  ],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": false
+ },
+ {
+  "view": "owner-_app_profile",
+  "path": "/app/profile",
+  "role": "owner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "manager-_app",
+  "path": "/app",
+  "role": "manager",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "manager-_app_schedule",
+  "path": "/app/schedule",
+  "role": "manager",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "manager-_app_timecards",
+  "path": "/app/timecards",
+  "role": "manager",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "manager-_app_inbox",
+  "path": "/app/inbox",
+  "role": "manager",
+  "rootFont": "32px",
+  "sidewaysScroll": true,
+  "documentWidth": 399,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": false
+ },
+ {
+  "view": "employee-_app",
+  "path": "/app",
+  "role": "employee",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Requests",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Pay",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "employee-_app_schedule",
+  "path": "/app/schedule",
+  "role": "employee",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Requests",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Pay",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "employee-_app_my_time",
+  "path": "/app/my-time",
+  "role": "employee",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Requests",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Pay",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "employee-_app_requests_hub",
+  "path": "/app/requests/hub",
+  "role": "employee",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Requests",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Pay",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "employee-_app_requests",
+  "path": "/app/requests",
+  "role": "employee",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Requests",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Pay",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "employee-_app_availability",
+  "path": "/app/availability",
+  "role": "employee",
+  "rootFont": "32px",
+  "sidewaysScroll": true,
+  "documentWidth": 433,
+  "newlyClipped": [],
+  "newlyPastEdge": [
+   "span \"Unavailable\" right 433",
+   "span \"Unavailable\" right 433",
+   "span \"Unavailable\" right 433",
+   "span \"Unavailable\" right 433",
+   "span \"Unavailable\" right 433",
+   "span \"Unavailable\" right 433",
+   "span \"Unavailable\" right 433"
+  ],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Requests",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Pay",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": false
+ },
+ {
+  "view": "employee-_app_updates",
+  "path": "/app/updates",
+  "role": "employee",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Requests",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Pay",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "employee-_app_notifications",
+  "path": "/app/notifications",
+  "role": "employee",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Requests",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Pay",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "employee-_app_profile",
+  "path": "/app/profile",
+  "role": "employee",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Requests",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Pay",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "employee-_app_exchange_swap",
+  "path": "/app/exchange/swap",
+  "role": "employee",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Requests",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Pay",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "employee-_app_exchange_callout",
+  "path": "/app/exchange/callout",
+  "role": "employee",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Requests",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Pay",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "employee-_app_my_pay",
+  "path": "/app/my-pay",
+  "role": "employee",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Requests",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Pay",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "employee-_app_timecards",
+  "path": "/app/timecards",
+  "role": "employee",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Requests",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Pay",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "payrollOwner-_app_payroll",
+  "path": "/app/payroll",
+  "role": "payrollOwner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "payrollOwner-_app_settings_payroll",
+  "path": "/app/settings/payroll",
+  "role": "payrollOwner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ },
+ {
+  "view": "payrollOwner-_app_my_pay",
+  "path": "/app/my-pay",
+  "role": "payrollOwner",
+  "rootFont": "32px",
+  "sidewaysScroll": false,
+  "documentWidth": 390,
+  "newlyClipped": [],
+  "newlyPastEdge": [],
+  "small": [],
+  "overlaps": [],
+  "smallAtDefault": [],
+  "overlapsAtDefault": [],
+  "tabs": [
+   {
+    "text": "Home",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Schedule",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Inbox",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "Team",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   },
+   {
+    "text": "More",
+    "fontSize": "13px",
+    "lines": 1,
+    "overflow": false
+   }
+  ],
+  "focusHidden": [],
+  "focusNoRing": [],
+  "pass": true
+ }
+]

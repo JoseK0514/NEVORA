@@ -1,0 +1,11 @@
+{"total":1378,"allowed":0,"pagesWithDiff":9,"byProp":{"height":87,"y":1285,"gap":6},"missingInAfter":[]}
+size employee-320-_app_timecards.png 320x1259 → 320x1251
+size employee-375-_app_timecards.png 375x1054 → 375x1050
+size employee-390-_app_timecards.png 390x1054 → 390x1050
+size owner-320-_app_employees_new.png 320x3013 → 320x3017
+size owner-320-_app_reports.png 320x7945 → 320x7949
+size owner-375-_app_employees_new.png 375x2729 → 375x2733
+size owner-375-_app_reports.png 375x6973 → 375x6977
+size owner-390-_app_employees_new.png 390x2705 → 390x2709
+size owner-390-_app_reports.png 390x6862 → 390x6866
+pixel pages differing 9

@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "priorDevelopment": "f27216dfff8f210ab92747ce47c8dd15a4cce11c",
+  "codeCandidate": "c9a58c333116e7e7b986de8d50b5df6af9d40724",
+  "codeTree": "cada58a8e5ea1d738e5d38c3bbed1e523e39b974",
+  "build": {
+    "command": "npm run build",
+    "exitCode": 0,
+    "sourceUnchanged": true,
+    "node": "v24.19.0",
+    "completedAt": "2026-10-22T03:41:44.428Z",
+    "inputCount": 1812,
+    "productionCredentialsProvided": false,
+    "deployed": false
+  },
+  "unit": {
+    "passed": 9306,
+    "failed": 0,
+    "existingSkipped": 801,
+    "executionStartedAtCommit": "b1a00437",
+    "relationToCodeCandidate": "Only the explicitly excluded browser-integration driver changed after this run started; application logic and executed unit inputs are unchanged."
+  },
+  "browser": {
+    "complete": true,
+    "scenarioRecords": 49,
+    "runtimeErrors": 0,
+    "engines": [
+      "chromium",
+      "webkit"
+    ],
+    "roles": [
+      "OWNER",
+      "MANAGER"
+    ],
+    "widths": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "runtime": "Next development with owned PostgreSQL transport",
+    "contactCase": "Controlled Today response; real SQL directory, sessions and current-authority checks. Expiry, fresh-row stale-contact withholding, blur and fresh recovery verified.",
+    "navigation": "Private readers receive pagehide and settle before full-document navigation; every runtime error remains fatal."
+  },
+  "sourceInventory": {
+    "classifiedHeads": 49,
+    "passed": true,
+    "regressionsPassed": 6
+  },
+  "codeReview": {
+    "status": "APPROVE",
+    "introducedBlockers": 0,
+    "applicationRevisionReviewed": "5aac289733ad93cdffb72f7401487bcb9ec5f25b",
+    "laterDelta": "Browser-driver changes only; no independent release certification."
+  },
+  "secretScan": {
+    "exitCode": 1,
+    "genericMatches": 4,
+    "classification": "Four archived markup identifiers exactly generated from guest tag, device and route; no ignore rules added."
+  },
+  "cleanup": {
+    "attemptsClosed": 7,
+    "sourceAndMirrorVerified": true,
+    "knownNextPidsAbsent": true,
+    "ownedPostgresStopped": true
+  },
+  "rawReceiptSha256": {
+    "unit-final.json": "47b8d8b54b342748d9737b54b3e06eaeadd7ecea5b88094a4ccba9ebed6d4f8f",
+    "build/build-receipt.json": "60d388461601cd9391dd03701f648927362786cd399a8a53a0eee471a3274dc9",
+    "browser-07/quick-wins/report.json": "f674aab42713164eb6861a08ce78b221222425cd5811f1e2ac60162d0cc5e3b0",
+    "secret-scan-triage.json": "f4465adca8d7a539729a216625707eb89d4b5d5611d03656c2ebcaec773ba965"
+  },
+  "applicationInputManifestSha256": "59ad14d0068e6a58681fda63bb4432bcfd898e82ac2b7de394d46dc6824bcae2",
+  "releaseAcceptance": "HOLD: existing R1, hosted CI, restore/hosted/device and independent acceptance gates remain open."
+}

@@ -79,7 +79,7 @@ Applies inside the phone query to `.button.primary`, `.button.secondary`, `.pw-b
 | Property | Value |
 |---|---|
 | Corners | `var(--g-control-radius)` (8px) |
-| Height | `min-height: 44px`; 48px for a full-width primary (sticky confirms, sheet actions). The offline page's "Try again" already matches |
+| Height | `min-height: 44px` for every phone button. 48px only for named sticky confirms and sheet actions, set by class; list rows stay 48px (D5, amended at Checkpoint 3). The offline page's "Try again" already matches |
 | Padding | 10px 16px |
 | Label | 600, 1.0625rem (17px), line-height 1.25, `text-wrap: balance`, centred |
 | Icon | 20px Phosphor, 8px gap |
@@ -103,7 +103,7 @@ File: `src/components/timecards.tsx:150-170`.
 
 | Width | Layout |
 |---|---|
-| 390 and 320, default root | Period start and end fields side by side (inputs 16px or larger). "View period" (primary) and "Refresh" (secondary) side by side, D4 shape, 44px, one line each |
+| 390 and 320, default root | Manager: period start and end fields side by side (inputs 16px or larger); "View period" (primary) and "Refresh" (secondary) side by side, D4 shape, 44px, one line each. Employee at 390: the same. Employee at 320: the fields and both buttons stack, full width, 44px, one line each; it stacked before this build too (corrected after Checkpoint 3, `build-run-2/day-picker/timecards-employee-320.png`) |
 | 390, 200% root | Fields stack, label above field. Buttons stack, primary first, full width. Summary figures stack one per row |
 | 1440 | Unchanged |
 
@@ -125,8 +125,8 @@ Files: `src/components/manager-weekly-roster.tsx:114-118`; `src/app/app/schedule
 | Rule set | What it sets |
 |---|---|
 | `manager-schedule.css:142-143` | Flex row, 3px gap, 10px side padding |
-| `mobile-workforce.css:124-129` (inside `max-width: 760px`, `[data-mobile-workforce="true"]`) | Flex, nowrap, `overflow-x: auto`, 8px gap; segments `flex: 0 0 44px`, `min-height: 60px`, 8px padding, `--mobile-control-radius` (14px); "Full week" 72px; weekday and date both `--mobile-caption` (15px); chosen: `--mobile-selected` (#EDF4FF) wash with `--mobile-accent` teal text |
-| `portal-design-system.css:95-97` (`max-width: 600px`) | Four-column grid, 4px gap, `overflow: visible`; segments `min-height: 52px`, padding 8px 4px |
+| `mobile-workforce.css:124-129` (inside `max-width: 760px`, `[data-mobile-workforce="true"]`) | Flex, nowrap, `overflow-x: auto`, 8px gap; segments `flex: 0 0 44px`, `min-height: 60px`, 8px padding, `--mobile-control-radius` (the portal sets it to 8px, so it computes to 8px); "Full week" 72px; weekday and date both `--mobile-caption` (15px); chosen: `--mobile-selected` (#EDF4FF) wash with `--mobile-accent` teal text |
+| `portal-design-system.css:95-97` (`max-width: 600px`) | Four-column grid, 4px gap, `overflow: visible`; segments `min-height: 52px`, padding 8px 4px. **Measured in slice 0:** the rule applies at 320 and 390, but only its `grid-template-columns` survives, and that does nothing under flex; the rest loses to mobile-workforce. Removed in step B of slice 6 |
 
 The mobile-workforce selectors carry more weight than the other two, and `before-schedule-daypicker-390.png` shows a scrolling row, so I expect the mobile-workforce rules to win. That is a reading of the code, not a measurement. Slice 0 records the computed layout, font sizes, padding and chosen colours at 320 and 390 and states which rule wins (check 0.5). Then:
 
@@ -141,7 +141,7 @@ The mobile-workforce selectors carry more weight than the other two, and `before
 | Unchosen | Transparent; `--g-muted` 500 (5.64:1 on the track) |
 | Chosen | White fill; `--g-ink` 600 on both lines (17.04:1); shadow `0 1px 3px rgb(17 24 39 / .1)`; plus `box-shadow: inset 0 0 0 1px var(--g-muted)`. The ring is the cue that meets 3:1: 5.64:1 against the track, 6.05:1 against the white fill |
 | Today | Date in ink 600 plus a 4px `--g-ink` dot 5px above the segment's bottom edge. Kept when chosen. `aria-label` keeps ", today" |
-| Phone sizes | The sizes slice 0 measures, converted to rem in step A with no size change in step B. From the code, both lines compute to 15px (`--mobile-caption`, `mobile-workforce.css:128`), so both become 0.9375rem. If slice 0 measures something else, this row takes the measured values before slice 6 starts |
+| Phone sizes | Measured in slice 0 at 320 and 390 (`build-report.md`, slice 0 notes): `display: flex` from `mobile-workforce.css:124`; 8px gap; padding 0 16px 16px; sideways scroll (scroll width 468px against 288px at 320 and 358px at 390); "Full week" 72 by 66px; days 44 by 66px with 8px padding; corners already 8px; weekday and date both 15px, so both become 0.9375rem in step A with no size change in step B |
 | Desktop sizes | Unchanged px |
 
 | State | Look |
@@ -240,7 +240,7 @@ Release notes must say that most iPhone users won't see text grow until the shel
 | D2 | Today marker: UX V3 suggested a dot on the picker and muted "Today" text in the grid header; UI chose ink 600 for "Today" | Dot on the picker; "Today" in ink 600 in the grid header (J1, approved) | Removing the teal disc removes a cue. Ink 600 text plus the bold date keeps "today" findable; both colours pass contrast |
 | D3 | Tab label cap: visual.md says 13px; the mock-up table says 14px | 13px, `min(0.75rem, 13px)` | 14px overflows "Schedule" at 320 (63.4px in a 62.4px column) |
 | D4 | "Close actions" pill (PRD Q5) | Keeps the pill | Sheet dismiss control, HIG sheet shape; UX, UI and PM agree |
-| D5 | Phone button height (PRD Q6) | 44px minimum; 48px for full-width primaries; menu rows stay 48px | Matches D4; rows are rows (flows F8) |
+| D5 | Phone button height (PRD Q6) | 44px for every phone button; 48px only for named sticky confirms and sheet actions, set by class; menu rows stay 48px. **Amended at Checkpoint 3 (2026-10-17):** the 48px full-width rule never applied (build review UI-F2) and was deleted in fix loop 1 | Matches D4's one size; a CSS rule can't tell a full-width primary from a short one; rows are rows (flows F8) |
 | D6 | Manager Timecards visible text "Refresh timecards" → "Refresh" on phones | Accept as a step B intended change | The employee path already ships it; the accessible name and scripts stay exact |
 | D7 | Timecards summary figures as one wrapped sentence (flows 2.1, F5) | Not this initiative; log for a Timecards pass | Changes markup and reading, beyond type and shape. At a 200% root the figures stack one per row |
 | D8 | "0 selected ›" pill (flows F6) | Log for a Timecards pass | Copy and behaviour, outside this PRD |

@@ -1,0 +1,89 @@
+// QA-only mock v3 (icons and buttons refined) (throwaway preview copy, never committed). States: ready, typing, filled, checking, missing,
+// pending, mismatch, unavailable, unknown, activated. Development's wording; fewer elements; live password checks.
+import { AUTH_COPY } from "@/lib/auth-copy";
+import { AuthShell } from "@/components/auth-premium/auth-shell";
+import { PasswordInput } from "@/components/auth-premium/password-input";
+import { EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr/EnvelopeSimple";
+import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
+import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
+import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { CopySimpleIcon } from "@phosphor-icons/react/dist/ssr/CopySimple";
+import { ShieldWarningIcon } from "@phosphor-icons/react/dist/ssr/ShieldWarning";
+import { CloudSlashIcon } from "@phosphor-icons/react/dist/ssr/CloudSlash";
+import "../../login/auth-premium.css";
+import "../../login/auth-signature.css";
+import "./mock.css";
+
+export const dynamic = "force-dynamic";
+type Check = "idle" | "ok" | "bad";
+
+export default async function Page({ searchParams }: { searchParams: Promise<{ state?: string }> }) {
+  const state = (await searchParams).state ?? "ready";
+  const t = AUTH_COPY.en;
+  const form = ["ready", "typing", "filled", "pending", "mismatch", "unavailable"].includes(state);
+  const pending = state === "pending";
+  const pw = state === "ready" ? "" : state === "typing" ? "horse" : "correct-horse";
+  const confirm = ["ready", "typing"].includes(state) ? "" : state === "mismatch" ? "correct-horsf" : "correct-horse";
+  const length: Check = pw.length === 0 ? "idle" : pw.length >= 8 ? "ok" : "idle";
+  const match: Check = !confirm ? "idle" : confirm === pw ? "ok" : state === "mismatch" ? "bad" : "idle";
+  const rule = (c: Check, text: string) => <li data-state={c}><span className="v2-rule__dot" aria-hidden="true">{c === "ok" ? <CheckIcon size={11} weight="bold" /> : c === "bad" ? <XIcon size={10} weight="bold" /> : null}</span>{text}</li>;
+
+  const verified = state === "checking"
+    ? <p className="v2-status" role="status"><span className="v2-spin" aria-hidden="true" />Opening your invitation…</p>
+    : <p className="v2-status"><span className="v2-badge" aria-hidden="true"><CheckIcon size={11} weight="bold" /></span><span><b>Invitation verified</b><span className="v2-dot">·</span>Northside Services</span></p>;
+
+  const body = state === "activated" ? <div className="v2-done">
+    <span className="v2-seal"><CheckIcon size={38} weight="bold" aria-hidden="true" /></span>
+    <h1 className="ap-title">Account activated</h1>
+    <p className="v2-lead">Keep your Employee ID. You will use it with the password you just created.</p>
+    <div className="v2-id">
+      <label className="v2-id__label" htmlFor="act-id">Employee ID for sign-in</label>
+      <input id="act-id" className="v2-id__value" value="NS-10482" readOnly autoComplete="off" />
+      <button type="button" className="v2-id__copy"><CopySimpleIcon size={17} weight="bold" aria-hidden="true" />Copy ID</button>
+    </div>
+    <a className="ap-primary v2-go" href="/login"><span>Continue to sign in</span><ArrowRightIcon size={18} weight="bold" aria-hidden="true" /></a>
+  </div> : <>
+    {state === "missing" || state === "unknown" ? <span className="v2-note__orb" data-tone={state === "unknown" ? "warn" : undefined}>{state === "unknown" ? <ShieldWarningIcon size={30} weight="duotone" aria-hidden="true" /> : <EnvelopeSimpleIcon size={30} weight="duotone" aria-hidden="true" />}</span> : null}
+    <h1 className="ap-title">Activate account</h1>
+    {state === "missing" || state === "unknown" ? null : verified}
+
+    {state === "checking" ? <div className="v2-card v2-skel" aria-hidden="true"><i /><i /><i /><i /></div> : null}
+
+    {state === "missing" ? <section className="v2-note">
+      <h2>Open the invitation link from your email to activate your account.</h2>
+      <p>If the link cannot be used, ask your Owner for a new invitation. You can sign in if you have already activated.</p>
+    </section> : null}
+    {state === "unknown" ? <section className="v2-note" data-tone="warn" role="alert">
+      <h2>Activation could not be confirmed.</h2>
+      <p>Ask your Owner to confirm your account status and Employee ID. If you know your ID, try signing in before requesting a new invitation. Your account may already be activated.</p>
+    </section> : null}
+
+    {form ? <form className="ap-form v2-form" aria-busy={pending}>
+      <fieldset className="ap-fieldset" disabled={pending}>
+        <div className="v2-card">
+          <div className="ap-field">
+            <label className="ap-label" htmlFor="activation-password">Create password</label>
+            <PasswordInput id="activation-password" name="password" minLength={8} placeholder="Choose your password" autoComplete="new-password" required
+              defaultValue={pw} controls={["activation-password", "activation-confirm-password"]} showLabel="Show passwords" hideLabel="Hide passwords"
+              aria-describedby="activation-rules" />
+          </div>
+          <div className="ap-field" data-invalid={state === "mismatch" ? "" : undefined}>
+            <label className="ap-label" htmlFor="activation-confirm-password">Confirm password</label>
+            <div className="ap-box"><input id="activation-confirm-password" className="ap-input" name="confirmPassword" type="password" minLength={8}
+              placeholder="Re-enter your password" autoComplete="new-password" required defaultValue={confirm}
+              aria-invalid={state === "mismatch" || undefined} aria-describedby="activation-rules" /></div>
+          </div>
+        </div>
+        <ul className="v2-rules" id="activation-rules" aria-live="polite">{rule(length, "At least 8 characters")}{rule(match, state === "mismatch" ? "Enter the same password in both fields." : "Passwords match")}</ul>
+        {state === "unavailable" ? <p className="v2-alert" role="alert"><span className="v2-alert__tile" aria-hidden="true"><CloudSlashIcon size={20} weight="duotone" /></span>Activation is temporarily unavailable. Your invitation was not confirmed. Try again later.</p> : null}
+        <button type="submit" className="ap-primary v2-submit" disabled={pending} aria-busy={pending}>{pending ? <span className="v2-spin v2-spin--light" aria-hidden="true" /> : null}<span>{pending ? "Activating account…" : "Activate account"}</span>{pending ? null : <ArrowRightIcon size={18} weight="bold" aria-hidden="true" />}</button>
+      </fieldset>
+    </form> : null}
+
+    {state === "missing" || state === "unknown" ? <>
+      <a className="ap-secondary v2-go v2-soft" href="/login"><span>Sign in</span></a>
+      {state === "missing" ? <p className="v2-foot">Your workplace must create your employee record and send an invitation to your registered email. No invitation yet? Contact your Owner.</p> : null}
+    </> : state === "checking" ? null : <p className="v2-signin">Already activated? <a className="ap-link" href="/login">Sign in</a></p>}
+  </>;
+  return <AuthShell lang="en" t={t} variant="sub" back={state === "activated" ? undefined : "/login"}>{body}</AuthShell>;
+}

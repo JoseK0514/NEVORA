@@ -21,6 +21,7 @@ import {currentPresentation} from '@/lib/workspace-presentation/current.server';
 import {requestTypeAllowed} from '@/lib/workspace-presentation/modules';
 import {addDays,formatWeekRange,isValidWeekStart,weekStartFor} from '@/lib/date-utils';
 import {redirect} from 'next/navigation';
+import {readNextPay} from './my-pay/next-pay';
 import {retiredViewDestination} from '@/lib/retired-views';
 
 const DASHBOARD_VIEWS: ManagerDashboardView[] = [
@@ -94,6 +95,8 @@ export default async function DashboardPage({
   const {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,daySummaries,hourRows,latestRevision}=dashboardData;
 
   const {modules}=await currentPresentation();
+  // MK1: Home's "Next payday" row, from the date My pay shows (none when pay statements are off or there's no schedule).
+  const nextPay=view==='overview'&&modules.payStatements?await readNextPay(workspace.timeZone):null;
   return (<ManagerCorrectionRecoveryBoundary key={recoveryKey}><ScopedReadFrame observation={source.state==='ready'?source:null}>
     <ManagerDashboard
       role={session.role === "OWNER" ? "OWNER" : "MANAGER"}
@@ -120,6 +123,7 @@ export default async function DashboardPage({
       locations={dashboard.locationReadiness}
       days={daySummaries}
       hours={hourRows}
+      nextPay={nextPay}
       latestRevision={
         latestRevision
           ? {

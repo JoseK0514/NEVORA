@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Desktop Home · Owner</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F2F4F3}
+a{color:#077572;text-decoration:none}a:hover{color:#055C5A}
+.side{flex:0 0 248px;background:#FFFFFF;border-right:1px solid #E6E9E8;padding:20px 14px;box-sizing:border-box;display:flex;flex-direction:column;gap:4px}
+.gl{margin:18px 10px 6px;font-size:14px;font-weight:600;color:#5F666A}
+.nv{display:flex;align-items:center;gap:12px;height:40px;padding:0 12px;border-radius:12px;color:#3E4347;font-size:15px;font-weight:500;text-decoration:none}
+.nv:hover{background:#F2F4F3;color:#16191C}
+.nv svg{flex:none;color:#5F666A}
+.nv.on{background:#DCEDE9;color:#07605F;font-weight:600}
+.nv.on svg{color:#07605F}
+.nv em{font-style:normal;margin-left:auto;min-width:20px;height:20px;border-radius:12px;background:#077572;color:#FFFFFF;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;padding:0 6px;box-sizing:border-box}
+.ib{width:42px;height:42px;display:inline-flex;align-items:center;justify-content:center;border:0;background:rgba(255,255,255,.08);color:#FFFFFF;border-radius:12px;position:relative;padding:0}
+.pip{position:absolute;top:9px;right:9px;width:8px;height:8px;border-radius:4px;background:#F08A6E;box-shadow:0 0 0 2px #1C4A47}
+.card{background:#FFFFFF;border-radius:16px;box-shadow:0 1px 2px rgba(16,40,38,.05),0 8px 24px rgba(16,40,38,.06)}
+.ch{display:flex;justify-content:space-between;align-items:center;padding:18px 20px 6px}
+.ch h2{margin:0;font-size:16px;line-height:22px;font-weight:600;color:#16191C}
+.ch span{font-size:14px;color:#5F666A}
+.ch a{font-size:14px;font-weight:600}
+.li{display:flex;align-items:center;gap:12px;min-height:72px;padding:0 20px;color:#16191C;text-decoration:none;position:relative}
+.li+.li::before{content:"";position:absolute;top:0;left:76px;right:0;height:1px;background:#E8ECEB}
+.li.flat+.li.flat::before{left:20px}
+.li:hover{background:#FAFBFA;color:#16191C}
+.tx{flex:1;min-width:0}
+.t{margin:0;font-size:16px;line-height:22px;font-weight:500}
+.s{margin:2px 0 0;font-size:14px;line-height:20px;color:#5F666A}
+.ic{width:40px;height:40px;border-radius:20px;display:flex;align-items:center;justify-content:center;flex:none;font-size:14px;font-weight:600}
+.chev{flex:none;color:#858B8F}
+.pl{display:inline-flex;align-items:center;height:28px;padding:0 12px;border-radius:999px;font-size:14px;font-weight:500;white-space:nowrap}
+.cell{padding:16px 20px 18px;display:flex;flex-direction:column;gap:10px;color:#16191C}
+.cl{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:500;color:#5F666A}
+.cn{font-size:32px;line-height:34px;font-weight:600;letter-spacing:-.025em}
+.wk{display:flex;flex-direction:column;gap:10px;padding:14px 20px;color:#16191C;text-decoration:none;position:relative}
+.wk+.wk::before{content:"";position:absolute;top:0;left:20px;right:0;height:1px;background:#E8ECEB}
+.bar{height:6px;border-radius:3px;background:#DDE2E1;overflow:hidden}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.span2{grid-column:span 2}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width: 900px){.grid{grid-template-columns:minmax(0,1fr)}.span2{grid-column:auto}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width: 760px){.side{display:none}.srch{min-width:0!important;width:42px;padding:0!important;justify-content:center}.srch b{display:none}.li .pl{display:none}.ch span{display:none}.srchk{display:none}header{padding-left:20px!important;padding-right:20px!important}main{padding-left:16px!important;padding-right:16px!important}}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; display: flex; flex-wrap: wrap; background: #F2F4F3; font-family: Inter, system-ui, sans-serif; color: #16191C; font-feature-settings: 'tnum' 1, 'cv11' 1; -webkit-font-smoothing: antialiased">
+
+  <aside class="side" aria-label="Main navigation">
+    <div style="display: flex; align-items: baseline; gap: 10px; padding: 6px 10px 10px">
+      <img src="/_blob/8150cd17908e50b6f4fc7d90effeebd5" alt="NEVORA" style="height: 13px; width: auto; mix-blend-mode: multiply; display: block">
+      <span style="font-size: 14px; color: #5F666A">Workforce</span>
+    </div>
+    <p class="gl">Plan</p>
+    <a class="nv on" href="Desktop-Home.dc.html" aria-current="page"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.5 10.6 12 3.8l8.5 6.8V20a.8.8 0 0 1-.8.8h-5v-5.6h-5.4v5.6h-5a.8.8 0 0 1-.8-.8z"></path></svg>Home</a>
+    <a class="nv" href="Desktop-Inbox.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 13.5 6.5 5h11L20 13.5V19H4z"></path><path d="M4 13.5h4.5l1 2h5l1-2H20"></path></svg>Inbox<em aria-label="3 need you">3</em></a>
+    <a class="nv" href="Schedule.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.5"></rect><path d="M4 9.5h16M8.5 3v4M15.5 3v4"></path></svg>Schedule</a>
+    <p class="gl">Team</p>
+    <a class="nv" href="Team.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="3.5"></circle><path d="M3 19c.8-3 3.2-4.5 6-4.5s5.2 1.5 6 4.5"></path><path d="M15.5 5.6a3.5 3.5 0 0 1 0 6.8M17.5 14.8c1.7.6 2.9 2 3.5 4.2"></path></svg>Team</a>
+    <a class="nv" href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10v4h3l6 4V6L7 10z"></path><path d="M16.5 9a4 4 0 0 1 0 6"></path></svg>Updates</a>
+    <p class="gl">Time and pay</p>
+    <a class="nv" href="Timecards.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>Timecards</a>
+    <a class="nv" href="Payroll-Owner.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="6" width="17" height="12" rx="2.5"></rect><circle cx="12" cy="12" r="2.5"></circle></svg>Payroll</a>
+    <a class="nv" href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 19V11M10 19V6M15 19v-6M20 19V9"></path></svg>Insights</a>
+    <p class="gl">Company</p>
+    <a class="nv" href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M6 6l1.6 1.6M16.4 16.4 18 18M6 18l1.6-1.6M16.4 7.6 18 6"></path></svg>Settings</a>
+  </aside>
+
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <header style="background: #1C4A47; color: #FFFFFF; padding: 18px 40px 112px; position: relative; overflow: hidden"><svg aria-hidden="true" width="420" height="420" viewBox="0 0 260 260" fill="none" style="position: absolute; right: -80px; top: 10px; opacity: .05; pointer-events: none"><path d="M130 20 240 230H20z" stroke="#FFFFFF" stroke-width="1.5"></path><path d="M130 70 205 210H55z" stroke="#FFFFFF" stroke-width="1.5"></path></svg>
+      <div style="max-width: 1120px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+        <span style="font-size: 14px; color: #B9D3D0">Northside QA Workforce</span>
+        <div style="display: flex; align-items: center; gap: 10px">
+          <button class="srch" aria-label="Search people and pages" style="display: inline-flex; align-items: center; gap: 10px; height: 42px; padding: 0 14px; min-width: 240px; border: 0; border-radius: 12px; background: rgba(255,255,255,.08); color: #B9D3D0; font: inherit; font-size: 14px; cursor: pointer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m20 20-4.2-4.2"></path></svg><b style="font-weight: 400">Search people and pages</b><span class="srchk" style="margin-left: auto; font-size: 14px; padding: 2px 6px; border-radius: 6px; background: rgba(255,255,255,.1)">⌘K</span></button>
+          <button class="ib" aria-label="Notifications, 2 unread"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"></path><path d="M10 20.5a2 2 0 0 0 4 0"></path></svg><span class="pip"></span></button>
+          <button class="ib" aria-label="Account: Fictional Owner" style="background: #FFFFFF; color: #1C4A47; font: inherit; font-size: 14px; font-weight: 600; border-radius: 21px">FO</button>
+        </div>
+      </div>
+      <div style="max-width: 1120px; margin-top: 36px">
+        <p style="margin: 0; font-size: 14px; font-weight: 500; letter-spacing: .02em; color: #A9C9C5; ">Sunday, October 18</p>
+        <h1 style="margin: 4px 0 0; font-size: 36px; line-height: 42px; font-weight: 600; letter-spacing: -0.028em">Good afternoon</h1>
+        <p style="margin: 8px 0 0; font-size: 17px; line-height: 24px; color: #D3E6E3">3 things need you today.</p>
+      </div>
+    </header>
+
+    <main style="margin-top: -72px; padding: 0 40px 48px; position: relative">
+      <div style="max-width: 1120px; display: flex; flex-direction: column; gap: 20px">
+        <section aria-labelledby="today-h" class="card" style="overflow: hidden">
+          <div class="ch" style="padding-bottom: 0"><h2 id="today-h">Today</h2><span>Counts published shifts only · Updated 6:14 PM</span></div>
+          <div class="stats" style="margin-top: 4px">
+            <div class="cell"><span class="cl"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.5"></rect><path d="M4 9.5h16"></path></svg>Scheduled</span><span class="cn">3</span></div>
+            <div class="cell" style="border-left: 1px solid #E8ECEB"><span class="cl"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>Clocked in</span><span class="cn">0</span></div>
+            <div class="cell" style="border-left: 1px solid #E8ECEB"><span class="cl"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 4v8l5 3"></path><path d="M20 12a8 8 0 1 1-3-6.2"></path></svg>Clocked in late</span><span class="cn" style="color: #8A8F94">0</span></div>
+            <a class="cell" href="Desktop-Inbox.dc.html" style="border-left: 1px solid #E8ECEB; background: #FDF3F0"><span class="cl" style="color: #B4402A"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5v5M12 16v.4"></path></svg>Not in yet</span><span class="cn" style="color: #B4402A">2</span></a>
+          </div>
+        </section>
+
+        <div class="grid">
+          <div class="span2" style="display: flex; flex-direction: column; gap: 20px; min-width: 0">
+            <section aria-labelledby="next-h" class="card" style="padding: 22px 24px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap">
+              <span class="ic" style="width: 52px; height: 52px; border-radius: 26px; background: #FBEAE6; color: #C2412A"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg></span>
+              <div style="flex: 1; min-width: 220px">
+                <span class="pl" style="background: #FBEAE6; color: #A3361F; height: 24px">Next up</span>
+                <h2 id="next-h" style="margin: 8px 0 0; font-size: 20px; line-height: 26px; font-weight: 600; letter-spacing: -0.012em">2 people haven’t clocked in</h2>
+                <p class="s" style="margin-top: 4px">Main Office shifts started at 8:00 AM.</p>
+              </div>
+              <a href="Desktop-Inbox.dc.html" style="display: inline-flex; align-items: center; gap: 8px; height: 46px; padding: 0 20px; border-radius: 12px; background: #077572; color: #FFFFFF; font-size: 15px; font-weight: 600">See who’s missing<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></a>
+            </section>
+            <section aria-labelledby="also-h" class="card">
+              <div class="ch"><h2 id="also-h">Also waiting</h2><a href="Desktop-Inbox.dc.html">Open Inbox</a></div>
+              <a class="li" href="Desktop-Inbox.dc.html">
+                <span class="ic" style="background: #E7F3F2; color: #07605F">AR</span>
+                <span class="tx"><p class="t">Time off for Alexandra</p><p class="s">Wed, Oct 28 – Thu, Oct 29 · 2 days</p></span>
+                <span class="pl" style="background: #E7F3F2; color: #07605F">Review</span>
+              </a>
+              <a class="li" href="Payroll-Owner.dc.html">
+                <span class="ic" style="background: #FBF1DF; color: #8A5300"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="6" width="17" height="12" rx="2.5"></rect><circle cx="12" cy="12" r="2.5"></circle></svg></span>
+                <span class="tx"><p class="t">Payroll Sep 21 – 27</p><p class="s">Payday Tue, Sep 29 · revision 2</p></span>
+                <span class="pl" style="background: #FDF1DC; color: #8A5300">Approve</span>
+              </a>
+            </section>
+          </div>
+
+          <section aria-labelledby="week-h" class="card" style="align-self: start">
+            <div class="ch"><h2 id="week-h">This week</h2><span>Oct 12 – 18</span></div>
+            <a class="wk" href="Schedule.dc.html">
+              <span style="display: flex; justify-content: space-between; align-items: baseline"><span class="t">Schedule</span><span style="font-size: 14px; font-weight: 600; color: #8A5300">1 of 2 live</span></span>
+              <span class="bar" aria-hidden="true"><i style="display: block; width: 50%; height: 100%; background: #E6A23C; border-radius: 3px"></i></span>
+              <span class="s" style="margin: 0">West Office is still a draft</span>
+            </a>
+            <a class="wk" href="Team.dc.html">
+              <span style="display: flex; justify-content: space-between; align-items: baseline"><span class="t">Availability</span><span style="font-size: 14px; font-weight: 600; color: #4A4F55">0 of 5 sent</span></span>
+              <span class="bar" aria-hidden="true"><i style="display: block; width: 0%; height: 100%; background: #077572; border-radius: 3px"></i></span>
+              <span class="s" style="margin: 0">Not sent for next week yet</span>
+            </a>
+            <a class="wk" href="Team.dc.html" style="padding-bottom: 20px">
+              <span style="display: flex; justify-content: space-between; align-items: baseline"><span class="t">Setup</span><span style="font-size: 14px; font-weight: 600; color: #07605F">1 of 2 done</span></span>
+              <span class="bar" aria-hidden="true"><i style="display: block; width: 50%; height: 100%; background: #077572; border-radius: 3px"></i></span>
+              <span class="s" style="margin: 0">Next: weekly hour targets</span>
+            </a>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1584 @@
+[
+ {
+  "id": "L1a owner 320x700 root100: band ends 112px below the frame top at the default size",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "bandHeight": 112,
+   "headingBottom": 65.6875,
+   "borderImage": {
+    "source": "none",
+    "outset": "0",
+    "slice": "100%",
+    "width": "1"
+   }
+  }
+ },
+ {
+  "id": "L1b owner 320x700 root200: every heading line on the band",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "lines": [
+    [
+     "H1",
+     77,
+     136,
+     [
+      28,
+      74,
+      71
+     ]
+    ],
+    [
+     "P",
+     146,
+     182,
+     [
+      28,
+      74,
+      71
+     ]
+    ],
+    [
+     "P",
+     191,
+     227,
+     [
+      255,
+      255,
+      255
+     ]
+    ],
+    [
+     "P",
+     236,
+     272,
+     [
+      255,
+      255,
+      255
+     ]
+    ]
+   ],
+   "band": [
+    28,
+    74,
+    71
+   ]
+  }
+ },
+ {
+  "id": "L1b owner 320x700 root200: at least 22px of band under the last line",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "last": 272,
+   "under": 0,
+   "bandEnd": 112
+  }
+ },
+ {
+  "id": "L1b owner 320x700 root200: no sideways scroll",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L1a owner 375x667 root100: band ends 112px below the frame top at the default size",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "bandHeight": 112,
+   "headingBottom": 65.6875,
+   "borderImage": {
+    "source": "none",
+    "outset": "0",
+    "slice": "100%",
+    "width": "1"
+   }
+  }
+ },
+ {
+  "id": "L1b owner 375x667 root200: every heading line on the band",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "lines": [
+    [
+     "H1",
+     77,
+     136,
+     [
+      28,
+      74,
+      71
+     ]
+    ],
+    [
+     "P",
+     146,
+     182,
+     [
+      28,
+      74,
+      71
+     ]
+    ],
+    [
+     "P",
+     191,
+     227,
+     [
+      255,
+      255,
+      255
+     ]
+    ]
+   ],
+   "band": [
+    28,
+    74,
+    71
+   ]
+  }
+ },
+ {
+  "id": "L1b owner 375x667 root200: at least 22px of band under the last line",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "last": 227,
+   "under": 0,
+   "bandEnd": 112
+  }
+ },
+ {
+  "id": "L1b owner 375x667 root200: no sideways scroll",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L1a owner 390x844 root100: band ends 112px below the frame top at the default size",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "bandHeight": 112,
+   "headingBottom": 65.6875,
+   "borderImage": {
+    "source": "none",
+    "outset": "0",
+    "slice": "100%",
+    "width": "1"
+   }
+  }
+ },
+ {
+  "id": "L1b owner 390x844 root200: every heading line on the band",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "lines": [
+    [
+     "H1",
+     77,
+     136,
+     [
+      28,
+      74,
+      71
+     ]
+    ],
+    [
+     "P",
+     146,
+     182,
+     [
+      28,
+      74,
+      71
+     ]
+    ],
+    [
+     "P",
+     191,
+     227,
+     [
+      255,
+      255,
+      255
+     ]
+    ]
+   ],
+   "band": [
+    28,
+    74,
+    71
+   ]
+  }
+ },
+ {
+  "id": "L1b owner 390x844 root200: at least 22px of band under the last line",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "last": 227,
+   "under": 0,
+   "bandEnd": 112
+  }
+ },
+ {
+  "id": "L1b owner 390x844 root200: no sideways scroll",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L1a manager 320x700 root100: band ends 112px below the frame top at the default size",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "bandHeight": 112,
+   "headingBottom": 65.6875,
+   "borderImage": {
+    "source": "none",
+    "outset": "0",
+    "slice": "100%",
+    "width": "1"
+   }
+  }
+ },
+ {
+  "id": "L1b manager 320x700 root200: every heading line on the band",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "lines": [
+    [
+     "H1",
+     77,
+     136,
+     [
+      28,
+      74,
+      71
+     ]
+    ],
+    [
+     "P",
+     146,
+     182,
+     [
+      28,
+      74,
+      71
+     ]
+    ],
+    [
+     "P",
+     191,
+     227,
+     [
+      255,
+      255,
+      255
+     ]
+    ],
+    [
+     "P",
+     236,
+     272,
+     [
+      255,
+      255,
+      255
+     ]
+    ]
+   ],
+   "band": [
+    28,
+    74,
+    71
+   ]
+  }
+ },
+ {
+  "id": "L1b manager 320x700 root200: at least 22px of band under the last line",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "last": 272,
+   "under": 0,
+   "bandEnd": 112
+  }
+ },
+ {
+  "id": "L1b manager 320x700 root200: no sideways scroll",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L1a manager 375x667 root100: band ends 112px below the frame top at the default size",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "bandHeight": 112,
+   "headingBottom": 65.6875,
+   "borderImage": {
+    "source": "none",
+    "outset": "0",
+    "slice": "100%",
+    "width": "1"
+   }
+  }
+ },
+ {
+  "id": "L1b manager 375x667 root200: every heading line on the band",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "lines": [
+    [
+     "H1",
+     77,
+     136,
+     [
+      28,
+      74,
+      71
+     ]
+    ],
+    [
+     "P",
+     146,
+     182,
+     [
+      28,
+      74,
+      71
+     ]
+    ],
+    [
+     "P",
+     191,
+     227,
+     [
+      255,
+      255,
+      255
+     ]
+    ]
+   ],
+   "band": [
+    28,
+    74,
+    71
+   ]
+  }
+ },
+ {
+  "id": "L1b manager 375x667 root200: at least 22px of band under the last line",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "last": 227,
+   "under": 0,
+   "bandEnd": 112
+  }
+ },
+ {
+  "id": "L1b manager 375x667 root200: no sideways scroll",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L1a manager 390x844 root100: band ends 112px below the frame top at the default size",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "bandHeight": 112,
+   "headingBottom": 65.6875,
+   "borderImage": {
+    "source": "none",
+    "outset": "0",
+    "slice": "100%",
+    "width": "1"
+   }
+  }
+ },
+ {
+  "id": "L1b manager 390x844 root200: every heading line on the band",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "lines": [
+    [
+     "H1",
+     77,
+     136,
+     [
+      28,
+      74,
+      71
+     ]
+    ],
+    [
+     "P",
+     146,
+     182,
+     [
+      28,
+      74,
+      71
+     ]
+    ],
+    [
+     "P",
+     191,
+     227,
+     [
+      255,
+      255,
+      255
+     ]
+    ]
+   ],
+   "band": [
+    28,
+    74,
+    71
+   ]
+  }
+ },
+ {
+  "id": "L1b manager 390x844 root200: at least 22px of band under the last line",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "last": 227,
+   "under": 0,
+   "bandEnd": 112
+  }
+ },
+ {
+  "id": "L1b manager 390x844 root200: no sideways scroll",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L2 payroll export 320 root100: 2 figure columns, Recorded in column 2, Breaks beside it",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "rows": 10,
+   "figureCols": [
+    2
+   ],
+   "sample": {
+    "tracks": [
+     18,
+     102,
+     102
+    ],
+    "starts": [
+     37,
+     67,
+     181
+    ],
+    "hours": [
+     {
+      "left": 67,
+      "top": 1050
+     },
+     {
+      "left": 181,
+      "top": 1050
+     }
+    ],
+    "kids": [
+     {
+      "cls": "INPUT",
+      "left": 37,
+      "top": 990
+     },
+     {
+      "cls": "employeeIdentity",
+      "left": 67,
+      "top": 990
+     },
+     {
+      "cls": "hours",
+      "left": 67,
+      "top": 1050
+     },
+     {
+      "cls": "hours",
+      "left": 181,
+      "top": 1050
+     }
+    ]
+   }
+  }
+ },
+ {
+  "id": "L2 payroll export 390 root100: 2 figure columns, Recorded in column 2, Breaks beside it",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "rows": 10,
+   "figureCols": [
+    2
+   ],
+   "sample": {
+    "tracks": [
+     18,
+     137,
+     137
+    ],
+    "starts": [
+     37,
+     67,
+     216
+    ],
+    "hours": [
+     {
+      "left": 67,
+      "top": 998
+     },
+     {
+      "left": 216,
+      "top": 998
+     }
+    ],
+    "kids": [
+     {
+      "cls": "INPUT",
+      "left": 37,
+      "top": 938
+     },
+     {
+      "cls": "employeeIdentity",
+      "left": 67,
+      "top": 938
+     },
+     {
+      "cls": "hours",
+      "left": 67,
+      "top": 998
+     },
+     {
+      "cls": "hours",
+      "left": 216,
+      "top": 998
+     }
+    ]
+   }
+  }
+ },
+ {
+  "id": "L2 payroll export 430 root100: 2 figure columns, Recorded in column 2, Breaks beside it",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "rows": 10,
+   "figureCols": [
+    3
+   ],
+   "sample": {
+    "tracks": [
+     18,
+     100.656,
+     100.672,
+     100.656
+    ],
+    "starts": [
+     37,
+     67,
+     180,
+     292
+    ],
+    "hours": [
+     {
+      "left": 67,
+      "top": 974
+     },
+     {
+      "left": 180,
+      "top": 974
+     }
+    ],
+    "kids": [
+     {
+      "cls": "INPUT",
+      "left": 37,
+      "top": 914
+     },
+     {
+      "cls": "employeeIdentity",
+      "left": 67,
+      "top": 914
+     },
+     {
+      "cls": "hours",
+      "left": 67,
+      "top": 974
+     },
+     {
+      "cls": "hours",
+      "left": 180,
+      "top": 974
+     }
+    ]
+   }
+  }
+ },
+ {
+  "id": "L2 payroll export 540 root100: 2 figure columns, Recorded in column 2, Breaks beside it",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "rows": 10,
+   "figureCols": [
+    4
+   ],
+   "sample": {
+    "tracks": [
+     18,
+     100,
+     100,
+     100,
+     100
+    ],
+    "starts": [
+     37,
+     67,
+     179,
+     291,
+     403
+    ],
+    "hours": [
+     {
+      "left": 67,
+      "top": 922
+     },
+     {
+      "left": 179,
+      "top": 922
+     }
+    ],
+    "kids": [
+     {
+      "cls": "INPUT",
+      "left": 37,
+      "top": 862
+     },
+     {
+      "cls": "employeeIdentity",
+      "left": 67,
+      "top": 862
+     },
+     {
+      "cls": "hours",
+      "left": 67,
+      "top": 922
+     },
+     {
+      "cls": "hours",
+      "left": 179,
+      "top": 922
+     }
+    ]
+   }
+  }
+ },
+ {
+  "id": "L2 payroll export 600 root100: 2 figure columns, Recorded in column 2, Breaks beside it",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "rows": 10,
+   "figureCols": [
+    4
+   ],
+   "sample": {
+    "tracks": [
+     18,
+     115,
+     115,
+     115,
+     115
+    ],
+    "starts": [
+     37,
+     67,
+     194,
+     321,
+     448
+    ],
+    "hours": [
+     {
+      "left": 67,
+      "top": 922
+     },
+     {
+      "left": 194,
+      "top": 922
+     }
+    ],
+    "kids": [
+     {
+      "cls": "INPUT",
+      "left": 37,
+      "top": 862
+     },
+     {
+      "cls": "employeeIdentity",
+      "left": 67,
+      "top": 862
+     },
+     {
+      "cls": "hours",
+      "left": 67,
+      "top": 922
+     },
+     {
+      "cls": "hours",
+      "left": 194,
+      "top": 922
+     }
+    ]
+   }
+  }
+ },
+ {
+  "id": "L2 payroll export 320 root200: 1 figure column",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "rows": 10,
+   "figureCols": [
+    1
+   ],
+   "sample": {
+    "tracks": [
+     18,
+     216
+    ],
+    "starts": [
+     37,
+     67
+    ],
+    "hours": [
+     {
+      "left": 67,
+      "top": 2249
+     },
+     {
+      "left": 37,
+      "top": 2304
+     }
+    ],
+    "kids": [
+     {
+      "cls": "INPUT",
+      "left": 37,
+      "top": 2104
+     },
+     {
+      "cls": "employeeIdentity",
+      "left": 67,
+      "top": 2104
+     },
+     {
+      "cls": "hours",
+      "left": 67,
+      "top": 2249
+     },
+     {
+      "cls": "hours",
+      "left": 37,
+      "top": 2304
+     }
+    ]
+   }
+  }
+ },
+ {
+  "id": "L2 payroll export 390 root200: 1 figure column",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "rows": 10,
+   "figureCols": [
+    1
+   ],
+   "sample": {
+    "tracks": [
+     18,
+     286
+    ],
+    "starts": [
+     37,
+     67
+    ],
+    "hours": [
+     {
+      "left": 67,
+      "top": 2052
+     },
+     {
+      "left": 37,
+      "top": 2107
+     }
+    ],
+    "kids": [
+     {
+      "cls": "INPUT",
+      "left": 37,
+      "top": 1949
+     },
+     {
+      "cls": "employeeIdentity",
+      "left": 67,
+      "top": 1949
+     },
+     {
+      "cls": "hours",
+      "left": 67,
+      "top": 2052
+     },
+     {
+      "cls": "hours",
+      "left": 37,
+      "top": 2107
+     }
+    ]
+   }
+  }
+ },
+ {
+  "id": "L2 payroll export 430 root200: 1 figure column",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "rows": 10,
+   "figureCols": [
+    1
+   ],
+   "sample": {
+    "tracks": [
+     18,
+     326
+    ],
+    "starts": [
+     37,
+     67
+    ],
+    "hours": [
+     {
+      "left": 67,
+      "top": 1807
+     },
+     {
+      "left": 37,
+      "top": 1862
+     }
+    ],
+    "kids": [
+     {
+      "cls": "INPUT",
+      "left": 37,
+      "top": 1704
+     },
+     {
+      "cls": "employeeIdentity",
+      "left": 67,
+      "top": 1704
+     },
+     {
+      "cls": "hours",
+      "left": 67,
+      "top": 1807
+     },
+     {
+      "cls": "hours",
+      "left": 37,
+      "top": 1862
+     }
+    ]
+   }
+  }
+ },
+ {
+  "id": "L2 payroll export 540 root200: at most 2 figure columns, in order (recorded)",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "rows": 10,
+   "figureCols": [
+    2
+   ],
+   "sample": {
+    "tracks": [
+     18,
+     212,
+     212
+    ],
+    "starts": [
+     37,
+     67,
+     291
+    ],
+    "hours": [
+     {
+      "left": 67,
+      "top": 1538
+     },
+     {
+      "left": 291,
+      "top": 1538
+     }
+    ],
+    "kids": [
+     {
+      "cls": "INPUT",
+      "left": 37,
+      "top": 1435
+     },
+     {
+      "cls": "employeeIdentity",
+      "left": 67,
+      "top": 1435
+     },
+     {
+      "cls": "hours",
+      "left": 67,
+      "top": 1538
+     },
+     {
+      "cls": "hours",
+      "left": 291,
+      "top": 1538
+     }
+    ]
+   }
+  }
+ },
+ {
+  "id": "L2 payroll export 600 root200: at most 2 figure columns, in order (recorded)",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "rows": 10,
+   "figureCols": [
+    2
+   ],
+   "sample": {
+    "tracks": [
+     18,
+     242,
+     242
+    ],
+    "starts": [
+     37,
+     67,
+     321
+    ],
+    "hours": [
+     {
+      "left": 67,
+      "top": 1476
+     },
+     {
+      "left": 321,
+      "top": 1476
+     }
+    ],
+    "kids": [
+     {
+      "cls": "INPUT",
+      "left": 37,
+      "top": 1373
+     },
+     {
+      "cls": "employeeIdentity",
+      "left": 67,
+      "top": 1373
+     },
+     {
+      "cls": "hours",
+      "left": 67,
+      "top": 1476
+     },
+     {
+      "cls": "hours",
+      "left": 321,
+      "top": 1476
+     }
+    ]
+   }
+  }
+ },
+ {
+  "id": "L5 reports 320 root100: field and button column edges match within 1px",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "labels": [
+    {
+     "left": 34,
+     "right": 286,
+     "top": 283,
+     "height": 85.5,
+     "width": 252
+    },
+    {
+     "left": 34,
+     "right": 286,
+     "top": 381,
+     "height": 85.5,
+     "width": 252
+    }
+   ],
+   "buttons": [
+    {
+     "left": 34,
+     "right": 286,
+     "top": 478,
+     "height": 44,
+     "width": 252,
+     "text": "View period",
+     "lines": 2
+    },
+    {
+     "left": 34,
+     "right": 286,
+     "top": 534,
+     "height": 44,
+     "width": 252,
+     "text": "Refresh",
+     "lines": 2
+    }
+   ],
+   "display": "flex",
+   "cols": "repeat(2, minmax(0px, 1fr))",
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L5 reports 320 root100: buttons 44px, one line each",
+  "engine": "chromium",
+  "pass": false,
+  "detail": [
+   {
+    "left": 34,
+    "right": 286,
+    "top": 478,
+    "height": 44,
+    "width": 252,
+    "text": "View period",
+    "lines": 2
+   },
+   {
+    "left": 34,
+    "right": 286,
+    "top": 534,
+    "height": 44,
+    "width": 252,
+    "text": "Refresh",
+    "lines": 2
+   }
+  ]
+ },
+ {
+  "id": "L5 reports 390 root100: field and button column edges match within 1px",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "labels": [
+    {
+     "left": 34,
+     "right": 190,
+     "top": 283,
+     "height": 85.5,
+     "width": 156
+    },
+    {
+     "left": 200,
+     "right": 356,
+     "top": 283,
+     "height": 85.5,
+     "width": 156
+    }
+   ],
+   "buttons": [
+    {
+     "left": 34,
+     "right": 207,
+     "top": 381,
+     "height": 44,
+     "width": 173,
+     "text": "View period",
+     "lines": 2
+    },
+    {
+     "left": 217,
+     "right": 356,
+     "top": 381,
+     "height": 44,
+     "width": 139,
+     "text": "Refresh",
+     "lines": 2
+    }
+   ],
+   "display": "flex",
+   "cols": "repeat(2, minmax(0px, 1fr))",
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L5 reports 390 root100: buttons 44px, one line each",
+  "engine": "chromium",
+  "pass": false,
+  "detail": [
+   {
+    "left": 34,
+    "right": 207,
+    "top": 381,
+    "height": 44,
+    "width": 173,
+    "text": "View period",
+    "lines": 2
+   },
+   {
+    "left": 217,
+    "right": 356,
+    "top": 381,
+    "height": 44,
+    "width": 139,
+    "text": "Refresh",
+    "lines": 2
+   }
+  ]
+ },
+ {
+  "id": "L5 reports 390 root200: one column, no sideways scroll",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "labels": [
+    {
+     "left": 34,
+     "right": 190,
+     "top": 506,
+     "height": 132,
+     "width": 156
+    },
+    {
+     "left": 200,
+     "right": 356,
+     "top": 506,
+     "height": 132,
+     "width": 156
+    }
+   ],
+   "buttons": [
+    {
+     "left": 34,
+     "right": 356,
+     "top": 650,
+     "height": 64.5,
+     "width": 322,
+     "text": "View period",
+     "lines": 2
+    },
+    {
+     "left": 34,
+     "right": 356,
+     "top": 727,
+     "height": 64.5,
+     "width": 322,
+     "text": "Refresh",
+     "lines": 2
+    }
+   ],
+   "display": "flex",
+   "cols": "repeat(2, minmax(0px, 1fr))",
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L6 employee timecards 320 root100: both buttons 44px, one line",
+  "engine": "chromium",
+  "pass": false,
+  "detail": [
+   {
+    "text": "View period",
+    "name": null,
+    "height": 48,
+    "width": 248,
+    "lines": 1,
+    "inside": true,
+    "overflowX": 0,
+    "minHeight": "44px",
+    "heightProp": "48px"
+   },
+   {
+    "text": "Refresh timecardsRefresh",
+    "name": "Refresh timecards",
+    "height": 48,
+    "width": 248,
+    "lines": 1,
+    "inside": true,
+    "overflowX": 0,
+    "minHeight": "44px",
+    "heightProp": "48px"
+   }
+  ]
+ },
+ {
+  "id": "L6 employee timecards 390 root100: both buttons 44px, one line",
+  "engine": "chromium",
+  "pass": false,
+  "detail": [
+   {
+    "text": "View period",
+    "name": null,
+    "height": 48,
+    "width": 153,
+    "lines": 1,
+    "inside": true,
+    "overflowX": 0,
+    "minHeight": "44px",
+    "heightProp": "48px"
+   },
+   {
+    "text": "Refresh timecardsRefresh",
+    "name": "Refresh timecards",
+    "height": 48,
+    "width": 153,
+    "lines": 1,
+    "inside": true,
+    "overflowX": 0,
+    "minHeight": "44px",
+    "heightProp": "48px"
+   }
+  ]
+ },
+ {
+  "id": "L6 employee timecards 390 root200: labels inside the buttons, nothing overflows",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "m": [
+    {
+     "text": "View period",
+     "name": null,
+     "height": 48,
+     "width": 153,
+     "lines": 2,
+     "inside": false,
+     "overflowX": 0,
+     "minHeight": "44px",
+     "heightProp": "48px"
+    },
+    {
+     "text": "Refresh timecardsRefresh",
+     "name": "Refresh timecards",
+     "height": 48,
+     "width": 153,
+     "lines": 2,
+     "inside": false,
+     "overflowX": 0,
+     "minHeight": "44px",
+     "heightProp": "48px"
+    }
+   ],
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L7 /app/employees/new .new-employee-footer 390: column-gap and row-gap 12px",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "columnGap": "8px",
+   "rowGap": "8px",
+   "kids": [
+    {
+     "top": 1984,
+     "left": 52,
+     "bottom": 2028,
+     "right": 338
+    },
+    {
+     "top": 2036,
+     "left": 52,
+     "bottom": 2080,
+     "right": 338
+    }
+   ]
+  }
+ },
+ {
+  "id": "L7 /app/requests .nto-form-footer 390: column-gap and row-gap 12px",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "columnGap": "10px",
+   "rowGap": "10px",
+   "kids": [
+    {
+     "top": 1193,
+     "left": 36,
+     "bottom": 1237,
+     "right": 142
+    },
+    {
+     "top": 1193,
+     "left": 152,
+     "bottom": 1237,
+     "right": 354
+    }
+   ]
+  }
+ },
+ {
+  "id": "L7 /app/reports [class*=\"reports-module\"][class*=\"__exports\"] 390: column-gap and row-gap 12px",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "columnGap": "8px",
+   "rowGap": "8px",
+   "kids": [
+    {
+     "top": 535,
+     "left": 34,
+     "bottom": 579,
+     "right": 356
+    },
+    {
+     "top": 587,
+     "left": 34,
+     "bottom": 631,
+     "right": 356
+    }
+   ]
+  }
+ },
+ {
+  "id": "L8 1440: heading top aligns with the step titles within 1px",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "headingTop": 208.3,
+   "titleTops": [
+    218.3,
+    218.3
+   ],
+   "card": {
+    "top": 190.3,
+    "height": 106.3
+   },
+   "stripTop": 316.6,
+   "summaryPad": "0px"
+  }
+ },
+ {
+  "id": "L8 1920: heading top aligns with the step titles within 1px",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "headingTop": 208.3,
+   "titleTops": [
+    218.3,
+    218.3
+   ],
+   "card": {
+    "top": 190.3,
+    "height": 106.3
+   },
+   "stripTop": 316.6,
+   "summaryPad": "0px"
+  }
+ },
+ {
+  "id": "L9 390: field border teal while the input has focus",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "border": "rgb(7, 117, 114)",
+   "shadow": "rgb(7, 117, 114) 0px 0px 0px 1px",
+   "active": "INPUT"
+  }
+ },
+ {
+  "id": "L9 390: Tab to Clear: field border not teal, Clear ring 2px at -2px inside its 44px target",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "name": "Clear search",
+   "focusVisible": true,
+   "outline": "solid 2px rgb(255, 255, 255)",
+   "offset": "2px",
+   "box": {
+    "w": 44,
+    "h": 44
+   },
+   "fieldBorder": "rgb(7, 117, 114)",
+   "fieldShadow": "rgb(7, 117, 114) 0px 0px 0px 1px",
+   "accent": "rgb(7, 117, 114)"
+  }
+ },
+ {
+  "id": "L11 390: a real Tab press puts a visible ring on Close",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "name": "Close search",
+   "text": "Close",
+   "focusVisible": true,
+   "outline": "solid 2px rgb(255, 255, 255)",
+   "offset": "2px"
+  }
+ },
+ {
+  "id": "L10 before 320: no logo (chip hidden)",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "brand": {
+    "left": 16,
+    "right": 140,
+    "top": 12,
+    "bottom": 56,
+    "w": 124
+   },
+   "chip": null,
+   "search": {
+    "left": 216,
+    "right": 260,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "bell": {
+    "left": 260,
+    "right": 304,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "count": null,
+   "header": {
+    "left": 0,
+    "right": 320,
+    "top": 0,
+    "bottom": 68,
+    "w": 320
+   },
+   "gapToWordmark": null,
+   "marginLeft": null,
+   "imgClipped": null,
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L10 before 375: no logo (chip hidden)",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "brand": {
+    "left": 16,
+    "right": 140,
+    "top": 12,
+    "bottom": 56,
+    "w": 124
+   },
+   "chip": null,
+   "search": {
+    "left": 271,
+    "right": 315,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "bell": {
+    "left": 315,
+    "right": 359,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "count": null,
+   "header": {
+    "left": 0,
+    "right": 375,
+    "top": 0,
+    "bottom": 68,
+    "w": 375
+   },
+   "gapToWordmark": null,
+   "marginLeft": null,
+   "imgClipped": null,
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L10 before 390: no logo (chip hidden)",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "brand": {
+    "left": 16,
+    "right": 140,
+    "top": 12,
+    "bottom": 56,
+    "w": 124
+   },
+   "chip": null,
+   "search": {
+    "left": 286,
+    "right": 330,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "bell": {
+    "left": 330,
+    "right": 374,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "count": null,
+   "header": {
+    "left": 0,
+    "right": 390,
+    "top": 0,
+    "bottom": 68,
+    "w": 390
+   },
+   "gapToWordmark": null,
+   "marginLeft": null,
+   "imgClipped": null,
+   "overflow": 0
+  }
+ }
+]

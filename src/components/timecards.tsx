@@ -16,7 +16,7 @@ import {parseCurrentTimecards,parseTimecardReceipt} from '@/lib/timecards/client
 import {batchExclusion,reviewTimecards,reviewIsCurrent,runReviewedBatch,type BatchAction,type ReviewedBatch,type BatchOutcome} from '@/lib/timecards/reviewed-batch';
 import styles from './timecards.module.css';
 import {MobileHomeDisclosure} from './mobile-home-disclosure';
-import {CaretRightIcon} from '@phosphor-icons/react/ssr';
+import {CaretDownIcon,CaretRightIcon} from '@phosphor-icons/react/ssr';
 import {employeeButtonClass,employeeInputClass,employeeRowClass} from './employee-corporate-ui';
 import {employeeTimecardPresentation} from './employee-timecard-presentation';
 import {createPortal} from 'react-dom';
@@ -90,6 +90,8 @@ function rowStatus(item:TimecardItem):{text:string;tone:RowTone}{
 }
 const initialsOf=(name:string)=>name.split(/\s+/).filter(Boolean).slice(0,2).map(word=>word.charAt(0).toUpperCase()).join('');
 const roleOf=(card:Timecard)=>card.entries.find(entry=>entry.positionName)?.positionName??null;
+/** UI-9: a draft with nothing recorded and nothing to review folds into one "no time yet" row. */
+const noTime=(item:TimecardItem)=>!needsReview(item)&&!isApproved(item)&&!item.card.entries.length&&!item.history.length&&item.card.recordedNanoseconds==='0';
 const byName=(a:TimecardItem,b:TimecardItem)=>a.card.employeeName.localeCompare(b.card.employeeName);
 const reviewFirst=(a:TimecardItem,b:TimecardItem)=>Number(needsReview(b))-Number(needsReview(a))||byName(a,b);
 const totalRecorded=(items:TimecardItem[])=>formatRecordedHours(items.reduce((sum,item)=>sum+BigInt(item.card.recordedNanoseconds),BigInt(0)).toString());
@@ -256,6 +258,17 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     return ()=>{document.removeEventListener('keydown',key);document.removeEventListener('pointerdown',press);};
   },[manager]);
   const openItem=openId?cards.find(item=>item.card.employeeId===openId)??null:null,openKey=openItem?openItem.card.employeeId:null;
+  // UX4: a #timecard-ID link (the Inbox's "Review timecard") opens that person's timecard once its card is in.
+  const openedFragment=useRef('');
+  useEffect(()=>{
+    if(!manager||!currentActor||data?.state!=='ready')return;
+    let fragment='';try{fragment=decodeURIComponent(window.location.hash.slice(1));}catch{return;}
+    if(!fragment.startsWith('timecard-')||openedFragment.current===fragment)return;
+    const id=fragment.slice('timecard-'.length);
+    if(!data.cards.some(item=>item.card.employeeId===id))return;
+    openedFragment.current=fragment;setOpenId(id);
+  },[manager,currentActor,data]);
+  const [showNoTime,setShowNoTime]=useState(false);
   useEffect(()=>{
     if(!manager||typeof window.matchMedia!=='function')return;
     const query=window.matchMedia(PHONE_QUERY),sync=()=>setPhone(query.matches);
@@ -287,8 +300,16 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const periodText=periodName?`${periodName} · ${rangeText(period)}`:rangeText(period);
     const open=!!today&&period.endDate>=today;
     const reviewItems=cards.filter(needsReview).sort(byName),approvedCount=cards.filter(isApproved).length;
-    const tableItems=[...cards].sort(reviewFirst).filter(item=>tab==='all'||(tab==='review'?needsReview(item):isApproved(item)));
-    const allItems=selecting?[...cards].sort(reviewFirst):[...cards.filter(item=>!needsReview(item)).sort(byName),...reviewItems];
+    const listed=[...cards].sort(reviewFirst).filter(item=>tab==='all'||(tab==='review'?needsReview(item):isApproved(item)));
+    // UI-9: two or more people with no time yet share one row, opened in place; a link to one of them opens it.
+    // It stays open while one of them is selected or open, and there's nothing to fold when no one has time yet.
+    const idle=listed.filter(noTime),fold=idle.length>1&&listed.length>idle.length&&!showNoTime&&!idle.some(item=>openId===item.card.employeeId||selected.includes(item.card.employeeId));
+    const tableItems=fold?listed.filter(item=>!noTime(item)):listed;
+    const showRole=cards.some(item=>roleOf(item.card));
+    const everyItem=selecting?[...cards].sort(reviewFirst):[...cards.filter(item=>!needsReview(item)).sort(byName),...reviewItems];
+    // UI-9: on phones too, people with no time yet fold into one row at the end of All timecards.
+    const phoneIdle=selecting?[]:everyItem.filter(noTime),phoneFold=phoneIdle.length>1&&everyItem.length>phoneIdle.length;
+    const allItems=phoneFold?everyItem.filter(item=>!noTime(item)):everyItem;
     const hidden=allItems.slice(PHONE_ROWS);
     let target='';try{target=typeof location==='undefined'?'':decodeURIComponent(location.hash.slice(1));}catch{/* A malformed fragment targets nothing. */}
     const locked=busy||!!pending||!!outcomes;
@@ -377,19 +398,22 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             <thead><tr>
               <th scope="col" className="cm-tc-check"><label className="cm-tc-hit"><input type="checkbox" aria-label="Select all eligible timecards" checked={eligible.length>0&&eligible.slice(0,100).every(item=>selected.includes(item.card.employeeId))}
                 disabled={locked||!eligible.length} onChange={e=>{setSelected(e.target.checked?eligible.slice(0,100).map(item=>item.card.employeeId):[]);setReview(null);setConfirmed(false);}}/></label></th>
-              <th scope="col">Person</th><th scope="col">Role</th><th scope="col" className="cm-num">Recorded</th><th scope="col" className="cm-num">Breaks</th><th scope="col">Status</th>
+              <th scope="col">Person</th>{showRole?<th scope="col">Role</th>:null}<th scope="col" className="cm-num">Recorded</th><th scope="col" className="cm-num">Breaks</th><th scope="col">Status</th>
             </tr></thead>
-            <tbody>{tableItems.length?tableItems.map(item=>{
+            <tbody>{tableItems.length||fold?tableItems.map(item=>{
               const id=item.card.employeeId,name=item.card.employeeName,row=rowStatus(item),breaks=formatRecordedHours(item.card.breakNanoseconds);
               return <tr key={id} id={`timecard-${id}`} tabIndex={-1} data-review={needsReview(item)||undefined}>
                 <td className="cm-tc-check"><label className="cm-tc-hit"><input type="checkbox" aria-label={`Select ${name}`} title={exclusionText(item)} checked={selected.includes(id)} disabled={pickDisabled(item)} onChange={e=>select(id,e.target.checked)}/></label></td>
                 <td><button type="button" className="cm-tc-person" onClick={()=>setOpenId(id)}><Avatar initials={initialsOf(name)}/><span>{name}</span></button></td>
-                <td className="cm-tc-role">{roleOf(item.card)??'—'}</td>
+                {showRole?<td className="cm-tc-role">{roleOf(item.card)??'—'}</td>:null}
                 <td className="cm-num">{formatRecordedHours(item.card.recordedNanoseconds)}</td>
                 <td className="cm-num cm-tc-breaks">{breaks==='0h'?<><span aria-hidden="true">—</span><span className="nv-sr">None</span></>:breaks}</td>
                 <td><span className="cm-tc-status" data-tone={row.tone}>{row.text}</span></td>
               </tr>;
-            }):<tr><td colSpan={6} className="cm-tc-none">{tab==='review'?'No timecards need review.':'No approved timecards yet.'}</td></tr>}</tbody>
+            }):<tr><td colSpan={showRole?6:5} className="cm-tc-none">{tab==='review'?'No timecards need review.':'No approved timecards yet.'}</td></tr>}
+            {fold?<tr className="cm-tc-idle"><td className="cm-tc-check" aria-hidden="true"/><td colSpan={showRole?5:4}>
+              <button type="button" className="cm-tc-idle__open" aria-expanded="false" onClick={()=>{setShowNoTime(true);const first=idle[0].card.employeeId;if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>document.getElementById(`timecard-${first}`)?.querySelector<HTMLElement>('.cm-tc-person')?.focus());}}>{`${idle.length} people with no time yet`}<span className="cm-tc-idle__hours" aria-hidden="true">0h</span><CaretDownIcon size={13} weight="bold" aria-hidden="true"/></button>
+            </td></tr>:null}</tbody>
           </table></div>
         </>:null}
         {ready&&cards.length&&phone?<>
@@ -403,6 +427,10 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               {!selecting&&hidden.length?<li className="cm-tc-more"><details open={hidden.some(item=>target===`timecard-${item.card.employeeId}`&&!needsReview(item))||undefined}>
                 <summary className="nv-row">{`Show ${hidden.length} more`}</summary>
                 <ul className="nv-rows">{hidden.map(item=>phoneRow(item,false))}</ul>
+              </details></li>:null}
+              {phoneFold?<li className="cm-tc-more cm-tc-idle"><details open={phoneIdle.some(item=>target===`timecard-${item.card.employeeId}`)||undefined}>
+                <summary className="nv-row"><span className="nv-row__text"><span className="nv-row__title">{`${phoneIdle.length} people with no time yet`}</span></span><span className="nv-row__trail">0h</span><CaretDownIcon className="nv-row__chev" size={16} weight="bold" aria-hidden="true"/></summary>
+                <ul className="nv-rows">{phoneIdle.map(item=>phoneRow(item,false))}</ul>
               </details></li>:null}
             </ul>
           </Card>

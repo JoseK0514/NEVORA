@@ -1,0 +1,36 @@
+{
+ "key": "Jose · guest-l45hzdfr · phone /app/schedule",
+ "url": "https://monkey-occurred-crystal-carolina.trycloudflare.com/app/schedule",
+ "path": "/app/schedule",
+ "device": "phone",
+ "viewport": {
+  "w": 440,
+  "h": 796
+ },
+ "page": {
+  "w": 440,
+  "h": 1994
+ },
+ "title": "NEVORA Workforce",
+ "heading": "My schedule",
+ "tester": "Jose",
+ "account": "ARAlexandra Rivera",
+ "strokes": [],
+ "pins": [
+  {
+   "n": 1,
+   "x": 6,
+   "y": 1781,
+   "text": "",
+   "t": 1792354877453,
+   "target": {
+    "tag": "div",
+    "id": "",
+    "cls": "page-frame",
+    "text": "My scheduleReview your week and manage your shifts.My shiftsOpen shiftsOct 12 – Oct 182026"
+   }
+  }
+ ],
+ "note": "This look weird just like that in the footer ",
+ "updatedAt": "2026-10-18T20:21:18.055Z"
+}

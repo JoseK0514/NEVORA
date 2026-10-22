@@ -1,0 +1,16 @@
+{
+ "UNEXPECTED": 4,
+ "B2 consequence: layout moved by button height or wrapping (geometry only)": 11643,
+ "B1 tab labels: one token, 10px to 12px where a legacy rule won (Home views)": 900,
+ "B2 phone button shape (radius, height, padding, label type, icon)": 2508,
+ "B6 consequence: Schedule layout moved by the picker track (geometry only)": 488,
+ "B6 day picker track, segments, chosen ring, today dot (phone and desktop)": 1186,
+ "B6 J1 grid heading today, column tint, location switcher": 1626,
+ "B2 pairs wrap: Locations card actions become a wrapping row": 12,
+ "B4 Refresh short label structure (Timecards)": 6
+}
+views with any difference: 144 | desktop views with difference: employee-1440-_app, employee-1920-_app, owner-1440-_app_schedule, owner-1440-_app_schedule_coverage, owner-1920-_app_schedule, owner-1920-_app_schedule_coverage
+UNEXPECTED employee-1440-_app header.employee-home-reviewed-module__k4entG__arrival>p>time x: 399 → 387
+UNEXPECTED employee-1440-_app div.employee-home-reviewed-module__k4entG__primary>section.employee-home-reviewed-module__k4entG__assignment>p.employee-home-reviewed-module__k4entG__countdown width: 185 → 195
+UNEXPECTED employee-1920-_app header.employee-home-reviewed-module__k4entG__arrival>p>time x: 399 → 387
+UNEXPECTED employee-1920-_app div.employee-home-reviewed-module__k4entG__primary>section.employee-home-reviewed-module__k4entG__assignment>p.employee-home-reviewed-module__k4entG__countdown width: 185 → 195

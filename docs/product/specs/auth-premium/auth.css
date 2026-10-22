@@ -438,3 +438,66 @@ svg { display: block; }
 .ios.e4.sub .back4 { position: absolute; z-index: 4; top: 62px; left: 16px; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px 6px 8px; border-radius: 16px; background: rgba(255,255,255,.14); color: #fff; font: 500 15px/20px var(--sys); }
 .e4 .back2 { display: inline-flex; align-items: center; gap: 6px; }
 .e4 .col2 .back2 + h1.t2 { margin-top: 18px; }
+
+/* ===== Profile in the E4 style: the brand band and type from sign-in, the app's own grey canvas and white cards. ===== */
+.pf { --canvas: #F3F4F3; --card: #FFFFFF; --ink: #161C1B; --ink-2: #5F625E; --ink-3: #8C8A84; --rule: #E6E3DD; --deep: #0D3634; --mark: #164B48; --sky: #35B6EC; --teal: #0B6E69; }
+.pf { background: var(--canvas); color: var(--ink); font-family: var(--sys); }
+.pf .band { position: absolute; overflow: hidden; background: var(--deep); }
+.pf .band .bigmark { position: absolute; }
+.pf .who { display: flex; align-items: center; gap: 16px; color: #fff; }
+.pf .av { display: inline-flex; width: 64px; height: 64px; border-radius: 32px; align-items: center; justify-content: center; background: #F4EFE7; color: var(--deep); font: 600 22px/1 var(--sys); letter-spacing: .5px; box-shadow: 0 0 0 3px rgba(255,255,255,.14); }
+.pf .who b { display: block; font: 500 28px/32px var(--sys); letter-spacing: -.8px; }
+.pf .who span.s { display: block; margin-top: 4px; font: 400 14px/20px var(--sys); color: rgba(255,255,255,.7); }
+.pf .eb { font: 600 12px/16px var(--sys); letter-spacing: 1.4px; text-transform: uppercase; color: rgba(255,255,255,.6); }
+.pf .sec { margin-top: 26px; }
+.pf .sec h2 { margin: 0 4px 10px; font: 600 12px/16px var(--sys); letter-spacing: 1.4px; text-transform: uppercase; color: var(--ink-2); }
+.pf .cardp { background: var(--card); border-radius: 16px; border: 1px solid var(--rule); overflow: hidden; }
+.pf .row { position: relative; display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 14px 18px; }
+.pf .row + .row::before { content: ""; position: absolute; top: 0; left: 18px; right: 0; height: 1px; background: var(--rule); }
+.pf .row .k { flex: none; width: 130px; font: 400 14px/20px var(--sys); color: var(--ink-2); }
+.pf .row .v { font: 500 15px/20px var(--sys); color: var(--ink); }
+.pf .row .ic { flex: none; display: inline-flex; width: 36px; height: 36px; border-radius: 10px; align-items: center; justify-content: center; background: #EEF3F2; color: var(--deep); }
+.pf .row .tx { flex: 1; min-width: 0; }
+.pf .row .tx b { display: block; font: 500 15px/20px var(--sys); }
+.pf .row .tx span { display: block; margin-top: 2px; font: 400 13px/18px var(--sys); color: var(--ink-2); }
+.pf .row .go { flex: none; color: var(--ink-3); }
+.pf .row .btn-s { flex: none; height: 36px; padding: 0 14px; border-radius: 9px; background: var(--deep); color: #fff; font: 500 14px/36px var(--sys); }
+.pf .row .seg { flex: none; display: inline-flex; padding: 3px; border-radius: 999px; background: #EFEEEA; font: 500 13px/16px var(--sys); }
+.pf .row .seg span { padding: 6px 12px; border-radius: 999px; color: var(--ink-2); }
+.pf .row .seg span.on { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.pf .row .tag { flex: none; padding: 3px 9px; border-radius: 999px; background: #E9F6EE; color: #1E7A3A; font: 500 12px/16px var(--sys); }
+.pf .foot-note { margin: 10px 4px 0; font: 400 13px/18px var(--sys); color: var(--ink-2); }
+.pf .foot-note a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+.pf .signout { display: flex; align-items: center; justify-content: center; height: 52px; margin-top: 26px; border-radius: 12px; border: 1px solid #D8D4CC; background: #fff; color: #B42318; font: 500 15px/20px var(--sys); }
+
+/* Phone */
+.ios.pf .sb { position: relative; z-index: 3; color: #fff; } .ios.pf .sb svg { fill: #fff; color: #fff; }
+.ios.pf .band { top: 0; left: 0; right: 0; height: 268px; }
+.ios.pf .band .bigmark { right: -70px; top: -10px; width: 260px; height: 246px; }
+.ios.pf .band .topbar { position: absolute; left: 20px; right: 16px; top: 58px; display: flex; justify-content: space-between; align-items: center; color: #fff; }
+.ios.pf .band .topbar .eb { color: rgba(255,255,255,.65); }
+.ios.pf .band .who { position: absolute; left: 20px; right: 20px; top: 112px; }
+.ios.pf .sheetp { position: absolute; top: 230px; left: 0; right: 0; bottom: 0; border-radius: 26px 26px 0 0; background: var(--canvas); }
+.ios.pf .cont { position: absolute; top: 236px; left: 16px; right: 16px; }
+.ios.pf .row .k { width: 112px; }
+.ios.pf .tabbar2 { position: absolute; left: 0; right: 0; bottom: 0; height: 84px; display: grid; grid-template-columns: repeat(5, 1fr); padding-top: 8px; background: rgba(250,250,249,.96); box-shadow: 0 -1px 0 var(--rule); }
+.ios.pf .tabbar2 span { display: flex; flex-direction: column; align-items: center; gap: 4px; font: 500 10px/12px var(--sys); color: #8E8E93; }
+.ios.pf .tabbar2 span.on { color: var(--teal); }
+.ios.pf .tabbar2 i { display: block; width: 24px; height: 24px; border-radius: 7px; background: currentColor; opacity: .85; }
+
+/* Desktop */
+.desk.pf { background: var(--canvas); }
+.desk.pf .side { position: absolute; top: 0; bottom: 0; left: 0; width: 240px; background: #FAFAF9; border-right: 1px solid var(--rule); }
+.desk.pf .side img { position: absolute; top: 34px; left: 28px; height: 15px; mix-blend-mode: multiply; }
+.desk.pf .side ul { position: absolute; top: 96px; left: 14px; right: 14px; }
+.desk.pf .side li { display: flex; align-items: center; gap: 12px; height: 38px; padding: 0 12px; border-radius: 9px; font: 400 14px/20px var(--sys); color: var(--ink); }
+.desk.pf .side li.on { background: #EEF3F2; font-weight: 500; color: var(--deep); }
+.desk.pf .side li i { width: 18px; height: 18px; border-radius: 5px; background: currentColor; opacity: .55; }
+.desk.pf .band { top: 24px; left: 272px; right: 32px; height: 168px; border-radius: 24px; }
+.desk.pf .band .bigmark { right: -40px; top: -90px; width: 360px; height: 340px; }
+.desk.pf .band .who { position: absolute; left: 40px; top: 50%; transform: translateY(-50%); }
+.desk.pf .band .who .av { width: 76px; height: 76px; border-radius: 38px; font-size: 26px; }
+.desk.pf .band .who b { font-size: 34px; line-height: 40px; letter-spacing: -1.1px; }
+.desk.pf .cols { position: absolute; top: 212px; left: 272px; right: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.desk.pf .cols .sec:first-child { margin-top: 0; }
+.desk.pf .band .bigmark { right: 40px; top: -36px; width: 220px; height: 208px; }
