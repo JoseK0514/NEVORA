@@ -348,7 +348,7 @@ export function verifySourceManifestMetadata(source, manifest, checkpoint) {
       derived = derived.replace(production, `import "./.next/dev/types/${name}";`);
     }
     typesHash = hash(derived);
-    if (manifest.generatedTypeReferences?.originalHash !== hash(original) || manifest.generatedTypeReferences?.derivedHash !== typesHash || manifest.generatedTypeReferences?.reason !== 'Next 16.3.8 dev generated type-reference paths') throw Error('Source manifest mismatch: generated type references');
+    if (manifest.generatedTypeReferences?.originalHash !== hash(original) || manifest.generatedTypeReferences?.derivedHash !== typesHash || manifest.generatedTypeReferences?.reason !== 'Next 16.4.2 dev generated type-reference paths') throw Error('Source manifest mismatch: generated type references');
   }
   const expectedHashes = {};
   for (const [file, originalHash] of Object.entries(manifest.hashes)) {

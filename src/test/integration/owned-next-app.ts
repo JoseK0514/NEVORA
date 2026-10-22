@@ -205,7 +205,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
       const originalTypes = await readFile(join(source, 'next-env.d.ts'), 'utf8');
       const derivedTypes = createOwnedDevTypeReferences(originalTypes);
       await writeFile(join(mirror, 'next-env.d.ts'), derivedTypes);
-      generatedTypeReferences = { originalHash: hash(originalTypes), derivedHash: hash(derivedTypes), reason: 'Next 16.3.8 dev generated type-reference paths' };
+      generatedTypeReferences = { originalHash: hash(originalTypes), derivedHash: hash(derivedTypes), reason: 'Next 16.4.2 dev generated type-reference paths' };
       mirrorHashes['next-env.d.ts'] = hash(derivedTypes);
     }
     const manifestBytes = JSON.stringify({ checkpoint: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: source, encoding: 'utf8' }).trim(), hashes, originalDbHash: hash(originalDb), substitutedDbHash: hash(adapter), substitutedFiles: pinDevTypeReferences ? ['src/lib/db.ts', 'next-env.d.ts'] : ['src/lib/db.ts'], generatedTypeReferences }, null, 2);

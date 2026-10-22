@@ -505,3 +505,36 @@ OFF_CLOCK plus enabled refresh released the wait. Both browsers closed, source
 was clean and unchanged, and the corrected Home/control files exactly match
 the pending integration correction. This supporting evidence does not substitute
 for complete matching-source mandatory CI.
+
+## Newly reviewed dependency advisories
+
+Run 39830658700 on `ed29e7d4` / merge `3e94d26b` passed all three SQL jobs,
+Communications14, all 9,316 unit cases (801 existing skips), types, repository lint,
+configuration regressions and the production build. The production audit then
+failed for Next 16.3.8. Remaining jobs were cancelled to save runner minutes.
+This is partial verification, not acceptance of the next dependency set.
+
+GitHub's reviewed advisory database added the Next cache-function RCE entry at
+2026-10-22T16:42:31Z. The upstream [security release](https://github.com/vercel/next.js/releases/tag/v16.4.1)
+fixes that RCE, the SVG image-optimization RCE and Server Action denial of service.
+The candidate now pins Next 16.4.2, the following [patch release](https://github.com/vercel/next.js/releases/tag/v16.4.2).
+The existing Node 24.19.0 and React 19.3.0 satisfy its published requirements.
+Vitest is pinned to 5.0.5 to resolve both reported mocker advisories, whose
+[fix begins at 5.0.3](https://github.com/vitest-dev/vitest/security/advisories/GHSA-qxg6-89mg-rqv8).
+No audit threshold, advisory exclusion or release control changes.
+
+Exact Next version checks and generated-type-reference provenance now require
+16.4.2; they do not accept a version range or the vulnerable runtime. A coherent
+16.3.8 build/receipt rejection regression failed before the change and all 23
+binding checks pass afterward. Six affected complete-byte manifest rejection
+cases and scoped lint pass. The published Next tarball confirms the same two
+generated type imports, development-badge hook/label and top-left configuration.
+The development-only ESLint forks retain their actual 16.3.8 provenance; their
+bytes/hashes are not relabeled or replaced by this runtime patch. The isolated
+startup fixture remains unused and is not production activation.
+
+The lockfile was generated with install scripts disabled; both production and
+full lockfile audits report zero vulnerabilities. Local installed Next/Vitest
+remain the earlier versions, so these lightweight checks are not execution proof
+of the patched runtime. Full fresh cloud installation and every mandatory check
+on the published dependency candidate remain required. Production stays held.

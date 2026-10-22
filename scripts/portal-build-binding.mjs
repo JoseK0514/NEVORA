@@ -223,7 +223,7 @@ export function retainPortalBuildBinding() {
   for (const path of [...requiredMetadata,...packageInputs]) if (!(path in (path.startsWith('.next/') ? artifactHashes : sourceHashes))) return fail();
   if (receipt.lockSha256 !== sourceHashes['package-lock.json']) return fail();
   const packageJson = metadataJson(readStable(root,'package.json'));
-  if (packageJson.scripts?.build !== 'next build' || packageJson.scripts?.start !== 'next start' || packageJson.dependencies?.next !== '16.3.8') return fail();
+  if (packageJson.scripts?.build !== 'next build' || packageJson.scripts?.start !== 'next start' || packageJson.dependencies?.next !== '16.4.2') return fail();
   const installedNext = metadataJson(readStable(root,'node_modules/next/package.json'));
   if (installedNext.version !== packageJson.dependencies.next) return fail();
   const lock = metadataJson(readStable(root,'package-lock.json'));
