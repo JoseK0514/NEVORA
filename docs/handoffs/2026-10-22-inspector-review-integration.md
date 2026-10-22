@@ -34,3 +34,11 @@ After verified integration, preserve every retiring remote tip as a lightweight 
 The development source inventory accepts an intentional missing branch only when its exact archive tag is present. It still rejects an advancing branch, missing/changed tag, omitted included source, unclassified new branch or an explicit branch ceiling violation. Tags preserve held/prototype/governance proposals without silently integrating them. A live owner/source advance requires reconciliation before deletion.
 
 Final source identities, complete CI/review results, exact retired/retained heads and the observed branch count will be appended only after those actions actually finish.
+
+## Prepared verification and remaining integration gate
+
+At preparation commit c5b3a02791a005e07e370d67970982bac9ec6977 (followed by source-inventory/handoff metadata): all 17 archive/source-inventory assertions passed, original archive custody passed, lint and TypeScript passed, all 69 existing release-engineering assertions passed, and the complete local unit run exited zero with 9,306 passed/801 skipped. Unit log: `/tmp/nevora-inspectors-unit-20261022.log`; no application file changed during that run. The refreshed source inventory separately passed for all 53 remote heads.
+
+PR23 at aca5591631502460ad6a4b674ed6614404a1a7d4 completed CI39848109299 with the Home suite failed; its phase-e-ui and phase-e-evidence aggregates correctly rejected the run. The owner is still replaying the shared-server Home cohort under diagnostics. This is the concrete integration blocker. No inspector preparation PR has been issued, no source owner was interrupted, no branch was deleted, and no release acceptance is claimed.
+
+Operating positions: engineering keeps archive validation dependency-free and outside application behavior; security treats historical probes as data and retains existing release/privacy controls; delivery waits for the active owner's final exact-source handoff; governance requires full CI/review before development merge and recoverable, race-guarded branch retirement afterward. These are the applied operating requirements, not a claim of an independent certification. The fresh preparation review and final combined-candidate review remain separate from a production authorization.

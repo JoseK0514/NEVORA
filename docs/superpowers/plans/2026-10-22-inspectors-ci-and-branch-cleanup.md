@@ -25,7 +25,7 @@
 ## Tasks
 
 - [x] Task1: Incorporate raw reports and reconcile current release findings against existing fixes/tests. Add archive custody checks with missing/tampered/extra-file regressions and bind them to CI. Preserve raw scripts as data in the exact evidence folder.
-- [ ] Task2: Prepare recoverable branch retirement and source-inventory support. Test active/retired refs, omitted/advanced tags and the5-branch ceiling. Record all exact heads and retain main/development plus at most3 active/required branches.
+- [x] Task2: Prepare recoverable branch retirement and source-inventory support. Test active/retired refs, omitted/advanced tags and the5-branch ceiling. Record all exact heads and retain main/development plus at most3 active/required branches.
 - [ ] Task3: Obtain current integration handoff, rebase/merge the latest verified development source, refresh all relevant heads, run required checks and fresh whole-branch review. Publish one complete Actions candidate; do not stitch partial runs into acceptance.
 - [ ] Task4: Merge the verified result to development, archive/delete only approved inactive branch refs, verify count<=5 and source recoverability, sync clean local development and deliver exact final handoff.
 
@@ -41,3 +41,6 @@
 - Local validation: lint, TypeScript and all69 existing release-engineering checks passed. Full unit suite is running; no full-suite outcome is claimed yet.
 - Cleanup dry plan:53 observed remote heads,48 proposed recoverable retirements and5 retained refs. It is PREPARED_NOT_EXECUTED and must be refreshed after the active owner's final source handoff.
 - Ruling: authorized branch deletions require exact-old-SHA leases and deletion-only refspecs. This compare-and-delete control prevents losing a concurrent push; it does not authorize forced updates or rewrites of any retained branch.
+- Full local unit verification completed with exit0:544 files passed/27 skipped;9306 tests passed/801 skipped,306.44s. Log: /tmp/nevora-inspectors-unit-20261022.log. No application source changed during the run.
+- Source inventory now classifies all53 observed remote heads, including the unchanged inspector source and the active integration/diagnostic references. After fetching, check:development-sources passed. A new owner head still requires the final Task3 reconciliation.
+- Concrete external gate: PR23 ataca5591631502460ad6a4b674ed6614404a1a7d4 completed run39848109299 with Home failed and phase-e-ui/phase-e-evidence rejected. Its owner remains active replaying the shared-server Home cohort in diagnostic run39852649616. No complete green CI or final reviewed owner handoff exists yet; Tasks3/4 cannot proceed from partial diagnostic success.
