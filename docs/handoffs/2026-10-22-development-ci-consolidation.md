@@ -175,3 +175,82 @@ case. Its screenshot shows the correct locked submitted state; the driver still
 waited for obsolete copy. It now requires the actual deadline message and
 `Locked · submitted`, then checks the same disabled controls and unchanged SQL
 records. These updates join the mirror fix in the same development PR.
+
+## Foreground timecard review after another account view
+
+Run 39791567520 on `33b41c0f` cleared browser installation on all initial runners
+and passed Phase E SQL, including the actual always-active sign-in limit. Its
+Communications browser report has 14 passing cells and zero runtime errors.
+Whole Phase D passed 122 checks before WebKit timed out at the second approval
+in its detail sheet. The driver had opened the Lead page, then acted on the
+background Manager sheet. Timecards intentionally clear their protected read
+and close the sheet on blur. The driver now returns the Manager to the foreground,
+loads the same current period, and explicitly reopens its sheet before approving
+and finalizing. No product privacy behavior changes. Eleven selected existing
+timecard privacy/focus/sheet regressions and scoped lint pass locally. The
+remaining matrix is being collected before publishing this final driver correction;
+its matching full cloud verification remains required.
+
+## Notification bell lifecycle regression
+
+The bell-ready wait alone did not resolve the final Home WebKit 1440 diagnostic
+on `33b41c0f`: it again recorded a native notification-read error just after the
+Schedule document committed. Inspection found the bell unconditionally paused
+and restarted its protected fetch on duplicate foreground focus/pageshow events.
+A new regression reproduced the unnecessary abort/restart on the original code.
+The bell now tracks whether its view is active, following the existing timecard
+pattern. Duplicate foreground events retain the current request; real blur,
+hide, offline, unmount and explicit notification changes retain their fences.
+Seven new lifetime regressions and six existing notification-panel tests pass.
+
+Home adds an actual held authorized notification GET: it must stay one request
+across duplicate foreground events, remain loading until release, and return a
+current successful count. The existing held My Time hard-navigation journey and
+all runtime-error rejection remain. This is an application lifecycle correction,
+not a new diagnostic exception, and still needs matching cloud browser proof.
+Calendar, Communications and Attention completed all fourteen cells each on
+`33b41c0f`; validation and all three SQL jobs are green. The completed run failed
+Attendance, Home and Navigation, so neither downstream evidence gate passed.
+
+## Exact contrast diagnostic without another full candidate run
+
+The completed candidate also passed Attention 14/14, leaving the three reported
+primary failures (Attendance, Home and Navigation). Navigation's WebKit 375
+Requests check found `color-contrast` after eight passing cells, with no runtime
+error, but omitted the node detail. Optional cloud run 39797352478 on
+`codex/browser-probe-20261022` at `77359b74` records axe target selectors and
+contrast values without HTML, content or raw URLs. It reuses the established
+probe-workflow pattern on its own branch; no additional PR or mandatory CI run
+is created. Its source is classified as reference only. Its result is diagnostic
+evidence and cannot certify the development candidate.
+
+That diagnostic passed Requests contrast at WebKit 375, then found a later WebKit
+1024 DOM-commit race immediately after a synthetic blur. Navigation now waits
+for the cleared DOM and still asserts zero private rows before any refocus/read;
+its separate synchronous abort and held-response fences stay unchanged.
+The detailed axe projection is retained for every checked page. No contrast rule
+or threshold is removed, and no visual correction is inferred from a passing
+sample. Optional run 39799596894 at probe head `4806c387` repeats the WebKit 375
+scenario in seven fresh owned applications to capture the intermittent contrast
+finding. The 52-source inventory reconciles this updated reference head.
+
+That repetition captured two Requests failures across seven isolated cases, all
+with zero runtime errors and closed owned applications. Axe measured secondary
+labels at 3.4–3.7:1 and the status tag at 3.7:1: unrelated sheet children were
+faded together. The approved `data-sig-sheet` entrance starts at opacity zero
+and lasts 280 ms (180 ms with reduced motion); screenshot/network readiness
+does not guarantee its completion. Navigation now waits for the actual sheet's
+computed opacity of one and finite entrance animations to finish before running
+the unchanged axe rule set. It records before/after animation state beside the
+detailed axe evidence. No product color, motion, threshold or timeout changes.
+
+Optional probe `c1c10a67`, run 39801825674, passed the helper against the actual
+stylesheet in both motion modes: a paused, partially faded sheet must keep it
+pending; playing the animation must finish at opacity one. It then repeats the
+seven isolated WebKit 375 cases: all seven passed, zero runtime errors, all owned
+applications closed, and source unchanged. Actual sheet opacity before the wait
+ranged from zero to 0.999927; every audit ran at opacity one with no remaining
+entrance animation. The controlled paused samples were 0.727373 (normal motion)
+and 0.871027 (reduced motion), and both stayed pending until actually played.
+This is diagnostic proof only; the corrected
+development candidate still requires all 12 mandatory jobs and 70 Phase E cells.
