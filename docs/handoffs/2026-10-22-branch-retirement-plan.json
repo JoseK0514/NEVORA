@@ -26,7 +26,7 @@
       "sha": "39ee9d1dbfd9e69dee8ffdfe9662465919e1aa33",
       "action": "archive-then-delete-after-verified-merge",
       "disposition": "included",
-      "reason": "Review archive added after the initial CI candidate freeze. All 409 changed files are under docs/product/reviews/50-inspectors-2026-10-21; no runtime changes relative to development. Retained as external review evidence, not merged or self-certified.",
+      "reason": "The 409-file original review archive is incorporated unchanged into this prepared candidate, with custody checks. Development merge and current release acceptance are still pending; historical findings are not self-certified.",
       "archiveRef": "refs/tags/archive/branches/2026-10-22/NEVORA-50-inspectors"
     },
     {
