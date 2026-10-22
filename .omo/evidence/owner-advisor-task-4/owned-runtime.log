@@ -1,0 +1,10 @@
+
+ RUN  v5.0.2 /Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel Scheduler
+
+
+ Test Files  5 passed (5)
+      Tests  36 passed (36)
+   Start at  16:33:36
+   Duration  609ms (tests 69%, import 16%, transform 14%, worker 1%)
+
+exit=0

@@ -1,0 +1,42 @@
+✔ allowed real Request transport, free catalog, failure reservation, restart and twenty-call lifetime cap (480.285667ms)
+✖ wrong endpoint, credential, redirects, models, body styles and output limits never reach transport (29.263625ms)
+✔ redirect response is rejected and remains charged (28.281958ms)
+✔ investigator function, message and encrypted reasoning rounds are accepted (31.25175ms)
+✔ fail closed: malformed (8.218833ms)
+✔ fail closed: symlink (7.068875ms)
+✔ fail closed: lock (7.241ms)
+✔ fail closed: missing (7.236667ms)
+✔ fail closed: expired (7.283458ms)
+✔ fail closed: tampered (6.460167ms)
+✔ fail closed: missing-receipt (33.742708ms)
+✔ fail closed: pending (11.364875ms)
+✔ multiple processes contend without exceeding twenty lifetime reservations (513.507458ms)
+✔ known Node preload installs before application code (102.228792ms)
+✔ invalid UTF-8, unsafe permissions and expiry after guard creation reject before transport (6.6555ms)
+✔ changed receipt and ledger counter reject further reservations (58.061667ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 15
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1388.472167
+
+✖ failing tests:
+
+test at src/test/integration/owner-advisor-pilot.check.mts:14:1
+✖ wrong endpoint, credential, redirects, models, body styles and output limits never reach transport (29.263625ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:14:580)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: undefined,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+exit=1
