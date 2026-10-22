@@ -17,9 +17,13 @@ export function NotificationBell({authority}:{authority:string}) {
    if(response.status===401||response.status===403)return {state:'unavailable',reason:'access_denied'};
    if(!response.ok)throw Error('Notifications unavailable');return response.json();
   },value=>parseEmployeeView(value,'notifications'),reason=>({state:'unavailable',reason}),()=> 'read_failed');
-  control.current=controller;let mounted=true;
-  const pause=()=>controller.pause();
-  const sync=()=>{controller.pause();if(document.visibilityState!=='hidden'&&navigator.onLine)controller.start();};
+  control.current=controller;let mounted=true,active=false;
+  const pause=()=>{active=false;controller.pause();};
+  const sync=(event?:Event)=>{
+   if(document.visibilityState==='hidden'||!navigator.onLine){pause();return;}
+   if(active&&event?.type!=='nevora:notifications-changed')return;
+   pause();active=true;controller.start();
+  };
   document.addEventListener('visibilitychange',sync);
   for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);
   for(const event of ['focus','pageshow','online','nevora:notifications-changed'])window.addEventListener(event,sync);

@@ -100,6 +100,7 @@ try{
     await ep.unroute('**/api/timecards');
     const {context:lead,page:lp}=await context(browser,'D3-L');await lp.goto(app.url+url);await lp.getByRole('heading',{name:'Your timecard',exact:true}).waitFor();
     assert.equal(await lp.getByRole('button',{name:'Approve timecard',exact:true}).count(),0);checked(engine+': Lead self-service without management controls');
+    currentPage=mp;await mp.bringToFront();await mp.goto(app.url+url);await openCard();
     await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Approved$/}).waitFor();await card.getByRole('button',{name:'Finalize period',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Finalized$/}).waitFor();
     await mp.goto(app.url+'/app/payroll-export?start=2026-09-21&end=2026-09-27');await mp.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
     await mp.getByRole('checkbox',{name:/Avery Period QA/}).check();await mp.getByRole('button',{name:'Generate reviewed export',exact:true}).click();await mp.getByRole('button',{name:'Download mapped CSV',exact:true}).waitFor();checked(engine+': finalized neutral export receipt verified');
