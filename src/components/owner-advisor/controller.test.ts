@@ -143,3 +143,33 @@ it("fences an old profile read completing after a save and retains the saved edi
   expect(state?.snapshot?.profile.revision).toBe(2);
   c.stop();
 });
+it("does not restore a late answer after signout retirement and stop", async () => {
+  vi.useFakeTimers();
+  let state: AdvisorView | undefined;
+  let finish: ((r: Response) => void) | undefined;
+  const c = createAdvisorController(
+    (v) => (state = v),
+    async (_url, init) =>
+      init?.method === "POST"
+        ? new Promise((r) => (finish = r))
+        : Response.json(snap()),
+  );
+  c.start();
+  await vi.advanceTimersByTimeAsync(0);
+  c.editQuestion("Private question");
+  const pending = c.ask();
+  c.pause();
+  c.stop();
+  finish?.(
+    Response.json({
+      ...snap(),
+      state: "answered",
+      answer: { text: "Private answer", sources: [] },
+    }),
+  );
+  await pending;
+  c.start();
+  expect(state?.snapshot).toBeNull();
+  expect(state?.answer).toBeNull();
+  expect(state?.question).toBe("");
+});

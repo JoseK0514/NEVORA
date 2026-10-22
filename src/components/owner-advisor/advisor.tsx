@@ -8,6 +8,7 @@ import {
   type AdvisorView,
 } from "./controller";
 import "./advisor.css";
+import { bindAdvisorLifecycle } from "./lifecycle";
 const starters = [
   "What needs my attention today?",
   "Investigate coverage for tomorrow and compare my options.",
@@ -272,38 +273,15 @@ export function OwnerAdvisor() {
   useEffect(() => {
     const c = createAdvisorController(setView);
     ref.current = c;
-    const pause = () => c.pause();
-    const resume = () => {
-      if (
-        document.visibilityState !== "hidden" &&
-        navigator.onLine &&
-        document.hasFocus()
-      )
-        c.start();
-    };
-    const visibility = () => {
-      pause();
-      resume();
-    };
-    const focus = (e: Event) => {
-      if (e.target === window) resume();
-    };
-    document.addEventListener("visibilitychange", visibility);
-    for (const name of ["blur", "pagehide", "offline", "nevora:signout"])
-      window.addEventListener(name, pause);
-    for (const name of ["pageshow", "online", "storage"])
-      window.addEventListener(name, visibility);
-    window.addEventListener("focus", focus);
-    resume();
+    const cleanup = bindAdvisorLifecycle(
+      c,
+      window,
+      document,
+      () => navigator.onLine,
+    );
     return () => {
-      c.stop();
+      cleanup();
       ref.current = null;
-      document.removeEventListener("visibilitychange", visibility);
-      for (const name of ["blur", "pagehide", "offline", "nevora:signout"])
-        window.removeEventListener(name, pause);
-      for (const name of ["pageshow", "online", "storage"])
-        window.removeEventListener(name, visibility);
-      window.removeEventListener("focus", focus);
     };
   }, []);
   return (
