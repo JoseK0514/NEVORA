@@ -651,3 +651,37 @@ scenario files match the tested diagnostic source. The optional probe workflow
 and entry points remain excluded. Every required final-source job and all 70
 browser cells remain mandatory; the following complete cloud run is the
 acceptance gate, and supporting results are not stitched into its verdict.
+
+## Tablet foreground precondition and failure evidence
+
+Full run 39844594485 at `5d0abab1` / merge `5c586f20` passed Phase E SQL and
+D1.3, then Whole Phase D timed out after 182 checks waiting for Clock In following
+the initial WebKit tablet PIN sign-in. Chromium's whole journey had completed.
+The remaining jobs were cancelled to save runner minutes. Cancellation is not a
+pass; this source is not accepted. The preceding source's Whole Phase D had passed
+both engines, so this finding requires direct diagnostic evidence.
+
+The failure image was still pointed at the Owner's setup page, not the tablet.
+The harness now selects the actual tablet page before its operations and masks
+input/textarea fields in failure screenshots. Bounded failure metadata records
+only route, focus, visibility, online state, PIN-gate phase and alert count. PIN
+diagnostics retain only digit count and clear/verify/status HTTP codes, never PIN
+values, setup codes, response bodies, cookies or headers.
+
+The driver switched to the Owner for setup without explicitly foregrounding the
+tablet again for PIN entry. The application intentionally resets verification on
+hide and rejects verification while hidden. A foreground mismatch is a hypothesis
+for the earlier failure; that image cannot prove its state. Before each native
+PIN sequence, the corrected driver brings the tablet to the foreground, observes
+actual visible/focused/online state and the enabled gate, and verifies four
+entered digits before Continue. Application privacy clearing and all original
+Clock In, uncertain-action, identity and immutable-record assertions remain.
+Focused cloud run 39846653700 at `684dfbea` is executing the complete Whole Phase D
+suite in both engines with these diagnostics; no success is assumed yet.
+
+That focused run passed all 201 checks in both engines with errors empty and a
+clean source checkpoint. All six native PIN attempts were focused, visible and
+online with four digits entered; every verify/status response was 200. The owned
+cluster stopped and was removed. The integrated Whole Phase D driver matches the
+tested probe bytes. This proves the corrected journey, not the historical hidden
+state that was never captured, and does not replace the next mandatory full run.
