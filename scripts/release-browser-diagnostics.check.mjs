@@ -1,7 +1,26 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { safeBrowserFailure } from './release-browser-diagnostics.mjs';
+import { safeBrowserFailure, safeLoginServerRequests } from './release-browser-diagnostics.mjs';
+
+test('login server diagnostics retain only bounded route/status/timing fields', () => {
+  const records = safeLoginServerRequests([
+    '\u001b[32mPOST /login?password=short-secret&returnTo=/private 200 in 1.5s\u001b[0m',
+    'GET /app 200 in 42ms',
+    'GET /api/calendar/private-capability 200 in 5ms',
+    'POST /login-extra 200 in 7ms',
+    'password=short-secret cookie=private-cookie',
+  ].join('\n'));
+  assert.deepEqual(records, [
+    { method: 'POST', route: '/login', status: 200, elapsedMs: 1500 },
+    { method: 'GET', route: '/app', status: 200, elapsedMs: 42 },
+  ]);
+  assert(!/secret|cookie|private|returnTo/.test(JSON.stringify(records)));
+  const many = Array.from({ length: 30 }, (_, index) => `GET /app 200 in ${index}ms`).join('\n');
+  assert.equal(safeLoginServerRequests(many).length, 16);
+  assert.equal(safeLoginServerRequests(many)[0].elapsedMs, 14);
+  assert.deepEqual(safeLoginServerRequests('GET /app 999 in 2ms\nGET /app 200 in 1.2.3ms'), []);
+});
 
 const cell = { suite: 'home', engine: 'webkit', width: 430, status: 'failed' };
 const credential = 'A'.repeat(43), digest = 'b'.repeat(64);

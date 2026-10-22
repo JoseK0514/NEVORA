@@ -685,3 +685,49 @@ online with four digits entered; every verify/status response was 200. The owned
 cluster stopped and was removed. The integrated Whole Phase D driver matches the
 tested probe bytes. This proves the corrected journey, not the historical hidden
 state that was never captured, and does not replace the next mandatory full run.
+
+## Native secondary Home sign-in diagnostic
+
+Run 39848109299 on `aca55916` / merge `70f19db9` passed validate (9,318 units,
+types, repository lint, production build, both audits), all three SQL jobs, full
+Attendance/remediation/D2/Clocker, Communications14 and Calendar14. Navigation and
+Attention were still running when Home failed; those unfinished results are not
+assumed successful. Home passed ten cells before WebKit430 timed out in the
+replaced-session stage waiting for its secondary native sign-in to reach Home.
+The trace records a POST /login with no response before the existing 30-second
+wait expires, and runtime errors are empty. Primary-page capture shows the old
+Home's private data cleared. It does not show the secondary page's state or prove
+where that POST stalled. The full workflow remains unverified.
+
+The Home sign-in diagnostic now labels primary/replacement targets, records
+request completion as well as request/response/failure, and bounds page-state
+capture. On failure it retains only safe login/app request statuses/durations
+from the owned server log and grouped PostgreSQL wait states. It captures no
+request/response bodies, credentials, cookies, headers or arbitrary server log
+text, and masks input/textarea values in target screenshots. The actual native
+sign-in and authenticated-arrival assertion remain unchanged; no retry or raised
+timeout is introduced. Scoped lint, syntax and all 141 runtime-observer
+regressions pass locally; no heavy local verification was started.
+
+Focused cloud run 39851642862 at `d5e8eb13` is exercising the first four shared-
+server Home WebKit cells, including real secondary account replacement, to
+capture the missing distinction between browser, server and database waits. No
+application or driver fix is claimed from diagnostics alone.
+
+Run 39848109299 subsequently completed with Navigation14 and Attention14 also
+passing: nine primary jobs succeeded, Home failed, and both downstream evidence
+gates failed. That is 66 successful Phase E cells, not 70, and is not acceptance.
+The production-build receipt binds clean, unchanged merge source `70f19db9` and
+its exact lockfile; fresh Ubuntu ran Next 16.4.2. Validate passed 9,318 tests in
+546 files, with 801 existing skipped tests, and both audits reported zero
+vulnerabilities.
+
+Focused run 39851642862 at `d5e8eb13` passed all four WebKit widths
+320/375/390/430 with zero errors and owned cleanup, without reproducing the
+secondary sign-in stall. It used a cold WebKit-only cohort and direct launch, so
+it does not establish the cause of the official mixed-engine failure. Full Home
+diagnostic run 39852649616 at `3632f232` replays the actual shared-server,
+launchServer/connect, Chromium7 then WebKit7 matrix with the enhanced diagnostic.
+Its optional job budget is 50 minutes, matching the unchanged mandatory Home
+budget; no mandatory assertion, timeout or test is modified. Its result remains
+pending and cannot substitute for all required final-source jobs.
