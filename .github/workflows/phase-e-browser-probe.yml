@@ -16,11 +16,8 @@ jobs:
         target: [home, d2, navigation, clocker]
     env:
       PHASE_E_EXPECTED_SHA: ${{ github.sha }}
-      PHASE_E_EVIDENCE_DIR: ${{ runner.temp }}/diagnostic-${{ matrix.target }}
       PHASE_D2_CORRECTIONS_EXPECTED_SHA: ${{ github.sha }}
-      PHASE_D2_CORRECTIONS_EVIDENCE_DIR: ${{ runner.temp }}/diagnostic-d2
       PHASE_C_EXPECTED_SHA: ${{ github.sha }}
-      PHASE_C_EVIDENCE_DIR: ${{ runner.temp }}/diagnostic-clocker-browser
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -32,6 +29,11 @@ jobs:
           node-version: 24.19.0
           cache: npm
       - run: npm ci
+      - name: Set owned diagnostic evidence directories
+        run: |
+          echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/diagnostic-${{ matrix.target }}" >> "$GITHUB_ENV"
+          echo "PHASE_D2_CORRECTIONS_EVIDENCE_DIR=$RUNNER_TEMP/diagnostic-d2" >> "$GITHUB_ENV"
+          echo "PHASE_C_EVIDENCE_DIR=$RUNNER_TEMP/diagnostic-clocker-browser" >> "$GITHUB_ENV"
       - name: Install pinned browser runtime
         run: |
           PW_ROOT="$GITHUB_WORKSPACE/tools/ci-browser-runtime"
