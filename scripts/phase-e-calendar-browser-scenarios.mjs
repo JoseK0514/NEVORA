@@ -3,6 +3,7 @@ import {join} from 'node:path';
 import {readFile,writeFile} from 'node:fs/promises';
 import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
+import {waitForCalendarCopyReady} from './browser-render-readiness.mjs';
 export async function runScenario({app,page,context,engine,width,evidenceDirectory,runtimeErrors:cellRuntimeErrors}){
  const checks=[],runtimeErrors=[],receipt=join(evidenceDirectory,`calendar-case-${engine}-${width}-report.json`);let stage='seed';
  page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({stage,...safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})});});
@@ -44,9 +45,11 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
   const stored=JSON.stringify(await q('SELECT * FROM calendar_subscriptions WHERE employee_id=$1',[fixture.actors[0]]))+JSON.stringify(await q('SELECT * FROM calendar_operations WHERE actor_employee_id=$1',[fixture.actors[0]]));assert.equal(stored.includes(firstUrl),false);assert.equal(stored.includes(new URL(firstUrl).pathname.split('/')[3]),false);
  });
  await step('Completed controlled clipboard write shows copied feedback only after completion',async()=>{
+  await waitForCalendarCopyReady(page,'Link created.');
   await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:()=>new Promise(resolve=>{window.finishFictionalCopy=resolve;})}}));await panel.getByRole('button',{name:'Copy link',exact:true}).click();assert.equal(await panel.getByText('Link copied.',{exact:true}).count(),0);await page.evaluate(()=>window.finishFictionalCopy?.());await panel.getByText('Link copied.',{exact:true}).waitFor();
  });
  await step('Clipboard rejection offers keyboard-accessible manual select without false copied success',async()=>{
+  await waitForCalendarCopyReady(page,'Link copied.');
   await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw Error('Fictional clipboard unavailable');}}}));await panel.getByRole('button',{name:'Copy link',exact:true}).click();await panel.getByText('Copy was unavailable. Use Select link, then copy it manually.',{exact:true}).waitFor();assert.equal(await panel.getByText('Link copied.',{exact:true}).count(),0);
   await panel.getByRole('button',{name:'Select link',exact:true}).focus();await page.keyboard.press('Enter');assert.equal(await page.evaluate(()=>{const field=document.activeElement;return field instanceof HTMLTextAreaElement&&field.selectionStart===0&&field.selectionEnd===field.value.length;}),true);
  });
@@ -58,6 +61,7 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
   await panel.getByRole('button',{name:'Replace link',exact:true}).click();await panel.getByText('Link created.',{exact:true}).waitFor();secondUrl=await panel.getByLabel('Your private calendar link',{exact:true}).inputValue();assert.equal(firstUrl===secondUrl,false);const old=await page.request.get(firstUrl,{headers:{'If-None-Match':'"fictional-old"'}});assert.equal(old.status(),404);assert.equal(await old.text(),'Calendar unavailable.');const replacement=await page.request.get(secondUrl);assert.equal(replacement.status(),200);assert.equal(await replacement.text(),firstBody);
  });
  await step('Delayed completed clipboard response after hide cannot restore copied notice or private URL',async()=>{
+  await waitForCalendarCopyReady(page,'Link created.');
   await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:()=>new Promise(resolve=>{window.finishFictionalCopy=resolve;})}}));await panel.getByRole('button',{name:'Copy link',exact:true}).click();await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await page.evaluate(()=>window.finishFictionalCopy?.());await noUrl();assert.equal(await panel.getByText('Link copied.',{exact:true}).count(),0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await state('Link active');await noUrl();
  });
  await step('Lost issuance response retries the same committed operation without recovering the raw URL',async()=>{
