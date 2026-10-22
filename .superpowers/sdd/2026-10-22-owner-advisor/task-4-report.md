@@ -55,3 +55,14 @@ Initial fixture run rejected macOS symlinked tmp paths; fixed test fixture to us
 ## Positions and next gate
 
 Engineering: bounded test-runtime seam; no new dependency. Security: explicit credential injection, restrictive egress/request schema, persistent failure-closed allowance. Governance: GO WITH CONDITIONS for root's bounded fictional local pilot only; no policy exception or production authorization requested. Release impact: CONDITION, root must validate actual Next wrapper/child preload and source/mirror teardown in its real local runtime before live connection. The executor's native preload, Request-shaped transport and unit contract evidence do not claim a completed Next/browser/live-provider scenario. Independent audit closure is not claimed. Root owns live proof, review, fixed ledger-path custody, credential lifecycle and actual credit reporting.
+
+## Scoped correction: loopback redirect bypass
+
+Review of `6c3e1dfb` identified that loopback fetch could follow a 307/308 to an unchecked remote endpoint. Guard now sends the normalized Request with forced `redirect: 'error'` for loopback transport, and rejects redirected/3xx responses defensively. This also preserves Request bodies instead of reusing the original body after Request construction. No pilot ledger or credentials were touched.
+
+Regression uses two real local HTTP servers and both string+POST and Request+GET forms, default/follow/manual caller modes, 307/308 responses. Binary observables: second server request count stays zero, ledger attempts stay zero, direct `/ready` returns `ready`. The native preload test now requires exactly `Owner advisor pilot guard refused operation`; unrelated DNS/network errors exit 3 and fail.
+
+- RED: `node --test src/test/integration/owner-advisor-pilot.check.mts` before guard correction: 17 passed / 1 failed (`Missing expected rejection`) in `.omo/evidence/owner-advisor-task-4/redirect-red.log`.
+- GREEN: same full invocation after correction: 18 passed / 0 failed, exit=0, in `.omo/evidence/owner-advisor-task-4/redirect-green.log`.
+- Affected owned-runtime invocation listed above: 36 passed, exit=0; `npx tsc --noEmit` exit=0; exact five-owned-file ESLint invocation listed above exit=0. Commands and complete output in `.omo/evidence/owner-advisor-task-4/redirect-checks.log`.
+- No paid calls or external service requests. Real Next readiness after this correction remains root's next gate; local `/ready` evidence is not represented as actual Next verification. Root's earlier source/mirror verification belongs to the prior commit, not this change.

@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { spawn } from 'node:child_process';
+import { createServer, type Server } from 'node:http';
 import { PILOT, PILOT_ENDPOINT, guardedFetch, initializePilot, reservePilot, type OwnerAdvisorPilot } from './owner-advisor-pilot.mts';
 function fixture() { const root = realpathSync(mkdtempSync(join(tmpdir(), 'pilot-'))); const p = { ...PILOT, credential: 'fictional-test-key', ledgerPath: join(root, 'private', 'ledger.json') }; initializePilot(p); return { p, cleanup: () => rmSync(root, { recursive: true, force: true }) }; }
 function body() { return { model: PILOT.model, store: false, include: ['reasoning.encrypted_content'], instructions: 'Fictional demo', input: [{ role: 'user', content: 'hello' }], tools: [], parallel_tool_calls: false, max_output_tokens: 4096 }; }
@@ -115,7 +116,7 @@ finally {
 test('known Node preload installs before application code', async () => { const f = fixture(); try {
     const preload = fileURLToPath(new URL('./owner-advisor-pilot-preload.mts', import.meta.url));
     const { credential, ...config } = f.p;
-    await new Promise<void>((resolve, reject) => { const child = spawn(process.execPath, ['--import', preload, '--input-type=module', '-e', "try { await fetch('https://api.openai.com/v1/responses'); process.exit(2); } catch { console.log('BLOCKED_BEFORE_TRANSPORT'); }"], { env: { ...process.env, NEON_AI_GATEWAY_TOKEN: credential, NEVORA_OWNER_ADVISOR_PILOT: JSON.stringify(config) }, stdio: 'pipe' }); let output = ''; child.stdout.on('data', c => output += c); child.once('error', reject); child.once('exit', code => { try {
+    await new Promise<void>((resolve, reject) => { const child = spawn(process.execPath, ['--import', preload, '--input-type=module', '-e', "try { await fetch('https://forbidden.invalid/v1/responses'); process.exit(2); } catch (error) { if (error.message !== 'Owner advisor pilot guard refused operation') process.exit(3); console.log('BLOCKED_BEFORE_TRANSPORT'); }"], { env: { ...process.env, NEON_AI_GATEWAY_TOKEN: credential, NEVORA_OWNER_ADVISOR_PILOT: JSON.stringify(config) }, stdio: 'pipe' }); let output = ''; child.stdout.on('data', c => output += c); child.once('error', reject); child.once('exit', code => { try {
         assert.equal(code, 0);
         assert.match(output, /BLOCKED_BEFORE_TRANSPORT/);
         resolve();
@@ -173,4 +174,49 @@ test('unchanged pilot expires exactly 24 hours after initialization', async (t) 
         assert.equal(calls, 0);
         assert.equal(count(f.p), 0);
     } finally { f.cleanup(); t.mock.timers.reset(); }
+});
+
+
+test('real loopback redirects cannot reach a second server and nonredirect readiness still works', async () => {
+    const f = fixture();
+    let targetRequests = 0;
+    const target = createServer((_req, res) => { targetRequests++; res.end('escaped'); });
+    const listen = (server: Server) => new Promise<string>((resolve, reject) => {
+        server.once('error', reject);
+        server.listen(0, '127.0.0.1', () => {
+            const address = server.address();
+            if (!address || typeof address === 'string') return reject(Error('No test port'));
+            resolve(`http://127.0.0.1:${address.port}`);
+        });
+    });
+    const close = (server: Server) => new Promise<void>((resolve, reject) => {
+        server.close(error => error ? reject(error) : resolve());
+        server.closeAllConnections();
+    });
+    let source: Server | undefined;
+    try {
+        const destination = await listen(target);
+        source = createServer((req, res) => {
+            if (req.url === '/ready') { res.end('ready'); return; }
+            res.writeHead(req.url === '/307' ? 307 : 308, {location: destination});
+            res.end();
+        });
+        const origin = await listen(source);
+        const fetch = guardedFetch(f.p, globalThis.fetch);
+        assert.equal(await (await fetch(origin + '/ready')).text(), 'ready');
+        for (const status of [307, 308]) {
+            for (const redirect of [undefined, 'follow', 'manual'] as const) {
+                await assert.rejects(fetch(origin + '/' + status, {
+                    method: 'POST', body: 'fictional-body', redirect,
+                }));
+                await assert.rejects(fetch(new Request(origin + '/' + status, {redirect})));
+            }
+        }
+        assert.equal(targetRequests, 0);
+        assert.equal(count(f.p), 0);
+    } finally {
+        if (source) await close(source);
+        await close(target);
+        f.cleanup();
+    }
 });

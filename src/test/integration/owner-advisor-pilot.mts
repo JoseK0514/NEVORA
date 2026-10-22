@@ -134,8 +134,12 @@ export function guardedFetch(p: OwnerAdvisorPilot, transport: typeof fetch): typ
     assertPilotLedger(p);
     return async (input, init) => {
         const request = new Request(input, init), url = new URL(request.url);
-        if (url.protocol === 'http:' && ['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname))
-            return transport(input, init);
+        if (url.protocol === 'http:' && ['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname)) {
+            // Never let an internal endpoint redirect around remote validation/reservation.
+            const response = await transport(request, { redirect: 'error' });
+            if (response.redirected || (response.status >= 300 && response.status < 400)) fail();
+            return response;
+        }
         if (request.url === PILOT.baseUrl + '/v1/models' && request.method === 'GET' && request.redirect === 'error' && request.headers.get('authorization') === `Bearer ${p.credential}`)
             return transport(request);
         if (request.url !== PILOT_ENDPOINT || request.method !== 'POST' || request.redirect !== 'error' || request.headers.get('authorization') !== `Bearer ${p.credential}` || request.headers.get('content-type') !== 'application/json')
