@@ -131,7 +131,9 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   assert.equal(focus.outlineStyle,'solid');assert(parseFloat(focus.outlineWidth)>=2);
   observations.keyboard.push({stage:'manager-before-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus()),managerFocused:await mp.evaluate(()=>document.hasFocus())});
   await mp.bringToFront();assert(await mp.evaluate(()=>document.hasFocus()),'Manager native keyboard page must be foreground');
-  const approve=mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first();await approve.focus();
+  observations.keyboard.push({stage:'manager-return',state:await mp.evaluate(()=>({visibility:document.visibilityState,focused:document.hasFocus(),routeState:document.querySelector('.portal-route-state h2')?.textContent??null,correctionRows:document.querySelectorAll('.manager-correction-row').length}))});
+  await mp.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
+  const approve=mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first();await approve.waitFor();await approve.focus();
   const managerFocus=await approve.evaluate(el=>({active:document.activeElement===el,outlineStyle:getComputedStyle(el).outlineStyle,outlineWidth:getComputedStyle(el).outlineWidth}));
   assert(managerFocus.active);assert.equal(managerFocus.outlineStyle,'solid');assert(parseFloat(managerFocus.outlineWidth)>=2);observations.keyboard.push({role:'manager',focus:managerFocus});
 
@@ -190,5 +192,8 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   observations.unexpectedRuntime=observations.runtime.filter(e=>!(e.phase==='offline'&&/^(Load failed|TypeError: Load failed|Failed to fetch|TypeError: Failed to fetch)$/.test(e.message)));
   assert.deepEqual(observations.unexpectedRuntime,[]);
   checked(`${engine}: 006 canonical comparisons/defaults/history, 008 lifecycle states and privacy`);
+ }catch(error){
+  observations.failureState=await mp.evaluate(()=>({visibility:document.visibilityState,focused:document.hasFocus(),routeState:document.querySelector('.portal-route-state h2')?.textContent??null,correctionRows:document.querySelectorAll('.manager-correction-row').length,correctionStatus:document.querySelector('.manager-corrections-empty')?.textContent??null})).catch(()=>null);
+  await mp.screenshot({path:join(evidence,`${engine}-ui-manager-failure.png`),fullPage:true}).catch(()=>{});throw error;
  }finally{await employee.close();await owner.close();}
 }

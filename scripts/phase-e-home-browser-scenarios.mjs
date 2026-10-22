@@ -29,6 +29,19 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const scenario=await seedOwnedScenario(app.database.executor,label,index+14),actor=scenario.actors[0],q=(text,values=[])=>app.database.executor.query({text,values});
  const checks=[],runtimeErrors=[],screenshots=[],details={stage:'Task11 developer verification',engine,width,actor,checks,screenshots,runtimeErrors};let stage='seed',binding,homeResponse,managerContext,manager;
  cellRuntimeErrors.setStageReader(()=>stage);
+ details.lifecycleTrace=[];
+ const trace=sample=>{if(details.lifecycleTrace.length===160)details.lifecycleTrace.shift();details.lifecycleTrace.push({at:Date.now(),stage,...sample});};
+ await page.exposeBinding('__nevoraHomeLifecycle',(_source,sample)=>trace(sample));
+ await page.addInitScript(()=>{
+  const documentId=crypto.randomUUID();
+  const sample=event=>void globalThis.__nevoraHomeLifecycle({event,documentId,route:location.pathname,focused:document.hasFocus(),visibility:document.visibilityState,readyState:document.readyState}).catch(()=>{});
+  for(const event of ['focus','blur','pagehide','pageshow'])window.addEventListener(event,()=>sample(event));
+  for(const event of ['DOMContentLoaded','visibilitychange'])document.addEventListener(event,()=>sample(event));
+  sample('document-created');
+ });
+ const notificationTrace=(event,request)=>{if(new URL(request.url()).pathname==='/api/notifications')trace({event,method:request.method(),navigation:request.isNavigationRequest()});};
+ const notificationStart=request=>notificationTrace('notification-start',request),notificationFinish=request=>notificationTrace('notification-finished',request),notificationFailed=request=>notificationTrace('notification-failed',request),nativeError=()=>trace({event:'pageerror'});
+ page.on('request',notificationStart);page.on('requestfinished',notificationFinish);page.on('requestfailed',notificationFailed);page.on('pageerror',nativeError);
  page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({stage,name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]')});});
  page.on('request',request=>{if(new URL(request.url()).pathname==='/api/employee/home')binding=request.headers()['x-nevora-home'];});
  const shot=async name=>{const path=join(evidenceDirectory,`home-task11-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
@@ -50,7 +63,29 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
    await writeFile(join(evidenceDirectory,`home-refresh-${engine}-${width}-report.json`),JSON.stringify({stage,diagnostic},null,2));throw error;
   }
  };
- async function login(target=page,id=actor,{waitForIdle=true}={}){await target.bringToFront();await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);try{await Promise.all([target.waitForURL(u=>u.pathname==='/app',{waitUntil:'commit'}),target.getByRole('button',{name:'Sign in',exact:true}).click()]);await target.locator('.app-shell.nevora-portal').waitFor();if(waitForIdle)await target.waitForLoadState('networkidle');}catch(error){const url=new URL(target.url()),code=url.searchParams.get('error');details.loginFailure={route:['/app','/login'].includes(url.pathname)?url.pathname:'other',error:['busy','invalid','missing','locked'].includes(code)?code:code?'other':null};await target.screenshot({path:join(evidenceDirectory,`home-${engine}-${width}-login-failure.png`),timeout:5000}).catch(()=>{});throw error;}}
+ async function login(target=page,id=actor,{waitForIdle=true}={}){
+  const started=Date.now(),attempt={stage,status:'started',trace:[]};details.loginAttempts??=[];details.loginAttempts.push(attempt);
+  const routeOf=value=>{try{const path=new URL(value).pathname;return ['/app','/login'].includes(path)?path:'other';}catch{return 'other';}};
+  const record=value=>{if(attempt.trace.length<40)attempt.trace.push({afterMs:Date.now()-started,...value});};
+  const requested=request=>{const route=routeOf(request.url());if(route!=='other')record({event:'request',route,method:request.method()});};
+  const responded=response=>{const route=routeOf(response.url());if(route!=='other')record({event:'response',route,method:response.request().method(),status:response.status(),redirect:!!(response.headers()['x-action-redirect']||response.headers().location)});};
+  const failed=request=>{const route=routeOf(request.url());if(route!=='other')record({event:'request-failed',route,method:request.method(),reason:/abort|cancel/i.test(request.failure()?.errorText??'')?'aborted':'transport-failed'});};
+  const navigated=frame=>{if(frame===target.mainFrame())record({event:'document',route:routeOf(frame.url())});};
+  target.on('request',requested);target.on('response',responded);target.on('requestfailed',failed);target.on('framenavigated',navigated);
+  try{
+   await target.bringToFront();await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
+   await target.getByRole('button',{name:'Sign in',exact:true}).click({noWaitAfter:true});
+   await target.waitForFunction(()=>location.pathname==='/app'&&!!document.querySelector('.app-shell.nevora-portal'));
+   await target.locator('.app-shell.nevora-portal').waitFor();attempt.arrival={documentRoute:'app',pageRoute:routeOf(target.url()),shellVisible:true};if(waitForIdle)await target.waitForLoadState('networkidle');attempt.status='ready';
+  }catch(error){
+   const url=new URL(target.url()),code=url.searchParams.get('error');details.loginFailure={route:routeOf(target.url()),error:['busy','invalid','missing','locked'].includes(code)?code:code?'other':null};attempt.status='failed';attempt.failure=details.loginFailure;
+   await writeFile(join(evidenceDirectory,`home-login-${engine}-${width}-report.json`),JSON.stringify({engine,width,attempts:details.loginAttempts},null,2));
+   await target.screenshot({path:join(evidenceDirectory,`home-${engine}-${width}-login-failure.png`),timeout:5000}).catch(()=>{});throw error;
+  }finally{
+   target.off('request',requested);target.off('response',responded);target.off('requestfailed',failed);target.off('framenavigated',navigated);
+   await writeFile(join(evidenceDirectory,`home-login-${engine}-${width}-report.json`),JSON.stringify({engine,width,attempts:details.loginAttempts},null,2));
+  }
+ }
  function gate(path){
   let release,started,finished,used=false,failure,outcome,operation='fetch',navigationReleased=false;const documentUrl=page.url();
   const wait=new Promise(r=>{release=r;}),seen=new Promise(r=>{started=r;}),done=new Promise(r=>{finished=r;});
@@ -293,7 +328,13 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');
  }finally{bellHold.release();await bellHold.done;await page.unroute(bellHold.path,bellHold.handler);page.off('request',observeBell);}
  checks.push('H11 duplicate foreground focus/pageshow retains one actual held authorized notification read; its returned current count is required');
- await ready();const early=gate('**/api/employee/my-time');await page.route(early.path,early.handler);await page.getByRole('button',{name:'Refresh recorded time',exact:true}).click();await early.seen;await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');const earlyNavigation=await page.goto(app.url+'/app/schedule?week='+scenario.week,{waitUntil:'domcontentloaded'});assert(earlyNavigation?.ok());await page.getByRole('heading',{name:'My schedule',exact:true}).waitFor();early.release('navigation');await early.done;assert.equal(early.failure,undefined);details.earlyTimeRouteOutcome=early.outcome;await page.unroute(early.path,early.handler);await page.waitForLoadState('networkidle');await page.goto(app.url+'/app');await ready();checks.push('H11 actual MyTime read interrupted by early hard route navigation produces no stale Home rows or page runtime error');
+ await ready();const early=gate('**/api/employee/my-time');await page.route(early.path,early.handler);await page.getByRole('button',{name:'Refresh recorded time',exact:true}).click();await early.seen;
+ await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');
+ const earlyNavigation=await page.goto(app.url+'/app/schedule?week='+scenario.week,{waitUntil:'domcontentloaded'});assert(earlyNavigation?.ok());await page.getByRole('heading',{name:'My schedule',exact:true}).waitFor();
+ await page.locator('.portal-notification-bell[data-state="ready"]').waitFor();
+ details.earlyTimeDestination=await page.evaluate(()=>({route:location.pathname,bellState:document.querySelector('.portal-notification-bell')?.getAttribute('data-state')}));
+ assert.deepEqual(details.earlyTimeDestination,{route:'/app/schedule',bellState:'ready'});
+ early.release('navigation');await early.done;assert.equal(early.failure,undefined);details.earlyTimeRouteOutcome=early.outcome;await page.unroute(early.path,early.handler);await page.waitForLoadState('networkidle');await page.goto(app.url+'/app');await ready();checks.push('H11 actual MyTime read interrupted by early hard route navigation produces no stale Home rows or page runtime error; destination notification read is ready before the next departure');
  stage='removal-review';
  await page.goto(app.url+'/app/schedule?week='+scenario.week);
  await page.getByRole('button',{name:'Confirm schedule',exact:true}).click();
@@ -327,5 +368,5 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  if(width===390){stage='communication-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE communications IN ACCESS EXCLUSIVE MODE');await refresh();await page.getByText('Communications unavailable',{exact:true}).waitFor();assert.equal(await page.getByText("You’re all set.",{exact:true}).count(),0);await shot('communications-unavailable');await blocker.query('COMMIT');await refresh();await page.getByText("You’re all set.",{exact:true}).waitFor();checks.push('H16 actual communication SQL lock failure suppresses all-clear and Retry restores current complete zero source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
  stage='axe-diagnostic';await page.addScriptTag({path:axeFile});details.axe=await page.evaluate(async()=>{const result=await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}});return result.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>({target:n.target.map(t=>String(t).replace(/\[[^\]]*\]/g,'[attribute]')),contrast:n.any.filter(a=>a.id==='color-contrast').map(a=>({ratio:a.data?.contrastRatio,foreground:a.data?.fgColor,background:a.data?.bgColor}))}))}));});assert.deepEqual(details.axe,[]);
  details.runtimeErrors=runtimeErrors;assert.deepEqual(runtimeErrors,[]);details.html=await page.locator('.employee-home').innerHTML();await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-checks.json`),JSON.stringify(details,null,2));return {checks};
- }catch(error){details.failedStage=stage;details.failure={name:error.name,code:error.code??null,message:'Browser step failed; see named stage and source location',location:error.stack?.split('\n').find(line=>line.includes('phase-e-home-browser-scenarios.mjs'))};await shot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-failure.json`),JSON.stringify(details,null,2));throw error;}finally{await managerContext?.close();}
+ }catch(error){details.failedStage=stage;details.failure={name:error.name,code:error.code??null,message:'Browser step failed; see named stage and source location',location:error.stack?.split('\n').find(line=>line.includes('phase-e-home-browser-scenarios.mjs'))};await shot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-failure.json`),JSON.stringify(details,null,2));throw error;}finally{page.off('request',notificationStart);page.off('requestfinished',notificationFinish);page.off('requestfailed',notificationFailed);page.off('pageerror',nativeError);await writeFile(join(evidenceDirectory,`home-lifecycle-${engine}-${width}-report.json`),JSON.stringify({engine,width,events:details.lifecycleTrace},null,2));await managerContext?.close();}
 }

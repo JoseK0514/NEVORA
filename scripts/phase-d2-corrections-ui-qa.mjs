@@ -42,6 +42,7 @@ const report={
 const checked=(name)=>{report.checks.push(name);console.log('[D2 browser] PASS '+name);};
 let app;
 const browsers=[];
+const cookiesByActor=new Map();
 const q=(text,values=[])=>app.database.executor.query({text,values});
 
 async function context(browser,viewport={width:1440,height:1000}){
@@ -53,17 +54,25 @@ async function context(browser,viewport={width:1440,height:1000}){
  });
  return c;
 }
-async function login(c,id){
+async function login(c,id,{reuseSession=false}={}){
+ if(reuseSession&&cookiesByActor.has(id)){
+  await c.addCookies(cookiesByActor.get(id));
+  const endpoint=id==='QAOWNER'?'/api/manager/time-corrections':'/api/employee/time-corrections';
+  const current=await c.request.get(app.url+endpoint,{headers:{'X-Nevora-Time-Correction':'1'}});
+  assert.equal(current.status(),200,'Reused real fixture session must still pass current server authorization');
+  report.sessionReuses??=[];report.sessionReuses.push({role:id==='QAOWNER'?'Owner':'Employee',status:current.status()});return;
+ }
  const page=await c.newPage();
  page.setDefaultTimeout(15000);
  await page.goto(app.url+'/login',{waitUntil:'domcontentloaded'});
  await page.getByLabel('Employee ID',{exact:true}).fill(id);
  await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
  await Promise.all([
-  page.waitForURL((url)=>url.pathname==='/app'),
+  page.waitForURL((url)=>url.pathname==='/app',{waitUntil:'commit'}),
   page.getByRole('button',{name:'Sign in',exact:true}).click(),
  ]);
- await page.waitForLoadState('networkidle');
+ await page.locator('.app-shell.nevora-portal').waitFor();await page.waitForLoadState('networkidle');
+ cookiesByActor.set(id,await c.cookies(app.url));
  await page.close();
 }
 async function geometry(page,selector,label,engine,width){
@@ -91,9 +100,11 @@ function localValue(instant){
 }
 
 try{
- app=await createOwnedNextApp(evidence);
- await seedOwnedApp(app.database.executor);
  const passwordHash=await hashPassword(TEST_PASSWORD);
+ for(const engine of ENGINES){
+ const fixtureEvidence=join(evidence,engine);await mkdir(fixtureEvidence,{recursive:true});
+ app=await createOwnedNextApp(fixtureEvidence);cookiesByActor.clear();
+ await seedOwnedApp(app.database.executor);
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('D2-E','Avery','Correction QA','555-0202','EMPLOYEE','loc-1')");
  await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',['D2-E',passwordHash]);
  await q("INSERT INTO employee_location_eligibility VALUES('D2-E','loc-1')");
@@ -110,7 +121,6 @@ try{
  await q(`INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at,version)
    VALUES('d2-browser-break','d2-browser-entry',clock_timestamp()-interval '190 minutes',clock_timestamp()-interval '175 minutes',1)`);
 
- for(const engine of ENGINES){
   const browser=await playwright[engine].launch({headless:true});
   browsers.push(browser);
   const employee=await context(browser);
@@ -198,6 +208,7 @@ try{
   await employeeAfter.close();
   await verifyCorrectionRecovery({browser,engine,app,q,context,login,checked,report,evidence,geometry});
   await verifyD2UiRemediation({app,browser,engine,evidence,report,checked,context,login,geometry,widths:WIDTHS});
+  await browser.close();await app.close();app=undefined;cookiesByActor.clear();
  }
  assert.deepEqual(report.errors,[]);
 }catch(error){

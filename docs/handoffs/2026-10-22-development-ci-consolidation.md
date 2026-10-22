@@ -346,3 +346,122 @@ notification bell and sheet readiness helper exactly match that probe source.
 All 52 branch heads are reconciled after fetching origin; scoped lint and
 whitespace checks pass. The corrections are being published together to PR23;
 only its following complete, matching-source mandatory CI can certify the result.
+
+## Current full-source sign-in diagnostic
+
+Candidate `52bc0821`, merge `c564e31b`, full run 39812884979 passed Phase E SQL,
+whole Phase D and remediation, then reached D2. Home passed ten cells and failed
+WebKit430 during the second-account sign-in at H10: navigation commit timed out,
+runtime errors were empty, and the original Home correctly cleared former-account
+facts. The current artifact captured the primary page, but not the other page's
+bounded route/error detail. Home sign-ins now emit a dedicated captured report
+containing only stage, elapsed times, static route classes, HTTP methods/statuses,
+redirect presence and request/navigation events; no actors, credentials, cookies,
+headers or arbitrary URLs. This is diagnostic instrumentation, not a claimed fix.
+Reference `f4a7eaf2` repeats WebKit430 in seven fresh owned applications to obtain
+the actual sign-in transport evidence before choosing an application or harness
+correction. Other current full-source jobs are still being collected.
+
+The completed `52bc0821` run also passed release SQL and all 14 Communications,
+Calendar and Attention cells. Its 9,316 unit tests passed, but types rejected the
+new copy test's captured nullable global path. A local constant fixes the closure
+type without a cast; both tests still pass, and cloud typecheck 39817453776 on
+`a7da650c` passed with source unchanged. Lint/build/audits did not run past the
+type failure on this candidate. Seven isolated Home430 repetitions (39815878309,
+`f4a7eaf2`) passed all 35 sign-ins, zero runtime errors, source custody and cleanup.
+The Home driver now requires actual current `/app` plus a visible authenticated
+shell after the native click, retaining bounded transport receipts; it no longer
+uses a separate navigation-event promise as the arrival oracle. Deliberately held
+initial reads remain inspected before network idle. No timeout increases.
+
+Navigation passed Chromium, then WebKit320 caught the development badge between
+visibility and a null bounding-box read. The driver now samples the current
+visible shadow-root button and its top-position rectangle in one bounded wait,
+keeping the same `y < 100` assertion and recording its measured bounds.
+
+D2 reached 67 checks, then its repeated `D2-E` password sign-ins hit the real
+limiter at `/login?error=busy`. Each engine now has a fresh owned app/database.
+Only non-identity response-loss setup reuses cookies from real completed fixture
+sign-ins, held in memory; every reuse must pass current server authorization with
+status 200. Explicit sign-out/account-switch/new-login and authority-loss tests
+still perform fresh native sign-ins. No bucket is cleared, limit changed, token
+manufactured or server gate bypassed. The sign-out journey follows the approved
+Profile/Session control rather than the removed More-menu action; all request,
+same-operation, stale-response and immutable-ledger assertions remain.
+
+Clocker SQL never executed: Ubuntu's Azure mirror stalled package setup until
+the unchanged 30-minute job limit cancelled it. The existing guarded official
+mirror preference now precedes PostgreSQL installation in all three SQL jobs,
+retaining both fallback mirrors and signature verification. A new CI regression
+failed before this change; all 76 release-engineering checks now pass locally.
+
+Reference `33de992d`, run 39819902970, verifies the four remaining surfaces in bounded cloud jobs:
+the shared-server Home14 matrix; complete D2 correction/recovery and identity
+journeys in both engines; Navigation WebKit320; and Clocker SQL plus browser
+lifecycle/recovery. No diagnostic is a substitute for complete matching-source
+mandatory CI on PR23. Production remains held.
+
+The preceding optional `6e354c4a` diagnostic never started jobs: GitHub rejected
+the runner context in job-level environment values. The actual annotation names
+lines 19/21/23 and `runner.temp`. The corrected diagnostic sets those directories
+in a step through `GITHUB_ENV`; Home and D2 runners started normally, with
+Navigation and Clocker queued under the two-job concurrency cap. This optional
+workflow is excluded from PR23 and does not alter its required gates.
+
+D2 in run 39819902970 passed 238 checks, including both engines' uncertain-command,
+account-switch and authority-denial cases, with zero runtime errors and 44 successful
+server-authorized real-session reuses. WebKit then timed out locating the Manager
+approval control for its keyboard audit after the lengthy Employee reflow journey.
+Both contexts reported `hasFocus=true`; the report captured aborted Attendance and
+Inbox reads, but omitted the Manager's final DOM state. The keyboard setup now
+records that state, reopens the real current Attendance route after bringing it to
+front, waits for the authorized queue, and keeps the actual focus/outline assertion.
+The separate subsequent offline/hidden/pagehide/late-read/authority-loss checks
+remain unchanged. Any failure now also captures the Manager state and screenshot.
+Reference `953cebbc`, run 39821785620, reruns only full D2; the original run's Home,
+Navigation and Clocker continue without duplicate execution.
+
+Navigation WebKit320 in 39819902970 passed all 14 checks with zero errors, one completed
+sign-in, measured badge geometry, real-stylesheet normal/reduced-motion readiness
+regressions, unchanged source and closed owned app. Home's seven Chromium cells
+passed, then WebKit320 completed all sign-ins but failed the fatal runtime check:
+the exact native notification-fetch access-control diagnostic arrived on Schedule
+591ms after the hard-navigation commit, outside the existing narrow pending-
+navigation classification. It remains fatal. Reference `6d16a7c4`, run 39822296715,
+adds bounded document-identity/lifecycle and notification-request tracing across
+three Home320 repetitions. No new classification or runtime exemption is added.
+
+D2 run 39821785620 on `953cebbc` passed all 282 checks across Chromium/WebKit,
+with errors empty and owned cluster stopped. The Manager queue keyboard setup,
+all response-loss/identity/authority tests and all remediation states executed.
+The Home trace's three fresh applications passed with errors zero, source
+unchanged and cleanup confirmed. Those successful notification reads started
+after the Schedule document's `pageshow`. The warm shared-server discrepancy
+still needs reproduction; reference `24c56d47`, run 39823552701, traces three
+WebKit sizes against one shared application without a classification change.
+
+That shared run passed all 15 checks at 320/375/430, errors zero, source unchanged
+and owned app closed. The original native error is intermittent and its exact
+trigger is not established by these successful repetitions. H11 now also waits
+for Schedule's actual current notification read before returning to Home, recording
+the ready route/state; network idle alone is not proof of completed hydration.
+The original My Time response remains held through the hard navigation and every
+runtime assertion remains fatal. Reference `4f2d622d`, run 39824553914, verifies this
+barrier in the shared three-cell diagnostic and runs the full Clocker browser
+suite independently of the long SQL suite. Full matching-source CI remains required.
+
+The original combined Clocker diagnostic reached its optional 20-minute job bound
+during still-progressing SQL tests, so it is cancelled and not acceptance. Its
+mirror mutation/inventory rejection controls and 76 release-engineering checks
+had passed. Mandatory Clocker SQL retains its existing 30-minute job budget; the
+independent browser target in 39824553914 avoids coupling that proof to this
+optional diagnostic bound. No test/job timeout in the required workflow changes.
+
+Run 39824553914 on `4f2d622d` passed both focused targets. Shared Home320/375/430
+each passed 15 checks, errors empty, actual Schedule notification state ready,
+old held response outcome `document-left`, source unchanged and owned app closed.
+Clocker passed all 90 browser checks in Chromium/WebKit, errors empty and owned
+cluster stopped. These supporting results, full D2's 282 checks, Navigation320,
+cloud typecheck and the 76 lightweight release regressions precede publication
+of the combined correction to PR23. Only its full following matching-source
+mandatory workflow can certify development readiness.

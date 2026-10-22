@@ -20,6 +20,6 @@ it('copies independent nested dependency bytes, executable modes and verbatim re
  expect(readFileSync(join(mirror,'node_modules','.bin','tool'),'utf8')).toBe('fictional tool');
 });
 it('refuses missing dependencies rather than producing an empty successful mirror',()=>{
- root=mkdtempSync(join(tmpdir(),'nevora-dependency-copy-'));
- expect(()=>copyOwnedDependencies(join(root,'missing'),join(root,'mirror'))).toThrow();
+ const directory=mkdtempSync(join(tmpdir(),'nevora-dependency-copy-'));root=directory;
+ expect(()=>copyOwnedDependencies(join(directory,'missing'),join(directory,'mirror'))).toThrow();
 });
