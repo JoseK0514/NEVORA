@@ -43,14 +43,21 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
         const page = await context.newPage();
         page.setDefaultTimeout(15000);
         page.on('pageerror', (error: Error) => errors.push(engine + ': ' + error.message.slice(0, 400)));
+        const visit = async (path: string) => {
+          if (page.url() !== 'about:blank') {
+            await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+            await page.waitForLoadState('networkidle');
+          }
+          return page.goto(origin + path);
+        };
         try {
-          await page.goto(origin + '/login');
+          await visit('/login');
           await page.getByLabel('Employee ID', { exact: true }).fill(actor);
           await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
           await page.getByRole('button', { name: 'Sign in', exact: true }).click();
           await page.waitForURL(origin + '/app');
           for (const path of ['/app', '/app/timecards', '/app/reports', '/app/inbox', '/app/schedule/new']) {
-            const response = await page.goto(origin + path);
+            const response = await visit(path);
             expect(response?.status(), engine + ' ' + actor + ' ' + path).toBe(200);
             await page.locator('main').getByRole('heading', { level: 1 }).first().waitFor();
             await page.waitForLoadState('networkidle');
@@ -67,8 +74,8 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
               const folded = page.getByRole('button', { name: /people with no time yet/ });
               await folded.waitFor(); await folded.click();
               await page.waitForFunction(() => [...document.querySelectorAll('.cm-tc-person')].some(element => element === document.activeElement));
-              await page.goto(origin + '/app/inbox');
-              await page.goto(origin + '/app/timecards#timecard-QAOWNER');
+              await visit('/app/inbox');
+              await visit('/app/timecards#timecard-QAOWNER');
               await page.getByRole('dialog').waitFor();
               expect(await page.getByRole('dialog').textContent()).toContain('Fictional Owner');
               await page.keyboard.press('Escape');
@@ -87,7 +94,7 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
             await page.screenshot({ path: output + '/' + engine + '-' + actor + '-' + path.replaceAll('/', '_') + '.png', fullPage: true });
             checks.push(engine + ': ' + actor + ' ' + path + ' at 320/390/768/1440');
           }
-          await page.goto(origin + '/app');
+          await visit('/app');
           await page.getByRole('button', { name: 'Search', exact: true }).click();
           const search = page.getByRole('combobox', { name: 'Search pages, people and places' });
           await search.fill('add shift');
@@ -97,7 +104,7 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
           await page.keyboard.press('Escape');
           checks.push(engine + ': ' + actor + ' search verb synonyms and keyboard dismissal');
           for (const path of ['/app/settings', '/app/settings/branding', '/app/settings/positions']) {
-            await page.goto(origin + path);
+            await visit(path);
             if (actor === 'QW-MANAGER') {
               await page.getByText('Only Owners can open Settings.', { exact: true }).waitFor();
               expect(new URL(page.url()).pathname).toBe(path);
@@ -112,7 +119,7 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
                 startAt: new Date(now - 3600000).toISOString(), endAt: new Date(now + 3600000).toISOString(), status: 'not_clocked_in', firstClockInAt: null, late: false };
               await route.fulfill({ status: 200, json: { state: 'ready', observedAt, validForMs: 60000, timeZone: 'America/Puerto_Rico', today: observedAt.slice(0, 10), counts: { scheduled: 1, clockedIn: 0, late: 0, notClockedIn: 1 }, shifts: [shift], missed: [shift] } });
             });
-            await page.goto(origin + '/app/inbox?item=shift%3Aquick-wins-contact');
+            await visit('/app/inbox?item=shift%3Aquick-wins-contact');
             const call = page.getByRole('link', { name: 'Call Fictional Manager', exact: true });
             await call.waitFor();
             holdRefresh = true;
@@ -136,7 +143,12 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
         } catch (error) {
           await page.screenshot({ path: output + '/' + engine + '-' + actor + '-failure.png', fullPage: true }).catch(() => {});
           throw error;
-        } finally { releaseRefresh(); await context.close(); }
+        } finally {
+          releaseRefresh();
+          await page.evaluate(() => window.dispatchEvent(new Event('pagehide'))).catch(() => {});
+          await page.waitForLoadState('networkidle').catch(() => {});
+          await context.close();
+        }
       }
     }
     expect(errors).toEqual([]);
