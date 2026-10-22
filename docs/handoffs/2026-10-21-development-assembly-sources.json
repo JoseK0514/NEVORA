@@ -6,6 +6,12 @@
   "observedAt": "2026-10-22",
   "sources": [
     {
+      "branch": "NEVORA-50-inspectors",
+      "sha": "39ee9d1dbfd9e69dee8ffdfe9662465919e1aa33",
+      "disposition": "reference",
+      "reason": "Review archive added after the initial CI candidate freeze. All 409 changed files are under docs/product/reviews/50-inspectors-2026-10-21; no runtime changes relative to development. Retained as external review evidence, not merged or self-certified."
+    },
+    {
       "branch": "codex/ui-quick-wins-integration-20261021",
       "sha": "516739a855d3b30a2e7445c3fcf9b8dd1095429d",
       "disposition": "included",

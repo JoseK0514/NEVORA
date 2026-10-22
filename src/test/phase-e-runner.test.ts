@@ -309,8 +309,15 @@ function jobMatches(job: string, ref: string, head = '', base = '') {
     throw new Error('Unsupported predicate in event test: ' + part);
   });
 }
-it.each(['development', 'main', 'phase-c/punch', 'phase-d/timecards', 'codex/phase-d-audit', 'fix/authority', 'release/candidate', 'phase-e/employee', 'codex/phase-e-employee-experience-20261008', 'phase-f/tenancy', 'codex/phase-f-inventory', 'codex/par-001-remediation-20261008'])('workflow accepts existing and Phase E push ref %s', branch => {
+it.each(['development', 'main'])('workflow verifies integrated push ref %s', branch => {
   expect(eventMatches('push', branch)).toBe(true);
+});
+it.each(['phase-c/punch', 'phase-d/timecards', 'codex/phase-d-audit', 'fix/authority', 'release/candidate', 'phase-e/employee', 'codex/phase-e-employee-experience-20261008', 'phase-f/tenancy', 'codex/phase-f-inventory', 'codex/par-001-remediation-20261008'])('candidate %s runs every mandatory gate through its PR without a duplicate push', branch => {
+  expect(eventMatches('push', branch)).toBe(false);
+  expect(eventMatches('pull_request', 'development')).toBe(true);
+  for (const job of ['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui']) {
+    expect(jobMatches(job, 'refs/pull/23/merge', branch, 'development'), job).toBe(true);
+  }
 });
 it('workflow ignores unrelated pushes and schedules every E/D/regression job for E push and E PR', () => {
   expect(eventMatches('push', 'feature/unrelated')).toBe(false); expect(eventMatches('pull_request', 'development')).toBe(true);

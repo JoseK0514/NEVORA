@@ -76,3 +76,32 @@ WebKit runtime error remains fatal and its existing remediation case must execut
 
 The PR description and linked GitHub run record the final published candidate,
 actual cloud results and remaining blockers without adding a docs-only CI rerun.
+
+## First cloud candidate: remaining contract reconciliation
+
+Run 39782282770 on merge candidate `6b1011dc` passed Phase E SQL (including
+the cap fixture in 8.3 seconds), release PostgreSQL, Clocker PostgreSQL, and
+Communications 14/14 with zero runtime errors.
+Whole Phase D passed the repaired Inbox and timecard-sheet journeys, then reached
+a later obsolete recovery assertion. The incorporated `4b582b65` and its existing
+component regression explicitly retain the selected reference across an access
+refresh and re-read the immutable receipt on return. The browser driver still
+required discarding that reference and forbade the read. It now exercises the
+current contract with the real fresh read held: blur clears private receipts,
+the held response cannot reveal them, the reference survives, the returned read
+must be authorized, no clock punch is sent, and the immutable ledger is unchanged.
+No production behavior or privacy lifetime was weakened for this reconciliation.
+
+The first full units ran 9,297 passing cases and found ten legacy push-trigger
+expectations in `phase-e-runner.test.ts`. All ten cases now test PR routing instead,
+each requiring every mandatory job and rejecting a duplicate feature push.
+The focused trigger subset passes 20/20. Remaining full-source verification must
+run on the corrected candidate; the earlier red result cannot certify it.
+
+The post-freeze `NEVORA-50-inspectors` branch is now explicitly classified as a
+reference in the source inventory. Its 409-file documentation-only diff was
+checked through GitHub's paginated commit API; its findings are not self-closed.
+The updated 51-source reconciliation passes. The existing Clocker component
+contract and the corrected trigger cases pass 25 selected tests; scoped lint
+and whitespace checks pass. A single corrected PR candidate supersedes the
+unfinished first run; its full fresh verification remains required.
