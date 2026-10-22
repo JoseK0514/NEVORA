@@ -7,9 +7,9 @@
   "sources": [
     {
       "branch": "codex/browser-probe-20261022",
-      "sha": "c1c10a67934f1698c587cd051cd67241b1cda269",
+      "sha": "8c686c0ffa241d71c32ca5ba99ca48dd3c8aaa88",
       "disposition": "reference",
-      "reason": "Optional cloud diagnostic from the published CI candidate, capturing exact WebKit contrast nodes and repeated isolated WebKit 375 cases without rerunning the full workflow. Not a development integration or acceptance run; its probe-only workflow and entry point are not merged."
+      "reason": "Reference branch for isolated CI diagnosis: exact browser failures, types, D2 fixture lifetimes and Clocker setup. Not a development integration or acceptance run; its probe-only workflow and entry points are not merged. Required source-bound verification remains on the integration PR."
     },
     {
       "branch": "NEVORA-50-inspectors",

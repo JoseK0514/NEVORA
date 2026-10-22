@@ -20,7 +20,7 @@ function walk(root,directory='') {
     const path=directory?directory+'/'+e.name:e.name;return e.isDirectory()?walk(root,path):[path];
   });
 }
-async function fixture() {
+async function fixture(nextVersion='16.4.2') {
   const base=realpathSync(mkdtempSync(join(tmpdir(),'portal-binding-fictional-'))),root=join(base,'project');mkdirSync(root);
   put(root,'scripts/portal-build-binding.mjs',readFileSync(join(here,'portal-build-binding.mjs')));
   put(root,'src/lib/tenancy/migrations/lossless-json.ts',readFileSync(join(app,'src/lib/tenancy/migrations/lossless-json.ts')));
@@ -29,13 +29,13 @@ async function fixture() {
   }
   for(const path of ['scripts/release-build.mjs','scripts/phase-e-owned.mjs',
     'src/lib/tenancy/runtime/portal-runtime-build-install-bootstrap.server.ts','src/lib/tenancy/runtime/portal-runtime-startup-loader.ts','src/lib/tenancy/runtime/portal-native-installation-producer.server.ts','src/lib/tenancy/runtime/portal-native-installation-capture.server.ts'])put(root,path,'// fictional inert source\n');
-  put(root,'package.json',JSON.stringify({scripts:{build:'next build',start:'next start'},dependencies:{next:'16.3.8'}}));
-  put(root,'package-lock.json',JSON.stringify({packages:{'node_modules/next':{version:'16.3.8'}}}));
+  put(root,'package.json',JSON.stringify({scripts:{build:'next build',start:'next start'},dependencies:{next:nextVersion}}));
+  put(root,'package-lock.json',JSON.stringify({packages:{'node_modules/next':{version:nextVersion}}}));
   put(root,'next.config.ts','export default {};\n');put(root,'tsconfig.json','{}');
   put(root,'src/lib/tenancy/runtime/portal-native-installation.generated.json',JSON.stringify({format:'PORTAL_NATIVE_INSTALLATION_RETAINED_V1'})+'\n');
   for(const path of ['node_modules/next/dist/bin/next','node_modules/next/dist/server/lib/start-server.js',
     'node_modules/next/dist/server/next-server.js','node_modules/next/dist/server/require-hook.js'])put(root,path,'// fictional package file\n');
-  put(root,'node_modules/next/package.json','{"version":"16.3.8"}');
+  put(root,'node_modules/next/package.json',JSON.stringify({version:nextVersion}));
   put(root,'node_modules/react/package.json','{"version":"19.3.0"}');put(root,'node_modules/react-dom/package.json','{"version":"19.3.0"}');
   const producer=await import(pathToFileURL(join(root,'scripts/portal-build-binding.mjs')).href);
   producer.generatePortalSourceImage();
@@ -82,6 +82,9 @@ test('fictional complete receipt produces create-only full retention and fixed b
 });
 for(const [field,value] of [['exitCode',1],['sourceUnchanged',false],['sourceClean',false]])test('receipt rejects '+field,async()=>{
   const f=await fixture();try{f.receipt[field]=value;f.receiptWrite();assert.throws(()=>f.producer.retainPortalBuildBinding(),/portal_build_binding_unavailable/);}finally{f.close();}
+});
+test('a coherent retained build on vulnerable Next16.3.8 is refused',async()=>{
+  const f=await fixture('16.3.8');try{assert.throws(()=>f.producer.retainPortalBuildBinding(),/portal_build_binding_unavailable/);}finally{f.close();}
 });
 test('changed generated image refuses retention without rewriting it',async()=>{const f=await fixture();try{
   const file='src/lib/tenancy/runtime/portal-source-image.generated.ts';put(f.root,file,'// changed\n');assert.throws(()=>f.producer.retainPortalBuildBinding());
