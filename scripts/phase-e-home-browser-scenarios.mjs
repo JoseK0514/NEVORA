@@ -50,7 +50,28 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
    await writeFile(join(evidenceDirectory,`home-refresh-${engine}-${width}-report.json`),JSON.stringify({stage,diagnostic},null,2));throw error;
   }
  };
- async function login(target=page,id=actor,{waitForIdle=true}={}){await target.bringToFront();await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);try{await Promise.all([target.waitForURL(u=>u.pathname==='/app',{waitUntil:'commit'}),target.getByRole('button',{name:'Sign in',exact:true}).click()]);await target.locator('.app-shell.nevora-portal').waitFor();if(waitForIdle)await target.waitForLoadState('networkidle');}catch(error){const url=new URL(target.url()),code=url.searchParams.get('error');details.loginFailure={route:['/app','/login'].includes(url.pathname)?url.pathname:'other',error:['busy','invalid','missing','locked'].includes(code)?code:code?'other':null};await target.screenshot({path:join(evidenceDirectory,`home-${engine}-${width}-login-failure.png`),timeout:5000}).catch(()=>{});throw error;}}
+ async function login(target=page,id=actor,{waitForIdle=true}={}){
+  const started=Date.now(),attempt={stage,status:'started',trace:[]};details.loginAttempts??=[];details.loginAttempts.push(attempt);
+  const routeOf=value=>{try{const path=new URL(value).pathname;return ['/app','/login'].includes(path)?path:'other';}catch{return 'other';}};
+  const record=value=>{if(attempt.trace.length<40)attempt.trace.push({afterMs:Date.now()-started,...value});};
+  const requested=request=>{const route=routeOf(request.url());if(route!=='other')record({event:'request',route,method:request.method()});};
+  const responded=response=>{const route=routeOf(response.url());if(route!=='other')record({event:'response',route,method:response.request().method(),status:response.status(),redirect:!!(response.headers()['x-action-redirect']||response.headers().location)});};
+  const failed=request=>{const route=routeOf(request.url());if(route!=='other')record({event:'request-failed',route,method:request.method(),reason:/abort|cancel/i.test(request.failure()?.errorText??'')?'aborted':'transport-failed'});};
+  const navigated=frame=>{if(frame===target.mainFrame())record({event:'document',route:routeOf(frame.url())});};
+  target.on('request',requested);target.on('response',responded);target.on('requestfailed',failed);target.on('framenavigated',navigated);
+  try{
+   await target.bringToFront();await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
+   await Promise.all([target.waitForURL(u=>u.pathname==='/app',{waitUntil:'commit'}),target.getByRole('button',{name:'Sign in',exact:true}).click()]);
+   await target.locator('.app-shell.nevora-portal').waitFor();if(waitForIdle)await target.waitForLoadState('networkidle');attempt.status='ready';
+  }catch(error){
+   const url=new URL(target.url()),code=url.searchParams.get('error');details.loginFailure={route:routeOf(target.url()),error:['busy','invalid','missing','locked'].includes(code)?code:code?'other':null};attempt.status='failed';attempt.failure=details.loginFailure;
+   await writeFile(join(evidenceDirectory,`home-login-${engine}-${width}-report.json`),JSON.stringify({engine,width,attempts:details.loginAttempts},null,2));
+   await target.screenshot({path:join(evidenceDirectory,`home-${engine}-${width}-login-failure.png`),timeout:5000}).catch(()=>{});throw error;
+  }finally{
+   target.off('request',requested);target.off('response',responded);target.off('requestfailed',failed);target.off('framenavigated',navigated);
+   await writeFile(join(evidenceDirectory,`home-login-${engine}-${width}-report.json`),JSON.stringify({engine,width,attempts:details.loginAttempts},null,2));
+  }
+ }
  function gate(path){
   let release,started,finished,used=false,failure,outcome,operation='fetch',navigationReleased=false;const documentUrl=page.url();
   const wait=new Promise(r=>{release=r;}),seen=new Promise(r=>{started=r;}),done=new Promise(r=>{finished=r;});

@@ -5,7 +5,7 @@ on:
 permissions:
   contents: read
 jobs:
-  home-final-sizes-diagnostic:
+  home-signin-diagnostic:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
@@ -40,7 +40,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes postgresql-16
           echo "NEVORA_TEST_PG_BIN=/usr/lib/postgresql/16/bin" >> "$GITHUB_ENV"
-      - name: Focused Home WebKit 1024 and 1440 with current sign-in readiness
+      - name: Repeat Home WebKit 430 with bounded sign-in request and navigation receipts
         run: node scripts/phase-d-owned.mjs contrast-probe
       - name: Upload diagnostics; this run cannot certify the development candidate
         if: always()

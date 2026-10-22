@@ -14,7 +14,7 @@ import {waitForSheetEntrance} from './browser-render-readiness.mjs';
 const source=resolve(process.cwd()),custody=captureSource(source,process.env.PHASE_E_EXPECTED_SHA),evidence=externalEvidence(source,process.env.PHASE_E_EVIDENCE_DIR);
 const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json')),pw=runtime('playwright'),axeFile=runtime.resolve('axe-core/axe.min.js');
 assert.equal(runtime('playwright/package.json').version,'1.62.1');assert.equal(runtime('axe-core/package.json').version,'4.11.0');
-const report={checkpoint:custody.checkpoint,tree:custody.tree,sourceClean:true,cases:[],limitations:['Focused Home WebKit 1024/1440 diagnosis only; not the mandatory 70-cell development verification.']};
+const report={checkpoint:custody.checkpoint,tree:custody.tree,sourceClean:true,cases:[],limitations:['Repeated Home WebKit 430 sign-in diagnosis only; not the mandatory 70-cell development verification.']};
 await writeFile(join(evidence,'source-manifest.json'),JSON.stringify(custody,null,2));
 let browser;
 try{
@@ -41,13 +41,13 @@ try{
    report.renderReadinessRegression.push({reducedMotion,paused,...result});
   }
  }finally{await motionContext.close();}
- for(let index=0;index<2;index++){
+ for(let index=0;index<7;index++){
   const directory=join(evidence,'case-'+index);await mkdir(directory,{recursive:true});
-  const width=[1024,1440][index],record={suite:'home',engine:'webkit',width,index,status:'failed',checks:[],errors:[]};report.cases.push(record);
+  const width=430,record={suite:'home',engine:'webkit',width,index,status:'failed',checks:[],errors:[]};report.cases.push(record);
   const observer=observeBrowserCell(record,record.errors,{navigationDiagnosticVerified});let app,context;
   try{
    app=await createOwnedNextApp(directory,{pinDevTypeReferences:true});await seedOwnedApp(app.database.executor);
-   context=await browser.newContext({viewport:{width,height:1000},hasTouch:false,isMobile:false,serviceWorkers:'block'});
+   context=await browser.newContext({viewport:{width,height:1000},hasTouch:true,isMobile:true,serviceWorkers:'block'});
    await context.route('**/*',route=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){record.errors.push('External request refused');return route.abort();}return route.continue();});
    await observer.observeContext(context,'primary');const page=await context.newPage();page.setDefaultTimeout(15000);
    const result=await runScenario({app,browser,context,page,engine:'webkit',width,evidenceDirectory:directory,axeFile,runtimeErrors:observer});
@@ -61,6 +61,6 @@ try{
  }
 }finally{
  await browser?.close();assertSourceUnchanged(source,custody);
- report.sourceUnchanged=true;report.status=report.cases.length===2&&report.cases.every(item=>item.status==='passed'&&item.closed)?'passed':'failed';
+ report.sourceUnchanged=true;report.status=report.cases.length===7&&report.cases.every(item=>item.status==='passed'&&item.closed)?'passed':'failed';
  await writeFile(join(evidence,'probe-report.json'),JSON.stringify(report,null,2));if(report.status!=='passed')process.exitCode=1;
 }
