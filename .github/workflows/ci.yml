@@ -388,6 +388,9 @@ jobs:
           NODE_ENV: test
           HOME_READINESS_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence
         run: node --import ./scripts/qa-server-context.mjs --import tsx scripts/phase-e-home-held-response.check.mjs
+      - name: Browser feedback and reviewed-view readiness regressions
+        if: ${{ matrix.suite == 'calendar' }}
+        run: node scripts/browser-render-readiness.check.mjs
       - name: Install PostgreSQL test runtime
         shell: bash
         run: |
