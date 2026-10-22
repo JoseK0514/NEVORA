@@ -50,7 +50,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
    await writeFile(join(evidenceDirectory,`home-refresh-${engine}-${width}-report.json`),JSON.stringify({stage,diagnostic},null,2));throw error;
   }
  };
- async function login(target=page,id=actor){await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app'),target.getByRole('button',{name:'Sign in',exact:true}).click()]);}
+ async function login(target=page,id=actor){await target.bringToFront();await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);try{await Promise.all([target.waitForURL(u=>u.pathname==='/app',{waitUntil:'commit'}),target.getByRole('button',{name:'Sign in',exact:true}).click()]);await target.locator('.app-shell.nevora-portal').waitFor();await target.waitForLoadState('networkidle');}catch(error){const url=new URL(target.url()),code=url.searchParams.get('error');details.loginFailure={route:['/app','/login'].includes(url.pathname)?url.pathname:'other',error:['busy','invalid','missing','locked'].includes(code)?code:code?'other':null};await target.screenshot({path:join(evidenceDirectory,`home-${engine}-${width}-login-failure.png`),timeout:5000}).catch(()=>{});throw error;}}
  function gate(path){
   let release,started,finished,used=false,failure,outcome,operation='fetch',navigationReleased=false;const documentUrl=page.url();
   const wait=new Promise(r=>{release=r;}),seen=new Promise(r=>{started=r;}),done=new Promise(r=>{finished=r;});

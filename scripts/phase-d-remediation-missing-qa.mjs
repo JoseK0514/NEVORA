@@ -18,10 +18,9 @@ const save=()=>writeFile(dir+'/report.json',JSON.stringify({checkpoint,tree,sour
 async function record(name,fn){let observations={};try{await fn(v=>Object.assign(observations,v));results.push({name,result:'PASS',observations});}catch(e){results.push({name,result:'FAIL',observations,error:String(e.stack??e)});}console.log(name+': '+results.at(-1).result);await save();}
 async function context(id){
  const c=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});await c.route('**/*',route=>{const u=new URL(route.request().url());return ['http:','https:'].includes(u.protocol)&&u.origin!==app.url?route.abort('blockedbyclient'):route.continue();});const p=await c.newPage();p.setDefaultTimeout(12000);p.on('pageerror',e=>runtimeErrors.push(String(e)));await p.goto(app.url+'/login');await p.getByLabel('Employee ID',{exact:true}).fill(id);await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
- const paths=id==='QAOWNER'?['/api/manager/today','/api/manager/action-center','/api/manager/clock-monitor']:[];
- const pending=paths.map(path=>p.waitForResponse(response=>new URL(response.url()).pathname===path&&response.request().method()==='GET'));
- const replies=await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign in',exact:true}).click(),...pending]);
- for(let index=0;index<paths.length;index++){const response=replies[index+2];assert.equal(response.status(),200,'Current Manager landing read succeeds before navigation');assert.equal(await response.finished(),null,'Current Manager landing body completes');landingReads.push({path:paths[index],status:response.status()});}
+ const reads=id==='QAOWNER'?[{path:'/api/manager/today',method:'GET'},{path:'/api/manager/action-center',method:'POST'},{path:'/api/manager/clock-monitor',method:'GET'}]:[];
+ const pending=reads.map(async({path,method})=>{const response=await p.waitForResponse(response=>new URL(response.url()).pathname===path&&response.request().method()===method);assert.equal(response.status(),200,'Current Manager landing read succeeds before navigation');assert.equal(await response.finished(),null,'Current Manager landing body completes');landingReads.push({path,method,status:response.status()});});
+ await Promise.all([p.waitForURL(u=>u.pathname==='/app',{waitUntil:'commit'}),p.getByRole('button',{name:'Sign in',exact:true}).click(),...pending]);
  await p.locator('.app-shell.nevora-portal').waitFor();await p.waitForLoadState('networkidle');return {c,p};
 }
 try{
