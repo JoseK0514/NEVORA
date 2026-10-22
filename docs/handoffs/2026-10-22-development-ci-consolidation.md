@@ -757,3 +757,15 @@ checks use the existing installed runner; full patched-runtime verification
 remains on fresh GitHub-hosted Ubuntu. The earlier Home stall is not declared
 fixed from a successful diagnostic replay, and no retry, cookie shortcut,
 runtime-error exemption or larger mandatory timeout has been added.
+
+The exact full Home replay 39852649616 at `3632f232` completed SUCCESS: all
+14 cells, 228 checks, errors empty, clean source checkpoint, exit zero and
+ownership closed. The formerly failing WebKit430 replacement sign-in reached the
+authenticated shell in approximately 3.1 seconds. This replay retained the actual
+shared app, Chromium7-before-WebKit7 sequence and launchServer/connect protocol.
+It did not reproduce the previous single stall; its historical cause remains
+unresolved. The PR retains fatal sign-in assertions and bounded failure evidence
+instead of claiming that diagnostics repaired authentication. Mandatory combined
+CI is still required on the newly assembled source; supporting runs are not
+stitched into acceptance. The borrowed recovery worktree was restored cleanly to
+its original `codex/phase-d-recovery-ci` branch at `36dcc978`.
