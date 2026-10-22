@@ -33,7 +33,7 @@
     "test:phase-e:sql": "node scripts/phase-e-owned.mjs sql --suite all",
     "test:phase-e:ui": "node scripts/phase-e-owned.mjs browser --suite all",
     "test:phase-e:evidence": "node scripts/phase-e-owned.mjs verify-ci",
-    "test:release-engineering": "node --test scripts/browser-contrast.check.mjs scripts/release-ci-contract.check.mjs scripts/release-postgres-cleanup.check.mjs scripts/release-browser-diagnostics.check.mjs scripts/release-lint-chain.check.mjs",
+    "test:release-engineering": "node --test scripts/browser-contrast.check.mjs scripts/ci-ubuntu-mirrors.check.mjs scripts/release-ci-contract.check.mjs scripts/release-postgres-cleanup.check.mjs scripts/release-browser-diagnostics.check.mjs scripts/release-lint-chain.check.mjs",
     "payroll:worker": "node --conditions=react-server --import ./scripts/node-server-context.mjs --import tsx scripts/payroll-worker.ts",
     "test:payroll:owned": "node scripts/payroll-postgres.mjs",
     "test:passkeys:owned": "node scripts/payroll-postgres.mjs vitest.passkeys-integration.config.mts",

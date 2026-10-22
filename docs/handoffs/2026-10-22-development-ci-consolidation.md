@@ -131,3 +131,47 @@ assertion now compares the complete returned row without accessing an unknown
 property. Navigation reached the clean Requests hub, then waited for the obsolete
 global document title. Its accessibility checks now require each route's actual
 metadata title before running the same complete axe rule set.
+
+## Hosted dependency download repair
+
+Run 39787329289 reproduced the same eight-minute browser installation timeout
+in Communications before any cell executed. Home and Attendance installed on
+other runners, confirming that this is a variable hosted mirror download path.
+Browser jobs now prefer `https://archive.ubuntu.com/ubuntu/` in GitHub's existing
+mirror inventory, with the existing security archive and Azure mirror retained
+as fallbacks. The helper accepts only that known three-mirror inventory and runs
+only as root on a GitHub Linux runner. It does not edit repository definitions,
+keyrings, signature verification or timeouts. The priority format is verified
+against [GitHub's runner image configuration](https://github.com/actions/runner-images/blob/main/images/ubuntu/scripts/build/configure-apt-sources.sh).
+Three local regressions verify preference/fallback preservation, refusal of
+unexpected inventory, idempotence and refusal outside Actions; scoped lint passes.
+
+The same candidate passed complete validation (units, types, repository lint,
+production build and both audits), all three PostgreSQL jobs, and whole Phase D
+(201 checks, zero runtime errors). Remediation then hit `/login?error=busy` in
+WebKit's malformed-response case because Chromium had already used the same
+RV-E1 account's budget. Each engine now has a fresh owned application/database;
+the account/session replacement, late response and immutable mutation assertions
+are retained. The new sign-in-budget regression now calls the password form's
+always-active `admitLoginAttempt`, rather than the separate passkey-gated limiter.
+That adjustment still requires real PostgreSQL execution on the final source.
+
+Calendar stopped in its WebKit 430 sign-in wait after ten cells passed. Its
+runtime error list is empty and its original receipt lacks the sign-in page, so
+the cause is not established. Its wait now uses the navigation commit followed
+by the rendered authenticated shell and ready current reads. A failure captures
+the pre-issuance page plus a scrubbed route/error-enum diagnostic, without raw
+URLs or calendar capabilities. No retry or larger timeout is introduced.
+
+Home completed thirteen cells, then its final WebKit 1440 cell recorded the
+native `notification-read` diagnostic during H11's intentionally interrupted
+My Time request. H11 now waits for the unrelated notification bell's current
+read before leaving, just as H08 already does. The My Time response remains held
+through actual hard navigation; late-response/privacy assertions and all runtime
+error rejection remain unchanged. No diagnostic is newly classified as harmless.
+
+Navigation passed 320/375 and reached 390's saved weekly availability deadline
+case. Its screenshot shows the correct locked submitted state; the driver still
+waited for obsolete copy. It now requires the actual deadline message and
+`Locked · submitted`, then checks the same disabled controls and unchanged SQL
+records. These updates join the mirror fix in the same development PR.

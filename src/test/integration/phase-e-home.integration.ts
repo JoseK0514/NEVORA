@@ -5,7 +5,7 @@ import type {CommunicationDraft} from '../../lib/communications/types';
 import {Client} from 'pg';
 import {createDisposableFoundationDatabase} from './local-postgres';
 import {seedOwnedApp,seedOwnedScenario,seedOwnedScenarioOwner} from './owned-app-fixture';
-import {consumeLoginAttempt} from '../../lib/auth/login-limits';
+import {admitLoginAttempt} from '../../lib/auth/login-limits.server';
 import {readEmployeeHome,homeAuthority} from '../../lib/data/employee-home.server';
 import {readEmployeeWeeklyReview} from '../../lib/data/employee-weekly-review.server';
 import {acknowledgeScheduleWeek} from '../../lib/data/acknowledgements';
@@ -29,9 +29,9 @@ it('fictional browser-cell Owners retain independent real sign-in budgets withou
  expect(first).not.toBe(second);
  expect(await q("SELECT id,role FROM employees WHERE id=ANY($1::text[]) ORDER BY id",[[first,second]])).toEqual([{id:first,role:'OWNER'},{id:second,role:'OWNER'}]);
  expect(await q('SELECT employee_id FROM employee_credentials WHERE employee_id=ANY($1::text[]) AND password_hash=(SELECT password_hash FROM employee_credentials WHERE employee_id=$2) ORDER BY employee_id',[[first,second],'QAOWNER'])).toEqual([{employee_id:first},{employee_id:second}]);
- for(let attempt=0;attempt<10;attempt++)expect(await consumeLoginAttempt(first,db.executor)).toBe(true);
- expect(await consumeLoginAttempt(first,db.executor)).toBe(false);
- expect(await consumeLoginAttempt(second,db.executor)).toBe(true);
+ for(let attempt=0;attempt<10;attempt++)expect(await admitLoginAttempt(first,'198.51.100.23',db.executor)).toBe(true);
+ expect(await admitLoginAttempt(first,'198.51.100.23',db.executor)).toBe(false);
+ expect(await admitLoginAttempt(second,'198.51.100.23',db.executor)).toBe(true);
 });
 it('actual six-source PARTIAL Home retains distant published Next Shift and current-week publication notice',async()=>{
  const r=await home();expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{authority:homeAuthority(proof),publicationState:'partial',nextShift:{shiftId:fixture.sourceId},sources:{schedule:{state:'partial'},acknowledgements:{state:'complete'},exchanges:{state:'complete'},timeOff:{state:'complete'},ownTime:{state:'complete'},communications:{state:'complete'}}}});

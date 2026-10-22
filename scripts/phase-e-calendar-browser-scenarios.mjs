@@ -27,7 +27,13 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
  const q=(text,values=[])=>app.database.executor.query({text,values});
  await step('Real fictional login and Schedule secondary calendar entry',async()=>{
   await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(fixture.actors[0]);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
-  await Promise.all([page.waitForURL(url=>url.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click()]);await currentPageReady();
+  try{
+   await Promise.all([page.waitForURL(url=>url.pathname==='/app',{waitUntil:'commit'}),page.getByRole('button',{name:'Sign in',exact:true}).click()]);await page.locator('.app-shell.nevora-portal').waitFor();await currentPageReady();
+  }catch(error){
+   const url=new URL(page.url()),reason=url.searchParams.get('error');
+   await writeFile(join(evidenceDirectory,`calendar-login-${engine}-${width}-report.json`),JSON.stringify({engine,width,route:['/login','/app'].includes(url.pathname)?url.pathname:'other',reason:['busy','invalid','deleting'].includes(reason)?reason:null,failure:safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})},null,2));
+   await page.screenshot({path:join(evidenceDirectory,`calendar-login-${engine}-${width}-failure.png`),fullPage:true});throw error;
+  }
   await page.goto(app.url+'/app/schedule');await currentPageReady();const calendarEntry=page.getByRole('link',{name:/^Add shifts to your calendar\b/});assert.equal(await calendarEntry.getAttribute('href'),'/app/profile#employee-calendar-title');await calendarEntry.click();await state('No calendar link');await currentPageReady();
  });
  await step('Deliberate create produces one transient URL and own private GET/HEAD feed',async()=>{

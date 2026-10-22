@@ -25,10 +25,10 @@ async function login(c,id){const p=await c.newPage();p.setDefaultTimeout(12000);
 async function page(c,path){const p=await c.newPage();p.setDefaultTimeout(12000);p.on('pageerror',e=>runtimeErrors.push({case:activeCase,message:String(e).replaceAll(app.url,'[owned-origin]'),stack:e.stack?.replaceAll(app.url,'[owned-origin]')}));p.on('console',m=>{if(m.type()==='error')consoleErrors.push({case:activeCase,message:m.text().replaceAll(app.url,'[owned-origin]')});});const response=await p.goto(app.url+path,{waitUntil:'domcontentloaded'});assert(response?.ok());await p.bringToFront();return p;}
 async function settleReply(release,done){release();let timer;try{await Promise.race([done,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Held committed reply did not settle')),12000);})]);}finally{clearTimeout(timer);}}
 try{
+ for(const engine of ['chromium','webkit']){
  app=await createOwnedNextApp(dir);await seedOwnedApp(app.database.executor);const ph=await hashPassword(TEST_PASSWORD);
  for(const [id,role] of [['RV-E1','EMPLOYEE'],['RV-E2','EMPLOYEE'],['RV-M1','MANAGER'],['RV-M2','MANAGER']]){await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$1,'Fictional','555-0444',$2,'loc-1')",[id,role]);await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[id,ph]);await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')",[id]);}
  for(const id of ['RV-M1','RV-M2'])await assignOwnedManagerCompanyAccess(app.database.executor,id);
- for(const engine of ['chromium','webkit']){
   browser=await pw[engine].launch({headless:true});const dates=engine==='chromium'?['07','08','09']:['17','18','19'];
   await record(engine+' employee cross-tab account switch clears uncertain missing command',async o=>{
    const c=await context();try{
@@ -125,6 +125,7 @@ try{
    }finally{release?.();await c.close();}
   });
   await browser.close();browser=null;
+  await app.close();app=null;
  }
 }finally{if(browser)await browser.close();if(app)await app.close();await writeFile(dir+'/report.json',JSON.stringify({checkpoint,tree,sourceClean,results,consoleErrors,runtimeErrors},null,2));}
 if(results.some(r=>r.result==='FAIL')||runtimeErrors.length)process.exitCode=1;console.log(JSON.stringify({checks:results.length,failures:results.filter(r=>r.result==='FAIL').map(r=>r.name),runtimeErrors},null,2));

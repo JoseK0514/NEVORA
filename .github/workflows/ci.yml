@@ -122,6 +122,8 @@ jobs:
           npm audit --prefix "$PW_ROOT" --audit-level=high
           echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
           echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
       - name: Install Chromium and WebKit
         timeout-minutes: 8
         run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
@@ -369,6 +371,8 @@ jobs:
           npm audit --prefix "$PW_ROOT" --audit-level=high
           echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
           echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
       - name: Install Chromium and WebKit
         timeout-minutes: 8
         run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
