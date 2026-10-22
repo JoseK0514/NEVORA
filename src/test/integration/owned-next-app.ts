@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
-import { createWriteStream } from 'node:fs';
+import { constants, cpSync, createWriteStream } from 'node:fs';
 import { access, copyFile, mkdir, mkdtemp, readFile, readdir, realpath, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
@@ -11,6 +11,13 @@ import {createCalendarLogRedactor} from './calendar-log-redaction';
 
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
 const applicationInput = (name: string) => ['src/', 'public/'].some(prefix => name.startsWith(prefix)) || ['package.json', 'package-lock.json', 'tsconfig.json', 'next-env.d.ts', 'next.config.ts'].includes(name);
+export function copyOwnedDependencies(source: string, mirror: string): void {
+  // An external cp can be observed between fork and exec as the parent's Node
+  // argv. Copy in-process instead of relaxing the supervisor's identity fence.
+  cpSync(join(source, 'node_modules'), join(mirror, 'node_modules'), {
+    recursive: true, verbatimSymlinks: true, mode: constants.COPYFILE_FICLONE,
+  });
+}
 function trackedApplicationFiles(source: string): string[] {
   const gitPaths = (args: string[]) => execFileSync('git', args, { cwd: source, encoding: 'utf8' }).split('\0').filter(Boolean);
   if (gitPaths(['ls-files', '-o', '--exclude-standard', '-z']).some(applicationInput)) throw Error('Untracked application source cannot produce exact-SHA evidence');
@@ -188,7 +195,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
     }
     await verifySource();
     await access(join(source, 'node_modules/next/dist/bin/next'));
-    execFileSync('cp', process.platform === 'darwin' ? ['-cR', join(source, 'node_modules'), join(mirror, 'node_modules')] : ['-R', join(source, 'node_modules'), join(mirror, 'node_modules')]);
+    copyOwnedDependencies(source, mirror);
     const originalDb = await readFile(join(source, 'src/lib/db.ts'), 'utf8');
     const adapter = createOwnedDbAdapter(originalDb);
     await writeFile(join(mirror, 'src/lib/db.ts'), adapter);

@@ -16,6 +16,7 @@ const modes={migrations:['node_modules/vitest/vitest.mjs','run','--config','vite
   reports:['node_modules/vitest/vitest.mjs','run','--config','vitest.reports-integration.config.mts'],
   remediation:['--import','./scripts/qa-server-context.mjs','--import','tsx','scripts/phase-d-remediation-qa.mjs'],
   'contrast-probe':['--import','./scripts/qa-server-context.mjs','--import','tsx','scripts/phase-e-request-contrast-probe.mjs'],
+  'missing-probe':['--import','./scripts/qa-server-context.mjs','--import','tsx','scripts/phase-d-remediation-missing-qa.mjs'],
   browser:['--import','./scripts/qa-server-context.mjs','--import','tsx','scripts/phase-d-browser-qa.mjs']};
 if(!Object.hasOwn(modes,mode))throw new Error('Unknown owned Phase D test mode');
 const bin=process.env.NEVORA_TEST_PG_BIN;
@@ -29,7 +30,7 @@ try{
   run('initdb',['-D',data,'-U','nevora_d','--auth-local=trust','--auth-host=trust','--encoding=UTF8','--no-locale']);
   run('pg_ctl',['-D',data,'-l',join(owned,'postgres.log'),'-w','start','-o',`-h 127.0.0.1 -p ${port} -k ${owned}`]);started=true;
   console.log('[Phase D] Owned loopback PostgreSQL; fictional data only.');
-  const env={...process.env,NODE_ENV:'test',FUEL_TEST_DATABASE_URL:`postgresql://nevora_d@127.0.0.1:${port}/${['browser','remediation','contrast-probe'].includes(mode)?'nevora_exchange_test_':'nevora_foundation_test_'}d_${marker.slice(0,12)}`,FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN:'yes'};
+  const env={...process.env,NODE_ENV:'test',FUEL_TEST_DATABASE_URL:`postgresql://nevora_d@127.0.0.1:${port}/${['browser','remediation','contrast-probe','missing-probe'].includes(mode)?'nevora_exchange_test_':'nevora_foundation_test_'}d_${marker.slice(0,12)}`,FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN:'yes'};
   delete env.DATABASE_URL;
   const result=spawnSync(process.execPath,modes[mode],{env,stdio:'inherit'});process.exitCode=result.status??1;
 }finally{

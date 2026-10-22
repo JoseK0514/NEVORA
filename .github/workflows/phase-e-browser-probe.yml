@@ -1,15 +1,16 @@
-name: Phase E contrast diagnostic
+name: Development CI focused diagnostic
 on:
   push:
     branches: [codex/browser-probe-20261022]
 permissions:
   contents: read
 jobs:
-  navigation-diagnostic:
+  home-and-missing-diagnostic:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
       PHASE_E_EXPECTED_SHA: ${{ github.sha }}
+      PHASE_D_EXPECTED_SHA: ${{ github.sha }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -28,29 +29,35 @@ jobs:
           npm audit --prefix "$PW_ROOT" --audit-level=high
           echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
           echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
-          echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/phase-e-contrast-probe" >> "$GITHUB_ENV"
+          echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/phase-e-focused-probe" >> "$GITHUB_ENV"
+          echo "PHASE_D_REMEDIATION_EVIDENCE_DIR=$RUNNER_TEMP/phase-d-missing-probe" >> "$GITHUB_ENV"
       - name: Prefer existing official Ubuntu archive
         run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
-      - name: Install WebKit
+      - name: Install Chromium and WebKit
         timeout-minutes: 8
-        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps webkit'
+        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
       - name: Install scratch PostgreSQL runtime
         run: |
           sudo apt-get update
           sudo apt-get install --yes postgresql-16
           echo "NEVORA_TEST_PG_BIN=/usr/lib/postgresql/16/bin" >> "$GITHUB_ENV"
-      - name: Repeat WebKit 375 in seven isolated owned applications
-        run: node scripts/phase-d-owned.mjs contrast-probe
+      - name: Full Home matrix with strict supervision and in-process copy
+        run: node scripts/phase-e-owned.mjs browser --suite home
+      - name: Missing-context remediation with actual Manager landing-read barrier
+        if: ${{ always() }}
+        run: node scripts/phase-d-owned.mjs missing-probe
       - name: Upload diagnostics; this run cannot certify the development candidate
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: phase-e-contrast-probe-${{ github.sha }}
+          name: development-ci-probe-${{ github.sha }}
           path: |
-            ${{ runner.temp }}/phase-e-contrast-probe/**/*-report.json
-            ${{ runner.temp }}/phase-e-contrast-probe/**/navigation-*.png
-            ${{ runner.temp }}/phase-e-contrast-probe/source-manifest.json
-            ${{ runner.temp }}/phase-e-contrast-probe/**/ownership.json
-            ${{ runner.temp }}/phase-e-contrast-probe/**/source-manifest.json
+            ${{ runner.temp }}/phase-e-focused-probe/**/*-report.json
+            ${{ runner.temp }}/phase-e-focused-probe/*.json
+            ${{ runner.temp }}/phase-e-focused-probe/*.png
+            ${{ runner.temp }}/phase-e-focused-probe/**/ownership.json
+            ${{ runner.temp }}/phase-e-focused-probe/**/source-manifest.json
+            ${{ runner.temp }}/phase-d-missing-probe/**/*.json
+            ${{ runner.temp }}/phase-d-missing-probe/**/*.png
           if-no-files-found: error
           retention-days: 14
