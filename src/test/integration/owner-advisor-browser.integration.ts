@@ -60,7 +60,11 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
           );
           const page = await context.newPage();
           page.setDefaultTimeout(20000);
-          page.on("pageerror", (error: Error) => errors.push(error.message));
+          page.on("pageerror", (error: Error) =>
+            errors.push(
+              engine + ":" + actor + ":" + page.url() + ":" + error.message,
+            ),
+          );
           try {
             await page.goto(origin + "/login");
             await page.getByLabel("Employee ID", { exact: true }).fill(actor);
@@ -368,6 +372,10 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
             });
             throw error;
           } finally {
+            await page.evaluate(() =>
+              window.dispatchEvent(new Event("pagehide")),
+            );
+            await page.waitForLoadState("networkidle");
             await context.close();
           }
         }
