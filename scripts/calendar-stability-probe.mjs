@@ -6,7 +6,6 @@ import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
 import {seedOwnedApp} from '../src/test/integration/owned-app-fixture.ts';
 import {runScenario} from './phase-e-calendar-browser-scenarios.mjs';
 import {observeBrowserCell} from './phase-e-browser-qa.mjs';
-import {verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
 import {captureSource,assertSourceUnchanged,externalEvidence} from './phase-e-owned.mjs';
 import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
 
@@ -18,11 +17,11 @@ let app;
 try{
  app=await createOwnedNextApp(join(evidence,'shared-app'),{pinDevTypeReferences:true});await seedOwnedApp(app.database.executor);
  for(const engine of ['chromium','webkit']){
-  const browser=await pw[engine].launch({headless:true}),navigationDiagnosticVerified=(await verifyNavigationFetchDiagnostic(browser)).verified;
+  const browser=await pw[engine].launch({headless:true});
   try{for(const width of engine==='chromium'?[320,375,390,430,768,1024,1440]:[320,375,390]){
    const directory=join(evidence,engine+'-'+width);await mkdir(directory,{recursive:true});
    const record={suite:'calendar',engine,width,status:'failed',checks:[],errors:[]};report.cases.push(record);
-   const observer=observeBrowserCell(record,record.errors,{navigationDiagnosticVerified});let context,page;
+   const observer=observeBrowserCell(record,record.errors,{navigationDiagnosticVerified:false});let context,page;
    try{
     context=await browser.newContext({viewport:{width,height:1000},hasTouch:width<768,isMobile:width<768,serviceWorkers:'block'});
     await context.route('**/*',route=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){record.errors.push('External request refused');return route.abort();}return route.continue();});
