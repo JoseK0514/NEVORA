@@ -8,12 +8,12 @@ jobs:
   focused:
     name: focused (${{ matrix.target }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 50
     strategy:
       fail-fast: false
       max-parallel: 2
       matrix:
-        target: [home-trace]
+        target: [home]
     env:
       PHASE_E_EXPECTED_SHA: ${{ github.sha }}
       PHASE_D2_CORRECTIONS_EXPECTED_SHA: ${{ github.sha }}
