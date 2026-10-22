@@ -117,6 +117,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               .getByRole("button", { name: "Sign in", exact: true })
               .click();
             await page.waitForURL(origin + "/app");
+            await page.waitForLoadState("networkidle");
             phase =
               actor === "OA-MANAGER"
                 ? "Manager denial"
@@ -137,10 +138,10 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               checks.push(engine + ": Manager discovery/page/API denied");
             } else {
               await page
+                .locator("main")
                 .getByRole("link", { name: "AI manager", exact: true })
-                .first()
-                .waitFor();
-              await page.goto(origin + "/app/ai-manager");
+                .click();
+              await page.waitForURL(origin + "/app/ai-manager");
               await page
                 .getByText("Your AI manager isn’t connected yet.", {
                   exact: true,
