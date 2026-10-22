@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type MouseEvent } from 'react';
 import { ArrowClockwise } from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
 import { ArrowSquareOut } from '@phosphor-icons/react/dist/ssr/ArrowSquareOut';
 import { CaretRight } from '@phosphor-icons/react/dist/ssr/CaretRight';
@@ -20,6 +20,7 @@ import { ButtonLabel, Field, FieldErrors, FormActions, lockPageScroll, useFieldE
 type Operation = 'REGISTER' | 'RENAME' | 'ROTATE' | 'REVOKE';
 type Selection = { operation: Operation; device?: ClockerDeviceView };
 const statuses = { UNREGISTERED: 'Needs setup', PENDING: 'Awaiting setup', EXPIRED: 'Setup expired', ACTIVE: 'Registered', REVOKED: 'Revoked' };
+const subscribe = () => () => {};
 
 /** Wave C: Clocker devices on the kit. Every operation goes through one dialog (a bottom sheet on
  * phones); the server's answer decides what the list shows. Setup codes stay on screen only until they expire. */
@@ -27,6 +28,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
   initialDevices: ClockerDeviceView[]; locations: ClockerLocationView[]; timeZone: string;
   action(form: FormData): Promise<ClockerOwnerResult>;
 }) {
+  const hydrated = useSyncExternalStore(subscribe, () => true, () => false);
   const [devices, setDevices] = useState(initialDevices);
   const [selection, setSelection] = useState<Selection | null>(null);
   const [pending, setPending] = useState(false);
@@ -133,7 +135,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
 
   return <SettingsFrame title="Clocker devices" eyebrow={`${devices.length} ${devices.length === 1 ? 'device' : 'devices'}`}
     summary="A shared tablet at each location, with access you control."
-    bandAside={<button className="nv-band-control" type="button" disabled={!activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}><Plus size={18} weight="bold" aria-hidden="true" />Add device</button>}
+    bandAside={<button className="nv-band-control" type="button" disabled={!hydrated || !activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}><Plus size={18} weight="bold" aria-hidden="true" />Add device</button>}
     aside={<>
       <GuideCard title="Connect a shared tablet" action={<Link className="nv-link" href="/app/settings/locations">Manage locations<CaretRight size={16} weight="bold" aria-hidden="true" /></Link>}>
         <ol className="wc-steps">
@@ -204,16 +206,16 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
               <span className="nv-row__status"><Status tone={tone}>{label}</Status></span>
               {hint ? <span className="nv-row__meta wc-hint">{hint}</span> : null}
               <span className="wc-row-actions">
-                <button className="nv-link" type="button" aria-label={`Rename ${device.name}`} onClick={event => open({ operation: 'RENAME', device }, event)}>Rename</button>
-                <button className="nv-link" type="button" disabled={!location?.active} aria-label={`${device.state === 'ACTIVE' ? 'Replace tablet' : device.state === 'REVOKED' ? 'Reconnect tablet' : 'New setup code'} for ${device.name}`} onClick={event => open({ operation: 'ROTATE', device }, event)}>{device.state === 'ACTIVE' ? 'Replace tablet' : device.state === 'REVOKED' ? 'Reconnect tablet' : 'New setup code'}</button>
-                {device.state !== 'REVOKED' ? <button className="nv-link wc-danger" type="button" aria-label={`Revoke access for ${device.name}`} onClick={event => open({ operation: 'REVOKE', device }, event)}>Revoke access</button> : null}
+                <button className="nv-link" type="button" disabled={!hydrated} aria-label={`Rename ${device.name}`} onClick={event => open({ operation: 'RENAME', device }, event)}>Rename</button>
+                <button className="nv-link" type="button" disabled={!hydrated || !location?.active} aria-label={`${device.state === 'ACTIVE' ? 'Replace tablet' : device.state === 'REVOKED' ? 'Reconnect tablet' : 'New setup code'} for ${device.name}`} onClick={event => open({ operation: 'ROTATE', device }, event)}>{device.state === 'ACTIVE' ? 'Replace tablet' : device.state === 'REVOKED' ? 'Reconnect tablet' : 'New setup code'}</button>
+                {device.state !== 'REVOKED' ? <button className="nv-link wc-danger" type="button" disabled={!hydrated} aria-label={`Revoke access for ${device.name}`} onClick={event => open({ operation: 'REVOKE', device }, event)}>Revoke access</button> : null}
               </span>
             </span>
           </article>
         </li>;
       })}</ul> : <EmptyState headingLevel={3} icon={<DeviceTablet size={22} weight="bold" />} title={devices.length ? 'No matching devices' : 'Your first tablet starts here'}
         action={devices.length ? <button className="nv-btn" data-kind="secondary" type="button" onClick={() => { setQuery(''); setFilter('ALL'); searchField.current?.focus({ preventScroll: true }); }}><X size={18} aria-hidden="true" />Clear filters</button>
-          : <button className="nv-btn" data-kind="primary" type="button" disabled={!activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}><Plus size={18} aria-hidden="true" />Add your first device</button>}>
+          : <button className="nv-btn" data-kind="primary" type="button" disabled={!hydrated || !activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}><Plus size={18} aria-hidden="true" />Add your first device</button>}>
         {devices.length ? 'Try another device name, location or status.' : 'Add a device, choose its location, and finish setup on the shared tablet.'}
       </EmptyState>}
       <div className="wc-card-actions wc-card-actions--note">
