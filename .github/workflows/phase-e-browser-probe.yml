@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        target: [home-trace]
+        target: [home-trace, clocker-browser]
     env:
       PHASE_E_EXPECTED_SHA: ${{ github.sha }}
       PHASE_D2_CORRECTIONS_EXPECTED_SHA: ${{ github.sha }}
@@ -70,7 +70,7 @@ jobs:
         if: ${{ matrix.target == 'clocker' }}
         run: npm run test:clocker:owned
       - name: Full Clocker lifecycle and recovery browser suite
-        if: ${{ matrix.target == 'clocker' }}
+        if: ${{ matrix.target == 'clocker' || matrix.target == 'clocker-browser' }}
         run: node scripts/phase-c-clocker-postgres.mjs --punch-ui
       - name: Upload scoped diagnostic evidence; not development acceptance
         if: always()
