@@ -77,9 +77,9 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   await q("INSERT INTO notifications(id,employee_id,type,title,body,event_key,environment,source_kind,source_id,source_version,effective_version,purpose,due_at,expires_at,urgency,push_state) VALUES($1,$2,'TIME_OFF_DECIDED','STORED PRIVATE TITLE','STORED PRIVATE BODY',$1,'test','TIME_OFF',$3,'APPROVED','APPROVED','EVENT',now()-interval '1 hour',now()+interval '1 day','high','pending')",[noticeId,actor,requestId]);
   const actualRole=[320,1440].includes(width)?'EMPLOYEE':'LEAD';await q('UPDATE employees SET role=$1 WHERE id=$2',[actualRole,actor]);
   stage='login';await login(actor);await settle();
-  // Move the owned dev runtime's badge away from Home using its own preferences;
-  // keep developer errors visible and retain normal native navigation hit testing.
-  const devTools=page.locator('nextjs-portal');await devTools.getByRole('button',{name:'Open Next.js Dev Tools',exact:true}).click();await devTools.locator('[data-preferences]').click();await devTools.getByLabel('Position',{exact:true}).selectOption('top-left');await devTools.getByRole('button',{name:'Close devtools panel',exact:true}).click();await settle();await page.keyboard.press('Escape');await devTools.locator('[data-preferences]').waitFor({state:'hidden'});await settle();
+  const devBadge=page.locator('nextjs-portal').getByRole('button',{name:'Open Next.js Dev Tools',exact:true});
+  await devBadge.waitFor();
+  const badgeBounds=await devBadge.boundingBox();assert(badgeBounds&&badgeBounds.y<100,'Configured development badge stays clear of bottom navigation');
   assert.equal(await page.evaluate(()=>matchMedia('(pointer: coarse)').matches),width<768,'Emulated touch pointer matches required context');assert.equal(await page.evaluate(()=>innerWidth),width);checks.push(`Actual authenticated ${actualRole} role`);checks.push('Required CSS width and mobile touch emulation verified; native taps used on mobile navigation');
   for(const href of ['/app/schedule','/app/my-time','/app']){await nav(href);const current=await page.locator('.mobile-nav').isVisible()?page.locator('.mobile-nav a[aria-current="page"]'):page.locator('nav[aria-label="Primary navigation"] a[aria-current="page"]');assert.equal(await current.getAttribute('href'),href);}
   checks.push('Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation');

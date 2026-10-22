@@ -12,6 +12,7 @@ import {readEmployeeAttentionDetail,recordEmployeeAttentionReceipt} from '../../
 import {publishScheduleWithRevision} from './management-api';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
+import {communicationRootInsert,communicationRevisionInsert,communicationGrantInsert,communicationContentHash} from '../../lib/data/communications.server';
 let db:Awaited<ReturnType<typeof createDisposableFoundationDatabase>>,proof:SessionMutationProof,fixture:Awaited<ReturnType<typeof seedOwnedScenario>>;
 const q=(text:string,values:unknown[]=[])=>db.executor.query({text,values});
 const home=()=>readEmployeeHome(proof,db.executor);
@@ -258,7 +259,21 @@ it('current acknowledgement inserted during final Home wait cannot return the bu
  const r=await readEmployeeHome(proof,ex);expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{communications:{state:'unavailable',reason:'source_changed'}}}});if('snapshot' in r)expect(r.snapshot.attention.some(row=>row.ref.id===result.id)).toBe(false);
 });
 it('communication cap sentinel retains known rows and never claims complete',async()=>{
- for(let n=0;n<101;n++)await publishUpdate('OPTIONAL');
+ const {result,draft}=await publishUpdate('OPTIONAL');
+ const [revision]=await db.executor.query<{workspaceId:string;fingerprint:string;observedAt:string}>({text:'SELECT workspace_id AS "workspaceId",audience_fingerprint AS fingerprint,audience_observed_at::text AS "observedAt" FROM communication_revisions WHERE id=$1',values:[result.version]});
+ const grants=await db.executor.query<{employeeId:string;provenance:Record<string,unknown>}>({text:'SELECT employee_id AS "employeeId",provenance FROM communication_recipients WHERE revision_id=$1',values:[result.version]});
+ expect(grants.some(grant=>grant.employeeId===proof.employee.id)).toBe(true);
+ const statements:SqlStatement[]=[];
+ for(let n=0;n<100;n++){
+  const id=randomUUID(),revisionId=randomUUID();
+  statements.push(communicationRootInsert(revision.workspaceId,id,ownerProof.employee.id),
+   communicationRevisionInsert({workspaceId:revision.workspaceId,communicationId:id,revisionId,version:1,actorId:ownerProof.employee.id,draft,audienceFingerprint:revision.fingerprint,observedAt:revision.observedAt,publishedAt:revision.observedAt}),
+   ...grants.map(grant=>communicationGrantInsert({workspaceId:revision.workspaceId,communicationId:id,revisionId,employeeId:grant.employeeId,contentHash:communicationContentHash(draft),locationId:'loc-1',kind:'LOCATION',observedAt:revision.observedAt,provenance:grant.provenance})),
+   {text:"UPDATE communications SET state='PUBLISHED',head_revision_id=$2 WHERE id=$1",values:[id,revisionId]},
+   {text:"INSERT INTO communication_lifecycle(id,workspace_id,communication_id,revision_id,actor_employee_id,kind) VALUES($1,$2,$3,$4,$5,'PUBLISHED')",values:[randomUUID(),revision.workspaceId,id,revisionId,ownerProof.employee.id]});
+ }
+ await db.executor.transaction(statements);
+ expect((await q("SELECT count(*)::int AS n FROM communications WHERE state='PUBLISHED'"))[0].n).toBe(101);
  const r=await home();expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{communications:{state:'partial',reason:'source_cap'}}}});if('snapshot' in r)expect(r.snapshot.attention.filter(row=>row.ref.kind==='COMMUNICATION')).toHaveLength(100);
 },30000);
 it('shift reassignment during final Home wait revokes current grant without backfilling the replacement',async()=>{

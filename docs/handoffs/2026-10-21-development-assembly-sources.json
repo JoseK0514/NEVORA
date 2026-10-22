@@ -2,9 +2,15 @@
   "schema": 1,
   "repository": "JoseK0514/NEVORA",
   "target": "development",
-  "assemblyBranch": "codex/ui-quick-wins-integration-20261021",
-  "observedAt": "2026-10-21",
+  "assemblyBranch": "codex/development-ci-consolidation-20261022",
+  "observedAt": "2026-10-22",
   "sources": [
+    {
+      "branch": "codex/ui-quick-wins-integration-20261021",
+      "sha": "516739a855d3b30a2e7445c3fcf9b8dd1095429d",
+      "disposition": "included",
+      "reason": "PR 22 is incorporated into development 0f8ffee5, the base of the single CI repair candidate."
+    },
     {
       "branch": "claude/bold-joliot-ec227c",
       "sha": "3c281cdb09bc2912e6ab007714e482ec02649dc9",
@@ -265,7 +271,7 @@
     },
     {
       "branch": "development",
-      "sha": "d4b01453f7fabaa7ac739d049934527b6b366310",
+      "sha": "0f8ffee52d85f48cd2fe890dc9aa682e995de4eb",
       "disposition": "target",
       "reason": "Assembly starts here and publishes here after review; this pin records the starting checkpoint."
     },

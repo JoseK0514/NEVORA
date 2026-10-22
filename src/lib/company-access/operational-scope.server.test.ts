@@ -16,6 +16,12 @@ const executorWith = (transaction: (statements: readonly SqlStatement[]) => Prom
 const sqlError = (message: string, code: string) => Object.assign(new Error(message), {code});
 
 describe('assertOperationalAccess failure classification', () => {
+  it('denies a successfully read inactive workspace without treating it as an outage', async () => {
+    const executor = executorWith(async statements => statements.map(() => []));
+    executor.query = async <T,>() => [{id: 'workspace-fuel', name: 'Fictional Access Company', timeZone: 'America/Puerto_Rico', active: false,
+      createdAt: '2030-01-01 00:00:00+00', updatedAt: '2030-01-01 00:00:00.000001+00'}] as T[];
+    await expect(assertOperationalAccess(proof, {kind: 'COMPANY'}, executor)).rejects.toBeInstanceOf(OperationalAuthorizationError);
+  });
   it('reports a missing Company Access schema as unavailable, never as a denial', async () => {
     const executor = executorWith(async () => {
       throw sqlError('relation "company_access_adoption" does not exist', '42P01');

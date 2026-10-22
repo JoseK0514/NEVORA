@@ -6,8 +6,10 @@ import {verifyRequiredJobs, ownedExecutionTimeout} from './phase-e-owned.mjs';
 const require=createRequire(import.meta.url);
 const workflow=require('js-yaml').load(readFileSync('.github/workflows/ci.yml','utf8'));
 const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','phase-e-postgres','phase-e-ui'];
-test('the clean Manager verification branch triggers the full CI workflow',()=>{
- assert(workflow.on.push.branches.includes('codex/verify-preview-33'));
+test('feature candidates run through PRs without a duplicate branch-push execution',()=>{
+ assert.deepEqual(workflow.on.push.branches,['development','main']);
+ for(const target of ['development','main','codex/verify-preview-33'])assert(workflow.on.pull_request.branches.includes(target));
+ assert.equal(workflow.concurrency['cancel-in-progress'],"${{ github.event_name == 'pull_request' }}");
 });
 test('all triggered candidate branches receive mandatory SQL and browser gates',()=>{
  for(const name of mandatory) {
