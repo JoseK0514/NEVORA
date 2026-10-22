@@ -43,7 +43,7 @@ export function parseSnapshot(value: unknown): AdvisorSnapshot {
   requireValue(
     record(value) &&
       value.state === "ready" &&
-      ["available", "unavailable"].includes(String(value.connection)),
+      (value.connection === "available" || value.connection === "unavailable"),
   );
   stamp(value);
   profile(value.profile);
@@ -51,7 +51,7 @@ export function parseSnapshot(value: unknown): AdvisorSnapshot {
   for (const m of value.history)
     requireValue(
       record(m) &&
-        ["user", "assistant"].includes(String(m.role)) &&
+        (m.role === "user" || m.role === "assistant") &&
         text(m.content),
     );
   const b = value.briefing;

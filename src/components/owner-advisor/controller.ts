@@ -119,7 +119,13 @@ export function createAdvisorController(
         headers: { "x-nevora-owner-advisor": "1" },
         signal: controller.signal,
       });
-      if (epoch !== generation || paused || stopped) return;
+      if (
+        epoch !== generation ||
+        paused ||
+        stopped ||
+        controller.signal.aborted
+      )
+        return;
       if ([401, 403, 404].includes(response.status)) {
         retire(errors[response.status === 404 ? "disabled" : "forbidden"]);
         return;
@@ -154,6 +160,12 @@ export function createAdvisorController(
       clearTimeout(timeout);
       if (read === controller) read = undefined;
     }
+  }
+  async function refreshAfterOperation(minObserved = -Infinity) {
+    contentVersion++;
+    read?.abort();
+    read = undefined;
+    return refresh(minObserved);
   }
   async function submit(command: AdvisorCommand) {
     if (!v.snapshot || v.busy || v.uncertain || paused || stopped) return;
@@ -197,7 +209,7 @@ export function createAdvisorController(
             "busy",
           ].includes(code),
         });
-        await refresh();
+        await refreshAfterOperation();
         return;
       }
       const result =
@@ -209,10 +221,9 @@ export function createAdvisorController(
       }
       // Fence reads begun before this operation completed. A fresh GET anchors
       // the result to a new monotonic request start, even after a long POST.
-      contentVersion++;
-      read?.abort();
-      read = undefined;
-      const authorized = await refresh(Date.parse(result.observedAt));
+      const authorized = await refreshAfterOperation(
+        Date.parse(result.observedAt),
+      );
       if (epoch !== generation || paused || stopped) return;
       controller.signal.throwIfAborted();
       if (!authorized) throw Error("Fresh access required");
@@ -221,6 +232,17 @@ export function createAdvisorController(
           answer: result.answer,
           question: "",
           message: "Answer received. Review its sources before deciding.",
+        });
+      else if (
+        v.snapshot &&
+        v.snapshot.profile.revision > result.profile.revision
+      )
+        publish({
+          priorities: result.profile.priorities,
+          dirty: true,
+          conflict: true,
+          message:
+            "Your priorities were saved, then changed elsewhere. Review the current saved priorities before saving again.",
         });
       else
         publish({
@@ -239,7 +261,7 @@ export function createAdvisorController(
           message:
             "The result is unknown after a connection interruption or cancellation. Refresh history before starting another request.",
         });
-        await refresh();
+        await refreshAfterOperation();
       }
     } finally {
       clearTimeout(timeout);

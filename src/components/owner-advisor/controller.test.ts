@@ -173,3 +173,62 @@ it("does not restore a late answer after signout retirement and stop", async () 
   expect(state?.answer).toBeNull();
   expect(state?.question).toBe("");
 });
+it("does not clear network uncertainty with a read begun before the failed operation", async () => {
+  vi.useFakeTimers();
+  let state: AdvisorView | undefined;
+  let old: ((r: Response) => void) | undefined;
+  let reads = 0;
+  const c = createAdvisorController(
+    (v) => (state = v),
+    async (_url, init) => {
+      if (init?.method === "POST") throw Error("network");
+      reads++;
+      if (reads === 1) return Response.json(snap());
+      if (reads === 2) return new Promise((r) => (old = r));
+      throw Error("fresh read unavailable");
+    },
+  );
+  c.start();
+  await vi.advanceTimersByTimeAsync(0);
+  await vi.advanceTimersByTimeAsync(9000);
+  c.editQuestion("Investigate");
+  await c.ask();
+  old?.(Response.json(snap()));
+  await vi.advanceTimersByTimeAsync(0);
+  expect(reads).toBe(3);
+  expect(state?.uncertain).toBe(true);
+  c.stop();
+});
+it("does not regress a newer saved revision observed by the post-save authority read", async () => {
+  vi.useFakeTimers();
+  let state: AdvisorView | undefined;
+  let saved = false;
+  const c = createAdvisorController(
+    (v) => (state = v),
+    async (_url, init) => {
+      if (init?.method === "POST") {
+        saved = true;
+        return Response.json({
+          ...snap(),
+          state: "saved",
+          profile: { priorities: "mine", revision: 2 },
+        });
+      }
+      return Response.json({
+        ...snap(),
+        profile: {
+          priorities: saved ? "newer Owner edit" : "saved",
+          revision: saved ? 3 : 1,
+        },
+      });
+    },
+  );
+  c.start();
+  await vi.advanceTimersByTimeAsync(0);
+  c.editPriorities("mine");
+  await c.save();
+  expect(state?.snapshot?.profile.revision).toBe(3);
+  expect(state?.priorities).toBe("mine");
+  expect(state?.conflict).toBe(true);
+  c.stop();
+});

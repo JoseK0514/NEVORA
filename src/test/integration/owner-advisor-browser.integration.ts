@@ -135,6 +135,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
                       (el: HTMLElement) => el === document.activeElement,
                     ),
                 ).toBe(true);
+                await page.evaluate(() => window.scrollTo(0, 0));
                 await page.screenshot({
                   path: resolve(evidence, engine + "-" + width + ".png"),
                   fullPage: true,
