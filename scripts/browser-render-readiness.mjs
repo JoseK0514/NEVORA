@@ -1,5 +1,24 @@
 // Accessibility measures the settled sheet, after its real CSS entrance motion.
 // Poll the rendered style and animation state; never change page motion or sleep.
+export async function waitForCalendarCopyReady(page, noticeText) {
+  const ready = await page.waitForFunction(text => {
+    const root = document.querySelector('[data-calendar-setting]');
+    const notice = [...(root?.querySelectorAll('[role="status"]') ?? [])].find(element => element.textContent === text);
+    const copy = [...(root?.querySelectorAll('button') ?? [])].find(element => element.textContent === 'Copy link');
+    return notice?.parentElement === document.activeElement && copy && !copy.disabled &&
+      copy.getAnimations().every(animation => !Number.isFinite(animation.effect?.getComputedTiming().endTime) ||
+        (!animation.pending && animation.playState === 'finished'));
+  }, noticeText);
+  await ready.dispose();
+}
+
+export async function waitForReviewedTimeOff(page, requestId) {
+  const ready = await page.waitForFunction(id =>
+    [...document.querySelectorAll('[data-nv-page] [role="status"] p')].some(element => element.textContent === 'Decision saved') &&
+    !document.getElementById('request-' + id), requestId);
+  await ready.dispose();
+}
+
 export async function waitForSheetEntrance(page) {
   const selector = '[data-sig-sheet]';
   await page.locator(selector).first().waitFor({state: 'visible'});

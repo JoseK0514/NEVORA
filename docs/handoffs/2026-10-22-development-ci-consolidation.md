@@ -573,3 +573,81 @@ are in the run's `development-ci-probe-47735441b6ba199426b4d5c4b1a23bf95fa9700b-
 artifact, `diagnostic-home-trace/probe-report.json`. The probe workflow and entry
 point remain excluded from the integration PR. Every mandatory final-source
 check is still required.
+
+## Complete patched-runtime run and remaining browser repairs
+
+Run 39837218227 at `01457412` / merge `b951cb2c` completed with eight successful
+primary jobs: validate, Clocker/release/Phase E SQL, full Attendance, Home14,
+Communications14 and Attention14. Validate passed 9,318 unit cases (801 existing
+skips), types, repository lint, production build on Next 16.4.2, and both audits
+with zero vulnerabilities. Its build receipt has clean unchanged source, exit0,
+Node24.19.0, npm11.17.0 and the exact integration lock hash. Attendance also passed
+the remediation source-bound validator and complete D2/Clocker browser stages.
+
+Calendar passed seven Chromium cells, then WebKit320 timed out clicking Copy
+link after the first completed clipboard confirmation. Its runtime-errors array
+is empty. Navigation passed nine cells, then WebKit390 recorded one native
+authority-read diagnostic 15ms after a document commit, outside the current
+exemption. Its functional checks completed, but the runtime observer correctly
+failed the cell. Aggregation and final evidence failed downstream. This run is
+not acceptance of this or any later source.
+
+Focused Calendar run 39840993385 at `5999fc22` passed all seven Chromium sizes
+and WebKit320/375/390 with 12 checks each and zero runtime errors. Read-only
+geometry samples captured the Copy button's real 0.98 press scale returning to
+normal, and feedback focus/scroll changing after the copied text appeared. A new
+driver wait requires the actual feedback container to own focus and the button's
+finite animations to finish before the next native Copy click. The controlled
+clipboard completion/rejection, private-URL retirement, native keyboard selection,
+timeouts and pointer actions remain. A controlled regression holds real CSS motion
+and focus independently in both engines and both motion preferences. It is being
+verified in cloud run 39842149858 at `11021bec`; no success is assumed yet.
+
+An earlier focused Calendar attempt, 39840360242, stopped before any scenario
+because the diagnostic mistakenly invoked the WebKit-specific navigation control
+in Chromium. The corrected diagnostic treats all runtime errors as fatal and
+does not run that unrelated control in Chromium. Mandatory navigation-control
+behavior and classification have not changed. Those diagnostic-only entry points
+remain excluded from this PR.
+
+Focused run 39841685356 at `16d2d45c` is tracing the actual WebKit390 Navigation
+authority request's document, lifecycle and stage. Its first isolated case
+reproduced a fatal error; the remaining cases and bounded trace are pending.
+No runtime-error exemption has been broadened. Source-bound mandatory acceptance
+still requires all 12 jobs and all 70 cells on the next corrected candidate.
+
+Run 39842149858 passed the Calendar correction: all ten focused cells (Chromium7
+and WebKit320/375/390), 12 functional checks per cell, zero runtime errors, clean
+unchanged source and closed owned runtime. Its controlled rendering regression
+also passed all four engine/motion combinations; visible text and focused-but-
+paused real CSS motion did not release the helper, and completion allowed exactly
+one native click. This remains supporting evidence, not Calendar14 acceptance.
+
+The completed authority trace 39841685356 reproduced the same failure in one of
+three isolated WebKit390 cases. The old Owner Requests document started the
+authority fetch during the employee-decision stage, five milliseconds before
+the native error and before that document's pagehide. The driver had observed
+the action's reviewed URL and database approval, then started another login
+while the post-action ScopedReadFrame was still recovering its fresh authority.
+The next helper waits for the actual authorized Decision saved notice and removal
+of the reviewed pending card, then retains the original SQL approval and employee
+readback assertions. URL arrival alone no longer releases the account switch.
+Substage labels now identify Owner login/review and employee decision separately.
+
+Controlled rendering checks also hold the decision notice and pending-card
+retirement separately: neither navigation without a decision view nor a notice
+with the old card can release the helper. Cloud run 39843174333 at `f2f957cb`
+is verifying those controls and three fresh real WebKit390 instances. No success
+is assumed yet. Runtime errors remain fatal with the same existing narrow
+diagnostic contract; no application authorization or lifetime rule changes.
+
+Run 39843174333 passed all three corrected WebKit390 instances: 21 checks each,
+zero runtime errors, clean unchanged source, closed owned apps and browser. Each
+trace now shows both the initial and post-review authority reads completing in
+the Owner review stage before the employee switch. All four engine/motion
+controlled cases also passed both Calendar and reviewed-view barriers, including
+the negative held states. The integrated helper, regression and two browser
+scenario files match the tested diagnostic source. The optional probe workflow
+and entry points remain excluded. Every required final-source job and all 70
+browser cells remain mandatory; the following complete cloud run is the
+acceptance gate, and supporting results are not stitched into its verdict.
