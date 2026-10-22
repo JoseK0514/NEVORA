@@ -113,22 +113,31 @@ test('multiple processes contend without exceeding twenty lifetime reservations'
 finally {
     f.cleanup();
 } });
-test('known Node preload installs before application code', async () => { const f = fixture(); try {
-    const preload = fileURLToPath(new URL('./owner-advisor-pilot-preload.mts', import.meta.url));
-    const { credential, ...config } = f.p;
-    await new Promise<void>((resolve, reject) => { const child = spawn(process.execPath, ['--import', preload, '--input-type=module', '-e', "try { await fetch('https://forbidden.invalid/v1/responses'); process.exit(2); } catch (error) { if (error.message !== 'Owner advisor pilot guard refused operation') process.exit(3); console.log('BLOCKED_BEFORE_TRANSPORT'); }"], { env: { ...process.env, NEON_AI_GATEWAY_TOKEN: credential, NEVORA_OWNER_ADVISOR_PILOT: JSON.stringify(config) }, stdio: 'pipe' }); let output = ''; child.stdout.on('data', c => output += c); child.once('error', reject); child.once('exit', code => { try {
-        assert.equal(code, 0);
-        assert.match(output, /BLOCKED_BEFORE_TRANSPORT/);
-        resolve();
-    }
-    catch (e) {
-        reject(e);
-    } }); });
-    assert.equal(count(f.p), 0);
-}
-finally {
-    f.cleanup();
-} });
+test('known Node preload rejects before sentinel transport; omission fails even when transport rejects', async () => {
+    const f = fixture();
+    try {
+        const preload = fileURLToPath(new URL('./owner-advisor-pilot-preload.mts', import.meta.url));
+        const { credential, ...config } = f.p;
+        const sentinel = 'data:text/javascript,' + encodeURIComponent("globalThis.transportCalls = 0; globalThis.fetch = async () => { globalThis.transportCalls++; throw Error('sentinel transport failure'); };");
+        const script = "try { await fetch('https://forbidden.invalid/v1/responses'); process.exit(2); } catch (error) { if (error.message !== 'Owner advisor pilot guard refused operation' || globalThis.transportCalls !== 0) { console.log('SENTINEL_CALLS=' + globalThis.transportCalls); process.exit(3); } console.log('BLOCKED_BEFORE_TRANSPORT'); }";
+        const run = (installed: boolean) => new Promise<{code: number | null; output: string}>((resolve, reject) => {
+            const child = spawn(process.execPath, ['--import', sentinel, ...(installed ? ['--import', preload] : []), '--input-type=module', '-e', script], {
+                env: {...process.env, NEON_AI_GATEWAY_TOKEN: credential, NEVORA_OWNER_ADVISOR_PILOT: JSON.stringify(config)}, stdio: 'pipe',
+            });
+            let output = '';
+            child.stdout.on('data', c => output += c);
+            child.once('error', reject);
+            child.once('exit', code => resolve({code, output}));
+        });
+        const installed = await run(true);
+        assert.equal(installed.code, 0);
+        assert.match(installed.output, /BLOCKED_BEFORE_TRANSPORT/);
+        const omitted = await run(false);
+        assert.equal(omitted.code, 3);
+        assert.match(omitted.output, /SENTINEL_CALLS=1/);
+        assert.equal(count(f.p), 0);
+    } finally { f.cleanup(); }
+});
 test('invalid UTF-8, unsafe permissions and expiry after guard creation reject before transport', async () => { const f = fixture(); try {
     let calls = 0;
     const fetch = guardedFetch(f.p, async () => { calls++; return new Response('{}'); });

@@ -5,8 +5,8 @@ $ npx vitest run src/test/integration/owned-next-advisor.test.ts src/test/integr
 
  Test Files  5 passed (5)
       Tests  36 passed (36)
-   Start at  16:37:46
-   Duration  642ms (tests 64%, transform 20%, import 16%, worker 1%)
+   Start at  16:38:53
+   Duration  640ms (tests 64%, transform 19%, import 16%, worker 1%)
 
 
 exit=0
