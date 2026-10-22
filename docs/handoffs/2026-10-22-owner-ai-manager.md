@@ -10,7 +10,9 @@ Company data, conversation and saved priorities require an active Owner with cur
 
 This increment proposes decisions. Schedule publication, employee messages, payroll, access changes and autonomous background work are subsequent work; there is no business mutation tool in this agent.
 
-Interface and final validation evidence will be recorded below when complete. The design and task checklist are in `docs/superpowers/specs/2026-10-22-owner-advisor-design.md` and `docs/superpowers/plans/2026-10-22-owner-advisor.md`.
+The implemented Owner interface at `/app/ai-manager` includes the live briefing, dated supporting links, a plain-text conversation, starter questions, Ask/Cancel and explicit priorities with revision-conflict review. Owner Home/navigation discover it only when the feature is enabled. Manager/employee discovery is unchanged. A persistent private-state controller refreshes authority proactively and retires private content on focus/visibility/network/signout/expiry changes. Long operations obtain a fresh access observation before displaying their result; stale reads cannot overwrite newer saves or clear uncertainty.
+
+Jose explicitly authorized the remaining local commits and verification. The final application commit is `577fc0ac`; its exact-source final browser run and the broader checks are in progress. The design and task checklist are in `docs/superpowers/specs/2026-10-22-owner-advisor-design.md` and `docs/superpowers/plans/2026-10-22-owner-advisor.md`.
 
 ## Connection and activation
 
@@ -45,7 +47,13 @@ Migration `0036_owner_advisor.sql` is a classified base migration after 0035. On
 
 Backend fix commit `22b5fdc2` has 23 passing focused tests (including HTTP cancellation/deadline and migration classification) and 19 passing real disposable PostgreSQL tests. TypeScript and focused ESLint passed. Provider responses were injected for those tests; this proves the application protocol, authorization, persistence and limits, not live model recommendation quality.
 
-Initial engineering review found handler-body timeout/cancellation, missing position identity in coverage groups and unreadable compressed code. The implementer added regression cases, fixed the behavior and formatted the module. The scoped re-review and final interface/whole-feature evidence remain to be recorded.
+Initial engineering review found handler-body timeout/cancellation, missing position identity in coverage groups and unreadable compressed code. The implementer added regression cases, fixed the behavior and formatted the module. The scoped re-review approved the backend at `22b5fdc2`, with no material finding open. Minor HTTP fixture typing/cleanup improvements remain observations; live model injection resistance is not established by fake provider responses.
+
+The current UI working tree has 53 passing focused tests and passing full TypeScript and touched-source ESLint. Root also ran full-project ESLint successfully. Final controller regressions include a successful 20-second operation, an older GET arriving after a save/error and another session for the same Owner saving a newer revision before result presentation. The original failing receipts and final focused command/exit status artifacts are in `.omo/evidence/owner-advisor-ui/`.
+
+Owned browser run2 passed 18 Chromium/WebKit scenario groups on `8db91e4c` at 320/390/1440 pixels, with zero external requests or page errors. Actual app/database journeys include priority save/reload/conflict, Manager page/API denial, keyboard fields, proactive refresh and blur/focus retirement. The runtime's source and mirror custody both verified on teardown. Answer/error/cancel display cases used explicitly labeled fulfilled UI fixtures, not a configured provider. Those browser results are provisional because the final controller race fixes followed them. The exact-source final rerun remains required.
+
+Full default regression and optimized build/whole-feature engineering review are not yet accepted as final evidence. One early broad-suite run was stopped after source changed; it is not a pass. The stable working-tree regression run is recorded separately under `.omo/evidence/owner-advisor-final/`.
 
 ## Subsequent senior-manager delivery
 
@@ -54,10 +62,18 @@ Initial engineering review found handler-body timeout/cancellation, missing posi
 3. Add scheduled monitoring with explicit triggers, a bounded run budget and an Owner review queue. Investigations should follow outcomes rather than repeatedly raise the same unresolved item.
 4. Add broader business sources only when their permissions and data quality are established. The current staffing/attendance context does not establish cash flow, sales, inventory or external market knowledge.
 
+The first live evaluation should use fictional business cases before company data: an uncovered shift with an unavailable candidate, two different position shortages, a changed published schedule after an earlier answer, incomplete staffing data and a proposed plan that conflicts with saved priorities. Check that the model investigates, cites dated facts, explains a realistic alternative and contingency, asks for missing information when needed and does not invent execution. These quality cases have not been run against a live model. Passing transport/database tests alone cannot establish that the advisor is smart enough for operational use.
+
 ## Director positions and release impact
 
 Product supports the investigation foundation toward Jose's senior-manager goal. Engineering reuses existing operational and scheduling services rather than implementing separate eligibility rules. Security requires current server-side Owner/company authority and minimized tool context. Governance keeps live spending, data activation, release integration and production authorization separate. No policy exception or production authorization was granted.
 
-Next gate: complete the interface, observe it on owned data, finish fresh-context engineering review and publish the reviewable feature branch. Independent UI/QA certification, hosted CI and production behavior are separate evidence states.
+Next gate: final exact-source browser/build checks, personal browser use and fresh-context whole-feature engineering review. Local commit permission does not authorize publishing, integration or production. Independent UI/QA certification, hosted CI and production behavior are separate evidence states.
+
+## Implementation decisions made within the authorized scope
+
+- Jose's product confirmations and request to start building authorize this bounded development increment without another design-approval round. Live activation and release decisions remain separate. If the chosen increment misses Jose's priority, the cost is development rework before integration.
+- Preserve the existing UI preview and create an isolated feature worktree from current development. If this isolation was unnecessary, its cost is temporary local disk/runtime use; it preserves the prior deliverable and concurrent work.
+- Add explicit Neon and optional OpenAI adapters after Jose preferred Neon, using the documented compatible route and validating its host. If gateway behavior changes, its cost is an adapter update; no live data or credit was used to make the choice.
 
 Official references checked October 22, 2026: [Neon overview](https://neon.com/docs/ai-gateway/overview), [Responses endpoint](https://neon.com/docs/ai-gateway/openai-responses), [data retention](https://neon.com/docs/ai-gateway/data-retention).

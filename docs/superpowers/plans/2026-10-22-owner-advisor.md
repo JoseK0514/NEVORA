@@ -24,16 +24,16 @@
 
 ## Task 2: Owner UI and discovery
 
-- [ ] Own page/components/CSS and minimal navigation/Home integration; consume Task 1 contracts without weakening server authority.
-- [ ] Implement briefing, conversation, saved priorities and clear pending/error/disconnected states with current design system. Default off, Owner only.
-- [ ] Verify rendering/interaction tests, keyboard, narrow widths, source links, state retirement and owned browser journeys. Commit only owned files.
+- [x] Own page/components/CSS and minimal navigation/Home integration; consume Task 1 contracts without weakening server authority.
+- [x] Implement briefing, conversation, saved priorities and clear pending/error/disconnected states with current design system. Default off, Owner only.
+- [ ] Verify rendering/interaction tests, keyboard, narrow widths, source links, state retirement and owned browser journeys. 53 focused tests pass; browser run2 passed 18 groups. Jose authorized remaining local commits; final browser rerun is in progress at application commit `577fc0ac`.
 - [ ] Review task; fix material findings.
 
 ## Task 3: whole-feature validation and handoff
 
 - [ ] Run appropriate focused regressions, typecheck, lint, optimized build, real SQL integration and owned browser checks. Record exact source and limits of evidence.
 - [ ] Obtain fresh-context whole-branch code review; resolve material findings.
-- [ ] Write handoff with completed functionality, activation settings, remaining autonomous-management roadmap, verification and production hold. Publish reviewable feature branch/draft PR when complete; no development merge inferred.
+- [ ] Finish handoff with completed functionality, activation settings, remaining autonomous-management roadmap, verification and production hold. Preserve the reviewable local branch; publishing/integration require the applicable authorization and are separate from local commit permission.
 
 ## Review focus
 
