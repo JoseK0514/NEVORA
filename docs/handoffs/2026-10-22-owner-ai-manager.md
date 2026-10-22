@@ -4,7 +4,7 @@ Implementation owner: Codex. Development base: `0f8ffee52d85f48cd2fe890dc9aa682e
 
 ## Delivered scope
 
-The investigation service supplies current company context, dated published staffing and coverage analysis using NEVORA's existing scheduling rules to a configured reasoning model, together with the Owner's explicitly saved priorities. The model connection remains off. Published staffing and current scheduling commitments, which can include drafts, carry different labels. Position-specific coverage recommendations retain the applicable position.
+The investigation service supplies current company context, dated published staffing and coverage analysis using NEVORA's existing scheduling rules to a configured reasoning model, together with the Owner's explicitly saved priorities. The fictional local demo now has a verified Neon model connection under the bounded pilot below; ordinary runtimes still default off. Published staffing and current scheduling commitments, which can include drafts, carry different labels. Position-specific coverage recommendations retain the applicable position.
 
 Company data, conversation and saved priorities require an active Owner with current Company Access authority. The server rechecks that original authority after asynchronous work. Another role cannot gain access through a URL, browser role label or client-provided identity. Preferences and history are isolated by workspace and Owner.
 
@@ -12,15 +12,15 @@ This increment proposes decisions. Schedule publication, employee messages, payr
 
 The implemented Owner interface at `/app/ai-manager` includes the live briefing, dated supporting links, a plain-text conversation, starter questions, Ask/Cancel and explicit priorities with revision-conflict review. Owner Home/navigation discover it only when the feature is enabled. Manager/employee discovery is unchanged. A persistent private-state controller refreshes authority proactively and retires private content on focus/visibility/network/signout/expiry changes. Long operations obtain a fresh access observation before displaying their result; stale reads cannot overwrite newer saves or clear uncertainty.
 
-Jose explicitly authorized local commits and verification. The verified application commit is `f67ad18d2b571cf0eb8dd2da04cf3ad532aafe87`; subsequent handoff commits change documentation only. The branch is local, with no remote push, PR, development/main merge or deployment. The design and completed task checklist are in `docs/superpowers/specs/2026-10-22-owner-advisor-design.md` and `docs/superpowers/plans/2026-10-22-owner-advisor.md`.
+Jose explicitly authorized local commits and verification. The verified application commit is `f67ad18d2b571cf0eb8dd2da04cf3ad532aafe87`. The later owned-runtime pilot and guard are verified at `f9591e5ee87aefb82c8428ddce7c8198cf153e65`; they do not change production application logic. The branch is local, with no remote push, PR, development/main merge or deployment. The design and completed task checklist are in `docs/superpowers/specs/2026-10-22-owner-advisor-design.md` and `docs/superpowers/plans/2026-10-22-owner-advisor.md`.
 
-The [local demo](http://localhost:61925/app/ai-manager) is running and open as a fictional Owner. It has real owned local PostgreSQL persistence and no model configuration. It is separate from the earlier UI preview, which remains intact. Demo controller PID46730 and ownership metadata live under `/Users/josek0514/.codex/visualizations/2026/10/17/01a14a91-6077-78e0-9d01-5b454d2b8590/owner-advisor-20261022/`.
+The [connected local demo](http://localhost:65197/app/ai-manager) is running as a fictional Owner, with real owned local PostgreSQL persistence. It is separate from the earlier UI preview, which remains intact. Live demo controller PID99569 and ownership metadata live under `/Users/josek0514/.codex/owner-advisor-live-evidence-20261022/`. The original disconnected demo's evidence remains in the visualization directory from the first increment.
 
 ## Connection and activation
 
-Jose prefers Neon AI Gateway. The implemented adapter uses a validated branch-scoped Neon HTTPS host and `/openai/v1/responses`; this route supports OpenAI models. Optional direct OpenAI uses the same bounded investigation protocol. No gateway was provisioned, credit purchased, secret retrieved or paid inference requested during this work.
+Jose prefers Neon AI Gateway. The implemented adapter uses a validated branch-scoped Neon HTTPS host and `/openai/v1/responses`; this route supports OpenAI models. Optional direct OpenAI uses the same bounded investigation protocol. The first increment used injected provider responses; the subsequent pilot completed real inference through Neon.
 
-Read-only connected metadata verified that NEVORA is in `aws-us-east-1` and belongs to VELANI LLC (MAIN), which has a Launch plan. That meets the documented account/region prerequisites. Gateway activation, prepaid credit balance and actual inference remain unverified. Configuration availability is not an authenticated connection test.
+Connected metadata and the signed-in Neon Console verified that NEVORA preview and Yavi Barber development belong to VELANI LLC (MAIN), on Launch. AI credits are shared by organization. The existing fictional-preview gateway was enabled; the free authenticated model catalog returned HTTP200 and included `gpt-6-1-sol`. No gateway purchase or credit transfer was needed.
 
 The page/navigation/API require `NEVORA_OWNER_ADVISOR_ENABLED=true`. Without provider configuration, the live briefing and explicit priorities remain useful while Ask is disabled. Live requests additionally require all of:
 
@@ -29,9 +29,23 @@ The page/navigation/API require `NEVORA_OWNER_ADVISOR_ENABLED=true`. Without pro
 - Server-side `NEON_AI_GATEWAY_BASE_URL` (bare official branch HTTPS host) and `NEON_AI_GATEWAY_TOKEN` in the existing approved secret store.
 - `NEVORA_OWNER_ADVISOR_DAILY_LIMIT` from 1 to 100. This is a request cap, not a guaranteed dollar ceiling; model selection and provider-side credit limits determine cost.
 
-Before live activation, Jose still needs to select a spending limit and approve the provider's handling of the authorized operational data. Use a non-production branch/account context for the first controlled inference check. Inspect its actual result, tools, usage and cancellation before considering a deployment. No production permission follows from branch location or a passing local test.
+Jose authorized up to $5 from the existing shared credit for this local fictional-data pilot. This does not authorize real company data, an ongoing production budget or deployment. Review the applicable provider handling and deployment controls before any such expansion.
 
 `store:false` is sent to the Responses endpoint. It does not promise zero provider retention: Neon/Databricks documents up to 30 days for abuse/security handling. The agent excludes private payroll identifiers and contact details from its tool outputs. Names and operational shift/eligibility context are still company information.
+
+### Bounded live pilot, October 22
+
+The explicit owned-runtime launch uses preview project `dry-hall-36228257`, branch `br-blue-firefly-b759kjzm` (`fictional-preview`), and model `gpt-6-1-sol`. Only fictional NEVORA Demo facts are supplied. A dedicated `ai_gateway:invoke` credential is held in macOS Keychain (service `NEVORA Owner Advisor Neon Pilot 20261022`, account `br-blue-firefly-b759kjzm`); no secret is committed or included in evidence. Ordinary tests do not inherit ambient provider credentials.
+
+The native Node preload restricts destination, route, model, redirect handling, request shapes, 64KiB input and 4096 output tokens. Before every attempted paid transport it durably reserves $0.25, at most twenty times. Failed or uncertain calls retain their reservation. The same private ledger survives restarts at `/Users/josek0514/.codex/owner-advisor-neon-pilot-20261022/ledger.json`; never delete/reset it or select another directory for this authorization. It expires **October 23, 2026 at 4:35:45 p.m. Puerto Rico time**. Locks, incomplete writes, tampering and expiry fail closed. This is a manual local pilot using the verified $2/M input and $10/M output rates, not generic production dollar metering or protection against a malicious operator rewriting all same-user state.
+
+Two real UI investigations completed: today's priorities and a follow-up asking whether Morgan could replace absent Alex while protecting Bayamón. The answers used current operational read tools, dated sources and saved priorities; compared options; distinguished hypothetical absence from missing clock-ins; and acknowledged missing candidate/availability/hours evidence. The follow-up was not a verified feasible staffing proposal. No business execution tool exists. These samples establish working transport and useful initial reasoning, not broad model-quality certification.
+
+Eight paid transport attempts used $2 of conservative **reservation allowance**, not $2 of billed spend. Signed-in billing showed **$14.98 before and $14.95 after**; this is the shared organization's displayed metering, not a per-feature invoice. No purchase, top-up or card charge was made. Twelve attempts remain in this pilot when that receipt was recorded; the guard also expires after 24 hours.
+
+Evidence: `/Users/josek0514/.codex/owner-advisor-live-evidence-20261022/connection.json`, `live-browser-dom.txt`, `live-console.json` (zero warning/error entries), and screenshots. Root independently matched all **1,842 source and mirror files** to the captured final source manifest, including guard/preload hashes. Current preview remains running; its eventual teardown is pending. The earlier preflight closed its owned PostgreSQL/Next processes with source/mirror verification before the reviewed corrections.
+
+The pilot guard has 18 passing tests, 36 passing affected owned-runtime tests, passing TypeScript/lint and meaningful failing-before-fix cases. Scoped review closed the loopback redirect escape and insufficient preload assertion, then approved `f9591e5e` with no blockers. See `docs/reviews/2026-10-22-owner-advisor-pilot.md`. Live cancellation and the full adversarial/operational quality matrix remain unevaluated; local fake-transport cancellation tests from the first increment still stand.
 
 ## Controls and practical limits
 
@@ -62,7 +76,7 @@ Final engineering review reproduced a lost update before Save: a refresh could a
 | Real owned PostgreSQL+Next browsers | 18 scenario groups passed in Chromium/WebKit at 320/390/1440; zero external requests/page errors; teardown source/mirror verified | `.omo/evidence/owner-advisor-ui/h1-final/`; original `/Users/josek0514/.codex/owner-advisor-ui-evidence-20261022/h1-final/` |
 | Root's personal browser use | Real login, Home link, starter question, priorities save/reload, disconnected Ask disabled; console warning/error list empty | `.omo/evidence/owner-advisor-final/manual-browser.md`; full-page screenshot in the demo metadata directory |
 
-The final browser manifest's 1,838 files were independently matched to committed blobs at `f67ad18d`. App/database journeys use real local persistence and role enforcement. Answer/error/cancel display cases use explicitly labeled fulfilled UI fixtures, not a configured provider. Owned development browsers substitute the approved local PostgreSQL transport and generated development type references; the production build uses the original application DB source. Physical devices, live model quality, gateway authentication and production behavior are not verified.
+The first increment's final browser manifest's 1,838 files were independently matched to committed blobs at `f67ad18d`. App/database journeys use real local persistence and role enforcement. Its answer/error/cancel display cases use explicitly labeled fulfilled UI fixtures. The subsequent pilot above separately proves gateway authentication and two real model answers. Owned development browsers substitute the approved local PostgreSQL transport and generated development type references; the production build uses the original application DB source. Physical devices, broad live model quality and production behavior remain unverified.
 
 Earlier failed/provisional browser runs and an interrupted broad run remain identified in the executor report; they are not the final pass. Trace evidence tied a WebKit development-overlay failure to test navigation interrupting Home's initial RSC work. The final journey waits for settled Home and uses its actual link, retaining strict zero-error assertions. No app code was changed to suppress those errors.
 
@@ -70,18 +84,18 @@ Final scoped engineering disposition: **APPROVE / code quality WATCH, no blocker
 
 ## Subsequent senior-manager delivery
 
-1. Connect the selected Neon model with an approved cost/data envelope; evaluate representative staffing problems against actual business expectations, including conflicting priorities and missing facts.
+1. Expand the initial two-case Neon evaluation against actual business expectations, including conflicting priorities, missing facts, injection attempts and cancellation. A deployed connection and real company data require their own approved envelope.
 2. Add proposal records with exact changes, fresh business-rule validation, outcome tracking and idempotent execution. Define which routine actions may run under standing Owner authority and which need a decision each time.
 3. Add scheduled monitoring with explicit triggers, a bounded run budget and an Owner review queue. Investigations should follow outcomes rather than repeatedly raise the same unresolved item.
 4. Add broader business sources only when their permissions and data quality are established. The current staffing/attendance context does not establish cash flow, sales, inventory or external market knowledge.
 
-The first live evaluation should use fictional business cases before company data: an uncovered shift with an unavailable candidate, two different position shortages, a changed published schedule after an earlier answer, incomplete staffing data and a proposed plan that conflicts with saved priorities. Check that the model investigates, cites dated facts, explains a realistic alternative and contingency, asks for missing information when needed and does not invent execution. These quality cases have not been run against a live model. Passing transport/database tests alone cannot establish that the advisor is smart enough for operational use.
+Further evaluation should continue with fictional business cases before company data: an uncovered shift with an unavailable candidate, two different position shortages, a changed published schedule after an earlier answer, incomplete staffing data and a proposed plan that conflicts with saved priorities. Check that the model investigates, cites dated facts, explains a realistic alternative and contingency, asks for missing information when needed and does not invent execution. The two pilot questions are initial evidence only; this broader matrix has not been completed. Passing transport/database tests alone cannot establish that the advisor is smart enough for operational use.
 
 ## Director positions and release impact
 
 Product supports the investigation foundation toward Jose's senior-manager goal. Engineering reuses existing operational and scheduling services rather than implementing separate eligibility rules. Security requires current server-side Owner/company authority and minimized tool context. Governance keeps live spending, data activation, release integration and production authorization separate. No policy exception or production authorization was granted.
 
-Next gate for live answers: Jose's model/spending/data-handling choice, followed by controlled fictional-data inference evaluation on Neon. Publishing/integration need their own direction. Hosted CI has not run for this local feature branch. Independent UI/QA certification and production authorization remain separate; this increment adds no R1 acceptance gate.
+Live fictional demo answers are verified within Jose's $5 allowance. Product supports broader operational evaluation next; Engineering/CISO/Governance support this bounded pilot with its fixed ledger, minimized fictional data, invoke-only credential and expiry. Publishing/integration and any real-data/deployed activation need their own direction. Hosted CI has not run for this local feature branch. Independent UI/QA certification and production authorization remain separate; this increment adds no R1 acceptance gate.
 
 ## Implementation decisions made within the authorized scope
 

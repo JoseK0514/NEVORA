@@ -38,3 +38,10 @@
 ## Review focus
 
 Revocation during a slow model call; stale authority on source links; request retry causing duplicate charges or turns; malicious notes/tool output; partial/truncated staffing and false completeness; owner/company isolation; explicit deployment activation; finite usage in horizontally scaled servers; truthful disconnected/UI states; cancellation preserving history and usage correctness.
+
+## Task 4: bounded live demo connection (Jose authorized October22)
+
+- [x] Verify existing shared AI credits and preview gateway; signed-in billing showed $14.98, with no purchase/top-up or transfer.
+- [x] Add explicit fictional-demo provider launch and persistent conservative paid-call guard; 18 guard and 36 affected owned-runtime tests, TypeScript/lint passed. Scoped review approved f9591e5e after redirect/preload corrections. Ordinary tests receive no ambient provider credential.
+- [x] Store a dedicated invoke-only preview credential in macOS Keychain, verify the free catalog and connect the owned demo to gpt-6-1-sol.
+- [x] Root observed two real sourced UI answers, eight reserved paid transports, zero console warnings/errors and all 1842 source/mirror hashes matching. Shared balance then showed $14.95. Evidence and the remaining evaluation/production limits are in the handoff. Local commits only; production and publishing remain separate.
