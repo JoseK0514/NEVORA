@@ -465,3 +465,43 @@ cluster stopped. These supporting results, full D2's 282 checks, Navigation320,
 cloud typecheck and the 76 lightweight release regressions precede publication
 of the combined correction to PR23. Only its full following matching-source
 mandatory workflow can certify development readiness.
+
+## Independent recorded-time readiness and stage instrumentation
+
+Full run 39825708729 on PR head `e107f79f` / merge `d7e9c3a9` passed Phase E SQL,
+but Home failed Chromium768 at H11 before clicking Refresh recorded time. Its
+screenshot shows recorded time unavailable, runtime errors empty, and every
+sign-in ready. Home readiness did not establish that the independent recorded-
+time controller had completed its current read after lifecycle refresh. It now
+foregrounds the page and checks actual OFF_CLOCK state plus an enabled refresh
+control before installing the held-response route; native focus is also settled
+before the hold. A controlled regression keeps Home ready while recorded time
+is still loading and then keeps its control disabled; neither may release the
+new wait. The actual existing My Time hold, navigation and runtime assertions
+remain. `cb09d631`, run 39827424092, exercises the full shared Home14 matrix and
+both engines' controlled readiness regressions.
+
+That full run's units also found one real instrumentation-order regression:
+9,315 passed and one failed because lifecycle setup called exposeBinding before
+the existing stage-listener guard test reached its intentional stop. The fatal
+page-error listener now registers immediately after its stage reader, before
+diagnostic bindings. The original assertion is unchanged; it failed locally
+before the correction and the entire 141-case runtime suite passes afterward.
+Remaining jobs on the known-failed full candidate were cancelled to save runner
+minutes. Cancellation is not a pass; every mandatory check remains required on
+the next complete corrected source.
+
+Home run 39827424092 passed 13 cells: all seven Chromium sizes (including the
+formerly failing 768) and WebKit320/375/390/430/768/1024. Its optional 20-minute
+job cap cancelled the last WebKit1440 cell before completion, so this remains
+partial evidence. The required Home job retains its original 50-minute budget.
+No optional or required timeout is raised, and the following full mandatory run
+must execute all fourteen Home cells.
+
+Run 39829897689 at `8c686c0f` passed all 141 runtime-observer regressions in the
+cloud plus both engines' controlled Home and independent recorded-time readiness
+regressions. Both negative recorded-time phases stayed pending; only actual
+OFF_CLOCK plus enabled refresh released the wait. Both browsers closed, source
+was clean and unchanged, and the corrected Home/control files exactly match
+the pending integration correction. This supporting evidence does not substitute
+for complete matching-source mandatory CI.

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
-import {waitForFreshHome} from './phase-e-home-browser-scenarios.mjs';
+import {waitForFreshHome,waitForRecordedTimeReady} from './phase-e-home-browser-scenarios.mjs';
 import {captureSource,assertSourceUnchanged,externalEvidence} from './phase-e-owned.mjs';
 
 // A scheduling fixture for the actual H06 helper, not product/SQL evidence.
@@ -34,7 +34,16 @@ for(const engine of ['chromium','webkit']){
   await waiting;await page.screenshot({path:join(evidence,engine+'-fresh.png')});
   assert.equal(result.observations[0].settled,false,'Prior ready snapshot must not release the fresh-generation wait');
   assert.equal(result.observations[1].settled,false,'Loading must not release the fresh-generation wait');
-  assert.deepEqual(result.resolved,{state:'ready',busy:'false',fresh:true,old:false});result.status='passed';
+  assert.deepEqual(result.resolved,{state:'ready',busy:'false',fresh:true,old:false});
+  await page.setContent('<main data-home-state="ready"><aside aria-label="Own recorded time"><span class="employee-time-badge"></span><button aria-label="Refreshing recorded time" disabled>Refreshing</button></aside></main>');
+  let recordedSettled=false;result.recordedReadiness=[];
+  const recordedWaiting=waitForRecordedTimeReady(page,'OFF_CLOCK').then(value=>{recordedSettled=true;result.recordedResolved=value;});
+  const render=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  await render();result.recordedReadiness.push({phase:'Home ready, recorded time still loading',settled:recordedSettled});assert.equal(recordedSettled,false);
+  await page.evaluate(()=>document.querySelector('.employee-time-badge').setAttribute('data-state','OFF_CLOCK'));
+  await render();result.recordedReadiness.push({phase:'Recorded state arrived, refresh still disabled',settled:recordedSettled});assert.equal(recordedSettled,false);
+  await page.evaluate(()=>{const button=document.querySelector('button');button.disabled=false;button.setAttribute('aria-label','Refresh recorded time');});
+  await recordedWaiting;assert.deepEqual(result.recordedResolved,{state:'OFF_CLOCK',refreshEnabled:true});result.status='passed';
  }catch(error){result.failure={name:error.name,message:error instanceof assert.AssertionError?error.message:'Controlled readiness fixture failed'};process.exitCode=1;}
  finally{await context?.close();await browser.close();result.browserClosed=!browser.isConnected();await writeFile(join(evidence,'readiness-report.json'),JSON.stringify(results,null,2));}
 }
