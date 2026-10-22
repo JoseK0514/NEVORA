@@ -112,7 +112,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');await settle();
   const opened=new URL(page.url());assert.equal(opened.searchParams.get('requestId'),requestId);assert.equal(opened.searchParams.get('tab'),'my');assert.equal(opened.hash,'#request-'+requestId);assert.deepEqual(await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]),before);await page.goBack();await ready('notifications');await settle();
   checks.push('push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation');
-  stage='private-lifetime';for(const event of ['blur','pagehide']){await page.evaluate(e=>window.dispatchEvent(new Event(e)),event);assert.equal(await page.locator('[data-inbox-row]').count(),0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('notifications');}
+  stage='private-lifetime';for(const event of ['blur','pagehide']){await page.evaluate(e=>window.dispatchEvent(new Event(e)),event);await page.waitForFunction(()=>!document.querySelector('[data-inbox-row]'));assert.equal(await page.locator('[data-inbox-row]').count(),0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('notifications');}
   await context.setOffline(true);await page.waitForFunction(()=>!document.querySelector('[data-inbox-row]'));await context.setOffline(false);await ready('notifications');
   // Observe the real abort boundary and React commit separately. Keep an actual
   // authorized old response held: clearing cannot depend on another successful read.

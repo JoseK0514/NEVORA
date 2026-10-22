@@ -31,27 +31,26 @@ jobs:
           echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/phase-e-contrast-probe" >> "$GITHUB_ENV"
       - name: Prefer existing official Ubuntu archive
         run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
-      - name: Install Chromium and WebKit
+      - name: Install WebKit
         timeout-minutes: 8
-        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps webkit'
       - name: Install scratch PostgreSQL runtime
         run: |
           sudo apt-get update
           sudo apt-get install --yes postgresql-16
           echo "NEVORA_TEST_PG_BIN=/usr/lib/postgresql/16/bin" >> "$GITHUB_ENV"
-      - name: Diagnose exact-source Navigation in disposable owned data
-        run: node scripts/phase-e-owned.mjs browser --suite navigation
+      - name: Repeat WebKit 375 in seven isolated owned applications
+        run: node scripts/phase-d-owned.mjs contrast-probe
       - name: Upload diagnostics; this run cannot certify the development candidate
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: phase-e-contrast-probe-${{ github.sha }}
           path: |
-            ${{ runner.temp }}/phase-e-contrast-probe/*-report.json
-            ${{ runner.temp }}/phase-e-contrast-probe/navigation-*.png
+            ${{ runner.temp }}/phase-e-contrast-probe/**/*-report.json
+            ${{ runner.temp }}/phase-e-contrast-probe/**/navigation-*.png
             ${{ runner.temp }}/phase-e-contrast-probe/source-manifest.json
-            ${{ runner.temp }}/phase-e-contrast-probe/owned-postgres-*/ownership.json
-            ${{ runner.temp }}/phase-e-contrast-probe/owned-next-*/ownership.json
-            ${{ runner.temp }}/phase-e-contrast-probe/owned-next-*/source-manifest.json
+            ${{ runner.temp }}/phase-e-contrast-probe/**/ownership.json
+            ${{ runner.temp }}/phase-e-contrast-probe/**/source-manifest.json
           if-no-files-found: error
           retention-days: 14
