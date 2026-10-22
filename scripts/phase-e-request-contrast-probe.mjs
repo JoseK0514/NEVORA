@@ -1,49 +1,26 @@
 import {createRequire} from 'node:module';
-import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import {mkdir,writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
 import assert from 'node:assert/strict';
 import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
 import {seedOwnedApp} from '../src/test/integration/owned-app-fixture.ts';
-import {runScenario} from './phase-e-navigation-browser-scenarios.mjs';
+import {runScenario} from './phase-e-home-browser-scenarios.mjs';
 import {observeBrowserCell} from './phase-e-browser-qa.mjs';
 import {verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
 import {captureSource,assertSourceUnchanged,externalEvidence} from './phase-e-owned.mjs';
 import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
-import {waitForSheetEntrance} from './browser-render-readiness.mjs';
 
 const source=resolve(process.cwd()),custody=captureSource(source,process.env.PHASE_E_EXPECTED_SHA),evidence=externalEvidence(source,process.env.PHASE_E_EVIDENCE_DIR);
 const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json')),pw=runtime('playwright'),axeFile=runtime.resolve('axe-core/axe.min.js');
 assert.equal(runtime('playwright/package.json').version,'1.62.1');assert.equal(runtime('axe-core/package.json').version,'4.11.0');
-const report={checkpoint:custody.checkpoint,tree:custody.tree,sourceClean:true,cases:[],limitations:['Focused Navigation WebKit320 diagnosis only; not the mandatory 70-cell development verification.']};
+const report={checkpoint:custody.checkpoint,tree:custody.tree,sourceClean:true,cases:[],limitations:['Focused Home WebKit320 lifecycle diagnosis only; not the mandatory 70-cell development verification.']};
 await writeFile(join(evidence,'source-manifest.json'),JSON.stringify(custody,null,2));
 let browser;
 try{
  browser=await pw.webkit.launch({headless:true});const navigationDiagnosticVerified=(await verifyNavigationFetchDiagnostic(browser)).verified;
- // Exercise the actual approved stylesheet in a controlled document. A paused,
- // partially faded sheet must keep the audit waiting in both motion modes.
- const motionContext=await browser.newContext();report.renderReadinessRegression=[];
- try{
-  const motionPage=await motionContext.newPage();motionPage.setDefaultTimeout(15000);
-  const css=await readFile(resolve('src/components/signature/components.css'),'utf8');
-  for(const reducedMotion of ['no-preference','reduce']){
-   await motionPage.emulateMedia({reducedMotion});
-   await motionPage.setContent('<style>'+css+'</style><div data-sig-sheet>Fictional sheet</div>');
-   const paused=await motionPage.locator('[data-sig-sheet]').evaluate(element=>{
-    const animation=element.getAnimations()[0];animation.pause();animation.currentTime=70;
-    return {name:animation.animationName,opacity:Number(getComputedStyle(element).opacity)};
-   });
-   assert(paused.opacity>0&&paused.opacity<1);
-   let resolved=false;const pending=waitForSheetEntrance(motionPage).then(result=>{resolved=true;return result;});
-   await motionPage.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
-   assert.equal(resolved,false,'Entrance wait must not resolve while the real animation is paused');
-   await motionPage.locator('[data-sig-sheet]').evaluate(element=>element.getAnimations()[0].play());
-   const result=await pending;assert(result.before[0].opacity<1);assert.equal(result.after[0].opacity,1);
-   report.renderReadinessRegression.push({reducedMotion,paused,...result});
-  }
- }finally{await motionContext.close();}
- for(let index=0;index<1;index++){
+ for(let index=0;index<3;index++){
   const directory=join(evidence,'case-'+index);await mkdir(directory,{recursive:true});
-  const width=320,record={suite:'navigation',engine:'webkit',width,index,status:'failed',checks:[],errors:[]};report.cases.push(record);
+  const width=320,record={suite:'home',engine:'webkit',width,index,status:'failed',checks:[],errors:[]};report.cases.push(record);
   const observer=observeBrowserCell(record,record.errors,{navigationDiagnosticVerified});let app,context;
   try{
    app=await createOwnedNextApp(directory,{pinDevTypeReferences:true});await seedOwnedApp(app.database.executor);
@@ -61,6 +38,6 @@ try{
  }
 }finally{
  await browser?.close();assertSourceUnchanged(source,custody);
- report.sourceUnchanged=true;report.status=report.cases.length===1&&report.cases.every(item=>item.status==='passed'&&item.closed)?'passed':'failed';
+ report.sourceUnchanged=true;report.status=report.cases.length===3&&report.cases.every(item=>item.status==='passed'&&item.closed)?'passed':'failed';
  await writeFile(join(evidence,'probe-report.json'),JSON.stringify(report,null,2));if(report.status!=='passed')process.exitCode=1;
 }
