@@ -4,7 +4,7 @@ import {join,resolve} from 'node:path';
 import assert from 'node:assert/strict';
 import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
 import {seedOwnedApp} from '../src/test/integration/owned-app-fixture.ts';
-import {runScenario} from './phase-e-home-browser-scenarios.mjs';
+import {runScenario} from './phase-e-navigation-browser-scenarios.mjs';
 import {observeBrowserCell} from './phase-e-browser-qa.mjs';
 import {verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
 import {captureSource,assertSourceUnchanged,externalEvidence} from './phase-e-owned.mjs';
@@ -14,7 +14,7 @@ import {waitForSheetEntrance} from './browser-render-readiness.mjs';
 const source=resolve(process.cwd()),custody=captureSource(source,process.env.PHASE_E_EXPECTED_SHA),evidence=externalEvidence(source,process.env.PHASE_E_EVIDENCE_DIR);
 const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json')),pw=runtime('playwright'),axeFile=runtime.resolve('axe-core/axe.min.js');
 assert.equal(runtime('playwright/package.json').version,'1.62.1');assert.equal(runtime('axe-core/package.json').version,'4.11.0');
-const report={checkpoint:custody.checkpoint,tree:custody.tree,sourceClean:true,cases:[],limitations:['Repeated Home WebKit 430 sign-in diagnosis only; not the mandatory 70-cell development verification.']};
+const report={checkpoint:custody.checkpoint,tree:custody.tree,sourceClean:true,cases:[],limitations:['Focused Navigation WebKit320 diagnosis only; not the mandatory 70-cell development verification.']};
 await writeFile(join(evidence,'source-manifest.json'),JSON.stringify(custody,null,2));
 let browser;
 try{
@@ -41,9 +41,9 @@ try{
    report.renderReadinessRegression.push({reducedMotion,paused,...result});
   }
  }finally{await motionContext.close();}
- for(let index=0;index<7;index++){
+ for(let index=0;index<1;index++){
   const directory=join(evidence,'case-'+index);await mkdir(directory,{recursive:true});
-  const width=430,record={suite:'home',engine:'webkit',width,index,status:'failed',checks:[],errors:[]};report.cases.push(record);
+  const width=320,record={suite:'navigation',engine:'webkit',width,index,status:'failed',checks:[],errors:[]};report.cases.push(record);
   const observer=observeBrowserCell(record,record.errors,{navigationDiagnosticVerified});let app,context;
   try{
    app=await createOwnedNextApp(directory,{pinDevTypeReferences:true});await seedOwnedApp(app.database.executor);
@@ -61,6 +61,6 @@ try{
  }
 }finally{
  await browser?.close();assertSourceUnchanged(source,custody);
- report.sourceUnchanged=true;report.status=report.cases.length===7&&report.cases.every(item=>item.status==='passed'&&item.closed)?'passed':'failed';
+ report.sourceUnchanged=true;report.status=report.cases.length===1&&report.cases.every(item=>item.status==='passed'&&item.closed)?'passed':'failed';
  await writeFile(join(evidence,'probe-report.json'),JSON.stringify(report,null,2));if(report.status!=='passed')process.exitCode=1;
 }

@@ -61,8 +61,9 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   target.on('request',requested);target.on('response',responded);target.on('requestfailed',failed);target.on('framenavigated',navigated);
   try{
    await target.bringToFront();await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
-   await Promise.all([target.waitForURL(u=>u.pathname==='/app',{waitUntil:'commit'}),target.getByRole('button',{name:'Sign in',exact:true}).click()]);
-   await target.locator('.app-shell.nevora-portal').waitFor();if(waitForIdle)await target.waitForLoadState('networkidle');attempt.status='ready';
+   await target.getByRole('button',{name:'Sign in',exact:true}).click({noWaitAfter:true});
+   await target.waitForFunction(()=>location.pathname==='/app'&&!!document.querySelector('.app-shell.nevora-portal'));
+   await target.locator('.app-shell.nevora-portal').waitFor();attempt.arrival={documentRoute:'app',pageRoute:routeOf(target.url()),shellVisible:true};if(waitForIdle)await target.waitForLoadState('networkidle');attempt.status='ready';
   }catch(error){
    const url=new URL(target.url()),code=url.searchParams.get('error');details.loginFailure={route:routeOf(target.url()),error:['busy','invalid','missing','locked'].includes(code)?code:code?'other':null};attempt.status='failed';attempt.failure=details.loginFailure;
    await writeFile(join(evidenceDirectory,`home-login-${engine}-${width}-report.json`),JSON.stringify({engine,width,attempts:details.loginAttempts},null,2));

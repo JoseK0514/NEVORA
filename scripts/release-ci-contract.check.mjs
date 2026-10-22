@@ -6,6 +6,17 @@ import {verifyRequiredJobs, ownedExecutionTimeout} from './phase-e-owned.mjs';
 const require=createRequire(import.meta.url);
 const workflow=require('js-yaml').load(readFileSync('.github/workflows/ci.yml','utf8'));
 const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','phase-e-postgres','phase-e-ui'];
+test('runtime installers prefer the existing official mirror before every apt dependency step',()=>{
+ for(const name of ['clocker-postgres','release-postgres','phase-e-postgres','phase-d-attendance-ui','phase-e-ui-suite']){
+  const steps=workflow.jobs[name].steps,preference=steps.findIndex(step=>step.name==='Prefer official Ubuntu archive');
+  assert(preference>=0,name+' archive preference missing');
+  assert.equal(steps[preference].if,undefined);
+  assert.match(steps[preference].run,/sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS .*scripts\/ci-ubuntu-mirrors\.mjs/);
+  const installers=steps.filter(step=>/apt-get|install --with-deps/.test(step.run??''));
+  assert(installers.length>0,name+' dependency installer missing');
+  for(const step of installers)assert(steps.indexOf(step)>preference,name+' must prefer the mirror before installation');
+ }
+});
 test('feature candidates run through PRs without a duplicate branch-push execution',()=>{
  assert.deepEqual(workflow.on.push.branches,['development','main']);
  for(const target of ['development','main','codex/verify-preview-33'])assert(workflow.on.pull_request.branches.includes(target));

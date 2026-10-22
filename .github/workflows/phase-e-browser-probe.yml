@@ -5,9 +5,22 @@ on:
 permissions:
   contents: read
 jobs:
-  typecheck-diagnostic:
+  focused:
+    name: focused (${{ matrix.target }})
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        target: [home, d2, navigation, clocker]
+    env:
+      PHASE_E_EXPECTED_SHA: ${{ github.sha }}
+      PHASE_E_EVIDENCE_DIR: ${{ runner.temp }}/diagnostic-${{ matrix.target }}
+      PHASE_D2_CORRECTIONS_EXPECTED_SHA: ${{ github.sha }}
+      PHASE_D2_CORRECTIONS_EVIDENCE_DIR: ${{ runner.temp }}/diagnostic-d2
+      PHASE_C_EXPECTED_SHA: ${{ github.sha }}
+      PHASE_C_EVIDENCE_DIR: ${{ runner.temp }}/diagnostic-clocker-browser
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -19,9 +32,55 @@ jobs:
           node-version: 24.19.0
           cache: npm
       - run: npm ci
-      - name: Typecheck the corrected real dependency-copy regression
-        run: npm run typecheck
-      - name: Verify source is unchanged
+      - name: Install pinned browser runtime
         run: |
-          git diff --exit-code
-          test -z "$(git ls-files --others --exclude-standard)"
+          PW_ROOT="$GITHUB_WORKSPACE/tools/ci-browser-runtime"
+          npm ci --prefix "$PW_ROOT" --no-audit --no-fund
+          npm audit --prefix "$PW_ROOT" --audit-level=high
+          echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+          echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
+      - name: Install Chromium and WebKit
+        timeout-minutes: 8
+        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+      - name: Install scratch PostgreSQL runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-16
+          echo "NEVORA_TEST_PG_BIN=/usr/lib/postgresql/16/bin" >> "$GITHUB_ENV"
+      - name: Full shared-server Home matrix with actual authenticated arrival
+        if: ${{ matrix.target == 'home' }}
+        run: node scripts/phase-e-owned.mjs browser --suite home
+      - name: Complete D2 correction, recovery and identity-boundary browser cases
+        if: ${{ matrix.target == 'd2' }}
+        run: npm run test:phase-d2:corrections-ui
+      - name: Navigation WebKit320 with current visible development badge
+        if: ${{ matrix.target == 'navigation' }}
+        run: node scripts/phase-d-owned.mjs contrast-probe
+      - name: Strict mirror custody and release-engineering regressions
+        if: ${{ matrix.target == 'clocker' }}
+        run: |
+          npm run test:release-engineering
+          NEVORA_MIRROR_EVIDENCE_DIR="$RUNNER_TEMP/diagnostic-mirror-mutated" node --import tsx scripts/release-mirror-custody-qa.mjs mutated
+          NEVORA_MIRROR_EVIDENCE_DIR="$RUNNER_TEMP/diagnostic-mirror-extra" node --import tsx scripts/release-mirror-custody-qa.mjs extra
+      - name: Full Clocker PostgreSQL suite
+        if: ${{ matrix.target == 'clocker' }}
+        run: npm run test:clocker:owned
+      - name: Full Clocker lifecycle and recovery browser suite
+        if: ${{ matrix.target == 'clocker' }}
+        run: node scripts/phase-c-clocker-postgres.mjs --punch-ui
+      - name: Upload scoped diagnostic evidence; not development acceptance
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: development-ci-probe-${{ github.sha }}-${{ matrix.target }}
+          path: |
+            ${{ runner.temp }}/diagnostic-*/*.json
+            ${{ runner.temp }}/diagnostic-*/*.png
+            ${{ runner.temp }}/diagnostic-*/case-*/*.json
+            ${{ runner.temp }}/diagnostic-*/case-*/*.png
+            ${{ runner.temp }}/diagnostic-*/**/ownership.json
+            ${{ runner.temp }}/diagnostic-*/**/source-manifest.json
+          if-no-files-found: error
+          retention-days: 14
