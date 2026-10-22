@@ -58,7 +58,49 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               } else await route.continue();
             },
           );
+          await context.tracing.start({ screenshots: true, snapshots: true });
           const page = await context.newPage();
+          let phase = "login";
+          const diagnostics: {
+            at: string;
+            phase: string;
+            kind: string;
+            url: string;
+            message: string;
+          }[] = [];
+          const record = (kind: string, url: string, message: string) =>
+            diagnostics.push({
+              at: new Date().toISOString(),
+              phase,
+              kind,
+              url,
+              message,
+            });
+          page.on("console", (message: { type(): string; text(): string }) =>
+            record("console:" + message.type(), page.url(), message.text()),
+          );
+          page.on(
+            "requestfailed",
+            (request: {
+              url(): string;
+              failure(): { errorText: string } | null;
+            }) =>
+              record(
+                "requestfailed",
+                request.url(),
+                request.failure()?.errorText ?? "",
+              ),
+          );
+          page.on(
+            "response",
+            (response: { url(): string; status(): number }) => {
+              if (response.status() >= 400)
+                record("http", response.url(), String(response.status()));
+            },
+          );
+          page.on("pageerror", (error: Error) =>
+            record("pageerror", page.url(), error.stack ?? error.message),
+          );
           page.setDefaultTimeout(20000);
           page.on("pageerror", (error: Error) =>
             errors.push(
@@ -75,6 +117,10 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               .getByRole("button", { name: "Sign in", exact: true })
               .click();
             await page.waitForURL(origin + "/app");
+            phase =
+              actor === "OA-MANAGER"
+                ? "Manager denial"
+                : "Owner real API scenarios";
             if (actor === "OA-MANAGER") {
               expect(
                 await page
@@ -269,6 +315,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               expect(api.status()).toBe(200);
               const saved = await api.json();
               expect(saved.connection).toBe("unavailable");
+              phase = "Owner UI fixtures";
               // Deliberately substituted UI-only responses; no provider or inference involved.
               let fixtureMode = "answer";
               let posts = 0;
@@ -372,11 +419,19 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
             });
             throw error;
           } finally {
+            phase = "teardown";
             await page.evaluate(() =>
               window.dispatchEvent(new Event("pagehide")),
             );
             await page.waitForLoadState("networkidle");
+            await context.tracing.stop({
+              path: resolve(evidence, engine + "-" + actor + "-trace.zip"),
+            });
             await context.close();
+            await writeFile(
+              resolve(evidence, engine + "-" + actor + "-diagnostics.json"),
+              JSON.stringify(diagnostics, null, 2),
+            );
           }
         }
       } finally {
