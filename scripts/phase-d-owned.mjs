@@ -15,7 +15,7 @@ const modes={migrations:['node_modules/vitest/vitest.mjs','run','--config','vite
   payroll:['node_modules/vitest/vitest.mjs','run','--config','vitest.payroll-export-integration.config.mts'],
   reports:['node_modules/vitest/vitest.mjs','run','--config','vitest.reports-integration.config.mts'],
   remediation:['--import','./scripts/qa-server-context.mjs','--import','tsx','scripts/phase-d-remediation-qa.mjs'],
-  'contrast-probe':['--import','./scripts/qa-server-context.mjs','--import','tsx','scripts/navigation-authority-probe.mjs'],
+  'contrast-probe':['--import','./scripts/qa-server-context.mjs','--import','tsx','scripts/home-login-probe.mjs'],
   'missing-probe':['--import','./scripts/qa-server-context.mjs','--import','tsx','scripts/phase-d-remediation-missing-qa.mjs'],
   browser:['--import','./scripts/qa-server-context.mjs','--import','tsx','scripts/phase-d-browser-qa.mjs']};
 if(!Object.hasOwn(modes,mode))throw new Error('Unknown owned Phase D test mode');

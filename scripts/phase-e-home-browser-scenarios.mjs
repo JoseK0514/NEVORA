@@ -2,7 +2,7 @@ import {measureRenderedContrast} from './browser-contrast.mjs';
 import {fulfillHeldResponse} from './browser-held-response.mjs';
 import assert from 'node:assert/strict';
 import {join} from 'node:path';
-import {writeFile} from 'node:fs/promises';
+import {readFile,writeFile} from 'node:fs/promises';
 import {Client} from 'pg';
 import {randomUUID,createHash} from 'node:crypto';
 import {hashPassword} from '../src/lib/auth/password.ts';
@@ -74,14 +74,15 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   }
  };
  async function login(target=page,id=actor,{waitForIdle=true}={}){
-  const started=Date.now(),attempt={stage,status:'started',trace:[]};details.loginAttempts??=[];details.loginAttempts.push(attempt);
+  const started=Date.now(),attempt={stage,target:target===page?'primary':'replacement',status:'started',trace:[]};details.loginAttempts??=[];details.loginAttempts.push(attempt);
   const routeOf=value=>{try{const path=new URL(value).pathname;return ['/app','/login'].includes(path)?path:'other';}catch{return 'other';}};
   const record=value=>{if(attempt.trace.length<40)attempt.trace.push({afterMs:Date.now()-started,...value});};
   const requested=request=>{const route=routeOf(request.url());if(route!=='other')record({event:'request',route,method:request.method()});};
   const responded=response=>{const route=routeOf(response.url());if(route!=='other')record({event:'response',route,method:response.request().method(),status:response.status(),redirect:!!(response.headers()['x-action-redirect']||response.headers().location)});};
   const failed=request=>{const route=routeOf(request.url());if(route!=='other')record({event:'request-failed',route,method:request.method(),reason:/abort|cancel/i.test(request.failure()?.errorText??'')?'aborted':'transport-failed'});};
+  const finished=request=>{const route=routeOf(request.url());if(route!=='other')record({event:'request-finished',route,method:request.method()});};
   const navigated=frame=>{if(frame===target.mainFrame())record({event:'document',route:routeOf(frame.url())});};
-  target.on('request',requested);target.on('response',responded);target.on('requestfailed',failed);target.on('framenavigated',navigated);
+  target.on('request',requested);target.on('response',responded);target.on('requestfailed',failed);target.on('requestfinished',finished);target.on('framenavigated',navigated);
   try{
    await target.bringToFront();await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
    await target.getByRole('button',{name:'Sign in',exact:true}).click({noWaitAfter:true});
@@ -89,10 +90,15 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
    await target.locator('.app-shell.nevora-portal').waitFor();attempt.arrival={documentRoute:'app',pageRoute:routeOf(target.url()),shellVisible:true};if(waitForIdle)await target.waitForLoadState('networkidle');attempt.status='ready';
   }catch(error){
    const url=new URL(target.url()),code=url.searchParams.get('error');details.loginFailure={route:routeOf(target.url()),error:['busy','invalid','missing','locked'].includes(code)?code:code?'other':null};attempt.status='failed';attempt.failure=details.loginFailure;
+   let diagnosticTimer;
+   try{attempt.pageState=await Promise.race([target.evaluate(()=>{const button=document.querySelector('form button[type=submit]');return {route:['/login','/app'].includes(location.pathname)?location.pathname:'other',readyState:document.readyState,focused:document.hasFocus(),visibility:document.visibilityState,busy:button?.getAttribute('aria-busy'),disabled:button?.getAttribute('aria-disabled'),shell:!!document.querySelector('.app-shell.nevora-portal')};}).catch(()=>({state:'unavailable'})),new Promise(resolve=>{diagnosticTimer=setTimeout(()=>resolve({state:'unresponsive'}),1000);})]);}finally{clearTimeout(diagnosticTimer);}
+   try{const log=(await readFile(join(app.root,'next.log'),'utf8')).replace(/\[[0-9;]*m/g,'').replaceAll(String.fromCharCode(27),'');attempt.serverRequests=log.split('\n').flatMap(line=>{const match=line.match(/\b(GET|POST) (\/login|\/app)(?:\?[^ ]*)? (\d{3}) in ([\d.]+)(ms|s)/);return match?[{method:match[1],route:match[2],status:Number(match[3]),elapsedMs:Number(match[4])*(match[5]==='s'?1000:1)}]:[];}).slice(-16);}catch{attempt.serverRequests='unavailable';}
+   const diagnosticClient=new Client({connectionString:app.database.connectionString,connectionTimeoutMillis:1000,statement_timeout:1000});
+   try{await diagnosticClient.connect();attempt.databaseWaits=(await diagnosticClient.query("SELECT state,wait_event_type,wait_event,count(*)::int AS connections FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() GROUP BY state,wait_event_type,wait_event")).rows;}catch{attempt.databaseWaits='unavailable';}finally{await diagnosticClient.end().catch(()=>{});}
    await writeFile(join(evidenceDirectory,`home-login-${engine}-${width}-report.json`),JSON.stringify({engine,width,attempts:details.loginAttempts},null,2));
-   await target.screenshot({path:join(evidenceDirectory,`home-${engine}-${width}-login-failure.png`),timeout:5000}).catch(()=>{});throw error;
+   await target.screenshot({path:join(evidenceDirectory,`home-${engine}-${width}-login-failure.png`),timeout:5000,mask:[target.locator('input,textarea')]}).catch(()=>{});throw error;
   }finally{
-   target.off('request',requested);target.off('response',responded);target.off('requestfailed',failed);target.off('framenavigated',navigated);
+   target.off('request',requested);target.off('response',responded);target.off('requestfailed',failed);target.off('requestfinished',finished);target.off('framenavigated',navigated);
    await writeFile(join(evidenceDirectory,`home-login-${engine}-${width}-report.json`),JSON.stringify({engine,width,attempts:details.loginAttempts},null,2));
   }
  }
