@@ -1,0 +1,316 @@
+[
+ {
+  "engine": "webkit",
+  "surface": "manager More",
+  "path": "Close actions",
+  "pass": true,
+  "before": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "closed": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "back": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "focusAfterClose": "BODY"
+ },
+ {
+  "engine": "webkit",
+  "surface": "manager More",
+  "path": "Esc",
+  "pass": true,
+  "before": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "closed": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "back": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "focusAfterClose": "BODY"
+ },
+ {
+  "engine": "webkit",
+  "surface": "manager More",
+  "path": "tap outside",
+  "pass": true,
+  "before": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "closed": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "back": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "focusAfterClose": "BODY"
+ },
+ {
+  "engine": "webkit",
+  "surface": "manager More",
+  "path": "swipe down",
+  "pass": true,
+  "before": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "closed": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "back": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "focusAfterClose": "BODY"
+ },
+ {
+  "engine": "webkit",
+  "surface": "manager More",
+  "path": "choosing a link",
+  "pass": true,
+  "before": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "closed": {
+   "len": 5,
+   "href": "http://127.0.0.1:62747/app/updates",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "back": {
+   "len": 5,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "focusAfterClose": "BODY"
+ },
+ {
+  "engine": "webkit",
+  "surface": "employee More",
+  "path": "Close actions",
+  "pass": true,
+  "before": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "closed": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "back": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "focusAfterClose": "BODY"
+ },
+ {
+  "engine": "webkit",
+  "surface": "employee More",
+  "path": "Esc",
+  "pass": true,
+  "before": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "closed": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "back": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "focusAfterClose": "BODY"
+ },
+ {
+  "engine": "webkit",
+  "surface": "employee More",
+  "path": "tap outside",
+  "pass": true,
+  "before": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "closed": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "back": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "focusAfterClose": "BODY"
+ },
+ {
+  "engine": "webkit",
+  "surface": "employee More",
+  "path": "swipe down",
+  "pass": true,
+  "before": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "closed": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "back": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "focusAfterClose": "BODY"
+ },
+ {
+  "engine": "webkit",
+  "surface": "employee More",
+  "path": "choosing a link",
+  "pass": true,
+  "before": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "closed": {
+   "len": 5,
+   "href": "http://127.0.0.1:62747/app/updates",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "back": {
+   "len": 5,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "focusAfterClose": "BODY"
+ },
+ {
+  "engine": "webkit",
+  "surface": "schedule page menu",
+  "path": "Close actions",
+  "pass": true,
+  "before": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "closed": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "back": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "focusAfterClose": "BODY"
+ },
+ {
+  "engine": "webkit",
+  "surface": "schedule page menu",
+  "path": "Esc",
+  "pass": true,
+  "before": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "closed": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "back": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "focusAfterClose": "BODY"
+ },
+ {
+  "engine": "webkit",
+  "surface": "schedule page menu",
+  "path": "tap outside",
+  "pass": false,
+  "before": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "closed": {
+   "len": 5,
+   "href": "http://127.0.0.1:62747/app/schedule?week=2026-10-12",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "back": {
+   "len": 5,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "focusAfterClose": "BODY"
+ },
+ {
+  "engine": "webkit",
+  "surface": "schedule page menu",
+  "path": "swipe down",
+  "pass": true,
+  "before": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "closed": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app/schedule",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "back": {
+   "len": 4,
+   "href": "http://127.0.0.1:62747/app",
+   "keys": "__NA,__PRIVATE_NEXTJS_INTERNALS_TREE"
+  },
+  "focusAfterClose": "BODY"
+ },
+ {
+  "engine": "webkit",
+  "surface": "schedule page menu",
+  "path": "choosing a link",
+  "value": "skipped: not offered"
+ }
+]

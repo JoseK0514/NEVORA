@@ -1,0 +1,109 @@
+[
+ {
+  "mode": "chrome-button",
+  "surface": "manager-more",
+  "value": "✓ 1st Back hides the keyboard, 2nd closes and stays",
+  "before": {
+   "url": "http://localhost:54513/app/schedule",
+   "len": 2
+  },
+  "after": {
+   "url": "http://localhost:54513/app/schedule",
+   "len": 2,
+   "open": true
+  },
+  "second": {
+   "url": "http://localhost:54513/app/schedule",
+   "open": false
+  },
+  "opened": true
+ },
+ {
+  "mode": "chrome-button",
+  "surface": "finder-sheet",
+  "value": "✓ 1st Back hides the keyboard, 2nd closes and stays",
+  "before": {
+   "url": "http://localhost:54513/app/schedule",
+   "len": 2
+  },
+  "after": {
+   "url": "http://localhost:54513/app/schedule",
+   "len": 2,
+   "open": true
+  },
+  "second": {
+   "url": "http://localhost:54513/app/schedule",
+   "open": false
+  },
+  "opened": true
+ },
+ {
+  "mode": "chrome-button",
+  "surface": "page-menu-locations",
+  "value": "✓ closes and stays",
+  "before": {
+   "url": "http://localhost:54513/app/settings/locations",
+   "len": 3
+  },
+  "after": {
+   "url": "http://localhost:54513/app/settings/locations",
+   "len": 3,
+   "open": false
+  },
+  "second": null,
+  "opened": true
+ },
+ {
+  "mode": "chrome-button",
+  "surface": "page-menu-schedule",
+  "value": "✓ closes and stays",
+  "before": {
+   "url": "http://localhost:54513/app/schedule",
+   "len": 4
+  },
+  "after": {
+   "url": "http://localhost:54513/app/schedule",
+   "len": 4,
+   "open": false
+  },
+  "second": null,
+  "opened": true
+ },
+ {
+  "mode": "chrome-button",
+  "surface": "no-surface",
+  "value": "✓ navigates back as today"
+ },
+ {
+  "mode": "chrome-button",
+  "surface": "employee-more",
+  "value": "✓ closes and stays",
+  "before": {
+   "url": "http://localhost:54513/app/schedule",
+   "len": 6
+  },
+  "after": {
+   "url": "http://localhost:54513/app/schedule",
+   "len": 6,
+   "open": false
+  },
+  "second": null,
+  "opened": true
+ },
+ {
+  "mode": "chrome-button",
+  "surface": "employee-more-home",
+  "value": "✓ closes and stays",
+  "before": {
+   "url": "http://localhost:54513/app",
+   "len": 7
+  },
+  "after": {
+   "url": "http://localhost:54513/app",
+   "len": 7,
+   "open": false
+  },
+  "second": null,
+  "opened": true
+ }
+]

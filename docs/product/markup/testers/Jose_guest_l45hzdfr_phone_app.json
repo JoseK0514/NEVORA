@@ -1,0 +1,36 @@
+{
+ "key": "Jose · guest-l45hzdfr · phone /app",
+ "url": "https://monkey-occurred-crystal-carolina.trycloudflare.com/app",
+ "path": "/app",
+ "device": "phone",
+ "viewport": {
+  "w": 357,
+  "h": 679
+ },
+ "page": {
+  "w": 440,
+  "h": 1706
+ },
+ "title": "NEVORA Workforce",
+ "heading": "Home",
+ "tester": "Jose",
+ "account": "ARAlexandra Rivera",
+ "strokes": [],
+ "pins": [
+  {
+   "n": 1,
+   "x": 266,
+   "y": 1122,
+   "text": "",
+   "t": 1792359133148,
+   "target": {
+    "tag": "div",
+    "id": "",
+    "cls": "employee-home-reviewed-module__k4entG__secondary",
+    "text": "To do3 actionsSchedule updated — review requiredWeek of Mon, October 12, 2026Required revi"
+   }
+  }
+ ],
+ "note": "Why does it look like it has 2 layers?",
+ "updatedAt": "2026-10-18T21:32:13.751Z"
+}

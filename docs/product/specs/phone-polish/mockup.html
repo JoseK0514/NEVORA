@@ -1,0 +1,107 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Phone polish mock-up</title>
+<style>
+@font-face{font-family:Inter;src:url("../../../../public/fonts/typeface/inter/variable.ttf") format("truetype");font-weight:100 900;}
+:root{--g-accent:#077572;--g-accent-hover:#055C5A;--g-accent-strong:#07605F;--g-accent-wash:#E7F3F2;--g-accent-pressed:#D3EAE8;--g-masthead:#1C4A47;--g-masthead-ink:#CFE3E1;
+--g-ink:#1C1C1C;--g-muted:#5F6368;--g-border:#D7D9DC;--g-hairline:#ECEDEF;--g-inset:#F6F7F8;--g-urgent:#E1553F;--g-canvas:#FFFFFF;
+--st-neutral-bg:#F1F2F4;--st-neutral-ink:#1C1C1C;--st-review-bg:#FBF1E2;--st-review-ink:#8A4B00;--st-done-bg:#EAF5EA;--st-done-ink:#1D6F42;--st-urgent-bg:#FDECE8;--st-urgent-ink:#A8361F;
+--ann:#6B3FA0;}
+*{box-sizing:border-box}
+body{margin:0;padding:32px;background:#E9EBEE;color:var(--g-ink);font:400 16px/1.5 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1.board{font:600 22px/1.3 Inter;margin:0 0 4px} p.board-sub{margin:0 0 28px;color:var(--g-muted);font-size:14px;max-width:900px}
+.row{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start;margin-bottom:40px}
+.frame{flex:none} .frame>.cap{font:600 13px/1.4 Inter;color:var(--g-ink);margin:0 0 8px} .frame>.cap small{display:block;font-weight:400;color:var(--g-muted)}
+.phone{position:relative;width:390px;background:#F6F7F8;border-radius:28px;overflow:hidden;box-shadow:0 0 0 1px #0000001A,0 10px 30px #0000001F}
+.phone.w320{width:320px} .phone.w375{width:375px}
+.desk{position:relative;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px #0000001A,0 10px 30px #0000001F}
+.status{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font:600 15px Inter;color:#fff}
+.status.dark{color:var(--g-ink)}
+.mast{background:var(--g-masthead);color:#fff}
+.hdr{display:flex;align-items:center;min-height:68px;padding:12px 16px}
+.wordmark{display:grid;line-height:1;width:124px;flex:none}
+.wordmark b{font:600 25px/1 Inter;letter-spacing:.2em} .wordmark span{font:400 10px/1.6 Inter;letter-spacing:.18em;color:var(--g-masthead-ink);text-align:center;padding-right:14px}
+.chip{display:inline-flex;align-items:center;justify-content:center;height:30px;min-width:40px;max-width:88px;flex:0 1 auto;margin-left:10px;margin-right:auto;padding:4px 6px;border-radius:8px;background:#fff;color:#273B66;font:700 12px/1 Inter;overflow:hidden;white-space:nowrap}
+.spacer{margin-left:auto}
+.ib{position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:999px;color:#fff;flex:none}
+.ib.pressed{background:rgb(255 255 255 / .14)} .ib.focus{outline:2px solid #fff;outline-offset:-2px}
+.count{position:absolute;top:5px;right:4px;min-width:18px;padding:1px 4px;border:2px solid var(--g-masthead);border-radius:999px;background:#fff;color:var(--g-accent);font:600 10px/1.3 Inter;text-align:center}
+.pagehead{padding:4px 20px 26px} .pagehead h2{margin:0;font:500 28px/1.25 Inter;letter-spacing:-.02em} .pagehead p{margin:4px 0 0;color:var(--g-masthead-ink);font-size:17px}
+.tabbar{display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px calc(6px + 20px);background:rgb(255 255 255 / .92);border-top:1px solid var(--g-hairline)}
+.tab{display:grid;justify-items:center;gap:4px;min-height:48px;padding-top:4px;color:var(--g-muted);font:500 12px/1.3 Inter}
+.tab.on{color:var(--g-accent);font-weight:600}
+.pin{position:absolute;z-index:5;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ann);color:#fff;font:700 12px/1 Inter;box-shadow:0 0 0 2px #fff}
+.notes{width:340px;flex:none;font-size:14px;line-height:1.5}
+.notes ol{margin:0;padding-left:20px} .notes li{margin-bottom:8px} .notes li::marker{color:var(--ann);font-weight:700}
+.notes h3{margin:0 0 8px;font:600 15px/1.4 Inter}
+.tag{display:inline-flex;align-items:center;padding:1px 8px;border-radius:999px;font:600 12px/1.5 Inter}
+.legend{display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--g-muted);margin-top:6px}
+.legend i{width:14px;height:14px;border-radius:50%;background:var(--ann);display:inline-block}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 3px #0000001A,0 1px 2px #0000000D}
+</style></head><body><style>
+.pass{position:relative;margin:0 16px;padding:22px 20px 18px;border-radius:16px;color:#fff;background:linear-gradient(135deg,#077572 0%,#1C4A47 100%);overflow:hidden}
+.pass .eyebrow{display:flex;justify-content:space-between;align-items:center;font-size:15px;color:rgb(255 255 255 / .94)}
+.pub{display:inline-flex;align-items:center;gap:7px;padding:3px 8px;border-radius:20px;background:rgb(255 255 255 / .16);font-size:14px;color:#fff}
+.pub::before{content:"";width:5px;height:5px;border-radius:50%;background:#fff}
+.blk h3{margin:14px 0 0;font:600 17px/1.4 Inter} .blk .note{margin:4px 0 8px;font-size:15px;color:rgb(255 255 255 / .94)}
+.date{font-size:15px;color:rgb(255 255 255 / .94)} .date b{color:#fff;font-weight:600}
+.time{font:500 36px/1.15 Inter;letter-spacing:-.02em;margin:2px 0}
+.cd{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:rgb(255 255 255 / .16);font:600 15px Inter;margin:6px 0}
+.loc{font-size:17px} .loc span{color:rgb(255 255 255 / .94);font-size:15px}
+.foot{position:relative;display:flex;justify-content:space-between;align-items:center;min-height:44px;margin-top:14px;padding-top:10px;font:600 17px Inter}
+.foot.solid{border-top:1px solid rgb(255 255 255 / .2)} .foot.stub{border-top:1.5px dashed rgb(255 255 255 / .32)}
+.foot.stub::before,.foot.stub::after{content:"";position:absolute;top:-10px;width:18px;height:18px;border-radius:50%;background:#F6F7F8}
+.foot.stub::before{left:-29px} .foot.stub::after{right:-29px}
+.sep{height:1px;background:rgb(255 255 255 / .24);margin:16px 0 0}
+.tear{position:relative;height:0;margin:18px 0 14px;border-top:1.5px dashed rgb(255 255 255 / .32)}
+.tear::before,.tear::after{content:"";position:absolute;top:-10px;width:18px;height:18px;border-radius:50%;background:#F6F7F8}
+.tear::before{left:-29px}.tear::after{right:-29px}
+.zone{font-size:14px;color:rgb(255 255 255 / .94);margin-top:2px}
+.sc{display:grid;place-items:center;width:96px;height:96px;border-radius:50%;background:#1C4A47;color:#fff}
+.lp{background:#fff;border-radius:16px;padding:8px;width:260px;box-shadow:0 8px 24px #00000033} .lp.dark{background:#2F2F2F;color:#fff}
+.lpi{display:flex;align-items:center;gap:14px;min-height:52px;padding:4px 10px;font:500 16px Inter}
+.lpi .sc{width:36px;height:36px}
+</style>
+<h1 class="board">Phone polish: visual mock-up</h1>
+<p class="board-sub">Fictional data. Purple pins are annotations. The sentence under "Scheduled now" is the UX flows' recommended copy (flows.md 2.2), pending the UX writer. Shortcut icons are Phosphor glyphs drawn locally; no paid generation.</p>
+
+<div class="row">
+ <div class="frame"><p class="cap">A · Employee Home today, 390<small>tomorrow leads; the shift under way sits second (secondary text drawn at the proposed 94%)</small></p>
+  <div class="phone" style="padding:16px 0 20px"><div class="pass"><div class="eyebrow"><span>Next shift</span><span class="pub">Published</span></div>
+  <div class="blk"><div class="date" style="margin-top:14px"><b>Tomorrow</b> · Sun, October 18, 2026</div><div class="time">8:00 AM – 4:00 PM</div><span class="cd"><svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M200,75.64V40a16,16,0,0,0-16-16H72A16,16,0,0,0,56,40V76a16.07,16.07,0,0,0,6.4,12.8L114.67,128,62.4,167.2A16.07,16.07,0,0,0,56,180v36a16,16,0,0,0,16,16H184a16,16,0,0,0,16-16V180.36a16.09,16.09,0,0,0-6.35-12.77L141.27,128l52.38-39.6A16.05,16.05,0,0,0,200,75.64ZM184,216H72V180l56-42,56,42.35Zm0-140.36L128,118,72,76V40H184Z"/></svg> Starts in 23 h 18 min</span><div class="loc">Main Office <span>· Customer Support</span></div><div class="foot stub">View schedule <svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></svg></div><div class="zone">Times in Puerto Rico time</div></div><div class="sep"></div>
+  <div class="blk"><h3>Scheduled now</h3><p class="note">Scheduled assignment; clock status is shown separately.</p><div class="date">Sat, October 17, 2026</div><div class="time">8:00 AM – 4:00 PM</div><div class="loc">Main Office <span>· Customer Support</span></div><div class="foot solid">View schedule <svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></svg></div></div></div></div></div>
+ <div class="frame"><p class="cap">B · Proposed, 390 (UX recommendation: h2 "Your shifts")<small>the shift under way leads; one tear line between now and next; one link</small></p>
+  <div class="phone" style="padding:16px 0 20px"><div class="pass"><div class="eyebrow"><span>Your shifts</span><span class="pub">Published</span></div>
+  <div class="blk"><h3>Scheduled now</h3><p class="note">Clock status below shows if you’re clocked in.</p><div class="date"><b>Today</b> · Sat, October 17, 2026</div><div class="time">8:00 AM – 4:00 PM</div><div class="loc">Main Office <span>· Customer Support</span></div></div>
+  <div class="tear"></div>
+  <div class="blk"><h3 style="margin-top:4px">Next shift</h3><div class="date"><b>Tomorrow</b> · Sun, October 18, 2026</div><div class="time">8:00 AM – 4:00 PM</div><span class="cd"><svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M200,75.64V40a16,16,0,0,0-16-16H72A16,16,0,0,0,56,40V76a16.07,16.07,0,0,0,6.4,12.8L114.67,128,62.4,167.2A16.07,16.07,0,0,0,56,180v36a16,16,0,0,0,16,16H184a16,16,0,0,0,16-16V180.36a16.09,16.09,0,0,0-6.35-12.77L141.27,128l52.38-39.6A16.05,16.05,0,0,0,200,75.64ZM184,216H72V180l56-42,56,42.35Zm0-140.36L128,118,72,76V40H184Z"/></svg> Starts in 23 h 18 min</span><div class="loc">Main Office <span>· Customer Support</span></div>
+  <div class="foot solid">View schedule <svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></svg></div><div class="zone">Times in Puerto Rico time</div></div></div>
+   <span class="pin" style="top:52px;left:44px">1</span><span class="pin" style="top:96px;left:350px">2</span><span class="pin" style="top:262px;left:350px">3</span><span class="pin" style="top:470px;left:350px">4</span></div></div>
+ <div class="frame"><p class="cap">C · Fallback if the h2 must stay "Next shift"<small>PRD Q2; same visual treatment</small></p>
+  <div class="phone" style="padding:16px 0 20px"><div class="pass"><div class="eyebrow"><span>Next shift</span><span class="pub">Published</span></div>
+  <div class="blk"><h3>Scheduled now</h3><p class="note">Clock status below shows if you’re clocked in.</p><div class="date"><b>Today</b> · Sat, October 17, 2026</div><div class="time">8:00 AM – 4:00 PM</div><div class="loc">Main Office <span>· Customer Support</span></div></div>
+  <div class="tear"></div>
+  <div class="blk"><h3 style="margin-top:4px">Next shift</h3><div class="date"><b>Tomorrow</b> · Sun, October 18, 2026</div><div class="time">8:00 AM – 4:00 PM</div><span class="cd"><svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M200,75.64V40a16,16,0,0,0-16-16H72A16,16,0,0,0,56,40V76a16.07,16.07,0,0,0,6.4,12.8L114.67,128,62.4,167.2A16.07,16.07,0,0,0,56,180v36a16,16,0,0,0,16,16H184a16,16,0,0,0,16-16V180.36a16.09,16.09,0,0,0-6.35-12.77L141.27,128l52.38-39.6A16.05,16.05,0,0,0,200,75.64ZM184,216H72V180l56-42,56,42.35Zm0-140.36L128,118,72,76V40H184Z"/></svg> Starts in 23 h 18 min</span><div class="loc">Main Office <span>· Customer Support</span></div>
+  <div class="foot solid">View schedule <svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></svg></div><div class="zone">Times in Puerto Rico time</div></div></div></div></div>
+ <div class="notes"><h3>Shift card order</h3><ol>
+  <li>The h2 keeps its id and its 15px eyebrow style at 94% white. Its text ("Your shifts" or "Next shift") is the PM's call (PRD Q2); the look is the same either way. The Published chip stays. No "Now" badge and no new colour: the card infers nothing about clock status.</li>
+  <li>"Scheduled now" (h3, 17px/600 white) leads, with the plain sentence under it in 15px at 94% white: 5.4:1 at the lightest, top-left point of the gradient. Today's 82% measures 4.44:1 there, so this slice raises all pass secondary text to 94%. "Today" leads the date in white 600, as "Tomorrow" does.</li>
+  <li>One tear line (dashed rule plus the two page-colour notches) separates now from next, replacing today's plain hairline. One pass, one tear: the card stays the single brand moment (U2).</li>
+  <li>"Next shift" h3 heads the future block, which keeps the countdown pill. One "View schedule" footer closes the card on a solid 20% white hairline. Both times keep the pass time size, so neither shift looks secondary.</li>
+ </ol></div>
+</div>
+
+<div class="row">
+ <div class="frame"><p class="cap">D · Android shortcut icons, 96×96 PNG source<small>Schedule = CalendarBlank · Time off = CalendarMinus</small></p>
+  <div style="display:flex;gap:24px;align-items:center;padding:20px;background:#fff;border-radius:10px;box-shadow:0 0 0 1px #0000001A">
+   <span class="sc"><svg width="48" height="48" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"/></svg></span><span class="sc"><svg width="48" height="48" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-48-56a8,8,0,0,1-8,8H104a8,8,0,0,1,0-16h48A8,8,0,0,1,160,152Z"/></svg></span>
+   <div style="font-size:13px;color:var(--g-muted);max-width:220px">96px circle in <code>#1C4A47</code> (the masthead and <code>theme_color</code>), 48px white glyph centred (9.91:1). Transparent corners. <code>purpose: "any"</code>.</div>
+   <span class="pin" style="position:relative;top:0;left:0">5</span></div></div>
+ <div class="frame"><p class="cap">E · Long-press menu, light and dark launcher<small>illustration of where they appear</small></p>
+  <div style="display:flex;gap:20px">
+   <div class="lp"><div class="lpi"><span class="sc"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"/></svg></span>Schedule</div><div class="lpi"><span class="sc"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-48-56a8,8,0,0,1-8,8H104a8,8,0,0,1,0-16h48A8,8,0,0,1,160,152Z"/></svg></span>Time off</div></div>
+   <div class="lp dark"><div class="lpi"><span class="sc"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"/></svg></span>Schedule</div><div class="lpi"><span class="sc"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-48-56a8,8,0,0,1-8,8H104a8,8,0,0,1,0-16h48A8,8,0,0,1,160,152Z"/></svg></span>Time off</div></div></div></div>
+ <div class="notes"><h3>Shortcuts</h3><ol start="5">
+  <li>One filled disc keeps the glyph readable on light and dark launcher menus; the disc edge fades on dark menus (1.35:1) but the white glyph does not. Company brands don't recolour these, as with the app icon.</li>
+ </ol></div>
+</div>
+</body></html>

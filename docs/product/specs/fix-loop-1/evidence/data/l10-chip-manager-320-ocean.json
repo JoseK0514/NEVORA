@@ -1,0 +1,42 @@
+{
+ "brand": {
+  "left": 16,
+  "right": 140,
+  "top": 12,
+  "bottom": 56,
+  "w": 124
+ },
+ "chip": {
+  "left": 158,
+  "right": 216,
+  "top": 19,
+  "bottom": 49,
+  "w": 58
+ },
+ "search": {
+  "left": 216,
+  "right": 260,
+  "top": 12,
+  "bottom": 56,
+  "w": 44
+ },
+ "bell": {
+  "left": 260,
+  "right": 304,
+  "top": 12,
+  "bottom": 56,
+  "w": 44
+ },
+ "count": "1",
+ "header": {
+  "left": 0,
+  "right": 320,
+  "top": 0,
+  "bottom": 68,
+  "w": 320
+ },
+ "gapToWordmark": 18,
+ "marginLeft": "18px",
+ "imgClipped": false,
+ "overflow": 0
+}

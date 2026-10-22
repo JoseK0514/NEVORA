@@ -1,0 +1,49 @@
+{
+ "key": "Jose · guest-l45hzdfr · phone /app/requests",
+ "url": "https://monkey-occurred-crystal-carolina.trycloudflare.com/app/requests",
+ "path": "/app/requests",
+ "device": "phone",
+ "viewport": {
+  "w": 440,
+  "h": 796
+ },
+ "page": {
+  "w": 440,
+  "h": 1351
+ },
+ "title": "NEVORA Workforce",
+ "heading": "Time off",
+ "tester": "Jose",
+ "account": "ARAlexandra Rivera",
+ "strokes": [],
+ "pins": [
+  {
+   "n": 1,
+   "x": 348,
+   "y": 77,
+   "text": "",
+   "t": 1792354723557,
+   "target": {
+    "tag": "div",
+    "id": "",
+    "cls": "page-frame",
+    "text": "OverviewTime offShift requestsAvailabilityTime offPlan your time away. Keep every request "
+   }
+  },
+  {
+   "n": 2,
+   "x": 232,
+   "y": 634,
+   "text": "",
+   "t": 1792354751898,
+   "target": {
+    "tag": "input",
+    "id": "timeoff-end-date",
+    "cls": "",
+    "text": ""
+   }
+  }
+ ],
+ "note": "Boxes are merging ",
+ "updatedAt": "2026-10-18T20:19:12.502Z"
+}

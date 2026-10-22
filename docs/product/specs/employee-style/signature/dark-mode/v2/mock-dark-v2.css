@@ -1,0 +1,107 @@
+/* Signature dark ("Midnight") token set, mock only: injected into the browser for screenshots.
+ * The band stays NEVORA deep teal; the page and cards go near-black teal; text is warm off-white;
+ * the primary action becomes mint with deep ink so it stays the brightest thing on screen. */
+:root {
+  color-scheme: dark;
+  --sig-page: #0C1817;
+  --sig-card: #172725;
+  --sig-ink-1: #F5F2EB;
+  --sig-ink-2: #D3D0C8;
+  --sig-ink-3: #B8B7B0;
+  --sig-faint: #56625F;
+  --sig-rule: #2C3B39;
+  --sig-edge: #30403E;
+  --sig-control-edge: #5A6764;
+  --sig-track: #20302E;
+  --sig-deep: #0D3634;
+  --sig-deep-hover: #12423F;
+  --sig-mark: #134340;
+  --sig-mint: #A9E2DA;
+  --sig-action: #A9E2DA;
+  --sig-action-wash: rgba(169, 226, 218, .12);
+  --sig-scrim: rgba(0, 0, 0, .55);
+  --sig-done-ink: #A9E2DA;  --sig-done-wash: rgba(169, 226, 218, .12);  --sig-done-line: rgba(169, 226, 218, .26);
+  --sig-review-ink: #EBBC74; --sig-review-wash: rgba(235, 188, 116, .12); --sig-review-line: rgba(235, 188, 116, .28);
+  --sig-urgent-ink: #F3A79D; --sig-urgent-wash: rgba(243, 167, 157, .12); --sig-urgent-line: rgba(243, 167, 157, .3);
+  --sig-info-ink: #D3D0C8;   --sig-info-wash: rgba(239, 235, 227, .06);  --sig-info-line: #30403E;
+  --sig-shadow-card-lift: 0 1px 0 rgba(0, 0, 0, .2), 0 14px 30px -18px rgba(0, 0, 0, .55);
+  --sig-shadow-card: inset 0 0 0 1px rgba(236, 231, 221, .07), var(--sig-shadow-card-lift);
+  --sig-shadow-raised: 0 0 0 1px #30403E, 0 14px 30px -18px rgba(0, 0, 0, .6);
+  --sig-shadow-sheet: 0 -10px 40px rgba(0, 0, 0, .5);
+  --sig-press-bg: #1B2B29;
+  --sig-hover-bg: #172624;
+  --sig-focus: #F5F2EB;
+  --sig-focus-on-dark: #FFFFFF;
+  /* Clocker accent: the primary action card and buttons. */
+  --clocker-accent: #A9E2DA; --clocker-accent-hover: #BDEAE3; --clocker-on-accent: #0C1817; --clocker-soft: rgba(169, 226, 218, .12); --clocker-focus: #A9E2DA;
+}
+html, body { background: #0C1817 !important; }
+/* Primary actions: mint fill, deep ink. */
+:is(.sg-cta, .sg-primary, .ap .ap-primary, .act-submit, .act-go):not(:disabled):not(.act-soft) { background: #A9E2DA !important; color: #0C1817 !important; box-shadow: 0 14px 26px -16px rgba(0, 0, 0, .7) !important; }
+:is(.sg-cta, .sg-primary, .ap .ap-primary) svg { color: #0C1817 !important; }
+.ap .ap-secondary, .act-soft { background: #172725 !important; color: #F5F2EB !important; box-shadow: 0 0 0 1px #30403E !important; }
+/* Phone sheet and auth surfaces that read the old names. */
+.ap { --cream: #0C1817 !important; --paper: #172725 !important; --ink: #F5F2EB !important; --ink-2: #D3D0C8 !important; --ink-3: #B8B7B0 !important; --rule: #2C3B39 !important; }
+.ap .ap-wordmark { color: #F5F2EB !important; }
+.ap .ap-box { background: #172725 !important; border-color: #3A4846 !important; }
+.ap .ap-input { color: #F5F2EB !important; }
+.ap .ap-input::placeholder { color: #A9AAA4 !important; }
+.ap .ap-lang, .ap .ap-lang button { background: #172725 !important; color: #D3D0C8 !important; }
+
+/* Old per-page names, mock only (the preview runs the pre-token code). */
+* { --sg-page: #0C1817 !important; --sg-card: #172725 !important; --sg-ink: #F5F2EB !important; --sg-ink-2: #D3D0C8 !important; --sg-ink-3: #B8B7B0 !important; --sg-faint: #56625F !important; --sg-rule: #2C3B39 !important; --sg-track: #20302E !important; --sg-teal: #A9E2DA !important; --sg-amber: #EBBC74 !important; --sg-red: #F3A79D !important; --sg-mark: #134340 !important; }
+* { --e5-bg: #0C1817 !important; --e5-card: #172725 !important; --e5-ink: #F5F2EB !important; --e5-ink-2: #D3D0C8 !important; --e5-ink-3: #B8B7B0 !important; --e5-rule: #2C3B39 !important; --e5-frame: #20302E !important; --e5-teal: #A9E2DA !important; }
+* { --h5-cream: #0C1817 !important; --h5-paper: #172725 !important; --h5-ink: #F5F2EB !important; --h5-ink-2: #D3D0C8 !important; --h5-ink-3: #B8B7B0 !important; --h5-faint: #56625F !important; --h5-rule: #2C3B39 !important; --h5-teal: #A9E2DA !important; --h5-amber: #EBBC74 !important; --h5-red: #F3A79D !important; --h5-mark: #134340 !important; }
+* { --s6-page: #0C1817 !important; --s6-card: #172725 !important; --s6-ink: #F5F2EB !important; --s6-ink-2: #D3D0C8 !important; --s6-ink-3: #B8B7B0 !important; --s6-faint: #56625F !important; --s6-rule: #2C3B39 !important; --s6-track: #20302E !important; --s6-teal: #A9E2DA !important; --s6-amber: #EBBC74 !important; --s6-red: #F3A79D !important; --s6-mark: #134340 !important; }
+* { --r6-page: #0C1817 !important; --r6-card: #172725 !important; --r6-ink: #F5F2EB !important; --r6-ink-2: #D3D0C8 !important; --r6-ink-3: #B8B7B0 !important; --r6-faint: #56625F !important; --r6-rule: #2C3B39 !important; --r6-teal: #A9E2DA !important; --r6-amber: #EBBC74 !important; --r6-red: #F3A79D !important; --r6-mark: #134340 !important; }
+* { --ck-page: #0C1817 !important; --ck-card: #172725 !important; --ck-ink: #F5F2EB !important; --ck-ink2: #D3D0C8 !important; --ck-ink3: #B8B7B0 !important; --ck-rule: #2C3B39 !important; --ck-edge: #30403E !important; --ck-track: #20302E !important; --ck-mark: #134340 !important; --ck-amber: #EBBC74 !important; }
+* { --ck-amber-wash: rgba(235,188,116,.14) !important; --clocker-accent: #A9E2DA !important; --clocker-accent-hover: #BDEAE3 !important; --clocker-on-accent: #0C1817 !important; --clocker-soft: rgba(169,226,218,.12) !important; --clocker-focus: #A9E2DA !important; --color-brand-primary: #F5F2EB !important; }
+
+/* Shell pieces outside the Signature tokens. */
+nav.mobile-nav { background: rgba(12, 24, 23, .94) !important; border-top: 1px solid #2C3B39 !important; box-shadow: none !important; }
+nav.mobile-nav a, nav.mobile-nav a span { color: #B3B5AF !important; }
+nav.mobile-nav a[aria-current="page"], nav.mobile-nav a[aria-current="page"] span, nav.mobile-nav a[aria-current="page"] svg { color: #A9E2DA !important; }
+nav.mobile-nav a[aria-current="page"]::before { background: rgba(169, 226, 218, .12) !important; }
+.portal-account-avatar { background: #A9E2DA !important; color: #0C1817 !important; }
+
+/* Forms, Profile calendar, activation and Clocker leftovers. */
+input:not([type=checkbox]):not([type=radio]), select, textarea { background-color: #172725 !important; color: #F5F2EB !important; border-color: #3A4846 !important; color-scheme: dark; }
+:is(.employee-calendar, .employee-calendar-example, .employee-calendar-status-box, .employee-calendar-providers) { background: #172725 !important; color: #F5F2EB !important; box-shadow: inset 0 0 0 1px #2C3B39 !important; }
+.employee-calendar-providers div, .employee-calendar-example div { background: transparent !important; }
+.employee-calendar-state { background: rgba(239, 235, 227, .06) !important; color: #D3D0C8 !important; }
+.employee-calendar-example i, .employee-calendar-example svg { background: rgba(169, 226, 218, .12) !important; color: #A9E2DA !important; }
+.employee-calendar-example :is(i, b) { color: #A9E2DA !important; }
+[class*="pfMono"] { background: #A9E2DA !important; color: #0C1817 !important; }
+.act-orb { background: rgba(169, 226, 218, .12) !important; color: #A9E2DA !important; box-shadow: 0 0 0 8px rgba(169, 226, 218, .05) !important; }
+.act-orb[data-tone=warn] { background: rgba(235, 188, 116, .12) !important; color: #EBBC74 !important; }
+[class*="keypad"] button[data-key=digit] { background: #172725 !important; color: #F5F2EB !important; box-shadow: 0 0 0 1px #30403E, 0 10px 22px -16px rgba(0, 0, 0, .7) !important; }
+[class*="keypad"] button[data-key=tool] { color: #D3D0C8 !important; }
+[class*="__continue"]:disabled, .button.primary:disabled { background: #20302E !important; color: #B8B7B0 !important; }
+[class*="pinSlots"] > span { box-shadow: inset 0 0 0 2px #8A938F !important; }
+[class*="pinSlots"] > span[data-filled=true] { background: #A9E2DA !important; box-shadow: none !important; }
+.clocker-language-toggle > b { background: rgba(169, 226, 218, .14) !important; color: #A9E2DA !important; }
+/* The PIN field is a transparent layer over the dots. */
+input[name=pin] { background: transparent !important; color: transparent !important; border: 0 !important; }
+/* Desktop frame: sidebar and top bar. */
+aside.sidebar { background: #101E1D !important; border-color: #1F2D2B !important; box-shadow: none !important; }
+aside.sidebar .nav-label, header.mobile-header span, header.mobile-header li, header.mobile-header a { color: #DCD9D1 !important; }
+aside.sidebar .nav-link svg { color: #B8B7B0 !important; }
+aside.sidebar .nav-link.active { background: rgba(169, 226, 218, .10) !important; box-shadow: inset 3px 0 0 #A9E2DA !important; }
+aside.sidebar .nav-link.active .nav-label, aside.sidebar .nav-link.active svg { color: #A9E2DA !important; }
+aside.sidebar img, aside.sidebar .brand-wordmark { filter: none; color: #F5F2EB !important; }
+aside.sidebar :is(p, small, span):not(.nav-label) { color: #B8B7B0 !important; }
+header.mobile-header .portal-account-avatar, .portal-account-avatar { background: #A9E2DA !important; color: #0C1817 !important; }
+
+/* v2 readability: thin light type looks thinner on dark, so display weights go up one step,
+ * labels get brighter, and cards carry a visible 1px edge. */
+:root { --sig-ink-2: #D3D0C8; --sig-ink-3: #B8B7B0; }
+body { -webkit-font-smoothing: antialiased; }
+:is(h1, h2, .sg-word, .sg-head2, [class*="h5Band"] h1, [class*="s6Band"] h1, .ap-title) { font-weight: 400 !important; }
+:is(.sg-date, .sgDurHero, .sg-ticket b, [class*="clock"] time, [class*="__clock"] time, .sg-day b, .sg-day strong) { font-weight: 300 !important; }
+[class*="keypad"] button[data-key=digit] { font-weight: 400 !important; }
+:is([class*="eyebrow"], [class*="Eyebrow"], .sg-cap, .sg-sec, [class*="sec"] > h2, small) { color: #C9C7BF; }
+:is(.sg-card, .sg-list, [class*="h5Card"], [class*="Card"], [class*="card"]):not(button):not(a) { box-shadow: inset 0 0 0 1px #30403E, 0 12px 28px -18px rgba(0, 0, 0, .6) !important; }
+
+@media (min-width: 1024px) { header.mobile-header { background: #101E1D !important; border-color: #2C3B39 !important; box-shadow: none !important; } }
+/* Any primary action button reads as the main action: mint fill, deep ink. */
+:is(.employee-action.primary, button.primary, .button.primary):not(:disabled) { background: #A9E2DA !important; color: #0C1817 !important; }

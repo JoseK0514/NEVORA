@@ -1,0 +1,60 @@
+{
+ "key": "Jose · guest-l45hzdfr · phone /app",
+ "url": "https://monkey-occurred-crystal-carolina.trycloudflare.com/app",
+ "path": "/app",
+ "device": "phone",
+ "viewport": {
+  "w": 440,
+  "h": 836
+ },
+ "page": {
+  "w": 440,
+  "h": 1310
+ },
+ "title": "NEVORA Workforce",
+ "heading": "Home",
+ "tester": "Jose",
+ "account": "ARAlexandra Rivera",
+ "strokes": [
+  {
+   "c": "red",
+   "w": 4,
+   "p": [
+    [
+     428,
+     1099
+    ],
+    [
+     417,
+     1099
+    ],
+    [
+     413,
+     1099
+    ],
+    [
+     409,
+     1099
+    ]
+   ],
+   "t": 1792354519916
+  }
+ ],
+ "pins": [
+  {
+   "n": 1,
+   "x": 417,
+   "y": 481,
+   "text": "",
+   "t": 1792354570253,
+   "target": {
+    "tag": "aside",
+    "id": "",
+    "cls": "employee-home-reviewed-module__k4entG__recordedSlot",
+    "text": "Own recorded time"
+   }
+  }
+ ],
+ "note": "Looks weird….ui",
+ "updatedAt": "2026-10-18T20:16:10.856Z"
+}

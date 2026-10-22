@@ -1,0 +1,93 @@
+[
+ {
+  "id": "L1a owner 390x844 root100: band ends 112px below the frame top at the default size",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "bandHeight": 112,
+   "headingBottom": 65.6875,
+   "borderImage": {
+    "source": "linear-gradient(rgb(39, 59, 102) 0px, rgb(39, 59, 102) 0px)",
+    "outset": "8px 390px 46px",
+    "slice": "0 fill",
+    "width": "1"
+   }
+  }
+ },
+ {
+  "id": "L1b owner 390x844 root200: every heading line on the band",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "lines": [
+    [
+     "H1",
+     77,
+     136,
+     [
+      39,
+      59,
+      102
+     ]
+    ],
+    [
+     "P",
+     146,
+     182,
+     [
+      39,
+      59,
+      102
+     ]
+    ],
+    [
+     "P",
+     191,
+     227,
+     [
+      39,
+      59,
+      102
+     ]
+    ]
+   ],
+   "band": [
+    39,
+    59,
+    102
+   ]
+  }
+ },
+ {
+  "id": "L1b owner 390x844 root200: at least 22px of band under the last line",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "last": 227,
+   "under": 49,
+   "bandEnd": 210
+  }
+ },
+ {
+  "id": "L1b owner 390x844 root200: no sideways scroll",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L1c ocean owner 390x844 root200: subtitle on the band at 4.5:1 or more",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "sub": "rgb(207, 222, 253)",
+   "band": [
+    39,
+    59,
+    102
+   ],
+   "ratio": 8.15
+  }
+ }
+]

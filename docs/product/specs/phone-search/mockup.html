@@ -1,0 +1,183 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Phone search mock-up</title>
+<style>
+@font-face{font-family:Inter;src:url("../../../../public/fonts/typeface/inter/variable.ttf") format("truetype");font-weight:100 900;}
+:root{--g-accent:#077572;--g-accent-hover:#055C5A;--g-accent-strong:#07605F;--g-accent-wash:#E7F3F2;--g-accent-pressed:#D3EAE8;--g-masthead:#1C4A47;--g-masthead-ink:#CFE3E1;
+--g-ink:#1C1C1C;--g-muted:#5F6368;--g-border:#D7D9DC;--g-hairline:#ECEDEF;--g-inset:#F6F7F8;--g-urgent:#E1553F;--g-canvas:#FFFFFF;
+--st-neutral-bg:#F1F2F4;--st-neutral-ink:#1C1C1C;--st-review-bg:#FBF1E2;--st-review-ink:#8A4B00;--st-done-bg:#EAF5EA;--st-done-ink:#1D6F42;--st-urgent-bg:#FDECE8;--st-urgent-ink:#A8361F;
+--ann:#6B3FA0;}
+*{box-sizing:border-box}
+body{margin:0;padding:32px;background:#E9EBEE;color:var(--g-ink);font:400 16px/1.5 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1.board{font:600 22px/1.3 Inter;margin:0 0 4px} p.board-sub{margin:0 0 28px;color:var(--g-muted);font-size:14px;max-width:900px}
+.row{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start;margin-bottom:40px}
+.frame{flex:none} .frame>.cap{font:600 13px/1.4 Inter;color:var(--g-ink);margin:0 0 8px} .frame>.cap small{display:block;font-weight:400;color:var(--g-muted)}
+.phone{position:relative;width:390px;background:#F6F7F8;border-radius:28px;overflow:hidden;box-shadow:0 0 0 1px #0000001A,0 10px 30px #0000001F}
+.phone.w320{width:320px} .phone.w375{width:375px}
+.desk{position:relative;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px #0000001A,0 10px 30px #0000001F}
+.status{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font:600 15px Inter;color:#fff}
+.status.dark{color:var(--g-ink)}
+.mast{background:var(--g-masthead);color:#fff}
+.hdr{display:flex;align-items:center;min-height:68px;padding:12px 16px}
+.wordmark{display:grid;line-height:1;width:124px;flex:none}
+.wordmark b{font:600 25px/1 Inter;letter-spacing:.2em} .wordmark span{font:400 10px/1.6 Inter;letter-spacing:.18em;color:var(--g-masthead-ink);text-align:center;padding-right:14px}
+.chip{display:inline-flex;align-items:center;justify-content:center;height:30px;min-width:40px;max-width:88px;flex:0 1 auto;margin-left:10px;margin-right:auto;padding:4px 6px;border-radius:8px;background:#fff;color:#273B66;font:700 12px/1 Inter;overflow:hidden;white-space:nowrap}
+.spacer{margin-left:auto}
+.ib{position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:999px;color:#fff;flex:none}
+.ib.pressed{background:rgb(255 255 255 / .14)} .ib.focus{outline:2px solid #fff;outline-offset:-2px}
+.count{position:absolute;top:5px;right:4px;min-width:18px;padding:1px 4px;border:2px solid var(--g-masthead);border-radius:999px;background:#fff;color:var(--g-accent);font:600 10px/1.3 Inter;text-align:center}
+.pagehead{padding:4px 20px 26px} .pagehead h2{margin:0;font:500 28px/1.25 Inter;letter-spacing:-.02em} .pagehead p{margin:4px 0 0;color:var(--g-masthead-ink);font-size:17px}
+.tabbar{display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px calc(6px + 20px);background:rgb(255 255 255 / .92);border-top:1px solid var(--g-hairline)}
+.tab{display:grid;justify-items:center;gap:4px;min-height:48px;padding-top:4px;color:var(--g-muted);font:500 12px/1.3 Inter}
+.tab.on{color:var(--g-accent);font-weight:600}
+.pin{position:absolute;z-index:5;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ann);color:#fff;font:700 12px/1 Inter;box-shadow:0 0 0 2px #fff}
+.notes{width:340px;flex:none;font-size:14px;line-height:1.5}
+.notes ol{margin:0;padding-left:20px} .notes li{margin-bottom:8px} .notes li::marker{color:var(--ann);font-weight:700}
+.notes h3{margin:0 0 8px;font:600 15px/1.4 Inter}
+.tag{display:inline-flex;align-items:center;padding:1px 8px;border-radius:999px;font:600 12px/1.5 Inter}
+.legend{display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--g-muted);margin-top:6px}
+.legend i{width:14px;height:14px;border-radius:50%;background:var(--ann);display:inline-block}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 3px #0000001A,0 1px 2px #0000000D}
+</style></head><body><style>
+.fsheet{position:relative;height:760px;background:#fff;display:flex;flex-direction:column}
+.fbar{display:flex;align-items:center;gap:8px;padding:6px 8px 8px 16px;border-bottom:1px solid var(--g-hairline)}
+.ffield{flex:1;min-width:0;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;border-radius:8px;background:var(--g-inset);color:var(--g-muted);border:1px solid transparent}
+.ffield.focus{border-color:var(--g-accent);box-shadow:0 0 0 1px var(--g-accent)}
+.fph{color:var(--g-muted);font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .fq{color:var(--g-ink);font-size:17px}
+.caret{width:2px;height:22px;background:var(--g-accent);margin-left:-6px}
+.fclear{display:grid;place-items:center;width:44px;height:44px;margin:0 -12px 0 auto;color:var(--g-muted)}
+.fclose{display:grid;place-items:center;min-width:56px;min-height:44px;padding:0 8px;color:var(--g-accent);font:500 17px/1 Inter}
+.fstatus{margin:0;padding:12px 16px;color:var(--g-muted);font-size:15px;border-bottom:1px solid var(--g-hairline)}
+.flist{flex:1;overflow:hidden;padding:4px 8px}
+.fgroup{padding:14px 8px 4px;color:var(--g-muted);font:600 15px/1.4 Inter}
+.frow{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:6px 8px;border-radius:8px}
+.frow.sel{background:var(--g-accent-wash)} .frow.sel .flabel{color:var(--g-accent-strong);font-weight:600}
+.frow.press{background:var(--g-accent-pressed)}
+.flabel{font-size:17px;line-height:1.35} .fdetail{flex:none;color:var(--g-muted);font-size:15px}
+.kbd{height:290px;flex:none;background:#D1D4D9;display:grid;place-items:center;color:#7A7F86;font:500 13px Inter;letter-spacing:.08em;text-transform:uppercase}
+.desk-pill{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 10px 0 12px;border:1px solid var(--g-border);border-radius:8px;color:var(--g-muted);font-size:14px;background:#fff}
+.moresheet{position:relative;margin:0 16px 16px;padding:12px 16px 12px;border-radius:24px;background:#fff;box-shadow:0 12px 48px #1C4A4733}
+.grab{width:36px;height:5px;border-radius:3px;background:#D7D9DC;margin:0 auto 10px}
+.mi{display:flex;align-items:center;gap:12px;min-height:48px;padding:0 4px;font-size:17px}
+.mi.first{color:var(--g-ink);font-weight:500;border-bottom:1px solid var(--g-hairline);margin-bottom:4px}
+.closeact{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;margin-top:8px;border-radius:999px;background:#F6F7F8;font:500 17px Inter}
+.scrim{position:absolute;inset:0;background:rgb(28 28 28 / .32)}
+</style>
+<h1 class="board">Phone search: visual mock-up</h1>
+<p class="board-sub">Fictional data. Purple pins are annotations, not UI. Wordmark is a text placeholder for the real NEVORA lockup. Icons are Phosphor (regular). Tokens from <code>src/app/app/portal-gusto.css</code>. Brand example uses the real <code>deriveBrand("#1D4ED8")</code> output (masthead #273B66).</p>
+
+<div class="row">
+ <div class="frame"><p class="cap">A · Header, closed, 390<small>Owner Home, default teal</small></p>
+  <div class="phone"><div class="mast" ><div class="status"><span>9:41</span><span>●●● ◔</span></div>
+  <div class="hdr"><div class="wordmark"><b>NEVORA</b><span >Workforce</span></div>
+  <span class="spacer"></span>
+  <span class="ib  " title="Search"><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg></span>
+  <span class="ib "><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M168,224a8,8,0,0,1-8,8H96a8,8,0,1,1,0-16h64A8,8,0,0,1,168,224Zm53.85-32A15.8,15.8,0,0,1,208,200H48a16,16,0,0,1-13.8-24.06C39.75,166.38,48,139.34,48,104a80,80,0,1,1,160,0c0,35.33,8.26,62.38,13.81,71.94A15.89,15.89,0,0,1,221.84,192ZM208,184c-7.73-13.27-16-43.95-16-80a64,64,0,1,0-128,0c0,36.06-8.28,66.74-16,80Z"/></svg><span class="count" >3</span></span></div><div class="pagehead" ><h2>Home</h2><p>Northside QA Workforce</p></div></div>
+  <div style="padding:0 16px 16px;margin-top:-6px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+  <div class="card" style="padding:14px;min-height:96px;display:grid;align-content:space-between"><span style="font-size:15px;color:var(--g-muted)">Scheduled today</span><b style="font:500 28px/1 Inter">3</b></div><div class="card" style="padding:14px;min-height:96px;display:grid;align-content:space-between"><span style="font-size:15px;color:var(--g-muted)">Clocked in now</span><b style="font:500 28px/1 Inter">0</b></div></div><div style="height:120px"></div><div class="tabbar"><span class="tab on"><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z"/></svg><span>Home</span></span><span class="tab "><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"/></svg><span>Schedule</span></span><span class="tab "><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,16V152h-28.7A15.86,15.86,0,0,0,168,156.69L148.69,176H107.31L88,156.69A15.86,15.86,0,0,0,76.69,152H48V48Zm0,160H48V168H76.69L96,187.31A15.86,15.86,0,0,0,107.31,192h41.38A15.86,15.86,0,0,0,160,187.31L179.31,168H208v40Z"/></svg><span>Inbox</span></span><span class="tab "><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"/></svg><span>Team</span></span><span class="tab "><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128Zm56-12a12,12,0,1,0,12,12A12,12,0,0,0,196,116ZM60,116a12,12,0,1,0,12,12A12,12,0,0,0,60,116Z"/></svg><span>More</span></span></div>
+  <span class="pin" style="top:100px;left:300px">1</span><span class="pin" style="top:100px;left:344px">2</span></div></div>
+ <div class="frame"><p class="cap">B · Header, pressed, 320 + company logo<small>B1 brand (Ocean), logo chip shrinks first</small></p>
+  <div class="phone w320"><div class="mast" style="background:#273B66"><div class="status"><span>9:41</span><span>●●● ◔</span></div>
+  <div class="hdr"><div class="wordmark"><b>NEVORA</b><span style="color:#CFDEFD">Workforce</span></div>
+  <span class="chip">OC Café</span>
+  <span class="ib pressed " title="Search"><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg></span>
+  <span class="ib "><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M168,224a8,8,0,0,1-8,8H96a8,8,0,1,1,0-16h64A8,8,0,0,1,168,224Zm53.85-32A15.8,15.8,0,0,1,208,200H48a16,16,0,0,1-13.8-24.06C39.75,166.38,48,139.34,48,104a80,80,0,1,1,160,0c0,35.33,8.26,62.38,13.81,71.94A15.89,15.89,0,0,1,221.84,192ZM208,184c-7.73-13.27-16-43.95-16-80a64,64,0,1,0-128,0c0,36.06-8.28,66.74-16,80Z"/></svg><span class="count" style="border-color:#273B66;color:#1D4ED8">3</span></span></div><div class="pagehead" style="--g-masthead-ink:#CFDEFD"><h2>Home</h2><p>Northside QA Workforce</p></div></div>
+  <div style="padding:0 16px 16px;margin-top:-6px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+  <div class="card" style="padding:14px;min-height:96px;display:grid;align-content:space-between"><span style="font-size:15px;color:var(--g-muted)">Scheduled today</span><b style="font:500 28px/1 Inter">3</b></div><div class="card" style="padding:14px;min-height:96px;display:grid;align-content:space-between"><span style="font-size:15px;color:var(--g-muted)">Clocked in now</span><b style="font:500 28px/1 Inter">0</b></div></div><div style="height:150px"></div><div class="tabbar"><span class="tab on"><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z"/></svg><span>Home</span></span><span class="tab "><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"/></svg><span>Schedule</span></span><span class="tab "><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,16V152h-28.7A15.86,15.86,0,0,0,168,156.69L148.69,176H107.31L88,156.69A15.86,15.86,0,0,0,76.69,152H48V48Zm0,160H48V168H76.69L96,187.31A15.86,15.86,0,0,0,107.31,192h41.38A15.86,15.86,0,0,0,160,187.31L179.31,168H208v40Z"/></svg><span>Inbox</span></span><span class="tab "><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"/></svg><span>Team</span></span><span class="tab "><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128Zm56-12a12,12,0,1,0,12,12A12,12,0,0,0,196,116ZM60,116a12,12,0,1,0,12,12A12,12,0,0,0,60,116Z"/></svg><span>More</span></span></div>
+  <span class="pin" style="top:100px;left:160px">3</span><span class="pin" style="top:100px;left:230px">4</span></div></div>
+ <div class="frame"><p class="cap">C · Focus ring on the masthead, 375<small>keyboard focus (Tab) on Search</small></p>
+  <div class="phone w375"><div class="mast" ><div class="status"><span>9:41</span><span>●●● ◔</span></div>
+  <div class="hdr"><div class="wordmark"><b>NEVORA</b><span >Workforce</span></div>
+  <span class="spacer"></span>
+  <span class="ib  focus" title="Search"><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg></span>
+  <span class="ib "><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M168,224a8,8,0,0,1-8,8H96a8,8,0,1,1,0-16h64A8,8,0,0,1,168,224Zm53.85-32A15.8,15.8,0,0,1,208,200H48a16,16,0,0,1-13.8-24.06C39.75,166.38,48,139.34,48,104a80,80,0,1,1,160,0c0,35.33,8.26,62.38,13.81,71.94A15.89,15.89,0,0,1,221.84,192ZM208,184c-7.73-13.27-16-43.95-16-80a64,64,0,1,0-128,0c0,36.06-8.28,66.74-16,80Z"/></svg></span></div><div class="pagehead" ><h2>Home</h2><p>Northside QA Workforce</p></div></div>
+  <div style="padding:0 16px 16px;margin-top:-6px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+  <div class="card" style="padding:14px;min-height:96px;display:grid;align-content:space-between"><span style="font-size:15px;color:var(--g-muted)">Scheduled today</span><b style="font:500 28px/1 Inter">3</b></div><div class="card" style="padding:14px;min-height:96px;display:grid;align-content:space-between"><span style="font-size:15px;color:var(--g-muted)">Clocked in now</span><b style="font:500 28px/1 Inter">0</b></div></div><div style="height:150px"></div><div class="tabbar"><span class="tab on"><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z"/></svg><span>Home</span></span><span class="tab "><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"/></svg><span>Schedule</span></span><span class="tab "><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,16V152h-28.7A15.86,15.86,0,0,0,168,156.69L148.69,176H107.31L88,156.69A15.86,15.86,0,0,0,76.69,152H48V48Zm0,160H48V168H76.69L96,187.31A15.86,15.86,0,0,0,107.31,192h41.38A15.86,15.86,0,0,0,160,187.31L179.31,168H208v40Z"/></svg><span>Inbox</span></span><span class="tab "><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"/></svg><span>Team</span></span><span class="tab "><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128Zm56-12a12,12,0,1,0,12,12A12,12,0,0,0,196,116ZM60,116a12,12,0,1,0,12,12A12,12,0,0,0,60,116Z"/></svg><span>More</span></span></div>
+  <span class="pin" style="top:100px;left:285px">5</span></div></div>
+ <div class="notes"><h3>Header</h3><ol>
+  <li>Search button: 44×44 hit area, round (999px) like the bell, Phosphor <code>MagnifyingGlass</code> 22px regular in <code>#FFFFFF</code>. White on <code>--g-masthead</code> is 9.91:1.</li>
+  <li>Order, left to right: wordmark, logo chip, Search, bell. No gap between the two 44px targets; the 22px glyphs sit 22px apart visually. Count badge unchanged.</li>
+  <li>Logo chip: <code>flex: 0 1 auto; min-width: 40px; max-width: 88px</code>. At 320 the chip shrinks before anything overlaps (16 + 124 + 10 + chip + 88 + 16 ≤ 320 holds down to a 66px chip).</li>
+  <li>Pressed: <code>rgb(255 255 255 / .14)</code> disc, 120ms, no scale. No hover style on touch (<code>@media (hover: hover)</code> only). Brand masthead: white on #273B66 is 11.03:1.</li>
+  <li>Focus: 2px white outline, inset 2px, the rule the bell already uses (<code>.mobile-header :is(a,button):focus-visible</code>).</li>
+ </ol></div>
+</div>
+
+<div class="row">
+ <div class="frame"><p class="cap">D · Sheet open, empty query<small>Actions and Pages only (U8 privacy rule)</small></p>
+  <div class="phone"><div class="fsheet">
+   <div class="status dark"><span>9:41</span><span>●●● ◔</span></div>
+   <div class="fbar"><label class="ffield focus"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg><span class="fph">Search</span><span class="caret"></span></label><span class="fclose">Close</span></div>
+   
+   <div class="flist"><div class="fgroup">Actions</div><div class="frow sel"><span class="flabel">Add a shift</span></div><div class="frow "><span class="flabel">Add an employee</span></div><div class="frow "><span class="flabel">Send an update</span></div><div class="fgroup">Pages</div><div class="frow "><span class="flabel">Home</span></div><div class="frow "><span class="flabel">Inbox</span></div><div class="frow "><span class="flabel">Schedule</span></div><div class="frow "><span class="flabel">Employees</span></div></div>
+   <div class="kbd">keyboard</div></div><span class="pin" style="top:12px;left:120px">6</span><span class="pin" style="top:12px;left:345px">7</span><span class="pin" style="top:128px;left:60px">8</span></div></div>
+ <div class="frame"><p class="cap">E · Typing, results<small>first row is the one Enter / Go opens</small></p>
+  <div class="phone"><div class="fsheet">
+   <div class="status dark"><span>9:41</span><span>●●● ◔</span></div>
+   <div class="fbar"><label class="ffield focus"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg><span class="fq">mar</span><span class="caret"></span><span class="fclear"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm37.66,130.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></svg></span></label><span class="fclose">Close</span></div>
+   
+   <div class="flist"><div class="fgroup">People</div><div class="frow sel"><span class="flabel">María José Rivera Santiago</span><span class="fdetail">Employee</span></div><div class="frow "><span class="flabel">Marcus Bell</span><span class="fdetail">Manager</span></div><div class="fgroup">Locations</div><div class="frow "><span class="flabel">Main Office</span><span class="fdetail">Location</span></div><div class="fgroup">Pages</div><div class="frow "><span class="flabel">Timecards</span></div><div class="frow "><span class="flabel">Templates</span></div></div>
+   <div class="kbd">keyboard</div></div><span class="pin" style="top:128px;left:300px">9</span><span class="pin" style="top:146px;left:2px">10</span></div></div>
+ <div class="notes"><h3>Sheet</h3><ol start="6">
+  <li>Full screen white sheet: <code>width:100vw; height:100dvh; max-height:none; margin:0; border:0; border-radius:0</code>, top padding <code>env(safe-area-inset-top)</code>. No backdrop shows. No open or close animation (U8).</li>
+  <li>Field: <code>--g-inset</code> fill, 8px radius, 44px tall, 17px text (no iOS zoom), 20px muted glyph. Phone placeholder "Search" (the long desktop placeholder needs 264px and gets cut at 390). Clear button once there is text: Phosphor <code>XCircle</code> fill 20px muted in a 44px target at the field's right edge. Focused field gets a 1px teal border plus 1px teal ring. "Close" is a tertiary text button: teal 17px/500, 56×44 target. Accessible name "Close search".</li>
+  <li>Group labels: 15px/600 muted, sentence case on phones (desktop keeps 12px uppercase). The 15px floor applies.</li>
+  <li>Rows: 48px minimum, 8px radius, label 17px ink, detail 15px muted, wraps on long names (no ellipsis). The keyboard hint row is hidden.</li>
+  <li>Highlighted row (<code>aria-selected</code>): <code>--g-accent-wash</code> with <code>--g-accent-strong</code> 600 label (6.50:1). Pressed row: <code>--g-accent-pressed</code> (5.87:1 for the label).</li>
+ </ol></div>
+</div>
+
+<div class="row">
+ <div class="frame"><p class="cap">F · Loading people<small>status line under the field, above the keyboard</small></p>
+  <div class="phone"><div class="fsheet">
+   <div class="status dark"><span>9:41</span><span>●●● ◔</span></div>
+   <div class="fbar"><label class="ffield focus"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg><span class="fph">Search</span><span class="caret"></span></label><span class="fclose">Close</span></div>
+   <p class="fstatus">Loading people and places…</p>
+   <div class="flist"><div class="fgroup">Actions</div><div class="frow sel"><span class="flabel">Add a shift</span></div><div class="frow "><span class="flabel">Add an employee</span></div><div class="frow "><span class="flabel">Send an update</span></div><div class="fgroup">Pages</div><div class="frow "><span class="flabel">Home</span></div><div class="frow "><span class="flabel">Inbox</span></div><div class="frow "><span class="flabel">Schedule</span></div><div class="frow "><span class="flabel">Employees</span></div></div>
+   <div class="kbd">keyboard</div></div><span class="pin" style="top:108px;left:300px">11</span></div></div>
+ <div class="frame"><p class="cap">G · Unavailable<small>no People group, never "No matches."</small></p>
+  <div class="phone"><div class="fsheet">
+   <div class="status dark"><span>9:41</span><span>●●● ◔</span></div>
+   <div class="fbar"><label class="ffield focus"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg><span class="fq">mar</span><span class="caret"></span><span class="fclear"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm37.66,130.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></svg></span></label><span class="fclose">Close</span></div>
+   <p class="fstatus">People and places are unavailable right now.</p>
+   <div class="flist"><div class="fgroup">Pages</div><div class="frow sel"><span class="flabel">Payroll</span></div><div class="frow "><span class="flabel">Payroll export</span></div></div>
+   <div class="kbd">keyboard</div></div></div></div>
+ <div class="frame"><p class="cap">H · Offline<small>no request made</small></p>
+  <div class="phone"><div class="fsheet">
+   <div class="status dark"><span>9:41</span><span>●●● ◔</span></div>
+   <div class="fbar"><label class="ffield focus"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg><span class="fph">Search</span><span class="caret"></span></label><span class="fclose">Close</span></div>
+   <p class="fstatus">People and places unavailable offline</p>
+   <div class="flist"><div class="fgroup">Actions</div><div class="frow sel"><span class="flabel">Add a shift</span></div><div class="frow "><span class="flabel">Add an employee</span></div><div class="frow "><span class="flabel">Send an update</span></div><div class="fgroup">Pages</div><div class="frow "><span class="flabel">Home</span></div><div class="frow "><span class="flabel">Inbox</span></div><div class="frow "><span class="flabel">Schedule</span></div><div class="frow "><span class="flabel">Employees</span></div></div>
+   <div class="kbd">keyboard</div></div></div></div>
+ <div class="notes"><h3>States</h3><ol start="11">
+  <li>Status line sits directly under the field on phones (in DOM order, not CSS <code>order</code>, so reading order matches). 15px muted text, hairline under it, no icon, no colour: these are waiting states (grey on the ladder), not errors.</li>
+  <li>"No matches." uses the same line. It never appears while people are unavailable or offline (AC4.4).</li>
+  <li>Reduced motion: nothing to reduce. The sheet has no motion at any setting.</li>
+ </ol></div>
+</div>
+
+<div class="row">
+ <div class="frame"><p class="cap">I · More sheet with Search first, 390<small>manager More (ActionMenu), existing sheet anatomy</small></p>
+  <div class="phone"><div class="mast" ><div class="status"><span>9:41</span><span>●●● ◔</span></div>
+  <div class="hdr"><div class="wordmark"><b>NEVORA</b><span >Workforce</span></div>
+  <span class="spacer"></span>
+  <span class="ib  " title="Search"><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg></span>
+  <span class="ib "><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M168,224a8,8,0,0,1-8,8H96a8,8,0,1,1,0-16h64A8,8,0,0,1,168,224Zm53.85-32A15.8,15.8,0,0,1,208,200H48a16,16,0,0,1-13.8-24.06C39.75,166.38,48,139.34,48,104a80,80,0,1,1,160,0c0,35.33,8.26,62.38,13.81,71.94A15.89,15.89,0,0,1,221.84,192ZM208,184c-7.73-13.27-16-43.95-16-80a64,64,0,1,0-128,0c0,36.06-8.28,66.74-16,80Z"/></svg><span class="count" >3</span></span></div><div class="pagehead" ><h2>Home</h2><p>Northside QA Workforce</p></div></div>
+  <div style="padding:0 16px 16px;margin-top:-6px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+  <div class="card" style="padding:14px;min-height:96px;display:grid;align-content:space-between"><span style="font-size:15px;color:var(--g-muted)">Scheduled today</span><b style="font:500 28px/1 Inter">3</b></div><div class="card" style="padding:14px;min-height:96px;display:grid;align-content:space-between"><span style="font-size:15px;color:var(--g-muted)">Clocked in now</span><b style="font:500 28px/1 Inter">0</b></div></div><div style="position:relative;height:430px"><div class="scrim" style="top:-260px"></div></div>
+  <div style="position:absolute;left:0;right:0;bottom:0">
+   <div class="moresheet"><div class="grab"></div>
+    <div class="mi first"><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg><span>Search</span></div>
+    <div class="mi">Updates</div><div class="mi">Timecards</div><div class="mi">Insights</div><div class="mi">Payroll</div><div class="mi">Templates</div><div class="mi">Settings</div>
+    <div class="closeact"><svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></svg><span>Close actions</span></div></div></div>
+   <span class="pin" style="bottom:420px;left:30px">12</span></div></div>
+ <div class="frame"><p class="cap">J · Landscape phone 844×390 (fixed)<small>phone button replaces the desktop pill</small></p>
+  <div class="phone" style="width:844px"><div class="mast"><div class="hdr" style="min-height:56px"><div class="wordmark"><b>NEVORA</b><span>Workforce</span></div><span class="spacer"></span>
+   <span class="ib"><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg></span><span class="ib"><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M168,224a8,8,0,0,1-8,8H96a8,8,0,1,1,0-16h64A8,8,0,0,1,168,224Zm53.85-32A15.8,15.8,0,0,1,208,200H48a16,16,0,0,1-13.8-24.06C39.75,166.38,48,139.34,48,104a80,80,0,1,1,160,0c0,35.33,8.26,62.38,13.81,71.94A15.89,15.89,0,0,1,221.84,192ZM208,184c-7.73-13.27-16-43.95-16-80a64,64,0,1,0-128,0c0,36.06-8.28,66.74-16,80Z"/></svg></span></div></div>
+   <div style="padding:16px;color:var(--g-muted);font-size:14px">Today: the desktop pill <span class="desk-pill"><svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg> Search <kbd style="font:500 12px Inter;border:1px solid var(--g-border);border-radius:5px;padding:1px 6px;background:var(--g-inset);color:var(--g-ink)">⌘K</kbd></span> and the account menu show in the phone header (live capture <code>before-landscape-844x390.png</code>).</div>
+   <span class="pin" style="top:18px;left:735px">13</span></div></div>
+ <div class="notes"><h3>Entry points</h3><ol start="12">
+  <li>"Search" is the first More row: same 48px row and 17px label as the others, with the 22px <code>MagnifyingGlass</code> (other manager More rows carry no icon today, so this one icon marks it as a tool, not a page). A hairline separates it from the destinations.</li>
+  <li>Landscape phones use the same media query as the phone chrome (<code>portal-gusto.css:284</code>): the 44px icon button, never the pill.</li>
+ </ol></div>
+</div>
+</body></html>

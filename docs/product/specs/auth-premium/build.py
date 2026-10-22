@@ -357,4 +357,42 @@ for key in ["forgot", "reset", "activate"]:
     (OUT / f"e4-desk-{key}-1440.html").write_text(page(desk, key))
     (OUT / f"e4-phone-{key}-390.html").write_text(page(phone, key))
 
+# ---------------- Profile in the E4 style ----------------
+def ic(path):
+    return f'<svg width="18" height="18" viewBox="0 0 256 256"><path fill="currentColor" d="{path}"/></svg>'
+I_BELL = ic("M221.8 175.9C216.2 166.3 208 139.1 208 104a80 80 0 1 0-160 0c0 35.1-8.2 62.3-13.8 71.9A16 16 0 0 0 48 200h40.8a40 40 0 0 0 78.4 0H208a16 16 0 0 0 13.8-24.1ZM128 216a24 24 0 0 1-22.6-16h45.2A24 24 0 0 1 128 216ZM48 184c7.7-13.2 16-43.7 16-80a64 64 0 1 1 128 0c0 36.3 8.3 66.8 16 80Z")
+I_CAL = ic("M208 32h-24v-8a8 8 0 0 0-16 0v8H88v-8a8 8 0 0 0-16 0v8H48a16 16 0 0 0-16 16v160a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16ZM72 48v8a8 8 0 0 0 16 0v-8h80v8a8 8 0 0 0 16 0v-8h24v32H48V48Zm136 160H48V96h160v112Z")
+I_GLOBE = ic("M128 24a104 104 0 1 0 104 104A104.2 104.2 0 0 0 128 24Zm87.6 96h-39.8c-1.4-28.5-10.3-55.4-25.4-76.3A88.2 88.2 0 0 1 215.6 120ZM128 215.4c-18.7-20.2-30-48.2-31.8-79.4h63.6c-1.8 31.2-13.1 59.2-31.8 79.4ZM96.2 120c1.8-31.2 13.1-59.2 31.8-79.4 18.7 20.2 30 48.2 31.8 79.4Zm10.4-76.3C91.5 64.6 82.6 91.5 81.2 120H40.4a88.2 88.2 0 0 1 66.2-76.3ZM40.4 136h40.8c1.4 28.5 10.3 55.4 25.4 76.3A88.2 88.2 0 0 1 40.4 136Zm109 76.3c15.1-20.9 24-47.8 25.4-76.3h40.8a88.2 88.2 0 0 1-66.2 76.3Z")
+I_KEY = ic("M160 16a80.1 80.1 0 0 0-76.1 104.8L18.3 186.3A8 8 0 0 0 16 192v40a8 8 0 0 0 8 8h40a8 8 0 0 0 8-8v-16h16a8 8 0 0 0 8-8v-16h16a8 8 0 0 0 5.7-2.3l9.5-9.6A80 80 0 1 0 160 16Zm0 144a63.5 63.5 0 0 1-23.1-4.3 8 8 0 0 0-8.8 1.8L116.7 169H96a8 8 0 0 0-8 8v16H72a8 8 0 0 0-8 8v16H32v-28.7l63.5-63.4a8 8 0 0 0 1.8-8.8A64 64 0 1 1 160 160Zm32-84a12 12 0 1 1-12-12 12 12 0 0 1 12 12Z")
+GO = '<svg class="go" width="8" height="14" viewBox="0 0 8 14"><path d="m1 1 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+FACE = FACEID.replace('width="20" height="20"', 'width="18" height="18"')
+
+def profile_body(phone):
+    work = ('<div class="sec"><h2>Work details</h2><div class="cardp">'
+            '<div class="row"><span class="k">Company</span><span class="v">Northside QA Workforce</span></div>'
+            '<div class="row"><span class="k">Work locations</span><span class="v">Main Office · West Office</span></div>'
+            '<div class="row"><span class="k">Time zone</span><span class="v">Puerto Rico time</span></div></div>'
+            '<p class="foot-note">Something wrong here? Ask your manager to update it. <a>Refresh details</a></p></div>')
+    sec = ('<div class="sec"><h2>Sign-in and security</h2><div class="cardp">'
+           f'<div class="row"><span class="ic">{FACE}</span><span class="tx"><b>Face ID</b><span>Sign in with a glance on this iPhone.</span></span><span class="btn-s">Set up</span></div>'
+           f'<div class="row"><span class="ic">{I_KEY}</span><span class="tx"><b>Saved passkeys</b><span>MacBook Pro · added Oct 12</span></span>{GO}</div></div></div>')
+    app = ('<div class="sec"><h2>App settings</h2><div class="cardp">'
+           f'<div class="row"><span class="ic">{I_GLOBE}</span><span class="tx"><b>Language</b></span><span class="seg"><span class="on">English</span><span>Español</span></span></div>'
+           f'<div class="row"><span class="ic">{I_BELL}</span><span class="tx"><b>Notifications</b><span>Schedule changes and request updates</span></span><span class="tag">On</span>{GO}</div>'
+           f'<div class="row"><span class="ic">{I_CAL}</span><span class="tx"><b>Add shifts to your calendar</b><span>Apple, Google or Outlook</span></span>{GO}</div></div></div>')
+    out = '<div class="signout">Sign out</div>'
+    if phone:
+        return sec + app + work + out
+    return f'<div class="cols"><div>{sec}{app}</div><div>{work}{out}</div></div>'
+
+WHO = '<div class="who"><span class="av">AR</span><div><b>Alexandra Rivera</b><span class="s">Employee · Northside QA Workforce</span></div></div>'
+phone_pf = (f'<div class="ios pf"><div class="band">{flat_mark()}<div class="grain"></div><div class="topbar"><span class="eb">Profile</span>{ic("M221.8 175.9C216.2 166.3 208 139.1 208 104a80 80 0 1 0-160 0c0 35.1-8.2 62.3-13.8 71.9A16 16 0 0 0 48 200h40.8a40 40 0 0 0 78.4 0H208a16 16 0 0 0 13.8-24.1Z")}</div>{WHO}</div>{SB}'
+            f'<div class="sheetp"></div><div class="cont">{profile_body(True)}</div>'
+            '<div class="tabbar2"><span><i></i>Home</span><span><i></i>Schedule</span><span><i></i>Requests</span><span><i></i>Pay</span><span class="on"><i></i>More</span></div></div>')
+desk_pf = (f'<div class="desk pf"><div class="side"><img src="{PUB}/images/nevora-wordmark.png" alt="NEVORA"><ul>'
+           '<li><i></i>Home</li><li><i></i>My schedule</li><li><i></i>My time</li><li><i></i>Requests</li><li><i></i>Updates</li><li><i></i>My pay</li><li class="on"><i></i>Profile</li></ul></div>'
+           f'<div class="band">{flat_mark()}<div class="grain"></div>{WHO}</div>{profile_body(False)}</div>')
+(OUT / "pf-phone-390.html").write_text(page(phone_pf, "profile"))
+(OUT / "pf-desk-1440.html").write_text(page(desk_pf, "profile"))
+
 print("built", len(list(OUT.glob("*.html"))))

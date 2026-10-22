@@ -1,0 +1,140 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Phone foundations mock-up</title>
+<style>
+@font-face{font-family:Inter;src:url("../../../../public/fonts/typeface/inter/variable.ttf") format("truetype");font-weight:100 900;}
+:root{--g-accent:#077572;--g-accent-hover:#055C5A;--g-accent-strong:#07605F;--g-accent-wash:#E7F3F2;--g-accent-pressed:#D3EAE8;--g-masthead:#1C4A47;--g-masthead-ink:#CFE3E1;
+--g-ink:#1C1C1C;--g-muted:#5F6368;--g-border:#D7D9DC;--g-hairline:#ECEDEF;--g-inset:#F6F7F8;--g-urgent:#E1553F;--g-canvas:#FFFFFF;
+--st-neutral-bg:#F1F2F4;--st-neutral-ink:#1C1C1C;--st-review-bg:#FBF1E2;--st-review-ink:#8A4B00;--st-done-bg:#EAF5EA;--st-done-ink:#1D6F42;--st-urgent-bg:#FDECE8;--st-urgent-ink:#A8361F;
+--ann:#6B3FA0;}
+*{box-sizing:border-box}
+body{margin:0;padding:32px;background:#E9EBEE;color:var(--g-ink);font:400 16px/1.5 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1.board{font:600 22px/1.3 Inter;margin:0 0 4px} p.board-sub{margin:0 0 28px;color:var(--g-muted);font-size:14px;max-width:900px}
+.row{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start;margin-bottom:40px}
+.frame{flex:none} .frame>.cap{font:600 13px/1.4 Inter;color:var(--g-ink);margin:0 0 8px} .frame>.cap small{display:block;font-weight:400;color:var(--g-muted)}
+.phone{position:relative;width:390px;background:#F6F7F8;border-radius:28px;overflow:hidden;box-shadow:0 0 0 1px #0000001A,0 10px 30px #0000001F}
+.phone.w320{width:320px} .phone.w375{width:375px}
+.desk{position:relative;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px #0000001A,0 10px 30px #0000001F}
+.status{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font:600 15px Inter;color:#fff}
+.status.dark{color:var(--g-ink)}
+.mast{background:var(--g-masthead);color:#fff}
+.hdr{display:flex;align-items:center;min-height:68px;padding:12px 16px}
+.wordmark{display:grid;line-height:1;width:124px;flex:none}
+.wordmark b{font:600 25px/1 Inter;letter-spacing:.2em} .wordmark span{font:400 10px/1.6 Inter;letter-spacing:.18em;color:var(--g-masthead-ink);text-align:center;padding-right:14px}
+.chip{display:inline-flex;align-items:center;justify-content:center;height:30px;min-width:40px;max-width:88px;flex:0 1 auto;margin-left:10px;margin-right:auto;padding:4px 6px;border-radius:8px;background:#fff;color:#273B66;font:700 12px/1 Inter;overflow:hidden;white-space:nowrap}
+.spacer{margin-left:auto}
+.ib{position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:999px;color:#fff;flex:none}
+.ib.pressed{background:rgb(255 255 255 / .14)} .ib.focus{outline:2px solid #fff;outline-offset:-2px}
+.count{position:absolute;top:5px;right:4px;min-width:18px;padding:1px 4px;border:2px solid var(--g-masthead);border-radius:999px;background:#fff;color:var(--g-accent);font:600 10px/1.3 Inter;text-align:center}
+.pagehead{padding:4px 20px 26px} .pagehead h2{margin:0;font:500 28px/1.25 Inter;letter-spacing:-.02em} .pagehead p{margin:4px 0 0;color:var(--g-masthead-ink);font-size:17px}
+.tabbar{display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px calc(6px + 20px);background:rgb(255 255 255 / .92);border-top:1px solid var(--g-hairline)}
+.tab{display:grid;justify-items:center;gap:4px;min-height:48px;padding-top:4px;color:var(--g-muted);font:500 12px/1.3 Inter}
+.tab.on{color:var(--g-accent);font-weight:600}
+.pin{position:absolute;z-index:5;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ann);color:#fff;font:700 12px/1 Inter;box-shadow:0 0 0 2px #fff}
+.notes{width:340px;flex:none;font-size:14px;line-height:1.5}
+.notes ol{margin:0;padding-left:20px} .notes li{margin-bottom:8px} .notes li::marker{color:var(--ann);font-weight:700}
+.notes h3{margin:0 0 8px;font:600 15px/1.4 Inter}
+.tag{display:inline-flex;align-items:center;padding:1px 8px;border-radius:999px;font:600 12px/1.5 Inter}
+.legend{display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--g-muted);margin-top:6px}
+.legend i{width:14px;height:14px;border-radius:50%;background:var(--ann);display:inline-block}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 3px #0000001A,0 1px 2px #0000000D}
+</style></head><body><style>
+.btnrow{display:flex;flex-wrap:wrap;gap:12px;padding:0 16px}
+.b{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border-radius:8px;font:600 17px/1.25 Inter;text-align:center;text-wrap:balance;flex:1 1 max-content}
+.b.p{background:var(--g-accent);color:#fff;border:1px solid var(--g-accent)} .b.s{background:#fff;color:var(--g-ink);border:1px solid var(--g-border)}
+.b.old{border-radius:999px} .b.full{min-height:48px;flex:1 1 100%}
+.b.p.press{background:var(--g-accent-hover);transform:scale(.98)} .b.s.press{background:var(--g-inset);border-color:#BFC3C8;transform:scale(.98)}
+.b.focus{outline:2px solid var(--g-accent);outline-offset:2px} .b.dis{opacity:.55}
+.panel{margin:16px;padding:16px;background:#fff;border-radius:12px;box-shadow:0 1px 3px #0000001A}
+.lbl{font:500 15px/1.4 Inter;color:var(--g-ink)} .field{display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0 12px;border:1px solid var(--g-border);border-radius:8px;font-size:17px;background:#fff}
+.dp{display:flex;gap:2px;padding:4px;border:1px solid #E6E7E9;border-radius:12px;background:var(--g-inset);width:max-content}
+.dp .seg{position:relative;display:grid;place-content:center;justify-items:center;gap:2px;min-width:44px;min-height:44px;padding:7px 10px;border-radius:8px;color:var(--g-muted);font:500 15px/1.2 Inter;text-align:center}
+.dp .seg strong{font:500 17px/1.2 Inter;font-variant-numeric:tabular-nums}
+.dp .seg.wk{min-width:72px} .dp .div{width:1px;align-self:stretch;margin:8px 4px;background:#E2E4E7}
+.dp .seg.on{background:#fff;color:var(--g-ink);box-shadow:0 1px 3px rgb(17 24 39 / .1),inset 0 0 0 1px var(--g-muted)} .dp .seg.on,.dp .seg.on strong{font-weight:600}
+.dp .seg.today strong{color:var(--g-ink);font-weight:600} .dp .seg.today::after{content:"";position:absolute;bottom:5px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--g-ink)}
+.dp .seg.hover{color:var(--g-ink)} .dp .seg.focus{outline:2px solid var(--g-accent);outline-offset:1px}
+.dp.old{background:transparent;border-color:transparent}
+.dp.old .seg.on{background:var(--g-accent);color:#fff;box-shadow:none;border-radius:13px} .dp.old .seg.today{color:var(--g-accent-strong);border:1px solid var(--g-border);border-radius:13px} .dp.old .seg.today::after{display:none}
+.dp.fc .seg.on{outline:2px solid #000;box-shadow:none}
+.roster{background:#fff;border-radius:12px;box-shadow:0 1px 3px #0000001A;margin:0 16px 16px;padding:16px 0 0;overflow:hidden}
+.roster h4{margin:0 16px 4px;font:500 20px/1.3 Inter} .roster p{margin:0 16px 12px;color:var(--g-muted);font-size:15px}
+.scroll{overflow:hidden;padding:0 16px 16px;-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 40px),transparent)}
+.sum{border-top:1px solid #E6E7E9;padding:12px 16px;color:var(--g-muted);font-size:15px}
+.big .seg{font-size:30px!important} .big .seg strong{font-size:34px!important}
+table.t{border-collapse:collapse;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 0 0 1px #0000001A}
+table.t td,table.t th{padding:6px 10px;border-bottom:1px solid var(--g-hairline);text-align:left} table.t th{color:var(--g-muted);font-weight:500}
+</style>
+<h1 class="board">Phone foundations: visual mock-up</h1>
+<p class="board-sub">Fictional data. Purple pins are annotations. Left of each pair is today (from live captures); right is the proposal. Type sizes shown at the default root (16px); the rem values render the same pixels.</p>
+
+<div class="row">
+ <div class="frame"><p class="cap">A · Timecards controls today, 390<small>pills, "Refresh timecards" wraps to 73px (live capture)</small></p>
+  <div class="phone"><div class="panel"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px"><div><div class="lbl">Period start</div><div class="field">10/10/2026 <svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"/></svg></div></div><div><div class="lbl">Period end</div><div class="field">10/16/2026 <svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"/></svg></div></div></div>
+  <div class="btnrow" style="padding:0"><span class="b p old">View period</span><span class="b s old">Refresh timecards</span></div></div></div></div>
+ <div class="frame"><p class="cap">B · Proposed, 390<small>8px corners, 44px, one line ("Refresh" short label)</small></p>
+  <div class="phone"><div class="panel"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px"><div><div class="lbl">Period start</div><div class="field">10/10/2026 <svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"/></svg></div></div><div><div class="lbl">Period end</div><div class="field">10/16/2026 <svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" ><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"/></svg></div></div></div>
+  <div class="btnrow" style="padding:0"><span class="b p">View period</span><span class="b s"><svg width="0" height="0" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" style="display:none"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></svg>Refresh</span></div></div>
+  <span class="pin" style="top:150px;left:20px">1</span><span class="pin" style="top:150px;left:356px">2</span></div></div>
+ <div class="frame"><p class="cap">C · Button states (phone)<small>default, pressed, focus, disabled, pending, full width</small></p>
+  <div class="phone" style="padding:16px 0;display:grid;gap:12px;background:#fff">
+   <div class="btnrow"><span class="b p">Approve timecard</span><span class="b s">Finalize period</span></div>
+   <div class="btnrow"><span class="b p press">Pressed</span><span class="b s press">Pressed</span></div>
+   <div class="btnrow"><span class="b p focus">Focus</span><span class="b s focus">Focus</span></div>
+   <div class="btnrow"><span class="b p dis">Disabled</span><span class="b s dis">Disabled</span></div>
+   <div class="btnrow"><span class="b p" aria-busy="true">Approving…</span><span class="b s">Cancel</span></div>
+   <div class="btnrow"><span class="b p full">Confirm schedule</span></div>
+   <span class="pin" style="top:300px;left:10px">3</span><span class="pin" style="top:360px;left:10px">4</span></div></div>
+ <div class="notes"><h3>One button shape</h3><ol>
+  <li>Primary: <code>--g-accent</code> fill, white 17px/600 label (5.53:1), 8px corners (<code>--g-control-radius</code>), 44px minimum, 10px/16px padding, line-height 1.25. Pairs sit in a wrapping row (<code>flex: 1 1 max-content</code>): when two labels can't share a line, each button takes its own full row instead of wrapping its label.</li>
+  <li>Secondary: white, 1px <code>--g-border</code>, ink label. "Refresh timecards" shows its existing short label "Refresh" below 390; accessible name stays "Refresh timecards".</li>
+  <li>Pending keeps the size; only the label changes ("Approving…"), button locked, no spinner. Disabled: opacity .55 (existing rule).</li>
+  <li>Full-width primary on phones (sticky confirms, sheet actions, offline "Try again"): 48px. Every other button: 44px. Pressed: hover colour plus <code>scale(.98)</code> over 120ms; no scale under reduced motion.</li>
+ </ol></div>
+</div>
+
+<div class="row">
+ <div class="frame"><p class="cap">D · Day picker today, 390<small>"Full week" chosen = solid teal; today = teal text</small></p>
+  <div class="phone" style="padding-top:16px"><div class="roster"><h4>Team schedule</h4><p>Times in Puerto Rico</p>
+   <div class="scroll"><div class="dp old"><span class="seg wk on">Full week</span><span class="seg "><span>Mon</span><strong>12</strong></span><span class="seg "><span>Tue</span><strong>13</strong></span><span class="seg "><span>Wed</span><strong>14</strong></span><span class="seg "><span>Thu</span><strong>15</strong></span><span class="seg "><span>Fri</span><strong>16</strong></span><span class="seg today"><span>Sat</span><strong>17</strong></span><span class="seg "><span>Sun</span><strong>18</strong></span></div></div>
+   <div class="sum">10 of 10 team members · Full week</div></div></div></div>
+ <div class="frame"><p class="cap">E · Proposed, 390, Full week chosen<small>D4 track, white chosen segment, ink, 1px muted ring</small></p>
+  <div class="phone" style="padding-top:16px"><div class="roster"><h4>Team schedule</h4><p>Times in Puerto Rico</p>
+   <div class="scroll"><div class="dp"><span class="seg wk on">Full week</span><span class="div"></span><span class="seg "><span>Mon</span><strong>12</strong></span><span class="seg "><span>Tue</span><strong>13</strong></span><span class="seg "><span>Wed</span><strong>14</strong></span><span class="seg "><span>Thu</span><strong>15</strong></span><span class="seg "><span>Fri</span><strong>16</strong></span><span class="seg today"><span>Sat</span><strong>17</strong></span><span class="seg "><span>Sun</span><strong>18</strong></span></div></div>
+   <div class="sum">10 of 10 team members · Full week</div></div>
+   <span class="pin" style="top:150px;left:20px">5</span><span class="pin" style="top:150px;left:118px">6</span></div></div>
+ <div class="frame"><p class="cap">F · Proposed, a day chosen (today)<small>scrolled so the chosen day is in view</small></p>
+  <div class="phone" style="padding-top:16px"><div class="roster"><h4>Team schedule</h4><p>Times in Puerto Rico</p>
+   <div class="scroll" style="-webkit-mask-image:linear-gradient(to right,transparent,#000 40px)"><div class="dp" style="margin-left:-84px"><span class="seg wk">Full week</span><span class="div"></span><span class="seg "><span>Mon</span><strong>12</strong></span><span class="seg "><span>Tue</span><strong>13</strong></span><span class="seg "><span>Wed</span><strong>14</strong></span><span class="seg "><span>Thu</span><strong>15</strong></span><span class="seg "><span>Fri</span><strong>16</strong></span><span class="seg today on"><span>Sat</span><strong>17</strong></span><span class="seg "><span>Sun</span><strong>18</strong></span></div></div>
+   <div class="sum">10 of 10 team members · Sat, Oct 17</div></div>
+   <span class="pin" style="top:150px;left:262px">7</span></div></div>
+ <div class="notes"><h3>Chosen day off teal</h3><ol start="5">
+  <li>Track: the D4 segmented track (<code>--g-inset</code>, 1px <code>#E6E7E9</code>, 4px padding). Two-line segments use 8px corners inside a 12px track (concentric), not the one-line pill.</li>
+  <li>Chosen: white, ink, weight 600, D4 shadow, plus a 1px inset ring in <code>--g-muted</code>. The ring is the cue that meets WCAG 1.4.11: 5.64:1 against the track, 6.05:1 against the white fill. The white fill alone is 1.07:1. A hairline divider separates "Full week" from the days.</li>
+  <li>Today: ink date at 600 and a 4px ink dot under it; keeps the dot when chosen. Shape, not colour, carries "today"; <code>aria-label</code> keeps ", today". No teal anywhere in the picker.</li>
+ </ol></div>
+</div>
+
+<div class="row">
+ <div class="frame"><p class="cap">G · Day picker states, desktop 1440 crop<small>default · hover · focus · chosen · forced colours</small></p>
+  <div class="desk" style="padding:20px;display:grid;gap:14px;width:640px">
+   <div class="dp"><span class="seg wk on">Full week</span><span class="div"></span><span class="seg   "><span>Mon</span><strong>12</strong></span><span class="seg  hover "><span>Tue</span><strong>13</strong></span><span class="seg   "><span>Wed</span><strong>14</strong></span><span class="seg   focus"><span>Thu</span><strong>15</strong></span><span class="seg   "><span>Fri</span><strong>16</strong></span><span class="seg today  "><span>Sat</span><strong>17</strong></span><span class="seg   "><span>Sun</span><strong>18</strong></span></div>
+   <div style="font-size:12px;color:var(--g-muted)">Tue: hover (ink text, no fill, 150ms colour). Thu: keyboard focus (2px teal ring, offset 1px). Sat: today.</div>
+   <div class="dp fc" style="background:#fff;border-color:#000"><span class="seg wk on" style="color:#000">Full week</span><span class="seg" style="color:#000"><span>Mon</span><strong>12</strong></span><span class="seg" style="color:#000"><span>Tue</span><strong>13</strong></span><span class="seg" style="color:#000"><span>Wed</span><strong>14</strong></span></div>
+   <div style="font-size:12px;color:var(--g-muted)">Forced colours: track border CanvasText, chosen segment 2px CanvasText outline (system colours replace the ring).</div>
+   <span class="pin" style="top:24px;left:610px">8</span></div></div>
+ <div class="frame"><p class="cap">H · Root at 200% (32px), 390<small>picker and buttons grow; targets stay ≥ 44px; nothing clips</small></p>
+  <div class="phone" style="padding:16px 0;background:#fff">
+   <div class="scroll" style="padding:0 16px"><div class="dp big"><span class="seg wk on">Full week</span><span class="seg today"><span>Mon</span><strong>12</strong></span><span class="seg"><span>Tue</span><strong>13</strong></span></div></div>
+   <div class="btnrow" style="margin-top:16px"><span class="b p" style="font-size:34px">View period</span></div>
+   <div class="btnrow" style="margin-top:12px"><span class="b s" style="font-size:34px">Refresh</span></div>
+   <span class="pin" style="top:30px;left:356px">9</span></div></div>
+ <div class="notes"><h3>Large root</h3><ol start="8">
+  <li>Desktop gets the same picker treatment (the PRD checks 390 and 1440). Desktop sizes stay in px this cycle (Jose, Q2).</li>
+  <li>At a 200% root the type doubles, padding stays in px, so controls grow by their content. Buttons stack one per row when two no longer fit side by side (<code>flex-wrap: wrap; flex: 1 1 12ch</code>). The picker keeps scrolling sideways inside its card; the page never scrolls sideways.</li>
+ </ol>
+ <h3 style="margin-top:18px">Phone type tokens, px to rem</h3>
+ <table class="t"><tr><th>Token</th><th>Today</th><th>Proposed</th></tr>
+ <tr><td><code>--mobile-body</code></td><td>17px</td><td><code>1.0625rem</code></td></tr><tr><td><code>--mobile-caption</code></td><td>15px</td><td><code>0.9375rem</code></td></tr><tr><td><code>--mobile-title</code></td><td>24px</td><td><code>1.5rem</code></td></tr><tr><td><code>--mobile-card-title</code></td><td>20px</td><td><code>1.25rem</code></td></tr><tr><td><code>--g-t-display (phone)</code></td><td>28px</td><td><code>1.75rem</code></td></tr><tr><td><code>--g-t-title (phone)</code></td><td>20px</td><td><code>1.25rem</code></td></tr><tr><td><code>--g-t-body (phone)</code></td><td>16px</td><td><code>1rem</code></td></tr><tr><td><code>--g-t-small / caption (phone floor)</code></td><td>15px</td><td><code>0.9375rem</code></td></tr><tr><td><code>tab labels</code></td><td>12px</td><td><code>min(0.75rem, 14px)</code></td></tr>
+ </table></div>
+</div>
+</body></html>

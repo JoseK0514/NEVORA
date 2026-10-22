@@ -1,0 +1,375 @@
+[
+ {
+  "id": "L1a owner 390x844 root100: band ends 112px below the frame top at the default size",
+  "engine": "webkit",
+  "pass": true,
+  "detail": {
+   "bandHeight": 112,
+   "headingBottom": 65.6875,
+   "borderImage": {
+    "source": "linear-gradient(rgb(39, 59, 102) 0px, rgb(39, 59, 102) 0px)",
+    "outset": "8px 390px 46px",
+    "slice": "0 fill",
+    "width": "1"
+   }
+  }
+ },
+ {
+  "id": "L1b owner 390x844 root200: every heading line on the band",
+  "engine": "webkit",
+  "pass": true,
+  "detail": {
+   "lines": [
+    [
+     "H1",
+     78,
+     136,
+     [
+      39,
+      59,
+      102
+     ]
+    ],
+    [
+     "P",
+     147,
+     183,
+     [
+      39,
+      59,
+      102
+     ]
+    ],
+    [
+     "P",
+     192,
+     228,
+     [
+      39,
+      59,
+      102
+     ]
+    ]
+   ],
+   "band": [
+    39,
+    59,
+    102
+   ]
+  }
+ },
+ {
+  "id": "L1b owner 390x844 root200: at least 22px of band under the last line",
+  "engine": "webkit",
+  "pass": true,
+  "detail": {
+   "last": 228,
+   "under": 48,
+   "bandEnd": 210
+  }
+ },
+ {
+  "id": "L1b owner 390x844 root200: no sideways scroll",
+  "engine": "webkit",
+  "pass": true,
+  "detail": {
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L1c ocean owner 390x844 root200: subtitle on the band at 4.5:1 or more",
+  "engine": "webkit",
+  "pass": false,
+  "detail": {
+   "sub": "rgba(0, 0, 0, 0)",
+   "band": [
+    39,
+    59,
+    102
+   ],
+   "ratio": 1.9
+  }
+ },
+ {
+  "id": "L10 ocean owner 320: one header row, chip 58px, 18px from the wordmark, nothing clipped",
+  "engine": "webkit",
+  "pass": true,
+  "detail": {
+   "brand": {
+    "left": 16,
+    "right": 140,
+    "top": 12,
+    "bottom": 56,
+    "w": 124
+   },
+   "chip": {
+    "left": 158,
+    "right": 216,
+    "top": 19,
+    "bottom": 49,
+    "w": 58
+   },
+   "search": {
+    "left": 216,
+    "right": 260,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "bell": {
+    "left": 260,
+    "right": 304,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "count": null,
+   "header": {
+    "left": 0,
+    "right": 320,
+    "top": 0,
+    "bottom": 68,
+    "w": 320
+   },
+   "gapToWordmark": 18,
+   "marginLeft": "18px",
+   "imgClipped": false,
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L10 ocean owner 375: one header row, chip 88px, 18px from the wordmark, nothing clipped",
+  "engine": "webkit",
+  "pass": true,
+  "detail": {
+   "brand": {
+    "left": 16,
+    "right": 140,
+    "top": 12,
+    "bottom": 56,
+    "w": 124
+   },
+   "chip": {
+    "left": 158,
+    "right": 246,
+    "top": 19,
+    "bottom": 49,
+    "w": 88
+   },
+   "search": {
+    "left": 271,
+    "right": 315,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "bell": {
+    "left": 315,
+    "right": 359,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "count": null,
+   "header": {
+    "left": 0,
+    "right": 375,
+    "top": 0,
+    "bottom": 68,
+    "w": 375
+   },
+   "gapToWordmark": 18,
+   "marginLeft": "18px",
+   "imgClipped": false,
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L10 ocean owner 390: one header row, chip 88px, 18px from the wordmark, nothing clipped",
+  "engine": "webkit",
+  "pass": true,
+  "detail": {
+   "brand": {
+    "left": 16,
+    "right": 140,
+    "top": 12,
+    "bottom": 56,
+    "w": 124
+   },
+   "chip": {
+    "left": 158,
+    "right": 246,
+    "top": 19,
+    "bottom": 49,
+    "w": 88
+   },
+   "search": {
+    "left": 286,
+    "right": 330,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "bell": {
+    "left": 330,
+    "right": 374,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "count": null,
+   "header": {
+    "left": 0,
+    "right": 390,
+    "top": 0,
+    "bottom": 68,
+    "w": 390
+   },
+   "gapToWordmark": 18,
+   "marginLeft": "18px",
+   "imgClipped": false,
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L10 ocean manager 320: one header row, chip 58px, 18px from the wordmark, nothing clipped",
+  "engine": "webkit",
+  "pass": true,
+  "detail": {
+   "brand": {
+    "left": 16,
+    "right": 140,
+    "top": 12,
+    "bottom": 56,
+    "w": 124
+   },
+   "chip": {
+    "left": 158,
+    "right": 216,
+    "top": 19,
+    "bottom": 49,
+    "w": 58
+   },
+   "search": {
+    "left": 216,
+    "right": 260,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "bell": {
+    "left": 260,
+    "right": 304,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "count": "1",
+   "header": {
+    "left": 0,
+    "right": 320,
+    "top": 0,
+    "bottom": 68,
+    "w": 320
+   },
+   "gapToWordmark": 18,
+   "marginLeft": "18px",
+   "imgClipped": false,
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L10 ocean manager 375: one header row, chip 88px, 18px from the wordmark, nothing clipped",
+  "engine": "webkit",
+  "pass": true,
+  "detail": {
+   "brand": {
+    "left": 16,
+    "right": 152,
+    "top": 12,
+    "bottom": 56,
+    "w": 136
+   },
+   "chip": {
+    "left": 170,
+    "right": 258,
+    "top": 19,
+    "bottom": 49,
+    "w": 88
+   },
+   "search": {
+    "left": 271,
+    "right": 315,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "bell": {
+    "left": 315,
+    "right": 359,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "count": "1",
+   "header": {
+    "left": 0,
+    "right": 375,
+    "top": 0,
+    "bottom": 68,
+    "w": 375
+   },
+   "gapToWordmark": 18,
+   "marginLeft": "18px",
+   "imgClipped": false,
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L10 ocean manager 390: one header row, chip 88px, 18px from the wordmark, nothing clipped",
+  "engine": "webkit",
+  "pass": true,
+  "detail": {
+   "brand": {
+    "left": 16,
+    "right": 152,
+    "top": 12,
+    "bottom": 56,
+    "w": 136
+   },
+   "chip": {
+    "left": 170,
+    "right": 258,
+    "top": 19,
+    "bottom": 49,
+    "w": 88
+   },
+   "search": {
+    "left": 286,
+    "right": 330,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "bell": {
+    "left": 330,
+    "right": 374,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "count": "1",
+   "header": {
+    "left": 0,
+    "right": 390,
+    "top": 0,
+    "bottom": 68,
+    "w": 390
+   },
+   "gapToWordmark": 18,
+   "marginLeft": "18px",
+   "imgClipped": false,
+   "overflow": 0
+  }
+ }
+]

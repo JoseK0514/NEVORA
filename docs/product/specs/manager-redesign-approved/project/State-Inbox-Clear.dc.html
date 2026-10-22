@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Inbox · All caught up</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F2F4F3}
+a{color:#077572;text-decoration:none}
+.wm{height:13px;width:auto;display:block;filter:invert(1) hue-rotate(180deg) brightness(1.15);mix-blend-mode:screen}
+.ib{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border:0;background:transparent;color:#FFFFFF;border-radius:12px;position:relative;padding:0}
+.pill{display:inline-flex;align-items:center;height:38px;padding:0 15px;border-radius:19px;border:0;font-family:inherit;font-size:15px;font-weight:500;background:rgba(255,255,255,.1);color:#E3EFEE;white-space:nowrap}
+.card{background:#FFFFFF;border-radius:20px;box-shadow:0 1px 2px rgba(16,40,38,.05),0 8px 24px rgba(16,40,38,.06)}
+.ch{display:flex;justify-content:space-between;align-items:center;padding:16px 16px 4px}
+.ch h2{margin:0;font-size:15px;line-height:20px;font-weight:600;color:#16191C}
+.ch span{font-size:15px;color:#5F666A}
+.li{display:flex;align-items:center;gap:12px;min-height:72px;padding:0 16px;color:#16191C;text-decoration:none}
+.t{margin:0;font-size:17px;line-height:22px;font-weight:500}
+.s{margin:3px 0 0;font-size:15px;line-height:20px;color:#5F666A}
+.tabs{position:absolute;left:0;right:0;bottom:0;height:84px;background:rgba(255,255,255,.97);border-top:1px solid #E8ECEB;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:0 6px 30px;box-sizing:border-box}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:13px;font-weight:500;color:#5F666A;text-decoration:none;position:relative;letter-spacing:.01em}
+.tab.on{color:#077572;font-weight:600}
+.tab.on svg{background:#DCEDE9;border-radius:15px;padding:3px 16px;box-sizing:content-box}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F2F4F3; font-family: Inter, system-ui, sans-serif; color: #16191C; font-feature-settings: 'tnum' 1, 'cv11' 1; -webkit-font-smoothing: antialiased">
+  <header style="background: #1C4A47; color: #FFFFFF; padding: 6px 8px 56px 20px; position: relative; overflow: hidden"><svg aria-hidden="true" width="260" height="260" viewBox="0 0 260 260" fill="none" style="position: absolute; right: -96px; top: 60px; opacity: .06; pointer-events: none"><path d="M130 20 240 230H20z" stroke="#FFFFFF" stroke-width="2"></path><path d="M130 70 205 210H55z" stroke="#FFFFFF" stroke-width="2"></path></svg>
+    <div style="display: flex; align-items: center; justify-content: space-between; height: 52px">
+      <div style="display: flex; align-items: baseline; gap: 10px">
+        <img class="wm" src="/_blob/8150cd17908e50b6f4fc7d90effeebd5" alt="NEVORA">
+        <span style="font-size: 15px; color: #A9C9C5">Workforce</span>
+      </div>
+      <div style="display: flex">
+        <button class="ib" aria-label="Search"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m20 20-4.2-4.2"></path></svg></button>
+        <button class="ib" aria-label="Notifications"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"></path><path d="M10 20.5a2 2 0 0 0 4 0"></path></svg></button>
+      </div>
+    </div>
+    <div style="padding: 20px 12px 0 0">
+      <p style="margin: 0 0 6px; font-size: 15px; font-weight: 500; letter-spacing: .02em; color: #A9C9C5; ">Checked 6:14 PM</p>
+      <h1 style="margin: 0; font-size: 30px; line-height: 36px; font-weight: 600; letter-spacing: -0.025em">Inbox</h1>
+      <p style="margin: 4px 0 0; font-size: 16px; line-height: 22px; color: #D3E6E3">Nothing needs you right now</p>
+    </div>
+    <div role="tablist" aria-label="Filter Inbox" style="display: flex; gap: 8px; margin-top: 20px">
+      <button class="pill" role="tab" aria-selected="true" style="background: #FFFFFF; color: #1C4A47; font-weight: 600">All</button>
+      <button class="pill" role="tab" aria-selected="false">Act now</button>
+      <button class="pill" role="tab" aria-selected="false">Requests</button>
+      <button class="pill" role="tab" aria-selected="false">Planning</button>
+    </div>
+  </header>
+
+  <main style="margin-top: -32px; padding: 0 16px 120px; display: flex; flex-direction: column; gap: 16px; position: relative">
+    <section class="card" style="padding: 30px 24px 28px; display: flex; flex-direction: column; align-items: center; text-align: center">
+      <svg width="96" height="96" viewBox="0 0 96 96" fill="none" aria-hidden="true">
+        <circle cx="48" cy="48" r="46" fill="#E7F3F2"></circle>
+        <rect x="26" y="30" width="44" height="38" rx="8" stroke="#1C4A47" stroke-width="2.2"></rect>
+        <path d="M26 52h12l3 5h14l3-5h12" stroke="#1C4A47" stroke-width="2.2" stroke-linejoin="round"></path>
+        <circle cx="66" cy="30" r="11" fill="#1C4A47"></circle>
+        <path d="m61 30 3.5 3.5L71 27" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      <h2 style="margin: 16px 0 0; font-size: 20px; font-weight: 600; letter-spacing: -0.012em">You’re all caught up</h2>
+      <p style="margin: 6px 0 0; font-size: 15px; line-height: 21px; color: #5F666A; max-width: 260px">Requests and missed clock-ins will show up here.</p>
+      <p style="margin: 14px 0 0; font-size: 15px; color: #5F666A">Checked 6:14 PM</p>
+    </section>
+
+    <section class="card">
+      <div class="ch"><h2>Planning</h2><span>Optional</span></div>
+      <a class="li" href="#">
+        <span style="width: 42px; height: 42px; border-radius: 21px; background: #F1F3F4; color: #4A4F55; display: flex; align-items: center; justify-content: center; flex: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h9"></path></svg></span>
+        <span style="flex: 1"><p class="t">Get next week ready</p><p class="s">Gaps, hour targets, availability</p></span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#858B8F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+      </a>
+    </section>
+  </main>
+
+  <nav class="tabs" aria-label="Main">
+    <a class="tab" href="Home-Manager.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20H4z"></path><path d="M10 20v-5h4v5"></path></svg>Home</a>
+    <a class="tab" href="Schedule.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.5"></rect><path d="M4 9.5h16M8.5 3v4M15.5 3v4"></path></svg>Schedule</a>
+    <a class="tab on" href="Inbox.dc.html" aria-current="page"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4.2h12a1 1 0 0 1 .95.7L21 13v5.8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V13l2.05-8.1A1 1 0 0 1 6 4.2zm-.9 8.8h4l1 2h3.8l1-2h4L17.3 6H6.7z"></path></svg>Inbox</a>
+    <a class="tab" href="Team.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="3.5"></circle><path d="M3 19c.8-3 3.2-4.5 6-4.5s5.2 1.5 6 4.5"></path><path d="M15.5 5.6a3.5 3.5 0 0 1 0 6.8M17.5 14.8c1.7.6 2.9 2 3.5 4.2"></path></svg>Team</a>
+    <a class="tab" href="More-Manager.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5.5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18.5" cy="12" r="1.6"></circle></svg>More</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

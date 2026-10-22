@@ -1,0 +1,36 @@
+{
+ "key": "Jose · guest-l45hzdfr · phone /app/requests?tab=new",
+ "url": "https://monkey-occurred-crystal-carolina.trycloudflare.com/app/requests?tab=new",
+ "path": "/app/requests?tab=new",
+ "device": "phone",
+ "viewport": {
+  "w": 440,
+  "h": 836
+ },
+ "page": {
+  "w": 440,
+  "h": 1351
+ },
+ "title": "NEVORA Workforce",
+ "heading": "Time off",
+ "tester": "Jose",
+ "account": "ARAlexandra Rivera",
+ "strokes": [],
+ "pins": [
+  {
+   "n": 1,
+   "x": 229,
+   "y": 634,
+   "text": "",
+   "t": 1792354595392,
+   "target": {
+    "tag": "input",
+    "id": "timeoff-end-date",
+    "cls": "",
+    "text": ""
+   }
+  }
+ ],
+ "note": "It looks messed up in iPhone ",
+ "updatedAt": "2026-10-18T20:16:35.995Z"
+}
