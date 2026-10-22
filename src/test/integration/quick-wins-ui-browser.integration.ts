@@ -19,7 +19,7 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
   try {
     const q = (text: string, values: unknown[] = []) => app.database.executor.query({ text, values });
     await seedOwnedApp(app.database.executor);
-    await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('QW-MANAGER','Fictional','Manager','2025550141','MANAGER','loc-1')");
+    await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('QW-MANAGER','Fictional','Manager','2025550141','MANAGER','loc-1'),('QW-IDLE','Fictional','Idle','2025550142','EMPLOYEE','loc-1')");
     await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)', ['QW-MANAGER', await hashPassword(TEST_PASSWORD)]);
     await assignOwnedManagerCompanyAccess(app.database.executor, 'QW-MANAGER');
     await q("INSERT INTO clocker_devices(id,location_id,name) VALUES('quick-wins-device','loc-1','Fictional quick wins tablet')");
@@ -66,7 +66,7 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
             if (path === '/app/timecards') {
               const folded = page.getByRole('button', { name: /people with no time yet/ });
               await folded.waitFor(); await folded.click();
-              expect(await page.locator('.cm-tc-person').evaluateAll((elements: HTMLElement[]) => elements.some(element => element === document.activeElement))).toBe(true);
+              await page.waitForFunction(() => [...document.querySelectorAll('.cm-tc-person')].some(element => element === document.activeElement));
               await page.goto(origin + '/app/timecards#timecard-QAOWNER');
               await page.getByRole('dialog').waitFor();
               expect(await page.getByRole('dialog').textContent()).toContain('Fictional Owner');
