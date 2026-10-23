@@ -818,3 +818,35 @@ D2 WebKit recorded a React-handled `TypeError: Load failed` and a native framewo
 Run 39911039137 at merge checkpoint 92cc2687 reproduced D2 during `manager-return`: its hard document request started at 23276ms, WebKit refused a source RSC fetch at 23650ms, Next logged its RSC fallback at 23673ms, and the new document response arrived at 23678ms. The pre-reload UI had zero correction rows while foreground authority recovery was pending. The driver now waits for the actual employee-specific approval control, completed network activity and both canonical rows before performing the original hard reload and native keyboard checks. It records that recovery boundary. No native or React error is reclassified. The existing D2 scenario is the red regression; a new matching cloud run must establish its result. Native relative-URL query strings and short proof/authority/credential assignments are also removed from diagnostic text.
 
 That diagnostic candidate passed validation (9,323 units, types, repository lint, production build and both audits), all three SQL jobs, all five Phase E suites/70 browser cells and their UI aggregate. Its build receipt matched all 5,090 source hashes. Attendance failed at D2 and consequently did not execute Clocker's browser step. The earlier Attention response-loss timeout did not recur; that historical cause is not claimed resolved. Independent review approved the bounded D2 readiness/RSC-drain follow-up for cloud testing only. The new full matching workflow, integration review and development verification remain required before cleanup/deployment.
+
+### Short authority lifetime repair
+
+Run 39914409768 on merge checkpoint `668097d9` again passed validation, all
+three SQL jobs and all 70 Phase E cells. D2 WebKit instead failed the new
+foreground-ready barrier before the hard reload, with no runtime or console
+errors. Its initial correction read completed at approximately four seconds;
+later RSC refreshes completed but the correction API was never reread. The
+visible queue was unavailable. Clocker browser and the final evidence gate
+therefore remain unverified on this source.
+
+`readCompanyResult` clips the correction snapshot to the operational authority
+budget of at most 15 seconds. The shared private snapshot controller scheduled
+all healthy polls after 30 seconds. Expiry canceled that poll and corrections
+waited another 30 seconds to retry. A completed outer RSC refresh retained the
+same inner controller and did not repair that interval.
+
+Healthy polling now uses 70% of the remaining lifetime after the full round
+trip, capped at the existing 30 seconds and bounded below by one second. The
+original hard expiry remains armed during renewal and is registered first, so
+even a one-second budget cannot be extended by a simultaneous poll. Expiry
+still aborts the request and rejects late results; failed reads still back off
+30 seconds and denied reads stop automatic polling. The corrections component
+still clears its rendered private rows while refreshing.
+
+Six direct behavioral regressions failed against the previous fixed interval.
+The corrected implementation also preserves the existing monitor's one-second
+expiry and employee-time 30-second polling assertions without weakening them.
+Focused controller and consumer suites passed locally; independent review and
+a fresh complete cloud workflow remain required. This application fix does not
+alter authorization, server budgets, database schema, notification delivery or
+any browser assertion.

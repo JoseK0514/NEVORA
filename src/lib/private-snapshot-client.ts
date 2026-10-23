@@ -8,7 +8,7 @@ export function createPrivateSnapshotController<T extends PrivateSnapshot>(chang
  const publish=(refreshing=false)=>{if(!stopped)changed({snapshot:current,refreshing,paused});};
  const cancelRequest=()=>{if(poll)clearTimeout(poll);if(timeout)clearTimeout(timeout);active?.abort();active=undefined;poll=undefined;timeout=undefined;};
  const clearExpiry=()=>{if(expiry)clearTimeout(expiry);expiry=undefined;};
- const schedule=()=>{if(!stopped&&!paused)poll=setTimeout(refresh,30000);};
+ const schedule=(delay=30000)=>{if(!stopped&&!paused)poll=setTimeout(refresh,delay);};
  function unavailable(reason:'read_failed'|'access_denied'){
   clearExpiry();current=failure(reason);publish();if(reason!=='access_denied')schedule();
  }
@@ -29,8 +29,11 @@ export function createPrivateSnapshotController<T extends PrivateSnapshot>(chang
    // Subtract the entire round trip, conservatively bounding delayed responses.
    const remaining=result.validForMs-Math.max(0,performance.now()-started);
    if(remaining<=0){unavailable('read_failed');return;}
-   current=result;publish();schedule();
+   // Renew within the remaining authority budget; keep the original expiry armed
+   // while that read is in flight so a slow renewal cannot prolong private data.
+   current=result;publish();
    expiry=setTimeout(()=>{if(stopped||paused)return;sequence++;cancelRequest();unavailable(expiryFailure(result.validForMs));},remaining);
+   schedule(Math.min(30000,Math.max(1000,remaining*.7)));
   }).catch(()=>{if(stopped||paused||generation!==sequence)return;cancelRequest();unavailable('read_failed');});
  }
  return {
