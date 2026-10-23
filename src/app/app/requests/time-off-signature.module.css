@@ -34,8 +34,8 @@
 
 /* Notices above the sheet content (sent, reviewed, couldn't send). */
 .toNotice:not(#to) { margin-bottom: 20px !important; }
-.toNotice[data-tone="ok"]:not(#to) { background: #EAF4F2; border-color: transparent; color: #0A5753; }
-.toNotice[data-tone="error"]:not(#to) { background: #FBF0EE; border-color: #F1D6D1; color: var(--sg-red); }
+.toNotice[data-tone="ok"]:not(#to) { background: var(--sig-tint-done); border-color: transparent; color: var(--sig-done-ink); }
+.toNotice[data-tone="error"]:not(#to) { background: var(--sig-tint-urgent); border-color: var(--sig-tint-urgent-line); color: var(--sg-red); }
 
 /* My requests: the waiting card */
 .toWait:not(#to) { scroll-margin-top: 96px; }
@@ -47,7 +47,7 @@
 .toRail li:last-child:not(#to) { align-items: flex-end; text-align: right; color: var(--sg-ink); font-weight: 500; }
 .toRail li:not(#to)::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--sg-teal); }
 .toRail li[data-done="true"]:last-child:not(#to)::before { background: var(--sg-teal); box-shadow: none; }
-.toRail li:last-child:not([data-done]):not(#to)::before { background: #FFFFFF; box-shadow: inset 0 0 0 2.5px var(--sg-amber), 0 0 0 4px rgba(138, 82, 8, .1); }
+.toRail li:last-child:not([data-done]):not(#to)::before { background: var(--sig-card); box-shadow: inset 0 0 0 2.5px var(--sg-amber), 0 0 0 4px rgba(138, 82, 8, .1); }
 .toTrack:not(#to) { position: absolute; top: 22.5px; left: 5px; right: 5px; height: 1.5px; background: linear-gradient(90deg, var(--sg-teal), var(--sg-rule)); }
 .toQuote:not(#to) { margin-top: 18px !important; padding: 12px 14px !important; border-radius: 12px; background: var(--sg-page); font: 400 .9375rem/1.375rem var(--sg-font); color: var(--sg-ink-2); overflow-wrap: anywhere; }
 .toWithdraw:not(#to) { border-top: 1px solid var(--sg-rule); }
@@ -58,7 +58,7 @@
 .toWithdraw form:not(#to) { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 0 20px 20px; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
 .toWithdraw form label:not(#to) { display: flex; align-items: center; gap: 10px; min-height: 44px; color: var(--sg-ink); }
 .toWithdraw form input[type="checkbox"]:not(#to) { width: 20px; height: 20px; accent-color: var(--sg-deep); }
-.toWithdraw form button:not(#to) { min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #FBF0EE; color: var(--sg-red); font: 500 .9375rem/1 var(--sg-font); cursor: pointer; }
+.toWithdraw form button:not(#to) { min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: var(--sig-tint-urgent); color: var(--sg-red); font: 500 .9375rem/1 var(--sg-font); cursor: pointer; }
 .toWithdraw form p:empty:not(#to) { display: none; }
 
 /* My requests: decided rows */
@@ -99,7 +99,7 @@
   @media (hover: hover) { .toMonthGrid button:hover:not(#to) { background: var(--sg-page); border-radius: 22px; } }
   .toMonthGrid button[data-past]:not(#to) { color: var(--sig-ink-3, #6F6C66); }
   .toMonthGrid button[data-today]:not(#to) { font-weight: 600; color: var(--sg-teal); }
-  .toMonthGrid button[data-range]:not(#to) { border-radius: 0; background: #E2F1ED; color: #0A5753; font-weight: 500; }
+  .toMonthGrid button[data-range]:not(#to) { border-radius: 0; background: var(--sig-done-wash); color: var(--sig-done-ink); font-weight: 500; }
   .toMonthGrid button[data-edge]:not(#to) { background: var(--sig-fill); color: var(--sig-on-fill); font-weight: 500; }
   .toMonthGrid button[data-edge="start"]:not(#to) { border-radius: 22px 0 0 22px; }
   .toMonthGrid button[data-edge="end"]:not(#to) { border-radius: 0 22px 22px 0; }

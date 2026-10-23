@@ -35,8 +35,8 @@
 .cdRoot :global(.wb-actions .nv-btn[data-kind="danger"]):not(#cd), .cdRoot :global(.wb-actions .nv-btn[data-tone="urgent"]):not(#cd) { color: var(--sg-red); }
 .cdRoot :global(.wb-actions .nv-btn):focus-visible:not(#cd), .cdRoot :global(.wb-check):focus-within:not(#cd) { outline: 2px solid var(--sg-ink); outline-offset: 2px; }
 .cdRoot :global(.wb-notice):not(#cd) { display: flex; gap: 12px; padding: 18px 20px; }
-.cdRoot :global(.wb-notice[data-tone="review"]):not(#cd) { background: #FBF4EA; box-shadow: inset 0 0 0 1px #F2E4CD; color: var(--sg-amber); }
-.cdRoot :global(.wb-notice[data-tone="urgent"]):not(#cd) { background: #FBF0EE; box-shadow: inset 0 0 0 1px #F1D6D1; color: var(--sg-red); }
+.cdRoot :global(.wb-notice[data-tone="review"]):not(#cd) { background: var(--sig-tint-review); box-shadow: inset 0 0 0 1px var(--sig-tint-review-line); color: var(--sg-amber); }
+.cdRoot :global(.wb-notice[data-tone="urgent"]):not(#cd) { background: var(--sig-tint-urgent); box-shadow: inset 0 0 0 1px var(--sig-tint-urgent-line); color: var(--sg-red); }
 .cdRoot :global(.wb-notice__title):not(#cd) { margin: 0; font: 500 1rem/1.3125rem var(--sg-font); color: var(--sg-ink); }
 .cdRoot :global(.wb-notice p):not(#cd) { margin: 4px 0 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
 .cdRoot :global(.wb-confirm):not(#cd) { display: flex; flex-direction: column; gap: 4px; }

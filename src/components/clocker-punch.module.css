@@ -31,8 +31,8 @@
 .panel button.card:global(.primary) :global(.clocker-es) { color: rgba(255, 255, 255, .8); }
 .panel button.card > svg:last-child { color: var(--ck-ink3); }
 .panel button.card:global(.primary) > svg:last-child { color: #ffffff; }
-.tile { display: grid; place-items: center; width: 64px; height: 64px; flex: none; border-radius: 20px; background: var(--clocker-soft); color: var(--ck-deep); }
-.card:global(.primary) .tile { background: #ffffff; }
+.tile { display: grid; place-items: center; width: 64px; height: 64px; flex: none; border-radius: 20px; background: var(--clocker-soft); color: var(--sig-deep-ink); }
+.card:global(.primary) .tile { background: var(--sig-card); }
 
 .foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .panel button.link { min-height: 44px; padding: 0 6px; margin-left: -6px; font-size: 1.0625rem; font-weight: 500; text-decoration: underline; text-decoration-color: var(--ck-edge); text-decoration-thickness: 1px; text-underline-offset: 6px; }
@@ -51,7 +51,7 @@
 .breakOption > svg:last-child { color: var(--ck-ink3); }
 
 /* Confirm, recorded and recovery */
-.orb { display: grid; place-items: center; width: 92px; height: 92px; margin-bottom: 20px; border-radius: 50%; background: var(--clocker-soft); color: var(--ck-deep); }
+.orb { display: grid; place-items: center; width: 92px; height: 92px; margin-bottom: 20px; border-radius: 50%; background: var(--clocker-soft); color: var(--sig-deep-ink); }
 .orb[data-tone=amber] { background: var(--ck-amber-wash); color: var(--ck-amber); }
 .seal { display: grid; place-items: center; width: 116px; height: 116px; margin-bottom: 26px; border-radius: 50%; background: var(--clocker-accent); color: #ffffff; box-shadow: 0 0 0 12px #E2F1ED; }
 .summary { display: grid; grid-template-columns: 1fr 1fr; width: 100%; margin: 26px 0 0; padding: 20px 22px; border-radius: 22px; background: var(--ck-card); box-shadow: var(--ck-lift); text-align: left; }
