@@ -153,6 +153,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               expect(api.status()).toBe(403);
               checks.push(engine + ": " + actor + " discovery/page/API denied");
             } else {
+              const beforeNotifications = await app.database.executor.query({ text: "SELECT count(*)::int n FROM notifications", values: [] });
               await app.database.executor.query({ text: "DELETE FROM owner_advisor_briefing_reviews WHERE owner_id='QAOWNER'", values: [] });
               await page
                 .locator("main")
@@ -182,7 +183,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               await page.waitForURL(/saved=1/);
               expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM shifts WHERE date=$1", values: [coverageDate] })).toEqual([{ n: 1 }]);
               expect(await app.database.executor.query({ text: "SELECT status FROM schedules WHERE week_start=$1", values: [coverageDate] })).toEqual([{ status: 'DRAFT' }]);
-              expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM notifications", values: [] })).toEqual([{ n: 0 }]);
+              expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM notifications", values: [] })).toEqual(beforeNotifications);
               checks.push(engine + ': real proposal preview and canonical draft confirmation; no publication or notifications');
               await page.goto(origin + '/app/ai-manager');
               const publishedDate = engine === 'chromium' ? '2030-10-21' : '2030-10-28';
