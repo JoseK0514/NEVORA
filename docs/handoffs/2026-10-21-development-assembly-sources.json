@@ -6,6 +6,12 @@
   "observedAt": "2026-10-23",
   "sources": [
     {
+      "branch": "Claude-UI-Fix",
+      "sha": "d3346480734cdada82eb9a7c5a8bcabca2cc4667",
+      "disposition": "included",
+      "reason": "Merged PR28 is included through current development e37d08e3. Exact source and combined schedule CSS were reviewed. Its already-merged remote retirement is held for Jose's archive/retirement decision; the five-active-branch gate remains enforced."
+    },
+    {
       "branch": "codex/development-ci-consolidation-20261022",
       "sha": "39f4e95e6e044e68c94d7022f6cf7836b2dfdaab",
       "disposition": "included",
@@ -348,9 +354,9 @@
     },
     {
       "branch": "development",
-      "sha": "40282f12c9f42ba00ed0f116c1dc6e42775efe8d",
+      "sha": "e37d08e3fedda00a949168c491216bba12ab4a13",
       "disposition": "target",
-      "reason": "Freshly fetched development base for the combined Owner AI review candidate. The assembly branch names the existing PR25 remote, whose original 2530a701 head is retained in candidate ancestry."
+      "reason": "Freshly fetched development after merged PR28, preserved in the combined Owner AI candidate. The assembly branch names the existing PR25 remote, whose original 2530a701 head remains in ancestry."
     },
     {
       "branch": "fix/ci-preview-33",
