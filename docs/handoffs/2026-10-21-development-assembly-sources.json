@@ -204,8 +204,9 @@
     {
       "branch": "codex/inspectors-ci-20261022",
       "disposition": "included",
-      "reason": "Jose-approved archive preservation and custody checks are included in PR23. Historical findings remain open to current evidence; the prepared branch-retirement plan is not executed here.",
-      "sha": "ef5212dd7ced6d1e7de77a80e847f245733172bd"
+      "reason": "Archive preservation and custody checks are merged into development through PR23. Retire only the unchanged remote after final development CI; retain its exact recovery tag, local branch and worktree. Historical findings remain subject to current evidence.",
+      "sha": "ef5212dd7ced6d1e7de77a80e847f245733172bd",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/inspectors-ci-20261022"
     },
     {
       "branch": "codex/f10-original-owner-bootstrap-20261011",
@@ -227,6 +228,12 @@
       "disposition": "superseded",
       "reason": "Mobile launch baseline/branch-specific CI is separate. Its activation-label fix uses older title case; the current form and setup check both use Activate account.",
       "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/nevora-mobile-launch"
+    },
+    {
+      "branch": "codex/owner-ai-release-testing-20261023",
+      "sha": "2530a701bf554020a696e30ebb7fbb1131dcec44",
+      "disposition": "held",
+      "reason": "Active unrelated Owner AI PR25 appeared during finalization. Preserve its remote branch and local work; exclude it from this approved integration and retirement. Reconcile any advancement before cleanup."
     },
     {
       "branch": "codex/par-001-remediation-20261008",
