@@ -26,3 +26,5 @@ Task verification command: `npm test` (owned PostgreSQL and real browser evidenc
 Pre-flight: contracts feed tools/service, controller and renderers; the same bounded structures and parsers are shared. Canonical save consumes the source-bound review plus separate publication consent. No conflicting interface assumptions.
 
 Ruling: payroll readiness is explicitly unverified rather than rerunning financial calculations in an AI read tool. This preserves rule verification and avoids presenting recorded run state as current approval readiness; the authoritative payroll workflow remains the next decision.
+
+Execution complete at application checkpoint `2ea94227`: both workflows implemented; final default 9,467 passed/801 existing skips, advisor PostgreSQL38, canonical coverage PostgreSQL39, engineering110, typecheck/lint/build exit0, and actual Chromium/WebKit28 browser scenario groups. Two fresh-review findings reproduced RED and fixed GREEN; raw report retained. See `docs/handoffs/2026-10-23-owner-reviewed-workflows.md`. Branch remains local for the requested pre-integration handoff.

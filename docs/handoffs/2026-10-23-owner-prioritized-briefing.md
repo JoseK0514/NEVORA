@@ -1,5 +1,7 @@
 # Owner prioritized briefing: implemented first increment
 
+Update: the subsequent coverage-proposal and attendance/payroll review increments are now implemented and locally tested. See [the current workflow handoff](2026-10-23-owner-reviewed-workflows.md) for their evidence and remaining integration/release gates. The text below records the earlier first-increment checkpoint.
+
 Jose approved starting the enhancement roadmap on October 23, 2026. This increment implements the prioritized Owner briefing and private follow-through. Implementation/evidence owner: Codex. Branch: `codex/owner-prioritized-briefing-20261023`. Fresh development input: `739165b2`; existing Owner advisor dependency: `2530a701` from draft PR25. Local dependency merge: `055a383d`. Initial implementation: `c81f46a5`. Tested application checkpoint after review fixes: `8cbb3ab3`. Subsequent documentation commits do not change the executed application.
 
 ## Result and boundaries
