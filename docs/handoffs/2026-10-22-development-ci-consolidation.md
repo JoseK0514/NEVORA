@@ -943,3 +943,50 @@ added. Three initial behavioral cases fail against the router-body wait;
 all five, including late JSON rejection, pass with the corrected read. The
 release-engineering set now has 102 cases.
 The full D2 scenario in both engines still requires matching cloud execution.
+
+### Matching SQL/D2 recovery and remaining WebKit failures
+
+Run 39926170280 on source 220c61e2 / merge e2dcf10e / tree 3ba2ba64
+passed validation (9,340 units, types, repository lint, production build, both
+zero-vulnerability audits and 102 release-engineering checks), all three SQL
+jobs, Home, Communications, Calendar and complete Attendance. Foundation ran
+all 281 cases in 245.70 seconds inside the unchanged 480-second limit; all five
+release SQL groups passed 743 cases. Phase E SQL passed 190; Clocker SQL passed
+524. The build receipt matched all 5,098 source hashes and 3,251 build files.
+Attendance receipts and independent review verified Phase D 201, D2 282 and
+Clocker 90 checks, zero errors, both D2 engines, closed ownership receipts and
+all eight source manifests. This verifies the bootstrap and D2 fixes.
+
+The workflow nevertheless failed Navigation WebKit390 and Attention WebKit375;
+59 of 70 Phase E cells passed, two failed and nine were unexecuted. No merge,
+retirement or deployment was performed. Navigation recorded three exact native
+WebKit fetch diagnostics during a proven requested document navigation (14/19ms
+old): /api/manager/today, /api/manager/action-center and /api/manager/clock-monitor.
+The corresponding application readers catch rejection in the shared controller;
+Action Center is a protected POST read with JSON, not a GET.
+
+A real small local WebKit26.5 control reproduced all four transport profiles
+(the existing private GET plus today's GET/default redirect, Action Center's
+POST JSON/header/actor shape and clock-monitor GET/redirect-error). Eight control
+cells prove normal 200 with one server ingress and zero native events, versus
+caught rejection during a held destination with zero server ingress, one exact
+native event and zero window errors/unhandled rejections. Genuine exception
+observers were positively tested for every profile. All profiles must reproduce
+in the actual CI browser before classification is enabled. Only the three exact
+Manager read paths were added; committed, ambiguous, foreign, query-bearing,
+unknown Manager paths and genuine window exceptions remain fatal. Three new
+path cases failed before the extension; 241 focused snapshot/fixture/runtime/evidence cases
+and 103 release-engineering cases pass afterward.
+
+Attention committed exactly one canonical operation, fetched its upstream
+response with HTTP 200 and executed the intended response abort, but the unknown
+alert did not appear within 15 seconds. Evaluation and screenshot also failed;
+the earlier report did not retain their failure classes. No client delivery,
+generation-fence or framework cause is claimed. New diagnostics record bounded
+document/lifecycle/action timing, crash/close/disconnection, node-side liveness
+and fixed redacted failure classes. Failure evaluation and screenshot are each
+bounded to five seconds. The original 15-second assertion, response-loss
+injection, operation identity, canonical count and generation fences remain.
+The deadline helper now preserves returned diagnostic values; its new behavior
+case failed before that fix and proves late values cannot rescue a timeout.
+Attention remains unresolved until matching execution supplies evidence.

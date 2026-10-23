@@ -27,12 +27,18 @@ it.each([
  {verified:false},{engine:'chromium'},{pending:false},{phase:'context-close'},
  {host:'fictional.invalid'},{host:'127.0.0.1:43211'},{path:'/__nextjs_original-stack-frames'},{path:'/api/manager/communications'},{path:'/PRIVATE_ACTOR_TOKEN'},
  {path:'/api/employee/profile'},{path:'/api/employee/calendar-subscriptions'},{path:'/app/api/push/status'},
+ {path:'/api/manager/action-center?intent=PRIVATE_ACTOR_TOKEN'},{path:'/api/manager/unknown'},{path:'/api/manager/time-corrections'},
  {host:'PRIVATE_ACTOR_TOKEN@127.0.0.1:43210'},{path:'/api/notifications?token=PRIVATE_ACTOR_TOKEN'},{path:'/api/employee/home#PRIVATE_ACTOR_TOKEN'},
 ])('keeps an unproven or live-document event fatal: %j',async options=>{
  const f=await fixture(options);f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();expect(f.execution.navigationDiagnostics).toHaveLength(0);
 });
 it.each(['/api/employee/home','/api/employee/my-time'])('recognizes only the observed static own-read path %s',async path=>{
  const f=await fixture({path});f.page.emit('pageerror',f.error);f.cell.assertClean();expect(f.execution.navigationDiagnostics).toHaveLength(1);
+});
+it.each(['/api/manager/today','/api/manager/action-center','/api/manager/clock-monitor'])('recognizes a proven exact Manager read path only before navigation commits: %s',async path=>{
+ const f=await fixture({path});f.page.emit('pageerror',f.error);f.cell.assertClean();expect(f.execution.navigationDiagnostics).toHaveLength(1);
+ f.commit();f.page.emit('pageerror',{...f.error});expect(()=>f.cell.assertClean()).toThrow();
+ const unproven=await fixture({path,verified:false});unproven.page.emit('pageerror',unproven.error);expect(()=>unproven.cell.assertClean()).toThrow();
 });
 it('retires the classification boundary at document commit',async()=>{
  const f=await fixture();f.commit();f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();expect(f.errors[0]).toMatchObject({pendingMainFrameNavigation:false,documentNavigation:{phase:'committed',ageMs:expect.any(Number)}});

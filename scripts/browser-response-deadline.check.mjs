@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {finishResponseByDeadline} from './browser-response-deadline.mjs';
+import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
+
+test('bounded work preserves its result and rejects a late value',async()=>{
+ const value={unknown:true,blocked:false};
+ assert.deepEqual(await runBeforeRecoveryDeadline(async()=>value,performance.now()+1000),value);
+ let release;const work=new Promise(resolve=>{release=resolve;});
+ const pending=runBeforeRecoveryDeadline(()=>work,performance.now()+20);
+ await assert.rejects(pending,/recovery deadline/);release(value);await assert.rejects(pending,/recovery deadline/);
+});
 
 test('a response must finish its body before recovery is considered complete',async()=>{
  let release,calls=0,completed=false;const body=new Promise(resolve=>{release=resolve;});

@@ -27,6 +27,9 @@ function nativeFetchResourceKind(message,page) {
     if(path==='/api/manager/communications'||path.startsWith('/api/manager/communications/'))return 'manager-read';
     if(path==='/api/employee/communications'||path.startsWith('/api/employee/communications/'))return 'employee-read';
     if(path==='/api/employee/my-time')return 'recorded-time-read';
+    if(path==='/api/manager/today')return 'manager-today-read';
+    if(path==='/api/manager/action-center')return 'action-center-read';
+    if(path==='/api/manager/clock-monitor')return 'clock-monitor-read';
     if(path==='/api/employee/profile')return 'profile-read';
     if(path==='/api/employee/calendar-subscriptions')return 'calendar-read';
     if(path==='/app/api/push/status')return 'device-status-read';
@@ -64,7 +67,7 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
   const start = errors.length;
   const classified=new WeakSet(),pages=new WeakMap();
   let phase = 'scenario', readStage = () => null, pageIndex = 0;
-  const stages = new Set(['seed', 'compose', 'audience-change', 'full-review', 'native-focus', 'revision-conflict', 'unknown', 'layout', 'private-lifetime', 'withdraw', 'employee-team', 'replacement', 'login', 'confirmation', 'republish', 'response-loss', 'leave-and-revoke', 'unavailable-retry', 'empty', 'loading', 'canonical-communications', 'actions-overflow', 'keyboard', 'api', 'offline', 'late-home', 'late-time', 'route-leave', 'sql-source-failure', 'replaced-session', 'early-my-time-route', 'removal-review', 'last-shift-removal', 'complete-zero', 'communication-source-failure', 'axe-diagnostic']);
+  const stages = new Set(['seed', 'compose', 'audience-change', 'full-review', 'native-focus', 'revision-conflict', 'unknown', 'layout', 'private-lifetime', 'withdraw', 'employee-team', 'replacement', 'login', 'confirmation', 'republish', 'response-loss', 'leave-and-revoke', 'unavailable-retry', 'empty', 'loading', 'canonical-communications', 'actions-overflow', 'keyboard', 'api', 'offline', 'late-home', 'late-time', 'route-leave', 'sql-source-failure', 'replaced-session', 'early-my-time-route', 'removal-review', 'last-shift-removal', 'complete-zero', 'communication-source-failure', 'axe-diagnostic', 'timeoff-form', 'owner-login', 'owner-timeoff-review', 'employee-decision']);
   return {
     setStageReader(reader) { readStage = reader; },
     setPhase(value) { assert(['scenario', 'axe', 'context-close'].includes(value)); phase = value; },

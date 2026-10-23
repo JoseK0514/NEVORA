@@ -4,8 +4,9 @@ export async function runBeforeRecoveryDeadline(work,deadline){
  if(!Number.isFinite(remaining)||remaining<=0)throw expired();
  let timer;
  try{
-  await Promise.race([Promise.resolve().then(work),new Promise((_,reject)=>{timer=setTimeout(()=>reject(expired()),remaining);})]);
+  const value=await Promise.race([Promise.resolve().then(work),new Promise((_,reject)=>{timer=setTimeout(()=>reject(expired()),remaining);})]);
   if(performance.now()>=deadline)throw expired();
+  return value;
  }finally{clearTimeout(timer);}
 }
 

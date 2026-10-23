@@ -4,7 +4,7 @@ import test from 'node:test';
 import { safeBrowserFailure, safeLoginServerRequests,safeEvaluationFailure } from './release-browser-diagnostics.mjs';
 
 test('evaluation rejection diagnostics retain only a fixed class without the rejected message',()=>{
- for(const [message,kind] of [['Execution context was destroyed at /private?proof=Violet7','context-destroyed'],['Target page, context or browser has been closed: cookie=Violet7','target-closed'],['Protocol error: password=Violet7','protocol'],['Timeout 15000ms token=Violet7','timeout'],['Violet7','other']]){
+ for(const [message,kind] of [['Execution context was destroyed at /private?proof=Violet7','context-destroyed'],['Target page, context or browser has been closed: cookie=Violet7','target-closed'],['Protocol error: password=Violet7','protocol'],['Timeout 15000ms token=Violet7','timeout'],['Browser response exceeded the original recovery deadline password=Violet7','timeout'],['Violet7','other']]){
   assert.deepEqual(safeEvaluationFailure(new Error(message)),{name:'Error',kind});
  }
  assert.deepEqual(safeEvaluationFailure(new Proxy({},{get(){throw Error('Violet7');}})),{name:'Error',kind:'other'});
