@@ -1090,3 +1090,37 @@ control in both engines before the full 14 Attention cells and uploads its
 receipt. All 12 jobs and 70 real browser cells remain required. Calendar's
 historical response-loss cause and the earlier Attention unknown-alert cause
 remain unproven; their original assertions and diagnostics stay enabled.
+
+### Clocker recovery-record privacy assertion
+
+PR24 candidate12d7779a workflow39946723054 passed validation (9346 unit tests,
+types, lint, fresh production build, both audits and103 release-engineering
+checks), all3 SQL jobs (743 release/524 Clocker/190 PhaseE), Home14,
+Communications14 and Calendar14. The required Attendance job passed whole
+PhaseD, remediation and all282 D2 checks, then failed Clocker Chromium after13
+checks at the raw stored-JSON privacy regular expression. This is a later gate,
+not a D2 failure. Its receipt intentionally retains no storage value, so the
+historical matching field cannot be identified from that artifact.
+
+The expression rejects any occurrence of fictional PIN2468 anywhere in the
+JSON, including permitted random command UUIDs and64hex public subject and
+verification digests. A regression using the actual make/save/read recovery
+functions produces a valid recoverable record containing those digits and
+demonstrates the old false rejection. The correction validates the exact raw
+record keys, the real command parser's nested key/type contract, this case's
+CLOCK_IN/null entry-and-break state, and equality with the specifically
+intercepted lost-response execute command. It rejects added personal/PIN/token/
+timestamp fields at every nesting boundary, private values substituted for
+subject/command identity, malformed storage, another valid operation and other
+actions. Failures use a fixed public message and never print either payload.
+
+The focused correction and unchanged punch-client tests pass55 checks in2 files;
+syntax, scoped lint and diff checks pass. No application storage, command,
+clocking or payroll behavior changes. Actual lost-response, reload, another
+employee and original-command recovery assertions remain enabled, and the
+complete90-check Clocker browser gate in both engines remains mandatory. This
+repair requires independent review and new full matching cloud CI; prior-source
+passes do not substitute for that verification. Independent review approved the
+bounded correction for CI only with no blockers. Cancellation of superseded
+workflow39946723054 was requested after that approval to avoid further browser
+spend; canceled/unexecuted cells do not count as passes on any source.
