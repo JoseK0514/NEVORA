@@ -215,6 +215,10 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               for (const width of [320, 390, 1440]) {
                 await page.setViewportSize({ width, height: 1000 });
                 expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+                for (const label of ['Coverage date', 'Period start', 'Period end', 'Review language']) {
+                  const bounds = await page.getByLabel(label, { exact: true }).boundingBox();
+                  expect(bounds?.height, `${engine} ${width}px ${label} touch target`).toBeGreaterThanOrEqual(44);
+                }
                 await page.screenshot({ path: resolve(evidence, engine + '-period-' + width + '.png'), fullPage: true });
               }
               checks.push(engine + ': real Spanish recorded-period review without provider; 320/390/1440px no overflow');
