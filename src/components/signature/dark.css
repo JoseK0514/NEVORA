@@ -18,7 +18,7 @@
 :root[data-theme="dark"] [data-nv-e5] aside.sidebar .nav-link.active { background: rgba(169, 226, 218, .10) !important; box-shadow: inset 3px 0 0 #A9E2DA !important; }
 :root[data-theme="dark"] [data-nv-e5] aside.sidebar .nav-link.active :is(.nav-label, svg) { color: #A9E2DA !important; }
 :root[data-theme="dark"] [data-nv-e5] aside.sidebar :is(.brand-wordmark, .sidebar-brand) { color: #F5F2EB !important; }
-:root[data-theme="dark"] [data-nv-e5] aside.sidebar :is(.brand-lockup-module, .login-brand-lockup) { color: #B8B7B0 !important; }
+:root[data-theme="dark"] [data-nv-e5] aside.sidebar :is(.brand-lockup-module, .login-brand-module) { color: #B8B7B0 !important; }
 :root[data-theme="dark"] [data-nv-e5] aside.sidebar :is(p, small) { color: #B8B7B0 !important; }
 @media (min-width: 1024px) {
   :root[data-theme="dark"] [data-nv-e5] header.mobile-header { background: #101E1D !important; border-color: #2C3B39 !important; box-shadow: none !important; }
