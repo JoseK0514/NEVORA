@@ -114,6 +114,7 @@
   margin: 16px 0 8px;
 }
 .oa-section :is(textarea, input[type="date"], select) {
+  min-height: 44px;
   display: block;
   width: 100%;
   min-width: 0;

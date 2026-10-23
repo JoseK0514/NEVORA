@@ -1,4 +1,6 @@
 import { parsePeriod } from "@/lib/timecards/project";
+export const ADVISOR_MAX_TOOL_CALLS = 8;
+export const ADVISOR_MAX_ANSWER_SOURCES = 1 + (ADVISOR_MAX_TOOL_CALLS - 1) * 2;
 export type AdvisorMessage = { role: "user" | "assistant"; content: string };
 export type AdvisorSource = { label: string; href: string; observedAt: string };
 export type AdvisorProfile = { priorities: string; revision: number };

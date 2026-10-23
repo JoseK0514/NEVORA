@@ -1,5 +1,6 @@
 import {
   record,
+  ADVISOR_MAX_ANSWER_SOURCES,
   type AdvisorSnapshot,
   type AdvisorAnswer,
   type AdvisorProfile,
@@ -25,8 +26,8 @@ function stamp(v: Record<string, unknown>) {
 export function profile(v: unknown): asserts v is AdvisorProfile {
   requireValue(record(v) && text(v.priorities, 2000) && count(v.revision));
 }
-function sources(v: unknown) {
-  requireValue(Array.isArray(v) && v.length <= 8);
+function sources(v: unknown, maximum = 8) {
+  requireValue(Array.isArray(v) && v.length <= maximum);
   for (const s of v) {
     requireValue(
       record(s) &&
@@ -123,7 +124,7 @@ export function parseAnswer(value: unknown): AnswerResponse {
       text(value.answer.text),
   );
   stamp(value);
-  sources(value.answer.sources);
+  sources(value.answer.sources, ADVISOR_MAX_ANSWER_SOURCES);
   const a = value.answer;
   if (a.proposals !== undefined) {
     requireValue(Array.isArray(a.proposals) && a.proposals.length <= 3);

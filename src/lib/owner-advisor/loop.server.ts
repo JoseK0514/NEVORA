@@ -2,6 +2,7 @@ import type { ProviderConfig } from "./config.server";
 import "server-only";
 import {
   AdvisorError,
+  ADVISOR_MAX_TOOL_CALLS,
   parseTool,
   record,
   type AdvisorMessage,
@@ -171,7 +172,7 @@ export async function investigate(
       if (!record(item)) throw new AdvisorError("provider_failed");
       if (item.type === "function_call") {
         if (
-          ++count > 8 ||
+          ++count > ADVISOR_MAX_TOOL_CALLS ||
           typeof item.call_id !== "string" ||
           item.call_id.length > 200
         )
