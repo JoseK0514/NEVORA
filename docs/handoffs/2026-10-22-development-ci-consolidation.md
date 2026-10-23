@@ -769,3 +769,39 @@ instead of claiming that diagnostics repaired authentication. Mandatory combined
 CI is still required on the newly assembled source; supporting runs are not
 stitched into acceptance. The borrowed recovery worktree was restored cleanly to
 its original `codex/phase-d-recovery-ci` branch at `36dcc978`.
+
+## October 23 merge review and native login-window correction
+
+The final read-only review approved development integration at `89d89c82`.
+Its one nonblocking MEDIUM was corrected in `01137e0b`: the receipt-refresh
+observer now watches the real location-scoped Clocker punch endpoint and proves
+detection using the existing native punch scenario before checking zero replay.
+All 49 retiring remote tips now have verified exact archive tags under
+`archive/branches/2026-10-23/`; no branch deletion has occurred. The inventory
+encodes the authorized five-branch ceiling, so its live check intentionally
+reports `54 > 5` until guarded retirement after verified development integration.
+
+Fresh run `39904936509` on PR merge `75b4798f` passed validation (including
+the production build) and all three SQL jobs. Home passed the first 12 cells,
+then WebKit1024 failed its initial native login with `/login?error=busy`.
+The downloaded login reports establish exactly 60 successful native sign-ins
+(five per cell), followed by the rejected 61st attempt. The masked screenshot
+shows the rate-limit message; runtime errors are empty. This is the unchanged
+per-address limit of 60 attempts in one real 15-minute database-clock bucket.
+The suite shares an owned app and client address. Earlier green runs crossing
+a natural bucket boundary did not expose this fixture scheduling dependency.
+This evidence does not explain the older sign-in POST with no response.
+
+The Home harness now reads the owned database's current maximum login scope
+and real time remaining in the current bucket before each native sign-in.
+When the real quota is exhausted, it waits in bounded intervals and re-reads
+until a real window has budget; an unchanging window fails after at most one
+full window. It never resets counters, alters time, injects a client address,
+retries sign-in, or changes production rate limits. Every native login and
+its existing arrival assertion still executes once. Read failure or invalid
+budget evidence fails closed. Bounded nonpersonal wait receipts are retained.
+
+The regression failed against immediate-proceed behavior, then all four
+login-window checks and all 81 release-engineering checks passed locally.
+Full matching cloud CI and hosted Preview remain required; these unit checks
+do not certify a deployed database or close any independent finding.

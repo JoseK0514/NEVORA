@@ -1,6 +1,8 @@
 import {measureRenderedContrast} from './browser-contrast.mjs';
 import {fulfillHeldResponse} from './browser-held-response.mjs';
 import {safeLoginServerRequests} from './release-browser-diagnostics.mjs';
+import {waitForOwnedLoginWindow} from './browser-login-window.mjs';
+import {LOGIN_LIMITS} from '../src/lib/auth/login-limits.server.ts';
 import assert from 'node:assert/strict';
 import {join} from 'node:path';
 import {readFile,writeFile} from 'node:fs/promises';
@@ -75,7 +77,9 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   }
  };
  async function login(target=page,id=actor,{waitForIdle=true}={}){
-  const started=Date.now(),attempt={stage,target:target===page?'primary':'replacement',status:'started',trace:[]};details.loginAttempts??=[];details.loginAttempts.push(attempt);
+  const windowWaits=[];
+  await waitForOwnedLoginWindow(q,{limit:LOGIN_LIMITS.perAddress,onWait:sample=>{windowWaits.push(sample);console.log('[Home native login window] '+JSON.stringify({engine,width,...sample}));}});
+  const started=Date.now(),attempt={stage,target:target===page?'primary':'replacement',status:'started',windowWaits,trace:[]};details.loginAttempts??=[];details.loginAttempts.push(attempt);
   const routeOf=value=>{try{const path=new URL(value).pathname;return ['/app','/login'].includes(path)?path:'other';}catch{return 'other';}};
   const record=value=>{if(attempt.trace.length<40)attempt.trace.push({afterMs:Date.now()-started,...value});};
   const requested=request=>{const route=routeOf(request.url());if(route!=='other')record({event:'request',route,method:request.method()});};
