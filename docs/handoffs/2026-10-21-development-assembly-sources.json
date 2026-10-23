@@ -9,7 +9,7 @@
       "branch": "Claude-UI-Fix",
       "sha": "d3346480734cdada82eb9a7c5a8bcabca2cc4667",
       "disposition": "included",
-      "reason": "Merged PR28 is included through current development e37d08e3. Exact source and combined schedule CSS were reviewed. Its already-merged remote retirement is held for Jose's archive/retirement decision; the five-active-branch gate remains enforced."
+      "reason": "Merged PR28 is included through current development e37d08e3. Exact source and combined schedule CSS were reviewed. Jose explicitly retained six active branches, one for Claude; preserve this remote. Future advancement still requires source reconciliation."
     },
     {
       "branch": "codex/development-ci-consolidation-20261022",
@@ -393,5 +393,5 @@
       "archiveRef": "refs/tags/archive/branches/2026-10-23/v0/resolve-login-runtime-errors-01fd3e6c"
     }
   ],
-  "maximumActiveBranches": 5
+  "maximumActiveBranches": 6
 }
