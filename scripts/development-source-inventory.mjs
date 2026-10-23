@@ -10,7 +10,7 @@ export function validateInventory(inventory) {
       typeof inventory.assemblyBranch !== 'string' || !inventory.assemblyBranch.startsWith('codex/') ||
       !Array.isArray(inventory.sources)) throw Error('Invalid development source inventory');
   if (inventory.maximumActiveBranches !== undefined &&
-      (!Number.isInteger(inventory.maximumActiveBranches) || inventory.maximumActiveBranches < 1 || inventory.maximumActiveBranches > 5)) {
+      (!Number.isInteger(inventory.maximumActiveBranches) || inventory.maximumActiveBranches < 1 || inventory.maximumActiveBranches > 6)) {
     throw Error('Invalid remote branch ceiling');
   }
   const branches = new Set();

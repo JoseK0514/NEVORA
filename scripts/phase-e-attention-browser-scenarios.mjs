@@ -22,6 +22,11 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   if(request.method()==='POST')details.actions.push({stage,atMs:atMs(),event:'request',serverAction:!!request.headers()['next-action'],documentNavigation:request.isNavigationRequest()});
   if(request.isNavigationRequest()&&request.frame()===page.mainFrame())record('document-request',{navigation:navigation.snapshot()});
  });
+ for(const event of ['response','requestfinished','requestfailed'])page.on(event,value=>{
+  const request=event==='response'?value.request():value;
+  if(stage==='unavailable-retry'&&request.method()==='POST'&&request.headers()['next-action'])
+   details.actions.push({stage,atMs:atMs(),event,...(event==='response'?{status:value.status()}:{} )});
+ });
  page.on('framenavigated',frame=>{if(frame===page.mainFrame())record('document-history-or-commit',{navigation:navigation.snapshot()});});
  await context.exposeBinding('__nevoraQaAttentionLifecycle',(source,value)=>{
   if(source.page!==page||!value||!['focus','blur','pagehide','pageshow','visibilitychange'].includes(value.event))return;
@@ -84,7 +89,22 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   stage='unavailable-retry';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();
   try{
    const unavailableOperation=await operation();await blocker.query('BEGIN');await blocker.query('LOCK TABLE employee_attention_operations IN ACCESS EXCLUSIVE MODE');
-   await confirm().click();await page.getByRole('alert').filter({hasText:'Confirmation unavailable.'}).waitFor();assert.equal(await operation(),unavailableOperation);await screenshot('unavailable');
+   await confirm().click();
+   try{await page.getByRole('alert').filter({hasText:'Confirmation unavailable.'}).waitFor();}
+   catch(error){
+    details.unavailableRetry={atMs:atMs(),pageClosed:page.isClosed(),browserConnected:browser?.isConnected()??null,navigation:navigation.snapshot()};
+    try{details.unavailableRetry.view=await runBeforeRecoveryDeadline(()=>page.evaluate(()=>({
+     unavailable:!![...document.querySelectorAll('[role="alert"]')].find(e=>e.textContent?.includes('Confirmation unavailable.')),
+     unknown:!![...document.querySelectorAll('[role="alert"]')].find(e=>e.textContent?.includes('Confirmation outcome unknown.')),
+     blocked:!![...document.querySelectorAll('[role="alert"]')].find(e=>e.textContent?.includes('no longer authorized')),
+     confirmation:document.querySelector('button[aria-busy]')?.getAttribute('aria-busy')??null,
+     authorityFields:document.querySelectorAll('input[name="authority"]').length,
+     success:!![...document.querySelectorAll('h2')].find(e=>e.textContent==='You’re up to date'),
+    })),performance.now()+5000);}catch(error){details.unavailableRetry.viewReadFailure=safeEvaluationFailure(error);}
+    try{details.unavailableRetry.databaseWaits=await q('SELECT wait_event_type,wait_event,count(*)::int AS connections FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() GROUP BY wait_event_type,wait_event ORDER BY wait_event_type,wait_event');}catch{details.unavailableRetry.databaseReadFailed=true;}
+    await screenshot('unavailable-failure',{timeout:5000}).catch(error=>{details.unavailableRetry.screenshotFailure=safeEvaluationFailure(error);});throw error;
+   }
+   assert.equal(await operation(),unavailableOperation);await screenshot('unavailable');
    await blocker.query('COMMIT');await page.getByRole('button',{name:'Retry confirmation',exact:true}).click();await page.getByRole('heading',{name:'You’re up to date',exact:true}).waitFor();
    assert.equal((await q('SELECT * FROM employee_attention_operations WHERE employee_id=$1 AND operation_id=$2',[actor,unavailableOperation])).length,1);
    await blocker.query('BEGIN');await blocker.query('LOCK TABLE schedule_publication_revisions IN ACCESS EXCLUSIVE MODE');

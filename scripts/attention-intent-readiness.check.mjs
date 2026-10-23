@@ -7,6 +7,7 @@ import {join,resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {waitForPrivateIntentClear} from './browser-render-readiness.mjs';
 import {captureSource,assertSourceUnchanged,externalEvidence} from './phase-e-owned.mjs';
+import {runAttentionSsrReadinessControl} from './attention-ssr-readiness-control.mjs';
 
 /** Hold real React scheduler delivery in a fictional document. Never alter the
  * actual application scenario, component state, generation fence or clocks. */
@@ -81,9 +82,9 @@ export async function runAttentionIntentReadinessControl(){
 
 async function main(){
  const source=resolve(process.cwd()),custody=captureSource(source,process.env.PHASE_E_EXPECTED_SHA),evidence=externalEvidence(source,process.env.PHASE_E_EVIDENCE_DIR);
- const control=await runAttentionIntentReadinessControl();assertSourceUnchanged(source,custody);
- const passed=control.results.length===2&&control.results.every(r=>r.status==='passed'&&r.browserClosed);
- const report={checkpoint:custody.checkpoint,tree:custody.tree,sourceClean:custody.sourceClean,sourceUnchanged:true,status:passed?'passed':'failed',...control};
+ const control=await runAttentionIntentReadinessControl(),ssrLifecycle=await runAttentionSsrReadinessControl();assertSourceUnchanged(source,custody);
+ const passed=[control,ssrLifecycle].every(check=>check.results.length===2&&check.results.every(r=>r.status==='passed'&&r.browserClosed));
+ const report={checkpoint:custody.checkpoint,tree:custody.tree,sourceClean:custody.sourceClean,sourceUnchanged:true,status:passed?'passed':'failed',...control,ssrLifecycle};
  await writeFile(join(evidence,'attention-intent-readiness-custody.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report));if(!passed)process.exitCode=1;
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href)await main();

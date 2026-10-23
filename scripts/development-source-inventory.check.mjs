@@ -70,7 +70,12 @@ test('enforces the approved remote branch ceiling without hiding extra heads',()
   const failures=compareSources(i,actual,()=>true);
   assert.ok(failures.includes('Remote branch ceiling exceeded: 6 > 5'));
   assert.ok(failures.includes('Unclassified branch: new-0'));
-  for(const value of [0,6,1.5,'5']){i.maximumActiveBranches=value;assert.throws(()=>validateInventory(i));}
+  i.maximumActiveBranches=6;
+  for(let n=0;n<3;n++)i.sources.push({branch:'new-'+n,sha:next,disposition:'held',reason:'reserved work'});
+  assert.deepEqual(compareSources(i,actual,()=>true),[]);
+  actual.set('seventh',next);
+  assert.deepEqual(compareSources(i,actual,()=>true),['Unclassified branch: seventh','Remote branch ceiling exceeded: 7 > 6']);
+  for(const value of [0,7,1.5,'6']){i.maximumActiveBranches=value;assert.throws(()=>validateInventory(i));}
 });
 test('parses exact lightweight archive tags without accepting malformed or duplicate refs',()=>{
   const ref='refs/tags/archive/branches/2026-10-22/feature';

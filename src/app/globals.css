@@ -11594,6 +11594,7 @@ body {
 .employee-week-control > a:hover { color: var(--color-brand-accent); }
 .employee-schedule-ack { margin-bottom: 16px; display: flex; align-items: center; justify-content: flex-start; gap: 16px; }
 .employee-schedule-ack p { margin: 0; color: var(--muted); font-size: calc(12 * var(--type-unit, 1px)); line-height: 1.5; }
+.employee-confirmation-preparing { min-height: 44px; max-width: 100%; margin: 0; display: flex; align-items: center; color: var(--muted); font-size: calc(12 * var(--type-unit, 1px)); line-height: 1.5; }
 .employee-schedule-ack.acknowledged { min-height: 36px; }
 .employee-schedule-ack form { flex-shrink: 0; }
 .employee-schedule-agenda { padding: 0 20px; }

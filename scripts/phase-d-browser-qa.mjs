@@ -2,6 +2,8 @@ import {publishScheduleWithRevision} from '../src/test/integration/management-ap
 import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
 import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
 import {openPeriodReports} from './phase-d-report-navigation.mjs';
+import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
+import {parseCurrentTimecards} from '../src/lib/timecards/client.ts';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
@@ -101,7 +103,34 @@ try{
     await ep.unroute('**/api/timecards');
     const {context:lead,page:lp}=await context(browser,'D3-L');await lp.goto(app.url+url);await lp.getByRole('heading',{name:'Your timecard',exact:true}).waitFor();
     assert.equal(await lp.getByRole('button',{name:'Approve timecard',exact:true}).count(),0);checked(engine+': Lead self-service without management controls');
-    currentPage=mp;await mp.bringToFront();await mp.goto(app.url+url);await openCard();
+    currentPage=mp;
+    // Exercise the real protected return even where headless windows keep focus.
+    // This is an explicit lifecycle regression, not physical OS certification.
+    const returnDeadline=performance.now()+15000;
+    await runBeforeRecoveryDeadline(async()=>{
+      await mp.evaluate(()=>window.dispatchEvent(new Event('blur')));
+      await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();
+      assert.equal(await mp.locator('#timecard-D3-E').count(),0,'Retired manager cards stay hidden before a fresh authority/page read');
+      const [response]=await Promise.all([
+        mp.waitForResponse(response=>{
+          const request=response.request(),target=new URL(response.url());
+          if(target.origin!==app.url||target.pathname!=='/api/timecards'||request.method()!=='POST'||request.headers()['x-nevora-actor']!=='D3-M')return false;
+          try{const body=request.postDataJSON();return body.startDate==='2026-09-21'&&body.endDate==='2026-09-27';}catch{return false;}
+        },{timeout:15000}),
+        (async()=>{
+          const rsc=mp.waitForRequest(request=>{const target=new URL(request.url());return target.origin===app.url&&target.pathname==='/app/timecards'&&request.headers().rsc==='1';},{timeout:15000});
+          await mp.bringToFront();await mp.evaluate(()=>window.dispatchEvent(new FocusEvent('focus')));await rsc;
+          // The existing RSC recovery owns this return to the selected period.
+        })(),
+      ]);
+      assert.equal(response.status(),200);await finishResponseByDeadline(response,returnDeadline);
+      const current=parseCurrentTimecards(await response.json(),{startDate:'2026-09-21',endDate:'2026-09-27'});
+      assert(current.cards.some(item=>item.card.employeeId==='D3-E'),'Fresh protected response contains the reviewed employee');
+      assert.equal(new URL(mp.url()).pathname+new URL(mp.url()).search,url,'Foreground return preserves the exact selected period');
+      await openCard();
+      (report.managerReturn??=[]).push({engine,lifecycle:'explicit blur/focus',responseStatus:response.status(),bodyFinished:true,observedAt:current.observedAt,validForMs:current.validForMs,period:current.period,elapsedMs:15000-(returnDeadline-performance.now())});
+    },returnDeadline);
+    checked(engine+': controlled Manager return hides retired cards and completes a fresh exact-period read within the original deadline');
     await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Approved$/}).waitFor();await card.getByRole('button',{name:'Finalize period',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Finalized$/}).waitFor();
     await mp.goto(app.url+'/app/payroll-export?start=2026-09-21&end=2026-09-27');await mp.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
     await mp.getByRole('checkbox',{name:/Avery Period QA/}).check();await mp.getByRole('button',{name:'Generate reviewed export',exact:true}).click();await mp.getByRole('button',{name:'Download mapped CSV',exact:true}).waitFor();checked(engine+': finalized neutral export receipt verified');

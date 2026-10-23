@@ -1,4 +1,5 @@
 import accessStyles from '@/components/company-access/company-access.module.css';
+import consentStyles from './coverage-consent.module.css';
 import {readOperationalShiftEditor} from '@/lib/company-access/operational-read.server';
 import {ScopedManualShiftForm} from '@/components/company-access/scoped-manual-shift-form';
 import {ScopedShiftReadOnly} from '@/components/company-access/scoped-operational-views';
@@ -99,6 +100,13 @@ export default async function NewShiftPage({
         </Facts>
       </Card>
       <Notice tone="info" quiet title={`This fills ${need}.`}>Anything else this shift still needs stays open on the schedule. Coverage is checked again when you save.</Notice>
+      {selected.publication === 'PUBLISHED' ? <>
+        <Notice tone="info" title="Published schedule change">Saving adds this assignment to the published schedule and may notify the affected employee. Notification delivery is not guaranteed by saving.</Notice>
+        <div className={consentStyles.consent}>
+          <input id="coverage-publication-consent" type="checkbox" name="publicationConsent" required />
+          <label htmlFor="coverage-publication-consent">I also approve publishing this replacement and queuing the applicable employee notifications.</label>
+        </div>
+      </> : <Notice tone="info" quiet title="Draft assignment">Saving adds a draft shift. Publish the schedule separately when you are ready to notify employees.</Notice>}
       <FormActions>
         <PendingButton pending="Saving…" block>Save replacement</PendingButton>
         <Link className="nv-btn" data-kind="secondary" data-block="true" href={refreshHref}>Back to coverage</Link>

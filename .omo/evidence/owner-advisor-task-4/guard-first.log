@@ -1,0 +1,219 @@
+✖ allowed real Request transport, free catalog, failure reservation, restart and twenty-call lifetime cap (0.878666ms)
+✖ wrong endpoint, credential, redirects, models, body styles and output limits never reach transport (0.413583ms)
+✖ redirect response is rejected and remains charged (0.176583ms)
+✖ investigator function, message and encrypted reasoning rounds are accepted (0.783209ms)
+✖ fail closed: malformed (0.406208ms)
+✖ fail closed: symlink (0.2665ms)
+✖ fail closed: lock (0.239ms)
+✖ fail closed: missing (0.276291ms)
+✖ fail closed: expired (0.24075ms)
+✖ fail closed: tampered (0.447333ms)
+✖ fail closed: missing-receipt (0.224917ms)
+✖ fail closed: pending (0.280125ms)
+✖ multiple processes contend without exceeding twenty lifetime reservations (0.30675ms)
+✖ known Node preload installs before application code (0.135459ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 0
+ℹ fail 14
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 69.662792
+
+✖ failing tests:
+
+test at src/test/integration/owner-advisor-pilot.check.mts:12:1
+✖ allowed real Request transport, free catalog, failure reservation, restart and twenty-call lifetime cap (0.878666ms)
+  Error: Owner advisor pilot guard refused operation
+      at fail (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:11:35)
+      at safe (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:18:36)
+      at initializePilot (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:31:3)
+      at fixture (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:8:169)
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:12:130)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+
+test at src/test/integration/owner-advisor-pilot.check.mts:13:1
+✖ wrong endpoint, credential, redirects, models, body styles and output limits never reach transport (0.413583ms)
+  Error: Owner advisor pilot guard refused operation
+      at fail (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:11:35)
+      at safe (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:18:36)
+      at initializePilot (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:31:3)
+      at fixture (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:8:169)
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:13:125)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+
+test at src/test/integration/owner-advisor-pilot.check.mts:14:1
+✖ redirect response is rejected and remains charged (0.176583ms)
+  Error: Owner advisor pilot guard refused operation
+      at fail (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:11:35)
+      at safe (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:18:36)
+      at initializePilot (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:31:3)
+      at fixture (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:8:169)
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:14:76)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+
+test at src/test/integration/owner-advisor-pilot.check.mts:15:1
+✖ investigator function, message and encrypted reasoning rounds are accepted (0.783209ms)
+  Error: Owner advisor pilot guard refused operation
+      at fail (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:11:35)
+      at safe (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:18:36)
+      at initializePilot (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:31:3)
+      at fixture (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:8:169)
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:15:101)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+
+test at src/test/integration/owner-advisor-pilot.check.mts:16:113
+✖ fail closed: malformed (0.406208ms)
+  Error: Owner advisor pilot guard refused operation
+      at fail (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:11:35)
+      at safe (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:18:36)
+      at initializePilot (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:31:3)
+      at fixture (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:8:169)
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:16:158)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+
+test at src/test/integration/owner-advisor-pilot.check.mts:16:113
+✖ fail closed: symlink (0.2665ms)
+  Error: Owner advisor pilot guard refused operation
+      at fail (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:11:35)
+      at safe (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:18:36)
+      at initializePilot (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:31:3)
+      at fixture (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:8:169)
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:16:158)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+
+test at src/test/integration/owner-advisor-pilot.check.mts:16:113
+✖ fail closed: lock (0.239ms)
+  Error: Owner advisor pilot guard refused operation
+      at fail (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:11:35)
+      at safe (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:18:36)
+      at initializePilot (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:31:3)
+      at fixture (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:8:169)
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:16:158)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+
+test at src/test/integration/owner-advisor-pilot.check.mts:16:113
+✖ fail closed: missing (0.276291ms)
+  Error: Owner advisor pilot guard refused operation
+      at fail (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:11:35)
+      at safe (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:18:36)
+      at initializePilot (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:31:3)
+      at fixture (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:8:169)
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:16:158)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+
+test at src/test/integration/owner-advisor-pilot.check.mts:16:113
+✖ fail closed: expired (0.24075ms)
+  Error: Owner advisor pilot guard refused operation
+      at fail (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:11:35)
+      at safe (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:18:36)
+      at initializePilot (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:31:3)
+      at fixture (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:8:169)
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:16:158)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+
+test at src/test/integration/owner-advisor-pilot.check.mts:16:113
+✖ fail closed: tampered (0.447333ms)
+  Error: Owner advisor pilot guard refused operation
+      at fail (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:11:35)
+      at safe (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:18:36)
+      at initializePilot (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:31:3)
+      at fixture (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:8:169)
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:16:158)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+
+test at src/test/integration/owner-advisor-pilot.check.mts:16:113
+✖ fail closed: missing-receipt (0.224917ms)
+  Error: Owner advisor pilot guard refused operation
+      at fail (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:11:35)
+      at safe (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:18:36)
+      at initializePilot (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:31:3)
+      at fixture (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:8:169)
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:16:158)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+
+test at src/test/integration/owner-advisor-pilot.check.mts:16:113
+✖ fail closed: pending (0.280125ms)
+  Error: Owner advisor pilot guard refused operation
+      at fail (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:11:35)
+      at safe (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:18:36)
+      at initializePilot (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:31:3)
+      at fixture (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:8:169)
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:16:158)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+
+test at src/test/integration/owner-advisor-pilot.check.mts:17:1
+✖ multiple processes contend without exceeding twenty lifetime reservations (0.30675ms)
+  Error: Owner advisor pilot guard refused operation
+      at fail (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:11:35)
+      at safe (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:18:36)
+      at initializePilot (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:31:3)
+      at fixture (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:8:169)
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:17:100)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+
+test at src/test/integration/owner-advisor-pilot.check.mts:18:1
+✖ known Node preload installs before application code (0.135459ms)
+  Error: Owner advisor pilot guard refused operation
+      at fail (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:11:35)
+      at safe (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:18:36)
+      at initializePilot (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.mts:31:3)
+      at fixture (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:8:169)
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:18:78)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)

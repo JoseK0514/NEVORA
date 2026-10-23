@@ -6,7 +6,7 @@ import { DEFAULT_WORDS, type WordSlots } from './workspace-presentation/words';
 
 /** Company choices that shape navigation (B2): modules that are off disappear
  * everywhere, and the vocabulary names the people page. Defaults change nothing. */
-export type NavContext = { modules?: EnabledModules; words?: WordSlots; operational?:OperationalAuthorityView };
+export type NavContext = { ownerAdvisorEnabled?: boolean; modules?: EnabledModules; words?: WordSlots; operational?:OperationalAuthorityView };
 import type {OperationalAuthorityView} from './company-access/model';
 
 export type NavigationItem = {
@@ -99,7 +99,7 @@ export function teamToolsForRole(role: UserRole, context: NavContext = {}): Navi
 /** Presentation groups consume only already-authorized navigation entries. Team tools, when given, sit before Workspace. */
 export function managementNavigationGroups(items: NavigationItem[], tools: NavigationItem[] = []) {
   const definitions = [
-    {label:'Plan', hrefs:['/app','/app/inbox','/app/schedule','/app/availability','/app/exchange','/app/schedule/templates','/app/schedule/settings']},
+    {label:'Plan', hrefs:['/app','/app/ai-manager','/app/inbox','/app/schedule','/app/availability','/app/exchange','/app/schedule/templates','/app/schedule/settings']},
     // "People", not "Team", so the Team entry isn't filed under a heading of the same name.
     {label:'People', hrefs:['/app/employees','/app/requests','/app/updates']},
     {label:'Time and pay', hrefs:['/app/timecards','/app/payroll','/app/payroll-export','/app/reports','/app/my-pay']},
@@ -142,12 +142,12 @@ export function activeNavigationHref(role: UserRole, path: string, payroll?: Pay
 export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities, input: NavContext | OperationalAuthorityView = {}): NavigationItem[] {
   const context:NavContext = 'state' in input ? {operational:input} : input;
   const modules = context.modules ?? ALL_MODULES_ON, words = context.words ?? DEFAULT_WORDS.en;
-  return baseNavigation(role, payroll, context.operational)
+  return baseNavigation(role, payroll, context.operational, context.ownerAdvisorEnabled)
     .filter(item => pathEnabled(item.href, modules))
     .map(item => item.href === "/app/employees" ? { ...item, label: words.people } : item);
 }
 
-function baseNavigation(role: UserRole, payroll?: PayrollCapabilities, operational?:OperationalAuthorityView): NavigationItem[] {
+function baseNavigation(role: UserRole, payroll?: PayrollCapabilities, operational?:OperationalAuthorityView, ownerAdvisorEnabled=false): NavigationItem[] {
   const finance: NavigationItem[] = payroll?.enabled ? [
     ...(payroll.canReview ? [{ href: '/app/payroll', label: 'Payroll', icon: 'payroll' as const }] : []),
     { href: '/app/my-pay', label: 'My pay', icon: 'statement' },
@@ -159,6 +159,7 @@ function baseNavigation(role: UserRole, payroll?: PayrollCapabilities, operation
   if (role === "OWNER") {
     return [
       ...management,
+      ...(ownerAdvisorEnabled ? [{href:"/app/ai-manager",label:"AI manager",icon:"reports" as const}] : []),
       { href: "/app/settings", label: "Settings", icon: "settings" as const },
     ];
   }

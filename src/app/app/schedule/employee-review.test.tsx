@@ -28,9 +28,11 @@ it('employee published shift displays its captured position and explicit overnig
  expect(html).toContain('10:00\u00a0PM');expect(html).toContain('6:00\u00a0AM');expect(html).toContain('Fixture location');
  expect(html).toContain('Fixture Barista at publication');expect(html).toContain('Ends Mon, Oct 12');
 });
-it('relevant canceled-to-empty published week exposes its current-version confirmation',async()=>{
+it('relevant canceled-to-empty published week presents review while confirmation prepares',async()=>{
  fixture.empty=true;const html=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05'})}));
- expect(html).toContain('Off');expect(html).toContain('Confirm schedule');expect(html).toContain('No assignments remain');
+ expect(html).toContain('Off');expect(html).toContain('Confirm this week');expect(html).toContain('No assignments remain');
+ expect(html).toContain('role="status">Preparing confirmation…');
+ expect(html).not.toContain('name="authority"');expect(html).not.toContain('name="operationId"');
  expect(html).not.toContain('employee-quiet-status success');
 });
 

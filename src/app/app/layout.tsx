@@ -70,7 +70,7 @@ export default async function PlatformLayout({ children }: { children: ReactNode
       notificationsEnabled={readNotificationConfig(process.env).featureEnabled}
       payrollCapabilities={payrollCapabilities}
       brand={{ style: brand.style, logoUrl: brand.logoUrl }}
-      presentation={{ modules: brand.modules, words: wordPreset(brand.words).en }}
+      presentation={{ ownerAdvisorEnabled: process.env.NEVORA_OWNER_ADVISOR_ENABLED === "true", modules: brand.modules, words: wordPreset(brand.words).en }}
       operationalAuthority={operationalAuthority}
       user={{
         id: session.id,

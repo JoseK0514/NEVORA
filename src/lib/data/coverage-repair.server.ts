@@ -116,5 +116,6 @@ export async function readCoverageRepair(locator: CoverageRepairLocator, proof: 
 export async function readCoverageRepairSelection(token: string, proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()) {
   const source = await protectedSource(proof, executor); const review = assertCoverageRepairReview(source, token, proof);
   const candidate = review.result.candidates.find(c => c.employeeId === review.employeeId)!;
-  return { locator: review.locator, employeeId: candidate.employeeId, employeeName: candidate.employeeName, locationName: review.result.location.shortName, positionName: review.result.position?.name, isDesignatedLead: review.result.designatedLead };
+  const publication = source.schedules.find(s => s.location_id === review.locator.locationId && s.week_start === review.locator.weekStart)?.status === 'PUBLISHED' ? 'PUBLISHED' as const : 'DRAFT' as const;
+  return { locator: review.locator, employeeId: candidate.employeeId, employeeName: candidate.employeeName, locationName: review.result.location.shortName, positionName: review.result.position?.name, isDesignatedLead: review.result.designatedLead, publication };
 }

@@ -172,9 +172,9 @@
 .s6Earlier[open] > summary .s6Chevron:not(#s6) { transform: rotate(90deg); }
 .s6Earlier > .s6List:not(#s6) { margin: 10px 0 0; }
 
-/* The confirm request: one compact row, the button on the right. */
-.s6Review:not(#s6) { flex-wrap: nowrap; }
-.s6Review .s6ReviewAction:not(#s6) { align-self: center; }
+.s6Review:not(#s6) { flex-wrap: wrap; }
+.s6Review .s6ReviewAction:not(#s6) { flex: 0 1 18rem; min-width: 0; max-width: 100%; align-self: center; }
+.s6ReviewAction :global(.employee-weekly-confirmation):not(#s6) { width: 100%; min-height: max(44px, 2.5rem); display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
 
 /* What changed: a row in Planning ahead. */
 .s6ChangesRow:not(#s6):empty { display: none; }
