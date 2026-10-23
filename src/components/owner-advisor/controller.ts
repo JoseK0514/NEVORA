@@ -4,14 +4,15 @@ import {
   type AdvisorCommand,
   type AdvisorSnapshot,
 } from "@/lib/owner-advisor/contracts";
-import { parseAnswer, parseSaved, parseSnapshot } from "./public-response";
+import { parseAnswer, parseSaved, parseSnapshot, parseBriefingReviewed } from "./public-response";
+import type { AttentionDisposition } from "@/lib/owner-advisor/briefing-contracts";
 export type AdvisorView = {
   snapshot: AdvisorSnapshot | null;
   answer: AdvisorAnswer | null;
   question: string;
   priorities: string;
   dirty: boolean;
-  busy: "ask" | "save" | null;
+  busy: "ask" | "save" | "review" | null;
   loading: boolean;
   message: string;
   uncertain: boolean;
@@ -179,7 +180,7 @@ export function createAdvisorController(
     const epoch = generation,
       controller = new AbortController();
     operation = controller;
-    publish({ busy: command.op === "ask" ? "ask" : "save", message: "" });
+    publish({ busy: command.op === "ask" ? "ask" : command.op === "review_briefing" ? "review" : "save", message: "" });
     const timeout = setTimeout(() => controller.abort(), 60000);
     try {
       const response = await request("/api/owner/advisor", {
@@ -206,7 +207,7 @@ export function createAdvisorController(
           record(body) && typeof body.code === "string" ? body.code : "";
         publish({
           message:
-            errors[code] ??
+            (command.op === "review_briefing" && code === "conflict" ? "The issue or your briefing choice changed. Review the refreshed briefing before choosing again." : errors[code]) ??
             "The request failed. Refresh history before trying again.",
           conflict: code === "conflict" && command.op === "save_priorities",
           uncertain: [
@@ -220,7 +221,7 @@ export function createAdvisorController(
         return;
       }
       const result =
-        command.op === "ask" ? parseAnswer(body) : parseSaved(body);
+        command.op === "ask" ? parseAnswer(body) : command.op === "review_briefing" ? parseBriefingReviewed(body) : parseSaved(body);
       controller.signal.throwIfAborted();
       if (result.authority !== authority) {
         retire("Your access changed. Refresh to continue.");
@@ -235,7 +236,8 @@ export function createAdvisorController(
       controller.signal.throwIfAborted();
       if (!authorized) throw Error("Fresh access required");
       if (result.state === "saved") draftRevision = result.profile.revision;
-      if (result.state === "answered")
+      if (result.state === "briefing_reviewed") publish({ message: "Briefing choice saved. Current records were checked again." });
+      else if (result.state === "answered")
         publish({
           answer: result.answer,
           question: "",
@@ -339,6 +341,14 @@ export function createAdvisorController(
         expectedRevision: draftRevision,
         priorities: v.priorities,
       });
+    },
+    reviewItem(id: string, disposition: AttentionDisposition) {
+      const item = v.snapshot?.attention?.items.find(i => i.id === id);
+      const reviewed = v.snapshot?.attention?.reviewed.find(i => i.id === id && i.state === "open");
+      const fingerprint = item?.fingerprint ?? reviewed?.fingerprint;
+      const revision = item?.reviewRevision ?? reviewed?.reviewRevision;
+      if (!fingerprint || revision === undefined) return Promise.resolve();
+      return submit({ op: "review_briefing", requestId: crypto.randomUUID(), issueId: id, fingerprint, expectedRevision: revision, disposition });
     },
     cancel() {
       operation?.abort();

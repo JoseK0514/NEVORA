@@ -145,6 +145,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               expect(api.status()).toBe(403);
               checks.push(engine + ": " + actor + " discovery/page/API denied");
             } else {
+              await app.database.executor.query({ text: "DELETE FROM owner_advisor_briefing_reviews WHERE owner_id='QAOWNER'", values: [] });
               await page
                 .locator("main")
                 .getByRole("link", { name: "AI manager", exact: true })
@@ -160,6 +161,34 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
                   .getByRole("button", { name: "Ask", exact: true })
                   .isDisabled(),
               ).toBe(true);
+              const attention = page.getByRole("region", { name: "Needs your attention", exact: true });
+              await attention.getByRole("heading", { name: "Needs your attention", exact: true }).waitFor();
+              const firstIssue = attention.locator("ol > li").first();
+              await firstIssue.getByRole("button", { name: "Track this issue", exact: true }).click();
+              await page.getByText("Briefing choice saved. Current records were checked again.", { exact: true }).waitFor();
+              await firstIssue.getByRole("button", { name: "Later · 1 hour", exact: true }).click();
+              await page.getByText("Briefing choice saved. Current records were checked again.", { exact: true }).waitFor();
+              await page.reload();
+              await attention.getByRole("button", { name: "Restore to briefing", exact: true }).first().click();
+              await page.getByText("Briefing choice saved. Current records were checked again.", { exact: true }).waitFor();
+              expect(await firstIssue.getByRole("button", { name: "Tracking", exact: true }).count()).toBe(1);
+              await firstIssue.getByRole("button", { name: "Not relevant today", exact: true }).click();
+              await page.getByText("Briefing choice saved. Current records were checked again.", { exact: true }).waitFor();
+              await app.database.executor.query({ text: "UPDATE location_staffing_settings SET minimum_staff_per_shift=2 WHERE location_id='loc-1'", values: [] });
+              await attention.getByRole("button", { name: "Check again", exact: true }).click();
+              await attention.getByText("Evidence changed. This issue is shown for review again.", { exact: true }).waitFor();
+              expect(await attention.locator("ol > li").count()).toBe(2);
+              await attention.getByRole("button", { name: "Restore to briefing", exact: true }).first().click();
+              await page.getByText("Briefing choice saved. Current records were checked again.", { exact: true }).waitFor();
+              await app.database.executor.query({ text: "UPDATE location_staffing_settings SET minimum_staff_per_shift=1 WHERE location_id='loc-1'; DELETE FROM location_coverage_windows WHERE location_id='loc-1'", values: [] });
+              await attention.getByRole("button", { name: "Check again", exact: true }).click();
+              const setup = attention.locator("ol > li").filter({ has: page.getByRole("heading", { name: "Complete coverage rules", exact: true }) });
+              await setup.getByRole("button", { name: "Track this issue", exact: true }).click();
+              await page.getByText("Briefing choice saved. Current records were checked again.", { exact: true }).waitFor();
+              await app.database.executor.query({ text: "INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) SELECT 'briefing-restored-'||n,'loc-1',n,'00:00','24:00' FROM generate_series(0,6)n", values: [] });
+              await attention.getByRole("button", { name: "Check again", exact: true }).click();
+              await attention.getByText("Coverage rules are now configured.", { exact: true }).waitFor();
+              checks.push(engine + ": actual briefing track/defer/reload/restore, changed-evidence reappearance and canonical setup resolution");
               await page
                 .getByRole("button", {
                   name: "What needs my attention today?",
@@ -178,6 +207,10 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
                     () => document.documentElement.scrollWidth <= innerWidth,
                   ),
                 ).toBe(true);
+                const defer = attention.locator("ol > li").first().getByRole("button", { name: "Later · 1 hour", exact: true });
+                await defer.focus();
+                await page.keyboard.press("Tab");
+                expect(await attention.locator("ol > li").first().getByRole("button", { name: "Not relevant today", exact: true }).evaluate((el: HTMLElement) => el === document.activeElement)).toBe(true);
                 await page.getByLabel("Your question", { exact: true }).focus();
                 expect(
                   await page

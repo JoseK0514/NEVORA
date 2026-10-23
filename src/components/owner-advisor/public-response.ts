@@ -59,6 +59,26 @@ export function parseSnapshot(value: unknown): AdvisorSnapshot {
     record(b) && date(b.observedAt) && typeof b.partial === "boolean",
   );
   sources(b.sources);
+  if (value.attention !== undefined) {
+    const a = value.attention;
+    const hash = (v: unknown) => typeof v === "string" && /^[a-f0-9]{64}$/.test(v);
+    const kind = (v: unknown) => ["clock_in", "coverage", "missing_punches", "setup"].includes(String(v));
+    const disposition = (v: unknown) => ["tracking", "deferred", "dismissed"].includes(String(v));
+    const day = (v: unknown) => typeof v === "string" && /^20\d\d-\d\d-\d\d$/.test(v) && date(v) && new Date(v).toISOString().slice(0, 10) === v;
+    requireValue(record(a) && ["ready", "unavailable"].includes(String(a.state)) &&
+      (a.date === null || day(a.date)) && date(a.observedAt) && typeof a.partial === "boolean" && count(a.total) && count(a.hidden) && Number(a.hidden) <= Number(a.total) &&
+      Array.isArray(a.items) && a.items.length <= 3 && Array.isArray(a.reviewed) && a.reviewed.length <= 50);
+    sources(a.sources);
+    for (const i of a.items) {
+      requireValue(record(i) && hash(i.id) && hash(i.fingerprint) && kind(i.kind) && text(i.locationId, 400) && text(i.locationName, 200) && day(i.date) && text(i.title, 300) && text(i.detail, 2000) &&
+        ["Published shifts and recorded punches", "Current planning ledger, including drafts"].includes(String(i.basis)) && count(i.reviewRevision) &&
+        (i.disposition === null || disposition(i.disposition)) && (i.deferredUntil === null || date(i.deferredUntil)));
+      sources([i.source]);
+    }
+    requireValue(new Set(a.items.map(i => i.id)).size === a.items.length);
+    for (const r of a.reviewed) requireValue(record(r) && hash(r.id) && (r.fingerprint === null || hash(r.fingerprint)) && kind(r.kind) && day(r.date) && text(r.locationName, 200) && text(r.title, 300) &&
+      ["open", "resolved", "not_current", "unverified"].includes(String(r.state)) && disposition(r.disposition) && (r.deferredUntil === null || date(r.deferredUntil)) && count(r.reviewRevision) && typeof r.evidenceChanged === "boolean");
+  }
   if (b.data !== null) {
     const d = b.data;
     requireValue(
@@ -116,4 +136,11 @@ export function parseSaved(value: unknown): {
   stamp(value);
   profile(value.profile);
   return value as ReturnType<typeof parseSaved>;
+}
+export function parseBriefingReviewed(value: unknown): {
+  state: "briefing_reviewed"; revision: number; authority: string; observedAt: string; validForMs: number;
+} {
+  requireValue(record(value) && value.state === "briefing_reviewed" && count(value.revision) && Number(value.revision) > 0);
+  stamp(value);
+  return value as ReturnType<typeof parseBriefingReviewed>;
 }

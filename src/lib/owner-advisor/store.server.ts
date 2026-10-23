@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import type { SessionMutationProof } from "@/lib/shift-changes/types";
 import type { SqlExecutor, SqlStatement } from "@/lib/notifications/types";
 import { ownerGuards, type OwnerAdmission } from "./authority.server";
+import type { AttentionReview, InternalAttention } from "./briefing";
 import {
   AdvisorError,
   type AdvisorErrorCode,
@@ -77,6 +78,28 @@ export class AdvisorStore {
     }>({
       text: "SELECT owner_advisor_reserve($1,$2,$3,$4,$5) AS result",
       values: [...this.scope, requestId, hash, cap],
+    });
+    if (row.result.error) throw new AdvisorError(row.result.error);
+    return row.result;
+  }
+  async briefingReviews(): Promise<AttentionReview[]> {
+    return this.transaction<AttentionReview>({
+      text: `SELECT issue_id AS id,fingerprint,kind,issue_date::text AS date,location_id AS "locationId",proof,disposition,deferred_until::text AS "deferredUntil",revision FROM owner_advisor_briefing_reviews WHERE workspace_id=$1 AND owner_id=$2 ORDER BY updated_at DESC,issue_id LIMIT 50`,
+      values: this.scope,
+    });
+  }
+  async briefingReplay(command: Extract<AdvisorCommand, {op: "review_briefing"}>) {
+    const [row] = await this.transaction<{command_hash: string; kind: string; result: {revision: number}}>(
+      {text: "SELECT command_hash,kind,result FROM owner_advisor_requests WHERE workspace_id=$1 AND owner_id=$2 AND request_id=$3", values: [...this.scope, command.requestId]});
+    if (!row) return null;
+    if (row.kind !== "review_briefing" || row.command_hash !== commandHash(command)) throw new AdvisorError("conflict");
+    return row.result;
+  }
+  async reviewBriefing(command: Extract<AdvisorCommand, {op: "review_briefing"}>, issue: InternalAttention) {
+    if (issue.proof.length > 1000) throw new AdvisorError("limit");
+    const [row] = await this.transaction<{result: {revision: number; error?: AdvisorErrorCode}}>({
+      text: "SELECT owner_advisor_review_briefing($1,$2,$3,$4,$5,$6,$7::date,$8,$9,$10::jsonb,$11,$12) AS result",
+      values: [...this.scope, command.requestId, commandHash(command), issue.id, issue.fingerprint, issue.date, issue.kind, issue.locationId, JSON.stringify(issue.proof), command.expectedRevision, command.disposition],
     });
     if (row.result.error) throw new AdvisorError(row.result.error);
     return row.result;

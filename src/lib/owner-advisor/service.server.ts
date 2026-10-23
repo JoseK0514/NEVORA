@@ -7,6 +7,7 @@ import { AdvisorTools } from "./tools.server";
 import { readConfig } from "./config.server";
 import { AdvisorError, parseCommand, type AdvisorSnapshot } from "./contracts";
 import { investigate, type Transport } from "./loop.server";
+import { readOwnerAttention } from "./briefing.server";
 export async function advisorService(
   proof: SessionMutationProof,
   ex: SqlExecutor,
@@ -55,17 +56,28 @@ export async function advisorService(
     return { authority: admission.authority, ...row };
   };
   if (value === undefined) {
+    const attention = await readOwnerAttention(store);
     const state = await store.read(),
-      briefing = await tools.briefing();
+      briefing = await tools.briefing(attention.today);
     return {
       state: "ready",
       connection: config ? "available" : "unavailable",
       ...state,
       briefing,
+      attention: attention.briefing,
       ...(await observation()),
     } satisfies AdvisorSnapshot;
   }
   const command = parseCommand(value);
+  if (command.op === "review_briefing") {
+    const replay = await store.briefingReplay(command);
+    if (replay) return { state: "briefing_reviewed" as const, revision: replay.revision, ...(await observation()) };
+    const attention = await readOwnerAttention(store);
+    const issue = attention.issues.find(i => i.id === command.issueId && i.fingerprint === command.fingerprint);
+    if (!issue) throw new AdvisorError("conflict");
+    const result = await store.reviewBriefing(command, issue);
+    return { state: "briefing_reviewed" as const, revision: result.revision, ...(await observation()) };
+  }
   if (command.op === "save_priorities") {
     const profile = await store.save(command);
     return { state: "saved" as const, profile, ...(await observation()) };

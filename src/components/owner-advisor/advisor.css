@@ -153,3 +153,24 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+.oa-priority-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.oa-priority-item {
+  border-top: 1px solid var(--cm-sep);
+  padding-block: 20px;
+  overflow-wrap: anywhere;
+}
+.oa-priority-item h3 {
+  margin-block: 6px;
+}
+.oa-follow-through {
+  margin-top: 16px;
+}
+.oa-follow-through summary {
+  min-height: 44px;
+  padding-block: 12px;
+  cursor: pointer;
+}

@@ -9,12 +9,14 @@ export type AdvisorSnapshot = {
   profile: AdvisorProfile;
   history: AdvisorMessage[];
   briefing: BriefingResult;
+  attention?: import("./briefing-contracts").AttentionBriefing;
   authority: string;
   observedAt: string;
   validForMs: number;
 };
 export type AdvisorCommand =
   | { op: "ask"; requestId: string; message: string }
+  | { op: "review_briefing"; requestId: string; issueId: string; fingerprint: string; expectedRevision: number; disposition: import("./briefing-contracts").AttentionDisposition }
   | {
       op: "save_priorities";
       requestId: string;
@@ -49,6 +51,13 @@ export function parseCommand(v: unknown): AdvisorCommand {
     )
   )
     throw new AdvisorError("invalid");
+  if (
+    v.op === "review_briefing" && Object.keys(v).sort().join(",") === "disposition,expectedRevision,fingerprint,issueId,op,requestId" &&
+    typeof v.issueId === "string" && /^[a-f0-9]{64}$/.test(v.issueId) &&
+    typeof v.fingerprint === "string" && /^[a-f0-9]{64}$/.test(v.fingerprint) &&
+    Number.isSafeInteger(v.expectedRevision) && Number(v.expectedRevision) >= 0 && Number(v.expectedRevision) < 2147483647 &&
+    (v.disposition === "tracking" || v.disposition === "deferred" || v.disposition === "dismissed")
+  ) return { op: "review_briefing", requestId: v.requestId.toLowerCase(), issueId: v.issueId, fingerprint: v.fingerprint, expectedRevision: Number(v.expectedRevision), disposition: v.disposition };
   if (
     v.op === "ask" &&
     Object.keys(v).sort().join(",") === "message,op,requestId" &&

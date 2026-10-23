@@ -1,5 +1,6 @@
 import "server-only";
 import { readToday } from "@/lib/data/today.server";
+import type { Today } from "@/lib/today/project";
 import {
   generationSourceSql,
   type GenerationSource,
@@ -20,10 +21,10 @@ import {
 const short = (v: string) => v.slice(0, 200);
 export class AdvisorTools {
   constructor(readonly store: AdvisorStore) {}
-  async briefing(): Promise<BriefingResult> {
+  async briefing(captured?: Today): Promise<BriefingResult> {
     const { proof, original, ex } = this.store;
     await checkOwner(proof, original, ex);
-    const today = await readToday(proof, ex);
+    const today = captured ?? await readToday(proof, ex);
     await checkOwner(proof, original, ex);
     if (today.state !== "ready")
       return {

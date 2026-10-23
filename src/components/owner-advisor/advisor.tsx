@@ -9,6 +9,8 @@ import {
 } from "./controller";
 import "./advisor.css";
 import { bindAdvisorLifecycle } from "./lifecycle";
+import { AttentionSection } from "./attention";
+import type { AttentionDisposition } from "@/lib/owner-advisor/briefing-contracts";
 const starters = [
   "What needs my attention today?",
   "Investigate coverage for tomorrow and compare my options.",
@@ -44,6 +46,7 @@ export function AdvisorScreen({
     cancel: () => void;
     refresh: () => void;
     reviewConflict: () => void;
+    reviewItem?: (id: string, disposition: AttentionDisposition) => void;
   };
 }) {
   const current = view.snapshot;
@@ -52,7 +55,7 @@ export function AdvisorScreen({
     <div className="nv-page oa-page" data-nv-page="">
       <PageBand
         title="AI manager"
-        summary="Investigate a situation and compare your options."
+        summary="See what needs your attention, then investigate your options."
       />
       <div className="oa-content">
         {view.message && (
@@ -78,6 +81,7 @@ export function AdvisorScreen({
           </section>
         ) : (
           <>
+            {current.attention && <AttentionSection briefing={current.attention} disabled={disabled} saving={view.busy === "review"} review={(id, disposition) => actions.reviewItem?.(id, disposition)} refresh={actions.refresh} />}
             <section className="oa-section" aria-labelledby="oa-briefing">
               <div className="oa-heading">
                 <h2 id="oa-briefing">Live briefing</h2>
@@ -295,6 +299,7 @@ export function OwnerAdvisor() {
         cancel: () => ref.current?.cancel(),
         refresh: () => ref.current?.start(),
         reviewConflict: () => ref.current?.reviewConflict(),
+        reviewItem: (id, disposition) => void ref.current?.reviewItem(id, disposition),
       }}
     />
   );

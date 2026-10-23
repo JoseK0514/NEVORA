@@ -1111,7 +1111,7 @@ it('Task 11 generic fixture replacement preserves the upgraded schema catalog', 
     for (const file of ['0011_clocker_devices.sql','0012_clocker_pins.sql','0013_clocker_punches.sql','0014_clocker_breaks.sql','0015_clocker_schedule_context.sql','0016_time_corrections.sql','0017_missing_time_supersession.sql','0018_timecards.sql','0019_payroll_export_mappings.sql','0020_account_recovery.sql','0021_timecard_reassignment_interlock.sql','0022_timecard_reopen_revision_authority.sql','0023_employee_attention_receipts.sql','0024_contextual_communications.sql','0025_calendar_subscriptions.sql','0023_template_ownership.sql','0024_schedule_copy_receipts.sql','0025_company_policies.sql','0026_attendance_observations.sql','0027_payroll_period_custody.sql','0028_configurable_payroll.sql','0029_payroll_private_notices.sql','0030_notification_source_kinds.sql']) {
       await upgrade.executor.query({text:await readFile('db/migrations/'+file,'utf8'),values:[]});
     }
-    for(const file of ['0031_workspace_presentation.sql','0032_workspace_words_modules.sql','0033_management_alert_preferences.sql','0034_account_deletion_requests.sql','0035_passkeys.sql','0036_owner_advisor.sql'])await upgrade.executor.query({text:await readFile('db/migrations/'+file,'utf8'),values:[]});
+    for(const file of ['0031_workspace_presentation.sql','0032_workspace_words_modules.sql','0033_management_alert_preferences.sql','0034_account_deletion_requests.sql','0035_passkeys.sql','0036_owner_advisor.sql','0037_owner_briefing_reviews.sql'])await upgrade.executor.query({text:await readFile('db/migrations/'+file,'utf8'),values:[]});
     const generic=await createGenericWorkspaceDatabase();
     defer(() => generic.dispose());
     const catalog=async(executor:SqlExecutor)=>({
