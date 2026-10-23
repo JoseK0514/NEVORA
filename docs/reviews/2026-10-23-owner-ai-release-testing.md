@@ -74,3 +74,13 @@ The pilot regressions use temporary ledgers, fictional credentials and injected/
 Resource impact: sequential owned browser/DB execution adds approximately the locally observed 69-second browser run and 7.5-second SQL run; the browser test retains its 240-second timeout and shares the existing 40-minute hosted job envelope. Local timing does not establish hosted margin. Require the updated candidate's hosted jobs to finish before treating CI as green; do not infer a timeout problem without evidence.
 
 Reviewer independently ran `node --test scripts/release-ci-contract.check.mjs`: 10 passed, zero failures/skips. `git diff --check` passed. Parent reports full release-engineering 110 passing checks (previously 107); that broader rerun was not repeated by reviewer. No new CRITICAL/HIGH/MEDIUM/LOW finding in this scoped delta. Approval permits the engineering handoff for the draft PR; production hold and independent release gates remain unchanged.
+
+## Scoped foundation fixture addendum — migration 0036 setup drift
+
+Code disposition: APPROVE; codeQualityStatus WATCH (earlier findings unchanged); no new code blockers. Validation condition: retain the narrow real PostgreSQL pass and complete the pending release-suite replay before declaring this regression resolved in execution.
+
+Inspected the sole working diff in `src/test/integration/foundation.integration.ts:1114` and the retained failure at `/Users/josek0514/.codex/owner-ai-release-testing-evidence-20261023/final/release-postgres.log`. The failing catalog equality shows the generic fixture's extra Owner advisor tables, their constraints and indexes. The manual historical upgrade path omitted migration 0036 while `src/test/integration/local-postgres.ts:42` and `db/migrations/order.ts:48` already include it. Appending 0036 after 0035 restores equivalent setup paths; it does not edit migration behavior or expected catalog data.
+
+Full catalog equality at line 1127 remains intact, covering column metadata, constraint definitions and index definitions. No table exclusion, assertion relaxation, skip, snapshot replacement or suppression was introduced. The two positive checks at lines 1125–1126 assert actual migrated history/operation-hash schema, preventing both paths from accidentally omitting these tables while comparing equal. They are relevant database-contract checks under the programming/remove-ai-slops perspectives, not source-string or deletion-only tests.
+
+Reviewer ran `git diff --check` successfully. Narrow/full database verification was still owned by the parent and pending at this review; no passing database rerun is claimed here. No CRITICAL/HIGH/MEDIUM/LOW finding added. Production hold remains unchanged.

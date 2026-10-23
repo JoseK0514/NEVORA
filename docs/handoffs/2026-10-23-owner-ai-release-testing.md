@@ -13,8 +13,11 @@ Engineering recommends the default-off draft integration PR after the fresh-cont
 1. Published staffing and coverage investigations omitted stable location identity. Two real-model answers consequently could not map `loc-1` to the returned location name. Added `locationId` from the actual row/block in both tools. Two real PostgreSQL assertions failed before this correction and pass after it.
 2. Source deduplication used only destination URL, dropping the published-schedule citation when current draft-inclusive coverage pointed at the same schedule page. Dedupe now includes destination, label and observation time. Its regression failed before correction and passes after it. Client source limits and allowlisted destinations remain intact.
 3. Integration resolved the owned-runtime launcher options conflict by retaining both current login diagnostics and advisor controls. No runtime guard was removed.
+4. The broader release PostgreSQL suite exposed upgrade-fixture drift: the generic fixture applied 0036 while the manual historical upgrade stopped at 0035. Added the omitted migration to that setup and positive checks for both advisor tables. Full columns/constraints/index equality remains unchanged. The focused PostgreSQL regression passes; the complete five-suite replay follows. The reviewer approved this scoped test correction without blockers.
 
 Raw red evidence: `final/citations-red.log` and `final/location-red.log`. These original failures are retained.
+
+Additional red integration evidence: `final/release-postgres.log` (foundation: 280 passed, one schema-catalog mismatch). Focused green: `final/upgrade-catalog-green.log`. Broad replay: `final/release-postgres-after-upgrade-fix.log`. Current-head hosted acceptance remains pending; the previous publication's actual Owner browser gate passed, while its broad release-database gate failed before reaching the advisor SQL step. Neither stale success nor the fixture's original failure is hidden.
 
 ## Verification actually executed
 
