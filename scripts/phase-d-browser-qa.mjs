@@ -120,7 +120,7 @@ try{
         (async()=>{
           const rsc=mp.waitForRequest(request=>{const target=new URL(request.url());return target.origin===app.url&&target.pathname==='/app/timecards'&&request.headers().rsc==='1';},{timeout:15000});
           await mp.bringToFront();await mp.evaluate(()=>window.dispatchEvent(new FocusEvent('focus')));await rsc;
-          await mp.goto(app.url+url);
+          // The existing RSC recovery owns this return to the selected period.
         })(),
       ]);
       assert.equal(response.status(),200);await finishResponseByDeadline(response,returnDeadline);
