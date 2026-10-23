@@ -29,7 +29,7 @@ Evidence root: `/Users/josek0514/.codex/owner-ai-release-testing-evidence-202610
 | Real Neon fictional reasoning samples | Four completed answer captures at `894d7a30`, manually assessed below; not broad reasoning certification | `quality/quality-results.json` |
 | Real paid-transport cancellation | One attempt; aborted; no answer/history stored; same request cannot retry | `final/cancellation.log`, `cancellation/quality-results.json` |
 | Pilot guard | 18 passed | `final/pilot-guard.log` |
-| Existing release-engineering checks | 107 passed | `final/release-engineering.log` |
+| Release-engineering checks | 110 passed after three new CI gate regressions (107 before wiring) | `final/ci-owner-gates-green.log`, original `final/release-engineering.log` |
 | Full TypeScript / ESLint | exit 0 | `final/types-after-fixes.log`, `final/lint-after-fixes.log` |
 | Optimized build | exit 0 at `033d123d`, sourceClean/sourceUnchanged true; 3,283 artifact hashes | `final/build.log`, `final/build-source.json` |
 | Git diff whitespace | exit 0 | Tool execution record |
@@ -60,6 +60,7 @@ The original fixed pilot ledger progressed from 8 to 19 reserved transport attem
 - Migration `0036_owner_advisor.sql` ran only in disposable databases. Apply through the normal deployment process, with existing backup/restore and migration gates. Roll back activation by disabling the feature/provider; keep the additive advisor tables intact to preserve histories/operation IDs rather than deleting data.
 - Source inventory confirms current development ancestry but fails the existing active-branch ceiling: 54 > 5 before publishing this branch. The ceiling remains five. Branch retirement is owned by the current release work, not this test task.
 - New draft PR/current-head hosted CI and deployed behavior have not yet been verified. A PR or successful local build is not production acceptance.
+- Draft [PR25](https://github.com/JoseK0514/NEVORA/pull/25) is published. Existing mandatory `release-postgres` now also runs all advisor database integrations; `phase-d-attendance-ui` also runs the advisor browser suite and always uploads its reports/traces/custody artifacts; `validate` also runs the pilot guard suite. All steps are mandatory and have no live provider configuration. Three CI contract checks failed before wiring and now pass. This CI-only addendum received a scoped APPROVE/WATCH re-review with no blockers. The application source remains byte-identical to tested `033d123d`; hosted checks on the publication head remain a separate gate. The active-branch ceiling is now 55 > 5 after publishing the integration branch.
 - Existing independent QA/UI, release/security/recovery gates and Jose's production authorization remain required. This engineering review does not close independent findings.
 - Real company data and ongoing model spending have not been approved by this test request. The earlier fictional-data pilot is the only live-data envelope exercised.
 
