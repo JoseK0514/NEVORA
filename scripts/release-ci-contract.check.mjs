@@ -6,6 +6,31 @@ import {verifyRequiredJobs, ownedExecutionTimeout} from './phase-e-owned.mjs';
 const require=createRequire(import.meta.url);
 const workflow=require('js-yaml').load(readFileSync('.github/workflows/ci.yml','utf8'));
 const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','phase-e-postgres','phase-e-ui'];
+test('mandatory release SQL job always runs the isolated Owner advisor integration suite',()=>{
+ const step=workflow.jobs['release-postgres'].steps.find(s=>s.run==='node scripts/payroll-postgres.mjs vitest.owner-advisor-integration.config.mts');
+ assert(step,'Owner advisor PostgreSQL checks missing');
+ assert.equal(step.if,undefined);
+ assert.equal(step['continue-on-error'],undefined);
+});
+test('mandatory browser job runs Owner advisor without a model connection and retains evidence',()=>{
+ const steps=workflow.jobs['phase-d-attendance-ui'].steps;
+ const step=steps.find(s=>s.run==='node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts');
+ assert(step,'Owner advisor browser checks missing');
+ assert.equal(step.if,undefined);
+ assert.equal(step['continue-on-error'],undefined);
+ assert.deepEqual(step.env,{NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE:'${{ runner.temp }}/nevora-owner-advisor-browser-evidence'});
+ const upload=steps.find(s=>s.name==='Upload Owner advisor browser evidence');
+ assert(upload);
+ assert.equal(upload.if,'always()');
+ assert.equal(upload.with['if-no-files-found'],'error');
+ for(const item of ['/*.json','/*.png','/*-trace.zip','/**/source-manifest.json','/**/ownership.json'])assert(upload.with.path.includes('nevora-owner-advisor-browser-evidence'+item));
+});
+test('validation runs the spending guard suite without enabling live inference',()=>{
+ const step=workflow.jobs.validate.steps.find(s=>s.run==='node --import tsx --test src/test/integration/owner-advisor-pilot.check.mts');
+ assert(step,'Owner advisor pilot guard regressions missing');
+ assert.equal(step.if,undefined);
+ assert.equal(step.env,undefined);
+});
 test('runtime installers prefer the existing official mirror before every apt dependency step',()=>{
  for(const name of ['clocker-postgres','release-postgres','phase-e-postgres','phase-d-attendance-ui','phase-e-ui-suite']){
   const steps=workflow.jobs[name].steps,preference=steps.findIndex(step=>step.name==='Prefer official Ubuntu archive');

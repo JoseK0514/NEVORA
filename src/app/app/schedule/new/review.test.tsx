@@ -18,6 +18,18 @@ const locator = { version: 1, weekStart: "2030-10-07", gapKey: "gap", locationId
 const selected = { locator, employeeId: "real-employee", employeeName: "Taylor Rivera", locationName: "Main Office", positionName: "Customer Support", isDesignatedLead: true };
 beforeEach(() => { state.read.mockReset().mockResolvedValue(selected); state.decode.mockReset().mockReturnValue({ locator }); });
 
+it("renders published consent with valid notice markup and an explicit stable label outside validation messages", async () => {
+  state.read.mockResolvedValue({ ...selected, publication: "PUBLISHED" });
+  const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) }));
+  expect(html).not.toMatch(/<p class="wa-notice__body"><p>/);
+  expect(html).toContain('id="coverage-publication-consent"');
+  expect(html).toContain('for="coverage-publication-consent"');
+  const consent = html.match(/<input[^>]*id="coverage-publication-consent"[^>]*>/)?.[0];
+  expect(consent).toContain('name="publicationConsent"');
+  expect(consent).toContain('required=""');
+  expect(html).not.toContain('checked=""');
+});
+
 it("shows and submits only the server-reviewed assignment, ignoring forged query prefills", async () => {
   const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review", employeeId: "FORGED", positionId: "FORGED", locationId: "FORGED", start: "00:00" }) }));
   expect(state.read).toHaveBeenCalledWith("retained-review", state.proof);

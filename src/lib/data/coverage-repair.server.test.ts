@@ -82,6 +82,15 @@ function executorFixture() {
   return { ...r, batches, executor, review, command };
 }
 
+it('requires separate publication consent before confirming a replacement into a published schedule', async () => {
+  const r = executorFixture();
+  r.state.schedules.push({ id: 'published', locationId: 'loc-1', weekStart: '2030-10-07', status: 'PUBLISHED', updatedAt: '' });
+  r.source.schedules.push({ id: 'published', location_id: 'loc-1', week_start: '2030-10-07', status: 'PUBLISHED' });
+  const review = createCoverageRepairReview(r.source, r.locator, 'E', r.proof);
+  await expect(createCoverageRepairShift({ ...r.command, review }, r.executor)).rejects.toThrow('Coverage changed');
+  expect(r.batches.flat().some(s => s.text.startsWith('INSERT INTO shifts'))).toBe(false);
+});
+
 it('protected review reads bracket the same coherent source with current management SQL proof and expose no private source', async () => {
   const r = executorFixture(); const result = await readCoverageRepair(r.locator, r.proof, false, r.executor);
   expect(r.batches).toHaveLength(1);

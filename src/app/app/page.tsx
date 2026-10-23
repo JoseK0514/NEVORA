@@ -98,6 +98,7 @@ export default async function DashboardPage({
   // MK1: Home's "Next payday" row, from the date My pay shows (none when pay statements are off or there's no schedule).
   const nextPay=view==='overview'&&modules.payStatements?await readNextPay(workspace.timeZone):null;
   return (<ManagerCorrectionRecoveryBoundary key={recoveryKey}><ScopedReadFrame observation={source.state==='ready'?source:null}>
+    {session.role === "OWNER" && process.env.NEVORA_OWNER_ADVISOR_ENABLED === "true" ? <Link className="nv-btn" data-kind="secondary" href="/app/ai-manager">AI manager</Link> : null}
     <ManagerDashboard
       role={session.role === "OWNER" ? "OWNER" : "MANAGER"}
       actorId={session.id}

@@ -34,6 +34,8 @@ jobs:
         run: npm ci
       - name: Unit tests
         run: npm test -- --maxWorkers=1
+      - name: Owner advisor pilot guard regressions
+        run: node --import tsx --test src/test/integration/owner-advisor-pilot.check.mts
       - name: Inspector archive custody (not findings acceptance)
         run: |
           node --test scripts/inspection-evidence.check.mjs scripts/development-source-inventory.check.mjs
@@ -144,6 +146,23 @@ jobs:
           test -x "$PG_BIN/initdb"
           test -x "$PG_BIN/pg_ctl"
           echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Owner advisor PostgreSQL and browser gate
+        env:
+          NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE: ${{ runner.temp }}/nevora-owner-advisor-browser-evidence
+        run: node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts
+      - name: Upload Owner advisor browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owner-advisor-browser-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/*.json
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/*-trace.zip
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/ownership.json
+          if-no-files-found: error
+          retention-days: 14
       - name: Exact-SHA D1.3 attendance browser gate
         env:
           PHASE_D_ATTENDANCE_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d13-browser-evidence
@@ -284,6 +303,8 @@ jobs:
           echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
       - name: Release PostgreSQL integration gates
         run: npm run test:release:postgres
+      - name: Owner advisor isolated PostgreSQL integration gate
+        run: node scripts/payroll-postgres.mjs vitest.owner-advisor-integration.config.mts
 
   phase-e-postgres:
     name: phase-e-postgres

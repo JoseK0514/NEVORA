@@ -68,7 +68,7 @@ export async function createShiftAction(formData: FormData) {
     let saved;
     try {
       saved = await createCoverageRepairShift({ review: String(formData.get('coverageRepairReview') ?? ''),
-        weekStart, employeeId, locationId, date, startTime, endTime, positionId, isDesignatedLead, actorEmployeeId: session.id, proof });
+        weekStart, employeeId, locationId, date, startTime, endTime, positionId, isDesignatedLead, publicationConsent: formData.get('publicationConsent') === 'on', actorEmployeeId: session.id, proof });
     } catch (error) {
       if(denied(error))return accessError();
       if (error instanceof CoverageRepairConflictError || error instanceof ManualAssignmentConflictError){if(!await currentAdmission(proof,admission))return accessError();return {error:error.message,issueCode:error.code};}

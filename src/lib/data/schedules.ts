@@ -328,6 +328,7 @@ export async function insertShiftAtLocation(input:{
 export async function createCoverageRepairShift(input: {
   review: string; employeeId: string; locationId: string; weekStart: string; date: string;
   startTime: string; endTime: string; positionId?: string | null; isDesignatedLead: boolean;
+  publicationConsent?: boolean;
   actorEmployeeId: string; proof: SessionMutationProof;
 }, executor: SqlExecutor = neonNotificationExecutor()) {
   assertManagementProof(input.proof, input.actorEmployeeId);
@@ -343,7 +344,7 @@ export async function createCoverageRepairShift(input: {
   const result = await commitPublishedWeekChange({ weekStarts: [locator.weekStart], actorEmployeeId: input.actorEmployeeId, proof: input.proof,
     sourceType: 'MANAGER_MUTATION', sourceId: id, coverageRepairReview: input.review, build: state => {
       const existing = state.schedules.find(s => s.locationId === locator.locationId && s.weekStart === locator.weekStart);
-      if (existing?.status === 'ARCHIVED') throw new CoverageRepairConflictError();
+      if (existing?.status === 'ARCHIVED' || (existing?.status === 'PUBLISHED' && input.publicationConsent !== true)) throw new CoverageRepairConflictError();
       const scheduleId = existing?.id ?? newScheduleId;
       const afterSchedules = existing ? state.schedules : [...state.schedules, { id: scheduleId, locationId: locator.locationId, weekStart: locator.weekStart, status: 'DRAFT' as const, updatedAt: '' }];
       return { statements: [
