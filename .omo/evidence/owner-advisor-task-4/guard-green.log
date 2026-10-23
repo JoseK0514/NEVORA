@@ -1,0 +1,26 @@
+✔ allowed real Request transport, free catalog, failure reservation, restart and twenty-call lifetime cap (474.436208ms)
+✔ wrong endpoint, credential, redirects, models, body styles and output limits never reach transport (14.592417ms)
+✔ redirect response is rejected and remains charged (33.3725ms)
+✔ investigator function, message and encrypted reasoning rounds are accepted (34.181416ms)
+✔ fail closed: malformed (10.026375ms)
+✔ fail closed: symlink (9.887917ms)
+✔ fail closed: lock (9.731833ms)
+✔ fail closed: missing (10.656042ms)
+✔ fail closed: expired (10.797334ms)
+✔ fail closed: tampered (10.591209ms)
+✔ fail closed: missing-receipt (35.668708ms)
+✔ fail closed: pending (17.092083ms)
+✔ multiple processes contend without exceeding twenty lifetime reservations (518.52325ms)
+✔ known Node preload installs before application code (85.321458ms)
+✔ invalid UTF-8, unsafe permissions and expiry after guard creation reject before transport (9.751ms)
+✔ changed receipt and ledger counter reject further reservations (66.438ms)
+✔ unchanged pilot expires exactly 24 hours after initialization (10.027167ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1416.285375
+exit=0

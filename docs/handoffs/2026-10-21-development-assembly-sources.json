@@ -2,9 +2,15 @@
   "schema": 1,
   "repository": "JoseK0514/NEVORA",
   "target": "development",
-  "assemblyBranch": "codex/development-ci-consolidation-20261022",
+  "assemblyBranch": "codex/owner-ai-release-testing-20261023",
   "observedAt": "2026-10-23",
   "sources": [
+    {
+      "branch": "codex/development-ci-consolidation-20261022",
+      "sha": "7423aacfb62a2f463248e59e211d25f2466582ef",
+      "disposition": "included",
+      "reason": "Current release diagnostics and browser verification are ancestors of the Owner AI testing assembly through development PR24. Keep the five-branch ceiling and all source checks intact."
+    },
     {
       "branch": "FIXING-RELEASE-DEV-NEVORA",
       "sha": "b5f474e3861b8b3ec6c83289c7dc82095921b671",

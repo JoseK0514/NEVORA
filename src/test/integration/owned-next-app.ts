@@ -1,3 +1,4 @@
+import { assertPilotLedger, validatePilot, PILOT, type OwnerAdvisorPilot } from './owner-advisor-pilot.mjs';
 import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
 import { constants, cpSync, createWriteStream } from 'node:fs';
@@ -79,6 +80,20 @@ export function ownedPayrollEnvironment(options: {payrollEnabled?:boolean} = {})
   return {NEVORA_PAYROLL_ENABLED: options.payrollEnabled === true ? 'true' : 'false'};
 }
 
+/** No ambient provider settings enter ordinary owned test runtimes. */
+export function ownedAdvisorEnvironment(options: {ownerAdvisorEnabled?: boolean; ownerAdvisorPilot?: OwnerAdvisorPilot} = {}): Record<string,string> {
+  const base = {NEVORA_OWNER_ADVISOR_ENABLED: options.ownerAdvisorEnabled === true ? 'true' : 'false'};
+  const pilot = options.ownerAdvisorPilot;
+  if (!pilot) return base;
+  if (options.ownerAdvisorEnabled !== true) throw Error('Pilot requires explicit owner advisor activation');
+  validatePilot(pilot);
+  const {credential, ...publicConfig} = pilot;
+  return {...base, NEVORA_OWNER_ADVISOR_PROVIDER:'neon', NEVORA_OWNER_ADVISOR_DATA_APPROVED:'true',
+    NEVORA_OWNER_ADVISOR_MODEL:pilot.model, NEVORA_OWNER_ADVISOR_DAILY_LIMIT:'20',
+    NEON_AI_GATEWAY_BASE_URL:pilot.baseUrl, NEON_AI_GATEWAY_TOKEN:credential,
+    NEVORA_OWNER_ADVISOR_PILOT:JSON.stringify(publicConfig)};
+}
+
 export type OwnedNextDatabaseInitializer=(context:{executor:SqlExecutor;identity:Readonly<OwnedDatabaseIdentity>;signal?:AbortSignal})=>Promise<void>;
 
 type OwnedMailOptions={recoverySmtpPort?:number;invitationSmtpPort?:number};
@@ -103,9 +118,14 @@ export function ownedMailEnvironment(origin:string,options:OwnedMailOptions={}):
  * generated dev type-reference paths. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { loginDiagnostics?:boolean; passkeysEnabled?: boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { loginDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; passkeysEnabled?: boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
   if (options.clockerPinKey !== undefined && !/^[a-f0-9]{64}$/.test(options.clockerPinKey)) throw new Error('Owned Clocker PIN key must be 32-byte hex.');
   validateOwnedMailOptions(options);
+  const advisorEnvironment = ownedAdvisorEnvironment(options);
+  if (options.ownerAdvisorPilot) {
+    await assertExternalEvidencePath(resolve(process.cwd()),options.ownerAdvisorPilot.ledgerPath);
+    assertPilotLedger(options.ownerAdvisorPilot);
+  }
   if (options.processOwnerId !== undefined && !/^[a-f0-9]{32}$/.test(options.processOwnerId)) throw Error('Owned process marker must identify the invocation.');
   if (options.onProcessStarted && !options.processOwnerId) throw Error('Owned process registration requires its invocation marker.');
   if(options.loginDiagnostics&&!options.processOwnerId)throw Error('Login diagnostics require the owned process marker.');
@@ -220,6 +240,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { l
       NEVORA_CLOCKER_PIN_KEY: options.clockerPinKey,
       NEXT_PUBLIC_NEVORA_PASSKEYS: options.passkeysEnabled === true ? 'on' : 'off',
       ...ownedPayrollEnvironment(options),
+      ...advisorEnvironment,
       NEVORA_CLOCKER_PUNCH_ENABLED: options.clockerPunchEnabled === true ? 'true' : 'false',
       ...ownedMailEnvironment(url,options),
       NEXT_TELEMETRY_DISABLED: '1', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
@@ -230,7 +251,14 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { l
     };
     options.signal?.throwIfAborted();
     const log = createWriteStream(join(root, 'next.log'));
-    child = spawn(process.execPath, [join(mirror, 'node_modules/next/dist/bin/next'), 'dev', '--hostname', '127.0.0.1', '--port', String(port)], {
+    const pilotArgs: string[] = [];
+    if (options.ownerAdvisorPilot) {
+      const preload = 'src/test/integration/owner-advisor-pilot-preload.mts';
+      const guard = 'src/test/integration/owner-advisor-pilot.mts';
+      metadata.ownerAdvisorPilot = { ...JSON.parse(advisorEnvironment.NEVORA_OWNER_ADVISOR_PILOT), ...PILOT, endpoint: PILOT.baseUrl + '/openai/v1/responses', preloadHash:mirrorHashes[preload], guardHash:mirrorHashes[guard] };
+      pilotArgs.push('--import', join(mirror,preload));
+    }
+    child = spawn(process.execPath, [...pilotArgs, join(mirror, 'node_modules/next/dist/bin/next'), 'dev', '--hostname', '127.0.0.1', '--port', String(port)], {
       cwd: mirror, env, detached: process.platform !== 'win32', stdio: ['ignore', 'pipe', 'pipe'],
     });
     // Credentials must never reach the persistent sink, even across chunks.
