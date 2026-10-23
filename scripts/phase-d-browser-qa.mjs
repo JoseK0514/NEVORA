@@ -217,6 +217,7 @@ try{
       attempt.enteredDigits=await cp.locator('input[name=pin]').evaluate(input=>input.value.length);assert.equal(attempt.enteredDigits,4);
       await cp.getByRole('button',{name:'Continue',exact:true}).click();attempt.submitted=true;
     }
+    let clockWrites=0;const observeClockWrite=request=>{if(request.method()==='POST'&&/^\/api\/clocker\/[^/]+\/punch$/.test(new URL(request.url()).pathname))clockWrites++;};cp.on('request',observeClockWrite);
     await pin(pinA);await cp.getByRole('button',{name:'Clock In',exact:true}).waitFor();let dropped=false;
     await cp.route('**/api/clocker/2/punch',async route=>{if(!dropped&&route.request().postDataJSON()?.operation==='execute'){dropped=true;assert.equal((await route.fetch()).status(),200);await route.abort('failed');}else await route.continue();});
     await cp.getByRole('button',{name:'Clock In',exact:true}).click();await cp.getByRole('button',{name:'Check Action Status',exact:true}).waitFor();assert(dropped);
@@ -226,6 +227,7 @@ try{
     await cp.getByRole('button',{name:'Clock In',exact:true}).evaluate(button=>{button.click();button.click();});await cp.getByRole('heading',{name:'Clock In Recorded',exact:true}).waitFor();
     assert.equal((await q("SELECT count(*)::int AS n FROM time_entries WHERE employee_id=$1",['UX5-B-'+engine]))[0].n,1);assert.equal(await cp.evaluate(key=>sessionStorage.getItem(key),engine==='chromium'?'nevora.clocker.pending.v1:2':saved.key),saved.text);checked(engine+': UX-05 next employee records exactly once without discarding prior receipt');
     await cp.getByRole('button',{name:'Done',exact:true}).click();await pin(pinA);await cp.getByRole('button',{name:'Check Action Status',exact:true}).click();await cp.getByRole('heading',{name:'Clock In Recorded',exact:true}).waitFor();assert.equal((await q("SELECT count(*)::int AS n FROM time_entries WHERE employee_id=$1",['UX5-A-'+engine]))[0].n,1);assert.equal(await cp.evaluate(key=>sessionStorage.getItem(key),engine==='chromium'?'nevora.clocker.pending.v1:2':saved.key),null);checked(engine+': UX-05 refresh and re-PIN recover original receipt without replay');
+    cp.off('request',observeClockWrite);assert(clockWrites>0,'Replay observer detects the actual location-scoped Clocker punch requests');clockWrites=0;
     await op.bringToFront();currentPage=op;await op.waitForLoadState('networkidle');
     const heldScripts=[],scriptPattern='**/_next/static/**/*.js';let releaseScripts;
     const scriptsReady=new Promise(resolve=>{releaseScripts=resolve;});
@@ -253,7 +255,7 @@ try{
     const immutableClock=()=>q('SELECT to_jsonb(c) AS row FROM clocker_command_ledger c WHERE command_id=$1 ORDER BY employee_id,device_id',[reference]);
     const beforeReceiptRefresh=await immutableClock();assert(beforeReceiptRefresh.length>0);
     let focusReads=0,releaseReceiptRead;const recoveryRead=route=>{focusReads++;return new Promise(resolve=>{releaseReceiptRead=()=>route.continue().then(resolve);});};await op.route('**/api/manager/clocker-recovery',recoveryRead);
-    let clockWrites=0;const observeClockWrite=request=>{if(request.method()==='POST'&&new URL(request.url()).pathname==='/api/clocker/punch')clockWrites++;};op.on('request',observeClockWrite);
+    op.on('request',observeClockWrite);
     try{
     await op.evaluate(()=>{window.dispatchEvent(new Event('focus'));return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));});assert.equal(focusReads,0,'Duplicate foreground focus does not restart a current receipt lookup');assert.equal(await op.getByRole('status').filter({hasText:'Recorded action found'}).count(),1);
     await op.evaluate(()=>window.dispatchEvent(new Event('blur')));assert.equal(await op.getByRole('status').filter({hasText:'Recorded action found'}).count(),0);
