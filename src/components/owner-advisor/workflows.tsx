@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { SelectField } from "@/components/select-field";
 import type { AdvisorAnswer, AdvisorCommand } from "@/lib/owner-advisor/contracts";
 import { issueLabel } from "@/lib/owner-advisor/workflow-contracts";
 type Inspection = Extract<AdvisorCommand, { op: "inspect" }>["tool"];
@@ -21,7 +22,7 @@ export function WorkflowControls({ date, disabled, inspect }: { date: string; di
         <label htmlFor="oa-period-start">Period start</label><input id="oa-period-start" type="date" value={startDate} required disabled={disabled} onChange={e => setStartDate(e.target.value)} />
         <label htmlFor="oa-period-end">Period end</label><input id="oa-period-end" type="date" value={endDate} min={startDate} required disabled={disabled} onChange={e => setEndDate(e.target.value)} aria-describedby="oa-period-limit" />
         <p id="oa-period-limit" className="oa-muted">Choose 1 to 31 days. Recorded time and payroll readiness are separate reviews.</p>
-        <label htmlFor="oa-review-language">Review language</label><select id="oa-review-language" value={language} disabled={disabled} onChange={e => setLanguage(e.target.value === "es" ? "es" : "en")}><option value="en">English</option><option value="es">Español</option></select>
+        <SelectField id="oa-review-language" name="reviewLanguage" label="Review language" options={[{ value: "en", label: "English" }, { value: "es", label: "Español" }]} value={language} disabled={disabled} onChange={e => setLanguage(e.target.value === "es" ? "es" : "en")} />
         <button className="nv-btn" data-kind="secondary" disabled={disabled}>Review attendance and payroll</button>
       </form>
     </div>

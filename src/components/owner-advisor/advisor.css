@@ -128,6 +128,9 @@
   background: var(--nv-canvas);
   color: inherit;
 }
+.oa-section .nevora-select {
+  padding-right: 38px;
+}
 .oa-notice {
   padding: 16px;
   border-left: 3px solid var(--cm-tint);
