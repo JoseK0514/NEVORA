@@ -101,6 +101,15 @@ function assertSameProcess(actual, lease) {
     observationFailure: { reason: 'IDENTITY_CHANGED', expected: processLeaseFields(lease), observed: processLeaseFields(actual) },
   });
 }
+function observedProcessExit(pid) {
+  const observation = spawnSync('ps', ['-p', String(pid), '-o', 'pid=,stat='], { encoding: 'utf8', timeout: 2000 });
+  if (observation.error || observation.stderr?.trim()) return undefined;
+  const output = observation.stdout?.trim() ?? '';
+  if (observation.status === 1 && !output) return 'absent';
+  const fields = output.split(/\s+/);
+  if (observation.status === 0 && fields.length === 2 && Number(fields[0]) === pid && fields[1].startsWith('Z')) return 'zombie';
+  return undefined;
+}
 function processLeaseFields(identity) {
   return { pid: identity.pid, ppid: identity.ppid, pgid: identity.pgid, started: identity.started, commandHash: identity.commandHash };
 }
@@ -122,7 +131,7 @@ export async function registerOwnedProcess({ kind, pid, ownerId }) {
 export async function superviseOwnedChild({ command, args, cwd, env, ownerId, timeoutMs, graceMs = 7500, signal }) {
   if (!/^[a-f0-9]{32}$/.test(ownerId) || !Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || !Number.isSafeInteger(graceMs) || graceMs < 1) throw Error('Invalid owned supervision contract');
   const leases = new Map(), child = spawn(command, args, { cwd, env: { ...env, NEVORA_OWNED_PROCESS_OWNER: ownerId }, detached: process.platform !== 'win32', stdio: ['ignore', 'inherit', 'inherit', 'ipc'] });
-  let failure, observationFailure, escalation, rootLease, stopping = false;
+  let failure, observationFailure, escalation, rootLease, initialRootExit, stopping = false;
   // Keep only our bounded reason codes and identity hashes, never argv/env.
   const retainObservationFailure = error => {
     observationFailure ??= error.observationFailure ?? { reason: ({
@@ -204,13 +213,23 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
     }, graceMs);
   };
   child.once('spawn', () => {
+    let unavailable = false;
     try {
       const identity = ownedProcessIdentity(child.pid, ownerId, true);
-      if (!identity || identity.pgid !== child.pid || identity.ppid !== process.pid) throw Error('Owned group leader is no longer proven');
+      if (!identity) { unavailable = true; throw Error('Owned group leader is no longer proven'); }
+      if (identity.pgid !== child.pid || identity.ppid !== process.pid) throw Error('Owned group leader is no longer proven');
       // Pin once from the creation handle; this root never becomes a resource
       // lease or registration authority, and its command must remain unchanged.
       rootLease = identity;
-    } catch (error) { retainObservationFailure(error); stop('Owned resource observation failed', 1); }
+    } catch (error) {
+      retainObservationFailure(error);
+      const missingObservation = unavailable || ['Cannot reprove owned process environment', 'Cannot verify owned process identity'].includes(error.message);
+      const exitProof = missingObservation && !stopping ? observedProcessExit(child.pid) : undefined;
+      if (exitProof) {
+        initialRootExit = exitProof; observationFailure.initialRootExit = exitProof;
+        stopping = true; failure = { message: 'Owned resource observation failed', status: 1 };
+      } else stop('Owned resource observation failed', 1);
+    }
   });
   child.on('message', message => {
     if (message?.type !== 'register-owned-process') return;
@@ -292,7 +311,8 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
     }
   } catch { cleanupFailed = true; }
   if (cleanupFailed) failure = { message: 'Owned resource cleanup could not be proven', status: failure?.status ?? 1 };
-  return { status: failure?.status ?? outcome.status ?? 1, signal: outcome.signal, timedOut: failure?.status === 124, error: failure?.message, observationFailure, resources };
+  const preserveChildFailure = initialRootExit && !cleanupFailed && resources.length === 0 && Number.isInteger(outcome.status) && outcome.status > 0;
+  return { status: preserveChildFailure ? outcome.status : failure?.status ?? outcome.status ?? 1, signal: outcome.signal, timedOut: failure?.status === 124, error: failure?.message, observationFailure, resources };
 }
 const approvedAdapters = new Map();
 function approvedDbAdapterHash(originalDb) {
