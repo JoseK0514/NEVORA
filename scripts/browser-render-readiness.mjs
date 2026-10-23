@@ -46,3 +46,8 @@ export async function restoreSheetMotion(page) {
   await page.emulateMedia({reducedMotion: 'no-preference'});
   return waitForSheetEntrance(page);
 }
+
+export async function waitForPrivateIntentClear(page) {
+  await page.locator('input[name="authority"]').waitFor({state: 'detached'});
+  return page.locator('input[name="authority"]').count();
+}

@@ -1060,3 +1060,33 @@ that same original wait deadline, and canonical operation count must grow by
 exactly one across original-operation recovery. This strengthens the existing
 real application regression; it is not an application behavior fix. New matching
 full CI remains required before further integration or retirement.
+
+### Attention pagehide rendering boundary
+
+The same development push run later failed Attention WebKit768 at the immediate
+post-pagehide input-count assertion: one authority field was observed instead
+of zero. Its response-loss case had already passed, including canonical recovery.
+Lifecycle metadata confirms pagehide immediately before the assertion; there
+were no runtime errors. This is a separate failure from the earlier unknown-
+outcome alert timeout. The diagnostic-only PR24 candidate e27eabe1 run39944958137
+was canceled early to combine the demonstrated readiness correction before
+spending further full-suite minutes; canceled execution is not verification.
+
+An actual-component React19.3 control reproduces the timing boundary by holding
+its real MessageChannel scheduler in a fictional document. The pagehide handler
+has run while its DOM update remains queued. An immediate count observes one
+field; the former count-only reader resolves prematurely and the control fails
+in both Chromium151 and WebKit26.5. Waiting for actual detachment passes in both
+engines. The exact original zero-count assertion is retained, with a new positive
+one-field precondition so an already-empty page cannot satisfy clearance.
+
+The control also proves a normal committed action refreshes once, while a late
+pre-pagehide result cannot restore the form or refresh after actual removal.
+The confirmation component (SHA256 a8f618b4a550860c2a0ff0401fc7f11500459708036ed0518f9918ab10126e69),
+its generation/privacy logic and application clocks are unchanged. Scheduler
+delivery is held only in the regression document with fictional action/router
+boundaries, not in the real application scenario. CI runs this source-bound
+control in both engines before the full 14 Attention cells and uploads its
+receipt. All 12 jobs and 70 real browser cells remain required. Calendar's
+historical response-loss cause and the earlier Attention unknown-alert cause
+remain unproven; their original assertions and diagnostics stay enabled.
