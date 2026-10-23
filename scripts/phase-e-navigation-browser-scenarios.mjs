@@ -4,7 +4,7 @@ import {join} from 'node:path';
 import {Client} from 'pg';
 import {seedOwnedScenario,seedOwnedScenarioOwner,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {interceptedInboxResponse,withActorRole} from './phase-e-navigation-request.mjs';
-import {waitForSheetEntrance,waitForReviewedTimeOff} from './browser-render-readiness.mjs';
+import {waitForSheetEntrance,waitForReviewedTimeOff,restoreSheetMotion} from './browser-render-readiness.mjs';
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,axeFile,runtimeErrors:cellRuntimeErrors}){
  let stage='seed';cellRuntimeErrors.setStageReader(()=>stage);
@@ -258,7 +258,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   assert(await page.evaluate(()=>[...Object.values(localStorage),...Object.values(sessionStorage)].every(v=>!v.includes('STORED PRIVATE')&&!v.includes('QA E'))));
   await q("UPDATE employees SET first_name=$1,last_name=$2 WHERE id=$3",['Avery With A Very Long Fictional Display Name','Long Employee Name For Reflow Verification',actor]);await page.reload();await ready('profile');await bounds();
   // Match scripts/ui-checks/checks.mjs: text zoom scales the rem-based kit, not the whole page box.
-  await page.emulateMedia({reducedMotion:'reduce'});const normalFont=await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize));await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});await page.waitForTimeout(600);assert.equal(await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize)),normalFont*2,'200% root-font text scale is applied');await bounds();await screenshot('text-200-long-content');await page.evaluate(()=>{document.documentElement.style.fontSize='';});await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.emulateMedia({reducedMotion:'reduce'});const normalFont=await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize));await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});await page.waitForTimeout(600);assert.equal(await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize)),normalFont*2,'200% root-font text scale is applied');await bounds();await screenshot('text-200-long-content');await page.evaluate(()=>{document.documentElement.style.fontSize='';});await restoreSheetMotion(page);
   if(width<768){
    // The kit reserves tab-bar space on the page, rather than the old outer frame.
    await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));

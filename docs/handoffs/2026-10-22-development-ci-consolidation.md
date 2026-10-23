@@ -990,3 +990,35 @@ injection, operation identity, canonical count and generation fences remain.
 The deadline helper now preserves returned diagnostic values; its new behavior
 case failed before that fix and proves late values cannot rescue a timeout.
 Attention remains unresolved until matching execution supplies evidence.
+
+### Navigation motion restoration readiness
+
+Run 39931923508 on source 35913424 passed validation (9,346 units, types,
+repository lint, build, both zero-vulnerability audits and 103 release checks),
+all three SQL jobs, Home, Communications, Calendar and complete Attendance.
+Its build matched 5,098 source hashes; the actual Linux WebKit runner verified
+all eight transport-control cells, including the POST read. Navigation then
+failed Chromium390 in the final driver's axe assertion, after all scenario
+functional checks and its three named page accessibility scans passed. There
+were no runtime errors. The driver had not retained final rule IDs, so the
+original violating rule is unknown.
+
+The final screenshot shows a faded Signature sheet. Restoring normal motion
+after the 200%/reduced-motion test changes the actual shared CSS animation from
+180ms sig-fade-in to 280ms sig-sheet-rise, restarting its opacity entrance. The
+driver previously took its final screenshot and audit without awaiting that
+entrance. A controlled Chromium151/axe4.11 reproduction using the exact checked-in
+CSS (SHA256 c53413c78d3230bf2f23ea866bec0d76ade2a32c1e429ce6bff5b042a356e133)
+reports color-contrast at opacity 0.0632477 and zero violations at settled
+opacity 1. This proves a readiness defect; it does not establish the unrecorded
+original rule.
+
+Motion restoration now awaits the existing actual sheet readiness helper before
+the final screenshot/audit. An emulate-only wrapper fails the controlled
+readiness assertion; the awaited wrapper passes. The existing mandatory browser
+readiness regression now tests real sheet CSS restoration in both engines,
+including a deliberately paused entrance, the early contrast failure, completed
+animation and unchanged zero-violation assertion. The final driver also records
+public axe rule IDs before asserting, without retaining private DOM content.
+No application CSS, motion duration, accessibility rule or timeout is changed.
+Independent review approves this bounded follow-up for new matching CI.

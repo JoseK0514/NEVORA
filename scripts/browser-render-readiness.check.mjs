@@ -1,14 +1,16 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
-import {writeFile} from 'node:fs/promises';
+import {readFile,writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
-import {waitForCalendarCopyReady,waitForReviewedTimeOff} from './browser-render-readiness.mjs';
+import {waitForCalendarCopyReady,waitForReviewedTimeOff,restoreSheetMotion} from './browser-render-readiness.mjs';
 import {captureSource,assertSourceUnchanged,externalEvidence} from './phase-e-owned.mjs';
 
 const source=resolve(process.cwd()),custody=captureSource(source,process.env.PHASE_E_EXPECTED_SHA);
 const evidence=externalEvidence(source,process.env.PHASE_E_EVIDENCE_DIR);
 const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json')),pw=runtime('playwright');
 assert.equal(runtime('playwright/package.json').version,'1.62.1');
+const sheetCss=await readFile('src/components/signature/components.css','utf8'),axeFile=runtime.resolve('axe-core/axe.min.js');
+assert.equal(runtime('axe-core/package.json').version,'4.11.0');
 const results=[];
 for(const engine of ['chromium','webkit']){
  const browser=await pw[engine].launch({headless:true});
@@ -33,7 +35,21 @@ for(const engine of ['chromium','webkit']){
    await page.evaluate(()=>document.querySelector('main').insertAdjacentHTML('beforeend','<div role="status"><p>Decision saved</p></div>'));await render();
    result.observations.push({phase:'Decision notice with stale pending request',settled:reviewSettled});assert.equal(reviewSettled,false);
    await page.evaluate(()=>document.getElementById('request-fictional-review').remove());await reviewed;
-   result.observations.push({phase:'Fresh decision notice and pending request removed',settled:reviewSettled});assert.equal(reviewSettled,true);result.status='passed';
+   result.observations.push({phase:'Fresh decision notice and pending request removed',settled:reviewSettled});assert.equal(reviewSettled,true);
+   if(reducedMotion==='reduce'){
+    await page.setContent('<!doctype html><html lang="en"><head><title>Fictional sheet motion control</title><style>'+sheetCss+' [data-sig-sheet]{animation-play-state:paused;background:white;color:black;padding:30px}button{background:white;color:black;font-size:18px}</style></head><body><main data-sig-sheet><button>Fictional profile control</button></main></body></html>');
+    await page.evaluate(()=>document.querySelector('[data-sig-sheet]').getAnimations().forEach(animation=>animation.finish()));
+    let restored=false;const restoring=restoreSheetMotion(page).then(value=>{restored=true;return value;});
+    await page.waitForFunction(()=>document.querySelector('[data-sig-sheet]').getAnimations().some(animation=>animation.animationName==='sig-sheet-rise'));
+    await page.evaluate(()=>document.querySelector('[data-sig-sheet]').getAnimations().forEach(animation=>{animation.pause();animation.currentTime=5;}));
+    await page.addScriptTag({path:axeFile});
+    const scan=()=>page.evaluate(async()=>(await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}})).violations.map(item=>item.id));
+    const earlyViolations=await scan();await render();assert.equal(restored,false);assert(earlyViolations.includes('color-contrast'));
+    await page.evaluate(()=>document.querySelector('[data-sig-sheet]').getAnimations().forEach(animation=>animation.finish()));
+    const entrance=await restoring,settledViolations=await scan();assert(entrance.after.every(item=>item.opacity===1));assert.deepEqual(settledViolations,[]);
+    result.observations.push({phase:'Actual sheet CSS restarts on motion restoration; readiness waits before contrast audit',earlyViolations,entrance,settledViolations});
+   }
+   result.status='passed';
   }catch(error){result.failure={name:error.name,message:error instanceof assert.AssertionError?error.message:'Controlled feedback readiness failed'};process.exitCode=1;}
   finally{await context?.close();}
  }}finally{await browser.close();for(const result of results.filter(item=>item.engine===engine))result.browserClosed=!browser.isConnected();}

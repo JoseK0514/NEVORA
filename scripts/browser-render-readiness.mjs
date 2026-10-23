@@ -41,3 +41,8 @@ export async function waitForSheetEntrance(page) {
   }), selector);
   return {before, after: await sample()};
 }
+
+export async function restoreSheetMotion(page) {
+  await page.emulateMedia({reducedMotion: 'no-preference'});
+  return waitForSheetEntrance(page);
+}

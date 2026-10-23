@@ -220,6 +220,7 @@ async function main() {
             runtimeErrors.setPhase('axe');
             await page.addScriptTag({ path: axeFile });
             const violations = await page.evaluate(async () => (await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } })).violations.map(item => item.id));
+            record.accessibilityViolations = violations;
             assert.deepEqual(violations, [], `${item} ${engine} ${width}: accessibility violations`);
             record.checks = [...result.checks, 'axe WCAG A/AA check'];
             } finally { runtimeErrors.setPhase('context-close'); await context.close(); }
