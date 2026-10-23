@@ -46,7 +46,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
       INSERT INTO employee_positions(employee_id,position_id) VALUES('OA-EMPLOYEE','qa-pos');
       INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('OA-EMPLOYEE','loc-1');
       INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) VALUES('oa-available','OA-EMPLOYEE',1,'00:00','24:00');
-      INSERT INTO weekly_availability_submissions(employee_id,week_start,uses_normal_availability) VALUES('OA-EMPLOYEE','2030-10-07',true),('OA-EMPLOYEE','2030-10-14',true);`, values: [] });
+      INSERT INTO weekly_availability_submissions(employee_id,week_start,uses_normal_availability) VALUES('OA-EMPLOYEE','2030-10-07',true),('OA-EMPLOYEE','2030-10-14',true),('OA-EMPLOYEE','2030-10-21',true),('OA-EMPLOYEE','2030-10-28',true);`, values: [] });
     await app.database.executor.query({ text: "INSERT INTO employee_scheduling_settings(employee_id,target_weekly_hours,maximum_weekly_hours,operational_rule_profile) VALUES('OA-EMPLOYEE',20,80,$1::jsonb)", values: [JSON.stringify(fictionalProfile())] });
     const origin = app.url.replace("127.0.0.1", "localhost");
     for (const engine of ["chromium", "webkit"]) {
@@ -184,6 +184,25 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               expect(await app.database.executor.query({ text: "SELECT status FROM schedules WHERE week_start=$1", values: [coverageDate] })).toEqual([{ status: 'DRAFT' }]);
               expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM notifications", values: [] })).toEqual([{ n: 0 }]);
               checks.push(engine + ': real proposal preview and canonical draft confirmation; no publication or notifications');
+              await page.goto(origin + '/app/ai-manager');
+              const publishedDate = engine === 'chromium' ? '2030-10-21' : '2030-10-28';
+              await app.database.executor.query({ text: "INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES($1,'loc-1',$2,'PUBLISHED','QAOWNER')", values: ['oa-published-' + engine, publishedDate] });
+              await page.getByLabel('Coverage date', { exact: true }).fill(publishedDate);
+              await page.getByRole('button', { name: 'Prepare coverage options', exact: true }).focus();
+              await page.keyboard.press('Enter');
+              await proposals.getByRole('link', { name: 'Review exact replacement', exact: true }).first().click();
+              const consent = page.getByRole('checkbox', { name: 'I also approve publishing this replacement and queuing the applicable employee notifications.', exact: true });
+              await consent.waitFor();
+              expect(await consent.isChecked()).toBe(false);
+              await page.getByRole('button', { name: 'Save replacement', exact: true }).click();
+              expect(await consent.evaluate((el: HTMLInputElement) => el.validity.valueMissing)).toBe(true);
+              expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM shifts WHERE date=$1", values: [publishedDate] })).toEqual([{ n: 0 }]);
+              await consent.focus(); await page.keyboard.press('Space');
+              expect(await consent.isChecked()).toBe(true);
+              await page.getByRole('button', { name: 'Save replacement', exact: true }).click();
+              await page.waitForURL(/saved=1/);
+              expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM schedule_publication_revisions WHERE week_start=$1", values: [publishedDate] })).toEqual([{ n: 1 }]);
+              checks.push(engine + ': published replacement requires separate unchecked consent; keyboard confirmation and canonical revision receipt');
               await page.goto(origin + '/app/ai-manager');
               await page.getByLabel('Period start', { exact: true }).fill('2026-10-01');
               await page.getByLabel('Period end', { exact: true }).fill('2026-10-07');
@@ -585,7 +604,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
           source: app.sourceHashes,
           providerConfigured: false,
           fixtureScope:
-            "answer/error/cancel UI only; priority and access use real owned database",
+            "answer/error/cancel UI interception only; workflows, priority and access use real owned database; no provider configured",
         },
         null,
         2,

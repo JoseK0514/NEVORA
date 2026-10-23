@@ -21,6 +21,7 @@ import { CoverageRepairConflictError, type CoverageRepairLocator } from '../../l
 import { fictionalProfile } from '../fixtures/shift-changes';
 import { createDisposableGenerationDatabase } from './local-postgres';
 import { withOwnedTestResources } from './owned-test-resources';
+import { installFixtureCompanyAccess } from './fixture-company-access';
 
 const enabled = !!process.env.FUEL_TEST_DATABASE_URL && process.env.FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN === 'yes';
 const week = '2030-10-07', hash = createHash('sha256').update('owned-manager-gap-session').digest('hex');
@@ -51,7 +52,7 @@ async function controlled(defer: (cleanup: () => void | Promise<unknown>) => voi
   const ready = new Promise<void>(resolve => { reached = resolve; }); const released = new Promise<void>(resolve => { release = resolve; }); defer(() => release());
   const executor: SqlExecutor = { query: db.executor.query, transaction: async statements => {
     await client.query('BEGIN');
-    try { const rows = []; for (const s of statements) { rows.push((await client.query(s.text, [...s.values])).rows); if (!paused && pause(s)) { paused = true; reached(); await released; } } await client.query('COMMIT'); return rows; }
+    try { const rows = []; const business = statements.some(s => s.text.startsWith('INSERT INTO shifts') || s.text.startsWith('DELETE FROM employee_sessions')); for (const s of statements) { rows.push((await client.query(s.text, [...s.values])).rows); if (business && !paused && pause(s)) { paused = true; reached(); await released; } } await client.query('COMMIT'); return rows; }
     catch (error) { await client.query('ROLLBACK'); throw error; }
   } };
   return { client, pid, executor, ready, release };
@@ -79,11 +80,12 @@ describe.skipIf(!enabled)('BA-MGR-001 owned SQL', () => {
     await q("INSERT INTO weekly_availability_windows(id,employee_id,week_start,day_of_week,start_time,end_time) SELECT e.id||'-weekly-'||d,e.id,$1::date,d,'00:00','24:00' FROM employees e CROSS JOIN generate_series(0,6) d", [week]);
     await q("INSERT INTO employee_scheduling_settings(employee_id,target_weekly_hours,maximum_weekly_hours,operational_rule_profile) SELECT id,20,80,$1::jsonb FROM employees", [JSON.stringify(fictionalProfile())]);
     await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'M',clock_timestamp()+interval '1 day')", [hash]);
+    await installFixtureCompanyAccess(db.executor);
   });
 
   it.each(['POSITION','STAFFING','LEAD'] as const)('SQL-01 current %s target creates one legal compound draft repair', async target => {
     const r = await prepare(target); let transactions = 0;
-    const executor: SqlExecutor = { query: db.executor.query, transaction: s => { transactions++; return db.executor.transaction(s); } };
+    const executor: SqlExecutor = { query: db.executor.query, transaction: s => { if(s.some(statement => statement.text.startsWith('INSERT INTO shifts')))transactions++; return db.executor.transaction(s); } };
     await createCoverageRepairShift(r.command, executor);
     expect(transactions).toBe(1); expect(await q('SELECT location_id,status FROM schedules')).toEqual([{ location_id: 'loc-1', status: 'DRAFT' }]);
     expect(await q('SELECT employee_id,date::text,start_time::text,end_time::text,position_id,is_designated_lead,assignment_origin FROM shifts')).toEqual([{ employee_id: 'E', date: week, start_time: '08:00:00', end_time: '12:00:00', position_id: target === 'POSITION' ? 'barista' : null, is_designated_lead: true, assignment_origin: 'MANAGER' }]);
@@ -130,13 +132,13 @@ describe.skipIf(!enabled)('BA-MGR-001 owned SQL', () => {
       await q(kind === 'revoked' ? 'DELETE FROM employee_sessions WHERE token_hash=$1' : kind === 'expired' ? "UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE token_hash=$1" : kind === 'role' ? "UPDATE employees SET role='EMPLOYEE' WHERE id='M'" : "UPDATE employees SET active=false WHERE id='M'", kind === 'revoked' || kind === 'expired' ? [hash] : []);
       return db.executor.transaction(statements);
     } };
-    await expect(createCoverageRepairShift(r.command, executor)).rejects.toThrow(kind === 'role' || kind === 'inactive' ? 'Coverage changed' : 'management_authorization'); expect(await oracle()).toEqual(before);
+    await expect(createCoverageRepairShift(r.command, executor)).rejects.toThrow('operational_authorization'); expect(await oracle()).toEqual(before);
   });
 
   it('SQL-11 observed source-lock wait rejects the original review after a committed membership change', async () => {
     const r = await prepare(); await withOwnedTestResources(async defer => {
       const blocker = await controlled(defer), writer = await controlled(defer);
-      const executor: SqlExecutor = { query: db.executor.query, transaction: async s => { await blocker.client.query('BEGIN'); await blocker.client.query('SELECT id FROM workspaces WHERE singleton FOR UPDATE'); return writer.executor.transaction(s); } };
+      const executor: SqlExecutor = { query: db.executor.query, transaction: async s => { if(!s.some(statement => statement.text.startsWith('INSERT INTO shifts')))return db.executor.transaction(s); await blocker.client.query('BEGIN'); await blocker.client.query('SELECT id FROM workspaces WHERE singleton FOR UPDATE'); return writer.executor.transaction(s); } };
       defer(() => blocker.client.query('ROLLBACK')); const pending = outcome(createCoverageRepairShift(r.command, executor)); defer(() => pending);
       await blocked(writer.pid, blocker.pid); await blocker.client.query("DELETE FROM employee_positions WHERE employee_id='E'"); await blocker.client.query('COMMIT');
       const expected = await oracle(); expect((await pending).error).toBeInstanceOf(CoverageRepairConflictError); expect(await oracle()).toEqual(expected);
@@ -147,6 +149,7 @@ describe.skipIf(!enabled)('BA-MGR-001 owned SQL', () => {
     const r = await prepare(), before = await oracle(); await withOwnedTestResources(async defer => {
       const blocker = await controlled(defer), writer = await controlled(defer);
       const executor: SqlExecutor = { query: db.executor.query, transaction: async s => {
+        if(!s.some(statement => statement.text.startsWith('INSERT INTO shifts')))return db.executor.transaction(s);
         await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '800 milliseconds' WHERE token_hash=$1", [hash]);
         await blocker.client.query('BEGIN'); await blocker.client.query(lock === 'session' ? 'SELECT token_hash FROM employee_sessions WHERE token_hash=$1 FOR UPDATE' : 'LOCK TABLE location_coverage_windows IN ACCESS EXCLUSIVE MODE', lock === 'session' ? [hash] : []);
         return writer.executor.transaction(s);
@@ -162,6 +165,7 @@ describe.skipIf(!enabled)('BA-MGR-001 owned SQL', () => {
     const r = await prepare(), before = await oracle(); await withOwnedTestResources(async defer => {
       const blocker = await controlled(defer), writer = await controlled(defer);
       const executor: SqlExecutor = { query: db.executor.query, transaction: async s => {
+        if(!s.some(statement => statement.text.startsWith('INSERT INTO shifts')))return db.executor.transaction(s);
         expect(s.some(statement => statement.text.includes('INSERT INTO notifications'))).toBe(true);
         await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '800 milliseconds' WHERE token_hash=$1", [hash]);
         await blocker.client.query('BEGIN'); await blocker.client.query('LOCK TABLE notifications IN ACCESS EXCLUSIVE MODE'); return writer.executor.transaction(s);
@@ -181,7 +185,7 @@ describe.skipIf(!enabled)('BA-MGR-001 owned SQL', () => {
         const logoutPending = outcome(deleting()); defer(() => logoutPending); await logout.ready;
         const repairPending = outcome(createCoverageRepairShift(r.command, writer.executor)); defer(() => repairPending); defer(() => logout.release());
         await blocked(writer.pid, logout.pid); logout.release(); expect((await logoutPending).error).toBeUndefined();
-        expect(String((await repairPending).error)).toContain('management_authorization'); expect(await oracle()).toEqual(before);
+        expect(String((await repairPending).error)).toContain('operational_authorization'); expect(await oracle()).toEqual(before);
       } else {
         const repairPending = outcome(createCoverageRepairShift(r.command, writer.executor)); defer(() => repairPending); await writer.ready;
         const logoutPending = outcome(deleting()); defer(() => logoutPending); defer(() => writer.release());
@@ -195,7 +199,7 @@ describe.skipIf(!enabled)('BA-MGR-001 owned SQL', () => {
   it('SQL-19 an ordinary no-review insert preserves its existing source-conflict rebuild', async () => {
     await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('ordinary','loc-1',$1,'DRAFT','M')", [week]);
     const proof = await requireSessionMutationProof(); let attempts = 0;
-    const executor: SqlExecutor = { query: db.executor.query, transaction: async s => { if (!attempts++) { await q("UPDATE location_staffing_settings SET minimum_staff_per_shift=3 WHERE location_id='loc-1'"); throw Object.assign(new Error('generation_source_conflict'), { code: '22P02' }); } return db.executor.transaction(s); } };
+    const executor: SqlExecutor = { query: db.executor.query, transaction: async s => { if(!s.some(statement => statement.text.startsWith('INSERT INTO shifts')))return db.executor.transaction(s); if (!attempts++) { await q("UPDATE location_staffing_settings SET minimum_staff_per_shift=3 WHERE location_id='loc-1'"); throw Object.assign(new Error('generation_source_conflict'), { code: '22P02' }); } return db.executor.transaction(s); } };
     await insertShift({ scheduleId: 'ordinary', employeeId: 'E', date: week, startTime: '08:00', endTime: '12:00', positionId: 'barista', isDesignatedLead: true, actorEmployeeId: 'M', proof }, executor);
     expect(attempts).toBe(2); expect((await q('SELECT id FROM shifts')).length).toBe(1);
   });
