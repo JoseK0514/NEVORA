@@ -66,13 +66,15 @@ try {
       FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN: 'yes',
     };
     console.log(`[Release PostgreSQL ${index + 1}/${suites.length}] ${suite.label}`);
+    const suiteStartedAt=performance.now(),budgetMs=480_000;
     const result = spawnSync(suite.command[0], suite.command.slice(1), {
       env,
       stdio: 'inherit',
-      timeout: 480_000,
+      timeout: budgetMs,
     });
     if (result.error || result.status !== 0) {
       console.error(`[Release PostgreSQL] ${suite.label} failed.`);
+      console.error(JSON.stringify({suite:suite.label,elapsedMs:Math.round(performance.now()-suiteStartedAt),budgetMs,status:result.status,signal:result.signal,errorCode:result.error?.code??null}));
       exitCode = result.status ?? 1;
       break;
     }

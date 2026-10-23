@@ -1,0 +1,104 @@
+import { readFile } from 'node:fs/promises';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+
+const state = vi.hoisted(() => ({
+  clients: [] as { database: string; statements: string[]; ended: boolean }[],
+  events: [] as string[],
+  exists: false,
+  marker: '',
+  failSql: '',
+  failConnect: false,
+}));
+
+vi.mock('pg', () => ({
+  Client: class {
+    record: (typeof state.clients)[number];
+    constructor(options: { connectionString: string }) {
+      this.record = { database: new URL(options.connectionString).pathname, statements: [], ended: false };
+      state.clients.push(this.record);
+    }
+    async connect() {
+      if (state.failConnect && this.record.database !== '/postgres') throw Error('fixture-connect-failed');
+    }
+    async end() {
+      this.record.ended = true;
+      state.events.push(`end:${this.record.database}`);
+    }
+    async query(text: string) {
+      this.record.statements.push(text);
+      if (this.record.database !== '/postgres') {
+        if (text === state.failSql) throw Error('fixture-migration-failed');
+        return { rows: text === 'SELECT pg_backend_pid() AS pid' ? [{ pid: state.clients.indexOf(this.record) + 1 }] : [] };
+      }
+      if (text.startsWith('SELECT 1 FROM pg_database')) return { rowCount: state.exists ? 1 : 0, rows: [] };
+      if (text.startsWith('CREATE DATABASE')) state.exists = true;
+      if (text.startsWith('SELECT oid FROM pg_database')) return { rows: [{ oid: 123 }] };
+      if (text.startsWith('COMMENT ON DATABASE')) state.marker = text.split(" IS '")[1].slice(0, -1);
+      if (text.startsWith('SELECT shobj_description')) return { rows: [{ marker: state.marker }] };
+      if (text.startsWith('DROP DATABASE')) {
+        state.events.push('drop');
+        state.exists = false;
+      }
+      return { rows: [] };
+    }
+  },
+}));
+
+import { CURRENT_MIGRATIONS, createDisposableFoundationDatabase } from './local-postgres';
+
+beforeEach(() => {
+  state.clients.length = 0;
+  state.events.length = 0;
+  state.exists = false;
+  state.marker = '';
+  state.failSql = '';
+  state.failConnect = false;
+  vi.stubEnv('DATABASE_URL', '');
+  vi.stubEnv('FUEL_TEST_DATABASE_URL', 'postgresql://fixture@127.0.0.1:54321/nevora_foundation_test_bootstrap');
+  vi.stubEnv('FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN', 'yes');
+});
+afterEach(() => vi.unstubAllEnvs());
+
+it('runs exact migration files sequentially on one closed bootstrap connection, keeping runtime connections separate', async () => {
+  const sql = await Promise.all(CURRENT_MIGRATIONS.map(file => readFile(`db/migrations/${file}`, 'utf8')));
+  const db = await createDisposableFoundationDatabase({ mode: 'current-runtime' });
+  try {
+    expect(state.clients).toHaveLength(2);
+    expect(state.clients[1].statements).toEqual(sql);
+    expect(state.clients[1].ended).toBe(true);
+    expect(state.clients[0].ended).toBe(false);
+    expect(state.clients[0].statements.filter(text => text.startsWith('SELECT shobj_description'))).toHaveLength(sql.length + 1);
+    await Promise.all([
+      db.executor.query({ text: 'SELECT 11', values: [] }),
+      db.executor.query({ text: 'SELECT 22', values: [] }),
+    ]);
+    expect(state.clients.slice(2).map(client => client.statements)).toEqual([
+      ['SELECT pg_backend_pid() AS pid', 'SELECT 11'],
+      ['SELECT pg_backend_pid() AS pid', 'SELECT 22'],
+    ]);
+    expect(state.clients.slice(2).every(client => client.ended)).toBe(true);
+  } finally { await db.dispose(); }
+});
+
+it('closes a failed bootstrap connection before dropping its owned database and never executes later migrations', async () => {
+  state.failSql = await readFile(`db/migrations/${CURRENT_MIGRATIONS[1]}`, 'utf8');
+  await expect(createDisposableFoundationDatabase({ mode: 'current-runtime' })).rejects.toThrow('fixture-migration-failed');
+  expect(state.clients).toHaveLength(2);
+  expect(state.clients[1].statements).toHaveLength(2);
+  expect(state.events).toEqual(['end:/nevora_foundation_test_bootstrap', 'drop', 'end:/postgres']);
+  expect(state.exists).toBe(false);
+});
+
+it('closes a bootstrap connection that fails to connect before disposing its owned database', async () => {
+  state.failConnect = true;
+  await expect(createDisposableFoundationDatabase({ mode: 'upgrade' })).rejects.toThrow('fixture-connect-failed');
+  expect(state.clients[1].ended).toBe(true);
+  expect(state.events).toEqual(['end:/nevora_foundation_test_bootstrap', 'drop', 'end:/postgres']);
+  expect(state.exists).toBe(false);
+});
+
+it('creates no bootstrap connection for an empty fixture', async () => {
+  const db = await createDisposableFoundationDatabase({ mode: 'empty' });
+  expect(state.clients).toHaveLength(1);
+  await db.dispose();
+});

@@ -895,3 +895,51 @@ Six HTTP/preload/privacy checks, evaluation redaction and existing release check
 are included in required CI. The focused Vitest subset passed 330 cases across
 seven files. A new complete matching cloud run and final integration review are
 still required. No archive branch was deleted and no hosted data was written.
+
+### Foundation setup overhead
+
+Run 39922997891 hit the release runner's fixed 480-second subprocess limit
+during the foundation group's final expiry/lock case. Vitest reported 479.97
+seconds and 275 completed passing cases before the runner shut down its owned
+PostgreSQL cluster. The interrupted case and the final five absence cases then
+reported connection errors; four idle-client errors followed cluster shutdown.
+This is failed verification, with later release groups unexecuted.
+
+The proposed 600-second allocation was withdrawn after review. Every release
+group retains its 480-second limit, the workflow retains its 30-minute job
+limit, and foundation retains its 15-second test and 30-second hook limits.
+Bootstrap now applies the same 38 migration files, one query per file and in
+the same order, on one short-lived connection per fresh fixture. Each file
+still receives its ownership check and original transaction boundaries. The
+connection closes before runtime queries or failure teardown. Runtime batches
+still use independent connections, including cancellation and real lock waits.
+PostgreSQL durability and connection/statement timeouts remain unchanged.
+Three regression cases failed against the earlier implementation; all four
+bootstrap cases pass, along with migration-order and initializer checks (13
+focused Vitest cases total). Cloud timing savings remain unverified.
+Failure logs now retain only suite, elapsed time, budget, exit status, signal
+and system error code so a future process deadline is distinguishable from an
+assertion failure. Forced-deadline shutdown is still a failed run, not evidence
+that remaining cases executed successfully.
+
+### D2 protected-read recovery boundary
+
+Run 39922997891 passed validation (9,336 unit tests, types, repository lint,
+production build and both audits), Home's 14 cells and Communications' 14
+cells. Attendance reached 97 D2 checks in Chromium, then failed the new router
+body-completion wait. Fresh RSC request 22 received HTTP 200 at 23245ms and
+ended as canceled at 23640ms; its Playwright response.finished() never resolved.
+The page showed both canonical correction rows, with no console/runtime error.
+The protected correction GET at 24250ms completed with HTTP 200 at 24376ms.
+
+Recovery now requires fresh post-boundary RSC HTTP 200 plus a fresh protected
+correction GET whose complete body is ready and contains both exact pending
+request IDs. Body and JSON extraction share the original 15-second deadline.
+The driver then
+requires rendered rows, network idle and zero pending RSC requests before the
+separate hard reload, and checks native/React errors before that reload as well
+as at scenario completion. No cancellation or JavaScript-error allowance was
+added. Three initial behavioral cases fail against the router-body wait;
+all five, including late JSON rejection, pass with the corrected read. The
+release-engineering set now has 102 cases.
+The full D2 scenario in both engines still requires matching cloud execution.
