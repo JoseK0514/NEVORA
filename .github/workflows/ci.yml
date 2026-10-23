@@ -5,17 +5,46 @@ on:
     branches: [development, main]
   pull_request:
     branches: [development, main, "phase-c/**", "release/**", "codex/verify-preview-33"]
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
+  workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
+  preflight:
+    name: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      full: ${{ steps.mode.outputs.full }}
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - name: Determine release mode
+        id: mode
+        run: node scripts/ci-cost-policy.mjs
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Verify CI scheduling and release contracts
+        run: node --test scripts/ci-cost-policy.check.mjs scripts/release-ci-contract.check.mjs
+
   validate:
     name: validate
+    needs: preflight
+    if: ${{ needs.preflight.outputs.full == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -67,6 +96,8 @@ jobs:
 
   clocker-postgres:
     name: clocker-postgres
+    needs: preflight
+    if: ${{ needs.preflight.outputs.full == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -104,6 +135,8 @@ jobs:
 
   phase-d-attendance-ui:
     name: phase-d-attendance-ui
+    needs: preflight
+    if: ${{ needs.preflight.outputs.full == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
@@ -253,6 +286,8 @@ jobs:
 
   release-postgres:
     name: release-postgres
+    needs: preflight
+    if: ${{ needs.preflight.outputs.full == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -287,6 +322,8 @@ jobs:
 
   phase-e-postgres:
     name: phase-e-postgres
+    needs: preflight
+    if: ${{ needs.preflight.outputs.full == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     env:
@@ -347,6 +384,8 @@ jobs:
 
   phase-e-ui-suite:
     name: phase-e-ui-suite (${{ matrix.suite }})
+    needs: preflight
+    if: ${{ needs.preflight.outputs.full == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 50
     strategy:
@@ -435,7 +474,7 @@ jobs:
 
   phase-e-ui:
     name: phase-e-ui
-    if: ${{ always() }}
+    if: ${{ always() && (github.event_name != 'pull_request' || github.event.pull_request.draft != true) }}
     needs: [phase-e-ui-suite]
     runs-on: ubuntu-24.04
     timeout-minutes: 50
@@ -489,6 +528,11 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24.19.0
+      - name: Draft preflight is not release acceptance
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.draft == true }}
+        run: |
+          echo "Draft preflight only. Mark the PR ready for review or explicitly dispatch full CI before release acceptance."
+          exit 1
       - name: Reject any skipped or failed mandatory E/D regression job
         env:
           PHASE_E_EXPECTED_SHA: ${{ github.sha }}

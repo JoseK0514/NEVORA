@@ -3,9 +3,20 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import {verifyRequiredJobs, ownedExecutionTimeout} from './phase-e-owned.mjs';
+import {verifyMatrixDependency} from './phase-e-browser-evidence.mjs';
 const require=createRequire(import.meta.url);
 const workflow=require('js-yaml').load(readFileSync('.github/workflows/ci.yml','utf8'));
 const mandatory=['validate','clocker-postgres','release-postgres','phase-d-attendance-ui','phase-e-postgres','phase-e-ui'];
+const fullGate="${{ needs.preflight.outputs.full == 'true' }}";
+const aggregateGate="${{ always() && (github.event_name != 'pull_request' || github.event.pull_request.draft != true) }}";
+test('real browser aggregate accepts the workflow dependency envelope and rejects incomplete matrix results',()=>{
+ const actualNeeds=Object.fromEntries(workflow.jobs['phase-e-ui'].needs.map(name=>[name,{result:'success'}]));
+ assert.doesNotThrow(()=>verifyMatrixDependency(actualNeeds));
+ for(const result of ['failure','cancelled','skipped','neutral',undefined])
+  assert.throws(()=>verifyMatrixDependency({'phase-e-ui-suite':{result}}));
+ for(const invalid of [null,{}, {...actualNeeds,preflight:{result:'success'}}])
+  assert.throws(()=>verifyMatrixDependency(invalid));
+});
 test('runtime installers prefer the existing official mirror before every apt dependency step',()=>{
  for(const name of ['clocker-postgres','release-postgres','phase-e-postgres','phase-d-attendance-ui','phase-e-ui-suite']){
   const steps=workflow.jobs[name].steps,preference=steps.findIndex(step=>step.name==='Prefer official Ubuntu archive');
@@ -20,15 +31,28 @@ test('runtime installers prefer the existing official mirror before every apt de
 test('feature candidates run through PRs without a duplicate branch-push execution',()=>{
  assert.deepEqual(workflow.on.push.branches,['development','main']);
  for(const target of ['development','main','codex/verify-preview-33'])assert(workflow.on.pull_request.branches.includes(target));
- assert.equal(workflow.concurrency['cancel-in-progress'],"${{ github.event_name == 'pull_request' }}");
+ assert.equal(workflow.concurrency['cancel-in-progress'],true);
+ assert.equal(workflow.concurrency.group,'${{ github.workflow }}-${{ github.ref }}');
+ assert.deepEqual(workflow.on.pull_request.types,['opened','synchronize','reopened','ready_for_review','converted_to_draft']);
+ assert(Object.hasOwn(workflow.on,'workflow_dispatch'));
 });
-test('all triggered candidate branches receive mandatory SQL and browser gates',()=>{
+test('ready/manual/push candidates retain every mandatory SQL and browser gate after preflight',()=>{
+ const preflight=workflow.jobs.preflight;
+ assert(preflight,'Missing cheap preflight');assert.equal(preflight.if,undefined);
+ assert.equal(preflight['timeout-minutes'],5);
+ assert.deepEqual(preflight.outputs,{full:'${{ steps.mode.outputs.full }}'});
+ assert(preflight.steps.some(step=>step.id==='mode'&&step.run==='node scripts/ci-cost-policy.mjs'&&step.if===undefined));
+ assert(preflight.steps.some(step=>step.run==='node --test scripts/ci-cost-policy.check.mjs scripts/release-ci-contract.check.mjs'&&step.if===undefined));
  for(const name of mandatory) {
   assert(workflow.jobs[name], 'Missing mandatory gate '+name);
-  assert.equal(workflow.jobs[name].if,name === 'phase-e-ui' ? '${{ always() }}' : undefined,'Branch-dependent skipping is forbidden for '+name);
+  assert.equal(workflow.jobs[name].if,name === 'phase-e-ui' ? aggregateGate : fullGate,'Release candidate gate changed for '+name);
+  if(name!=='phase-e-ui')assert.equal(workflow.jobs[name].needs,'preflight');
  }
  assert.deepEqual([...workflow.jobs['phase-e-evidence'].needs].sort(),[...mandatory].sort());
  assert.match(workflow.jobs['phase-e-evidence'].if,/^\$\{\{\s*always\(\)\s*\}\}$/);
+ const draft=workflow.jobs['phase-e-evidence'].steps.find(step=>step.name==='Draft preflight is not release acceptance');
+ assert(draft);assert.equal(draft.if,"${{ github.event_name == 'pull_request' && github.event.pull_request.draft == true }}");
+ assert.match(draft.run,/exit 1/,'Deferred checks must not produce release acceptance');
 });
 test('existing aggregate rejects failed, cancelled, skipped, neutral and missing jobs',()=>{
  const pass=Object.fromEntries(mandatory.map(name=>[name,{result:'success'}]));
@@ -56,12 +80,12 @@ test('all-browser budget fits the existing job while single-suite and SQL budget
 
 test('five bounded leaves retain strict current-source aggregation and unique raw artifacts',()=>{
  const leaf=workflow.jobs['phase-e-ui-suite'], aggregate=workflow.jobs['phase-e-ui'];
- assert.equal(leaf.if,undefined);
+ assert.equal(leaf.if,fullGate);assert.equal(leaf.needs,'preflight');
  assert.deepEqual(leaf.strategy,{ 'fail-fast':false, 'max-parallel':2, matrix:{suite:['home','communications','calendar','navigation','attention']} });
  assert.equal(leaf.env.PHASE_E_EXPECTED_SHA,'${{ github.sha }}');
  assert.equal(leaf.env.PHASE_E_BROWSER_SUITE,'${{ matrix.suite }}');
  assert.deepEqual(aggregate.needs,['phase-e-ui-suite']);
- assert.equal(aggregate.if,'${{ always() }}');
+ assert.equal(aggregate.if,aggregateGate);
  for(const job of [leaf,aggregate]) {
   assert.equal(job['continue-on-error'],undefined);
   assert.equal(job.permissions,undefined);

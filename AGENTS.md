@@ -12,6 +12,15 @@ new branches, verify their work, then update the recorded heads and dispositions
 The check reports drift; it never merges branches automatically. Main and
 production still require Jose's explicit authorization.
 
+## CI spending discipline
+
+Keep iterative work in draft PRs and batch fixes after focused local checks.
+Mark a stable candidate ready for review to run full CI; return to draft before
+another fix wave. Draft preflight is not release acceptance. Explicit manual CI
+dispatch runs the full suite. Preserve all mandatory matching-candidate checks
+before integration/release; do not use a historical green run or diagnostic as
+their replacement. Avoid duplicate dispatches while the same candidate runs.
+
 ## Executive operating model
 Before material application code, test, schema/database, configuration, CI/CD,
 infrastructure, security, deployment, or release work, read:

@@ -113,11 +113,14 @@ function leaf(source, custody, evidence, suite) {
     localMirrorVerified: true, sourceUnchanged: true, evidenceRoot: evidence, receipts: validated.receipts,
   }, null, 2));
 }
-function aggregate(source, custody, evidence) {
-  const needs = JSON.parse(process.env.PHASE_E_CI_NEEDS_JSON ?? 'null');
+export function verifyMatrixDependency(needs) {
   assert(needs && typeof needs === 'object');
   assert.deepEqual(Object.keys(needs), ['phase-e-ui-suite'], 'Missing/extra matrix dependency');
   assert.equal(needs['phase-e-ui-suite'].result, 'success', 'Matrix did not succeed');
+}
+function aggregate(source, custody, evidence) {
+  const needs = JSON.parse(process.env.PHASE_E_CI_NEEDS_JSON ?? 'null');
+  verifyMatrixDependency(needs);
   const artifacts = externalEvidence(source, process.env.PHASE_E_ARTIFACTS_DIR);
   assert.notEqual(artifacts, evidence, 'Aggregate output must be separate');
   rejectLinks(artifacts);
