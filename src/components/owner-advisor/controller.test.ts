@@ -16,6 +16,21 @@ const snap = () => ({
   validForMs: 15000,
 });
 afterEach(() => vi.useRealTimers());
+it("inspects without a provider, fences the result with fresh access and retires it on pause", async () => {
+  vi.useFakeTimers();
+  let state: AdvisorView | undefined;
+  const calls: string[] = [];
+  const c = createAdvisorController(v => { state = v; }, async (_url, init) => {
+    calls.push(init?.method ?? "GET");
+    const snapshot = { ...snap(), connection: "unavailable" };
+    return Response.json(init?.method === "POST" ? { state: "answered", answer: { text: "Prepared coverage", sources: [], proposals: [] }, authority: snapshot.authority, observedAt: snapshot.observedAt, validForMs: 15000 } : snapshot);
+  });
+  c.start(); await vi.advanceTimersByTimeAsync(0);
+  await c.inspect({ name: "coverage_proposals", args: { date: "2026-10-22" } });
+  expect(calls).toEqual(["GET", "POST", "GET"]);
+  expect(state?.answer?.proposals).toEqual([]);
+  c.pause(); expect(state?.answer).toBeNull(); c.stop();
+});
 it("refreshes before expiry without replacing dirty priorities, then retires private data and ignores late replies", async () => {
   vi.useFakeTimers();
   let state: AdvisorView | undefined;

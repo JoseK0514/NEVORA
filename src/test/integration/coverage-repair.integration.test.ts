@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { Client } from 'pg';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 const context = vi.hoisted(() => ({ executor: null as SqlExecutor | null, token: 'owned-manager-gap-session' }));
 vi.mock('@/lib/db', () => {
@@ -38,8 +38,9 @@ async function prepare(target: CoverageRepairLocator['target'] = 'POSITION') {
   const locator: CoverageRepairLocator = { version: 1, weekStart: week, gapKey: `loc-1|${week}|08:00|12:00`, locationId: 'loc-1', date: week, startTime: '08:00', endTime: '12:00', target,
     ...(target === 'POSITION' ? { positionId: 'barista' } : {}), reported: { missingStaff: 2, requiresLead: true, positions: [{ positionId: 'barista', missing: 1 }] } };
   const review = createCoverageRepairReview(await source(), locator, 'E', proof);
-  const command = { review, employeeId: 'E', locationId: 'loc-1', weekStart: week, date: week, startTime: '08:00', endTime: '12:00', ...(target === 'POSITION' ? { positionId: 'barista' } : {}), isDesignatedLead: true, actorEmployeeId: 'M', proof };
+  const command = { review, employeeId: 'E', locationId: 'loc-1', weekStart: week, date: week, startTime: '08:00', endTime: '12:00', ...(target === 'POSITION' ? { positionId: 'barista' } : {}), isDesignatedLead: true, publicationConsent: true, actorEmployeeId: 'M', proof };
   const form = new FormData(); Object.entries({ coverageRepairReview: review, employeeId: 'E', locationId: 'loc-1', weekStart: week, date: week, startTime: '08:00', endTime: '12:00', positionId: target === 'POSITION' ? 'barista' : '', isDesignatedLead: 'on', actorEmployeeId: 'FORGED' }).forEach(([k,v]) => form.set(k,v));
+  form.set('publicationConsent', 'on');
   return { proof, locator, review, command, form };
 }
 async function controlled(defer: (cleanup: () => void | Promise<unknown>) => void, pause: (s: SqlStatement) => boolean = () => false) {
@@ -67,11 +68,10 @@ async function expireAfterDatabaseClock() {
 }
 
 describe.skipIf(!enabled)('BA-MGR-001 owned SQL', () => {
-  beforeAll(async () => { db = await createDisposableGenerationDatabase(); });
-  afterAll(async () => { await db?.dispose(); });
+  afterEach(async () => { await db?.dispose(); });
   beforeEach(async () => {
+    db = await createDisposableGenerationDatabase();
     context.executor = db.executor; context.token = 'owned-manager-gap-session';
-    await q('TRUNCATE employees,schedules,positions,location_coverage_windows,schedule_week_settings RESTART IDENTITY CASCADE');
     await q("UPDATE workspaces SET active=true,time_zone='America/Puerto_Rico'; UPDATE locations SET active=true; UPDATE locations SET short_name='Fictional South' WHERE id='loc-1'; UPDATE location_staffing_settings SET minimum_staff_per_shift=2,requires_designated_lead=true");
     await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('M','Fictional','Manager','NONE','MANAGER','loc-1'),('E','Fictional','Qualified','NONE','LEAD','loc-1'),('U','Fictional','Unqualified','NONE','EMPLOYEE','loc-1'),('F','Fictional','Alternate','NONE','LEAD','loc-1'); INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('M','loc-1'),('E','loc-1'),('E','loc-2'),('U','loc-1'),('F','loc-1'); INSERT INTO positions(id,workspace_id,name) VALUES('barista','workspace-fuel','Barista'),('cashier','workspace-fuel','Cashier'); INSERT INTO employee_positions(employee_id,position_id) VALUES('E','barista'),('F','barista'); INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES('coverage','loc-1',1,'08:00','12:00'); INSERT INTO coverage_window_position_requirements(coverage_window_id,position_id,quantity) VALUES('coverage','barista',1)");
     await q("INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) SELECT e.id||'-normal-'||d,e.id,d,'00:00','24:00' FROM employees e CROSS JOIN generate_series(0,6) d");

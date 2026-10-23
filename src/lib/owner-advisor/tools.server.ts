@@ -7,7 +7,9 @@ import {
 } from "@/lib/data/generation-guards";
 import { mapSchedulingSourceFacts } from "@/lib/data/scheduling-source-facts";
 import { calculateScheduleHealth } from "@/lib/scheduling/schedule-health";
-import { deriveCoverageRepair } from "@/lib/data/coverage-repair.server";
+import { deriveCoverageRepair, createCoverageRepairReview } from "@/lib/data/coverage-repair.server";
+import { readPeriodReview } from "./period-review.server";
+import type { CoverageProposal } from "./workflow-contracts";
 import { reportedCoverageState } from "@/lib/scheduling/coverage-repair";
 import { addDays, weekStartFor, durationMinutes } from "@/lib/date-utils";
 import { AdvisorStore } from "./store.server";
@@ -67,6 +69,7 @@ export class AdvisorTools {
     const { proof, original, ex } = this.store;
     await checkOwner(proof, original, ex);
     if (call.name === "company_briefing") return this.briefing();
+    if (call.name === "attendance_payroll_review") return readPeriodReview(this.store, call.args);
     const date = call.args.date,
       week = weekStartFor(date),
       href = `/app/schedule?week=${week}`;
@@ -153,7 +156,8 @@ export class AdvisorTools {
     const blocks = health.coverageBlocks.filter(
       (b) => b.date === date && !b.covered,
     );
-    let partial = blocks.length > 10;
+    let partial = blocks.length > 10 || blocks.some(b => b.gap === null || b.requiresLead === null);
+    const proposals: CoverageProposal[] = [];
     const gaps = blocks.slice(0, 10).map((b) => {
       const locator = {
         version: 1 as const,
@@ -188,6 +192,18 @@ export class AdvisorTools {
               : {}),
           });
           if (result.candidates.length > 10) partial = true;
+          if (call.name === "coverage_proposals" && result.status === "READY") {
+            for (const c of result.candidates.filter(c => c.evaluation.eligible)) {
+              if (proposals.length >= 3) { partial = true; break; }
+              const schedule = facts.schedules.find(s => s.locationId === b.locationId && s.weekStart === week);
+              if (schedule?.status === "ARCHIVED") continue;
+              proposals.push({ employeeName: short(c.employeeName), locationId: b.locationId, locationName: short(b.locationName), date,
+                startTime: b.startTime, endTime: b.endTime, positionName: result.position ? short(result.position.name) : null,
+                isDesignatedLead: result.designatedLead, scheduledHours: c.scheduledHours, targetHours: c.targetHours ?? null,
+                publication: schedule?.status === "PUBLISHED" ? "PUBLISHED" : "DRAFT",
+                review: createCoverageRepairReview(row.source, result.locator, c.employeeId, proof) });
+            }
+          }
           return {
             target: target.target,
             ...("positionId" in target
@@ -222,6 +238,7 @@ export class AdvisorTools {
         },
       ],
       partial,
+      ...(call.name === "coverage_proposals" ? { proposals } : {}),
       data: {
         date,
         basis: "CURRENT_SCHEDULING_LEDGER_INCLUDES_DRAFT_COMMITMENTS",

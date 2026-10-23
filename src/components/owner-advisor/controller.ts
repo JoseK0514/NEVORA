@@ -12,7 +12,7 @@ export type AdvisorView = {
   question: string;
   priorities: string;
   dirty: boolean;
-  busy: "ask" | "save" | "review" | null;
+  busy: "ask" | "save" | "review" | "inspect" | null;
   loading: boolean;
   message: string;
   uncertain: boolean;
@@ -180,7 +180,7 @@ export function createAdvisorController(
     const epoch = generation,
       controller = new AbortController();
     operation = controller;
-    publish({ busy: command.op === "ask" ? "ask" : command.op === "review_briefing" ? "review" : "save", message: "" });
+    publish({ busy: command.op === "inspect" ? "inspect" : command.op === "ask" ? "ask" : command.op === "review_briefing" ? "review" : "save", message: "", ...(command.op === "inspect" ? { answer: null } : {}) });
     const timeout = setTimeout(() => controller.abort(), 60000);
     try {
       const response = await request("/api/owner/advisor", {
@@ -221,7 +221,7 @@ export function createAdvisorController(
         return;
       }
       const result =
-        command.op === "ask" ? parseAnswer(body) : command.op === "review_briefing" ? parseBriefingReviewed(body) : parseSaved(body);
+        command.op === "ask" || command.op === "inspect" ? parseAnswer(body) : command.op === "review_briefing" ? parseBriefingReviewed(body) : parseSaved(body);
       controller.signal.throwIfAborted();
       if (result.authority !== authority) {
         retire("Your access changed. Refresh to continue.");
@@ -326,6 +326,9 @@ export function createAdvisorController(
         requestId: crypto.randomUUID(),
         message: v.question,
       });
+    },
+    inspect(tool: Extract<AdvisorCommand, { op: "inspect" }>["tool"]) {
+      return submit({ op: "inspect", requestId: crypto.randomUUID(), tool });
     },
     save() {
       if (

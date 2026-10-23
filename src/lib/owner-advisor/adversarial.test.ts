@@ -78,7 +78,7 @@ it("supplies fresh facts independently of stale history and keeps credentials ou
   expect(body.input).toContainEqual({ role: "assistant", content: "Yesterday there were 20 shifts." });
   expect(body.input.at(-1).content).toContain('"scheduled":2');
   expect(body.input.at(-1).content).toContain('"partial":true');
-  expect(body.tools.map((t: { name: string }) => t.name)).toEqual(["company_briefing", "published_staffing", "coverage_investigation"]);
+  expect(body.tools.map((t: { name: string }) => t.name)).toEqual(["company_briefing", "published_staffing", "coverage_proposals", "attendance_payroll_review", "coverage_investigation"]);
   expect(JSON.stringify(body)).not.toContain(config.key + '"');
   expect(result.sources).toEqual([source]);
 });

@@ -1,8 +1,8 @@
-/** Public contracts contain no session proof or provider secrets. */
+import { parsePeriod } from "@/lib/timecards/project";
 export type AdvisorMessage = { role: "user" | "assistant"; content: string };
 export type AdvisorSource = { label: string; href: string; observedAt: string };
 export type AdvisorProfile = { priorities: string; revision: number };
-export type AdvisorAnswer = { text: string; sources: AdvisorSource[] };
+export type AdvisorAnswer = { text: string; sources: AdvisorSource[] } & import("./workflow-contracts").WorkflowEvidence;
 export type AdvisorSnapshot = {
   state: "ready";
   connection: "available" | "unavailable";
@@ -15,6 +15,7 @@ export type AdvisorSnapshot = {
   validForMs: number;
 };
 export type AdvisorCommand =
+  | { op: "inspect"; requestId: string; tool: Extract<ToolCall, { name: "attendance_payroll_review" }> | { name: "coverage_proposals"; args: { date: string } } }
   | { op: "ask"; requestId: string; message: string }
   | { op: "review_briefing"; requestId: string; issueId: string; fingerprint: string; expectedRevision: number; disposition: import("./briefing-contracts").AttentionDisposition }
   | {
@@ -51,6 +52,11 @@ export function parseCommand(v: unknown): AdvisorCommand {
     )
   )
     throw new AdvisorError("invalid");
+  if (v.op === "inspect" && Object.keys(v).sort().join(",") === "op,requestId,tool" && record(v.tool) && Object.keys(v.tool).sort().join(",") === "args,name") {
+    const tool = parseTool(v.tool.name, JSON.stringify(v.tool.args));
+    if (tool.name === "attendance_payroll_review" || tool.name === "coverage_proposals") return { op: "inspect", requestId: v.requestId.toLowerCase(), tool };
+    throw new AdvisorError("invalid");
+  }
   if (
     v.op === "review_briefing" && Object.keys(v).sort().join(",") === "disposition,expectedRevision,fingerprint,issueId,op,requestId" &&
     typeof v.issueId === "string" && /^[a-f0-9]{64}$/.test(v.issueId) &&
@@ -89,12 +95,14 @@ export function parseCommand(v: unknown): AdvisorCommand {
   throw new AdvisorError("invalid");
 }
 export type ToolCall =
+  | { name: "attendance_payroll_review"; args: { startDate: string; endDate: string; language: "en" | "es" } }
+  | { name: "coverage_proposals"; args: { date: string } }
   | { name: "company_briefing"; args: Record<string, never> }
   | {
       name: "published_staffing" | "coverage_investigation";
       args: { date: string };
     };
-export type ToolResult = {
+export type ToolResult = import("./workflow-contracts").WorkflowEvidence & {
   observedAt: string;
   sources: AdvisorSource[];
   partial: boolean;
@@ -110,10 +118,14 @@ export function parseTool(name: unknown, args: unknown): ToolCall {
     throw new AdvisorError("invalid");
   }
   if (!record(v)) throw new AdvisorError("invalid");
+  if (name === "attendance_payroll_review" && Object.keys(v).sort().join(",") === "endDate,language,startDate" && typeof v.startDate === "string" && typeof v.endDate === "string" && /^20/.test(v.startDate) && /^20/.test(v.endDate) && (v.language === "en" || v.language === "es")) {
+    try { return { name, args: { ...parsePeriod(v.startDate, v.endDate), language: v.language } }; }
+    catch { throw new AdvisorError("invalid"); }
+  }
   if (name === "company_briefing" && Object.keys(v).length === 0)
     return { name, args: {} };
   if (
-    (name === "published_staffing" || name === "coverage_investigation") &&
+    (name === "published_staffing" || name === "coverage_investigation" || name === "coverage_proposals") &&
     Object.keys(v).join(",") === "date" &&
     typeof v.date === "string" &&
     /^20\d\d-\d\d-\d\d$/.test(v.date) &&

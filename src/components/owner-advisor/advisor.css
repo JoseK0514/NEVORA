@@ -113,7 +113,7 @@
   font-weight: 600;
   margin: 16px 0 8px;
 }
-.oa-section textarea {
+.oa-section :is(textarea, input[type="date"], select) {
   display: block;
   width: 100%;
   min-width: 0;
@@ -133,9 +133,12 @@
   background: var(--cm-fill);
   overflow-wrap: anywhere;
 }
-.oa-page :is(button, textarea, a, summary):focus-visible {
+.oa-page :is(button, textarea, input, select, a, summary):focus-visible {
   outline: 2px solid var(--cm-tint);
   outline-offset: 3px;
+}
+.oa-section form > .nv-btn {
+  margin-top: 16px;
 }
 @media (max-width: 760px) {
   .oa-content {

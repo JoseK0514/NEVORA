@@ -9,6 +9,7 @@ import {
   TEST_PASSWORD,
 } from "./owned-app-fixture";
 import { hashPassword } from "../../lib/auth/password";
+import { fictionalProfile } from "../fixtures/shift-changes";
 it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and WebKit", async () => {
   const evidence = process.env.NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE;
   if (!evidence) throw Error("Explicit external evidence directory required");
@@ -40,6 +41,13 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
       text: "INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)",
       values: ["OA-EMPLOYEE", await hashPassword(TEST_PASSWORD)],
     });
+    await app.database.executor.query({ text: `UPDATE location_coverage_windows SET start_time='08:00',end_time='12:00' WHERE id='qa-loc-1-1';
+      INSERT INTO coverage_window_position_requirements(coverage_window_id,position_id,quantity) VALUES('qa-loc-1-1','qa-pos',1);
+      INSERT INTO employee_positions(employee_id,position_id) VALUES('OA-EMPLOYEE','qa-pos');
+      INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('OA-EMPLOYEE','loc-1');
+      INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) VALUES('oa-available','OA-EMPLOYEE',1,'00:00','24:00');
+      INSERT INTO weekly_availability_submissions(employee_id,week_start,uses_normal_availability) VALUES('OA-EMPLOYEE','2030-10-07',true),('OA-EMPLOYEE','2030-10-14',true);`, values: [] });
+    await app.database.executor.query({ text: "INSERT INTO employee_scheduling_settings(employee_id,target_weekly_hours,maximum_weekly_hours,operational_rule_profile) VALUES('OA-EMPLOYEE',20,80,$1::jsonb)", values: [JSON.stringify(fictionalProfile())] });
     const origin = app.url.replace("127.0.0.1", "localhost");
     for (const engine of ["chromium", "webkit"]) {
       const browser = await runtime[engine].launch({ headless: true });
@@ -161,6 +169,37 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
                   .getByRole("button", { name: "Ask", exact: true })
                   .isDisabled(),
               ).toBe(true);
+              const coverageDate = engine === 'chromium' ? '2030-10-07' : '2030-10-14';
+              await page.getByLabel('Coverage date', { exact: true }).fill(coverageDate);
+              await page.getByRole('button', { name: 'Prepare coverage options', exact: true }).click();
+              const proposals = page.getByRole('region', { name: 'Coverage proposals', exact: true });
+              await proposals.getByRole('link', { name: 'Review exact replacement', exact: true }).first().waitFor();
+              expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM shifts WHERE date=$1", values: [coverageDate] })).toEqual([{ n: 0 }]);
+              await proposals.getByRole('link', { name: 'Review exact replacement', exact: true }).first().click();
+              await page.getByRole('heading', { name: 'Review replacement', exact: true }).waitFor();
+              await page.getByText('Draft assignment', { exact: true }).waitFor();
+              await page.getByRole('button', { name: 'Save replacement', exact: true }).click();
+              await page.waitForURL(/saved=1/);
+              expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM shifts WHERE date=$1", values: [coverageDate] })).toEqual([{ n: 1 }]);
+              expect(await app.database.executor.query({ text: "SELECT status FROM schedules WHERE week_start=$1", values: [coverageDate] })).toEqual([{ status: 'DRAFT' }]);
+              expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM notifications", values: [] })).toEqual([{ n: 0 }]);
+              checks.push(engine + ': real proposal preview and canonical draft confirmation; no publication or notifications');
+              await page.goto(origin + '/app/ai-manager');
+              await page.getByLabel('Period start', { exact: true }).fill('2026-10-01');
+              await page.getByLabel('Period end', { exact: true }).fill('2026-10-07');
+              await page.getByLabel('Review language', { exact: true }).selectOption('es');
+              await page.getByRole('button', { name: 'Review attendance and payroll', exact: true }).click();
+              const periodReview = page.getByRole('region', { name: 'Excepciones del período', exact: true });
+              await periodReview.getByText(/Preparación de nómina sin verificar/).waitFor();
+              await periodReview.getByText('Nómina desactivada.', { exact: true }).waitFor();
+              for (const width of [320, 390, 1440]) {
+                await page.setViewportSize({ width, height: 1000 });
+                expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+                await page.screenshot({ path: resolve(evidence, engine + '-period-' + width + '.png'), fullPage: true });
+              }
+              checks.push(engine + ': real Spanish recorded-period review without provider; 320/390/1440px no overflow');
+              await page.reload();
+              await page.getByText('Your AI manager isn’t connected yet.', { exact: true }).waitFor();
               const attention = page.getByRole("region", { name: "Needs your attention", exact: true });
               await attention.getByRole("heading", { name: "Needs your attention", exact: true }).waitFor();
               const firstIssue = attention.locator("ol > li").first();

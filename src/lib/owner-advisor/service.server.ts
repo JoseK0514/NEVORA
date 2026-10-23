@@ -69,6 +69,17 @@ export async function advisorService(
     } satisfies AdvisorSnapshot;
   }
   const command = parseCommand(value);
+  if (command.op === "inspect") {
+    const result = await tools.run(command.tool);
+    return { state: "answered" as const, answer: {
+      text: command.tool.name === "coverage_proposals"
+        ? `Prepared ${result.proposals?.length ?? 0} coverage options from the current planning ledger, including drafts. Nothing has been saved. Review each exact replacement in Scheduling; other requirements may remain open.${result.partial ? " Some information or options are unavailable or omitted." : ""}`
+        : command.tool.args.language === "es"
+          ? "Revise las excepciones registradas del período. La preparación de nómina sigue sin verificar; abra Nómina para comprobar las reglas y los datos actuales. No se modificó ningún registro."
+          : "Review the period's recorded exceptions. Payroll readiness remains unverified; open Payroll to verify current rules and inputs. No records were changed.",
+      sources: result.sources, ...(result.proposals ? { proposals: result.proposals } : {}), ...(result.periodReview ? { periodReview: result.periodReview } : {}),
+    }, ...(await observation()) };
+  }
   if (command.op === "review_briefing") {
     const replay = await store.briefingReplay(command);
     if (replay) return { state: "briefing_reviewed" as const, revision: replay.revision, ...(await observation()) };

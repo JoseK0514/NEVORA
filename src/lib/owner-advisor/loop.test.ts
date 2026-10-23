@@ -37,6 +37,15 @@ const deps = () => ({
   })),
   signal: new AbortController().signal,
 });
+it("keeps executable proposal hints out of provider input and attaches only server-returned evidence", async () => {
+  const proposal = { employeeName: "Fictional", locationId: "L1", locationName: "North", date: "2026-10-22", startTime: "08:00", endTime: "12:00", positionName: null, isDesignatedLead: false, scheduledHours: 12, targetHours: null, publication: "DRAFT" as const, review: "PRIVATE_REVIEW_HINT" };
+  const fetch = transport([call("coverage_proposals", '{"date":"2026-10-22"}'), answer]);
+  const tool = vi.fn(async (c: import("./contracts").ToolCall) => ({ observedAt: "2026-10-22T12:00:00Z", sources: [], partial: false, data: {}, ...(c.name === "coverage_proposals" ? { proposals: [proposal] } : {}) }));
+  const result = await investigate(config, [], "", "Prepare coverage", { ...deps(), tool, fetch });
+  expect(result.proposals).toEqual([proposal]);
+  expect(String(fetch.mock.calls[1][1].body)).not.toContain("PRIVATE_REVIEW_HINT");
+  expect(String(fetch.mock.calls[1][1].body)).toContain("Fictional");
+});
 describe("Owner investigation boundaries", () => {
   it("requires all explicit configuration", () => {
     expect(readConfig({})).toBeNull();

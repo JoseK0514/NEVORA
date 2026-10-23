@@ -29,6 +29,16 @@ const snapshot = parseSnapshot({
   observedAt: "2026-10-22T12:00:00Z",
   validForMs: 15000,
 });
+it("offers both explicit workflows without a provider and renders server-owned exact proposals", () => {
+  const html = renderToStaticMarkup(<AdvisorScreen view={{ ...initialView, loading: false, snapshot, answer: {
+    text: "Prepared options", sources: [], proposals: [{ employeeName: "Fictional Ana", locationId: "L1", locationName: "North", date: "2026-10-22", startTime: "08:00", endTime: "12:00", positionName: "Barista", isDesignatedLead: false, scheduledHours: 12, targetHours: 20, publication: "DRAFT", review: "abc123" }],
+  } }} actions={actions} />);
+  expect(html).toContain("Prepare coverage options");
+  expect(html).toContain("Review attendance and payroll");
+  expect(html).toContain("Fictional Ana");
+  expect(html).toContain('/app/schedule/new?review=abc123');
+  expect(html).toContain("Draft assignment");
+});
 it("renders loading and error without exposing prior data", () => {
   expect(
     renderToStaticMarkup(

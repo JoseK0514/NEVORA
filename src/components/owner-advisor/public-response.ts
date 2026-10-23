@@ -34,6 +34,7 @@ function sources(v: unknown) {
         date(s.observedAt) &&
         typeof s.href === "string" &&
         (/^\/app$/.test(s.href) ||
+          /^\/app\/payroll$/.test(s.href) || /^\/app\/timecards\?start=20\d\d-\d\d-\d\d&end=20\d\d-\d\d-\d\d$/.test(s.href) ||
           (/^\/app\/schedule\?week=20\d\d-\d\d-\d\d$/.test(s.href) &&
             date(s.href.slice(-10)))),
     );
@@ -123,6 +124,27 @@ export function parseAnswer(value: unknown): AnswerResponse {
   );
   stamp(value);
   sources(value.answer.sources);
+  const a = value.answer;
+  if (a.proposals !== undefined) {
+    requireValue(Array.isArray(a.proposals) && a.proposals.length <= 3);
+    for (const p of a.proposals) requireValue(record(p) && text(p.employeeName, 200) && text(p.locationId, 400) && text(p.locationName, 200) &&
+      typeof p.date === "string" && /^20\d\d-\d\d-\d\d$/.test(p.date) && date(p.date) &&
+      typeof p.startTime === "string" && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(p.startTime) && typeof p.endTime === "string" && /^(?:(?:[01]\d|2[0-3]):[0-5]\d|24:00)$/.test(p.endTime) &&
+      (p.positionName === null || text(p.positionName, 200)) && typeof p.isDesignatedLead === "boolean" &&
+      typeof p.scheduledHours === "number" && Number.isFinite(p.scheduledHours) && p.scheduledHours >= 0 && (p.targetHours === null || typeof p.targetHours === "number" && Number.isFinite(p.targetHours) && p.targetHours >= 0) &&
+      ["DRAFT", "PUBLISHED"].includes(String(p.publication)) && typeof p.review === "string" && p.review.length > 0 && p.review.length <= 16384 && /^[A-Za-z0-9_-]+$/.test(p.review));
+  }
+  if (a.periodReview !== undefined) {
+    const p = a.periodReview;
+    requireValue(record(p) && date(p.startDate) && date(p.endDate) && date(p.observedAt) && ["en", "es"].includes(String(p.language)) && p.readiness === "unverified" && typeof p.partial === "boolean" &&
+      record(p.attendance) && ["ready", "unavailable"].includes(String(p.attendance.state)) && count(p.attendance.total) && Array.isArray(p.attendance.employees) && p.attendance.employees.length <= 100 &&
+      record(p.payroll) && ["ready", "disabled", "unavailable"].includes(String(p.payroll.state)) && Array.isArray(p.payroll.runs) && p.payroll.runs.length <= 10);
+    for (const c of p.attendance.employees) requireValue(record(c) && text(c.name, 200) && ["DRAFT", "APPROVED", "FINALIZED", "REOPENED", "NEEDS_REVIEW"].includes(String(c.state)) && count(c.revision) && typeof c.historical === "boolean" &&
+      Array.isArray(c.locations) && c.locations.length <= 20 && c.locations.every(l => text(l, 200)) && Array.isArray(c.issues) && c.issues.length <= 10 && c.issues.every(i => typeof i === "string" && /^[a-z_]+$/.test(i)));
+    for (const r of p.payroll.runs) requireValue(record(r) && typeof r.id === "string" && /^[a-f0-9-]{36}$/i.test(r.id) && count(r.revision) && date(r.startDate) && date(r.endDate) &&
+      ["WAITING_FOR_AMOUNTS", "BLOCKED", "REVIEW_REQUIRED", "APPROVED"].includes(String(r.status)) && (r.ruleRevision === null || count(r.ruleRevision)) && typeof r.superseded === "boolean" && typeof r.coverageComplete === "boolean" &&
+      Array.isArray(r.codes) && r.codes.length <= 20 && r.codes.every(c => typeof c === "string" && /^[A-Z_]+$/.test(c)));
+  }
   return value as AnswerResponse;
 }
 export function parseSaved(value: unknown): {

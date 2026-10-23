@@ -10,6 +10,7 @@ import {
 import "./advisor.css";
 import { bindAdvisorLifecycle } from "./lifecycle";
 import { AttentionSection } from "./attention";
+import { WorkflowControls, WorkflowResults } from "./workflows";
 import type { AttentionDisposition } from "@/lib/owner-advisor/briefing-contracts";
 const starters = [
   "What needs my attention today?",
@@ -47,6 +48,7 @@ export function AdvisorScreen({
     refresh: () => void;
     reviewConflict: () => void;
     reviewItem?: (id: string, disposition: AttentionDisposition) => void;
+    inspect?: (tool: Extract<import("@/lib/owner-advisor/contracts").AdvisorCommand, { op: "inspect" }>["tool"]) => void;
   };
 }) {
   const current = view.snapshot;
@@ -131,6 +133,7 @@ export function AdvisorScreen({
               )}
               <Sources sources={current.briefing.sources} />
             </section>
+            <WorkflowControls date={current.briefing.data?.date ?? current.observedAt.slice(0, 10)} disabled={disabled} inspect={tool => actions.inspect?.(tool)} />
             <div className="oa-columns">
               <section className="oa-section" aria-labelledby="oa-conversation">
                 <h2 id="oa-conversation">Conversation</h2>
@@ -151,6 +154,7 @@ export function AdvisorScreen({
                   <article className="oa-answer" aria-label="Latest answer">
                     <h3>Answer and reasoning</h3>
                     <p className="oa-plain">{view.answer.text}</p>
+                    <WorkflowResults answer={view.answer} />
                     <Sources sources={view.answer.sources} />
                   </article>
                 )}
@@ -300,6 +304,7 @@ export function OwnerAdvisor() {
         refresh: () => ref.current?.start(),
         reviewConflict: () => ref.current?.reviewConflict(),
         reviewItem: (id, disposition) => void ref.current?.reviewItem(id, disposition),
+        inspect: tool => void ref.current?.inspect(tool),
       }}
     />
   );
