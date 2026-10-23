@@ -42,6 +42,10 @@ it("prepares exact eligible proposals without inference or writes; confirmation 
   expect(await f.q("SELECT count(*)::int n FROM schedule_publication_revisions")).toEqual([{ n: 0 }]);
   expect(await f.q("SELECT count(*)::int n FROM notifications")).toEqual([{ n: 0 }]);
 });
+it("reports unconfigured coverage as incomplete even when there are no computed gap blocks", async () => {
+  const result = await inspect(coverage);
+  expect(result).toMatchObject({ state: "answered", answer: { text: expect.stringContaining("Some information or options are unavailable or omitted."), proposals: [] } });
+});
 it("rejects stale and revoked previews without assigning anyone", async () => {
   await seedCoverage(); const result = await inspect(coverage);
   if (result.state !== "answered") throw Error("Expected answer");

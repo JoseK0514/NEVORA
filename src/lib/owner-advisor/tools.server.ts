@@ -156,7 +156,7 @@ export class AdvisorTools {
     const blocks = health.coverageBlocks.filter(
       (b) => b.date === date && !b.covered,
     );
-    let partial = blocks.length > 10 || blocks.some(b => b.gap === null || b.requiresLead === null);
+    let partial = blocks.length > 10 || health.setupIssues.length > 0 || !facts.locations.some(l => l.active) || blocks.some(b => b.gap === null || b.requiresLead === null);
     const proposals: CoverageProposal[] = [];
     const gaps = blocks.slice(0, 10).map((b) => {
       const locator = {
@@ -242,6 +242,7 @@ export class AdvisorTools {
       data: {
         date,
         basis: "CURRENT_SCHEDULING_LEDGER_INCLUDES_DRAFT_COMMITMENTS",
+        setupIssues: health.setupIssues.slice(0, 100).map(i => ({ code: i.code, locationId: i.locationId })),
         gaps,
       },
     };
