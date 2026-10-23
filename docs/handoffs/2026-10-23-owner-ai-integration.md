@@ -1,6 +1,6 @@
 # Owner AI combined candidate: independent review and integration handoff
 
-Status: LOCAL REVIEW COMPLETE WITH CONDITIONS; PUBLICATION/DEVELOPMENT/HOSTED GATES OPEN.
+Status: LOCAL REVIEW COMPLETE WITH CONDITIONS; SOURCE INVENTORY PASSED; PUBLICATION/DEVELOPMENT/HOSTED GATES OPEN.
 
 Jose authorized full review and development integration of the Owner advisor, prioritized briefing and reviewed workflows. Production remains a separate decision. This handoff records actual executions and distinguishes the local application candidate from the still-unmodified remote PR.
 
@@ -42,6 +42,7 @@ Three additional native arrow/menu keyboard attempts remain failed. Plain native
 | Pilot guard / inventory and inspection guard regressions | Exit 0 at final application candidate; no paid calls |
 | Historical inspector custody check | PASS: 409 files / 50 reports / 310 screenshots. Historical archive custody only, no findings acceptance |
 | Dependency audits | Production-only audit: zero vulnerabilities; final full dependency audit: zero vulnerabilities |
+| Fresh development source inventory | PASS: 55 classified sources, five active branches; exact archives, included sources and current development verified after fetch/prune/tags |
 
 All database testing used fresh owned loopback PostgreSQL and fictional data. No production credentials, customer records, real notifications, hosted database writes or newly metered inference were used. Browser answer/error/cancel fixtures are explicitly synthetic; they do not establish real-model semantics.
 
@@ -56,8 +57,8 @@ Raw reviewer reports are copied unchanged under [the review directory](../review
 
 ## Remaining release gates
 
-1. The active “Verify Manager/Owner rebuild” task owns archived-branch retirement. Base development's actual workflow [39988584243](https://github.com/JoseK0514/NEVORA/actions/runs/39988584243) passed all 12 mandatory jobs. At last remote check, 56 heads remained; the five-branch ceiling and final PR26 recovery tag still block source-inventory compliance. Do not race the existing cleanup owner or weaken the ceiling. Fetch and rerun `npm run check:development-sources` after its work.
-2. Once the source gate passes, verify remote PR25 still has the expected ancestor, publish the combined candidate by normal fast-forward, attach/update its title and review description, and obtain complete exact-candidate/test-merge cloud CI. Preserve actual SHA and artifacts; no pending/skipped mandatory job counts as success.
+1. Source gate is satisfied at this snapshot. The “Verify Manager/Owner rebuild” task owns archived-branch retirement; its operation is observed remotely, with five heads and the exact PR26 recovery tag. After fresh fetch/prune/tags, `npm run check:development-sources` PASSes with 55 classified sources, five active branches and exact archive/inclusion/current-development checks. Base development's actual workflow [39988584243](https://github.com/JoseK0514/NEVORA/actions/runs/39988584243) passed all 12 mandatory jobs. No branch was retired here. Observe the existing owner's completed post-operation retainer checks before changing PR25; preserve its worktrees and the mandatory ceiling.
+2. Recheck the source gate and verify remote PR25 still has the expected ancestor, publish the combined candidate by normal fast-forward, attach/update its title and review description, and obtain complete exact-candidate/test-merge cloud CI. Preserve actual SHA and artifacts; no pending/skipped mandatory job counts as success.
 3. Merge only into development as authorized after all mandatory candidate gates. Verify the actual merge parents/tree and matching development-push CI before calling development integration verified.
 4. Hosted acceptance needs an approved isolated non-production database, least-privilege credentials, exact environment binding and rollback. The separately prepared Preview setup is still held for hosted database authorization. Never substitute its legacy Preview database or production bindings. This candidate's canonical chain has 40 BASE plus two FINAL migrations; held tenant migration files stay excluded. AI additions are `0036_owner_advisor.sql` and `0037_owner_briefing_reviews.sql`; neither was run on a hosted target here.
 5. The original $5 pilot is exhausted at 20 reserved attempts. A new cap question is pending. Preserve the original ledger; do not reset it, create another allocation under the old authorization or call a provider without a newly authorized campaign. Live answer-quality acceptance remains open.
