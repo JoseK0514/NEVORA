@@ -242,7 +242,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.mobile-nav .mo
 .sig-skeleton__lines > span:first-child { width: 62%; height: 14px; }
 .sig-skeleton__lines > span:nth-child(n + 3) { width: 40%; }
 .sig-skeleton__tile, .sig-skeleton__lines > span {
-  background: linear-gradient(90deg, var(--sig-track, #EEECE7) 0%, #F6F5F1 50%, var(--sig-track, #EEECE7) 100%) 0 0 / 200% 100%;
+  background: linear-gradient(90deg, var(--sig-track, #EEECE7) 0%, var(--sig-fill-soft) 50%, var(--sig-track, #EEECE7) 100%) 0 0 / 200% 100%;
   animation: sig-sheen 1.4s linear infinite;
 }
 @keyframes sig-sheen { to { background-position: -200% 0; } }

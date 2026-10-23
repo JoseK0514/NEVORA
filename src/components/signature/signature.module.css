@@ -65,7 +65,7 @@
 @media (hover: hover) { .sgRoot :global(.sg-primary):hover:not(:disabled):not([aria-disabled="true"]):not(#sg) { background: var(--sig-fill-hover); } }
 .sgRoot :global(.sg-primary[aria-busy="true"]):not(#sg) { cursor: progress; }
 .sgRoot :global(.sg-primary):is(:disabled, [aria-disabled="true"]):not([aria-busy="true"]):not(#sg) { background: var(--sig-disabled, #ECEAE5); color: var(--sig-ink-disabled, #5F625E); cursor: not-allowed; }
-.sgRoot :global(.sg-round):not(#sg) { flex: none; display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; border-radius: 50%; color: var(--sg-deep); text-decoration: none; }
+.sgRoot :global(.sg-round):not(#sg) { flex: none; display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; border-radius: 50%; color: var(--sig-deep-ink); text-decoration: none; }
 .sgRoot :global(.sg-round):not(#sg)::before { content: ""; position: absolute; width: 40px; height: 40px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--sg-rule); }
 .sgRoot :global(.sg-round):not(#sg) { position: relative; }
 .sgRoot :global(.sg-note):not(#sg) { display: flex; gap: 10px; margin: 14px 24px 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
@@ -76,7 +76,7 @@
 .sgLinkRow > span:not(#sg) { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .sgLinkRow b:not(#sg) { font: 500 1.0625rem/1.375rem var(--sg-font); letter-spacing: -.012em; }
 .sgLinkRow small:not(#sg) { font: 400 .9375rem/1.25rem var(--sg-font); color: var(--sg-ink-2); }
-@media (hover: hover) { .sgLinkRow:hover:not(#sg), .sgRoot :global(a.sg-row):hover:not(#sg) { background: #FAFAF8; } }
+@media (hover: hover) { .sgLinkRow:hover:not(#sg), .sgRoot :global(a.sg-row):hover:not(#sg) { background: var(--sig-hover-bg); } }
 .sgLinkRow:focus-visible:not(#sg), .sgRoot :global(a.sg-row):focus-visible:not(#sg) { outline-offset: -3px; border-radius: 18px; }
 /* Lists and cards clip (overflow:hidden), so row links and disclosures inside them take the ring inside; outweighs the
  * root ring rule. Buttons keep the outside ring (an inset ink ring would vanish on a deep fill). */
@@ -105,21 +105,21 @@
 .sgRoot :global(.sg-h > span):not(#sg) { font: 400 .875rem/1.125rem var(--sg-font); color: var(--sg-ink-3); }
 .sgRoot :global(.sg-card):not(#sg) { margin: 0 16px; border-radius: 22px; background: var(--sg-card); box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .06), var(--sg-card-shadow); overflow: hidden; }
 .sgRoot :global(.sg-card + .sg-card):not(#sg) { margin-top: 12px; }
-.sgRoot :global(.sg-card[data-tone="tint"]):not(#sg) { background: #EAF4F2; box-shadow: none; }
-.sgRoot :global(.sg-card[data-tone="amber"]):not(#sg) { background: #FBF4EA; box-shadow: inset 0 0 0 1px #F2E4CD; }
+.sgRoot :global(.sg-card[data-tone="tint"]):not(#sg) { background: var(--sig-tint-done); box-shadow: none; }
+.sgRoot :global(.sg-card[data-tone="amber"]):not(#sg) { background: var(--sig-tint-review); box-shadow: inset 0 0 0 1px var(--sig-tint-review-line); }
 .sgRoot :global(.sg-card-head):not(#sg) { display: flex; align-items: center; gap: 14px; padding: 18px 20px; }
 .sgRoot :global(.sg-card-body):not(#sg) { padding: 0 20px 20px; }
 .sgRoot :global(.sg-card-foot):not(#sg) { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 20px; border-top: 1px solid var(--sg-rule); font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
 .sgRoot :global(.sg-card-foot > svg):not(#sg) { flex: none; color: var(--sg-ink-3); }
-.sgRoot :global(.sg-card-foot[data-tone="amber"]):not(#sg) { border-top-color: #F2E4CD; background: #FDF8F1; color: var(--sg-amber); }
+.sgRoot :global(.sg-card-foot[data-tone="amber"]):not(#sg) { border-top-color: #F2E4CD; background: var(--sig-tint-review-2); color: var(--sg-amber); }
 .sgRoot :global(.sg-card-foot[data-tone="amber"] > svg):not(#sg) { color: var(--sg-amber); }
-.sgRoot :global(.sg-tile):not(#sg) { flex: none; display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 13px; background: #E8F2EF; color: var(--sg-deep); }
-.sgRoot :global(.sg-tile[data-tone="amber"]):not(#sg) { background: #F8EAD5; color: var(--sg-amber); }
-.sgRoot :global(.sg-tile[data-tone="white"]):not(#sg) { background: #FFFFFF; color: var(--sg-teal); }
-.sgRoot :global(.sg-pill):not(#sg), .sgRoot :global(.sg-card .nv-status):not(#sg) { flex: none; display: inline-flex; align-items: center; gap: 0; height: 24px; padding: 0 9px; border: 0; border-radius: 999px; background: #EFEDE8; color: #55585A; font: 500 .8125rem/1 var(--sg-font); letter-spacing: .01em; white-space: nowrap; }
+.sgRoot :global(.sg-tile):not(#sg) { flex: none; display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 13px; background: var(--sig-tint-teal); color: var(--sig-deep-ink); }
+.sgRoot :global(.sg-tile[data-tone="amber"]):not(#sg) { background: var(--sig-tint-review-3); color: var(--sg-amber); }
+.sgRoot :global(.sg-tile[data-tone="white"]):not(#sg) { background: var(--sig-card); color: var(--sg-teal); }
+.sgRoot :global(.sg-pill):not(#sg), .sgRoot :global(.sg-card .nv-status):not(#sg) { flex: none; display: inline-flex; align-items: center; gap: 0; height: 24px; padding: 0 9px; border: 0; border-radius: 999px; background: var(--sig-tint-neutral); color: var(--sig-tint-neutral-ink); font: 500 .8125rem/1 var(--sg-font); letter-spacing: .01em; white-space: nowrap; }
 .sgRoot :global(.sg-card .nv-status svg):not(#sg) { display: none; }
-.sgRoot :global(:is(.sg-pill[data-tone="amber"], .sg-card .nv-status[data-tone="review"])):not(#sg) { background: #FBEFDC; color: #74440A; }
-.sgRoot :global(:is(.sg-pill[data-tone="teal"], .sg-card .nv-status[data-tone="done"])):not(#sg) { background: #E2F1ED; color: #0A5753; }
+.sgRoot :global(:is(.sg-pill[data-tone="amber"], .sg-card .nv-status[data-tone="review"])):not(#sg) { background: var(--sig-review-wash); color: var(--sig-tint-review-ink); }
+.sgRoot :global(:is(.sg-pill[data-tone="teal"], .sg-card .nv-status[data-tone="done"])):not(#sg) { background: var(--sig-done-wash); color: var(--sig-done-ink); }
 .sgRoot :global(.sg-r):not(#sg) { position: relative; display: flex; align-items: center; gap: 16px; min-height: 76px; padding: 16px 20px; color: var(--sg-ink); text-decoration: none; }
 .sgRoot :global(.sg-r + .sg-r):not(#sg)::before { content: ""; position: absolute; top: 0; left: 78px; right: 0; height: 1px; background: var(--sg-rule); pointer-events: none; }
 .sgRoot :global(.sg-r .sg-copy > span + span):not(#sg) { color: var(--sg-ink-3); }

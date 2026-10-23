@@ -106,12 +106,12 @@
 .h5List li + li:not(#h5)::before, .h5More > ul > li:not(#h5)::before, .h5More:not(#h5)::before { content: ""; position: absolute; top: 0; left: 18px; right: 0; height: 1px; background: var(--h5-rule); pointer-events: none; z-index: 1; }
 .h5More:not(#h5) { position: relative; }
 .h5Row:not(#h5) { display: flex; align-items: center; gap: 16px; min-height: 72px; padding: 14px 18px; color: var(--h5-ink); text-decoration: none; }
-@media (hover: hover) { .h5Row:hover:not(#h5) { background: #FAFAF8; } }
+@media (hover: hover) { .h5Row:hover:not(#h5) { background: var(--sig-hover-bg); } }
 .h5Row:focus-visible:not(#h5) { outline-offset: -3px; border-radius: 18px; }
 /* Row links and disclosures sit in an overflow:hidden card, so their ring goes inside; this has to outweigh the root
  * ring rule above. Buttons inside a row keep the outside ring (an inset ink ring would vanish on a deep fill). */
 .h5List :is(a, summary):not(:global(.sig-btn), :global(.sg-cta), :global(.sg-primary), :global(.sg-round), :global(.employee-action), [data-sig-press="button"]):focus-visible:not(#h5):not(#h5) { outline-offset: -3px; }
-.h5Ring:not(#h5) { flex: none; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #C9C6BF; }
+.h5Ring:not(#h5) { flex: none; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--sig-ring-edge); }
 .h5Copy:not(#h5) { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
 .h5Copy strong:not(#h5) { font: 500 1.0625rem/1.375rem var(--h5-font); letter-spacing: -.012em; color: var(--h5-ink); overflow-wrap: anywhere; }
 .h5Copy small:not(#h5) { font: 400 .9375rem/1.25rem var(--h5-font); color: var(--h5-ink-2); overflow-wrap: anywhere; }
@@ -135,7 +135,7 @@
 .h5More > summary:not(#h5) { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; padding: 8px 18px; list-style: none; cursor: pointer; color: var(--h5-ink); font: 500 .9375rem/1.25rem var(--h5-font); }
 .h5More > summary > span:not(#h5) { text-decoration: underline; text-decoration-color: var(--h5-rule); text-underline-offset: 5px; }
 .h5More > summary:not(#h5)::-webkit-details-marker { display: none; }
-@media (hover: hover) { .h5More > summary:hover:not(#h5) { background: #FAFAF8; } }
+@media (hover: hover) { .h5More > summary:hover:not(#h5) { background: var(--sig-hover-bg); } }
 .h5More > summary:focus-visible:not(#h5) { outline-offset: -3px; border-radius: 18px; }
 .h5More > summary .h5Chevron:not(#h5) { transform: rotate(90deg); transition: transform .2s ease; }
 .h5More[open] > summary .h5Chevron:not(#h5) { transform: rotate(-90deg); }

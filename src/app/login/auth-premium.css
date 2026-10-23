@@ -225,6 +225,9 @@
   .ap .ap-primary { margin-top: 20px; }
   .ap-secondary { margin-top: 10px; }
   .ap-links { justify-items: center; gap: 2px; margin-top: 16px; text-align: center; }
+  /* The help disclosure keeps its centred summary when it opens (it used to jump left as the text widened it). */
+  .ap-links > .ap-help { justify-self: stretch; }
+  .ap-links > .ap-help > summary { justify-content: center; }
   .ap-legal .brand-legal { justify-content: center; text-align: center; }
 }
 /* The mark's right arm ends 8px before the EN/ES switch (which grows with text, hence rem); it shows only when its left

@@ -163,6 +163,34 @@
   --sig-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   --sig-grain-opacity:  .07;      /* grain layer opacity (mix-blend-mode: overlay) | signature.module.css:21 */
 
+  /* ---------- Light tints and their dark twins (dev-preview inspection, Oct 23, 2026) ----------
+   * Each light value is exactly the colour these surfaces already used, so light mode is unchanged; the dark block
+   * below gives each one a dark value. Use these instead of typing a light hex into an employee or sign-in file. */
+  --sig-deep-ink:          #0D3634;  /* icons and initials on light tiles; mint in dark */
+  --sig-selected-bg:       #FBFAF8;  /* selected row */
+  --sig-card-quiet:        #FCFBF9;  /* inset form panel */
+  --sig-tint-urgent:       #FBF0EE;  /* error feedback wash */
+  --sig-tint-urgent-line:  #F1D6D1;
+  --sig-tint-done:         #EAF4F2;  /* success feedback wash, correction trigger */
+  --sig-tint-done-hover:   #E1EFEC;
+  --sig-tint-done-soft:    #F5FAF8;
+  --sig-tint-done-soft-2:  #F2F8F6;
+  --sig-tint-neutral:      #EFEDE8;  /* neutral state pill */
+  --sig-tint-neutral-ink:  #55585A;
+  --sig-tint-review:       #FBF4EA;  /* review / pending panel */
+  --sig-tint-review-2:     #FDF8F1;
+  --sig-tint-review-3:     #F8EAD5;
+  --sig-tint-review-line:  #F2E4CD;
+  --sig-tint-review-ink:   #74440A;
+  --sig-tint-teal:         #E8F2EF;  /* teal icon tile */
+  --sig-tint-teal-2:       #DDEFEB;
+  --sig-grid-line:         #F1EFEB;
+  --sig-track-soft:        #F6F4F0;
+  --sig-switch-off:        #E3E0D9;
+  --sig-fill-soft:         #F6F5F1;
+  --sig-radio-edge:        #CFCBC3;
+  --sig-ring-edge:         #C9C6BF;
+
   /* ---------- Aliases (compatibility only; prefer the names above) ---------- */
   --sig-ink:      var(--sig-ink-1);
   --sig-teal:     var(--sig-action);
@@ -202,6 +230,16 @@
   --sig-press-bg: #1B2B29;        --sig-hover-bg: #1A2A28;
   --sig-press-wash: rgba(255, 255, 255, .06);
   --sig-focus: #F5F2EB;           --sig-focus-on-dark: #FFFFFF;
+  --sig-deep-ink: #A9E2DA;        --sig-selected-bg: #1A2A28;    --sig-card-quiet: #142422;
+  --sig-tint-urgent: rgba(243, 167, 157, .12);  --sig-tint-urgent-line: rgba(243, 167, 157, .3);
+  --sig-tint-done: rgba(169, 226, 218, .12);    --sig-tint-done-hover: rgba(169, 226, 218, .18);
+  --sig-tint-done-soft: rgba(169, 226, 218, .06); --sig-tint-done-soft-2: rgba(169, 226, 218, .08);
+  --sig-tint-neutral: rgba(245, 242, 235, .08); --sig-tint-neutral-ink: #D3D0C8;
+  --sig-tint-review: rgba(235, 188, 116, .10);  --sig-tint-review-2: rgba(235, 188, 116, .06); --sig-tint-review-3: rgba(235, 188, 116, .16);
+  --sig-tint-review-line: rgba(235, 188, 116, .28); --sig-tint-review-ink: #EBBC74;
+  --sig-tint-teal: rgba(169, 226, 218, .12);    --sig-tint-teal-2: rgba(169, 226, 218, .16);
+  --sig-grid-line: #24332F;       --sig-track-soft: #1A2A28;     --sig-switch-off: #3A4846;     --sig-fill-soft: #1A2A28;
+  --sig-radio-edge: #5A6764;      --sig-ring-edge: #5A6764;
   --sig-type-hero-word:     400 2.875rem/3.125rem var(--sig-font-display);
   --sig-type-hero-figure:   300 3.75rem/3.875rem var(--sig-font-display);
   --sig-type-hero-duration: 300 3.375rem/3.5rem var(--sig-font-display);
