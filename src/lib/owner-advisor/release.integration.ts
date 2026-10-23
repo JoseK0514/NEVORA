@@ -49,7 +49,7 @@ it("reads a changed publication on the next investigation and excludes medical n
   expect(await tools.run({ name: "published_staffing", args: { date: "2026-10-23" } })).toMatchObject({ data: { shifts: [{ revision: 1 }, { revision: 1 }] } });
   await publication(2, 1);
   let result = await tools.run({ name: "published_staffing", args: { date: "2026-10-23" } });
-  expect(result).toMatchObject({ data: { shifts: [{ revision: 2 }] } });
+  expect(result).toMatchObject({ data: { shifts: [{ revision: 2, locationId: "loc-1" }] } });
   expect(JSON.stringify(result)).not.toMatch(/MEDICAL|555003|example.invalid/);
   await f.q("UPDATE schedule_publication_revision_shifts SET is_callout_approved=true WHERE revision_id='pub-2'");
   result = await tools.run({ name: "published_staffing", args: { date: "2026-10-23" } });

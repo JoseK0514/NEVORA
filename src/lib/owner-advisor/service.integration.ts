@@ -324,6 +324,7 @@ it("keeps two missing positions attached to their separately qualified candidate
     data: {
       gaps: [
         {
+          locationId: "loc-1",
           options: expect.arrayContaining([
             expect.objectContaining({
               target: "POSITION",

@@ -82,3 +82,16 @@ it("supplies fresh facts independently of stale history and keeps credentials ou
   expect(JSON.stringify(body)).not.toContain(config.key + '"');
   expect(result.sources).toEqual([source]);
 });
+
+it("preserves published and current-coverage citations even when their destination is shared", async () => {
+  const d = dependencies();
+  const published = { label: "Published schedule", href: "/app/schedule?week=2026-10-19", observedAt: "2026-10-23T13:00:00Z" };
+  const coverage = { label: "Schedule coverage and eligibility", href: published.href, observedAt: "2026-10-23T13:00:01Z" };
+  d.tool.mockResolvedValueOnce({ observedAt: published.observedAt, sources: [], partial: false, data: {} })
+    .mockResolvedValueOnce({ observedAt: published.observedAt, sources: [published], partial: false, data: {} })
+    .mockResolvedValueOnce({ observedAt: coverage.observedAt, sources: [coverage], partial: false, data: {} });
+  let round = 0;
+  const fetch = vi.fn(async () => new Response(JSON.stringify(++round < 3 ? { output: [{ type: "function_call", name: round === 1 ? "published_staffing" : "coverage_investigation", arguments: '{"date":"2026-10-23"}', call_id: String(round) }] } : text())));
+  const result = await investigate(config, [], "", "Compare published staffing and coverage", { ...d, fetch });
+  expect(result.sources).toEqual([published, coverage]);
+});

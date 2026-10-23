@@ -72,6 +72,7 @@ export class AdvisorTools {
     if (call.name === "published_staffing") {
       const rows = await this.store.transaction<{
         employeeName: string | null;
+        locationId: string;
         locationName: string;
         positionName: string | null;
         date: string;
@@ -81,7 +82,7 @@ export class AdvisorTools {
         revision: number;
       }>({
         text: `WITH latest AS (SELECT id,revision_number FROM schedule_publication_revisions WHERE week_start=$2::date ORDER BY revision_number DESC,id DESC LIMIT 1)
-    SELECT e.first_name||' '||e.last_name AS "employeeName",l.name AS "locationName",s.position_name AS "positionName",s.date::text,s.start_time::text AS "startTime",s.end_time::text AS "endTime",clock_timestamp()::text AS "observedAt",r.revision_number AS revision
+    SELECT e.first_name||' '||e.last_name AS "employeeName",l.id AS "locationId",l.name AS "locationName",s.position_name AS "positionName",s.date::text,s.start_time::text AS "startTime",s.end_time::text AS "endTime",clock_timestamp()::text AS "observedAt",r.revision_number AS revision
     FROM schedule_publication_revision_shifts s JOIN latest r ON r.id=s.revision_id JOIN locations l ON l.id=s.location_id LEFT JOIN employees e ON e.id=s.employee_id WHERE l.workspace_id=$1 AND s.date=$3::date AND NOT s.is_callout_approved ORDER BY s.start_time,s.id LIMIT 101`,
         values: [original.workspace.id, week, date],
       });
@@ -98,6 +99,7 @@ export class AdvisorTools {
             .slice(0, 100)
             .map((s) => ({
               employeeName: s.employeeName ? short(s.employeeName) : null,
+              locationId: s.locationId,
               locationName: short(s.locationName),
               positionName: s.positionName ? short(s.positionName) : null,
               date: s.date,
@@ -169,6 +171,7 @@ export class AdvisorTools {
       const initial = deriveCoverageRepair(row.source, locator);
       if (initial.targets.length > 5) partial = true;
       return {
+        locationId: b.locationId,
         locationName: short(b.locationName),
         startTime: b.startTime,
         endTime: b.endTime,

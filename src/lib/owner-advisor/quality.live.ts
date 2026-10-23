@@ -85,3 +85,28 @@ it.each(cases)("evaluates real Neon reasoning: $id", async (scenario) => {
   } catch (error) { record.error = error instanceof Error ? error.message : "Evaluation failed"; throw error; }
   finally { record.finishedAt = new Date().toISOString(); }
 });
+
+it("cancels a live paid transport without storing an answer or replaying its request", async () => {
+  const controller = new AbortController(), requestId = randomUUID();
+  const record: Record<string, unknown> = { id: "live-cancellation", startedAt: new Date().toISOString() };
+  results.push(record);
+  let calls = 0;
+  const fetch = async (url: string, init: RequestInit) => {
+    calls++;
+    const pending = transport(url, init);
+    const timer = setTimeout(() => controller.abort(), 150);
+    try { return await pending; } finally { clearTimeout(timer); }
+  };
+  const env = {
+    NEVORA_OWNER_ADVISOR_ENABLED: "true", NEVORA_OWNER_ADVISOR_DATA_APPROVED: "true", NEVORA_OWNER_ADVISOR_PROVIDER: "neon", NEVORA_OWNER_ADVISOR_MODEL: PILOT.model, NEVORA_OWNER_ADVISOR_DAILY_LIMIT: "100", NEON_AI_GATEWAY_BASE_URL: PILOT.baseUrl, NEON_AI_GATEWAY_TOKEN: pilot.credential,
+  };
+  const command = { op: "ask", requestId, message: "Review today's fictional staffing. No actions." };
+  await expect(advisorService(f.owner, f.db.executor, env, controller.signal, command, fetch)).rejects.toThrow();
+  expect(calls).toBe(1);
+  expect(controller.signal.aborted).toBe(true);
+  expect(await f.q("SELECT state FROM owner_advisor_requests WHERE request_id=$1", [requestId])).toEqual([{ state: "failed" }]);
+  expect(await f.q("SELECT history FROM owner_advisor_profiles")).toEqual([]);
+  await expect(advisorService(f.owner, f.db.executor, env, new AbortController().signal, command, fetch)).rejects.toThrow("prior_attempt_failed");
+  expect(calls).toBe(1);
+  Object.assign(record, { finishedAt: new Date().toISOString(), calls, cancelled: true, historyStored: false, replayBlocked: true });
+});

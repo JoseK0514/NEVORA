@@ -210,7 +210,7 @@ export async function investigate(
       await bounded(deps.check, signal);
       return {
         text,
-        sources: [...new Map(sources.map((s) => [s.href, s])).values()],
+        sources: [...new Map(sources.map((s) => [JSON.stringify([s.href, s.label, s.observedAt]), s])).values()],
       };
     }
   }
