@@ -9,7 +9,8 @@
     "Integrate only after complete exact-candidate CI and fresh review.",
     "Verify remote archive equals exact retiring commit before deleting the unchanged branch.",
     "Preserve local worktrees, all uncommitted work, main and active owner inputs.",
-    "Archive and remove this integration branch only after its merged commit is reachable from development."
+    "Archive and remove this integration branch only after its merged commit is reachable from development.",
+    "Resolve exactly one reviewed-integration-head row from the final reviewed PR head in the execution receipt; require unchanged remote head, exact recovery tag and verified development ancestry before its deletion. The plan cannot contain its own future commit hash."
   ],
   "maximumActiveBranches": 5,
   "branches": [
@@ -238,11 +239,20 @@
       "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/clean-ui-development-20261020"
     },
     {
-      "sha": "89d89c82c71ae6cb19a90f291893fa1052220eaf",
-      "branch": "codex/development-ci-consolidation-20261022",
+      "branch": "codex/ci-spend-controls-20261023",
+      "sha": "e49edcd8607be18a40fd2c7ae3fc48542d801597",
       "action": "retain",
+      "disposition": "held",
+      "reason": "Active draft CI spending PR27 is outside this approved integration. Preserve its remote and all local work; reconcile its exact head before cleanup."
+    },
+    {
+      "branch": "codex/development-ci-consolidation-20261022",
+      "action": "archive-final-integration-head-after-verified-merge",
       "disposition": "integration",
-      "reason": "Active integration and CI repair owner; this SHA records the original preparation checkpoint. Pin the final reviewed head during guarded retirement execution."
+      "headSource": "reviewed-integration-head",
+      "priorReviewedSha": "78fae30a5b6ecf7c842efa2f750cce717c73035b",
+      "reason": "Retire this unchanged remote only after final review, merge and matching development CI. Pin the actual final PR head and its exact archive in the execution receipt, preserving local branch/worktree and both unrelated active PR branches within the five-branch limit.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/development-ci-consolidation-20261022"
     },
     {
       "sha": "838c77325272696c5f9cc29fab14d664708d2e3c",

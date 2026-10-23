@@ -195,6 +195,12 @@
       "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/browser-probe-20261022"
     },
     {
+      "branch": "codex/ci-spend-controls-20261023",
+      "sha": "e49edcd8607be18a40fd2c7ae3fc48542d801597",
+      "disposition": "held",
+      "reason": "Active draft CI spending PR27 appeared during finalization. Preserve its remote and local work; exclude its workflow changes from this approved integration and reconcile any advancement before cleanup."
+    },
+    {
       "branch": "codex/clean-ui-development-20261020",
       "sha": "0affe6ec1f94dda84bfa065ac15769021e7b5761",
       "disposition": "included",
