@@ -55,7 +55,7 @@
 .pfRoot :global(.profile-section-heading .profile-icon-tile):not(#pf):not(#pf) { display: none; }
 .pfRoot :global(.profile-section-heading h2):not(#pf):not(#pf) { margin: 0; font: 600 .75rem/1rem var(--sg-font); letter-spacing: .13em; text-transform: uppercase; color: var(--sg-ink-2); }
 .pfRoot :global(.employee-profile-details):not(#pf):not(#pf) { margin: 0 16px; padding: 0; border: 1px solid var(--sg-rule); border-radius: 18px; background: var(--sg-card); }
-.pfRoot :global(.employee-profile-details > div):not(#pf):not(#pf) { position: relative; display: flex; justify-content: space-between; gap: 16px; margin: 0; padding: 14px 18px; border: 0; }
+.pfRoot :global(.employee-profile-details > div):not(#pf):not(#pf) { position: relative; display: flex; justify-content: space-between; gap: 16px; margin: 0; padding: 14px 18px; border: 0; border-radius: 0; background: transparent; }
 .pfRoot :global(.employee-profile-details > div + div):not(#pf):not(#pf)::before { content: ""; position: absolute; top: 0; left: 18px; right: 0; height: 1px; background: var(--sg-rule); }
 .pfRoot :global(.employee-profile-details dt):not(#pf):not(#pf) { flex: none; font: 400 1rem/1.375rem var(--sg-font); color: var(--sg-ink-2); }
 .pfRoot :global(.employee-profile-details dd):not(#pf):not(#pf) { margin: 0; font: 500 1rem/1.375rem var(--sg-font); color: var(--sg-ink); text-align: right; overflow-wrap: anywhere; }
