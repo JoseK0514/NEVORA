@@ -2,13 +2,12 @@ import type { Workspace } from '../domain';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import { neonNotificationExecutor } from './sql-executor';
 import { validateWorkspaceProfile } from '../workspace/validation';
+import {WorkspaceUnavailableError, WorkspaceInactiveError} from '../workspace/errors';
+export {WorkspaceUnavailableError, WorkspaceInactiveError} from '../workspace/errors';
 
 import type { SessionMutationProof } from "../shift-changes/types";
 import { assertManagementProof, managementSessionStatements } from "./management-session";
 
-export class WorkspaceUnavailableError extends Error {
-  constructor() { super('Workspace configuration is unavailable.'); }
-}
 export class WorkspaceTimezoneLockedError extends Error {
   constructor() { super('Changing the business timezone requires a separately reviewed conversion because operational records already exist.'); }
 }
@@ -24,10 +23,15 @@ export const workspaceReadSql = () => `SELECT ${fields} FROM workspaces WHERE si
 export async function getWorkspace(executor: SqlExecutor = neonNotificationExecutor()): Promise<Workspace> {
   try {
     const rows = await executor.query<Workspace>({ text: workspaceReadSql(), values: [] });
-    if (rows.length !== 1 || !rows[0].active) throw new WorkspaceUnavailableError();
+    if (rows.length !== 1) throw new WorkspaceUnavailableError();
     validateWorkspaceProfile(rows[0]);
+    if (rows[0].active === false) throw new WorkspaceInactiveError();
+    if (rows[0].active !== true) throw new WorkspaceUnavailableError();
     return rows[0];
-  } catch { throw new WorkspaceUnavailableError(); }
+  } catch (error) {
+    if (error instanceof WorkspaceInactiveError) throw error;
+    throw new WorkspaceUnavailableError();
+  }
 }
 export async function getPublicWorkspaceName(executor: SqlExecutor = neonNotificationExecutor()): Promise<string | null> {
   try { return (await getWorkspace(executor)).name; } catch { return null; }

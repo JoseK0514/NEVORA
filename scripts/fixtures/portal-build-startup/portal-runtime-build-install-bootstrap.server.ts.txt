@@ -112,7 +112,7 @@ export async function loadPortalBuildInstallStartupIdentity() {
       'requiredFiles','entries','traceEdges','dependencies','image','launcher','installationBytes','generatedImageSourceSha256','installationSourceSha256','verification','remainingGates']);
     if(retained.format!=='PORTAL_BUILD_INSTALL_INPUT_RETENTION_V1'||retained.buildId!==buildId)return denied;
     const runtime=exact(retained.runtime,['node','npm','platform','architecture','next','packageSha256','lockSha256']);
-    if(runtime.node!==process.version||runtime.platform!==process.platform||runtime.architecture!==process.arch||runtime.next!=='16.3.8')return denied;
+    if(runtime.node!==process.version||runtime.platform!==process.platform||runtime.architecture!==process.arch||runtime.next!=='16.4.2')return denied;
     const launcher=exact(retained.launcher,['path','sha256','command','nodeOptions','nodePath','standaloneConfig']);
     if(launcher.path!=='node_modules/next/dist/bin/next'||launcher.command!=='next start'||launcher.nodeOptions!=='ABSENT'||launcher.nodePath!=='ABSENT'||launcher.standaloneConfig!=='ABSENT'||
       process.argv[2]!=='start'||!process.argv[1]||realpathSync(process.argv[1])!==join(root,'node_modules/next/dist/bin/next')||hash(read(root,launcher.path))!==launcher.sha256)return denied;

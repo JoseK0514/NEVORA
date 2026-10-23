@@ -1,0 +1,12 @@
+import { start, go, shot, BASE } from "./h.mjs";
+const w = Number(process.argv[2]);
+const { b, p, log } = await start("AUDIT-M", w, { touch: true });
+const reqs = []; p.on("requestfinished", async r => { if (!/_next\/static|fonts|favicon/.test(r.url())) { const res = await r.response(); reqs.push(r.method() + " " + (res?.status()) + " " + r.url().replace(BASE, "").slice(0, 120)); } });
+p.on("requestfailed", r => reqs.push("FAILED " + r.method() + " " + r.url().replace(BASE, "").slice(0, 120) + " " + r.failure()?.errorText));
+const errs = []; p.on("console", m => { if (m.type() === "error") errs.push(m.text().replace(/file:\/\/\/\S*/g, "").slice(0, 600)); });
+await go(p, "/app/updates/47a142df-be09-4569-a8bf-7cccbd12f56f");
+await p.waitForTimeout(2000);
+console.log((await p.locator("main").innerText()).replace(/\s+/g, " ").slice(0, 300));
+console.log(reqs.join("\n")); console.log("ERRS", errs.join("\n---\n")); console.log("blocked", log.blocked);
+await shot(p, `update-detail-err-${w}`);
+await b.close();

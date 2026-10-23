@@ -2,13 +2,13 @@ name: CI
 
 on:
   push:
-    branches: [development, main, "codex/verify-preview-33", "phase-c/**", "phase-d/**", "codex/phase-d-**", "phase-e/**", "codex/phase-e-**", "phase-f/**", "codex/phase-f-**", "codex/par-001-**", "fix/**", "release/**"]
+    branches: [development, main]
   pull_request:
     branches: [development, main, "phase-c/**", "release/**", "codex/verify-preview-33"]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -34,6 +34,10 @@ jobs:
         run: npm ci
       - name: Unit tests
         run: npm test -- --maxWorkers=1
+      - name: Inspector archive custody (not findings acceptance)
+        run: |
+          node --test scripts/inspection-evidence.check.mjs scripts/development-source-inventory.check.mjs
+          npm run check:inspection-evidence
       - name: Notification and foundation configuration regressions
         run: |
           npm run test:notifications:qa
@@ -78,6 +82,8 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
       - name: Install PostgreSQL test runtime
         shell: bash
         run: |
@@ -122,6 +128,8 @@ jobs:
           npm audit --prefix "$PW_ROOT" --audit-level=high
           echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
           echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
       - name: Install Chromium and WebKit
         timeout-minutes: 8
         run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
@@ -261,6 +269,8 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
       - name: Install PostgreSQL test runtime
         shell: bash
         run: |
@@ -297,6 +307,8 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
       - name: Install PostgreSQL test runtime
         shell: bash
         run: |
@@ -369,6 +381,8 @@ jobs:
           npm audit --prefix "$PW_ROOT" --audit-level=high
           echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
           echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
       - name: Install Chromium and WebKit
         timeout-minutes: 8
         run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
@@ -378,6 +392,9 @@ jobs:
           NODE_ENV: test
           HOME_READINESS_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence
         run: node --import ./scripts/qa-server-context.mjs --import tsx scripts/phase-e-home-held-response.check.mjs
+      - name: Browser feedback and reviewed-view readiness regressions
+        if: ${{ matrix.suite == 'calendar' }}
+        run: node scripts/browser-render-readiness.check.mjs
       - name: Install PostgreSQL test runtime
         shell: bash
         run: |

@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  devIndicators: { position: 'top-left' },
   // The build cache retains original sources, including erased local-only code.
   // Keep production artifacts free of that source material as well as bundles.
   experimental: { turbopackFileSystemCacheForBuild: false },

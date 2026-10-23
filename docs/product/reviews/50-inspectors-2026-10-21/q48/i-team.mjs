@@ -1,0 +1,21 @@
+import { start, go, shot, BASE } from "./h.mjs";
+const w = Number(process.argv[2]);
+const { b, p, log } = await start("AUDIT-M", w, { touch: true });
+const main = async () => (await p.locator("main").first().innerText()).replace(/\s+/g, " ");
+await go(p, "/app/employees");
+const links = await p.locator("main a[href^='/app/employees/']").evaluateAll(as => as.map(a => a.getAttribute("aria-label") + " -> " + a.getAttribute("href")));
+console.log(links.filter(l => /Owner|Manager/.test(l)).join("\n"));
+const owner = links.find(l => /Owner/.test(l.split(",")[1] || "")); const oh = owner.split(" -> ")[1];
+await go(p, oh); console.log("OWNER as manager:", (await main()).slice(0, 500));
+console.log("owner ctrls", await p.evaluate(() => [...document.querySelectorAll("main input,main select,main button")].filter(e => e.getClientRects().length && e.type !== "hidden").map(e => `${e.tagName[0]}:${(e.getAttribute("aria-label") || e.innerText || e.value || "").replace(/\s+/g, " ").slice(0, 25)}${e.disabled || e.readOnly ? "(ro)" : ""}`)));
+await shot(p, `team-owner-as-manager-${w}`, true);
+const sel = await p.locator("main select").first().evaluate(s => [...s.options].map(o => o.text + (o.selected ? "*" : "") + (o.disabled ? "(dis)" : ""))).catch(() => null); console.log("role select", sel);
+// filters
+await go(p, "/app/employees");
+await p.locator("main select").first().selectOption({ label: "Lead" }); await p.getByRole("button", { name: "Apply filters" }).click(); await p.waitForLoadState("networkidle"); await p.waitForTimeout(800);
+console.log("filter lead", p.url().replace(BASE, ""), (await main()).slice(150, 450));
+await p.locator("main input[name=q]").fill("zzzz"); await p.getByRole("button", { name: "Apply filters" }).click(); await p.waitForLoadState("networkidle"); await p.waitForTimeout(800);
+console.log("filter none", p.url().replace(BASE, ""), (await main()).slice(150, 500)); await shot(p, `team-empty-${w}`);
+await p.getByRole("button", { name: /^Inactive/ }).click().catch(e => console.log("inactive", String(e).slice(0, 80))); await p.waitForTimeout(800); console.log("inactive", p.url().replace(BASE, ""), (await main()).slice(150, 450));
+console.log("blocked", log.blocked, log.pageerr);
+await b.close();

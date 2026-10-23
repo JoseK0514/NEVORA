@@ -4,7 +4,8 @@ import {previewCommunicationAudience,executeCommunicationCommand,communicationAu
 import type {CommunicationDraft} from '../../lib/communications/types';
 import {Client} from 'pg';
 import {createDisposableFoundationDatabase} from './local-postgres';
-import {seedOwnedApp,seedOwnedScenario} from './owned-app-fixture';
+import {seedOwnedApp,seedOwnedScenario,seedOwnedScenarioOwner} from './owned-app-fixture';
+import {admitLoginAttempt} from '../../lib/auth/login-limits.server';
 import {readEmployeeHome,homeAuthority} from '../../lib/data/employee-home.server';
 import {readEmployeeWeeklyReview} from '../../lib/data/employee-weekly-review.server';
 import {acknowledgeScheduleWeek} from '../../lib/data/acknowledgements';
@@ -12,6 +13,7 @@ import {readEmployeeAttentionDetail,recordEmployeeAttentionReceipt} from '../../
 import {publishScheduleWithRevision} from './management-api';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
+import {communicationRootInsert,communicationRevisionInsert,communicationGrantInsert,communicationContentHash} from '../../lib/data/communications.server';
 let db:Awaited<ReturnType<typeof createDisposableFoundationDatabase>>,proof:SessionMutationProof,fixture:Awaited<ReturnType<typeof seedOwnedScenario>>;
 const q=(text:string,values:unknown[]=[])=>db.executor.query({text,values});
 const home=()=>readEmployeeHome(proof,db.executor);
@@ -22,6 +24,15 @@ beforeEach(async()=>{
  await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) VALUES('home-leave',$1,'2030-11-01','2030-11-01','APPROVED','PRIVATE OWN REASON'),('foreign-leave',$2,'2030-11-02','2030-11-02','APPROVED','OTHER PRIVATE REASON')",fixture.actors.slice(0,2));
 });
 afterEach(async()=>{await db?.dispose();});
+it('fictional browser-cell Owners retain independent real sign-in budgets without disabling rate limits',async()=>{
+ const first=await seedOwnedScenarioOwner(db.executor,'HSQL1'),second=await seedOwnedScenarioOwner(db.executor,'HSQL2');
+ expect(first).not.toBe(second);
+ expect(await q("SELECT id,role FROM employees WHERE id=ANY($1::text[]) ORDER BY id",[[first,second]])).toEqual([{id:first,role:'OWNER'},{id:second,role:'OWNER'}]);
+ expect(await q('SELECT employee_id FROM employee_credentials WHERE employee_id=ANY($1::text[]) AND password_hash=(SELECT password_hash FROM employee_credentials WHERE employee_id=$2) ORDER BY employee_id',[[first,second],'QAOWNER'])).toEqual([{employee_id:first},{employee_id:second}]);
+ for(let attempt=0;attempt<10;attempt++)expect(await admitLoginAttempt(first,'198.51.100.23',db.executor)).toBe(true);
+ expect(await admitLoginAttempt(first,'198.51.100.23',db.executor)).toBe(false);
+ expect(await admitLoginAttempt(second,'198.51.100.23',db.executor)).toBe(true);
+});
 it('actual six-source PARTIAL Home retains distant published Next Shift and current-week publication notice',async()=>{
  const r=await home();expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{authority:homeAuthority(proof),publicationState:'partial',nextShift:{shiftId:fixture.sourceId},sources:{schedule:{state:'partial'},acknowledgements:{state:'complete'},exchanges:{state:'complete'},timeOff:{state:'complete'},ownTime:{state:'complete'},communications:{state:'complete'}}}});
  if(!('snapshot' in r))throw Error('No Home');expect(r.snapshot.attention.some(i=>i.ref.kind==='SCHEDULE'&&i.required)).toBe(true);expect(r.snapshot.attention.some(i=>i.ref.id==='home-leave')).toBe(true);
@@ -258,7 +269,21 @@ it('current acknowledgement inserted during final Home wait cannot return the bu
  const r=await readEmployeeHome(proof,ex);expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{communications:{state:'unavailable',reason:'source_changed'}}}});if('snapshot' in r)expect(r.snapshot.attention.some(row=>row.ref.id===result.id)).toBe(false);
 });
 it('communication cap sentinel retains known rows and never claims complete',async()=>{
- for(let n=0;n<101;n++)await publishUpdate('OPTIONAL');
+ const {result,draft}=await publishUpdate('OPTIONAL');
+ const [revision]=await db.executor.query<{workspaceId:string;fingerprint:string;observedAt:string}>({text:'SELECT workspace_id AS "workspaceId",audience_fingerprint AS fingerprint,audience_observed_at::text AS "observedAt" FROM communication_revisions WHERE id=$1',values:[result.version]});
+ const grants=await db.executor.query<{employeeId:string;provenance:Record<string,unknown>}>({text:'SELECT employee_id AS "employeeId",provenance FROM communication_recipients WHERE revision_id=$1',values:[result.version]});
+ expect(grants.some(grant=>grant.employeeId===proof.employee.id)).toBe(true);
+ const statements:SqlStatement[]=[];
+ for(let n=0;n<100;n++){
+  const id=randomUUID(),revisionId=randomUUID();
+  statements.push(communicationRootInsert(revision.workspaceId,id,ownerProof.employee.id),
+   communicationRevisionInsert({workspaceId:revision.workspaceId,communicationId:id,revisionId,version:1,actorId:ownerProof.employee.id,draft,audienceFingerprint:revision.fingerprint,observedAt:revision.observedAt,publishedAt:revision.observedAt}),
+   ...grants.map(grant=>communicationGrantInsert({workspaceId:revision.workspaceId,communicationId:id,revisionId,employeeId:grant.employeeId,contentHash:communicationContentHash(draft),locationId:'loc-1',kind:'LOCATION',observedAt:revision.observedAt,provenance:grant.provenance})),
+   {text:"UPDATE communications SET state='PUBLISHED',head_revision_id=$2 WHERE id=$1",values:[id,revisionId]},
+   {text:"INSERT INTO communication_lifecycle(id,workspace_id,communication_id,revision_id,actor_employee_id,kind) VALUES($1,$2,$3,$4,$5,'PUBLISHED')",values:[randomUUID(),revision.workspaceId,id,revisionId,ownerProof.employee.id]});
+ }
+ await db.executor.transaction(statements);
+ expect(await q("SELECT count(*)::int AS n FROM communications WHERE state='PUBLISHED'")).toEqual([{n:101}]);
  const r=await home();expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{communications:{state:'partial',reason:'source_cap'}}}});if('snapshot' in r)expect(r.snapshot.attention.filter(row=>row.ref.kind==='COMMUNICATION')).toHaveLength(100);
 },30000);
 it('shift reassignment during final Home wait revokes current grant without backfilling the replacement',async()=>{

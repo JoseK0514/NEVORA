@@ -1,9 +1,10 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
-import { createWriteStream } from 'node:fs';
+import { constants, cpSync, createWriteStream } from 'node:fs';
 import { access, copyFile, mkdir, mkdtemp, readFile, readdir, realpath, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import {pathToFileURL} from 'node:url';
 import { createDisposableExchangeDatabase } from './local-postgres';
 import {createOwnedPgTransport,type OwnedDatabaseIdentity} from './owned-pg-transport';
 import type {SqlExecutor} from '../../lib/notifications/types';
@@ -11,6 +12,13 @@ import {createCalendarLogRedactor} from './calendar-log-redaction';
 
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
 const applicationInput = (name: string) => ['src/', 'public/'].some(prefix => name.startsWith(prefix)) || ['package.json', 'package-lock.json', 'tsconfig.json', 'next-env.d.ts', 'next.config.ts'].includes(name);
+export function copyOwnedDependencies(source: string, mirror: string): void {
+  // An external cp can be observed between fork and exec as the parent's Node
+  // argv. Copy in-process instead of relaxing the supervisor's identity fence.
+  cpSync(join(source, 'node_modules'), join(mirror, 'node_modules'), {
+    recursive: true, verbatimSymlinks: true, mode: constants.COPYFILE_FICLONE,
+  });
+}
 function trackedApplicationFiles(source: string): string[] {
   const gitPaths = (args: string[]) => execFileSync('git', args, { cwd: source, encoding: 'utf8' }).split('\0').filter(Boolean);
   if (gitPaths(['ls-files', '-o', '--exclude-standard', '-z']).some(applicationInput)) throw Error('Untracked application source cannot produce exact-SHA evidence');
@@ -95,11 +103,12 @@ export function ownedMailEnvironment(origin:string,options:OwnedMailOptions={}):
  * generated dev type-reference paths. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { passkeysEnabled?: boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { loginDiagnostics?:boolean; passkeysEnabled?: boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
   if (options.clockerPinKey !== undefined && !/^[a-f0-9]{64}$/.test(options.clockerPinKey)) throw new Error('Owned Clocker PIN key must be 32-byte hex.');
   validateOwnedMailOptions(options);
   if (options.processOwnerId !== undefined && !/^[a-f0-9]{32}$/.test(options.processOwnerId)) throw Error('Owned process marker must identify the invocation.');
   if (options.onProcessStarted && !options.processOwnerId) throw Error('Owned process registration requires its invocation marker.');
+  if(options.loginDiagnostics&&!options.processOwnerId)throw Error('Login diagnostics require the owned process marker.');
   options.signal?.throwIfAborted();
   const source = resolve(process.cwd());
   // Validate before allocating a runtime or database. Only committed input is
@@ -188,7 +197,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
     }
     await verifySource();
     await access(join(source, 'node_modules/next/dist/bin/next'));
-    execFileSync('cp', process.platform === 'darwin' ? ['-cR', join(source, 'node_modules'), join(mirror, 'node_modules')] : ['-R', join(source, 'node_modules'), join(mirror, 'node_modules')]);
+    copyOwnedDependencies(source, mirror);
     const originalDb = await readFile(join(source, 'src/lib/db.ts'), 'utf8');
     const adapter = createOwnedDbAdapter(originalDb);
     await writeFile(join(mirror, 'src/lib/db.ts'), adapter);
@@ -198,7 +207,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
       const originalTypes = await readFile(join(source, 'next-env.d.ts'), 'utf8');
       const derivedTypes = createOwnedDevTypeReferences(originalTypes);
       await writeFile(join(mirror, 'next-env.d.ts'), derivedTypes);
-      generatedTypeReferences = { originalHash: hash(originalTypes), derivedHash: hash(derivedTypes), reason: 'Next 16.3.8 dev generated type-reference paths' };
+      generatedTypeReferences = { originalHash: hash(originalTypes), derivedHash: hash(derivedTypes), reason: 'Next 16.4.2 dev generated type-reference paths' };
       mirrorHashes['next-env.d.ts'] = hash(derivedTypes);
     }
     const manifestBytes = JSON.stringify({ checkpoint: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: source, encoding: 'utf8' }).trim(), hashes, originalDbHash: hash(originalDb), substitutedDbHash: hash(adapter), substitutedFiles: pinDevTypeReferences ? ['src/lib/db.ts', 'next-env.d.ts'] : ['src/lib/db.ts'], generatedTypeReferences }, null, 2);
@@ -216,6 +225,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
       NEXT_TELEMETRY_DISABLED: '1', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
       NEVORA_OWNED_APP_DATABASE: database.connectionString,
       NEVORA_OWNED_APP_IDENTITY: JSON.stringify(identity), NEVORA_OWNED_APP_BARRIERS: barriers,
+      ...(options.loginDiagnostics?{NODE_OPTIONS:'--import='+pathToFileURL(join(mirror,'src/test/integration/owned-login-diagnostics.mjs')).href,NEVORA_OWNED_LOGIN_ORIGIN:url}:{}),
       ...(options.processOwnerId ? { NEVORA_OWNED_PROCESS_OWNER: options.processOwnerId } : {}),
     };
     options.signal?.throwIfAborted();

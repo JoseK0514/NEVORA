@@ -34,12 +34,15 @@ export function measureRenderedContrast(element) {
   }
   const colors = layer => {
     if (layer.image === 'none') return [rgba(layer.color)];
-    if (!/^(linear|radial)-gradient\(/.test(layer.image) || /url\(|color\(|oklab|oklch|in srgb/i.test(layer.image)) throw Error('Unsupported background image');
+    if (!/^(linear|radial)-gradient\(/.test(layer.image) || /url\(|color\(|oklab|oklch|in srgb/i.test(layer.image) || layer.image.match(/gradient\(/g)?.length !== 1) throw Error('Unsupported background image');
     const stops = layer.image.match(/rgba?\([^)]+\)/g);
     if (!stops?.length) throw Error('Unmeasured gradient');
     if (layer.image.startsWith('linear-gradient') && layer.bounds) {
       const match = layer.image.match(/^linear-gradient\(([-\d.]+)deg, (rgba?\([^)]+\)) ([\d.]+)%, (rgba?\([^)]+\)) ([\d.]+)%\)$/);
-      if (!match) throw Error('Unsupported linear gradient geometry');
+      // Default directions, implicit positions and multi-stop signature washes
+      // still have safe full-stop bounds. Only narrow the measured region for
+      // the explicit two-stop geometry below; never drop a painted stop.
+      if (!match) return stops.map(rgba);
       const angle=Number(match[1])*Math.PI/180,dx=Math.sin(angle),dy=-Math.cos(angle),b=layer.bounds;
       const length=Math.abs(b.width*dx)+Math.abs(b.height*dy),start=Number(match[3])/100,end=Number(match[5])/100;
       if (!(length>0&&end>start)) throw Error('Unsupported gradient range');

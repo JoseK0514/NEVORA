@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {join} from 'node:path';
 import {writeFile} from 'node:fs/promises';
-import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
+import {seedOwnedScenario,seedOwnedScenarioOwner,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
 import {businessDate} from '../src/lib/business-time.ts';
 import {weekStartFor} from '../src/lib/date-utils.ts';
@@ -12,7 +12,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  runtimeErrors.setStageReader(()=>stage);
  const tabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',backTabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
  const details={engine,width,checks,screenshots,managerErrors,managerNetworkFailures:[]},shot=async name=>{const path=join(evidenceDirectory,`updates-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
- const login=async(target,id)=>{await target.bringToFront();await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app'),target.getByRole('button',{name:'Sign in',exact:true}).click()]);await target.waitForLoadState('networkidle');};
+ const login=async(target,id)=>{await target.bringToFront();await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app',{waitUntil:'commit'}),target.getByRole('button',{name:'Sign in',exact:true}).click()]);await target.locator('.app-shell.nevora-portal').waitFor();await target.waitForLoadState('networkidle');};
  const measureActions=async name=>{const heights=await page.locator('.wb-update').getByRole('button').evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().height));assert(heights.length>0,'Current update actions were measured');assert(heights.every(h=>h>=44),'Current update actions keep 44px targets');(details.actionTargetHeights??=[]).push({stage:name,heights});};
  let managerContext,manager;
  try{
@@ -27,7 +27,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   const captureRead=response=>{const path=new URL(response.url()).pathname;if(managerReads.includes(path)&&!firstReads.has(path))firstReads.set(path,response);};
   manager.on('response',captureRead);
   try{
-   await login(manager,'QAOWNER');
+   await login(manager,await seedOwnedScenarioOwner(app.database.executor,label));
    await Promise.all(managerReads.map(async path=>{
     try{const response=firstReads.get(path)??await manager.waitForResponse(response=>new URL(response.url()).pathname===path);bootstrapReceipt.authenticated.push({path,status:response.status()});await saveBootstrap();assert.equal(response.status(),200,'Current Owner dashboard read succeeds');}
     catch(error){bootstrapReceipt.authenticated.push({path,failure:safeBrowserFailure(error).summary});await saveBootstrap();throw error;}

@@ -127,10 +127,18 @@ async function createOwnedDatabase(prefix: 'fuel_phase3_test_' | 'nevora_foundat
     transaction: (statements, signal) => run(statements, true, signal),
   };
   try {
-    // Exact checked-in sequence, including original transaction boundaries.
-    for (const file of CURRENT_MIGRATIONS.slice(0, migrations)) {
-      await assertOwned();
-      await executor.query({ text: await readFile(resolve('db/migrations', file), 'utf8'), values: [] });
+    if (migrations > 0) {
+      // Bootstrap is serial and owns no concurrent work. Keep each unchanged
+      // file's transaction boundaries while avoiding a connection per file.
+      // Close this connection before returning the independent runtime executor.
+      const bootstrap = new Client({ connectionString: target.href, connectionTimeoutMillis: 3000, statement_timeout: 5000 });
+      try {
+        await bootstrap.connect();
+        for (const file of CURRENT_MIGRATIONS.slice(0, migrations)) {
+          await assertOwned();
+          await bootstrap.query(await readFile(resolve('db/migrations', file), 'utf8'), []);
+        }
+      } finally { await bootstrap.end(); }
     }
   } catch (error) { await dispose(); throw error; }
   return { executor, connectionString: target.href, dispose };

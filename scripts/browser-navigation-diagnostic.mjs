@@ -1,19 +1,30 @@
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 
-const reads=new Set(['notification-read','home-read','recorded-time-read']);
+const reads=new Set(['notification-read','home-read','recorded-time-read','manager-today-read','action-center-read','clock-monitor-read']);
 export function observeDocumentNavigation(page,origin=()=>new URL(page.url()).origin){
- let pending=null,phase='idle',startedAt=null;
+ let pending=null,phase='idle',startedAt=null,source=null,destination=null,sequence=0,sourceHistoryEvents=0;
  const read=fn=>{try{return fn();}catch{return undefined;}};
+ const documentUrl=value=>{const url=new URL(value);url.hash='';return url.href;};
  page.on('request',request=>{
   if(!read(()=>request.isNavigationRequest()&&request.frame()===page.mainFrame()))return;
-  if(!read(()=>new URL(request.url()).origin===origin())){pending=null;phase='idle';startedAt=null;return;}
-  pending=request;phase='requested';startedAt=Date.now();
+  pending=null;phase='unproven';startedAt=Date.now();sequence++;sourceHistoryEvents=0;
+  source=read(()=>documentUrl(page.url()));destination=read(()=>documentUrl(request.url()));
+  if(!source||!destination||!read(()=>new URL(destination).origin===origin()))return;
+  if(source===destination){phase='same-url';return;}
+  pending=request;phase='requested';
  });
- page.on('framenavigated',frame=>{if(read(()=>frame===page.mainFrame())&&pending){pending=null;phase='committed';}});
+ page.on('framenavigated',frame=>{
+  if(!read(()=>frame===page.mainFrame())||!pending)return;
+  const url=read(()=>documentUrl(frame.url()));
+  // A history update in the source document is not the pending destination's commit.
+  if(url===source){sourceHistoryEvents++;return;}
+  pending=null;phase=url===destination?'committed':'unproven';
+ });
  page.on('domcontentloaded',()=>{if(phase==='committed')phase='dom-ready';});
  page.on('requestfailed',request=>{if(pending===request){pending=null;phase='failed';}});
- return {pending:()=>pending!==null,snapshot:()=>({phase,ageMs:startedAt===null?null:Math.min(60000,Math.max(0,Date.now()-startedAt))})};
+ page.on('requestfinished',request=>{if(pending===request){pending=null;phase='finished';}});
+ return {pending:()=>pending!==null,snapshot:()=>({phase,sequence,sourceHistoryEvents,ageMs:startedAt===null?null:Math.min(60000,Math.max(0,Date.now()-startedAt))})};
 }
 export function navigationFetchDiagnostic(execution,diagnostic,pending,verified,phase){
  return execution.engine==='webkit'&&verified===true&&pending===true&&phase==='scenario'&&diagnostic.plainOwnRead===true
@@ -32,6 +43,12 @@ export async function observeWindowExceptions(context,report){
 }
 
 export async function verifyNavigationFetchDiagnostic(browser){
+ const profiles=[
+  {name:'private-get',options:{credentials:'same-origin',cache:'no-store',redirect:'error',headers:{'X-Nevora-QA':'fictional'}}},
+  {name:'today-get',options:{method:'GET',credentials:'same-origin',cache:'no-store',headers:{'X-Nevora-Today':'1'}}},
+  {name:'action-center-post-read',options:{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/json','X-Nevora-Action-Center':'1','X-Nevora-Actor':'fictional-qa'},body:JSON.stringify({weekStart:'2026-10-19'})}},
+  {name:'clock-monitor-get',options:{method:'GET',credentials:'same-origin',cache:'no-store',redirect:'error',headers:{Accept:'application/json','X-Nevora-Monitor':'1'}}},
+ ];
  let release,started,signal,ingress=0;
  const server=createServer((request,response)=>{
   if(request.url==='/read'){ingress++;response.setHeader('content-type','application/json');response.end('{"ok":true}');return;}
@@ -39,8 +56,9 @@ export async function verifyNavigationFetchDiagnostic(browser){
   if(request.url==='/replacement'){release=send;signal();}else send();
  });
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin='http://127.0.0.1:'+server.address().port;
- const cells=[];let windowObserverVerified=false;
+ const cells=[];let windowObserverVerifications=0;
  try{
+  for(const profile of profiles){
   for(const navigation of [false,true]){
    const context=await browser.newContext({serviceWorkers:'block'}),errors=[];let navigationResult,reportWindow;const windowEvents=[];
    try{
@@ -52,15 +70,19 @@ export async function verifyNavigationFetchDiagnostic(browser){
     const handle=await page.evaluateHandle(()=>{
      const state={id:crypto.randomUUID(),errors:0,rejections:0,pagehide:0};
      addEventListener('error',()=>state.errors++);addEventListener('unhandledrejection',()=>state.rejections++);addEventListener('pagehide',()=>state.pagehide++);
-     return {state,async read(){try{const response=await fetch('/read',{credentials:'same-origin',cache:'no-store',redirect:'error',headers:{'X-Nevora-QA':'fictional'}});await response.json();return {...state,status:response.status,handled:false};}catch{return {...state,status:0,handled:true};}}};
+     return {state,async read(options){try{const response=await fetch('/read',{...options,signal:new AbortController().signal});await response.json();return {...state,status:response.status,handled:false};}catch{return {...state,status:0,handled:true};}}};
     });
     const identity=await handle.evaluate(value=>value.state.id),before=ingress;
-    if(navigation){started=new Promise(resolve=>{signal=resolve;});navigationResult=page.goto(origin+'/replacement').then(response=>({ok:response?.ok()}),()=>({ok:false}));await started;}
+    if(navigation){
+     started=new Promise(resolve=>{signal=resolve;});navigationResult=page.goto(origin+'/replacement').then(response=>({ok:response?.ok()}),()=>({ok:false}));await started;
+     await handle.evaluate(()=>history.replaceState(history.state,'',location.href));
+     assert.equal(navigationPhase.pending(),true,'Source-document history cannot commit another navigation destination');
+    }
     let timer,result;
-    try{result=await Promise.race([handle.evaluate(value=>value.read()),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Navigation diagnostic read did not settle')),5000);})]);}
+    try{result=await Promise.race([handle.evaluate((value,options)=>value.read(options),profile.options),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Navigation diagnostic read did not settle')),5000);})]);}
     finally{clearTimeout(timer);release?.();release=undefined;}
-    if(navigation){assert((await navigationResult).ok);await page.getByRole('heading',{name:'/replacement',exact:true}).waitFor();}
-    const cell={navigation,identityMatches:result.id===identity,status:result.status,handled:result.handled,windowErrors:result.errors,unhandledRejections:result.rejections,pagehide:result.pagehide,serverReads:ingress-before,nativeDiagnostics:errors.length,onlyExactNativeDiagnostic:errors.every(Boolean),nativeNavigation};
+    if(navigation){assert((await navigationResult).ok);await page.getByRole('heading',{name:'/replacement',exact:true}).waitFor();assert.equal(navigationPhase.pending(),false,'Actual destination commit ends native-diagnostic eligibility');}
+    const cell={profile:profile.name,navigation,identityMatches:result.id===identity,status:result.status,handled:result.handled,windowErrors:result.errors,unhandledRejections:result.rejections,pagehide:result.pagehide,serverReads:ingress-before,nativeDiagnostics:errors.length,onlyExactNativeDiagnostic:errors.every(Boolean),nativeNavigation};
     assert(cell.identityMatches);assert.equal(cell.windowErrors,0);assert.equal(cell.unhandledRejections,0);assert.equal(cell.pagehide,0);
     if(!navigation){assert.equal(cell.status,200);assert.equal(cell.serverReads,1);assert.equal(cell.nativeDiagnostics,0);}
     cells.push(cell);
@@ -70,11 +92,13 @@ export async function verifyNavigationFetchDiagnostic(browser){
      await page.evaluate(()=>{setTimeout(()=>{throw Error('Fictional QA exception');},0);void Promise.reject(Error('Fictional QA rejection'));});
      try{await Promise.race([Promise.all([observed,pageEvents]),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Window exception observer did not report')),5000);})]);}
      finally{clearTimeout(timer);}
-     assert.deepEqual([...windowEvents].sort(),['error','unhandledrejection']);windowObserverVerified=true;
+     assert.deepEqual([...windowEvents].sort(),['error','unhandledrejection']);windowObserverVerifications++;
     }
    }finally{release?.();release=undefined;if(navigationResult)await navigationResult;await context.close();}
   }
-  const last=cells[1],verified=last.status===0&&last.handled&&last.serverReads===0&&last.nativeDiagnostics===1&&last.onlyExactNativeDiagnostic;
+  }
+  const windowObserverVerified=windowObserverVerifications===profiles.length;
+  const verified=cells.length===profiles.length*2&&cells.filter(cell=>cell.navigation).every(cell=>cell.status===0&&cell.handled&&cell.serverReads===0&&cell.nativeDiagnostics===1&&cell.onlyExactNativeDiagnostic);
   return {status:verified?'mechanism-reproduced':'not-reproduced',verified:verified&&windowObserverVerified,windowObserverVerified,cells};
  }finally{release?.();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
 }

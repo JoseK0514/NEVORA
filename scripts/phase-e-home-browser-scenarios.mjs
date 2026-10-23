@@ -1,12 +1,16 @@
 import {measureRenderedContrast} from './browser-contrast.mjs';
 import {fulfillHeldResponse} from './browser-held-response.mjs';
+import {safeLoginServerRequests,safeEvaluationFailure} from './release-browser-diagnostics.mjs';
+import {OWNED_LOGIN_HEADER,readOwnedLoginEvents} from '../src/test/integration/owned-login-diagnostics.mjs';
+import {waitForOwnedLoginWindow} from './browser-login-window.mjs';
+import {LOGIN_LIMITS} from '../src/lib/auth/login-limits.server.ts';
 import assert from 'node:assert/strict';
 import {join} from 'node:path';
-import {writeFile} from 'node:fs/promises';
+import {readFile,writeFile} from 'node:fs/promises';
 import {Client} from 'pg';
 import {randomUUID,createHash} from 'node:crypto';
 import {hashPassword} from '../src/lib/auth/password.ts';
-import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
+import {seedOwnedScenario,seedOwnedScenarioOwner,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
 
 // Shared by H06 and its controlled browser scheduling regression.
@@ -23,6 +27,16 @@ export async function waitForFreshHome(page, freshLocation){
  },freshLocation,{timeout:15000});
 }
 
+export async function waitForRecordedTimeReady(page, expectedState){
+ const ready=await page.waitForFunction(expected=>{
+  const root=document.querySelector('aside[aria-label="Own recorded time"]');
+  const button=root?.querySelector('button[aria-label="Refresh recorded time"]');
+  if(button&&!button.disabled&&root.querySelector('.employee-time-badge')?.getAttribute('data-state')===expected)return {state:expected,refreshEnabled:true};
+  return false;
+ },expectedState);
+ try{return await ready.jsonValue();}finally{await ready.dispose();}
+}
+
 // Actual authenticated persisted Task11 Home journeys with canonical communication sources.
 export async function runScenario({app,browser,context,page,engine,width,evidenceDirectory,axeFile,runtimeErrors:cellRuntimeErrors}){
  const label=`H${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
@@ -30,6 +44,19 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const checks=[],runtimeErrors=[],screenshots=[],details={stage:'Task11 developer verification',engine,width,actor,checks,screenshots,runtimeErrors};let stage='seed',binding,homeResponse,managerContext,manager;
  cellRuntimeErrors.setStageReader(()=>stage);
  page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({stage,name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]')});});
+ details.lifecycleTrace=[];
+ const trace=sample=>{if(details.lifecycleTrace.length===160)details.lifecycleTrace.shift();details.lifecycleTrace.push({at:Date.now(),stage,...sample});};
+ await page.exposeBinding('__nevoraHomeLifecycle',(_source,sample)=>trace(sample));
+ await page.addInitScript(()=>{
+  const documentId=crypto.randomUUID();
+  const sample=event=>void globalThis.__nevoraHomeLifecycle({event,documentId,route:location.pathname,focused:document.hasFocus(),visibility:document.visibilityState,readyState:document.readyState}).catch(()=>{});
+  for(const event of ['focus','blur','pagehide','pageshow'])window.addEventListener(event,()=>sample(event));
+  for(const event of ['DOMContentLoaded','visibilitychange'])document.addEventListener(event,()=>sample(event));
+  sample('document-created');
+ });
+ const notificationTrace=(event,request)=>{const route=new URL(request.url()).pathname;if(['/api/notifications','/api/employee/my-time'].includes(route))trace({event,route,method:request.method(),navigation:request.isNavigationRequest()});};
+ const notificationStart=request=>notificationTrace('notification-start',request),notificationFinish=request=>notificationTrace('notification-finished',request),notificationFailed=request=>notificationTrace('notification-failed',request),nativeError=()=>trace({event:'pageerror'});
+ page.on('request',notificationStart);page.on('requestfinished',notificationFinish);page.on('requestfailed',notificationFailed);page.on('pageerror',nativeError);
  page.on('request',request=>{if(new URL(request.url()).pathname==='/api/employee/home')binding=request.headers()['x-nevora-home'];});
  const shot=async name=>{const path=join(evidenceDirectory,`home-task11-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
  const next=()=>page.locator('[aria-labelledby="employee-reviewed-next-heading"]');
@@ -50,7 +77,42 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
    await writeFile(join(evidenceDirectory,`home-refresh-${engine}-${width}-report.json`),JSON.stringify({stage,diagnostic},null,2));throw error;
   }
  };
- async function login(target=page,id=actor){await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app'),target.getByRole('button',{name:'Sign in',exact:true}).click()]);}
+ async function login(target=page,id=actor,{waitForIdle=true}={}){
+  const windowWaits=[];
+  await waitForOwnedLoginWindow(q,{limit:LOGIN_LIMITS.perAddress,onWait:sample=>{windowWaits.push(sample);console.log('[Home native login window] '+JSON.stringify({engine,width,...sample}));}});
+  const started=Date.now(),attemptId=randomUUID(),attempt={stage,target:target===page?'primary':'replacement',status:'started',windowWaits,trace:[]};details.loginAttempts??=[];details.loginAttempts.push(attempt);
+  const routeOf=value=>{try{const path=new URL(value).pathname;return ['/app','/login'].includes(path)?path:'other';}catch{return 'other';}};
+  const record=value=>{if(attempt.trace.length<40)attempt.trace.push({afterMs:Date.now()-started,...value});};
+  let sequence=0;const identities=new WeakMap();
+  const requestMeta=request=>{if(!identities.has(request))identities.set(request,++sequence);const type=request.resourceType();return {id:identities.get(request),route:routeOf(request.url()),method:request.method(),navigation:request.isNavigationRequest(),resourceType:['document','fetch','xhr'].includes(type)?type:'other',serverAction:typeof request.headers()['next-action']==='string'};};
+  const requested=request=>{const metadata=requestMeta(request);if(metadata.route!=='other')record({event:'request',...metadata});};
+  const responded=response=>{const metadata=requestMeta(response.request());if(metadata.route!=='other')record({event:'response',...metadata,status:response.status(),redirect:!!(response.headers()['x-action-redirect']||response.headers().location)});};
+  const failed=request=>{const metadata=requestMeta(request);if(metadata.route!=='other')record({event:'request-failed',...metadata,reason:/abort|cancel/i.test(request.failure()?.errorText??'')?'aborted':'transport-failed'});};
+  const finished=request=>{const metadata=requestMeta(request);if(metadata.route!=='other')record({event:'request-finished',...metadata});};
+  const navigated=frame=>{if(frame===target.mainFrame())record({event:'document',route:routeOf(frame.url())});};
+  target.on('request',requested);target.on('response',responded);target.on('requestfailed',failed);target.on('requestfinished',finished);target.on('framenavigated',navigated);
+  try{
+   await target.setExtraHTTPHeaders({[OWNED_LOGIN_HEADER]:attemptId});
+   await target.bringToFront();await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(id);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
+   await target.getByRole('button',{name:'Sign in',exact:true}).click({noWaitAfter:true});
+   await target.waitForFunction(()=>location.pathname==='/app'&&!!document.querySelector('.app-shell.nevora-portal'));
+   await target.locator('.app-shell.nevora-portal').waitFor();attempt.arrival={documentRoute:'app',pageRoute:routeOf(target.url()),shellVisible:true};if(waitForIdle)await target.waitForLoadState('networkidle');
+   attempt.serverTrace=readOwnedLoginEvents(await readFile(join(app.root,'next.log'),'utf8'),attemptId);assert(attempt.serverTrace.some(event=>event.event==='request-start'&&event.method==='POST'),'Owned native login server observation required');attempt.status='ready';
+  }catch(error){
+   const url=new URL(target.url()),code=url.searchParams.get('error');details.loginFailure={route:routeOf(target.url()),error:['busy','invalid','missing','locked'].includes(code)?code:code?'other':null};attempt.status='failed';attempt.failure=details.loginFailure;
+   let diagnosticTimer;
+   try{attempt.pageState=await Promise.race([target.evaluate(()=>{const button=document.querySelector('form button[type=submit]');return {route:['/login','/app'].includes(location.pathname)?location.pathname:'other',readyState:document.readyState,focused:document.hasFocus(),visibility:document.visibilityState,busy:button?.getAttribute('aria-busy'),disabled:button?.getAttribute('aria-disabled'),shell:!!document.querySelector('.app-shell.nevora-portal')};}).catch(error=>({state:'unavailable',failure:safeEvaluationFailure(error)})),new Promise(resolve=>{diagnosticTimer=setTimeout(()=>resolve({state:'unresponsive'}),1000);})]);}finally{clearTimeout(diagnosticTimer);}
+   try{const log=await readFile(join(app.root,'next.log'),'utf8');attempt.serverRequests=safeLoginServerRequests(log);attempt.serverTrace=readOwnedLoginEvents(log,attemptId);}catch{attempt.serverRequests='unavailable';attempt.serverTrace='unavailable';}
+   const diagnosticClient=new Client({connectionString:app.database.connectionString,connectionTimeoutMillis:1000,statement_timeout:1000});
+   try{await diagnosticClient.connect();attempt.databaseWaits=(await diagnosticClient.query("SELECT state,wait_event_type,wait_event,count(*)::int AS connections FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() GROUP BY state,wait_event_type,wait_event")).rows;attempt.sessionOutcome=(await diagnosticClient.query('SELECT EXISTS(SELECT 1 FROM employee_sessions WHERE employee_id=$1 AND created_at>=to_timestamp($2::double precision/1000)) AS "createdSinceAttempt"',[id,started])).rows[0];}catch{attempt.databaseWaits='unavailable';attempt.sessionOutcome='unavailable';}finally{await diagnosticClient.end().catch(()=>{});}
+   await writeFile(join(evidenceDirectory,`home-login-${engine}-${width}-report.json`),JSON.stringify({engine,width,attempts:details.loginAttempts},null,2));
+   await target.screenshot({path:join(evidenceDirectory,`home-${engine}-${width}-login-failure.png`),timeout:5000,mask:[target.locator('input,textarea')]}).catch(()=>{});throw error;
+  }finally{
+   await target.setExtraHTTPHeaders({}).catch(()=>{});
+   target.off('request',requested);target.off('response',responded);target.off('requestfailed',failed);target.off('requestfinished',finished);target.off('framenavigated',navigated);
+   await writeFile(join(evidenceDirectory,`home-login-${engine}-${width}-report.json`),JSON.stringify({engine,width,attempts:details.loginAttempts},null,2));
+  }
+ }
  function gate(path){
   let release,started,finished,used=false,failure,outcome,operation='fetch',navigationReleased=false;const documentUrl=page.url();
   const wait=new Promise(r=>{release=r;}),seen=new Promise(r=>{started=r;}),done=new Promise(r=>{finished=r;});
@@ -82,7 +144,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  await publishScheduleWithRevision({locationId:'loc-1',weekStart:clock.week,managerId:'QAOWNER'},app.database.executor);
  await q("INSERT INTO clocker_devices(id,location_id,name) VALUES($1,'loc-1','Fictional Home device')",[label+'-device']);
  await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES($1,$2,'loc-1',$3,clock_timestamp()-interval '20 minutes','CLOCKED_IN')",[label+'-time',actor,label+'-device']);
- stage='loading';const loading=gate('**/api/employee/home');await page.route(loading.path,loading.handler);await login();await loading.seen;
+ stage='loading';const loading=gate('**/api/employee/home');await page.route(loading.path,loading.handler);await login(page,actor,{waitForIdle:false});await loading.seen;
  assert(await page.getByText('Loading Home…',{exact:true}).isVisible());assert.equal(await assignments().count(),0);assert.equal(await items().count(),0);assert(await recorded().getByRole('status').filter({hasText:'Loading recorded time'}).isVisible(),'the Signature clock keeps its loading placeholder without showing recorded facts');assert(await recorded().getByRole('button',{name:'Refreshing recorded time',exact:true}).isDisabled());assert.equal(await page.getByText('Clocked in',{exact:true}).count(),0);assert.equal(await recorded().locator('time').count(),0);await shot('loading');loading.release();await ready();await page.unroute(loading.path,loading.handler);
  await page.getByText('Clocked in',{exact:true}).waitFor();
  assert.equal(homeResponse.state,'partial');assert.equal(homeResponse.allSet,false);assert.equal(homeResponse.snapshot.sources.communications.state,'complete');assert.equal(homeResponse.snapshot.nextShift.shiftId,scenario.sourceId);assert.equal(homeResponse.snapshot.currentShift.shiftId,label+'-ongoing');
@@ -114,9 +176,10 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  assert.equal(await items().count(),homeResponse.snapshot.attention.length);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);for(const item of homeResponse.snapshot.attention.filter(item=>item.ref.kind==='SCHEDULE'))assert(await page.locator(`[data-home-group] time[datetime="${item.ref.id}"]`).isVisible());assert.equal(await page.locator('[data-home-group] small').filter({hasText:'Recorded '}).count(),homeResponse.snapshot.attention.filter(item=>item.ref.kind!=='SCHEDULE').length);const leave=homeResponse.snapshot.attention.filter(item=>item.ref.kind==='TIME_OFF');assert.equal(new Set(leave.map(item=>item.label)).size,7);for(const item of leave)assert(await page.getByText(item.label,{exact:true}).isVisible());await shot('show-all');
  checks.push('H02 actual separate Actions/Updates membership and available native keyboard disclosures expose every returned item; weekly reviews show their own week and distinct time-off periods remain distinguishable; Home has canonical review links and no compact consent or Mark read');
  stage='canonical-communications';
- managerContext=await browser.newContext({viewport:{width,height:900}});await managerContext.route('**/*',route=>new URL(route.request().url()).origin===new URL(app.url).origin?route.continue():route.abort());manager=await managerContext.newPage();await login(manager,'QAOWNER');
- const [ownerSession]=await q('SELECT token_hash FROM employee_sessions WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 1',['QAOWNER']);
- const owner={employee:{id:'QAOWNER'},sessionTokenHash:ownerSession.token_hash};
+ const ownerId=await seedOwnedScenarioOwner(app.database.executor,label);
+ managerContext=await browser.newContext({viewport:{width,height:900}});await managerContext.route('**/*',route=>new URL(route.request().url()).origin===new URL(app.url).origin?route.continue():route.abort());manager=await managerContext.newPage();await login(manager,ownerId);
+ const [ownerSession]=await q('SELECT token_hash FROM employee_sessions WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 1',[ownerId]);
+ const owner={employee:{id:ownerId},sessionTokenHash:ownerSession.token_hash};
  const [session]=await q('SELECT token_hash FROM employee_sessions WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 1',[actor]);
  const self={employee:{id:actor,firstName:'Fictional',lastName:'Self',role:'LEAD',primaryLocationId:'loc-1'},sessionTokenHash:session.token_hash};
  // Public lifetime header is derived only from this fixture's actual SQL session;
@@ -275,7 +338,34 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='route-leave';const leaving=gate('**/api/employee/home');await page.route(leaving.path,leaving.handler);await page.locator('[data-home-refresh]').click();await leaving.seen;await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');const leavingNavigation=await page.goto(app.url+'/app/requests/hub',{waitUntil:'domcontentloaded'});assert(leavingNavigation?.ok());await page.getByRole('heading',{name:'Requests',exact:true}).waitFor();leaving.release('navigation');await leaving.done;assert.equal(leaving.failure,undefined);details.routeLeaveOutcome=leaving.outcome;await page.unroute(leaving.path,leaving.handler);await page.waitForLoadState('networkidle');assert.equal(await page.locator('[aria-labelledby="employee-reviewed-next-heading"] a[href^="/app/schedule"]').count(),0);await page.goto(app.url+'/app');await ready();checks.push('H08 hard route leave during actual Home read unmounts private Home; re-entry reads current sources');
  if(width===390){stage='sql-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE time_off_requests IN ACCESS EXCLUSIVE MODE');await refresh();await page.getByText('Time off unavailable',{exact:true}).waitFor();assert.equal(await assignments().count(),2);await shot('unavailable');await blocker.query('COMMIT');await refresh();assert.equal(await page.getByText('Time off unavailable',{exact:true}).count(),0);checks.push('H09 actual time-off lock timeout retains independently authorized assignments, discloses unavailable and Retry restores current source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
  stage='replaced-session';const other=await context.newPage();await login(other,scenario.actors[1]);await other.waitForLoadState('networkidle');await other.close();await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await page.locator('[data-home-state="unauthorized"]').waitFor();assert.equal(await assignments().count(),0);assert.equal(await items().count(),0);assert.equal(await recorded().locator('time').count(),0);assert(await recorded().getByRole('link',{name:'Sign in',exact:true}).isVisible());assert(await recorded().getByRole('link',{name:'My time',exact:true}).isVisible());assert.equal(await recorded().getByRole('button',{name:'Refresh recorded time',exact:true}).count(),0);await shot('session-replaced');checks.push('H10 actual same-browser account cookie replacement refuses former lifetime binding and clears every Home private row');
- await login();await ready();stage='early-my-time-route';const early=gate('**/api/employee/my-time');await page.route(early.path,early.handler);await page.getByRole('button',{name:'Refresh recorded time',exact:true}).click();await early.seen;const earlyNavigation=await page.goto(app.url+'/app/schedule?week='+scenario.week,{waitUntil:'domcontentloaded'});assert(earlyNavigation?.ok());await page.getByRole('heading',{name:'My schedule',exact:true}).waitFor();early.release('navigation');await early.done;assert.equal(early.failure,undefined);details.earlyTimeRouteOutcome=early.outcome;await page.unroute(early.path,early.handler);await page.waitForLoadState('networkidle');await page.goto(app.url+'/app');await ready();checks.push('H11 actual MyTime read interrupted by early hard route navigation produces no stale Home rows or page runtime error');
+ await page.bringToFront();await login();await ready();stage='early-my-time-route';
+ const bellHold=gate('**/api/notifications');let bellReads=0;
+ const observeBell=request=>{if(request.method()==='GET'&&new URL(request.url()).pathname==='/api/notifications')bellReads++;};
+ await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');
+ await page.waitForLoadState('networkidle');
+ page.on('request',observeBell);await page.route(bellHold.path,bellHold.handler);
+ try{
+  await page.evaluate(()=>window.dispatchEvent(new Event('nevora:notifications-changed')));await bellHold.seen;
+  await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='loading');
+  await page.evaluate(()=>{window.dispatchEvent(new Event('focus'));window.dispatchEvent(new Event('pageshow'));});
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  assert.equal(bellReads,1,'Duplicate foreground events retain the held current notification read');
+  const reply=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/notifications'&&response.request().method()==='GET');
+  bellHold.release();await bellHold.done;assert.equal((await reply).status(),200);assert.equal(bellHold.outcome,'fulfilled');assert.equal(bellHold.failure,undefined);
+  await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');
+ }finally{bellHold.release();await bellHold.done;await page.unroute(bellHold.path,bellHold.handler);page.off('request',observeBell);}
+ checks.push('H11 duplicate foreground focus/pageshow retains one actual held authorized notification read; its returned current count is required');
+ await page.bringToFront();await ready();await waitForRecordedTimeReady(page,'OFF_CLOCK');
+ const earlyRefresh=recorded().getByRole('button',{name:'Refresh recorded time',exact:true});await earlyRefresh.focus();
+ details.earlyTimeBaseline=await waitForRecordedTimeReady(page,'OFF_CLOCK');
+ assert.deepEqual(details.earlyTimeBaseline,{state:'OFF_CLOCK',refreshEnabled:true});
+ const early=gate('**/api/employee/my-time');await page.route(early.path,early.handler);await earlyRefresh.click();await early.seen;
+ await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');
+ const earlyNavigation=await page.goto(app.url+'/app/schedule?week='+scenario.week,{waitUntil:'domcontentloaded'});assert(earlyNavigation?.ok());await page.getByRole('heading',{name:'My schedule',exact:true}).waitFor();
+ await page.locator('.portal-notification-bell[data-state="ready"]').waitFor();
+ details.earlyTimeDestination=await page.evaluate(()=>({route:location.pathname,bellState:document.querySelector('.portal-notification-bell')?.getAttribute('data-state')}));
+ assert.deepEqual(details.earlyTimeDestination,{route:'/app/schedule',bellState:'ready'});
+ early.release('navigation');await early.done;assert.equal(early.failure,undefined);details.earlyTimeRouteOutcome=early.outcome;await page.unroute(early.path,early.handler);await page.waitForLoadState('networkidle');await page.goto(app.url+'/app');await ready();checks.push('H11 actual MyTime read interrupted by early hard route navigation produces no stale Home rows or page runtime error; destination notification read is ready before the next departure');
  stage='removal-review';
  await page.goto(app.url+'/app/schedule?week='+scenario.week);
  await page.getByRole('button',{name:'Confirm schedule',exact:true}).click();
@@ -309,5 +399,5 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  if(width===390){stage='communication-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE communications IN ACCESS EXCLUSIVE MODE');await refresh();await page.getByText('Communications unavailable',{exact:true}).waitFor();assert.equal(await page.getByText("You’re all set.",{exact:true}).count(),0);await shot('communications-unavailable');await blocker.query('COMMIT');await refresh();await page.getByText("You’re all set.",{exact:true}).waitFor();checks.push('H16 actual communication SQL lock failure suppresses all-clear and Retry restores current complete zero source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
  stage='axe-diagnostic';await page.addScriptTag({path:axeFile});details.axe=await page.evaluate(async()=>{const result=await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}});return result.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>({target:n.target.map(t=>String(t).replace(/\[[^\]]*\]/g,'[attribute]')),contrast:n.any.filter(a=>a.id==='color-contrast').map(a=>({ratio:a.data?.contrastRatio,foreground:a.data?.fgColor,background:a.data?.bgColor}))}))}));});assert.deepEqual(details.axe,[]);
  details.runtimeErrors=runtimeErrors;assert.deepEqual(runtimeErrors,[]);details.html=await page.locator('.employee-home').innerHTML();await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-checks.json`),JSON.stringify(details,null,2));return {checks};
- }catch(error){details.failedStage=stage;details.failure={name:error.name,code:error.code??null,message:'Browser step failed; see named stage and source location',location:error.stack?.split('\n').find(line=>line.includes('phase-e-home-browser-scenarios.mjs'))};await shot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-failure.json`),JSON.stringify(details,null,2));throw error;}finally{await managerContext?.close();}
+ }catch(error){details.failedStage=stage;details.failure={name:error.name,code:error.code??null,message:'Browser step failed; see named stage and source location',location:error.stack?.split('\n').find(line=>line.includes('phase-e-home-browser-scenarios.mjs'))};await shot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-failure.json`),JSON.stringify(details,null,2));throw error;}finally{page.off('request',notificationStart);page.off('requestfinished',notificationFinish);page.off('requestfailed',notificationFailed);page.off('pageerror',nativeError);await writeFile(join(evidenceDirectory,`home-lifecycle-${engine}-${width}-report.json`),JSON.stringify({engine,width,events:details.lifecycleTrace},null,2));await managerContext?.close();}
 }

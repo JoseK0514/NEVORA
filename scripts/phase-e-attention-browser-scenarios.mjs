@@ -4,18 +4,42 @@ import {Client} from 'pg';
 import {writeFile} from 'node:fs/promises';
 import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
+import {safeEvaluationFailure} from './release-browser-diagnostics.mjs';
+import {observeDocumentNavigation} from './browser-navigation-diagnostic.mjs';
+import {runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,runtimeErrors:cellRuntimeErrors}){
  const label=`AT${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
  const scenario=await seedOwnedScenario(app.database.executor,label,index+56),actor=scenario.actors[0],q=(text,values=[])=>app.database.executor.query({text,values});
- const checks=[],runtimeErrors=[],details={engine,width,actor,week:scenario.week};let stage='login';page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({stage,name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]')});});
+ const checks=[],runtimeErrors=[],details={engine,width,actor,week:scenario.week,actions:[]};let stage='login';page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({stage,name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]')});});
+ const startedAt=performance.now(),navigation=observeDocumentNavigation(page,()=>app.url),browser=context.browser();details.lifecycle=[];
+ const atMs=()=>Math.round(performance.now()-startedAt);
+ const record=(event,fields={})=>{details.lifecycle.push({stage,event,atMs:atMs(),...fields});if(details.lifecycle.length>64)details.lifecycle.shift();};
+ const disconnected=()=>record('browser-disconnected');browser?.on('disconnected',disconnected);
+ for(const event of ['close','crash','domcontentloaded','load'])page.on(event,()=>record(event));
+ page.on('request',request=>{
+  if(request.method()==='POST')details.actions.push({stage,atMs:atMs(),event:'request',serverAction:!!request.headers()['next-action'],documentNavigation:request.isNavigationRequest()});
+  if(request.isNavigationRequest()&&request.frame()===page.mainFrame())record('document-request',{navigation:navigation.snapshot()});
+ });
+ page.on('framenavigated',frame=>{if(frame===page.mainFrame())record('document-history-or-commit',{navigation:navigation.snapshot()});});
+ await context.exposeBinding('__nevoraQaAttentionLifecycle',(source,value)=>{
+  if(source.page!==page||!value||!['focus','blur','pagehide','pageshow','visibilitychange'].includes(value.event))return;
+  record(value.event,{visibility:['visible','hidden'].includes(value.visibility)?value.visibility:'unknown',focused:value.focused===true});
+ });
+ await context.addInitScript(()=>{
+  const report=event=>{void globalThis.__nevoraQaAttentionLifecycle({event,visibility:document.visibilityState,focused:document.hasFocus()}).catch(()=>{});};
+  for(const event of ['focus','blur','pagehide','pageshow'])window.addEventListener(event,()=>report(event));
+  document.addEventListener('visibilitychange',()=>report('visibilitychange'));
+ });
  cellRuntimeErrors.setStageReader(()=>stage);
- const screenshot=async name=>page.screenshot({path:join(evidenceDirectory,`attention-${engine}-${width}-${name}.png`),fullPage:true});
+ const screenshot=async (name,options={})=>page.screenshot({path:join(evidenceDirectory,`attention-${engine}-${width}-${name}.png`),fullPage:true,...options});
  async function login(target=page){await target.goto(app.url+'/login');await target.getByLabel('Employee ID',{exact:true}).fill(actor);await target.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([target.waitForURL(u=>u.pathname==='/app'),target.getByRole('button',{name:'Sign in',exact:true}).click()]);await target.waitForLoadState('networkidle');}
  async function schedule(extra=''){await page.goto(app.url+`/app/schedule?week=${scenario.week}${extra}`);await page.waitForLoadState('networkidle');}
  async function publish(start){if(start)await q('UPDATE shifts SET start_time=$1 WHERE id=$2',[start,scenario.sourceId]);await publishScheduleWithRevision({locationId:'loc-1',weekStart:scenario.week,managerId:'QAOWNER'},app.database.executor);}
  const confirm=()=>page.getByRole('button',{name:'Confirm schedule',exact:true});
  const operation=()=>page.locator('input[name="operationId"]').inputValue();
+ let scenarioFailure;
+ try{
  await login();stage='full-review';await schedule('&acknowledged=1');
  assert.equal(await page.getByText('Schedule confirmed.',{exact:true}).count(),0,'query cannot fabricate success');assert(await confirm().isEnabled());
  details.reviewedRevision=await page.locator('input[name="expectedRevisionId"]').inputValue();
@@ -42,8 +66,14 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  await publish('10:00');await schedule();assert(await confirm().isEnabled());
  stage='response-loss';
  // Abort one action response in the browser after the actual server commit.
- let lost=false;await page.route('**/app/schedule?*',async route=>{if(!lost&&route.request().method()==='POST'&&route.request().headers()['next-action']){lost=true;await route.fetch();await route.abort('failed');}else await route.continue();});
- const recoveryOp=await operation();await confirm().click();await page.getByRole('alert').filter({hasText:'Confirmation outcome unknown.'}).waitFor();assert.equal(await operation(),recoveryOp);await screenshot('unknown');
+ let lost=false;await page.route('**/app/schedule?*',async route=>{if(!lost&&route.request().method()==='POST'&&route.request().headers()['next-action']){lost=true;details.actions.push({stage,atMs:atMs(),event:'response-loss-intercept'});const response=await route.fetch();details.actions.push({stage,atMs:atMs(),event:'response-loss-upstream',status:response.status()});await route.abort('failed');details.actions.push({stage,atMs:atMs(),event:'response-loss-aborted'});}else await route.continue();});
+ const recoveryOp=await operation();await confirm().click();
+ try{await page.getByRole('alert').filter({hasText:'Confirmation outcome unknown.'}).waitFor();}
+ catch(error){details.responseLoss={intercepted:lost,atMs:atMs(),pageClosed:page.isClosed(),browserConnected:browser?.isConnected()??null,navigation:navigation.snapshot()};
+  try{details.responseLoss.canonicalOperations=(await q('SELECT * FROM employee_attention_operations WHERE employee_id=$1 AND operation_id=$2',[actor,recoveryOp])).length;}catch{details.responseLoss.canonicalReadFailed=true;}
+  try{details.responseLoss.view=await runBeforeRecoveryDeadline(()=>page.evaluate(()=>({unknown:!![...document.querySelectorAll('[role="alert"]')].find(e=>e.textContent?.includes('Confirmation outcome unknown.')),blocked:!![...document.querySelectorAll('[role="alert"]')].find(e=>e.textContent?.includes('no longer authorized')),confirmation:document.querySelector('button[aria-busy]')?.getAttribute('aria-busy')??null,success:!![...document.querySelectorAll('h2')].find(e=>e.textContent==='You’re up to date')})),performance.now()+5000);}catch(error){details.responseLoss.viewReadFailure=safeEvaluationFailure(error);}
+  await screenshot('response-loss-failure',{timeout:5000}).catch(error=>{details.responseLoss.screenshotFailure=safeEvaluationFailure(error);});throw error;}
+ assert.equal(await operation(),recoveryOp);await screenshot('unknown');
  await page.unroute('**/app/schedule?*');await page.getByRole('button',{name:'Retry confirmation',exact:true}).click();await page.getByRole('heading',{name:'You’re up to date',exact:true}).waitFor();
  assert.equal((await q('SELECT * FROM employee_attention_operations WHERE employee_id=$1 AND operation_id=$2',[actor,recoveryOp])).length,1);checks.push('Actual committed action response loss renders outcome_unknown; original operation retry recovers one canonical result');
  stage='leave-and-revoke';await publish('11:00');await schedule();await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));assert.equal(await page.locator('input[name="authority"]').count(),0);checks.push('Leaving the view clears obsolete private intent and prevents late-response reuse');
@@ -64,6 +94,8 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  // Empty week is a true source state, not a false success.
  stage='empty';const empty=new Date(scenario.week+'T12:00:00Z');empty.setUTCDate(empty.getUTCDate()+7);await page.goto(app.url+'/app/schedule?week='+empty.toISOString().slice(0,10));await page.waitForLoadState('networkidle');assert.equal(await confirm().count(),0);assert.equal(await page.getByText('Schedule not published yet',{exact:true}).count(),7);assert.equal(await page.getByText('Off — no assignment',{exact:true}).count(),0);assert(await page.getByRole('status').filter({hasText:'published this week yet'}).count());await screenshot('empty');checks.push('Unpublished empty week has no confirmation and no fabricated off/success state');
  // Return to real schedule for driver's WCAG scan.
- stage='layout';await schedule();details.checks=checks;details.runtimeErrors=runtimeErrors;details.responseCaptured=!!captured;await writeFile(join(evidenceDirectory,`attention-${engine}-${width}-checks.json`),JSON.stringify(details,null,2));
+ stage='layout';await schedule();details.responseCaptured=!!captured;
  return {checks};
+ }catch(error){scenarioFailure=error;throw error;}
+ finally{browser?.off('disconnected',disconnected);details.stage=stage;details.checks=checks;details.runtimeErrors=runtimeErrors;try{await writeFile(join(evidenceDirectory,`attention-${engine}-${width}-report.json`),JSON.stringify(details,null,2));}catch(error){if(!scenarioFailure)throw error;console.error('Attention diagnostic report unavailable; original scenario failure retained');}}
 }

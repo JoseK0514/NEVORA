@@ -12,11 +12,17 @@ import {hashPassword} from '../src//lib/auth/password.ts';
 const pw=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'))('playwright');
 const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim(),sourceClean=execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim()==='';
 if(process.env.PHASE_D_EXPECTED_SHA){assert.equal(checkpoint,process.env.PHASE_D_EXPECTED_SHA);assert(sourceClean);}
-const dir=resolve(process.env.PHASE_D_REMEDIATION_EVIDENCE_DIR+'/missing');await mkdir(dir,{recursive:true});const results=[],runtimeErrors=[];let app,browser;
+const dir=resolve(process.env.PHASE_D_REMEDIATION_EVIDENCE_DIR+'/missing');await mkdir(dir,{recursive:true});const results=[],runtimeErrors=[],landingReads=[];let app,browser;
 const q=(text,values=[])=>app.database.executor.query({text,values});const h=()=>({'X-Nevora-Time-Correction':'1',Origin:app.url});
-const save=()=>writeFile(dir+'/report.json',JSON.stringify({checkpoint,tree,sourceClean,results,runtimeErrors},null,2));
+const save=()=>writeFile(dir+'/report.json',JSON.stringify({checkpoint,tree,sourceClean,results,runtimeErrors,landingReads},null,2));
 async function record(name,fn){let observations={};try{await fn(v=>Object.assign(observations,v));results.push({name,result:'PASS',observations});}catch(e){results.push({name,result:'FAIL',observations,error:String(e.stack??e)});}console.log(name+': '+results.at(-1).result);await save();}
-async function context(id){const c=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});await c.route('**/*',route=>{const u=new URL(route.request().url());return ['http:','https:'].includes(u.protocol)&&u.origin!==app.url?route.abort('blockedbyclient'):route.continue();});const p=await c.newPage();p.setDefaultTimeout(12000);p.on('pageerror',e=>runtimeErrors.push(String(e)));await p.goto(app.url+'/login');await p.getByLabel('Employee ID',{exact:true}).fill(id);await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign in',exact:true}).click()]);return {c,p};}
+async function context(id){
+ const c=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});await c.route('**/*',route=>{const u=new URL(route.request().url());return ['http:','https:'].includes(u.protocol)&&u.origin!==app.url?route.abort('blockedbyclient'):route.continue();});const p=await c.newPage();p.setDefaultTimeout(12000);p.on('pageerror',e=>runtimeErrors.push(String(e)));await p.goto(app.url+'/login');await p.getByLabel('Employee ID',{exact:true}).fill(id);await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
+ const reads=id==='QAOWNER'?[{path:'/api/manager/today',method:'GET'},{path:'/api/manager/action-center',method:'POST'},{path:'/api/manager/clock-monitor',method:'GET'}]:[];
+ const pending=reads.map(async({path,method})=>{const response=await p.waitForResponse(response=>new URL(response.url()).pathname===path&&response.request().method()===method);assert.equal(response.status(),200,'Current Manager landing read succeeds before navigation');assert.equal(await response.finished(),null,'Current Manager landing body completes');landingReads.push({path,method,status:response.status()});});
+ await Promise.all([p.waitForURL(u=>u.pathname==='/app',{waitUntil:'commit'}),p.getByRole('button',{name:'Sign in',exact:true}).click(),...pending]);
+ await p.locator('.app-shell.nevora-portal').waitFor();await p.waitForLoadState('networkidle');return {c,p};
+}
 try{
  app=await createOwnedNextApp(dir);await seedOwnedApp(app.database.executor);const ph=await hashPassword(TEST_PASSWORD);
  for(const engine of ['chromium','webkit']){

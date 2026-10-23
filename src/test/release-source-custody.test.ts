@@ -28,3 +28,6 @@ it('refuses changed tracked application input before allocating a database', asy
   const root = source(); writeFileSync(join(root, 'src', 'example.ts'), 'export const value = 2;');
   await expect(createOwnedNextApp(join(root, '..', 'evidence-unused'))).rejects.toThrow(/Tracked application source differs/);
 });
+it('refuses login observation without an explicit owned process marker before any database allocation',async()=>{
+ await expect(createOwnedNextApp(join(original,'unused-evidence'),{loginDiagnostics:true})).rejects.toThrow('Login diagnostics require the owned process marker');
+});

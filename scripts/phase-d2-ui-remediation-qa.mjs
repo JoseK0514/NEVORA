@@ -5,6 +5,8 @@ import {join} from 'node:path';
 import {Temporal} from '@js-temporal/polyfill';
 import {hashPassword} from '../src/lib/auth/password.ts';
 import {TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
+import {safeD2Error,safeD2Text,unexpectedD2Runtime} from './d2-runtime-failures.mjs';
+import {finishD2ForegroundRecovery} from './d2-foreground-recovery.mjs';
 
 // Runs only inside the existing owned PostgreSQL / exact-clean-SHA D2 gate.
 export async function verifyD2UiRemediation({app,browser,engine,evidence,report,checked,context,login,geometry,widths}){
@@ -28,13 +30,27 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
  await login(employee,employeeId);await login(owner,'QAOWNER');
  const ep=await employee.newPage(),mp=await owner.newPage();
  ep.setDefaultTimeout(15000);mp.setDefaultTimeout(15000);
- let phase='normal';
- const observations={engine,console:[],runtime:[],failedRequests:[],injectedFailures:[],keyboard:[],states:[]};
+ let phase='normal',stage='initial',requestSequence=0;
+ const observations={engine,console:[],runtime:[],failedRequests:[],injectedFailures:[],keyboard:[],states:[],network:[]};
+ const startedAt=performance.now(),requests=new WeakMap(),consoleDetails=[],managerRscRequests=new Set();
+ const clean=safeD2Text;
+ const record=value=>{observations.network.push({atMs:Math.round(performance.now()-startedAt),stage,phase,...value});if(observations.network.length>300)observations.network.shift();};
  report.remediation??=[];report.remediation.push(observations);
  for(const [role,page] of [['employee',ep],['manager',mp]]){
-  page.on('console',message=>{if(message.type()==='error')observations.console.push({role,phase,text:message.text()});});
-  page.on('pageerror',error=>observations.runtime.push({role,phase,message:error.message}));
-  page.on('requestfailed',request=>observations.failedRequests.push({role,phase,path:new URL(request.url()).pathname,method:request.method(),failure:request.failure()?.errorText}));
+  page.on('console',message=>{if(message.type()==='error'){
+   const entry={role,phase,stage,atMs:Math.round(performance.now()-startedAt),text:clean(message.text()),reactBoundary:message.text().includes('The above error occurred in the <'),extractionFailed:false,errors:[]};observations.console.push(entry);
+   consoleDetails.push(Promise.all(message.args().map(arg=>arg.evaluate(value=>value instanceof Error?{name:value.name,message:value.message,stack:value.stack}:null).then(error=>{if(error)entry.errors.push(safeD2Error(error));},()=>{entry.extractionFailed=true;}))));
+  }});
+  page.on('pageerror',error=>observations.runtime.push({role,phase,stage,atMs:Math.round(performance.now()-startedAt),...safeD2Error(error)}));
+  page.on('request',request=>{
+   const url=new URL(request.url());if(url.origin!==app.url||!(url.pathname==='/app'||url.pathname.startsWith('/api/')||url.pathname==='/__nextjs_original-stack-frames'))return;
+   if(role==='manager'&&url.pathname==='/app'&&request.headers().rsc==='1')managerRscRequests.add(request);
+   const id=++requestSequence;requests.set(request,id);record({role,id,event:'request',path:clean(url.pathname),method:request.method(),rsc:request.headers().rsc==='1',serverAction:!!request.headers()['next-action'],document:request.isNavigationRequest()});
+  });
+  page.on('response',response=>{const id=requests.get(response.request());if(id)record({role,id,event:'response',status:response.status()});});
+  page.on('requestfinished',request=>{managerRscRequests.delete(request);const id=requests.get(request);if(id)record({role,id,event:'finished'});});
+  page.on('requestfailed',request=>{managerRscRequests.delete(request);const id=requests.get(request);if(id)record({role,id,event:'failed',reason:clean(request.failure()?.errorText)});});
+  page.on('requestfailed',request=>observations.failedRequests.push({role,phase,path:clean(new URL(request.url()).pathname),method:request.method(),failure:clean(request.failure()?.errorText)}));
  }
  const headers={'X-Nevora-Time-Correction':'1',Origin:app.url};
  const add=(at,minutes)=>Temporal.Instant.from(at).add({minutes}).toString();
@@ -81,7 +97,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
    assert(item.context.decisions.every(d=>d.status==='APPROVED'));
   }
   observations.comparison={raw,rawBreak,canonical,canonicalBreak,requests:snapshot.requests.filter(r=>[pendingEntry,pendingBreak].includes(r.id))};
-  await mp.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
+  stage='manager-initial';await mp.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   assert.equal(await mp.locator('.manager-correction-row').filter({hasText:name}).getByText('Current effective',{exact:true}).count(),2);
   await shots(mp,'.manager-corrections','multiple-supersessions');
@@ -98,7 +114,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   assert(contrast.length>0);assert(contrast.every(pair=>pair.opacity===1&&pair.ratio>=4.5));observations.contrast=contrast;
 
   observations.keyboard.push({stage:'employee-before-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus()),managerFocused:await mp.evaluate(()=>document.hasFocus())});
-  await ep.bringToFront();assert(await ep.evaluate(()=>document.hasFocus()),'Employee native keyboard page must be foreground');
+  stage='employee-foreground';await ep.bringToFront();assert(await ep.evaluate(()=>document.hasFocus()),'Employee native keyboard page must be foreground');
   observations.keyboard.push({stage:'employee-after-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus())});
   await ep.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
   const details=ep.locator('.employee-time-entry').first();
@@ -130,39 +146,56 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   // remains false for its native date control despite a real Tab transition.
   assert.equal(focus.outlineStyle,'solid');assert(parseFloat(focus.outlineWidth)>=2);
   observations.keyboard.push({stage:'manager-before-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus()),managerFocused:await mp.evaluate(()=>document.hasFocus())});
-  await mp.bringToFront();assert(await mp.evaluate(()=>document.hasFocus()),'Manager native keyboard page must be foreground');
-  const approve=mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first();await approve.focus();
+  stage='manager-return';const priorRequest=requestSequence,refreshDeadline=performance.now()+15000;
+  const freshRsc=mp.waitForResponse(response=>{const request=response.request(),url=new URL(request.url());return url.origin===app.url&&url.pathname==='/app'&&request.headers().rsc==='1'&&(requests.get(request)??0)>priorRequest;});
+  const freshCorrections=mp.waitForResponse(response=>{const request=response.request(),url=new URL(request.url());return url.origin===app.url&&url.pathname==='/api/manager/time-corrections'&&request.method()==='GET'&&(requests.get(request)??0)>priorRequest;});
+  const [,foregroundResponse,correctionResponse]=await Promise.all([mp.bringToFront(),freshRsc,freshCorrections]);await finishD2ForegroundRecovery(foregroundResponse,correctionResponse,[pendingEntry,pendingBreak],refreshDeadline);
+  assert(await mp.evaluate(()=>document.hasFocus()),'Manager native keyboard page must be foreground');
+  observations.keyboard.push({stage:'manager-return',state:await mp.evaluate(()=>({visibility:document.visibilityState,focused:document.hasFocus(),routeState:document.querySelector('.portal-route-state h2')?.textContent??null,correctionRows:document.querySelectorAll('.manager-correction-row').length}))});
+  // Foreground return starts a protected RSC recovery. Finish that tested
+  // recovery before a separate hard reload, so the driver cannot cancel it.
+  await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
+  await mp.waitForLoadState('networkidle');
+  const recoveryDeadline=performance.now()+15000;
+  while(managerRscRequests.size){assert(performance.now()<recoveryDeadline,'Foreground RSC recovery must finish before a separate hard reload');await new Promise(resolve=>setTimeout(resolve,25));}
+  assert.equal(await mp.locator('.manager-correction-row').filter({hasText:name}).count(),2);
+  assert.equal(managerRscRequests.size,0,'Observed foreground RSC requests must be drained at the reload boundary');
+  await Promise.all(consoleDetails);const beforeReload=unexpectedD2Runtime(observations);assert.deepEqual(beforeReload.runtime,[]);assert.deepEqual(beforeReload.console,[],'Foreground recovery must not emit a JavaScript exception');
+  assert.equal(managerRscRequests.size,0,'Foreground RSC must remain drained after console extraction');
+  record({role:'manager',event:'foreground-recovery-ready',pendingRscRequests:managerRscRequests.size,freshRscRequestId:requests.get(foregroundResponse.request()),freshCorrectionRequestId:requests.get(correctionResponse.request())});
+  await mp.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
+  const approve=mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first();await approve.waitFor();await approve.focus();
   const managerFocus=await approve.evaluate(el=>({active:document.activeElement===el,outlineStyle:getComputedStyle(el).outlineStyle,outlineWidth:getComputedStyle(el).outlineWidth}));
   assert(managerFocus.active);assert.equal(managerFocus.outlineStyle,'solid');assert(parseFloat(managerFocus.outlineWidth)>=2);observations.keyboard.push({role:'manager',focus:managerFocus});
 
   // Cleared states use real lifecycle events and preserve the authoritative count.
-  phase='offline';await owner.setOffline(true);await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('offline','.portal-route-state');await shots(mp,'.portal-route-state','offline');
+  stage='offline';phase='offline';await owner.setOffline(true);await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('offline','.portal-route-state');await shots(mp,'.portal-route-state','offline');
   await owner.setOffline(false);await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();phase='normal';checked(`${engine}: offline → online protected refresh`);
-  await mp.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('pagehide','.portal-route-state');
+  stage='pagehide-pageshow';await mp.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('pagehide','.portal-route-state');
   await mp.evaluate(()=>window.dispatchEvent(new Event('pageshow')));await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
-  await mp.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));});
+  stage='hidden-visible';await mp.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));});
   await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('hidden','.portal-route-state');
   await mp.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'visible'});document.dispatchEvent(new Event('visibilitychange'));});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
 
-  let release;const delayed=new Promise(resolve=>{release=resolve;});
+  stage='delayed-read';let release;const delayed=new Promise(resolve=>{release=resolve;});
   const delayRoute=async route=>{if(route.request().method()==='GET')await delayed;await route.continue();};
   await mp.route('**/api/manager/time-corrections',delayRoute);
   await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
   await mp.getByText('Loading correction requests',{exact:true}).waitFor();await shots(mp,'.manager-corrections','loading');release();
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();await mp.unroute('**/api/manager/time-corrections',delayRoute);
   const unavailable=route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({state:'unavailable',reason:'read_failed'})});
-  phase='injected-503';await mp.route('**/api/manager/time-corrections',unavailable);observations.injectedFailures.push('503 protected correction read');
+  stage='injected-503';phase='injected-503';await mp.route('**/api/manager/time-corrections',unavailable);observations.injectedFailures.push('503 protected correction read');
   await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.getByText('Correction requests unavailable',{exact:true}).waitFor();await safePause('read failure');await shots(mp,'.manager-corrections','unavailable');
   await mp.unroute('**/api/manager/time-corrections',unavailable);await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   phase='normal';
-  const malformed=route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({...snapshot,requests:snapshot.requests.map(r=>({...r,context:{state:'confirmed',sourceKind:'ADJUSTMENT',startAt:'invalid'}}))})});
+  stage='malformed-context';const malformed=route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({...snapshot,requests:snapshot.requests.map(r=>({...r,context:{state:'confirmed',sourceKind:'ADJUSTMENT',startAt:'invalid'}}))})});
   await mp.route('**/api/manager/time-corrections',malformed);observations.injectedFailures.push('Malformed protected effective context');
   await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.getByText('Correction requests unavailable',{exact:true}).waitFor();await safePause('malformed context');
   await mp.unroute('**/api/manager/time-corrections',malformed);await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
-  await q('UPDATE time_entries SET version=version+1 WHERE id=$1',[entryId]);
+  stage='stale-source';await q('UPDATE time_entries SET version=version+1 WHERE id=$1',[entryId]);
   await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
   await mp.getByText('The source or approved baseline changed since this request. The proposed time is not the current effective time.',{exact:true}).first().waitFor();
   await shots(mp,'.manager-corrections','stale');
@@ -175,20 +208,26 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   await mp.getByText('No correction requests',{exact:true}).waitFor();await shots(mp,'.manager-corrections','confirmed-empty');
   assert.equal((await q('SELECT count(*)::int AS count FROM nevora_pending_time_corrections WHERE employee_id=$1',[employeeId]))[0].count,0);
   observations.keyboard.push({decisions:'two declines activated with Enter'});
-  await ep.reload({waitUntil:'networkidle'});await ep.getByText('Declined',{exact:true}).first().waitFor();await shots(ep,'.employee-correction-center','completed-history');
+  stage='completed-history';await ep.reload({waitUntil:'networkidle'});await ep.getByText('Declined',{exact:true}).first().waitFor();await shots(ep,'.employee-correction-center','completed-history');
   // Restore only this disposable version mutation to compare untouched raw evidence.
   await q('UPDATE time_entries SET version=version-1 WHERE id=$1',[entryId]);
   assert.deepEqual((await q('SELECT clock_in_at::text AS start,clock_out_at::text AS finish,device_id,schedule_context,version FROM time_entries WHERE id=$1',[entryId]))[0],raw);
   assert.deepEqual((await q('SELECT break_start_at::text AS start,break_end_at::text AS finish,break_type_id,break_type_snapshot,version FROM break_entries WHERE id=$1',[breakId]))[0],rawBreak);
   assert.equal((await q('SELECT count(*)::int AS count FROM time_correction_adjustments WHERE employee_id=$1',[employeeId]))[0].count,4);
   const unrelated=await owner.request.get(app.url+'/api/employee/time-corrections',{headers});assert.equal(unrelated.status(),403);
-  phase='authority-denied';await q("UPDATE employees SET role='LEAD' WHERE id='QAOWNER'");
+  stage='authority-denied';phase='authority-denied';await q("UPDATE employees SET role='LEAD' WHERE id='QAOWNER'");
   await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.locator('.manager-corrections').waitFor({state:'detached'});assert.equal(await mp.locator('.manager-correction-row').count(),0);
   assert.equal((await owner.request.get(app.url+'/api/manager/time-corrections',{headers})).status(),403);
   await q("UPDATE employees SET role='OWNER' WHERE id='QAOWNER'");
   // Record all native errors. Only explicitly injected transport failures may be classified.
-  observations.unexpectedRuntime=observations.runtime.filter(e=>!(e.phase==='offline'&&/^(Load failed|TypeError: Load failed|Failed to fetch|TypeError: Failed to fetch)$/.test(e.message)));
+  await Promise.all(consoleDetails);
+  const unexpected=unexpectedD2Runtime(observations);
+  observations.unexpectedRuntime=unexpected.runtime;observations.unexpectedConsole=unexpected.console;
   assert.deepEqual(observations.unexpectedRuntime,[]);
+  assert.deepEqual(observations.unexpectedConsole,[],'React-handled JavaScript exceptions remain fatal');
   checked(`${engine}: 006 canonical comparisons/defaults/history, 008 lifecycle states and privacy`);
+ }catch(error){
+  observations.failureState=await mp.evaluate(()=>({visibility:document.visibilityState,focused:document.hasFocus(),routeState:document.querySelector('.portal-route-state h2')?.textContent??null,correctionRows:document.querySelectorAll('.manager-correction-row').length,correctionStatus:document.querySelector('.manager-corrections-empty')?.textContent??null})).catch(()=>null);
+  await mp.screenshot({path:join(evidence,`${engine}-ui-manager-failure.png`),fullPage:true}).catch(()=>{});throw error;
  }finally{await employee.close();await owner.close();}
 }

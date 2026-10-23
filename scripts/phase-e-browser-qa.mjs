@@ -27,6 +27,9 @@ function nativeFetchResourceKind(message,page) {
     if(path==='/api/manager/communications'||path.startsWith('/api/manager/communications/'))return 'manager-read';
     if(path==='/api/employee/communications'||path.startsWith('/api/employee/communications/'))return 'employee-read';
     if(path==='/api/employee/my-time')return 'recorded-time-read';
+    if(path==='/api/manager/today')return 'manager-today-read';
+    if(path==='/api/manager/action-center')return 'action-center-read';
+    if(path==='/api/manager/clock-monitor')return 'clock-monitor-read';
     if(path==='/api/employee/profile')return 'profile-read';
     if(path==='/api/employee/calendar-subscriptions')return 'calendar-read';
     if(path==='/app/api/push/status')return 'device-status-read';
@@ -64,7 +67,7 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
   const start = errors.length;
   const classified=new WeakSet(),pages=new WeakMap();
   let phase = 'scenario', readStage = () => null, pageIndex = 0;
-  const stages = new Set(['seed', 'compose', 'audience-change', 'full-review', 'native-focus', 'revision-conflict', 'unknown', 'layout', 'private-lifetime', 'withdraw', 'employee-team', 'replacement', 'login', 'confirmation', 'republish', 'response-loss', 'leave-and-revoke', 'unavailable-retry', 'empty', 'loading', 'canonical-communications', 'actions-overflow', 'keyboard', 'api', 'offline', 'late-home', 'late-time', 'route-leave', 'sql-source-failure', 'replaced-session', 'early-my-time-route', 'removal-review', 'last-shift-removal', 'complete-zero', 'communication-source-failure', 'axe-diagnostic']);
+  const stages = new Set(['seed', 'compose', 'audience-change', 'full-review', 'native-focus', 'revision-conflict', 'unknown', 'layout', 'private-lifetime', 'withdraw', 'employee-team', 'replacement', 'login', 'confirmation', 'republish', 'response-loss', 'leave-and-revoke', 'unavailable-retry', 'empty', 'loading', 'canonical-communications', 'actions-overflow', 'keyboard', 'api', 'offline', 'late-home', 'late-time', 'route-leave', 'sql-source-failure', 'replaced-session', 'early-my-time-route', 'removal-review', 'last-shift-removal', 'complete-zero', 'communication-source-failure', 'axe-diagnostic', 'timeoff-form', 'owner-login', 'owner-timeoff-review', 'employee-decision']);
   return {
     setStageReader(reader) { readStage = reader; },
     setPhase(value) { assert(['scenario', 'axe', 'context-close'].includes(value)); phase = value; },
@@ -84,7 +87,7 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
           const stage = readable(readStage);
           if(navigationFetchDiagnostic(execution,diagnostic,state.navigation.pending(),navigationDiagnosticVerified,phase)){
             classified.add(error);execution.navigationDiagnostics??=[];
-            execution.navigationDiagnostics.push({type:'navigation-fetch-diagnostic',role,pageIndex:index,phase,diagnostic,pendingMainFrameNavigation:true,stage:stages.has(stage)?stage:null});return;
+            execution.navigationDiagnostics.push({type:'navigation-fetch-diagnostic',role,pageIndex:index,phase,diagnostic,pendingMainFrameNavigation:true,documentNavigation:state.navigation.snapshot(),stage:stages.has(stage)?stage:null});return;
           }
           errors.push({ type: 'page-runtime-error', role, pageIndex: index, phase, diagnostic,pendingMainFrameNavigation:state.navigation.pending(),documentNavigation:state.navigation.snapshot(),
             failure: safeBrowserFailure({ name, message: summary }, execution, { stage: stages.has(stage) ? stage : null }) });
@@ -172,7 +175,7 @@ async function main() {
   let app;
   try {
     // Setup observes abort itself and awaits its owned teardown before rejecting.
-    app = await createOwnedNextApp(evidence, { pinDevTypeReferences: true, signal: controller.signal, processOwnerId: owner.ownerId, onProcessStarted: async child => registerOwnedProcess({ kind: 'next', pid: child.pid, ownerId: owner.ownerId }) });
+    app = await createOwnedNextApp(evidence, { loginDiagnostics:suites.includes('home'), pinDevTypeReferences: true, signal: controller.signal, processOwnerId: owner.ownerId, onProcessStarted: async child => registerOwnedProcess({ kind: 'next', pid: child.pid, ownerId: owner.ownerId }) });
     report.sourceManifest = join(app.root, 'source-manifest.json'); report.appRoot = app.root;
     report.appOwnerId = JSON.parse(readFileSync(join(app.root, 'ownership.json'), 'utf8')).ownerId;
     verifySourceManifest(source, app.root, custody.checkpoint);
@@ -217,6 +220,7 @@ async function main() {
             runtimeErrors.setPhase('axe');
             await page.addScriptTag({ path: axeFile });
             const violations = await page.evaluate(async () => (await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } })).violations.map(item => item.id));
+            record.accessibilityViolations = violations;
             assert.deepEqual(violations, [], `${item} ${engine} ${width}: accessibility violations`);
             record.checks = [...result.checks, 'axe WCAG A/AA check'];
             } finally { runtimeErrors.setPhase('context-close'); await context.close(); }

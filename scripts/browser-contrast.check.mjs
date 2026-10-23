@@ -36,3 +36,15 @@ test('partial-alpha image paints over its own color before the black ancestor',(
 test('varying alpha retains the transparent endpoint over its own color',()=>{
  assert.throws(()=>measure({backgroundColor:'rgb(0, 0, 0)'},{backgroundColor:'rgb(255, 255, 255)',backgroundImage:'linear-gradient(145deg, rgba(0, 0, 0, 0) 0%, rgba(119, 119, 119, 0.5) 100%)'}),/Foreground crosses background bounds/);
 });
+test('default-direction signature wash composites over its own surface',()=>{
+ const result=measure({backgroundColor:'rgb(0, 0, 0)'},{backgroundColor:'rgb(255, 255, 255)',backgroundImage:'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5))'});
+ assert.deepEqual(result.samples[0].background,[127.5,127.5,127.5,1]);
+ assert(result.ratio<4.5);assert(result.ratio>3.97);
+});
+test('implicit stops and a middle stop retain the least contrast paint bound',()=>{
+ const result=measure({backgroundImage:'linear-gradient(90deg, rgb(0, 0, 0), rgb(119, 119, 119) 50%, rgb(0, 0, 0))'});
+ assert(result.ratio<4.5);assert(result.ratio>4.47);
+});
+test('stacked translucent image layers remain unsupported',()=>{
+ assert.throws(()=>measure({backgroundColor:'rgb(0, 0, 0)',backgroundImage:'linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12)), linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12))'}),/Unsupported background image/);
+});

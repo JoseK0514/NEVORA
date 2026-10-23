@@ -19,7 +19,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
  const owner=await context(browser);await login(owner,'QAOWNER');
  try{
   for(const kind of ['ENTRY_BOUNDARY','BREAK_BOUNDARY','MISSING_ENTRY'])for(const loss of ['before','after']){
-   const c=await context(browser,{width:390,height:844});await login(c,'D2-E');
+   const c=await context(browser,{width:390,height:844});await login(c,'D2-E',{reuseSession:true});
    let releaseDelivery=()=>{};
    try{
     const page=await c.newPage();page.setDefaultTimeout(15000);watch(page);
@@ -99,10 +99,10 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
   }
 
   for(const decision of ['APPROVE','REJECT'])for(const loss of ['before','after','malformed','unknown']){
-   const employee=await context(browser);await login(employee,'D2-E');
+   const employee=await context(browser);await login(employee,'D2-E',{reuseSession:true});
    const submitted=await boundCorrectionPost(employee.request,app.url+'/api/employee/time-corrections',{headers,data:entryCommand()});
    assert.equal(submitted.status(),202);const pending=await submitted.json();await employee.close();
-   const c=await context(browser,{width:390,height:844});await login(c,'QAOWNER');
+   const c=await context(browser,{width:390,height:844});await login(c,'QAOWNER',{reuseSession:true});
    try{
     const page=await c.newPage();page.setDefaultTimeout(15000);watch(page);
     const attendanceNavigation=await page.goto(app.url+'/app?view=attendance',{waitUntil:'domcontentloaded'});assert(attendanceNavigation?.ok());await page.bringToFront();
@@ -175,8 +175,8 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    await page.route('**/api/employee/time-corrections',route=>route.request().method()==='POST'?route.abort('failed'):route.continue());
    await details.getByRole('button',{name:'Send request',exact:true}).click();
    await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).waitFor();
-   await page.locator('.employee-more-trigger').click();
-   await Promise.all([page.waitForURL(url=>url.pathname==='/login'),page.locator('#employee-more-navigation').getByRole('button',{name:'Sign out',exact:true}).click()]);
+   await page.goto(app.url+'/app/profile',{waitUntil:'networkidle'});
+   await Promise.all([page.waitForURL(url=>url.pathname==='/login',{waitUntil:'commit'}),page.getByRole('region',{name:'Session',exact:true}).getByRole('button',{name:'Sign out',exact:true}).click()]);
    await login(c,'QAOWNER');await page.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
    assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
    await login(c,'D2-E');await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});

@@ -8,6 +8,24 @@ function property(value, key) {
   try { return value?.[key]; } catch { return undefined; }
 }
 
+export function safeEvaluationFailure(error){
+ const name=property(error,'name'),value=property(error,'message'),message=typeof value==='string'?value.slice(0,8000):'';
+ const kind=/execution context.*destroyed|cannot find context/i.test(message)?'context-destroyed':/target.*closed|page.*closed|browser.*closed/i.test(message)?'target-closed':/protocol error/i.test(message)?'protocol':/timeout|timed out|recovery deadline/i.test(message)?'timeout':'other';
+ return {name:names.has(name)?name:'Error',kind};
+}
+
+/** Extract only request metadata; never retain query strings or raw server text. */
+export function safeLoginServerRequests(text) {
+  const plain = text.replace(/\[[0-9;]*m/g, '').replaceAll(String.fromCharCode(27), '');
+  return plain.split('\n').flatMap(line => {
+    const match = line.match(/\b(GET|POST) (\/login|\/app)(?:\?[^ ]*)? (\d{3}) in (\d+(?:\.\d+)?)(ms|s)(?:\s|$)/);
+    if (!match) return [];
+    const status = Number(match[3]), elapsedMs = Number(match[4]) * (match[5] === 's' ? 1000 : 1);
+    return status >= 100 && status <= 599 && Number.isFinite(elapsedMs)
+      ? [{ method: match[1], route: match[2], status, elapsedMs }] : [];
+  }).slice(-16);
+}
+
 /** Keep bounded failure detail without copying URLs, capabilities or credentials. */
 export function safeBrowserFailure(error, execution, scenario) {
   const name = property(error, 'name');
