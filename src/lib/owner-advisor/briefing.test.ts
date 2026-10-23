@@ -12,7 +12,7 @@ function today(punched = false) {
 }
 function coverage(filled = false, configured = true) {
   const locations = ["south", "west", "east"].map(id => ({ id, name: id, minimumStaffPerShift: configured ? 1 : null, requiresDesignatedLead: configured ? false : null }));
-  return { observedAt: at, locations, health: calculateScheduleHealth({
+  return { observedAt: at, locations, rules: Object.fromEntries(locations.map(l => [l.id, { minimumStaff: l.minimumStaffPerShift, requiresLead: l.requiresDesignatedLead, windows: [{ startTime: "08:00", endTime: "18:00", minimumStaff: null, positions: [] }] }])), health: calculateScheduleHealth({
     locations, employees: filled ? [{ id: "c", name: "C", active: true, eligibleLocationIds: ["south", "west", "east"], positionIds: [] }] : [],
     shifts: filled ? locations.map(l => ({ id: l.id, employeeId: "c", locationId: l.id, date: "2026-10-23", startTime: "08:00", endTime: "18:00" })) : [],
     coverageWindows: locations.map(l => ({ locationId: l.id, dayOfWeek: 5, startTime: "08:00", endTime: "18:00", positionRequirements: [] })), weekDates: ["2026-10-23"],
@@ -86,4 +86,25 @@ it("invalidates a coverage dismissal when shortages move between the same period
   const after = { ...before, health: { ...before.health, coverageBlocks: [{ ...first, gap: 2 }, { ...second, gap: 1 }] } };
   const fresh = deriveAttention(today(true), after).issues[0];
   expect(fresh.fingerprint).not.toBe(old.fingerprint);
+});
+it("never resolves tracked coverage after its weekday rule was removed", () => {
+  const before = coverage();
+  const issue = deriveAttention(today(true), before).issues.find(i => i.locationId === "south")!;
+  const saved: AttentionReview = { id: issue.id, fingerprint: issue.fingerprint, kind: issue.kind, date: issue.date, locationId: issue.locationId, proof: issue.proof, disposition: "tracking", deferredUntil: null, revision: 1 };
+  const after = coverage(true);
+  after.rules.south.windows = [];
+  expect(after.health.setupIssues).toEqual([]);
+  const result = deriveAttention(today(true), after, [saved]);
+  expect(result.briefing.reviewed[0].state).toBe("not_current");
+  expect(result.briefing.partial).toBe(true);
+});
+it("shows changed invalid-position requirements even when the setup error code stays the same", () => {
+  const before = coverage();
+  before.health.setupIssues = [{ code: "POSITION_REQUIREMENT_INVALID", locationId: "south", positionId: "inactive-A", message: "Invalid requirement" }];
+  const old = deriveAttention(today(true), before).issues.find(i => i.kind === "setup")!;
+  const saved: AttentionReview = { id: old.id, fingerprint: old.fingerprint, kind: old.kind, date: old.date, locationId: old.locationId, proof: old.proof, disposition: "dismissed", deferredUntil: null, revision: 1 };
+  const after = { ...before, health: { ...before.health, setupIssues: [{ code: "POSITION_REQUIREMENT_INVALID" as const, locationId: "south", positionId: "inactive-B", message: "Invalid requirement" }] } };
+  const result = deriveAttention(today(true), after, [saved]);
+  expect(result.briefing.items.find(i => i.id === old.id)).toBeDefined();
+  expect(result.briefing.reviewed[0].evidenceChanged).toBe(true);
 });

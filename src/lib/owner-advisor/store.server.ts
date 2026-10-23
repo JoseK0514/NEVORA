@@ -96,7 +96,7 @@ export class AdvisorStore {
     return row.result;
   }
   async reviewBriefing(command: Extract<AdvisorCommand, {op: "review_briefing"}>, issue: InternalAttention) {
-    if (issue.proof.length > 1000) throw new AdvisorError("limit");
+    if (issue.proof.length > 10000) throw new AdvisorError("limit");
     const [row] = await this.transaction<{result: {revision: number; error?: AdvisorErrorCode}}>({
       text: "SELECT owner_advisor_review_briefing($1,$2,$3,$4,$5,$6,$7::date,$8,$9,$10::jsonb,$11,$12) AS result",
       values: [...this.scope, command.requestId, commandHash(command), issue.id, issue.fingerprint, issue.date, issue.kind, issue.locationId, JSON.stringify(issue.proof), command.expectedRevision, command.disposition],

@@ -12,6 +12,7 @@ export type AttentionCoverage = {
   health: ReturnType<typeof calculateScheduleHealth>;
   observedAt: string;
   locations: { id: string; name: string }[];
+  rules: Record<string, { minimumStaff: number | null; requiresLead: boolean | null; windows: { startTime: string; endTime: string; minimumStaff: number | null; positions: { id: string; quantity: number; active: boolean }[] }[] }>;
 };
 export type InternalAttention = AttentionItem & { proof: string[]; rank: number; order: string };
 const hash = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
@@ -23,6 +24,15 @@ const titles: Record<AttentionKind, string> = {
 };
 const subject = (s: { employeeId: string; locationId: string; startAt: string; endAt: string }) => hash([s.employeeId, s.locationId, s.startAt, s.endAt]);
 const minutes = (value: string) => Number(value.slice(0, 2)) * 60 + Number(value.slice(3, 5));
+function rulesFingerprint(coverage: AttentionCoverage, locationId: string) {
+  const rule = coverage.rules[locationId];
+  if (!rule) return null;
+  return hash([rule.minimumStaff, rule.requiresLead, rule.windows.map(w => [w.startTime, w.endTime, w.minimumStaff,
+    w.positions.map(p => [p.id, p.quantity, p.active]).sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)))]).sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)))]);
+}
+function missingDayRule(coverage: AttentionCoverage, locationId: string, date: string) {
+  return !coverage.rules[locationId] || (coverage.rules[locationId].windows.length === 0 && coverage.health.coverageBlocks.some(b => b.locationId === locationId && b.date === date));
+}
 
 function resolution(review: AttentionReview, today: Extract<Today, { state: "ready" }>, coverage: AttentionCoverage | null): "resolved" | "not_current" | "unverified" {
   if (review.date !== today.today) return "not_current";
@@ -36,8 +46,11 @@ function resolution(review: AttentionReview, today: Extract<Today, { state: "rea
   if (!coverage.locations.some(l => l.id === review.locationId)) return "not_current";
   if (coverage.health.setupIssues.some(i => i.locationId === review.locationId)) return "unverified";
   if (review.kind === "setup") return "resolved";
+  const [ruleMarker, ...intervals] = review.proof;
+  if (!ruleMarker || !/^rules:[a-f0-9]{64}$/.test(ruleMarker)) return "unverified";
+  if (ruleMarker !== `rules:${rulesFingerprint(coverage, review.locationId)}` || missingDayRule(coverage, review.locationId, review.date)) return "not_current";
   const blocks = coverage.health.coverageBlocks.filter(b => b.locationId === review.locationId && b.date === review.date && b.covered);
-  const covered = review.proof.length > 0 && review.proof.every(interval => {
+  const covered = intervals.length > 0 && intervals.every(interval => {
     const [start, end] = interval.split("|").map(minutes);
     let cursor = start;
     for (const block of blocks) {
@@ -53,7 +66,7 @@ function resolution(review: AttentionReview, today: Extract<Today, { state: "rea
 
 export function deriveAttention(today: Today, coverage: AttentionCoverage | null, reviews: AttentionReview[] = []): { briefing: AttentionBriefing; issues: InternalAttention[] } {
   if (today.state !== "ready") return { briefing: { state: "unavailable", date: null, observedAt: new Date().toISOString(), partial: true, items: [], reviewed: [], total: 0, hidden: 0, sources: [] }, issues: [] };
-  if (coverage && (coverage.health.coverageBlocks.length > 10000 || new Intl.DateTimeFormat("en-CA", { timeZone: today.timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(coverage.observedAt)) !== today.today)) coverage = null;
+  if (coverage && (coverage.health.coverageBlocks.length >= 10000 || new Intl.DateTimeFormat("en-CA", { timeZone: today.timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(coverage.observedAt)) !== today.today)) coverage = null;
   const now = Date.parse(today.observedAt), date = today.today, issues: InternalAttention[] = [];
   const attendanceSource = { label: "Published shifts and recorded punches", href: "/app", observedAt: today.observedAt };
   const planningSource = coverage ? { label: "Current planning ledger, including drafts", href: `/app/schedule?week=${weekStartFor(date)}`, observedAt: coverage.observedAt } : null;
@@ -65,7 +78,7 @@ export function deriveAttention(today: Today, coverage: AttentionCoverage | null
     const source = kind === "clock_in" || kind === "missing_punches" ? attendanceSource : planningSource!;
     issues.push({ id, fingerprint, kind, locationId, locationName: locationName.slice(0, 200), date, title: titles[kind], detail,
       basis: kind === "clock_in" || kind === "missing_punches" ? "Published shifts and recorded punches" : "Current planning ledger, including drafts",
-      source, proof: [...proof].sort(), rank, order, reviewRevision: saved?.revision ?? 0,
+      source, proof: [...proof], rank, order, reviewRevision: saved?.revision ?? 0,
       disposition: matching ? saved.disposition : null, deferredUntil: matching ? saved.deferredUntil : null });
   }
   if (today.shifts.length <= 1000) {
@@ -86,8 +99,10 @@ export function deriveAttention(today: Today, coverage: AttentionCoverage | null
     const currentMinute = minutes(zoned);
     for (const location of coverage.locations) {
       const setup = coverage.health.setupIssues.filter(i => i.locationId === location.id);
-      if (setup.length) {
-        add("setup", location.id, location.name, "Coverage cannot be fully assessed until missing or invalid staffing and coverage rules are reviewed.", setup.map(i => i.code), 4, "");
+      const dayRuleMissing = missingDayRule(coverage, location.id, date);
+      if (setup.length || dayRuleMissing) {
+        const evidence = setup.map(i => [i.code, "positionId" in i ? i.positionId : null]);
+        add("setup", location.id, location.name, "Coverage cannot be fully assessed until missing or invalid staffing and coverage rules are reviewed.", [hash([evidence, dayRuleMissing, rulesFingerprint(coverage, location.id)])], 4, "");
         continue;
       }
       const blocks = coverage.health.coverageBlocks.filter(b => b.locationId === location.id && b.date === date && !b.covered && minutes(b.endTime) > currentMinute);
@@ -96,7 +111,7 @@ export function deriveAttention(today: Today, coverage: AttentionCoverage | null
       const missingLead = blocks.some(b => b.requiresLead && !b.leadCovered);
       const missingPositions = [...new Set(blocks.flatMap(b => b.positionCoverage.filter(p => p.missing > 0).map(p => p.positionName.slice(0, 100))))].sort();
       const facts = `${blocks.length} planning periods need review, starting ${blocks[0].startTime}. Maximum staffing shortfall: ${missingStaff}.${missingLead ? " A designated lead is missing." : ""}${missingPositions.length ? ` Unfilled positions: ${missingPositions.join(", ")}.` : ""} Includes draft commitments; verify published staffing separately.`;
-      add("coverage", location.id, location.name, facts.slice(0, 2000), blocks.map(b => `${b.startTime}|${b.endTime}`), minutes(blocks[0].startTime) <= currentMinute ? 1 : 2, blocks[0].startTime,
+      add("coverage", location.id, location.name, facts.slice(0, 2000), [`rules:${rulesFingerprint(coverage, location.id)}`, ...blocks.map(b => `${b.startTime}|${b.endTime}`)], minutes(blocks[0].startTime) <= currentMinute ? 1 : 2, blocks[0].startTime,
         blocks.map(b => [b.startTime, b.endTime, b.gap, b.leadCovered, b.positionCoverage.map(p => [p.positionId, p.missing])]));
     }
   }
@@ -110,7 +125,7 @@ export function deriveAttention(today: Today, coverage: AttentionCoverage | null
       state: current ? "open" as const : resolution(r, today, coverage), disposition: r.disposition, deferredUntil: r.deferredUntil, reviewRevision: r.revision,
       evidenceChanged: current !== undefined && current.fingerprint !== r.fingerprint };
   });
-  return { issues, briefing: { state: "ready", date, observedAt: today.observedAt, partial: !coverage || coverage.health.setupIssues.length > 0 || today.shifts.length > 1000,
+  return { issues, briefing: { state: "ready", date, observedAt: today.observedAt, partial: !coverage || coverage.health.setupIssues.length > 0 || coverage.locations.some(l => missingDayRule(coverage, l.id, date)) || today.shifts.length > 1000,
     items: visible.slice(0, 3).map(publicItem), reviewed, total: issues.length, hidden: issues.length - visible.length,
     sources: planningSource ? [attendanceSource, planningSource] : [attendanceSource] } };
 }

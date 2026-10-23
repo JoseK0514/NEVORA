@@ -5,7 +5,7 @@ CREATE TABLE owner_advisor_briefing_reviews (
  workspace_id text NOT NULL REFERENCES workspaces(id), owner_id text NOT NULL REFERENCES employees(id),
  issue_id text NOT NULL CHECK(issue_id ~ '^[a-f0-9]{64}$'), fingerprint text NOT NULL CHECK(fingerprint ~ '^[a-f0-9]{64}$'),
  issue_date date NOT NULL, kind text NOT NULL CHECK(kind IN('clock_in','coverage','missing_punches','setup')),
- location_id text NOT NULL REFERENCES locations(id), proof jsonb NOT NULL CHECK(jsonb_typeof(proof)='array' AND jsonb_array_length(proof) BETWEEN 1 AND 1000 AND octet_length(proof::text)<=100000),
+ location_id text NOT NULL REFERENCES locations(id), proof jsonb NOT NULL CHECK(jsonb_typeof(proof)='array' AND jsonb_array_length(proof) BETWEEN 1 AND 10000 AND octet_length(proof::text)<=100000),
  disposition text NOT NULL CHECK(disposition IN('tracking','deferred','dismissed')), deferred_until timestamptz,
  revision integer NOT NULL CHECK(revision>0), updated_at timestamptz NOT NULL DEFAULT clock_timestamp(),
  PRIMARY KEY(workspace_id,owner_id,issue_id),

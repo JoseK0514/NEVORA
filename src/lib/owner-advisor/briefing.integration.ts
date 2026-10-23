@@ -2,6 +2,9 @@ import { afterEach, beforeEach, expect, it } from "vitest";
 import { companyAccessFixture } from "@/test/integration/company-access-fixture";
 import { advisorService } from "./service.server";
 import { randomUUID } from "node:crypto";
+import { AdvisorStore } from "./store.server";
+import { admitOwner } from "./authority.server";
+import type { InternalAttention } from "./briefing";
 
 let f: Awaited<ReturnType<typeof companyAccessFixture>>;
 beforeEach(async () => { f = await companyAccessFixture(); });
@@ -60,4 +63,12 @@ it("serializes competing review revisions and restores a hidden issue", async ()
   expect(attempts.filter(r => r.status === "rejected")).toHaveLength(7);
   await advisorService(f.owner, f.db.executor, env, new AbortController().signal, { op: "review_briefing", requestId: randomUUID(), issueId: issue.id, fingerprint: issue.fingerprint, expectedRevision: 1, disposition: "tracking" });
   expect((await ready()).attention!.items.find(i => i.id === issue.id)).toMatchObject({ disposition: "tracking", reviewRevision: 2 });
+});
+it("persists a coverage card with more than one thousand bounded period proofs", async () => {
+  const snapshot = await ready(), issue = snapshot.attention!.items[0];
+  const store = new AdvisorStore(f.owner, await admitOwner(f.owner, f.db.executor), f.db.executor);
+  const candidate: InternalAttention = { ...issue, proof: Array.from({ length: 1001 }, (_, minute) => `${String(Math.floor(minute / 60)).padStart(2, "0")}:${String(minute % 60).padStart(2, "0")}|24:00`), rank: 1, order: "00:00" };
+  const command = { op: "review_briefing" as const, requestId: randomUUID(), issueId: issue.id, fingerprint: issue.fingerprint, expectedRevision: 0, disposition: "tracking" as const };
+  await expect(store.reviewBriefing(command, candidate)).resolves.toMatchObject({ revision: 1 });
+  expect(await f.q("SELECT jsonb_array_length(proof)::int n FROM owner_advisor_briefing_reviews")).toEqual([{ n: 1001 }]);
 });

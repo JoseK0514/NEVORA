@@ -21,7 +21,16 @@ export async function readOwnerAttention(store: AdvisorStore) {
       if (row && Object.values(row.source).every(rows => rows.length <= 3000)) {
         const facts = mapSchedulingSourceFacts(row.source, { workspaceId: original.workspace.id, startDate: weekStartFor(today.today), endDate: addDays(weekStartFor(today.today), 7), retainAdjacentCommitments: true });
         const locations = facts.locations.filter(l => l.active);
-        if (locations.length <= 100) coverage = { observedAt: row.observedAt, locations: locations.map(l => ({id: l.id, name: l.shortName})), health: calculateScheduleHealth({
+        const dayOfWeek = new Date(`${today.today}T12:00:00Z`).getUTCDay();
+        const rules = Object.fromEntries(locations.map(l => [l.id, {
+          minimumStaff: facts.staffing.find(s => s.locationId === l.id)?.minimumStaffPerShift ?? null,
+          requiresLead: facts.staffing.find(s => s.locationId === l.id)?.requiresDesignatedLead ?? null,
+          windows: facts.coverageWindows.filter(w => w.locationId === l.id && w.dayOfWeek === dayOfWeek).map(w => ({
+            startTime: w.startTime, endTime: w.endTime, minimumStaff: w.minimumStaff ?? null,
+            positions: w.positionRequirements.map(p => ({ id: p.positionId, quantity: p.quantity, active: facts.positions.some(position => position.id === p.positionId && position.active) })),
+          })),
+        }]));
+        if (locations.length <= 100) coverage = { observedAt: row.observedAt, locations: locations.map(l => ({id: l.id, name: l.shortName})), rules, health: calculateScheduleHealth({
           workspace: facts.workspace, positions: facts.positions, shifts: facts.ledger,
           employees: facts.employees.map(e => ({...e, name: `${e.firstName} ${e.lastName}`})),
           locations: locations.map(l => ({ id: l.id, name: l.shortName, minimumStaffPerShift: facts.staffing.find(s => s.locationId === l.id)?.minimumStaffPerShift ?? null, requiresDesignatedLead: facts.staffing.find(s => s.locationId === l.id)?.requiresDesignatedLead ?? null })),

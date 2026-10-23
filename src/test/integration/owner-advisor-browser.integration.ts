@@ -209,7 +209,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
                 ).toBe(true);
                 const defer = attention.locator("ol > li").first().getByRole("button", { name: "Later · 1 hour", exact: true });
                 await defer.focus();
-                await page.keyboard.press("Tab");
+                await page.keyboard.press(engine === "webkit" && process.platform === "darwin" ? "Alt+Tab" : "Tab");
                 expect(await attention.locator("ol > li").first().getByRole("button", { name: "Not relevant today", exact: true }).evaluate((el: HTMLElement) => el === document.activeElement)).toBe(true);
                 await page.getByLabel("Your question", { exact: true }).focus();
                 expect(
