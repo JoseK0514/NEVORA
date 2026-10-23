@@ -7,7 +7,7 @@ import {join,resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 
 const runner=resolve(process.argv[2]),mode=process.argv[3];
-assert(['member-environment','root-environment','root-with-live-member','member-eacces','member-eio','member-missing-marker','ambiguous-exit'].includes(mode));
+assert(['member-environment','root-environment','root-with-live-member','member-eacces','member-eio','member-missing-marker','ambiguous-exit','ambiguous-exit-stderr','ambiguous-exit-malformed','root-ambiguous-exit','darwin-environment-stderr'].includes(mode));
 const root=fs.mkdtempSync(join(tmpdir(),'nevora-e-retirement-'));
 const paths=Object.fromEntries(['member.json','member-exited.json','member-exit','root-exit','child.mjs','worker.mjs'].map(name=>[name,join(root,name)]));
 const nativeSpawn=cp.spawn,nativeRead=cp.spawnSync,nativeFileRead=fs.readFileSync,nativeKill=process.kill.bind(process),actualPlatform=process.platform;
@@ -41,7 +41,15 @@ cp.spawn=function(command,args,options){
  return child;
 };
 cp.spawnSync=function(command,args,options){
- if(mode==='ambiguous-exit'&&triggered&&command==='ps'&&args[0]==='-p'&&args[1]===String(memberPid())&&args.at(-1)==='pid=,stat=')return {status:1,stdout:'',stderr:'fixture absence observer unavailable',error:Error('fixture ps error')};
+ if(mode==='darwin-environment-stderr'&&command==='ps'&&args[0]==='eww'){
+  try{return {status:0,stdout:fs.readFileSync('/proc/'+Number(args[2])+'/environ','utf8').replaceAll('\0',' '),stderr:triggered&&Number(args[2])===memberPid()?'fixture environment observer diagnostic':''};}
+  catch{return {status:0,stdout:'',stderr:'fixture environment observer diagnostic'};}
+ }
+ if(['ambiguous-exit','ambiguous-exit-stderr','ambiguous-exit-malformed','root-ambiguous-exit'].includes(mode)&&triggered&&command==='ps'&&args[0]==='-p'&&args[1]===String(memberPid())&&args.at(-1)==='pid=,stat='){
+  if(mode==='ambiguous-exit-stderr')return {status:1,stdout:'',stderr:'fixture absence observer diagnostic'};
+  if(mode==='ambiguous-exit-malformed')return {status:0,stdout:memberPid()+' Z extra',stderr:''};
+  return {status:1,stdout:'',stderr:'fixture absence observer unavailable',error:Error('fixture ps error')};
+ }
  return nativeRead(command,args,options);
 };
 process.kill=function(pid,signal){signals.push({pid,signal});return nativeKill(pid,signal);};
@@ -53,13 +61,13 @@ fs.readFileSync=function(path,...args){
  const kind=pid===created.pid?'root':'member';environmentReads.push({kind,pid});
  if(kind==='member'){memberSeen=true;memberProof??=identity(member);}
  if(kind==='root'&&memberSeen&&!leaseReady)setImmediate(()=>{leaseReady=true;});
- const rootTarget=['root-environment','root-with-live-member'].includes(mode);
+ const rootTarget=['root-environment','root-with-live-member','root-ambiguous-exit'].includes(mode);
  if(!triggered&&leaseReady&&kind===(rootTarget?'root':'member')){
   triggered=true;const before={root:state(created.pid),member:state(member)};
   assert(before.root.clean&&before.root.status===0&&!before.root.zombie);assert(before.member.clean&&before.member.status===0&&!before.member.zombie);
-  if(['member-environment','root-environment','ambiguous-exit'].includes(mode))fs.writeFileSync(paths['member-exit'],'exit');
+  if(['member-environment','root-environment','ambiguous-exit','ambiguous-exit-stderr','ambiguous-exit-malformed','root-ambiguous-exit','darwin-environment-stderr'].includes(mode))fs.writeFileSync(paths['member-exit'],'exit');
   if(rootTarget)fs.writeFileSync(paths['root-exit'],'exit');
-  const after={root:rootTarget?gone(created.pid):state(created.pid),member:mode==='root-with-live-member'?state(member):['member-environment','root-environment','ambiguous-exit'].includes(mode)?gone(member):state(member)};
+  const after={root:rootTarget?gone(created.pid):state(created.pid),member:mode==='root-with-live-member'?state(member):['member-environment','root-environment','ambiguous-exit','ambiguous-exit-stderr','ambiguous-exit-malformed','root-ambiguous-exit','darwin-environment-stderr'].includes(mode)?gone(member):state(member)};
   proof={target:kind,before,after};
  }
  if(triggered&&kind==='member'&&['member-eacces','member-eio'].includes(mode)){const error=Error('Declared live fixture read failure');error.code=mode==='member-eacces'?'EACCES':'EIO';throw error;}
@@ -70,14 +78,14 @@ fs.readFileSync=function(path,...args){
  if(live.zombie)return '';
  return 'NEVORA_OWNED_PROCESS_OWNER='+ownerId+'\0';
 };
-if(actualPlatform!=='linux')Object.defineProperty(process,'platform',{value:'linux'});
+Object.defineProperty(process,'platform',{value:mode==='darwin-environment-stderr'?'darwin':'linux'});
 syncBuiltinESMExports();
 try{
  const api=await import(pathToFileURL(runner));
  result=await api.superviseOwnedChild({command:process.execPath,args:[paths['child.mjs']],cwd:root,env:api.safeEnvironment(),ownerId,timeoutMs:8000,graceMs:1500});
 }finally{
  cp.spawn=nativeSpawn;cp.spawnSync=nativeRead;fs.readFileSync=nativeFileRead;process.kill=nativeKill;
- if(actualPlatform!=='linux')Object.defineProperty(process,'platform',{value:actualPlatform});
+ Object.defineProperty(process,'platform',{value:actualPlatform});
  syncBuiltinESMExports();
  const rootNow=created&&identity(created.pid),memberNow=memberPid()&&identity(memberPid());
  if((sameLifetime(rootNow,rootProof)&&rootNow.ppid===process.pid&&rootNow.pgid===created.pid)||(sameLifetime(memberNow,memberProof)&&memberNow.pgid===created.pid)){
@@ -86,6 +94,6 @@ try{
 }
 assert(triggered,'Requested native boundary was not reached');
 const final={root:gone(created.pid),member:gone(memberPid())};
-const receipt={mode,actualPlatform,simulation:actualPlatform!=='linux'?'Linux marker retention and ENOENT/empty environment modeled only for native absent/zombie fixture PIDs':'None for positive process/environment reads',faultInjection:['member-eacces','member-eio','member-missing-marker','ambiguous-exit'].includes(mode)?mode:null,proof,result,actualExit,environmentReads,signals,backupUsed,final};
+const receipt={mode,actualPlatform,simulation:mode==='darwin-environment-stderr'?'Darwin environment branch modeled marker/diagnostic result only for native fixture PIDs':actualPlatform!=='linux'?'Linux marker retention and ENOENT/empty environment modeled only for native absent/zombie fixture PIDs':'None for positive process/environment reads',faultInjection:['member-eacces','member-eio','member-missing-marker','ambiguous-exit','ambiguous-exit-stderr','ambiguous-exit-malformed','root-ambiguous-exit','darwin-environment-stderr'].includes(mode)?mode:null,proof,result,actualExit,environmentReads,signals,backupUsed,final};
 fs.rmSync(root,{recursive:true,force:true});
 process.stdout.write(JSON.stringify(receipt));

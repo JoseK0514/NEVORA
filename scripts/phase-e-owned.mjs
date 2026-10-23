@@ -80,20 +80,38 @@ function processIdentity(pid) {
   if (parts[8]?.startsWith('Z')) return undefined;
   return { pid, ppid: Number(parts[1]), pgid: Number(parts[2]), started: parts.slice(3, 8).join(' '), commandHash: hash(parts.slice(9).join(' ')) };
 }
-function ownedProcessIdentity(pid, ownerId, required = false) {
+const retiredProcess = Symbol('retired-process');
+function environmentFailure(pid, phase, reason, code) {
+  return Object.assign(Error(reason === 'OWNERSHIP_LOST' ? 'Live process lost invocation ownership; refusing signal' : 'Cannot reprove owned process environment'), {
+    observationFailure: { reason, pid, phase: ['root-environment', 'member-environment'].includes(phase) ? phase : 'environment', errno: ['ENOENT', 'ESRCH', 'EACCES', 'EIO'].includes(code) ? code : code === undefined ? 'unavailable' : 'other' },
+  });
+}
+function ownedProcessIdentity(pid, ownerId, required = false, { allowRetirement = false, phase = 'environment' } = {}) {
   const identity = processIdentity(pid);
   if (!identity) return undefined;
   const marker = 'NEVORA_OWNED_PROCESS_OWNER=' + ownerId;
   let owned;
   if (process.platform === 'linux') {
     try { owned = readFileSync('/proc/' + pid + '/environ', 'utf8').split('\0').includes(marker); }
-    catch { if (required) throw Error('Cannot reprove owned process environment'); return undefined; }
+    catch (error) {
+      if (allowRetirement && ['ENOENT', 'ESRCH'].includes(error.code) && observedProcessExit(pid)) return retiredProcess;
+      if (required) throw environmentFailure(pid, phase, 'OWNERSHIP_UNAVAILABLE', error.code);
+      return undefined;
+    }
   } else {
     const environment = spawnSync('ps', ['eww', '-p', String(pid), '-o', 'command='], { encoding: 'utf8', timeout: 2000 });
-    if (environment.error || environment.status !== 0) { if (required) throw Error('Cannot reprove owned process environment'); return undefined; }
+    if (environment.error || environment.stderr?.trim() || environment.status !== 0) {
+      if (allowRetirement && !environment.error && !environment.stderr?.trim() && environment.status === 1 && !environment.stdout?.trim() && observedProcessExit(pid)) return retiredProcess;
+      if (required) throw environmentFailure(pid, phase, 'OWNERSHIP_UNAVAILABLE', environment.error?.code);
+      return undefined;
+    }
     owned = new RegExp('(?:^|\\s)' + marker + '(?:\\s|$)').test(environment.stdout);
   }
-  if (!owned) { if (required) throw Error('Live process lost invocation ownership; refusing signal'); return undefined; }
+  if (!owned) {
+    if (allowRetirement && observedProcessExit(pid)) return retiredProcess;
+    if (required) throw environmentFailure(pid, phase, 'OWNERSHIP_LOST');
+    return undefined;
+  }
   return identity;
 }
 function assertSameProcess(actual, lease) {
@@ -147,10 +165,16 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
   const continuityFailure = (expected, observed) => Object.assign(Error('Owned member continuity changed'), {
     observationFailure: { reason: 'MEMBER_CONTINUITY_CHANGED', expected: processLeaseFields(expected), observed: processLeaseFields(observed) },
   });
-  const rootGroupProof = () => {
-    if (!rootLease || child.exitCode !== null || child.signalCode !== null) throw Error('Owned group leader is no longer proven');
-    const actual = ownedProcessIdentity(child.pid, ownerId, true);
-    if (!actual) throw Error('Owned group leader is no longer proven');
+  const rootGroupProof = sampledMember => {
+    // Retirement discards only this stale sample. It never proves ownership or
+    // authorizes a lease/signal, and a surviving or uncertain member still fails.
+    const retiredSample = () => {
+      if (sampledMember && observedProcessExit(child.pid) && observedProcessExit(sampledMember.pid)) return retiredProcess;
+      throw Object.assign(Error('Owned group leader is no longer proven'), { observationFailure: { reason: 'LEADER_UNPROVEN', pid: child.pid, phase: 'root-environment' } });
+    };
+    if (!rootLease || child.exitCode !== null || child.signalCode !== null) return retiredSample();
+    const actual = ownedProcessIdentity(child.pid, ownerId, true, { allowRetirement: Boolean(sampledMember), phase: 'root-environment' });
+    if (!actual || actual === retiredProcess) return retiredSample();
     assertSameProcess(actual, rootLease);
     if (actual.ppid !== rootLease.ppid || actual.ppid !== process.pid || actual.pgid !== actual.pid) throw continuityFailure(rootLease, actual);
     return actual;
@@ -163,7 +187,7 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
     if (!identity) throw Error('Process lacks invocation ownership');
     const previous = leases.get(pid);
     const rootMember = rootLease && identity.pgid === rootLease.pid;
-    if (rootMember && kind === 'owned-descendant' && (!previous || previous.kind === 'owned-descendant')) rootGroupProof();
+    if (rootMember && kind === 'owned-descendant' && (!previous || previous.kind === 'owned-descendant') && rootGroupProof(identity) === retiredProcess) return;
     if (previous) {
       const leader = leases.get(previous.pgid);
       if (rootMember && kind === 'owned-descendant' && previous.kind === 'owned-descendant') {
@@ -192,8 +216,8 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
       const actual = processIdentity(lease.pid);
       if (!actual) continue;
       if (actual.started !== lease.started || actual.pgid !== lease.pgid || !isDescendant(lease.pid, child.pid, table)) throw continuityFailure(lease, actual);
-      rootGroupProof();
-      ownedProcessIdentity(lease.pid, ownerId, true);
+      if (rootGroupProof(actual) === retiredProcess) continue;
+      ownedProcessIdentity(lease.pid, ownerId, true, { allowRetirement: true, phase: 'member-environment' });
     }
     for (const pid of table.keys()) if (pid !== child.pid && isDescendant(pid, child.pid, table)) {
       const identity = ownedProcessIdentity(pid, ownerId);
