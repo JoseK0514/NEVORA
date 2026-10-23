@@ -30,7 +30,7 @@ export function EmployeeWeeklyConfirmation({weekStart,expectedRevisionId,intent,
   try{const response=await acknowledgeScheduleAction(form);if(generation.current!==current)return;setResult(response);if(response.status==='committed')router.refresh();}
   catch{if(generation.current!==current)return;setResult({status:'outcome_unknown',operationId:intent.operationId});}
  });}
- return <div>
+ return <div className="employee-weekly-confirmation">
   {result?.status==='blocked'?null:ready?<form action={submit}>
    <input type="hidden" name="weekStart" value={weekStart}/><input type="hidden" name="expectedRevisionId" value={expectedRevisionId}/>
    <input type="hidden" name="operationId" value={intent.operationId}/><input type="hidden" name="authority" value={intent.authority}/>
