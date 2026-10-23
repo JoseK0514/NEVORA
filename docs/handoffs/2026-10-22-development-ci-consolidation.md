@@ -805,3 +805,12 @@ The regression failed against immediate-proceed behavior, then all four
 login-window checks and all 81 release-engineering checks passed locally.
 Full matching cloud CI and hosted Preview remain required; these unit checks
 do not certify a deployed database or close any independent finding.
+### 2026-10-23 navigation correlation and unresolved browser failures
+
+Cloud run 39906619205 on merge checkpoint 6228b425 failed Home, Attention and D2. Its passing validation/build, three SQL jobs, Communications, Calendar and Navigation do not satisfy the full gate.
+
+Home WebKit 768 recorded a plain notification native diagnostic while leaving a document. The observer had marked any main-frame history event as a document commit. A controlled WebKit reproduction held a different destination, emitted source-document `history.replaceState`, then performed the old document's read. The old observer failed the pending-request assertion. The corrected observer retains eligibility only for that distinct pending destination: its actual commit, an unknown destination, same-URL ambiguity, request failure or request completion ends eligibility. The native-message/read allowlist is unchanged. The control passed after the correction with one source history event, the same old document identity, a handled native refusal, zero window exceptions/rejections and zero read ingress. Of five new lifecycle regressions, three fail on the old implementation; 31 observer tests pass on the correction. This proves the observer defect; a new full cloud run must still verify the application case.
+
+Attention Chromium 375 timed out waiting for the response-loss recovery alert, with no recorded runtime errors. Its action interception, upstream status, canonical-operation count and visible state are now retained in a failure report. No recovery assertion or timeout was relaxed.
+
+D2 WebKit recorded a React-handled `TypeError: Load failed` and a native framework-stack-frame diagnostic. These are not the classified own-read navigation mechanism. Timestamped stage/RSC request and console Error stack evidence is now collected. React-handled exceptions are explicitly fatal in addition to the existing native-error gate; expected injected HTTP status diagnostics remain distinct. The underlying D2 cause remains open until the richer evidence identifies it. No app behavior or security control changed in this diagnostic step.

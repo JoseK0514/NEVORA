@@ -3,17 +3,28 @@ import {createServer} from 'node:http';
 
 const reads=new Set(['notification-read','home-read','recorded-time-read']);
 export function observeDocumentNavigation(page,origin=()=>new URL(page.url()).origin){
- let pending=null,phase='idle',startedAt=null;
+ let pending=null,phase='idle',startedAt=null,source=null,destination=null,sequence=0,sourceHistoryEvents=0;
  const read=fn=>{try{return fn();}catch{return undefined;}};
+ const documentUrl=value=>{const url=new URL(value);url.hash='';return url.href;};
  page.on('request',request=>{
   if(!read(()=>request.isNavigationRequest()&&request.frame()===page.mainFrame()))return;
-  if(!read(()=>new URL(request.url()).origin===origin())){pending=null;phase='idle';startedAt=null;return;}
-  pending=request;phase='requested';startedAt=Date.now();
+  pending=null;phase='unproven';startedAt=Date.now();sequence++;sourceHistoryEvents=0;
+  source=read(()=>documentUrl(page.url()));destination=read(()=>documentUrl(request.url()));
+  if(!source||!destination||!read(()=>new URL(destination).origin===origin()))return;
+  if(source===destination){phase='same-url';return;}
+  pending=request;phase='requested';
  });
- page.on('framenavigated',frame=>{if(read(()=>frame===page.mainFrame())&&pending){pending=null;phase='committed';}});
+ page.on('framenavigated',frame=>{
+  if(!read(()=>frame===page.mainFrame())||!pending)return;
+  const url=read(()=>documentUrl(frame.url()));
+  // A history update in the source document is not the pending destination's commit.
+  if(url===source){sourceHistoryEvents++;return;}
+  pending=null;phase=url===destination?'committed':'unproven';
+ });
  page.on('domcontentloaded',()=>{if(phase==='committed')phase='dom-ready';});
  page.on('requestfailed',request=>{if(pending===request){pending=null;phase='failed';}});
- return {pending:()=>pending!==null,snapshot:()=>({phase,ageMs:startedAt===null?null:Math.min(60000,Math.max(0,Date.now()-startedAt))})};
+ page.on('requestfinished',request=>{if(pending===request){pending=null;phase='finished';}});
+ return {pending:()=>pending!==null,snapshot:()=>({phase,sequence,sourceHistoryEvents,ageMs:startedAt===null?null:Math.min(60000,Math.max(0,Date.now()-startedAt))})};
 }
 export function navigationFetchDiagnostic(execution,diagnostic,pending,verified,phase){
  return execution.engine==='webkit'&&verified===true&&pending===true&&phase==='scenario'&&diagnostic.plainOwnRead===true
@@ -55,11 +66,15 @@ export async function verifyNavigationFetchDiagnostic(browser){
      return {state,async read(){try{const response=await fetch('/read',{credentials:'same-origin',cache:'no-store',redirect:'error',headers:{'X-Nevora-QA':'fictional'}});await response.json();return {...state,status:response.status,handled:false};}catch{return {...state,status:0,handled:true};}}};
     });
     const identity=await handle.evaluate(value=>value.state.id),before=ingress;
-    if(navigation){started=new Promise(resolve=>{signal=resolve;});navigationResult=page.goto(origin+'/replacement').then(response=>({ok:response?.ok()}),()=>({ok:false}));await started;}
+    if(navigation){
+     started=new Promise(resolve=>{signal=resolve;});navigationResult=page.goto(origin+'/replacement').then(response=>({ok:response?.ok()}),()=>({ok:false}));await started;
+     await handle.evaluate(()=>history.replaceState(history.state,'',location.href));
+     assert.equal(navigationPhase.pending(),true,'Source-document history cannot commit another navigation destination');
+    }
     let timer,result;
     try{result=await Promise.race([handle.evaluate(value=>value.read()),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Navigation diagnostic read did not settle')),5000);})]);}
     finally{clearTimeout(timer);release?.();release=undefined;}
-    if(navigation){assert((await navigationResult).ok);await page.getByRole('heading',{name:'/replacement',exact:true}).waitFor();}
+    if(navigation){assert((await navigationResult).ok);await page.getByRole('heading',{name:'/replacement',exact:true}).waitFor();assert.equal(navigationPhase.pending(),false,'Actual destination commit ends native-diagnostic eligibility');}
     const cell={navigation,identityMatches:result.id===identity,status:result.status,handled:result.handled,windowErrors:result.errors,unhandledRejections:result.rejections,pagehide:result.pagehide,serverReads:ingress-before,nativeDiagnostics:errors.length,onlyExactNativeDiagnostic:errors.every(Boolean),nativeNavigation};
     assert(cell.identityMatches);assert.equal(cell.windowErrors,0);assert.equal(cell.unhandledRejections,0);assert.equal(cell.pagehide,0);
     if(!navigation){assert.equal(cell.status,200);assert.equal(cell.serverReads,1);assert.equal(cell.nativeDiagnostics,0);}
