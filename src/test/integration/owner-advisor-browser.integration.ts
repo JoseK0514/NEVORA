@@ -32,11 +32,19 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
       values: ["OA-MANAGER", await hashPassword(TEST_PASSWORD)],
     });
     await assignOwnedManagerCompanyAccess(app.database.executor, "OA-MANAGER");
+    await app.database.executor.query({
+      text: "INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('OA-EMPLOYEE','Fictional','Employee','2025550197','EMPLOYEE','loc-1')",
+      values: [],
+    });
+    await app.database.executor.query({
+      text: "INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)",
+      values: ["OA-EMPLOYEE", await hashPassword(TEST_PASSWORD)],
+    });
     const origin = app.url.replace("127.0.0.1", "localhost");
     for (const engine of ["chromium", "webkit"]) {
       const browser = await runtime[engine].launch({ headless: true });
       try {
-        for (const actor of ["QAOWNER", "OA-MANAGER"]) {
+        for (const actor of ["QAOWNER", "OA-MANAGER", "OA-EMPLOYEE"]) {
           const context = await browser.newContext({
             viewport: { width: 1440, height: 1000 },
             serviceWorkers: "block",
@@ -119,10 +127,10 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
             await page.waitForURL(origin + "/app");
             await page.waitForLoadState("networkidle");
             phase =
-              actor === "OA-MANAGER"
-                ? "Manager denial"
+              actor !== "QAOWNER"
+                ? actor + " denial"
                 : "Owner real API scenarios";
-            if (actor === "OA-MANAGER") {
+            if (actor !== "QAOWNER") {
               expect(
                 await page
                   .getByRole("link", { name: "AI manager", exact: true })
@@ -135,7 +143,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
                 { headers: { "x-nevora-owner-advisor": "1" } },
               );
               expect(api.status()).toBe(403);
-              checks.push(engine + ": Manager discovery/page/API denied");
+              checks.push(engine + ": " + actor + " discovery/page/API denied");
             } else {
               await page
                 .locator("main")
