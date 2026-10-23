@@ -2,12 +2,43 @@ import assert from 'node:assert/strict';
 import {join} from 'node:path';
 import {readFile,writeFile} from 'node:fs/promises';
 import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
-import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
+import {safeBrowserFailure,safeEvaluationFailure} from './release-browser-diagnostics.mjs';
 import {waitForCalendarCopyReady} from './browser-render-readiness.mjs';
+import {observeDocumentNavigation} from './browser-navigation-diagnostic.mjs';
+import {runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 export async function runScenario({app,page,context,engine,width,evidenceDirectory,runtimeErrors:cellRuntimeErrors}){
  const checks=[],runtimeErrors=[],receipt=join(evidenceDirectory,`calendar-case-${engine}-${width}-report.json`);let stage='seed';
+ const started=performance.now(),diagnostics={events:[]},navigation=observeDocumentNavigation(page,()=>app.url);let diagnosticActor;
+ const record=(event,fields={})=>{diagnostics.events.push({stage,event,atMs:Math.round(performance.now()-started),...fields});if(diagnostics.events.length>64)diagnostics.events.shift();};
+ for(const event of ['close','crash','domcontentloaded','load'])page.on(event,()=>record(event));
+ const calendarPost=request=>request.method()==='POST'&&new URL(request.url()).origin===app.url&&new URL(request.url()).pathname==='/api/employee/calendar-subscriptions';
+ page.on('request',request=>{if(calendarPost(request))record('post-request');});
+ page.on('response',response=>{if(calendarPost(response.request()))record('post-response',{status:response.status()});});
+ page.on('requestfinished',request=>{if(calendarPost(request))record('post-finished');});
+ page.on('requestfailed',request=>{if(calendarPost(request))record('post-failed');});
+ await context.exposeBinding('__nevoraQaCalendarLifecycle',(source,value)=>{
+  if(source.page!==page||!value||!['focus','blur','pagehide','pageshow','visibilitychange'].includes(value.event))return;
+  record(value.event,{visibility:['visible','hidden'].includes(value.visibility)?value.visibility:'unknown',focused:value.focused===true});
+ });
+ await context.addInitScript(()=>{
+  const report=event=>{void globalThis.__nevoraQaCalendarLifecycle({event,visibility:document.visibilityState,focused:document.hasFocus()}).catch(()=>{});};
+  for(const event of ['focus','blur','pagehide','pageshow'])window.addEventListener(event,()=>report(event));
+  document.addEventListener('visibilitychange',()=>report('visibilitychange'));
+ });
+ const view=()=>runBeforeRecoveryDeadline(()=>page.evaluate(()=>{
+  const panel=document.querySelector('[data-calendar-setting]'),text=panel?.textContent??'',replace=[...(panel?.querySelectorAll('button')??[])].find(e=>e.textContent?.trim()==='Replace link');
+  return {visibility:['visible','hidden'].includes(document.visibilityState)?document.visibilityState:'unknown',focused:document.hasFocus(),panel:!!panel,disclosureOpen:panel?.closest('details.profile-calendar-disclosure')?.open??null,
+   paused:text.includes('Calendar settings paused.'),active:text.includes('Link active'),unknown:text.includes('The result is unknown.'),unavailable:text.includes('Calendar settings unavailable.'),urlFields:panel?.querySelectorAll('textarea').length??0,
+   replace:replace?{disabled:replace.disabled,ariaDisabled:replace.getAttribute('aria-disabled')==='true'}:null};
+ }),performance.now()+5000);
+ const operationCount=()=>runBeforeRecoveryDeadline(async()=>Number((await app.database.executor.query({text:'SELECT count(*)::integer n FROM calendar_operations WHERE actor_employee_id=$1',values:[diagnosticActor]}))[0].n),performance.now()+5000);
  page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({stage,...safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})});});
- const step=async(name,run)=>{stage=name;await writeFile(receipt,JSON.stringify({stage:name,status:'running',checks,runtimeErrors}));try{await run();checks.push(name);await writeFile(receipt,JSON.stringify({stage:name,status:'passed',checks,runtimeErrors}));}catch(error){await writeFile(receipt,JSON.stringify({stage:name,status:'failed',checks,runtimeErrors,failure:safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})}));throw Error('Calendar case failed: '+name);}};
+ const step=async(name,run)=>{stage=name;await writeFile(receipt,JSON.stringify({stage:name,status:'running',checks,runtimeErrors,diagnostics}));try{await run();checks.push(name);await writeFile(receipt,JSON.stringify({stage:name,status:'passed',checks,runtimeErrors,diagnostics}));}catch(error){
+  diagnostics.failure={pageClosed:page.isClosed(),browserConnected:context.browser()?.isConnected()??null,navigation:navigation.snapshot()};
+  try{diagnostics.failure.view=await view();}catch(error){diagnostics.failure.viewReadFailure=safeEvaluationFailure(error);}
+  if(diagnosticActor)try{diagnostics.failure.canonicalOperations=await operationCount();}catch(error){diagnostics.failure.canonicalReadFailure=safeEvaluationFailure(error);}
+  await writeFile(receipt,JSON.stringify({stage:name,status:'failed',checks,runtimeErrors,diagnostics,failure:safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})}));throw Error('Calendar case failed: '+name);
+ }};
  const currentPageReady=async()=>{await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');await page.waitForLoadState('networkidle');};
  const panel=page.locator('[data-calendar-setting]');
  const retry=()=>panel.getByRole('button',{name:'Try again to load the calendar link',exact:true});
@@ -25,6 +56,7 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
  // Other suites deliberately vary the fictional location label. Restore this suite's expected canonical label.
  await app.database.executor.query({text:"UPDATE locations SET short_name='Main Office' WHERE id='loc-1'",values:[]});
  const fixture=await seedOwnedScenario(app.database.executor,'CALENDAR'+engine.toUpperCase()+width,[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0));
+ diagnosticActor=fixture.actors[0];
  const q=(text,values=[])=>app.database.executor.query({text,values});
  await step('Real fictional login and Schedule secondary calendar entry',async()=>{
   await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(fixture.actors[0]);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
@@ -65,8 +97,10 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
   await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:()=>new Promise(resolve=>{window.finishFictionalCopy=resolve;})}}));await panel.getByRole('button',{name:'Copy link',exact:true}).click();await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await page.evaluate(()=>window.finishFictionalCopy?.());await noUrl();assert.equal(await panel.getByText('Link copied.',{exact:true}).count(),0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await state('Link active');await noUrl();
  });
  await step('Lost issuance response retries the same committed operation without recovering the raw URL',async()=>{
-  let intercepted=false;await page.route('**/api/employee/calendar-subscriptions',async route=>{if(route.request().method()==='POST'&&!intercepted){intercepted=true;const response=await route.fetch(),result=await response.json();assert.equal(result.status,'created');await route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({status:'outcome_unknown',operationId:result.operationId}),headers:{'Cache-Control':'no-store, private'}});}else await route.continue();});
-  await panel.getByRole('button',{name:'Replace link',exact:true}).click();await panel.getByText('The result is unknown. Retry the same operation to check it.',{exact:true}).waitFor();await noUrl();assert(await panel.getByRole('button',{name:'Replace link',exact:true}).isDisabled());await openManagement();assert(await panel.getByRole('button',{name:'Revoke link',exact:true}).isDisabled());await retry().click();await panel.getByText('The link is active. Its URL cannot be retrieved; replace the link to create a new one.',{exact:true}).waitFor();await state('Link active');await noUrl();await page.unroute('**/api/employee/calendar-subscriptions');assert.equal((await page.request.get(secondUrl)).status(),404);assert.equal(Number((await q('SELECT count(*)::integer n FROM calendar_subscriptions WHERE employee_id=$1 AND revoked_at IS NULL',[fixture.actors[0]]))[0].n),1);
+  diagnostics.responseLoss={before:await view(),canonicalOperationsBefore:await operationCount(),intercepted:false,upstreamCreated:false,fulfilled:false};
+  let intercepted=false,completed;const injected=new Promise(resolve=>{completed=resolve;});
+  await page.route('**/api/employee/calendar-subscriptions',async route=>{if(route.request().method()==='POST'&&!intercepted){intercepted=true;diagnostics.responseLoss.intercepted=true;record('response-loss-intercept');const response=await route.fetch();record('response-loss-upstream',{status:response.status()});const result=await response.json();diagnostics.responseLoss.upstreamCreated=result.status==='created';assert.equal(result.status,'created');await route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({status:'outcome_unknown',operationId:result.operationId}),headers:{'Cache-Control':'no-store, private'}});diagnostics.responseLoss.fulfilled=true;record('response-loss-fulfilled');completed();}else await route.continue();});
+  await panel.getByRole('button',{name:'Replace link',exact:true}).click();record('response-loss-click-returned');const deadline=performance.now()+15000;await panel.getByText('The result is unknown. Retry the same operation to check it.',{exact:true}).waitFor();await runBeforeRecoveryDeadline(()=>injected,deadline);assert(diagnostics.responseLoss.intercepted&&diagnostics.responseLoss.upstreamCreated&&diagnostics.responseLoss.fulfilled,'The original-operation recovery must follow actual committed response loss');await noUrl();assert(await panel.getByRole('button',{name:'Replace link',exact:true}).isDisabled());await openManagement();assert(await panel.getByRole('button',{name:'Revoke link',exact:true}).isDisabled());await retry().click();await panel.getByText('The link is active. Its URL cannot be retrieved; replace the link to create a new one.',{exact:true}).waitFor();await state('Link active');await noUrl();await page.unroute('**/api/employee/calendar-subscriptions');assert.equal((await page.request.get(secondUrl)).status(),404);assert.equal(Number((await q('SELECT count(*)::integer n FROM calendar_subscriptions WHERE employee_id=$1 AND revoked_at IS NULL',[fixture.actors[0]]))[0].n),1);diagnostics.responseLoss.canonicalOperationsAfter=await operationCount();assert.equal(diagnostics.responseLoss.canonicalOperationsAfter,diagnostics.responseLoss.canonicalOperationsBefore+1,'The committed operation replay cannot issue a second link');
  });
  await step('Late creation response after hide remains suppressed and replay has no URL',async()=>{
   let intercepted=false;await page.route('**/api/employee/calendar-subscriptions',async route=>{if(route.request().method()==='POST'&&!intercepted){intercepted=true;const response=await route.fetch();assert.equal(response.status(),200);await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await route.fulfill({response});}else await route.continue();});await panel.getByRole('button',{name:'Replace link',exact:true}).click();await panel.getByText('Calendar settings paused. Return to this window to check the link.',{exact:true}).waitFor();await noUrl();await page.unroute('**/api/employee/calendar-subscriptions');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await state('Link active');await noUrl();await retry().click();await panel.getByText('The link is active. Its URL cannot be retrieved; replace the link to create a new one.',{exact:true}).waitFor();await noUrl();

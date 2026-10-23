@@ -1022,3 +1022,41 @@ animation and unchanged zero-violation assertion. The final driver also records
 public axe rule IDs before asserting, without retaining private DOM content.
 No application CSS, motion duration, accessibility rule or timeout is changed.
 Independent review approves this bounded follow-up for new matching CI.
+
+### Development integration and Calendar response-loss receipt
+
+PR23 merged source 0152392c into development at f77727ad after all 12 jobs
+passed in run 39936486892, all 70 Phase E cells passed with zero final axe
+violations, and independent final review approved the matching receipts. The
+actual merge has the tested tree baf56a93 and expected base/source parents.
+
+The required development push run 39940756705 then failed Calendar WebKit430:
+ten cells passed, the eleventh timed out for 15 seconds waiting for the unknown
+issuance notice after eight functional checks. This case fulfills a 503 JSON
+response after fetching an actual committed creation; it does not abort the
+response as Attention's separate case does. Runtime errors were empty. Its
+receipt did not prove interception, upstream creation, fulfillment, current
+visibility or whether the click submitted. No historical cause is established.
+Development validation/build/audits, all three SQL jobs, Home, Communications,
+Navigation and complete Attendance passed; Attention was still running when
+this follow-up was prepared. Cleanup and Preview publication remain blocked.
+
+A focused local WebKit26.5 control bundled the actual Calendar React component
+(SHA256 78f2d04fb81ba3b582693b63f1ba1b564dce8d9cc6e9ca14c628371efbd37790)
+with a fictional HTTP ledger and presentation-only navigation link. All five
+clipboard/blur/offline/focus/rotation/503/retry trials passed, with interception,
+upstream creation and fulfillment proved and three canonical operations after
+replay. This excludes a generic failure of that isolated sequence; it does not
+reproduce Linux, Next or PostgreSQL behavior and does not close the failure.
+
+Calendar now records bounded public lifecycle/request timing, safe pre-click
+and failure UI booleans, node-side liveness and canonical operation counts.
+Failure evaluation and canonical reads each have a five-second diagnostic
+deadline. No HTML, URL, body, cookie, header, raw operation identity or private
+calendar capability is retained. The existing 15-second unknown-notice wait,
+response substitution and application privacy/generation fences are unchanged.
+After the notice, actual interception/creation/fulfillment must be proved within
+that same original wait deadline, and canonical operation count must grow by
+exactly one across original-operation recovery. This strengthens the existing
+real application regression; it is not an application behavior fix. New matching
+full CI remains required before further integration or retirement.
