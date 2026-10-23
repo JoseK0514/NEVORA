@@ -850,3 +850,48 @@ Focused controller and consumer suites passed locally; independent review and
 a fresh complete cloud workflow remain required. This application fix does not
 alter authorization, server budgets, database schema, notification delivery or
 any browser assertion.
+
+### Native login correlation and post-boundary RSC completion
+
+Run 39918553002 on merge checkpoint `959ce9ce` passed validation (9,335 units,
+types, lint, production build and both audits), all three SQL jobs, Communications,
+Calendar, Navigation and Attention. The build receipt matched all 5,091 source hashes.
+Home WebKit390 failed initial native sign-in after nine successful cells:
+the browser observed a POST but no response/finish or `/app` arrival. The
+evaluation rejection was reduced to `unavailable`; trailing Next request logs
+were not correlated to the attempt. No runtime error, busy redirect or database
+wait was recorded. Neither authentication success nor an authentication defect
+is established by an uncorrelated Server Action HTTP 200.
+
+Home now assigns a nonsecret per-attempt UUID header and records only request
+identity, navigation/resource kind and Next-action presence. An opt-in preload
+in the marked owned development process subscribes to Node 24's
+[HTTP diagnostic channel](https://nodejs.org/download/release/v24.19.0/docs/api/diagnostics_channel.html).
+It observes only marked loopback `/login` GET/POST lifecycle metadata, including
+response completion and a fixed redirect class. It does not consume bodies,
+modify handlers or retain credentials, cookies, action identifiers or raw headers.
+The preload refuses production and unmarked runtimes. Successful native login
+must prove the server observer saw its POST. Failure receipts retain a fixed
+evaluation-error class, correlated server events and a bounded read-only boolean
+indicating whether this fictional actor received a session since the attempt.
+These are diagnostics; they do not claim to fix the historical sign-in stall.
+
+D2 WebKit now renewed corrections and reached two ready canonical rows. The
+hard reload still raced a newly scheduled RSC read: its document request at
+23274ms was canceled after Next's RSC fallback initiated another document
+navigation. Notification, RSC and framework native diagnostics remain fatal.
+An empty observed-request set alone cannot prove no refresh is about to start.
+The driver now requires a new post-boundary RSC request, HTTP 200 and completed
+body before checking rendered rows, network idle and zero pending requests, then
+performing the original hard reload. This new read may be proactive when both
+headless pages already report focus; it is not attributed to a focus event.
+Headers and body share one original 15-second monotonic deadline. A stalled or
+failed body fails the scenario without aborting or substituting the response.
+
+Independent review found and required that body deadline before approval.
+Four deadline cases failed against immediate completion and pass with the bound;
+four initial HTTP diagnostic cases failed without observations and now pass.
+Six HTTP/preload/privacy checks, evaluation redaction and existing release checks
+are included in required CI. The focused Vitest subset passed 330 cases across
+seven files. A new complete matching cloud run and final integration review are
+still required. No archive branch was deleted and no hosted data was written.

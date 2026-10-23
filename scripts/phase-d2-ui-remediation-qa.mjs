@@ -6,6 +6,7 @@ import {Temporal} from '@js-temporal/polyfill';
 import {hashPassword} from '../src/lib/auth/password.ts';
 import {TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {safeD2Error,safeD2Text,unexpectedD2Runtime} from './d2-runtime-failures.mjs';
+import {finishResponseByDeadline} from './browser-response-deadline.mjs';
 
 // Runs only inside the existing owned PostgreSQL / exact-clean-SHA D2 gate.
 export async function verifyD2UiRemediation({app,browser,engine,evidence,report,checked,context,login,geometry,widths}){
@@ -145,7 +146,10 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   // remains false for its native date control despite a real Tab transition.
   assert.equal(focus.outlineStyle,'solid');assert(parseFloat(focus.outlineWidth)>=2);
   observations.keyboard.push({stage:'manager-before-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus()),managerFocused:await mp.evaluate(()=>document.hasFocus())});
-  stage='manager-return';await mp.bringToFront();assert(await mp.evaluate(()=>document.hasFocus()),'Manager native keyboard page must be foreground');
+  stage='manager-return';const priorRequest=requestSequence,refreshDeadline=performance.now()+15000;
+  const freshRsc=mp.waitForResponse(response=>{const request=response.request(),url=new URL(request.url());return url.origin===app.url&&url.pathname==='/app'&&request.headers().rsc==='1'&&(requests.get(request)??0)>priorRequest;});
+  const [,foregroundResponse]=await Promise.all([mp.bringToFront(),freshRsc]);assert.equal(foregroundResponse.status(),200);await finishResponseByDeadline(foregroundResponse,refreshDeadline);
+  assert(await mp.evaluate(()=>document.hasFocus()),'Manager native keyboard page must be foreground');
   observations.keyboard.push({stage:'manager-return',state:await mp.evaluate(()=>({visibility:document.visibilityState,focused:document.hasFocus(),routeState:document.querySelector('.portal-route-state h2')?.textContent??null,correctionRows:document.querySelectorAll('.manager-correction-row').length}))});
   // Foreground return starts a protected RSC recovery. Finish that tested
   // recovery before a separate hard reload, so the driver cannot cancel it.
@@ -155,7 +159,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   while(managerRscRequests.size){assert(performance.now()<recoveryDeadline,'Foreground RSC recovery must finish before a separate hard reload');await new Promise(resolve=>setTimeout(resolve,25));}
   assert.equal(await mp.locator('.manager-correction-row').filter({hasText:name}).count(),2);
   assert.equal(managerRscRequests.size,0,'Observed foreground RSC requests must be drained at the reload boundary');
-  record({role:'manager',event:'foreground-recovery-ready',pendingRscRequests:managerRscRequests.size});
+  record({role:'manager',event:'foreground-recovery-ready',pendingRscRequests:managerRscRequests.size,freshRscRequestId:requests.get(foregroundResponse.request())});
   await mp.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
   const approve=mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first();await approve.waitFor();await approve.focus();
   const managerFocus=await approve.evaluate(el=>({active:document.activeElement===el,outlineStyle:getComputedStyle(el).outlineStyle,outlineWidth:getComputedStyle(el).outlineWidth}));

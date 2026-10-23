@@ -8,6 +8,12 @@ function property(value, key) {
   try { return value?.[key]; } catch { return undefined; }
 }
 
+export function safeEvaluationFailure(error){
+ const name=property(error,'name'),value=property(error,'message'),message=typeof value==='string'?value.slice(0,8000):'';
+ const kind=/execution context.*destroyed|cannot find context/i.test(message)?'context-destroyed':/target.*closed|page.*closed|browser.*closed/i.test(message)?'target-closed':/protocol error/i.test(message)?'protocol':/timeout|timed out/i.test(message)?'timeout':'other';
+ return {name:names.has(name)?name:'Error',kind};
+}
+
 /** Extract only request metadata; never retain query strings or raw server text. */
 export function safeLoginServerRequests(text) {
   const plain = text.replace(/\[[0-9;]*m/g, '').replaceAll(String.fromCharCode(27), '');

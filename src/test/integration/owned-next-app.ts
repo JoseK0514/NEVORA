@@ -4,6 +4,7 @@ import { constants, cpSync, createWriteStream } from 'node:fs';
 import { access, copyFile, mkdir, mkdtemp, readFile, readdir, realpath, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import {pathToFileURL} from 'node:url';
 import { createDisposableExchangeDatabase } from './local-postgres';
 import {createOwnedPgTransport,type OwnedDatabaseIdentity} from './owned-pg-transport';
 import type {SqlExecutor} from '../../lib/notifications/types';
@@ -102,11 +103,12 @@ export function ownedMailEnvironment(origin:string,options:OwnedMailOptions={}):
  * generated dev type-reference paths. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { passkeysEnabled?: boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { loginDiagnostics?:boolean; passkeysEnabled?: boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
   if (options.clockerPinKey !== undefined && !/^[a-f0-9]{64}$/.test(options.clockerPinKey)) throw new Error('Owned Clocker PIN key must be 32-byte hex.');
   validateOwnedMailOptions(options);
   if (options.processOwnerId !== undefined && !/^[a-f0-9]{32}$/.test(options.processOwnerId)) throw Error('Owned process marker must identify the invocation.');
   if (options.onProcessStarted && !options.processOwnerId) throw Error('Owned process registration requires its invocation marker.');
+  if(options.loginDiagnostics&&!options.processOwnerId)throw Error('Login diagnostics require the owned process marker.');
   options.signal?.throwIfAborted();
   const source = resolve(process.cwd());
   // Validate before allocating a runtime or database. Only committed input is
@@ -223,6 +225,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
       NEXT_TELEMETRY_DISABLED: '1', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
       NEVORA_OWNED_APP_DATABASE: database.connectionString,
       NEVORA_OWNED_APP_IDENTITY: JSON.stringify(identity), NEVORA_OWNED_APP_BARRIERS: barriers,
+      ...(options.loginDiagnostics?{NODE_OPTIONS:'--import='+pathToFileURL(join(mirror,'src/test/integration/owned-login-diagnostics.mjs')).href,NEVORA_OWNED_LOGIN_ORIGIN:url}:{}),
       ...(options.processOwnerId ? { NEVORA_OWNED_PROCESS_OWNER: options.processOwnerId } : {}),
     };
     options.signal?.throwIfAborted();

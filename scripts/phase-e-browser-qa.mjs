@@ -172,7 +172,7 @@ async function main() {
   let app;
   try {
     // Setup observes abort itself and awaits its owned teardown before rejecting.
-    app = await createOwnedNextApp(evidence, { pinDevTypeReferences: true, signal: controller.signal, processOwnerId: owner.ownerId, onProcessStarted: async child => registerOwnedProcess({ kind: 'next', pid: child.pid, ownerId: owner.ownerId }) });
+    app = await createOwnedNextApp(evidence, { loginDiagnostics:suites.includes('home'), pinDevTypeReferences: true, signal: controller.signal, processOwnerId: owner.ownerId, onProcessStarted: async child => registerOwnedProcess({ kind: 'next', pid: child.pid, ownerId: owner.ownerId }) });
     report.sourceManifest = join(app.root, 'source-manifest.json'); report.appRoot = app.root;
     report.appOwnerId = JSON.parse(readFileSync(join(app.root, 'ownership.json'), 'utf8')).ownerId;
     verifySourceManifest(source, app.root, custody.checkpoint);
