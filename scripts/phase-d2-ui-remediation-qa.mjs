@@ -31,7 +31,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
  ep.setDefaultTimeout(15000);mp.setDefaultTimeout(15000);
  let phase='normal',stage='initial',requestSequence=0;
  const observations={engine,console:[],runtime:[],failedRequests:[],injectedFailures:[],keyboard:[],states:[],network:[]};
- const startedAt=performance.now(),requests=new WeakMap(),consoleDetails=[];
+ const startedAt=performance.now(),requests=new WeakMap(),consoleDetails=[],managerRscRequests=new Set();
  const clean=safeD2Text;
  const record=value=>{observations.network.push({atMs:Math.round(performance.now()-startedAt),stage,phase,...value});if(observations.network.length>300)observations.network.shift();};
  report.remediation??=[];report.remediation.push(observations);
@@ -43,11 +43,12 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   page.on('pageerror',error=>observations.runtime.push({role,phase,stage,atMs:Math.round(performance.now()-startedAt),...safeD2Error(error)}));
   page.on('request',request=>{
    const url=new URL(request.url());if(url.origin!==app.url||!(url.pathname==='/app'||url.pathname.startsWith('/api/')||url.pathname==='/__nextjs_original-stack-frames'))return;
+   if(role==='manager'&&url.pathname==='/app'&&request.headers().rsc==='1')managerRscRequests.add(request);
    const id=++requestSequence;requests.set(request,id);record({role,id,event:'request',path:clean(url.pathname),method:request.method(),rsc:request.headers().rsc==='1',serverAction:!!request.headers()['next-action'],document:request.isNavigationRequest()});
   });
   page.on('response',response=>{const id=requests.get(response.request());if(id)record({role,id,event:'response',status:response.status()});});
-  page.on('requestfinished',request=>{const id=requests.get(request);if(id)record({role,id,event:'finished'});});
-  page.on('requestfailed',request=>{const id=requests.get(request);if(id)record({role,id,event:'failed',reason:clean(request.failure()?.errorText)});});
+  page.on('requestfinished',request=>{managerRscRequests.delete(request);const id=requests.get(request);if(id)record({role,id,event:'finished'});});
+  page.on('requestfailed',request=>{managerRscRequests.delete(request);const id=requests.get(request);if(id)record({role,id,event:'failed',reason:clean(request.failure()?.errorText)});});
   page.on('requestfailed',request=>observations.failedRequests.push({role,phase,path:clean(new URL(request.url()).pathname),method:request.method(),failure:clean(request.failure()?.errorText)}));
  }
  const headers={'X-Nevora-Time-Correction':'1',Origin:app.url};
@@ -146,6 +147,15 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   observations.keyboard.push({stage:'manager-before-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus()),managerFocused:await mp.evaluate(()=>document.hasFocus())});
   stage='manager-return';await mp.bringToFront();assert(await mp.evaluate(()=>document.hasFocus()),'Manager native keyboard page must be foreground');
   observations.keyboard.push({stage:'manager-return',state:await mp.evaluate(()=>({visibility:document.visibilityState,focused:document.hasFocus(),routeState:document.querySelector('.portal-route-state h2')?.textContent??null,correctionRows:document.querySelectorAll('.manager-correction-row').length}))});
+  // Foreground return starts a protected RSC recovery. Finish that tested
+  // recovery before a separate hard reload, so the driver cannot cancel it.
+  await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
+  await mp.waitForLoadState('networkidle');
+  const recoveryDeadline=performance.now()+15000;
+  while(managerRscRequests.size){assert(performance.now()<recoveryDeadline,'Foreground RSC recovery must finish before a separate hard reload');await new Promise(resolve=>setTimeout(resolve,25));}
+  assert.equal(await mp.locator('.manager-correction-row').filter({hasText:name}).count(),2);
+  assert.equal(managerRscRequests.size,0,'Observed foreground RSC requests must be drained at the reload boundary');
+  record({role:'manager',event:'foreground-recovery-ready',pendingRscRequests:managerRscRequests.size});
   await mp.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
   const approve=mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first();await approve.waitFor();await approve.focus();
   const managerFocus=await approve.evaluate(el=>({active:document.activeElement===el,outlineStyle:getComputedStyle(el).outlineStyle,outlineWidth:getComputedStyle(el).outlineWidth}));

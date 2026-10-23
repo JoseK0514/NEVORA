@@ -12,11 +12,13 @@ test('unreadable console error arguments cannot become successful empty errors',
 });
 test('diagnostic text and structured stacks omit credentials, capabilities and opaque values',()=>{
  const privateValue='FICTIONAL_PRIVATE_VALUE_012345678901234567890123456789';
- for(const text of [`token=${privateValue}`,`/api/calendar/${privateValue}`,`postgres://qa:${privateValue}@fictional.invalid/db`,privateValue]){
+ for(const text of [`token=${privateValue}`,`/api/calendar/${privateValue}`,`postgres://qa:${privateValue}@fictional.invalid/db`,privateValue,`/127.0.0.1:43210/app?ref=${privateValue}`]){
   assert(!safeD2Text(text).includes(privateValue));
  }
  const error=safeD2Error({name:'TypeError',message:'Load failed',stack:`TypeError: token=${privateValue}\n at fetch (webpack-internal:///(app-pages-browser)/./node_modules/next/src/client/components/router-reducer/fetch-server-response.ts:327:10)\n at ${privateValue}.js:8:3`});
  assert.equal(error.message,'Load failed');assert.deepEqual(error.frames,[{source:'fetch-server-response.ts',line:327,column:10},{source:'other-script',line:8,column:3}]);assert(!JSON.stringify(error).includes(privateValue));
+ for(const text of ['proof=short-private','authority=short-private','credential=short-private','/app?ref=short-private'])assert(!safeD2Text(text).includes('short-private'));
+ assert.equal(safeD2Text('/api/company-access/operational-authority'),'/api/company-access/operational-authority');
 });
 test('injected HTTP failures are distinct from JavaScript exceptions',()=>{
  const http={phase:'injected-503',text:'Failed to load resource: the server responded with a status of 503',errors:[]};
