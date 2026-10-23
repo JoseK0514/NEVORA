@@ -1,6 +1,34 @@
 # Owner development validation repair
 
-Status: local repair checks passed; fresh mandatory cloud acceptance is pending. Jose approved development integration and retaining six existing remote branches, including Claude-UI-Fix. Production and additional hosted AI changes remain separate.
+Status: the initial-root exit correction is independently verified locally; fresh mandatory cloud acceptance is pending. Jose approved development integration and retaining six existing remote branches, including Claude-UI-Fix. Production and additional hosted AI changes remain separate.
+
+## Initial-root exit correction and current local acceptance
+
+The next code checkpoint is clean `e5e24ff434c0f8c0a6f707dd1f7b85352db9f59c`, tree `a9392d76867930d2b77ca061041bd5836464814b`, in isolated local checkout `/Users/josek0514/.codex/worktrees/owner-ai-root-exit-20261023`. The preceding14b/ab89 sections preserve the first repair snapshot. Documentation added aftere5 does not change its tested code. Reuse the same six remote branches and open [PR29](https://github.com/JoseK0514/NEVORA/pull/29).
+
+PR29's first workflow [40031137572](https://github.com/JoseK0514/NEVORA/actions/runs/40031137572), headab89/test-merge211d6bc8/treefedd245b, failed mandatory validation:9,496passed,801existing skips, one original runner assertion expected child exit23 but received1. The failure took232ms; child stderr/initial observation were not retained by that old assertion. **The exact historical cloud trigger remains unproved.** Both native Linux process suites passed in that run. Current per-job results and complete workflow state belong in PR metadata and the external receipt.
+
+A separate persisted real-process control at `9cf3799038ddd979da9324a9987370c9f55139b4` establishes a concrete defect: a gated child exits23 before its first identity read, native observation confirms zombie/absence, the creation handle reports23, but the supervisor returns1. No PID identity is forged, no resource lease or fallback signal is recorded, and final PID absence is checked. Three negative cases pass; the positive propagation assertion fails. Two further retained RED controls show why nonempty observer stderr must invalidate absence/zombie evidence.
+
+The three-file correction preserves the actual positive nonzero exit code only when initial root proof was unavailable, a separate native PID/stat observation cleanly confirms absence or the exact zombie PID, the actual child exit event arrives, no resource leases exist, and cleanup has not failed. Both observer errors and diagnostic stderr invalidate this proof. Zero child exits and live invalid marker/parent/group or uncertain observations still fail with1; timeout124 is unchanged. Original error/observation metadata remains failed, with a bounded initialRootExit enum. This creates no identity, registration or signalling authority and does not certify absence of unobserved descendants. It relies on the actual already-gone child handle delivering its exit event; no separate recovery deadline for a lost event is claimed. The original runner still expects23 and now retains stderr context.
+
+| Exact e5 check actually run | Result |
+| --- | --- |
+| Full default suite | 9,503passed,801existing skips, zero failures;566passed files/27skipped;324.85s, one worker |
+| Parent focused supervisor checks | 119/119 across four files,44.42s |
+| Independent focused replay | 119/119, zero failure/skip,42.836s; all5,252tracked hashes unchanged, clean exactHEAD and runner/fixture processes absent |
+| Typecheck / repository lint | Both exit0 |
+| Release engineering | 124passed, zero failures/skips |
+| Source-bound production build | R2 exit0, clean/unchanged e5;5,252source hashes and3,286build-file receipt hashes |
+| Production / full dependency audits | Both zero vulnerabilities |
+
+The first local e5 build failed because this checkout reused a dependency symlink outside Next's project root. Its failed receipt/log remain retained with all5,252source hashes unchanged and zero build-file hashes. Removing only that owned symlink and installing the unchanged lockfile locally with `npm ci --ignore-scripts` installed431packages. R2 then passed without a source/configuration change. Evidence: `engineering/root-exit-e5-build-source.json`, `root-exit-fresh-install.log`, `root-exit-e5-build-r2-source.json`. Unit/process checks used the same pinned dependencies in the earlier owned installation; fresh cloud installation remains mandatory.
+
+[Security's initial review](../reviews/2026-10-23-owner-ai-integration/security-root-exit-initial-fix-review.md) requested the stderr controls; its unchanged [closure review](../reviews/2026-10-23-owner-ai-integration/security-root-exit-stderr-closure.md) approves the corrected scope. [Independent QA review](../reviews/2026-10-23-owner-ai-integration/qa-root-exit-e5e24ff4-review.md) and [independent verification](../reviews/2026-10-23-owner-ai-integration/qa-root-exit-e5e24ff4-independent-verification.md) accept the reproduced local status defect as corrected one5. Release acceptance still requires the fresh exact-source workflow and artifacts.
+
+Independent audits of the precedingab89/211d execution accept [Home's original startup blocker](../reviews/2026-10-23-owner-ai-integration/qa-repair-pr29-home-artifact.md):14cells/228checks, no errors/axe findings,81observed resources stopped, including an original root-group member. [Owner](../reviews/2026-10-23-owner-ai-integration/qa-repair-pr29-owner-artifact.md) passes28checks and six trace/diagnostic sets; [Comms](../reviews/2026-10-23-owner-ai-integration/qa-repair-pr29-comms-artifact.md) passes14cells/156checks with all14Preview responses ready/finished and retained DOM evidence. These named-source audits do not certify thee5 supervisor. QA-OWN01 and QA-COM01 historical causes remain explicit intermittent risks; no error is excluded or retrospectively explained. QA-AT01 remains its prior carried risk.
+
+All new raw reviews are copied byte-identically. Publish only after required local conditions and the previous run's evidence are retained; require all12 jobs on the new immutable PR candidate, source/build/runtime custody, independent dispositions and actual development-push validation after authorized merge. No hosted write, paid inference or production authorization follows.
 
 ## Actual integration and failure
 
