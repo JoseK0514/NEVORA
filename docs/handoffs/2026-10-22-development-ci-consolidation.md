@@ -1124,3 +1124,49 @@ passes do not substitute for that verification. Independent review approved the
 bounded correction for CI only with no blockers. Cancellation of superseded
 workflow39946723054 was requested after that approval to avoid further browser
 spend; canceled/unexecuted cells do not count as passes on any source.
+
+### Reports navigation after mapping review
+
+Candidate `1325e160` workflow `39949910080` passed validation, all three SQL
+jobs, Home, Communications and Calendar. Attendance stopped in whole Phase D
+after 132 checks: WebKit's hard navigation from payroll export to Reports was
+interrupted by another navigation back to payroll export. The receipt records
+two fatal native diagnostics for the source RSC and Next stack-frame requests.
+The failure page was focused, visible and online; the database was idle. That
+run did not reach the corrected Clocker browser case. Navigation and Attention
+were still running when this correction was prepared; passes from that source
+cannot verify a subsequent candidate.
+
+An isolated, fictional Next 16.4.2/React 19.3 control reproduces the mechanism.
+While a destination document request is held, a real source `router.refresh()`
+causes WebKit to reject its source RSC fetch and Next to fall back to source-page
+navigation, interrupting the destination. Chromium's hard-navigation baseline
+succeeds. The actual rendered Next Link reaches the destination in both engines
+under the same verified refresh overlap, with no page errors. The control's
+fixture timer is a fault stimulus, verified to run after the destination request
+is held; it is not an application settling delay or a privacy-clock change.
+
+Reproducible sources, the dependency lock, both successful browser-control
+receipts and their hashes are preserved in
+`docs/handoffs/reproductions/2026-10-23-router-navigation/`. Browsers and the
+isolated Next server closed. This macOS control has no database and does not
+identify which historical application refresh path initiated the race. It
+reproduces a framework/navigation interaction; no application lifecycle repair
+or Linux certification is claimed.
+
+The required real application driver now clicks the rendered Insights link and
+uses the actual Custom period form. It requires both exact input dates, the
+matching protected POST with its view header, a successful fully completed
+response for that exact period with a bounded lease, and the rendered fixture
+total within one 15-second period-read deadline. Every following totals, export,
+print, role-denial and privacy assertion is retained. Existing native errors
+remain fatal; an observed framework RSC fallback is explicitly fatal too.
+Ordered request/response/completion/failure/frame/console metadata is capped at
+64 events and stores only fixed resource kinds, statuses and booleans, without
+URLs, headers, bodies, cookies, operation IDs or arbitrary console messages.
+
+All nine focused response/deadline/trace checks passed, including incomplete
+bodies, wrong periods, denied/unavailable/expired reads, late JSON and diagnostic
+sanitization. Scoped lint and diff checks passed. Independent review approved
+the executable correction for new full CI only, with no blockers. All 12 jobs,
+all 70 Phase E cells and complete Attendance remain mandatory before integration.

@@ -1,0 +1,34 @@
+{
+  "recordedDate": "2026-10-23",
+  "applicationCandidateAtInvestigation": "1325e16056246a771cf4760c6e45541d65f3c37a",
+  "next": "16.4.2",
+  "react": "19.3.0",
+  "playwright": "1.62.1",
+  "node": "v24.19.0",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "browserControlExitCodes": {
+    "chromium": 0,
+    "webkit": 0
+  },
+  "nextServerExitCode": 0,
+  "nextServerClosed": true,
+  "browsersClosed": true,
+  "hashes": {
+    "package.json": "f9058518b0cc93e9d96416305c4506d80997a4b0a6dfe899976694dd4a57a16e",
+    "package-lock.json": "e84d0d61cfa27f539a7790b5cdd7820d426de196b6860954e35e944f1c75b3fa",
+    "next.config.mjs": "d71c27a30f99927f4d9b18926cd74765cbfba1e8391120fc5fa44429b56028e2",
+    "app/layout.jsx": "5b451df2f949a2f97e70982aaf9cbb6d82746b69ba0ddc715aee300134eb0fa9",
+    "app/source/page.jsx": "9dea248ff9fad4b4e37a5e51699b1c0b0a3e3df1335b79a9cb8f090d553b2260",
+    "app/source/control.jsx": "c792e7635abcb5909db5a58d58ef3bd8ae3c9be8a12b17aa134d96240348360b",
+    "app/destination/page.jsx": "250a91e611d241749d1b702755adf6d068541fc832cc420b49fbe2aedf72e078",
+    "app/api/fixture-version/route.js": "8a914955c7b061b75d457d8f973819847aec9b169956c0d83e00c7531d770c7d",
+    "browser-control.mjs": "56619896401396a949adfd2afda65bd1540fe8aa43f02f935460dfa122391cba",
+    "chromium-proof.json": "83a676d802dd6e19a0c1803dd19dc23c95f5ecd4f145169d936ac72c1e3ddb06",
+    "webkit-proof.json": "aba4ba3e906a003b1376af1af189dc06b6f334c657a6a1b9b5cd0e1b8e324383"
+  },
+  "limitations": [
+    "Fictional framework navigation mechanism control; no application database or privacy lifecycle certification.",
+    "Historical application refresh initiator unrecorded; full matching real-application cloud CI remains required."
+  ]
+}
