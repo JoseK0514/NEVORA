@@ -5,7 +5,7 @@
 
 .ap.ap { --cream: var(--sig-page); --paper: var(--sig-card); --rule: var(--sig-rule); --ink-3: var(--sig-ink-3); --mint: var(--sig-mint); --teal: var(--sig-action);
   --display: var(--sig-font-display); }
-html:has(body .ap), body:has(> .ap), body:has(.ap) { background: #F7F6F3 !important; }
+html:has(body .ap), body:has(> .ap), body:has(.ap) { background: var(--sig-page) !important; }
 
 /* Light display headings, as in the app. */
 .ap.ap .ap-title { font-family: var(--display); font-weight: 300; letter-spacing: -.04em; }
@@ -48,7 +48,9 @@ html:has(body .ap), body:has(> .ap), body:has(.ap) { background: #F7F6F3 !import
   .ap .ap-form .ap-field + .ap-field { margin-top: -1px; }
   .ap .ap-form .ap-label { font: 600 .75rem/1rem var(--sys); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
   .ap .ap-form .ap-box { min-height: 2.5rem; margin-top: 4px; border: 0; border-radius: 10px; background: transparent; box-shadow: none; }
-  .ap .ap-form .ap-box:focus-within { box-shadow: 0 0 0 2px var(--ink); }
+  /* Focus marks the whole field row (label and value), not a tight ring around the text. */
+  .ap .ap-form .ap-box:focus-within { box-shadow: none; }
+  .ap .ap-form .ap-field:focus-within { position: relative; z-index: 1; box-shadow: inset 0 0 0 2px var(--sig-action); }
   .ap.ap .ap-form .ap-box { padding-inline: 0; }
   .ap.ap .ap-form .ap-box .ap-input { padding-inline: 0; font-size: 1.0625rem; }
   .ap .ap-primary { border-radius: 16px; }

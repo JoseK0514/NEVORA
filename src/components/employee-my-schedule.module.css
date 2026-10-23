@@ -91,12 +91,12 @@
 .s6RowOff:not(#s6) { align-items: center; min-height: 54px; padding-block: 8px; }
 .s6RowOff .s6Day:not(#s6) { flex-direction: row; align-items: baseline; gap: 8px; width: auto; min-width: 2.5rem; }
 .s6RowOff .s6Day strong:not(#s6) { margin: 0; font-size: 1.125rem; line-height: 1.375rem; }
-.s6RowSelected:not(#s6) { background: #FBFAF8; }
+.s6RowSelected:not(#s6) { background: var(--sig-selected-bg); }
 .s6Day:not(#s6) { flex: none; display: flex; flex-direction: column; width: 2.5rem; padding-top: 1px; }
 .s6Day small:not(#s6) { font: 600 .75rem/1rem var(--s6-font); letter-spacing: .12em; text-transform: uppercase; color: var(--s6-ink-3); }
 .s6Day strong:not(#s6) { margin-top: 2px; font: 300 1.75rem/1.875rem var(--s6-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; color: var(--s6-ink); }
 .s6DayToday small:not(#s6) { color: var(--s6-teal); }
-.s6DayToday strong:not(#s6) { font-weight: 500; color: var(--s6-deep); }
+.s6DayToday strong:not(#s6) { font-weight: 500; color: var(--sig-deep-ink); }
 .s6RowOff .s6Day strong:not(#s6) { color: var(--s6-ink-3); }
 .s6DayShifts:not(#s6) { display: flex; flex: 1; flex-direction: column; gap: 14px; min-width: 0; }
 .s6Shift:not(#s6) { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 4px 10px; }
@@ -123,7 +123,7 @@
 .s6LinkRow > span:not(#s6) { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .s6LinkRow b:not(#s6) { font: 500 1.0625rem/1.375rem var(--s6-font); letter-spacing: -.012em; }
 .s6LinkRow small:not(#s6) { font: 400 .9375rem/1.25rem var(--s6-font); color: var(--s6-ink-2); }
-@media (hover: hover) { .s6LinkRow:hover:not(#s6) { background: #FAFAF8; } }
+@media (hover: hover) { .s6LinkRow:hover:not(#s6) { background: var(--sig-hover-bg); } }
 .s6LinkRow:focus-visible:not(#s6) { outline-offset: -3px; border-radius: 18px; }
 /* Row links and disclosures sit in an overflow:hidden card, so their ring goes inside; this has to outweigh the root
  * ring rule above. Buttons inside a row (Claim shift) keep the outside ring. */
@@ -154,7 +154,7 @@
 .s6Options:not(#s6) { margin: 0; }
 .s6Options > summary:not(#s6) { display: flex; align-items: center; gap: 10px; margin: -6px -6px -6px -4px; padding: 6px 6px 6px 4px; border-radius: 12px; list-style: none; cursor: pointer; }
 .s6Options > summary:not(#s6)::-webkit-details-marker { display: none; }
-@media (hover: hover) { .s6Options > summary:hover:not(#s6) { background: #FAFAF8; } }
+@media (hover: hover) { .s6Options > summary:hover:not(#s6) { background: var(--sig-hover-bg); } }
 .s6Options > summary .s6Chevron:not(#s6) { margin-left: auto; transition: transform .2s ease; }
 .s6Options[open] > summary .s6Chevron:not(#s6) { transform: rotate(90deg); }
 .s6Options > summary:focus-visible:not(#s6) { outline-offset: 0; }

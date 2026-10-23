@@ -27,7 +27,7 @@
 
 /* Reviewed updates: rows. */
 .euRow:not(#eu) { color: var(--sg-ink); text-decoration: none; }
-@media (hover: hover) { .euRow:hover:not(#eu) { background: #FAFAF8; } }
+@media (hover: hover) { .euRow:hover:not(#eu) { background: var(--sig-hover-bg); } }
 .euRow:focus-visible:not(#eu) { outline: 2px solid var(--sg-ink); outline-offset: -3px; border-radius: 20px; }
 .euDone:not(#eu) { display: inline-flex; align-items: center; gap: 4px; color: var(--sg-teal); font-weight: 500; }
 .euChev:not(#eu) { flex: none; color: var(--sig-glyph, #8A8378); }

@@ -9,15 +9,16 @@
 
 /* Employee frame: bottom tabs, desktop sidebar and top bar, avatar. */
 :root[data-theme="dark"] [data-nv-e5] nav.mobile-nav { background: rgba(12, 24, 23, .94) !important; border-top: 1px solid #2C3B39 !important; box-shadow: none !important; }
-:root[data-theme="dark"] [data-nv-e5] nav.mobile-nav a, :root[data-theme="dark"] [data-nv-e5] nav.mobile-nav a span { color: #B3B5AF !important; }
-:root[data-theme="dark"] [data-nv-e5] nav.mobile-nav a[aria-current="page"],
-:root[data-theme="dark"] [data-nv-e5] nav.mobile-nav a[aria-current="page"] :is(span, svg) { color: #A9E2DA !important; }
+:root[data-theme="dark"] [data-nv-e5] nav.mobile-nav :is(a, button), :root[data-theme="dark"] [data-nv-e5] nav.mobile-nav :is(a, button) span { color: #B3B5AF !important; }
+:root[data-theme="dark"] [data-nv-e5] nav.mobile-nav :is(a, button):is([aria-current="page"], .active),
+:root[data-theme="dark"] [data-nv-e5] nav.mobile-nav :is(a, button):is([aria-current="page"], .active) :is(span, svg) { color: #A9E2DA !important; }
 :root[data-theme="dark"] [data-nv-e5] aside.sidebar { background: #101E1D !important; border-color: #2C3B39 !important; box-shadow: none !important; }
 :root[data-theme="dark"] [data-nv-e5] aside.sidebar .nav-label { color: #DCD9D1 !important; }
 :root[data-theme="dark"] [data-nv-e5] aside.sidebar .nav-link svg { color: #B8B7B0 !important; }
 :root[data-theme="dark"] [data-nv-e5] aside.sidebar .nav-link.active { background: rgba(169, 226, 218, .10) !important; box-shadow: inset 3px 0 0 #A9E2DA !important; }
 :root[data-theme="dark"] [data-nv-e5] aside.sidebar .nav-link.active :is(.nav-label, svg) { color: #A9E2DA !important; }
 :root[data-theme="dark"] [data-nv-e5] aside.sidebar :is(.brand-wordmark, .sidebar-brand) { color: #F5F2EB !important; }
+:root[data-theme="dark"] [data-nv-e5] aside.sidebar :is(.brand-lockup-module, .login-brand-module) { color: #B8B7B0 !important; }
 :root[data-theme="dark"] [data-nv-e5] aside.sidebar :is(p, small) { color: #B8B7B0 !important; }
 @media (min-width: 1024px) {
   :root[data-theme="dark"] [data-nv-e5] header.mobile-header { background: #101E1D !important; border-color: #2C3B39 !important; box-shadow: none !important; }
@@ -41,6 +42,10 @@
 :root[data-theme="dark"] :is([data-nv-e5], .ap) .ap-lang { background: rgba(245, 242, 235, .08) !important; }
 :root[data-theme="dark"] :is([data-nv-e5], .ap) .ap-lang button { color: #D3D0C8 !important; }
 :root[data-theme="dark"] :is([data-nv-e5], .ap) .ap-lang button[aria-pressed="true"] { background: #2C3B39 !important; color: #F5F2EB !important; box-shadow: none !important; }
+
+/* Profile calendar panel: its supporting copy and links. */
+:root[data-theme="dark"] [data-nv-e5] .employee-calendar :is(p, small, li) { color: #D3D0C8 !important; }
+:root[data-theme="dark"] [data-nv-e5] .employee-calendar a { color: #A9E2DA !important; }
 
 /* Sign-in: the navy wordmark becomes warm white on the dark sheet. */
 :root[data-theme="dark"] .ap .ap-wordmark { color: #F5F2EB !important; }

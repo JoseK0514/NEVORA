@@ -5,9 +5,9 @@
 .ccRoot :global(.wb-error):not(#cc) { display: flex; align-items: center; gap: 8px; margin: 8px 0 0; font: 500 .9375rem/1.3125rem var(--sg-font); color: var(--sg-red); }
 .ccRoot :global(.wb-error:empty):not(#cc), .ccRoot :global(#communication-form-error:empty):not(#cc) { display: none; }
 .ccRoot :global(#communication-form-error.wb-error):not(#cc) { margin: 16px 24px 0; }
-.ccRoot :global(.wb-notice):not(#cc) { display: flex; gap: 12px; margin: 20px 16px 0; padding: 18px 20px; border-radius: 20px; background: #FBF4EA; box-shadow: inset 0 0 0 1px #F2E4CD; color: var(--sg-amber); font: 400 .9375rem/1.3125rem var(--sg-font); }
+.ccRoot :global(.wb-notice):not(#cc) { display: flex; gap: 12px; margin: 20px 16px 0; padding: 18px 20px; border-radius: 20px; background: var(--sig-tint-review); box-shadow: inset 0 0 0 1px var(--sig-tint-review-line); color: var(--sg-amber); font: 400 .9375rem/1.3125rem var(--sg-font); }
 .ccRoot :global(.wb-notice p):not(#cc) { margin: 4px 0 0; color: var(--sg-ink-2); }
-.ccRoot :global(.wb-notice .nv-btn):not(#cc) { min-height: 44px; margin-top: 10px; padding: 0 16px; border: 0; border-radius: 999px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--sg-rule); color: var(--sg-ink); font: 500 .9375rem/1 var(--sg-font); }
+.ccRoot :global(.wb-notice .nv-btn):not(#cc) { min-height: 44px; margin-top: 10px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--sig-card); box-shadow: inset 0 0 0 1px var(--sg-rule); color: var(--sg-ink); font: 500 .9375rem/1 var(--sg-font); }
 
 /* The message, set like a page. */
 .ccPaper:not(#cc) { position: relative; margin: 0 16px; padding: 22px 22px 0; border-radius: 22px; background: var(--sg-card); box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .06), 0 1px 1px rgba(22, 28, 27, .03), 0 24px 44px -26px rgba(13, 54, 52, .32); overflow: hidden; }
@@ -22,15 +22,15 @@
 .ccBody:not(#cc)::placeholder { color: var(--sig-ink-3, #6F6C66); }
 .ccTitle:focus-visible:not(#cc), .ccBody:focus-visible:not(#cc) { outline: 2px solid var(--sg-ink); outline-offset: 2px; border-radius: 6px; }
 .ccTitle[aria-invalid="true"]:not(#cc), .ccBody[aria-invalid="true"]:not(#cc) { box-shadow: inset 0 -2px 0 var(--sg-red); }
-.ccFoot:not(#cc) { display: flex; justify-content: space-between; gap: 12px; margin: 14px -22px 0 !important; padding: 14px 22px; border-top: 1px solid var(--sg-rule); background: #FCFBF9; font: 400 .8125rem/1rem var(--sg-font); color: var(--sg-ink-3); font-variant-numeric: tabular-nums; }
+.ccFoot:not(#cc) { display: flex; justify-content: space-between; gap: 12px; margin: 14px -22px 0 !important; padding: 14px 22px; border-top: 1px solid var(--sg-rule); background: var(--sig-card-quiet); font: 400 .8125rem/1rem var(--sg-font); color: var(--sg-ink-3); font-variant-numeric: tabular-nums; }
 
 /* Who gets it */
 .ccWho:not(#cc) { min-width: 0; padding: 0; border: 0; }
 .ccWho > label:not(#cc) { position: relative; cursor: pointer; }
-.ccWho > label[data-selected]:not(#cc) { background: #F5FAF8; }
+.ccWho > label[data-selected]:not(#cc) { background: var(--sig-tint-done-soft); }
 .ccWho input[type="radio"]:not(#cc) { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
 .ccWho > label:focus-within:not(#cc) { outline: 2px solid var(--sg-ink); outline-offset: -3px; border-radius: 20px; }
-.ccRadio:not(#cc) { flex: none; width: 22px; height: 22px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px #CFCBC3; }
+.ccRadio:not(#cc) { flex: none; width: 22px; height: 22px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--sig-radio-edge); }
 .ccWho > label[data-selected] .ccRadio:not(#cc) { box-shadow: inset 0 0 0 7px var(--sg-deep); }
 .ccExpiry:not(#cc) { margin-top: 20px !important; }
 .ccCheck:not(#cc) { display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 12px 20px; cursor: pointer; }
