@@ -3,6 +3,7 @@ import test from 'node:test';
 import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 import {finishPeriodReportResponse,observeReportNavigation} from './phase-d-report-navigation.mjs';
 import {EventEmitter} from 'node:events';
+import {projectCommunicationRead,observeCommunicationRead,readCommunicationResponse,finalizeCommunicationRead} from './communication-read-diagnostics.mjs';
 
 test('bounded work preserves its result and rejects a late value',async()=>{
  const value={unknown:true,blocked:false};
@@ -59,4 +60,71 @@ test('navigation trace is capped, excludes private URL/message values and keeps 
  page.emit('framenavigated',frame);for(let i=0;i<70;i++)page.emit('request',request);
  assert.equal(fatal,1);assert.equal(trace.events.length,64);assert(trace.omittedEvents>0);assert(!JSON.stringify(trace).includes('private-sentinel'));
  stop();const count=trace.omittedEvents;page.emit('request',request);assert.equal(trace.omittedEvents,count);
+});
+
+test('communication diagnostics project only fixed public states and identity booleans',()=>{
+ const secret='private-sentinel';
+ const result=projectCommunicationRead({state:'ready',reason:secret,id:secret,authority:secret,validForMs:45000,title:secret,body:secret,revisionId:secret},{id:secret,authority:secret});
+ assert.deepEqual(result,{state:'ready',reason:'other',leaseMs:45000,resourceMatched:true,authorityMatched:true});
+ assert(!JSON.stringify(result).includes(secret));
+ assert.deepEqual(projectCommunicationRead({state:secret,reason:secret,validForMs:Infinity},{}),{state:'other',reason:'other',leaseMs:'invalid',resourceMatched:false,authorityMatched:false});
+});
+test('communication response diagnostics finish the body and retain unavailable status without private data',async()=>{
+ let release;const finished=new Promise(resolve=>{release=resolve;});let bodyRead=false;
+ const response={status:()=>503,finished:()=>finished,body:async()=>{bodyRead=true;return Buffer.from(JSON.stringify({state:'unavailable',reason:'read_failed',body:'private-sentinel'}));}};
+ const result=readCommunicationResponse(response,{},performance.now()+1000);
+ await Promise.resolve();assert.equal(bodyRead,false);release(null);
+ const diagnostic=await result;assert.equal(diagnostic.status,503);assert.equal(diagnostic.bodyFinished,true);assert.equal(diagnostic.state,'unavailable');assert.equal(diagnostic.reason,'read_failed');assert(!JSON.stringify(diagnostic).includes('private-sentinel'));
+});
+test('communication diagnostic body timeout stays bounded and a late private body is not read',async()=>{
+ let release,reads=0;const finished=new Promise(resolve=>{release=resolve;});
+ const result=readCommunicationResponse({status:()=>200,finished:()=>finished,body:async()=>{reads++;return Buffer.from('private-sentinel');}},{},performance.now()+20);
+ await assert.rejects(result,/recovery deadline/);release(null);await Promise.resolve();await Promise.resolve();assert.equal(reads,0);
+});
+test('communication malformed, oversized and failed bodies never expose their private error text',async()=>{
+ for(const body of [async()=>Buffer.from('private-sentinel'),async()=>Buffer.alloc(1_000_001),async()=>{throw Error('private-sentinel');}]){
+  await assert.rejects(readCommunicationResponse({status:()=>200,finished:async()=>null,body},{},performance.now()+1000),error=>error.message==='Communication diagnostic body unavailable');
+ }
+});
+test('communication network diagnostics correlate requests, cap events and detach without raw URLs or errors',async()=>{
+ const page=new EventEmitter();page.mainFrame=()=>({});page.evaluate=async()=>({focused:true,visible:true,online:true,bodyPresent:false,unavailable:true,loading:false,paused:false,accessChanged:false});
+ const observer=observeCommunicationRead(page,'http://127.0.0.1:1','private-sentinel');
+ for(let i=0;i<80;i++)page.emit('request',{url:()=> 'http://127.0.0.1:1/_next/private-asset.js',headers:()=>({})});
+ const request={url:()=> 'http://127.0.0.1:1/api/employee/communications/private-sentinel?private-query',method:()=> 'GET',headers:()=>({'x-nevora-communication-authority':'private-sentinel'}),failure:()=>({errorText:'cancelled private-error'})};
+ page.emit('request',request);page.emit('requestfailed',request);for(let i=0;i<80;i++)page.emit('request',request);
+ const result=await observer.finish();assert.equal(result.events[0].requestId,result.events[1].requestId);assert.equal(result.events[1].failure,'cancelled');assert.equal(result.events.length,64);assert(result.omittedEvents>0);assert(!JSON.stringify(result).includes('private-'));
+ assert.equal(page.listenerCount('request'),0);assert.equal(page.listenerCount('response'),0);assert.equal(page.listenerCount('requestfailed'),0);
+ const count=result.events.length;page.emit('request',request);assert.equal(result.events.length,count);
+});
+test('unrelated API activity cannot exhaust protected communication read diagnostics',async()=>{
+ const page=new EventEmitter();page.evaluate=async()=>({});
+ const observer=observeCommunicationRead(page,'http://127.0.0.1:1','protected');
+ for(let i=0;i<80;i++)page.emit('request',{url:()=>`http://127.0.0.1:1/api/unrelated/${i}`,method:()=> 'GET',headers:()=>({})});
+ page.emit('request',{url:()=> 'http://127.0.0.1:1/api/employee/communications/protected',method:()=> 'GET',headers:()=>({})});
+ const result=await observer.finish();assert.equal(result.events.filter(x=>x.resource==='employee-detail').length,1);assert(result.events.length<=64);
+});
+test('diagnostic failure preserves an existing scenario error and still closes and checks runtime',async()=>{
+ const original=Error('Original scenario failure'),calls=[];
+ await assert.rejects(async()=>{
+  try{throw original;}finally{
+   const result=await finalizeCommunicationRead({scenarioFailed:true,diagnostic:{finish:async()=>{calls.push('finish');throw Error('private-sentinel');}},persist:async()=>calls.push('persist'),close:async()=>{calls.push('close');throw Error('close failure');},assertClean:()=>{calls.push('assert');throw Error('runtime failure');}});
+   assert.deepEqual(result,{diagnosticFailed:true,cleanupFailed:true});
+  }
+ },error=>error===original);
+ assert.deepEqual(calls,['finish','close','assert']);
+});
+test('failed diagnostic persistence cannot turn a passing scenario into success or skip cleanup',async()=>{
+ for(const failFinish of [true,false]){
+  const calls=[];
+  await assert.rejects(finalizeCommunicationRead({scenarioFailed:false,diagnostic:{finish:async()=>{if(failFinish)throw Error('private-sentinel');return {};}},persist:async()=>{throw Error('private-sentinel');},close:async()=>calls.push('close'),assertClean:()=>calls.push('assert')}),error=>error.message==='Communication read diagnostic unavailable');
+  assert.deepEqual(calls,['close','assert']);
+ }
+});
+test('cleanup and runtime failures remain fatal after diagnostic collection',async()=>{
+ const closeError=Error('Context closure failed'),runtimeError=Error('Runtime check failed');
+ for(const checkFailure of [undefined,runtimeError]){
+  let checked=false;
+  await assert.rejects(finalizeCommunicationRead({scenarioFailed:false,diagnostic:null,persist:async()=>{},close:async()=>{throw closeError;},assertClean:()=>{checked=true;if(checkFailure)throw checkFailure;}}),error=>error===(checkFailure??closeError));
+  assert.equal(checked,true);
+ }
 });

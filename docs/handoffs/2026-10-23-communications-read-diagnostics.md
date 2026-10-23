@@ -1,0 +1,13 @@
+# Development Communications read investigation
+
+Development source `739165b212d8d0812fedce466bbf9de2de6f339b` has the same tree as the fully successful PR #24 run `39954286804`. Its separate development workflow `39959827843` failed Communications WebKit at 768px after 11 passing cells. The failure is a 15-second title wait in `full-review`; the screenshot shows “Couldn’t load this update” and the runtime-error array is empty. No response status, body state or request timing was retained. This does not establish a navigation fallback or justify an application change.
+
+The unchanged private snapshot controller rejects reads after 10 seconds; the service has an 8-second read signal. Fetch/JSON failures, a server unavailable response or exhausted response lifetime can all reach the observed screen. Initial manager bootstrap reads succeeded. All cells share one owned Next/PostgreSQL fixture, so a fresh isolated single-cell run would omit relevant sequencing.
+
+The diagnostic observes the existing employee read without routing/intercepting requests, retrying it, changing app clocks or relaxing any assertion. It records capped request sequence IDs, fixed resource categories, method/status, completion/cancellation, bounded timing and projected state/reason/lifetime/identity booleans. Fixed DOM booleans identify the final read state. It excludes URLs, query strings, headers, cookies, DTOs, content, authorities, operation identifiers and arbitrary error messages. Body work is bounded; listeners detach. Static assets cannot exhaust the event budget before the protected read.
+
+Each cell writes `communications-read-<engine>-<width>-report.json`, covered by the existing safe report upload. Raw per-case details remain excluded rather than uploading arbitrary DOM/error payloads. The new report is diagnostic evidence; mandatory source/closure verification remains in the existing leaf receipts.
+
+`communications-diagnostic.yml` runs only the unchanged 14-cell Communications suite in a shared owned fixture, with the same pinned actions, Node/Playwright/axe, isolated PostgreSQL and source/closure verifier. Its push trigger is limited to a change of that workflow on the owned consolidation branch. It has read-only repository permission, no secrets, no notifications and no deployment or hosted database access. It is explicitly diagnostic and cannot replace the 12 mandatory CI jobs, their 70 cells, complete Attendance or the evidence gates. Final release verification still requires the final matching development source.
+
+Owner: Codex. Root cause and app repair remain unproven. Branch retirement and Preview deployment remain blocked. Hosted DEV setup still awaits Jose’s explicit authorization; production is untouched.
