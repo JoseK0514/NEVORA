@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
 import { constants, cpSync, createWriteStream } from 'node:fs';
-import { access, copyFile, mkdir, mkdtemp, readFile, readdir, realpath, writeFile } from 'node:fs/promises';
+import { access, copyFile, lstat, mkdir, mkdtemp, readFile, readdir, realpath, rm, statfs, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import {pathToFileURL} from 'node:url';
@@ -73,6 +73,35 @@ export async function assertExternalEvidencePath(source:string,evidenceDirectory
  if (!isAbsolute(evidenceDirectory) || !outside(resolve(source),resolve(evidenceDirectory)) || !outside(await realpath(source),await canonicalDestination(resolve(evidenceDirectory)))) {
   throw new Error('Application evidence must be an explicit directory outside the repository.');
  }
+}
+
+export async function releaseOwnedDerivedArtifacts(root:string,source:string,ownerId:string) {
+ if(!isAbsolute(root)||resolve(root)!==root||!/^owned-next-[A-Za-z0-9]+$/.test(basename(root)))throw Error('Derived cleanup requires an owned application root');
+ await assertExternalEvidencePath(source,root);
+ const mirror=join(root,'app'),marker=join(root,'ownership.json');
+ const checkIdentity=async()=>{
+  const [rootInfo,mirrorInfo,markerInfo]=await Promise.all([lstat(root),lstat(mirror),lstat(marker)]);
+  if(!rootInfo.isDirectory()||rootInfo.isSymbolicLink()||!mirrorInfo.isDirectory()||mirrorInfo.isSymbolicLink()||!markerInfo.isFile()||markerInfo.isSymbolicLink())throw Error('Derived cleanup ownership paths changed');
+  const canonicalRoot=await realpath(root);
+  if(await realpath(mirror)!==join(canonicalRoot,'app'))throw Error('Derived cleanup mirror escaped its owner');
+  const actual=JSON.parse(await readFile(marker,'utf8'));
+  if(actual.ownerId!==ownerId||actual.root!==root||actual.source!==source||actual.closed!==true||actual.sourceVerified!==true||actual.mirrorVerified!==true)throw Error('Derived cleanup requires verified closed ownership');
+  return canonicalRoot;
+ };
+ const canonicalRoot=await checkIdentity(),directories:string[]=[];
+ for(const name of ['node_modules','.next']){
+  const target=join(mirror,name);
+  let info;try{info=await lstat(target);}catch(error){if((error as NodeJS.ErrnoException).code==='ENOENT')continue;throw error;}
+  if(!info.isDirectory()||info.isSymbolicLink()||await realpath(target)!==join(canonicalRoot,'app',name))throw Error('Derived cleanup target escaped its owner');
+  directories.push(name);
+ }
+ const before=await statfs(root);
+ for(const name of directories){
+  if(await checkIdentity()!==canonicalRoot)throw Error('Derived cleanup owner moved');
+  await rm(join(mirror,name),{recursive:true,force:false});
+ }
+ const after=await statfs(root);
+ return {directories:directories.map(name=>'app/'+name),availableBytesBefore:before.bavail*before.bsize,availableBytesAfter:after.bavail*after.bsize};
 }
 
 export function ownedPayrollEnvironment(options: {payrollEnabled?:boolean} = {}) {
@@ -168,6 +197,10 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { l
       if (mirrorPrepared) await verifyMirror();
       metadata.sourceVerified = true; metadata.mirrorVerified = mirrorPrepared;
       await writeFile(manifestPath, JSON.stringify(metadata, null, 2));
+      if(mirrorPrepared){
+        metadata.derivedArtifactsReleased=await releaseOwnedDerivedArtifacts(root,source,ownerId);
+        await writeFile(manifestPath, JSON.stringify(metadata, null, 2));
+      }
     })().catch(async error => { closureFailure = error; metadata.verificationError = String(error); await writeFile(manifestPath, JSON.stringify(metadata, null, 2)); closing = undefined; throw error; });
     return closing;
   };

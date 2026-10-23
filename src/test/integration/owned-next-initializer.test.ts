@@ -1,5 +1,5 @@
 import {execFileSync} from 'node:child_process';
-import {mkdtempSync,mkdirSync,writeFileSync,rmSync} from 'node:fs';
+import {existsSync,mkdtempSync,mkdirSync,readFileSync,readdirSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
@@ -40,4 +40,22 @@ it('abort during initialization stops before a child and closes its allocated da
 });
 it('the default absent initializer retains the existing child-start lifecycle',async()=>{
  await expect(createOwnedNextApp(source(),{pinDevTypeReferences:false})).rejects.toThrow('Owned test stops before a real child');expect(state.spawn).toHaveBeenCalledTimes(1);expect(state.dispose).toHaveBeenCalledTimes(1);
+});
+it('verified closure releases copied dependencies and generated cache while preserving source custody',async()=>{
+ const evidence=source(),sourceRoot=process.cwd(),original=readFileSync(join(sourceRoot,'src/lib/db.ts'),'utf8');let mirror='',manifest='';
+ state.spawn.mockImplementation(()=>{
+  const [name]=readdirSync(evidence).filter(name=>name.startsWith('owned-next-'));mirror=join(evidence,name,'app');
+  mkdirSync(join(mirror,'.next/cache'),{recursive:true});writeFileSync(join(mirror,'.next/cache/fixture'),Buffer.alloc(4096));
+  manifest=readFileSync(join(evidence,name,'source-manifest.json'),'utf8');
+  throw Error('Owned child boundary');
+ });
+ await expect(createOwnedNextApp(evidence,{pinDevTypeReferences:false})).rejects.toThrow('Owned child boundary');
+ expect(state.dispose).toHaveBeenCalledTimes(1);
+ expect(existsSync(join(mirror,'node_modules'))).toBe(false);expect(existsSync(join(mirror,'.next'))).toBe(false);
+ expect(readFileSync(join(sourceRoot,'src/lib/db.ts'),'utf8')).toBe(original);
+ expect(existsSync(join(sourceRoot,'node_modules/next/dist/bin/next'))).toBe(true);
+ expect(readFileSync(join(mirror,'../source-manifest.json'),'utf8')).toBe(manifest);
+ expect(readFileSync(join(mirror,'src/lib/db.ts'),'utf8')).toContain('createOwnedPgTransport');
+ const receipt=JSON.parse(readFileSync(join(mirror,'../ownership.json'),'utf8'));
+ expect(receipt).toMatchObject({closed:true,sourceVerified:true,mirrorVerified:true});
 });
