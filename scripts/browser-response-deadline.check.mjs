@@ -4,6 +4,54 @@ import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-resp
 import {finishPeriodReportResponse,observeReportNavigation} from './phase-d-report-navigation.mjs';
 import {EventEmitter} from 'node:events';
 import {projectCommunicationRead,observeCommunicationRead,readCommunicationResponse,finalizeCommunicationRead} from './communication-read-diagnostics.mjs';
+import {projectCommunicationPreview,readCommunicationPreviewResponse,previewEventBuffer,projectPreviewDom,observeCommunicationPreview} from './communication-preview-diagnostics.mjs';
+
+test('preview diagnostics project safe enums and DOM identity without private content or authority',()=>{
+ const privateValue='private-preview-sentinel';
+ assert.deepEqual(projectCommunicationPreview({state:'ready',authority:privateValue,fingerprint:privateValue,title:privateValue}),{state:'ready'});
+ assert.deepEqual(projectCommunicationPreview({state:privateValue}),{state:'other'});
+ const dom=projectPreviewDom({documentId:123,formId:2,route:'compose',previewPresent:true,busy:true,title:privateValue,authority:privateValue,html:privateValue});
+ assert.equal(dom.documentId,123);assert.equal(dom.formId,2);assert.equal(dom.previewPresent,true);assert.equal(dom.busy,true);
+ assert(!JSON.stringify(dom).includes(privateValue));
+ assert.equal(projectPreviewDom({formId:Infinity,documentId:-1,route:privateValue}).formId,0);
+});
+test('preview event bounds retain an explicit omission count',()=>{
+ const buffer=previewEventBuffer(2);for(let id=0;id<5;id++)buffer.record({id});
+ assert.deepEqual(buffer.snapshot(),{events:[{id:0},{id:1}],omittedEvents:3});
+ assert.throws(()=>previewEventBuffer(129));assert.throws(()=>previewEventBuffer(0));
+});
+test('preview response diagnostics require a complete bounded body and exclude arbitrary error text',async()=>{
+ const response={status:()=>200,finished:async()=>null,body:async()=>Buffer.from(JSON.stringify({state:'ready',authority:'private-preview-sentinel'}))};
+ assert.deepEqual(await readCommunicationPreviewResponse(response,performance.now()+1000),{status:200,bodyFinished:true,state:'ready'});
+ for(const body of [async()=>Buffer.alloc(1_000_001),async()=>Buffer.from('not-json-private-preview-sentinel'),async()=>{throw Error('private-preview-sentinel');}]){
+  await assert.rejects(readCommunicationPreviewResponse({...response,body},performance.now()+1000),error=>error.message==='Communication preview diagnostic body unavailable');
+ }
+ let release;const stalled=new Promise(resolve=>{release=resolve;});
+ const pending=readCommunicationPreviewResponse({...response,finished:()=>stalled},performance.now()+20);
+ await assert.rejects(pending,/preview diagnostic body unavailable/);release(null);await assert.rejects(pending,/preview diagnostic body unavailable/);
+});
+test('preview observations keep their own buffer, exact locator and idempotent listener cleanup',async()=>{
+ const page=new EventEmitter();let binding,init,roleCalls=0,documentReads=0;
+ page.exposeBinding=async(_name,callback)=>{binding=callback;};page.addInitScript=async callback=>{init=callback;};
+ page.evaluate=async()=>{documentReads++;return {documentId:1,formId:2,route:'compose',previewPresent:true,publishCandidate:false,windowOmittedEvents:0,authority:'private-preview-sentinel'};};
+ page.getByRole=(role,options)=>{roleCalls++;assert.equal(role,'button');assert.deepEqual(options,{name:'Publish update',exact:true});return {count:async()=>1,isVisible:async()=>true};};
+ const observer=await observeCommunicationPreview(page,'http://127.0.0.1:1');assert.equal(typeof init,'function');
+ const request={url:()=> 'http://127.0.0.1:1/api/employee/communications/preview?private-preview-sentinel',method:()=> 'POST'};
+ binding({}, {event:'dom',documentId:1,formId:1,route:'compose',authority:'private-preview-sentinel'});
+ page.emit('request',request);page.emit('response',{request:()=>request,status:()=>200,finished:async()=>null,body:async()=>Buffer.from('{"state":"ready","authority":"private-preview-sentinel"}')});page.emit('requestfinished',request);
+ const first=observer.finish(),second=observer.finish();assert.equal(first,second);const report=await first;
+ assert.equal(documentReads,1);assert.equal(roleCalls,1);assert.equal(report.publishButton.visible,true);assert.equal(report.documentState.publishCandidate,false);
+ assert(report.events.some(row=>row.kind==='body'&&row.state==='ready'&&row.bodyFinished));assert.equal(report.pendingBodies,0);
+ assert(!JSON.stringify(report).includes('private-preview-sentinel'));
+ for(const event of ['request','response','requestfinished','requestfailed'])assert.equal(page.listenerCount(event),0);
+ const before=JSON.stringify(report);binding({}, {event:'dom',formId:9});assert.equal(JSON.stringify(report),before);
+});
+test('an unavailable preview document does not leak its failure and still removes request listeners',async()=>{
+ const page=new EventEmitter();page.exposeBinding=async()=>{};page.addInitScript=async()=>{};page.evaluate=async()=>{throw Error('private-preview-sentinel');};page.getByRole=()=>{throw Error('private-preview-sentinel');};
+ const observer=await observeCommunicationPreview(page,'http://127.0.0.1:1'),report=await observer.finish();
+ assert.equal(report.documentState.available,false);assert.equal(report.publishButton.available,false);assert(!JSON.stringify(report).includes('private-preview-sentinel'));
+ for(const event of ['request','response','requestfinished','requestfailed'])assert.equal(page.listenerCount(event),0);
+});
 
 test('bounded work preserves its result and rejects a late value',async()=>{
  const value={unknown:true,blocked:false};

@@ -1,6 +1,7 @@
 import { expect, it } from "vitest";
 import { createRequire } from "node:module";
 import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { mkdir, writeFile } from "node:fs/promises";
 import { createOwnedNextApp } from "./owned-next-app";
 import {
@@ -17,6 +18,9 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
   const runtime = createRequire(
     resolve("tools/ci-browser-runtime/package.json"),
   )("playwright");
+  const { observeDocumentNavigation, observeWindowExceptions } = await import(
+    pathToFileURL(resolve("scripts/browser-navigation-diagnostic.mjs")).href
+  );
   const app = await createOwnedNextApp(evidence, { ownerAdvisorEnabled: true });
   const checks: string[] = [],
     external: string[] = [],
@@ -92,6 +96,31 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               url,
               message,
             });
+          const navigation = observeDocumentNavigation(page, () => origin);
+          const knownPath = (value: string) => {
+            try {
+              const url = new URL(value);
+              return url.origin === origin && ["/login", "/app", "/app/ai-manager", "/app/schedule/coverage", "/api/company-access/operational-authority"].includes(url.pathname)
+                ? url.pathname : "other";
+            } catch { return "unavailable"; }
+          };
+          await observeWindowExceptions(context, (_page: unknown, kind: string) =>
+            record("window:" + kind, knownPath(page.url()), JSON.stringify(navigation.snapshot())),
+          );
+          page.on("request", (request: { url(): string; method(): string; isNavigationRequest(): boolean; frame(): unknown; headers(): Record<string, string> }) => {
+            const path = knownPath(request.url());
+            if (request.isNavigationRequest() && request.frame() === page.mainFrame())
+              record("document-request", path, JSON.stringify(navigation.snapshot()));
+            else if (path === "/api/company-access/operational-authority")
+              record("authority-request", path, JSON.stringify({ method: request.method(), companyAccessHeader: request.headers()["x-nevora-company-access"] === "1", navigation: navigation.snapshot() }));
+          });
+          page.on("requestfinished", (request: { url(): string }) => {
+            if (knownPath(request.url()) === "/api/company-access/operational-authority")
+              record("authority-finished", "/api/company-access/operational-authority", JSON.stringify(navigation.snapshot()));
+          });
+          page.on("framenavigated", (frame: { url(): string }) => {
+            if (frame === page.mainFrame()) record("document-commit", knownPath(frame.url()), JSON.stringify(navigation.snapshot()));
+          });
           page.on("console", (message: { type(): string; text(): string }) =>
             record("console:" + message.type(), page.url(), message.text()),
           );
@@ -110,12 +139,17 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
           page.on(
             "response",
             (response: { url(): string; status(): number }) => {
+              if (knownPath(response.url()) === "/api/company-access/operational-authority")
+                record("authority-response", "/api/company-access/operational-authority", JSON.stringify({ status: response.status(), navigation: navigation.snapshot() }));
               if (response.status() >= 400)
                 record("http", response.url(), String(response.status()));
             },
           );
           page.on("pageerror", (error: Error) =>
             record("pageerror", page.url(), error.stack ?? error.message),
+          );
+          page.on("pageerror", (error: Error) =>
+            record("pageerror-context", knownPath(page.url()), JSON.stringify({ name: error.name === "Fetch API cannot load http" ? "webkit-native-fetch" : error.name === "TypeError" ? "TypeError" : "other", loadFailed: error.name === "TypeError" && error.message === "Load failed", navigation: navigation.snapshot() })),
           );
           page.setDefaultTimeout(20000);
           page.on("pageerror", (error: Error) =>
