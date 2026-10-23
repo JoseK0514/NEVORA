@@ -1,0 +1,102 @@
+{
+  "engine": "webkit",
+  "browser": "26.5",
+  "next": "16.4.2",
+  "react": "19.3.0",
+  "cases": [
+    {
+      "mode": "hard",
+      "triggeredAfterDestination": true,
+      "outcome": {
+        "status": "failed",
+        "interrupted": true,
+        "sourceFallback": true
+      },
+      "finalOutcome": {
+        "status": "failed",
+        "interrupted": true,
+        "sourceFallback": true
+      },
+      "events": [
+        {
+          "kind": "request",
+          "path": "/source",
+          "navigation": true,
+          "rsc": false
+        },
+        {
+          "kind": "commit",
+          "path": "/source"
+        },
+        {
+          "kind": "commit",
+          "path": "/source"
+        },
+        {
+          "kind": "request",
+          "path": "/destination",
+          "navigation": true,
+          "rsc": false
+        },
+        {
+          "kind": "pageerror",
+          "sourceRsc": true,
+          "nextFrames": false
+        },
+        {
+          "kind": "pageerror",
+          "sourceRsc": false,
+          "nextFrames": true
+        },
+        {
+          "kind": "request",
+          "path": "/source",
+          "navigation": true,
+          "rsc": false
+        },
+        {
+          "kind": "commit",
+          "path": "/source"
+        }
+      ]
+    },
+    {
+      "mode": "link",
+      "triggeredAfterDestination": true,
+      "path": "/destination",
+      "events": [
+        {
+          "kind": "request",
+          "path": "/source",
+          "navigation": true,
+          "rsc": false
+        },
+        {
+          "kind": "commit",
+          "path": "/source"
+        },
+        {
+          "kind": "commit",
+          "path": "/source"
+        },
+        {
+          "kind": "request",
+          "path": "/destination",
+          "navigation": false,
+          "rsc": true
+        },
+        {
+          "kind": "request",
+          "path": "/destination",
+          "navigation": false,
+          "rsc": true
+        },
+        {
+          "kind": "commit",
+          "path": "/destination"
+        }
+      ]
+    }
+  ],
+  "browserClosed": true
+}

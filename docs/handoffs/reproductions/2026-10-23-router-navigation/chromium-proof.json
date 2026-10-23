@@ -1,0 +1,92 @@
+{
+  "engine": "chromium",
+  "browser": "151.0.7922.34",
+  "next": "16.4.2",
+  "react": "19.3.0",
+  "cases": [
+    {
+      "mode": "hard",
+      "triggeredAfterDestination": true,
+      "outcome": {
+        "status": "pending"
+      },
+      "finalOutcome": {
+        "status": "completed"
+      },
+      "events": [
+        {
+          "kind": "request",
+          "path": "/source",
+          "navigation": true,
+          "rsc": false
+        },
+        {
+          "kind": "commit",
+          "path": "/source"
+        },
+        {
+          "kind": "commit",
+          "path": "/source"
+        },
+        {
+          "kind": "request",
+          "path": "/destination",
+          "navigation": true,
+          "rsc": false
+        },
+        {
+          "kind": "request",
+          "path": "/source",
+          "navigation": false,
+          "rsc": true
+        },
+        {
+          "kind": "commit",
+          "path": "/source"
+        },
+        {
+          "kind": "commit",
+          "path": "/destination"
+        }
+      ]
+    },
+    {
+      "mode": "link",
+      "triggeredAfterDestination": true,
+      "path": "/destination",
+      "events": [
+        {
+          "kind": "request",
+          "path": "/source",
+          "navigation": true,
+          "rsc": false
+        },
+        {
+          "kind": "commit",
+          "path": "/source"
+        },
+        {
+          "kind": "commit",
+          "path": "/source"
+        },
+        {
+          "kind": "request",
+          "path": "/destination",
+          "navigation": false,
+          "rsc": true
+        },
+        {
+          "kind": "request",
+          "path": "/destination",
+          "navigation": false,
+          "rsc": true
+        },
+        {
+          "kind": "commit",
+          "path": "/destination"
+        }
+      ]
+    }
+  ],
+  "browserClosed": true
+}

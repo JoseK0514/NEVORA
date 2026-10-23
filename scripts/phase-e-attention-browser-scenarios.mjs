@@ -7,6 +7,7 @@ import {publishScheduleWithRevision} from '../src/test/integration/management-ap
 import {safeEvaluationFailure} from './release-browser-diagnostics.mjs';
 import {observeDocumentNavigation} from './browser-navigation-diagnostic.mjs';
 import {runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
+import {waitForPrivateIntentClear} from './browser-render-readiness.mjs';
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,runtimeErrors:cellRuntimeErrors}){
  const label=`AT${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
@@ -76,7 +77,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  assert.equal(await operation(),recoveryOp);await screenshot('unknown');
  await page.unroute('**/app/schedule?*');await page.getByRole('button',{name:'Retry confirmation',exact:true}).click();await page.getByRole('heading',{name:'You’re up to date',exact:true}).waitFor();
  assert.equal((await q('SELECT * FROM employee_attention_operations WHERE employee_id=$1 AND operation_id=$2',[actor,recoveryOp])).length,1);checks.push('Actual committed action response loss renders outcome_unknown; original operation retry recovers one canonical result');
- stage='leave-and-revoke';await publish('11:00');await schedule();await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));assert.equal(await page.locator('input[name="authority"]').count(),0);checks.push('Leaving the view clears obsolete private intent and prevents late-response reuse');
+ stage='leave-and-revoke';await publish('11:00');await schedule();await page.locator('input[name="authority"]').waitFor({state:'attached'});assert.equal(await page.locator('input[name="authority"]').count(),1);await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));assert.equal(await waitForPrivateIntentClear(page),0);checks.push('Leaving the view clears obsolete private intent and prevents late-response reuse');
  await schedule();await q('DELETE FROM employee_sessions WHERE employee_id=$1',[actor]);await confirm().click();await page.waitForURL(u=>u.pathname==='/login');checks.push('Actual session revocation is denied by server action and routes to login');
  await login();await schedule();
  if(width===390){

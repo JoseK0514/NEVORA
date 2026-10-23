@@ -1022,3 +1022,151 @@ animation and unchanged zero-violation assertion. The final driver also records
 public axe rule IDs before asserting, without retaining private DOM content.
 No application CSS, motion duration, accessibility rule or timeout is changed.
 Independent review approves this bounded follow-up for new matching CI.
+
+### Development integration and Calendar response-loss receipt
+
+PR23 merged source 0152392c into development at f77727ad after all 12 jobs
+passed in run 39936486892, all 70 Phase E cells passed with zero final axe
+violations, and independent final review approved the matching receipts. The
+actual merge has the tested tree baf56a93 and expected base/source parents.
+
+The required development push run 39940756705 then failed Calendar WebKit430:
+ten cells passed, the eleventh timed out for 15 seconds waiting for the unknown
+issuance notice after eight functional checks. This case fulfills a 503 JSON
+response after fetching an actual committed creation; it does not abort the
+response as Attention's separate case does. Runtime errors were empty. Its
+receipt did not prove interception, upstream creation, fulfillment, current
+visibility or whether the click submitted. No historical cause is established.
+Development validation/build/audits, all three SQL jobs, Home, Communications,
+Navigation and complete Attendance passed; Attention was still running when
+this follow-up was prepared. Cleanup and Preview publication remain blocked.
+
+A focused local WebKit26.5 control bundled the actual Calendar React component
+(SHA256 78f2d04fb81ba3b582693b63f1ba1b564dce8d9cc6e9ca14c628371efbd37790)
+with a fictional HTTP ledger and presentation-only navigation link. All five
+clipboard/blur/offline/focus/rotation/503/retry trials passed, with interception,
+upstream creation and fulfillment proved and three canonical operations after
+replay. This excludes a generic failure of that isolated sequence; it does not
+reproduce Linux, Next or PostgreSQL behavior and does not close the failure.
+
+Calendar now records bounded public lifecycle/request timing, safe pre-click
+and failure UI booleans, node-side liveness and canonical operation counts.
+Failure evaluation and canonical reads each have a five-second diagnostic
+deadline. No HTML, URL, body, cookie, header, raw operation identity or private
+calendar capability is retained. The existing 15-second unknown-notice wait,
+response substitution and application privacy/generation fences are unchanged.
+After the notice, actual interception/creation/fulfillment must be proved within
+that same original wait deadline, and canonical operation count must grow by
+exactly one across original-operation recovery. This strengthens the existing
+real application regression; it is not an application behavior fix. New matching
+full CI remains required before further integration or retirement.
+
+### Attention pagehide rendering boundary
+
+The same development push run later failed Attention WebKit768 at the immediate
+post-pagehide input-count assertion: one authority field was observed instead
+of zero. Its response-loss case had already passed, including canonical recovery.
+Lifecycle metadata confirms pagehide immediately before the assertion; there
+were no runtime errors. This is a separate failure from the earlier unknown-
+outcome alert timeout. The diagnostic-only PR24 candidate e27eabe1 run39944958137
+was canceled early to combine the demonstrated readiness correction before
+spending further full-suite minutes; canceled execution is not verification.
+
+An actual-component React19.3 control reproduces the timing boundary by holding
+its real MessageChannel scheduler in a fictional document. The pagehide handler
+has run while its DOM update remains queued. An immediate count observes one
+field; the former count-only reader resolves prematurely and the control fails
+in both Chromium151 and WebKit26.5. Waiting for actual detachment passes in both
+engines. The exact original zero-count assertion is retained, with a new positive
+one-field precondition so an already-empty page cannot satisfy clearance.
+
+The control also proves a normal committed action refreshes once, while a late
+pre-pagehide result cannot restore the form or refresh after actual removal.
+The confirmation component (SHA256 a8f618b4a550860c2a0ff0401fc7f11500459708036ed0518f9918ab10126e69),
+its generation/privacy logic and application clocks are unchanged. Scheduler
+delivery is held only in the regression document with fictional action/router
+boundaries, not in the real application scenario. CI runs this source-bound
+control in both engines before the full 14 Attention cells and uploads its
+receipt. All 12 jobs and 70 real browser cells remain required. Calendar's
+historical response-loss cause and the earlier Attention unknown-alert cause
+remain unproven; their original assertions and diagnostics stay enabled.
+
+### Clocker recovery-record privacy assertion
+
+PR24 candidate12d7779a workflow39946723054 passed validation (9346 unit tests,
+types, lint, fresh production build, both audits and103 release-engineering
+checks), all3 SQL jobs (743 release/524 Clocker/190 PhaseE), Home14,
+Communications14 and Calendar14. The required Attendance job passed whole
+PhaseD, remediation and all282 D2 checks, then failed Clocker Chromium after13
+checks at the raw stored-JSON privacy regular expression. This is a later gate,
+not a D2 failure. Its receipt intentionally retains no storage value, so the
+historical matching field cannot be identified from that artifact.
+
+The expression rejects any occurrence of fictional PIN2468 anywhere in the
+JSON, including permitted random command UUIDs and64hex public subject and
+verification digests. A regression using the actual make/save/read recovery
+functions produces a valid recoverable record containing those digits and
+demonstrates the old false rejection. The correction validates the exact raw
+record keys, the real command parser's nested key/type contract, this case's
+CLOCK_IN/null entry-and-break state, and equality with the specifically
+intercepted lost-response execute command. It rejects added personal/PIN/token/
+timestamp fields at every nesting boundary, private values substituted for
+subject/command identity, malformed storage, another valid operation and other
+actions. Failures use a fixed public message and never print either payload.
+
+The focused correction and unchanged punch-client tests pass55 checks in2 files;
+syntax, scoped lint and diff checks pass. No application storage, command,
+clocking or payroll behavior changes. Actual lost-response, reload, another
+employee and original-command recovery assertions remain enabled, and the
+complete90-check Clocker browser gate in both engines remains mandatory. This
+repair requires independent review and new full matching cloud CI; prior-source
+passes do not substitute for that verification. Independent review approved the
+bounded correction for CI only with no blockers. Cancellation of superseded
+workflow39946723054 was requested after that approval to avoid further browser
+spend; canceled/unexecuted cells do not count as passes on any source.
+
+### Reports navigation after mapping review
+
+Candidate `1325e160` workflow `39949910080` passed validation, all three SQL
+jobs, Home, Communications and Calendar. Attendance stopped in whole Phase D
+after 132 checks: WebKit's hard navigation from payroll export to Reports was
+interrupted by another navigation back to payroll export. The receipt records
+two fatal native diagnostics for the source RSC and Next stack-frame requests.
+The failure page was focused, visible and online; the database was idle. That
+run did not reach the corrected Clocker browser case. Navigation and Attention
+were still running when this correction was prepared; passes from that source
+cannot verify a subsequent candidate.
+
+An isolated, fictional Next 16.4.2/React 19.3 control reproduces the mechanism.
+While a destination document request is held, a real source `router.refresh()`
+causes WebKit to reject its source RSC fetch and Next to fall back to source-page
+navigation, interrupting the destination. Chromium's hard-navigation baseline
+succeeds. The actual rendered Next Link reaches the destination in both engines
+under the same verified refresh overlap, with no page errors. The control's
+fixture timer is a fault stimulus, verified to run after the destination request
+is held; it is not an application settling delay or a privacy-clock change.
+
+Reproducible sources, the dependency lock, both successful browser-control
+receipts and their hashes are preserved in
+`docs/handoffs/reproductions/2026-10-23-router-navigation/`. Browsers and the
+isolated Next server closed. This macOS control has no database and does not
+identify which historical application refresh path initiated the race. It
+reproduces a framework/navigation interaction; no application lifecycle repair
+or Linux certification is claimed.
+
+The required real application driver now clicks the rendered Insights link and
+uses the actual Custom period form. It requires both exact input dates, the
+matching protected POST with its view header, a successful fully completed
+response for that exact period with a bounded lease, and the rendered fixture
+total within one 15-second period-read deadline. Every following totals, export,
+print, role-denial and privacy assertion is retained. Existing native errors
+remain fatal; an observed framework RSC fallback is explicitly fatal too.
+Ordered request/response/completion/failure/frame/console metadata is capped at
+64 events and stores only fixed resource kinds, statuses and booleans, without
+URLs, headers, bodies, cookies, operation IDs or arbitrary console messages.
+
+All nine focused response/deadline/trace checks passed, including incomplete
+bodies, wrong periods, denied/unavailable/expired reads, late JSON and diagnostic
+sanitization. Scoped lint and diff checks passed. Independent review approved
+the executable correction for new full CI only, with no blockers. All 12 jobs,
+all 70 Phase E cells and complete Attendance remain mandatory before integration.

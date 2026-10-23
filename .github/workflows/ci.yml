@@ -395,6 +395,9 @@ jobs:
       - name: Browser feedback and reviewed-view readiness regressions
         if: ${{ matrix.suite == 'calendar' }}
         run: node scripts/browser-render-readiness.check.mjs
+      - name: Actual React private-intent clearance regression
+        if: ${{ matrix.suite == 'attention' }}
+        run: node scripts/attention-intent-readiness.check.mjs
       - name: Install PostgreSQL test runtime
         shell: bash
         run: |
@@ -419,6 +422,8 @@ jobs:
             ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence/*.json
             ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence/*.png
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/home-held-*.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/attention-intent-readiness-custody.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/calendar-readiness-custody.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/*-report.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/source-manifest.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/*.png
