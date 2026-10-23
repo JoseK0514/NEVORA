@@ -8,6 +8,7 @@ import {pathToFileURL} from 'node:url';
 import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
 import {seedOwnedApp,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
+import {assertPrivateClockInRecovery} from './clocker-recovery-privacy.ts';
 const evidence=resolve(process.env.PHASE_C_EVIDENCE_DIR??join(homedir(),'.codex/visualizations/2026/10/05/nevora-punch-integration'));
 await mkdir(evidence,{recursive:true});
 const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'));
@@ -98,14 +99,14 @@ try{
   assert.equal(await count(),before+3);await t.getByRole('button',{name:'Clock Out',exact:true}).click();await t.getByRole('button',{name:'Confirm Clock Out',exact:true}).click();await success(t,'Clock Out');await done(t);
   assert.equal(await count(),before+4);checked(engine+': all four transitions persist; canceled Clock Out does not write');
   // A lost response must not create a replacement command, even after a page reload.
-  await verify(t);await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();let dropped=false;
+  await verify(t);await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();let dropped=false,lostCommand;
   await t.route('**/api/clocker/2/punch',async route=>{
-   if(!dropped&&route.request().postDataJSON()?.operation==='execute'){dropped=true;const response=await route.fetch();assert.equal(response.status(),200);await route.abort('failed');}
+   if(!dropped&&route.request().postDataJSON()?.operation==='execute'){dropped=true;lostCommand=route.request().postDataJSON().command;const response=await route.fetch();assert.equal(response.status(),200);await route.abort('failed');}
    else await route.continue();
   });
   await t.getByRole('button',{name:'Clock In',exact:true}).click();await t.getByRole('button',{name:'Check Action Status',exact:true}).waitFor();assert(dropped);
   assert.equal(await t.getByRole('button',{name:'Clock In',exact:true}).count(),0);
-  const stored=await t.evaluate(()=>sessionStorage.getItem(Object.keys(sessionStorage).find(key=>key.startsWith('nevora.clocker.pending.v2:2:'))??'nevora.clocker.pending.v1:2'));assert(stored);assert(!/Avery|2468|nev_pin_|nev_dev_|tokenHash|firstName|recordedAt/.test(stored));
+  const stored=await t.evaluate(()=>sessionStorage.getItem(Object.keys(sessionStorage).find(key=>key.startsWith('nevora.clocker.pending.v2:2:'))??'nevora.clocker.pending.v1:2'));assert(stored);assertPrivateClockInRecovery(stored,lostCommand);
   await t.unroute('**/api/clocker/2/punch');await t.reload();await idle(t);await verify(t,'3579');
   await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Check Action Status',exact:true}).count(),0);assert.equal(await t.evaluate(()=>sessionStorage.getItem(Object.keys(sessionStorage).find(key=>key.startsWith('nevora.clocker.pending.v2:2:'))??'nevora.clocker.pending.v1:2')),stored);
   checked(engine+': another employee has their own clock path while the prior intent remains intact');
