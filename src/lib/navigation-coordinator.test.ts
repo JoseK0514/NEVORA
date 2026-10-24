@@ -104,9 +104,11 @@ it('keeps a server redirect replace pending through its source commit and settle
  expect(navigation.pending()).toBe(false);expect(settled).toHaveBeenCalledTimes(1);
 });
 
-it('settles a router transition when the router commits a further redirect instead of its destination',()=>{
+it('settles a further router redirect through its own transition and destination commit',()=>{
  const navigation=createNavigationCoordinator();
  navigation.transition('/app/reports','/app/settings');
+ navigation.transition('/app/settings','/app');
+ navigation.committed('/app/settings');expect(navigation.pending()).toBe(true);
  navigation.committed('/app');
  expect(navigation.pending()).toBe(false);
 });
@@ -203,6 +205,8 @@ it('compares router addresses by their decoded query, as the router formats a co
 it('still settles a superseding transition on a genuine further redirect',()=>{
  const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
  navigation.transition('/source','/old');navigation.transition('/source','/new');identity.request();
+ navigation.transition('/new','/login');
+ navigation.committed('/old');navigation.committed('/new');expect(reload).not.toHaveBeenCalled();
  navigation.committed('/login');
  expect(navigation.pending()).toBe(false);expect(reload).toHaveBeenCalledTimes(1);
 });
@@ -320,30 +324,70 @@ it('ignores late Link completions from discarded or superseded attempts',()=>{
  navigation.committed('/c');expect(reload).toHaveBeenCalledTimes(1);
 });
 
+it.each([64,128])('keeps the newest destination pending after %s abandoned destinations',count=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ for(let index=0;index<count;index++){
+  navigation.transition('/source',`/abandoned/${index}`);navigation.discard();
+ }
+ const current=navigation.transition('/source','/new');identity.request();
+ navigation.committed('/abandoned/0');navigation.committed(`/abandoned/${count-1}`);
+ expect(navigation.pending()).toBe(true);expect(navigation.current()).toBe(current);expect(reload).not.toHaveBeenCalled();
+ navigation.committed('/new');
+ expect(navigation.pending()).toBe(false);expect(reload).toHaveBeenCalledTimes(1);
+});
+
+it.each(['link','history','imperative','router'] as const)('keeps repeated older %s destinations stale, including query spelling variants',kind=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ for(let index=0;index<2;index++){
+  navigation.begin('/source','/old?name=Ana%20Rivera',kind);navigation.discard();
+ }
+ const current=navigation.transition('/source','/new');identity.request();
+ navigation.committed('/old?name=Ana+Rivera');navigation.committed('/source');navigation.committed('/old?name=Ana%20Rivera');
+ expect(navigation.pending()).toBe(true);expect(navigation.current()).toBe(current);expect(reload).not.toHaveBeenCalled();
+ navigation.committed('/new');
+ expect(navigation.pending()).toBe(false);expect(reload).toHaveBeenCalledTimes(1);
+});
+
+it('requires current-attempt evidence even for an address never seen before',()=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const current=navigation.transition('/source','/new');identity.request();
+ navigation.committed('/unattributed');
+ expect(navigation.pending()).toBe(true);expect(navigation.current()).toBe(current);expect(reload).not.toHaveBeenCalled();
+ navigation.committed('/new');expect(reload).toHaveBeenCalledTimes(1);
+});
+
 it('still settles a further redirect to an address that already committed or whose navigation already settled',()=>{
  const committed=createNavigationCoordinator();
  committed.transition('/source','/a');committed.committed('/a');
  committed.transition('/a','/b');committed.committed('/a');
  expect(committed.pending()).toBe(true);// /a is the source of /b, the redirecting page's own commit
  committed.transition('/b','/c');committed.committed('/a');
- expect(committed.pending()).toBe(false);// a redirect back to a page that committed earlier
+ expect(committed.pending()).toBe(true);
+ committed.transition('/c','/a');committed.committed('/c');
+ expect(committed.pending()).toBe(true);
+ committed.committed('/a');expect(committed.pending()).toBe(false);// a redirect back to a page that committed earlier
  const failed=createNavigationCoordinator(),link=failed.begin('/source','/reports','link');
  if(!link)throw Error('Expected a navigation attempt');
  failed.observe(link,true);failed.observe(link,false);
  failed.transition('/source','/settings');failed.committed('/reports');
- expect(failed.pending()).toBe(false);// the Link settled, so it can no longer commit late
+ expect(failed.pending()).toBe(true);
+ failed.transition('/settings','/reports');failed.committed('/reports');
+ expect(failed.pending()).toBe(false);
 });
 
-it('consumes a stale commit, so the same address committing again is a further redirect',()=>{
+it('requires a new transition before an older address can settle a further redirect',()=>{
  const navigation=createNavigationCoordinator();
  navigation.transition('/source','/old');navigation.transition('/source','/new');
  navigation.committed('/old');expect(navigation.pending()).toBe(true);
- navigation.committed('/elsewhere');expect(navigation.pending()).toBe(false);
+ navigation.committed('/elsewhere');expect(navigation.pending()).toBe(true);
+ navigation.transition('/new','/elsewhere');navigation.committed('/elsewhere');expect(navigation.pending()).toBe(false);
  navigation.transition('/elsewhere','/next');navigation.committed('/old');
+ expect(navigation.pending()).toBe(true);
+ navigation.transition('/next','/old');navigation.committed('/old');
  expect(navigation.pending()).toBe(false);
 });
 
-it('remembers the 64 most recent unsettled destinations, its own included, and forgets the oldest first',()=>{
+it('keeps stale commits conservative on both sides of the former history limit',()=>{
  const kept=createNavigationCoordinator();
  for(let index=0;index<63;index++){kept.transition('/source',`/abandoned/${index}`);kept.discard();}
  kept.transition('/source','/new');kept.committed('/abandoned/0');
@@ -352,6 +396,6 @@ it('remembers the 64 most recent unsettled destinations, its own included, and f
  for(let index=0;index<64;index++){bounded.transition('/source',`/abandoned/${index}`);bounded.discard();}
  bounded.transition('/source','/new');
  bounded.committed('/abandoned/1');expect(bounded.pending()).toBe(true);
- // The 65th-newest destination was forgotten, so its commit now reads as a further redirect.
- bounded.committed('/abandoned/0');expect(bounded.pending()).toBe(false);
+ bounded.committed('/abandoned/0');expect(bounded.pending()).toBe(true);
+ bounded.committed('/new');expect(bounded.pending()).toBe(false);
 });

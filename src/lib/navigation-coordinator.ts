@@ -14,19 +14,10 @@ function addressKey(address:string){
  return address.slice(0,query)+(search?'?'+search:'');
 }
 
-const TARGETED_LIMIT=64;
-
 export function createNavigationCoordinator(){
  let active:NavigationAttempt|null=null,generation=0,seenPending=false;
- // Every address an attempt targeted, by the newest attempt that targeted it, kept across later begin(), transition()
- // and discard() until that address commits or its attempt settles. A commit of one of these addresses belongs to an
- // older attempt: it is stale for every newer attempt, never their redirect. Bounded, oldest first.
- const targeted=new Map<string,number>();
  const settled=new Set<()=>void>(),idle=new Set<()=>void>();
  const start=(attempt:NavigationAttempt)=>{
-  const key=addressKey(attempt.destination);
-  targeted.delete(key);targeted.set(key,attempt.generation);
-  for(const oldest of targeted.keys()){if(targeted.size<=TARGETED_LIMIT)break;targeted.delete(oldest);}
   active=attempt;seenPending=false;return attempt;
  };
  const quiet=()=>{
@@ -35,9 +26,6 @@ export function createNavigationCoordinator(){
  };
  const finish=(attempt:NavigationAttempt)=>{
   if(active!==attempt)return false;
-  // A settled attempt cannot commit later, so its destination no longer marks a commit as stale.
-  const key=addressKey(attempt.destination);
-  if(targeted.get(key)===attempt.generation)targeted.delete(key);
   active=null;seenPending=false;
   for(const listener of [...settled])listener();
   // A settled listener may start the next navigation; idle listeners then wait for that one.
@@ -51,9 +39,8 @@ export function createNavigationCoordinator(){
   },
   /** A navigation the router starts itself (router.push or replace, including the replace a server redirect
    * issues after its page commits). A link already heading to the same destination keeps its own attempt.
-   * It settles when the router commits its destination, or commits an address that belongs to no earlier attempt:
-   * not its source (the redirecting page's own commit) and not a destination an older attempt targeted (a further
-   * redirect). */
+   * Each redirect's push or replace starts its own transition. An unrelated address commit cannot prove that the
+   * current transition completed, even if that address has never been observed before. */
   transition(source:string,destination:string):NavigationAttempt|null{
    if(active&&addressKey(active.destination)===addressKey(destination))return active;
    if(addressKey(source)===addressKey(destination)&&!active)return null;
@@ -67,16 +54,14 @@ export function createNavigationCoordinator(){
    else if(seenPending)finish(attempt);
   },
   committed(address:string){
-   const key=addressKey(address);
-   if(active&&key===addressKey(active.destination)){finish(active);return;}
-   // An older attempt's commit: that attempt is done, but no newer attempt settles on it.
-   if(targeted.delete(key))return;
-   if(active?.kind==='router'&&key!==addressKey(active.source))finish(active);
+   // Only the current destination or its attempt-bound Link completion is evidence of settlement. No history of
+   // earlier destinations is needed: eviction, repeated commits and unknown addresses all remain conservative.
+   if(active&&addressKey(address)===addressKey(active.destination))finish(active);
   },
   // A new explicit user choice supersedes the old navigation. Its caller starts
   // a new authority barrier; no deferred snapshot or callback is replayed to settled listeners.
   // The coordinator is idle afterwards, so idle listeners (an identity reload) no longer wait.
-  // Discarded attempts may still commit, so their destinations stay targeted.
+  // Discarded attempts may still commit, but cannot settle a different current destination.
   discard(){active=null;seenPending=false;quiet();},
   subscribe(listener:()=>void){settled.add(listener);return()=>{settled.delete(listener);};},
   /** Calls the listener once, as soon as no navigation is in flight: now, or when the current one finishes or is
