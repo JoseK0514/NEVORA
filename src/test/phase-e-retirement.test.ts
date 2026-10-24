@@ -3,11 +3,11 @@ import {resolve} from 'node:path';
 import {expect,it} from 'vitest';
 
 const runner=resolve('scripts/phase-e-owned.mjs'),fixture=resolve('src/test/fixtures/phase-e-retirement-boundary.mjs');
-const modes=['member-environment','root-environment','root-with-live-member','member-eacces','member-eio','member-missing-marker','ambiguous-exit','ambiguous-exit-stderr','ambiguous-exit-malformed','root-ambiguous-exit','darwin-environment-stderr'] as const;
+const modes=['member-environment','root-environment','root-with-live-member','member-eacces','member-eio','member-missing-marker','ambiguous-exit','ambiguous-exit-stderr','ambiguous-exit-malformed','root-ambiguous-exit','darwin-environment-stderr','member-retired-eacces','root-retired-eacces','root-retired-eacces-with-live-member','root-retired-eacces-ambiguous'] as const;
 it.each(modes)('owned retirement boundary: %s',mode=>{
  const execution=spawnSync(process.execPath,[fixture,runner,mode],{env:{PATH:process.env.PATH,HOME:process.env.HOME,NODE_ENV:'test'},encoding:'utf8',timeout:15000});
  expect(execution.status,execution.stderr).toBe(0);
- const receipt=JSON.parse(execution.stdout),detail=JSON.stringify(receipt),positive=mode==='member-environment'||mode==='root-environment';
+ const receipt=JSON.parse(execution.stdout),detail=JSON.stringify(receipt),positive=['member-environment','root-environment','member-retired-eacces','root-retired-eacces'].includes(mode);
  expect(receipt.proof.before.root,detail).toMatchObject({clean:true,status:0,zombie:false});
  expect(receipt.proof.before.member,detail).toMatchObject({clean:true,status:0,zombie:false});
  expect(receipt.result.status,detail).toBe(positive?0:1);
@@ -27,7 +27,7 @@ it.each(modes)('owned retirement boundary: %s',mode=>{
  }else{
   expect(receipt.result.error,detail).toBe('Owned resource observation failed');
   expect(receipt.result.observationFailure,detail).toBeDefined();
-  if(mode==='root-with-live-member')expect(receipt.proof.after.member,detail).toMatchObject({clean:true,status:0,zombie:false});
+  if(mode==='root-with-live-member'||mode==='root-retired-eacces-with-live-member')expect(receipt.proof.after.member,detail).toMatchObject({clean:true,status:0,zombie:false});
   if(mode==='member-missing-marker')expect(receipt.result.observationFailure.reason,detail).toBe('OWNERSHIP_LOST');
   if(mode==='darwin-environment-stderr')expect(receipt.result.observationFailure.reason,detail).toBe('OWNERSHIP_UNAVAILABLE');
   if(mode==='member-eacces'||mode==='member-eio'){

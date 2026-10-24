@@ -94,7 +94,7 @@ function ownedProcessIdentity(pid, ownerId, required = false, { allowRetirement 
   if (process.platform === 'linux') {
     try { owned = readFileSync('/proc/' + pid + '/environ', 'utf8').split('\0').includes(marker); }
     catch (error) {
-      if (allowRetirement && ['ENOENT', 'ESRCH'].includes(error.code) && observedProcessExit(pid)) return retiredProcess;
+      if (allowRetirement && ['ENOENT', 'ESRCH', 'EACCES'].includes(error.code) && observedProcessExit(pid)) return retiredProcess;
       if (required) throw environmentFailure(pid, phase, 'OWNERSHIP_UNAVAILABLE', error.code);
       return undefined;
     }
