@@ -1,6 +1,7 @@
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
 import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
 import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
+import {observeDocumentNavigation,observeWindowExceptions,verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
 import {openPeriodReports,reportNavigationStage} from './phase-d-report-navigation.mjs';
 import {verifyReportRecoveryNavigation} from './scoped-navigation-browser-check.mjs';
 import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
@@ -23,7 +24,7 @@ const {chromium,webkit}=runtime('playwright');
 const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim();
 const dirty=execFileSync('git',['status','--porcelain=v1'],{encoding:'utf8'}).trim();
 if(process.env.PHASE_D_EXPECTED_SHA){assert.equal(checkpoint,process.env.PHASE_D_EXPECTED_SHA);assert.equal(dirty,'','Exact candidate browser verification requires a clean worktree');}
-const report={checkpoint,tree,sourceClean:dirty==='',checks:[],errors:[],networkCancellations:[],screenshots:[],recovery:[],runtimeDiagnostics:[],limitations:['Owned local runtime is not hosted verification.','Chromium/WebKit automation is not physical-device or screen-reader acceptance.']};
+const report={checkpoint,tree,sourceClean:dirty==='',checks:[],errors:[],networkCancellations:[],screenshots:[],recovery:[],runtimeDiagnostics:[],windowExceptions:[],limitations:['Owned local runtime is not hosted verification.','Chromium/WebKit automation is not physical-device or screen-reader acceptance.']};
 const runtimeStarted=performance.now();
 async function waitUntil(test){const deadline=Date.now()+15000;while(!test()){if(Date.now()>deadline)throw Error('Expected browser request did not arrive');await new Promise(resolve=>setTimeout(resolve,10));}}
 async function waitUntilAsync(test){const deadline=Date.now()+15000;while(!await test()){if(Date.now()>deadline)throw Error('Expected UI state did not arrive');await new Promise(resolve=>setTimeout(resolve,10));}}
@@ -55,10 +56,14 @@ try{
   const engineName=id=>'Portal '+id;
   async function context(browser,id){
     const context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block'});
+    await observeWindowExceptions(context,(page,kind)=>{
+      report.errors.push(engineName(id)+': window '+kind);
+      report.windowExceptions.push({portal:id,lifecycle,elapsedMs:Math.round(performance.now()-runtimeStarted),reportControl:reportNavigationStage(page),kind});
+    });
     await context.route('**/*',route=>{const target=new URL(route.request().url());return ['http:','https:'].includes(target.protocol)&&target.origin!==app.url?route.abort():route.continue();});
-    const page=await context.newPage();currentPage=page;page.setDefaultTimeout(15000);page.on('pageerror',error=>{
+    const page=await context.newPage();currentPage=page;const documentNavigation=observeDocumentNavigation(page,()=>app.url);page.setDefaultTimeout(15000);page.on('pageerror',error=>{
       if(error.message.endsWith('due to access control checks.')&&error.message.includes(new URL(app.url).host+'/api/'))report.networkCancellations.push(engineName(id)+': '+error.message);
-      else{report.errors.push(engineName(id)+': '+error.message);report.runtimeDiagnostics.push({portal:id,lifecycle,elapsedMs:Math.round(performance.now()-runtimeStarted),reportControl:reportNavigationStage(page),afterCheck:report.checks.at(-1),route:new URL(page.url()).pathname.replace(/[A-Za-z0-9_-]{32,}/g,'[opaque]'),failure:safeBrowserFailure(error),stack:safeBrowserFailure({message:error.stack}).summary});}
+      else{report.errors.push(engineName(id)+': '+error.message);report.runtimeDiagnostics.push({portal:id,lifecycle,monotonicMs:Math.round(performance.now()),elapsedMs:Math.round(performance.now()-runtimeStarted),reportControl:reportNavigationStage(page),nativeFetchName:error.name==='Fetch API cannot load http',pendingDocumentNavigation:documentNavigation.pending(),documentNavigation:documentNavigation.snapshot(),afterCheck:report.checks.at(-1),route:new URL(page.url()).pathname.replace(/[A-Za-z0-9_-]{32,}/g,'[opaque]'),failure:safeBrowserFailure(error),stack:safeBrowserFailure({message:error.stack}).summary});}
     });
     await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
     await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click()]);
@@ -68,6 +73,10 @@ try{
   for(const [engine,type] of [['chromium',chromium],['webkit',webkit]].filter(([name])=>!process.env.PHASE_D_QA_ENGINES||process.env.PHASE_D_QA_ENGINES.split(',').includes(name))){
     lifecycle='scenario';
     const browser=await type.launch({headless:true});browsers.push(browser);
+    if(engine==='webkit'){
+      report.navigationDiagnosticControl=await verifyNavigationFetchDiagnostic(browser);
+      assert.equal(report.navigationDiagnosticControl.windowObserverVerified,true,'Window exception observation must catch the real thrown/rejected negative controls');
+    }
     const {context:employee,page:ep}=await context(browser,'D3-E');await ep.goto(app.url+url);
     await ep.getByRole('heading',{name:'Your timecard',exact:true}).waitFor();assert.equal(await ep.getByRole('article').count(),1);
     assert(await ep.getByRole('article').getByText('8h',{exact:true}).first().isVisible());assert(await ep.getByRole('article').getByText('30m',{exact:true}).first().isVisible());checked(engine+': employee self period and break totals');

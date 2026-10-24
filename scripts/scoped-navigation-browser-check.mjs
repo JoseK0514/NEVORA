@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {markReportNavigationStage,openPeriodReports} from './phase-d-report-navigation.mjs';
+import {markReportNavigationStage,observeReportNavigation,openPeriodReports} from './phase-d-report-navigation.mjs';
 import {runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 import {assignOwnedManagerCompanyAccess} from '../src/test/integration/owned-app-fixture.ts';
 
@@ -100,8 +100,10 @@ async function verifyExplicitRecovery(page,origin,engine,report){
 }
 
 async function verifyRoleRedirect(page,app,engine,report,managerId){
- const row={engine,case:'actual-role-redirect',status:'pending'};report.scopedNavigation.push(row);
+ const row={engine,case:'actual-role-redirect',status:'pending',events:[],omittedEvents:0};report.scopedNavigation.push(row);
  const mark=phase=>markReportNavigationStage(page,engine,row.case,phase);
+ const stopTrace=observeReportNavigation(page,app.url,row,()=>report.errors.push('Role redirect emitted a framework RSC fallback.'));
+ try{
  let attempted=false,changed=false,used=false,mutation;
  const handler=async route=>{
   if(used||route.request().headers().rsc!=='1')return route.continue();used=true;
@@ -128,4 +130,5 @@ async function verifyRoleRedirect(page,app,engine,report,managerId){
    finally{try{await mutation;}finally{if(attempted){await app.database.executor.query({text:"UPDATE employees SET role='MANAGER' WHERE id=$1",values:[managerId]});await assignOwnedManagerCompanyAccess(app.database.executor,managerId);}}}
   }catch(error){row.status='failed';throw error;}
  }
+ }finally{stopTrace();}
 }

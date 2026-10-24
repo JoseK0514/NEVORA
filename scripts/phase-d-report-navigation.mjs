@@ -24,11 +24,17 @@ export async function finishPeriodReportResponse(response,period,deadline){
 
 export function observeReportNavigation(page,origin,trace,onFrameworkFailure){
  const started=performance.now();
+ trace.startedAtMs=Math.round(started);const requests=new WeakMap();let sequence=0;
  const event=(kind,detail={})=>{if(trace.events.length<64)trace.events.push({kind,elapsedMs:Math.min(60000,Math.max(0,Math.round(performance.now()-started))),...detail});else trace.omittedEvents++;};
  const describe=request=>{
   const url=new URL(request.url());if(url.origin!==origin)return;
-  const resource=({'/app/payroll-export':'source-route','/app/reports':'report-route','/api/reports':'report-read','/api/company-access/operational-authority':'authority-read','/__nextjs_original-stack-frames':'next-frames'})[url.pathname];
-  if(resource)return {resource,navigation:request.isNavigationRequest(),rsc:request.headers().rsc==='1'};
+  const resource=({'/app/payroll-export':'source-route','/app/reports':'report-route','/app':'role-home','/api/reports':'report-read','/api/company-access/operational-authority':'authority-read','/__nextjs_original-stack-frames':'next-frames'})[url.pathname];
+  if(resource){
+   const navigation=request.isNavigationRequest();
+   if(navigation&&request.frame()!==page.mainFrame())return;
+   if(!requests.has(request))requests.set(request,{requestId:++sequence,...(navigation?{sameAddress:request.url()===page.url()}:{} )});
+   return {...requests.get(request),resource,navigation,rsc:request.headers().rsc==='1'};
+  }
  };
  const request=r=>{const detail=describe(r);if(detail)event('request',detail);};
  const response=r=>{const detail=describe(r.request());if(detail)event('response',{...detail,status:r.status()});};

@@ -109,6 +109,18 @@ test('navigation trace is capped, excludes private URL/message values and keeps 
  assert.equal(fatal,1);assert.equal(trace.events.length,64);assert(trace.omittedEvents>0);assert(!JSON.stringify(trace).includes('private-sentinel'));
  stop();const count=trace.omittedEvents;page.emit('request',request);assert.equal(trace.omittedEvents,count);
 });
+test('same-address document evidence stays bound to its request across address changes and excludes child frames',()=>{
+ let address='http://127.0.0.1:1/app/reports?private-sentinel';
+ const page=new EventEmitter(),frame={url:()=>address};page.mainFrame=()=>frame;page.url=()=>address;
+ const request={url:()=> 'http://127.0.0.1:1/app/reports?private-sentinel',isNavigationRequest:()=>true,frame:()=>frame,headers:()=>({})};
+ const trace={events:[],omittedEvents:0},stop=observeReportNavigation(page,'http://127.0.0.1:1',trace,()=>assert.fail('Unexpected fallback'));
+ page.emit('request',request);address='http://127.0.0.1:1/app';
+ page.emit('response',{request:()=>request,status:()=>200});page.emit('requestfinished',request);
+ assert.deepEqual(trace.events.map(event=>event.sameAddress),[true,true,true]);
+ assert.equal(new Set(trace.events.map(event=>event.requestId)).size,1);
+ page.emit('request',{...request,frame:()=>({})});assert.equal(trace.events.length,3);
+ assert(!JSON.stringify(trace).includes('private-sentinel'));stop();
+});
 
 test('communication diagnostics project only fixed public states and identity booleans',()=>{
  const secret='private-sentinel';
