@@ -36,40 +36,38 @@ def page(name, title, body, style='', dark=False, height=None):
 
 # ---------------- Employee ----------------
 def home(dark=False, lead=False):
-    team = f'''
-  <div class="sec">Today’s team</div>
+    days = [('M', '19', 'w'), ('T', '20', 'w'), ('W', '21', 'w'), ('T', '22', ''), ('F', '23', 'w'), ('S', '24', 't'), ('S', '25', 'w')]
+    glance = ''.join(f'<div class="{c}"><small>{d}</small><b>{n}</b></div>' for d, n, c in days)
+    team = f"""
+  <div class="sec-row"><b>Today’s team</b><span>Main Office</span></div>
   <div>
-    <a class="row" href="#"><span class="rt"><b>4 on shift now</b><i>Main Office · you lead tomorrow</i></span>{CHEV}</a>
-    <a class="row one" href="#"><span class="rt"><b>Message today’s team</b></span>{CHEV}</a>
-  </div>''' if lead else f'''
-  <div class="sec">This week</div>
+    <a class="row av-row" href="#"><span class="av tint">{{{{i:UsersThree}}}}</span><span class="rt"><b>4 on shift now</b><i>Morgan, Taylor and 2 more</i></span>{CHEV}</a>
+    <a class="row av-row" href="#"><span class="av tint">{{{{i:Megaphone}}}}</span><span class="rt"><b>Message today’s team</b><i>Everyone on shift today</i></span>{CHEV}</a>
+  </div>""" if lead else f"""
+  <div class="sec-row"><b>This week</b><span>5 shifts · 40 h</span></div>
+  <div class="glance">{glance}</div>"""
+    return f"""  <div class="bar"><span class="org">Northside QA Workforce</span><span class="sp"></span><a href="#" aria-label="Notifications">{{{{i:Bell}}}}</a></div>
+  <div class="hello"><small>Saturday, October 24</small><h1>Good evening, Alexandra</h1></div>
+  <a class="next" href="#"><div class="next__top"><span>Next shift</span><span>Tomorrow</span></div><b>8:00 AM – 4:00 PM</b><i>Sunday, October 25</i><div class="next__meta">{{{{i:MapPin}}}}{'Main Office · Shift lead' if lead else 'Main Office · Customer Support'}</div></a>
+  <div class="sec-row"><b>Needs you</b></div>
   <div>
-    <a class="row one" href="#"><span class="rt"><b>Shifts</b></span><span class="rv l">7 · 56 h</span>{CHEV}</a>
-    <div class="row one"><span class="rt"><b>Clock</b></span><span class="rv l">Off clock</span></div>
-  </div>
-  <p class="help">Punches come from your location’s Clocker.</p>'''
-    return f'''  <div class="bar"><span class="org">Northside QA Workforce</span><span class="sp"></span><a href="#" aria-label="Notifications">{{{{i:Bell}}}}</a></div>
-  <div class="hd"><h1>Today</h1><p>Saturday, October 24</p></div>
-  <a class="key" href="#"><small>Next shift · Tomorrow</small><b>Sunday, October 25</b><i>8:00 AM – 4:00 PM</i><em>Main Office · Customer Support{' · Shift lead' if lead else ''}</em></a>
-  <div class="sec">Needs you</div>
-  <div>
-    <a class="row" href="#"><span class="rt"><b>Confirm your schedule</b><i>Oct 19 – 25 and Oct 26 – Nov 1</i></span><span class="count">2</span>{CHEV}</a>
+    <a class="row av-row" href="#"><span class="av tint">{{{{i:CalendarCheck}}}}</span><span class="rt"><b>Confirm your schedule</b><i>Oct 19 – 25 and Oct 26 – Nov 1</i></span>{CHEV}</a>
   </div>{team}
-  {{{{etabs:Home}}}}'''
+  {{{{etabs:Home}}}}"""
 
 page('E01-Home', 'Home', home())
 page('L01-LeadHome', 'Lead · Home', home(lead=True))
 page('D01-HomeDark', 'Dark · Home', home(dark=True), dark=True)
 
 def schedule(dark=False):
-    return f'''  <div class="bar"><span class="org">Northside QA Workforce</span><span class="sp"></span><a href="#" aria-label="Add to your calendar">{{{{i:CalendarCheck}}}}</a></div>
-  <div class="hd"><h1>Schedule</h1><p>Oct 19 – 25 · 7 shifts · 56 h</p></div>
+    return f'''  <div class="bar"><span class="sp"></span><a href="#" aria-label="Add to your calendar">{{{{i:CalendarCheck}}}}</a></div>
+  <div class="hd"><h1>Schedule</h1><p>Oct 19 – 25 · 5 shifts · 40 h</p></div>
   <div class="seg"><span class="on">My shifts</span><span>Open shifts</span></div>
   {week()}
-  <div style="margin-top:20px"><div class="row"><span class="rt"><b>Confirm this week</b><i>Your manager asked you to check it</i></span><a class="bs go" href="#">Confirm</a></div></div>
+  <div style="margin-top:20px"><div class="row av-row"><span class="av tint">{{{{i:CalendarCheck}}}}</span><span class="rt"><b>Confirm this week</b><i>Your manager asked you to check it</i></span><a class="bs go" href="#">Confirm</a></div></div>
   <div class="sh"><b>Saturday</b><span>Day off</span></div>
   <p class="empty">No shift today.</p>
-  <div class="sh"><b>Coming up</b></div>
+  <div class="sh"><b>Coming up</b><span>2 shifts</span></div>
   <div>
     <a class="row" href="#"><span class="rt"><b>Sunday, Oct 25</b><i>8:00 AM – 4:00 PM · Main Office</i></span>{CHEV}</a>
     <a class="row" href="#"><span class="rt"><b>Monday, Oct 26</b><i>8:00 AM – 4:00 PM · Main Office</i></span>{CHEV}</a>
@@ -78,7 +76,7 @@ def schedule(dark=False):
 page('E02-Schedule', 'Schedule', schedule(), WK)
 page('D02-ScheduleDark', 'Dark · Schedule', schedule(True), WK, dark=True)
 
-BEHIND = '''  <div class="behind"><div class="hd" style="padding-top:62px"><h1>Schedule</h1><p>Oct 19 – 25 · 7 shifts · 56 h</p></div></div>
+BEHIND = '''  <div class="behind"><div class="hd" style="padding-top:62px"><h1>Schedule</h1><p>Oct 19 – 25 · 5 shifts · 40 h</p></div></div>
   <div class="dim"></div>'''
 page('E03-ShiftSheet', 'Shift (sheet)', f'''{BEHIND}
   <div class="sheet">
@@ -128,11 +126,11 @@ page('E05-CalloutSheet', 'Unable to work (sheet)', f'''{BEHIND}
   </div>''')
 
 def requests(dark=False):
-    return f'''  <div class="bar"><span class="org">Northside QA Workforce</span><span class="sp"></span><a href="#" aria-label="New request">{{{{i:Plus}}}}</a></div>
+    return f'''  <div class="bar"><span class="sp"></span><a href="#" aria-label="New request">{{{{i:Plus}}}}</a></div>
   <div class="hd"><h1>Requests</h1><p>1 waiting for approval</p></div>
   <div class="grp">Waiting</div>
   <div>
-    <a class="row" href="#"><span class="rt"><b>Time off · Nov 3 – 4</b><i>2 full days · Sent Oct 24</i></span><span class="rv">Waiting</span>{CHEV}</a>
+    <a class="row av-row" href="#"><span class="av tint">{{{{i:CalendarMinus}}}}</span><span class="rt"><b>Time off · Nov 3 – 4</b><i>2 full days · Sent Oct 24</i></span>{CHEV}</a>
   </div>
   <div class="grp">Ask for</div>
   <div>
@@ -184,8 +182,7 @@ page('E10-Availability', 'Availability', f'''  <div class="nav"><a class="l" hre
   <p class="help">Send it by Friday, Oct 30 for the week of Nov 2. An end time of midnight includes the rest of that day.</p>
   {{{{etabs:Requests}}}}''')
 
-page('E11-Pay', 'Pay', f'''  <div class="bar"><span class="org">Northside QA Workforce</span><span class="sp"></span></div>
-  <div class="hd"><h1>Pay</h1></div>
+page('E11-Pay', 'Pay', f'''  <div class="hd" style="padding-top:62px"><h1>Pay</h1></div>
   <div class="lead"><b>Next payday is Tuesday, October 27</b><i>In 3 days · for Oct 19 – 25</i></div>
   <div class="grp" style="margin-top:32px">This week</div>
   <div>
@@ -208,7 +205,7 @@ page('E12-MyTime', 'My time', f'''  <div class="nav"><a class="l" href="#">{{{{i
   <p class="empty">No recorded punches today.</p>
   <div class="grp">Corrections</div>
   <a class="btn sec" href="#" style="margin-top:12px">Request a correction</a>
-  <p class="help">Your manager reviews each request. Your original times are kept.</p>
+  <p class="help">Your manager reviews each request. Your original times are kept. Punches come from your location’s Clocker.</p>
   {{{{etabs:Pay}}}}''')
 
 def updates(lead=False):

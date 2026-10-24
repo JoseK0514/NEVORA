@@ -7,8 +7,8 @@ def img(name):
         return 'data:image/png;base64,' + base64.b64encode(f.read()).decode()
 
 SECTIONS = [
-    ('Employee: the everyday screens', 'One white page, 34pt titles, grouped rows and one teal, like the Owner app. Teal appears as a card only on Home, for the next shift.', [
-        ('E01-Home', 'Home', 'Next shift as the one teal card; what needs you; the week in two rows.'),
+    ('Employee: the everyday screens', 'One white page, 34pt titles, grouped rows and one teal, like the Owner app. Round 2: a warmer Home, the company name only on Home, counts on the right of section titles, and small teal icons where something needs you.', [
+        ('E01-Home', 'Home', 'A personal greeting; the next shift as the one premium card; what needs you; your week at a glance.'),
         ('E02-Schedule', 'Schedule', 'Week strip, confirm the week, then today and what is coming up.'),
         ('E06-Requests', 'Requests', 'What is waiting, then what you can ask for. Plus starts a new request.'),
         ('E11-Pay', 'Pay', 'Next payday, this week’s hours, statements. Payroll wording unchanged.'),
@@ -33,7 +33,7 @@ SECTIONS = [
         ('E17-DeleteAccount', 'Delete account', 'Account, what happens, confirm, keep my account.'),
     ]),
     ('Lead and Manager', 'A Lead sees the same app with a team section and can message today’s team. A Manager without access gets one calm page.', [
-        ('L01-LeadHome', 'Lead · Home', 'Shift lead on the card; today’s team.'),
+        ('L01-LeadHome', 'Lead · Home', 'Shift lead on the card; today’s team instead of the week.'),
         ('L02-LeadUpdates', 'Lead · Updates', 'Plus messages today’s team.'),
         ('M01-NoAccess', 'Manager · No access', 'Same words as today; tab bar shares its width.'),
     ]),
