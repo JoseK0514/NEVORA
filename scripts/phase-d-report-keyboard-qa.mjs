@@ -24,7 +24,7 @@ try{
  await q("INSERT INTO clocker_devices(id,location_id,name,active) VALUES('key-device','loc-1','Fictional keyboard device',true)");
  await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('KEY-T','KEY-E','loc-1','key-device','2026-09-22T12:00:00Z','2026-09-22T20:00:00Z','CLOCKED_OUT',1)");
  for(const engine of ['webkit','chromium']){
-  browser=await pw[engine].launch({headless:true});const context=await browser.newContext({viewport:{width:390,height:1000},serviceWorkers:'block'});
+  browser=await pw[engine].launch({headless:true});const context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block'});
   await context.route('**/*',r=>new URL(r.request().url()).origin!==app.url?r.abort():r.continue());const page=await context.newPage();page.setDefaultTimeout(15000);page.on('pageerror',e=>{if(e.message.endsWith('due to access control checks.')&&e.message.includes(new URL(app.url).host+'/api/'))report.networkCancellations.push({engine,error:String(e)});else report.errors.push({name:engine+' runtime',error:String(e)});});
   await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click()]);
   // The report responds before WebKit's load event settles in this owned dev
@@ -39,13 +39,27 @@ try{
    // Start each native traversal in a fresh document: WebKit preserves its
    // sequential focus starting point across refreshes of the reused disclosure.
    await page.goto(app.url+'/app/reports?start=2026-09-21&end=2026-09-27',{waitUntil:'domcontentloaded'});
-   await page.getByRole('heading',{name:'Hours by person',exact:true}).waitFor();
-   await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/reports'&&r.request().method()==='POST'),page.getByRole('button',{name:'Refresh',exact:true}).click()]);await page.waitForFunction(()=>document.querySelector('button[aria-label="Refresh"]')?.getAttribute('aria-busy')!=='true');await page.getByRole('heading',{name:'Hours by person',exact:true}).waitFor();
+   const phone=width<=760;
+   if(phone){await page.getByRole('heading',{name:'Insights',exact:true}).waitFor();await page.locator('.q-insights-phone').getByRole('list',{name:'Period figures',exact:true}).waitFor();}
+   else{await page.getByRole('heading',{name:'Hours by person',exact:true}).waitFor();
+    await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/reports'&&r.request().method()==='POST'),page.getByRole('button',{name:'Refresh',exact:true}).click()]);await page.waitForFunction(()=>document.querySelector('button[aria-label="Refresh"]')?.getAttribute('aria-busy')!=='true');await page.getByRole('heading',{name:'Hours by person',exact:true}).waitFor();}
    const tab=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab';
    const backTab=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
    const details=page.locator('details').filter({has:page.locator('summary').filter({hasText:'Period details'})});
    const summary=details.locator(':scope > summary');
    await check(engine+' report native keyboard '+width,async()=>{
+    if(phone){
+     const root=page.locator('.q-insights-phone'),figures=root.getByRole('list',{name:'Period figures',exact:true}),recorded=figures.locator('details').filter({has:page.locator('summary .q-rt').getByText('Recorded time',{exact:true})}),recordedSummary=recorded.locator(':scope > summary');
+     assert.equal(await page.locator('.q-insights-desk').isVisible(),false,'Full report tools yield to the approved compact phone figures');assert.equal(await figures.locator(':scope > li').count(),4);
+     assert.equal(await recordedSummary.locator('.q-rv').innerText(),'8 h','The phone figure uses the persisted eight recorded hours');
+     await recordedSummary.focus();await page.keyboard.press('Enter');assert(await recorded.evaluate(e=>e.open));assert(await recordedSummary.evaluate(e=>document.activeElement===e&&e.matches(':focus-visible')));
+     const person=recorded.locator('.q-sublist > li').filter({hasText:'LongReportEmployee'.repeat(4)+' QA'});assert.equal(await person.count(),1);assert.equal(await person.locator('span').last().innerText(),'8 h');assert(await person.isVisible());
+     const geometry=await person.evaluate(e=>{const r=e.getBoundingClientRect();return {width:r.width,left:r.left,right:r.right,scroll:e.scrollWidth,client:e.clientWidth,text:[...e.querySelectorAll('span')].map(span=>{const range=document.createRange();range.selectNodeContents(span);const text=range.getBoundingClientRect(),box=span.getBoundingClientRect();return {left:text.left,right:text.right,visible:box.width>0&&box.height>0,unclipped:span.scrollWidth<=span.clientWidth+2&&text.left>=r.left-2&&text.right<=r.right+2};})};});report.geometry.push({engine,viewportWidth:width,kind:'phone-recorded-person',...geometry});assert(geometry.left>=-2&&geometry.right<=width+2&&geometry.scroll<=geometry.client+2&&geometry.text.every(text=>text.visible&&text.unclipped),'The complete fictional name and value fit the phone');
+     await page.keyboard.press(tab);const next=figures.locator('summary').filter({hasText:'People with no time'});assert(await next.evaluate(e=>document.activeElement===e&&e.matches(':focus-visible')));await page.keyboard.press(backTab);assert(await recordedSummary.evaluate(e=>document.activeElement===e));
+     const counted=root.locator('details.q-counted'),countedSummary=counted.locator(':scope > summary');await countedSummary.focus();await page.keyboard.press('Enter');assert(await counted.evaluate(e=>e.open));await counted.getByText('Recorded time includes breaks. Breaks are shown separately; no pay or deduction rules are applied.',{exact:true}).waitFor();assert(await counted.locator('time[datetime]').isVisible());await page.keyboard.press('Enter');assert.equal(await counted.evaluate(e=>e.open),false);
+     const timecards=figures.getByRole('link',{name:/^Timecards to finish/});assert.equal(await timecards.getAttribute('href'),'/app/timecards?start=2026-09-21&end=2026-09-27');await timecards.focus();await Promise.all([page.waitForURL(u=>u.pathname==='/app/timecards'),page.keyboard.press('Enter')]);const destination=new URL(page.url());assert.equal(destination.searchParams.get('start'),'2026-09-21');assert.equal(destination.searchParams.get('end'),'2026-09-27');await page.goBack({waitUntil:'domcontentloaded'});await root.getByRole('list',{name:'Period figures',exact:true}).waitFor();
+     report.keyPaths.push({engine,viewportWidth:width,kind:'phone-figures',recordedDisclosure:true,forwardAndReverseKeyboard:true,countedDisclosure:true,canonicalTimecardsNavigation:true});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+2),'No page overflow');return;
+    }
     const exporter=page.getByRole('button',{name:'Export',exact:true});await exporter.focus();await page.keyboard.press('Enter');
     await page.getByRole('button',{name:'Print / Save PDF',exact:true}).waitFor();await page.keyboard.press('Escape');await page.getByRole('button',{name:'Print / Save PDF',exact:true}).waitFor({state:'hidden'});
     await summary.focus();if(!await details.evaluate(e=>e.open))await page.keyboard.press('Enter');await until(()=>details.evaluate(e=>e.open));
