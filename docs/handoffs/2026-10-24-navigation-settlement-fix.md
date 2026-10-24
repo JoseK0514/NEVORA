@@ -4,7 +4,7 @@
 
 Jose authorized Codex to implement the navigation corrections while preserving Claude's design. Code verification checkpoint: `393f3b110d1dcf14414cda7b277f0c8fd71dd93b`, on local `codex/quiet-ui-development-20261023`, descended from Claude's complete `a5470f79d0c47f5d6c2e8c56d7ae2bb454bfc0f3` and Codex's existing disclosure-readiness repairs. This document and source classification are subsequent documentation-only work.
 
-Nothing from this correction has been pushed. PR30 still publishes `d6ce3ef9d7014be9f0f11126781f6b7b67c4e500`; development remains `8d4a3792aceb9cd56e7e33ce318f4d5e9a74f9bb`. No new full cloud workflow, merge, deploy, alias change, hosted database write, real notification, archive tag or branch deletion occurred.
+The previous published PR30 source is `d6ce3ef9d7014be9f0f11126781f6b7b67c4e500`; development remains `8d4a3792aceb9cd56e7e33ce318f4d5e9a74f9bb`. Jose authorized the exact source consolidation below. Claude's complete tip is preserved remotely and the source gate now passes. This candidate is prepared for one combined publication through existing PR30; matching cloud acceptance remains required. No merge, deploy, alias change, hosted database write or real notification occurred.
 
 ## Final change
 
@@ -37,15 +37,16 @@ Private raw evidence root: `/Users/josek0514/.codex/quiet-ui-pr30-evidence-20261
 
 ## Positions and next gate
 
-Engineering: the final correction removes history-based completion inference and revalidates the retained server layout. Security: existing server authorization, view bindings, stale private-data retirement and scope recovery remain mandatory; denied reads are preserved in evidence. Governance/release: local evidence supports review, but release status remains CONDITION/BLOCKED pending source consolidation and matching full cloud acceptance. This is not independent audit closure or production approval.
+Engineering: the final correction removes history-based completion inference and revalidates the retained server layout. Security: existing server authorization, view bindings, stale private-data retirement and scope recovery remain mandatory; denied reads are preserved in evidence. Governance/release: local evidence and verified source consolidation support publication, but release status remains CONDITION pending matching full cloud acceptance. This is not independent audit closure or production approval.
 
-After fetching origin, the source inventory now classifies the exact Claude tip as included. The gate still refuses assembly because seven remote branches exceed the recorded maximum of six. The ceiling and its validation are unchanged.
+After Jose replied "Yes preserve Claude branch" to the exact recoverable archive/retirement request, Codex fetched origin and verified Claude's remote tip was still a5470f79 and an ancestor of the candidate. The archive tag was created and pushed without overwriting any existing tag. A separate remote read verified both branch and tag resolved to a5470f79 before retirement. The branch deletion was conditional on that unchanged SHA; no branch history was rewritten. Other active branches and worktrees were preserved.
 
-Concrete proposed consolidation, requiring Jose's authorization because it retires Claude's active branch before the previously sequenced post-integration cleanup:
+Completed consolidation:
 
-1. Verify `claude/role-nav-webkit` is still exactly a5470f79 and is an ancestor of the candidate.
-2. Create `refs/tags/archive/branches/2026-10-24/claude/role-nav-webkit` at that exact tip. Push and verify its remote peeled commit before any branch deletion. Do not overwrite an existing archive tag.
-3. With Jose's explicit approval, retire only that included remote branch, bind its source entry to the archive, then fetch and rerun `npm run check:development-sources`. Other owners' active branches remain intact.
-4. Publish the combined candidate only through the existing Codex-owned PR30 branch and run all12 mandatory cloud jobs once. Preserve every test and evidence gate. Review matching results before development integration, then verify the development-push checks and follow the separately prepared DEV Preview procedure.
+1. Remote lightweight tag `refs/tags/archive/branches/2026-10-24/claude/role-nav-webkit` preserves `a5470f79d0c47f5d6c2e8c56d7ae2bb454bfc0f3` exactly. The active source branch was retired only after that verification.
+2. Source inventory binds the included Claude source to that archive. After fetching, `npm run check:development-sources` passes:57 classified sources, six active branches, exact archives and included/current-development ancestry verified. All11 source-inventory contract tests pass. The maximum remains six; no gate was relaxed.
+3. Private verification receipt: `/Users/josek0514/.codex/quiet-ui-pr30-evidence-20261023/claude-role-nav-archive-verified.json`. Restoring the branch from the tag recovers the complete Claude lineage.
 
-No production step is authorized by this handoff. Codex owns the correction and next publication; Jose's only immediate decision is whether to authorize the specific recoverable retirement above.
+Next: publish the combined candidate only through the existing Codex-owned PR30 branch and run all12 mandatory cloud jobs once. Preserve every test and evidence gate. Review matching results before development integration, then verify the development-push checks and follow the separately prepared DEV Preview procedure. The previously approved final five-branch cleanup remains after accepted development integration.
+
+No production step is authorized by this handoff. Codex owns publication and verification. No additional Jose decision is needed to start this already authorized combined cloud run.

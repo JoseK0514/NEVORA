@@ -15,7 +15,8 @@
       "branch": "claude/role-nav-webkit",
       "sha": "a5470f79d0c47f5d6c2e8c56d7ae2bb454bfc0f3",
       "disposition": "included",
-      "reason": "Claude's complete navigation repair lineage is an ancestor of this candidate. Jose authorized Codex's additional nonvisual corrections, verified at 393f3b11. Full cloud acceptance remains pending. Preserve this active branch until its exact tip has an authorized, verified recoverable archive; the seven-versus-six branch ceiling still blocks assembly."
+      "reason": "Claude's complete navigation repair lineage is an ancestor of this candidate. Jose authorized Codex's additional nonvisual corrections, verified at 393f3b11, and the exact recoverable source consolidation on October 24. The remote archive was verified at a5470f79 before the unchanged branch was retired; six active branches remain. Full matching cloud acceptance is still required.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-24/claude/role-nav-webkit"
     },
     {
       "branch": "codex/development-ci-consolidation-20261022",
