@@ -76,61 +76,39 @@ export function NewLocationForm({
   }
 
   return (
-    <form ref={form} noValidate onSubmit={submit} aria-busy={pending} className="wc-form" aria-label={`Add ${place}`} {...handlers}>
-      <fieldset disabled={pending || success} className="wc-fieldset">
+    <form ref={form} id="new-location-form" noValidate onSubmit={submit} aria-busy={pending} className="wc-form" aria-label={`Add ${place}`} {...handlers}>
+      <fieldset disabled={pending || success} className="q-fieldset">
         <FieldErrors errors={errors}>
-          <section className="nv-card" aria-labelledby="location-details-title">
-            <div className="nv-card__head"><h2 className="nv-card__title" id="location-details-title">{words.location} details</h2></div>
-            <div className="nv-card__body wc-fields">
-              <Field label={`${words.location} name`} help="The full name your team sees across NEVORA." helpId="location-name-help" inputRef={nameInput}
-                id="new-location-name" name="name" required maxLength={160} value={name} onChange={(event) => setName(event.target.value)}
-                placeholder="e.g. Downtown office" autoComplete="off" />
-              <Field label="Short name" help="A compact label for schedules and shift lists." helpId="location-short-name-help"
-                id="new-location-short-name" name="shortName" required maxLength={48} value={shortName} onChange={(event) => setShortName(event.target.value)}
-                placeholder="e.g. Downtown" autoComplete="off" />
-            </div>
-          </section>
-          <section className="nv-card" aria-labelledby="location-clocker-title">
-            <div className="nv-card__head"><h2 className="nv-card__title" id="location-clocker-title">Clocker link</h2></div>
-            <div className="nv-card__body wc-fields">
-              <Field label="Clocker key" optional helpId="location-clocker-help"
-                help={<><p>Leave blank to generate a key automatically. A custom key uses lowercase letters, numbers and single hyphens, up to 64 characters.</p>
-                  <p>This key becomes part of the {place}’s Clocker link and can’t be changed later.</p></>}
-                id="new-location-clocker-key" name="clockerKey" pattern="[a-z0-9]+(-[a-z0-9]+)*" maxLength={64}
-                placeholder="e.g. downtown-office" autoComplete="off" autoCapitalize="none" spellCheck={false} />
-            </div>
-          </section>
+          {/* Quiet (v4, approved Oct 23): three fields and one line under them. The page's Add (top right) submits. */}
+          <Field label="Name" fieldClassName="q-first" inputRef={nameInput} id="new-location-name" name="name" required maxLength={160} value={name} onChange={(event) => setName(event.target.value)}
+            placeholder="e.g. Harbor Point" autoComplete="off" />
+          <Field label="Short name" id="new-location-short-name" name="shortName" required maxLength={48} value={shortName} onChange={(event) => setShortName(event.target.value)}
+            placeholder="e.g. Harbor" autoComplete="off" />
+          <Field label="Clocker key" helpId="location-clocker-help"
+            help={`The Clocker key can’t be changed later.`}
+            id="new-location-clocker-key" name="clockerKey" pattern="[a-z0-9]+(-[a-z0-9]+)*" maxLength={64}
+            placeholder="Created for you" autoComplete="off" autoCapitalize="none" spellCheck={false} />
         </FieldErrors>
       </fieldset>
       <p className="nv-sr" role="status">{pending ? `Saving your ${place}.` : ""}</p>
       {result.error ? (
         <div ref={feedback} className="wc-feedback" role="alert" tabIndex={-1}>
           <Notice tone="urgent" title={unconfirmed ? "Not saved yet" : `${words.location} not added`}
-            action={<Link className="nv-link" href="/app/settings/locations">Check {Places}</Link>}>{result.error}</Notice>
+            action={<Link className="q-btn q-btn--quiet" href="/app/settings/locations">Check {Places}</Link>}>{result.error}</Notice>
         </div>
       ) : null}
       {success ? (
         <div ref={feedback} className="wc-feedback" role="status" tabIndex={-1}>
           <Notice tone="done" title={`${words.location} added`}
-            action={<><Link className="nv-link" href="/app/schedule/settings">Scheduling rules</Link><Link className="nv-link" href="/app/employees">Employee eligibility</Link></>}>
-            {name.trim()} is ready for setup. Set staffing and coverage, then choose who can work there.
+            action={<Link className="q-btn q-btn--quiet" href="/app/schedule/settings">Next: staffing</Link>}>
+            {null}
           </Notice>
         </div>
       ) : null}
-      <FormActions>
-        {success ? (
-          <>
-            <Link className="nv-btn" data-kind="primary" href="/app/settings/locations">View {lower(Places)}</Link>
-            <button className="nv-btn" data-kind="secondary" type="button" onClick={addAnother}><PlusIcon size={18} aria-hidden="true" />Add another {place}</button>
-          </>
-        ) : (
-          <>
-            <button className="nv-btn" data-kind="primary" type="submit" disabled={pending}><ButtonLabel pending={pending} idle={`Add ${place}`} busy="Adding…" /></button>
-            <Link className="nv-btn" data-kind="secondary" href="/app/settings/locations" aria-disabled={pending || undefined}
-              tabIndex={pending ? -1 : undefined} onClick={(event) => { if (pending) event.preventDefault(); }}>Cancel</Link>
-          </>
-        )}
-      </FormActions>
+      {success ? <FormActions>
+        <Link className="q-btn" href="/app/settings/locations">View {lower(Places)}</Link>
+        <button className="q-btn q-btn--sec" type="button" onClick={addAnother}>Add another {place}</button>
+      </FormActions> : <button type="submit" className="q-sr" disabled={pending} tabIndex={-1}>{`Add ${place}`}</button>}
     </form>
   );
 }

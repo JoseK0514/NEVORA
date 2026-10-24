@@ -90,12 +90,10 @@ it('renders every location through the measured selector with a safe expanded fa
   ];
   for (const names of catalogs) {
     f.locations = names.map((shortName, i) => ({ id: String(i), shortName }));
+    // Quiet (v4): the location picker is one menu that lists every location.
     const output = await html();
-    expect(output).toContain('data-expanded-locations="true"');
-    expect(output).toContain(
-      `data-dense-locations="${names.length > 8 ? "true" : "false"}"`,
-    );
-    for (const name of names) expect(output).toContain(name);
+    expect(output).toContain('>All locations</a>');
+    for (const name of names) expect(output).toContain(`>${name}</a>`);
   }
 });
 
@@ -104,7 +102,7 @@ vi.mock('@/lib/data/schedule-generation-review',()=>({getScheduleGenerationRevie
 vi.mock('@/components/schedule-generation-controls',()=>import('../../../components/schedule-generation-controls'));
 vi.mock('@/app/app/schedule/generation-actions',()=>({generateWeekAction:vi.fn(),clearGenerationExclusionAction:vi.fn()}));
 it('Manager Schedule uses the shared viewport-safe action menu instead of a page-local details dropdown',async()=>{f.role='MANAGER';const output=await html();expect(output).toContain('class="nevora-action-menu"');expect(output).toContain('popover="auto"');expect(output).not.toContain('<details class="schedule-more-menu"');});
-it('Manager renders actual assigned positions and captured published names without invented labels',async()=>{f.role='MANAGER';f.positions=[{id:'cashier',name:'Renamed Cashier'}];f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];f.shifts=[{id:'draft',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-05',startTime:'08:00',endTime:'12:00',scheduleStatus:'DRAFT'},{id:'published',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-06',startTime:'08:00',endTime:'12:00',scheduleStatus:'PUBLISHED'},{id:'legacy',employeeId:'worker',locationId:'north',date:'2026-10-07',startTime:'08:00',endTime:'12:00',scheduleStatus:'DRAFT'}];f.captured=[{sourceShiftId:'published',positionName:'Captured Cashier'}];const output=await html();expect(output).toContain('Renamed Cashier');expect(output).toContain('Captured Cashier');expect(output.match(/schedule-assigned-position/g)).toHaveLength(2);expect(output).toContain('Build week');});
+it('Manager renders actual assigned positions and captured published names without invented labels',async()=>{f.role='MANAGER';f.positions=[{id:'cashier',name:'Renamed Cashier'}];f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];f.shifts=[{id:'draft',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-05',startTime:'08:00',endTime:'12:00',scheduleStatus:'DRAFT'},{id:'published',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-06',startTime:'08:00',endTime:'12:00',scheduleStatus:'PUBLISHED'},{id:'legacy',employeeId:'worker',locationId:'north',date:'2026-10-07',startTime:'08:00',endTime:'12:00',scheduleStatus:'DRAFT'}];f.captured=[{sourceShiftId:'published',positionName:'Captured Cashier'}];const output=await html();expect(output).toContain('Renamed Cashier');expect(output).toContain('Captured Cashier');expect(output.match(/schedule-assigned-position/g)).toHaveLength(2);expect(output).toContain('plan=1#schedule-planning');expect(renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',plan:'1'})}))).toContain('Build week');});
 it('Employee/Lead do not load Manager review or position catalogs',async()=>{for(const role of ['EMPLOYEE','LEAD']){f.role=role;expect(await html()).not.toContain('Build week');}expect(f.managerReads).not.toHaveBeenCalled();});
 it('protected generated deletion reports scheduling history truthfully',async()=>{f.role='MANAGER';const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',error:'SHIFT_HAS_EXCHANGE_HISTORY'})}));expect(output).toContain('scheduling history');});
 it('archived historical assignments retain their captured position identity',async()=>{f.role='MANAGER';f.positions=[{id:'cashier',name:'Renamed Cashier'}];f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];f.shifts=[{id:'archived',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-05',startTime:'08:00',endTime:'12:00',scheduleStatus:'ARCHIVED'}];f.captured=[{sourceShiftId:'archived',positionName:'Original Cashier'}];const output=await html();expect(output).toContain('Original Cashier');expect(output).not.toContain('Renamed Cashier');});
@@ -112,9 +110,11 @@ it('archived historical assignments retain their captured position identity',asy
 it('archived row omitted from newer publication resolves its older capture in a single batch',async()=>{f.role='MANAGER';f.positions=[{id:'cashier',name:'Renamed Cashier'}];f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];f.shifts=[{id:'archived',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-05',startTime:'08:00',endTime:'12:00',scheduleStatus:'ARCHIVED'}];f.captured=[];f.history=[{sourceShiftId:'archived',positionId:'cashier',positionName:'Original Cashier'}];const output=await html();expect(output).toContain('Original Cashier');expect(output).not.toContain('Renamed Cashier');expect(f.managerReads.mock.calls.filter(([arg])=>typeof arg==='object')).toEqual([[{weekStart:'2026-10-05',shiftIds:['archived']}]]);});
 it('uncaptured legacy non-Draft assignments keep actual catalog fallback while positionless rows stay unlabeled',async()=>{f.role='MANAGER';f.positions=[{id:'cashier',name:'Actual Cashier'}];f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];f.shifts=[{id:'legacy',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-05',startTime:'08:00',endTime:'12:00',scheduleStatus:'ARCHIVED'},{id:'positionless',employeeId:'worker',locationId:'north',date:'2026-10-06',startTime:'08:00',endTime:'12:00',scheduleStatus:'ARCHIVED'}];const output=await html();expect(output).toContain('Actual Cashier');expect(output.match(/schedule-assigned-position/g)).toHaveLength(1);});
 
+// Quiet (v4): Build and publish (the … menu) opens the planning panel, which publishes each location.
 it.each(['OWNER','MANAGER'])('%s can reach publication for each displayed location',async role=>{
  f.role=role;f.locations=[{id:'loc-1',shortName:'Main Office'},{id:'loc-2',shortName:'West Office'}];
- const output=await html();expect(output).toContain('Publish Main Office');expect(output).toContain('Publish West Office');
+ expect(await html()).toContain('href="/app/schedule?week=2026-10-05&amp;plan=1#schedule-planning"');
+ const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',plan:'1'})}));expect(output).toContain('Publish Main Office');expect(output).toContain('Publish West Office');
 });
 it('publication review exposes measured warnings before an explicit location-bound confirmation',async()=>{
  f.role='MANAGER';f.locations=[{id:'loc-2',shortName:'West Office'}];
@@ -175,7 +175,7 @@ it('preserves the existing Company error and warning messages',async()=>{
  expect(output).toContain('The shift information is incomplete or outside this week.');expect(output).toContain("Shift saved, but it is outside the employee&#x27;s submitted availability.");
  expect(output).toContain('role="alert"');expect(output).toContain('role="status"');
 });
-it('v3: the week facts sit in the title lines, open shifts link to Find cover, and an unplanned location offers Plan',async()=>{
+it('Quiet: the week facts sit under the title, open shifts offer Find cover, and an unplanned location offers Plan',async()=>{
  f.role='MANAGER';f.locations=[{id:'main',shortName:'Main Office'},{id:'west',shortName:'West Office'}];
  f.statuses=[{locationId:'main',status:'PUBLISHED'}];
  f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];
@@ -186,17 +186,14 @@ it('v3: the week facts sit in the title lines, open shifts link to Find cover, a
    {id:'COVERAGE:setup',type:'COVERAGE_GAP',priority:'REVIEW',title:'Staffing setup needed at West Office',detail:'',href:'/app/schedule/settings',locationId:'west'}]};
  const output=(await html()).replace(/ /g,' ');
  expect(output).toContain('Oct 5 – 11 · Main Office published');
- expect(output).toContain('Main Office published Oct 2');
- expect(output).toContain('>West Office not planned</a>');
- expect(output).toContain('availability 0 of 8');
- expect(output).toContain('Availability received from 0 of 8 people.');
  expect(output).toContain('West Office isn’t planned');
+ expect(output).toContain('aria-label="Plan West Office">Plan</a>');
  expect(output).toContain('href="/app/schedule?week=2026-10-05&amp;location=west&amp;plan=1#schedule-planning"');
  expect(output).toContain(`href="${repair.replaceAll('&','&amp;')}"`);
- expect(output).toContain('Find Cover');
+ expect(output).toContain('>Find cover</a>');
  expect(output).toContain('1 this week');
- // The planning panel, copy week, templates and add shift stay reachable.
- expect(output).toContain('Publish West Office');expect(output).toContain('Copy previous week');
+ // The planning panel (through Build and publish), copy week, templates and add shift stay reachable.
+ expect(output).toContain('plan=1#schedule-planning');expect(output).toContain('Copy previous week');
  expect(output).toContain('/app/schedule/templates?week=2026-10-05');expect(output).toContain('href="/app/schedule/new?week=2026-10-05"');
 });
 it('v3: a failed dashboard read leaves availability and open shifts out instead of showing zero',async()=>{

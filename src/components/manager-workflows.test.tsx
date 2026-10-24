@@ -58,7 +58,7 @@ it.each(["OWNER","MANAGER"] as const)("gives %s operational Time Off views and r
   vi.mocked(requireSession).mockResolvedValue({id:"reviewer",firstName:"Alex",lastName:"Rivera",role,primaryLocationId:"loc"});
   const pending = renderToStaticMarkup(await ManagerTimeOff({tab:"team"}));
   expect(listPendingTimeOffRequests).toHaveBeenCalledOnce();
-  expect(pending).toContain("Pending"); expect(pending).not.toMatch(/New Request|My Requests|startDate/);
+  expect(pending).toContain("Waiting"); expect(pending).not.toMatch(/New Request|My Requests|startDate/);
   const approved = renderToStaticMarkup(await ManagerTimeOff({tab:"approved"}));
   expect(listTeamTimeOffRequests).toHaveBeenCalledWith("APPROVED"); expect(approved).not.toContain("<form");
   await ManagerTimeOff({tab:"declined"}); expect(listTeamTimeOffRequests).toHaveBeenCalledWith("DENIED");
@@ -66,13 +66,13 @@ it.each(["OWNER","MANAGER"] as const)("gives %s operational Time Off views and r
 it("distinguishes missing, intentionally unavailable and submitted windows without treating seeded hours as a submission", async () => {
   // Times are kept whole with no-break spaces; compare the words.
   const html = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28"})).replace(/\u00a0/g, " ");
-  // Clean Manager (v3): the stat card went; the filter chips carry the counts.
-  expect(html).toMatch(/Not submitted<span class="wa-chip__count" aria-label=", 1">1</); expect(html).toContain("Unavailable all week"); expect(html).toContain("FUEL – 2"); expect(html).toContain("6:00 AM – 2:00 PM"); expect(html).not.toContain("7:00 AM"); expect(html).not.toContain("<form"); expect(html).not.toContain("checkbox");
-  expect(html).toMatch(/data-tone="review">.*?Not submitted<\/span>/);
-  expect(html).toContain('2 of 3 submitted');
-  expect(html).toMatch(/Unavailable all week<span class="wa-chip__count" aria-label=", 1">1</);
-  expect(html).toMatch(/data-tone="neutral">.*?Unavailable all week<\/span>/);
-  expect(html).toMatch(/data-tone="done">.*?Submitted<\/span>/);
+  // Quiet (v4): Not sent and Sent carry the counts; seeded hours on someone who hasn't sent don't count or show.
+  expect(html).toContain(">Not sent · 1</button>"); expect(html).toContain(">Sent · 2</button>");
+  expect(html).toContain("2 of 3 sent");
+  expect(html).toContain('aria-label="Missing Person, No primary location, not sent"'); expect(html).not.toContain("7:00 AM");
+  // A link to someone who has sent opens the Sent list with their hours.
+  const sent = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28",employeeId:"available"})).replace(/\u00a0/g, " ");
+  expect(sent).toContain("6:00 AM – 2:00 PM"); expect(sent).toContain("Unavailable all week"); expect(sent).not.toContain("7:00 AM");
 });
 it("keeps management pending, coverage and outcome data separate", async () => {
   const pending = renderToStaticMarkup(await ManagerShiftRequests({ timeZone:"America/Puerto_Rico",tab:"requests"}));
@@ -83,7 +83,7 @@ it("keeps management pending, coverage and outcome data separate", async () => {
 
 it("handles an invalid management week without reading or editing personal availability", async () => {
   const html = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",week:"2026-99-99",currentWeek:"2026-09-28"}));
-  expect(html).toContain("That schedule week is not valid");
+  expect(html).toContain("That week isn’t valid, so this is the upcoming week.");
   expect(listAvailabilitySubmissionStatuses).toHaveBeenCalledWith("2026-09-28");
 });
 
@@ -116,7 +116,7 @@ it('H12 actionable manager exception explains its reason outside the action grid
  vi.mocked(readShiftChangeAvailability).mockResolvedValueOnce({allowed:true,notice:'Projected scheduled overtime needs manager review.'});
  const html=renderToStaticMarkup(await ManagerShiftRequests({timeZone:'America/Puerto_Rico'}));
  expect(html).toContain('>Approve<');expect(html).toContain('Projected scheduled overtime needs manager review.');
- expect(html.indexOf('Projected scheduled overtime')).toBeLessThan(html.indexOf('class="wa-decision"'));
+ expect(html.indexOf('Projected scheduled overtime')).toBeLessThan(html.indexOf('class="q-acts"'));
  expect(html).not.toMatch(/operationalProfile|weeklyMinutes|classification/);
 });
 

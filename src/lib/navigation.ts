@@ -184,7 +184,7 @@ export type MobileTab = NavigationItem & {
  * get Home, Schedule, Inbox and Team. */
 export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities, context: NavContext = {}): MobileTab[] {
   const home: MobileTab = { href: "/app", label: "Home", icon: "dashboard", owns: ["/app"] };
-  const schedule: MobileTab = { href: "/app/schedule", label: "Schedule", icon: "schedule", owns: ["/app/schedule"] };
+  const schedule: MobileTab = { href: "/app/schedule", label: "Schedule", icon: "schedule", owns: ["/app/schedule", "/app/schedule/templates", "/app/schedule/settings"] };
   if (role === "EMPLOYEE" || role === "LEAD") {
     const pay: MobileTab = payroll?.enabled && (context.modules ?? ALL_MODULES_ON).payStatements
       ? { href: "/app/my-pay", label: "Pay", icon: "statement", owns: ["/app/my-pay", "/app/my-time", "/app/timecards"] }
@@ -193,10 +193,11 @@ export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities,
   }
   const authorized = new Set(navigationForRole(role, payroll, context).map(item=>item.href));
   const tabs:MobileTab[] = [
-    home,
+    // Quiet (v4): Notifications opens from Today's bell, so Home stays lit there.
+    { ...home, owns: ["/app", "/app/notifications"] },
     schedule,
     { href: "/app/inbox", label: "Inbox", icon: "inbox", owns: ["/app/inbox", "/app/requests", "/app/exchange", "/app/availability"] },
-    { href: "/app/employees", label: "Team", icon: "employees", owns: ["/app/employees"] },
+    { href: "/app/employees", label: "Team", icon: "employees", owns: ["/app/employees", "/app/account-recovery", "/app/clocker-recovery"] },
   ];
   return tabs.filter(tab=>authorized.has(tab.href));
 }
@@ -210,7 +211,8 @@ export function mobileMoreForRole(role: UserRole, payroll?: PayrollCapabilities,
 /** The tab that owns the current page: a tab href, "more", or none. */
 export function activeMobileTab(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext = {}): string | undefined {
   const active = activeNavigationHref(role, path, payroll, context);
-  if (!active) return undefined;
+  // Quiet (v4): a tool page with no menu entry of its own (Account and Clocker recovery) lights the tab that owns it.
+  if (!active) return mobileTabsForRole(role, payroll, context).find(tab => tab.owns.some(owned => owned !== "/app" && (path === owned || path.startsWith(`${owned}/`))))?.href;
   return mobileTabsForRole(role, payroll, context).find(tab => tab.owns.includes(active))?.href ?? "more";
 }
 

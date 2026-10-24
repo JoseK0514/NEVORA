@@ -19,18 +19,19 @@ it('renders a valid empty catalog with creation available', async () => {
   const html = renderToStaticMarkup(await BreakTypesPage());
   expect(mocks.roles).toHaveBeenCalledWith(['OWNER']);
   expect(mocks.list).toHaveBeenCalledWith({ employeeId: 'owner', sessionTokenHash: 'a'.repeat(64) });
-  expect(html).toContain('aria-label="Configured break types"');
-  expect(html).toContain('Add break type');
+  expect(html).toContain('No break types yet');
+  expect(html).toMatch(/<button class="q-btn" type="button">Add break type<\/button>/);
   expect(html).not.toContain('role="alert"');
 });
 
-it('keeps archived records and their actions in the initial All view', async () => {
+// Quiet (v4): with nothing active, the list opens on Archived; the row opens the editor with Reactivate.
+it('opens on Archived when every break type is archived', async () => {
   mocks.list.mockResolvedValue([{ id: 'rest', name: 'Rest', category: 'REST', targetMinutes: null, active: false, version: 3 }]);
   const html = renderToStaticMarkup(await BreakTypesPage());
   expect(html).toContain('data-break-type="rest"');
-  expect(html).toContain('Reactivate');
-  expect(html).toContain('No reference time');
-  expect(html).toContain('aria-pressed="true"');
+  expect(html).toContain('aria-label="Edit Rest"');
+  expect(html).toContain(' · Archived');
+  expect(html).toMatch(/aria-pressed="true" aria-label="Archived, 1"/);
 });
 
 it('does not represent a failed catalog read as an empty editable catalog', async () => {

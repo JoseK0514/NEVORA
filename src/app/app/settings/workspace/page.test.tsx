@@ -25,12 +25,13 @@ it("keeps Owner authorization and both editable fields with clear scheduling con
   expect(html).toContain('for="workspace-name"');
   expect(html).toContain('for="workspace-timezone"');
   // The business name wraps long names (one row that grows); Enter still saves.
-  expect(html).toMatch(/<textarea(?=[^>]*name="name")(?=[^>]*maxLength="160")(?=[^>]*required="")(?=[^>]*rows="1")(?=[^>]*class="wc-control wc-wrap")[^>]*>Northside Operations<\/textarea>/);
+  expect(html).toMatch(/<textarea(?=[^>]*name="name")(?=[^>]*maxLength="160")(?=[^>]*required="")(?=[^>]*rows="1")(?=[^>]*class="q-in wc-wrap")[^>]*>Northside Operations<\/textarea>/);
   expect(html).toContain('value="America/Puerto_Rico"');
   expect(html).not.toMatch(/<input(?=[^>]*name="timeZone")(?=[^>]*disabled="")[^>]*>/);
-  expect(html).toContain("Monday at 12:00\u00a0AM");
-  expect(html).toContain('type="submit"');
-  expect(html).toContain("Save changes");
+  // Quiet (v4): the week start is a row; Save sits at the top right and submits the form.
+  expect(html).toContain('<span class="q-rv q-rv--l">Monday</span>');
+  expect(html).toContain('type="submit" form="company-profile-form"');
+  expect(html).toContain(">Save</button>");
   expect(html).toContain('href="/app/settings"');
 });
 
@@ -39,12 +40,10 @@ it("explains a protected timezone without locking the workspace name", async () 
   const html = renderToStaticMarkup(await WorkspacePage());
   // A protected timezone reads in full as text, not as a disabled field (TC-06); it isn't submitted.
   expect(html).not.toContain('name="timeZone"');
-  expect(html).toContain(">Puerto Rico time</p>");
-  expect(html).not.toContain(">America/Puerto_Rico</p>");
+  expect(html).toContain('<span class="q-rv q-rv--l">Puerto Rico</span>');
+  expect(html).not.toContain(">America/Puerto_Rico<");
   expect(html).not.toMatch(/<(?:input|textarea)(?=[^>]*name="name")(?=[^>]*disabled="")[^>]*>/);
-  expect(html).toContain("You can still change your business name.");
   expect(html).toContain("Changing the business timezone requires a separately reviewed conversion because operational records already exist.");
-  expect(html).toContain("Why is the timezone protected?");
   expect(html).toContain('aria-describedby="timezone-help"');
 });
 

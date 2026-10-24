@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { formatTime } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
-import { Avatar, Card, Status } from "@/components/kit/kit";
-import { HoldHeight } from "@/components/kit/hold-height";
-import { KeepSelectedVisible } from "@/components/kit/keep-selected-visible";
+import { initialsOf } from "@/components/quiet/quiet";
 import type { AvailabilitySubmissionListItem } from "@/lib/data/availability-submissions";
 import type { AvailabilityRecord } from "@/lib/data/availability";
 
@@ -15,13 +15,7 @@ export type AvailabilityReviewEmployee = AvailabilitySubmissionListItem & {
   updatedLabel?: string;
 };
 
-const FILTERS = [
-  { value: "all", label: "Everyone" },
-  { value: "missing", label: "Not submitted" },
-  { value: "submitted", label: "Submitted" },
-  { value: "unavailable", label: "Unavailable all week" },
-] as const;
-type Filter = typeof FILTERS[number]["value"];
+type Filter = "all" | "missing" | "submitted" | "unavailable";
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export function matchesAvailabilityFilter(employee: AvailabilityReviewEmployee, filter: Filter) {
@@ -31,54 +25,47 @@ export function matchesAvailabilityFilter(employee: AvailabilityReviewEmployee, 
   return true;
 }
 
-const initials = (name: string) => name.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join("");
-
-/** Everyone's submission for the week, filtered in place. A deep link (?employeeId=) lands on that person. */
+/** Quiet (v4, approved Oct 23): Not sent and Sent. A person who hasn't sent opens their page; a person who has
+ * opens their hours in place. A deep link (?employeeId=) lands on that person. */
 export function AvailabilityTeamList({ employees, employeeId }: {
   employees: AvailabilityReviewEmployee[];
   employeeId?: string;
 }) {
-  const [filter, setFilter] = useState<Filter>("all");
+  const missing = employees.filter(employee => !employee.submitted).length;
+  const linked = employees.find(employee => employee.employeeId === employeeId);
+  const [filter, setFilter] = useState<"missing" | "submitted">(linked ? (linked.submitted ? "submitted" : "missing") : missing ? "missing" : "submitted");
   const target = useRef<HTMLLIElement>(null);
-  const chips = useRef<HTMLDivElement>(null);
   const visible = employees.filter(employee => matchesAvailabilityFilter(employee, filter));
   useEffect(() => { target.current?.focus(); }, [employeeId]);
 
-  // QA r3: "People" (not "Team", the Team page's name); the "submit" note is said once, under the list.
-  const waiting = visible.some(employee => !employee.submitted);
-  return <Card title="People" id="availability-team" meta={`${visible.length} ${visible.length === 1 ? "person" : "people"}`}
-    foot={waiting ? "Hours show here once each person submits." : undefined}>
-    <div className="wa-chips" role="group" aria-label="Show" ref={chips}>
-      {FILTERS.map(item => {
-        const count = employees.filter(employee => matchesAvailabilityFilter(employee, item.value)).length;
-        return <button type="button" className="wa-chip" aria-pressed={filter === item.value} key={item.value} onClick={() => setFilter(item.value)}>
-          {item.label}<span className="wa-chip__count" aria-label={`, ${count}`}>{count}</span>
-        </button>;
-      })}
-      <KeepSelectedVisible />
+  return <section aria-label="People">
+    <div className="q-seg" role="group" aria-label="Show">
+      <button type="button" aria-pressed={filter === "missing"} onClick={() => setFilter("missing")}>{`Not sent · ${missing}`}</button>
+      <button type="button" aria-pressed={filter === "submitted"} onClick={() => setFilter("submitted")}>{`Sent · ${employees.length - missing}`}</button>
     </div>
-    <p className="nv-sr" role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "person" : "people"} shown</p>
-    {/* ST-WA-3: a filter keeps the list at the full team's height, so the chips never jump under the finger.
-        HoldHeight (the kit component) applies the hold in the same render as the change. */}
-    <HoldHeight holding={filter !== "all"}>
-    {visible.length ? <ul className="wa-people">
-      {visible.map(employee => <li ref={employee.employeeId === employeeId ? target : undefined} tabIndex={-1} id={`employee-${employee.employeeId}`} className="wa-person" data-selected={employee.employeeId === employeeId ? "true" : undefined} key={employee.employeeId} aria-label={`${employee.employeeName} availability`}>
-        <div className="wa-person__head">
-          <Avatar initials={initials(employee.employeeName)} />
-          <span className="wa-person__text">
-            <span className="nv-row__title">{employee.employeeName}</span>
-            <span className="nv-row__meta">{employee.locationName}{employee.updatedLabel ? <>{"\u00a0· "}<span className="nv-keep">Updated {employee.updatedLabel}</span></> : null}</span>
-            <span className="nv-row__status"><Status tone={!employee.submitted ? "review" : employee.windowCount === 0 ? "neutral" : "done"}>{!employee.submitted ? "Not submitted" : employee.windowCount === 0 ? "Unavailable all week" : "Submitted"}</Status></span>
-          </span>
-        </div>
-        {employee.windows.length ? <ul className="wa-hours" aria-label={`${employee.employeeName} available hours`}>
-          {employee.windows.map(window => <li key={window.id}><span className="wa-hours__day">{DAYS[window.dayOfWeek]}</span><span>{keepWhole(`${formatTime(window.startTime)} – ${formatTime(window.endTime)}`)}</span></li>)}
-        </ul> : null}
-      </li>)}
-    </ul> : <div className="wa-card-body">
-      <p className="wa-text wa-muted">{employees.length ? "No one matches this filter." : "Employees and Leads show here once they’re added."}</p>
-      {employees.length ? <button className="nv-btn" data-kind="secondary" data-block="true" type="button" onClick={() => { setFilter("all"); chips.current?.querySelector<HTMLButtonElement>("button")?.focus(); }}>Show everyone</button> : null}
-    </div>}
-    </HoldHeight>
-  </Card>;
+    <p className="q-sr" role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "person" : "people"} shown</p>
+    {visible.length ? <ul className="q-list q-avail-list">
+      {visible.map(employee => {
+        const selected = employee.employeeId === employeeId;
+        // Someone who started but hasn't sent shows when they last changed it (the server's own wording of the time).
+        const detail = employee.submitted && employee.windowCount === 0 ? `${employee.locationName} · Unavailable all week`
+          : !employee.submitted && employee.updatedLabel ? `${employee.locationName} · Updated ${employee.updatedLabel}` : employee.locationName;
+        const head = <>
+          <span className="q-av" aria-hidden="true">{initialsOf(employee.employeeName)}</span>
+          <span className="q-rt"><b>{employee.employeeName}</b><i>{detail}</i></span>
+        </>;
+        return <li ref={selected ? target : undefined} tabIndex={-1} id={`employee-${employee.employeeId}`} data-selected={selected ? "true" : undefined} key={employee.employeeId}>
+          {!employee.submitted ? <Link className="q-row q-row--av" href={`/app/employees/${encodeURIComponent(employee.employeeId)}`} aria-label={`${employee.employeeName}, ${employee.locationName}, not sent`}>{head}</Link>
+          : employee.windows.length ? <details className="q-details" open={selected || undefined}>
+            <summary className="q-row q-row--av" aria-label={`${employee.employeeName}, ${detail}, sent${employee.updatedLabel ? ` ${employee.updatedLabel}` : ""}`}>{head}<CaretRightIcon className="q-chev" aria-hidden="true" /></summary>
+            <ul className="q-hours" aria-label={`${employee.employeeName} available hours`}>
+              {employee.windows.map(window => <li key={window.id}><span>{DAYS[window.dayOfWeek]}</span><span>{keepWhole(`${formatTime(window.startTime)} – ${formatTime(window.endTime)}`)}</span></li>)}
+            </ul>
+            {employee.updatedLabel ? <p className="q-help q-hours__updated">{`Updated ${employee.updatedLabel}`}</p> : null}
+          </details>
+          : <div className="q-row q-row--av">{head}</div>}
+        </li>;
+      })}
+    </ul> : <p className="q-empty q-first">{!employees.length ? "Employees and Leads show here once they’re added." : filter === "missing" ? "Everyone has sent theirs." : "No one has sent theirs yet."}</p>}
+  </section>;
 }

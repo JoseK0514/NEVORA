@@ -8,11 +8,14 @@ export function ConfigurationForm({
   children,
   className = "employee-form",
   reviewedUpdatedAt,
+  id,
 }: {
   action: (data: FormData) => Promise<ConfigurationResult>;
   children: ReactNode;
   className?: string;
   reviewedUpdatedAt?: string;
+  /** Quiet (v4): lets a submit in the page's top bar (form="…") send this form. */
+  id?: string;
 }) {
   const [result, setResult] = useState<ConfigurationResult>({});
   const [pending, setPending] = useState(false);
@@ -44,7 +47,7 @@ export function ConfigurationForm({
     }
   }
   return (
-    <form onSubmit={submit} className={className} aria-busy={pending}>
+    <form id={id} onSubmit={submit} className={className} aria-busy={pending}>
       <fieldset disabled={pending} className="configuration-fields">
         {draftUpdatedAt !== undefined ? <input type="hidden" name="expectedUpdatedAt" value={draftUpdatedAt} /> : null}
         {children}

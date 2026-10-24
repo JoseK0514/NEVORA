@@ -1,5 +1,6 @@
 'use client';
 
+import { QuietList, QuietRow, QuietSection } from './quiet/quiet';
 import Link from 'next/link';
 import {useId, type ReactNode} from 'react';
 import {CaretRightIcon, CheckCircleIcon, CircleIcon, SquaresFourIcon} from '@phosphor-icons/react/ssr';
@@ -85,4 +86,20 @@ export function OwnerSetupRow({steps, locationCount}: {steps: SetupSteps | null;
 
 export function OwnerSetupRowLive({locationCount}: {locationCount: number}) {
   return <OwnerSetupRow steps={useHomeSetupSteps()} locationCount={locationCount}/>;
+}
+
+/** Quiet (v4): Home's Setup section, one row naming the next step. Gone once setup is complete. */
+export function OwnerSetupQuiet({steps, locationCount}: {steps: SetupSteps | null; locationCount: number}) {
+  if (!steps || !hasSetupGaps(steps)) return null;
+  const done = setupDoneCount(steps);
+  const next = steps.coverageOpen
+    ? locationCount === 0 ? {href: '/app/settings/locations', label: 'add a location'} : {href: '/app/schedule/settings#coverage-staffing', label: 'set coverage periods'}
+    : {href: '/app/schedule/settings#target-hours', label: 'set weekly hour targets'};
+  return <QuietSection id="home-setup" title="Setup">
+    <QuietList label="Setup"><QuietRow href={next.href} title={`${done} of 2 steps done`} detail={`Next, ${next.label}`} /></QuietList>
+  </QuietSection>;
+}
+
+export function OwnerSetupQuietLive({locationCount}: {locationCount: number}) {
+  return <OwnerSetupQuiet steps={useHomeSetupSteps()} locationCount={locationCount}/>;
 }

@@ -23,28 +23,25 @@ vi.mock("@/components/phone-input", () => ({ PhoneInput: (props: ComponentProps<
 vi.mock("@/app/login/actions", () => ({ login: vi.fn() }));
 vi.mock("@/app/activate/actions", () => ({ activateAccountAction: vi.fn() }));
 
-// E4 sign-in design (docs/product/specs/auth-premium/SPEC.md): the workspace shows above the sign-in greeting;
-// every page carries the NEVORA wordmark, the brand panel and the VELANI LLC footer.
+// Quiet (v4, approved Oct 23): the wordmark at the top of sign in, the workspace under the greeting, and one
+// legal line at the bottom ("© 2026 VELANI LLC · Privacy · Terms · Support"; the ownership line stays for screen readers).
 it("brands login as NEVORA Workforce with the configured workspace and Velani ownership", async () => {
   const html = renderToStaticMarkup(await LoginPage({ searchParams: Promise.resolve({}) }));
   expect(html).toContain('aria-label="NEVORA"');
-  expect(html).toContain("NEVORA Workforce");
-  expect(html).toContain("Your week,<br/>in one place.");
   expect(html).toContain("Northside Services");
   expect(html).not.toContain("Fuel Coffee Drive");
-  expect(html).toContain("© 2026 VELANI LLC. All rights reserved.");
+  expect(html).toContain("© 2026 VELANI LLC");
   expect(html).toContain("NEVORA is a product of VELANI LLC.");
   expect(html).toContain("Welcome back");
 });
 
 // Activation follows development's email-invitation page until it gets its own Signature mock.
-it("brands activation as NEVORA Workforce", async () => {
+it("brands activation with the workspace and Velani ownership", async () => {
   const html = renderToStaticMarkup(await ActivatePage({ searchParams: Promise.resolve({}) }));
-  expect(html).toContain("NEVORA");
-  expect(html).toContain("Workforce");
+  expect(html).toContain("Activate account");
   expect(html).toContain("Northside Services");
   expect(html).not.toContain("Fuel Coffee Drive");
-  expect(html).toContain("© 2026 VELANI LLC. All rights reserved.");
+  expect(html).toContain("© 2026 VELANI LLC");
   expect(html).toContain("NEVORA is a product of VELANI LLC.");
 });
 

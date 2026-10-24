@@ -105,6 +105,14 @@ const en = {
   privacy: "Privacy",
   terms: "Terms",
   support: "Support",
+  // Quiet (v4, approved Oct 23): the sign-in pages' words from the approved mockups.
+  quiet: {
+    idPlaceholder: "e.g. 10482", passwordPlaceholder: "Password",
+    forgotSub: "We’ll email you a recovery link.", emailPlaceholder: "Email on your account",
+    haveCode: "I have a code", cantUseEmail: "Can’t use your email?",
+    resetTitle: "New password", newPasswordPlaceholder: "At least 8 characters", confirmPassword: "Confirm password", typeAgain: "Type it again",
+    activateSub: "Open the invitation link in your email.", noInvitation: "No invitation? Ask your Owner.",
+  },
 };
 
 export type AuthCopy = typeof en;
@@ -207,6 +215,13 @@ const es: AuthCopy = {
   privacy: "Privacidad",
   terms: "Términos",
   support: "Ayuda",
+  quiet: {
+    idPlaceholder: "p. ej., 10482", passwordPlaceholder: "Contraseña",
+    forgotSub: "Te enviaremos un enlace de recuperación.", emailPlaceholder: "Correo de tu cuenta",
+    haveCode: "Tengo un código", cantUseEmail: "¿No puedes usar tu correo?",
+    resetTitle: "Contraseña nueva", newPasswordPlaceholder: "Al menos 8 caracteres", confirmPassword: "Confirma la contraseña", typeAgain: "Escríbela otra vez",
+    activateSub: "Abre el enlace de invitación en tu correo.", noInvitation: "¿Sin invitación? Pídesela al Owner.",
+  },
 };
 
 export const AUTH_COPY: Record<AuthLang, AuthCopy> = { en, es };

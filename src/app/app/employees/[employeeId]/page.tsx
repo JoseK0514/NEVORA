@@ -13,7 +13,9 @@ import { OperationalRuleFields } from "@/components/operational-rule-fields";
 import { EmployeeProfileTabs } from "@/components/employee-profile-tabs";
 import { KeyIcon } from "@phosphor-icons/react/dist/ssr/Key";
 import { LockKeyIcon } from "@phosphor-icons/react/dist/ssr/LockKey";
-import { Card, MetaParts, PageBand, Row, Rows, Tile } from "@/components/kit/kit";
+import { Card, Row, Rows, Tile } from "@/components/kit/kit";
+import { QuietGroup, QuietHeader, QuietNav, QuietPage, QuietRow } from "@/components/quiet/quiet";
+import { employeeInitials } from "@/lib/employee-display";
 import { FormActions, Notice } from "@/components/wave-a/parts";
 import { PendingButton } from "@/components/wave-a/pending-button";
 import { requireSessionMutationProof } from "@/lib/auth/session";
@@ -29,9 +31,10 @@ import {
 } from "../actions";
 
 export default async function EmployeeProfilePage({
-  params,
+  params, searchParams,
 }: {
   params: Promise<{ employeeId: string }>;
+  searchParams?: Promise<{ edit?: string }>;
 }) {
   await requireRoles(MANAGER_ROLES);
   const { employeeId } = await params;
@@ -57,13 +60,41 @@ export default async function EmployeeProfilePage({
   const canManageCore = actor.role === "OWNER" || employee.role !== "OWNER";
 
   const roleLabel = employeeRoleLabel(employee.role);
+  const editing = (await searchParams)?.edit === "1";
+  const positionNames = employee.positionIds.map(id => positions.find(position => position.id === id)?.name).filter(Boolean).join(", ");
+  const name = `${employee.firstName} ${employee.lastName}`;
+  const base = `/app/employees/${encodeURIComponent(employee.id)}`;
+  const recoverable = employee.id !== actor.id && (actor.role === "OWNER" || employee.role === "EMPLOYEE" || employee.role === "LEAD");
+  const dial = employee.phone ? employee.phone.replace(/(?!^\+)[^\d]/g, "") : "";
+  // Quiet (v4, approved Oct 23): who they are, Call, Message and Shifts, then Details and Access. Edit opens the editors below.
+  if (!editing) return (<ScopedReadFrame observation={source}>
+    <QuietPage className="q-member">
+      <QuietNav back={{ href: "/app/employees", label: "Team" }} right={canManageCore ? <Link className="q-nav__r" href={`${base}?edit=1`}>Edit</Link> : undefined} />
+      <div className="q-who"><span className="q-av q-av--lg" aria-hidden="true">{employeeInitials(employee.firstName, employee.lastName)}</span>
+        <div><h1>{name}</h1><p>{[positionNames || roleLabel, primaryLocation ? `${primaryLocation.shortName}${primaryLocation.active ? "" : " (inactive)"}` : null, employee.active ? null : "Inactive"].filter(Boolean).join(" · ")}</p></div></div>
+      <div className="q-qa">
+        {dial ? <a className="q-bs" href={`tel:${dial}`} aria-label={`Call ${name}`}>Call</a> : <span className="q-bs" aria-disabled="true">Call</span>}
+        {dial ? <a className="q-bs" href={`sms:${dial}`} aria-label={`Message ${name}`}>Message</a> : <span className="q-bs" aria-disabled="true">Message</span>}
+        <Link className="q-bs" href="/app/schedule" aria-label={`Shifts for ${name}`}>Shifts</Link>
+      </div>
+      <QuietGroup label="Details" id="member-details"><ul className="q-list">
+        <QuietRow title="Employee ID" value={employee.id} tone="l" />
+        <QuietRow title="Phone" value={employee.phone ? formatPhoneNumber(employee.phone) : "None"} tone={employee.phone ? "l" : "ph"} />
+        <QuietRow title="Email" value={employee.email || "None"} tone={employee.email ? "l" : "ph"} />
+        <QuietRow title="Role" value={roleLabel} tone="l" />
+      </ul></QuietGroup>
+      {canManageCore && employee.active ? <QuietGroup label="Access" id="member-access"><ul className="q-list">
+        <QuietRow href={`${base}/clocker-pin`} title="Clocker PIN" value="Set" tone="l" />
+        {recoverable ? <QuietRow href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} title="Account" value={invitation?.state === "ready" && invitation.eligibility !== "ALREADY_ACTIVATED" ? (invitation.invitation?.state === "ISSUED" ? "Invited" : "Not activated") : "Active"} tone="l" /> : null}
+      </ul></QuietGroup> : null}
+    </QuietPage>
+  </ScopedReadFrame>);
   // Phase 3.5 Wave A: Team member detail on the kit. Who they are in the band, contact at a glance,
   // then Details (contact, access, tablet PIN, sign-in help) and Scheduling (positions, locations, Owner rules).
   return (<ScopedReadFrame observation={source}>
-    <div className="nv-page wa-page wa-member" data-nv-page="">
-      <PageBand overlap={false} back={{ href: "/app/employees", label: "Team" }} eyebrow={`${roleLabel}\u00a0· ${employee.active ? "Active" : "Inactive"}`}
-        title={`${employee.firstName} ${employee.lastName}`}
-        summary={<MetaParts text={[primaryLocation ? `${primaryLocation.shortName}${primaryLocation.active ? "" : " (inactive)"}` : "No primary location", formatPhoneNumber(employee.phone), employee.email].filter(Boolean).join(" · ")} />} />
+    <div className="q-page wa-page wa-member" data-nv-page="">
+      <QuietNav back={{ href: base, label: name }} />
+      <QuietHeader title={`Edit ${employee.firstName}`} />
       <div className="nv-content wa-narrow">
         <EmployeeProfileTabs
           details={<>

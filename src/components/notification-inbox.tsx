@@ -34,6 +34,19 @@ const reviewLabels:Record<NotificationReviewState,string>={unread:'Unread',read:
 const actionLabels:Record<NotificationActionState,string>={required:'Action required',available:'Action available',complete:'Action complete',none:'No action required',unavailable:'Action status unavailable'};
 const filters:{value:NotificationFilter;label:string}[]=[{value:'all',label:'All'},{value:'unread',label:'Unread'},{value:'required',label:'Needs action'}];
 
+/** Quiet (v4): "12 min ago", "2 h ago", "Yesterday", "Monday", then "Oct 19". */
+function when(at:string,now=new Date()){
+ const date=new Date(at),minutes=Math.floor((now.getTime()-date.getTime())/60000);
+ const day=(value:Date)=>new Date(value.getFullYear(),value.getMonth(),value.getDate()).getTime();
+ const days=Math.round((day(now)-day(date))/86400000);
+ if(minutes<1)return 'Just now';
+ if(days===0)return minutes<60?`${minutes} min ago`:`${Math.floor(minutes/60)} h ago`;
+ if(days===1)return 'Yesterday';
+ if(days<7)return new Intl.DateTimeFormat('en-US',{weekday:'long'}).format(date);
+ return new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',...(date.getFullYear()===now.getFullYear()?{}:{year:'numeric'})}).format(date);
+}
+const whenLong=(at:string)=>new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(at));
+
 export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;onMarkRead?:(id:string)=>Promise<void>}){
  const [pendingRead,setPendingRead]=useState<string|null>(null),[readNotice,setReadNotice]=useState('');
  const readGate=useRef(false);
@@ -63,58 +76,39 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
  const userRefreshing=refreshFrom!==null&&ready?.observedAt===refreshFrom;
  if(refreshFrom!==null&&!userRefreshing)setRefreshFrom(null);
  if(onMarkRead){
-  // Clean Manager (v3, QA): Owners and Managers get the Inbox's list. No "Your alerts" strip or view-count line; the filters,
-  // the list area and the foot are there in every state, so the page keeps its height when a read fails, pauses or signs out.
-  const offline=state.paused&&typeof navigator!=='undefined'&&navigator.onLine===false;
-  const loading=!ready&&!state.paused&&!unavailable;
-  const busy=userRefreshing||(loading&&state.refreshing);
-  const status=state.paused?<Freshness state={offline?'offline':'stale'}>{offline?'Offline':'Paused'}</Freshness>
-   :unavailable?<Freshness state="stale">Not available</Freshness>:loading||userRefreshing?'Checking…':null;
-  return <section ref={root} className={styles.inbox} aria-label="Notifications" data-private-view="notifications">
-   <div className={styles.controls}>
-    <div className={styles.filters} role="group" aria-label="Filter notifications">{filters.map(option=><button key={option.value} type="button" aria-pressed={filter===option.value} disabled={!ready} onClick={()=>setFilter(option.value)}>{option.label}<span className={styles.count}>{counts?counts[option.value]:'–'}</span></button>)}<KeepSelectedVisible/></div>
-    <label className={styles.search}><MagnifyingGlassIcon size={18} aria-hidden="true"/><span className={styles.srOnly}>Search notifications</span><input type="search" value={search} disabled={!ready} onChange={event=>setSearch(event.target.value)} placeholder="Search this inbox"/></label>
+  // Quiet (v4, approved Oct 23): All and Unread, then one row per notification: what it is, then when.
+  // Opening a row marks it read (as iOS does); there is no Mark read button, search or refresh foot.
+  const unread=counts?.unread??0;
+  const view=filter==='unread'?items:ready?filterNotifications(ready.items,'all',''):[];
+  const sorted=[...view].sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));
+  return <section ref={root} aria-label="Notifications" data-private-view="notifications">
+   <div className="q-seg" role="group" aria-label="Filter notifications">
+    <button type="button" aria-pressed={filter!=='unread'} disabled={!ready} onClick={()=>setFilter('all')}>All</button>
+    <button type="button" aria-pressed={filter==='unread'} disabled={!ready} onClick={()=>setFilter('unread')}>{unread?`Unread · ${unread}`:'Unread'}</button>
    </div>
-   {/* The count line goes from view (v3); screen readers still hear how many a filter or search leaves. */}
-   {ready?<p className="nv-sr" role="status" aria-live="polite">{items.length} {items.length===1?'notification':'notifications'} in this view{filter==='required'?' · Action required':filter==='unread'?' · Unread':''}</p>:null}
-   <HoldHeight holding={!ready} memory="notifications-manager" className="cm-notifications-hold">
-   {!ready?<div className="cm-notifications-state" role="status"><h2>{state.paused?'Updates paused':denied?'Your session ended':unavailable?'Couldn’t load notifications':'Loading notifications…'}</h2><p>{state.paused?'Return to this window while online to check current information.':denied?'Sign in again to see notifications.':unavailable?'Check your connection, then try again.':'Checking your current access.'}</p></div>:<>
-    {ready.coverage==='partial'?<p className="cm-notifications-notice" role="status"><WarningCircleIcon size={18} aria-hidden="true"/><span><strong>Some updates could not be checked.</strong> Some notifications are unavailable or outside this bounded view. Retry to check current access.</span></p>:null}
-    {groups.length?groups.map(group=><section className={styles.group} key={group.key} aria-label={group.label}>
-     <h2 className={styles.groupHeading}>{keepWhole(group.label)}</h2>
-     {/* One row per notification: what it is, then one grey line with its one status and the time; Mark read in the trailing slot. */}
-     <ul className={`${styles.list} nv-rows`}>{group.items.map(item=>{
+   {ready?<p className="q-sr" role="status" aria-live="polite">{sorted.length} {sorted.length===1?'notification':'notifications'}{filter==='unread'?' unread':''}</p>:null}
+   <HoldHeight holding={!ready} memory="notifications-manager" className="q-notif-hold">
+   {!ready?<div className="q-emptyblock" role="status"><h2 className="q-emptyblock__title">{state.paused?'Updates paused':denied?'Your session ended':unavailable?'Couldn’t load notifications':'Loading…'}</h2>
+     {state.paused||denied||unavailable?<p className="q-empty">{state.paused?'Come back to this window while online.':denied?'Sign in again to see notifications.':'Check your connection, then try again.'}</p>:null}
+     {denied?<div className="q-emptyblock__action"><Link className="q-btn q-btn--sec" href="/login">Sign in</Link></div>
+      :unavailable?<div className="q-emptyblock__action"><button type="button" className="q-btn q-btn--sec" onClick={onRetry}>Try again</button></div>:null}
+    </div>:<>
+    {ready.coverage==='partial'?<div className="q-note" data-tone="info"><span className="q-note__body">Some notifications couldn’t be checked.</span></div>:null}
+    {sorted.length?<ul className="q-list q-notif-list">{sorted.map(item=>{
+      const Icon=icons[notificationPresentation(item.label).icon];
       const review=item.reviewState??'unavailable';
-      const marking=review==='unread'?pendingRead===item.id?'Marking read…':'Mark read':null;
       return <li key={item.id} data-inbox-row>
-       <Link className="nv-row" data-unread={review==='unread'||undefined} href={item.href}>
-        <span className="nv-row__text"><span className="nv-row__title">{item.label}</span>
-         <span className="nv-row__meta"><span className="nv-keep">{reviewLabels[review]}{'\u00a0·'}</span> <time dateTime={item.at}>{keepWhole(new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit'}).format(new Date(item.at)))}</time></span></span>
-        {/* Holds the trailing slot's width; the Mark read button sits over it (a button can't live inside the link). */}
-        {marking?<span className="cm-notifications-trail" aria-hidden="true">{marking}</span>:null}
-        <CaretRightIcon className="nv-row__chev" size={18} weight="bold" aria-hidden="true"/>
+       <Link className="q-row q-row--av" href={item.href} aria-label={`${item.label}, ${reviewLabels[review]}, ${whenLong(item.at)}`}
+        onClick={()=>{if(review==='unread')void markRead(item.id);}}>
+        <span className="q-av" aria-hidden="true"><Icon className="q-ic" aria-hidden="true"/></span>
+        <span className="q-rt"><b>{item.label}</b><i><time dateTime={item.at}>{when(item.at)}</time></i></span>
        </Link>
-       {marking?<button type="button" className={`${styles.markRead} cm-notifications-mark`} disabled={pendingRead!==null} onClick={()=>void markRead(item.id)} aria-label={`Mark ${item.label} read`}>{marking}</button>:null}
       </li>;
      })}</ul>
-    </section>):<div className="cm-notifications-state" role="status">
-     <h2>{search?'No matching notifications':filter==='unread'?'No unread notifications in this view':filter==='required'?'No notifications requiring action in this view':ready.coverage==='complete'?'No notifications here.':'No available notifications to show'}</h2>
-     <p>{search?'Try another search, or clear it to see your updates.':ready.coverage==='partial'?'This view is incomplete. Retry to check what is available.':'Check Requests and Schedule for their current status.'}</p>
-     {search?<button type="button" className="cm-notifications-state__action" onClick={()=>setSearch('')}>Clear search</button>:filter!=='all'?<button type="button" className="cm-notifications-state__action" onClick={()=>setFilter('all')}>View all notifications</button>:null}
-    </div>}
-    <nav className="cm-notifications-links" aria-label="Related pages"><Link href="/app/inbox?filter=requests">Requests</Link><Link href="/app/schedule">Schedule</Link></nav>
+     :<p className="q-empty q-first">{filter==='unread'?'You’re all caught up.':'No notifications yet.'}</p>}
+    {readNotice&&readNotice.startsWith('We could not')?<p className="q-help" role="status">We couldn’t mark that one read.</p>:null}
    </>}
    </HoldHeight>
-   {/* The manual refresh sits under the list, as on the Inbox; a read's result (Mark read) shows beside it. Signed out, Sign in takes its place. */}
-   <p className="cm-page-foot">
-    <span className="cm-page-foot__status">{readNotice?<span aria-hidden="true">{readNotice}</span>:status}<span className="nv-sr" role="status">{readNotice}</span></span>
-    {denied?<Link className="nv-band-control cm-refresh" href="/login">Sign in</Link>
-     :<button type="button" className="nv-band-control cm-refresh" disabled={state.paused} aria-disabled={busy||undefined}
-       onClick={()=>{if(busy)return;if(ready)setRefreshFrom(ready.observedAt);onRetry();}}>
-      <ArrowsClockwiseIcon size={16} aria-hidden="true"/>{unavailable||ready?.coverage==='partial'?'Try again':'Refresh'}
-      <span className="nv-sr" role="status">{userRefreshing?'Refreshing notifications…':''}</span>
-     </button>}
-   </p>
   </section>;
  }
 

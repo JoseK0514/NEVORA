@@ -14,7 +14,7 @@ export default async function BrandingPage() {
   const latest = history[0];
   const current = storedBrand(latest?.settings);
   return (
-    <SettingsFrame title="Branding" summary="Your color and logo across NEVORA. Layout, text sizes and status colors stay the same.">
+    <SettingsFrame title="Branding" save={{ form: "brand-form" }}>
       <BrandEditor key={latest?.revision ?? 0}
         workspaceName={workspace.name}
         revision={latest?.revision ?? 0}

@@ -40,7 +40,7 @@ it('the preview composition replaces private readers while the native Home keeps
   expect(native).toContain('data-live-readers="today actions"');
   const preview = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome} overviewSlots={{actions: null, activity: null, snapshots: {today: previewToday, actions: previewActionCenter}}}/>);
   expect(preview).not.toContain('data-live-reader');
-  expect(preview).toContain('Updated');
+  expect(preview).toContain('on shift</b>');
 });
 
 it('the clean Overview is "Today", drops the tab row, and Home\'s own views still open from their addresses', () => {

@@ -9,7 +9,8 @@ import {OperationalUnavailable} from '@/components/company-access/operational-un
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {listPositions} from "@/lib/data/positions";
 import { keepDuration } from "@/components/wave-a/keep-duration";
-import { CreateShiftForm } from "@/components/create-shift-form";
+import { CreateShiftForm, CREATE_SHIFT_FORM_ID } from "@/components/create-shift-form";
+import { QuietNav } from "@/components/quiet/quiet";
 import { ConfigurationForm } from "@/components/configuration-form";
 import { Card, PageBand } from "@/components/kit/kit";
 import { Fact, Facts, FormActions, Notice } from "@/components/wave-a/parts";
@@ -148,13 +149,13 @@ export default async function NewShiftPage({
   const locationId = locations.some(location => location.id === params.locationId) ? params.locationId! : "";
   // W2: Back returns to the day and person the form was opened for, when it was opened for one.
   const cancelHref = `/app/schedule?week=${weekStart}${locationId ? `&location=${encodeURIComponent(locationId)}` : ""}${params.date === date ? `&day=${date}` : ""}${params.employeeId ? `#schedule-employee-${encodeURIComponent(params.employeeId)}` : ""}`;
-  // Phase 3.5 Wave A: Add shift on the kit. The band names the week; the form is two cards and a summary.
+  // Quiet (v4, approved Oct 23): Add shift is a sheet: Cancel, New shift and Add in the bar, then the form.
   return (<ScopedReadFrame observation={source}>
-    <div className="nv-page wa-page wa-shift" data-nv-page="">
-      <PageBand back={{ href: cancelHref, label: "Schedule" }} eyebrow={keepWhole(formatWeekRange(weekStart))} title="Add shift" summary="Choose who’s working, where and when." />
-      <div className="nv-content wa-wide">
-        <CreateShiftForm action={createShiftAction} employees={employees} locations={locations} positions={positions} weekStart={weekStart} weekEnd={weekEnd} date={date} employeeId={params.employeeId} positionId={params.positionId} locationId={locationId} startTime={params.start} endTime={params.end} isDesignatedLead={params.lead === "1"} cancelHref={cancelHref} />
-      </div>
+    <div className="q-page" data-nv-page="" data-q-sheet="">
+      <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href={cancelHref}>Cancel</Link>} title="New shift"
+        right={<button type="submit" form={CREATE_SHIFT_FORM_ID} className="q-nav__r q-nav__r--b" disabled={!employees.some(item => item.active) || !locations.length}>Add</button>} />
+      <h1 className="q-sr">{`Add shift, ${keepWhole(formatWeekRange(weekStart))}`}</h1>
+      <CreateShiftForm action={createShiftAction} employees={employees} locations={locations} positions={positions} weekStart={weekStart} weekEnd={weekEnd} date={date} employeeId={params.employeeId} positionId={params.positionId} locationId={locationId} startTime={params.start} endTime={params.end} isDesignatedLead={params.lead === "1"} cancelHref={cancelHref} />
     </div>
   </ScopedReadFrame>);
 }

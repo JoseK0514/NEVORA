@@ -16,7 +16,7 @@ vi.mock('@/lib/business-improvements/company-policies/service',()=>({
 }));
 beforeEach(()=>{source.fail=false;source.rows=policyUIRows();});
 it('renders the native Owner page with valid current and malformed historical policy',async()=>{
- const html=renderToStaticMarkup(await Page());expect(html).toContain('Company policies');expect(html).toContain('Saved revision 3');expect(html).toContain('Revision unavailable');expect(html).not.toContain('NEVER_RENDER_INVALID_PRIVATE_PAYLOAD');
+ const html=renderToStaticMarkup(await Page());expect(html).toContain('Company policies');expect(html).toContain('q-rv--l">Revision 3<');expect(html).toContain('Revision unavailable');expect(html).not.toContain('NEVER_RENDER_INVALID_PRIVATE_PAYLOAD');
 });
 it('renders selected-invalid recovery without activating an older policy',async()=>{
  source.rows=policyUIRows(false);const html=renderToStaticMarkup(await Page());expect(html).toContain('Current revision 2 unavailable');expect(html).not.toContain('name="lateness.threshold"');

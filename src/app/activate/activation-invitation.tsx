@@ -5,12 +5,8 @@ import {useLayoutEffect,useRef,useState,type FormEvent,type RefObject} from 'rea
 import type {ActivationResult} from '@/lib/auth/invitations/model';
 import {ActivationPasswords} from './activation-passwords';
 import {ActivationSubmit} from './activation-submit';
-import {ArrowRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
-import {CloudSlashIcon} from '@phosphor-icons/react/dist/ssr/CloudSlash';
 import {CopySimpleIcon} from '@phosphor-icons/react/dist/ssr/CopySimple';
-import {EnvelopeSimpleIcon} from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
-import {ShieldWarningIcon} from '@phosphor-icons/react/dist/ssr/ShieldWarning';
 
 type Phase='checking'|'missing'|'ready'|'pending'|'invalid'|'unavailable'|'outcome_unknown'|'activated';
 /** Scrub first. Never retain a query string, encoded/ambiguous proof or history state. */
@@ -72,54 +68,39 @@ export function ActivationInvitation({loginHref,workspaceName=null}:{loginHref:s
 function CopyId({value}:{value:string}) {
  const [copied,setCopied]=useState(false);
  async function copy(){try{await navigator.clipboard.writeText(value);setCopied(true);setTimeout(()=>setCopied(false),2000);}catch{document.getElementById('activation-employee-id')?.focus();}}
- return <><button type="button" className="act-id__copy" onClick={()=>void copy()}>{copied?<CheckIcon size={17} weight="bold" aria-hidden="true"/>:<CopySimpleIcon size={17} weight="bold" aria-hidden="true"/>}{copied?'Copied':'Copy ID'}</button>
-  <span className="ap-sr" role="status" aria-live="polite">{copied?'Employee ID copied':''}</span></>;
+ return <><button type="button" className="q-in__eye q-in__copy" onClick={()=>void copy()} aria-label={copied?"Copied":"Copy Employee ID"}>{copied?<CheckIcon size={17} weight="bold" aria-hidden="true"/>:<CopySimpleIcon size={17} weight="bold" aria-hidden="true"/>}</button>
+  <span className="q-sr" role="status" aria-live="polite">{copied?'Employee ID copied':''}</span></>;
 }
-/* Signature (activation v3, approved Oct 20, 2026; docs/product/specs/employee-style/signature/activation/v3): one status
- * line under the title, the two passwords in one group with live checks, one message per state, and the Employee ID as the
- * success moment. Wording and the flow above are development's, unchanged. */
+/* Quiet (v4, approved Oct 23): Activate account with one line under the title. With no usable invitation: Back to sign in
+ * and "No invitation? Ask your Owner." With one: the two passwords and Activate account. Activated: the Employee ID to keep.
+ * The flow above is unchanged. */
 export function ActivationInvitationView({phase,mismatch=false,employeeId,loginHref,workspaceName=null,onSubmit,formRef,successRef}:{phase:Phase;mismatch?:boolean;employeeId?:string|null;loginHref:string;workspaceName?:string|null;onSubmit:(event:FormEvent<HTMLFormElement>)=>void;formRef?:RefObject<HTMLFormElement|null>;successRef?:RefObject<HTMLDivElement|null>}) {
  const canSubmit=['ready','pending','unavailable'].includes(phase);const error=mismatch||phase==='unavailable';
  const signInHref=loginHref.replace('?activated=1&','?').replace('?activated=1','');
- const note=phase==='missing'||phase==='invalid'||phase==='outcome_unknown';
- const workspace=<span className="act-ws">{workspaceName??'Workspace unavailable'}</span>;
- if(phase==='activated'&&employeeId)return <div className="act-done activation-success" role="status" ref={successRef} tabIndex={-1}>
-  <span className="act-seal" aria-hidden="true"><CheckIcon size={38} weight="bold"/></span>
-  <h1 className="ap-title">Account activated</h1>
-  <p className="act-lead">Keep your Employee ID. You will use it with the password you just created.</p>
-  <div className="act-id">
-   <label className="act-id__label" htmlFor="activation-employee-id">Employee ID for sign-in</label>
-   <input id="activation-employee-id" className="act-id__value" value={employeeId} readOnly autoComplete="off" onFocus={event=>event.currentTarget.select()}/>
-   <CopyId value={employeeId}/>
-  </div>
-  <Link href={loginHref} className="ap-primary act-go"><span>Continue to sign in</span><ArrowRightIcon size={18} weight="bold" aria-hidden="true"/></Link>
+ const workspace=workspaceName??'Workspace unavailable';
+ if(phase==='activated'&&employeeId)return <div className="activation-success" role="status" ref={successRef} tabIndex={-1}>
+  <div className="q-hd"><h1>Account activated</h1><p>Keep your Employee ID. You will use it with the password you just created.</p></div>
+  <div className="q-fl"><label htmlFor="activation-employee-id">Employee ID for sign-in</label>
+   <div className="q-in__wrap"><input id="activation-employee-id" className="q-in" value={employeeId} readOnly autoComplete="off" onFocus={event=>event.currentTarget.select()}/><CopyId value={employeeId}/></div></div>
+  <Link href={loginHref} className="q-btn">Continue to sign in</Link>
  </div>;
+ const sub=phase==='checking'?`Opening your invitation… · ${workspace}`:canSubmit?`Invitation verified · ${workspace}`
+  :phase==='outcome_unknown'?'Activation could not be confirmed.':'Open the invitation link in your email.';
  return <>
-  {note?<span className="act-orb" data-tone={phase==='outcome_unknown'?'warn':undefined} aria-hidden="true">{phase==='outcome_unknown'?<ShieldWarningIcon size={30} weight="duotone"/>:<EnvelopeSimpleIcon size={30} weight="duotone"/>}</span>:null}
-  <h1 className="ap-title">Activate account</h1>
-  <p className="ap-sr" id="activation-intro">Open your email invitation, then choose a password.</p>
-  {phase==='checking'?<>
-   <p className="act-status" role="status"><span className="act-spin" aria-hidden="true"/><span>Opening your invitation…<span className="act-dot" aria-hidden="true">·</span>{workspace}</span></p>
-   <div className="act-skel" aria-hidden="true"><i/><i/><i/><i/></div>
-  </>:null}
-  {canSubmit?<p className="act-status"><span className="act-badge" aria-hidden="true"><CheckIcon size={11} weight="bold"/></span><span><b>Invitation verified</b><span className="act-dot" aria-hidden="true">·</span>{workspace}</span></p>:null}
-  {phase==='missing'||phase==='invalid'?<section className="act-note activation-invitation-state" role="status">
-   <h2>Open the invitation link from your email to activate your account.</h2>
-   <p>If the link cannot be used, ask your Owner for a new invitation. You can sign in if you have already activated.</p>
-  </section>:null}
-  {phase==='outcome_unknown'?<section className="act-note activation-invitation-state" role="alert">
-   <h2>Activation could not be confirmed.</h2>
-   <p>Ask your Owner to confirm your account status and Employee ID. If you know your ID, try signing in before requesting a new invitation. Your account may already be activated.</p>
-  </section>:null}
-  {canSubmit&&<form ref={formRef} className="ap-form act-form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'} aria-describedby="activation-intro">
-   <fieldset className="ap-fieldset" disabled={phase==='pending'}>
-    <ActivationPasswords mismatch={mismatch} errorId={error?'activation-error':undefined}/>
-    {phase==='unavailable'&&!mismatch?<p id="activation-error" className="act-alert" role="alert"><span className="act-alert__tile" aria-hidden="true"><CloudSlashIcon size={20} weight="duotone"/></span>Activation is temporarily unavailable. Your invitation was not confirmed. Try again later.</p>:null}
+  <div className="q-hd"><h1>Activate account</h1><p role={phase==='checking'?'status':undefined}>{sub}</p></div>
+  <p className="q-sr" id="activation-intro">Open your email invitation, then choose a password.</p>
+  {phase==='invalid'?<p className="q-help q-auth__alert activation-invitation-state" role="status">This invitation link can’t be used. Ask your Owner for a new invitation. You can sign in if you have already activated.</p>:null}
+  {phase==='outcome_unknown'?<p className="q-help q-auth__alert activation-invitation-state" role="alert">Ask your Owner to confirm your account status and Employee ID. If you know your ID, try signing in before requesting a new invitation. Your account may already be activated.</p>:null}
+  {phase==='missing'?<span className="q-sr activation-invitation-state" role="status">Open the invitation link from your email to activate your account.</span>:null}
+  {canSubmit&&<form ref={formRef} className="q-auth__form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'} aria-describedby="activation-intro">
+   <fieldset className="q-auth__fields" disabled={phase==='pending'}>
+    <ActivationPasswords quiet mismatch={mismatch} errorId={error?'activation-error':undefined}/>
+    {phase==='unavailable'&&!mismatch?<p id="activation-error" className="q-error q-auth__alert" role="alert">Activation is temporarily unavailable. Your invitation was not confirmed. Try again later.</p>:null}
    </fieldset>
-   <ActivationSubmit pending={phase==='pending'}/>
+   <ActivationSubmit pending={phase==='pending'} className="q-btn"/>
   </form>}
-  <noscript><p className="act-foot">JavaScript is required to open your secure email invitation. Use an enabled browser or contact your Owner.</p></noscript>
-  {note?<Link href={signInHref} className="ap-secondary act-go act-soft">Sign in</Link>:<p className="act-signin"><Link href={signInHref} className="act-signin__link">Already activated? Sign in</Link></p>}
-  {phase==='missing'||phase==='invalid'?<p className="act-foot">Your workplace must create your employee record and send an invitation to your registered email. No invitation yet? Contact your Owner.</p>:null}
+  <noscript><p className="q-help q-auth__alert">JavaScript is required to open your secure email invitation. Use an enabled browser or contact your Owner.</p></noscript>
+  {canSubmit||phase==='checking'?<Link href={signInHref} className="q-btn q-btn--quiet">Already activated? Sign in</Link>
+   :<><Link href={signInHref} className="q-btn q-btn--sec">Back to sign in</Link><p className="q-help q-auth__center">No invitation? Ask your Owner.</p></>}
  </>;
 }

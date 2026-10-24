@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
-import { BrandLegal } from "@/components/brand-legal";
+import { BrandLegal, QuietLegal } from "@/components/brand-legal";
+import { QuietNav } from "@/components/quiet/quiet";
 import { BrandWordmark } from "@/components/brand-mark";
 import type { AuthCopy, AuthLang } from "@/lib/auth-copy";
 import { LangSwitch } from "./lang-switch";
@@ -114,4 +115,19 @@ export function AuthShell({ lang, t, variant, back, bandTitle, children }: {
 /** The workspace line above the sign-in greeting: a tile with the initial, then the name. */
 export function WorkspaceEyebrow({ name }: { name: string }) {
   return <p className="ap-eyebrow"><i aria-hidden="true">{name.trim().charAt(0).toUpperCase() || "N"}</i>{name}</p>;
+}
+
+/** Quiet (v4, approved Oct 23): the sign-in pages on one white page. Sign in has the wordmark and the other language
+ * at the top; the other pages have a Sign in back link. The short legal line sits at the bottom. */
+export function QuietAuthShell({ lang, t, back, children }: { lang: AuthLang; t: AuthCopy; back?: string; children: ReactNode }) {
+  return (
+    <main className="q-page q-auth" data-nv-page="" lang={lang === "es" ? "es" : undefined}>
+      <div className="q-auth__col">
+        {back ? <QuietNav back={{ href: back, label: t.signInPill }} />
+          : <header className="q-auth__top"><span className="q-auth__wordmark"><BrandWordmark /></span><LangSwitch lang={lang} label={t.langLabel} quiet /></header>}
+        {children}
+      </div>
+      <footer className="q-auth__foot"><QuietLegal lang={lang} /></footer>
+    </main>
+  );
 }

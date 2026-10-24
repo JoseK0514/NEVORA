@@ -71,9 +71,11 @@ beforeEach(() => {
 it("keeps every rule group and native fragment destination available from section navigation", async () => {
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
   expect(html).toMatch(/<h1[^>]*>Sched\u00aduling rules<\/h1>/);
-  expect(html).toContain('aria-label="Scheduling rule sections"');
-  for (const id of ["rules-staffing", "rules-hours", "rules-coverage", "rules-policy"]) {
-    expect(html).toContain(`href="#${id}"`);
+  // Quiet (v4): five rows that open in place, in the approved order.
+  const order = ["Availability deadline", "Staffing per location", "Weekly hours", "Recurring coverage", "Trades and coverage"].map(name => html.indexOf(`<b>${name}</b>`));
+  expect(order.every(index => index > 0)).toBe(true);
+  expect([...order].sort((a, b) => a - b)).toEqual(order);
+  for (const id of ["rules-deadline", "rules-policy"]) {
     expect(html).toContain(`id="${id}"`);
   }
   // Sections keep the ids other pages link to (Owner setup, Team member detail).
@@ -98,7 +100,7 @@ it("gives empty staffing and employee groups actionable setup paths without crea
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
   expect(html).toContain('href="/app/settings/locations"');
   expect(html).toContain('href="/app/employees"');
-  expect(html).toContain('Add a location before creating a coverage period.');
+  expect(html).toContain('Add a location first. <a href="/app/settings/locations" class="q-link">Locations</a>');
   expect(html).not.toContain('name="locationId"');
 });
 
@@ -286,7 +288,7 @@ it("keeps FUEL – 2 staff isolated from FUEL – 110 during the confirmed weeke
   expect(health.hourBalances.map((b) => b.scheduledHours)).toEqual([7, 7]);
 });
 
-it('unconfigured staffing displays a blank explicit required Lead choice',async()=>{vi.mocked(listLocationStaffingSettings).mockResolvedValue([{locationId:'new',locationName:'New',minimumStaffPerShift:null,requiresDesignatedLead:null}]);const html=renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({})}));expect(html).toMatch(/select[^>]*name="lead-choice-new"[^>]*required/);expect(html).toContain('Choose a lead rule');expect(html).not.toMatch(/name="staffing-new"[^>]*value="[0-9]/);});
+it('unconfigured staffing displays a blank explicit required Lead choice',async()=>{vi.mocked(listLocationStaffingSettings).mockResolvedValue([{locationId:'new',locationName:'New',minimumStaffPerShift:null,requiresDesignatedLead:null}]);const html=renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({})}));expect(html).toMatch(/select[^>]*name="lead-choice-new"[^>]*required/);expect(html).toMatch(/<option value="" disabled="" selected="">Choose<\/option><option value="true">Required<\/option>/);expect(html).not.toMatch(/name="staffing-new"[^>]*value="[0-9]/);});
 
 it("preserves configured customer location names without Fuel-specific normalization", async () => {
   vi.mocked(listLocations).mockResolvedValue(fuelRuleLocations.map(l => ({...l, updatedAt: '2030-10-01 00:00:00+00', shortName: l.id === "loc-1" ? "FUEL - 2" : "Northside West"})));

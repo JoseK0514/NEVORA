@@ -10,11 +10,12 @@ import { PencilSimpleIcon } from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import { PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { TimerIcon } from '@phosphor-icons/react/dist/ssr/Timer';
 import { XIcon } from '@phosphor-icons/react/dist/ssr/X';
+import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { Status } from './kit/kit';
 import { toast } from './toaster';
 import { breakCategories, type BreakType } from '../lib/clocker/break-types';
 import type { BreakTypeResult } from '../app/app/settings/breaks/actions';
-import { EmptyState, GuideCard, Notice, SettingsFrame } from '../app/app/settings/wave-c-kit';
+import { EmptyState, Notice, SettingsFrame } from '../app/app/settings/wave-c-kit';
 import { ButtonLabel, Field, FieldErrors, FormActions, lockPageScroll, useFieldErrors } from '../app/app/settings/wave-c-form';
 
 type Selection = { operation: 'CREATE' | 'EDIT' | 'ARCHIVE' | 'REACTIVATE'; type?: BreakType };
@@ -30,7 +31,8 @@ export function ClockerBreakTypes({ initialTypes, action }: {
 }) {
   const [types, setTypes] = useState(initialTypes);
   const [selection, setSelection] = useState<Selection | null>(null);
-  const [filter, setFilter] = useState<Filter>('All');
+  // Quiet (v4): open on Archived when nothing is active, so archived breaks aren't hidden behind an empty tab.
+  const [filter, setFilter] = useState<Filter>(() => initialTypes.some(type => type.active) || !initialTypes.length ? 'Active' : 'Archived');
   const [query, setQuery] = useState('');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<{ message: string; refresh: boolean } | null>(null);
@@ -122,56 +124,24 @@ export function ClockerBreakTypes({ initialTypes, action }: {
   const saveLabel = selection?.operation === 'CREATE' ? 'Create break type' : selection?.operation === 'EDIT' ? 'Save changes'
     : selection?.operation === 'ARCHIVE' ? 'Archive break type' : 'Reactivate break type';
 
-  return <SettingsFrame title="Break types" eyebrow={`${types.length} ${types.length === 1 ? 'break type' : 'break types'} · ${activeCount} active`}
-    summary="The breaks your team can start at the Clocker."
-    bandAside={<button ref={addButton} type="button" className="nv-band-control" onClick={event => open({ operation: 'CREATE' }, event)}><PlusIcon size={18} weight="bold" aria-hidden="true" />Add break type</button>}
-    aside={<GuideCard title="How break settings work">
-      <p>A reference time is a guide. It never ends a break on its own or takes time off what was worked.</p>
-      <p>Each break keeps the name and settings it started with. Archiving removes a type from new breaks; breaks already in progress can still end.</p>
-    </GuideCard>}>
-    {types.length ? <section className="nv-card" aria-labelledby="break-find-title">
-      <div className="nv-card__head"><h2 className="nv-card__title" id="break-find-title">Find break types</h2></div>
-      <div className="wc-find">
-        <label className="nv-sr" htmlFor="break-search">Search break types</label>
-        <span className="wc-search"><MagnifyingGlassIcon size={20} aria-hidden="true" />
-          <input id="break-search" className="wc-control" type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search break types" autoComplete="off" />
-        </span>
-        <div className="wc-pills" role="group" aria-label="Filter break types">
-          {(['All', 'Active', 'Archived'] as const).map(item => <button key={item} type="button" className="nv-filter" aria-pressed={filter === item}
-            aria-label={`${item}, ${counts[item]}`} onClick={() => setFilter(item)}>{item} <span className="wc-count" aria-hidden="true">{counts[item]}</span></button>)}
-        </div>
-      </div>
-    </section> : null}
-    <section className="nv-card" aria-label="Configured break types">
-      <div className="nv-card__head">
-        <h2 className="nv-card__title">Your break types</h2>
-        <span className="nv-card__meta" role="status">Showing {visibleTypes.length} of {types.length} {types.length === 1 ? 'break type' : 'break types'}</span>
-      </div>
-      {visibleTypes.length ? <ul className="nv-rows">{visibleTypes.map(type => {
-        const Icon = categoryIcons[type.category];
-        return <li key={type.id}>
-          <div className="nv-row wc-action-row" data-leading="true" data-break-type={type.id}>
-            <span className="nv-tile" data-tone={type.active ? 'accent' : 'neutral'} aria-hidden="true"><Icon size={22} /></span>
-            <span className="nv-row__text">
-              <span className="nv-row__title">{type.name}</span>
-              <span className="nv-row__meta"><span className="nv-keep">{categoryLabel(type.category)}&nbsp;·</span> <span className="nv-keep">{type.targetMinutes === null ? 'No reference time' : `Reference time ${type.targetMinutes}\u00a0min`}</span></span>
-              {type.active ? null : <span className="nv-row__status"><Status tone="neutral">Archived</Status></span>}
-              <span className="wc-row-actions">
-                <button type="button" className="nv-link" aria-label={`Edit ${type.name}`} onClick={event => open({ operation: 'EDIT', type }, event)}><PencilSimpleIcon size={18} aria-hidden="true" />Edit</button>
-                <button type="button" className="nv-link" aria-label={`${type.active ? 'Archive' : 'Reactivate'} ${type.name}`} onClick={event => open({ operation: type.active ? 'ARCHIVE' : 'REACTIVATE', type }, event)}>
-                  {type.active ? <ArchiveIcon size={18} aria-hidden="true" /> : <ArrowClockwiseIcon size={18} aria-hidden="true" />}{type.active ? 'Archive' : 'Reactivate'}
-                </button>
-              </span>
-            </span>
-          </div>
-        </li>;
-      })}</ul> : <EmptyState headingLevel={3} icon={<CoffeeIcon size={22} weight="bold" />} title={types.length ? 'No matching break types' : 'No break types yet'}
-        action={types.length ? <button className="nv-btn" data-kind="secondary" type="button" onClick={() => { setFilter('All'); setQuery(''); document.getElementById('break-search')?.focus(); }}><XIcon size={18} aria-hidden="true" />Clear filters</button>
-          : <button className="nv-btn" data-kind="primary" type="button" onClick={event => open({ operation: 'CREATE' }, event)}><PlusIcon size={18} aria-hidden="true" />Add your first break type</button>}>
-        {types.length ? 'Try another name, or view all your break types.' : 'Add the breaks your team takes. Each has a name, a classification and an optional reference time.'}
-      </EmptyState>}
-      <p className="nv-card__foot">Changes apply to future breaks.</p>
-    </section>
+  // Quiet (v4, approved Oct 23): Active and Archived, one row per break (name, kind, reference time). A row opens its editor.
+  return <SettingsFrame title="Break types"
+    bandAside={<button ref={addButton} type="button" className="q-nav__r q-nav__r--ink" aria-label="Add break type" onClick={event => open({ operation: 'CREATE' }, event)}><PlusIcon className="q-ic" aria-hidden="true" /></button>}>
+    {types.length ? <div className="q-seg" role="group" aria-label="Filter break types">
+      {(['Active', 'Archived'] as const).map(item => <button key={item} type="button" aria-pressed={filter === item} aria-label={`${item}, ${counts[item]}`} onClick={() => setFilter(item)}>
+        {item === 'Active' ? `Active · ${counts.Active}` : 'Archived'}</button>)}
+    </div> : null}
+    <p className="q-sr" role="status">Showing {visibleTypes.length} of {types.length} {types.length === 1 ? 'break type' : 'break types'}</p>
+    {visibleTypes.length ? <ul className="q-list" aria-label="Configured break types" style={{ marginTop: 16 }}>{visibleTypes.map(type => <li key={type.id}>
+      <button type="button" className="q-row" data-break-type={type.id} aria-label={`Edit ${type.name}`} onClick={event => open({ operation: 'EDIT', type }, event)}>
+        <span className="q-rt"><b>{type.name}</b><i>{categoryLabel(type.category)}{type.active ? '' : ' · Archived'}</i></span>
+        {type.targetMinutes === null ? null : <span className="q-rv q-rv--l">{`${type.targetMinutes}\u00a0min`}</span>}
+        <CaretRightIcon className="q-chev" aria-hidden="true" />
+      </button>
+    </li>)}</ul> : <EmptyState headingLevel={3} icon={null} title={types.length ? (filter === 'Archived' ? 'No archived break types' : 'No active break types') : 'No break types yet'}
+      action={types.length ? null : <button className="q-btn" type="button" onClick={event => open({ operation: 'CREATE' }, event)}>Add break type</button>}>
+      {types.length ? '' : 'Add the breaks your team takes.'}
+    </EmptyState>}
     <dialog ref={dialog} className="wc-dialog" aria-labelledby="break-editor-title" aria-describedby="break-editor-description" onCancel={event => { event.preventDefault(); close(); }}>
       {selection ? <form noValidate key={selection.operation + '-' + (selection.type?.id ?? 'new')} onSubmit={submit} aria-busy={pending} className="wc-dialog__form" {...handlers}>
         <div className="wc-dialog__head">
@@ -199,9 +169,11 @@ export function ClockerBreakTypes({ initialTypes, action }: {
         {error ? <div ref={errorMessage} role="alert" tabIndex={-1} className="wc-feedback"><Notice tone="urgent" title={error.message.startsWith('It may not have saved') ? 'Not saved yet' : 'Not saved'}>{error.message}</Notice></div> : null}
         <p role="status" className="nv-sr">{pending ? 'Saving your changes…' : ''}</p>
         <FormActions>
-          {error?.refresh ? <button type="button" className="nv-btn" data-kind="primary" onClick={() => window.location.reload()}><ArrowClockwiseIcon size={18} aria-hidden="true" />Reload</button>
-            : <button className="nv-btn" data-kind={selection.operation === 'ARCHIVE' ? 'danger' : 'primary'} type="submit" disabled={pending}><ButtonLabel pending={pending} idle={saveLabel} busy="Saving…" /></button>}
-          <button className="nv-btn" data-kind="secondary" type="button" disabled={pending} onClick={close} data-autofocus={selection.operation === 'ARCHIVE' ? '' : undefined}>Cancel</button>
+          {error?.refresh ? <button type="button" className="q-btn" onClick={() => window.location.reload()}>Reload</button>
+            : <button className={selection.operation === 'ARCHIVE' ? 'q-btn q-btn--danger' : 'q-btn'} type="submit" disabled={pending}><ButtonLabel pending={pending} idle={saveLabel} busy="Saving…" /></button>}
+          {selection.operation === 'EDIT' && selection.type ? <button className="q-btn q-btn--danger" type="button" disabled={pending}
+            onClick={() => { clear(); setError(null); setSelection({ operation: selection.type!.active ? 'ARCHIVE' : 'REACTIVATE', type: selection.type }); }}>{selection.type.active ? 'Archive break type' : 'Reactivate break type'}</button> : null}
+          <button className="q-btn q-btn--sec" type="button" disabled={pending} onClick={close} data-autofocus={selection.operation === 'ARCHIVE' ? '' : undefined}>Cancel</button>
         </FormActions>
       </form> : null}
     </dialog>

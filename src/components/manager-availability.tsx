@@ -3,21 +3,15 @@ import {withOperationalCompany} from '@/lib/company-access/operational-scope.ser
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import { formatBusinessDateTime } from "@/lib/business-time";
-import Link from "next/link";
 import { AvailabilityTeamList } from "@/components/availability-team-list";
-import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
-import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
 import { listTeamAvailabilityWindows } from "@/lib/data/availability";
 import { listAvailabilitySubmissionStatuses } from "@/lib/data/availability-submissions";
 import { getUpcomingAvailabilityWeek, getWeekSettings } from "@/lib/data/week-settings";
-import { addDays, formatWeekRange, weekStartFor } from "@/lib/date-utils";
+import { weekStartFor } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
-import { KitLink, PageBand } from "./kit/kit";
-import { RequestPagesNav } from "./clean/request-pages-nav";
-import { Notice } from "./wave-a/parts";
-import {ManagerIssueFocus} from './manager-issue-focus';
+import { QuietHeader, QuietList, QuietNav, QuietPage, QuietRow, weekLabel } from "./quiet/quiet";
 
 /** Phase 3.5 Wave A: Team availability on the kit. The week in the band, the counts and the deadline in one card,
  * then everyone's submission, people who haven't submitted first. */
@@ -52,22 +46,18 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
   }));
   const deadline = settings?.availabilityDeadline ? keepWhole(formatBusinessDateTime(settings.availabilityDeadline, timeZone)) : null;
 
+  // Quiet (v4, approved Oct 23): the week and the count under the title, the deadline as one row, then the people.
+  const deadlineDay = settings?.availabilityDeadline ? new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short", month: "short", day: "numeric" }).format(new Date(settings.availabilityDeadline)) : null;
   return (<ScopedReadFrame observation={source}>
-    <div className="nv-page wa-page wa-availability" data-nv-page="">
-      <PageBand title="Team availability"
-        eyebrow={<span className="premium-week-eyebrow">
-          <Link className="nv-band-control premium-week-arrow" href={`/app/availability?week=${addDays(selectedWeek, -7)}`} aria-label="Previous week"><CaretLeftIcon size={18} weight="bold" aria-hidden="true" /></Link>
-          <span>{keepWhole(formatWeekRange(selectedWeek))}</span>
-          <Link className="nv-band-control premium-week-arrow" href={`/app/availability?week=${addDays(selectedWeek, 7)}`} aria-label="Next week"><CaretRightIcon size={18} weight="bold" aria-hidden="true" /></Link>
-        </span>}
-        // Clean Manager (v3): the deadline joins the summary; the chips below carry the counts, so the stat card goes.
-        summary={<>{statuses.length ? `${statuses.length - notSubmitted} of ${statuses.length} submitted for this week. ` : "No one submits availability yet. "}{locked ? `Closed ${deadline}.` : deadline ? `People can submit until ${deadline}.` : <>No deadline set. <KitLink href="/app/schedule/settings">Set one in Scheduling rules</KitLink>.</>}</>}
-        extra={<RequestPagesNav current="/app/availability" />} />
-      <div className="nv-content">
-        <ManagerIssueFocus prefix="employee-" />
-        {invalidWeek ? <Notice tone="urgent" title="That schedule week is not valid">Showing the upcoming week instead.</Notice> : null}
-        <AvailabilityTeamList employees={reviewEmployees} employeeId={employeeId} />
-      </div>
-    </div>
+    <QuietPage className="q-availability">
+      <QuietNav back={{ href: "/app/inbox", label: "Inbox" }} />
+      <QuietHeader title="Availability" sub={`${keepWhole(weekLabel(selectedWeek))} · ${statuses.length - notSubmitted} of ${statuses.length} sent`} />
+      {invalidWeek ? <p className="q-error q-first" role="alert">That week isn’t valid, so this is the upcoming week.</p> : null}
+      <QuietList style={{ marginTop: 16 }}>
+        <QuietRow title="Deadline" value={deadlineDay ?? "Not set"} tone="l" href="/app/schedule/settings"
+          label={locked ? `Deadline passed ${deadline}` : deadline ? `Deadline ${deadline}` : "No deadline set. Set one in Scheduling rules"} />
+      </QuietList>
+      <AvailabilityTeamList employees={reviewEmployees} employeeId={employeeId} />
+    </QuietPage>
   </ScopedReadFrame>);
 }

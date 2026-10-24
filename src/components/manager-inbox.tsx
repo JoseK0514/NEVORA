@@ -6,13 +6,13 @@ import { ScopedReadFrame, type ScopedObservation } from "./company-access/scoped
 import { useToday } from "./manager-today";
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowsClockwiseIcon, ArrowsLeftRightIcon, CalendarBlankIcon, CaretDownIcon, CaretRightIcon, ChatTextIcon, ClockIcon, PhoneIcon, UserCheckIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
+import { ArrowsLeftRightIcon, CalendarBlankIcon, CaretDownIcon, CaretRightIcon, ChatTextIcon, ClockIcon, PhoneIcon, PlusIcon, UserCheckIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from "./manager-action-center";
 import { actionCenterNavigation } from "./action-center-navigation";
 import { EmptyState } from "./empty-state";
 import { Celebration } from "./celebration";
 import { Avatar, Button, Card, Freshness, KitStack, MetaParts, PageBand, Status, Tile } from "./kit/kit";
-import { KeepSelectedVisible } from "./kit/keep-selected-visible";
+import { QuietHeader } from "./quiet/quiet";
 import { usePresentation } from "./presentation-context";
 import { pathEnabled } from "@/lib/workspace-presentation/modules";
 import { CLOCK_IN, presentItem } from "@/lib/action-center/present";
@@ -28,13 +28,13 @@ const statusText = {
 } as const;
 
 const filters: { value: InboxFilter; label: string }[] = [
-  { value: "all", label: "All" }, { value: "now", label: "Act now" }, { value: "requests", label: "Requests" }, { value: "planning", label: "Plan ahead" },
+  { value: "now", label: "Act now" }, { value: "requests", label: "Requests" }, { value: "planning", label: "Plan ahead" },
 ];
 
 const emptyText: Record<InboxFilter, string> = {
   all: "Nothing needs you right now.",
-  now: "Nothing to act on now. Shifts with no clock-in and urgent gaps show up here.",
-  requests: "No requests are waiting. New time-off and shift requests show up here.",
+  now: "Nothing to act on now.",
+  requests: "No requests are waiting.",
   planning: "Nothing to plan ahead right now.",
 };
 
@@ -46,6 +46,8 @@ type InboxEntry = {
   key: string; href: string; label: string; leading?: ReactNode; title: ReactNode; meta?: ReactNode; action: string; status?: ReactNode; urgent?: boolean;
   /** Clean Manager (v3): a short value on the right ("2h 15m", "Waiting"). Decoration: the status says it to screen readers. */
   trailing?: ReactNode; trailingTone?: "urgent" | "review";
+  /** Quiet (v4): a row whose only action is one small button ("Find cover"). */
+  button?: string;
   /** Detail pane only: labelled facts and one plain sentence on what to do. */
   facts?: [string, ReactNode][]; note?: string; secondary?: { href: string; label: string }[]; paneMeta?: boolean;
   /** PD5: a phone number the manager already sees on Team, so a no-clock-in can be answered with Call or Text. */
@@ -67,18 +69,19 @@ const Selection = createContext<{ selected: string | null; select: (entry: Inbox
 function KitRow({ entry }: { entry: InboxEntry }) {
   const selection = useContext(Selection);
   const selected = selection?.selected === entry.key;
+  // Quiet (v4): name, one detail line, a value on the right (the one red is how late someone is), a chevron or one small button.
   return <li className="inbox-row" data-urgent={entry.urgent || undefined} data-selected={selected || undefined}>
-    <Link className="nv-row" data-leading={entry.leading ? "true" : undefined} href={entry.href} aria-label={entry.label} data-inbox-key={entry.key}
+    {entry.button ? <div className={`q-row${entry.leading ? " q-row--av" : ""}${entry.meta ? "" : " q-row--one"}`} data-inbox-key={entry.key}>
+      {entry.leading}
+      <span className="q-rt"><b>{entry.title}</b>{entry.meta ? <i>{entry.meta}</i> : null}</span>
+      <Link className="q-bs" href={entry.href} aria-label={entry.label} onClick={event => selection?.select(entry, event)}>{entry.button}</Link>
+    </div> : <Link className={`q-row${entry.leading ? " q-row--av" : ""}${entry.meta ? "" : " q-row--one"}`} href={entry.href} aria-label={entry.label} data-inbox-key={entry.key}
       aria-current={selected ? "true" : undefined} onClick={event => selection?.select(entry, event)}>
       {entry.leading}
-      <span className="nv-row__text">
-        <span className="nv-row__title">{entry.title}</span>
-        {entry.meta ? <span className="nv-row__meta">{entry.meta}</span> : null}
-        <span className="nv-row__status">{entry.status}<span className="inbox-action" aria-hidden="true">{entry.action}</span></span>
-      </span>
-      {entry.trailing ? <span className="nv-row__trail" data-tone={entry.trailingTone} aria-hidden="true">{entry.trailing}</span> : null}
-      <CaretRightIcon className="nv-row__chev" size={18} weight="bold" aria-hidden="true" />
-    </Link>
+      <span className="q-rt"><b>{entry.title}</b>{entry.meta ? <i>{entry.meta}</i> : null}</span>
+      {entry.trailing ? <span className={`q-rv${entry.trailingTone === "urgent" ? " q-rv--alert" : ""}`} aria-hidden="true">{entry.trailing}</span> : null}
+      <CaretRightIcon className="q-chev" aria-hidden="true" />
+    </Link>}
   </li>;
 }
 
@@ -135,15 +138,14 @@ function requestFacts(facts: RequestFacts): [string, ReactNode][] {
 function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, timeZone: string): InboxEntry {
   const urgent = item.priority === "URGENT" && !calm;
   const request = item.category === "requests";
-  const Icon = urgent ? WarningCircleIcon : item.category === "timekeeping" ? ClockIcon : request ? UserCheckIcon : CalendarBlankIcon;
   const action = actionCenterNavigation(item);
   const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, action.label, timeZone);
   const facts = request ? (item as ActionItem & { request?: RequestFacts }).request : undefined;
   return { key: item.id, href: withFilter(action.href, filter, item.id), label: `${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, urgent,
-    leading: request && shown.person ? <Avatar initials={initials(shown.person)} waiting /> : <Tile tone={urgent ? "urgent" : request ? "review" : "neutral"}><Icon size={20} weight="bold" /></Tile>,
+    leading: request && shown.person ? <span className="q-av" aria-hidden="true">{initials(shown.person)}</span> : undefined,
     title: shown.title, meta: <MetaParts text={shown.detail} />, action: shown.action,
     status: request ? <Status tone="review">Waiting</Status> : urgent ? <Status tone="urgent">Not covered</Status> : undefined,
-    trailing: request ? "Waiting" : undefined, trailingTone: request ? "review" as const : undefined,
+    trailing: undefined,
     note: calm ? "This time has passed. Review it for the record; it doesn’t need action now."
       : facts ? "Approve or decline it on the full request." : item.category === "requests" ? requestNote : typeNote[item.type] ?? categoryNote[item.category],
     facts: facts ? requestFacts(facts) : undefined };
@@ -159,7 +161,7 @@ function lateBy(shift: TodayShift, observedAt: string | undefined) {
   const minutes = Math.floor((Date.parse(observedAt) - Date.parse(shift.startAt)) / 60_000);
   if (!(minutes > 0)) return undefined;
   const h = Math.floor(minutes / 60), m = minutes % 60;
-  return h ? (m ? `${h}h ${m}m` : `${h}h`) : `${m}m`;
+  return h ? (m ? `${h} h ${m} min` : `${h} h`) : `${m} min`;
 }
 
 export function shiftEntry(shift: TodayShift, timeZone: string, observedAt?: string, showPlace = true, phone?: string, observation?: ScopedObservation): InboxEntry {
@@ -168,14 +170,14 @@ export function shiftEntry(shift: TodayShift, timeZone: string, observedAt?: str
   const href = running ? `/app/employees/${encodeURIComponent(shift.employeeId)}` : `/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`;
   const action = running ? "Contact" : "Review timecard";
   // The pill says what happened, so the meta line is only when and where.
-  const when = running ? `Started ${clock(shift.startAt, timeZone)}` : `${clock(shift.startAt, timeZone)}\u00a0– ${clock(shift.endAt, timeZone)}`;
+  const when = running ? `Shift began at ${clock(shift.startAt, timeZone)}` : `Shift ended at ${clock(shift.endAt, timeZone)}`;
   const condition = running ? "Not clocked in" : `No ${CLOCK_IN}`;
   return { key: `shift:${shift.id}`, href, label: `${action} for ${shift.employeeName}: ${condition}`, urgent: true,
-    leading: <Avatar initials={initials(shift.employeeName)} />, title: shift.employeeName,
+    leading: <span className="q-av" aria-hidden="true">{initials(shift.employeeName)}</span>, title: shift.employeeName,
     // P3-WR-11: each part stays whole and moves to the next line as a unit, so nothing is clipped at large text.
     meta: showPlace ? <MetaParts text={`${keepWhole(when)} · ${shift.locationName}`} /> : keepWhole(when), action,
     status: <Status tone="urgent">{condition}</Status>,
-    trailing: running ? lateBy(shift, observedAt) : "Ended", trailingTone: "urgent",
+    trailing: running ? lateBy(shift, observedAt) : undefined, trailingTone: "urgent",
     // TCD-08: the pane says each thing once: the pill is the condition, the facts are when and where, the note is what to do.
     paneMeta: false,
     facts: [["Shift", <span key="t" className="nv-keep">{keepWhole(`${clock(shift.startAt, timeZone)} – ${clock(shift.endAt, timeZone)}`)}</span>], ["Location", shift.locationName],
@@ -200,7 +202,7 @@ function ShiftRow({ shift, timeZone, observedAt, showPlace }: { shift: TodayShif
 function gapEntry(item: ActionItem, filter: InboxFilter, timeZone: string): InboxEntry {
   const entry = itemEntry(item, false, filter, timeZone);
   const parts = mobileActionDetail(item.detail).split(" · ");
-  return { ...entry, leading: undefined, title: gapPlace(item), meta: parts[1] ? keepWhole(parts[1]) : entry.meta, trailing: "1", trailingTone: undefined };
+  return { ...entry, leading: <span className="q-av q-av--open" aria-hidden="true"><PlusIcon className="q-ic" aria-hidden="true" /></span>, title: gapPlace(item), meta: parts[1] ? keepWhole(parts[1]) : entry.meta, trailing: undefined, trailingTone: undefined, button: "Find cover" };
 }
 function gapPlace(item: ActionItem) {
   return /\bat (.+)$/.exec(item.title)?.[1] ?? item.detail.split(" · ")[0] ?? item.title;
@@ -210,12 +212,12 @@ function gapPlace(item: ActionItem) {
 function Disclosure({ title, meta, count, items, children }: { title: ReactNode; meta?: ReactNode; count: ReactNode; items: ActionItem[]; children: ReactNode }) {
   return <li className="premium-group cm-disclosure">
     <GroupDisclosure items={items}>
-      <summary className="nv-row">
-        <span className="nv-row__text"><span className="nv-row__title">{title}</span>{meta ? <span className="nv-row__meta">{meta}</span> : null}</span>
-        <span className="nv-row__trail">{count}</span>
-        <CaretDownIcon className="inbox-group-caret" size={16} weight="bold" aria-hidden="true" />
+      <summary className={meta ? "q-row" : "q-row q-row--one"}>
+        <span className="q-rt"><b>{title}</b>{meta ? <i>{meta}</i> : null}</span>
+        <span className="q-rv q-rv--l">{count}</span>
+        <CaretDownIcon className="q-chev inbox-group-caret" aria-hidden="true" />
       </summary>
-      <ul className="nv-rows inbox-list">{children}</ul>
+      <ul className="q-list inbox-list">{children}</ul>
     </GroupDisclosure>
   </li>;
 }
@@ -230,7 +232,7 @@ const planLabel: Partial<Record<ActionItem["type"], string>> = {
 function planEntry(item: ActionItem, filter: InboxFilter, timeZone: string): InboxEntry {
   const entry = itemEntry(item, false, filter, timeZone);
   const missing = item.type === "DEADLINE_MISSING" || item.type === "COVERAGE_RULES_MISSING";
-  return { ...entry, leading: undefined, title: planLabel[item.type] ?? entry.title, meta: missing ? undefined : entry.meta, trailing: missing ? "Not set" : "1", trailingTone: undefined };
+  return { ...entry, leading: undefined, title: planLabel[item.type] ?? entry.title, meta: missing ? undefined : entry.meta, trailing: missing ? "Not set" : undefined, trailingTone: undefined };
 }
 
 function planGroups(items: ActionItem[]) {
@@ -249,10 +251,11 @@ function GroupDisclosure({ items, children }: { items: ActionItem[]; children: R
 
 
 function Section({ id, title, count, note, children }: { id: string; title: string; count: number; note?: string; children: ReactNode }) {
-  return <Card id={`inbox-${id}`} titleLabel={`${title}, ${count}`} title={<>{title}<span className="inbox-section-count" aria-hidden="true">{count}</span></>}>
-    {note ? <p className="inbox-section-note">{note}</p> : null}
+  return <section id={`inbox-${id}`} aria-labelledby={`inbox-${id}-title`}>
+    <div className="q-grp"><h2 id={`inbox-${id}-title`} aria-label={`${title}, ${count}`}>{title}</h2></div>
+    {note ? <p className="q-help">{note}</p> : null}
     {children}
-  </Card>;
+  </section>;
 }
 
 export function ManagerInbox({ contacts, ...props }: { weekStart: string; actorId: string; timeZone: string; contacts?: InboxContacts }) {
@@ -273,7 +276,8 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   snapshot: ActionCenter | null; today?: Today | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string; initialFilter?: InboxFilter;
 }) {
   const phones = useContext(Phones);
-  const [filter, setFilter] = useState<InboxFilter>(initialFilter);
+  // Quiet (v4): three segments; "all" (an old link) opens Act now.
+  const [filter, setFilter] = useState<InboxFilter>(initialFilter === "all" ? "now" : initialFilter);
   // Phase 4: on a wide screen the Inbox is a list with a detail pane. The URL keeps the selection, so Back from a review restores it.
   const wide = useSyncExternalStore(wideSubscribe, () => window.matchMedia(WIDE).matches, () => false);
   const [selectedKey, setSelectedKey] = useState<string | null>(() => typeof window === "undefined" ? null : new URL(window.location.href).searchParams.get("item"));
@@ -289,7 +293,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const [hasShown, setHasShown] = useState(false);
   // Follow the URL when it changes underneath us (Back, a new link).
   const [urlFilter, setUrlFilter] = useState(initialFilter);
-  if (urlFilter !== initialFilter) { setUrlFilter(initialFilter); setFilter(initialFilter); }
+  if (urlFilter !== initialFilter) { setUrlFilter(initialFilter); setFilter(initialFilter === "all" ? "now" : initialFilter); }
   // W2: the filter lives in the URL, so a review page's Back returns to it.
   const choose = (value: InboxFilter) => {
     setFilter(value);
@@ -324,6 +328,8 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const current = entries.find(entry => entry.key === selectedKey) ?? entries[0] ?? null;
   const select = (entry: InboxEntry, event: MouseEvent<HTMLAnchorElement>) => {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+    // Quiet (v4): on a phone the row opens its review, as the mockup's chevron says; the pane is for wide screens.
+    if (!wide) return;
     event.preventDefault();
     // v3: below 1024px the item opens in a half-height sheet; on wide screens, in the pane.
     if (wide) focusPane.current = true; else setSheetOpen(true);
@@ -384,16 +390,16 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const missedShown = 3;
   const missedPlaces = value ? new Set(value.noClockIn.map(shift => shift.locationName)).size > 1 : false;
 
-  return <div className="nv-page manager-inbox premium-inbox cm-page cm-inbox" data-nv-page="" data-inbox-state={ready ? (total ? "ready" : "clear") : connection}>
-    <PageBand title="Inbox"
-      summary={<span className="premium-inbox-summary">{value ? `${needsYouSentence(value.count)}${todayFailed ? " Clock-ins can’t be checked right now." : ""}` : connection === "loading" || connection === "reconnecting" ? "Checking what needs you…" : "Requests and problems to resolve."}</span>}
-      // ST-02: the filters are there from the first paint (disabled until the read is ready), so the band never grows.
-      // IS-59: while they are disabled the scrolling row would become an empty Tab stop; tabIndex -1 keeps it out.
-      extra={!ready || total ? <div className="nv-filters premium-inbox-filters" role="group" aria-label="Show" tabIndex={ready ? undefined : -1}>
-        {filters.map(entry => <button key={entry.value} type="button" className="nv-filter" aria-pressed={filter === entry.value} disabled={!ready} onClick={() => choose(entry.value)}>{entry.label}{value ? <em className="cm-filter-count" aria-hidden="true">{counts[entry.value]}</em> : null}</button>)}
-        <KeepSelectedVisible />
-      </div> : null} />
-    <KitStack>
+  // Quiet (v4, approved Oct 23): title, three segments (Act now, Requests, Plan ahead), then plain lists. No band, no footer.
+  return <div className="q-page manager-inbox premium-inbox cm-inbox" data-nv-page="" data-inbox-state={ready ? (total ? "ready" : "clear") : connection}>
+    <div className="q-bar" />
+    <QuietHeader title="Inbox" sub={<span className="q-sr premium-inbox-summary">{value ? `${needsYouSentence(value.count)}${todayFailed ? " Clock-ins can’t be checked right now." : ""}` : connection === "loading" || connection === "reconnecting" ? "Checking what needs you…" : "Requests and problems to resolve."}</span>} />
+    {/* ST-02: the segments are there from the first paint (disabled until the read is ready), so nothing moves. */}
+    {!ready || total ? <div className="q-seg premium-inbox-filters" role="group" aria-label="Show">
+      {filters.map(entry => <button key={entry.value} type="button" aria-pressed={filter === entry.value} disabled={!ready} onClick={() => choose(entry.value)}
+        aria-label={value && counts[entry.value] ? `${entry.label}, ${counts[entry.value]}` : undefined}>{entry.label}{value && counts[entry.value] && entry.value !== "planning" ? ` · ${counts[entry.value]}` : ""}</button>)}
+    </div> : null}
+    <div>
       <Selection.Provider value={{ selected: shownKey, select }}>
       {/* The pane's column is there in every state but "all caught up", so the list never changes width. */}
       <div className="inbox-columns" data-detail={!ready || total ? "true" : undefined}>
@@ -401,37 +407,33 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
       {/* ST-P4-03: the held height is part of this render, so the page never empties under the reader and scroll stays put. */}
       <div className="inbox-list-column" ref={listColumn} data-row-nav=".inbox-row, .premium-group > details > summary"
         style={!ready && hasShown && lastListHeight ? { minHeight: `${lastListHeight}px` } : undefined}>
-      {!ready ? <Card><div className="inbox-status nv-card__body">
-        {/* ST-26: the status line comes first, so it stays put when the placeholder rows go. */}
-        <p role="status" tabIndex={-1} className="inbox-status-message">{statusText[connection]}</p>
-        {connection === "loading" || connection === "reconnecting" ? <div className="premium-skeleton" aria-hidden="true">{[0, 1, 2].map(i => <span key={i} className="premium-skeleton__row"><span className="premium-skeleton__dot" /><span><span className="premium-skeleton__line" /><span className="premium-skeleton__line premium-skeleton__line--short" /></span></span>)}</div> : null}
-        {connection === "access_lost" ? <Link className="nv-link" href="/login">Sign in</Link>
-          : connection === "unavailable" || connection === "ready" ? <button type="button" className="nv-btn" data-kind="primary" onClick={() => { refresh(); focusAfterRetry(".premium-inbox .nv-content .nv-card:not(:has(.inbox-status)) :is(.nv-card__title, h2, h3)", ".inbox-status .nv-btn"); }}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button> : null}
-      </div></Card> : total === 0 ? <Card><div className="inbox-clear nv-card__body">
-        <EmptyState illustration="all-caught-up" status title="All caught up">
-          Nothing needs you right now.{ready.limitedAttendance ? " Some attendance comparisons are unavailable." : ""}
-        </EmptyState>
-        {ready.limitedAttendance ? null : <Celebration kind="INBOX_CLEAR" eventKey={ready.observedAt.slice(0, 10)} confirmed />}
-      </div></Card> : <>
-        {show("now") && todayFailed ? <Card title="Clock-ins">
-          <div className="nv-card__body"><p className="premium-note">Today’s clock-ins can’t be checked right now, so shifts with no clock-in aren’t listed. Everything else here is current.</p>
-            <button type="button" className="nv-btn" data-kind="secondary" onClick={refresh}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button></div>
-        </Card> : null}
+      {!ready ? <div className="inbox-status">
+        {/* ST-26: the status line comes first, so it stays put. */}
+        <p role="status" tabIndex={-1} className="q-empty inbox-status-message" style={{ marginTop: 24 }}>{statusText[connection]}</p>
+        {connection === "access_lost" ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link>
+          : connection === "unavailable" || connection === "ready" ? <button type="button" className="q-btn q-btn--sec" onClick={() => { refresh(); focusAfterRetry(".premium-inbox .q-grp h2", ".inbox-status .q-btn"); }}>Try again</button> : null}
+      </div> : total === 0 ? <div className="inbox-clear">
+        <p className="q-empty" role="status" style={{ marginTop: 24 }}>Nothing needs you right now.{ready.limitedAttendance ? " Some attendance comparisons are unavailable." : ""}</p>
+      </div> : <>
+        {show("now") && todayFailed ? <section aria-label="Clock-ins">
+          <p className="q-empty" style={{ marginTop: 24 }}>Clock-ins can’t be checked right now.</p>
+          <button type="button" className="q-btn q-btn--sec" onClick={refresh}>Try again</button>
+        </section> : null}
         {show("now") && value!.noClockIn.length ? <div id="missed-punches">
           <Section id="missed" title="Not clocked in" count={value!.noClockIn.length}>
-            <ul className="nv-rows inbox-list">
+            <ul className="q-list inbox-list">
               {value!.noClockIn.slice(0, missedShown).map(shift => <ShiftRow key={shift.id} shift={shift} timeZone={timeZone} observedAt={ready.observedAt} showPlace={missedPlaces} />)}
               {value!.noClockIn.length > missedShown ? <li className="premium-group cm-more">
                 <details open={value!.noClockIn.slice(missedShown).some(shift => `shift:${shift.id}` === shownKey) || undefined}>
-                  <summary className="nv-row">{`Show ${value!.noClockIn.length - missedShown} more`}</summary>
-                  <ul className="nv-rows inbox-list">{value!.noClockIn.slice(missedShown).map(shift => <ShiftRow key={shift.id} shift={shift} timeZone={timeZone} observedAt={ready.observedAt} showPlace={missedPlaces} />)}</ul>
+                  <summary className="q-row q-row--one"><span className="q-rt"><b>{`Show ${value!.noClockIn.length - missedShown} more`}</b></span><CaretDownIcon className="q-chev" aria-hidden="true" /></summary>
+                  <ul className="q-list inbox-list">{value!.noClockIn.slice(missedShown).map(shift => <ShiftRow key={shift.id} shift={shift} timeZone={timeZone} observedAt={ready.observedAt} showPlace={missedPlaces} />)}</ul>
                 </details>
               </li> : null}
             </ul>
           </Section>
         </div> : null}
-        {show("now") && value!.now.length ? <Section id="urgent" title={otherNow.length ? "Act now" : "Open shifts today"} count={value!.now.length}>
-          <ul className="nv-rows inbox-list">
+        {show("now") && value!.now.length ? <Section id="urgent" title={otherNow.length ? "Act now" : "Open shifts"} count={value!.now.length}>
+          <ul className="q-list inbox-list">
             {gapPlaces.map(({ place, items }) => items.length === 1
               ? <KitRow key={items[0].id} entry={gapEntry(items[0], filter, timeZone)} />
               : <Disclosure key={place} title={place} items={items} count={items.length}
@@ -442,14 +444,14 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
           </ul>
         </Section> : null}
         {show("requests") && (value!.requests.length || filter === "requests") ? <Section id="requests" title="Requests" count={value!.requests.length}>
-          <ul className="nv-rows inbox-list">
+          <ul className="q-list inbox-list">
             {groupInboxItems(value!.requests).flatMap(entry => entry.kind === "item" ? [entry.item] : entry.items).map(item => <ItemRow key={item.id} item={item} filter={filter} timeZone={timeZone} />)}
             {/* Phones had no way to the request lists; this row is that way on every width (clean Manager v3). */}
             <AllRequests />
           </ul>
         </Section> : null}
         {show("planning") && (value!.planning.length || value!.past.length) ? <Section id="exceptions" title="Plan ahead" count={value!.planning.length}>
-          <ul className="nv-rows inbox-list">
+          <ul className="q-list inbox-list">
             {plan.map(group => group.items.length === 1 && group.type !== "COVERAGE_GAP"
               ? <KitRow key={group.items[0].id} entry={planEntry(group.items[0], filter, timeZone)} />
               : <Disclosure key={group.type} title={planLabel[group.type] ?? group.items[0].title} items={group.items} count={group.items.length}>
@@ -459,26 +461,11 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
               {value!.past.map(item => <ItemRow key={item.id} item={item} calm filter={filter} timeZone={timeZone} />)}
             </Disclosure> : null}
           </ul>
-          <p className="cm-section-foot">{`Planning items don’t count toward the ${value!.count} that need${value!.count === 1 ? "s" : ""} you today.`}</p>
+
         </Section> : null}
-        {filter !== "all" && !hasEntries(filter, value!) ? <Card title={filters.find(entry => entry.value === filter)?.label}>
-          <div className="nv-card__body"><p className="premium-note">{emptyText[filter]}</p>
-            {filter === "requests" ? <Link className="nv-link" href="/app/requests?tab=approved">See decided time off</Link> : null}</div>
-        </Card> : null}
-        {ready.limitedAttendance ? <p className="inbox-note">Some attendance comparisons are unavailable. Check the attendance view for details.</p> : null}
+        {filter !== "all" && !hasEntries(filter, value!) ? <p className="q-empty" style={{ marginTop: 24 }}>{emptyText[filter]}</p> : null}
+        {ready.limitedAttendance ? <p className="q-help inbox-note">Some attendance comparisons are unavailable.</p> : null}
       </>}
-      {/* The read's time and the manual refresh sit under the list (v3). IS-P4-17: a Refresh the user asks for says so. */}
-      {/* The read's time appears once the list has shown, so it never sits under a placeholder and jumps (QA h8). */}
-      {ready || hasShown ? <p className="cm-page-foot">
-        {updated ? <Freshness>Updated <time dateTime={ready!.observedAt}>{updated}</time></Freshness>
-          : connection === "offline" ? <Freshness state="offline">Offline</Freshness> : connection === "paused" ? <Freshness state="stale">Paused</Freshness>
-          : connection === "loading" || connection === "reconnecting" ? "Checking…" : <Freshness state="stale">Not available</Freshness>}
-        <button type="button" className="nv-band-control cm-refresh" onClick={() => { if (userRefreshing) return; if (ready) setRefreshFrom(ready.observedAt); refresh(); }}
-          disabled={connection === "loading" || connection === "reconnecting"} aria-disabled={userRefreshing || undefined}>
-          <ArrowsClockwiseIcon size={16} aria-hidden="true" />{userRefreshing ? "Refreshing…" : "Refresh"}
-          <span className="nv-sr" role="status">{userRefreshing ? "Refreshing the Inbox…" : ""}</span>
-        </button>
-      </p> : null}
       </div>
       {!wide && sheetOpen && ready && current && current.key === selectedKey ? <ItemSheet entry={current} onClose={() => { setSheetOpen(false); const url = new URL(window.location.href); if (url.searchParams.has("item")) { url.searchParams.delete("item"); window.history.replaceState(window.history.state, "", url); } }} /> : null}
       <div className="inbox-side-column">
@@ -487,7 +474,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
       </div>
       </div>
       </Selection.Provider>
-    </KitStack>
+    </div>
   </div>;
 }
 
@@ -576,7 +563,7 @@ function AllRequests() {
       <span className="nv-row__text"><span className="nv-row__title">All requests</span></span>
       <CaretDownIcon className="inbox-group-caret" size={16} weight="bold" aria-hidden="true" />
     </summary>
-    <ul className="nv-rows inbox-list">{pages.map(page => <li key={page.href}><Link className="nv-row" href={page.href}>
+    <ul className="q-list inbox-list">{pages.map(page => <li key={page.href}><Link className="nv-row" href={page.href}>
       <span className="nv-row__text"><span className="nv-row__title">{page.title}</span><span className="nv-row__meta">{page.meta}</span></span>
       <CaretRightIcon className="nv-row__chev" size={18} weight="bold" aria-hidden="true" />
     </Link></li>)}</ul>

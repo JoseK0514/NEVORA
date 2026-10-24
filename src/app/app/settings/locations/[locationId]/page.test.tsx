@@ -22,9 +22,10 @@ it("preserves editable fields and the stable Clocker link without accepting a re
   expect(html).toMatch(/<input(?=[^>]*name="shortName")(?=[^>]*required="")(?=[^>]*maxLength="48")[^>]*>/);
   expect(html).toContain('href="/clocker/east-office"');
   expect(html).not.toContain('name="clockerKey"');
-  expect(html).toContain('href="/app/schedule/settings"');
+  // Quiet (v4): Staffing opens Scheduling rules at that section; Back returns to Locations; Save is at the top right.
+  expect(html).toContain('href="/app/schedule/settings#coverage-staffing"');
   expect(html).toContain('href="/app/settings/locations"');
-  expect(html).toContain("Save changes");
+  expect(html).toContain('form="edit-location-form"');
 });
 
 it("renders an inactive location with its stored names, history guidance and truthful Clocker status", async () => {
@@ -32,7 +33,8 @@ it("renders an inactive location with its stored names, history guidance and tru
   const html = await render();
   expect(html).toContain('value="East office"');
   expect(html).toContain("Unavailable while inactive");
-  expect(html).toContain("Inactive locations keep their history and eligibility.");
+  expect(html).not.toContain('href="/clocker/');
+  expect(html).toContain("Inactive: new assignments and the Clocker are unavailable.");
   expect(html).not.toMatch(/id="edit-location-active"[^>]*checked/);
 });
 

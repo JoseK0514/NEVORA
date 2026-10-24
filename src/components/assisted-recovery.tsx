@@ -1,15 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import {useEffect,useRef,type FormEvent} from 'react';
-import {ArrowRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowRight';
-import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
-import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
-import {CursorTextIcon} from '@phosphor-icons/react/dist/ssr/CursorText';
-import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
+import {useEffect,useRef,useState,type FormEvent} from 'react';
+import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {keepWhole} from '@/lib/keep-whole';
-import {GuideCard,Notice,SettingsFrame} from '@/app/app/settings/wave-c-kit';
-import {ButtonLabel,Field,FieldErrors,FormActions,useFieldErrors} from '@/app/app/settings/wave-c-form';
+import {Notice,SettingsFrame} from '@/app/app/settings/wave-c-kit';
+import {ButtonLabel,Field,FieldErrors,useFieldErrors} from '@/app/app/settings/wave-c-form';
+
+/** Quiet (v4): how the Owner or Manager checked who someone is; each is a complete sentence the server records. */
+const METHODS=[
+ {value:'Verified in person with a photo ID.',label:'In person, photo ID'},
+ {value:'Verified in person; I know this employee.',label:'In person, I know them'},
+ {value:'Verified through our workplace records and a trusted colleague.',label:'Workplace records'},
+ {value:'other',label:'Something else'},
+];
 
 export type AssistedRecoveryProof={proof:string;expiresAt:string;employeeId:string};
 type Props={
@@ -31,7 +35,9 @@ type Props={
  * the private-data clearing and the lifecycle; this is presentation only. */
 export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,timeZone,onSubmit,onStartAgain}:Props){
  // The band's Back names where it goes: the employee it was opened from, Settings, or Home.
- const back=employeeId?{href:`/app/employees/${encodeURIComponent(employeeId)}`,label:employeeId.length<=16?employeeId:'Employee'}:from==='settings'?{href:'/app/settings',label:'Settings'}:{href:'/app',label:'Home'};
+ const [method,setMethod]=useState(METHODS[0].value);
+ const [confirmed,setConfirmed]=useState(false);
+ const back=employeeId?{href:`/app/employees/${encodeURIComponent(employeeId)}`,label:employeeId.length<=16?employeeId:'Employee'}:from==='settings'?{href:'/app/settings',label:'Settings'}:{href:'/app/employees',label:'Team'};
  const feedback=useRef<HTMLDivElement>(null),proof=useRef<HTMLInputElement>(null);
  const previousProof=useRef<AssistedRecoveryProof|null>(null),employee=useRef<HTMLInputElement&HTMLSelectElement&HTMLTextAreaElement>(null);
  const {errors,handlers}=useFieldErrors({employeeId:{missing:'Enter the employee’s ID.'},attestation:{missing:'Describe how you verified their identity.',length:'Write at least 10 characters about how you verified them.'},confirm:{missing:'Confirm you verified their identity yourself.'}});
@@ -42,71 +48,53 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
  },[message,issued]);
  const until=issued?keepWhole(new Date(issued.expiresAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone,timeZoneName:'short'})):'';
 
- return <SettingsFrame back={back} settingsCrumb={false} title="Account recovery"
-  summary="Help a verified employee get back into their account."
-  aside={<GuideCard title="How recovery works">
-   <ol className="wc-steps">
-    <li><strong>Verify identity</strong>Use a trusted workplace process and record how you confirmed it.</li>
-    <li><strong>Share the code privately</strong>The code works once and expires after 15 minutes.</li>
-    <li><strong>The employee resets access</strong>They choose a new password and sign in again.</li>
-   </ol>
-   <details className="wc-disclosure"><summary>What changes after a reset?<CaretDownIcon className="wc-caret" size={16} weight="bold" aria-hidden="true"/></summary>
-    <div className="wc-disclosure__body"><p>Password reset ends all of the employee’s portal sessions. Their role and work records stay intact.</p><p>Issuing another code retires unused earlier codes.</p></div></details>
-  </GuideCard>}>
-  {issued?<section className="nv-card" aria-labelledby="assisted-receipt-title">
-   <div className="wc-receipt" ref={feedback} tabIndex={-1} role="status" aria-labelledby="assisted-receipt-title">
-    <span className="nv-tile" data-tone="done" aria-hidden="true"><CheckCircleIcon size={22} weight="fill"/></span>
-    <div>
-     <h2 className="nv-card__title" id="assisted-receipt-title">Recovery code ready</h2>
-     <p className="wc-muted">For <strong className="wc-strong wc-path">{issued.employeeId}</strong>. Share it directly with the employee you verified.</p>
-    </div>
+ // Quiet (v4, approved Oct 23): the employee's ID, how you checked who they are, a confirmation switch, then one button.
+ return <SettingsFrame back={back} settingsCrumb={false} title="Account recovery" summary="Give someone a one-time code to get back in.">
+  {issued?<section aria-labelledby="assisted-receipt-title">
+   <div ref={feedback} tabIndex={-1} role="status" aria-labelledby="assisted-receipt-title" className="q-lead" style={{ marginTop: 24 }}>
+    <b id="assisted-receipt-title">Recovery code ready</b><i>{`For ${issued.employeeId} · works once, until `}<time dateTime={issued.expiresAt}>{until}</time></i>
    </div>
-   <div className="nv-card__body wc-fields">
-    <div className="wc-field">
-     <label className="wc-label" htmlFor="assisted-proof">Recovery code</label>
-     <div className="wc-linkbox">
-      <input ref={proof} id="assisted-proof" className="wc-control wc-code-input" readOnly value={issued.proof} autoComplete="off" spellCheck={false} aria-describedby="assisted-proof-hint"/>
-      <button type="button" className="nv-btn" data-kind="secondary" onClick={()=>{proof.current?.focus();proof.current?.select();}}><CursorTextIcon size={18} aria-hidden="true"/>Select</button>
-     </div>
-     <p className="wc-help" id="assisted-proof-hint">Select and copy the code for a private handoff. Never post it in a shared channel.</p>
-    </div>
-    <dl className="wc-facts">
-     <div><dt>Use</dt><dd>Single use</dd></div>
-     <div><dt>Valid until</dt><dd><time dateTime={issued.expiresAt}>{until}</time></dd></div>
-    </dl>
-    <div className="wc-fact"><div><span className="wc-fact__value">What the employee does next</span>
-     <span className="wc-fact__note">Open <Link className="wc-inline-link" href="/reset-access">Reset access</Link>, enter this code, and choose a new password. Then sign in again.</span></div></div>
-    <p className="wc-muted">For privacy, the code is hidden when you leave this page, switch apps, or go offline. It expires after 15 minutes.</p>
+   <div className="q-fl">
+    <label className="q-fl__label" htmlFor="assisted-proof">Recovery code</label>
+    <div className="q-in__wrap" style={{ marginTop: 8 }}><input ref={proof} id="assisted-proof" className="q-in" readOnly value={issued.proof} autoComplete="off" spellCheck={false} aria-describedby="assisted-proof-hint" style={{ paddingRight: 92 }}/>
+     <button type="button" className="q-bs" style={{ position: "absolute", right: 9, top: 9 }} onClick={()=>{proof.current?.focus();proof.current?.select();}}>Select</button></div>
+    <p className="q-fl__help" id="assisted-proof-hint">Share it privately. They open <Link href="/reset-access" style={{ color: "#0B6E69" }}>Reset access</Link>, enter the code and choose a new password.</p>
    </div>
-   <div className="nv-card__body">
-    <FormActions><button className="nv-btn" data-kind="secondary" type="button" onClick={onStartAgain}>Prepare another code<ArrowRightIcon size={18} aria-hidden="true"/></button></FormActions>
-    <p className="wc-muted wc-after-actions">Issuing another code retires any unused earlier code. Preparing the form alone does not cancel this one.</p>
-   </div>
+   <button className="q-btn q-btn--sec" type="button" onClick={onStartAgain}>Prepare another code</button>
+   <p className="q-help">Issuing another code retires any unused earlier code. The code hides when you leave this page.</p>
   </section>:<form noValidate onSubmit={event=>{if(!event.currentTarget.checkValidity()){event.preventDefault();return;}onSubmit(event);}} aria-busy={busy} className="wc-form" aria-label="Verify the employee" data-guard={hydrated?undefined:''} {...handlers}>
    <noscript><Notice tone="info">Enable JavaScript to issue a recovery code. You can still go back with the link above.</Notice></noscript>
    <fieldset disabled={!hydrated||busy} className="wc-fieldset">
     <FieldErrors errors={errors}>
-     <section className="nv-card" aria-labelledby="assisted-verify-title">
-      <div className="nv-card__head"><h2 className="nv-card__title" id="assisted-verify-title">Verify the employee</h2></div>
-      <div className="nv-card__body wc-fields">
-       <p className="wc-muted">Confirm their identity before issuing a code.</p>
-       <Field label="Employee ID" help="Use the exact ID in your workplace records." helpId="assisted-employee-hint" inputRef={employee}
-        id="assisted-employee" required maxLength={200} name="employeeId" defaultValue={employeeId} autoComplete="username" autoCapitalize="none" spellCheck={false}/>
-       <Field kind="textarea" label="How you verified them" helpId="assisted-verification-hint"
-        help="Use an established in-person or trusted workplace process. Do not substitute a newly supplied email or phone number. Omit sensitive documents, codes and personal details."
-        id="assisted-attestation" name="attestation" required minLength={10} maxLength={500} rows={4} placeholder="Briefly describe how you verified their identity."/>
-       <div className="wc-field" data-invalid={errors.confirm?'true':undefined}>
-        <label className="wc-check" data-invalid={errors.confirm?'true':undefined}><input type="checkbox" required name="confirm" aria-describedby={errors.confirm?'assisted-confirm-error':undefined}/><span>I independently confirmed this employee’s identity and can transfer this code securely.</span></label>
-        {errors.confirm?<p className="wc-error" id="assisted-confirm-error"><WarningCircleIcon size={18} weight="fill" aria-hidden="true"/>{errors.confirm}</p>:null}
-       </div>
-      </div>
-     </section>
+     <h2 className="q-sr" id="assisted-verify-title">Verify the employee</h2>
+     <Field label="Employee ID" inputRef={employee} placeholder="e.g. 10482"
+      id="assisted-employee" required maxLength={200} name="employeeId" defaultValue={employeeId} autoComplete="username" autoCapitalize="none" spellCheck={false}/>
+     <ul className="q-list" style={{ marginTop: 24 }}>
+      <li><label className="q-row q-row--one q-select-row">
+       <span className="q-rt"><b>How you checked</b></span>
+       <select className="q-select-row__control" name={method === "other" ? undefined : "attestation"} value={method} onChange={event => setMethod(event.target.value)} aria-label="How you checked who they are">
+        {METHODS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+       </select>
+       <CaretRightIcon className="q-chev" aria-hidden="true"/>
+      </label></li>
+      <li><label className="q-row q-row--one" data-invalid={errors.confirm?'true':undefined}>
+       <span className="q-rt"><b>I confirmed who they are</b></span>
+       <input type="checkbox" role="switch" className="q-tog" required name="confirm" checked={confirmed} onChange={event=>setConfirmed(event.target.checked)} aria-describedby={errors.confirm?'assisted-confirm-error':'assisted-confirm-hint'}/>
+      </label></li>
+     </ul>
+     <p className="q-sr" id="assisted-confirm-hint">I independently confirmed this employee’s identity and can transfer this code securely.</p>
+     {/* Security guidance (kept from the approved recovery flow): check against records you already hold. */}
+     <p className="q-help">Do not substitute a newly supplied email or phone number. Omit sensitive documents, codes and personal details.</p>
+     {method === "other" ? <Field kind="textarea" label="How you checked" id="assisted-attestation" name="attestation" required minLength={10} maxLength={500} rows={3}
+      placeholder="For example: in person, with their workplace badge"/> : null}
+     {errors.confirm?<p className="q-error" id="assisted-confirm-error">{errors.confirm}</p>:null}
     </FieldErrors>
    </fieldset>
    <p className="nv-sr" role="status">{busy?'Issuing recovery code. Checking your access and preparing a single-use code.':''}</p>
    {message?<div className="wc-feedback" ref={feedback} tabIndex={-1} role="alert"><Notice tone="urgent" title={message.includes('session ended')?'Your session ended':message.includes('expired')?'Recovery code expired':'Code not issued'}
-    action={message.includes('session ended')?<Link className="nv-link" href="/login">Sign in</Link>:undefined}>{message}</Notice></div>:null}
-   <FormActions><button className="nv-btn" data-kind="primary" type="submit" disabled={!hydrated||busy}><ButtonLabel pending={busy} idle={<>Issue recovery code<ArrowRightIcon size={20} className="wc-icon-after" aria-hidden="true"/></>} busy="Issuing code…"/></button></FormActions>
+    action={message.includes('session ended')?<Link className="q-btn q-btn--quiet" href="/login">Sign in</Link>:undefined}>{message}</Notice></div>:null}
+   <button className="q-btn" type="submit" disabled={!hydrated||busy||!confirmed} aria-describedby={confirmed?undefined:'assisted-confirm-needed'}><ButtonLabel pending={busy} idle="Issue recovery code" busy="Issuing code…"/></button>
+   {confirmed?null:<p className="q-sr" id="assisted-confirm-needed">Turn on “I confirmed who they are” first.</p>}
   </form>}
  </SettingsFrame>;
 }

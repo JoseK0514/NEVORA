@@ -15,36 +15,34 @@ const render = (devices: ClockerDeviceView[], available = locations) => renderTo
   initialDevices: devices, locations: available, timeZone: 'America/Puerto_Rico', action: vi.fn(),
 }));
 
-it('keeps overview explanations inside their definition descriptions', () => {
-  const summary = render([]).split('aria-label="Device overview">')[1].split('</dl>')[0];
-  for (const label of ['Registered', 'Needs setup', 'Revoked']) expect(summary).toContain(`<dt class="nv-stat__label">${label}</dt><dd class="nv-stat__value">0</dd>`);
-  expect(summary).not.toMatch(/<\/dd><p>/);
-});
-
-it('retains device identity, search and every management operation across states', () => {
+// Quiet (v4, approved Oct 23): Active, Needs setup and Removed with their counts; each device is one row that opens
+// its sheet (Rename, a new setup code, Replace or Reconnect, Revoke access). Wider search and overview cards are gone.
+it('counts each state in its segment for assistive technology', () => {
   const html = render([device('active', 'ACTIVE'), device('pending', 'PENDING'), device('expired', 'EXPIRED'), device('revoked', 'REVOKED')]);
-  for (const id of ['active', 'pending', 'expired', 'revoked']) expect(html).toContain(`data-clocker-device="${id}"`);
-  expect(html).toContain('type="search"');
+  expect(html).toContain('aria-label="Active, 1"');
+  expect(html).toContain('aria-label="Needs setup, 2"');
+  expect(html).toContain('aria-label="Removed, 1"');
   expect(html.match(/aria-pressed="true"/g)).toHaveLength(1);
-  expect(html.match(/>Rename<\/button>/g)).toHaveLength(4);
-  expect(html.match(/>Revoke access<\/button>/g)).toHaveLength(3);
-  expect(html).toContain('Replace tablet');
-  expect(html).toContain('Reconnect tablet');
-  expect(html.match(/>New setup code<\/button>/g)).toHaveLength(2);
 });
 
-it('disables registration when no active location exists while retaining existing management', () => {
+it('shows the selected state as rows that open their device options', () => {
+  const html = render([device('active', 'ACTIVE'), device('pending', 'PENDING'), device('expired', 'EXPIRED'), device('revoked', 'REVOKED')]);
+  expect(html).toMatch(/<button type="button" class="q-row" data-clocker-device="active" aria-label="active, options"/);
+  for (const id of ['pending', 'expired', 'revoked']) expect(html).not.toContain(`data-clocker-device="${id}"`);
+  expect(html).not.toContain('type="search"');
+});
+
+it('disables registration when no active location exists and points to Locations', () => {
   const html = render([device('inactive', 'ACTIVE', 'old')], [locations[1]]);
-  expect(html).toMatch(/<button(?=[^>]*disabled="")[^>]*>[\s\S]*?Add device<\/button>/);
-  expect(html).toMatch(/<button(?=[^>]*disabled="")[^>]*>Replace tablet<\/button>/);
-  expect(html).toContain('>Rename</button>');
-  expect(html).toContain('>Revoke access</button>');
+  expect(html).toMatch(/<button(?=[^>]*disabled="")[^>]*aria-label="Add device"/);
+  expect(html).toContain('data-clocker-device="inactive"');
   expect(html).toContain('href="/app/settings/locations"');
 });
 
-it('exposes a first-device action and no management or search controls for an empty inventory', () => {
+it('offers adding the first device and no device rows for an empty inventory', () => {
   const html = render([]);
-  expect(html).toContain('Add your first device');
+  expect(html).toContain('Add the shared tablet at each location.');
+  expect(html).toMatch(/<button class="q-btn"[^>]*>Add device<\/button>/);
   expect(html).not.toContain('data-clocker-device=');
   expect(html).not.toContain('type="search"');
   expect(html).not.toContain('nevora-action-menu-item');
@@ -59,19 +57,17 @@ it('escapes device and location values rather than inserting markup', () => {
 
 function expectDisabled(html: string, label: string) {
   const tag = [...html.matchAll(/<button\b[^>]*>[\s\S]*?<\/button>/g)].map(match => match[0])
-    .find(button => button.replace(/<[^>]*>/g, '') === label);
+    .find(button => button.replace(/<[^>]*>/g, '') === label || button.includes(`aria-label="${label}"`));
   expect(tag, label).toBeDefined();
   expect(tag, label).toMatch(/^<button\b[^>]*\bdisabled=""/);
 }
 
-it('withholds device dialog actions until their handlers are hydrated', () => {
-  const html = render([device('fictional-tablet', 'UNREGISTERED')]);
-  for (const label of ['Add device', 'Rename', 'New setup code', 'Revoke access']) {
-    expectDisabled(html, label);
-  }
+it('withholds device actions until their handlers are hydrated', () => {
+  const html = render([device('fictional-tablet', 'ACTIVE')]);
+  for (const label of ['Add device', 'fictional-tablet, options']) expectDisabled(html, label);
 });
 
 it('withholds the empty-list registration action until hydration', () => {
   const html = render([]);
-  expectDisabled(html, 'Add your first device');
+  expectDisabled(html, 'Add device');
 });

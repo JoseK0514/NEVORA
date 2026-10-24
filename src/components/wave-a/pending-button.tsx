@@ -9,7 +9,7 @@ import { guardSingleSubmit } from "./single-submit";
  * fieldset while a request is out; this button watches that, so those forms stay untouched.
  * Only the button that sent the form changes its words; the others just disable. When the request ends, the form's
  * result line is scrolled into view and focused. */
-export function PendingButton({ children, pending, kind = "primary", block = false, name, value, disabled = false, label, icon }: {
+export function PendingButton({ children, pending, kind = "primary", block = false, name, value, disabled = false, label, icon, className }: {
   children: ReactNode;
   /** What the button says while its form is sending, e.g. "Saving…". */
   pending: ReactNode;
@@ -21,6 +21,8 @@ export function PendingButton({ children, pending, kind = "primary", block = fal
   /** Accessible name when the visible words need context. */
   label?: string;
   icon?: ReactNode;
+  /** Quiet (v4): the page's own button class in place of the kit button. */
+  className?: string;
 }) {
   const button = useRef<HTMLButtonElement>(null);
   const sent = useRef(false);
@@ -62,7 +64,7 @@ export function PendingButton({ children, pending, kind = "primary", block = fal
   }, []);
 
   return (
-    <button ref={button} className="nv-btn" data-kind={kind} data-block={block ? "true" : undefined} data-busy={busy ? "true" : undefined}
+    <button ref={button} className={className ?? "nv-btn"} data-kind={className ? undefined : kind} data-block={block ? "true" : undefined} data-busy={busy ? "true" : undefined}
       type="submit" name={name} value={value} disabled={disabled} aria-disabled={busy} aria-busy={busy || undefined} onClick={event => { if (event.currentTarget.form?.getAttribute("aria-busy") === "true") event.preventDefault(); }} aria-label={busy ? undefined : label}>
       {icon ? <span style={busy ? {visibility: "hidden"} : undefined} aria-hidden="true">{icon}</span> : null}
       <PendingLabel className="wa-btn__words" pending={busy} pendingText={pending}>{children}</PendingLabel>

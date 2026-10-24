@@ -1,0 +1,29 @@
+@title Schedule
+<style>
+.wk{display:grid;grid-template-columns:repeat(7,1fr);margin:20px 12px 0}
+.wk a{display:flex;flex-direction:column;align-items:center;gap:6px}
+.wk small{font-size:13px;line-height:18px;font-weight:500;color:#8A8A87}
+.wk b{display:grid;place-items:center;width:36px;height:36px;border-radius:18px;font-weight:400;font-variant-numeric:tabular-nums}
+.wk .on b{background:#111413;color:#fff;font-weight:600}
+.sh{display:flex;align-items:baseline;justify-content:space-between;margin:32px 20px 4px}
+.sh b{font-size:20px;line-height:25px;font-weight:600;letter-spacing:-.4px}
+.sh span{font-size:15px;line-height:20px;color:#6B6B6B}
+.loc{display:flex;align-items:center;gap:4px;font-size:17px;line-height:22px}
+</style>
+<div class="p">
+  <div class="bar"><span class="loc">Main Office{{i:CaretDown:s}}</span><span class="sp"></span><a href="#" aria-label="Add shift">{{i:Plus}}</a></div>
+  <div class="hd"><h1>Schedule</h1><p>Oct 19 – 25 · Published</p></div>
+  <div class="wk">
+    <a href="#"><small>M</small><b>19</b></a><a href="#"><small>T</small><b>20</b></a><a href="#"><small>W</small><b>21</b></a><a href="#"><small>T</small><b>22</b></a><a class="on" href="#"><small>F</small><b>23</b></a><a href="#"><small>S</small><b>24</b></a><a href="#"><small>S</small><b>25</b></a>
+  </div>
+  <div class="sh"><b>Friday</b><span>6 shifts</span></div>
+  <div>
+    <a class="row av-row" href="#"><span class="av">AR</span><span class="rt"><b>Alexandra Rivera</b><i>8:00 AM – 4:00 PM · Front desk</i></span></a>
+    <a class="row av-row" href="#"><span class="av">DK</span><span class="rt"><b>Dana Kim</b><i>8:00 AM – 4:00 PM · Floor</i></span></a>
+    <a class="row av-row" href="#"><span class="av">JT</span><span class="rt"><b>Jordan Torres</b><i>9:00 AM – 5:00 PM · Floor</i></span></a>
+    <a class="row av-row" href="#"><span class="av">PL</span><span class="rt"><b>Priya Lal</b><i>9:00 AM – 5:00 PM · Front desk</i></span></a>
+    <div class="row av-row"><span class="av open">{{i:Plus}}</span><span class="rt"><b>Front desk</b><i>Open · 12:30 – 4:00 PM</i></span><a class="bs" href="#">Find cover</a></div>
+    <a class="row av-row" href="#"><span class="av">MS</span><span class="rt"><b>Marco Silva</b><i>4:00 PM – 12:00 AM · Floor</i></span></a>
+  </div>
+  {{tabs:Schedule}}
+</div>

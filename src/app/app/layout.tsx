@@ -20,6 +20,8 @@ import "./clean-manager/updates.css";
 import "./clean-manager/notifications.css";
 // Employee app, new style (Withings-inspired, Jose approved Oct 20): scoped to the shell's data-nv-e5.
 import "./employee-style.css";
+// Quiet (v4, Jose approved Oct 23): the Owner and Manager phone shell. Loaded last.
+import "./quiet-shell.css";
 import {cookies} from "next/headers";
 import {createHash} from "node:crypto";
 import {employeeViewAuthority} from "@/lib/employee-view-authority.server";

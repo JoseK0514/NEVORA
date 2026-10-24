@@ -1,8 +1,9 @@
+import Link from "next/link";
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {requireSessionMutationProof} from '@/lib/auth/session';
-import { Card, KitLink, PageBand } from "@/components/kit/kit";
+import { QuietNav } from "@/components/quiet/quiet";
 import { Notice } from "@/components/wave-a/parts";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listLocations } from "@/lib/data/employees";
@@ -33,28 +34,13 @@ export default async function NewEmployeePage({
 
   // Phase 3.5 Wave A: New employee on the kit. Three cards (person, access, scheduling), then what happens next.
   return (
-    <ScopedReadFrame observation={source}><div className="nv-page wa-page wa-newmember" data-nv-page="">
-      <PageBand back={{ href: "/app/employees", label: "Team" }} title="Add employee" summary="Their contact, access and scheduling details. Email is optional." />
-      <div className="nv-content wa-narrow">
-        {params.error ? <Notice tone="urgent" title="The employee wasn’t added">{errors[params.error] ?? "Complete all required employee fields."}</Notice> : null}
-        {!activeLocations.length ? <Notice tone="review" title="Add a location first">
-          {session.role === "OWNER" ? "An employee needs an active primary location." : "An employee needs an active primary location. Ask an Owner to add one."}
-        </Notice> : null}
-        {!activeLocations.length && session.role === "OWNER" ? <KitLink href="/app/settings/locations">Manage locations</KitLink> : null}
-
-        <Card title="Employee details"><div className="wa-fields">
-          <NewEmployeeForm actorRole={session.role} locations={activeLocations} positions={positions} action={createEmployeeFormAction}/>
-        </div></Card>
-
-        <Card title="What happens next" id="new-next">
-          <ol className="wa-steps">
-            <li>Review their registered email and Employee ID.</li>
-            <li>An Owner sends the account invitation from their profile.</li>
-            <li>They open the email link, create a password and sign in with their Employee ID.</li>
-          </ol>
-          <p className="wa-card-note">Email is optional for the employee record. A registered email is required before an invitation can be sent.</p>
-        </Card>
-      </div>
+    <ScopedReadFrame observation={source}><div className="q-page wa-newmember" data-nv-page="" data-q-sheet="">
+      <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href="/app/employees">Cancel</Link>} title="New employee"
+        right={<button type="submit" form="new-employee-form" className="q-nav__r q-nav__r--b" disabled={!activeLocations.length}>Save</button>} />
+      <h1 className="q-sr">New employee</h1>
+      {params.error ? <p className="q-error" role="alert">{errors[params.error] ?? "Complete all required employee fields."}</p> : null}
+      {!activeLocations.length ? <p className="q-help" role="status">{session.role === "OWNER" ? <>Add a location first. <Link href="/app/settings/locations" style={{ color: "#0B6E69" }}>Locations</Link></> : "Ask an Owner to add a location first."}</p> : null}
+      <NewEmployeeForm actorRole={session.role} locations={activeLocations} positions={positions} action={createEmployeeFormAction}/>
     </div></ScopedReadFrame>
   );
 }

@@ -26,13 +26,12 @@ it("retains the creation contract and automatic optional Clocker key", async () 
   expect(html).toMatch(/<input(?=[^>]*name="name")(?=[^>]*required="")(?=[^>]*maxLength="160")[^>]*>/);
   expect(html).toMatch(/<input(?=[^>]*name="shortName")(?=[^>]*required="")(?=[^>]*maxLength="48")[^>]*>/);
   expect(html).toMatch(/<input(?=[^>]*name="clockerKey")(?=[^>]*pattern="\[a-z0-9\]\+\(-\[a-z0-9\]\+\)\*")(?=[^>]*maxLength="64")[^>]*>/);
-  expect(html).toContain("Leave blank to generate a key automatically");
+  // Quiet (v4): the key's placeholder says it's created for you; the sheet's Add submits the form.
+  expect(html).toContain('placeholder="Created for you"');
   expect(html).toContain("can’t be changed later");
   expect(html).toContain('aria-describedby="location-clocker-help"');
   expect(html).toContain('href="/app/settings/locations"');
-  expect(html).toContain("Set staffing &amp; coverage");
-  expect(html).toContain("Assign eligible employees");
-  expect(html).toContain('type="submit"');
+  expect(html).toContain('type="submit" form="new-location-form"');
 });
 
 it("preserves edit-location controls and its immutable Clocker contract", () => {

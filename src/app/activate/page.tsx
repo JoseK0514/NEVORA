@@ -2,7 +2,7 @@ import { getPublicWorkspaceName } from "@/lib/data/workspaces";
 import { safeReturnTo } from "@/lib/notifications/destinations";
 import { AUTH_COPY } from "@/lib/auth-copy";
 import { readAuthLang } from "@/lib/auth-lang.server";
-import { AuthShell } from "@/components/auth-premium/auth-shell";
+import { QuietAuthShell } from "@/components/auth-premium/auth-shell";
 import { ActivationInvitation } from "./activation-invitation";
 import "../login/auth-premium.css";
 import "../login/auth-signature.css";
@@ -17,7 +17,7 @@ export default async function ActivatePage({ searchParams }: {
   const returnTo = typeof params.returnTo === "string" ? safeReturnTo(params.returnTo) : null;
   const returnQuery = returnTo ? `returnTo=${encodeURIComponent(returnTo)}` : "";
 
-  return <AuthShell lang={lang} t={AUTH_COPY[lang]} variant="sub" back={`/login${returnQuery ? `?${returnQuery}` : ""}`}>
+  return <QuietAuthShell lang={lang} t={AUTH_COPY[lang]} back={`/login${returnQuery ? `?${returnQuery}` : ""}`}>
     <ActivationInvitation workspaceName={workspaceName} loginHref={`/login?activated=1${returnQuery ? `&${returnQuery}` : ""}`} />
-  </AuthShell>;
+  </QuietAuthShell>;
 }

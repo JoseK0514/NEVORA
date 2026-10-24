@@ -8,7 +8,8 @@ import { UsersIcon } from "@phosphor-icons/react/dist/ssr/Users";
 import { CalendarXIcon } from "@phosphor-icons/react/dist/ssr/CalendarX";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { EmptyState } from "./empty-state";
-import { Avatar, Card, Row, Rows } from "./kit/kit";
+import { Avatar } from "./kit/kit";
+import { QuietGroup, QuietRow, QuietSection } from "./quiet/quiet";
 import { addDays, formatDayLabel, formatTime } from "../lib/date-utils";
 import { absencesOn, fullDayAbsence, type WeeklyApprovedAbsences, assignedHours, type RosterEmployee, type RosterShift } from "../lib/scheduling/manager-roster-presentation";
 
@@ -27,6 +28,8 @@ function compactTime(time: string) {
 }
 /** The phone list's clock: "6:00 AM", and 12:00 AM at midnight as in the mockup. */
 const clock = (time: string) => formatTime(time).replace(" ", " ");
+/** Quiet (v4): "12:30 – 4:00 PM", one AM/PM when both ends share it. */
+const span = (start: string, end: string) => { const a = clock(start), b = clock(end); const ma = a.slice(-2), mb = b.slice(-2); return /[AP]M/.test(ma) && ma === mb ? `${a.slice(0, -3)} – ${b}` : `${a} – ${b}`; };
 /** The roster block's clock: "6a", "2p", "6:30a", "12a". */
 function brief(time: string) {
   const [hour, minute] = time.slice(0, 5).split(":").map(Number);
@@ -113,50 +116,46 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   // ---------- Phone: week strip and the chosen day ----------
   const dayShifts = shiftsOn(phoneDay).sort((a, b) => a.shift.startTime.localeCompare(b.shift.startTime) || a.employee.name.localeCompare(b.employee.name));
   const dayOpen = openShifts.filter(open => open.date === phoneDay).sort((a, b) => a.startTime.localeCompare(b.startTime));
-  const SHOWN = 5;
-  const shiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <Row key={shift.id} href={editHref(shift)} label={shiftLabel(shift, employee.name)}
-    leading={<span className="cm-time" aria-hidden="true"><span>{clock(shift.startTime)}</span><span>{clock(shift.endTime)}</span></span>}
-    title={employee.name}
-    meta={[shift.position || shift.location || employee.role, shift.status === "PUBLISHED" ? null : statusWord(shift.status), shift.lead ? "Lead" : null].filter(Boolean).join(" · ")} />;
-  const weekStrip = <div className="cm-week" role="group" aria-label="Schedule day">
+  // Quiet (v4, approved Oct 23): the week strip, then the chosen day: avatar, name, "8:00 AM – 4:00 PM · Front desk".
+  const shiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <QuietRow key={shift.id} href={editHref(shift)} label={shiftLabel(shift, employee.name)} chevron={false}
+    avatar={initials(employee.name).toUpperCase()} title={employee.name}
+    detail={[`${clock(shift.startTime)} – ${clock(shift.endTime)}`, shift.position || shift.location || employee.role, shift.status === "PUBLISHED" ? null : statusWord(shift.status), shift.lead ? "Lead" : null].filter(Boolean).join(" · ")} />;
+  const weekStrip = <div className="q-week" role="group" aria-label="Schedule day">
     {dates.map(date => {
       const count = shiftsOn(date).length + openShifts.filter(open => open.date === date).length;
       const day = formatDayLabel(date);
-      return <button key={date} type="button" className="cm-week__day" aria-pressed={phoneDay === date} data-today={date === today || undefined}
+      return <button key={date} type="button" aria-pressed={phoneDay === date} data-today={date === today || undefined}
         aria-label={`${longWeekday(date)}, ${day.day}${date === today ? ", today" : ""}, ${count ? plural(count, "shift", "shifts") : "no shifts"}`}
         onClick={() => setPhoneDay(date)}>
-        <span aria-hidden="true">{narrowWeekday(date)}</span>
+        <small aria-hidden="true">{narrowWeekday(date)}</small>
         <b aria-hidden="true">{Number(date.slice(8))}</b>
-        <i aria-hidden="true" data-on={count ? "" : undefined} />
       </button>;
     })}
   </div>;
   // One list for the day: assigned and open shifts together, in time order (QA: the count, the strip and the rows agree).
   const dayRows = [
     ...dayShifts.map(entry => ({ start: entry.shift.startTime, node: shiftRow(entry) })),
-    ...dayOpen.map(open => ({ start: open.startTime, node: <Row key={open.id}
-      leading={<span className="cm-time" aria-hidden="true"><span>{clock(open.startTime)}</span><span>{clock(open.endTime)}</span></span>}
-      title={<span className="cm-open-title">Open shift</span>}
-      meta={!locationId && open.location ? open.location : "No one assigned"}
-      trailing={<Link className="cm-pill" href={open.href} aria-label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>Find Cover</Link>} /> })),
+    ...dayOpen.map(open => ({ start: open.startTime, node: <QuietRow key={open.id} avatar="open"
+      title={!locationId && open.location ? open.location : "Open shift"} detail={`Open · ${span(open.startTime, open.endTime)}`}
+      control={<Link className="q-bs" href={open.href} aria-label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>Find cover</Link>} /> })),
   ].sort((a, b) => a.start.localeCompare(b.start));
   // "Show N more" opens the rest of this day only; a new day starts collapsed. Focus moves to the first row it revealed.
+  const SHOWN_QUIET = 8;
   const showAll = moreDay === phoneDay;
-  const showMore = () => { setMoreDay(phoneDay); requestAnimationFrame(() => document.querySelector<HTMLElement>(`#schedule-day .nv-rows > li:nth-child(${SHOWN + 1}) :is(a, button)`)?.focus()); };
+  const showMore = () => { setMoreDay(phoneDay); requestAnimationFrame(() => document.querySelector<HTMLElement>(`#schedule-day .q-list > li:nth-child(${SHOWN_QUIET + 1}) :is(a, button)`)?.focus()); };
   const absenceKnown = (employeeId: string) => absences.state === "ready" && absences.employeeIds.includes(employeeId);
   const dayAbsences = employees.map(employee => ({employee, rows: absencesOn(absences, employee.id, phoneDay)})).filter(entry => entry.rows.length);
-  const dayList = <Card id="schedule-day" title={<>{longWeekday(phoneDay)}<span className="cm-count">{plural(dayRows.length, "shift", "shifts")}</span></>}
-    titleLabel={`${longWeekday(phoneDay)}, ${plural(dayRows.length, "shift", "shifts")}`} foot={footnote}>
-    <Rows label={`Shifts on ${longWeekday(phoneDay)}`}>
-      {(showAll ? dayRows : dayRows.slice(0, SHOWN)).map(row => row.node)}
-      {!showAll && dayRows.length > SHOWN ? <li className="cm-more"><button type="button" className="nv-row cm-more__button" onClick={showMore}>{`Show ${dayRows.length - SHOWN} more`}</button></li> : null}
-      {!dayRows.length ? <Row title="No shifts" meta={`Nothing is scheduled on ${longWeekday(phoneDay)}.`} /> : null}
-    </Rows>
-    {absences.state === "unavailable" || employees.some(employee => !absenceKnown(employee.id)) ? <p className="wb-note" role="status">Time off unavailable. Reload before adding shifts.</p> : null}
-    {dayAbsences.length ? <Rows label={`Approved time off on ${longWeekday(phoneDay)}`}>
-      {dayAbsences.map(({employee, rows}) => <Row key={employee.id} title={employee.name} meta={absenceText(rows)} />)}
-    </Rows> : null}
-  </Card>;
+  const dayList = <QuietSection id="schedule-day" title={longWeekday(phoneDay)} aside={plural(dayRows.length, "shift", "shifts")}>
+    <ul className="q-list" aria-label={`Shifts on ${longWeekday(phoneDay)}`}>
+      {(showAll ? dayRows : dayRows.slice(0, SHOWN_QUIET)).map(row => row.node)}
+      {!showAll && dayRows.length > SHOWN_QUIET ? <li className="cm-more"><button type="button" className="q-row q-row--one cm-more__button" onClick={showMore}><span className="q-rt"><b>{`Show ${dayRows.length - SHOWN_QUIET} more`}</b></span></button></li> : null}
+    </ul>
+    {!dayRows.length ? <p className="q-empty">Nothing scheduled.</p> : null}
+    {absences.state === "unavailable" || employees.some(employee => !absenceKnown(employee.id)) ? <p className="q-help" role="status">Time off unavailable. Reload before adding shifts.</p> : null}
+    {dayAbsences.length ? <QuietGroup label="Time off"><ul className="q-list" aria-label={`Approved time off on ${longWeekday(phoneDay)}`}>
+      {dayAbsences.map(({employee, rows}) => <QuietRow key={employee.id} avatar={initials(employee.name).toUpperCase()} title={employee.name} detail={absenceText(rows).replace("Time off · ", "")} />)}
+    </ul></QuietGroup> : null}
+  </QuietSection>;
 
   // ---------- Desktop: people × days ----------
   const shown = (employee: RosterEmployee) => employee.shifts.filter(shift => visibleDates.includes(shift.date));
@@ -239,9 +238,6 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
     {employees.length ? <>
       <div className="cm-sched-phone">{dayList}</div>
       <div className="cm-sched-desk">{grid}</div>
-    </> : <EmptyState className="cm-roster__empty" status icon={<UsersIcon size={22} />} illustration="setup-checklist" title="Your team schedule starts here"
-      action={<Link className="button secondary" href="/app/employees">Manage employees</Link>}>
-      Add team members to start assigning shifts.
-    </EmptyState>}
+    </> : <><p className="q-empty" style={{ marginTop: 24 }}>Add people to your team to start scheduling.</p><Link className="q-btn q-btn--sec" href="/app/employees">Go to Team</Link></>}
   </section>;
 }

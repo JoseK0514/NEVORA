@@ -18,7 +18,8 @@ it('puts writing before delivery and requires audience review before any publica
  expect(html).toContain('Preview audience');expect(html).not.toContain('>Publish update<');
  for(const field of ['communication-type','communication-location','communication-requirement'])expect(html).toContain(`id="${field}"`);
  for(const type of ['LOCATION_ANNOUNCEMENT','SHIFT_NOTE','OPERATIONAL_UPDATE','TODAYS_TEAM'])expect(html).toContain(`value="${type}"`);
- expect(html).toContain('Set an expiration');
+ // Quiet (v4): the expiry is the Expires row (Never until a date is chosen).
+ expect(html).toContain('<b>Expires</b>');
 });
 it('keeps employee authorship limited to today’s team without management requirements',()=>{
  const html=render({context:{...context,management:false},mode:'employee'});expect(html).toContain('Today’s team');

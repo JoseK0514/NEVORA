@@ -29,8 +29,9 @@ it('the Owner preview renders the D3 sidebar, the search button and the setup ca
   for (const gone of ['Requests', 'Employees', 'Availability', 'Shift requests', 'Templates', 'Payroll export']) expect(sidebar).not.toContain(`>${gone}<`);
   expect(sidebar).toContain('>Scheduling rules<');
   expect(html).toContain('aria-label="Search"');
-  expect(html).toContain('Finish setting up');
-  expect(html).toContain('3 employees have no weekly hour target.');
+  // Quiet (v4): Setup is one row, "N of 2 steps done", naming the next step.
+  expect(html).toContain('<h2 id="home-setup-title">Setup</h2>');
+  expect(html).toMatch(/<b>\d of 2 steps done<\/b><i>Next, /);
   expect(html).toContain('href="/app/schedule/settings#coverage-staffing"');
 });
 
@@ -42,7 +43,7 @@ it('Today strip and rail read one fixture source at one frozen moment', () => {
   expect(previewToday.state === 'ready' && previewToday.counts.clockedIn).toBe(rows);
   expect(previewActionCenter.state === 'ready' && previewActionCenter.observedAt).toBe(previewObservedAt);
   const html = renderToStaticMarkup(<HomePreview/>);
-  // Home's Today card reads the frozen moment (the rail's clock card moved to Attendance).
-  expect(html.match(/Updated <time[^>]*>4:49 PM<\/time>/g)?.length).toBeGreaterThanOrEqual(1);
+  // Quiet (v4): Right now reads the frozen fixture (the four people on the clock).
+  expect(html).toContain('<b>4 on shift</b>');
   expect(html).not.toContain('No one is clocked in right now');
 });

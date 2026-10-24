@@ -24,7 +24,8 @@ describe("public policy pages", () => {
     const html = renderToStaticMarkup(createElement(Page));
     expect(html).toContain(`<h1 id="legal-title">${title}</h1>`);
     expect(html).toContain('href="mailto:support@thevelani.com"');
-    expect(html).toContain("Provided by VELANI LLC");
+    // Quiet (v4): the operator is named under the title ("Effective … · VELANI LLC").
+    expect(html).toContain("VELANI LLC");
     for (const href of ["/privacy", "/terms", "/support", "/account-deletion"]) expect(html).toMatch(new RegExp(`href="${href}"|aria-current="page"`));
     // Every fact is confirmed, so no draft marker is left.
     expect(html).not.toContain("legal-unresolved");

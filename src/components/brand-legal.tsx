@@ -19,3 +19,11 @@ export function BrandLegal({ lang = "en" }: { lang?: "en" | "es" }) {
     </nav> : null}
   </div>;
 }
+
+/** Quiet (v4, approved Oct 23): one line under the sign-in pages, "© 2026 VELANI LLC · Privacy · Terms · Support". */
+export function QuietLegal({ lang = "en" }: { lang?: "en" | "es" }) {
+  const t = LINKS[lang];
+  return <p className="q-legal">© 2026 VELANI LLC{policiesVisible() ? <>
+    {" · "}<Link href="/privacy">{t.privacy}</Link>{" · "}<Link href="/terms">{t.terms}</Link>{" · "}<Link href="/support">{t.support}</Link>
+  </> : null}<span className="q-sr">{` ${NUVORA_BRAND.ownership}`}</span></p>;
+}

@@ -22,11 +22,13 @@ it("authorizes the Owner before reading the full catalog", async () => {
   expect(html).toContain('name="id" value="support"');
   expect(html).toContain('name="id" value="retired"');
   expect(html).toContain("Retired qualification");
-  expect(html).toContain('aria-label="Edit Retired qualification, inactive"');
+  // Quiet (v4): Active and Retired segments; each position is a row that opens its editor.
+  expect(html).toContain('aria-label="Edit Retired qualification, retired"');
+  expect(html).toContain('aria-label="Retired, 1"');
   expect(html).toContain('maxLength="80"');
   expect(html).toContain('aria-labelledby="position-support-active-label"');
-  expect(html).toContain('id="position-support-active-label">Active position');
-  expect(html).toContain("They do not grant Owner, Manager, Lead or Employee access.");
+  expect(html).toContain('id="position-support-active-label">Active');
+  expect(html).toContain("Retired positions can’t be newly assigned. People keep their history.");
 });
 it("does not read or render private configuration when authorization fails", async () => {
   mocks.requireRoles.mockRejectedValue(new Error("Access denied"));
@@ -45,9 +47,9 @@ it("keeps an unavailable read distinct from an empty catalog and offers a retry"
 it("explains optional positions and guards forms before hydration", async () => {
   mocks.listPositions.mockResolvedValue([]);
   const html = renderToStaticMarkup(await PositionsPage());
-  expect(html).toContain("Positionless shifts remain available.");
+  expect(html).toContain("Shifts can still be added without a position.");
   expect(html).toContain("JavaScript is required to add or edit positions.");
-  expect(html).toMatch(/<fieldset(?=[^>]*disabled="")(?=[^>]*class="wc-fieldset")[^>]*>/);
-  expect(html).toContain("Add your first position");
+  expect(html).toMatch(/<fieldset(?=[^>]*disabled="")(?=[^>]*class="q-fieldset wc-fieldset")[^>]*>/);
+  expect(html).toMatch(/<button type="button" class="q-btn" disabled="">Add position<\/button>/);
   expect(html).not.toContain("Couldn’t load positions.");
 });

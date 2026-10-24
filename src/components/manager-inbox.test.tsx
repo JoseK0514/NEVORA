@@ -15,32 +15,36 @@ const ready = (items: ActionItem[], limitedAttendance = false): ActionCenter => 
 const html = (snapshot: ActionCenter | null, connection: Parameters<typeof InboxSurface>[0]['connection'] = 'ready') =>
   renderToStaticMarkup(createElement(InboxSurface, {snapshot, connection, onRefresh: () => {}, timeZone: 'America/Puerto_Rico'}));
 
-it('lists exceptions before requests and sends every decision to its full review', () => {
-  const output = html(ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests'), item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT'), item('EXCHANGE:e1', 'EXCHANGE', 'requests')]));
-  expect(output.indexOf('id="inbox-urgent"')).toBeGreaterThan(0); expect(output.indexOf('id="inbox-urgent"')).toBeLessThan(output.indexOf('id="inbox-requests"'));
+// Quiet (v4, approved Oct 23): Act now · N, Requests · N and Plan ahead. The Inbox opens on Act now; each row opens
+// its full review (decisions stay there).
+const surface = (snapshot: ActionCenter, initialFilter?: string) =>
+  renderToStaticMarkup(createElement(InboxSurface, {snapshot, connection: 'ready', onRefresh: () => {}, timeZone: 'America/Puerto_Rico', ...(initialFilter ? {initialFilter} : {})} as Parameters<typeof InboxSurface>[0]));
+it('lists exceptions under Act now and sends every decision to its full review', () => {
+  const snapshot = ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests'), item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT'), item('EXCHANGE:e1', 'EXCHANGE', 'requests')]);
+  const output = html(snapshot);
+  expect(output).toContain('aria-label="Act now, 1">Act now · 1</button>');
+  expect(output).toContain('aria-label="Requests, 2">Requests · 2</button>');
+  expect(output.indexOf('id="inbox-urgent"')).toBeGreaterThan(0);
   // O1: no Approve/Decline or swipe without the request's dates, duration and note.
-  expect(output).not.toContain('name="decision"');
-  expect(output).not.toContain('<form');
-  expect(output).not.toContain('swipe');
+  for (const view of [output, surface(snapshot, 'requests')]) {
+    expect(view).not.toContain('name="decision"');
+    expect(view).not.toContain('<form');
+    expect(view).not.toContain('swipe');
+  }
   // The review link remembers the Inbox filter (IS-14) and its own row (IS-P4-11), and carries no dead fragment (IS-18).
-  expect(output).toContain('href="/app/requests?tab=pending&amp;requestId=r1&amp;filter=all&amp;item=TIME_OFF%3Ar1"');
-  expect(output).not.toContain('requestId=r1&amp;filter=all"');
-  expect(output).toContain('class="inbox-row" data-urgent="true"');
-  expect(output).toContain('Updated <time dateTime="2026-10-16T14:30:00Z">10:30 AM</time>');
-  // F4: the action is a link line; the condition is a pill.
-  expect(output).toContain('<span class="inbox-action" aria-hidden="true">Review time off</span>');
-  expect(output).toMatch(/data-tone="review"[^]*Waiting/);
+  expect(surface(snapshot, 'requests')).toContain('href="/app/requests?tab=pending&amp;requestId=r1&amp;filter=requests&amp;item=TIME_OFF%3Ar1"');
+  expect(output).toContain('>Find cover</a>');
 });
 it('says All caught up only for a ready, empty observation', () => {
-  expect(html(ready([]))).toContain('All caught up');
-  for (const connection of ['loading', 'offline', 'unavailable', 'access_lost'] as const) expect(html(null, connection)).not.toContain('All caught up');
+  expect(html(ready([]))).toContain('Nothing needs you right now.');
+  for (const connection of ['loading', 'offline', 'unavailable', 'access_lost'] as const) expect(html(null, connection)).not.toContain('Nothing needs you right now.');
   expect(html(null, 'loading')).toContain('Loading your Inbox…');
   expect(html(null, 'access_lost')).toContain('href="/login"');
   expect(html(ready([], true))).toContain('Some attendance comparisons are unavailable');
 });
 it('keeps counts separate from labels for assistive tech', () => {
   const output = html(ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests')]));
-  expect(output).toContain('aria-label="Requests, 1">Requests<span class="inbox-section-count" aria-hidden="true">1</span></h2>');
+  expect(output).toContain('aria-label="Requests, 1">Requests · 1</button>');
 });
 it('counts only what needs you today in the band (F1)', () => {
   const output = html(ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests'), item('target', 'TARGET_MISSING', 'scheduling', 'MISSING_INPUT'), item('deadline', 'DEADLINE_MISSING', 'scheduling', 'MISSING_INPUT')]));
@@ -51,7 +55,7 @@ it('counts only what needs you today in the band (F1)', () => {
 });
 it('opens on the filter named in the URL (W2)', () => {
   const output = renderToStaticMarkup(createElement(InboxSurface, {snapshot: ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests'), item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT')]), connection: 'ready', onRefresh: () => {}, timeZone: 'America/Puerto_Rico', initialFilter: 'requests'}));
-  expect(output).toMatch(/aria-pressed="true"[^>]*>Requests</);
+  expect(output).toMatch(/aria-pressed="true"[^>]*>Requests · 1</);
   expect(output).not.toContain('id="inbox-urgent"');
 });
 it('opens older Planning links (?filter=exceptions) on Planning', async () => {
@@ -60,24 +64,22 @@ it('opens older Planning links (?filter=exceptions) on Planning', async () => {
   expect(inboxFilter('now')).toBe('now');
   expect(inboxFilter('anything')).toBe('all');
 });
-it('Phase 4: the desktop pane shows the first item and opens its full review; decisions stay on the review', () => {
+it('the detail beside the list shows the first item and opens its full review; decisions stay on the review', () => {
   const output = html(ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests'), item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT')]));
-  expect(output).toContain('class="inbox-columns" data-detail="true"');
   const pane = output.split('class="nv-card inbox-detail"')[1].split('</section>')[0];
-  // The urgent gap comes first in the list, so the pane shows it.
+  // Act now leads, so the detail shows the urgent gap.
   expect(pane).toContain('id="inbox-detail-title" tabindex="-1">Title gap</h2>');
   expect(pane).toContain('class="nv-btn" data-kind="primary"');
   expect(pane).not.toMatch(/Approve|Decline|<form/);
-  expect(output).toContain('data-inbox-key="TIME_OFF:r1"');
-  // D-4: Requests folds into Inbox; its three pages are one step away.
-  for (const href of ['/app/requests', '/app/exchange', '/app/availability']) expect(output).toContain(`href="${href}"`);
-  // No pane while loading data that isn't there, and none when all is clear.
+  // D-4: Requests folds into Inbox; its three pages are one step away (All requests, under Requests).
+  for (const href of ['/app/requests', '/app/exchange', '/app/availability']) expect(surface(ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests')]), 'requests')).toContain(`href="${href}"`);
+  // No detail when all is clear.
   expect(html(ready([]))).not.toContain('inbox-detail__title');
-  expect(html(null, 'loading')).toContain('inbox-detail--placeholder');
 });
-it("Codex's optional request facts fill the pane; the decision stays on the full review", () => {
-  const request = {...item('TIME_OFF:r1', 'TIME_OFF', 'requests'), request: {startDate: '2026-10-28', endDate: '2026-10-29', lengthText: '2 days', locationName: 'Main Office', note: 'Fictional family appointment', reviewHref: '/app/requests?tab=pending&requestId=r1&from=inbox'}} as ActionItem;
-  const pane = html(ready([request])).split('class="nv-card inbox-detail"')[1].split('</section>')[0];
+
+it("Codex's optional request facts fill the detail; the decision stays on the full review", () => {
+  const request = {...item('TIME_OFF:r1', 'TIME_OFF', 'requests'), request: {startDate: '2026-10-28', endDate: '2026-10-29', lengthText: '2 days', locationName: 'Main Office', note: 'Fictional family appointment', reviewHref: '/app/requests?tab=pending&requestId=r1'}} as ActionItem;
+  const pane = surface(ready([request]), 'requests').split('class="nv-card inbox-detail"')[1].split('</section>')[0];
   expect(pane).toContain('<dt>Dates</dt><dd><span class="nv-keep"><span class="nv-nowrap">Wed, Oct 28\u00a0–</span> <span class="nv-nowrap">Thu, Oct 29</span></span></dd>');
   // r4 QA: whole days read as the full review words them ("2 full days"), not the read's shorter "2 days".
   expect(pane).toContain('<dt>Length</dt><dd>2 full days</dd>');

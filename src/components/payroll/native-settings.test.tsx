@@ -18,7 +18,7 @@ it('explains native company preferences and automatic publication without asking
   expect(html).not.toContain('name="bankProfile"');
   expect(html).not.toContain('name="sourceProvider"');
   expect(html).not.toContain('name="publish"');
-  expect(html).toMatch(/Review the change<\/h3>[\s\S]*Save company preferences[\s\S]*<\/section><\/fieldset><\/form>/);
+  expect(html).toMatch(/Reason for change[\s\S]*Save company preferences[\s\S]*<\/div><\/fieldset><\/form>/);
 });
 it('keeps the historical provider preference workflow available before native adoption', () => {
   boundary.native = false;
@@ -27,7 +27,7 @@ it('keeps the historical provider preference workflow available before native ad
   expect(html).toContain('name="bankProfile"');
   expect(html).toContain('name="sourceProvider"');
   expect(html).toContain('name="publish"');
-  expect(html).toMatch(/Review the change<\/h3>[\s\S]*Save company preferences[\s\S]*<\/section><\/fieldset><\/form>/);
+  expect(html).toMatch(/Reason for change[\s\S]*Save company preferences[\s\S]*<\/div><\/fieldset><\/form>/);
 });
 it('waits for fresh Owner access before presenting saved company preferences', () => {
   boundary.loading = true;

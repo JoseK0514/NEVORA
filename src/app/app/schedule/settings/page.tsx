@@ -3,17 +3,11 @@ import {withOperationalCompany} from '@/lib/company-access/operational-scope.ser
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import Link from "next/link";
-import type React from "react";
-import { PageBand, Status, Tile } from "@/components/kit/kit";
+import { QuietHeader, QuietNav, QuietPage } from "@/components/quiet/quiet";
 import { keepWhole } from "@/lib/keep-whole";
-import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
-import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
-import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
-import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
-import { UsersIcon } from "@phosphor-icons/react/dist/ssr/Users";
-import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { ActionForm, InlineConfigForm, KeepFocusClear, RulesSaveForm } from "@/components/wave-b-forms";
 import { PositionQuotaFields } from "@/components/position-quota-fields";
 import { ShiftChangePolicyFields } from "@/components/shift-change-policy-fields";
@@ -36,18 +30,15 @@ import { formatWeekRange, isValidWeekStart, weekStartFor } from "@/lib/date-util
 
 const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-/* IS-B9: the page's own section links target these headings. The sections keep their ids (coverage-staffing,
- * target-hours, coverage-windows) for links from elsewhere, which the issue-focus helper centres. */
-function RuleHeading({ title, meta, id }: { title: string; meta?: React.ReactNode; id?: string }) {
-  return <div className="nv-card__head"><h2 className="nv-card__title" id={id} tabIndex={id ? -1 : undefined}>{title}</h2>{meta ? <span className="nv-card__meta">{meta}</span> : null}</div>;
-}
-
-function Empty({ icon, title, children, action }: { icon: React.ReactNode; title: string; children?: React.ReactNode; action?: { href: string; label: string } }) {
-  return <div className="wb-empty-row"><Tile tone="neutral">{icon}</Tile><div><p className="wb-strong">{title}</p>{children ? <p className="wb-note">{children}</p> : null}{action ? <Link className="nv-link" href={action.href}>{action.label}<ArrowRightIcon size={18} aria-hidden="true" /></Link> : null}</div></div>;
+/** Quiet (v4): a rule's row; it opens the rule's settings under it. */
+function Summary({ title, value }: { title: string; value: string }) {
+  return <summary className="q-row q-row--one">
+    <span className="q-rt"><b>{title}</b></span><span className="q-rv q-rv--l">{value}</span><CaretRightIcon className="q-chev" aria-hidden="true" />
+  </summary>;
 }
 
 export default async function ScheduleSettingsPage({ searchParams }: {
-  searchParams: Promise<{ error?: string; saved?: string; windowSaved?: string; windowDeleted?: string; week?: string; deadlineSaved?: string; availabilityDeadline?: string }>;
+  searchParams: Promise<{ error?: string; saved?: string; windowSaved?: string; windowDeleted?: string; week?: string; deadlineSaved?: string; availabilityDeadline?: string; employeeId?: string }>;
 }) {
   const session = await requireRoles(MANAGER_ROLES);
   const params=await searchParams;
@@ -78,93 +69,99 @@ export default async function ScheduleSettingsPage({ searchParams }: {
     return locations.find(location => location.id === locationId)?.shortName ?? fallback;
   }
 
+  // Quiet (v4, approved Oct 23): five rows, each with its current value; a row opens its settings in place.
+  // Links into a section (#coverage-staffing, #target-…) open it through ManagerIssueFocus.
+  const deadlineValue = weekSettings?.availabilityDeadline ? new Intl.DateTimeFormat("en-US", { timeZone: workspace.timeZone, weekday: "short", month: "short", day: "numeric" }).format(new Date(weekSettings.availabilityDeadline)) : "Not set";
+  const staffValues = [...new Set(staffing.map(location => location.minimumStaffPerShift))];
+  const staffingValue = !staffing.length ? "No locations" : staffing.some(location => location.minimumStaffPerShift === null || location.requiresDesignatedLead === null) ? "Needs setup"
+    : staffValues.length === 1 ? `${staffValues[0]} per shift` : "Varies";
+  const targets = employees.filter(employee => employee.targetWeeklyHours !== null && employee.targetWeeklyHours !== undefined).length;
+  const hoursValue = targets ? `${targets} ${targets === 1 ? "target" : "targets"}` : "No targets";
+  const coverageValue = coverageWindows.length ? `${coverageWindows.length} ${coverageWindows.length === 1 ? "period" : "periods"}` : "Off";
+  const modes = policy ? [...new Set([policy.swap.mode, policy.coverage.mode])] : [];
+  const policyValue = policyUnavailable ? "Unavailable" : !policy || modes.includes(null) ? "Not set" : modes.length > 1 ? "Mixed"
+    : modes[0] === "MANAGER_REVIEW" ? "Manager approves" : "Automatic";
+  const open = {
+    deadline: Boolean(params.deadlineSaved || ["INVALID_DEADLINE", "DEADLINE_WORKSPACE_CHANGED", "INVALID_SHIFT"].includes(params.error ?? "")),
+    staffing: params.error === "invalid_staffing",
+    hours: params.error === "invalid_hours" || Boolean(params.employeeId),
+    coverage: Boolean(params.windowSaved || params.windowDeleted || ["duplicate_window", "invalid_window"].includes(params.error ?? "")),
+  };
+
   return (<ScopedReadFrame observation={source}>
-    <div className="nv-page wb-page wb-rules" data-nv-page="">
-      <PageBand back={{ href: `/app/schedule?week=${weekStart}`, label: "Schedule" }} title={"Sched\u00aduling rules"} summary="Set staffing, weekly hours and recurring coverage so your team knows what a complete schedule needs." overlap={false} />
-      <div className="nv-content">
+    <QuietPage className="q-rules">
+      <QuietNav back={{ href: `/app/schedule?week=${weekStart}`, label: "Schedule" }} />
+      <QuietHeader title={"Sched\u00aduling rules"} />
       <ManagerIssueFocus prefix="target-" /><ManagerIssueFocus prefix="staffing-" /><ManagerIssueFocus prefix="coverage-" /><KeepFocusClear />
-      {params.error || params.saved || params.windowSaved || params.windowDeleted || params.deadlineSaved ? <div className="wb-feedback">
-      {params.error ? <p className="form-error" role="alert"><WarningCircleIcon size={22} aria-hidden="true" /><span>{
-        params.error === "INVALID_DEADLINE" ? "Enter a valid availability deadline in the workspace time zone."
+      {params.error ? <p className="q-error q-first form-error" role="alert">{
+        params.error === "INVALID_DEADLINE" ? "Enter a valid availability deadline."
           : params.error === "DEADLINE_WORKSPACE_CHANGED" ? "Workspace settings changed. Review the deadline and try again."
           : params.error === "INVALID_SHIFT" ? "Choose a valid Monday for the schedule week."
-          : params.error === "invalid_staffing"
-          ? "Minimum staff must be a whole number from 1 to 100, and each new location needs a designated lead choice."
-          : params.error === "invalid_hours"
-            ? "Targets and maximums must be from 0 to 168 hours."
-            : params.error === "duplicate_window"
-              ? "That coverage period already exists."
-              : "Enter a day, a start and end time, and staff numbers if you need them."
-      }</span></p> : null}
-      {params.deadlineSaved ? <p className="form-success" role="status">Availability deadline saved.</p> : null}
-      {params.saved ? <p className="form-success" role="status"><CheckCircleIcon size={22} weight="fill" aria-hidden="true" /><span>Scheduling rules saved.</span></p> : null}
-      {params.windowSaved ? <p className="form-success" role="status"><CheckCircleIcon size={22} weight="fill" aria-hidden="true" /><span>Coverage period added.</span></p> : null}
-      {params.windowDeleted ? <p className="form-success" role="status"><CheckCircleIcon size={22} weight="fill" aria-hidden="true" /><span>Coverage period removed.</span></p> : null}
-      </div> : null}
+          : params.error === "invalid_staffing" ? "Minimum staff must be a whole number from 1 to 100, and each new location needs a lead choice."
+          : params.error === "invalid_hours" ? "Targets and maximums must be from 0 to 168 hours."
+          : params.error === "duplicate_window" ? "That coverage period already exists."
+          : "Enter a day, a start and end time, and staff numbers if you need them."}</p> : null}
+      {params.deadlineSaved ? <p className="q-help q-first form-success" role="status">Availability deadline saved.</p> : null}
+      {params.saved ? <p className="q-help q-first form-success" role="status">Scheduling rules saved.</p> : null}
+      {params.windowSaved ? <p className="q-help q-first form-success" role="status">Coverage period added.</p> : null}
+      {params.windowDeleted ? <p className="q-help q-first form-success" role="status">Coverage period removed.</p> : null}
 
-      <div className="wb-rules-layout">
-        <aside className="wb-rules-nav">
-          <nav className="wb-jump" aria-label="Scheduling rule sections">
-            <span className="wb-jump__label">On this page</span>
-            <a href="#rules-deadline">Availability deadline</a>
-            <a href="#rules-staffing">Location staffing</a>
-            <a href="#rules-hours">Weekly hours</a>
-            <a href="#rules-coverage">Recurring coverage</a>
-            <a href="#rules-policy">Trades and coverage</a>
-          </nav>
-          <p className="wb-note wb-rules-nav__note">Staffing and hours save together. Coverage periods and policies save separately.</p>
-        </aside>
-
-        <div className="wb-rules-content">
-          <section className="nv-card" aria-labelledby="rules-deadline">
-            <RuleHeading title="Availability deadline" id="rules-deadline" meta={formatWeekRange(weekStart)} />
-            <ActionForm action={setAvailabilityDeadlineAction} className="wb-body wb-form wb-config" failure="The availability deadline could not be saved. Try again." submit={{label: weekSettings?.availabilityDeadline ? "Update deadline" : "Set deadline", pendingLabel: "Saving…", className: "nv-btn", kind: "primary"}}>
+      <div className="q-list q-rule-list" style={{ marginTop: 16 }}>
+        <details className="q-details q-rule" open={open.deadline || undefined}>
+          <Summary title="Availability deadline" value={deadlineValue} />
+          <div className="q-rule__body" id="rules-deadline">
+            <ActionForm action={setAvailabilityDeadlineAction} className="q-rule-form" failure="The availability deadline could not be saved. Try again." submit={{label: weekSettings?.availabilityDeadline ? "Update deadline" : "Set deadline", pendingLabel: "Saving…", className: "q-btn"}}>
               <input type="hidden" name="returnTo" value="/app/schedule/settings" />
               <input type="hidden" name="weekStart" value={weekStart} />
-              <label className="wb-field"><span>Availability deadline</span><input type="datetime-local" name="availabilityDeadline" aria-describedby="deadline-help" defaultValue={params.availabilityDeadline ?? formatBusinessDateTimeInput(weekSettings?.availabilityDeadline, workspace.timeZone)} /></label>
-              <p className="wb-help" id="deadline-help">Times in {workspace.timeZone.replaceAll("_", " ")}. Leave blank to clear the deadline.</p>
+              <div className="q-fl"><label htmlFor="rules-deadline-input">{`Deadline for ${formatWeekRange(weekStart)}`}</label>
+                <input id="rules-deadline-input" className="q-in" type="datetime-local" name="availabilityDeadline" aria-describedby="deadline-help" defaultValue={params.availabilityDeadline ?? formatBusinessDateTimeInput(weekSettings?.availabilityDeadline, workspace.timeZone)} /></div>
+              <p className="q-help" id="deadline-help">{`${workspace.timeZone.replaceAll("_", " ")} time. Leave it blank to clear it.`}</p>
             </ActionForm>
-          </section>
-          <RulesSaveForm action={saveScheduleHealthSettingsFormAction} bar={staffing.length > 0 || employees.length > 0}>
-            <section className="nv-card manager-issue-target" id="coverage-staffing" tabIndex={-1}>
-              <RuleHeading title="Location staffing" id="rules-staffing" />
-              <p className="wb-note wb-card-lead">Choose the minimum staff needed during overlapping shift times, and whether a designated lead must be present.</p>
+          </div>
+        </details>
+        <RulesSaveForm action={saveScheduleHealthSettingsFormAction} bar={staffing.length > 0 || employees.length > 0}>
+          <details className="q-details q-rule" open={open.staffing || undefined}>
+            <Summary title="Staffing per location" value={staffingValue} />
+            <div className="q-rule__body manager-issue-target" id="coverage-staffing" tabIndex={-1}>
+              <p className="q-help">The fewest people working at once, and whether a shift lead must be there.</p>
               <ul className="wb-setting-list">
                 {staffing.map(location => {
                   const name = locationLabel(location.locationId, location.locationName);
                   const needsSetup = location.minimumStaffPerShift === null || location.requiresDesignatedLead === null;
                   return (
                     <li className="wb-setting manager-issue-target" id={"staffing-" + location.locationId} tabIndex={-1} key={location.locationId}>
-                      <div className="wb-setting__name"><span className="wb-record__title">{name}</span>{needsSetup ? <Status tone="review">Needs setup</Status> : <span className="wb-record__meta">Staffing per shift</span>}</div>
+                      <div className="wb-setting__name"><span className="wb-record__title">{name}</span>{needsSetup ? <span className="wb-record__meta">Needs setup</span> : null}</div>
                       <div className="wb-setting__fields">
                         <label className="wb-field"><span>Minimum staff</span><span className="wb-suffix"><input type="number" name={"staffing-" + location.locationId} aria-label={name + " minimum staff per shift"} defaultValue={location.minimumStaffPerShift ?? undefined} min={1} max={100} step={1} required /><span aria-hidden="true">people</span></span></label>
                         {location.requiresDesignatedLead === null ? (
-                          <label className="wb-field"><span>Designated lead</span><select name={"lead-choice-" + location.locationId} defaultValue="" required aria-label={name + " designated lead rule"}><option value="" disabled>Choose a lead rule</option><option value="true">Designated lead required</option><option value="false">Designated lead not required</option></select></label>
+                          <label className="wb-field"><span>Shift lead</span><select name={"lead-choice-" + location.locationId} defaultValue="" required aria-label={name + " designated lead rule"}><option value="" disabled>Choose</option><option value="true">Required</option><option value="false">Not required</option></select></label>
                         ) : (
-                          <label className="wb-check"><input type="hidden" name={"lead-configured-" + location.locationId} value="true" /><input type="checkbox" name={"lead-" + location.locationId} defaultChecked={location.requiresDesignatedLead} aria-label={name + " designated lead required"} /><span>Designated lead required</span></label>
+                          <label className="wb-check"><input type="hidden" name={"lead-configured-" + location.locationId} value="true" /><input type="checkbox" name={"lead-" + location.locationId} defaultChecked={location.requiresDesignatedLead} aria-label={name + " designated lead required"} /><span>Shift lead required</span></label>
                         )}
                       </div>
                     </li>
                   );
                 })}
               </ul>
-              {!staffing.length ? <div className="wb-body"><Empty icon={<MapPinIcon size={22} />} title="Add your first location" action={{ href: "/app/settings/locations", label: "Manage locations" }}>Set up a location, then choose its staffing and lead requirements.</Empty></div> : null}
-            </section>
-
-            <section className="nv-card manager-issue-target" id="target-hours" tabIndex={-1}>
-              <RuleHeading title="Weekly hours" id="rules-hours" meta={employees.length ? `${employees.length} ${employees.length === 1 ? "person" : "people"}` : undefined} />
-              <p className="wb-note wb-card-lead">Targets guide balanced schedules. Maximums flag extra scheduled hours. Leave a target blank to leave it out of the hours review.</p>
+              {!staffing.length ? <p className="q-empty">Add a location first. <Link className="q-link" href="/app/settings/locations">Locations</Link></p> : null}
+            </div>
+          </details>
+          <details className="q-details q-rule" open={open.hours || undefined}>
+            <Summary title="Weekly hours" value={hoursValue} />
+            <div className="q-rule__body manager-issue-target" id="target-hours" tabIndex={-1}>
+              <p className="q-help">Targets keep schedules balanced. Maximums flag extra hours. Leave a target blank to skip it.</p>
               {employees.length ? <RulesHoursList rows={employees.map(employee => ({
                 employeeId: employee.employeeId, employeeName: employee.employeeName,
-                detail: `${employee.employeeId} · ${employee.role[0]}${employee.role.slice(1).toLowerCase()} · ${locationLabel(employee.primaryLocationId, "—")}`,
+                detail: `${employee.role[0]}${employee.role.slice(1).toLowerCase()} · ${locationLabel(employee.primaryLocationId, "—")}`,
                 targetWeeklyHours: employee.targetWeeklyHours ?? null, maximumWeeklyHours: employee.maximumWeeklyHours ?? null,
-              }))} /> : <div className="wb-body"><Empty icon={<UsersIcon size={22} />} title="No employees to set up" action={{ href: "/app/employees", label: "Manage employees" }}>Add active employees to set their weekly hour targets.</Empty></div>}
-            </section>
-          </RulesSaveForm>
-
-          <section className="nv-card manager-issue-target" id="coverage-windows" tabIndex={-1}>
-            <RuleHeading title="Recurring coverage" id="rules-coverage" meta={coverageWindows.length ? `${coverageWindows.length} ${coverageWindows.length === 1 ? "period" : "periods"}` : undefined} />
-            <p className="wb-note wb-card-lead">Add the periods you expect every week. The schedule can then flag open coverage, even before any shift is added.</p>
+              }))} /> : <p className="q-empty">Add people first. <Link className="q-link" href="/app/employees">Team</Link></p>}
+            </div>
+          </details>
+        </RulesSaveForm>
+        <details className="q-details q-rule" open={open.coverage || undefined}>
+          <Summary title="Recurring coverage" value={coverageValue} />
+          <div className="q-rule__body manager-issue-target" id="coverage-windows" tabIndex={-1}>
+            <p className="q-help">Periods you expect every week. The schedule flags open coverage even before shifts are added.</p>
             {locations.length ? <details className="wb-disclosure wb-disclosure--ruled wb-add-period" open={!coverageWindows.length}>
               <summary><span className="wb-inline-icon"><PlusIcon size={20} aria-hidden="true" />Add coverage period</span><CaretDownIcon size={20} aria-hidden="true" /></summary>
               <InlineConfigForm action={addCoverageWindowFormAction} className="wb-period-form" submit={{ label: "Add coverage period", pendingLabel: "Adding…", kind: "primary" }} successText="Coverage period added.">
@@ -177,9 +174,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
                 </div>
                 <PositionQuotaFields positions={positions.filter(position => position.active)} />
               </InlineConfigForm>
-            </details> : <div className="wb-body"><Empty icon={<CalendarBlankIcon size={22} />} title="Add a location before creating a coverage period." action={{ href: "/app/settings/locations", label: "Manage locations" }} /></div>}
-
-            {/* U3: periods grouped by location, in week order. A link to one period opens its group. */}
+            </details> : <p className="q-empty">Add a location first. <Link className="q-link" href="/app/settings/locations">Locations</Link></p>}
             {coverageGroups.map(group => (
               <details className="wb-disclosure wb-disclosure--ruled wb-period-group" key={group.locationId} open={coverageGroups.length === 1 || group.needsReview}>
                 <summary><span className="wb-summary-text"><span className="wb-record__title">{group.label}</span><span>{group.windows.length} {group.windows.length === 1 ? "period" : "periods"} · {group.days} {group.days === 1 ? "day" : "days"} a week</span></span><CaretDownIcon size={20} aria-hidden="true" /></summary>
@@ -200,17 +195,16 @@ export default async function ScheduleSettingsPage({ searchParams }: {
                 </ul>
               </details>
             ))}
-            {!coverageWindows.length ? <div className="wb-body wb-body--ruled"><Empty icon={<CalendarBlankIcon size={22} />} title="No coverage periods yet">Add the recurring shift periods your team expects each week.</Empty></div> : <div className="wb-card-end" />}
-          </section>
-
-          <section className="nv-card wb-auto" id="rules-policy" tabIndex={-1}>
-            <RuleHeading title="Trades and coverage" />
-            <p className="wb-note wb-card-lead">How shift trades and coverage requests are approved, and how far ahead they must be sent and completed.</p>
-            {policyUnavailable ? <div className="wb-body"><p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>Couldn’t load this policy. Reload the page to try again.</span></p></div> : <ShiftChangePolicyFields policy={policy} canEdit={session.role === "OWNER"} />}
-          </section>
-        </div>
+          </div>
+        </details>
+        <details className="q-details q-rule">
+          <Summary title="Trades and coverage" value={policyValue} />
+          <div className="q-rule__body" id="rules-policy" tabIndex={-1}>
+            <p className="q-help">How trades and cover are approved, and how far ahead they must be sent.</p>
+            {policyUnavailable ? <p className="q-error" role="alert">Couldn’t load this policy. Reload the page to try again.</p> : <ShiftChangePolicyFields policy={policy} canEdit={session.role === "OWNER"} />}
+          </div>
+        </details>
       </div>
-      </div>
-    </div>
+    </QuietPage>
   </ScopedReadFrame>);
 }

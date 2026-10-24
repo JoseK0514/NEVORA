@@ -4,6 +4,7 @@ import {keepWhole} from '@/lib/keep-whole';
 import {Freshness, PageBand} from './kit/kit';
 import {KeepSelectedVisible} from './kit/keep-selected-visible';
 import Link from 'next/link';
+import {QuietHeader, QuietNav} from '@/components/quiet/quiet';
 import {useState} from 'react';
 import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import {TrayIcon} from '@phosphor-icons/react/dist/ssr/Tray';
@@ -72,41 +73,36 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
   const stateTitle = paused ? 'Updates paused' : signedOut ? 'Your session ended' : unavailableReason ? 'Couldn’t load updates' : 'Loading updates…';
   const stateText = paused ? 'Return online and to this page to refresh.' : signedOut ? 'Sign in again to see updates.' : unavailableReason ? 'Check your connection, then try again.' : 'Checking for current workplace updates.';
   const when = (item: ReadyUpdate) => keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, dateStyle: 'medium', timeStyle: 'short'}).format(new Date(item.publishedAt)));
+  // Quiet (v4, approved Oct 23): "+" to compose; All and Needs reply; one row per update with who has read it.
+  const day = (item: ReadyUpdate) => keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, month: 'short', day: 'numeric'}).format(new Date(item.publishedAt)));
+  const readLine = (item: ReadyUpdate) => {
+   const people = item.management?.recipients;
+   if (people?.length) return `${people.filter(person => person.acknowledgedAt).length} of ${people.length} have read it`;
+   return item.acknowledgement === 'REQUIRED' ? 'Must be read' : 'Optional';
+  };
+  const needsReply = filter === 'to-review';
   return <UpdateEntrance className="employee-view communication-view updates-page">
-   <div className="nv-page premium-updates cm-page cm-updates" data-nv-page="">
-   <PageBand title="Updates" summary="Workplace news and notes, all in one place." overlap={false}/>
-   <div className="premium-employee-content">
-   {slot ? createPortal(compose, slot) : compose}
+   <div className="q-page premium-updates cm-updates" data-nv-page="">
+   <QuietNav back={{href: '/app/more', label: 'More'}} right={<Link className="q-nav__r q-nav__r--ink" href="/app/updates/compose" aria-label="Create update"><PlusIcon className="q-ic" aria-hidden="true" /></Link>} />
+   <QuietHeader title="Updates" />
    <section className="updates-inbox" aria-label="Workplace updates" aria-busy={refreshing}>
-    <div className="updates-toolbar">
-     <fieldset className="updates-filters" disabled={!current}><legend className="sr-only">Filter updates</legend>{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} onClick={() => setFilter(option.id)}>{option.label}<span className="updates-filter-count">{current ? option.count : '–'}</span></button>)}<KeepSelectedVisible /></fieldset>
+    <div className="q-seg" role="group" aria-label="Filter updates">
+     <button type="button" aria-pressed={!needsReply} disabled={!current} onClick={() => setFilter('all')}>All</button>
+     <button type="button" aria-pressed={needsReply} disabled={!current} onClick={() => setFilter('to-review')} aria-label={current ? `Needs reply, ${toReview}` : 'Needs reply'}>{current && toReview ? `Needs reply · ${toReview}` : 'Needs reply'}</button>
     </div>
     <HoldHeight holding={!current} memory="updates-manager" className="cm-updates-hold">
-    {current?.state === 'partial' ? <p className="cm-updates-notice" role="status"><NavIcon name="alert" />Some updates couldn’t load. Try again to check for the rest.</p> : null}
-    {!current ? <div className="cm-updates-state" role="status"><h2>{stateTitle}</h2><p>{stateText}</p></div>
-     : visible.length ? [...groups].map(([date, rows]) => <section className="updates-date-group" key={date} aria-label={date}>
-      <h2>{keepWhole(date)}</h2>
-      {/* One row per update: the title, then one grey line with its one status and the time (spec: one status label per row). */}
-      <ul className="updates-list nv-rows">{rows.map(item => <li key={item.id}><Link className="nv-row" href={'/app/updates/' + item.id} prefetch={false}>
-       <span className="nv-row__text"><span className="nv-row__title">{item.title}</span>
-        <span className="nv-row__meta"><span className="nv-keep">{item.acknowledgement === 'REQUIRED' ? 'Acknowledgement required' : 'Optional update'}{'\u00a0·'}</span> <time dateTime={item.publishedAt}>{when(item)}</time></span></span>
-       <CaretRightIcon className="nv-row__chev" size={18} weight="bold" aria-hidden="true" />
+    {current?.state === 'partial' ? <p className="q-help" role="status">Some updates couldn’t load. Try again to check for the rest.</p> : null}
+    {!current ? <div role="status" style={{ marginTop: 24 }}><p className="q-empty">{status ? `${stateTitle}. ` : ''}{stateText}</p>
+      {signedOut ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link> : unavailableReason ? <button type="button" className="q-btn q-btn--sec" disabled={paused} aria-disabled={busy || undefined} onClick={() => { if (!busy) onRefresh(); }}>Try again</button> : null}</div>
+     : visible.length ? <ul className="q-list updates-list" style={{ marginTop: 16 }}>{visible.map(item => <li key={item.id}><Link className="q-row" href={'/app/updates/' + item.id} prefetch={false}>
+       <span className="q-rt"><b>{item.title}</b><i><time dateTime={item.publishedAt}>{day(item)}</time>{` · ${readLine(item)}`}</i></span>
+       <CaretRightIcon className="q-chev" aria-hidden="true" />
       </Link></li>)}</ul>
-     </section>)
-     : <div className="cm-updates-state" role="status"><h2>{emptyTitle}</h2><p>{emptyDescription}</p>{filter !== 'all' ? <button type="button" className="cm-updates-state__action" onClick={() => setFilter('all')}>View all updates</button> : null}</div>}
+     : <div role="status" style={{ marginTop: 24 }}><p className="q-empty">{filter === 'all' ? 'No updates yet.' : 'Nothing needs a reply.'}</p>
+      {filter !== 'all' ? <button type="button" className="q-btn q-btn--quiet" onClick={() => setFilter('all')}>View all updates</button> : null}</div>}
     </HoldHeight>
    </section>
-   {/* The manual refresh sits under the list, as on the Inbox. Signed out, Refresh would only fetch the same refusal, so Sign in takes its place. */}
-   <p className="cm-page-foot">
-    <span className="cm-page-foot__status">{status}</span>
-    {signedOut ? <Link className="nv-band-control cm-refresh" href="/login">Sign in</Link>
-     : <button type="button" className="nv-band-control cm-refresh" disabled={paused} aria-disabled={busy || undefined}
-       onClick={() => { if (busy) return; if (current) setRefreshFrom(current.observedAt); onRefresh(); }}>
-      <ArrowsClockwiseIcon size={16} aria-hidden="true" />{unavailableReason && !current ? 'Try again' : 'Refresh'}
-      <span className="nv-sr" role="status">{userRefreshing ? 'Refreshing updates…' : ''}</span>
-     </button>}
-   </p>
-   </div>
+   <span className="q-sr" role="status">{userRefreshing ? 'Refreshing updates…' : ''}</span>
    </div>
   </UpdateEntrance>;
  }
