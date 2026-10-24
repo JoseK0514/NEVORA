@@ -9,8 +9,8 @@ import {waitForSheetEntrance,waitForReviewedTimeOff,restoreSheetMotion} from './
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,axeFile,runtimeErrors:cellRuntimeErrors}){
  let stage='seed';cellRuntimeErrors.setStageReader(()=>stage);
  const tabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',backTabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
- const checks=[],contrast=[],focusTrace=[],expiryRecovery=[],runtimeErrors=[],loginAttempts=[],prefix=`navigation-${engine}-${width}`,headers={};
- let badgeBounds=null;
+ const checks=[],contrast=[],focusTrace=[],expiryRecovery=[],runtimeErrors=[],loginAttempts=[],navigationAttempts=[],prefix=`navigation-${engine}-${width}`,headers={};
+ let badgeBounds=null,retainedOverflowFailure=false;
  const q=(text,values=[])=>app.database.executor.query({text,values});
  page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]').replace(/[A-Za-z0-9_-]{40,}/g,'[long value]'),path:new URL(page.url()).pathname.replace(/\/api\/calendar\/[^/]+/g,'/api/calendar/[redacted]'),lastCompleted:checks.at(-1),stack:error.stack?.replace(/https?:[^\s)]+/g,'[URL]').replace(/[A-Za-z0-9_-]{40,}/g,'[long value]')});});
  page.on('request',request=>{const path=new URL(request.url()).pathname;if(path.startsWith('/api/employee/')||path==='/api/notifications')headers[path]=request.headers()['x-nevora-employee-view'];});
@@ -27,6 +27,27 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  }
  async function settle(){await page.waitForLoadState('networkidle');}
  async function nav(href,keyboard=false){
+  assert(['/app','/app/schedule','/app/requests/hub','/app/my-time','/app/availability','/app/profile','/app/notifications','/app/updates'].includes(href),'Known navigation diagnostic destination');
+  const source=new URL(page.url()).pathname,start=performance.now(),row={destination:href,keyboard,status:'started',requests:[],omittedRequests:0};
+  if(navigationAttempts.length<64)navigationAttempts.push(row);
+  const observed=new Map();
+  const request=value=>{
+   const url=new URL(value.url());if(url.origin!==app.url||url.pathname!==href||!(value.headers().rsc==='1'||value.isNavigationRequest()))return;
+   if(row.requests.length===16){row.omittedRequests++;return;}
+   const entry={kind:value.headers().rsc==='1'?'rsc':'document',status:null,finished:false,failed:false};observed.set(value,entry);row.requests.push(entry);
+  };
+  const response=value=>{const entry=observed.get(value.request());if(entry)entry.status=value.status();};
+  const finished=value=>{const entry=observed.get(value);if(entry)entry.finished=true;};
+  const failed=value=>{const entry=observed.get(value);if(entry)entry.failed=true;};
+  page.on('request',request);page.on('response',response);page.on('requestfinished',finished);page.on('requestfailed',failed);
+  try{await navigate(href,keyboard);row.status='passed';}
+  catch(error){row.status='failed';if(!navigationAttempts.includes(row)&&!retainedOverflowFailure){retainedOverflowFailure=true;navigationAttempts.push(row);}throw error;}
+  finally{
+   row.elapsedMs=Math.round(performance.now()-start);row.destinationCommitted=new URL(page.url()).pathname===href;row.sourceUnchanged=new URL(page.url()).pathname===source;
+   page.off('request',request);page.off('response',response);page.off('requestfinished',finished);page.off('requestfailed',failed);
+  }
+ }
+ async function navigate(href,keyboard=false){
   const mobile=await page.locator('.mobile-nav').isVisible();
   const primary=['/app','/app/schedule','/app/requests/hub','/app/my-time'].includes(href);
   // Availability belongs to Requests on both layouts; desktop Profile is an account action.
@@ -267,7 +288,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   }
   checks.push('long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance');
   await screenshot('final');
-  await writeFile(join(evidenceDirectory,prefix+'-report.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,loginAttempts,badgeBounds,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
+  await writeFile(join(evidenceDirectory,prefix+'-report.json'),JSON.stringify({engine,width,status:'passed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,loginAttempts,navigationAttempts,badgeBounds,kind:'actual authenticated owned Next/PostgreSQL; synthetic lifecycle events labeled in checks'},null,2));
   return {checks};
- }catch(error){await screenshot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,prefix+'-report.json'),JSON.stringify({engine,width,status:'failed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,loginAttempts,badgeBounds,error:String(error)},null,2));throw error;}
+ }catch(error){await screenshot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,prefix+'-report.json'),JSON.stringify({engine,width,status:'failed',checks,contrast,focusTrace,expiryRecovery,runtimeErrors,loginAttempts,navigationAttempts,badgeBounds,error:String(error)},null,2));throw error;}
 }
