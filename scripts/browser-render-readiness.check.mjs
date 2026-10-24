@@ -43,6 +43,10 @@ for(const engine of ['chromium','webkit']){
    await render();if(opening.animations){assert.equal(disclosureReady,false);await disclosure.evaluate(element=>element.getAnimations({subtree:true}).forEach(animation=>animation.finish()));}
    await openingReady;assert.equal(await disclosure.locator('[data-recorded]').innerText(),'8 h');assert(await disclosure.locator('[data-recorded]').isVisible());
    result.observations.push({phase:'Actual portal disclosure motion retains eight recorded hours and waits for rendered content',opening,ready:disclosureReady});
+   await disclosure.evaluate(element=>{const animation=element.querySelector('[data-recorded]').animate([{opacity:0},{opacity:1}],{duration:500,fill:'both'});animation.pause();});
+   let finiteReady=false;const finiteWaiting=waitForDisclosureReady(disclosure).then(()=>{finiteReady=true;});await render();assert.equal(finiteReady,false);
+   await disclosure.evaluate(element=>element.getAnimations({subtree:true}).forEach(animation=>animation.finish()));await finiteWaiting;assert.equal(finiteReady,true);
+   result.observations.push({phase:'A paused finite child animation keeps readiness pending until it finishes',pendingObserved:true,ready:finiteReady});
    await disclosure.locator('summary').press('Enter');await assert.rejects(waitForDisclosureReady(disclosure,150),error=>error.name==='TimeoutError');
    result.observations.push({phase:'A closed disclosure cannot pass readiness',rejected:true});
    if(reducedMotion==='reduce'){
