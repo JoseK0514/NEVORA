@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import {join} from 'node:path';
 import {Client} from 'pg';
-import {writeFile} from 'node:fs/promises';
+import {readFile,writeFile} from 'node:fs/promises';
 import {seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
-import {safeEvaluationFailure} from './release-browser-diagnostics.mjs';
+import {safeEvaluationFailure,safeScheduleServerRequests,safeDatabaseWaits} from './release-browser-diagnostics.mjs';
 import {observeDocumentNavigation} from './browser-navigation-diagnostic.mjs';
 import {runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 import {waitForPrivateIntentClear} from './browser-render-readiness.mjs';
@@ -105,7 +105,24 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
     await screenshot('unavailable-failure',{timeout:5000}).catch(error=>{details.unavailableRetry.screenshotFailure=safeEvaluationFailure(error);});throw error;
    }
    assert.equal(await operation(),unavailableOperation);await screenshot('unavailable');
-   await blocker.query('COMMIT');await page.getByRole('button',{name:'Retry confirmation',exact:true}).click();await page.getByRole('heading',{name:'You’re up to date',exact:true}).waitFor();
+   await blocker.query('COMMIT');details.retryAfterRelease={lockReleasedAtMs:atMs()};await page.getByRole('button',{name:'Retry confirmation',exact:true}).click();
+   try{await page.getByRole('heading',{name:'You’re up to date',exact:true}).waitFor();}
+   catch(error){
+    const diagnostic=details.retryAfterRelease;
+    try{
+    diagnostic.failedAtMs=atMs();diagnostic.pageClosed=page.isClosed();diagnostic.browserConnected=browser?.isConnected()??null;diagnostic.navigation=navigation.snapshot();
+    const deadline=performance.now()+5000;
+    const observations=await Promise.allSettled([
+     runBeforeRecoveryDeadline(()=>page.evaluate(operation=>({unavailable:!![...document.querySelectorAll('[role="alert"]')].find(e=>e.textContent?.includes('Confirmation unavailable.')),unknown:!![...document.querySelectorAll('[role="alert"]')].find(e=>e.textContent?.includes('Confirmation outcome unknown.')),pending:!!document.querySelector('button[aria-busy="true"]'),success:!![...document.querySelectorAll('h2')].find(e=>e.textContent==='You’re up to date'),authorityFields:document.querySelectorAll('input[name="authority"]').length,sameOperation:document.querySelector('input[name="operationId"]')?.value===operation}),unavailableOperation),deadline),
+     runBeforeRecoveryDeadline(()=>q('SELECT count(*)::int AS committed FROM employee_attention_operations WHERE employee_id=$1 AND operation_id=$2',[actor,unavailableOperation]),deadline),
+     runBeforeRecoveryDeadline(()=>q('SELECT state,wait_event_type,wait_event,count(*)::int AS connections,sum(cardinality(pg_blocking_pids(pid)))::int AS blockers FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() GROUP BY state,wait_event_type,wait_event ORDER BY state,wait_event_type,wait_event'),deadline),
+     runBeforeRecoveryDeadline(async()=>safeScheduleServerRequests(await readFile(join(app.root,'next.log'),'utf8')),deadline),
+    ]);
+    for(const [index,name] of ['view','operation','databaseWaits','serverRequests'].entries()){const observation=observations[index];if(observation.status==='rejected'){diagnostic[name+'Failure']=safeEvaluationFailure(observation.reason);continue;}diagnostic[name]=name==='databaseWaits'?safeDatabaseWaits(observation.value):name==='operation'?{committed:Number.isSafeInteger(observation.value[0]?.committed)?observation.value[0].committed:null}:observation.value;}
+    await screenshot('retry-after-release-failure',{timeout:5000,mask:[page.locator('input')]}).catch(error=>{diagnostic.screenshotFailure=safeEvaluationFailure(error);});
+    }catch(failure){diagnostic.captureFailure=safeEvaluationFailure(failure);}
+    throw error;
+   }
    assert.equal((await q('SELECT * FROM employee_attention_operations WHERE employee_id=$1 AND operation_id=$2',[actor,unavailableOperation])).length,1);
    await blocker.query('BEGIN');await blocker.query('LOCK TABLE schedule_publication_revisions IN ACCESS EXCLUSIVE MODE');
    await schedule();assert.equal(await confirm().count(),0);assert.equal(await page.locator('.employee-schedule-shift').count(),0);assert(await page.getByRole('status').filter({hasText:'Schedule unavailable'}).count());await screenshot('source-unavailable');

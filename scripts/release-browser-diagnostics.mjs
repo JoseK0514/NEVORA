@@ -26,6 +26,24 @@ export function safeLoginServerRequests(text) {
   }).slice(-16);
 }
 
+/** Failure-only schedule metadata: never copy a query, capability or server text. */
+export function safeScheduleServerRequests(text){
+ const plain=text.slice(-65536).replace(/\[[0-9;]*m/g,'').replaceAll(String.fromCharCode(27),'');
+ return plain.split('\n').flatMap(line=>{
+  const match=line.match(/\b(GET|POST) \/app\/schedule(?:\?[^ ]*)? (\d{3}) in (\d+(?:\.\d+)?)(ms|s)(?:\s|$)/);
+  if(!match)return [];const status=Number(match[2]),elapsedMs=Number(match[3])*(match[4]==='s'?1000:1);
+  return status>=100&&status<=599&&Number.isFinite(elapsedMs)?[{method:match[1],route:'/app/schedule',status,elapsedMs}]:[];
+ }).slice(-16);
+}
+
+export function safeDatabaseWaits(rows){
+ const states=new Set([null,'active','idle','idle in transaction','idle in transaction (aborted)','fastpath function call','disabled']);
+ const types=new Set([null,'Lock','Client','Activity','IO','LWLock','IPC','Timeout','BufferPin','Extension','InjectionPoint']);
+ const events=new Set([null,'relation','transactionid','tuple','virtualxid','advisory','ClientRead','ClientWrite','DataFileRead','DataFileWrite','WALWrite','WALSync','WALInsert','BufferIO','BufferContent','ProcArray']);
+ const count=value=>Number.isSafeInteger(value)&&value>=0&&value<=100000?value:null;
+ return Array.isArray(rows)?rows.slice(0,16).map(row=>{const state=property(row,'state'),type=property(row,'wait_event_type'),event=property(row,'wait_event');return {state:states.has(state)?state:'other',waitType:types.has(type)?type:'other',waitEvent:events.has(event)?event:'other',connections:count(property(row,'connections')),blockers:count(property(row,'blockers'))};}):[];
+}
+
 /** Keep bounded failure detail without copying URLs, capabilities or credentials. */
 export function safeBrowserFailure(error, execution, scenario) {
   const name = property(error, 'name');

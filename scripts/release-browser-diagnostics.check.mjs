@@ -1,7 +1,20 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { safeBrowserFailure, safeLoginServerRequests,safeEvaluationFailure } from './release-browser-diagnostics.mjs';
+import { safeBrowserFailure, safeLoginServerRequests,safeEvaluationFailure,safeScheduleServerRequests,safeDatabaseWaits } from './release-browser-diagnostics.mjs';
+
+test('schedule retry diagnostics retain only bounded request completion metadata',()=>{
+ const records=safeScheduleServerRequests('\u001b[32mPOST /app/schedule?proof=Violet7&week=2028-01-31 200 in 1.5s\u001b[0m\nGET /app/schedule 200 in 42ms\nPOST /app/schedule-extra 200 in 1ms\nPOST /api/private 200 in 1ms\ncookie=Violet7');
+ assert.deepEqual(records,[{method:'POST',route:'/app/schedule',status:200,elapsedMs:1500},{method:'GET',route:'/app/schedule',status:200,elapsedMs:42}]);assert(!/Violet7|proof|cookie|2028/.test(JSON.stringify(records)));
+ const many=Array.from({length:30},(_,index)=>`POST /app/schedule?secret=Violet7 200 in ${index}ms`).join('\n');assert.equal(safeScheduleServerRequests(many).length,16);assert.equal(safeScheduleServerRequests(many)[0].elapsedMs,14);
+ assert.deepEqual(safeScheduleServerRequests('POST /app/schedule 999 in 2ms\nPOST /app/schedule 200 in 1.2.3ms'),[]);
+});
+
+test('database retry diagnostics project only catalog enums and finite counts',()=>{
+ const rows=safeDatabaseWaits([{state:'active',wait_event_type:'Lock',wait_event:'relation',connections:2,blockers:1,query:'password=Violet7'},{state:'Violet7',wait_event_type:'Violet7',wait_event:'Violet7',connections:NaN,blockers:Infinity}]);
+ assert.deepEqual(rows,[{state:'active',waitType:'Lock',waitEvent:'relation',connections:2,blockers:1},{state:'other',waitType:'other',waitEvent:'other',connections:null,blockers:null}]);assert(!JSON.stringify(rows).includes('Violet7'));assert.equal(safeDatabaseWaits(Array.from({length:30},()=>({}))).length,16);
+ assert.deepEqual(safeDatabaseWaits(null),[]);
+});
 
 test('evaluation rejection diagnostics retain only a fixed class without the rejected message',()=>{
  for(const [message,kind] of [['Execution context was destroyed at /private?proof=Violet7','context-destroyed'],['Target page, context or browser has been closed: cookie=Violet7','target-closed'],['Protocol error: password=Violet7','protocol'],['Timeout 15000ms token=Violet7','timeout'],['Browser response exceeded the original recovery deadline password=Violet7','timeout'],['Violet7','other']]){
