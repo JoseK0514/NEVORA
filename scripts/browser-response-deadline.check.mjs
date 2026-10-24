@@ -1,10 +1,25 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
-import {finishPeriodReportResponse,observeReportNavigation} from './phase-d-report-navigation.mjs';
+import {finishPeriodReportResponse,observeReportNavigation,reportNavigationObservation} from './phase-d-report-navigation.mjs';
 import {EventEmitter} from 'node:events';
 import {projectCommunicationRead,observeCommunicationRead,readCommunicationResponse,finalizeCommunicationRead} from './communication-read-diagnostics.mjs';
 import {projectCommunicationPreview,readCommunicationPreviewResponse,previewEventBuffer,projectPreviewDom,observeCommunicationPreview} from './communication-preview-diagnostics.mjs';
+
+test('report observation binds a live main-frame document without retaining addresses or private queries',()=>{
+ const page=new EventEmitter(),origin='http://127.0.0.1:12345',frame={url:()=>origin+'/app/reports'},child={url:()=>origin+'/embedded'};let frames=[frame];page.url=frame.url;page.mainFrame=()=>frame;page.frames=()=>frames;
+ const trace={events:[],omittedEvents:0},stop=observeReportNavigation(page,origin,trace,()=>{});
+ const request={url:()=>origin+'/app?private-value',isNavigationRequest:()=>true,frame:()=>frame,headers:()=>({})};page.emit('request',request);
+ const observed=reportNavigationObservation(page);assert.equal(observed.traceId,trace.traceId);assert(observed.onlyMainFrame);assert.equal(observed.currentResource,'report-route');assert.equal(observed.eventCount,1);assert.deepEqual(observed.pendingDocuments,[{requestId:1,sameAddress:false,resource:'role-home',navigation:true,rsc:false}]);assert(!JSON.stringify(observed).includes('private-value'));assert(!JSON.stringify(observed).includes('127.0.0.1'));
+ frames=[frame,child];page.emit('request',{...request,frame:()=>child});assert.equal(reportNavigationObservation(page).onlyMainFrame,false);assert.equal(reportNavigationObservation(page).pendingDocuments[0].requestId,1);frames=[frame];
+ page.emit('request',{...request,url:()=>origin+'/login?private-value'});assert.deepEqual(reportNavigationObservation(page).pendingDocuments,[],'An untracked replacement cannot leave the old document eligible');
+ page.emit('request',request);page.emit('requestfinished',request);assert.deepEqual(reportNavigationObservation(page).pendingDocuments,[]);
+ page.emit('request',request);page.emit('framenavigated',frame);assert.deepEqual(reportNavigationObservation(page).pendingDocuments,[]);stop();assert.equal(reportNavigationObservation(page),null);assert.equal(page.listenerCount('request'),0);
+});
+test('report observation rejects duplicate ownership and truncated evidence',()=>{
+ const page=new EventEmitter(),frame={url:()=> 'http://127.0.0.1:12345/app/reports'};page.url=frame.url;page.mainFrame=()=>frame;page.frames=()=>[frame];const trace={events:[],omittedEvents:0},stop=observeReportNavigation(page,'http://127.0.0.1:12345',trace,()=>{});
+ assert.throws(()=>observeReportNavigation(page,'http://127.0.0.1:12345',{events:[],omittedEvents:0},()=>{}),/One report-navigation observer/);trace.omittedEvents=1;assert.equal(reportNavigationObservation(page),null);stop();
+});
 
 test('preview diagnostics project safe enums and DOM identity without private content or authority',()=>{
  const privateValue='private-preview-sentinel';

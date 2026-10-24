@@ -1,6 +1,39 @@
+import {createHash} from 'node:crypto';
+
 const fallback='Role redirect emitted a framework RSC fallback.';
 const network=value=>value?.projectionUnavailable===false&&value.error?.name==='TypeError'&&value.error.messageKind==='load-failed'&&value.cause===null;
 const quiet=cell=>cell?.identityMatches===true&&cell.pagehide===0&&cell.windowErrors===0&&cell.unhandledRejections===0;
+
+export function projectFrameworkNativeDiagnostic(error,origin,portal){
+ try{
+  const url=new URL(origin),name=error?.name,message=error?.message;
+  if(url.origin!==origin||url.protocol!=='http:'||url.hostname!=='127.0.0.1'||!url.port||Number(url.port)<1||typeof portal!=='string'||!/^[A-Za-z0-9_-]{1,32}$/.test(portal))return null;
+  if(name!=='Fetch API cannot load http'||message!=='/'+url.host+'/__nextjs_original-stack-frames due to access control checks.')return null;
+  return {signature:'webkit-native-framework-fetch',resourceKind:'next-frames',sameOwnedOrigin:true,exactMessage:true,messageFingerprint:createHash('sha256').update('Portal '+portal+': '+message).digest('hex')};
+ }catch{return null;}
+}
+const framework=value=>value?.signature==='webkit-native-framework-fetch'&&value.resourceKind==='next-frames'&&value.sameOwnedOrigin===true&&value.exactMessage===true&&/^[a-f0-9]{64}$/.test(value.messageFingerprint??'');
+
+function assessNativeDiagnostics(report,actor,row,caughtIndices,lastConsole,destinationId){
+ if(report.runtimeDiagnostics.length===0)return {errorIndices:[],decisions:[]};
+ if(report.runtimeDiagnostics.length>caughtIndices.length||!/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(row.traceId??''))return null;
+ const calibration=report.rscCaughtErrorControl.cells.find(cell=>cell.kind==='framework-frames-post'&&cell.navigation);
+ if(!framework(calibration?.nativeEvents?.[0]?.framework))return null;
+ const errorIndices=[],events=row.events,lastRoot=Math.max(...caughtIndices.map(index=>report.caughtRscErrors[index].monotonicMs));
+ for(const diagnostic of report.runtimeDiagnostics){
+  const observation=diagnostic?.navigationObservation,index=diagnostic?.errorIndex;
+  if(diagnostic?.portal!==actor||diagnostic.lifecycle!=='scenario'||diagnostic.nativeFetchName!==true||!framework(diagnostic.framework)||diagnostic.reportControl?.engine!=='webkit'||diagnostic.reportControl.control!=='actual-role-redirect'||diagnostic.reportControl.phase!=='role-changed-destination-release'||diagnostic.pendingDocumentNavigation!==true||diagnostic.documentNavigation?.phase!=='requested'||diagnostic.documentNavigation.sourceHistoryEvents!==0)return null;
+  if(!Number.isSafeInteger(index)||index<0||typeof report.errors[index]!=='string'||!report.errors[index].startsWith('Portal '+actor+': ')||errorIndices.includes(index)||row.fallbackErrorIndices.includes(index)||createHash('sha256').update(report.errors[index]).digest('hex')!==diagnostic.framework.messageFingerprint)return null;
+  if(!observation||observation.traceId!==row.traceId||observation.onlyMainFrame!==true||!['source-route','report-route'].includes(observation.currentResource)||!Number.isFinite(diagnostic.monotonicMs)||diagnostic.monotonicMs<=lastRoot||observation.monotonicMs!==diagnostic.monotonicMs||!Number.isFinite(observation.elapsedMs)||Math.abs(diagnostic.monotonicMs-row.startedAtMs-observation.elapsedMs)>1)return null;
+  const count=observation.eventCount;
+  if(!Number.isSafeInteger(count)||count<=lastConsole+1||count>events.length||observation.elapsedMs<events[count-1].elapsedMs||count<events.length&&observation.elapsedMs>events[count].elapsedMs||!Array.isArray(observation.pendingDocuments)||observation.pendingDocuments.length!==1)return null;
+  const before=events.slice(0,count),live=before.flatMap((request,at)=>request.kind==='request'&&request.navigation===true&&!before.some((event,after)=>after>at&&(event.kind==='commit'||event.requestId===request.requestId&&['failed','finished'].includes(event.kind)))?[request]:[]);
+  const document=live[0],observed=observation.pendingDocuments[0];
+  if(live.length!==1||document.requestId!==destinationId||document.resource!=='role-home'||document.rsc!==false||document.sameAddress!==false||!observed||observed.requestId!==document.requestId||observed.resource!==document.resource||observed.navigation!==true||observed.rsc!==false||observed.sameAddress!==false)return null;
+  errorIndices.push(index);
+ }
+ return {errorIndices,decisions:[{control:'actual-role-redirect',engine:'webkit',contract:'secondary-native-framework-diagnostic',diagnosticIndices:report.runtimeDiagnostics.map((_value,index)=>index),errorIndices:[...errorIndices],transportReason:'unknown',networkRequestAssociation:'not-established'}]};
+}
 
 function controlsVerified(report){
  const baseline=report.navigationDiagnosticControl,control=report.rscCaughtErrorControl;
@@ -28,7 +61,7 @@ function controlsVerified(report){
  * claim. Every other console/window/native error retains its fatal outcome. */
 export function assessRoleRedirectDiagnostics(report,actor){
  const rejected={errorIndices:[],caughtIndices:[],decisions:[]};
- if(!report||report.sourceClean!==true||report.scenarioComplete!==true||report.runtimeClosed!==true||report.windowExceptions?.length!==0||report.runtimeDiagnostics?.length!==0||report.omittedCaughtRscErrors!==0||!Array.isArray(report.errors)||!Array.isArray(report.caughtRscErrors)||!controlsVerified(report))return rejected;
+ if(!report||report.sourceClean!==true||report.scenarioComplete!==true||report.runtimeClosed!==true||report.windowExceptions?.length!==0||!Array.isArray(report.runtimeDiagnostics)||report.omittedCaughtRscErrors!==0||!Array.isArray(report.errors)||!Array.isArray(report.caughtRscErrors)||!controlsVerified(report))return rejected;
  const rows=Array.isArray(report.scopedNavigation)?report.scopedNavigation.filter(row=>row?.engine==='webkit'&&row.case==='actual-role-redirect'):[];
  if(rows.length!==1)return rejected;
  const row=rows[0],events=row.events;
@@ -69,7 +102,9 @@ export function assessRoleRedirectDiagnostics(report,actor){
  }
  const errorIndices=row.fallbackErrorIndices;
  if(!Array.isArray(errorIndices)||errorIndices.length!==consoles.length||new Set(errorIndices).size!==errorIndices.length||errorIndices.some(index=>!Number.isSafeInteger(index)||index<0||report.errors[index]!==fallback))return rejected;
- return {errorIndices:[...errorIndices],caughtIndices,decisions:[{control:'actual-role-redirect',engine:'webkit',contract:'handled-load-failure',errorIndices:[...errorIndices],caughtIndices:[...caughtIndices],transportReason:'unknown'}]};
+ const native=assessNativeDiagnostics(report,actor,row,caughtIndices,lastConsole,destinationId);
+ if(!native)return rejected;
+ return {errorIndices:[...errorIndices,...native.errorIndices],caughtIndices,decisions:[{control:'actual-role-redirect',engine:'webkit',contract:'handled-load-failure',errorIndices:[...errorIndices],caughtIndices:[...caughtIndices],transportReason:'unknown'},...native.decisions]};
 }
 
 export function finalizeRoleRedirectDiagnostics(report,actor){

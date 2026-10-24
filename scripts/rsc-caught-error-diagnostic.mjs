@@ -3,6 +3,7 @@ import {createServer} from 'node:http';
 import {observeDocumentNavigation,observeWindowExceptions} from './browser-navigation-diagnostic.mjs';
 import {observeRscCaughtErrors} from './rsc-caught-error-observer.mjs';
 import {runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
+import {projectFrameworkNativeDiagnostic} from './role-redirect-diagnostic.mjs';
 
 // HTTP controls use the same browser binary as the application scenario. They
 // validate observation, not the cause or acceptability of any application error.
@@ -36,7 +37,7 @@ export async function verifyRscCaughtErrorDiagnostic(browser){
     await observeWindowExceptions(context,(_page,kind)=>windowEvents.push(kind));
     await observeRscCaughtErrors(context,(_page,metadata)=>caught.push(metadata));
     const page=await context.newPage(),documentNavigation=observeDocumentNavigation(page,()=>origin);page.setDefaultTimeout(5000);
-    page.on('pageerror',error=>nativeEvents.push({exactNative:error.name==='Fetch API cannot load http'&&error.message==='/'+origin.slice('http://'.length)+profile.path+' due to access control checks.',documentNavigation:documentNavigation.snapshot()}));
+    page.on('pageerror',error=>nativeEvents.push({exactNative:error.name==='Fetch API cannot load http'&&error.message==='/'+origin.slice('http://'.length)+profile.path+' due to access control checks.',framework:projectFrameworkNativeDiagnostic(error,origin,'HTTP-CONTROL'),documentNavigation:documentNavigation.snapshot()}));
     page.on('console',message=>{if(message.type()==='error')consoleEvents.push(message.text().includes('Failed to fetch RSC payload for ')&&message.text().includes('Falling back to browser navigation.'));});
     await page.goto(origin+'/initial');
     const handle=await page.evaluateHandle(()=>({id:globalThis.__fictionalDocument,pagehide:0,errors:0,rejections:0}));

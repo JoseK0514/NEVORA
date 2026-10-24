@@ -8,6 +8,7 @@ import {safeEvaluationFailure,safeScheduleServerRequests,safeDatabaseWaits} from
 import {observeDocumentNavigation} from './browser-navigation-diagnostic.mjs';
 import {runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 import {waitForPrivateIntentClear} from './browser-render-readiness.mjs';
+import {observeRevocationActions,captureRevocationFailure} from './attention-revocation-diagnostic.mjs';
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,runtimeErrors:cellRuntimeErrors}){
  const label=`AT${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
@@ -15,6 +16,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  const checks=[],runtimeErrors=[],details={engine,width,actor,week:scenario.week,actions:[]};let stage='login';page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({stage,name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]')});});
  const startedAt=performance.now(),navigation=observeDocumentNavigation(page,()=>app.url),browser=context.browser();details.lifecycle=[];
  const atMs=()=>Math.round(performance.now()-startedAt);
+ const revocationActions=observeRevocationActions(page,app.url,()=>stage,atMs);
  const record=(event,fields={})=>{details.lifecycle.push({stage,event,atMs:atMs(),...fields});if(details.lifecycle.length>64)details.lifecycle.shift();};
  const disconnected=()=>record('browser-disconnected');browser?.on('disconnected',disconnected);
  for(const event of ['close','crash','domcontentloaded','load'])page.on(event,()=>record(event));
@@ -83,7 +85,20 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  await page.unroute('**/app/schedule?*');await page.getByRole('button',{name:'Retry confirmation',exact:true}).click();await page.getByRole('heading',{name:'You’re up to date',exact:true}).waitFor();
  assert.equal((await q('SELECT * FROM employee_attention_operations WHERE employee_id=$1 AND operation_id=$2',[actor,recoveryOp])).length,1);checks.push('Actual committed action response loss renders outcome_unknown; original operation retry recovers one canonical result');
  stage='leave-and-revoke';await publish('11:00');await schedule();await page.locator('input[name="authority"]').waitFor({state:'attached'});assert.equal(await page.locator('input[name="authority"]').count(),1);await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));assert.equal(await waitForPrivateIntentClear(page),0);checks.push('Leaving the view clears obsolete private intent and prevents late-response reuse');
- await schedule();await q('DELETE FROM employee_sessions WHERE employee_id=$1',[actor]);await confirm().click();await page.waitForURL(u=>u.pathname==='/login');checks.push('Actual session revocation is denied by server action and routes to login');
+ await schedule();stage='session-revocation';await q('DELETE FROM employee_sessions WHERE employee_id=$1',[actor]);await confirm().click();
+ try{await page.waitForURL(u=>u.pathname==='/login');}
+ catch(error){
+  details.sessionRevocation={failedAtMs:atMs(),pageClosed:page.isClosed(),browserConnected:browser?.isConnected()??null,navigation:navigation.snapshot(),actionsAtFailure:revocationActions.snapshot()};
+  try{Object.assign(details.sessionRevocation,await captureRevocationFailure({
+   view:()=>page.evaluate(()=>({route:location.pathname==='/login'?'login':location.pathname==='/app/schedule'?'schedule':'other',readyState:document.readyState,focused:document.hasFocus(),visibility:document.visibilityState,signInVisible:[...document.querySelectorAll('button')].some(e=>e.textContent?.trim()==='Sign in'&&e.getClientRects().length>0),confirmPending:[...document.querySelectorAll('button')].some(e=>e.textContent?.trim()==='Confirming…'),authorityInputs:document.querySelectorAll('input[name="authority"]').length,operationPresent:!!document.querySelector('input[name="operationId"]')})),
+   sessions:()=>q('SELECT count(*)::int AS sessions FROM employee_sessions WHERE employee_id=$1',[actor]),
+   databaseWaits:()=>q('SELECT state,wait_event_type,wait_event,count(*)::int AS connections,sum(cardinality(pg_blocking_pids(pid)))::int AS blockers FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() GROUP BY state,wait_event_type,wait_event ORDER BY state,wait_event_type,wait_event'),
+   serverRequests:()=>readFile(join(app.root,'next.log'),'utf8'),
+   screenshot:()=>screenshot('session-revocation-failure',{timeout:5000,mask:[page.locator('input')]}),
+  }));}catch(captureError){details.sessionRevocation.captureFailure=safeEvaluationFailure(captureError);}
+  throw error;
+ }
+ checks.push('Actual session revocation is denied by server action and routes to login');
  await login();await schedule();
  if(width===390){
   stage='unavailable-retry';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();
@@ -135,5 +150,5 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  stage='layout';await schedule();details.responseCaptured=!!captured;
  return {checks};
  }catch(error){scenarioFailure=error;throw error;}
- finally{browser?.off('disconnected',disconnected);details.stage=stage;details.checks=checks;details.runtimeErrors=runtimeErrors;try{await writeFile(join(evidenceDirectory,`attention-${engine}-${width}-report.json`),JSON.stringify(details,null,2));}catch(error){if(!scenarioFailure)throw error;console.error('Attention diagnostic report unavailable; original scenario failure retained');}}
+ finally{revocationActions.close();details.sessionRevocationActions=revocationActions.snapshot();browser?.off('disconnected',disconnected);details.stage=stage;details.checks=checks;details.runtimeErrors=runtimeErrors;try{await writeFile(join(evidenceDirectory,`attention-${engine}-${width}-report.json`),JSON.stringify(details,null,2));}catch(error){if(!scenarioFailure)throw error;console.error('Attention diagnostic report unavailable; original scenario failure retained');}}
 }

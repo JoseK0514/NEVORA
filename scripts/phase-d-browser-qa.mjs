@@ -4,8 +4,8 @@ import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
 import {observeDocumentNavigation,observeWindowExceptions,verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
 import {observeRscCaughtErrors} from './rsc-caught-error-observer.mjs';
 import {verifyRscCaughtErrorDiagnostic} from './rsc-caught-error-diagnostic.mjs';
-import {finalizeRoleRedirectDiagnostics} from './role-redirect-diagnostic.mjs';
-import {openPeriodReports,reportNavigationStage} from './phase-d-report-navigation.mjs';
+import {finalizeRoleRedirectDiagnostics,projectFrameworkNativeDiagnostic} from './role-redirect-diagnostic.mjs';
+import {openPeriodReports,reportNavigationStage,reportNavigationObservation} from './phase-d-report-navigation.mjs';
 import {verifyReportRecoveryNavigation} from './scoped-navigation-browser-check.mjs';
 import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 import {parseCurrentTimecards} from '../src/lib/timecards/client.ts';
@@ -70,7 +70,11 @@ try{
     await context.route('**/*',route=>{const target=new URL(route.request().url());return ['http:','https:'].includes(target.protocol)&&target.origin!==app.url?route.abort():route.continue();});
     const page=await context.newPage();currentPage=page;const documentNavigation=observeDocumentNavigation(page,()=>app.url);page.setDefaultTimeout(15000);page.on('pageerror',error=>{
       if(error.message.endsWith('due to access control checks.')&&error.message.includes(new URL(app.url).host+'/api/'))report.networkCancellations.push(engineName(id)+': '+error.message);
-      else{report.errors.push(engineName(id)+': '+error.message);report.runtimeDiagnostics.push({portal:id,lifecycle,monotonicMs:Math.round(performance.now()),elapsedMs:Math.round(performance.now()-runtimeStarted),reportControl:reportNavigationStage(page),nativeFetchName:error.name==='Fetch API cannot load http',pendingDocumentNavigation:documentNavigation.pending(),documentNavigation:documentNavigation.snapshot(),afterCheck:report.checks.at(-1),route:new URL(page.url()).pathname.replace(/[A-Za-z0-9_-]{32,}/g,'[opaque]'),failure:safeBrowserFailure(error),stack:safeBrowserFailure({message:error.stack}).summary});}
+      else{
+       const errorIndex=report.errors.length,navigationObservation=reportNavigationObservation(page);
+       report.errors.push(engineName(id)+': '+error.message);
+       report.runtimeDiagnostics.push({portal:id,lifecycle,errorIndex,monotonicMs:navigationObservation?.monotonicMs??Math.round(performance.now()),elapsedMs:Math.round(performance.now()-runtimeStarted),reportControl:reportNavigationStage(page),nativeFetchName:error.name==='Fetch API cannot load http',framework:projectFrameworkNativeDiagnostic(error,app.url,id),navigationObservation,pendingDocumentNavigation:documentNavigation.pending(),documentNavigation:documentNavigation.snapshot(),afterCheck:report.checks.at(-1),route:new URL(page.url()).pathname.replace(/[A-Za-z0-9_-]{32,}/g,'[opaque]'),failure:safeBrowserFailure(error),stack:safeBrowserFailure({message:error.stack}).summary});
+      }
     });
     await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
     await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click()]);
