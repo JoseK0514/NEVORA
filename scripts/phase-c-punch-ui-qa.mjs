@@ -30,7 +30,7 @@ async function savePin(p,id,pin){await goto(p,`/app/employees/${id}/clocker-pin`
 async function enroll(owner,p,name){
  await goto(owner,'/app/settings/clocker');await owner.getByRole('button',{name:'Add device',exact:true}).click();
  const d=owner.getByRole('dialog');await d.getByLabel('Device name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await d.getByRole('button',{name:'Create setup code',exact:true}).click();await d.waitFor({state:'hidden'});
- const code=await owner.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();
+ const displayedSetup=owner.getByRole('textbox',{name:/^Setup code · expires /});assert.equal(await displayedSetup.getAttribute('readonly'),'');const code=await displayedSetup.inputValue();assert(code);
  await goto(p,'/clocker/2');await p.getByRole('heading',{name:'Set up this tablet',exact:true}).waitFor();await p.evaluate(()=>document.fonts.ready);await shot(p,name.includes('Second')?'second-tablet-setup':name.split(' ')[0]+'-setup');await p.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await p.getByRole('button',{name:'Connect tablet',exact:true}).click();await idle(p);
 }
 async function editBreak(owner,name,category,minutes){
