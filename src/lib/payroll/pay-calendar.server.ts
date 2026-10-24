@@ -6,7 +6,7 @@ import { statement } from "./store";
 import { openPeriod } from "./calendar";
 import { payrollFeatureEnabled } from "./service";
 
-export type OpenPayPeriod = { period: { startDate: string; endDate: string }; payday: string };
+export type OpenPayPeriod = { period: { startDate: string; endDate: string }; payday: string; frequency?: PayrollPreferences["schedule"]["frequency"] };
 
 /** Jose, 2026-10-19: employees see when the hours they're working now are paid.
  * Reads only the effective pay schedule (frequency, anchor, payday offset) — no amounts, people or runs —
@@ -22,7 +22,9 @@ export async function currentPayPeriod(ex: SqlExecutor = neonNotificationExecuto
        FROM workspaces w WHERE w.singleton AND w.active`,
     ));
     if (!row?.schedule?.frequency || !row.schedule.anchorDate || typeof row.schedule.paydayOffsetDays !== "number") return null;
-    return openPeriod(row.schedule, row.today);
+    // Quiet (v4): Payroll names the frequency under its title ("Weekly").
+    const open = openPeriod(row.schedule, row.today);
+    return open ? { ...open, frequency: row.schedule.frequency } : null;
   } catch {
     return null;
   }

@@ -8,18 +8,16 @@ import {ShiftChangeForm} from './shift-change-form';
 import {ShiftChangeHistory} from './shift-change-history';
 import {readShiftChangeHistoryView} from '@/lib/data/shift-change-views';
 import { businessDate } from "@/lib/business-time";
-import { ArrowsDownUpIcon } from "@phosphor-icons/react/dist/ssr/ArrowsDownUp";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listManagerPendingExchanges, listManagementCoverage, listTeamExchangeActivity, type ExchangeRecord } from "@/lib/data/exchanges";
 import { listPendingCallouts, listTeamCalloutHistory, type CalloutRecord } from "@/lib/data/callouts";
-import { Card, FilterPills, PageBand, Status } from "./kit/kit";
-import { RequestPagesNav } from "./clean/request-pages-nav";
-import { Fact, Facts, Notice } from "./wave-a/parts";
 import { PendingButton } from "./wave-a/pending-button";
-import { ShiftBlock } from "./wave-a/shift-block";
-import {ManagerIssueFocus} from './manager-issue-focus';
+import { agoLabel, initialsOf, QuietHeader, QuietNav, QuietPage, QuietSegments } from "./quiet/quiet";
+import { addDays, formatTime } from "@/lib/date-utils";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
+import type { ReactNode } from "react";
 
-const tabs = [{ id: "pending", label: "Pending" }, { id: "coverage", label: "Open coverage" }, { id: "activity", label: "Team activity" }] as const;
+const tabs = [{ id: "pending", label: "Waiting" }, { id: "coverage", label: "Open cover" }, { id: "activity", label: "Done" }] as const;
 // TC-WA-13: the same words the employee chose from (reviewed-callout-form.tsx).
 const reasons: Record<string, string> = { ILLNESS: "Illness / sick", FAMILY_EMERGENCY: "Family emergency", TRANSPORTATION: "Transportation issue", SCHOOL: "School conflict", PERSONAL_EMERGENCY: "Personal emergency", OTHER: "Other" };
 const errors: Record<string, string> = {
@@ -39,36 +37,89 @@ function statusWord(status: string) {
 }
 const possessive = (name: string) => `${name}’${name.endsWith("s") ? "" : "s"}`;
 
-/** The shifts on a swap or coverage request; a swap shows both, with the trade between them. */
-function ExchangeShifts({ exchange }: { exchange: ExchangeRecord }) {
-  const historical = ["APPROVED", "DENIED", "CANCELLED", "EXPIRED"].includes(exchange.status);
-  const label = (name: string) => `${possessive(name)} ${historical ? "shift then" : "shift"}`;
-  return <div className="wa-shifts">
-    <ShiftBlock shift={exchange.sourceShift} label={label(exchange.sourceShift.employeeName)} />
-    {exchange.kind === "SWAP" && exchange.targetShift ? <>
-      <span className="wa-shifts__trade" aria-hidden="true"><ArrowsDownUpIcon size={18} weight="bold" /></span>
-      <ShiftBlock shift={exchange.targetShift} label={label(exchange.targetShift.employeeName)} />
-    </> : null}
-  </div>;
+/** Quiet (v4): "Sat, 8:00 AM" for a shift. */
+function at(shift: { date: string; startTime: string }) {
+  const day = new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone: "UTC" }).format(new Date(`${shift.date}T12:00:00Z`));
+  return `${day}, ${formatTime(shift.startTime)}`;
 }
 
-function exchangeLead(exchange: ExchangeRecord) {
-  if (exchange.kind === "SWAP") return exchange.targetEmployeeName ? `Swap with ${exchange.targetEmployeeName}` : "Swap";
-  return exchange.targetEmployeeName ? `${exchange.targetEmployeeName} picked up this shift` : "Offered for someone to pick up";
+/** One line for what the request asks: "Swap Sat, 8:00 AM with Marco Silva". */
+function exchangeLine(exchange: ExchangeRecord) {
+  if (exchange.kind === "SWAP") return exchange.targetEmployeeName ? `Swap ${at(exchange.sourceShift)} with ${exchange.targetEmployeeName}` : `Swap ${at(exchange.sourceShift)}`;
+  return exchange.targetEmployeeName ? `Give ${at(exchange.sourceShift)} to ${exchange.targetEmployeeName}` : `Offered ${at(exchange.sourceShift)}`;
 }
 
-function CalloutFacts({ callout }: { callout: CalloutRecord }) {
+/** "Mon, Oct 5, 2026" */
+function fullDate(date: string) {
+  return new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
+}
+
+type FactShift = { date: string; startTime: string; endTime: string; locationName: string; positionName?: string; positionId?: string; isDesignatedLead?: boolean };
+
+/** One shift in full: whose it is, the full date, start to end (an overnight end names its day), and where. */
+function ShiftFact({ label, shift }: { label: string; shift: FactShift }) {
+  const start = shift.startTime.slice(0, 5), end = shift.endTime.slice(0, 5);
+  const ends = end === "24:00" ? "midnight" : formatTime(end);
+  const overnight = end !== "24:00" && end < start;
+  const position = shift.positionName ?? (shift.positionId ? `Position ${shift.positionId}` : null);
+  return <li>
+    <b>{label}</b>
+    <span>{fullDate(shift.date)}</span>
+    <span>{formatTime(start)} – {ends}{overnight ? `, ends ${fullDate(addDays(shift.date, 1))}` : ""}</span>
+    <span>{[shift.locationName, position, shift.isDesignatedLead ? "Shift lead" : null].filter(Boolean).join(" · ")}</span>
+  </li>;
+}
+
+/** What opens under a request: both shifts of a swap, the shift and who picked it up for coverage. */
+function ExchangeFacts({ exchange }: { exchange: ExchangeRecord }) {
+  const source = <ShiftFact label={`${possessive(exchange.sourceShift.employeeName)} shift`} shift={exchange.sourceShift} />;
+  if (exchange.kind === "SWAP") return <>
+    <ul className="q-facts">{source}{exchange.targetShift ? <ShiftFact label={`${possessive(exchange.targetShift.employeeName)} shift`} shift={exchange.targetShift} /> : null}</ul>
+    <p className="q-help">{exchange.targetShift ? "Approving trades these two shifts." : "The other shift isn’t available right now. Reload to see the latest."}</p>
+  </>;
   return <>
-    <div className="wa-shifts"><ShiftBlock shift={callout} label={`${possessive(callout.employeeName)} shift`} /></div>
-    <Facts label="Reason">
-      <Fact label="Reason">{reasons[callout.reasonCode] ?? callout.reasonCode}</Fact>
-      {callout.reasonNote ? <Fact label="Note">{callout.reasonNote}</Fact> : null}
-    </Facts>
+    <ul className="q-facts">{source}<li><b>{exchange.targetEmployeeName ? `Picked up by ${exchange.targetEmployeeName}` : "No one has picked it up yet"}</b></li></ul>
+    <p className="q-help">{exchange.targetEmployeeName ? "Approving gives this shift to the person who picked it up." : `Closing stops anyone else from picking it up. The shift stays with ${exchange.requestedByName}.`}</p>
   </>;
 }
 
-/** Phase 3.5 Wave A: Shift requests for Owners and Managers on the kit. One card per request that needs a decision,
- * with its shifts, what approving does and the decision; open coverage and recent outcomes in their own views. */
+function CalloutFacts({ callout, reason }: { callout: CalloutRecord; reason: string }) {
+  return <>
+    <ul className="q-facts">
+      <ShiftFact label={`${possessive(callout.employeeName)} shift`} shift={callout} />
+      <li><b>Reason</b><span>{reason}</span></li>
+      {callout.reasonNote ? <li><b>Note</b><span>{callout.reasonNote}</span></li> : null}
+    </ul>
+    <p className="q-help">Approving takes the shift off their schedule. It will still need someone to cover it.</p>
+  </>;
+}
+
+/** A request row that opens in place (the Quiet disclosure) to show its shifts in full; the decision stays under it. */
+function RequestDetails({ name, line, sent, label, open, children }: { name: string; line: string; sent: string; label: string; open: boolean; children: ReactNode }) {
+  return <details className="q-details q-request__details" open={open}>
+    <summary className="q-row q-row--av" aria-label={label}>
+      <span className="q-av" aria-hidden="true">{initialsOf(name)}</span>
+      <span className="q-rt"><b>{name}</b><i>{line}</i></span>
+      <span className="q-rv">{sent}</span>
+      <CaretRightIcon className="q-chev" aria-hidden="true" />
+    </summary>
+    <div className="q-details__body q-done__body">{children}</div>
+  </details>;
+}
+
+function Decision({ id, revision, decline, approve, allowed, notice, what }: { id: string; revision?: number; decline: string; approve: string; allowed: boolean; notice?: string; what: string }) {
+  if (!revision) return <p className="q-help q-acts-note">This request changed. Reload to see the latest.</p>;
+  return <ShiftChangeForm fields={{ requestId: id, expectedRevision: revision }} className="q-acts-form">
+    {notice ? <p className="q-help q-acts-note">{notice}</p> : null}
+    <div className="q-acts">
+      <PendingButton className="q-bs" name="kind" value={decline} pending="Declining…" label={`Decline ${what}`}>Decline</PendingButton>
+      {allowed ? <PendingButton className="q-bs q-bs--go" name="kind" value={approve} pending="Approving…" label={`Approve ${what}`}>Approve</PendingButton> : null}
+    </div>
+  </ShiftChangeForm>;
+}
+
+/** Quiet (v4, approved Oct 23): Waiting, Open cover and Done. A waiting request is one row (who, what, when it was sent)
+ * with Decline and Approve under it; open cover can be closed; Done rows open their history. */
 export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: {
   timeZone: string; tab?: string; error?: string; approved?: string; reviewed?: string; calloutApproved?: string; calloutDenied?: string; requestId?: string;
 }) {
@@ -77,103 +128,77 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
   const selected = tabs.find(item => item.id === tab) ?? tabs[0];
   const source=await withOperationalCompany(proof,async()=>{
   const [pending, callouts, coverage, exchanges, history] = await Promise.all([
-    selected.id === "pending" ? listManagerPendingExchanges() : Promise.resolve([]),
-    selected.id === "pending" ? listPendingCallouts() : Promise.resolve([]),
+    listManagerPendingExchanges(),
+    listPendingCallouts(),
     selected.id === "coverage" ? listManagementCoverage(businessDate(new Date(), timeZone)) : Promise.resolve([]),
     selected.id === "activity" ? listTeamExchangeActivity(true) : Promise.resolve([]),
     selected.id === "activity" ? listTeamCalloutHistory() : Promise.resolve([]),
   ]);
   const livePending=pending.filter(e=>e.status==='MANAGER_PENDING');
   const liveCoverage=coverage.filter(e=>e.status==='OPEN');
-  const approvals=new Map(await Promise.all([...livePending.map(e=>({id:e.id,revision:e.requestRevision,kind:'MANAGER_APPROVE' as const})),...callouts.map(e=>({id:e.id,revision:e.requestRevision,kind:'APPROVE_CALLOUT' as const}))].map(async e=>[e.id,e.revision?await readShiftChangeAvailability(proof,{kind:e.kind,requestId:e.id,expectedRevision:e.revision,operationId:randomUUID()}).catch(()=>({allowed:false,notice:'We couldn’t check this right now. Reload to try again.'})):{allowed:false,notice:'This request changed. Reload to see the latest.'}] as const)));
+  const decide=selected.id==='pending';
+  const approvals=new Map(decide?await Promise.all([...livePending.map(e=>({id:e.id,revision:e.requestRevision,kind:'MANAGER_APPROVE' as const})),...callouts.map(e=>({id:e.id,revision:e.requestRevision,kind:'APPROVE_CALLOUT' as const}))].map(async e=>[e.id,e.revision?await readShiftChangeAvailability(proof,{kind:e.kind,requestId:e.id,expectedRevision:e.revision,operationId:randomUUID()}).catch(()=>({allowed:false,notice:'We couldn’t check this right now. Reload to try again.'})):{allowed:false,notice:'This request changed. Reload to see the latest.'}] as const)):[]);
   const historyViews=new Map(await Promise.all([...exchanges,...history].map(async e=>[e.id,await readShiftChangeHistoryView(proof,e.id).catch(()=>null)] as const)));
     return {callouts,exchanges,history,livePending,liveCoverage,approvals,historyViews};
   });
   if(source.state==='unavailable')return <OperationalUnavailable title="Team shift requests unavailable" reason={source.reason}/>;
   const {callouts,exchanges,history,livePending,liveCoverage,approvals,historyViews}=source.data;
+  const now = source.observedAt;
+  const waiting = livePending.length + callouts.length;
   const activity = [
-    ...exchanges.map(exchange => ({ id: exchange.id, createdAt: exchange.createdAt, status: exchange.status, title: `${exchange.kind === "SWAP" ? "Swap" : "Coverage"}\u00a0· ${exchange.requestedByName}`, lead: exchangeLead(exchange), body: <ExchangeShifts exchange={exchange} /> })),
-    ...history.map(callout => ({ id: callout.id, createdAt: callout.createdAt, status: callout.status, title: `Unable to work\u00a0· ${callout.employeeName}`, lead: null, body: <>
-      <CalloutFacts callout={callout} />
-      {callout.status === "APPROVED" && !callout.releaseApplies ? <p className="wa-card-note">This approval was for an earlier version of the shift. Check who is assigned now.</p> : null}
-    </> })),
+    ...exchanges.map(exchange => ({ id: exchange.id, createdAt: exchange.createdAt, status: exchange.status, name: exchange.requestedByName, line: exchangeLine(exchange), note: null as string | null })),
+    ...history.map(callout => ({ id: callout.id, createdAt: callout.createdAt, status: callout.status, name: callout.employeeName, line: `Can’t work ${at(callout)}`,
+      note: callout.status === "APPROVED" && !callout.releaseApplies ? "This approval was for an earlier version of the shift. Check who is assigned now." : null })),
   ].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 30);
-  const count = selected.id === "pending" ? livePending.length + callouts.length : selected.id === "coverage" ? liveCoverage.length : activity.length;
-  const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+  const sent = (createdAt: string) => agoLabel(createdAt, now, true);
 
-  const decisionNotice = (id: string) => approvals.get(id)?.notice
-    ? <div className="wa-card-body wa-card-body--tight"><Notice tone="review" quiet>{approvals.get(id)?.notice}</Notice></div> : null;
+  return <ScopedReadFrame observation={source}><QuietPage className="q-shiftreq">
+    <QuietNav back={{ href: "/app/inbox", label: "Inbox" }} />
+    <QuietHeader title="Shift requests" />
+    <QuietSegments label="Shift request sections" items={tabs.map(item => ({ href: `/app/exchange?tab=${item.id}`, current: selected.id === item.id,
+      label: item.id === "pending" && waiting ? `Waiting · ${waiting}` : item.label }))} />
+    {error ? <p className="q-error q-first" role="alert">{errors[error] ?? "The request may have changed. Check it and decide again."}</p> : null}
 
-  return <ScopedReadFrame observation={source}><div className="nv-page wa-page wa-shiftreq" data-nv-page="">
-    <PageBand title="Shift requests" overlap={false}
-      summary={selected.id === "pending" ? (count ? `${plural(count, "request needs", "requests need")} your decision.` : "Nothing needs your decision.")
-        : selected.id === "coverage" ? (count ? `${plural(count, "shift", "shifts")} nobody has picked up yet.` : "Every offered shift has been picked up.")
-        : "Recent outcomes, newest first."}
-      extra={<><RequestPagesNav current="/app/exchange" /><FilterPills label="Shift request sections" items={tabs.map(item => ({ href: `/app/exchange?tab=${item.id}`, label: item.label, current: selected.id === item.id }))} /></>} />
-    <div className="nv-content">
-      <ManagerIssueFocus prefix="request-" />
-      {error ? <Notice tone="urgent" title="That decision wasn’t saved">{errors[error] ?? "The request may have changed. Check it and decide again."}</Notice> : null}
+    {selected.id === "pending" ? (waiting ? <ul className="q-list q-requests" aria-label="Waiting shift requests">
+      {livePending.map(exchange => {
+        const what = `${exchange.kind === "SWAP" ? "swap" : "coverage"} request from ${exchange.requestedByName}`;
+        return <li className="q-request" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id} data-selected={requestId === exchange.id ? "true" : undefined}>
+          <RequestDetails name={exchange.requestedByName} line={exchangeLine(exchange)} sent={sent(exchange.createdAt)} open={requestId === exchange.id}
+            label={`${exchange.requestedByName}, ${exchangeLine(exchange)}. Show ${exchange.kind === "SWAP" ? "both shifts" : "the shift"}.`}><ExchangeFacts exchange={exchange} /></RequestDetails>
+          <Decision id={exchange.id} revision={exchange.requestRevision} decline="MANAGER_DECLINE" approve="MANAGER_APPROVE" allowed={!!approvals.get(exchange.id)?.allowed} notice={approvals.get(exchange.id)?.notice ?? undefined} what={what} />
+        </li>;
+      })}
+      {callouts.map(callout => {
+        const reason = [reasons[callout.reasonCode] ?? callout.reasonCode, callout.reasonNote].filter(Boolean).join(" · ");
+        return <li className="q-request" id={`request-${callout.id}`} tabIndex={-1} key={callout.id} data-selected={requestId === callout.id ? "true" : undefined}>
+          <RequestDetails name={callout.employeeName} line={`Can’t work ${at(callout)} · ${reason}`} sent={sent(callout.createdAt)} open={requestId === callout.id}
+            label={`${callout.employeeName} can’t work ${at(callout)}, ${reason}. Show the shift.`}><CalloutFacts callout={callout} reason={reasons[callout.reasonCode] ?? callout.reasonCode} /></RequestDetails>
+          <Decision id={callout.id} revision={callout.requestRevision} decline="DECLINE_CALLOUT" approve="APPROVE_CALLOUT" allowed={!!approvals.get(callout.id)?.allowed} notice={approvals.get(callout.id)?.notice ?? undefined} what={`the report from ${callout.employeeName}`} />
+        </li>;
+      })}
+    </ul> : <p className="q-empty q-first">You’re all caught up.</p>) : null}
 
-      {livePending.length || callouts.length || liveCoverage.length ? <div className="wa-grid">
-      {livePending.map(exchange => <div className="wa-target" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id} data-selected={requestId === exchange.id ? "true" : undefined}>
-        <Card title={`${exchange.kind === "SWAP" ? "Swap" : "Coverage"}\u00a0· ${exchange.requestedByName}`} meta={<Status tone="review">Waiting</Status>}>
-          <p className="wa-card-lead">{exchangeLead(exchange)}</p>
-          <ExchangeShifts exchange={exchange} />
-          {decisionNotice(exchange.id)}
-          <p className="wa-card-note">{exchange.kind === "SWAP" ? "Approving trades the two shifts above." : "Approving gives this shift to the person who picked it up."}</p>
-          <div className="wa-card-body">
-            {exchange.requestRevision?<ShiftChangeForm fields={{requestId:exchange.id,expectedRevision:exchange.requestRevision}} className="wa-form shift-change-form">
-              <div className="wa-decision">
-                <PendingButton kind="secondary" name="kind" value="MANAGER_DECLINE" pending="Declining…" label={`Decline ${exchange.kind === "SWAP" ? "swap" : "coverage"} request from ${exchange.requestedByName}`}>Decline</PendingButton>
-                {approvals.get(exchange.id)?.allowed?<PendingButton name="kind" value="MANAGER_APPROVE" pending="Approving…" label={`Approve ${exchange.kind === "SWAP" ? "swap" : "coverage"} request from ${exchange.requestedByName}`}>Approve</PendingButton>:null}
-              </div>
-            </ShiftChangeForm>:<Notice tone="review" quiet>This request changed. Reload to see the latest.</Notice>}
-          </div>
-        </Card>
-      </div>)}
+    {selected.id === "coverage" ? (liveCoverage.length ? <ul className="q-list q-requests" aria-label="Open cover">
+      {liveCoverage.map(exchange => <li className="q-request" key={exchange.id}>
+        <RequestDetails name={exchange.requestedByName} line={exchangeLine(exchange)} sent={sent(exchange.createdAt)} open={false}
+          label={`${exchange.requestedByName}, ${exchangeLine(exchange)}. Show the shift.`}><ExchangeFacts exchange={exchange} /></RequestDetails>
+        {exchange.requestRevision ? <ShiftChangeForm fields={{ kind: "MANAGER_CLOSE", requestId: exchange.id, expectedRevision: exchange.requestRevision }} className="q-acts-form">
+          <div className="q-acts"><PendingButton className="q-bs" pending="Closing…" label={`Close the coverage request from ${exchange.requestedByName}. The shift stays with them.`}>Close request</PendingButton></div>
+        </ShiftChangeForm> : null}
+      </li>)}
+    </ul> : <p className="q-empty q-first">No open cover.</p>) : null}
 
-      {callouts.map(callout => <div className="wa-target" id={`request-${callout.id}`} tabIndex={-1} key={callout.id} data-selected={requestId === callout.id ? "true" : undefined}>
-        <Card title={`Unable to work\u00a0· ${callout.employeeName}`} meta={<Status tone="review">Waiting</Status>}>
-          <p className="wa-card-lead">Can’t work this shift</p>
-          <CalloutFacts callout={callout} />
-          {callout.status === "APPROVED" && !callout.releaseApplies ? <p className="wa-card-note">This approval was for an earlier version of the shift. Check who is assigned now.</p> : null}
-          {decisionNotice(callout.id)}
-          <p className="wa-card-note">Approving takes the shift off their schedule. It will still need someone to cover it.</p>
-          <div className="wa-card-body">
-            {callout.requestRevision?<ShiftChangeForm fields={{requestId:callout.id,expectedRevision:callout.requestRevision}} className="wa-form shift-change-form">
-              <div className="wa-decision">
-                <PendingButton kind="secondary" name="kind" value="DECLINE_CALLOUT" pending="Declining…" label={`Decline the report from ${callout.employeeName}`}>Decline</PendingButton>
-                {approvals.get(callout.id)?.allowed?<PendingButton name="kind" value="APPROVE_CALLOUT" pending="Approving…" label={`Approve the report from ${callout.employeeName}`}>Approve</PendingButton>:null}
-              </div>
-            </ShiftChangeForm>:<Notice tone="review" quiet>This request changed. Reload to see the latest.</Notice>}
-          </div>
-        </Card>
-      </div>)}
-
-      {liveCoverage.map(exchange => <Card key={exchange.id} title={`Coverage\u00a0· ${exchange.requestedByName}`} meta={<Status tone="neutral">Not picked up</Status>}>
-        <p className="wa-card-lead">{exchangeLead(exchange)}</p>
-        <ExchangeShifts exchange={exchange} />
-        <p className="wa-card-note">Closing stops anyone else from picking it up. The shift stays with {exchange.requestedByName}.</p>
-        {exchange.requestRevision?<div className="wa-card-body"><ShiftChangeForm fields={{kind:"MANAGER_CLOSE",requestId:exchange.id,expectedRevision:exchange.requestRevision}} className="wa-form shift-change-form">
-          <PendingButton kind="secondary" pending="Closing…" block label={`Close the coverage request from ${exchange.requestedByName}`}>Close request</PendingButton>
-        </ShiftChangeForm></div>:null}
-      </Card>)}
-      </div> : null}
-
-      {selected.id === "activity" && activity.length ? <Card title="Recent outcomes" meta={plural(activity.length, "request", "requests")}>
-        <ol className="wa-entries">
-          {activity.map(item => <li className="wa-entry" key={item.id}>
-            <div className="wa-entry__head"><span className="nv-row__title">{item.title}</span><Status tone={item.status === "APPROVED" ? "done" : "neutral"}>{statusWord(item.status)}</Status></div>
-            {item.lead ? <p className="wa-entry__lead">{item.lead}</p> : null}
-            {item.body}
-            <div className="wa-history"><ShiftChangeHistory events={historyViews.get(item.id)??null}/></div>
-          </li>)}
-        </ol>
-      </Card> : null}
-
-      {!count ? <Card title={selected.id === "pending" ? "You’re all caught up" : selected.id === "coverage" ? "No open coverage" : "No recent outcomes"}>
-        <div className="wa-card-body"><p className="wa-text wa-muted">{selected.id === "pending" ? "Swaps, pick-ups and “Unable to work” reports that need you show up here and in your Inbox." : selected.id === "coverage" ? "Shifts people offer up show here until someone picks them up." : "Approved, declined and withdrawn requests show up here."}</p></div>
-      </Card> : null}
-    </div>
-  </div></ScopedReadFrame>;
+    {selected.id === "activity" ? (activity.length ? <ul className="q-list q-requests q-done" aria-label="Done">
+      {activity.map(item => <li key={item.id}>
+        <details className="q-details">
+          <summary className="q-row q-row--av">
+            <span className="q-av" aria-hidden="true">{initialsOf(item.name)}</span>
+            <span className="q-rt"><b>{item.name}</b><i>{item.line}</i></span>
+            <span className="q-rv">{statusWord(item.status)}</span>
+          </summary>
+          <div className="q-details__body q-done__body">{item.note ? <p className="q-help">{item.note}</p> : null}<ShiftChangeHistory events={historyViews.get(item.id)??null}/></div>
+        </details>
+      </li>)}
+    </ul> : <p className="q-empty q-first">Nothing decided yet.</p>) : null}
+  </QuietPage></ScopedReadFrame>;
 }

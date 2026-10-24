@@ -12,7 +12,7 @@ import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {createPrivateSnapshotController} from '../lib/private-snapshot-client';
 import type {RecoveryReview} from '../lib/clocker/recovery-review.server';
 import {keepWhole} from '../lib/keep-whole';
-import {EmptyState, GuideCard, Notice, SettingsFrame} from '../app/app/settings/wave-c-kit';
+import {Notice, SettingsFrame} from '../app/app/settings/wave-c-kit';
 import {ButtonLabel, FormActions} from '../app/app/settings/wave-c-form';
 import {ScopedReadFrame,type ScopedObservation} from './company-access/scoped-read-frame';
 
@@ -40,7 +40,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
   const ready = state?.state === 'ready' ? state : null;
   const denied = state?.state === 'unavailable' && state.reason === 'access_denied';
   const unavailable = state?.state === 'unavailable' && state.reason !== 'no_selection';
-  const back = from === 'settings' ? {href: '/app/settings', label: 'Settings'} : {href: '/app', label: 'Home'};
+  const back = from === 'settings' ? {href: '/app/settings', label: 'Settings'} : {href: '/app/employees', label: 'Team'};
 
   useEffect(() => {
     const c = createPrivateSnapshotController<RecoveryReview>(value => {
@@ -110,17 +110,8 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
   }
 
   const errorId = `${inputId}-error`;
-  const content = <SettingsFrame back={back} settingsCrumb={false} title="Clocker recovery" summary="Check a saved Clocker action and help the employee finish recovery."
-    aside={<GuideCard title="A clear path to recovery">
-      <ol className="wc-steps">
-        <li><strong>Find the saved reference</strong>It’s on the recovery screen of the registered tablet.</li>
-        <li><strong>Review the receipt together</strong>Check the employee, action, time, tablet and location.</li>
-        <li><strong>Return to the same tablet</strong>The employee enters their PIN and checks the action to finish recovery.</li>
-      </ol>
-      <p>Checking a receipt doesn’t change recorded time or retry a clock action.</p>
-      <details className="wc-disclosure"><summary>Can others still use the tablet?<CaretDownIcon className="wc-caret" size={16} weight="bold" aria-hidden="true"/></summary>
-        <div className="wc-disclosure__body"><p>Yes. Other employees can use their own PIN and record their work. If this tablet can’t store recovery data, use another registered tablet at the same location and keep the original record for review.</p></div></details>
-    </GuideCard>}>
+  // Quiet (v4, approved Oct 23): the reference, Check, the receipt when there is one, and one row to Timecards.
+  const content = <SettingsFrame back={back} settingsCrumb={false} title="Clocker recovery" summary="Look up a saved clock-in receipt.">
     <form noValidate className="wc-form" aria-label="Check a saved action" data-guard={hydrated ? undefined : ''}
       onInvalidCapture={event => { event.preventDefault(); setInvalid((event.target as HTMLInputElement).validity.valueMissing ? 'Enter the saved reference.' : 'Use the full reference: 32 letters and numbers in five groups, with dashes.'); (event.target as HTMLInputElement).focus(); }}
       onSubmit={event => {
@@ -137,59 +128,44 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
         }
         controller.current?.refresh();
       }}>
-      <section className="nv-card" aria-labelledby="recovery-lookup-heading">
-        <div className="nv-card__head"><h2 className="nv-card__title" id="recovery-lookup-heading">Check a saved action</h2></div>
-        <fieldset disabled={!hydrated || pending} className="nv-card__body wc-fields wc-plain-fieldset">
-          <div className="wc-field" data-invalid={invalid ? 'true' : undefined}>
-            <label className="wc-label" htmlFor={inputId}>Saved action reference</label>
-            <input id={inputId} className="wc-control wc-code-input" required value={reference} onChange={event => changeReference(event.target.value)}
-              pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
-              maxLength={36} autoComplete="off" autoCapitalize="none" spellCheck={false} aria-describedby={invalid ? `${errorId} ${helpId}` : helpId} aria-invalid={invalid ? true : undefined}
-              placeholder="Paste the saved reference"/>
-            {invalid ? <p className="wc-error" id={errorId}><WarningCircleIcon size={18} weight="fill" aria-hidden="true"/>{invalid}</p> : null}
-            <p id={helpId} className="wc-help">Shown on the employee’s tablet, like 12345678-1234-1234-1234-123456789abc. Include every character and dash.</p>
-          </div>
-        </fieldset>
-        <div className="nv-card__body">
-          <FormActions>
-            <button className="nv-btn" data-kind="primary" type="submit" disabled={!hydrated || pending}>
-              <ButtonLabel pending={pending} idle={<><MagnifyingGlassIcon size={20} className="wc-icon-before" aria-hidden="true"/>Check receipt</>} busy={<><SpinnerGapIcon size={20} className="wc-spin wc-icon-before" aria-hidden="true"/>Checking…</>}/>
-            </button>
-          </FormActions>
+      <h2 className="q-sr" id="recovery-lookup-heading">Check a saved action</h2>
+      <fieldset disabled={!hydrated || pending} className="q-fieldset">
+        <div className="q-fl" data-invalid={invalid ? 'true' : undefined}>
+          <label className="q-fl__label" htmlFor={inputId}>Saved reference</label>
+          <input id={inputId} className="q-in" style={{ marginTop: 8 }} required value={reference} onChange={event => changeReference(event.target.value)}
+            pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+            maxLength={36} autoComplete="off" autoCapitalize="none" spellCheck={false} aria-describedby={invalid ? `${errorId} ${helpId}` : helpId} aria-invalid={invalid ? true : undefined}
+            placeholder="e.g. 12345678-1234…"/>
+          {invalid ? <p className="q-fl__error" id={errorId}>{invalid}</p> : null}
+          <p id={helpId} className="q-sr">Shown on the employee’s tablet, like 12345678-1234-1234-1234-123456789abc.</p>
         </div>
-        <noscript><div className="nv-card__body"><Notice tone="info">Enable JavaScript to check a receipt. You can still review timecards below.</Notice></div></noscript>
-      </section>
+      </fieldset>
+      <button className="q-btn" type="submit" disabled={!hydrated || pending}><ButtonLabel pending={pending} idle="Check" busy="Checking…"/></button>
+      <noscript><Notice tone="info">Enable JavaScript to check a receipt.</Notice></noscript>
     </form>
 
-    <section className="nv-card wc-result" aria-labelledby="recovery-result-heading" aria-busy={pending}>
-      <div className="nv-card__head"><h2 className="nv-card__title" id="recovery-result-heading">Receipt</h2></div>
-      {pending ? <div role="status"><EmptyState headingLevel={3} icon={<SpinnerGapIcon size={22} weight="bold" className="wc-spin"/>} title="Checking the saved receipt">Looking for a recorded action with this reference.</EmptyState></div>
-        : ready ? <div ref={feedback} tabIndex={-1} className="wc-feedback nv-card__body wc-fields">
-          <div role="status"><Notice tone={ready.receipts.length ? 'done' : 'info'} title={ready.receipts.length ? 'Recorded action found' : 'Action still unconfirmed'}>
-            {ready.receipts.length ? 'Review it with the employee before they finish on the tablet.' : 'No recorded action was found yet. The request may still be in progress.'}</Notice></div>
-          <dl className="wc-facts"><div><dt>Reference checked</dt><dd className="wc-path">{ready.commandId}</dd></div></dl>
-          {ready.receipts.length ? <>
-            <ul className="wc-receipts">{ready.receipts.map((receipt, index) => <li key={[receipt.employeeId, receipt.performedAt, index].join('-')} className="wc-receipt-item">
-              <div className="wc-receipt-item__who"><span className="nv-avatar" aria-hidden="true">{receipt.employeeName.split(' ').filter(Boolean).slice(0, 2).map(part => part[0]).join('')}</span>
-                <div><h3 className="wc-receipt-item__name">{receipt.employeeName}</h3><p className="wc-muted">{actionNames[receipt.action] ?? 'Recorded action'}</p></div></div>
-              <dl className="wc-facts"><div><dt>Recorded at</dt><dd><time dateTime={receipt.performedAt}>{formattedTime(receipt.performedAt)}</time></dd></div><div><dt>Tablet</dt><dd>{receipt.deviceName}</dd></div><div><dt>Location</dt><dd>{receipt.locationName}</dd></div></dl>
-            </li>)}</ul>
-            <div className="wc-fact"><span className="wc-fact__icon" aria-hidden="true"><DeviceTabletIcon size={20}/></span><div><span className="wc-fact__value">Finish on the same tablet</span><span className="wc-fact__note">Ask the employee to enter their PIN on the original tablet and check their action status. The tablet verifies the receipt before clearing the resolved action.</span></div></div>
-          </> : <div className="wc-fact"><span className="wc-fact__icon" aria-hidden="true"><DeviceTabletIcon size={20}/></span><div><span className="wc-fact__value">Keep the original recovery record</span><span className="wc-fact__note">Ask the employee to enter their PIN and check the action on the same registered tablet. Not finding a receipt doesn’t cancel the request.</span></div></div>}
+    <section aria-labelledby="recovery-result-heading" aria-busy={pending}>
+      <h2 className="q-sr" id="recovery-result-heading">Receipt</h2>
+      {pending ? <p className="q-empty" role="status" style={{ marginTop: 24 }}>Checking the saved receipt…</p>
+        : ready ? <div ref={feedback} tabIndex={-1} className="wc-feedback">
+          <div role="status" className="q-lead" style={{ marginTop: 32 }}><b>{ready.receipts.length ? 'Recorded action found' : 'Not recorded yet'}</b>
+            <i>{ready.receipts.length ? 'Check it with the employee, then they finish on the same tablet.' : 'It may still be in progress. They check again on the same tablet.'}</i></div>
+          {ready.receipts.length ? <ul className="q-list" style={{ marginTop: 12 }}>{ready.receipts.map((receipt, index) => <li key={[receipt.employeeId, receipt.performedAt, index].join('-')}>
+            <div className="q-row q-row--av"><span className="q-av" aria-hidden="true">{receipt.employeeName.split(' ').filter(Boolean).slice(0, 2).map(part => part[0]).join('')}</span>
+              <span className="q-rt"><b>{`${receipt.employeeName} · ${actionNames[receipt.action] ?? 'Recorded action'}`}</b><i><time dateTime={receipt.performedAt}>{formattedTime(receipt.performedAt)}</time>{` · ${receipt.deviceName}, ${receipt.locationName}`}</i></span></div>
+          </li>)}</ul> : null}
+          <p className="q-sr">Reference checked: {ready.commandId}</p>
         </div>
-        : unavailable ? <div ref={feedback} tabIndex={-1} className="wc-feedback nv-card__body" role="alert">
+        : unavailable ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role="alert">
           <Notice tone="urgent" title={denied ? 'Your session ended' : 'Couldn’t check the receipt.'}
-            action={denied ? <Link className="nv-link" href="/login">Sign in</Link> : undefined}>
-            {denied ? 'Sign in again before checking this action.' : 'Keep the saved action and its original reference. Check again when your connection is back.'}</Notice>
-        </div>
-        : <EmptyState headingLevel={3} icon={<ReceiptIcon size={22} weight="bold"/>} title="Your receipt will appear here">Enter a saved reference to see whether the action was recorded.</EmptyState>}
+            action={denied ? <Link className="q-btn q-btn--quiet" href="/login">Sign in</Link> : undefined}>
+            {denied ? 'Sign in again before checking this action.' : 'Keep the saved reference and check again when you’re back online.'}</Notice>
+        </div> : null}
     </section>
 
-    <section className="nv-card" aria-labelledby="recovery-corrections-heading">
-      <div className="nv-card__head"><h2 className="nv-card__title" id="recovery-corrections-heading">Time wrong or not recorded?</h2></div>
-      <div className="nv-card__body"><p className="wc-muted">Review the employee’s evidence, then correct the time in Timecards. Keep the original action reference.</p></div>
-      <div className="wc-card-actions"><Link href="/app/timecards" className="nv-link">Review timecards<CaretRightIcon size={16} weight="bold" aria-hidden="true"/></Link></div>
-    </section>
+    <ul className="q-list" style={{ marginTop: 40 }}>
+      <li><Link href="/app/timecards" className="q-row"><span className="q-rt"><b>Time wrong or missing?</b><i>Fix it in Timecards</i></span><CaretRightIcon className="q-chev" aria-hidden="true"/></Link></li>
+    </ul>
   </SettingsFrame>;
   return observation ? <ScopedReadFrame observation={observation}>{content}</ScopedReadFrame> : content;
 }

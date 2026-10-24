@@ -19,12 +19,14 @@ export function PhoneInput({
   defaultValue = "",
   id,
   "aria-describedby": describedBy,
-}: PhoneInputProps) {
+  className,
+}: PhoneInputProps & { className?: string }) {
   const [value, setValue] = useState(() => formatPhoneInput(defaultValue));
 
   return (
     <input
       id={id}
+      className={className}
       aria-describedby={describedBy}
       name={name}
       inputMode="tel"

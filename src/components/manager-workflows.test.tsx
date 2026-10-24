@@ -1,6 +1,6 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { requireSession } from "@/lib/auth/session";
 import { getShiftValidationContext } from "@/lib/data/schedules";
 import CoverageSuggestionsPage from "../app/app/schedule/coverage/page";
@@ -58,7 +58,7 @@ it.each(["OWNER","MANAGER"] as const)("gives %s operational Time Off views and r
   vi.mocked(requireSession).mockResolvedValue({id:"reviewer",firstName:"Alex",lastName:"Rivera",role,primaryLocationId:"loc"});
   const pending = renderToStaticMarkup(await ManagerTimeOff({tab:"team"}));
   expect(listPendingTimeOffRequests).toHaveBeenCalledOnce();
-  expect(pending).toContain("Pending"); expect(pending).not.toMatch(/New Request|My Requests|startDate/);
+  expect(pending).toContain("Waiting"); expect(pending).not.toMatch(/New Request|My Requests|startDate/);
   const approved = renderToStaticMarkup(await ManagerTimeOff({tab:"approved"}));
   expect(listTeamTimeOffRequests).toHaveBeenCalledWith("APPROVED"); expect(approved).not.toContain("<form");
   await ManagerTimeOff({tab:"declined"}); expect(listTeamTimeOffRequests).toHaveBeenCalledWith("DENIED");
@@ -66,13 +66,13 @@ it.each(["OWNER","MANAGER"] as const)("gives %s operational Time Off views and r
 it("distinguishes missing, intentionally unavailable and submitted windows without treating seeded hours as a submission", async () => {
   // Times are kept whole with no-break spaces; compare the words.
   const html = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28"})).replace(/\u00a0/g, " ");
-  // Clean Manager (v3): the stat card went; the filter chips carry the counts.
-  expect(html).toMatch(/Not submitted<span class="wa-chip__count" aria-label=", 1">1</); expect(html).toContain("Unavailable all week"); expect(html).toContain("FUEL – 2"); expect(html).toContain("6:00 AM – 2:00 PM"); expect(html).not.toContain("7:00 AM"); expect(html).not.toContain("<form"); expect(html).not.toContain("checkbox");
-  expect(html).toMatch(/data-tone="review">.*?Not submitted<\/span>/);
-  expect(html).toContain('2 of 3 submitted');
-  expect(html).toMatch(/Unavailable all week<span class="wa-chip__count" aria-label=", 1">1</);
-  expect(html).toMatch(/data-tone="neutral">.*?Unavailable all week<\/span>/);
-  expect(html).toMatch(/data-tone="done">.*?Submitted<\/span>/);
+  // Quiet (v4): Not sent and Sent carry the counts; seeded hours on someone who hasn't sent don't count or show.
+  expect(html).toContain(">Not sent · 1</button>"); expect(html).toContain(">Sent · 2</button>");
+  expect(html).toContain("2 of 3 sent");
+  expect(html).toContain('aria-label="Missing Person, No primary location, not sent"'); expect(html).not.toContain("7:00 AM");
+  // A link to someone who has sent opens the Sent list with their hours.
+  const sent = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28",employeeId:"available"})).replace(/\u00a0/g, " ");
+  expect(sent).toContain("6:00 AM – 2:00 PM"); expect(sent).toContain("Unavailable all week"); expect(sent).not.toContain("7:00 AM");
 });
 it("keeps management pending, coverage and outcome data separate", async () => {
   const pending = renderToStaticMarkup(await ManagerShiftRequests({ timeZone:"America/Puerto_Rico",tab:"requests"}));
@@ -83,7 +83,7 @@ it("keeps management pending, coverage and outcome data separate", async () => {
 
 it("handles an invalid management week without reading or editing personal availability", async () => {
   const html = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",week:"2026-99-99",currentWeek:"2026-09-28"}));
-  expect(html).toContain("That schedule week is not valid");
+  expect(html).toContain("That week isn’t valid, so this is the upcoming week.");
   expect(listAvailabilitySubmissionStatuses).toHaveBeenCalledWith("2026-09-28");
 });
 
@@ -116,7 +116,7 @@ it('H12 actionable manager exception explains its reason outside the action grid
  vi.mocked(readShiftChangeAvailability).mockResolvedValueOnce({allowed:true,notice:'Projected scheduled overtime needs manager review.'});
  const html=renderToStaticMarkup(await ManagerShiftRequests({timeZone:'America/Puerto_Rico'}));
  expect(html).toContain('>Approve<');expect(html).toContain('Projected scheduled overtime needs manager review.');
- expect(html.indexOf('Projected scheduled overtime')).toBeLessThan(html.indexOf('class="wa-decision"'));
+ expect(html.indexOf('Projected scheduled overtime')).toBeLessThan(html.indexOf('class="q-acts"'));
  expect(html).not.toMatch(/operationalProfile|weeklyMinutes|classification/);
 });
 
@@ -143,3 +143,42 @@ it('honors company-read denial before team requests, availability and activity l
 
 // This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
 vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+
+describe("management sees every shift in full before deciding (Codex review, Oct 23)", () => {
+  const shift = (over: Record<string, unknown>) => ({ id: "s", scheduleId: "sched", employeeId: "e1", employeeName: "Fictional Ana", locationId: "north", locationName: "North Office", weekStart: "2026-10-05", date: "2026-10-05", startTime: "08:00", endTime: "12:00", ...over });
+  const plain = (html: string) => html.replace(/ /g, " ");
+  it("a swap shows both employees, full dates, start and end times and locations ahead of Approve", async () => {
+    vi.mocked(listPendingCallouts).mockResolvedValue([]);
+    vi.mocked(listManagerPendingExchanges).mockResolvedValue([{ id: "swap", requestRevision: 3, actionable: true, kind: "SWAP", status: "MANAGER_PENDING", requestedByEmployeeId: "e1", requestedByName: "Fictional Ana", requestedByRole: "EMPLOYEE", targetEmployeeId: "e2", targetEmployeeName: "Fictional Ben", createdAt: "2026-10-03T00:00:00Z",
+      sourceShift: shift({}) as never, targetShift: shift({ id: "t", employeeId: "e2", employeeName: "Fictional Ben", locationId: "south", locationName: "South Office", date: "2026-10-08", startTime: "14:00", endTime: "18:00" }) as never }]);
+    vi.mocked(readShiftChangeAvailability).mockResolvedValueOnce({ allowed: true } as never);
+    const html = plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" })));
+    const facts = html.slice(html.indexOf('class="q-facts"'), html.indexOf('class="q-acts"'));
+    for (const text of ["Fictional Ana’s shift", "Mon, Oct 5, 2026", "8:00 AM – 12:00 PM", "North Office", "Fictional Ben’s shift", "Thu, Oct 8, 2026", "2:00 PM – 6:00 PM", "South Office"]) expect(facts).toContain(text);
+    expect(html).toContain(">Approve<");
+    expect(html.indexOf("South Office")).toBeLessThan(html.indexOf(">Approve<"));
+    // Still a revision-bound decision on the same request.
+    expect(html).toContain('name="expectedRevision" value="3"');
+  });
+  it("coverage shows the affected shift and who picked it up, or that no one has", async () => {
+    vi.mocked(listPendingCallouts).mockResolvedValue([]);
+    const cover = { id: "cover", requestRevision: 2, actionable: true, kind: "COVERAGE" as const, status: "MANAGER_PENDING" as const, requestedByEmployeeId: "e1", requestedByName: "Fictional Ana", requestedByRole: "EMPLOYEE" as const, createdAt: "2026-10-03T00:00:00Z", sourceShift: shift({ endTime: "02:00", startTime: "18:00" }) as never };
+    vi.mocked(listManagerPendingExchanges).mockResolvedValue([{ ...cover, targetEmployeeId: "e2", targetEmployeeName: "Fictional Ben" }]);
+    const named = plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" })));
+    expect(named).toContain("Mon, Oct 5, 2026"); expect(named).toContain("6:00 PM – 2:00 AM, ends Tue, Oct 6, 2026"); expect(named).toContain("North Office"); expect(named).toContain("Picked up by Fictional Ben");
+    vi.mocked(listManagerPendingExchanges).mockResolvedValue([cover]);
+    expect(plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" })))).toContain("No one has picked it up yet");
+  });
+  it("an “Unable to work” report shows the affected shift with its reason and note", async () => {
+    vi.mocked(listManagerPendingExchanges).mockResolvedValue([]);
+    vi.mocked(listPendingCallouts).mockResolvedValue([{ id: "callout", requestRevision: 4, shiftId: "s", employeeId: "e1", employeeName: "Fictional Ana", locationId: "north", locationName: "North Office", weekStart: "2026-10-05", date: "2026-10-05", startTime: "08:00", endTime: "12:00", reasonCode: "TRANSPORTATION", reasonNote: "Fictional bus strike", status: "PENDING", createdAt: "2026-10-03T00:00:00Z" }]);
+    const html = plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" })));
+    const facts = html.slice(html.indexOf('class="q-facts"'));
+    for (const text of ["Fictional Ana’s shift", "Mon, Oct 5, 2026", "8:00 AM – 12:00 PM", "North Office", "Transportation issue", "Fictional bus strike"]) expect(facts).toContain(text);
+  });
+  it("a deep-linked request opens with its shifts showing", async () => {
+    vi.mocked(listPendingCallouts).mockResolvedValue([]);
+    vi.mocked(listManagerPendingExchanges).mockResolvedValue([{ id: "linked", requestRevision: 1, kind: "COVERAGE", status: "MANAGER_PENDING", requestedByEmployeeId: "e1", requestedByName: "Fictional Ana", requestedByRole: "EMPLOYEE", createdAt: "2026-10-03T00:00:00Z", sourceShift: shift({}) as never }]);
+    expect(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico", requestId: "linked" }))).toMatch(/<details class="q-details q-request__details" open="">/);
+  });
+});

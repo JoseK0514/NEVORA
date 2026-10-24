@@ -10,7 +10,6 @@ import { ActionMenu } from "@/components/action-menu";
 import {ManagerIssueFocus} from '@/components/manager-issue-focus';
 import { EmployeeMySchedule } from "@/components/employee-my-schedule";
 import './employee-schedule.css';
-import { ScheduleLocationControl } from "@/components/schedule-location-control";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate, formatBusinessDateTimeInput } from "@/lib/business-time";
 import { SchedulePublicationChange } from "@/components/schedule-publication-change";
@@ -18,11 +17,10 @@ import { listCapturedShiftPositions } from "@/lib/data/publication-revisions";
 import {ScheduleRouteFeedback} from '@/components/company-access/schedule-route-feedback';
 import Link from "next/link";
 import { Fragment, type ReactNode } from "react";
-import { Card, PageBand, Row, Rows } from "@/components/kit/kit";
+import { QuietBar, QuietHeader, QuietPage, QuietRow } from "@/components/quiet/quiet";
 import { FocusOnArrival } from "@/components/kit/focus-on-arrival";
 import { ManagerWeeklyRoster, type RosterOpenShift } from "@/components/manager-weekly-roster";
 import { scheduleWeekFacts } from "@/components/clean/week-summary";
-import { TopBarTools } from "@/components/clean/top-bar-tools";
 import { DayAwareLink } from "@/components/clean/day-aware-link";
 import { readWeeklyApprovedAbsences } from "@/lib/data/weekly-approved-absences.server";
 import { loadManagerDashboardData } from "@/lib/data/manager-dashboard";
@@ -310,46 +308,34 @@ export default async function SchedulePage({
     ? locations.filter(location => (selectedLocation === "all" || location.id === selectedLocation) && statusFor(location.id) !== "PUBLISHED") : [];
 
   return (
-    <div className="manager-schedule-page premium-legacy-page nv-page cm-page cm-schedule" data-nv-page="">
-      <PageBand title="Schedule"
-        summary={<>
-          <span className="cm-sched-phone-inline">{`${compactWeekRange(weekStart)}${phonePublished ? ` · ${phonePublished}` : ""}`}</span>
-          <span className="cm-sched-desk-inline">{deskFacts.length
-            ? deskFacts.map((part, index) => <Fragment key={index}>{index ? " · " : ""}{part}</Fragment>)
-            : `${rosterShifts.length} ${rosterShifts.length === 1 ? "shift" : "shifts"} this week`}</span>
-        </>}
-        aside={<TopBarTools className="cm-sched-slot" phone><div className="cm-sched-bar">
-          <Link className="cm-sched-back" href={`/app/schedule?week=${previousWeek}${locationQuery}`} aria-label={`Previous week, ${formatWeekRange(previousWeek)}`}>
-            <CaretLeftIcon size={20} weight="bold" aria-hidden="true" /><span aria-hidden="true">{formatDayLabel(previousWeek).day}</span>
-          </Link>
-          <nav className="cm-sched-stepper" aria-label="Schedule week">
-            <Link className="cm-kbtn cm-kbtn--icon" href={`/app/schedule?week=${previousWeek}${locationQuery}`} aria-label="Previous week"><CaretLeftIcon size={13} weight="bold" aria-hidden="true" /></Link>
-            <span className="cm-kbtn cm-sched-range">{compactWeekRange(weekStart)}</span>
-            <Link className="cm-kbtn cm-kbtn--icon" href={`/app/schedule?week=${nextWeek}${locationQuery}`} aria-label="Next week"><CaretRightIcon size={13} weight="bold" aria-hidden="true" /></Link>
-          </nav>
-          <ActionMenu id="schedule-more-actions" label="More" ariaLabel="More schedule actions" triggerClassName="cm-kbtn cm-sched-more"
-            triggerContent={<><span className="cm-sched-desk-inline">More</span><CaretDownIcon className="cm-sched-desk-inline" size={11} weight="bold" aria-hidden="true" /><DotsThreeCircleIcon className="cm-sched-phone-inline" size={25} aria-hidden="true" /></>}>
-            <Link className="nevora-action-menu-item" href={`/app/schedule?week=${currentWeek}${locationQuery}`} aria-current={weekStart === currentWeek ? "date" : undefined}><strong>This week</strong><span>Return to the current week.</span></Link>
-            <Link className="nevora-action-menu-item" href={`/app/schedule?week=${nextWeek}${locationQuery}`}><strong>Next week</strong><span>{formatWeekRange(nextWeek)}</span></Link>
-            <Link className="nevora-action-menu-item" href={`/app/schedule/templates?week=${weekStart}`}><strong>Templates</strong><span>Manage reusable shift patterns.</span></Link>
-            <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}${locationQuery}&plan=1#schedule-planning`}><strong>Build and publish</strong><span>Automatic scheduling and publication by location.</span></Link>
-            <ScheduleCopyForm actorId={session.id} command={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}} />
-            <PrintScheduleButton />
-            <Link className="nevora-action-menu-item" href={`/app/schedule/settings?week=${weekStart}`}><strong>Scheduling rules</strong><span>Coverage requirements and employee hour targets.</span></Link>
-            <Link className="nevora-action-menu-item" href="/app/updates"><strong>Team updates</strong><span>Keep your team informed.</span></Link>
-            <div className="nevora-action-menu-divider" />
-            <form action={setAvailabilityDeadlineAction} className="schedule-menu-deadline manager-issue-target" id="schedule-deadline" tabIndex={-1}>
-              <input type="hidden" name="weekStart" value={weekStart} />
-              <label><span>Availability deadline</span><input type="datetime-local" name="availabilityDeadline" defaultValue={params.availabilityDeadline ?? formatBusinessDateTimeInput(weekSettings?.availabilityDeadline, workspace.timeZone)} /></label>
-              <button className="button secondary" type="submit">{weekSettings?.availabilityDeadline ? "Update" : "Set deadline"}</button>
-            </form>
-          </ActionMenu>
-          <DayAwareLink className="cm-kbtn cm-kbtn--primary schedule-add-shift" href={addShiftHref} aria-label="Add shift">
-            <PlusIcon className="cm-sched-desk-inline" size={13} weight="bold" aria-hidden="true" /><PlusIcon className="cm-sched-phone-inline" size={25} aria-hidden="true" />
-            <span className="cm-sched-desk-inline" aria-hidden="true">Add shift</span>
-          </DayAwareLink>
-        </div></TopBarTools>} />
-      <div className="nv-content premium-legacy-content">
+    // Quiet (v4, approved Oct 23): location menu and Add shift in the bar, the week line under the title, the week strip,
+    // then the chosen day. The "…" menu keeps the week, Templates, Build and publish and Scheduling rules one tap away.
+    <QuietPage className="q-schedule">
+      <QuietBar start={<ActionMenu id="schedule-location-menu" label="Location" ariaLabel={`Location: ${selectedLocation === "all" ? "All locations" : locations.find(location => location.id === selectedLocation)?.shortName ?? ""}`} align="start"
+          triggerClassName="q-sched-loc" triggerContent={<>{selectedLocation === "all" ? "All locations" : locations.find(location => location.id === selectedLocation)?.shortName}<CaretDownIcon className="q-ic q-ic--s" aria-hidden="true" /></>}>
+          <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}`} aria-current={selectedLocation === "all" ? "true" : undefined}>All locations</Link>
+          {locations.map(location => <Link key={location.id} className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=${location.id}`} aria-current={selectedLocation === location.id ? "true" : undefined}>{location.shortName}</Link>)}
+        </ActionMenu>}>
+        <ActionMenu id="schedule-more-actions" label="More" ariaLabel="More schedule actions" triggerClassName="q-bar__icon" triggerContent={<DotsThreeCircleIcon className="q-ic" aria-hidden="true" />}>
+          <Link className="nevora-action-menu-item" href={`/app/schedule?week=${previousWeek}${locationQuery}`}><strong>Previous week</strong><span>{formatWeekRange(previousWeek)}</span></Link>
+          <Link className="nevora-action-menu-item" href={`/app/schedule?week=${currentWeek}${locationQuery}`} aria-current={weekStart === currentWeek ? "date" : undefined}><strong>This week</strong><span>{formatWeekRange(currentWeek)}</span></Link>
+          <Link className="nevora-action-menu-item" href={`/app/schedule?week=${nextWeek}${locationQuery}`}><strong>Next week</strong><span>{formatWeekRange(nextWeek)}</span></Link>
+          <div className="nevora-action-menu-divider" />
+          <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}${locationQuery}&plan=1#schedule-planning`}><strong>Build and publish</strong><span>Fill the draft and publish it</span></Link>
+          <ScheduleCopyForm actorId={session.id} command={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}} />
+          <Link className="nevora-action-menu-item" href={`/app/schedule/templates?week=${weekStart}`}><strong>Templates</strong><span>Reusable weeks</span></Link>
+          <Link className="nevora-action-menu-item" href={`/app/schedule/settings?week=${weekStart}`}><strong>Scheduling rules</strong><span>Coverage and hour targets</span></Link>
+          <PrintScheduleButton />
+          <div className="nevora-action-menu-divider" />
+          <form action={setAvailabilityDeadlineAction} className="schedule-menu-deadline manager-issue-target" id="schedule-deadline" tabIndex={-1}>
+            <input type="hidden" name="weekStart" value={weekStart} />
+            <label><span>Availability deadline</span><input type="datetime-local" name="availabilityDeadline" defaultValue={params.availabilityDeadline ?? formatBusinessDateTimeInput(weekSettings?.availabilityDeadline, workspace.timeZone)} /></label>
+            <button className="button secondary" type="submit">{weekSettings?.availabilityDeadline ? "Update" : "Set deadline"}</button>
+          </form>
+        </ActionMenu>
+        <DayAwareLink className="q-bar__icon" href={addShiftHref} aria-label="Add shift"><PlusIcon className="q-ic" aria-hidden="true" /></DayAwareLink>
+      </QuietBar>
+      <QuietHeader title="Schedule" sub={`${compactWeekRange(weekStart)}${phonePublished ? ` · ${phonePublished}` : ""}`} />
       <ScheduleRouteFeedback error={params.error} warning={params.warning}/>
       {params.published ? (
         <section className="nevora-success-panel" role="status" aria-labelledby="schedule-published-title">
@@ -392,38 +378,26 @@ export default async function SchedulePage({
       <ManagerIssueFocus prefix="schedule-" />
       {params.plan === "1" || params.publishCheck ? <FocusOnArrival targetId="schedule-planning" /> : null}
       <ManagerWeeklyRoster key={`${weekStart}:${selectedLocation}:${reviewDay ?? "all"}`} employees={roster} dates={dates} today={today} reviewDay={reviewDay} timeZone={workspace.timeZone}
-        absences={absences} locationId={selectedLocation === "all" ? undefined : selectedLocation} openShifts={openShifts} footnote={facts.availabilityNote ?? undefined}
-        controls={<ScheduleLocationControl dense={locations.length > 8}>
-          <div className="segmented cm-locations" role="group" aria-label="Schedule location">
-            <Link className={selectedLocation === "all" ? "selected" : ""} aria-current={selectedLocation === "all" ? "true" : undefined} href={`/app/schedule?week=${weekStart}`}>
-              <span className="cm-sched-desk-inline">All locations</span><span className="cm-sched-phone-inline">All</span>
-            </Link>
-            {locations.map((location) => (
-              <Link key={location.id} className={selectedLocation === location.id ? "selected" : ""} aria-current={selectedLocation === location.id ? "true" : undefined}
-                href={`/app/schedule?week=${weekStart}&location=${location.id}`}>{location.shortName}</Link>
-            ))}
-          </div>
-        </ScheduleLocationControl>}
+        absences={absences} locationId={selectedLocation === "all" ? undefined : selectedLocation} openShifts={openShifts}
         notices={<>
-          {toPlan.length ? <div className="cm-sched-phone cm-sched-plan"><Card><Rows label="Locations the team can’t see yet">
+          {toPlan.length ? <ul className="q-list" aria-label="Locations the team can’t see yet" style={{ marginTop: 16 }}>
             {toPlan.map(location => {
               const drafted = statusFor(location.id) === "DRAFT";
-              return <Row key={location.id} title={drafted ? `${location.shortName} isn’t published` : `${location.shortName} isn’t planned`}
-                meta={drafted ? "Employees there can’t see this week yet" : "Nothing scheduled this week"}
-                trailing={<Link className="cm-pill" href={planHref(location.id)} aria-label={drafted ? `Review and publish ${location.shortName}` : `Plan ${location.shortName}`}>{drafted ? "Review" : "Plan"}</Link>} />;
+              return <QuietRow key={location.id} title={drafted ? `${location.shortName} isn’t published` : `${location.shortName} isn’t planned`}
+                detail={drafted ? "The team can’t see this week yet" : "Nothing scheduled this week"}
+                control={<Link className="q-bs" href={planHref(location.id)} aria-label={drafted ? `Review and publish ${location.shortName}` : `Plan ${location.shortName}`}>{drafted ? "Review" : "Plan"}</Link>} />;
             })}
-          </Rows></Card></div> : null}
-          <details className={`mws-planning manager-issue-target${publicationReview || params.publishCheck ? " review-open" : ""}`} id="schedule-planning" tabIndex={-1} open={!!publicationReview || !!params.publishCheck || params.plan === "1"}>
+          </ul> : null}
+          {publicationReview || params.publishCheck || params.plan === "1" ? <details className={`mws-planning manager-issue-target${publicationReview || params.publishCheck ? " review-open" : ""}`} id="schedule-planning" tabIndex={-1} open>
             <summary><CalendarCheckIcon size={22} aria-hidden="true" /><span><strong>Build and publish</strong><small>Automatic scheduling and publication by location</small></span><CaretRightIcon size={18} aria-hidden="true" /></summary>
             <div className="mws-planning-body"><p>Build or fill your draft, review the assignments, then publish to make the schedule visible to your team.</p>
               <ScheduleGenerationControls key={`${weekStart}:${selectedLocation}`} weekStart={weekStart} selectedLocation={selectedLocation} review={generationReview} />
               <SchedulePublicationControls weekStart={weekStart} locations={selectedLocation === "all" ? locations : locations.filter(location => location.id === selectedLocation)} review={publicationReview}/>
             </div>
-          </details>
+          </details> : null}
           {reviewDay?<div className="manager-schedule-context manager-issue-target" id="schedule-review" tabIndex={-1}><p>Opened for review: {formatDayLabel(reviewDay).weekday} {formatDayLabel(reviewDay).day} · {selectedLocation==='all'?'All locations':locations.find(location=>location.id===selectedLocation)?.shortName}</p><Link href={`/app/schedule?week=${weekStart}${locationQuery}`}>Show full week</Link></div>:null}
         </>} />
-      </div>
-    </div>
+    </QuietPage>
   );
   }
   if(!manager)return renderSchedule();

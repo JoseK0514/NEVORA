@@ -12,6 +12,7 @@ import {stableExportJson} from '@/lib/payroll-export/json';
 import {selectVisibleFinalized,changeExportSelection} from '@/lib/payroll-export/selection';
 import {PayrollExportMapping} from './payroll-export-mapping';
 import styles from './payroll-export.module.css';
+import {QuietHeader,QuietNav} from './quiet/quiet';
 const dateLabel=(value:string)=>new Intl.DateTimeFormat('en',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'}).format(new Date(`${value}T00:00:00Z`));
 function download(text:string,type:string,name:string){const url=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 type ProfileCommand={operationId:string;id:string;expectedRevision:number;profile:ExportProfile};
@@ -20,6 +21,14 @@ function payrollSourceKey(cards:readonly TimecardItem[],profiles:readonly SavedE
  // Compare every source/projected/history fact except that one clock field.
  const comparableCards=cards.map(item=>({...item,card:Object.fromEntries(Object.entries(item.card).filter(([key])=>key!=='observedAt'))}));
  return stableExportJson({cards:comparableCards,profiles});
+}
+const dayText=(value:string)=>{try{return new Intl.DateTimeFormat('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(`${value}T12:00:00Z`));}catch{return '';}};
+/** Quiet (v4): a date row; the value reads in teal on the right and the picker opens on tap. */
+function DateRow({label,value,onChange,disabled}:{label:string;value:string;onChange:(value:string)=>void;disabled?:boolean}){
+ return <li><label className="q-row q-row--one q-picker-row"><span className="q-rt"><b>{label}</b></span>
+  <span className="q-rv q-rv--go" aria-hidden="true">{dayText(value)}</span>
+  <input className="q-picker-row__input" type="date" value={value} required disabled={disabled} aria-label={label} onChange={event=>event.target.value&&onChange(event.target.value)}
+   onClick={event=>{try{event.currentTarget.showPicker?.();}catch{/* Focus is enough where pickers can't open. */}}}/></label></li>;
 }
 export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;actorId:string}){
  const [period,setPeriod]=useState(initialPeriod),[draftPeriod,setDraftPeriod]=useState(initialPeriod),[cards,setCards]=useState<TimecardItem[]|null>(null),[profiles,setProfiles]=useState<SavedExportProfile[]>([]),[profileId,setProfileId]=useState('neutral'),[draft,setDraft]=useState<ExportProfile>(neutralProfile),[reviewed,setReviewed]=useState(false),[selected,setSelected]=useState<string[]>([]),[state,setState]=useState('Loading finalized time'),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[result,setResult]=useState<PayrollExportPayload|null>(null);
@@ -100,14 +109,44 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
   try{const response=await fetch('/api/payroll-export/profiles',{method:'POST',cache:'no-store',credentials:'same-origin',headers,body:JSON.stringify(command)});if(current!==generation.current.value)return;if(response.status===401||response.status===403){clearProtected.current('Export access ended',true);return;}if(response.status===409){saveRetry.current=null;setNotice('The mapping changed. Refresh and review its latest revision.');return;}if(!response.ok)throw new Error();const body=await response.json();if(current!==generation.current.value)return;if(performance.now()>=validUntil.current){clearProtected.current('Export data expired. Refresh a current protected snapshot.');return;}if(body?.state!=='saved'||!body.profile)throw new Error();const item={id:body.profile.id,revision:body.profile.revision,profile:parseExportProfile(body.profile.profile)} as SavedExportProfile;if(item.id!==command.id||!Number.isSafeInteger(item.revision)||item.revision!==command.expectedRevision+1||stableExportJson(item.profile)!==stableExportJson(command.profile))throw Error('Unverified mapping receipt');acceptSavedProfile.current(item);setProfiles(p=>[...p.filter(p=>p.id!==item.id),item]);setProfileId(item.id);setDraft(item.profile);saveRetry.current=null;setNotice(`Mapping saved as revision ${item.revision}.`);}catch{if(current===generation.current.value)setNotice('Mapping save is unconfirmed. Save again to retry the same command.');}finally{if(current===generation.current.value){mutating.current=false;setBusy(false);}}
  };
  const visibleSelection=selectVisibleFinalized(cards??[]);
- const generate=()=>{try{if(!cards||selected.length===0||selected.length>100)throw new Error('Choose 1 to 100 finalized employees');const chosen=selected.map(id=>cards.find(c=>c.card.employeeId===id)!);if(chosen.some(c=>!c||c.state!=='FINALIZED'))throw new Error('Every selected card must be finalized');void send({...period,operationId:crypto.randomUUID(),profileId:saved?.id??null,profileRevision:saved?.revision??0,cards:chosen.map(c=>({employeeId:c.card.employeeId,revision:c.revision,sourceHash:c.sourceHash,finalizationOperationId:c.history[0].operationId}))});}catch(error){setNotice(error instanceof Error?error.message:'Review the export');}};
+ const generate=(ids:string[]=selected)=>{try{if(!cards||ids.length===0||ids.length>100)throw new Error('Choose 1 to 100 finalized employees');const chosen=ids.map(id=>cards.find(c=>c.card.employeeId===id)!);if(chosen.some(c=>!c||c.state!=='FINALIZED'))throw new Error('Every selected card must be finalized');void send({...period,operationId:crypto.randomUUID(),profileId:saved?.id??null,profileRevision:saved?.revision??0,cards:chosen.map(c=>({employeeId:c.card.employeeId,revision:c.revision,sourceHash:c.sourceHash,finalizationOperationId:c.history[0].operationId}))});}catch(error){setNotice(error instanceof Error?error.message:'Review the export');}};
  const periodChanged=draftPeriod.startDate!==period.startDate||draftPeriod.endDate!==period.endDate;
  const chosen=cards?.filter(c=>selected.includes(c.card.employeeId))??[];
  const finalized=cards?.filter(c=>c.state==='FINALIZED')??[];
  const recorded=chosen.reduce((sum,c)=>sum+BigInt(c.card.recordedNanoseconds),BigInt(0)).toString();
  const breaks=chosen.reduce((sum,c)=>sum+BigInt(c.card.breakNanoseconds),BigInt(0)).toString();
  const locked=busy||retry!==null||!currentActor;
- return <div className={styles.root}>
+ // Quiet (v4, approved Oct 23): on phones, the pay period (Start, End), how many timecards are finalized, and one Export.
+ // Export sends every finalized timecard (up to 100) with the chosen mapping. Wider screens keep the full tool below.
+ const choosePeriod=(next:Period)=>{
+  setDraftPeriod(next);
+  let parsed:Period;try{parsed=parsePeriod(next.startDate,next.endDate);}catch{setNotice('Choose a period of 1 to 31 days.');return;}
+  if(parsed.startDate===period.startDate&&parsed.endDate===period.endDate)return;
+  if(mutating.current||retry!==null||saveRetry.current!==null){setNotice('Finish or retry the current export before changing the period.');return;}
+  setNotice('');clearProtected.current('Loading finalized time');setPeriod(parsed);
+ };
+ const ready=state==='ready'&&currentActor;
+ const exportAll=()=>{const ids=visibleSelection.selected;setSelected(ids);setResult(null);generate(ids);};
+ const phone=<div className="q-page q-export-phone" data-nv-page="">
+  <QuietNav back={{href:'/app/payroll',label:'Payroll'}}/>
+  <QuietHeader title="Time exports"/>
+  <div className="q-grp"><h2>Pay period</h2></div>
+  <ul className="q-list">
+   <DateRow label="Start" value={draftPeriod.startDate} disabled={busy} onChange={value=>choosePeriod({...draftPeriod,startDate:value})}/>
+   <DateRow label="End" value={draftPeriod.endDate} disabled={busy} onChange={value=>choosePeriod({...draftPeriod,endDate:value})}/>
+  </ul>
+  <div className="q-grp"><h2>Timecards</h2></div>
+  <ul className="q-list"><li><div className="q-row q-row--one"><span className="q-rt"><b>Finalized</b></span><span className="q-rv q-rv--l">{ready&&cards?`${finalized.length} of ${cards.length}`:'—'}</span></div></li></ul>
+  {notice?<p className="q-help q-first" role="status">{notice}</p>:null}
+  {retry?<button type="button" className="q-btn" disabled={busy} onClick={()=>retry&&void send(retry)}>Try again</button>
+   :<button type="button" className={ready&&finalized.length&&!locked?'q-btn':'q-btn q-btn--off'} disabled={!ready||!finalized.length||locked} onClick={exportAll}>Export finalized time</button>}
+  <p className="q-help q-export-hint">{!ready?(state==='ready'?'Checking export access…':state):busy?'Preparing your files…':retry?'Try again to confirm this export.':!finalized.length?'Finalize timecards to export them.':`Exports ${finalized.length} finalized ${finalized.length===1?'timecard':'timecards'}${visibleSelection.overLimit?' (the first 100)':''}.`}</p>
+  {result?<><div className="q-grp"><h2>Files</h2></div><ul className="q-list">
+   <li><button type="button" className="q-row q-row--btn" onClick={()=>downloadCurrent(result.csv,'text/csv;charset=utf-8',`nevora-mapped-${result.model.period.startDate}-${result.operationId}.csv`)}><span className="q-rt"><b>Time file</b><i>{`CSV · ${result.profile.name}`}</i></span><DownloadSimpleIcon className="q-chev" aria-hidden="true"/></button></li>
+   <li><button type="button" className="q-row q-row--btn" onClick={()=>downloadCurrent(stableExportJson(result.model),'application/json',`nevora-canonical-${result.model.period.startDate}-${result.operationId}.json`)}><span className="q-rt"><b>Time record</b><i>JSON · exact durations</i></span><DownloadSimpleIcon className="q-chev" aria-hidden="true"/></button></li>
+  </ul></>:null}
+ </div>;
+ return <>{phone}<div className={`${styles.root} q-export-desk`}>
   <section className={styles.card} aria-labelledby="payroll-period-title">
    <div className={styles.sectionHeading}><span className={styles.sectionIcon}><CalendarDotsIcon size={21} aria-hidden="true" /></span><div><h2 id="payroll-period-title">Pay period</h2><p>Choose up to 31 days of finalized time.</p></div></div>
    <form className={styles.toolbar} onSubmit={e=>{e.preventDefault();try{const nextPeriod=parsePeriod(draftPeriod.startDate,draftPeriod.endDate);if(nextPeriod.startDate===period.startDate&&nextPeriod.endDate===period.endDate){if(mutating.current){setNotice('Finish the current operation before refreshing export data.');return;}reload.current();}else{if(mutating.current||retry!==null||saveRetry.current!==null){setNotice('Finish or retry the current export or mapping save before changing the period.');return;}clearProtected.current('Loading finalized time');setPeriod(nextPeriod);}setNotice('');}catch{setNotice('Choose a period of 1 to 31 days.');}}}>
@@ -140,7 +179,7 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
      <p className={styles.timeBasis}><InfoIcon size={17} aria-hidden="true" /><span>Hours include breaks. Your payroll system decides pay types and runs payroll.</span></p>
      <label><span>Mapping profile</span><span className={styles.selectFrame}><select aria-label="Mapping profile" value={profileId} disabled={locked} onChange={e=>{setProfileId(e.target.value);const p=profiles.find(p=>p.id===e.target.value)?.profile??neutralProfile();setDraft(p);setReviewed(false);setResult(null);}}><option value="neutral">NEVORA normalized time CSV</option>{profiles.map(p=><option key={p.id} value={p.id}>{p.profile.name} · revision {p.revision}</option>)}</select></span></label>
      {saved?<details className={styles.mappingInfo}><summary>Mapping details</summary><p className={styles.note}>{saved.profile.product} · {saved.profile.precision==='HALF_UP'?'Explicit half-up rounding':'Reject precision loss'} · {saved.profile.verifiedRequirements}</p></details>:<p className={styles.note}>Exact hours, each linked to its finalized timecard. Check the format with your payroll provider before importing.</p>}
-     <button type="button" className={`${styles.button} ${styles.primary} ${styles.generate}`} disabled={locked||selected.length===0||periodChanged} onClick={generate}>Generate reviewed export<ArrowRightIcon size={18} aria-hidden="true" /></button>
+     <button type="button" className={`${styles.button} ${styles.primary} ${styles.generate}`} disabled={locked||selected.length===0||periodChanged} onClick={()=>generate()}>Generate reviewed export<ArrowRightIcon size={18} aria-hidden="true" /></button>
      <p className={styles.actionHint}>{busy?'Preparing your request…':retry?'Retry to confirm the outcome of this export.':periodChanged?'View finalized time for your updated dates.':selected.length===0?'Select finalized employees to prepare your files.':'Creates a mapped CSV and canonical time record.'}</p>
      {retry&&<button type="button" className={`${styles.button} ${styles.generate}`} disabled={busy} onClick={()=>retry&&void send(retry)}><ArrowClockwiseIcon size={18} aria-hidden="true" />Retry same export</button>}
     </section>
@@ -153,5 +192,5 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
    <PayrollExportMapping draft={draft} setDraft={setDraft} cards={cards??[]} reviewed={reviewed} setReviewed={setReviewed} disabled={locked} save={()=>void save()} />
   </>}
   <PayrollPeriodClose period={period} actorId={actorId}/>
- </div>;
+ </div></>;
 }

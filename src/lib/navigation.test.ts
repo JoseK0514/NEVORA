@@ -58,7 +58,10 @@ describe('phone tabs', () => {
     expect(navigationForRole(role,undefined,context).map(item => item.href).slice(0, 3)).toEqual(['/app','/app/inbox','/app/schedule']);
     const reachable = [...mobileTabsForRole(role,undefined,context).flatMap(tab => tab.owns), ...mobileMoreForRole(role, { ...payroll, canReview: true },context).map(item => item.href)];
     for (const item of navigationForRole(role, { ...payroll, canReview: true },context)) expect(reachable).toContain(item.href);
-    expect(activeMobileTab(role, '/app/schedule/templates',undefined,context)).toBe('more');
+    // Quiet (v4): Templates and Scheduling rules open from Schedule, so Schedule stays lit there (approved mockups).
+    expect(activeMobileTab(role, '/app/schedule/templates',undefined,context)).toBe('/app/schedule');
+    expect(activeMobileTab(role, '/app/schedule/settings',undefined,context)).toBe('/app/schedule');
+    expect(activeMobileTab(role, '/app/notifications',undefined,context)).toBe('/app');
     expect(activeMobileTab(role, '/app/schedule/new',undefined,context)).toBe('/app/schedule');
     expect(activeMobileTab(role, '/app/payroll',undefined,context)).toBeUndefined();
   });

@@ -101,21 +101,22 @@ export function Field(props: FieldProps) {
   const describedHelp = help ? helpId ?? `${id}-help` : undefined;
   const errorId = shown ? `${id}-error` : undefined;
   const describedBy = [control["aria-describedby"], describedHelp, errorId].filter(Boolean).join(" ") || undefined;
-  const shared = { ...control, className: className ? `wc-control ${className}` : "wc-control", "aria-describedby": describedBy, "aria-invalid": shown ? true : undefined, ref: inputRef };
+  // Quiet (v4): grey label above a filled 50pt field; an error in red words under it.
+  const shared = { ...control, className: className ? `q-in ${className}` : "q-in", "aria-describedby": describedBy, "aria-invalid": shown ? true : undefined, ref: inputRef };
   const element = kind === "select"
-    ? <span className="wc-select"><select {...(shared as SelectHTMLAttributes<HTMLSelectElement>)} /><CaretDownIcon className="wc-select__caret" size={18} weight="bold" aria-hidden="true" /></span>
+    ? <span className="q-in__wrap q-in__wrap--select"><select {...(shared as SelectHTMLAttributes<HTMLSelectElement>)} /><CaretDownIcon className="q-in__caret" aria-hidden="true" /></span>
     : kind === "textarea" ? <textarea {...(shared as TextareaHTMLAttributes<HTMLTextAreaElement>)} />
-      : unit ? <span className="wc-unit"><input {...(shared as InputHTMLAttributes<HTMLInputElement>)} /><span aria-hidden="true">{unit}</span></span>
+      : unit ? <span className="q-in__wrap q-in__wrap--unit"><input {...(shared as InputHTMLAttributes<HTMLInputElement>)} /><span className="q-in__unit" aria-hidden="true">{unit}</span></span>
         : <input {...(shared as InputHTMLAttributes<HTMLInputElement>)} />;
   return (
-    <div className={fieldClassName ? `wc-field ${fieldClassName}` : "wc-field"} data-invalid={shown ? "true" : undefined}>
-      <div className="wc-field__label-row">
-        <label className="wc-label" htmlFor={id}>{label}{optional ? <span className="wc-optional"> Optional</span> : null}</label>
+    <div className={fieldClassName ? `q-fl wc-field ${fieldClassName}` : "q-fl wc-field"} data-invalid={shown ? "true" : undefined}>
+      <div className="q-fl__row">
+        <label className="q-fl__label" htmlFor={id}>{label}{optional ? <span className="q-fl__opt"> · Optional</span> : null}</label>
         {labelAside}
       </div>
       {element}
-      {shown ? <p className="wc-error" id={errorId}><WarningCircleIcon size={18} weight="fill" aria-hidden="true" />{shown}</p> : null}
-      {help ? <div className="wc-help" id={describedHelp}>{help}</div> : null}
+      {shown ? <p className="q-fl__error" id={errorId}>{shown}</p> : null}
+      {help ? <div className="q-fl__help" id={describedHelp}>{help}</div> : null}
     </div>
   );
 }
@@ -140,12 +141,12 @@ export function SwitchRow({ id, name, label, description, checked, defaultChecke
 }) {
   const descriptionId = description ? `${id}-description` : undefined;
   return (
-    <label className="wc-switch-row" htmlFor={id} data-disabled={disabled ? "true" : undefined}>
-      <span className="wc-switch-row__text">
-        <span className="wc-switch-row__label" id={`${id}-label`}>{label}</span>
-        {description ? <span className="wc-switch-row__description" id={descriptionId}>{description}</span> : null}
+    <label className={description ? "q-row wc-switch-row" : "q-row q-row--one wc-switch-row"} htmlFor={id} data-disabled={disabled ? "true" : undefined}>
+      <span className="q-rt">
+        <b id={`${id}-label`}>{label}</b>
+        {description ? <i id={descriptionId}>{description}</i> : null}
       </span>
-      <input id={id} name={name} value={value} type="checkbox" role="switch" className="wc-switch" disabled={disabled}
+      <input id={id} name={name} value={value} type="checkbox" role="switch" className="q-tog" disabled={disabled}
         {...(checked === undefined ? { defaultChecked } : { checked })}
         onChange={event => onChange?.(event.target.checked)}
         aria-labelledby={`${id}-label`} aria-describedby={[descriptionId, describedBy].filter(Boolean).join(" ") || undefined} />
@@ -175,13 +176,17 @@ export function FormActions({ children, sticky = false }: { children: ReactNode;
     measure();
     return () => { observer.disconnect(); window.removeEventListener("resize", measure); root.style.removeProperty("--wc-tabbar"); root.style.removeProperty("--wc-bar"); };
   }, [sticky]);
-  return <div ref={bar} className={sticky ? "wc-actions nv-actionbar" : "wc-actions"} role={sticky ? "group" : undefined} aria-label={sticky ? "Save" : undefined}>{children}</div>;
+  return <div ref={bar} className="q-actions wc-actions" role={sticky ? "group" : undefined} aria-label={sticky ? "Save" : undefined}>{children}</div>;
 }
 
 /** The settings save form: the browser posts once per tap, entries stay on failure,
  * and the outcome appears just above the buttons and takes focus. */
 export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {}, submitLabel, pendingLabel = "Saving…",
-  secondary, successTitle = "Saved", showServerSuccess = true, errorTitle = "Not saved", onResult, className, sticky = false, disabled = false, label }: {
+  secondary, successTitle = "Saved", showServerSuccess = true, errorTitle = "Not saved", onResult, className, sticky = false, disabled = false, label, id, topSave = false }: {
+  /** Quiet (v4): the form's id, so the page's top-right Save can submit it. */
+  id?: string;
+  /** Quiet (v4): Save lives in the page's top bar; the form shows no button of its own. */
+  topSave?: boolean;
   action: (data: FormData) => Promise<ConfigurationResult>;
   children: ReactNode;
   reviewedUpdatedAt?: string;
@@ -235,9 +240,9 @@ export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {
   }
 
   return (
-    <form noValidate onSubmit={submit} className={className ? `wc-form ${className}` : "wc-form"} aria-busy={pending} aria-label={label} data-guard={disabled ? "" : undefined} {...handlers}
+    <form noValidate id={id} onSubmit={submit} className={className ? `wc-form ${className}` : "wc-form"} aria-busy={pending} aria-label={label} data-guard={disabled ? "" : undefined} {...handlers}
       onInput={() => { if (result.error || result.success) setResult({}); }}>
-      <fieldset disabled={pending || disabled} className="wc-fieldset">
+      <fieldset disabled={pending || disabled} className="q-fieldset wc-fieldset">
         {draftUpdatedAt !== undefined ? <input type="hidden" name="expectedUpdatedAt" value={draftUpdatedAt} /> : null}
         <FieldErrors errors={errors}>{children}</FieldErrors>
       </fieldset>
@@ -247,10 +252,10 @@ export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {
           <Notice tone={result.error ? "urgent" : "done"} title={result.error ? errorTitle : successTitle}>{result.error || (showServerSuccess ? result.success : null)}</Notice>
         </div>
       ) : null}
-      <FormActions sticky={sticky}>
-        <button type="submit" className="nv-btn" data-kind="primary" disabled={pending || disabled}><ButtonLabel pending={pending} idle={submitLabel} busy={pendingLabel} /></button>
+      {topSave ? (secondary ? <FormActions>{secondary}</FormActions> : null) : <FormActions sticky={sticky}>
+        <button type="submit" className="q-btn" disabled={pending || disabled}><ButtonLabel pending={pending} idle={submitLabel} busy={pendingLabel} /></button>
         {secondary}
-      </FormActions>
+      </FormActions>}
     </form>
   );
 }

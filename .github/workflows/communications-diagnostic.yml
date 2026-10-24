@@ -74,6 +74,8 @@ jobs:
           name: communications-diagnostic-${{ github.sha }}
           path: |
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/*-report.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/updates-*-failure.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/updates-*-checks.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/source-manifest.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/*.png
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/owned-postgres-*/ownership.json

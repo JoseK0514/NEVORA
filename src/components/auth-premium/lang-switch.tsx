@@ -21,8 +21,12 @@ function switchTo(next: AuthLang) {
 
 /** English / Español for the four sign-in pages (on for development, per Jose). Each option names itself in its own
  * language; the pressed one is the language shown. */
-export function LangSwitch({ lang, label }: { lang: AuthLang; label: string }) {
+export function LangSwitch({ lang, label, quiet = false }: { lang: AuthLang; label: string; /** Quiet (v4): one link naming the other language. */ quiet?: boolean }) {
   const ready = useSyncExternalStore(subscribe, hydrated, server);
+  if (quiet) {
+    const next: AuthLang = lang === "es" ? "en" : "es";
+    return <button type="button" className="q-auth__lang" lang={next} disabled={!ready} aria-label={`${label}: ${next === "es" ? "Español" : "English"}`} onClick={() => switchTo(next)}>{next === "es" ? "Español" : "English"}</button>;
+  }
   return (
     <div className="ap-lang" role="group" aria-label={label}>
       {([["en", "English", "EN"], ["es", "Español", "ES"]] as const).map(([value, long, short]) => (

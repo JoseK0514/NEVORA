@@ -4,7 +4,9 @@ import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 
 import { useEffect, useLayoutEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import { AirplaneTiltIcon, ArrowsClockwiseIcon, CalendarXIcon, WalletIcon, UserCheckIcon, UserMinusIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
-import { Avatar, Button, Card, CardBody, Freshness, KitLink, KitStack, PageBand, Row, Rows, Tile } from "@/components/kit/kit";
+import { Avatar, Button, Card, CardBody, Freshness, KitLink, Row, Rows, Tile } from "@/components/kit/kit";
+import { QuietBar, QuietBarIcon, QuietHeader, QuietList, QuietRow, QuietSection } from "@/components/quiet/quiet";
+import { BellIcon } from "@phosphor-icons/react/dist/ssr/Bell";
 import { CLOCK_IN, presentItem } from "@/lib/action-center/present";
 import { useToday } from "./manager-today";
 import { useSharedHomeRead, type ActionCenterConnection } from "./manager-action-center";
@@ -45,6 +47,8 @@ export type PremiumHomeProps = {
   setupHoldsItems?: boolean;
   /** MK1: the next payday from My pay's pay schedule; Home shows it as one Coming up row. */
   nextPay?: NextPay;
+  /** Quiet (v4): the workspace name in Home's top bar. */
+  workspaceName?: string;
 };
 
 const clock = (iso: string, timeZone: string) => {
@@ -93,7 +97,7 @@ export type PremiumHomeSurfaceProps = PremiumHomeProps & {
 };
 
 /** Presentation only, so the fictional preview can show Home without a session. */
-export function PremiumHomeSurface({ dateLabel, timeZone, setup, setupHoldsItems = false, nextPay = null, today, monitor = null, monitorPending = false, todayRefreshing = false, onRetryToday,
+export function PremiumHomeSurface({ dateLabel, timeZone, workspaceName, setup, setupHoldsItems = false, today, monitor = null, monitorPending = false, todayRefreshing = false, onRetryToday,
   actions, actionsConnection, onRetryActions, liveReaders, offline = false }: PremiumHomeSurfaceProps) {
   const readyToday = today?.state === "ready" ? today : null;
   // r4 QA: Home remembers whether the Owner setup card shows, so the next route placeholder starts with its shape.
@@ -137,21 +141,90 @@ export function PremiumHomeSurface({ dateLabel, timeZone, setup, setupHoldsItems
     if (hold) column.dataset.holding = ""; else delete column.dataset.holding;
   }, [value, holding, actionsConnection, offline]);
 
-  return <div className="nv-page premium-home cm-page cm-home" data-nv-page="" data-live-readers={liveReaders}>
-    {/* The one live line is for screen readers in every state; each card says its own state, so the header never changes height. */}
-    <PageBand eyebrow={dateLabel} title="Today" summary={<span role="status" className="sr-only">{summary}</span>} />
-    <KitStack className="cm-home__grid">
-      {setup ? <div className="cm-home__setup">{setup}</div> : null}
-      <div className="cm-home__now" ref={nowColumn}>
-        {value ? <NeedsYouCard value={value} timeZone={timeZone} /> : <PendingCard connection={offline ? "offline" : actionsConnection} onRetry={retryAll} />}
-        {nextPay ? <ComingUpCard nextPay={nextPay} /> : null}
-      </div>
-      <div className="cm-home__people">
-        <PeopleCards today={today} monitor={monitor} monitorPending={monitorPending} refreshing={todayRefreshing} onRetry={onRetryToday} timeZone={timeZone} offline={offline} paused={actionsConnection === "paused"} />
-      </div>
-      {readyToday && (readyToday.shifts.length || (monitor?.state === "ready" && monitor.employees.length)) ? <div className="cm-home__timeline"><ShiftTimeline today={readyToday} monitor={monitor} timeZone={timeZone} /></div> : null}
-    </KitStack>
+  // Quiet (v4, approved Oct 23): top bar, title, Right now, Needs you, Setup. Nothing else on Home.
+  return <div className="q-page premium-home cm-home" data-nv-page="" data-live-readers={liveReaders}>
+    <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon className="q-ic" aria-hidden="true" /></QuietBarIcon></QuietBar>
+    <QuietHeader title="Today" sub={<>{dateLabel}<span role="status" className="q-sr">{summary}</span></>} />
+    <QuietRightNow today={today} monitor={monitor} monitorPending={monitorPending} refreshing={todayRefreshing} onRetry={onRetryToday} timeZone={timeZone} offline={offline} paused={actionsConnection === "paused"} />
+    <div className="cm-home__now" ref={nowColumn}>
+      {value ? <QuietNeedsYou value={value} timeZone={timeZone} observedAt={readyToday?.observedAt} /> : <QuietPending connection={offline ? "offline" : actionsConnection} onRetry={retryAll} />}
+    </div>
+    {setup}
   </div>;
+}
+
+const peopleOf = (shifts: TodayShift[]) => new Set(shifts.map(shift => shift.employeeId)).size;
+const firstNames = (names: string[]) => {
+  const first = names.map(name => name.split(/\s+/)[0] ?? name);
+  return first.length <= 2 ? first.join(" and ") : `${first.slice(0, 2).join(", ")} and ${first.length - 2} more`;
+};
+
+/** Right now: one row, "6 of 8 on shift", and who starts next. A zero is said in words. */
+function QuietRightNow({ today, monitor, monitorPending = false, refreshing, onRetry, timeZone, offline = false, paused = false }: { today: Today | null; monitor: ClockMonitor | null; monitorPending?: boolean; refreshing: boolean; onRetry?: () => void; timeZone: string; offline?: boolean; paused?: boolean }) {
+  const section = (row: ReactNode) => <QuietSection id="home-working" title="Right now"><QuietList label="Right now">{row}</QuietList></QuietSection>;
+  if (!today || today.state !== "ready") {
+    if (today?.state === "unavailable") return section(<QuietRow title="Who’s on shift isn’t available" detail="Try again in a moment"
+      control={<button type="button" className="q-bs premium-today-retry" aria-disabled={refreshing || undefined}
+        onClick={() => { if (refreshing || !onRetry) return; onRetry(); focusAfterRetry("#home-working-title", ".premium-today-retry"); }}>{refreshing ? "Trying…" : "Try again"}</button>} />);
+    return section(<QuietRow title={offline ? "You’re offline" : paused ? "Paused while you’re away" : "Checking who’s on shift…"} detail={offline ? "Updates when you reconnect" : paused ? "Updates when you’re back" : " "} />);
+  }
+  const open = monitor?.state === "ready" ? monitor.employees : null;
+  const onShift = open ? new Set(open.map(person => person.employeeId)).size : peopleOf(today.shifts.filter(working)) || today.counts.clockedIn;
+  const scheduled = peopleOf(today.shifts);
+  const onIds = new Set(open ? open.map(person => person.employeeId) : today.shifts.filter(working).map(shift => shift.employeeId));
+  const next = today.shifts.filter(later).filter(shift => !onIds.has(shift.employeeId)).sort((a, b) => a.startAt.localeCompare(b.startAt))[0];
+  const title = monitorPending && !open && today.counts.clockedIn ? "Checking who’s on shift…"
+    : onShift === 0 ? (scheduled ? "No one on shift yet" : "No shifts today")
+    : scheduled ? `${onShift} of ${scheduled} on shift` : `${onShift} on shift`;
+  const detail = next ? (onShift === 0 ? `First shift at ${clock(next.startAt, timeZone)}` : `${next.employeeName} starts at ${clock(next.startAt, timeZone)}`)
+    : onShift === 0 && scheduled ? "No more shifts start today" : undefined;
+  return section(<QuietRow href="/app/schedule" title={title} detail={detail} label={[title, detail].filter(Boolean).join(", ") + ", open Schedule"} />);
+}
+
+/** Needs you: one row per kind, said as one phrase ("2 open shifts"). The one red is how late someone is. */
+function QuietNeedsYou({ value, timeZone, observedAt }: { value: NeedsYou; timeZone: string; observedAt?: string }) {
+  if (value.count === 0) return <QuietSection id="home-needs-you" title="Needs you"><p className="q-empty">Nothing needs you right now.</p></QuietSection>;
+  const gaps = value.now.filter(item => item.type === "COVERAGE_GAP");
+  const urgentRequests = value.now.filter(item => item.category === "requests");
+  const otherUrgent = value.now.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests");
+  const requests = [...urgentRequests, ...value.requests];
+  const person = (item: ActionItem) => presentItem({ ...item, detail: mobileActionDetail(item.detail) }, "", timeZone).person;
+  const now = observedAt ? Date.parse(observedAt) : NaN;
+  const late = value.noClockIn;
+  const one = late.length === 1 ? late[0] : null;
+  const minutes = one && Number.isFinite(now) ? Math.max(1, Math.round((now - Date.parse(one.startAt)) / 60_000)) : 0;
+  const ended = one ? one.status === "no_punches" : false;
+  const kinds = [...new Set(requests.map(item => item.type === "TIME_OFF" ? "time off" : item.type === "EXCHANGE" ? "a shift swap" : "a can’t-work report"))];
+  const requestDetail = requests.length === 1 ? `${kinds[0][0].toUpperCase()}${kinds[0].slice(1)}${person(requests[0]) ? ` from ${person(requests[0])}` : ""}`
+    : kinds.length === 1 ? `${kinds[0][0].toUpperCase()}${kinds[0].slice(1)}` : `${kinds.slice(0, -1).join(", ").replace(/^./, c => c.toUpperCase())} and ${kinds.at(-1)}`;
+  return <QuietSection id="home-needs-you" title="Needs you">
+    <QuietList label="Needs you">
+      {one ? <QuietRow href="/app/inbox?filter=now" title={ended ? `${one.employeeName} didn’t clock in` : `${one.employeeName} is late`}
+        detail={ended ? `Shift ended at ${clock(one.endAt, timeZone)}` : `Shift began at ${clock(one.startAt, timeZone)}`}
+        value={ended || !minutes ? undefined : minutes >= 60 ? `${Math.floor(minutes / 60)} h ${minutes % 60 ? `${minutes % 60} min` : ""}`.trim() : `${minutes} min`} tone="alert"
+        label={`${one.employeeName} hasn’t clocked in, open in Inbox`} />
+      : late.length ? <QuietRow href="/app/inbox?filter=now" title={`${late.length} people haven’t clocked in`} detail={firstNames(late.map(shift => shift.employeeName))}
+        label={`${late.length} shifts with no ${CLOCK_IN}, open in Inbox`} /> : null}
+      {gaps.length ? <QuietRow href="/app/inbox?filter=now" title={plural(gaps.length, "open shift", "open shifts").replace("\u00a0", " ")}
+        detail={locationCounts(gaps.map(item => ({ locationName: gapLocation(item) }))) || "Today"} label={`${plural(gaps.length, "open shift", "open shifts").replace("\u00a0", " ")} today, open in Inbox`} /> : null}
+      {otherUrgent.length ? <QuietRow href="/app/inbox?filter=now" title={plural(otherUrgent.length, "urgent item", "urgent items").replace("\u00a0", " ")} detail={otherUrgent[0].title}
+        label={`${plural(otherUrgent.length, "urgent item", "urgent items").replace("\u00a0", " ")}, open in Inbox`} /> : null}
+      {requests.length ? <QuietRow href="/app/inbox?filter=requests" title={plural(requests.length, "request", "requests").replace("\u00a0", " ")} detail={requestDetail}
+        label={`${plural(requests.length, "request", "requests").replace("\u00a0", " ")} waiting, open in Inbox`} /> : null}
+    </QuietList>
+  </QuietSection>;
+}
+
+function QuietPending({ connection, onRetry }: { connection: ActionCenterConnection; onRetry?: () => void }) {
+  const busy = connection === "loading" || connection === "reconnecting";
+  const message = busy ? "Checking what needs you…" : connection === "offline" ? "Updates when you reconnect." : connection === "paused" ? "Updates when you’re back."
+    : connection === "access_lost" ? "Sign in again to see what needs you." : "What needs you isn’t available right now.";
+  return <section id="home-needs-you" aria-labelledby="home-needs-you-title" aria-busy={busy || undefined} className={busy ? undefined : "premium-pending-failed"}>
+    <div className="q-sec"><h2 id="home-needs-you-title">Needs you</h2></div>
+    <p className="q-empty">{message}</p>
+    {connection === "access_lost" ? <a className="q-btn q-btn--sec" href="/login">Sign in</a>
+      : !busy && onRetry && connection !== "offline" && connection !== "paused" ? <button type="button" className="q-btn q-btn--sec" onClick={onRetry}>Try again</button> : null}
+  </section>;
 }
 
 const locationCounts = (list: { locationName?: string | null }[]) => {
@@ -159,52 +232,6 @@ const locationCounts = (list: { locationName?: string | null }[]) => {
   for (const entry of list) if (entry.locationName) counts.set(entry.locationName, (counts.get(entry.locationName) ?? 0) + 1);
   return [...counts].map(([name, n]) => `${name} ${n}`).join(" · ");
 };
-
-/** Needs you: one row per kind, each with its count, each opening the matching Inbox view. */
-function NeedsYouCard({ value, timeZone }: { value: NeedsYou; timeZone: string }) {
-  if (value.count === 0) return <Card id="home-needs-you" title="Needs you">
-    <CardBody><p className="premium-note">Nothing needs you right now. New requests and shifts with no clock‑in show up here.</p></CardBody>
-  </Card>;
-  const gaps = value.now.filter(item => item.type === "COVERAGE_GAP");
-  const urgentRequests = value.now.filter(item => item.category === "requests");
-  const otherUrgent = value.now.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests");
-  const requests = [...urgentRequests, ...value.requests];
-  const person = (item: ActionItem) => presentItem({ ...item, detail: mobileActionDetail(item.detail) }, "", timeZone).person;
-  const oneRequest = requests.length === 1 ? requests[0] : null;
-  const requestMeta = oneRequest ? [person(oneRequest), oneRequest.type === "TIME_OFF" ? "time off" : oneRequest.type === "EXCHANGE" ? "shift change" : "can’t work"].filter(Boolean).join(", ") : undefined;
-  const gapPlaces = gaps.map(item => ({ locationName: gapLocation(item) }));
-  return <Card id="home-needs-you" title={<>Needs you<span className="cm-count">{value.count}</span></>} titleLabel={`Needs you, ${value.count}`}
-    meta={<KitLink href="/app/inbox">Inbox</KitLink>} foot={<span className="cm-desk-only"><KitLink href="/app/inbox">Open Inbox</KitLink></span>}>
-    <Rows label="Needs you">
-      {value.noClockIn.length ? <Row href="/app/inbox?filter=now" leading={<Tile tone="urgent"><UserMinusIcon size={20} weight="fill" /></Tile>}
-        title={`Not clocked in`} meta={locationCounts(value.noClockIn) || undefined} trailing={<span className="cm-row-count">{value.noClockIn.length}</span>}
-        label={`${plural(value.noClockIn.length, `shift with no ${CLOCK_IN}`, `shifts with no ${CLOCK_IN}`).replace("\u00a0", " ")}, open in Inbox`} /> : null}
-      {gaps.length ? <Row href="/app/inbox?filter=now" leading={<Tile tone="review"><CalendarXIcon size={20} weight="fill" /></Tile>}
-        title="Open shifts today" meta={locationCounts(gapPlaces) || undefined} trailing={<span className="cm-row-count">{gaps.length}</span>}
-        label={`${plural(gaps.length, "open shift", "open shifts").replace("\u00a0", " ")} today, open in Inbox`} /> : null}
-      {otherUrgent.length ? <Row href="/app/inbox?filter=now" leading={<Tile tone="urgent"><WarningCircleIcon size={20} weight="fill" /></Tile>}
-        title="Urgent" trailing={<span className="cm-row-count">{otherUrgent.length}</span>}
-        label={`${plural(otherUrgent.length, "urgent item", "urgent items").replace("\u00a0", " ")}, open in Inbox`} /> : null}
-      {requests.length ? <Row href="/app/inbox?filter=requests" leading={<Tile tone="neutral">{oneRequest?.type === "TIME_OFF" ? <AirplaneTiltIcon size={20} weight="fill" /> : <UserCheckIcon size={20} weight="fill" />}</Tile>}
-        title={oneRequest ? (oneRequest.type === "TIME_OFF" ? "Time-off request" : oneRequest.type === "EXCHANGE" ? "Shift change request" : "Can’t-work report") : "Requests"} meta={requestMeta} trailing={<span className="cm-row-count">{requests.length}</span>}
-        label={`${plural(requests.length, "request", "requests").replace("\u00a0", " ")} waiting, open in Inbox`} /> : null}
-    </Rows>
-  </Card>;
-}
-
-/** MK1 (the UI part): one dated row for the next payday, from the date My pay already shows. Payroll runs and deadlines
- * join it once their wording is approved. */
-function ComingUpCard({ nextPay }: { nextPay: NonNullable<NextPay> }) {
-  const day = new Date(`${nextPay.payday}T12:00:00Z`);
-  const date = new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(day);
-  const when = nextPay.daysUntil === 0 ? "today" : nextPay.daysUntil === 1 ? "tomorrow" : `in ${nextPay.daysUntil} days`;
-  return <Card id="home-coming-up" title="Coming up">
-    <Rows label="Coming up">
-      <Row href="/app/my-pay" leading={<Tile tone="neutral"><WalletIcon size={20} weight="fill" /></Tile>} title="Next payday" meta={keepWhole(date)} trailing={when}
-        label={`Next payday, ${date}, ${when}, open My pay`} />
-    </Rows>
-  </Card>;
-}
 
 /** The coverage gap's place, from its detail ("Main Office · …") when the item carries no location name. */
 function gapLocation(item: ActionItem) {
@@ -224,58 +251,6 @@ function sinceLabel(iso: string, timeZone: string) {
   const day = (value: Date) => new Intl.DateTimeFormat("en-CA", { timeZone, dateStyle: "short" }).format(value);
   if (day(new Date(iso)) === day(new Date())) return `in at ${clock(iso, timeZone)}`;
   return `in since ${new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short" }).format(new Date(iso))} ${clock(iso, timeZone)}`;
-}
-
-/** Who is working now and who starts later today, from the published-shift snapshot. */
-function PeopleCards({ today, monitor, monitorPending = false, refreshing, onRetry, timeZone, offline = false, paused = false }: { today: Today | null; monitor: ClockMonitor | null; monitorPending?: boolean; refreshing: boolean; onRetry?: () => void; timeZone: string; offline?: boolean; paused?: boolean }) {
-  if (!today || today.state !== "ready") {
-    const stamp = !today && offline ? <Freshness state="offline">Offline</Freshness> : !today && paused ? <Freshness state="stale">Paused</Freshness>
-      : !today ? <span className="cm-loading-meta"><Freshness state="stale">Loading…</Freshness></span>
-      : <button type="button" className="premium-today-retry" aria-disabled={refreshing || undefined}
-          onClick={() => { if (refreshing || !onRetry) return; onRetry(); focusAfterRetry("#home-working .nv-card__title", ".premium-today-retry"); }}>
-          <ArrowsClockwiseIcon size={16} aria-hidden="true" />{refreshing ? "Trying…" : "Try again"}
-        </button>;
-    return <Card id="home-working" title="Working now" meta={stamp} foot={today?.state === "unavailable" ? "Today’s clock-ins aren’t available." : undefined}>
-      <div className="premium-skeleton premium-skeleton--rows premium-skeleton--still" aria-hidden="true">{[0, 1].map(i => <span key={i} className="premium-skeleton__row"><span className="premium-skeleton__dot" /><span><span className="premium-skeleton__line" /><span className="premium-skeleton__line premium-skeleton__line--short" /></span></span>)}</div>
-    </Card>;
-  }
-  // Who is on the clock: the open clock-ins when that read is in, else today's shifts that show a clock-in.
-  const open = monitor?.state === "ready" ? [...monitor.employees].sort((a, b) => a.clockInAt.localeCompare(b.clockInAt)) : null;
-  const shiftFor = (employeeId: string) => today.shifts.find(shift => shift.employeeId === employeeId && working(shift));
-  const now = today.shifts.filter(working);
-  const count = open ? open.length : now.length || today.counts.clockedIn;
-  // Review fix (11/50): someone who clocked in early for a later shift showed in Working now AND Later today.
-  const workingIds = new Set(open ? open.map(person => person.employeeId) : now.map(shift => shift.employeeId));
-  const next = today.shifts.filter(later).filter(shift => !workingIds.has(shift.employeeId)).sort((a, b) => a.startAt.localeCompare(b.startAt));
-  return <>
-    <Card id="home-working" title={<>Working now<span className="cm-count">{count}</span></>}
-      foot={<Freshness>Updated <time dateTime={today.observedAt}>{clock(today.observedAt, timeZone)}</time></Freshness>}>
-      {!open && monitorPending && today.counts.clockedIn ? <div className="premium-skeleton premium-skeleton--rows cm-working-hold" aria-hidden="true">
-        {Array.from({ length: Math.min(today.counts.clockedIn, 6) }, (_, i) => <span key={i} className="premium-skeleton__row"><span className="premium-skeleton__dot" /><span><span className="premium-skeleton__line" /><span className="premium-skeleton__line premium-skeleton__line--short" /></span></span>)}
-      </div> : open && open.length ? <Rows label="Working now">
-        {open.map(person => { const shift = shiftFor(person.employeeId); return <Row key={person.timeEntryId}
-          leading={<Avatar initials={initials(person.employeeName)} />} title={person.employeeName}
-          meta={`${person.locationName}\u00a0· ${person.state === "ON_BREAK" ? "on break" : sinceLabel(person.clockInAt, timeZone)}`}
-          trailing={shift ? `until ${short(shift.endAt, timeZone)}` : undefined} />; })}
-      </Rows> : now.length ? <Rows label="Working now">
-        {now.map(shift => <Row key={shift.id}
-          leading={<Avatar initials={initials(shift.employeeName)} />} title={shift.employeeName}
-          meta={`${shift.locationName}\u00a0· ${shift.status === "on_break" ? "on break" : shift.firstClockInAt ? sinceLabel(shift.firstClockInAt, timeZone) : "clocked in"}`}
-          trailing={`until ${short(shift.endAt, timeZone)}`} />)}
-      </Rows> : <CardBody><p className="premium-note">{!open && today.counts.clockedIn
-        // A snapshot can carry counts without its shift list; the count is still true.
-        ? `${plural(today.counts.clockedIn, "person is", "people are")} clocked in.` : "No one is clocked in right now."}</p></CardBody>}
-    </Card>
-    {next.length ? <Card id="home-later" title={<>Later today<span className="cm-count">{next.length}</span></>}>
-      <Rows label="Later today">
-        {next.slice(0, 4).map(shift => <Row key={shift.id}
-          leading={<Avatar initials={initials(shift.employeeName)} />} title={shift.employeeName} meta={shift.locationName}
-          trailing={`${short(shift.startAt, timeZone)} – ${short(shift.endAt, timeZone)}`} />)}
-        {/* Final re-pass P3: the count says 6, so the rest are one step away. */}
-        {next.length > 4 ? <li className="cm-later-more"><Link className="nv-row" href="/app/schedule" aria-label={`Show ${next.length - 4} more in Schedule`}>{`Show ${next.length - 4} more`}</Link></li> : null}
-      </Rows>
-    </Card> : null}
-  </>;
 }
 
 /** One timeline row: the planned shift (if any) and the time recorded so far (if any), in epoch milliseconds. */
@@ -316,62 +291,4 @@ export function timelineLanes(today: Extract<Today, { state: "ready" }>, monitor
   const from = Math.floor(Math.min(now, ...times) / hour) * hour;
   const to = Math.max(Math.ceil(Math.max(...times, now) / hour) * hour, Math.floor(now / hour) * hour + hour);
   return { lanes, from, to, now };
-}
-
-/** Desktop only: today's shifts on one timeline. Bars are decoration; each row's name and times are text. */
-function ShiftTimeline({ today, monitor, timeZone }: { today: Extract<Today, { state: "ready" }>; monitor: ClockMonitor | null; timeZone: string }) {
-  const { lanes, from, to, now } = timelineLanes(today, monitor);
-  const hour = 3_600_000;
-  const span = Math.max(to - from, hour);
-  const at = (time: number) => `${(((time - from) / span) * 100).toFixed(2)}%`;
-  const width = (range: { from: number; to: number }) => `calc(${at(range.to)} - ${at(range.from)})`;
-  // Whole-hour ticks, at most about seven of them.
-  const step = Math.max(1, Math.ceil(span / hour / 6)) * hour;
-  const ticks = Array.from({ length: Math.floor(span / step) + 1 }, (_, i) => from + step * i);
-  const said = (lane: TimelineLane) => {
-    const planned = lane.shift ? `, ${clock(lane.shift.startAt, timeZone)} to ${clock(lane.shift.endAt, timeZone)}` : ", no shift today";
-    const state = lane.kind === "in" || lane.kind === "unscheduled" ? (lane.clockedInAt ? `, clocked in at ${clock(lane.clockedInAt, timeZone)}` : ", clocked in")
-      : lane.kind === "done" ? ", clocked in" : lane.kind === "later" ? ", later today" : `, no ${CLOCK_IN}`;
-    return planned + state;
-  };
-  const recording = lanes.some(lane => lane.recorded);
-  return <Card id="home-timeline" title="Shifts today" meta={<span className="cm-count">{today.shifts.length}</span>}>
-    <div className="cm-timeline">
-      <div className="cm-timeline__axis" aria-hidden="true"><span />
-        <span className="cm-timeline__track">{ticks.map((tick, i) => <span key={i} style={{ left: at(tick) }}>{clock(new Date(tick).toISOString(), timeZone).replace(":00", "")}</span>)}</span>
-      </div>
-      <ul className="cm-timeline__rows" aria-label="Shifts today">
-        {lanes.map(lane => <li key={lane.key} className="cm-timeline__row">
-          <span className="cm-timeline__name">{lane.name}<span className="sr-only">{said(lane)}</span></span>
-          <span className="cm-timeline__track" aria-hidden="true">
-            {ticks.map((tick, i) => <i key={i} className="cm-timeline__grid" style={{ left: at(tick) }} />)}
-            {lane.planned ? <i className="cm-timeline__bar" data-kind={lane.kind === "in" ? "planned" : lane.kind === "done" ? "in" : lane.kind} style={{ left: at(lane.planned.from), width: width(lane.planned) }} /> : null}
-            {lane.recorded ? <i className="cm-timeline__bar" data-kind="recorded" style={{ left: at(lane.recorded.from), width: width(lane.recorded) }} /> : null}
-            <i className="cm-timeline__now" style={{ left: at(now) }} />
-          </span>
-        </li>)}
-      </ul>
-      <p className="cm-timeline__key" aria-hidden="true"><span data-kind="in">Clocked in</span>{recording ? <span data-kind="planned">Planned</span> : null}<span data-kind="missed">No {CLOCK_IN}</span><span data-kind="later">Later today</span><span data-kind="now">Now, {clock(today.observedAt, timeZone)}</span></p>
-    </div>
-  </Card>;
-}
-
-function PendingCard({ connection, onRetry }: { connection: ActionCenterConnection; onRetry?: () => void }) {
-  const busy = connection === "loading" || connection === "reconnecting";
-  // ST-01: while loading, hold the space the Needs you rows will take.
-  const rows = <div className={`premium-skeleton premium-skeleton--rows${busy ? "" : " premium-skeleton--still"}`} aria-hidden="true">{[0, 1, 2].map(i => <span key={i} className="premium-skeleton__row"><span className="premium-skeleton__dot" /><span><span className="premium-skeleton__line" /><span className="premium-skeleton__line premium-skeleton__line--short" /></span></span>)}</div>;
-  if (busy) return <section className="nv-card premium-skeleton-card" id="home-needs-you" aria-label="Needs you" aria-busy="true">
-    <div className="nv-card__head"><h2 className="nv-card__title">Needs you</h2><span className="nv-card__meta cm-loading-meta"><Freshness state="stale">Loading…</Freshness></span></div>
-    {rows}
-  </section>;
-  const message = connection === "offline" ? "Updates when you reconnect." : connection === "paused" ? "Updates when you’re back."
-    : connection === "access_lost" ? "Sign in again to see what needs you." : "What needs you isn’t available right now.";
-  return <section className="nv-card premium-skeleton-card premium-pending-failed" id="home-needs-you" aria-label="Needs you">
-    <div className="nv-card__head"><h2 className="nv-card__title">Needs you</h2><span className="nv-card__meta"><Freshness state={connection === "offline" ? "offline" : "stale"}>{connection === "offline" ? "Offline" : connection === "paused" ? "Paused" : "Not available"}</Freshness></span></div>
-    {/* IS-54: the band summary is the one live region; this message is read in place. */}
-    <div className="nv-card__body"><p className="premium-note">{message}</p>
-      {connection === "access_lost" ? <Button href="/login" kind="secondary">Sign in</Button>
-        : onRetry && connection !== "offline" && connection !== "paused" ? <button type="button" className="nv-btn" data-kind="secondary" onClick={onRetry}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button> : null}
-    </div>
-  </section>;
 }

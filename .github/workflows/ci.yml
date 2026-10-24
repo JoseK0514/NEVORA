@@ -136,6 +136,7 @@ jobs:
         timeout-minutes: 8
         run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
       - name: Install PostgreSQL test runtime
+        id: attendance_runtime
         shell: bash
         run: |
           sudo apt-get update
@@ -164,11 +165,13 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Exact-SHA D1.3 attendance browser gate
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
         env:
           PHASE_D_ATTENDANCE_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d13-browser-evidence
           PHASE_D_ATTENDANCE_EXPECTED_SHA: ${{ github.sha }}
         run: npm run test:phase-d:attendance-ui
       - name: Verify SHA-bound report
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
         env:
           PHASE_D_ATTENDANCE_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d13-browser-evidence
           PHASE_D_ATTENDANCE_EXPECTED_SHA: ${{ github.sha }}
@@ -183,16 +186,19 @@ jobs:
           console.log(JSON.stringify({ checkpoint: report.checkpoint, tree: report.tree, checks: report.checks.length, errors: report.errors }, null, 2));
           NODE
       - name: Whole Phase D exact-candidate browser regression
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
         env:
           PHASE_D_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-browser-evidence
           PHASE_D_EXPECTED_SHA: ${{ github.sha }}
         run: node scripts/phase-d-owned.mjs browser
       - name: Independent Phase D audit remediation regressions
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
         env:
           PHASE_D_REMEDIATION_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-remediation-evidence
           PHASE_D_EXPECTED_SHA: ${{ github.sha }}
         run: node scripts/phase-d-owned.mjs remediation
       - name: Verify remediation SHA-bound evidence
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
         env:
           PHASE_D_REMEDIATION_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-remediation-evidence
           PHASE_D_EXPECTED_SHA: ${{ github.sha }}
@@ -207,16 +213,21 @@ jobs:
           }
           NODE
       - name: Existing D2 correction browser regression
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
         env:
           PHASE_D2_CORRECTIONS_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d2-browser-evidence
           PHASE_D2_CORRECTIONS_EXPECTED_SHA: ${{ github.sha }}
         run: npm run test:phase-d2:corrections-ui
       - name: Existing Clocker lifecycle and recovery browser regression
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
         env:
           PHASE_C_EVIDENCE_DIR: ${{ runner.temp }}/nevora-clocker-browser-evidence
           PHASE_C_EXPECTED_SHA: ${{ github.sha }}
-        run: node scripts/phase-c-clocker-postgres.mjs --punch-ui
+        run: |
+          node scripts/clocker-break-filter-readiness.check.mjs
+          node scripts/phase-c-clocker-postgres.mjs --punch-ui
       - name: Verify whole-phase SHA and mandatory UX evidence
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
         env:
           PHASE_D_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-browser-evidence
           PHASE_D_EXPECTED_SHA: ${{ github.sha }}
@@ -356,6 +367,7 @@ jobs:
           name: phase-e-sql-${{ github.sha }}
           path: |
             ${{ runner.temp }}/nevora-phase-e-long-path-startup-evidence/**/startup-receipt.json
+            ${{ runner.temp }}/nevora-phase-e-long-path-startup-evidence/**/sql-report.json
             ${{ runner.temp }}/nevora-phase-e-long-path-startup-evidence/**/runner.log
             ${{ runner.temp }}/nevora-phase-e-long-path-startup-evidence/**/tcp-query.log
             ${{ runner.temp }}/nevora-phase-e-long-path-startup-evidence/**/ownership.json
@@ -446,6 +458,8 @@ jobs:
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/attention-intent-readiness-custody.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/calendar-readiness-custody.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/*-report.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/updates-*-failure.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/updates-*-checks.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/source-manifest.json
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/*.png
             ${{ runner.temp }}/nevora-phase-e-browser-evidence/owned-postgres-*/ownership.json

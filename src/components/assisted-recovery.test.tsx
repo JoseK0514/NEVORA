@@ -10,8 +10,10 @@ describe('Assisted recovery workflow presentation',()=>{
  it('requires the employee, bounded verification record and independent attestation',()=>{
   const html=renderToStaticMarkup(<AssistedRecovery {...props}/>);
   expect(html).toMatch(/<input[^>]+id="assisted-employee"[^>]+required=""[^>]+maxLength="200"[^>]+name="employeeId"/);
-  expect(html).toContain('name="attestation" required="" minLength="10" maxLength="500"');
-  expect(html).toContain('type="checkbox" required=""');
+  // Quiet (v4): the record is one of the named checks (each over 10 characters), or written out under Something else.
+  expect(html).toMatch(/<select[^>]*name="attestation"/);
+  expect(html).toContain('value="Verified in person with a photo ID."');
+  expect(html).toMatch(/type="checkbox" role="switch"[^>]*required=""/);
   expect(html).toContain('Do not substitute a newly supplied email or phone number.');
   expect(html).toContain('Omit sensitive documents, codes and personal details.');
   expect(html).toContain('independently confirmed');
@@ -22,7 +24,8 @@ describe('Assisted recovery workflow presentation',()=>{
   const html=renderToStaticMarkup(<AccountRecovery kind="assisted" actorId="QAOWNER"/>);
   expect(html).toContain('<fieldset disabled=""');
   expect(html).toContain('Enable JavaScript to issue a recovery code.');
-  expect(html).toMatch(/href="\/app"[^>]*>[\s\S]*?Home<\/a>/);
+  // Quiet (v4): Account recovery opens from Team, so Back returns there.
+  expect(html).toMatch(/href="\/app\/employees"[^>]*>[\s\S]*?Team<\/a>/);
  });
  it('opened from an employee page, prefills their ID and returns to that page (W2)',()=>{
   const html=renderToStaticMarkup(<AccountRecovery kind="assisted" actorId="QAOWNER" employeeId="AUDIT-E"/>);
@@ -40,8 +43,8 @@ describe('Assisted recovery workflow presentation',()=>{
   const html=renderToStaticMarkup(<AssistedRecovery {...props} issued={{proof:'A'.repeat(43),employeeId:'QAEMPLOYEE',expiresAt:'2026-10-12T16:30:00Z'}}/>);
   expect(html).toContain('Recovery code ready');expect(html).toContain('QAEMPLOYEE');
   expect(html).toContain('dateTime="2026-10-12T16:30:00Z"');expect(html).toContain('readOnly=""');
-  expect(html).toContain('Single use');expect(html).toContain('href="/reset-access"');
-  expect(html).toContain('switch apps');expect(html).toContain('unused earlier code');
+  expect(html).toContain('works once');expect(html).toContain('href="/reset-access"');
+  expect(html).toContain('hides when you leave this page');expect(html).toContain('unused earlier code');
   expect(html).not.toContain('<form');expect(html).not.toContain('Password updated');
  });
  it('gives ended-access feedback an explicit sign-in path',()=>{

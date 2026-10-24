@@ -1,0 +1,554 @@
+/* Every rule is prefixed :is(#q-root, html): it matches everywhere and carries one id of weight, so the older
+ * element rules on phone pages (mobile-workforce.css: .page-frame h1, p, li, button, input) never resize Quiet text.
+ * NEVORA "Quiet" (v4, Jose approved 2026-10-23; mockups in docs/product/specs/owner-v4-quiet).
+ * White page, black and grey text, teal only for the main button and the active tab, red once.
+ * Type 34 title · 20 section · 17 row · 15 detail · 13 help · 11 tab label. Margin 20. Rows 64 (two lines) and 52 (one line).
+ * Every class is q- prefixed; nothing here restyles another component. */
+
+:is(#q-root, html) .q-page {
+  --q-ink: #111413; --q-grey: #6B6B6B; --q-soft: #8A8A87; --q-faint: #A3A3A0; --q-chev: #B8B8B5;
+  --q-line: #EDEDEB; --q-fill: #F2F2F0; --q-teal: #0B6E69; --q-red: #C42B1C; --q-av: #4A4A48;
+  position: relative; min-height: 100%; padding-bottom: 32px; background: #FFFFFF; color: var(--q-ink);
+  font: 400 17px/22px -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+  letter-spacing: -.2px; -webkit-font-smoothing: antialiased;
+}
+:is(#q-root, html) .q-page *, :is(#q-root, html) .q-page *::before, :is(#q-root, html) .q-page *::after { box-sizing: border-box; }
+:is(#q-root, html) .q-page a { color: inherit; text-decoration: none; }
+:is(#q-root, html) .q-page :focus-visible { outline: 2px solid var(--q-teal); outline-offset: 2px; border-radius: 6px; }
+:is(#q-root, html) .q-ic { flex: none; display: block; width: 24px; height: 24px; }
+:is(#q-root, html) .q-ic--s { width: 14px; height: 14px; }
+:is(#q-root, html) .q-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+/* Top bars. The status bar area is the safe-area inset, so a browser tab starts at the bar. */
+:is(#q-root, html) .q-bar, :is(#q-root, html) .q-nav { height: 44px; padding: var(--q-safe-top, env(safe-area-inset-top, 0px)) 20px 0; box-sizing: content-box; }
+:is(#q-root, html) .q-bar { display: flex; align-items: center; gap: 20px; }
+:is(#q-root, html) .q-bar__sp { flex: 1; }
+:is(#q-root, html) .q-bar__org { font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-bar__icon { position: relative; display: grid; place-items: center; width: 28px; height: 44px; padding: 0; border: 0; background: none; color: var(--q-ink); cursor: pointer; }
+:is(#q-root, html) .q-bar__icon::before { content: ""; position: absolute; inset: 0 -8px; }
+:is(#q-root, html) .q-nav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; }
+:is(#q-root, html) .q-nav__l { justify-self: start; display: flex; align-items: center; gap: 4px; min-height: 44px; font-size: 17px; line-height: 22px; }
+:is(#q-root, html) .q-nav__l--teal { color: var(--q-teal) !important; }
+:is(#q-root, html) .q-nav__t { font-size: 17px; line-height: 22px; font-weight: 600; }
+:is(#q-root, html) .q-nav__r { justify-self: end; display: flex; align-items: center; min-height: 44px; padding: 0; border: 0; background: none; font: inherit; color: var(--q-teal) !important; cursor: pointer; }
+:is(#q-root, html) .q-nav__r--b { font-weight: 600; }
+:is(#q-root, html) .q-nav__r--ink { color: var(--q-ink) !important; }
+:is(#q-root, html) .q-nav__r:disabled { color: var(--q-faint) !important; cursor: default; }
+
+/* Title */
+:is(#q-root, html) .q-hd { padding: 4px 20px 0; }
+:is(#q-root, html) .q-hd h1 { margin: 0; font-size: 34px; line-height: 41px; font-weight: 700; letter-spacing: -.6px; }
+:is(#q-root, html) .q-hd p { margin: 2px 0 0; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
+
+/* Sections and group labels */
+:is(#q-root, html) .q-sec { display: flex; align-items: baseline; justify-content: space-between; margin: 40px 20px 4px; font-size: 20px; line-height: 25px; font-weight: 600; letter-spacing: -.4px; }
+:is(#q-root, html) .q-sec h2 { margin: 0; font: inherit; letter-spacing: inherit; color: inherit; text-wrap: initial; }
+:is(#q-root, html) .q-sec__aside { font-size: 15px; line-height: 20px; font-weight: 400; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-grp { margin: 28px 20px 0; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-grp h2 { margin: 0; font: inherit; letter-spacing: inherit; color: inherit; text-wrap: initial; }
+:is(#q-root, html) .q-grp--m { margin-top: 16px; }
+
+/* Rows */
+:is(#q-root, html) .q-list { margin: 0; padding: 0; list-style: none; }
+:is(#q-root, html) .q-list > li { font-size: 17px; line-height: 22px; }
+:is(#q-root, html) .q-row { position: relative; display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 0 20px; color: inherit; }
+:is(#q-root, html) .q-row--one { min-height: 52px; }
+:is(#q-root, html) .q-row::after { content: ""; position: absolute; left: 20px; right: 0; bottom: 0; height: 1px; background: var(--q-line); }
+:is(#q-root, html) .q-row--av::after { left: 72px; }
+:is(#q-root, html) .q-list > li:last-child > .q-row::after, :is(#q-root, html) .q-list > .q-row:last-child::after { display: none; }
+a.q-row, button.q-row { cursor: pointer; }
+button.q-row { width: 100%; border: 0; background: none; font: inherit; text-align: left; }
+a.q-row:active, button.q-row:active { background: #F7F7F6; }
+:is(#q-root, html) .q-rt { flex: 1; min-width: 0; }
+:is(#q-root, html) .q-rt b { display: block; font-weight: 400; font-size: 17px; line-height: 22px; overflow-wrap: anywhere; }
+:is(#q-root, html) .q-rt i { display: block; margin-top: 1px; font-style: normal; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-rv { flex: none; max-width: 55%; font-size: 15px; line-height: 20px; color: var(--q-grey); font-variant-numeric: tabular-nums; letter-spacing: -.1px; text-align: right; }
+:is(#q-root, html) .q-rv--l, :is(#q-root, html) .q-rv--ph, :is(#q-root, html) .q-rv--ink, :is(#q-root, html) .q-rv--go { font-size: 17px; line-height: 22px; letter-spacing: -.2px; }
+:is(#q-root, html) .q-rv--ph { color: var(--q-faint); }
+:is(#q-root, html) .q-rv--ink { color: var(--q-ink); }
+:is(#q-root, html) .q-rv--go { color: var(--q-teal); }
+:is(#q-root, html) .q-rv--alert { color: var(--q-red); }
+:is(#q-root, html) .q-chev { flex: none; width: 14px; height: 14px; color: var(--q-chev); }
+:is(#q-root, html) .q-check { flex: none; width: 20px; height: 20px; color: var(--q-teal); }
+:is(#q-root, html) .q-av { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 20px; background: var(--q-fill); color: var(--q-av); font-size: 15px; line-height: 1; font-weight: 500; letter-spacing: 0; }
+:is(#q-root, html) .q-av--lg { width: 64px; height: 64px; border-radius: 32px; font-size: 20px; }
+:is(#q-root, html) .q-av--open { background: #FFFFFF; box-shadow: inset 0 0 0 1.5px #D6D6D3; color: var(--q-soft); }
+:is(#q-root, html) .q-av--open .q-ic { width: 18px; height: 18px; }
+
+/* Search, segments, toggles */
+:is(#q-root, html) .q-search { display: flex; align-items: center; gap: 8px; height: 40px; margin: 20px 20px 0; padding: 0 12px; border-radius: 12px; background: var(--q-fill); color: #7A7A77; font-size: 17px; line-height: 22px; }
+:is(#q-root, html) .q-search .q-ic { width: 18px; height: 18px; }
+:is(#q-root, html) .q-search input { flex: 1; min-width: 0; height: 100%; padding: 0; border: 0; background: none; font: inherit; color: var(--q-ink); letter-spacing: inherit; outline: none; }
+:is(#q-root, html) .q-search input::placeholder { color: #7A7A77; }
+:is(#q-root, html) .q-seg { display: flex; height: 36px; margin: 20px 20px 0; padding: 2px; border-radius: 10px; background: var(--q-fill); }
+:is(#q-root, html) .q-seg > a, :is(#q-root, html) .q-seg > button { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; padding: 0 6px; border: 0; border-radius: 8px; background: none; font-family: inherit; font-size: 15px; line-height: 20px; font-weight: 500; color: var(--q-grey); letter-spacing: -.1px; white-space: nowrap; cursor: pointer; }
+:is(#q-root, html) .q-seg > [aria-current="page"], :is(#q-root, html) .q-seg > [aria-pressed="true"] { background: #FFFFFF; color: var(--q-ink); box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
+:is(#q-root, html) .q-tog { flex: none; position: relative; width: 51px; height: 31px; margin: 0; border-radius: 16px; background: #E3E3E0; appearance: none; -webkit-appearance: none; cursor: pointer; transition: background-color 160ms ease-out; }
+:is(#q-root, html) .q-tog::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 14px; background: #FFFFFF; box-shadow: 0 2px 4px rgba(0, 0, 0, .14); transition: transform 200ms cubic-bezier(.32, .72, 0, 1); }
+:is(#q-root, html) .q-tog:checked, :is(#q-root, html) .q-tog[aria-checked="true"] { background: var(--q-teal); }
+:is(#q-root, html) .q-tog:checked::after, :is(#q-root, html) .q-tog[aria-checked="true"]::after { transform: translateX(20px); }
+:is(#q-root, html) .q-tog:disabled { opacity: .5; cursor: default; }
+
+/* Fields */
+:is(#q-root, html) .q-fl { display: block; margin: 24px 20px 0; }
+:is(#q-root, html) .q-fl + .q-fl { margin-top: 16px; }
+:is(#q-root, html) .q-fl > label, :is(#q-root, html) .q-fl > .q-fl__label { display: block; margin-bottom: 8px; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-in { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; height: 50px; min-height: 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-ink); font: inherit; letter-spacing: inherit; }
+input.q-in, select.q-in, textarea.q-in { outline: none; }
+:is(#q-root, html) .q-in::placeholder { color: var(--q-soft); }
+:is(#q-root, html) .q-in--ph { color: var(--q-soft); }
+:is(#q-root, html) .q-in:focus, :is(#q-root, html) .q-in:focus-within { box-shadow: inset 0 0 0 2px var(--q-ink); }
+textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; align-items: flex-start; }
+:is(#q-root, html) .q-in__wrap { position: relative; }
+:is(#q-root, html) .q-in__wrap > .q-in { padding-right: 52px; }
+:is(#q-root, html) .q-in__eye { position: absolute; right: 4px; top: 3px; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: none; color: var(--q-grey); cursor: pointer; }
+:is(#q-root, html) .q-in__eye .q-ic { width: 20px; height: 20px; }
+:is(#q-root, html) .q-help { margin: 8px 20px 0; font-size: 13px; line-height: 18px; color: var(--q-grey); letter-spacing: 0; }
+:is(#q-root, html) .q-help--c { text-align: center; }
+:is(#q-root, html) .q-error { margin: 8px 20px 0; font-size: 15px; line-height: 20px; color: var(--q-red); letter-spacing: -.1px; }
+
+/* Buttons */
+:is(#q-root, html) .q-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: calc(100% - 40px); height: 50px; margin: 24px 20px 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-teal); color: #FFFFFF !important; font-family: inherit; font-size: 17px; line-height: 22px; font-weight: 600; letter-spacing: -.2px; cursor: pointer; transition: transform 160ms ease-out; }
+:is(#q-root, html) .q-btn:active:not(:disabled) { transform: scale(.97); }
+:is(#q-root, html) .q-btn--sec { background: var(--q-fill); color: var(--q-ink) !important; }
+:is(#q-root, html) .q-btn--off, :is(#q-root, html) .q-btn:disabled { background: var(--q-fill); color: var(--q-faint) !important; cursor: default; opacity: 1; }
+:is(#q-root, html) .q-btn--quiet { height: 44px; margin-top: 8px; background: none; color: var(--q-teal) !important; font-weight: 400; }
+:is(#q-root, html) .q-btn--danger { height: 44px; background: none; color: var(--q-red) !important; font-weight: 400; }
+:is(#q-root, html) .q-bs { flex: none; display: inline-flex; align-items: center; justify-content: center; height: 32px; min-height: 0; padding: 0 14px; border: 0; border-radius: 16px; background: var(--q-fill); color: var(--q-ink) !important; font-family: inherit; font-size: 15px; line-height: 20px; font-weight: 600; letter-spacing: -.1px; white-space: nowrap; cursor: pointer; }
+:is(#q-root, html) .q-bs--go { background: var(--q-teal); color: #FFFFFF !important; }
+:is(#q-root, html) .q-bs:disabled { opacity: .5; cursor: default; }
+:is(#q-root, html) .q-acts { position: relative; display: flex; gap: 8px; padding: 0 20px 16px 72px; }
+:is(#q-root, html) .q-acts .q-bs { flex: 1; }
+:is(#q-root, html) .q-acts::after { content: ""; position: absolute; left: 72px; right: 0; bottom: 0; height: 1px; background: var(--q-line); }
+:is(#q-root, html) .q-row:has(+ .q-acts)::after, :is(#q-root, html) .q-list > li:has(+ li > .q-acts) .q-row::after { display: none; }
+
+/* Text blocks */
+:is(#q-root, html) .q-empty { margin: 8px 20px 0; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-lead { margin: 32px 20px 0; }
+:is(#q-root, html) .q-lead b { display: block; font-size: 20px; line-height: 25px; font-weight: 600; letter-spacing: -.4px; }
+:is(#q-root, html) .q-lead i { display: block; margin-top: 2px; font-style: normal; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-body { margin: 24px 20px 0; font-size: 17px; line-height: 25px; color: #3A3A38; letter-spacing: -.2px; }
+:is(#q-root, html) .q-body p { margin: 0 0 16px; font-size: inherit; line-height: inherit; }
+:is(#q-root, html) .q-gap { height: 24px; }
+:is(#q-root, html) .q-gap--32 { height: 32px; }
+
+/* Desktop: the same page in a calm column beside the sidebar. */
+@media (min-width: 768px) {
+  :is(#q-root, html) .q-page { max-width: 720px; padding-bottom: 48px; }
+  :is(#q-root, html) .q-bar, :is(#q-root, html) .q-nav { padding-top: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(#q-root, html) .q-btn, :is(#q-root, html) .q-tog, :is(#q-root, html) .q-tog::after { transition: none; }
+  :is(#q-root, html) .q-btn:active:not(:disabled) { transform: none; }
+}
+@media (prefers-contrast: more) {
+  :is(#q-root, html) .q-page { --q-grey: #4A4A48; --q-line: #9A9A97; }
+}
+
+/* Schedule: the week strip and the location menu */
+:is(#q-root, html) .q-week { display: grid; grid-template-columns: repeat(7, 1fr); margin: 20px 12px 0; }
+:is(#q-root, html) .q-week > button { display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 0; padding: 0; border: 0; background: none; color: var(--q-ink, #111413); font: inherit; cursor: pointer; }
+:is(#q-root, html) .q-week small { font-size: 13px; line-height: 18px; font-weight: 500; color: #8A8A87; letter-spacing: 0; }
+:is(#q-root, html) .q-week b { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; font-size: 17px; line-height: 22px; font-weight: 400; font-variant-numeric: tabular-nums; }
+:is(#q-root, html) .q-week > button[aria-pressed="true"] b { background: #111413; color: #FFFFFF; font-weight: 600; }
+:is(#q-root, html) .q-sched-loc { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0; border: 0; background: none; color: #111413; font: inherit; font-size: 17px; line-height: 22px; letter-spacing: -.2px; cursor: pointer; }
+:is(#q-root, html) .q-bar .q-bar__icon > svg, :is(#q-root, html) .q-bar button.q-bar__icon svg { width: 24px; height: 24px; }
+
+/* Settings forms (src/app/app/settings/wave-c-*): field pieces, notes, actions */
+:is(#q-root, html) .q-fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#q-root, html) .q-fl__row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+:is(#q-root, html) .q-fl__label { display: block; font-size: 15px; line-height: 20px; font-weight: 400; color: #6B6B6B; letter-spacing: -.1px; }
+:is(#q-root, html) .q-fl__opt { color: #8A8A87; }
+:is(#q-root, html) .q-fl__error { margin: 8px 0 0; font-size: 15px; line-height: 20px; color: #C42B1C; letter-spacing: -.1px; }
+:is(#q-root, html) .q-fl__help, :is(#q-root, html) .q-fl__help p { margin: 8px 0 0; font-size: 13px; line-height: 18px; color: #6B6B6B; letter-spacing: 0; }
+:is(#q-root, html) .q-fl[data-invalid="true"] .q-in { box-shadow: inset 0 0 0 2px #C42B1C; }
+:is(#q-root, html) select.q-in { appearance: none; -webkit-appearance: none; padding-right: 40px; }
+:is(#q-root, html) .q-in__wrap { position: relative; display: block; }
+:is(#q-root, html) .q-in__caret { position: absolute; right: 16px; top: 18px; width: 14px; height: 14px; color: #8A8A87; pointer-events: none; }
+:is(#q-root, html) .q-in__wrap--unit .q-in { padding-right: 56px; }
+:is(#q-root, html) .q-in__unit { position: absolute; right: 16px; top: 14px; font-size: 17px; line-height: 22px; color: #8A8A87; pointer-events: none; }
+:is(#q-root, html) .q-note { display: block; margin: 16px 20px 0; font-size: 15px; line-height: 20px; color: #6B6B6B; letter-spacing: -.1px; }
+:is(#q-root, html) .q-note__title { display: block; font-weight: 600; color: #111413; }
+:is(#q-root, html) .q-note[data-tone="urgent"] .q-note__title, :is(#q-root, html) .q-note[data-tone="urgent"] { color: #C42B1C; }
+:is(#q-root, html) .q-note__action { margin-top: 8px; }
+:is(#q-root, html) .q-emptyblock { margin-top: 24px; }
+:is(#q-root, html) .q-emptyblock__title { margin: 0 20px; font-size: 17px; line-height: 22px; font-weight: 600; color: #111413; letter-spacing: -.2px; }
+:is(#q-root, html) .q-emptyblock__action { margin-top: 8px; }
+:is(#q-root, html) .q-actions { display: flex; flex-direction: column; }
+:is(#q-root, html) .q-actions > .q-btn + .q-btn { margin-top: 12px; }
+:is(#q-root, html) label.q-row { cursor: pointer; }
+:is(#q-root, html) label.q-row[data-disabled="true"] { cursor: default; opacity: .6; }
+
+/* Sheets: Settings editors (wc-dialog) open as a white bottom sheet on phones and a centred card on wide screens. */
+:is(#q-root, html) .q-page dialog.wc-dialog { position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; max-height: 92dvh; margin: 0; padding: 0 0 calc(24px + env(safe-area-inset-bottom, 0px)); border: 0; border-radius: 20px 20px 0 0; background: #FFFFFF; color: #111413; box-shadow: 0 -12px 40px rgba(0, 0, 0, .18); overflow: auto; overscroll-behavior: contain; }
+:is(#q-root, html) .q-page dialog.wc-dialog::backdrop { background: rgba(17, 20, 19, .42); }
+:is(#q-root, html) .q-page .wc-dialog__head { display: flex; align-items: flex-start; gap: 12px; padding: 20px 20px 0; }
+:is(#q-root, html) .q-page .wc-dialog__head > div { flex: 1; min-width: 0; }
+:is(#q-root, html) .q-page .wc-dialog__title { margin: 0; font-size: 20px; line-height: 25px; font-weight: 600; letter-spacing: -.4px; color: #111413; }
+:is(#q-root, html) .q-page .wc-dialog__text { margin: 4px 0 0; font-size: 15px; line-height: 20px; color: #6B6B6B; letter-spacing: -.1px; }
+:is(#q-root, html) .q-page .wc-dialog__close { display: grid; place-items: center; width: 44px; height: 44px; margin: -10px -12px 0 0; padding: 0; border: 0; background: none; color: #6B6B6B; cursor: pointer; }
+:is(#q-root, html) .q-page .wc-dialog__close svg { width: 22px; height: 22px; }
+:is(#q-root, html) .q-page .wc-dialog .wc-fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+:is(#q-root, html) .q-page .wc-dialog .wc-fact { margin-top: 16px; }
+@media (min-width: 768px) {
+  :is(#q-root, html) .q-page dialog.wc-dialog { inset: 0; width: min(480px, calc(100% - 48px)); max-height: min(720px, calc(100dvh - 48px)); margin: auto; padding-bottom: 24px; border-radius: 20px; }
+}
+:is(#q-root, html) textarea.q-in.wc-wrap { display: block; height: auto; min-height: 50px; padding: 14px 16px; line-height: 22px; overflow: hidden; resize: none; }
+
+/* Branding */
+:is(#q-root, html) .q-swatch { flex: none; width: 22px; height: 22px; border-radius: 11px; }
+:is(#q-root, html) .q-logo { display: flex; align-items: center; height: 28px; }
+:is(#q-root, html) .q-logo img { display: block; max-height: 28px; max-width: 96px; object-fit: contain; }
+:is(#q-root, html) .q-preview { margin: 12px 20px 0; padding: 16px; border-radius: 12px; background: #F2F2F0; }
+:is(#q-root, html) .q-preview b { display: block; font-size: 17px; line-height: 22px; font-weight: 600; }
+:is(#q-root, html) .q-preview i { display: block; font-style: normal; font-size: 15px; line-height: 20px; color: #6B6B6B; letter-spacing: -.1px; }
+:is(#q-root, html) .q-preview span { display: inline-flex; align-items: center; height: 32px; margin-top: 12px; padding: 0 14px; border-radius: 16px; color: #FFFFFF; font-size: 15px; line-height: 20px; font-weight: 600; }
+:is(#q-root, html) .q-swatches { display: grid; grid-template-columns: repeat(4, 56px); justify-content: space-between; row-gap: 16px; margin: 20px 20px 0; }
+:is(#q-root, html) .q-swatches button { display: grid; place-items: center; width: 56px; height: 56px; min-height: 0; padding: 0; border: 0; border-radius: 28px; color: #FFFFFF; cursor: pointer; }
+:is(#q-root, html) .q-swatches button svg { width: 24px; height: 24px; }
+:is(#q-root, html) .q-swatches button[aria-pressed="true"] { box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 5px #111413; }
+/* The Wave C containers were grids with 16px gaps; inside a Quiet page they are plain blocks, so the 24/28/40 spacing is the page's own. */
+:is(#q-root, html) .q-page :is(.wc-content, .wc-form, .wc-brand, .wc-main, .wc-fields, .wc-layout, .wc-hub, .wc-hub__column) { display: block; gap: 0; margin: 0; padding: 0; background: none; box-shadow: none; }
+:is(#q-root, html) .q-page .wc-feedback { margin: 0; padding: 0; background: none; outline: none; }
+/* A row whose value is a native picker: the select covers the value and the chevron. */
+:is(#q-root, html) .q-select-row { position: relative; }
+:is(#q-root, html) .q-select-row__control { flex: none; max-width: 60%; min-height: 0; height: 52px; padding: 0 4px 0 0; border: 0; background: none; color: #6B6B6B; font: inherit; font-size: 17px; line-height: 22px; text-align: right; text-align-last: right; appearance: none; -webkit-appearance: none; cursor: pointer; }
+:is(#q-root, html) .q-select-row__control:focus-visible { outline: 2px solid #0B6E69; border-radius: 6px; }
+
+/* Employee and Profile: avatar beside the name, three quick actions */
+:is(#q-root, html) .q-who { display: flex; align-items: center; gap: 16px; margin: 12px 20px 0; }
+:is(#q-root, html) .q-who h1 { margin: 0; font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -.5px; color: #111413; text-wrap: initial; }
+:is(#q-root, html) .q-who p { margin: 2px 0 0; font-size: 15px; line-height: 20px; color: #6B6B6B; letter-spacing: -.1px; }
+:is(#q-root, html) .q-qa { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 24px 20px 0; }
+:is(#q-root, html) .q-qa .q-bs { height: 40px; border-radius: 12px; }
+:is(#q-root, html) .q-qa .q-bs[aria-disabled="true"] { color: #A3A3A0 !important; }
+/* A row whose value is typed in place, and a row that opens to show more fields. */
+:is(#q-root, html) .q-input-row input { flex: 1; min-width: 0; min-height: 0; height: 52px; padding: 0; border: 0; background: none; color: #111413; font: inherit; font-size: 17px; line-height: 22px; text-align: right; outline: none; }
+:is(#q-root, html) .q-input-row input::placeholder { color: #A3A3A0; }
+:is(#q-root, html) .q-input-row:focus-within { box-shadow: inset 0 -2px 0 #111413; }
+:is(#q-root, html) .q-details > summary { list-style: none; cursor: pointer; }
+:is(#q-root, html) .q-details > summary::-webkit-details-marker { display: none; }
+:is(#q-root, html) .q-details[open] > summary .q-chev { transform: rotate(90deg); }
+:is(#q-root, html) .q-details__body { padding: 8px 20px 16px; font-size: 15px; line-height: 20px; }
+
+:is(#q-root, html) .q-select-row .q-rt, :is(#q-root, html) .q-input-row .q-rt { flex: none; }
+:is(#q-root, html) .q-select-row .q-rt b, :is(#q-root, html) .q-input-row .q-rt b { white-space: nowrap; }
+:is(#q-root, html) .q-select-row .q-select-row__control { flex: 1; min-width: 0; max-width: none; }
+/* Clocker PIN: four boxes over one field */
+:is(#q-root, html) .q-pin { position: relative; display: grid; grid-template-columns: repeat(4, 56px); gap: 12px; margin-top: 8px; }
+:is(#q-root, html) .q-pin input { position: absolute; inset: 0; z-index: 1; width: 100%; height: 56px; min-height: 0; margin: 0; padding: 0; border: 0; background: transparent; color: transparent; caret-color: transparent; font-size: 16px; opacity: .01; }
+:is(#q-root, html) .q-pin span { display: grid; place-items: center; height: 56px; border-radius: 12px; background: #F2F2F0; }
+:is(#q-root, html) .q-pin span i { width: 10px; height: 10px; border-radius: 5px; background: #111413; }
+:is(#q-root, html) .q-pin:focus-within span[data-on] { box-shadow: inset 0 0 0 2px #111413; }
+
+/* The first field under a sheet's bar sits 16 below it (a page's first field sits 24 below its title). */
+:is(#q-root, html) .q-fl.q-first { margin-top: 16px; }
+
+/* Compose (an update): the shared form drawn in the Quiet sheet style. */
+:is(#q-root, html) .q-compose .nv-content { margin: 0; padding: 0; display: block; }
+:is(#q-root, html) .q-compose .wb-form, :is(#q-root, html) .q-compose fieldset.wb-form { display: block; margin: 0; padding: 0; border: 0; min-width: 0; }
+:is(#q-root, html) .q-compose .nv-card { margin: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
+:is(#q-root, html) .q-compose .nv-card__head { display: block; margin: 28px 20px 0; padding: 0; }
+:is(#q-root, html) .q-compose .nv-card__title { margin: 0; font-size: 15px; line-height: 20px; font-weight: 600; color: #6B6B6B; letter-spacing: -.1px; }
+:is(#q-root, html) .q-compose .nv-card__meta { display: none; }
+:is(#q-root, html) .q-compose .wb-body { margin: 0; padding: 0; }
+:is(#q-root, html) .q-compose .wb-field { margin: 16px 20px 0; }
+:is(#q-root, html) .q-compose .wb-label-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+:is(#q-root, html) .q-compose .wb-field > label, :is(#q-root, html) .q-compose .wb-label-row label { display: block; margin-bottom: 8px; font-size: 15px; line-height: 20px; color: #6B6B6B; letter-spacing: -.1px; }
+:is(#q-root, html) .q-compose .wb-label-row label { margin: 0; }
+:is(#q-root, html) .q-compose .wb-counter { font-size: 13px; line-height: 20px; color: #8A8A87; }
+:is(#q-root, html) .q-compose .wb-control { display: block; width: 100%; height: 50px; min-height: 0; padding: 0 16px; border: 0; border-radius: 12px; background: #F2F2F0; color: #111413; font: inherit; font-size: 17px; line-height: 22px; appearance: none; -webkit-appearance: none; outline: none; }
+:is(#q-root, html) .q-compose textarea.wb-control { height: 120px; padding-top: 14px; resize: none; }
+:is(#q-root, html) .q-compose .wb-control:focus { box-shadow: inset 0 0 0 2px #111413; }
+:is(#q-root, html) .q-compose .wb-help, :is(#q-root, html) .q-compose .wb-note, :is(#q-root, html) .q-compose .wb-box { margin: 8px 20px 0; padding: 0; border: 0; background: none; font-size: 13px; line-height: 18px; color: #6B6B6B; letter-spacing: 0; }
+:is(#q-root, html) .q-compose .wb-field .wb-help { margin: 8px 0 0; }
+:is(#q-root, html) .q-compose .wb-divider { display: none; }
+:is(#q-root, html) .q-compose .wb-check { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; font-size: 17px; line-height: 22px; color: #111413; }
+:is(#q-root, html) .q-compose .wb-error { margin: 8px 0 0; font-size: 15px; line-height: 20px; color: #C42B1C; }
+:is(#q-root, html) .q-compose .wb-actions { display: flex; flex-direction: column; gap: 12px; margin: 24px 20px 0; }
+:is(#q-root, html) .q-compose .wb-actions .nv-btn { height: 50px; border-radius: 12px; }
+:is(#q-root, html) .q-compose .nv-btn[data-kind="primary"] { background: #0B6E69; color: #FFFFFF; }
+:is(#q-root, html) .q-compose .nv-btn[data-kind="secondary"] { background: #F2F2F0; color: #111413; box-shadow: none; }
+:is(#q-root, html) .q-list > li:last-child > details > summary.q-row::after, :is(#q-root, html) .q-details[open] > summary.q-row::after { display: none; }
+:is(#q-root, html) .q-compose .nv-card__head, :is(#q-root, html) .q-compose .wb-box, :is(#q-root, html) .q-compose #compose-body-hint { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); }
+:is(#q-root, html) .q-compose .wb-counter { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+:is(#q-root, html) .q-compose section.nv-card:first-of-type .wb-field:first-child { margin-top: 16px; }
+
+/* Notifications (v4): the list sits 16 under the segments; a type icon fills the avatar where there is no person. */
+:is(#q-root, html) .q-notif-list { margin-top: 16px; }
+:is(#q-root, html) .q-notif-list .q-av .q-ic { width: 20px; height: 20px; }
+:is(#q-root, html) .q-notif-hold { display: block; }
+
+/* Requests (v4): a row and its Decline and Approve pills read as one item; the line sits under the pills. */
+:is(#q-root, html) .q-requests { margin-top: 16px; }
+:is(#q-root, html) .q-request > .q-row::after { display: none; }
+:is(#q-root, html) .q-requests > li:last-child .q-acts::after { display: none; }
+:is(#q-root, html) .q-acts-form { display: block; margin: 0; }
+:is(#q-root, html) .q-acts-form--page { margin-top: 24px; }
+:is(#q-root, html) .q-acts-form--page .q-acts { padding-left: 20px; }
+:is(#q-root, html) .q-acts-form--page .q-acts::after { display: none; }
+:is(#q-root, html) .q-acts-form .wa-target { padding: 0 20px 16px 72px; }
+:is(#q-root, html) .q-request:focus { outline: none; }
+:is(#q-root, html) .q-acts-form .shift-change-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#q-root, html) .q-acts-form > .form-error, :is(#q-root, html) .q-acts-form > .form-success, :is(#q-root, html) .q-acts-note { margin: 0; padding: 0 20px 12px 72px; font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html) .q-acts-form > .form-error { color: var(--q-red); }
+:is(#q-root, html) .q-done__body { padding-left: 72px; }
+/* A waiting request opens in place to show its shifts in full (who, the full date, start to end, where) above the decision. */
+:is(#q-root, html) .q-request > .q-details > summary.q-row::after { display: none; }
+:is(#q-root, html) .q-request__details > .q-details__body { padding-top: 4px; padding-bottom: 12px; }
+:is(#q-root, html) .q-facts { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+:is(#q-root, html) .q-facts > li { display: flex; flex-direction: column; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-facts > li > b { font-weight: 600; color: var(--q-ink); }
+:is(#q-root, html) .q-facts + .q-help { margin: 12px 0 0; }
+
+/* Availability (v4): the people sit 8 under the segments; sent hours open under the row. */
+:is(#q-root, html) .q-avail-list { margin-top: 8px; }
+:is(#q-root, html) .q-hours { margin: 0; padding: 0 20px 12px 72px; list-style: none; }
+:is(#q-root, html) .q-hours > li { display: flex; gap: 12px; font-size: 15px; line-height: 24px; color: var(--q-ink); }
+:is(#q-root, html) .q-hours > li > span:first-child { width: 36px; color: var(--q-grey); }
+:is(#q-root, html) .q-avail-list li:focus { outline: none; }
+
+/* Add shift (v4): picker rows show their value on the right (teal for dates and times, ink for the person). */
+:is(#q-root, html) .q-select-row__control--ink { color: var(--q-ink); }
+:is(#q-root, html) .q-picker-row { position: relative; cursor: pointer; }
+:is(#q-root, html) .q-picker-row .q-rv { margin-left: auto; }
+:is(#q-root, html) .q-picker-row__input { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; margin: 0; padding: 0; border: 0; opacity: 0; cursor: pointer; }
+:is(#q-root, html) .q-picker-row:focus-within { box-shadow: inset 0 0 0 2px var(--q-teal); border-radius: 6px; }
+:is(#q-root, html) .q-shift-form .configuration-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#q-root, html) .q-shift-form__more { margin-top: 24px; }
+:is(#q-root, html) .q-shift-form > [role="status"], :is(#q-root, html) .q-shift-form > .form-error, :is(#q-root, html) .q-shift-form > .form-success { margin: 16px 20px 0; font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html) .q-shift-form > .form-error { color: var(--q-red); }
+:is(#q-root, html) .q-select-row__control--ph { color: var(--q-faint); }
+
+/* Templates (v4): the name field and the full-width Save under it; saved templates are a row with Archive and Use under it. */
+:is(#q-root, html) .q-template-form { display: block; margin: 0; }
+:is(#q-root, html) .q-template-form > .wb-error, :is(#q-root, html) .q-acts__form > .wb-error { display: block; margin: 8px 20px 0; font-size: 13px; line-height: 18px; color: var(--q-red); }
+:is(#q-root, html) .q-template-form > .wb-error svg, :is(#q-root, html) .q-acts__form > .wb-error svg { display: none; }
+:is(#q-root, html) .q-acts--flush { padding-left: 20px; }
+:is(#q-root, html) .q-acts--flush::after { left: 20px; }
+:is(#q-root, html) .q-acts > div, :is(#q-root, html) .q-acts > .q-acts__form { flex: 1; display: flex; flex-direction: column; min-width: 0; margin: 0; }
+:is(#q-root, html) .q-acts > div > .q-bs, :is(#q-root, html) .q-acts__form > .q-bs { width: 100%; }
+:is(#q-root, html) .q-acts > div > p { margin: 6px 0 0; font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html) .q-acts__form .wb-confirm { display: flex; flex-direction: column; gap: 8px; }
+:is(#q-root, html) .q-acts__form .wb-confirm .wb-text { margin: 0; font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html) .q-acts__form .wb-confirm .wb-actions { display: flex; gap: 8px; }
+:is(#q-root, html) .q-acts__form .wb-confirm .nv-btn { flex: 1; height: 32px; min-height: 0; padding: 0 12px; border: 0; border-radius: 16px; background: var(--q-fill); color: var(--q-ink); font: inherit; font-size: 15px; font-weight: 600; }
+:is(#q-root, html) .q-acts__form .wb-confirm .nv-btn[data-kind="primary"] { background: var(--q-red); color: #FFFFFF; }
+:is(#q-root, html) .q-link { color: var(--q-teal); text-decoration: none; }
+:is(#q-root, html) .q-template-list { margin-top: 0; }
+
+/* Scheduling rules (v4): five rows; each opens its settings under it. */
+:is(#q-root, html) .q-rule-list > form { display: block; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+:is(#q-root, html) .q-rule-list > .q-rule:last-child > summary.q-row::after { display: none; }
+:is(#q-root, html) .q-rule[open] > summary.q-row::after { display: none; }
+:is(#q-root, html) .q-rule__body { padding: 0 0 20px; border-bottom: 1px solid var(--q-line); margin-left: 20px; }
+:is(#q-root, html) .q-rule-list > .q-rule:last-child .q-rule__body { border-bottom: 0; }
+:is(#q-root, html) .q-rule__body > .q-help:first-child { margin-top: 0; padding-right: 20px; }
+:is(#q-root, html) .q-rule__body .q-fl { margin-left: 0; }
+:is(#q-root, html) .q-rule-form { display: block; margin: 0; }
+:is(#q-root, html) .q-rule-form .q-btn { margin-left: 0; width: calc(100% - 20px); }
+:is(#q-root, html) .q-rule-form .q-help { margin-left: 0; }
+/* Templates: Saved sits 40 under the Save button (12 more than a group's usual 28). */
+:is(#q-root, html) .q-gap-40 { height: 12px; }
+/* Scheduling rules: the staffing and hours Save shows only while one of those two is open. */
+:is(#q-root, html) .q-rule-list > form:not(:has(> fieldset > details[open])) > .wb-savebar { display: none; }
+:is(#q-root, html) .q-rule-list .wb-savebar { position: static; display: block; margin: 0; padding: 0 20px 20px; border: 0; background: none; box-shadow: none; }
+:is(#q-root, html) .q-rule-list .wb-savebar > p { display: block; margin: 0; font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html) .q-rule-list .wb-savebar > p svg { display: none; }
+:is(#q-root, html) .q-rule-list .wb-savebar > .wb-error { color: var(--q-red); }
+:is(#q-root, html) .q-rule-list .wb-savebar > .nv-btn { display: flex; align-items: center; justify-content: center; width: 100%; height: 50px; min-height: 0; margin: 12px 0 0; border: 0; border-radius: 12px; background: var(--q-teal); color: #FFFFFF; font: inherit; font-size: 17px; font-weight: 600; box-shadow: none; }
+:is(#q-root, html) .q-rule-list > form > .configuration-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+
+/* Timecards (v4): when approvals open sits 12 under the segments; the people 8 under that. */
+:is(#q-root, html) .q-tc-help { margin-top: 12px; }
+:is(#q-root, html) .q-tc-list { margin-top: 8px; }
+:is(#q-root, html) .q-tc-hold { display: block; }
+:is(#q-root, html) .q-tc-list button.q-row { width: 100%; border: 0; background: none; font: inherit; text-align: left; cursor: pointer; }
+:is(#q-root, html) .q-tc-list li:focus { outline: none; }
+/* Timecards select (v4 sheet style): a round check takes the avatar's place; the review, confirm and results read as grouped rows. */
+:is(#q-root, html) .q-tc-pick { cursor: pointer; }
+:is(#q-root, html) .q-tc-pick[data-off] { cursor: default; }
+:is(#q-root, html) .q-tc-pick[data-off] .q-rt b, :is(#q-root, html) .q-tc-pick[data-off] .q-rv { color: var(--q-faint); }
+:is(#q-root, html) .q-tc-box { flex: none; width: 24px; height: 24px; margin: 0 8px; border: 1.5px solid #C8C8C5; border-radius: 12px; background: #FFFFFF center / 14px 14px no-repeat; appearance: none; -webkit-appearance: none; cursor: inherit; transition: background-color 160ms ease-out, border-color 160ms ease-out; }
+:is(#q-root, html) .q-tc-box:checked { border-color: var(--q-teal); background-color: var(--q-teal); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M2.5 7.4l3 3 6-6.4' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+:is(#q-root, html) .q-tc-box:disabled { border-color: #E3E3E0; background-color: var(--q-fill); }
+:is(#q-root, html) .q-tc-box:focus-visible { outline: 2px solid var(--q-ink); outline-offset: 2px; }
+:is(#q-root, html) .q-tc-pick.q-row--one::after { left: 60px; }
+:is(#q-root, html) .q-tc-bulk { margin-bottom: 24px; }
+:is(#q-root, html) .q-tc-bulk .q-grp { margin-top: 16px; }
+:is(#q-root, html) .q-tc-bulk__list { margin-top: 8px; }
+:is(#q-root, html) .q-tc-bulk .q-btn { margin-top: 16px; }
+:is(#q-root, html) .q-tc-confirm .q-grp { margin-top: 28px; }
+:is(#q-root, html) .q-tc-confirm > .q-help { margin-top: 4px; }
+:is(#q-root, html) .q-tc-confirm > .q-list { margin-top: 8px; }
+:is(#q-root, html) .q-tc-confirm__check { padding-top: 12px; padding-bottom: 12px; cursor: pointer; }
+:is(#q-root, html) .q-tc-confirm__check .q-rt b { font-size: 15px; line-height: 20px; }
+:is(#q-root, html) .q-tc-confirm__check::after { display: none; }
+:is(#q-root, html) .q-tc-confirm .q-rv[data-tone="approved"], :is(#q-root, html) .q-tc-confirm .q-rv[data-tone="finalized"] { color: var(--q-teal); }
+:is(#q-root, html) .q-tc-confirm .q-rv[data-tone="outcome-unknown"], :is(#q-root, html) .q-tc-confirm .q-rv[data-tone="denied"], :is(#q-root, html) .q-tc-confirm .q-rv[data-tone="conflict"], :is(#q-root, html) .q-tc-confirm .q-rv[data-tone="blocked"] { color: var(--q-red); }
+/* Pages whose old wrapper still frames a Quiet page (Timecards): the wrapper adds nothing. */
+:is(#q-root, html) .nv-page:has(> .q-page) { margin: 0; padding: 0; background: #FFFFFF; min-height: 0; }
+
+/* Payroll (v4): past periods are button rows; the review keeps its own layout under a Payroll back link. */
+:is(#q-root, html) button.q-row--btn { width: 100%; border: 0; background: none; font: inherit; text-align: left; cursor: pointer; }
+:is(#q-root, html) .q-payroll .q-nav .q-bar__icon { justify-self: end; }
+:is(#q-root, html) .q-payroll-back { display: flex; align-items: center; height: 44px; padding: 0 20px; margin-top: var(--q-safe-top, env(safe-area-inset-top)); }
+:is(#q-root, html) .q-payroll-back .q-nav__l { display: inline-flex; align-items: center; gap: 4px; min-height: 0; padding: 0; border: 0; background: none; font: inherit; font-size: 17px; color: var(--q-ink); cursor: pointer; }
+
+/* Insights (v4): four figures 16 under the segments; each opens its list; How these are counted opens the definitions. */
+:is(#q-root, html) .q-figures { margin-top: 16px; }
+:is(#q-root, html) .q-figure__body { padding: 0 20px 12px; }
+:is(#q-root, html) .q-sublist { margin: 0; padding: 0; list-style: none; }
+:is(#q-root, html) .q-sublist > li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 15px; line-height: 20px; color: var(--q-ink); }
+:is(#q-root, html) .q-sublist > li > span + span { color: var(--q-grey); text-align: right; }
+:is(#q-root, html) .q-insights-phone .q-figures > li:first-child .q-sublist > li > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+:is(#q-root, html) .q-insights-phone .q-figures > li:first-child .q-sublist > li > span + span { flex-shrink: 0; }
+:is(#q-root, html) .q-counted { margin: 16px 0 0; }
+:is(#q-root, html) .q-counted > summary { list-style: none; margin-top: 0; }
+:is(#q-root, html) .q-counted > summary::-webkit-details-marker { display: none; }
+:is(#q-root, html) .q-counted__list { margin: 8px 20px 0; padding: 0 0 0 18px; font-size: 15px; line-height: 20px; color: var(--q-grey); }
+:is(#q-root, html) .q-counted__list > li + li { margin-top: 8px; }
+:is(#q-root, html) .q-insights .wb-insights { display: block; margin: 0; padding: 0; gap: 0; }
+
+/* Time exports (v4): the Quiet page on phones, the full export tool on wider screens. */
+:is(#q-root, html) .q-export-hint { text-align: center; }
+@media (min-width: 761px) { :is(#q-root, html) .q-export-phone { display: none; } }
+@media (max-width: 760px) {
+  :is(#q-root, html) .q-export-desk { display: none; }
+  :is(#q-root, html) .premium-exports .premium-legacy-content { margin: 0; padding: 0; }
+}
+
+/* Fields inside an opened row (Scheduling rules, Payroll settings): Quiet labels, inputs, checks and notes. */
+:is(#q-root, html) .q-rule__body { padding-right: 20px; font-size: 15px; line-height: 20px; color: var(--q-ink); }
+:is(#q-root, html) .q-rule__body.wb-form, :is(#q-root, html) .q-rule__body .wb-form { display: flex; flex-direction: column; gap: 16px; margin: 0; padding-top: 0; border: 0; background: none; box-shadow: none; }
+:is(#q-root, html) .q-rule__body fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#q-root, html) .q-rule__body label:not(.wb-check):not(.q-row), :is(#q-root, html) .q-rule__body .wb-field { display: flex; flex-direction: column; gap: 8px; font-size: 15px; line-height: 20px; color: var(--q-grey); }
+:is(#q-root, html) .q-rule__body .wb-field > span:first-child { color: var(--q-grey); }
+:is(#q-root, html) .q-rule__body input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), :is(#q-root, html) .q-rule__body select, :is(#q-root, html) .q-rule__body textarea {
+  width: 100%; height: 50px; min-height: 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-ink); font: inherit; font-size: 17px; line-height: 22px; box-shadow: none; outline: none; appearance: none; -webkit-appearance: none; }
+:is(#q-root, html) .q-rule__body textarea { height: auto; min-height: 88px; padding: 14px 16px; resize: vertical; }
+:is(#q-root, html) .q-rule__body input:focus-visible, :is(#q-root, html) .q-rule__body select:focus-visible, :is(#q-root, html) .q-rule__body textarea:focus-visible { box-shadow: inset 0 0 0 2px var(--q-teal); }
+:is(#q-root, html) .q-rule__body .wb-check { display: flex; align-items: center; gap: 12px; min-height: 44px; font-size: 17px; line-height: 22px; color: var(--q-ink); }
+:is(#q-root, html) .q-rule__body .wb-check input[type="checkbox"] { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--q-teal); }
+:is(#q-root, html) .q-rule__body .wb-note, :is(#q-root, html) .q-rule__body .wb-help, :is(#q-root, html) .q-rule__body .pw-small, :is(#q-root, html) .q-rule__body small { margin: 0; font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html) .q-rule__body .nv-card { margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+:is(#q-root, html) .q-rule__body .nv-card__head { display: none; }
+:is(#q-root, html) .q-rule__body .wb-body { padding: 0; display: flex; flex-direction: column; gap: 16px; }
+:is(#q-root, html) .q-rule__body .wb-grid { display: flex; flex-direction: column; gap: 16px; }
+:is(#q-root, html) .q-rule__body .wb-box { margin: 0; padding: 12px 16px; border: 0; border-radius: 12px; background: var(--q-fill); font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html) .q-rule__body .wb-box strong { display: block; color: var(--q-ink); font-weight: 600; }
+:is(#q-root, html) .q-rule__body .nv-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 50px; min-height: 0; margin: 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-ink); font: inherit; font-size: 17px; font-weight: 600; box-shadow: none; }
+:is(#q-root, html) .q-rule__body .nv-btn[data-kind="primary"] { background: var(--q-teal); color: #FFFFFF; }
+:is(#q-root, html) .q-rule__body .wb-error { display: flex; gap: 6px; margin: 0; font-size: 13px; line-height: 18px; color: var(--q-red); }
+:is(#q-root, html) .q-rule__body .wb-history > div { padding: 12px 0; border-bottom: 1px solid var(--q-line); }
+:is(#q-root, html) .q-rule__body .wb-history p { margin: 4px 0; color: var(--q-grey); }
+
+/* Payroll settings: the effective date, reason and save show while a company row is open. */
+:is(#q-root, html) .q-pset-form { display: block; margin: 0; }
+:is(#q-root, html) .q-pset-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#q-root, html) .q-pset-review { display: none; flex-direction: column; gap: 16px; margin: 0 20px 0; padding: 16px 0 20px; border-bottom: 1px solid var(--q-line); }
+:is(#q-root, html) .q-pset-fields:has(> details[open]) > .q-pset-review { display: flex; }
+:is(#q-root, html) .q-pset-review label { display: flex; flex-direction: column; gap: 8px; font-size: 15px; line-height: 20px; color: var(--q-grey); }
+:is(#q-root, html) .q-pset-review input { width: 100%; height: 50px; min-height: 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-ink); font: inherit; font-size: 17px; outline: none; box-shadow: none; }
+:is(#q-root, html) .q-pset-review .q-btn { width: 100%; margin: 0; }
+:is(#q-root, html) .q-pset-review .wb-box { margin: 0; padding: 12px 16px; border: 0; border-radius: 12px; background: var(--q-fill); font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html) .q-pset-review .wb-note { margin: 0; font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html) .q-pset .q-rule-list > form > fieldset > .q-rule:last-of-type > summary.q-row::after { display: block; }
+:is(#q-root, html) .q-pset-privacy { margin-top: 24px; }
+
+/* Company policies (v4): switch rows; a rule that's on opens its threshold fields under it. */
+:is(#q-root, html) .q-policies .company-policy-editor, :is(#q-root, html) .q-policies.company-policy-editor { display: block; }
+:is(#q-root, html) .q-policy > fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#q-root, html) .q-policy__row { cursor: pointer; }
+:is(#q-root, html) .q-policy .policy-rule-fields:not([hidden]) { display: flex; flex-direction: column; gap: 16px; margin-left: 20px; padding: 4px 20px 20px 0; border-bottom: 1px solid var(--q-line); }
+:is(#q-root, html) .q-policy:has(.policy-rule-fields:not([hidden])) .q-policy__row::after { display: none; }
+:is(#q-root, html) .q-policy__default { align-self: flex-start; min-height: 0; padding: 0; border: 0; background: none; font: inherit; font-size: 15px; color: var(--q-teal); cursor: pointer; }
+:is(#q-root, html) .q-policy__note { margin: 0 20px 12px; }
+:is(#q-root, html) .q-policy__note .q-link { min-height: 0; padding: 0; border: 0; background: none; font: inherit; color: var(--q-teal); cursor: pointer; }
+:is(#q-root, html) .q-policies .policy-form { display: block; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+:is(#q-root, html) .q-policies .policy-notice:empty { display: none; }
+:is(#q-root, html) .q-policies .policy-notice { margin: 16px 20px 0; font-size: 13px; line-height: 18px; color: var(--q-grey); outline: none; }
+:is(#q-root, html) .q-policies .policy-state, :is(#q-root, html) .q-policies .policy-replacement-review { margin: 16px 20px 0; padding: 12px 16px; border: 0; border-radius: 12px; background: var(--q-fill); font-size: 15px; line-height: 20px; }
+:is(#q-root, html) .q-policies .policy-state h2, :is(#q-root, html) .q-policies .policy-replacement-review h2 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+:is(#q-root, html) .q-policies .policy-private-review { margin: 16px 20px 0; font-size: 15px; line-height: 20px; color: var(--q-grey); }
+:is(#q-root, html) .q-policies .policy-actions { margin: 0; }
+:is(#q-root, html) .q-policy-legal { margin-top: 16px; }
+:is(#q-root, html) .q-policy-legal + .q-policy-legal { margin-top: 8px; }
+:is(#q-root, html) .q-policies .policy-history h2 { display: none; }
+:is(#q-root, html) .q-policies .policy-history ul { margin: 8px 0 0; padding: 0; list-style: none; }
+:is(#q-root, html) .q-policies .policy-history li { padding: 10px 0; border-bottom: 1px solid var(--q-line); font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html) .q-policies .policy-history li strong { color: var(--q-ink); font-size: 15px; }
+:is(#q-root, html) .q-policies .q-tog { width: 51px; height: 31px; min-height: 0; padding: 0; border: 0; box-shadow: none; }
+:is(#q-root, html) .q-policy-private .policy-private-review { margin: 0; }
+:is(#q-root, html) .q-policy-private .policy-private-review > summary { position: relative; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 20px; list-style: none; font-size: 17px; line-height: 22px; color: var(--q-ink); cursor: pointer; }
+:is(#q-root, html) .q-policy-private .policy-private-review > summary::-webkit-details-marker { display: none; }
+:is(#q-root, html) .q-policy-private .policy-private-review > summary > span { margin-left: auto; font-size: 15px; color: var(--q-grey); }
+:is(#q-root, html) .q-policy-private .policy-private-review > summary::after { content: ""; position: absolute; left: 20px; right: 0; bottom: 0; height: 1px; background: var(--q-line); }
+:is(#q-root, html) .q-policy-private .policy-private-review > :not(summary) { margin: 8px 20px 12px; font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html) .q-policies .q-row, :is(#q-root, html) .q-policies .q-row .q-rt b { color: var(--q-ink); font-weight: 400; }
+:is(#q-root, html) .q-policies .q-row .q-rt i { color: var(--q-grey); }
+:is(#q-root, html) .q-policy-private .policy-private-review { padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+
+/* Sign-in pages (v4): one white page; the column is phone-width on every screen; the legal line sits at the bottom. */
+html:has(.q-auth), body:has(.q-auth) { background: #FFFFFF !important; }
+:is(#q-root, html) .q-auth { position: relative; display: block; min-height: 100dvh; padding: var(--q-safe-top, env(safe-area-inset-top)) 0 calc(var(--q-safe-bottom, env(safe-area-inset-bottom)) + 52px); background: #FFFFFF; color: var(--q-ink); }
+:is(#q-root, html) .q-auth__col { max-width: 430px; margin: 0 auto; }
+:is(#q-root, html) .q-auth__top { display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 20px; }
+:is(#q-root, html) .q-auth__wordmark { display: flex; align-items: center; color: var(--q-ink); }
+:is(#q-root, html) .q-auth__wordmark .brand-wordmark { display: block; width: 104px; height: auto; }
+:is(#q-root, html) .q-auth__lang { min-height: 0; height: 44px; padding: 0; border: 0; background: none; font: inherit; font-size: 15px; line-height: 20px; color: var(--q-grey); cursor: pointer; }
+:is(#q-root, html) .q-auth__hd { padding-top: 40px; }
+:is(#q-root, html) .q-auth__alert { margin: 16px 20px 0; }
+:is(#q-root, html) .q-auth__form { display: block; margin: 0; }
+:is(#q-root, html) .q-auth__form .q-btn { width: calc(100% - 40px); }
+:is(#q-root, html) .q-passkey .q-btn { margin-top: 12px; width: calc(100% - 40px); }
+:is(#q-root, html) .q-passkey .q-error { margin: 8px 20px 0; }
+:is(#q-root, html) .q-auth__links { display: flex; justify-content: space-between; margin: 8px 20px 0; }
+:is(#q-root, html) .q-auth__links a { display: flex; align-items: center; height: 44px; font-size: 17px; line-height: 22px; color: var(--q-teal); text-decoration: none; }
+:is(#q-root, html) .q-auth__foot { position: absolute; left: 0; right: 0; bottom: var(--q-safe-bottom, env(safe-area-inset-bottom)); padding: 0 20px; text-align: center; }
+:is(#q-root, html) .q-legal { margin: 0; font-size: 13px; line-height: 18px; color: var(--q-soft); letter-spacing: 0; }
+:is(#q-root, html) .q-legal a { color: var(--q-grey); text-decoration: none; }
+:is(#q-root, html) .q-in__eye { position: absolute; top: 50%; right: 4px; display: grid; place-items: center; width: 44px; height: 44px; min-height: 0; padding: 0; border: 0; background: none; color: var(--q-grey); transform: translateY(-50%); cursor: pointer; }
+:is(#q-root, html) .q-in__eye svg { width: 24px; height: 24px; }
+:is(#q-root, html) .q-in__wrap > .q-in { width: 100%; }
+/* Sign-in pages: recovery receipts, activation checks, and policy pages' opened sections. */
+:is(#q-root, html) .q-auth__fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#q-root, html) .q-auth__more { margin: 0; }
+:is(#q-root, html) .q-auth__more > summary { list-style: none; margin-top: 0; }
+:is(#q-root, html) .q-auth__more > summary::-webkit-details-marker { display: none; }
+:is(#q-root, html) .q-auth__more > .q-help { margin: 0 20px 8px; text-align: center; }
+:is(#q-root, html) .q-auth__receipt { margin: 24px 20px 0; padding: 14px 16px; border-radius: 12px; background: var(--q-fill); outline: none; }
+:is(#q-root, html) .q-auth__receipt h2 { margin: 0 0 4px; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--q-ink); }
+:is(#q-root, html) .q-auth__receipt p { margin: 0; font-size: 15px; line-height: 20px; color: var(--q-grey); }
+:is(#q-root, html) .q-auth__receipt--error h2 { color: var(--q-red); }
+:is(#q-root, html) .q-auth__receipt .q-link { display: inline-block; margin-top: 8px; }
+:is(#q-root, html) .q-auth__center { margin-top: 16px; text-align: center; }
+:is(#q-root, html) .q-auth__rules { margin: 8px 20px 0; padding: 0; list-style: none; font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html) .q-auth__rules [data-state="ok"] { color: var(--q-teal); }
+:is(#q-root, html) .q-auth__rules [data-state="bad"] { color: var(--q-red); }
+:is(#q-root, html) .q-in__copy { color: var(--q-teal); }
+:is(#q-root, html) .q-doc__list { margin-top: 16px; }
+:is(#q-root, html) .q-doc__body { padding: 0 20px 16px; font-size: 15px; line-height: 22px; color: var(--q-ink); }
+:is(#q-root, html) .q-doc__body p { margin: 0 0 10px; }
+:is(#q-root, html) .q-doc__body ul { margin: 0 0 10px; padding-left: 20px; }
+:is(#q-root, html) .q-doc__body a { color: var(--q-teal); }
+:is(#q-root, html) .q-doc__action { margin: 16px 20px 0; }
+:is(#q-root, html) .q-doc .q-rv { white-space: nowrap; }
+/* The bar already carries the top safe area; the sign-in header carries its own. */
+:is(#q-root, html) .q-auth { padding-top: 0; }
+:is(#q-root, html) .q-auth__top { padding-top: var(--q-safe-top, env(safe-area-inset-top, 0px)); box-sizing: content-box; }
+/* Insights (v4): the Quiet page on phones, the full Insights tool on wider screens. */
+@media (min-width: 761px) { :is(#q-root, html) .q-insights-phone { display: none; } }
+@media (max-width: 760px) { :is(#q-root, html) .q-insights-desk { display: none !important; } }
+/* Payroll (v4): the summary on phones; wider screens go straight to the review. */
+@media (min-width: 761px) { :is(#q-root, html) .q-payroll-phone, :is(#q-root, html) .q-payroll-back { display: none; } }
+@media (max-width: 760px) { :is(#q-root, html) .q-payroll-review[data-home] { display: none; } }
+:is(#q-root, html) .q-doc__links { margin: 32px 20px 24px; font-size: 13px; line-height: 18px; color: var(--q-soft); text-align: center; }
+:is(#q-root, html) .q-doc__links a { color: var(--q-grey); text-decoration: none; }
+:is(#q-root, html) .q-doc__links [aria-current] { color: var(--q-ink); }
+:is(#q-root, html) .q-hours__updated { margin: -4px 20px 12px 72px; }
+:is(#q-root, html) .q-rt__line { display: block; }
+/* New update (v4): Next in the bar checks the audience, so the card that only repeats it stays out of view. */
+:is(#q-root, html) .q-compose .q-compose-next { display: none; }
+:is(#q-root, html) .q-compose textarea.q-in { height: 120px; padding-top: 14px; resize: none; }
+:is(#q-root, html) .q-compose .q-fl__opt[data-over] { color: var(--q-red); }

@@ -1,7 +1,7 @@
 import { ManagerAttendanceReview } from "./manager-attendance-review";
 import { ManagerTimeCorrections } from "./manager-time-corrections";
 import {HomeActionCenterProvider} from './manager-action-center';
-import {OwnerSetupRowLive} from './owner-setup-card';
+import {OwnerSetupQuietLive} from './owner-setup-card';
 import { formatBusinessTimestamp } from "@/lib/business-time";
 import Link from "next/link";
 import type { ManagerActionItem } from "@/lib/assistance/manager-actions";
@@ -197,13 +197,13 @@ function homeDateLabel(timeZone: string) {
 
 /** Manager and Owner Home (premium direction, phase 2): band, Today, Next up, This week. */
 function PremiumOverview(props: Props) {
-  const common = { greeting: `${greeting(props.timeZone)}, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props) };
+  const common = { greeting: `${greeting(props.timeZone)}, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName };
   const slots = props.overviewSlots;
   if (slots?.snapshots) return <PremiumHomeSurface {...common} setup={slots.setup ?? null} setupHoldsItems={!!slots.setup}
     today={slots.snapshots.today} monitor={slots.snapshots.monitor ?? null} actions={slots.snapshots.actions} actionsConnection="ready" />;
   return <SharedHomeRead key={`${props.actorId}:${props.weekStart}`} live weekStart={props.weekStart} actorId={props.actorId ?? ''}
     owner={props.role === 'OWNER'} initialItems={props.managerActions}>
-    <PremiumHomeLive {...common} nextPay={props.nextPay ?? null} setup={props.role === 'OWNER' ? <OwnerSetupRowLive locationCount={props.totalLocations}/> : null} />
+    <PremiumHomeLive {...common} nextPay={props.nextPay ?? null} setup={props.role === 'OWNER' ? <OwnerSetupQuietLive locationCount={props.totalLocations}/> : null} />
   </SharedHomeRead>;
 }
 

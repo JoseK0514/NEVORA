@@ -1,0 +1,22 @@
+@title Profile
+<style>
+.who{display:flex;align-items:center;gap:16px;margin:12px 20px 0}
+.who h1{margin:0;font-size:28px;line-height:34px;font-weight:700;letter-spacing:-.5px}
+.who p{margin:2px 0 0;font-size:15px;line-height:20px;color:#6B6B6B}
+</style>
+<div class="p">
+  <div class="nav"><a class="l" href="#">{{i:CaretLeft:s}}More</a><span></span><a class="r" href="#">Edit</a></div>
+  <div class="who"><span class="av lg">FO</span><div><h1>Fictional Owner</h1><p>Owner · Northside QA Workforce</p></div></div>
+  <div style="margin-top:24px">
+    <div class="row one"><span class="rt"><b>Phone</b></span><span class="rv l">555-0100</span></div>
+    <a class="row one" href="#"><span class="rt"><b>Email</b></span><span class="rv go">Add</span></a>
+    <div class="row one"><span class="rt"><b>Time zone</b></span><span class="rv l">Puerto Rico</span></div>
+  </div>
+  <div style="margin-top:32px">
+    <a class="row one" href="#"><span class="rt"><b>Notifications</b></span><span class="rv l">On</span>{{i:CaretRight:s chev}}</a>
+    <a class="row one" href="#"><span class="rt"><b>Alerts on this phone</b></span><span class="rv go">Turn on</span></a>
+    <a class="row one" href="#"><span class="rt"><b>Privacy and terms</b></span>{{i:CaretRight:s chev}}</a>
+  </div>
+  <a class="btn danger" href="#" style="margin-top:24px">Sign out</a>
+  {{tabs:More}}
+</div>

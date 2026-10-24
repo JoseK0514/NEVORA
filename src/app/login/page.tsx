@@ -4,10 +4,11 @@ import { safeReturnTo } from "@/lib/notifications/destinations";
 import { login } from "@/app/login/actions";
 import { AUTH_COPY } from "@/lib/auth-copy";
 import { readAuthLang } from "@/lib/auth-lang.server";
-import { AuthShell, WorkspaceEyebrow } from "@/components/auth-premium/auth-shell";
+import { QuietAuthShell } from "@/components/auth-premium/auth-shell";
 import { Greeting } from "@/components/auth-premium/greeting";
 import { PasswordInput } from "@/components/auth-premium/password-input";
 import { PasskeySlot, PasswordSignInMarker } from "@/components/auth-premium/passkey-slot";
+import "@/components/quiet/quiet.css";
 import { LoginSubmit } from "./login-submit";
 import "./auth-premium.css";
 import "./auth-signature.css";
@@ -24,46 +25,33 @@ export default async function LoginPage({
   const returnQuery = returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : "";
   const errorId = params.error ? "login-error" : undefined;
 
+  // Quiet (v4, approved Oct 23): the wordmark and Español, the greeting and the workspace, two fields, Sign in, Face ID,
+  // then Forgot access? and Activate account on one line.
   return (
-    <AuthShell lang={lang} t={t} variant="signin" bandTitle={<><Greeting words={t.greeting} as="p" className="ap-band__greet" /><span className="ap-band__ws">{workspaceName ?? t.workspaceUnavailable}</span></>}>
-      <WorkspaceEyebrow name={workspaceName ?? t.workspaceUnavailable} />
-      <Greeting words={t.greeting} />
-      <p className="ap-subtitle">{t.signInSubtitle}</p>
-
-      {params.error ? (
-        <p className="ap-alert" data-tone="error" id="login-error" role="alert">{params.error === "deleting" ? t.loginDeleting : params.error === "busy" ? t.loginBusy : t.loginError}</p>
-      ) : null}
-      {params.activated ? (
-        <p className="ap-alert" data-tone="done" role="status">{t.activated}</p>
-      ) : null}
-
-      {/* Signature (phase 4): on phones Face ID leads; on wider screens it stays under Sign in. */}
-      <div className="ap-lead-only"><PasskeySlot t={t} lead /></div>
-      <form action={login} className="ap-form" data-invalid={params.error ? "" : undefined}>
+    <QuietAuthShell lang={lang} t={t}>
+      <div className="q-hd q-auth__hd"><Greeting words={t.greeting} className="" /><p>{workspaceName ?? t.workspaceUnavailable}</p></div>
+      {params.error ? <p className="q-error q-auth__alert" id="login-error" role="alert">{params.error === "deleting" ? t.loginDeleting : params.error === "busy" ? t.loginBusy : t.loginError}</p> : null}
+      {params.activated ? <p className="q-help q-auth__alert" role="status">{t.activated}</p> : null}
+      <form action={login} className="q-auth__form" data-invalid={params.error ? "" : undefined}>
         {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
         <PasswordSignInMarker />
-        <div className="ap-field">
-          <label className="ap-label" htmlFor="login-employee-id">{t.employeeId}</label>
-          <div className="ap-box">
-            <input id="login-employee-id" className="ap-input" name="employeeId" placeholder={t.employeeIdPlaceholder}
-              autoComplete="username" autoCapitalize="none" spellCheck={false} aria-describedby={errorId} required />
-          </div>
+        <div className="q-fl">
+          <label htmlFor="login-employee-id">{t.employeeId}</label>
+          <input id="login-employee-id" className="q-in" name="employeeId" placeholder={t.quiet.idPlaceholder}
+            autoComplete="username" autoCapitalize="none" spellCheck={false} aria-describedby={errorId} required />
         </div>
-        {/* Forgot access? shows in the label row but follows the password field, so Tab goes ID, password, Forgot. */}
-        <div className="ap-field ap-field--aside">
-          <label className="ap-label" htmlFor="login-password">{t.password}</label>
-          <PasswordInput id="login-password" name="password" placeholder={t.passwordPlaceholder} autoComplete="current-password"
+        <div className="q-fl">
+          <label htmlFor="login-password">{t.password}</label>
+          <PasswordInput quiet id="login-password" name="password" placeholder={t.quiet.passwordPlaceholder} autoComplete="current-password"
             aria-describedby={errorId} required showLabel={t.showPassword} hideLabel={t.hidePassword} />
-          <Link className="ap-aside-link ap-wide" href="/forgot-access">{t.forgotAccess}</Link>
         </div>
-        <LoginSubmit idle={t.signIn} busy={t.signingIn} />
+        <LoginSubmit idle={t.signIn} busy={t.signingIn} className="q-btn" />
       </form>
-      <div className="ap-follow-only"><PasskeySlot t={t} /></div>
-
-      <div className="ap-links">
-        <p className="ap-narrow"><Link className="ap-link" href="/forgot-access">{t.forgotAccess}</Link></p>
-        <p className="ap-alt">{t.newEmployee} <Link className="ap-link" href={`/activate${returnQuery}`}>{t.activateYourAccount}</Link></p>
-      </div>
-    </AuthShell>
+      <PasskeySlot t={t} quiet />
+      <nav className="q-auth__links" aria-label={t.signIn}>
+        <Link href="/forgot-access">{t.forgotAccess}</Link>
+        <Link href={`/activate${returnQuery}`}>{t.activateAccount}</Link>
+      </nav>
+    </QuietAuthShell>
   );
 }

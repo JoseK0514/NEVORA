@@ -76,7 +76,7 @@ beforeEach(() => {
 
 it("shows core employee management to a Manager for a non-Owner employee", async () => {
   const html = renderToStaticMarkup(
-    await EmployeeProfilePage({ params: Promise.resolve({ employeeId: "worker" }) }),
+    await EmployeeProfilePage({ params: Promise.resolve({ employeeId: "worker" }), searchParams: Promise.resolve({ edit: "1" }) }),
   );
   expect(html).toContain("Employee details");
   expect(html).toContain("Scheduling profile");
@@ -85,7 +85,7 @@ it("shows core employee management to a Manager for a non-Owner employee", async
 it("withholds Owner core-management controls from a Manager", async () => {
   m.employeeRole = "OWNER";
   const html = renderToStaticMarkup(
-    await EmployeeProfilePage({ params: Promise.resolve({ employeeId: "worker" }) }),
+    await EmployeeProfilePage({ params: Promise.resolve({ employeeId: "worker" }), searchParams: Promise.resolve({ edit: "1" }) }),
   );
   expect(html).not.toContain('data-testid="employee-core-form"');
   expect(html).toContain("Only an Owner can change another Owner");
@@ -95,7 +95,7 @@ it("allows an Owner to manage another Owner", async () => {
   m.actorRole = "OWNER";
   m.employeeRole = "OWNER";
   const html = renderToStaticMarkup(
-    await EmployeeProfilePage({ params: Promise.resolve({ employeeId: "worker" }) }),
+    await EmployeeProfilePage({ params: Promise.resolve({ employeeId: "worker" }), searchParams: Promise.resolve({ edit: "1" }) }),
   );
   expect(html).toContain('data-testid="employee-core-form"');
 });
@@ -109,8 +109,9 @@ it('links authorized employee management to a separate Clocker PIN screen',async
 
 it('offers account recovery for this employee and links missing hour settings to their row (W2)',async()=>{
  m.employeeRole='EMPLOYEE';
- const html=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}));
- expect(html).toContain('href="/app/account-recovery?employee=worker"');
+ // Quiet (v4): the summary offers account recovery; Edit shows the hour settings link.
+ expect(renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}))).toContain('href="/app/account-recovery?employee=worker"');
+ const html=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'}),searchParams:Promise.resolve({edit:'1'})}));
  expect(html).toContain('href="/app/schedule/settings#target-worker"');
 });
 // Server composition tests; actual mounted finite-body behavior is checked separately.
@@ -129,7 +130,7 @@ vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalEmpl
 }}));
 vi.mock('@/lib/auth/invitations/service.server',()=>({readInvitationStatus:m.invitation}));
 it('mounts real Owner invitation and scope controls with the coherent profile context',async()=>{
- m.actorRole='OWNER';const html=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}));
+ m.actorRole='OWNER';const html=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'}),searchParams:Promise.resolve({edit:'1'})}));
  expect(html).toContain('Account invitation');expect(html).toContain('Management access');expect(html).toContain('data-scope-revision="7"');expect(m.invitation).toHaveBeenCalledOnce();
 });
 it('does not request or render Owner invitation/scope controls for a Manager',async()=>{

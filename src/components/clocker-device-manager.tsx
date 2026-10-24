@@ -37,7 +37,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
   const [setup, setSetup] = useState<{ code: string; expiresAt: string; device: ClockerDeviceView } | null>(null);
   const [copyMessage, setCopyMessage] = useState('');
   const [query, setQuery] = useState('');
-  const [filter, setFilter] = useState<'ALL' | 'SETUP' | 'REVOKED'>('ALL');
+  const [filter, setFilter] = useState<'ALL' | 'SETUP' | 'REVOKED'>('ALL'); // Quiet (v4): ALL is the Active tab (registered).
   const dialog = useRef<HTMLDialogElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const codeField = useRef<HTMLTextAreaElement>(null);
@@ -53,7 +53,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
   const visibleDevices = devices.filter(device => {
     const location = locations.find(item => item.id === device.locationId);
     const matches = `${device.name} ${location?.name ?? ''}`.toLowerCase().includes(query.trim().toLowerCase());
-    return matches && (filter === 'ALL' || (filter === 'SETUP' ? needsSetup(device) : device.state === 'REVOKED'));
+    return matches && (filter === 'ALL' ? device.state === 'ACTIVE' : filter === 'SETUP' ? needsSetup(device) : device.state === 'REVOKED');
   });
   const { errors, handlers, clear } = useFieldErrors({ name: { missing: 'Enter a device name.' }, locationId: { missing: 'Choose a location.' } });
   const date = (value: string) => {
@@ -133,96 +133,43 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     : selection?.operation === 'REVOKE' ? 'Revoke this device’s access?' : 'Create a new setup code?';
   const submitLabel = selection?.operation === 'REGISTER' ? 'Create setup code' : selection?.operation === 'RENAME' ? 'Save name' : selection?.operation === 'REVOKE' ? 'Revoke access' : 'Create new code';
 
-  return <SettingsFrame title="Clocker devices" eyebrow={`${devices.length} ${devices.length === 1 ? 'device' : 'devices'}`}
-    summary="A shared tablet at each location, with access you control."
-    bandAside={<button className="nv-band-control" type="button" disabled={!hydrated || !activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}><Plus size={18} weight="bold" aria-hidden="true" />Add device</button>}
-    aside={<>
-      <GuideCard title="Connect a shared tablet" action={<Link className="nv-link" href="/app/settings/locations">Manage locations<CaretRight size={16} weight="bold" aria-hidden="true" /></Link>}>
-        <ol className="wc-steps">
-          <li><strong>Add your device</strong>Name the tablet and choose its location.</li>
-          <li><strong>Open the location’s Clocker</strong>Use the Clocker link on the shared tablet.</li>
-          <li><strong>Enter the setup code</strong>Stay signed in here, then refresh devices once it connects.</li>
-        </ol>
-        <p>Replacing a tablet or revoking access keeps existing punches and time records.</p>
-      </GuideCard>
-    </>}>
+  // Quiet (v4, approved Oct 23): "+" adds a device; Active, Needs setup and Removed; one row per tablet. A row opens its sheet.
+  return <SettingsFrame title="Clocker devices"
+    bandAside={<button className="q-nav__r q-nav__r--ink" type="button" aria-label="Add device" disabled={!hydrated || !activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}><Plus className="q-ic" aria-hidden="true" /></button>}>
     {!activeLocations.length ? <Notice tone="info" title="No active location"
-      action={<Link className="nv-link" href="/app/settings/locations">Go to Locations</Link>}>Add or reactivate a location before registering a tablet.</Notice> : null}
-    <section className="nv-card" aria-labelledby="clocker-overview-title">
-      <div className="nv-card__head"><h2 className="nv-card__title" id="clocker-overview-title">Overview</h2></div>
-      <dl className="nv-stats wc-stats" style={{ ['--nv-stat-cols' as string]: 3 }} aria-label="Device overview">
-        <div className="nv-stat"><dt className="nv-stat__label">Registered</dt><dd className="nv-stat__value">{registered}</dd></div>
-        <div className="nv-stat"><dt className="nv-stat__label">Needs setup</dt><dd className="nv-stat__value">{waiting}</dd></div>
-        <div className="nv-stat"><dt className="nv-stat__label">Revoked</dt><dd className="nv-stat__value">{revoked}</dd></div>
-      </dl>
-    </section>
+      action={<Link className="q-btn q-btn--quiet" href="/app/settings/locations">Go to Locations</Link>}>Add or reactivate a location before registering a tablet.</Notice> : null}
     {notice ? <div role="status"><Notice tone="info">{notice}</Notice></div> : null}
-    {setup && locationForSetup ? <section className="nv-card wc-setup" aria-labelledby="clocker-code-title" ref={setupCard} tabIndex={-1}>
-      <div className="nv-card__head">
-        <h2 className="nv-card__title" id="clocker-code-title">Connect {setup.device.name}</h2>
-        <span className="nv-card__meta">Expires {date(setup.expiresAt)}</span>
+    {setup && locationForSetup ? <section aria-labelledby="clocker-code-title" ref={setupCard} tabIndex={-1}>
+      <div className="q-grp"><h2 id="clocker-code-title">Connect {setup.device.name}</h2></div>
+      <div className="q-fl" style={{ marginTop: 8 }}>
+        <label className="q-fl__label" htmlFor="clocker-setup-code">Setup code · expires {date(setup.expiresAt)}</label>
+        <textarea id="clocker-setup-code" ref={codeField} className="q-in" style={{ height: 76, marginTop: 8 }} value={setup.code} readOnly rows={2} spellCheck={false} autoComplete="off" aria-describedby="clocker-setup-hint" />
+        <p className="q-fl__help" id="clocker-setup-hint">Open this location’s Clocker on the tablet and paste the code.</p>
       </div>
-      <div className="nv-card__body wc-fields">
-        <p className="wc-muted">Open this location’s Clocker on the tablet, then paste this one-time setup code.</p>
-        <div className="wc-field">
-          <label className="wc-label" htmlFor="clocker-setup-code">Setup code</label>
-          <textarea id="clocker-setup-code" ref={codeField} className="wc-control wc-code" value={setup.code} readOnly rows={2} spellCheck={false} autoComplete="off" aria-describedby="clocker-setup-hint" />
-          <p className="wc-help" id="clocker-setup-hint">Stay signed in here until the tablet connects. Then refresh devices to see its status.</p>
-        </div>
-        <div className="wc-actions">
-          <button className="nv-btn" data-kind="primary" type="button" onClick={copyCode}><Copy size={18} aria-hidden="true" />Copy setup code</button>
-          <Link className="nv-btn" data-kind="secondary" href={`/clocker/${locationForSetup.clockerKey}`} target="_blank" rel="noopener noreferrer">Open {locationForSetup.name} Clocker<ArrowSquareOut size={18} aria-hidden="true" /></Link>
-        </div>
-        <p role="status" className="wc-muted wc-live">{copyMessage}</p>
-      </div>
-      <div className="wc-card-actions"><button className="nv-link" type="button" onClick={() => setSetup(null)}>Hide code</button></div>
+      <button className="q-btn" type="button" onClick={copyCode}>Copy setup code</button>
+      <Link className="q-btn q-btn--sec" style={{ marginTop: 12 }} href={`/clocker/${locationForSetup.clockerKey}`} target="_blank" rel="noopener noreferrer">Open {locationForSetup.name} Clocker</Link>
+      <button className="q-btn q-btn--quiet" type="button" onClick={() => setSetup(null)}>Hide code</button>
+      <p role="status" className="q-sr">{copyMessage}</p>
     </section> : null}
-    {devices.length ? <section className="nv-card" aria-labelledby="clocker-find-title">
-      <div className="nv-card__head"><h2 className="nv-card__title" id="clocker-find-title">Find devices</h2></div>
-      <div className="wc-find">
-        <span className="wc-search"><MagnifyingGlass size={20} aria-hidden="true" /><input ref={searchField} className="wc-control" type="search" aria-label="Search devices" placeholder="Search devices" value={query} onChange={event => setQuery(event.target.value)} autoComplete="off" /></span>
-        <div className="wc-pills" role="group" aria-label="Filter devices">
-          {([['ALL', 'All', devices.length], ['SETUP', 'Needs setup', waiting], ['REVOKED', 'Revoked', revoked]] as const).map(([value, label, count]) =>
-            <button key={value} type="button" className="nv-filter" aria-pressed={filter === value} aria-label={`${label}, ${count}`} onClick={() => setFilter(value)}>{label} <span className="wc-count" aria-hidden="true">{count}</span></button>)}
-        </div>
-        <p className="wc-count-line" role="status">Showing {visibleDevices.length} of {devices.length} {devices.length === 1 ? 'device' : 'devices'}</p>
-      </div>
-    </section> : null}
-    <section className="nv-card" aria-labelledby="clocker-devices-title">
-      <div className="nv-card__head"><h2 className="nv-card__title" id="clocker-devices-title">Your devices</h2></div>
-      {visibleDevices.length ? <ul className="nv-rows">{visibleDevices.map(device => {
-        const location = locations.find(item => item.id === device.locationId);
-        const label = location?.active === false && device.state !== 'REVOKED' ? 'Location inactive' : statuses[device.state];
-        const tone: KitTone = device.state === 'ACTIVE' && location?.active ? 'done' : device.state === 'REVOKED' ? 'neutral' : 'review';
-        const hint = location?.active === false ? 'Reactivate this location before reconnecting.' : device.state === 'EXPIRED' ? 'Create a new setup code to connect this tablet.'
-          : device.state === 'PENDING' ? 'Finish setup on the shared tablet.' : device.state === 'UNREGISTERED' ? 'Create a setup code to connect this tablet.' : null;
-        return <li key={device.id}>
-          <article className="nv-row wc-action-row" data-leading="true" data-clocker-device={device.id} aria-label={device.name}>
-            <span className="nv-tile" data-tone={device.state === 'REVOKED' ? 'neutral' : 'accent'} aria-hidden="true"><DeviceTablet size={22} /></span>
-            <span className="nv-row__text">
-              <span className="nv-row__title">{device.name}</span>
-              <span className="nv-row__meta">{location?.name ?? 'Location unavailable'}</span>
-              <span className="nv-row__meta">{device.lastSeenAt ? `Last checked ${date(device.lastSeenAt)}` : device.state === 'ACTIVE' ? 'Registered, not checked in yet' : 'No tablet has connected yet'}</span>
-              <span className="nv-row__status"><Status tone={tone}>{label}</Status></span>
-              {hint ? <span className="nv-row__meta wc-hint">{hint}</span> : null}
-              <span className="wc-row-actions">
-                <button className="nv-link" type="button" disabled={!hydrated} aria-label={`Rename ${device.name}`} onClick={event => open({ operation: 'RENAME', device }, event)}>Rename</button>
-                <button className="nv-link" type="button" disabled={!hydrated || !location?.active} aria-label={`${device.state === 'ACTIVE' ? 'Replace tablet' : device.state === 'REVOKED' ? 'Reconnect tablet' : 'New setup code'} for ${device.name}`} onClick={event => open({ operation: 'ROTATE', device }, event)}>{device.state === 'ACTIVE' ? 'Replace tablet' : device.state === 'REVOKED' ? 'Reconnect tablet' : 'New setup code'}</button>
-                {device.state !== 'REVOKED' ? <button className="nv-link wc-danger" type="button" disabled={!hydrated} aria-label={`Revoke access for ${device.name}`} onClick={event => open({ operation: 'REVOKE', device }, event)}>Revoke access</button> : null}
-              </span>
-            </span>
-          </article>
-        </li>;
-      })}</ul> : <EmptyState headingLevel={3} icon={<DeviceTablet size={22} weight="bold" />} title={devices.length ? 'No matching devices' : 'Your first tablet starts here'}
-        action={devices.length ? <button className="nv-btn" data-kind="secondary" type="button" onClick={() => { setQuery(''); setFilter('ALL'); searchField.current?.focus({ preventScroll: true }); }}><X size={18} aria-hidden="true" />Clear filters</button>
-          : <button className="nv-btn" data-kind="primary" type="button" disabled={!hydrated || !activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}><Plus size={18} aria-hidden="true" />Add your first device</button>}>
-        {devices.length ? 'Try another device name, location or status.' : 'Add a device, choose its location, and finish setup on the shared tablet.'}
-      </EmptyState>}
-      <div className="wc-card-actions wc-card-actions--note">
-        <span className="wc-muted">Status shows registration, not a live connection.</span>
-        <button className="nv-link" type="button" onClick={() => window.location.reload()}><ArrowClockwise size={18} aria-hidden="true" />Refresh devices</button>
-      </div>
-    </section>
+    {devices.length ? <div className="q-seg" role="group" aria-label="Filter devices">
+      {([['ALL', 'Active', registered], ['SETUP', 'Needs setup', waiting], ['REVOKED', 'Removed', revoked]] as const).map(([value, label, count]) =>
+        <button key={value} type="button" aria-pressed={filter === value} aria-label={`${label}, ${count}`} onClick={() => setFilter(value)}>{value === 'ALL' ? `${label} · ${count}` : label}</button>)}
+    </div> : null}
+    <p className="q-sr" role="status">Showing {visibleDevices.length} of {devices.length} {devices.length === 1 ? 'device' : 'devices'}</p>
+    {visibleDevices.length ? <ul className="q-list" style={{ marginTop: 16 }} aria-label="Your devices">{visibleDevices.map(device => {
+      const location = locations.find(item => item.id === device.locationId);
+      const state = location?.active === false && device.state !== 'REVOKED' ? 'Location inactive' : device.state === 'ACTIVE' ? null : statuses[device.state];
+      const seen = device.lastSeenAt ? `Used ${date(device.lastSeenAt)}` : device.state === 'ACTIVE' ? 'Not used yet' : null;
+      return <li key={device.id}>
+        <button type="button" className="q-row" data-clocker-device={device.id} aria-label={`${device.name}, options`} disabled={!hydrated} onClick={event => open({ operation: 'RENAME', device }, event)}>
+          <span className="q-rt"><b>{device.name}</b><i>{[location?.name ?? 'Location unavailable', state ?? seen].filter(Boolean).join(' · ')}</i></span>
+          <CaretRight className="q-chev" aria-hidden="true" />
+        </button>
+      </li>;
+    })}</ul> : <EmptyState headingLevel={3} icon={null} title={devices.length ? (filter === 'ALL' ? 'No active devices' : filter === 'SETUP' ? 'Nothing needs setup' : 'No removed devices') : 'No devices yet'}
+      action={devices.length ? null : <button className="q-btn" type="button" disabled={!hydrated || !activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}>Add device</button>}>
+      {devices.length ? '' : 'Add the shared tablet at each location.'}
+    </EmptyState>}
     <dialog ref={dialog} className="wc-dialog" aria-labelledby="clocker-dialog-title" aria-describedby="clocker-dialog-text" onCancel={event => { event.preventDefault(); close(); }}>
       {selection ? <form noValidate onSubmit={submit} key={`${selection.operation}-${selection.device?.id ?? 'new'}`} aria-busy={pending} className="wc-dialog__form" {...handlers}>
         <div className="wc-dialog__head">
@@ -250,9 +197,15 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
         {error ? <div ref={errorBox} role="alert" tabIndex={-1} className="wc-feedback"><Notice tone="urgent" title={error.message.startsWith('It may not have saved') ? 'Not saved yet' : 'Not saved'}>{error.message}</Notice></div> : null}
         <p role="status" className="nv-sr">{pending ? 'Saving…' : ''}</p>
         <FormActions>
-          {error?.refresh ? <button className="nv-btn" data-kind="primary" type="button" onClick={() => window.location.reload()}><ArrowClockwise size={18} aria-hidden="true" />Refresh devices</button>
-            : <button className="nv-btn" data-kind={selection.operation === 'REVOKE' ? 'danger' : 'primary'} type="submit" disabled={pending}><ButtonLabel pending={pending} idle={submitLabel} busy="Saving…" /></button>}
-          <button className="nv-btn" data-kind="secondary" type="button" disabled={pending} onClick={close} data-autofocus={selection.operation === 'REVOKE' || selection.operation === 'ROTATE' ? '' : undefined}>Cancel</button>
+          {error?.refresh ? <button className="q-btn" type="button" onClick={() => window.location.reload()}>Refresh devices</button>
+            : <button className={selection.operation === 'REVOKE' ? 'q-btn q-btn--danger' : 'q-btn'} type="submit" disabled={pending}><ButtonLabel pending={pending} idle={submitLabel} busy="Saving…" /></button>}
+          {selection.operation === 'RENAME' && selection.device ? <>
+            <button className="q-btn q-btn--sec" type="button" disabled={pending || !locations.find(item => item.id === selection.device!.locationId)?.active}
+              onClick={() => { setError(null); setSelection({ operation: 'ROTATE', device: selection.device }); }}>{selection.device.state === 'ACTIVE' ? 'Replace tablet' : selection.device.state === 'REVOKED' ? 'Reconnect tablet' : 'New setup code'}</button>
+            {selection.device.state !== 'REVOKED' ? <button className="q-btn q-btn--danger" type="button" disabled={pending}
+              onClick={() => { setError(null); setSelection({ operation: 'REVOKE', device: selection.device }); }}>Revoke access</button> : null}
+          </> : null}
+          <button className="q-btn q-btn--sec" type="button" disabled={pending} onClick={close} data-autofocus={selection.operation === 'REVOKE' || selection.operation === 'ROTATE' ? '' : undefined}>Cancel</button>
         </FormActions>
       </form> : null}
     </dialog>

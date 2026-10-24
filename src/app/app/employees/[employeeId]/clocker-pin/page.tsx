@@ -4,7 +4,7 @@ import {OperationalUnavailable} from '@/components/company-access/operational-un
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ClockerPinForm } from '@/components/clocker-pin-form';
-import { Card, PageBand } from '@/components/kit/kit';
+import { QuietNav } from '@/components/quiet/quiet';
 import { MANAGER_ROLES, requireRoles } from '@/lib/auth/permissions';
 import { requireSessionMutationProof } from '@/lib/auth/session';
 import { getEmployeeManagementProfile } from '@/lib/data/employees';
@@ -32,12 +32,16 @@ export default async function EmployeeClockerPinPage({params}:{params:Promise<{e
  const {employee,allowed,pin}=source.data;if(!employee)notFound();
  const employeeHref=`/app/employees/${encodeURIComponent(employeeId)}`;
  const name=`${employee.firstName} ${employee.lastName}`;
- const closed=(title:string,body:string,href:string,label:string)=><Card title={title}>
-  <div className="wa-card-body"><p className="wa-text">{body}</p><Link className="nv-btn" data-kind="secondary" data-block="true" href={href}>{label}</Link></div>
- </Card>;
- return <ScopedReadFrame observation={source}><div className="nv-page wa-page wa-pin" data-nv-page="">
-  <PageBand back={{href:employeeHref,label:name}} eyebrow={`Employee ID ${employeeId}`} title="Clocker PIN" summary="For clocking in and out on the shared tablet." />
-  <div className="nv-content wa-narrow">
+ const closed=(title:string,body:string,href:string,label:string)=><section aria-label={title}>
+  <p className="q-empty" style={{marginTop:24}}><b style={{color:'#111413',fontWeight:600}}>{title}. </b>{body}</p><Link className="q-btn q-btn--sec" href={href}>{label}</Link>
+ </section>;
+ const ready=allowed&&employee.active&&!!pin;
+ // Quiet (v4, approved Oct 23): a sheet: Cancel, the title, Save; the person's name; the two PIN rows.
+ return <ScopedReadFrame observation={source}><div className="q-page wa-pin" data-nv-page="" data-q-sheet="">
+  <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href={employeeHref}>Cancel</Link>} title="Clocker PIN"
+   right={ready?<button type="submit" form="clocker-pin-form" className="q-nav__r q-nav__r--b">Save</button>:undefined}/>
+  <div className="q-hd" style={{paddingTop:16}}><h1 style={{fontSize:28,lineHeight:'34px'}}>{name}</h1></div>
+  <div>
    {!allowed?closed('Owner access required','Only an Owner can manage another Owner’s Clocker PIN.',employeeHref,'Back to employee')
     :!employee.active?closed('Employee is inactive','Inactive people can’t use a PIN. Make them active again before setting one.',employeeHref,'View employee')
     :pin?<ClockerPinForm employeeId={employeeId} initialVersion={pin.version} action={saveClockerPinAction}/>

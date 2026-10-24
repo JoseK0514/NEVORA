@@ -8,11 +8,12 @@ import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
+import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import type { ConfigurationResult } from "@/components/configuration-form";
 import { Status } from "@/components/kit/kit";
 import { toast } from "@/components/toaster";
 import type { Position } from "@/lib/domain";
-import { EmptyState, GuideCard, SettingsFrame } from "../wave-c-kit";
+import { EmptyState, SettingsFrame } from "../wave-c-kit";
 import { Field, SettingsForm, SwitchRow } from "../wave-c-form";
 
 type PositionAction = (data: FormData) => Promise<ConfigurationResult>;
@@ -22,8 +23,8 @@ const clientSnapshot = () => true;
 const serverSnapshot = () => false;
 const nameMessages = { name: { missing: "Enter a position name." } };
 
-function PositionRow({ position, hidden, ready, action }: {
-  position: Position; hidden: boolean; ready: boolean; action: PositionAction;
+function PositionRow({ position, hidden, ready, action, people }: {
+  position: Position; hidden: boolean; ready: boolean; action: PositionAction; people?: number;
 }) {
   const details = useRef<HTMLDetailsElement>(null);
   const id = `position-${position.id}`;
@@ -36,30 +37,20 @@ function PositionRow({ position, hidden, ready, action }: {
   return (
     <li hidden={hidden}>
       <details className="wc-editable" ref={details}>
-        <summary className="nv-row" aria-label={`Edit ${position.name}, ${position.active ? "active" : "inactive"}`}>
-          <span className="nv-row__text">
-            <span className="nv-row__title">{position.name}</span>
-            {position.active ? null : <span className="nv-row__status"><Status tone="neutral">Inactive</Status></span>}
-          </span>
-          <span className="nv-row__trail wc-edit-label">Edit</span>
-          <CaretDownIcon className="nv-row__chev wc-caret" size={18} weight="bold" aria-hidden="true" />
+        <summary className={people === undefined ? "q-row q-row--one" : "q-row"} aria-label={`Edit ${position.name}, ${position.active ? "active" : "retired"}`}>
+          <span className="q-rt"><b>{position.name}</b>{people === undefined ? null : <i>{`${people} ${people === 1 ? "person" : "people"}`}</i>}</span>
+          <CaretRightIcon className="q-chev" aria-hidden="true" />
         </summary>
         <div className="wc-editable__body">
           <SettingsForm key={position.updatedAt} action={action} label={`Edit ${position.name}`} disabled={!ready}
             messages={nameMessages} submitLabel="Save position" successTitle="Position saved"
             onResult={result => { if (result.success && !result.error) { toast(result.success); close(); } }}
-            secondary={<button type="button" className="nv-btn" data-kind="secondary" onClick={close}>Cancel</button>}>
+            secondary={<button type="button" className="q-btn q-btn--sec" onClick={close}>Cancel</button>}>
             <input type="hidden" name="id" value={position.id} />
             <input type="hidden" name="expectedUpdatedAt" value={position.updatedAt ?? ""} />
-            <div className="wc-fields">
-              <Field label="Position name" help="Use a job title or qualification your team recognizes."
-                id={`${id}-name`} name="name" defaultValue={position.name} required maxLength={80} autoComplete="off" />
-              <div className="wc-field">
-                <SwitchRow id={`${id}-active`} name="active" defaultChecked={position.active}
-                  label="Active position" description="Available for new assignments" describedBy={`${id}-active-help`} />
-                <p id={`${id}-active-help`} className="wc-muted">Turning this off stops new assignments. Employees keep their qualifications and history.</p>
-              </div>
-            </div>
+            <Field label="Name" id={`${id}-name`} name="name" defaultValue={position.name} required maxLength={80} autoComplete="off" />
+            <ul className="q-list" style={{ marginTop: 16 }}><li><SwitchRow id={`${id}-active`} name="active" defaultChecked={position.active} label="Active" describedBy={`${id}-active-help`} /></li></ul>
+            <p id={`${id}-active-help`} className="q-help">Retired positions can’t be newly assigned. People keep their history.</p>
           </SettingsForm>
         </div>
       </details>
@@ -67,13 +58,15 @@ function PositionRow({ position, hidden, ready, action }: {
   );
 }
 
-export function PositionCatalog({ positions, available, createAction, updateAction }: {
+export function PositionCatalog({ positions, available, createAction, updateAction, people }: {
   positions: readonly Position[]; available: boolean; createAction: PositionAction; updateAction: PositionAction;
+  /** Quiet (v4): how many active people hold each position. */
+  people?: Readonly<Record<string, number>>;
 }) {
   const ready = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
   const addCard = useRef<HTMLElement>(null);
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>("active");
   const [addKey, setAddKey] = useState(0);
   const activeCount = positions.filter(position => position.active).length;
   const normalizedQuery = query.trim().toLocaleLowerCase();
@@ -103,66 +96,38 @@ export function PositionCatalog({ positions, available, createAction, updateActi
     if (result.success && !result.error) clearFilters();
     return result;
   }
+  // Quiet (v4, approved Oct 23): "+" in the bar opens Add; Active and Retired; one row per position with how many people hold it.
+  const [adding, setAdding] = useState(false);
+  const addDialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => { const dialog = addDialog.current; if (adding && dialog && !dialog.open) dialog.showModal(); if (!adding && dialog?.open) dialog.close(); }, [adding]);
+  const tab: Filter = filter === "inactive" ? "inactive" : "active";
   return (
-    <SettingsFrame title="Positions" eyebrow={available ? `${positions.length} ${positions.length === 1 ? "position" : "positions"} · ${activeCount} active` : undefined}
-      summary="The job qualifications your team brings to each shift."
-      aside={<>
-        <GuideCard title="Qualifications, not access">
-          <p>Positions describe job qualifications. They do not grant Owner, Manager, Lead or Employee access.</p>
-        </GuideCard>
-        <GuideCard title="Retire a position, keep its history" action={<Link className="nv-link" href="/app/schedule/settings">Review scheduling rules<CaretRightIcon size={16} weight="bold" aria-hidden="true" /></Link>}>
-          <p>Inactive positions can’t be newly assigned. Coverage rules that still ask for one stay in Scheduling rules and need attention.</p>
-        </GuideCard>
-      </>}>
-      {!available ? (
-        <section className="nv-card" aria-labelledby="positions-unavailable-title">
-          <EmptyState tone="urgent" icon={<WarningCircleIcon size={22} weight="bold" />} titleId="positions-unavailable-title" title="Couldn’t load positions."
-            action={<a className="nv-btn" data-kind="primary" href="/app/settings/positions">Try again</a>}>
-            Try again to see your positions. Nothing was changed.
-          </EmptyState>
-        </section>
-      ) : (
-        <>
-          <noscript><p className="wc-footnote">JavaScript is required to add or edit positions. You can still review the catalog.</p></noscript>
-          <section className="nv-card" aria-labelledby="new-position-title" id="new-position" ref={addCard}>
-            <div className="nv-card__head"><h2 className="nv-card__title" id="new-position-title">Add a position</h2></div>
-            <div className="nv-card__body">
-              <SettingsForm key={addKey} action={create} label="Add a position" disabled={!ready} messages={nameMessages}
-                submitLabel="Add position" pendingLabel="Adding…" successTitle="Position added" showServerSuccess={false}>
-                <Field label="Position name" help="New positions are active and available for assignment." helpId="new-position-help"
-                  id="new-position-name" name="name" required maxLength={80} placeholder="e.g. Customer support" autoComplete="off" />
-              </SettingsForm>
-            </div>
+    <SettingsFrame title="Positions"
+      bandAside={available ? <button type="button" className="q-nav__r q-nav__r--ink" aria-label="Add position" disabled={!ready} onClick={() => setAdding(true)}><PlusIcon className="q-ic" aria-hidden="true" /></button> : undefined}>
+      {!available ? <EmptyState icon={null} titleId="positions-unavailable-title" title="Couldn’t load positions."
+          action={<a className="q-btn q-btn--sec" href="/app/settings/positions">Try again</a>}>Nothing was changed.</EmptyState> : <>
+        <noscript><p className="q-help">JavaScript is required to add or edit positions.</p></noscript>
+        {positions.length ? <div className="q-seg" role="group" aria-label="Filter positions by status">
+          <button type="button" aria-pressed={tab === "active"} onClick={() => setFilter("active")} aria-label={`Active, ${counts.active}`}>{`Active · ${counts.active}`}</button>
+          <button type="button" aria-pressed={tab === "inactive"} onClick={() => setFilter("inactive")} aria-label={`Retired, ${counts.inactive}`}>Retired</button>
+        </div> : null}
+        <p className="q-sr" role="status" aria-live="polite">{positions.length ? `Showing ${positions.filter(position => position.active === (tab === "active")).length} of ${positions.length} positions` : ""}</p>
+        {positions.length ? <ul className="q-list wc-editables" aria-label="Positions" style={{ marginTop: 16 }}>{positions.map(position => <PositionRow key={position.id} position={position}
+          hidden={position.active !== (tab === "active")} ready={ready} action={update} people={people?.[position.id]} />)}</ul> : null}
+        {positions.length && !positions.some(position => position.active === (tab === "active")) ? <p className="q-empty" style={{ marginTop: 16 }}>{tab === "active" ? "No active positions." : "No retired positions."}</p> : null}
+        {!positions.length ? <EmptyState icon={null} title="No positions yet" action={<button type="button" className="q-btn" onClick={() => setAdding(true)} disabled={!ready}>Add position</button>}>
+          Shifts can still be added without a position.</EmptyState> : null}
+        <dialog ref={addDialog} className="wc-dialog" aria-labelledby="new-position-title" onClose={() => setAdding(false)} onCancel={() => setAdding(false)}>
+          <div className="wc-dialog__head"><div><h2 className="wc-dialog__title" id="new-position-title">New position</h2></div>
+            <button type="button" className="wc-dialog__close" aria-label="Close" onClick={() => setAdding(false)}><XIcon aria-hidden="true" /></button></div>
+          <section id="new-position" ref={addCard}>
+            <SettingsForm key={addKey} action={async data => { const result = await create(data); if (result.success && !result.error) setAdding(false); return result; }} label="Add a position" disabled={!ready} messages={nameMessages}
+              submitLabel="Add position" pendingLabel="Adding…" successTitle="Position added" showServerSuccess={false}>
+              <Field label="Name" id="new-position-name" name="name" required maxLength={80} placeholder="e.g. Front desk" autoComplete="off" />
+            </SettingsForm>
           </section>
-          <section className="nv-card" aria-labelledby="position-catalog-heading">
-            <div className="nv-card__head">
-              <h2 className="nv-card__title" id="position-catalog-heading">Position catalog</h2>
-              {positions.length ? <span className="nv-card__meta" role="status" aria-live="polite">{`Showing ${shown} of ${positions.length} ${positions.length === 1 ? "position" : "positions"}`}</span> : null}
-            </div>
-            {positions.length ? <>
-              <div className="wc-find">
-                <label className="nv-sr" htmlFor="position-search">Search positions</label>
-                <span className="wc-search"><MagnifyingGlassIcon size={20} aria-hidden="true" />
-                  <input id="position-search" className="wc-control" type="search" placeholder="Search positions" value={query} onChange={event => setQuery(event.target.value)} autoComplete="off" />
-                </span>
-                <div className="wc-pills" role="group" aria-label="Filter positions by status">
-                  {(["all", "active", "inactive"] as const).map(option => <button type="button" className="nv-filter" key={option} aria-pressed={filter === option} onClick={() => setFilter(option)}
-                    aria-label={`${option[0].toUpperCase() + option.slice(1)}, ${counts[option]}`}>
-                    {option[0].toUpperCase() + option.slice(1)} <span className="wc-count" aria-hidden="true">{counts[option]}</span></button>)}
-                </div>
-              </div>
-              <ul className="nv-rows wc-editables" aria-label="Positions">{positions.map(position => <PositionRow key={position.id} position={position} hidden={!matches(position)} ready={ready} action={update} />)}</ul>
-              {!shown ? <EmptyState headingLevel={3} icon={<MagnifyingGlassIcon size={22} weight="bold" />} title="No matching positions"
-                action={<button type="button" className="nv-btn" data-kind="secondary" onClick={clearAndFocus}><XIcon size={18} aria-hidden="true" />Clear filters</button>}>
-                Try a different name, or clear your filters.
-              </EmptyState> : null}
-            </> : <EmptyState headingLevel={3} icon={<BriefcaseIcon size={22} weight="bold" />} title="No positions yet"
-              action={<button type="button" className="nv-btn" data-kind="secondary" onClick={revealAdd}>Add your first position</button>}>
-              No positions configured. Positionless shifts remain available.
-            </EmptyState>}
-          </section>
-        </>
-      )}
+        </dialog>
+      </>}
     </SettingsFrame>
   );
 }

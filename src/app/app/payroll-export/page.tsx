@@ -17,11 +17,13 @@ export default async function PayrollExportPage({searchParams}:{searchParams:Pro
   const access=await withOperationalCompany(await requireSessionMutationProof(),async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title="Payroll exports unavailable" reason={access.reason}/>;
   const workspace=await getWorkspace(),params=await searchParams;
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
-  let period={startDate:today.subtract({days:6}).toString(),endDate:today.toString()};
+  // Quiet (v4): the default is this week, Monday to Sunday (the period Timecards and Payroll show).
+  const monday=today.subtract({days:today.dayOfWeek-1});
+  let period={startDate:monday.toString(),endDate:monday.add({days:6}).toString()};
   try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current period. */}
   // Managers and Owners only (redirect above): the teal band, same title and wording.
   return <ScopedReadFrame observation={access}><div className="employee-view payroll-page premium-legacy-page premium-exports" data-nv-page="">
-    <PageBand title="Time exports" summary="Review finalized time and prepare files for your payroll system." overlap={false}/>
+    <div className="q-export-desk"><PageBand title="Time exports" summary="Review finalized time and prepare files for your payroll system." overlap={false}/></div>
     <div className="nv-content premium-legacy-content"><PayrollExport key={session.id} initialPeriod={period} actorId={session.id}/></div>
   </div></ScopedReadFrame>;
 }

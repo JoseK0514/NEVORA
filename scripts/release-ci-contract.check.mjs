@@ -31,6 +31,36 @@ test('validation runs the spending guard suite without enabling live inference',
  assert.equal(step.if,undefined);
  assert.equal(step.env,undefined);
 });
+test('independent Attendance stages retain fatal outcomes and run after earlier failure only with installed runtimes',()=>{
+ const job=workflow.jobs['phase-d-attendance-ui'],steps=job.steps;
+ const runtime=steps.filter(step=>step.id==='attendance_runtime');
+ assert.equal(runtime.length,1);assert.equal(runtime[0].name,'Install PostgreSQL test runtime');assert.equal(runtime[0].if,undefined);
+ assert(steps.findIndex(step=>step.name==='Install Chromium and WebKit')<steps.indexOf(runtime[0]));
+ const names=['Exact-SHA D1.3 attendance browser gate','Verify SHA-bound report','Whole Phase D exact-candidate browser regression','Independent Phase D audit remediation regressions','Verify remediation SHA-bound evidence','Existing D2 correction browser regression','Existing Clocker lifecycle and recovery browser regression','Verify whole-phase SHA and mandatory UX evidence'];
+ for(const name of names){
+  const matching=steps.filter(step=>step.name===name);assert.equal(matching.length,1,name);
+  assert.equal(matching[0].if,"${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}",name);
+  assert(steps.indexOf(matching[0])>steps.indexOf(runtime[0]),name);
+ }
+ assert.equal(job['continue-on-error'],undefined);
+ for(const step of steps)assert.equal(step['continue-on-error'],undefined,step.name+' must retain failures');
+ assert.match(steps.find(step=>step.name==='Verify whole-phase SHA and mandatory UX evidence').run,/report\.errors\.length/);
+ assert.match(steps.find(step=>step.name==='Verify remediation SHA-bound evidence').run,/r\.runtimeErrors/);
+});
+test('Clocker rendering controls run before the unchanged authenticated regression and retain their receipt',()=>{
+ const steps=workflow.jobs['phase-d-attendance-ui'].steps;
+ const step=steps.find(value=>value.name==='Existing Clocker lifecycle and recovery browser regression');
+ assert.deepEqual(step.run.trim().split('\n'),[
+  'node scripts/clocker-break-filter-readiness.check.mjs',
+  'node scripts/phase-c-clocker-postgres.mjs --punch-ui',
+ ]);
+ assert.equal(step.env.PHASE_C_EXPECTED_SHA,'${{ github.sha }}');
+ assert.equal(step.env.PHASE_C_EVIDENCE_DIR,'${{ runner.temp }}/nevora-clocker-browser-evidence');
+ assert.equal(step['continue-on-error'],undefined);
+ const upload=steps.find(value=>value.name==='Upload whole Phase D browser evidence');
+ assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
+ assert(upload.with.path.includes('${{ runner.temp }}/nevora-clocker-browser-evidence/*.json'));
+});
 test('runtime installers prefer the existing official mirror before every apt dependency step',()=>{
  for(const name of ['clocker-postgres','release-postgres','phase-e-postgres','phase-d-attendance-ui','phase-e-ui-suite']){
   const steps=workflow.jobs[name].steps,preference=steps.findIndex(step=>step.name==='Prefer official Ubuntu archive');

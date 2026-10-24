@@ -2,14 +2,21 @@
   "schema": 1,
   "repository": "JoseK0514/NEVORA",
   "target": "development",
-  "assemblyBranch": "codex/owner-ai-release-testing-20261023",
-  "observedAt": "2026-10-23",
+  "assemblyBranch": "codex/premium-backend",
+  "observedAt": "2026-10-24",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
-      "sha": "d3346480734cdada82eb9a7c5a8bcabca2cc4667",
+      "sha": "3103829366dbf27b21c0860a7ef13fc458648563",
       "disposition": "included",
-      "reason": "Merged PR28 is included through current development e37d08e3. Exact source and combined schedule CSS were reviewed. Jose explicitly retained six active branches, one for Claude; preserve this remote. Future advancement still requires source reconciliation."
+      "reason": "Quiet v4 and Claude's bounded functional repairs are included unchanged from 31038293, based directly on development 8d4a3792. Review and full matching cloud acceptance remain required before integration. Preserve Claude's branch and visual style."
+    },
+    {
+      "branch": "claude/role-nav-webkit",
+      "sha": "a5470f79d0c47f5d6c2e8c56d7ae2bb454bfc0f3",
+      "disposition": "included",
+      "reason": "Claude's complete navigation repair lineage is an ancestor of this candidate. Jose authorized Codex's additional nonvisual corrections, verified at 393f3b11, and the exact recoverable source consolidation on October 24. The remote archive was verified at a5470f79 before the unchanged branch was retired; six active branches remain. Full matching cloud acceptance is still required.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-24/claude/role-nav-webkit"
     },
     {
       "branch": "codex/development-ci-consolidation-20261022",
@@ -284,10 +291,10 @@
       "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/pr16-database-restore-rehearsal-20261020"
     },
     {
-      "branch": "codex/premium-backend",
-      "sha": "2d425b4b19ad86e9b19e23498e92269e871f2a1f",
-      "disposition": "reference",
-      "reason": "Unique commits contain historical evidence/docs; application changes are integrated through current backend/auth inputs."
+      "branch": "codex/owner-ai-release-testing-20261023",
+      "sha": "2ea580d623c76dd7d717492d209552461b5b4a28",
+      "disposition": "included",
+      "reason": "PR29's reviewed CI supervision, dependency and diagnostic changes are included without overlapping Claude UI paths. Its existing failed workflow is retained as failed evidence; new assembled-source acceptance is mandatory. The assembly reuses the inactive Codex premium-backend remote by fast-forward, retaining its original 2d425b4b ancestry and historical evidence without overlaying 2042 historical docs onto current development."
     },
     {
       "branch": "codex/ready-desktop",
@@ -354,9 +361,9 @@
     },
     {
       "branch": "development",
-      "sha": "e37d08e3fedda00a949168c491216bba12ab4a13",
+      "sha": "8d4a3792aceb9cd56e7e33ce318f4d5e9a74f9bb",
       "disposition": "target",
-      "reason": "Freshly fetched development after merged PR28, preserved in the combined Owner AI candidate. The assembly branch names the existing PR25 remote, whose original 2530a701 head remains in ancestry."
+      "reason": "Freshly fetched combined development after PR25; preserved as the base for Claude Quiet v4 and the reviewed CI repairs. No development merge is claimed before matching cloud acceptance."
     },
     {
       "branch": "fix/ci-preview-33",

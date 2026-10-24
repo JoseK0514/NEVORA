@@ -8,6 +8,7 @@ import type { PayrollStatementsResponse } from '@/lib/payroll/contracts';
 import Link from 'next/link';
 import { SigBand, SigPage, SigSection, DownloadIcon } from '../signature/signature';
 import styles from './my-pay.module.css';
+import { QuietHeader, QuietList, QuietNav, QuietPage, QuietRow } from '../quiet/quiet';
 
 /* My pay in the Signature style (phase 1, approved Oct 20, 2026; target:
  * docs/product/specs/employee-style/signature/phase-1/p1c-pay.png). The band carries the next payday from the pay
@@ -73,4 +74,24 @@ export function MyPay({ nextPay = null }: { nextPay?: NextPay }) {
       {error ? null : <button type="button" className="sg-link" disabled={loading} onClick={() => void reload()}>Refresh<span className="nv-sr"> statements</span></button>}
     </div>
   </SigPage>;
+}
+
+/** Quiet (v4, approved Oct 23): My pay for Owners and Managers. The next payday as one lead line, then the statements. */
+export function QuietMyPay({ nextPay = null }: { nextPay?: NextPay }) {
+  const { data, loading, error, reload } = usePayrollResource('/api/payroll/statements', readStatements);
+  const statements = data ? [...data.statements].sort(newestFirst) : [];
+  const days = nextPay?.daysUntil;
+  const payday = nextPay ? new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric' }).format(utc(nextPay.payday)) : null;
+  return <QuietPage>
+    <QuietNav back={{ href: '/app/more', label: 'More' }} />
+    <QuietHeader title="My pay" />
+    {payday ? <div className="q-lead"><b>{`Next payday is ${payday}`}</b>{days !== undefined ? <i>{days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`}</i> : null}</div> : null}
+    <div className="q-grp" style={{ marginTop: payday ? 40 : 28 }}><h2 id="mp-statements">Statements</h2></div>
+    {loading ? <p className="q-empty" role="status">Loading…</p>
+      : error ? <div className="q-emptyblock" role="alert"><p className="q-empty">{error === PAYROLL_SIGNED_OUT ? 'Sign in again to see your statements.' : 'Couldn’t load your statements.'}</p>
+        <div className="q-emptyblock__action">{error === PAYROLL_SIGNED_OUT ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link> : <button type="button" className="q-btn q-btn--sec" onClick={() => void reload()}>Try again</button>}</div></div>
+      : statements.length ? <QuietList label="Statements">{statements.map(statement => <QuietRow key={statement.id} href={documentHref(statement)}
+          title={`Payday ${formatDisplayDate(statement.payday)}`} detail={`${periodLabel(statement.period.startDate, statement.period.endDate)} · PDF`} label={`Download ${statement.filename}`} />)}</QuietList>
+      : <p className="q-empty">No statements yet. Only you can see them.</p>}
+  </QuietPage>;
 }

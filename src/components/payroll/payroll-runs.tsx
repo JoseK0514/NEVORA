@@ -2,7 +2,10 @@
 
 import { PayrollStepper } from './payroll-stepper';
 import { useEffect, useState, type FormEvent } from 'react';
-import { ArrowRightIcon, CalendarDotsIcon, CheckCircleIcon, FileArrowUpIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
+import { ArrowRightIcon, CalendarDotsIcon, CaretLeftIcon, CaretRightIcon, CheckCircleIcon, FileArrowUpIcon, SlidersHorizontalIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
+import Link from 'next/link';
+import { QuietHeader, QuietNav, QuietPage } from '../quiet/quiet';
+import type { OpenPayPeriod } from '@/lib/payroll/pay-calendar.server';
 import type { PayrollCapabilities, PayrollRun } from '@/lib/payroll/contracts';
 import { parsePayrollImport, readRuns } from './api';
 import { formatPayrollMoney } from './money';
@@ -20,29 +23,79 @@ const keepWhole = (text: string) => keepWholeBase(text).replace(/\b(Mon|Tue|Wed|
 const statusLabels = { BLOCKED: 'Needs attention', WAITING_FOR_AMOUNTS: 'Waiting for amounts', REVIEW_REQUIRED: 'Review required', APPROVED: 'Approved' };
 const jobLabels = { PREPARE: 'Draft preparation', PDF: 'PDF generation', PUBLISH: 'Statement publication', REMINDER: 'Private payroll notice' };
 
-export function PayrollRuns({ recoveryScope }: { recoveryScope: string }) {
+const FREQUENCY = { WEEKLY: 'Weekly', BIWEEKLY: 'Every two weeks', SEMIMONTHLY: 'Twice a month', MONTHLY: 'Monthly' } as const;
+const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
+/** "Oct 19 – 25", or "Sep 28 – Oct 4". */
+function quietRange(start: string, end: string) {
+  const month = (date: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'short' }).format(utcDay(date));
+  return start.slice(0, 7) === end.slice(0, 7) ? `${month(start)} ${Number(start.slice(8))} – ${Number(end.slice(8))}` : `${month(start)} ${Number(start.slice(8))} – ${month(end)} ${Number(end.slice(8))}`;
+}
+const quietDay = (date: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric' }).format(utcDay(date));
+
+/** Quiet (v4, approved Oct 23): Payroll's first screen. The open period and its payday, one Review button, then past periods.
+ * Review opens the existing review for that period (or the draft form for it when none exists yet). */
+function PayrollHome({ current, runs, today, canEditSettings, loading, error, onReload, onOpen, onPrepare }: {
+  current: OpenPayPeriod | null; runs: PayrollRun[]; today: string; canEditSettings: boolean; loading: boolean; error: string | null;
+  onReload: () => void; onOpen: (id: string) => void; onPrepare: () => void;
+}) {
+  const open = current ? runs.find(item => item.period.startDate === current.period.startDate && item.period.endDate === current.period.endDate && !item.correctionOf) : undefined;
+  const past = runs.filter(item => item.id !== open?.id).sort((a, b) => b.period.startDate.localeCompare(a.period.startDate));
+  return <QuietPage className="q-payroll q-payroll-phone">
+    <QuietNav back={{ href: '/app/more', label: 'More' }} right={canEditSettings ? <Link className="q-bar__icon q-nav__r q-nav__r--ink" href="/app/settings/payroll" aria-label="Payroll settings"><SlidersHorizontalIcon className="q-ic" aria-hidden="true" /></Link> : undefined} />
+    <QuietHeader title="Payroll" sub={current?.frequency ? FREQUENCY[current.frequency] : undefined} />
+    {loading ? <p className="q-empty q-first" role="status">Loading…</p>
+      : error ? <div className="q-emptyblock" role="alert"><p className="q-empty">{error}</p><div className="q-emptyblock__action"><button type="button" className="q-btn q-btn--sec" onClick={onReload}>Try again</button></div></div>
+      : <>
+        {current ? <>
+          <div className="q-lead"><b>{quietRange(current.period.startDate, current.period.endDate)}</b><i>{`Payday ${quietDay(current.payday)}${open ? ` · ${statusLabels[open.status]}` : ''}`}</i></div>
+          <button type="button" className="q-btn" onClick={() => open ? onOpen(open.id) : onPrepare()}>Review period</button>
+          {/* Time exports opens from Payroll (its back link says Payroll); the mockup shows no other way in on a phone. */}
+          <Link className="q-btn q-btn--quiet" href={`/app/payroll-export?start=${current.period.startDate}&end=${current.period.endDate}`}>Export time</Link>
+        </> : <>
+          <p className="q-empty q-first">Set your pay schedule to see the current period.</p>
+          {canEditSettings ? <Link className="q-btn q-btn--sec" href="/app/settings/payroll">Payroll settings</Link> : null}
+        </>}
+        <div className="q-grp" style={{ marginTop: 40 }}><h2>Past periods</h2></div>
+        {past.length ? <ul className="q-list" aria-label="Past periods">{past.map(item => <li key={item.id}>
+          <button type="button" className="q-row q-row--btn" onClick={() => onOpen(item.id)}>
+            <span className="q-rt"><b>{quietRange(item.period.startDate, item.period.endDate)}{item.correctionOf ? ' · Correction' : ''}</b><i>{`${item.payday < today ? 'Paid' : 'Payday'} ${quietDay(item.payday)}`}</i></span>
+            <span className="q-rv">{statusLabels[item.status]}</span><CaretRightIcon className="q-chev" aria-hidden="true" />
+          </button></li>)}</ul> : <p className="q-empty">No past periods yet</p>}
+      </>}
+  </QuietPage>;
+}
+
+export function PayrollRuns({ recoveryScope, current = null, canEditSettings = false }: { recoveryScope: string; current?: OpenPayPeriod | null; canEditSettings?: boolean }) {
   const resource = usePayrollResource('/api/payroll/runs', readRuns);
   const operation = usePayrollOperation('/api/payroll/runs', resource.reload, recoveryScope);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [prepareOpen, setPrepareOpen] = useState(false);
+  // Quiet (v4): the summary first; Review or a past period opens the review below.
+  const [home, setHome] = useState(true);
+  const [today] = useState(() => new Date().toISOString().slice(0, 10));
   useEffect(() => {
     const runId = operation.receipt?.runId;
     if (!runId) return;
     let active = true;
-    queueMicrotask(() => { if (active) setSelectedId(runId); });
+    queueMicrotask(() => { if (active) { setSelectedId(runId); setHome(false); } });
     return () => { active = false; };
   }, [operation.receipt]);
   const data = !resource.loading && resource.data?.capabilities.canReview ? resource.data : null;
   const run = data?.runs.find(item => item.id === selectedId) ?? data?.runs[0];
   const locked = resource.loading || operation.busy || (!!operation.pending && !operation.resuming);
-  return <PayrollFrame title="Payroll" description="Review payroll, approve an exact revision and track private pay statements.">
+  // Phones open on the summary; wider screens show the review straight away (the summary is phone-only).
+  const summary = <PayrollHome current={current} runs={data?.runs ?? []} today={today} canEditSettings={canEditSettings} loading={resource.loading}
+    error={resource.error ?? (!data && resource.data ? 'Your account can’t review payroll.' : null)} onReload={() => void resource.reload()}
+    onOpen={id => { setSelectedId(id); setHome(false); }} onPrepare={() => { setPrepareOpen(true); setHome(false); }} />;
+  const onSummary = home && !operation.pending;
+  return <>{onSummary ? summary : null}<div className="q-payroll-review" data-home={onSummary ? "" : undefined}><div className="q-payroll-back"><button type="button" className="q-nav__l" onClick={() => setHome(true)}><CaretLeftIcon className="q-ic q-ic--s" aria-hidden="true" />Payroll</button></div><PayrollFrame title="Payroll" description="Review payroll, approve an exact revision and track private pay statements.">
     <div className="wb-payroll-feedback"><OperationFeedback operation={operation} /></div>
     {resource.loading ? <PayrollState title="Loading payroll">Checking your current access and payroll runs.</PayrollState> : resource.error ? <PayrollState title="Payroll unavailable" error retry={() => void resource.reload()}>{resource.error}</PayrollState> : !data && resource.data ? <PayrollState title="Payroll access unavailable">Your current account cannot review these payroll runs.</PayrollState> : data && <>
       <div className="pw-toolbar"><p><CalendarDotsIcon size={18} aria-hidden />{data.runs.length} payroll {data.runs.length === 1 ? 'run' : 'runs'}</p><div className="pw-actions"><button className="pw-button pw-secondary" onClick={() => void resource.reload()} disabled={resource.loading || locked}>Refresh</button><button className="pw-button" onClick={() => setPrepareOpen(value => !value)} disabled={locked}>Prepare a draft<ArrowRightIcon size={18} aria-hidden /></button></div></div>
       {prepareOpen && <PayrollPanel title="New payroll draft" description="Draft preparation checks finalized time. It does not finalize timecards or approve payroll."><form className="pw-form" onSubmit={event => {
         event.preventDefault(); const values = new FormData(event.currentTarget);
         void operation.submit({ action: 'PREPARE', period: { startDate: String(values.get('start')), endDate: String(values.get('end')) }, payday: String(values.get('payday')) });
-      }}><fieldset disabled={locked}><div className="pw-fields"><label>Period start<input name="start" type="date" required /></label><label>Period end<input name="end" type="date" required /></label><label>Payday<input name="payday" type="date" required /></label></div><button className="pw-button" type="submit">Prepare draft</button></fieldset></form></PayrollPanel>}
+      }}><fieldset disabled={locked}><div className="pw-fields"><label>Period start<input name="start" type="date" required defaultValue={current?.period.startDate} /></label><label>Period end<input name="end" type="date" required defaultValue={current?.period.endDate} /></label><label>Payday<input name="payday" type="date" required defaultValue={current?.payday} /></label></div><button className="pw-button" type="submit">Prepare draft</button></fieldset></form></PayrollPanel>}
       <BacklogReview data={data} operation={operation} />
       {data.runs.length === 0 ? <PayrollState title="No payroll runs yet">Start with company payroll settings, then prepare a draft for the period you want to review.</PayrollState> : <div className="pw-review-layout">
         <PayrollPanel title="Pay periods" description="Each approval belongs to one exact revision."><div className="pw-run-list">{data.runs.map(item => <button key={item.id} type="button" className={`pw-run-option${item.id === run?.id ? ' selected' : ''}`} aria-pressed={item.id === run?.id} onClick={() => setSelectedId(item.id)} disabled={locked}>
@@ -63,7 +116,7 @@ export function PayrollRuns({ recoveryScope }: { recoveryScope: string }) {
       <PortalStatements runs={data.runs} />
       <PrivacyNote>Financial records are restricted to current payroll access. NEVORA records payroll and pay statements; it does not process payments. {noticeReadiness(data.capabilities)}</PrivacyNote>
     </>}
-  </PayrollFrame>;
+  </PayrollFrame></div></>;
 }
 
 function RunReview({ run, capabilities, operation }: { run: PayrollRun; capabilities: PayrollCapabilities; operation: ReturnType<typeof usePayrollOperation> }) {

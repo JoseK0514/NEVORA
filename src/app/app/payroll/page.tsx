@@ -5,6 +5,7 @@ import { PayrollRuns } from '@/components/payroll/payroll-runs';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { payrollRecoveryScope } from '@/components/payroll/recovery-scope';
 import { OwnerOnlyNotice } from '@/components/owner-only-notice';
+import { currentPayPeriod } from '@/lib/payroll/pay-calendar.server';
 import '../payroll-export/payroll-page.css';
 import './payroll-workflow.css';
 
@@ -16,5 +17,6 @@ export default async function PayrollPage() {
   if (!capabilities.canReview) return <OwnerOnlyNotice title="Payroll" reason="Payroll is open to Owners and the people they give payroll access." help="Ask an Owner if you need it." />;
   const workspace = await getWorkspace();
   const recoveryScope = payrollRecoveryScope(workspace.id, proof.employee.id);
-  return <PayrollRuns key={recoveryScope} recoveryScope={recoveryScope} />;
+  const current = await currentPayPeriod().catch(() => null);
+  return <PayrollRuns key={recoveryScope} recoveryScope={recoveryScope} current={current} canEditSettings={proof.employee.role === 'OWNER'} />;
 }

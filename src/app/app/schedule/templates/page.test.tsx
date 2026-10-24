@@ -60,8 +60,8 @@ describe("schedule template workflow presentation", () => {
       kind: "TEMPLATE", weekStart: "2026-10-12", templateId: "pattern-1",
     } }));
     expect(output).toContain('href="/app/schedule?week=2026-10-12"');
-    expect(output).toContain('href="/app/schedule/templates?week=2026-10-05"');
-    expect(output).toContain('href="/app/schedule/templates?week=2026-10-19"');
+    // Quiet (v4): Templates works on the week Schedule opened it for; there is no week stepper here.
+    expect(output).toContain('Oct 12 – 18');
   });
   it.each(["2026-10-13", "2030-02-30", "<script>", ""])("uses workspace-local current week for invalid input %s", async week => {
     vi.useFakeTimers(); vi.setSystemTime(new Date("2026-10-12T02:30:00Z"));
@@ -74,8 +74,8 @@ describe("schedule template workflow presentation", () => {
     const output = await html();
     expect(output).not.toContain("<script>alert");
     expect(output).toContain("&lt;script&gt;");
-    expect(output).toContain("1 shift</p>");
-    expect(output).toContain("Apply to this week");
+    expect(output).toContain("1 shift</i>");
+    expect(output).toContain("Use for Oct 12 – 18");
     expect(output).toContain("Archive");
   });
   it("keeps partial application and warning counts visible with a review destination", async () => {
@@ -84,7 +84,7 @@ describe("schedule template workflow presentation", () => {
     expect(output).toContain("2 skipped because of current conflicts or unavailable employees.");
     expect(output).toContain("1 added with a warning to review.");
     expect(output).toContain("Review schedule");
-    expect(output).toContain('role="status" class="form-warning"');
+    expect(output).toMatch(/role="status" class="[^"]*form-warning"/);
   });
   it("reports zero applied shifts without hiding the receipt", async () => {
     expect(await html(Promise.resolve({ applied: "0" }))).toContain("Applied 0 shifts.");
@@ -94,7 +94,7 @@ describe("schedule template workflow presentation", () => {
     const output = await html(Promise.resolve({ week: "2026-10-12", error: "unavailable" }));
     expect(output).toContain('role="alert"');
     expect(output).toContain("Choose an active template");
-    expect(output).toContain('href="#st-template-name"');
+    expect(output).toContain('id="st-template-name"');
     expect(output).toContain('minLength="3" maxLength="50" required=""');
   });
 });

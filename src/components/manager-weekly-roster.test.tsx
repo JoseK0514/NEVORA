@@ -46,8 +46,9 @@ it("respects an Action Center day focus while keeping full-week totals and contr
 });
 it("offers an actionable empty roster without implying publication", () => {
   const output = html(undefined, []);
-  expect(output).toContain("Manage employees");
-  expect(output).toContain("Your team schedule starts here");
+  // Quiet (v4): one line and the way to Team.
+  expect(output).toContain("Add people to your team to start scheduling.");
+  expect(output).toContain('href="/app/employees">Go to Team</a>');
   expect(output).not.toContain("Published");
 });
 

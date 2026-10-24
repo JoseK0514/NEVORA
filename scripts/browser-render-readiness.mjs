@@ -14,7 +14,7 @@ export async function waitForCalendarCopyReady(page, noticeText) {
 
 export async function waitForReviewedTimeOff(page, requestId) {
   const ready = await page.waitForFunction(id =>
-    [...document.querySelectorAll('[data-nv-page] [role="status"] p')].some(element => element.textContent === 'Decision saved') &&
+    [...document.querySelectorAll('.q-timeoff [role="status"]')].some(element => element.textContent === 'Decision saved.') &&
     !document.getElementById('request-' + id), requestId);
   await ready.dispose();
 }
@@ -50,4 +50,28 @@ export async function restoreSheetMotion(page) {
 export async function waitForPrivateIntentClear(page) {
   await page.locator('input[name="authority"]').waitFor({state: 'detached'});
   return page.locator('input[name="authority"]').count();
+}
+
+// Native open state precedes rendered ::details-content during its CSS transition.
+// Keep the real motion and require its finite animations to finish before measuring.
+export async function waitForDisclosureReady(disclosure, timeout = 15000) {
+  if (!Number.isFinite(timeout) || timeout <= 0) throw new RangeError('A positive disclosure deadline is required');
+  const deadline = performance.now() + timeout;
+  const element = await disclosure.elementHandle({timeout});
+  if (!element) throw new Error('The expected disclosure is absent');
+  try {
+    if (performance.now() >= deadline) throw new Error('Disclosure readiness exceeded its original deadline');
+    const ready = await disclosure.page().waitForFunction(element => {
+      element.getBoundingClientRect();
+      return element.isConnected && element.open &&
+      getComputedStyle(element, '::details-content').contentVisibility !== 'hidden' &&
+      element.getAnimations({subtree: true}).every(animation =>
+        !Number.isFinite(animation.effect?.getComputedTiming().endTime) ||
+        (!animation.pending && animation.playState === 'finished'));
+    }, element, {timeout: Math.max(1, deadline - performance.now())});
+    await ready.dispose();
+    if (performance.now() >= deadline) throw new Error('Disclosure readiness exceeded its original deadline');
+  } finally {
+    await element.dispose();
+  }
 }

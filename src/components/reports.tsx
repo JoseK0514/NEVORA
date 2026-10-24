@@ -24,6 +24,8 @@ import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {Avatar,Card,KitLink,Row,Rows,StatGrid,Status,Tile,type KitTone} from './kit/kit';
 import {keepWhole} from '../lib/keep-whole';
 import {timeZoneLabel} from '../lib/time-zone-label';
+import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
+import {QuietHeader,QuietNav} from './quiet/quiet';
 type State='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'paused'|'access_lost';
 /** IS-B1, IS-B29: a fresh snapshot is read a third of the way through the current one's life (and retried while there's time)
  * and swapped in when verified, so the report only empties if every read fails before expiry.
@@ -226,6 +228,57 @@ export function ReportsView({report,state,onThisWeek}:{report:PeriodReports|null
   <details className="cm-insights__more wb-disclosure"><summary><span>Report definitions</span><CaretDownIcon size={20} aria-hidden="true"/></summary><div className="wb-body"><ul className="wb-definitions">{definitions.map(d=><li key={d}>{d}</li>)}</ul><p className="wb-note">As of <time dateTime={report.observedAt}>{observedLabel(report.observedAt,report.timeZone)}</time></p></div></details>
  </div>;
 }
+/** Quiet (v4): "159.5 h". */
+const quietHours=(nanoseconds:string)=>{if(!/^-?\d+$/.test(nanoseconds))return '—';const negative=nanoseconds.startsWith('-');const minutes=Number(BigInt(negative?nanoseconds.slice(1):nanoseconds)/BigInt(60_000_000_000));return `${negative?'−':''}${Math.round(minutes/6)/10} h`;};
+/** "Oct 19 – 23", or "Sep 28 – Oct 4". */
+const quietRange=(period:Period)=>{const month=(date:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short'}).format(new Date(`${date}T12:00:00Z`));
+ return period.startDate.slice(0,7)===period.endDate.slice(0,7)?`${month(period.startDate)} ${Number(period.startDate.slice(8))} – ${Number(period.endDate.slice(8))}`:`${month(period.startDate)} ${Number(period.startDate.slice(8))} – ${month(period.endDate)} ${Number(period.endDate.slice(8))}`;};
+
+function QuietFigure({title,value,children,href}:{title:string;value:string;children?:React.ReactNode;href?:string}){
+ const row=<><span className="q-rt"><b>{title}</b></span><span className="q-rv q-rv--l">{value}</span><CaretRightIcon className="q-chev" aria-hidden="true"/></>;
+ if(href||!children)return <li>{href?<Link className="q-row q-row--one" href={href}>{row}</Link>:<div className="q-row q-row--one">{row}</div>}</li>;
+ return <li><details className="q-details"><summary className="q-row q-row--one">{row}</summary><div className="q-figure__body">{children}</div></details></li>;
+}
+
+/** Quiet (v4, approved Oct 23): four figures for the period, each opening what's behind it, then how they're counted. */
+export function QuietReportsView({report,state}:{report:PeriodReports|null;state:State}){
+ if(!report){
+  const waiting=state==='loading'||state==='reconnecting';
+  return <div className="q-emptyblock q-first" role="status" aria-busy={waiting}>
+   <h2 className="q-emptyblock__title">{({loading:'Loading…',offline:'You’re offline',reconnecting:'Reconnecting…',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Your session ended',ready:'Couldn’t load insights'})[state]}</h2>
+   {waiting?null:<p className="q-empty">{state==='access_lost'?'Sign in again to see insights.':state==='paused'?'Come back to this page to see the current numbers.':state==='offline'?'Connect to the internet, then try again.':'Check your connection, then try again.'}</p>}
+   {state==='access_lost'?<div className="q-emptyblock__action"><Link className="q-btn q-btn--sec" href="/login">Sign in</Link></div>:null}
+  </div>;
+ }
+ const href=timecardsHref(report.period);
+ const withTime=report.hoursByEmployee.filter(r=>BigInt(r.recordedNanoseconds)>BigInt(0)).sort((a,b)=>{const d=BigInt(b.recordedNanoseconds)-BigInt(a.recordedNanoseconds);return d>BigInt(0)?1:d<BigInt(0)?-1:a.name.localeCompare(b.name);});
+ const noTime=report.hoursByEmployee.filter(r=>BigInt(r.recordedNanoseconds)<=BigInt(0)).sort((a,b)=>a.name.localeCompare(b.name));
+ const idle=Math.max(noTime.length,report.summary.employeeCount-withTime.length);
+ const toFinish=report.approvals.filter(card=>card.state!=='FINALIZED').length;
+ const offDays=timeOffDays(report);
+ const requests=[...report.callouts,...report.timeOff];
+ const definitions=[...new Set([...report.definitions,'Recorded time includes breaks. Breaks are shown separately; no pay or deduction rules are applied.',report.coverageReliability.definition,report.scheduleStability.definition,report.overtime.reason])];
+ return <>
+  <ul className="q-list q-figures" aria-label="Period figures">
+   <QuietFigure title="Recorded time" value={quietHours(report.summary.recordedNanoseconds)}>
+    {withTime.length?<ul className="q-sublist">{withTime.map(r=><li key={r.id}><span>{r.name}</span><span>{quietHours(r.recordedNanoseconds)}</span></li>)}</ul>:<p className="q-help">No time recorded yet.</p>}
+   </QuietFigure>
+   <QuietFigure title="People with no time" value={idle?String(idle):'None'}>
+    {noTime.length?<ul className="q-sublist">{noTime.map(r=><li key={r.id}><span>{r.name}</span></li>)}</ul>:idle?<p className="q-help">{plural(idle,'person has','people have')} no recorded time.</p>:<p className="q-help">Everyone has recorded time.</p>}
+   </QuietFigure>
+   <QuietFigure title="Timecards to finish" value={String(toFinish)} href={href}/>
+   <QuietFigure title="Time off taken" value={offDays?plural(offDays,'day','days'):'None'}>
+    {requests.length?<ul className="q-sublist">{requests.map(r=><li key={`${r.kind}:${r.id}`}><span>{r.employeeName}</span><span>{`${r.kind==='CALLOUT'?'Unable to work':'Time off'} · ${r.endDate!==r.date?formatDateRange(r.date,r.endDate):formatDisplayDate(r.date)}`}</span></li>)}</ul>:<p className="q-help">No time off in this period.</p>}
+   </QuietFigure>
+  </ul>
+  <details className="q-counted">
+   <summary className="q-btn q-btn--quiet">How these are counted</summary>
+   <ul className="q-counted__list">{definitions.map(d=><li key={d}>{d}</li>)}</ul>
+   <p className="q-help">As of <time dateTime={report.observedAt}>{observedLabel(report.observedAt,report.timeZone)}</time> · {timeZoneLabel(report.timeZone)}</p>
+  </details>
+ </>;
+}
+
 export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:string}){
  const [draft,setDraft]=useState(initialPeriod),[period,setPeriod]=useState(initialPeriod),[report,setReport]=useState<PeriodReports|null>(null),[state,setState]=useState<State>('loading'),[notice,setNotice]=useState('');
  const reloadRef=useRef<()=>void>(()=>{}),exportRef=useRef<()=>Promise<void>>(async()=>{}),printRef=useRef<()=>void>(()=>{});
@@ -320,7 +373,21 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
     </div>
    </div>
 </>;
+ // Quiet (v4, approved Oct 23): back to More, the period under the title, This week, Last week and Month, then the figures.
+ // Wide screens keep Export and the period picker in the top bar.
+ const phone=<div className="q-page q-insights q-insights-phone" data-nv-page="">
+  <QuietNav back={{href:'/app/more',label:'More'}}/>
+  <QuietHeader title="Insights" sub={quietRange(period)}/>
+  <div className="q-seg" role="group" aria-label="Report period" data-report-entrance="">
+   {MODES.filter(item=>item.mode!=='custom').map(item=><button key={item.mode} type="button" aria-pressed={mode===item.mode} disabled={!presets||busy} onClick={()=>choose(item.mode)}>{item.short}</button>)}
+  </div>
+  {notice&&notice!==PERIOD_ERROR?<p className="q-error q-first" id="report-export-error" role="alert">{notice}</p>:null}
+  <div className="wb-insights" data-report-entrance=""><QuietReportsView report={report} state={state}/></div>
+ </div>;
+ // Wider screens keep the full Insights tool (period picker, Export, custom period, the whole report).
  return <>
+  {phone}
+  <div className="q-insights-desk">
   {/* Phones: the navigation bar (back to More, Export). Desktop: the period picker and Export in the top bar or beside the title. */}
   <div className="cm-insights__nav">
    <button type="button" className="cm-insights__back" popoverTarget="manager-more-navigation"><CaretLeftIcon size={20} weight="bold" aria-hidden="true"/>More</button>
@@ -351,5 +418,6 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
     <p className="cm-page-foot"><span>{keepWhole(rangeText(period))}{report?<> · {timeZoneLabel(report.timeZone)}</>:null}</span><button type="button" className="cm-refresh" aria-label="Refresh" aria-busy={busy||undefined} onClick={()=>reloadRef.current()}><ArrowsClockwiseIcon size={16} aria-hidden="true"/>Refresh</button></p>
    </div>
   </div>
+   </div>
  </>;
 }

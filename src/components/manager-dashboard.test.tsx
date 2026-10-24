@@ -18,9 +18,9 @@ it("loads the current Action Center without exposing unverified server-provided 
     locations:[],days:[],hours:[],latestRevision:null,
   };
   const html = renderToStaticMarkup(<ManagerDashboard {...props}/>);
-  // One band, one h1, and no count until the live read confirms it (F1).
+  // One h1 (Quiet v4: the page header, no band), and no count until the live read confirms it (F1).
   expect(html.match(/<h1/g)).toHaveLength(1);
-  expect(html).toContain('data-nv-band');
+  expect(html).toContain('class="q-hd"');
   expect(html).toContain('Checking what needs you…');
   expect(html).not.toContain('Sam Cruz is waiting');expect(html).not.toMatch(/\b7 things need you/);expect(html).not.toContain('All caught up');
   expect(html).not.toContain("at Fuel.");

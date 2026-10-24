@@ -24,20 +24,20 @@ const render = async () => renderToStaticMarkup(await EmployeeClockerPinPage({ p
 
 it('renders separate masked four-digit setup inputs with employee context and authoritative version', async () => {
   const html = await render();
-  expect(html).toContain('Avery'); expect(html).toContain('Create a PIN');
+  // Quiet (v4): a sheet titled Clocker PIN, the person's name, four boxes, Save at the top right.
+  expect(html).toContain('Avery'); expect(html).toContain('<span class="q-nav__t">Clocker PIN</span>');
   expect(html).toContain('name="expectedVersion" value="0"');
   expect(html.match(/type="password"/g)).toHaveLength(2);
   expect(html.match(/pattern="\[0-9\]\{4\}"/g)).toHaveLength(2);
   expect(html).toContain('inputMode="numeric"');
-  expect(html).toContain('Save PIN'); expect(html).toContain('Cancel');
+  expect(html).toContain('Save PIN'); expect(html).toContain('form="clocker-pin-form"'); expect(html).toContain('Cancel');
   expect(m.read).toHaveBeenCalledWith({ employeeId: 'actor', sessionTokenHash: 'proof' }, 'worker');
 });
 it('explains reset consequences and retains the current version without exposing an old PIN', async () => {
   m.version = 7;
   const html = await render();
-  expect(html).toContain('Reset the PIN'); expect(html).toContain('The old PIN will stop working.');
+  expect(html).toContain('Reset PIN'); expect(html).toContain('The old PIN stops working.');
   expect(html).toContain('name="expectedVersion" value="7"');
-  expect(html).toContain('portal access and recorded time unchanged');
   expect(html).not.toContain('value="0123"');
 });
 it('withholds all PIN controls and reads for Manager-to-Owner access', async () => {

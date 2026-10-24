@@ -50,7 +50,8 @@ describe("Home timeline (UI-1, PD2, UX6)", () => {
     expect(from).toBe(Date.parse("2026-10-20T11:00:00Z"));
     expect(from % hour).toBe(0);
   });
-  it("renders the timeline when only unscheduled people are on the clock", async () => {
+  // Quiet (v4, approved Oct 23): Today has no timeline; Right now counts everyone on the clock.
+  it("counts people on the clock even when none of them is scheduled today", async () => {
     const { renderToStaticMarkup } = await import("react-dom/server");
     const { createElement } = await import("react");
     const { PremiumHomeSurface } = await import("./premium-home");
@@ -60,8 +61,8 @@ describe("Home timeline (UI-1, PD2, UX6)", () => {
       today: today([]), monitor: monitor([open("extra", "2026-10-20T11:30:00Z")]),
       actions: null, actionsConnection: "loading",
     }));
-    expect(html).toContain('id="home-timeline"');
-    expect(html).toContain("no shift today, clocked in at");
+    expect(html).toContain("<b>1 on shift</b>");
+    expect(html).toContain('href="/app/schedule"');
   });
   it("attaches an open punch to only its current shift, preserving finished and future shifts", () => {
     const shifts = [
@@ -80,19 +81,15 @@ describe("Home timeline (UI-1, PD2, UX6)", () => {
 });
 
 describe("Home's Next payday row (MK1)", () => {
-  it("shows the next payday from My pay's date, and nothing without one", async () => {
+  // Quiet (v4): the next payday lives on My pay (from More), so Today doesn't repeat it.
+  it("leaves the next payday to My pay", async () => {
     const { renderToStaticMarkup } = await import("react-dom/server");
     const { createElement } = await import("react");
     const { PremiumHomeSurface } = await import("./premium-home");
     const base = { greeting: "", dateLabel: "Tuesday, October 20", timeZone: "America/Puerto_Rico", week: { weekStart: "2026-10-19", weekLabel: "", plannedShifts: 0, availabilitySubmitted: 0, availabilityEligible: 0, locations: [] },
       today: null, actions: null, actionsConnection: "loading" as const };
     const html = renderToStaticMarkup(createElement(PremiumHomeSurface, { ...base, nextPay: { payday: "2026-10-27", daysUntil: 6 } }));
-    expect(html).toContain("Coming up");
-    expect(html).toContain("Next payday");
-    expect(html).toContain("Tue, Oct");
-    expect(html).toContain("in 6 days");
-    expect(html).toContain('href="/app/my-pay"');
-    expect(renderToStaticMarkup(createElement(PremiumHomeSurface, { ...base, nextPay: { payday: "2026-10-21", daysUntil: 0 } }))).toContain(">today<");
-    expect(renderToStaticMarkup(createElement(PremiumHomeSurface, base))).not.toContain("Next payday");
-  });
+    expect(html).not.toContain("Next payday");
+    expect(html).not.toContain('href="/app/my-pay"');
+  });;
 });

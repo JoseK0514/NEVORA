@@ -24,6 +24,6 @@ export default async function ReportsPage({searchParams}:{searchParams:Promise<{
   let period={startDate:monday.toString(),endDate:today.toString()};
   try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current period. */}
   // v3: Reports renders the navigation bar (More, period, Export), the segmented periods and the content after the title.
-  return <ScopedReadFrame observation={access}><ReportsEntrance><PageBand title="Insights" summary="Recorded hours, time off and approvals for the period"/>
+  return <ScopedReadFrame observation={access}><ReportsEntrance><div className="q-insights-desk"><PageBand title="Insights" summary="Recorded hours, time off and approvals for the period"/></div>
     <Reports key={session.id} initialPeriod={period} today={today.toString()}/></ReportsEntrance></ScopedReadFrame>;
 }

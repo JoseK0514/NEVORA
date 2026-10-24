@@ -28,44 +28,43 @@ import { createElement } from "react";
 beforeEach(() => { vi.clearAllMocks(); });
 const render = async (q?: string | string[], status?: string | string[]) => renderToStaticMarkup(await LocationsPage({ searchParams: Promise.resolve({ q, status }) }));
 
-it("retains real ready, setup, inactive, Clocker and management paths", async () => {
+// Quiet (v4, approved Oct 23): one row per location (short name, people, status). The approved page has no search
+// box; ?q= and ?status= links from elsewhere still narrow the list.
+it("lists every location with its people and status", async () => {
   const html = await render();
   expect(data.requireRoles).toHaveBeenCalledWith(["OWNER"]);
   expect(data.locations).toHaveBeenCalledWith({ includeInactive: true });
-  expect(html).toContain("Showing 3 of 3 locations");
-  expect(html).toContain("3 setup items");
-  expect(html).toContain("Scheduling setup is complete.");
-  expect(html).toContain("1 eligible employee");
-  expect(html).toContain("0 eligible employees");
-  expect(html).toContain("Unavailable while inactive");
-  for (const path of ["/clocker/east-office", "/clocker/old-office", "/app/settings/locations/east", "/app/settings/locations/new", "/app/schedule/settings", "/app/employees"]) expect(html).toContain(`href="${path}"`);
+  expect(html).toContain("2 active of 3 locations");
+  expect(html.match(/data-location="/g)).toHaveLength(3);
+  expect(html).toContain("0 employees · Needs setup");
+  expect(html).toContain("1 employee</i>");
+  expect(html).toContain("0 employees · Inactive");
+  for (const path of ["/app/settings/locations/east", "/app/settings/locations/west", "/app/settings/locations/old", "/app/settings/locations/new"]) expect(html).toContain(`href="${path}"`);
 });
-it("matches a short name without case sensitivity and preserves the query in status links", async () => {
+it("matches a short name without case sensitivity", async () => {
   const html = await render("  STUDIO  ");
-  expect(html).toContain("West Office"); expect(html).not.toContain("East Office");
-  expect(html).toContain("Showing 1 of 3 locations");
-  expect(html).toContain('href="/app/settings/locations?q=STUDIO&amp;status=setup"');
+  expect(html).toContain('aria-label="Edit West Office"'); expect(html).not.toContain('aria-label="Edit East Office"');
+  expect(html.match(/data-location="/g)).toHaveLength(1);
 });
-it.each([["setup", "East Office"], ["ready", "West Office"], ["inactive", "Old Office"]])("filters %s using the existing readiness evaluator", async (status, name) => {
+it.each([["setup", "east"], ["ready", "west"], ["inactive", "old"]])("filters %s using the existing readiness evaluator", async (status, id) => {
   const html = await render(undefined, status);
-  expect(html).toContain(name); expect(html.match(/data-location="/g)).toHaveLength(1);
-  expect(html).toContain(`name="status" value="${status}"`);
+  expect(html).toContain(`data-location="${id}"`); expect(html.match(/data-location="/g)).toHaveLength(1);
 });
-it("combines filters with search and offers a clear reset for no matches", async () => {
+it("combines filters with search and offers a way back to every location", async () => {
   const html = await render("East", "ready");
-  expect(html).toContain("No matching locations"); expect(html).toContain("Clear search and filters");
+  expect(html).toContain("No matching locations"); expect(html).toContain('href="/app/settings/locations">Show all</a>');
   expect(html).not.toContain('data-location="');
 });
 it("handles repeated or unknown URL parameters without crashing or hiding the directory", async () => {
   const html = await render(["East", "West"], ["ready", "inactive"]);
-  expect(html).toContain("Showing 3 of 3 locations");
-  expect(await render(undefined, "unknown")).toContain("Showing 3 of 3 locations");
+  expect(html.match(/data-location="/g)).toHaveLength(3);
+  expect((await render(undefined, "unknown")).match(/data-location="/g)).toHaveLength(3);
 });
 it("distinguishes a true empty directory from a search without matches", async () => {
   data.locations.mockResolvedValueOnce([]);
   const html = await render();
-  expect(html).toContain("Your first workplace starts here"); expect(html).not.toContain("No matching locations");
-  expect(html).toContain("Add a location, then set up staffing, coverage and your eligible team.");
+  expect(html).toContain("Add the places your team works."); expect(html).not.toContain("No matching locations");
+  expect(html).toContain('<a class="q-btn" href="/app/settings/locations/new">Add location</a>');
 });
 it("fails before data reads when Owner authorization is rejected", async () => {
   data.requireRoles.mockRejectedValueOnce(new Error("Forbidden"));

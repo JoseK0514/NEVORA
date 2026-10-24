@@ -8,6 +8,7 @@ import { currentPresentation } from "@/lib/workspace-presentation/current.server
 import { wordPreset } from "@/lib/workspace-presentation/words";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { filterDirectoryEmployees, readDirectoryFilters, type DirectorySearchParams } from "@/lib/employee-directory";
+import { listPositions } from "@/lib/data/positions";
 
 export const metadata = { title: "Team" };
 
@@ -21,6 +22,8 @@ export default async function EmployeesPage({ searchParams }: {
   if(source.data.mode==='LOCATIONS')return <ScopedEmployeeDirectory data={source.data} observation={source}/>;
   const {employees,locations}=source.data;
   const filters = readDirectoryFilters(params, locations);
-  return <ScopedReadFrame observation={source}><EmployeeDirectory words={wordPreset((await currentPresentation()).words).en} employees={employees} locations={locations} filters={filters}
+  // Quiet (v4): each person's detail line names their positions; a failed read falls back to the role.
+  const positions = await listPositions({ includeInactive: true }).catch(() => []);
+  return <ScopedReadFrame observation={source}><EmployeeDirectory positions={positions} words={wordPreset((await currentPresentation()).words).en} employees={employees} locations={locations} filters={filters}
     visibleEmployees={filterDirectoryEmployees(employees, filters)} /></ScopedReadFrame>;
 }

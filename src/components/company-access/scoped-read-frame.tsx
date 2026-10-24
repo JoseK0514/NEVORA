@@ -4,6 +4,7 @@ import {useRouter} from 'next/navigation';
 import type {OperationalAuthorityView} from '@/lib/company-access/model';
 import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {readOperationalNavigation} from './commands';
+import {useAppNavigation} from '../app-navigation';
 
 export type ScopedObservation={authority:string;observedAt:string;validForMs:number};
 type CurrentAuthority=Extract<OperationalAuthorityView,{state:'ready'}>&{requestStartedAt:number};
@@ -20,6 +21,7 @@ const online=()=>document.visibilityState!=='hidden'&&navigator.onLine&&document
  */
 export function ScopedReadFrame({observation,children,unavailable}:{observation?:ScopedObservation|null;children?:ReactNode;unavailable?:ReactNode}){
  const router=useRouter();
+ const navigation=useAppNavigation(),deferredRefresh=useRef(false);
  const [body,setBody]=useState<Body>({authority:null,phase:'expired',content:null});
  // A replacement view cannot know whether an earlier instance retired while an
  // RSC response was in flight. Mounts therefore use the same fresh barrier.
@@ -41,7 +43,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    if(!active||!required.current)return;
    const current=!state.paused&&state.snapshot?.state==='ready'?state.snapshot:null;
    setRecovery(previous=>previous.required&&previous.view===current?previous:{required:true,view:current});
-   if(current&&!state.refreshing){
+   if(current&&!state.refreshing&&!navigation?.pending()){
     const key=JSON.stringify([current.authority,current.observedAt,current.requestStartedAt]);
     // A refresh waits behind an unfinished Server Action. A same-page replace
     // fetches fresh dynamic data while discarding that action's stale router result.
@@ -67,14 +69,15 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    anchor.current=current;required.current=false;controller.pause();setRecovery({required:false,view:null});
   }
   controls.current={recover,pause,complete};
+  const resume=navigation?.subscribe(()=>{if(!active||!online())return;if(required.current)recover();else if(deferredRefresh.current){deferredRefresh.current=false;router.refresh();}});
   const visibility=()=>{if(document.visibilityState==='hidden')pause();else recover();};
   document.addEventListener('visibilitychange',visibility);
   for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);
   window.addEventListener('focus',focus);
   for(const event of ['pageshow','online','storage'])window.addEventListener(event,recover);
   queueMicrotask(()=>{if(active)recover();});
-  return()=>{active=false;controller.stop();controls.current=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('focus',focus);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['pageshow','online','storage'])window.removeEventListener(event,recover);};
- },[router]);
+  return()=>{active=false;resume?.();controller.stop();controls.current=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('focus',focus);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['pageshow','online','storage'])window.removeEventListener(event,recover);};
+ },[router,navigation]);
 
  useEffect(()=>{
   let active=true,early:ReturnType<typeof setTimeout>|undefined,expiry:ReturnType<typeof setTimeout>|undefined;
@@ -99,13 +102,15 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    latest.current=observed;
    if(required.current&&recovery.view)controls.current?.complete(recovery.view);
    setBody({authority:observation!.authority,phase:'ready',content:children});
-   early=setTimeout(()=>{if(proactiveVersion.current!==version){proactiveVersion.current=version;router.refresh();}},remaining*.65);
+   early=setTimeout(()=>{if(proactiveVersion.current!==version){proactiveVersion.current=version;if(navigation?.pending())deferredRefresh.current=true;else router.refresh();}},remaining*.65);
    expiry=setTimeout(()=>controls.current?.recover(),remaining);
   });
   return()=>{active=false;if(early)clearTimeout(early);if(expiry)clearTimeout(expiry);};
- },[version,observed,duration,observation,children,recovery,router]);
+ },[version,observed,duration,observation,children,recovery,router,navigation]);
+
+ const refreshCurrent=()=>{navigation?.discard();controls.current?.recover();};
 
  if(!recovery.required&&observation&&body.phase==='ready'&&body.authority===observation.authority)return body.content;
- if(!observation&&unavailable)return <div>{unavailable}<button className="button secondary" type="button" onClick={()=>controls.current?.recover()}>Refresh current view</button></div>;
- return <section className="portal-route-state" role="status"><h2>{body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…'}</h2><p>{body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.'}</p><button className="button secondary" type="button" onClick={()=>controls.current?.recover()}>Refresh current view</button></section>;
+ if(!observation&&unavailable)return <div>{unavailable}<button className="button secondary" type="button" onClick={refreshCurrent}>Refresh current view</button></div>;
+ return <section className="portal-route-state" role="status"><h2>{body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…'}</h2><p>{body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.'}</p><button className="button secondary" type="button" onClick={refreshCurrent}>Refresh current view</button></section>;
 }

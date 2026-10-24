@@ -9,6 +9,7 @@ import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
 import {seedOwnedApp,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {assertPrivateClockInRecovery} from './clocker-recovery-privacy.ts';
+import {archiveBreak} from './clocker-break-editor.mjs';
 const evidence=resolve(process.env.PHASE_C_EVIDENCE_DIR??join(homedir(),'.codex/visualizations/2026/10/05/nevora-punch-integration'));
 await mkdir(evidence,{recursive:true});
 const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'));
@@ -26,22 +27,18 @@ async function context(browser,viewport={width:1024,height:768}){
 async function goto(page,path){const r=await page.goto(app.url+path,{waitUntil:'networkidle'});assert.equal(r.status(),200,'Working route '+path);}
 async function login(c){const p=await c.newPage();await goto(p,'/login');await p.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
  await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign in',exact:true}).click()]);return p;}
-async function savePin(p,id,pin){await goto(p,`/app/employees/${id}/clocker-pin`);await p.getByLabel('New PIN',{exact:true}).fill(pin);await p.getByLabel('Confirm PIN',{exact:true}).fill(pin);await p.getByRole('button',{name:/Save PIN|Reset PIN/,exact:true}).click();await p.getByRole('status').filter({hasText:'PIN saved'}).waitFor();}
+async function savePin(p,id,pin){await goto(p,`/app/employees/${id}/clocker-pin`);await p.getByLabel('New PIN',{exact:true}).fill(pin);await p.getByLabel('Confirm PIN',{exact:true}).fill(pin);const save=p.getByRole('button',{name:'Save',exact:true});assert.equal(await save.getAttribute('form'),'clocker-pin-form');await save.click();await p.getByRole('status').filter({hasText:'PIN saved'}).waitFor();}
 async function enroll(owner,p,name){
- await goto(owner,'/app/settings/clocker');await owner.getByRole('button',{name:'Add device',exact:true}).click();
+ await goto(owner,'/app/settings/clocker');await owner.getByLabel('Add device',{exact:true}).click();
  const d=owner.getByRole('dialog');await d.getByLabel('Device name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await d.getByRole('button',{name:'Create setup code',exact:true}).click();await d.waitFor({state:'hidden'});
- const code=await owner.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();
+ const displayedSetup=owner.getByRole('textbox',{name:/^Setup code · expires /});assert.equal(await displayedSetup.getAttribute('readonly'),'');const code=await displayedSetup.inputValue();assert(code);
  await goto(p,'/clocker/2');await p.getByRole('heading',{name:'Set up this tablet',exact:true}).waitFor();await p.evaluate(()=>document.fonts.ready);await shot(p,name.includes('Second')?'second-tablet-setup':name.split(' ')[0]+'-setup');await p.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await p.getByRole('button',{name:'Connect tablet',exact:true}).click();await idle(p);
 }
 async function editBreak(owner,name,category,minutes){
- await goto(owner,'/app/settings/breaks');const row=owner.locator('[data-break-type="ui-rest"]');
- await row.getByRole('button',{name:/^Edit /}).click();const d=owner.getByRole('dialog');
+ await goto(owner,'/app/settings/breaks');await owner.getByRole('button',{name:/^Active, \d+$/}).click();const row=owner.locator('button[data-break-type="ui-rest"]');
+ assert.match(await row.getAttribute('aria-label'),/^Edit /);await row.click();const d=owner.getByRole('dialog');await d.getByRole('heading',{name:'Edit break type',exact:true}).waitFor();
  await d.getByLabel('Break name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Classification',exact:true}).selectOption(category);await d.getByLabel(/^Reference time/).fill(String(minutes));
  await d.getByRole('button',{name:'Save changes',exact:true}).click();await d.waitFor({state:'hidden'});
-}
-async function archiveBreak(owner,operation){
- const row=owner.locator('[data-break-type="ui-rest"]');await row.getByRole('button',{name:new RegExp('^'+operation+' ')}).click();
- const d=owner.getByRole('dialog');await d.getByRole('button',{name:operation+' break type',exact:true}).click();await d.waitFor({state:'hidden'});
 }
 async function idle(p){await p.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await p.waitForFunction(()=>{const i=document.querySelector('input[name=pin]');return i&&!i.matches(':disabled');});}
 async function verify(p,pin='2468'){await idle(p);for(const n of pin)await p.getByRole('button',{name:'Number '+n,exact:true}).click();await p.getByRole('button',{name:'Continue',exact:true}).click();}

@@ -1,13 +1,13 @@
 "use client";
 
-import Link from "next/link";
+import {NavigationLink as Link} from './navigation-link';
+import {AppNavigationProvider,useIdentityReload} from './app-navigation';
 import { NotificationBell } from "./notification-bell";
 import { useInboxCount } from "./use-inbox-count";
-import { ActionMenu } from "./action-menu";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { AuthBrand } from "./auth-brand";
-import { PlusIcon, MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react/ssr";
+import { PlusIcon, XIcon } from "@phosphor-icons/react/ssr";
 import { NavIcon } from "@/components/nav-icon";
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
@@ -17,10 +17,10 @@ import { SheetGestures } from "./sheet-gestures";
 import { Toaster } from "./toaster";
 import { FormValidation } from "./form-validation";
 import type { UserRole } from "@/lib/domain";
-import { teamToolsForRole, activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, moreNavigationGroups, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
+import { teamToolsForRole, activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
 import { SectionTabs } from "./section-tabs";
 import { isPopoverOpen, hidePopover } from "./kit/popover-open";
-import { CommandFinder, OPEN_FINDER_EVENT, type OpenFinderDetail } from "./command-finder";
+import { CommandFinder } from "./command-finder";
 import { PresentationProvider } from "./presentation-context";
 import { NUVORA_BRAND } from "../lib/brand";
 import { handleRowNavigation } from "../lib/row-navigation";
@@ -51,7 +51,7 @@ type AppShellProps = {
 };
 
 export function AppShell(props:AppShellProps){
- return <AppShellView key={JSON.stringify([props.user.id,props.user.role])} {...props}/>;
+ return <AppNavigationProvider key={JSON.stringify([props.user.id,props.user.role])}><AppShellView {...props}/></AppNavigationProvider>;
 }
 
 function AppShellView({
@@ -77,7 +77,9 @@ function AppShellView({
   }
   const employeeMoreKeyboardOpen = useRef(false);
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
-  const accessChanged=useCallback((reason:'identity'|'scope')=>{if(reason==='identity')window.location.reload();else {window.dispatchEvent(new Event('nevora:notifications-changed'));router.refresh();}},[router]);
+  // Refresh the retained layout's server identity without interrupting the destination document's streamed content.
+  const identityReload=useIdentityReload(()=>router.refresh());
+  const accessChanged=useCallback((reason:'identity'|'scope')=>{if(reason==='identity')identityReload.request();else {window.dispatchEvent(new Event('nevora:notifications-changed'));router.refresh();}},[router,identityReload]);
   const operational=useOperationalNavigation(user.id,user.role,operationalAuthority,accessChanged);
   const inboxCount = useInboxCount(!employee && (user.role === 'OWNER' || operational.view?.state === 'ready' && operational.view.scope?.mode === 'COMPANY'), pathname);
   const context:NavContext = {...presentation, operational:operational.view??undefined};
@@ -232,6 +234,8 @@ function AppShellView({
     <div className={employee ? "app-shell employee-shell nevora-portal" : "app-shell nevora-portal"} data-sidebar-collapsed={collapsed}
       // Clean Manager and Owner app (v3): premium-clean-manager.css applies only under this attribute, so Employee and Lead pages never change.
       data-nv-clean={employee ? undefined : ""}
+      // Quiet (v4, Jose approved Oct 23, docs/product/specs/owner-v4-quiet): the Owner and Manager pages and their tab bar.
+      data-nv-quiet={employee ? undefined : ""}
       // Employee app, new style (Jose approved Oct 20, docs/product/specs/employee-style): employee-style.css applies only under this attribute.
       data-nv-e5={employee ? "" : undefined}
       style={brand?.style as CSSProperties | undefined} data-company-brand={brand?.style ? "custom" : undefined}
@@ -419,50 +423,17 @@ function AppShellView({
                     aria-current={active ? "page" : undefined}
                     aria-label={needsYou !== null ? `${item.label}, ${needsYou} need${needsYou === 1 ? "s" : ""} you` : undefined}
                   >
-                    {/* v3: filled iOS-style glyphs on the Owner and Manager tab bar. */}
-                    <NavIcon name={item.icon === "employees" ? "team" : item.icon} size={22} weight="fill" />
+                    {/* Quiet (v4): outline glyphs, filled only for the current tab; the count is spoken, not drawn. */}
+                    <NavIcon name={item.icon === "employees" ? "team" : item.icon} size={24} weight={active ? "fill" : "regular"} />
                     <span>{item.label}</span>
-                    {needsYou !== null ? <span className="mobile-nav-count" aria-hidden="true">{needsYou > 99 ? "99+" : needsYou}</span> : null}
                   </Link>
                 );
               })}
-              <ActionMenu id="manager-more-navigation" label="More" ariaLabel="More navigation" sheet
-                triggerClassName={activeTab === "more" ? "mobile-nav-link manager-more-trigger active" : "mobile-nav-link manager-more-trigger"}
-                triggerContent={<><NavIcon name="moreCircle" size={22} weight="fill" /><span>More</span></>}>
-                {/* A tool, not a destination: opens the one finder dialog in the same tap (no timer), so iOS raises the keyboard. */}
-                <button type="button" className="nevora-action-menu-item nevora-more-search" aria-haspopup="dialog"
-                  onClick={event => {
-                    event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover();
-                    const detail: OpenFinderDetail = { returnFocusTo: document.querySelector<HTMLElement>('[popovertarget="manager-more-navigation"]') };
-                    window.dispatchEvent(new CustomEvent(OPEN_FINDER_EVENT, { detail }));
-                  }}>
-                  <MagnifyingGlassIcon size={22} aria-hidden="true" /><span>Search</span>
-                </button>
-                <div className="nevora-action-menu-divider nevora-more-search-divider" />
-                {/* v3: the account sits at the top of More, as in iOS Settings. */}
-                {navigation.some(item => item.href === "/app/profile") ? <Link href="/app/profile" className="nevora-action-menu-item cm-more-profile"
-                  aria-current={activeHref === "/app/profile" ? "page" : undefined}
-                  onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
-                  <span className="avatar" aria-hidden="true">{initials}</span>
-                  <span className="cm-more-profile__text"><strong>{user.firstName} {user.lastName}</strong><small>{user.role === "OWNER" ? "Owner" : "Manager"} · {workspaceName}</small></span>
-                </Link> : null}
-                {/* MG3: grouped by job. Headings are labels only; every link is unchanged. */}
-                {moreNavigationGroups(mobileMore.filter(item => item.href !== "/app/profile"), teamTools).map(group => <div key={group.label} className="nevora-more-group" role="group" aria-label={group.label} data-group={group.label}>
-                  <p className="nevora-more-group-label" aria-hidden="true">{group.label}</p>
-                  {group.items.map(item => (
-                    <Link key={item.href} href={item.href} className="nevora-action-menu-item"
-                      aria-current={item.href === (activeTool?.href ?? activeHref) ? 'page' : undefined}
-                      onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
-                      {/* v3: a small coloured square per row, as in iOS Settings. Decoration only. */}
-                      <span className="cm-more-icon" aria-hidden="true"><NavIcon name={item.icon} size={18} /></span>
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>)}
-                {notificationsEnabled ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings" aria-label="Profile and device settings">Profile and device settings</button> : null}
-                <div className="nevora-action-menu-divider" />
-                <PortalSignout><button className="nevora-action-menu-item" type="submit">Sign out</button></PortalSignout>
-              </ActionMenu>
+              {/* Quiet (v4): More is a page, as in the approved mockups. */}
+              <Link href="/app/more" className={activeTab === "more" || pathname === "/app/more" ? "mobile-nav-link manager-more-trigger active" : "mobile-nav-link manager-more-trigger"}
+                aria-current={pathname === "/app/more" ? "page" : undefined}>
+                <NavIcon name="moreCircle" size={24} weight={activeTab === "more" || pathname === "/app/more" ? "fill" : "regular"} /><span>More</span>
+              </Link>
             </>
           )}
         </nav>

@@ -7,19 +7,14 @@ import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listPendingTimeOffRequests, listTeamTimeOffRequests } from "@/lib/data/requests";
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
 import { formatTime, weekStartFor } from "@/lib/date-utils";
-import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
-import { TrayIcon } from "@phosphor-icons/react/dist/ssr/Tray";
-import { Card, FilterPills, KitLink, MetaParts, PageBand, Row, Rows, Status, Tile } from "@/components/kit/kit";
-import { RequestPagesNav } from "@/components/clean/request-pages-nav";
-import { Fact, Facts, Notice } from "@/components/wave-a/parts";
 import { ActionForm } from "@/components/wave-a/action-form";
-import { TimeOffReviewDecision } from "@/components/time-off-review-decision";
+import { agoLabel, dayLabel, initialsOf, QuietHeader, QuietList, QuietNav, QuietPage, QuietRow, QuietSegments } from "@/components/quiet/quiet";
 import { ManagerIssueFocus } from './manager-issue-focus';
 import { inboxFilter } from "@/lib/action-center/inbox";
 import { getWorkspace } from "@/lib/data/workspaces";
 
 const tabs = [
-  { id: "pending", label: "Pending", status: "PENDING" },
+  { id: "pending", label: "Waiting", status: "PENDING" },
   { id: "approved", label: "Approved", status: "APPROVED" },
   { id: "declined", label: "Declined", status: "DENIED" },
 ] as const;
@@ -49,71 +44,60 @@ const backTo = ({ from, filter, item }: Origin) => {
   return { href: search ? `/app/inbox?${search}` : "/app/inbox", label: "Inbox" };
 };
 
-function FocusedReview({ request, origin, error }: { request: PendingRequest; origin: Origin; error?: string }) {
-  const back = backTo(origin);
-  const from = origin.from;
-  const range = request.endDate !== request.startDate ? `${shortDate(request.startDate)}\u00a0– ${shortDate(request.endDate)}` : shortDate(request.startDate);
+/** Quiet (v4): "Thu, Oct 29 – Fri, Oct 30 · 2 days", "Thu, Oct 29 · 9:00 AM – 1:00 PM" or "Thu, Oct 29 · All day". */
+function whenLabel(request: { startDate: string; endDate: string; startTime?: string | null; endTime?: string | null }) {
   const days = Math.round((Date.parse(`${request.endDate}T12:00:00Z`) - Date.parse(`${request.startDate}T12:00:00Z`)) / 86_400_000) + 1;
-  const length = request.startTime && request.endTime ? `Partial day · ${formatTime(request.startTime)}\u00a0– ${formatTime(request.endTime)}`
-    : days === 1 ? "Full day" : `${days} full days`;
+  if (request.startTime && request.endTime) return `${dayLabel(request.startDate)} · ${formatTime(request.startTime)} – ${formatTime(request.endTime)}`;
+  return days === 1 ? `${dayLabel(request.startDate)} · All day` : `${dayLabel(request.startDate)} – ${dayLabel(request.endDate)} · ${days} days`;
+}
+
+function Decision({ id, name }: { id: string; name: string }) {
+  return <ActionForm action={reviewTimeOffAction} className="q-acts-form" label={`Review time off for ${name}`}
+    failure={{ title: "Your decision wasn’t saved", body: "Check your connection and try again. Nothing changed." }}>
+    <input type="hidden" name="requestId" value={id} />
+    <TimeOffReviewActions name={name} quiet />
+  </ActionForm>;
+}
+
+/** F6: one request on its own page. Back names where the manager came from; the decision returns there (D-5). */
+function FocusedReview({ request, origin, error }: { request: PendingRequest; origin: Origin; error?: string }) {
   const week = weekStartFor(request.startDate);
-  return <div className="nv-page premium-review" data-nv-page="">
-    <PageBand back={back} eyebrow="Time-off request" title={request.employeeName}
-      summary={`Wants ${request.endDate !== request.startDate ? `${shortDate(request.startDate, false)}\u00a0– ${shortDate(request.endDate, false)}` : shortDate(request.startDate, false)} off.`} />
-    <form action={reviewTimeOffAction} className="nv-content premium-review-form" aria-label={`Review time off for ${request.employeeName}`}>
+  return <QuietPage>
+    <QuietNav back={backTo(origin)} />
+    <QuietHeader title={request.employeeName} sub={whenLabel(request)} />
+    {error ? <p className="q-error q-first" role="alert">The request may have changed. Check it and decide again.</p> : null}
+    <QuietList style={{ marginTop: 16 }}>
+      <QuietRow title="Note" detail={request.reason ? request.reason : "No note"} />
+      <QuietRow title="That week’s schedule" href={`/app/schedule?week=${encodeURIComponent(week)}`} />
+    </QuietList>
+    <form action={reviewTimeOffAction} className="q-acts-form q-acts-form--page" aria-label={`Review time off for ${request.employeeName}`}>
       <input type="hidden" name="requestId" value={request.id} />
-      <input type="hidden" name="returnTo" value={from} />
+      <input type="hidden" name="returnTo" value={origin.from} />
       <input type="hidden" name="returnFilter" value={origin.filter} />
-      {error ? <p className="form-error premium-review-error" role="alert">The request could not be reviewed. It may have changed; review it again.</p> : null}
-      <Card id={`request-${request.id}`} title="Request" meta={<Status tone="review">Waiting</Status>}>
-        <Rows label="Request details">
-          <Row title="Dates" trailing={<span className="premium-fact">{range}</span>} />
-          <Row title="Length" trailing={<span className="premium-fact">{length}</span>} />
-        </Rows>
-      </Card>
-      <Card id="request-note" title="Note">
-        <p className="premium-review-note">{request.reason ? request.reason : "No note was added."}</p>
-      </Card>
-      <Card id="request-context" title="Before you decide">
-        <Rows label="Before you decide">
-          <Row href={`/app/schedule?week=${encodeURIComponent(week)}`} title="See that week’s schedule" meta="Who else is working those days"
-            leading={<Tile><CalendarBlankIcon size={20} weight="bold" /></Tile>} />
-          {/* r4 REQ P2-5: the way back to the list is a row here, on the content edge, not a floating link. */}
-          <Row href="/app/requests?tab=pending" title="All pending time-off requests" leading={<Tile><TrayIcon size={20} weight="bold" /></Tile>} />
-        </Rows>
-      </Card>
-      {/* Sticky inside the form, so the decision stays on screen while the facts scroll. */}
-      <TimeOffReviewDecision />
+      <TimeOffReviewActions name={request.employeeName} quiet />
     </form>
-  </div>;
+  </QuietPage>;
 }
 
 /** IS-10: a link to a request that is no longer waiting says so, instead of opening the list. */
 function DecidedReview({ origin }: { origin: Origin }) {
-  return <div className="nv-page premium-review" data-nv-page="">
-    <PageBand back={backTo(origin)} eyebrow="Time-off request" title="Already decided" summary="This request isn’t waiting for review anymore." />
-    <div className="nv-content">
-      <Card title="Where to find it">
-        <p className="premium-review-note">Approved and declined requests stay in Time off for the record.</p>
-        <p className="premium-review-more"><KitLink href="/app/requests?tab=approved">See approved time off</KitLink> · <KitLink href="/app/requests?tab=declined">See declined</KitLink></p>
-      </Card>
-    </div>
-  </div>;
+  return <QuietPage>
+    <QuietNav back={backTo(origin)} />
+    <QuietHeader title="Already decided" sub="This request isn’t waiting anymore." />
+    <QuietList style={{ marginTop: 16 }}>
+      <QuietRow title="Approved time off" href="/app/requests?tab=approved" />
+      <QuietRow title="Declined time off" href="/app/requests?tab=declined" />
+    </QuietList>
+  </QuietPage>;
 }
-
-function lengthLabel(request: { startDate: string; endDate: string; startTime?: string | null; endTime?: string | null }) {
-  const days = Math.round((Date.parse(`${request.endDate}T12:00:00Z`) - Date.parse(`${request.startDate}T12:00:00Z`)) / 86_400_000) + 1;
-  return request.startTime && request.endTime ? `Partial day · ${formatTime(request.startTime)}\u00a0– ${formatTime(request.endTime)}` : days === 1 ? "Full day" : `${days} full days`;
-}
-const rangeLabel = (request: { startDate: string; endDate: string }) =>
-  request.endDate !== request.startDate ? `${shortDate(request.startDate)}\u00a0– ${shortDate(request.endDate)}` : shortDate(request.startDate);
 
 export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, filter, item }: {
   tab?: string; error?: string; reviewed?: string; requestId?: string; from?: string; filter?: string; item?: string;
 }) {
   await requireRoles(MANAGER_ROLES);
   const selected = tabs.find(item => item.id === tab) ?? tabs[0];
-  const source=await withOperationalCompany(await requireSessionMutationProof(),()=>selected.status==='PENDING'?listPendingTimeOffRequests():listTeamTimeOffRequests(selected.status));
+  const proof = await requireSessionMutationProof();
+  const source=await withOperationalCompany(proof,()=>selected.status==='PENDING'?listPendingTimeOffRequests():listTeamTimeOffRequests(selected.status));
   if(source.state==='unavailable')return <OperationalUnavailable title="Team time off unavailable" reason={source.reason}/>;
   const requests=source.data;
 
@@ -122,57 +106,40 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
   if (focused) return <ScopedReadFrame observation={source}><FocusedReview request={focused as PendingRequest} origin={origin} error={error} /></ScopedReadFrame>;
   if (selected.status === "PENDING" && requestId && !error) return <ScopedReadFrame observation={source}><DecidedReview origin={origin} /></ScopedReadFrame>;
 
-  const count = requests.length;
-  // Codex C1: who decided and when, when the read includes it (optional until tonight's merge).
+  // Quiet (v4, approved Oct 23): the segments carry the waiting count on every tab.
+  const waiting = selected.status === "PENDING" ? requests.length
+    : await withOperationalCompany(proof, () => listPendingTimeOffRequests()).then(read => read.state === "ready" ? read.data.length : 0).catch(() => 0);
   const zone = selected.status === "PENDING" ? "UTC" : await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
+  // Codex C1: who decided and when, once the read includes it: "Approved by Dana Kim · Oct 2".
   const decidedLine = (request: object) => {
     const { reviewerName, reviewedAt } = request as { reviewerName?: string; reviewedAt?: string };
     if (!reviewerName && !reviewedAt) return null;
     let on = "";
-    try { on = reviewedAt ? new Intl.DateTimeFormat("en-US", { timeZone: zone, month: "short", day: "numeric" }).format(new Date(reviewedAt)).replace(" ", "\u00a0") : ""; } catch { on = ""; }
-    return <span className="wa-row-note">{`${selected.id === "approved" ? "Approved" : "Declined"}${reviewerName ? ` by ${reviewerName}` : ""}${on ? ` · ${on}` : ""}`}</span>;
+    try { on = reviewedAt ? new Intl.DateTimeFormat("en-US", { timeZone: zone, month: "short", day: "numeric" }).format(new Date(reviewedAt)) : ""; } catch { on = ""; }
+    return `${selected.id === "approved" ? "Approved" : "Declined"}${reviewerName ? ` by ${reviewerName}` : ""}${on ? ` · ${on}` : ""}`;
   };
-  const plural = (n: number) => `${n}\u00a0${n === 1 ? "request" : "requests"}`;
-  // Phase 3.5 Wave A: the full Time-off list on the kit. Pending requests are cards with the decision on them;
-  // approved and declined are one record card each. The single-request review above is unchanged.
+
   return (<ScopedReadFrame observation={source}>
-    <div className="nv-page wa-page wa-timeoff" data-nv-page="">
-      <PageBand title="Time off" overlap={false}
-        summary={selected.id === "pending" ? (count ? `${plural(count)} waiting for your review.` : "Nothing is waiting for your review.") : `Your team’s ${selected.label.toLowerCase()} time off, latest dates first.`}
-        extra={<><RequestPagesNav current="/app/requests" /><FilterPills label="Time off sections" items={tabs.map(item => ({ href: `/app/requests?tab=${item.id}`, label: item.label, current: selected.id === item.id }))} /></>} />
-      <div className="nv-content">
-        <ManagerIssueFocus prefix="request-" />
-        {error ? <Notice tone="urgent" title="That decision wasn’t saved">The request may have changed. Check it and decide again.</Notice> : null}
-        {reviewed ? <Notice tone="done" title="Decision saved">The employee can see it in their requests.</Notice> : null}
-        {selected.id === "pending" ? (count ? <div className="wa-grid">{requests.map(request => (
-          <div className="wa-target" id={`request-${request.id}`} tabIndex={-1} key={request.id}>
-            <Card title={request.employeeName} meta={<Status tone="review">Waiting</Status>}>
-              <Facts label={`Time off for ${request.employeeName}`}>
-                <Fact label="Dates">{rangeLabel(request)}</Fact>
-                <Fact label="Length">{lengthLabel(request)}</Fact>
-                {request.reason ? <Fact label="Note">{request.reason}</Fact> : null}
-              </Facts>
-              <ActionForm action={reviewTimeOffAction} className="wa-card-body wa-decision-form" label={`Review time off for ${request.employeeName}`}
-                failure={{ title: "Your decision wasn’t saved", body: "Check your connection and try again. Nothing changed." }}>
-                <input type="hidden" name="requestId" value={request.id} />
-                <TimeOffReviewActions name={request.employeeName} />
-                <KitLink href={`/app/requests?tab=pending&requestId=${encodeURIComponent(request.id)}`}>Open request and that week’s schedule</KitLink>
-              </ActionForm>
-            </Card>
-          </div>
-        ))}</div> : <Card title="You’re all caught up">
-          <div className="wa-card-body"><p className="wa-text wa-muted">New time-off requests show up here and in your Inbox.</p></div>
-        </Card>) : (
-          <Card title={selected.label} meta={plural(count)} id={`timeoff-${selected.id}`}>
-            {count ? <Rows label={`${selected.label} time off`}>
-              {requests.map(request => (
-                <Row key={request.id} title={request.employeeName}
-                  meta={<><MetaParts text={`${rangeLabel(request)} · ${lengthLabel(request)}`} />{request.reason ? <span className="wa-row-note">Note: {request.reason}</span> : null}{decidedLine(request)}</>} />
-              ))}
-            </Rows> : <div className="wa-card-body"><p className="wa-text wa-muted">{`No ${selected.label.toLowerCase()} time off yet. Decisions you make show up here.`}</p></div>}
-          </Card>
-        )}
-      </div>
-    </div>
+    <QuietPage className="q-timeoff">
+      <QuietNav back={backTo(origin)} />
+      <QuietHeader title="Time off" />
+      <QuietSegments label="Time off sections" items={tabs.map(item => ({ href: `/app/requests?tab=${item.id}`, current: selected.id === item.id,
+        label: item.id === "pending" && waiting ? `Waiting · ${waiting}` : item.label }))} />
+      {error ? <p className="q-error q-first" role="alert">That decision wasn’t saved. The request may have changed; check it and decide again.</p> : null}
+      {reviewed ? <p className="q-help q-first" role="status">Decision saved.</p> : null}
+      {selected.id === "pending" ? (requests.length ? <ul className="q-list q-requests" aria-label="Waiting time off">{requests.map(request => {
+        const sent = (request as { createdAt?: string }).createdAt;
+        return <li key={request.id} id={`request-${request.id}`} tabIndex={-1} className="q-request">
+          <QuietRow bare avatar={initialsOf(request.employeeName)} title={request.employeeName} detail={whenLabel(request)}
+            value={sent ? agoLabel(sent, source.observedAt) : undefined} href={`/app/requests?tab=pending&requestId=${encodeURIComponent(request.id)}`} chevron={false} />
+          <Decision id={request.id} name={request.employeeName} />
+        </li>;
+      })}</ul> : <p className="q-empty q-first">You’re all caught up.</p>)
+      : requests.length ? <QuietList label={`${selected.label} time off`} style={{ marginTop: 16 }}>{requests.map(request => (
+          <QuietRow key={request.id} avatar={initialsOf(request.employeeName)} title={request.employeeName}
+            detail={decidedLine(request) ? <>{whenLabel(request)}<span className="q-rt__line">{decidedLine(request)}</span></> : whenLabel(request)} />
+        ))}</QuietList>
+      : <p className="q-empty q-first">{`No ${selected.label.toLowerCase()} time off yet.`}</p>}
+    </QuietPage>
   </ScopedReadFrame>);
 }

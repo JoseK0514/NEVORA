@@ -1,0 +1,26 @@
+@title Employee
+<style>
+.who{display:flex;align-items:center;gap:16px;margin:12px 20px 0}
+.who h1{margin:0;font-size:28px;line-height:34px;font-weight:700;letter-spacing:-.5px}
+.who p{margin:2px 0 0;font-size:15px;line-height:20px;color:#6B6B6B}
+.qa{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:24px 20px 0}
+.qa .bs{height:40px;border-radius:12px}
+</style>
+<div class="p">
+  <div class="nav"><a class="l" href="#">{{i:CaretLeft:s}}Team</a><span></span><a class="r" href="#">Edit</a></div>
+  <div class="who"><span class="av lg">AR</span><div><h1>Alexandra Rivera</h1><p>Front desk · Main Office</p></div></div>
+  <div class="qa"><a class="bs" href="#">Call</a><a class="bs" href="#">Message</a><a class="bs" href="#">Shifts</a></div>
+  <div class="grp">Details</div>
+  <div>
+    <div class="row one"><span class="rt"><b>Employee ID</b></span><span class="rv l">10482</span></div>
+    <div class="row one"><span class="rt"><b>Phone</b></span><span class="rv l">787-555-0101</span></div>
+    <div class="row one"><span class="rt"><b>Email</b></span><span class="rv ph">None</span></div>
+    <div class="row one"><span class="rt"><b>Role</b></span><span class="rv l">Employee</span></div>
+  </div>
+  <div class="grp">Access</div>
+  <div>
+    <a class="row one" href="#"><span class="rt"><b>Clocker PIN</b></span><span class="rv l">Set</span>{{i:CaretRight:s chev}}</a>
+    <a class="row one" href="#"><span class="rt"><b>Account</b></span><span class="rv l">Active</span>{{i:CaretRight:s chev}}</a>
+  </div>
+  {{tabs:Team}}
+</div>

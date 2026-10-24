@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import { AuthBrand } from "@/components/auth-brand";
 import { BrandLegal } from "@/components/brand-legal";
 import { NUVORA_BRAND } from "@/lib/brand";
-import { POLICY_DOCUMENTS, POLICY_FACTS, POLICY_OPERATOR, policiesVisible, type Block, type Inline, type PolicyDocument } from "@/lib/legal/policies";
+import { POLICY_DOCUMENTS, POLICY_FACTS, POLICY_OPERATOR, SUPPORT_EMAIL, policiesVisible, type Block, type Inline, type PolicyDocument } from "@/lib/legal/policies";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
+import { QuietHeader, QuietNav } from "@/components/quiet/quiet";
 
 function Run({ run }: { run: Inline }) {
   if (typeof run === "string") return <>{run}</>;
@@ -18,7 +20,7 @@ function Run({ run }: { run: Inline }) {
 
 const Runs = ({ runs }: { runs: Inline[] }) => <>{runs.map((run, index) => <Run key={index} run={run} />)}</>;
 
-function BlockView({ block }: { block: Block }) {
+export function BlockView({ block }: { block: Block }) {
   return "p" in block ? <p><Runs runs={block.p} /></p> : <ul>{block.list.map((item, index) => <li key={index}><Runs runs={item} /></li>)}</ul>;
 }
 
@@ -61,3 +63,40 @@ export function LegalDocumentPage({ doc, action }: { doc: PolicyDocument; action
 
 const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 export const shortTitle = (doc: PolicyDocument) => doc.slug === "account-deletion" ? "Account deletion" : doc.title;
+
+/** Quiet (v4, approved Oct 23): a policy page on the white sign-in page. Back to Sign in, the title and its effective date,
+ * then one row per section that opens its text in place; Questions ends the list with the support email. */
+export function QuietLegalDocumentPage({ doc, action }: { doc: PolicyDocument; action?: ReactNode }) {
+  if (!policiesVisible()) notFound();
+  const effective = POLICY_FACTS.EFFECTIVE_DATE;
+  const sub = doc.effective ? `Effective ${effective ?? "[CONFIRM_EFFECTIVE_DATE]"} · ${POLICY_OPERATOR}` : POLICY_OPERATOR;
+  return (
+    <main className="q-page q-auth q-doc" data-nv-page="">
+      <div className="q-auth__col">
+        <QuietNav back={{ href: "/login", label: "Sign in" }} />
+        <QuietHeader title={doc.title} sub={sub} titleId="legal-title" />
+        <p className="q-sr">{doc.summary}</p>
+        {action ? <div className="q-doc__action">{action}</div> : null}
+        <ul className="q-list q-doc__list" aria-labelledby="legal-title">
+          {doc.sections.map(section => <li key={section.heading}>
+            <details className="q-details" id={`legal-${slug(section.heading)}`}>
+              <summary className="q-row q-row--one"><span className="q-rt"><b>{section.heading}</b></span><CaretRightIcon className="q-chev" aria-hidden="true" /></summary>
+              <div className="q-doc__body">{section.blocks.map((block, index) => <BlockView key={index} block={block} />)}</div>
+            </details>
+          </li>)}
+          {doc.slug === "privacy" ? <li><a className="q-row q-row--one" href={`mailto:${SUPPORT_EMAIL}`}><span className="q-rt"><b>Questions</b></span><span className="q-rv">{SUPPORT_EMAIL}</span></a></li> : null}
+        </ul>
+        <QuietPolicyLinks current={doc.slug} />
+      </div>
+    </main>
+  );
+}
+
+/** Quiet (v4): the policy pages link each other (and Account deletion) in one line at the end. */
+export function QuietPolicyLinks({ current }: { current: PolicyDocument["slug"] }) {
+  return <nav className="q-doc__links" aria-label="NEVORA policies and help">
+    {POLICY_DOCUMENTS.map((other, index) => <span key={other.slug}>{index ? " · " : null}{other.slug === current
+      ? <span aria-current="page">{shortTitle(other)}</span>
+      : <Link href={`/${other.slug}`}>{shortTitle(other)}</Link>}</span>)}
+  </nav>;
+}

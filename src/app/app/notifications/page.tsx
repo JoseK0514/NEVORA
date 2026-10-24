@@ -2,9 +2,7 @@ import {redirect} from 'next/navigation';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
 import {EmployeeAccountPanel} from '@/components/employee-account-panel';
-import Link from 'next/link';
-import styles from './notifications.module.css';
-import {PageBand} from '@/components/kit/kit';
+import {QuietHeader,QuietNav,QuietPage} from '@/components/quiet/quiet';
 export const metadata = { title: "Notifications" };
 
 export default async function NotificationsPage(){
@@ -14,6 +12,7 @@ export default async function NotificationsPage(){
  // TC-P3-34: soft hyphens, because browsers don't hyphenate a capitalised word; at 200% text on a phone the title breaks "Notifica-tions", not mid-letter.
  // Signature (phase 2): employees and Leads get the Signature page (its own band and sheet); managers keep the clean page.
  if(!manager)return <EmployeeAccountPanel key={authority} kind="notifications" authority={authority} endpoint="/api/notifications" signature/>;
- return <div className={`nv-page employee-view premium-notifications ${styles.page}${manager?' cm-page cm-notifications':''}`} data-nv-page=""><PageBand title={"Notifi\u00adca\u00adtions"} summary="Schedule changes, requests and team updates in one place." overlap={false}/>
-  <div className="premium-employee-content">{manager?<p className="premium-card-lead"><Link href="/app/inbox">Decisions are in your Inbox</Link></p>:null}<EmployeeAccountPanel key={authority} kind="notifications" authority={authority} endpoint="/api/notifications" markReadAllowed={manager}/></div></div>;
+ // Quiet (v4, approved Oct 23): back to Today, the title, then the list.
+ return <QuietPage><QuietNav back={{href:'/app',label:'Today'}}/><QuietHeader title={"Notifi\u00adca\u00adtions"}/>
+  <EmployeeAccountPanel key={authority} kind="notifications" authority={authority} endpoint="/api/notifications" markReadAllowed/></QuietPage>;
 }

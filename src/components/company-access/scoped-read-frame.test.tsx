@@ -17,6 +17,7 @@ vi.mock('react',async original=>({
  useEffect:(effect:()=>void|(()=>void))=>{fixture.effects.push(effect);},
 }));
 vi.mock('next/navigation',()=>({useRouter:()=>fixture.router}));
+vi.mock('../app-navigation',()=>({useAppNavigation:()=>null}));
 vi.mock('@/lib/private-snapshot-client',()=>({
  createPrivateSnapshotController:()=>({start:fixture.start,pause:fixture.pause,stop:fixture.stop}),
 }));

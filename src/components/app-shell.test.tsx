@@ -83,15 +83,15 @@ it.each(["EMPLOYEE", "LEAD"] as const)("gives %s Home, Schedule, Requests and Ho
   expect(html).not.toContain("sidebar-mantra");
 });
 
+// Quiet (v4, approved Oct 23): More is a page (/app/more), not a sheet over the tabs.
 it.each(["MANAGER", "OWNER"] as const)("gives %s Home, Schedule, Inbox, Team and More tabs", (role) => {
   const { html, mobile } = render(role);
-  const [primary] = mobile.split('id="manager-more-navigation"');
-  expect([...primary.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
-    "/app", "/app/schedule", "/app/inbox", "/app/employees",
+  expect([...mobile.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
+    "/app", "/app/schedule", "/app/inbox", "/app/employees", "/app/more",
   ]);
-  expect(primary).toContain('<span>Inbox</span>');
-  expect(primary).toContain('aria-label="More navigation"');
-  expect(primary).toContain('<span>More</span>');
+  expect(mobile).toContain('<span>Inbox</span>');
+  expect(mobile).toContain('<span>More</span>');
+  expect(mobile).not.toContain('manager-more-navigation');
   expect(html).not.toContain("employee-shell");
   expect(html).not.toContain("employee-more-navigation");
   expect(html).not.toContain("sidebar-mantra");
@@ -152,50 +152,36 @@ it('groups authorized owner destinations and provides an accessible sidebar cont
  expect(html).toContain('aria-expanded="true"');
 });
 
-it.each(['MANAGER','OWNER'] as const)('makes every remaining %s destination reachable from the tab-bar More', role=>{
+it.each(['MANAGER','OWNER'] as const)('links %s More to its page and keeps Profile out of the sidebar', role=>{
  const {html,mobile}=render(role);
  const header=html.split('<header class="mobile-header">')[1].split('</header>')[0];
- expect(header).not.toContain('manager-more-navigation');
- expect(mobile).toContain('popoverTarget="manager-more-navigation"');
- const menu=mobile.split('id="manager-more-navigation"')[1] ?? '';
- const hrefs=[...menu.matchAll(/href="([^"]+)"/g)].map(match=>match[1]);
- // The same destinations as before, grouped by job (MG3), plus Home's team tools at their old addresses (clean Manager v3).
- const tools=['/app?view=attendance','/app?view=team','/app?view=activity','/app/clocker-recovery','/app/account-recovery'];
- expect([...hrefs].sort()).toEqual(['/app/updates','/app/timecards','/app/reports','/app/payroll-export','/app/schedule/templates','/app/schedule/settings',...(role==='OWNER'?['/app/settings']:[]),'/app/profile',...tools].sort());
- // v3: the account (Profile) leads the sheet, as in iOS Settings; the rest follow by job.
- expect(hrefs).toEqual(['/app/profile','/app/timecards','/app/payroll-export','/app/reports','/app/schedule/templates','/app/schedule/settings','/app/updates',...tools,...(role==='OWNER'?['/app/settings']:[])]);
- expect(menu).toContain('role="dialog"');expect(menu).toContain('aria-modal="true"');
- // Phase 3.5: Owners and Managers reach their Profile from More and the desktop account menu, never the sidebar.
+ expect(header).not.toContain('href="/app/more"');
+ expect(mobile.match(/href="\/app\/more"/g)).toHaveLength(1);
+ // Owners and Managers reach their Profile from More and the desktop account menu, never the sidebar.
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
  expect(sidebar).not.toContain('href="/app/profile"');
  expect(html.split('id="portal-account-menu"')[1]).toContain('href="/app/profile" class="nevora-action-menu-item"');
- expect(menu).toContain('aria-label="Time and pay"');
- expect(menu).toContain('aria-label="Team tools"');
 });
 
 it.each(['EMPLOYEE','LEAD'] as const)('push_disabled_profile_and_inbox_accessible shell affordances for %s',role=>{
  const {html}=render(role);expect(html).toContain('href="/app/profile"');expect(html).toContain('href="/app/notifications"');expect(html).not.toContain('portal-device-settings');
 });
 
-it.each(['MANAGER','OWNER'] as const)('keeps %s Updates in the mobile menu with nested routes selected',role=>{
+it.each(['MANAGER','OWNER'] as const)('lights %s More on Updates and its nested routes',role=>{
  const {html,mobile}=render(role,'/app/updates/compose');
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
- const [direct,menu]=mobile.split('id="manager-more-navigation"');
- expect(direct).not.toContain('href="/app/updates"');
- expect(direct).toContain('class="mobile-nav-link manager-more-trigger active"');
- expect(menu).toMatch(/href="\/app\/updates"[^>]*aria-current="page"/);
- expect(menu.match(/href="\/app\/updates"/g)).toHaveLength(1);
+ expect(mobile).not.toContain('href="/app/updates"');
+ expect(mobile).toMatch(/href="\/app\/more"[^>]*class="mobile-nav-link manager-more-trigger active"|class="mobile-nav-link manager-more-trigger active"[^>]*href="\/app\/more"/);
  expect(sidebar).toMatch(/href="\/app\/updates"[^>]*aria-current="true"/);
  expect(sidebar.match(/href="\/app\/updates"/g)).toHaveLength(1);
 });
 
-it.each(['MANAGER','OWNER'] as const)('gives %s one More menu in the tab bar and preserves the authorized notification destination',role=>{
+it.each(['MANAGER','OWNER'] as const)('gives %s one More link in the tab bar and preserves the authorized notification destination',role=>{
  const html=renderToStaticMarkup(<AppShell workspaceName="QA" notificationAuthority="fictional-view-authority" operationalAuthority={company} user={{id:'actor',firstName:'Sam',lastName:'Cruz',role}}>Content</AppShell>);
  const header=html.split('<header class="mobile-header">')[1].split('</header>')[0];
  const mobile=html.split('aria-label="Mobile navigation"')[1].split('</nav>')[0];
  expect(header.match(/href="\/app\/notifications"/g)).toHaveLength(1);
- expect(header).not.toContain('aria-label="More navigation"');
- expect(html.match(/aria-label="More navigation"/g)?.length).toBe(2); // trigger and its menu
+ expect(mobile.match(/href="\/app\/more"/g)).toHaveLength(1);
  expect(mobile).not.toContain('nevora-action-menu-chevron');
  expect(header).toContain('class="portal-account-menu"');
  expect(header).not.toContain('role-chip');

@@ -39,19 +39,19 @@ it("keeps native selects and role options (presentation smoke)", async () => {
   const manager = renderToStaticMarkup(
     await NewEmployeePage({ searchParams: Promise.resolve({}) }),
   );
-  expect(manager.match(/class="nevora-select"/g)).toHaveLength(2);
+  // Quiet (v4): Role and Location are picker rows (native selects); the sheet's Save submits the form.
+  expect(manager.match(/class="q-select-row__control"/g)).toHaveLength(2);
   expect(manager).not.toContain('value="OWNER"');
   expect(manager).toMatch(/name="id"[^>]*maxLength="128"|maxLength="128"[^>]*name="id"/);
   expect(manager.match(/maxLength="160"/g)).toHaveLength(2);
   expect(manager).toMatch(/type="email"[^>]*maxLength="254"|maxLength="254"[^>]*type="email"/);
-  expect(manager).toContain("contact, access and scheduling");
-  expect(manager).not.toContain("Only scheduling information is collected");
+  expect(manager).toContain('form="new-employee-form"');
 
   m.role = "OWNER";
   const owner = renderToStaticMarkup(
     await NewEmployeePage({ searchParams: Promise.resolve({}) }),
   );
-  expect(owner.match(/class="nevora-select"/g)).toHaveLength(2);
+  expect(owner.match(/class="q-select-row__control"/g)).toHaveLength(2);
   expect(owner).toContain('value="OWNER"');
 });
 
@@ -64,10 +64,9 @@ it("preserves submitted field names, required contact fields and optional email"
   expect(fields.filter(field => /name="(?:id|firstName|lastName|phone)"/.test(field)).every(field => field.includes('required=""'))).toBe(true);
   expect(fields.find(field => field.includes('name="email"'))).not.toContain('required=""');
   expect(html).toContain('value="EMPLOYEE" selected=""');
-  // Back (to Team) and Cancel.
-  expect(html.match(/href="\/app\/employees"/g)).toHaveLength(2);
-  expect(html).toContain("An Owner sends the account invitation from their profile.");
-  expect(html).toContain("A registered email is required before an invitation can be sent.");
+  // Quiet (v4): a sheet, so Cancel (to Team) is the one way back.
+  expect(html.match(/href="\/app\/employees"/g)).toHaveLength(1);
+  expect(html).toContain('aria-label="Email, optional"');
 });
 
 it("blocks creation when no active location exists and supplies the Owner setup route", async () => {

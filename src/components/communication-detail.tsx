@@ -13,7 +13,9 @@ import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {useCommunicationAction,useCommunicationResource,type CommunicationMode,type CommunicationNotice} from '../lib/communications/client';
 import type {CommunicationRead} from '../lib/communications/types';
-import {MetaParts,PageBand,Status,Tile} from './kit/kit';
+import {MetaParts,Status,Tile} from './kit/kit';
+import {QuietNav} from './quiet/quiet';
+import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {SkeletonRows} from './skeleton';
 import {PendingLabel} from './employee-submit-button';
 import {revealFeedback} from '@/lib/reveal-feedback';
@@ -56,6 +58,8 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
  const failedNow=!ready&&!(pending&&!read);
  useEffect(()=>{if(failedNow){hadFailure.current=true;return;}if(ready&&hadFailure.current){hadFailure.current=false;if(!document.activeElement||document.activeElement===document.body)surface.current?.focus({preventScroll:true});}},[failedNow,ready]);
  const stamp=(at:string)=>keepWhole(new Intl.DateTimeFormat('en-US',{timeZone:ready?.timeZone??'UTC',dateStyle:'medium',timeStyle:'short'}).format(new Date(at)));
+ // Quiet (v4): "Oct 23, 5:02 PM" — the year only when it isn't this year.
+ const short=(at:string)=>{const d=new Date(at),zone=ready?.timeZone??'UTC';const sameYear=new Intl.DateTimeFormat('en-US',{timeZone:zone,year:'numeric'}).format(d)===new Intl.DateTimeFormat('en-US',{timeZone:zone,year:'numeric'}).format(new Date(ready?.observedAt??at));return keepWhole(new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',...(sameYear?{}:{year:'numeric'}),hour:'numeric',minute:'2-digit'}).format(d));};
  if(!ready){
   const loading=pending&&!read;
   const offline=paused&&typeof navigator!=='undefined'&&navigator.onLine===false;
@@ -72,9 +76,14 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
     </section>
    </div>;
   if(signature)return <SigPage className={cd.cdRoot} band={<SigBand eyebrow="Update"><h1 className={cd.cdTitle}>{title}</h1><p className="sg-sub"><span>{description}</span></p><Link className="sg-band-link" href="/app/updates"><CaretLeftIcon size={14} aria-hidden="true"/>Updates</Link></SigBand>}>{failedBody}</SigPage>;
+  // Quiet (v4): the state in words and one way forward.
   return <>
-   <PageBand back={{href:'/app/updates',label:'Updates'}} eyebrow="Update" title={title} summary={description}/>
-   {failedBody}
+   <QuietNav back={{href:'/app/updates',label:'Updates'}}/>
+   <div className="q-hd"><h1 style={{fontSize:28,lineHeight:'34px'}}>{title}</h1><p>{description}</p></div>
+   <section ref={surface} aria-busy={loading} aria-label={title}>
+    <p className="q-sr" role="status">{title}. {description}</p>
+    {loading?null:signedOut||read?.state==='unauthorized'||notice==='blocked'?<Link href="/login" className="q-btn q-btn--sec">Sign in</Link>:read?.state==='withdrawn'?<Link href="/app/updates" className="q-btn q-btn--sec">All updates</Link>:<button type="button" className="q-btn q-btn--sec" onClick={onRefresh} disabled={paused||pending}>{notice==='conflict'?'Review latest':'Try again'}</button>}
+   </section>
   </>;
  }
  const required=ready.acknowledgement==='REQUIRED';
@@ -128,9 +137,33 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
  if(signature)return <SigPage className={cd.cdRoot} band={<SigBand eyebrow={category}><h1 className={cd.cdTitle}>{ready.title}</h1>
   <p className={cd.cdByline}><span aria-hidden="true">{ready.authorContext.split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]!.toUpperCase()).join('')}</span><span><MetaParts text={`${ready.authorContext} · Published ${stamp(ready.publishedAt)}`}/></span></p>
   <Link className="sg-band-link" href="/app/updates"><CaretLeftIcon size={14} aria-hidden="true"/>Updates</Link></SigBand>}>{article}</SigPage>;
+ // Quiet (v4, approved Oct 23): the title, when and whether it must be read, the message, who has read it, Withdraw.
+ const people=ready.management?.recipients;
  return <>
-  <PageBand back={{href:'/app/updates',label:'Updates'}} eyebrow={category} title={ready.title} summary={<MetaParts text={`${ready.authorContext} · Published ${stamp(ready.publishedAt)}`}/>}/>
-  {article}
+  <QuietNav back={{href:'/app/updates',label:'Updates'}} right={ready.management?<Link className="q-nav__r" href={'/app/updates/compose?update='+ready.id}>Edit</Link>:undefined}/>
+  <article ref={surface} className="wb-focus-target" tabIndex={-1} data-update-revision={ready.revisionId}>
+   <div className="q-hd"><h1 style={{fontSize:28,lineHeight:'34px'}}>{ready.title}</h1>
+    <p>{`${short(ready.publishedAt)} · ${required?'Must be read':'Optional'}`}<span className="q-sr">{` · ${category} · ${ready.authorContext}`}</span></p></div>
+   <div className="q-body" style={{whiteSpace:'pre-wrap'}}><p>{ready.body}</p></div>
+   {ready.editedAt||ready.expiresAt?<p className="q-help">{[ready.editedAt?`Edited ${stamp(ready.editedAt)}`:null,ready.expiresAt?`Available until ${stamp(ready.expiresAt)}`:null].filter(Boolean).join(' · ')}</p>:null}
+   <p role="status" aria-live="polite" className="q-sr">{pending?'Confirming your review…':''}</p>
+   {people?<ul className="q-list" style={{marginTop:8}}><li><details className="q-details" aria-label="Acknowledgement status"><summary className="q-row q-row--one"><span className="q-rt"><b>Read by</b></span><span className="q-rv q-rv--l">{`${count} of ${people.length}`}</span><CaretRightIcon className="q-chev" aria-hidden="true"/></summary>
+    {people.length?<ul className="q-list">{people.map((recipient,index)=><li key={index}><div className="q-row q-row--one" style={{paddingLeft:36}}><span className="q-rt"><b>{recipient.name}</b></span><span className="q-rv q-rv--l">{recipient.acknowledgedAt?'Read':'Not yet'}</span></div></li>)}</ul>:<p className="q-help" style={{marginBottom:12}}>No recipients are available in your view.</p>}
+   </details></li></ul>:acknowledged?<p className="q-note" role="status"><b className="q-note__title">Acknowledged</b><span className="q-note__body">{stamp(ready.ownAcknowledgedAt!)}</span></p>
+    :required?<section ref={receiptRef} tabIndex={-1} aria-label="Your review status"><ul className="q-list" style={{marginTop:8}}><li><label className="q-row q-row--one"><span className="q-rt"><b>I have reviewed this update</b></span><input type="checkbox" role="switch" className="q-tog" checked={reviewed} disabled={locked} onChange={e=>setReviewed(e.target.checked)} aria-describedby="communication-acknowledgement-help"/></label></li></ul>
+      <p className="q-sr" id="communication-acknowledgement-help">{ACK_WORD} confirms receipt of this version. It does not indicate agreement or attendance.</p>
+      <button type="button" className="q-btn" disabled={!reviewed||notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('ACKNOWLEDGE');}}><PendingLabel pending={pending} pendingText="Confirming…">Acknowledge update</PendingLabel></button></section>
+    :markedRead?<p className="q-note" role="status"><b className="q-note__title">Marked read</b></p>
+    :<button type="button" className="q-btn q-btn--sec" disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('MARK_READ');}}><PendingLabel pending={pending} pendingText="Saving…">Mark read</PendingLabel></button>}
+   {ready.sentCount!==undefined?<p className="q-sr">Sent to {ready.sentCount} {ready.sentCount===1?'recipient':'recipients'}.</p>:null}
+   {ready.canWithdraw?(confirmWithdraw?<div role="group" aria-labelledby="withdraw-confirm-text" style={{marginTop:24}}>
+     <p className="q-empty" id="withdraw-confirm-text">{audience?`Withdraw this update for ${audience} ${audience===1?'person':'people'}? They won’t see it anymore.`:'Withdraw this update? People won’t see it anymore.'}</p>
+     <button ref={confirmRef} type="button" className="q-btn" style={{background:'#C42B1C'}} disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('WITHDRAW');}}>{pending?'Withdrawing…':'Withdraw update'}</button>
+     <button type="button" className="q-btn q-btn--quiet" disabled={pending} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(false);}}>Keep update</button></div>
+    :<button ref={withdrawRef} type="button" className="q-btn q-btn--danger" disabled={locked} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(true);}}>Withdraw update</button>):null}
+   {notice==='unknown'?<section ref={noticeRef} role="status"><p className="q-note"><b className="q-note__title">Result not yet confirmed</b><span className="q-note__body">Check status before trying again.</span></p><button type="button" className="q-btn q-btn--sec" aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('LOOKUP');}}>{pending?'Checking…':'Check status'}</button></section>
+    :notice==='unavailable'?<section ref={noticeRef} role="alert"><p className="q-note" data-tone="urgent"><b className="q-note__title">Unable to confirm</b><span className="q-note__body">Try again.</span></p><button type="button" className="q-btn q-btn--sec" aria-disabled={pending||undefined} onClick={()=>{if(!pending)onRefresh();}}>Try again</button></section>:null}
+  </article>
  </>;
 }
 function CurrentDetail({read,mode,authority,refresh}:{read:CommunicationRead;mode:CommunicationMode;authority:string;refresh:()=>void}){
@@ -152,5 +185,5 @@ export function CommunicationDetail({id,authority,mode}:{id:string;authority:str
   if(article)revealFeedback(article);
  },[read]);
  const retry=()=>{recovery.current=document.activeElement instanceof HTMLElement?document.activeElement:null;resource.refresh();};
- return <div ref={root} className="nv-page wb-page wb-narrow wb-update" data-nv-page="">{read?<CurrentDetail key={read.state==='ready'?read.revisionId:'unavailable'} read={read} mode={mode} authority={authority} refresh={resource.refresh}/>:<CommunicationDetailView read={resource.state.snapshot?.state==='unavailable'?{state:['access_denied','session_ended'].includes(resource.state.snapshot.reason)?'unauthorized':resource.state.snapshot.reason==='withdrawn'?'withdrawn':'unavailable',reason:resource.state.snapshot.reason}:null} paused={resource.state.paused} pending={resource.state.refreshing} notice={null} onAction={()=>{}} onRefresh={retry} signature={mode==='employee'}/>}</div>;
+ return <div ref={root} className={mode==='manager'?'q-page wb-update':'nv-page wb-page wb-narrow wb-update'} data-nv-page="">{read?<CurrentDetail key={read.state==='ready'?read.revisionId:'unavailable'} read={read} mode={mode} authority={authority} refresh={resource.refresh}/>:<CommunicationDetailView read={resource.state.snapshot?.state==='unavailable'?{state:['access_denied','session_ended'].includes(resource.state.snapshot.reason)?'unauthorized':resource.state.snapshot.reason==='withdrawn'?'withdrawn':'unavailable',reason:resource.state.snapshot.reason}:null} paused={resource.state.paused} pending={resource.state.refreshing} notice={null} onAction={()=>{}} onRefresh={retry} signature={mode==='employee'}/>}</div>;
 }

@@ -3,13 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
-import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
+import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { toast } from "./toaster";
 import { MODULES, MODULE_IDS, blockerText, type ModuleBlockers, type ModuleId } from "@/lib/workspace-presentation/modules";
 import { WORD_PRESETS, type WordPresetId } from "@/lib/workspace-presentation/words";
 import { Notice } from "@/app/app/settings/wave-c-kit";
-import { ButtonLabel, FormActions, SwitchRow } from "@/app/app/settings/wave-c-form";
+import { SwitchRow } from "@/app/app/settings/wave-c-form";
 
 /** Owner editor for company words and modules (B2), Wave C kit layout. The server re-checks
  * every rule; a module with requests still waiting cannot be turned off. */
@@ -70,50 +69,45 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
   }
 
   const changed = wordsChanged || modulesChanged;
+  // Quiet (v4, approved Oct 23): no Save button. A choice or a switch saves a moment after it changes, and says so if it can't.
+  useEffect(() => {
+    if (!changed || busy || notice?.tone === "error") return;
+    const timer = window.setTimeout(() => { void save(); }, 400);
+    return () => window.clearTimeout(timer);
+  });
   return <div className="wc-main" data-revision={revision}>
-    <section className="nv-card" aria-labelledby="features-words-title">
-      <div className="nv-card__head"><h2 className="nv-card__title" id="features-words-title">Your team’s words</h2></div>
-      <div className="nv-card__body wc-fields">
-        <p className="wc-muted" id="features-words-help">Used in the menu, settings and page titles. Spanish versions are ready for when NEVORA speaks Spanish.</p>
-        <div className="wc-choices" role="radiogroup" aria-labelledby="features-words-title" aria-describedby="features-words-help">
-          {WORD_PRESETS.map(p => <label key={p.id} className="wc-choice" data-checked={words === p.id || undefined}>
-            <input type="radio" name="word-preset" value={p.id} checked={words === p.id} disabled={busy} onChange={() => { pending.current = null; setNotice(null); setWords(p.id); }} />
-            <span className="wc-choice__text">
-              <span className="wc-choice__name">{p.name}</span>
-              <span className="wc-choice__detail">{p.en.people} · {p.en.locations}</span>
-            </span>
-          </label>)}
-        </div>
-      </div>
+    <section aria-labelledby="features-words-title">
+      <div className="q-grp"><h2 id="features-words-title">Your team’s words</h2></div>
+      <ul className="q-list" role="radiogroup" aria-labelledby="features-words-title">
+        {WORD_PRESETS.map(p => <li key={p.id}><label className="q-row" data-checked={words === p.id || undefined}>
+          <input className="q-sr" type="radio" name="word-preset" value={p.id} checked={words === p.id} disabled={busy} onChange={() => { pending.current = null; setNotice(null); setWords(p.id); }} />
+          <span className="q-rt"><b>{p.name}</b><i>{`${p.en.people}, ${p.en.locations.toLowerCase()}`}</i></span>
+          {words === p.id ? <CheckIcon className="q-check" aria-hidden="true" /> : null}
+        </label></li>)}
+      </ul>
     </section>
 
-    <section className="nv-card" aria-labelledby="features-modules-title" id="features">
-      <div className="nv-card__head"><h2 className="nv-card__title" id="features-modules-title">Features</h2></div>
-      <div className="nv-card__body">
-        <p className="wc-muted">Turning a feature off hides it everywhere and stops it on the server. Turn it back on any time; nothing is lost.</p>
-      </div>
-      <ul className="nv-rows wc-switches">
+    <section aria-labelledby="features-modules-title" id="features">
+      <div className="q-grp"><h2 id="features-modules-title">Features</h2></div>
+      <ul className="q-list">
         {MODULES.map(m => {
           const on = !off.includes(m.id), waiting = blockers[m.id] ?? 0;
           const unavailable = m.requires === "payroll" && !payrollEnabled;
           const locked = on && waiting > 0 && !disabled.includes(m.id);
           const noteId = `module-${m.id}-note`;
-          const note = unavailable ? "Available when payroll is turned on for your company." : locked ? blockerText(m.id, waiting) : !on ? m.offNote : null;
-          return <li key={m.id} className="wc-switch-item" data-on={on && !unavailable}>
-            <SwitchRow id={`module-${m.id}`} label={m.name} description={m.description} checked={on && !unavailable}
+          const note = unavailable ? "Available when payroll is on." : locked ? blockerText(m.id, waiting) : null;
+          return <li key={m.id} data-on={on && !unavailable}>
+            <SwitchRow id={`module-${m.id}`} label={m.name} checked={on && !unavailable}
               disabled={busy || unavailable || locked} onChange={() => toggle(m.id)} describedBy={note ? noteId : undefined} />
-            {note ? <p className="wc-switch-note wc-with-icon" id={noteId}><InfoIcon size={16} aria-hidden="true" />{note}</p> : null}
+            {note ? <p className="q-help" id={noteId} style={{ marginTop: -8, paddingBottom: 12 }}>{note}</p> : null}
           </li>;
         })}
       </ul>
     </section>
 
-    <p className="nv-sr" role="status">{busy ? "Saving…" : ""}</p>
-    <FormActions sticky>
-      {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? (notice.text.startsWith("Sign in again") ? "Your session ended" : notice.text.startsWith("It may not have saved") ? "Not saved yet" : "Not saved") : undefined}
-        action={notice.text.startsWith("Sign in again") ? <Link className="nv-link" href="/login">Sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
-      <button type="button" className="nv-btn" data-kind="primary" onClick={save} disabled={busy || !changed}><ButtonLabel pending={busy} idle="Save changes" busy="Saving…" /></button>
-      {changed ? <span className="wc-save-state">Unsaved<span className="wc-wide-state"> changes</span></span> : <span className="wc-save-state wc-save-state--done" ref={savedLine} tabIndex={-1}><CheckCircleIcon size={18} weight="fill" aria-hidden="true" />Saved</span>}
-    </FormActions>
+    <p className="q-sr" role="status">{busy ? "Saving…" : changed ? "" : "Saved"}</p>
+    {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? (notice.text.startsWith("Sign in again") ? "Your session ended" : notice.text.startsWith("It may not have saved") ? "Not saved yet" : "Not saved") : undefined}
+      action={notice.text.startsWith("Sign in again") ? <Link className="q-btn q-btn--quiet" href="/login">Sign in</Link> : <button type="button" className="q-btn q-btn--sec" onClick={() => { setNotice(null); void save(); }}>Try again</button>}>{notice.text}</Notice></div> : null}
+    <span className="q-sr" ref={savedLine} tabIndex={-1}>{changed ? "" : "Saved"}</span>
   </div>;
 }
