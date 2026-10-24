@@ -162,6 +162,7 @@ async function main() {
   }
   const { createOwnedNextApp } = await import('../src/test/integration/owned-next-app.ts');
   const { seedOwnedApp } = await import('../src/test/integration/owned-app-fixture.ts');
+  const { traceOwnedFixtureSeed } = await import('../src/test/integration/owned-setup-trace.ts');
   const report = { checkpoint: custody.checkpoint, tree: custody.tree, sourceClean: true, ownerId: owner.ownerId, ownershipFile: process.env.PHASE_E_OWNERSHIP_FILE, ownershipClosed: false, suites, status: 'failed', executions: [], errors: [], runtime: { playwright: '1.62.1', axe: '4.11.0' }, launches: [], sourceManifest: undefined, limitations: ['Owned local Next/SQL mirror is not hosted verification.', 'Chromium/WebKit automation is not physical-device, screen-reader or actual-calendar-client acceptance.'] };
   const progress=[];
   const emitProgress=(cell,event,started)=>{
@@ -179,7 +180,7 @@ async function main() {
     report.sourceManifest = join(app.root, 'source-manifest.json'); report.appRoot = app.root;
     report.appOwnerId = JSON.parse(readFileSync(join(app.root, 'ownership.json'), 'utf8')).ownerId;
     verifySourceManifest(source, app.root, custody.checkpoint);
-    await seedOwnedApp(app.database.executor);
+    await traceOwnedFixtureSeed(app.database.executor,seedOwnedApp,receipt=>writeFileSync(join(evidence,'fixture-setup-report.json'),JSON.stringify({checkpoint:custody.checkpoint,tree:custody.tree,...receipt},null,2)));
     for (const engine of ENGINES) {
       controller.signal.throwIfAborted();
       const launch = (async () => {
