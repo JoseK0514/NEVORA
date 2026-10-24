@@ -215,6 +215,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               await page.getByText('Draft assignment', { exact: true }).waitFor();
               await page.getByRole('button', { name: 'Save replacement', exact: true }).click();
               await page.waitForURL(/saved=1/);
+              await page.getByText('Replacement saved', { exact: true }).waitFor();
               expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM shifts WHERE date=$1", values: [coverageDate] })).toEqual([{ n: 1 }]);
               expect(await app.database.executor.query({ text: "SELECT status FROM schedules WHERE week_start=$1", values: [coverageDate] })).toEqual([{ status: 'DRAFT' }]);
               expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM notifications", values: [] })).toEqual(beforeNotifications);
@@ -236,6 +237,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               expect(await consent.isChecked()).toBe(true);
               await page.getByRole('button', { name: 'Save replacement', exact: true }).click();
               await page.waitForURL(/saved=1/);
+              await page.getByText('Replacement saved', { exact: true }).waitFor();
               expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM schedule_publication_revisions WHERE week_start=$1", values: [publishedDate] })).toEqual([{ n: 1 }]);
               checks.push(engine + ': published replacement requires separate unchecked consent; keyboard confirmation and canonical revision receipt');
               await page.goto(origin + '/app/ai-manager');
