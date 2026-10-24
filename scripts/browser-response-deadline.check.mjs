@@ -121,6 +121,15 @@ test('same-address document evidence stays bound to its request across address c
  page.emit('request',{...request,frame:()=>({})});assert.equal(trace.events.length,3);
  assert(!JSON.stringify(trace).includes('private-sentinel'));stop();
 });
+test('failed navigation requests retain only bounded failure categories',()=>{
+ const page=new EventEmitter(),trace={events:[],omittedEvents:0};
+ const stop=observeReportNavigation(page,'http://127.0.0.1:1',trace,()=>assert.fail('Unexpected fallback'));
+ const request={url:()=> 'http://127.0.0.1:1/app?private-sentinel',isNavigationRequest:()=>false,headers:()=>({rsc:'1'})};
+ for(const errorText of ['net::ERR_ABORTED','private-sentinel'])page.emit('requestfailed',{...request,failure:()=>({errorText})});
+ page.emit('requestfailed',{...request,failure:()=>{throw Error('private-sentinel');}});
+ assert.deepEqual(trace.events.map(event=>event.failureCategory),['aborted','other','unavailable']);
+ assert(!JSON.stringify(trace).includes('private-sentinel'));stop();
+});
 
 test('communication diagnostics project only fixed public states and identity booleans',()=>{
  const secret='private-sentinel';

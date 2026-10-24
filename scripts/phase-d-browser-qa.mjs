@@ -2,6 +2,8 @@ import {publishScheduleWithRevision} from '../src/test/integration/management-ap
 import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
 import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
 import {observeDocumentNavigation,observeWindowExceptions,verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
+import {observeRscCaughtErrors} from './rsc-caught-error-observer.mjs';
+import {verifyRscCaughtErrorDiagnostic} from './rsc-caught-error-diagnostic.mjs';
 import {openPeriodReports,reportNavigationStage} from './phase-d-report-navigation.mjs';
 import {verifyReportRecoveryNavigation} from './scoped-navigation-browser-check.mjs';
 import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
@@ -24,7 +26,7 @@ const {chromium,webkit}=runtime('playwright');
 const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim();
 const dirty=execFileSync('git',['status','--porcelain=v1'],{encoding:'utf8'}).trim();
 if(process.env.PHASE_D_EXPECTED_SHA){assert.equal(checkpoint,process.env.PHASE_D_EXPECTED_SHA);assert.equal(dirty,'','Exact candidate browser verification requires a clean worktree');}
-const report={checkpoint,tree,sourceClean:dirty==='',checks:[],errors:[],networkCancellations:[],screenshots:[],recovery:[],runtimeDiagnostics:[],windowExceptions:[],limitations:['Owned local runtime is not hosted verification.','Chromium/WebKit automation is not physical-device or screen-reader acceptance.']};
+const report={checkpoint,tree,sourceClean:dirty==='',checks:[],errors:[],networkCancellations:[],screenshots:[],recovery:[],runtimeDiagnostics:[],windowExceptions:[],caughtRscErrors:[],omittedCaughtRscErrors:0,limitations:['Owned local runtime is not hosted verification.','Chromium/WebKit automation is not physical-device or screen-reader acceptance.']};
 const runtimeStarted=performance.now();
 async function waitUntil(test){const deadline=Date.now()+15000;while(!test()){if(Date.now()>deadline)throw Error('Expected browser request did not arrive');await new Promise(resolve=>setTimeout(resolve,10));}}
 async function waitUntilAsync(test){const deadline=Date.now()+15000;while(!await test()){if(Date.now()>deadline)throw Error('Expected UI state did not arrive');await new Promise(resolve=>setTimeout(resolve,10));}}
@@ -60,6 +62,10 @@ try{
       report.errors.push(engineName(id)+': window '+kind);
       report.windowExceptions.push({portal:id,lifecycle,elapsedMs:Math.round(performance.now()-runtimeStarted),reportControl:reportNavigationStage(page),kind});
     });
+    await observeRscCaughtErrors(context,(page,metadata)=>{
+      if(report.caughtRscErrors.length>=64){report.omittedCaughtRscErrors++;return;}
+      report.caughtRscErrors.push({portal:id,lifecycle,monotonicMs:Math.round(performance.now()),reportControl:reportNavigationStage(page),...metadata});
+    });
     await context.route('**/*',route=>{const target=new URL(route.request().url());return ['http:','https:'].includes(target.protocol)&&target.origin!==app.url?route.abort():route.continue();});
     const page=await context.newPage();currentPage=page;const documentNavigation=observeDocumentNavigation(page,()=>app.url);page.setDefaultTimeout(15000);page.on('pageerror',error=>{
       if(error.message.endsWith('due to access control checks.')&&error.message.includes(new URL(app.url).host+'/api/'))report.networkCancellations.push(engineName(id)+': '+error.message);
@@ -76,6 +82,8 @@ try{
     if(engine==='webkit'){
       report.navigationDiagnosticControl=await verifyNavigationFetchDiagnostic(browser);
       assert.equal(report.navigationDiagnosticControl.windowObserverVerified,true,'Window exception observation must catch the real thrown/rejected negative controls');
+      report.rscCaughtErrorControl=await verifyRscCaughtErrorDiagnostic(browser);
+      assert.equal(report.rscCaughtErrorControl.observerVerified,true,'Caught RSC error observation must retain both network and processing controls without suppressing console output');
     }
     const {context:employee,page:ep}=await context(browser,'D3-E');await ep.goto(app.url+url);
     await ep.getByRole('heading',{name:'Your timecard',exact:true}).waitFor();assert.equal(await ep.getByRole('article').count(),1);

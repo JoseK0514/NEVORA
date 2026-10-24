@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
+import {requestFailureCategory} from './rsc-caught-error-observer.mjs';
 
 const stages=new WeakMap();
 export function markReportNavigationStage(page,engine,control,phase){
@@ -39,7 +40,11 @@ export function observeReportNavigation(page,origin,trace,onFrameworkFailure){
  const request=r=>{const detail=describe(r);if(detail)event('request',detail);};
  const response=r=>{const detail=describe(r.request());if(detail)event('response',{...detail,status:r.status()});};
  const finished=r=>{const detail=describe(r);if(detail)event('finished',detail);};
- const failed=r=>{const detail=describe(r);if(detail)event('failed',detail);};
+ const failed=r=>{
+  const detail=describe(r);if(!detail)return;
+  let failureCategory='unavailable';try{failureCategory=requestFailureCategory(r.failure()?.errorText);}catch{}
+  event('failed',{...detail,failureCategory});
+ };
  const frame=f=>{if(f!==page.mainFrame())return;const path=new URL(f.url()).pathname;event('commit',{destination:path==='/app/reports'?'reports':path==='/app/payroll-export'?'source':'other'});};
  const consoleError=message=>{
   if(message.type()!=='error')return;
