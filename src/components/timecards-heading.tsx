@@ -1,25 +1,11 @@
 'use client';
 
-import {useRef} from 'react';
-import gsap from 'gsap';
-import {useGSAP} from '@gsap/react';
 import styles from './timecards-heading.module.css';
 
-gsap.registerPlugin(useGSAP);
-
+/* Phase 1 (inspection Oct 24): page entrances are off. Content painted, jumped back and animated in on every visit,
+ * which read as lag; a page now appears in place. */
 export function TimecardsHeading({manager}:{manager:boolean}) {
-  const heading=useRef<HTMLElement>(null);
-  useGSAP(()=>{
-    const media=gsap.matchMedia();
-    media.add('(prefers-reduced-motion: no-preference)',()=>{
-      const entrance=gsap.from(heading.current,{y:8,duration:.45,ease:'power2.out',clearProps:'transform'});
-      const finish=()=>{if(document.hidden)entrance.progress(1);};
-      document.addEventListener('visibilitychange',finish);
-      return ()=>document.removeEventListener('visibilitychange',finish);
-    });
-    return ()=>media.revert();
-  },{scope:heading});
-  return <header ref={heading} className={styles.heading}>
+  return <header className={styles.heading}>
     <h1>Timecards</h1>
     <p>{manager?'Review hours and close each pay period.':'Your hours, breaks and approvals.'}</p>
   </header>;

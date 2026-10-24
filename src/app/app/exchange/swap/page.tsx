@@ -28,8 +28,10 @@ export default async function SwapPage({
   const workspace = await getWorkspace();
   const params = await searchParams;
 
+  // Opened without choosing a shift (a bare link): back to Shift requests quietly. Only a chosen shift that is
+  // missing, someone else's or past is an error.
   if (!params.sourceShiftId) {
-    redirect("/app/exchange?error=INVALID_SHIFT");
+    redirect("/app/exchange");
   }
 
   const source = await getPublishedShift(params.sourceShiftId);

@@ -4,8 +4,6 @@ import {HoldHeight} from './kit/hold-height';
 import {keepWhole} from '@/lib/keep-whole';
 import Link from 'next/link';
 import {useRef,useState} from 'react';
-import {useGSAP} from '@gsap/react';
-import gsap from 'gsap';
 import {BellIcon} from '@phosphor-icons/react/dist/ssr/Bell';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {CalendarMinusIcon} from '@phosphor-icons/react/dist/ssr/CalendarMinus';
@@ -62,15 +60,6 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
  const groups=groupNotifications(items);
  const counts=ready?{all:ready.items.length,unread:ready.items.filter(item=>item.reviewState==='unread').length,required:ready.items.filter(item=>item.actionState==='required').length}:null;
 
- useGSAP(()=>{
-  const rows=root.current?.querySelectorAll('[data-inbox-row]');
-  if(!rows?.length)return;
-  const media=gsap.matchMedia();
-  media.add('(prefers-reduced-motion: no-preference)',()=>{
-   gsap.fromTo(rows,{y:6},{y:0,duration:.28,stagger:.025,ease:'power2.out',clearProps:'transform'});
-  });
-  return ()=>media.revert();
- },{scope:root,dependencies:[ready?.observedAt,filter,search],revertOnUpdate:true});
 
  // A Refresh the reader asked for says so until a newer read lands (as on the Inbox); background polls stay quiet.
  const userRefreshing=refreshFrom!==null&&ready?.observedAt===refreshFrom;
@@ -98,7 +87,7 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
       const Icon=icons[notificationPresentation(item.label).icon];
       const review=item.reviewState??'unavailable';
       return <li key={item.id} data-inbox-row>
-       <Link className="q-row q-row--av" href={item.href} aria-label={`${item.label}, ${reviewLabels[review]}, ${whenLong(item.at)}`}
+       <Link className="q-row q-row--av" href={item.href} prefetch={false} aria-label={`${item.label}, ${reviewLabels[review]}, ${whenLong(item.at)}`}
         onClick={()=>{if(review==='unread')void markRead(item.id);}}>
         <span className="q-av" aria-hidden="true"><Icon className="q-ic" aria-hidden="true"/></span>
         <span className="q-rt"><b>{item.label}</b><i><time dateTime={item.at}>{when(item.at)}</time></i></span>
@@ -132,7 +121,7 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
     <ul className={styles.list}>{group.items.map(item=>{
      const presentation=notificationPresentation(item.label),Icon=icons[presentation.icon];
      const review=item.reviewState??'unavailable',action=item.actionState??'unavailable';
-     return <li key={item.id} data-inbox-row><Link className={styles.row} data-unread={review==='unread'} href={item.href}>
+     return <li key={item.id} data-inbox-row><Link className={styles.row} data-unread={review==='unread'} href={item.href} prefetch={false}>
       <span className={styles.icon}><Icon size={22} weight="regular" aria-hidden="true"/></span>
       <div className={styles.copy}><div className={styles.rowHeading}><strong>{item.label}</strong><time dateTime={item.at}>{keepWhole(new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit'}).format(new Date(item.at)))}</time></div>
        <div className={styles.statuses}><span className={styles.review} data-state={review}>{review==='unread'?<span className={styles.dot} aria-hidden="true"/>:review==='confirmed'?<CheckCircleIcon size={15} aria-hidden="true"/>:null}{reviewLabels[review]}</span>{/* One status per row for Owners and Managers (v3); employees keep both. */}{onMarkRead?null:<span className={styles.action} data-state={action}>{actionLabels[action]}</span>}</div>

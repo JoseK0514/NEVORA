@@ -24,3 +24,6 @@ it('ended-shift exclusion uses the coherent server observation even when renderi
  try {await expect(CalloutPage({searchParams:Promise.resolve({shiftId:'shift'})})).rejects.toThrow('error=INVALID_SHIFT');}
  finally {clock.observedAt='2026-10-04T09:00:00Z';vi.useRealTimers();}
 });
+it('opened without choosing a shift returns to My requests with no false error (inspection Oct 24)',async()=>{
+ await expect(CalloutPage({searchParams:Promise.resolve({})})).rejects.toThrow(/^\/app\/exchange\?tab=my$/);
+});

@@ -5,6 +5,7 @@ import type {OperationalAuthorityView} from '@/lib/company-access/model';
 import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {readOperationalNavigation} from './commands';
 import {useAppNavigation} from '../app-navigation';
+import {QuietSkeleton} from '../quiet/quiet';
 
 export type ScopedObservation={authority:string;observedAt:string;validForMs:number};
 type CurrentAuthority=Extract<OperationalAuthorityView,{state:'ready'}>&{requestStartedAt:number};
@@ -111,6 +112,6 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  const refreshCurrent=()=>{navigation?.discard();controls.current?.recover();};
 
  if(!recovery.required&&observation&&body.phase==='ready'&&body.authority===observation.authority)return body.content;
- if(!observation&&unavailable)return <div>{unavailable}<button className="button secondary" type="button" onClick={refreshCurrent}>Refresh current view</button></div>;
- return <section className="portal-route-state" role="status"><h2>{body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…'}</h2><p>{body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.'}</p><button className="button secondary" type="button" onClick={refreshCurrent}>Refresh current view</button></section>;
+ if(!observation&&unavailable)return <div className="scoped-unavailable">{unavailable}<button className="button secondary scoped-unavailable__refresh" type="button" onClick={refreshCurrent}>Refresh current view</button></div>;
+ return <section className="portal-route-state" role="status" data-checking={body.phase==='paused'?undefined:''}>{body.phase==='paused'?null:<QuietSkeleton/>}<h2>{body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…'}</h2><p>{body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.'}</p><button className="button secondary" type="button" onClick={refreshCurrent}>Refresh current view</button></section>;
 }

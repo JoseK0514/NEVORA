@@ -1,8 +1,6 @@
 'use client';
 import Link from 'next/link';
 import {useEffect,useRef,useState} from 'react';
-import {useGSAP} from '@gsap/react';
-import {gsap} from 'gsap';
 import {ArrowClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
 import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import {CircleIcon} from '@phosphor-icons/react/dist/ssr/Circle';
@@ -24,7 +22,6 @@ import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {SigBand,SigPage} from './signature/signature';
 import cd from './communication-detail-signature.module.css';
 
-gsap.registerPlugin(useGSAP);
 
 /** TC-B-01: a soft hyphen lets the long word break cleanly at large text sizes instead of clipping. */
 const ACK_WORD='Ac\u00adknowl\u00adedge\u00adment';
@@ -37,14 +34,6 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
  const receiptRef=useRef<HTMLElement>(null),withdrawRef=useRef<HTMLButtonElement>(null),confirmRef=useRef<HTMLButtonElement>(null),askedWithdraw=useRef(false);
  const surface=useRef<HTMLElement>(null);
  const ready=!paused&&notice!=='conflict'&&notice!=='blocked'&&notice!=='signed-out'&&read?.state==='ready'?read:null;
- useGSAP(()=>{
-  if(!ready?.ownAcknowledgedAt&&!ready?.ownReadAt)return;
-  const media=gsap.matchMedia();
-  media.add('(prefers-reduced-motion: no-preference)',()=>{
-   gsap.from('.communication-result-icon',{scale:.9,duration:.2,ease:'power2.out'});
-  });
-  return ()=>media.revert();
- },{scope:surface,dependencies:[ready?.ownAcknowledgedAt,ready?.ownReadAt],revertOnUpdate:true});
  // IS-B12: when the review is recorded and the pressed button goes away, focus lands on the result, not the page.
  const doneNow=!!(ready?.ownAcknowledgedAt||(ready?.acknowledgement!=='REQUIRED'&&ready?.ownReadAt));
  const wasDone=useRef(doneNow);

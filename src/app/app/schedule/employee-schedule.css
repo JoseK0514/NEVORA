@@ -1,4 +1,4 @@
-@font-face { font-family:'Inter'; src:url('/fonts/typeface/inter/variable.ttf') format('truetype'); font-style:normal; font-weight:100 900; font-display:swap; }
+/* Phase 1: Inter comes once, as woff2, from src/app/typeface-theme.css (a second TTF declaration downloaded 876 KB again and re-wrapped text). */
 .my-schedule { --schedule-accent:var(--color-brand-accent); --schedule-soft:var(--nuvora-indigo-soft); width:min(1080px,100%); font-family:'Inter',var(--font-family-apple); }
 .my-schedule h1,.my-schedule h2,.my-schedule p { margin:0; }
 .my-schedule-heading { display:flex; justify-content:space-between; align-items:center; gap:20px; margin-bottom:26px; }

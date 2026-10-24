@@ -1,6 +1,7 @@
 "use client";
 
 import {NavigationLink as Link} from './navigation-link';
+import {useLinkStatus} from 'next/link';
 import {AppNavigationProvider,useIdentityReload} from './app-navigation';
 import { NotificationBell } from "./notification-bell";
 import { useInboxCount } from "./use-inbox-count";
@@ -49,6 +50,13 @@ type AppShellProps = {
     role: UserRole;
   };
 };
+
+
+/** Phase 1: the tapped tab lights up at once, before its page arrives (the Quiet shell styles the mark). */
+function TabPending() {
+  const { pending } = useLinkStatus();
+  return pending ? <span className="mobile-nav-pending" aria-hidden="true" /> : null;
+}
 
 export function AppShell(props:AppShellProps){
  return <AppNavigationProvider key={JSON.stringify([props.user.id,props.user.role])}><AppShellView {...props}/></AppNavigationProvider>;
@@ -162,11 +170,19 @@ function AppShellView({
       shell.style.setProperty("--cm-actionbar-h", `${bar ? Math.round(bar.getBoundingClientRect().height) : 0}px`);
     };
     const observer = new ResizeObserver(measure);
-    const watch = () => { observer.disconnect(); for (const element of shell.querySelectorAll(".mobile-nav, .nv-actionbar")) observer.observe(element); measure(); };
+    // Phase 1: a streaming page mutates the shell many times; look for added or removed bars once per frame and
+    // re-observe only when the set changed. Size changes reach measure through the ResizeObserver, after layout.
+    let watched: Element[] = [], frame = 0;
+    const watch = () => {
+      frame = 0;
+      const bars = [...shell.querySelectorAll(".mobile-nav, .nv-actionbar")];
+      if (bars.length === watched.length && bars.every((bar, index) => bar === watched[index])) return;
+      watched = bars; observer.disconnect(); for (const element of bars) observer.observe(element); measure();
+    };
     watch();
-    const changes = new MutationObserver(watch);
+    const changes = new MutationObserver(() => { if (!frame) frame = requestAnimationFrame(watch); });
     changes.observe(shell, { childList: true, subtree: true });
-    return () => { observer.disconnect(); changes.disconnect(); };
+    return () => { if (frame) cancelAnimationFrame(frame); observer.disconnect(); changes.disconnect(); };
   }, [employee, pathname]);
 
   // Arrow keys move between rows of dense lists that opt in (D6).
@@ -419,6 +435,8 @@ function AppShellView({
                   <Link
                     key={item.href}
                     href={item.href}
+                    // Phase 1: the tabs load in full ahead of the tap. The access frame still checks each page when it opens.
+                    prefetch
                     className={active ? "mobile-nav-link active" : "mobile-nav-link"}
                     aria-current={active ? "page" : undefined}
                     aria-label={needsYou !== null ? `${item.label}, ${needsYou} need${needsYou === 1 ? "s" : ""} you` : undefined}
@@ -426,13 +444,15 @@ function AppShellView({
                     {/* Quiet (v4): outline glyphs, filled only for the current tab; the count is spoken, not drawn. */}
                     <NavIcon name={item.icon === "employees" ? "team" : item.icon} size={24} weight={active ? "fill" : "regular"} />
                     <span>{item.label}</span>
+                    <TabPending />
                   </Link>
                 );
               })}
               {/* Quiet (v4): More is a page, as in the approved mockups. */}
-              <Link href="/app/more" className={activeTab === "more" || pathname === "/app/more" ? "mobile-nav-link manager-more-trigger active" : "mobile-nav-link manager-more-trigger"}
+              <Link href="/app/more" prefetch className={activeTab === "more" || pathname === "/app/more" ? "mobile-nav-link manager-more-trigger active" : "mobile-nav-link manager-more-trigger"}
                 aria-current={pathname === "/app/more" ? "page" : undefined}>
                 <NavIcon name="moreCircle" size={24} weight={activeTab === "more" || pathname === "/app/more" ? "fill" : "regular"} /><span>More</span>
+                <TabPending />
               </Link>
             </>
           )}

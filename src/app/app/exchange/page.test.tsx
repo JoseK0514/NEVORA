@@ -103,3 +103,8 @@ it('H10 explanatory notices stay outside employee action grids while recovery co
  for(const group of actions){expect(group).not.toContain('shift-change-unavailable');expect(group).not.toContain('review current assignment');}
  expect(result).toContain('value="CANCEL"');expect(result).toContain('Unable to work');expect(result).toContain('Historical approval does not release the current assignment');
 });
+it('an empty shift board says so once, in the band (inspection Oct 24)',async()=>{
+ const board=renderToStaticMarkup(await ExchangePage({searchParams:Promise.resolve({})})).replace(/<br\/?>/g,' ');
+ expect(board).toContain('No open shifts right now');
+ expect(board).not.toContain('The shift board is clear');
+});

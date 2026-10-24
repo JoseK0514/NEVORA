@@ -1,15 +1,12 @@
 'use client';
 
-import {useRef, type ReactNode} from 'react';
-import {useGSAP} from '@gsap/react';
-import {gsap} from 'gsap';
+import type {ReactNode} from 'react';
 import {MegaphoneIcon} from '@phosphor-icons/react/dist/ssr/Megaphone';
 import {NotePencilIcon} from '@phosphor-icons/react/dist/ssr/NotePencil';
 import {UsersThreeIcon} from '@phosphor-icons/react/dist/ssr/UsersThree';
 import {MapPinLineIcon} from '@phosphor-icons/react/dist/ssr/MapPinLine';
 import type {CommunicationDraft} from '@/lib/communications/types';
 
-gsap.registerPlugin(useGSAP);
 export const updateKinds = {
  TODAYS_TEAM: {label: "Today's team", Icon: UsersThreeIcon},
  SHIFT_NOTE: {label: 'Shift note', Icon: NotePencilIcon},
@@ -25,14 +22,8 @@ export function UpdateKind({type, iconOnly = false}: {type: CommunicationDraft['
  </span>;
 }
 
-export function UpdateEntrance({children, className, identity}: {children: ReactNode; className: string; identity?: string}) {
- const container = useRef<HTMLDivElement>(null);
- useGSAP(() => {
-  const media = gsap.matchMedia();
-  media.add('(prefers-reduced-motion: no-preference)', () => {
-   gsap.fromTo('[data-update-heading]', {y: 6, opacity: .85}, {y: 0, opacity: 1, duration: .38, ease: 'power2.out', clearProps: 'transform,opacity'});
-  });
-  return () => media.revert();
- }, {scope: container, dependencies: [identity], revertOnUpdate: true});
- return <div ref={container} className={className}>{children}</div>;
+/* Phase 1 (inspection Oct 24): page entrances are off. Content painted, jumped back and animated in on every visit,
+ * which read as lag; a page now appears in place. */
+export function UpdateEntrance({children, className}: {children: ReactNode; className: string; identity?: string}) {
+ return <div className={className}>{children}</div>;
 }

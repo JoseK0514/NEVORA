@@ -130,7 +130,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 
   /* Navigation bar: no wordmark, no workspace name; search, bell and the account button in the tint. */
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header, html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d):has([data-nv-band]) .mobile-header {
-    background: rgba(242, 242, 247, .94); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+    background: #F2F2F7; /* Phase 1: solid, no live blur while scrolling */
     min-height: 44px; padding: 0 8px 0 16px; border: 0; box-shadow: none; color: var(--cm-label);
   }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header > .brand, html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header .portal-workspace-name, html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-header .company-logo-chip { display: none; }
@@ -220,7 +220,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 
   /* Tab bar: the standard bar. Filled glyphs, tint on the current tab, a red badge. */
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-nav {
-    background: rgba(249, 249, 249, .94); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+    background: #F9F9F9; /* Phase 1: solid, no live blur while scrolling */
     border: 0; box-shadow: 0 -.5px 0 rgba(0, 0, 0, .3); border-radius: 0; margin: 0; left: 0; right: 0; bottom: 0; padding-top: 4px;
   }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .mobile-nav .mobile-nav-link { color: #6C6C70; background: none; box-shadow: none; font: 500 0.6875rem/0.8125rem var(--cm-sys); letter-spacing: .07px; gap: 2px; }

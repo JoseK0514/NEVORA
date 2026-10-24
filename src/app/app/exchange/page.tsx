@@ -241,7 +241,7 @@ export default async function ExchangePage({
             {session.role === "EMPLOYEE" || session.role === "LEAD" ? <div className="sg-card" data-tone="tint"><Link className={sr.srNext} href="/app/availability">
               <span className="sg-tile" data-tone="white" aria-hidden="true"><CalendarBlankIcon size={22} /></span>
               <span><b>Want more shifts?</b><small>Update when you can work.</small></span><i aria-hidden="true"><ArrowRightIcon size={18} /></i></Link></div> : null}</> : null}
-        </> : <div className="sg-card"><div className={sr.srEmpty}><span className="sg-tile" aria-hidden="true"><CalendarBlankIcon size={22} /></span><strong>The shift board is clear</strong><span>Check back later for available open shifts.</span></div></div>)
+        </> : null /* The band already says "No open shifts right now"; a second empty card only repeated it (inspection Oct 24). */)
         : hasTradeRequests ? <>
           {incoming.length ? <><SigHead id="sr-incoming" title="Waiting for you" count={incoming.length} />
             <ul className={sr.srStack} aria-labelledby="sr-incoming">{incoming.map(exchange => (

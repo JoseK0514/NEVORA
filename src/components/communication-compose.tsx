@@ -3,8 +3,6 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import Link from 'next/link';
 import {useEffect,useRef,useState,type MutableRefObject} from 'react';
 import {useRouter} from 'next/navigation';
-import {useGSAP} from '@gsap/react';
-import gsap from 'gsap';
 import {ArrowRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import {PaperPlaneTiltIcon} from '@phosphor-icons/react/dist/ssr/PaperPlaneTilt';
 import {UsersThreeIcon} from '@phosphor-icons/react/dist/ssr/UsersThree';
@@ -39,13 +37,6 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
  const formRef=useRef<HTMLFormElement>(null);
  const feedbackRef=useRef<HTMLDivElement>(null),recoveryRef=useRef<HTMLDivElement>(null);
  const previewHeadingRef=useRef<HTMLHeadingElement>(null);
- useGSAP(()=>{
-  const media=gsap.matchMedia();
-  media.add('(prefers-reduced-motion: no-preference)',()=>{
-   if(preview)gsap.from('.compose-reviewed',{y:6,opacity:0,duration:.24,ease:'power2.out'});
-  });
-  return ()=>media.revert();
- },{scope:formRef,dependencies:[preview],revertOnUpdate:true});
  useEffect(()=>{
   if((action.notice==='unknown'||action.notice==='unavailable'&&action.hasUnknown)&&recoveryRef.current){
    revealFeedback(recoveryRef.current);
@@ -165,11 +156,6 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
 function BoundCommunicationCompose({authority,mode,updateId}:{authority:string;mode:CommunicationMode;updateId?:string}){
  const router=useRouter(),retained=useRef<ComposeRetention|null>(null);
  const pageRef=useRef<HTMLDivElement>(null);
- useGSAP(()=>{
-  const media=gsap.matchMedia();
-  media.add('(prefers-reduced-motion: no-preference)',()=>{gsap.from('.nv-content > *',{y:6,opacity:0,duration:.3,ease:'power2.out',clearProps:'transform,opacity'});});
-  return ()=>media.revert();
- },{scope:pageRef});
  const actionRef=useRef<ReturnType<typeof useCommunicationAction>|null>(null);
  const resource=useCommunicationResource(mode,authority,'/context',async signal=>{
   const context=await communicationRequest(mode,authority,'/context',undefined,signal) as CommunicationContext;

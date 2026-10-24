@@ -7,6 +7,7 @@ const navigationMock = vi.hoisted(() => ({ pathname: "/app/my-time" }));
 vi.mock("next/navigation", () => ({ usePathname: () => navigationMock.pathname, useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }), useSearchParams: () => new URLSearchParams() }));
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }: ComponentProps<"a">) => createElement("a", { href, ...props }, children),
+  useLinkStatus: () => ({ pending: false }),
 }));
 vi.mock("@/components/brand-mark", () => import("./brand-mark"));
 vi.mock("@/components/nav-icon", () => import("./nav-icon"));

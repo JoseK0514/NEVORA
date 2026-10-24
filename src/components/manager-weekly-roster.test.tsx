@@ -105,3 +105,15 @@ it('includes each date of partial leave and unions touching periods before offer
  expect(fullDayAbsence(absencesOn(read,'qa','2030-10-07'))).toBe(true);
  expect(fullDayAbsence(absencesOn(read,'qa','2030-10-08'))).toBe(false);
 });
+
+// Inspection Oct 24: on the Quiet Schedule page the desktop grid showed unstyled under the phone day list, and on
+// desktop it lost its styling, because its rules hang off a .cm-schedule wrapper the Quiet page no longer has.
+it("keeps the people × days grid desktop-only with its own styling hook, and the day list phone-only", async () => {
+  const output = html();
+  expect(output).toMatch(/<div class="cm-sched-desk cm-sched-slot"><div class="cm-grid-wrap">/);
+  expect(output).toContain('class="cm-sched-phone"');
+  const { readFileSync } = await import("node:fs");
+  const css = readFileSync(new URL("./quiet/quiet.css", import.meta.url), "utf8").replace(/\s+/g, " ");
+  expect(css).toContain("@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) { :is(#q-root, html) .q-schedule .cm-sched-desk { display: none; }");
+  expect(css).toMatch(/@media \(min-width: 761px\) \{ :is\(#q-root, html\) \.q-schedule \.cm-sched-phone \{ display: none; \}/);
+});

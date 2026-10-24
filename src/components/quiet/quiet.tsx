@@ -95,6 +95,16 @@ export function QuietRow({ title, detail, value, tone, avatar, href, control, ch
   return bare ? row : <li id={id}>{row}</li>;
 }
 
+/** Quiet (v4) loading shape: the page's large title and grouped rows, static (no shimmer), so a placeholder and the page it
+ * becomes look like one page. Shown only in the Quiet shell (quiet.css); elsewhere the older placeholder stays. */
+export function QuietSkeleton({ rows = 6 }: { rows?: number }) {
+  return <div className="q-page q-skel-page" aria-hidden="true">
+    <div className="q-skel__nav" />
+    <div className="q-skel__title"><i /><i /></div>
+    <ul className="q-skel__rows">{Array.from({ length: rows }, (_, index) => <li key={index}><b /><span><i /><i /></span></li>)}</ul>
+  </div>;
+}
+
 export function initialsOf(name: string) {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
 }

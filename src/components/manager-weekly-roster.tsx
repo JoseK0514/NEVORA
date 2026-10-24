@@ -237,7 +237,8 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
     <>{notices}</>
     {employees.length ? <>
       <div className="cm-sched-phone">{dayList}</div>
-      <div className="cm-sched-desk">{grid}</div>
+      {/* The desktop people × days grid keeps its v3 styling (cm-sched-slot); Quiet hides it on phones. */}
+      <div className="cm-sched-desk cm-sched-slot">{grid}</div>
     </> : <><p className="q-empty" style={{ marginTop: 24 }}>Add people to your team to start scheduling.</p><Link className="q-btn q-btn--sec" href="/app/employees">Go to Team</Link></>}
   </section>;
 }

@@ -1,17 +1,9 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
+import type { ReactNode } from "react";
 
+/* Phase 1 (inspection Oct 24): page entrances are off. Content painted, jumped back and animated in on every visit,
+ * which read as lag; a page now appears in place. */
 export function TimeOffMotion({ children }: { children: ReactNode }) {
-  const scope = useRef<HTMLDivElement>(null);
-  useGSAP(() => {
-    const media = gsap.matchMedia();
-    media.add("(prefers-reduced-motion: no-preference)", () => {
-      gsap.from("[data-timeoff-intro]", { y: 8, duration: 0.45, ease: "power2.out", clearProps: "transform" });
-    });
-    return () => media.revert();
-  }, { scope });
-  return <div ref={scope} className="nto-motion">{children}</div>;
+  return <div className="nto-motion">{children}</div>;
 }

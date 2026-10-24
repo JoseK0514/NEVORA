@@ -1,21 +1,8 @@
 "use client";
-import { useRef, type ReactNode } from "react";
-import { useGSAP } from "@gsap/react";
-import { gsap } from "gsap";
+import type { ReactNode } from "react";
 
-gsap.registerPlugin(useGSAP);
-
+/* Phase 1 (inspection Oct 24): page entrances are off. Content painted, jumped back and animated in on every visit,
+ * which read as lag; a page now appears in place. */
 export function EmployeeDirectoryMotion({ children, className }: { children: ReactNode; className: string }) {
-  const root = useRef<HTMLDivElement>(null);
-  useGSAP(() => {
-    const media = gsap.matchMedia();
-    media.add("(prefers-reduced-motion: no-preference)", () => {
-      gsap.from("[data-directory-enter]", {
-        y: 6, opacity: 0.92, duration: 0.32, stagger: 0.035,
-        ease: "power2.out", clearProps: "transform,opacity",
-      });
-    }, root);
-    return () => media.revert();
-  }, { scope: root });
-  return <div className={className} ref={root}>{children}</div>;
+  return <div className={className}>{children}</div>;
 }
