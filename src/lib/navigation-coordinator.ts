@@ -63,7 +63,6 @@ export function createNavigationCoordinator(){
   // The coordinator is idle afterwards, so idle listeners (an identity reload) no longer wait.
   // Discarded attempts may still commit, but cannot settle a different current destination.
   discard(){active=null;seenPending=false;quiet();},
-  dispose(){active=null;seenPending=false;settled.clear();idle.clear();},
   subscribe(listener:()=>void){settled.add(listener);return()=>{settled.delete(listener);};},
   /** Calls the listener once, as soon as no navigation is in flight: now, or when the current one finishes or is
    * discarded. The returned function stops the wait. */
@@ -83,9 +82,9 @@ export function onRouterTransition(listener:(href:string)=>void){routerTransitio
 
 /** An identity change reloads the whole document. Started while the router is navigating, the reload cancels that
  * navigation's RSC request, which WebKit rejects before pagehide, so Next logs a failed fetch and starts a competing
- * browser navigation. Reload once no navigation is in flight instead: when it settles or is explicitly discarded.
- * A fresh server shell replacing this one already revalidates identity; its teardown cancels the obsolete reload
- * instead of interrupting the replacement shell's requests. A finished wait never fires into a later navigation. */
+ * browser navigation. Reload once no navigation is in flight instead: when it settles, when it is abandoned (discarded,
+ * including by the provider remount a new identity causes at that commit), or when the shell that asked unmounts.
+ * Exactly one reload either way, and a finished wait never fires into a later navigation. */
 export function createIdentityReload(navigation:NavigationCoordinator|null,reload:()=>void){
  let stop:(()=>void)|null=null,waiting=false,done=false;
  const run=()=>{if(done)return;done=true;waiting=false;stop?.();stop=null;reload();};
@@ -97,6 +96,7 @@ export function createIdentityReload(navigation:NavigationCoordinator|null,reloa
    const stopWaiting=navigation.whenIdle(run);
    if(waiting)stop=stopWaiting;
   },
-  release(){stop?.();stop=null;waiting=false;},
+  /** The shell is leaving: a deferred reload happens now, after the commit that replaced it. */
+  release(){if(waiting)run();},
  };
 }
