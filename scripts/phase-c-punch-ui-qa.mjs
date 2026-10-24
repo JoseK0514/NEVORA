@@ -9,6 +9,7 @@ import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
 import {seedOwnedApp,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {assertPrivateClockInRecovery} from './clocker-recovery-privacy.ts';
+import {archiveBreak} from './clocker-break-editor.mjs';
 const evidence=resolve(process.env.PHASE_C_EVIDENCE_DIR??join(homedir(),'.codex/visualizations/2026/10/05/nevora-punch-integration'));
 await mkdir(evidence,{recursive:true});
 const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'));
@@ -38,13 +39,6 @@ async function editBreak(owner,name,category,minutes){
  assert.match(await row.getAttribute('aria-label'),/^Edit /);await row.click();const d=owner.getByRole('dialog');await d.getByRole('heading',{name:'Edit break type',exact:true}).waitFor();
  await d.getByLabel('Break name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Classification',exact:true}).selectOption(category);await d.getByLabel(/^Reference time/).fill(String(minutes));
  await d.getByRole('button',{name:'Save changes',exact:true}).click();await d.waitFor({state:'hidden'});
-}
-async function archiveBreak(owner,operation){
- assert(['Archive','Reactivate'].includes(operation));const filter=operation==='Archive'?'Active':'Archived';await owner.getByRole('button',{name:new RegExp('^'+filter+', \\d+$')}).click();
- const row=owner.locator('button[data-break-type="ui-rest"]');assert.match(await row.getAttribute('aria-label'),/^Edit /);await row.click();
- const d=owner.getByRole('dialog');await d.getByRole('heading',{name:'Edit break type',exact:true}).waitFor();await d.getByRole('button',{name:operation+' break type',exact:true}).click();
- await d.getByRole('heading',{name:operation+' this break type?',exact:true}).waitFor();await d.getByRole('button',{name:operation+' break type',exact:true}).click();await d.waitFor({state:'hidden'});
- assert.equal(await owner.locator('button[data-break-type="ui-rest"]').count(),0,'The completed change removes the break from its prior filter');
 }
 async function idle(p){await p.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await p.waitForFunction(()=>{const i=document.querySelector('input[name=pin]');return i&&!i.matches(':disabled');});}
 async function verify(p,pin='2468'){await idle(p);for(const n of pin)await p.getByRole('button',{name:'Number '+n,exact:true}).click();await p.getByRole('button',{name:'Continue',exact:true}).click();}

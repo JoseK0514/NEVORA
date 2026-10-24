@@ -11,7 +11,7 @@ import {runAttentionSsrReadinessControl} from './attention-ssr-readiness-control
 
 /** Hold real React scheduler delivery in a fictional document. Never alter the
  * actual application scenario, component state, generation fence or clocks. */
-const schedulerControl=`
+export const schedulerControl=`
 window.heldReactTasks=[];window.holdReactTasks=false;window.reactChannels=0;
 const NativeMessageChannel=window.MessageChannel;
 window.MessageChannel=class extends NativeMessageChannel{
