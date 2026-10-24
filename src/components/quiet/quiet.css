@@ -401,6 +401,8 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-sublist { margin: 0; padding: 0; list-style: none; }
 :is(#q-root, html) .q-sublist > li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 15px; line-height: 20px; color: var(--q-ink); }
 :is(#q-root, html) .q-sublist > li > span + span { color: var(--q-grey); text-align: right; }
+:is(#q-root, html) .q-insights-phone .q-figures > li:first-child .q-sublist > li > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+:is(#q-root, html) .q-insights-phone .q-figures > li:first-child .q-sublist > li > span + span { flex-shrink: 0; }
 :is(#q-root, html) .q-counted { margin: 16px 0 0; }
 :is(#q-root, html) .q-counted > summary { list-style: none; margin-top: 0; }
 :is(#q-root, html) .q-counted > summary::-webkit-details-marker { display: none; }
