@@ -100,20 +100,22 @@ async function verifyExplicitRecovery(page,origin,engine,report){
 }
 
 async function verifyRoleRedirect(page,app,engine,report,managerId){
- const row={engine,case:'actual-role-redirect',status:'pending',events:[],omittedEvents:0};report.scopedNavigation.push(row);
+ const row={engine,case:'actual-role-redirect',actor:managerId,status:'pending',events:[],omittedEvents:0,fallbackErrorIndices:[]};report.scopedNavigation.push(row);
  const mark=phase=>markReportNavigationStage(page,engine,row.case,phase);
- const stopTrace=observeReportNavigation(page,app.url,row,()=>report.errors.push('Role redirect emitted a framework RSC fallback.'));
+ const stopTrace=observeReportNavigation(page,app.url,row,()=>{row.fallbackErrorIndices.push(report.errors.length);report.errors.push('Role redirect emitted a framework RSC fallback.');});
  try{
  let attempted=false,changed=false,used=false,mutation;
  const handler=async route=>{
   if(used||route.request().headers().rsc!=='1')return route.continue();used=true;
-  attempted=true;mutation=app.database.executor.query({text:"UPDATE employees SET role='EMPLOYEE' WHERE id=$1",values:[managerId]});await mutation;changed=true;
+  attempted=true;mutation=app.database.executor.query({text:"UPDATE employees SET role='EMPLOYEE' WHERE id=$1",values:[managerId]});await mutation;changed=true;row.roleChanged=true;
   mark('role-changed-destination-release');
   await page.evaluate(()=>window.dispatchEvent(new Event('storage')));
+  row.storageTriggered=true;
   return route.continue();
  };
  mark('source-entry');await page.goto(app.url+'/app/payroll-export?start=2026-09-21&end=2026-09-27');
  await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
+ row.documentTimeOrigin=await page.evaluate(()=>performance.timeOrigin);
  await page.route('**/app/reports?*',handler);
  try{
   mark('request-destination');
@@ -121,13 +123,14 @@ async function verifyRoleRedirect(page,app,engine,report,managerId){
   assert(used&&changed,'The actual Reports request must encounter the fictional actor role change');
   await page.locator('.employee-home').waitFor();
   assert.equal(await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).count(),0);
+  row.sourcePrivateAbsent=true;row.destinationVerified=true;
   mark('complete');
   row.status='passed';
  }catch(error){row.status='failed';throw error;}
  finally{
   try{
    try{await page.unroute('**/app/reports?*',handler);}
-   finally{try{await mutation;}finally{if(attempted){await app.database.executor.query({text:"UPDATE employees SET role='MANAGER' WHERE id=$1",values:[managerId]});await assignOwnedManagerCompanyAccess(app.database.executor,managerId);}}}
+   finally{try{await mutation;}finally{if(attempted){await app.database.executor.query({text:"UPDATE employees SET role='MANAGER' WHERE id=$1",values:[managerId]});await assignOwnedManagerCompanyAccess(app.database.executor,managerId);row.cleanupRestored=true;}}}
   }catch(error){row.status='failed';throw error;}
  }
  }finally{stopTrace();}

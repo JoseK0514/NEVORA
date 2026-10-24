@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
-import {requestFailureCategory} from './rsc-caught-error-observer.mjs';
+import {requestFailureCategory,rscFallbackResource} from './rsc-caught-error-observer.mjs';
 
 const stages=new WeakMap();
 export function markReportNavigationStage(page,engine,control,phase){
@@ -49,7 +49,7 @@ export function observeReportNavigation(page,origin,trace,onFrameworkFailure){
  const consoleError=message=>{
   if(message.type()!=='error')return;
   const fallback=message.text().includes('Failed to fetch RSC payload for ')&&message.text().includes('Falling back to browser navigation.');
-  event('console-error',{code:fallback?'rsc-navigation-fallback':'other'});
+  event('console-error',{code:fallback?'rsc-navigation-fallback':'other',...(fallback?{targetResource:rscFallbackResource(message.text(),origin)}:{})});
   if(fallback)onFrameworkFailure();
  };
  const listeners={request,response,requestfinished:finished,requestfailed:failed,framenavigated:frame,console:consoleError};

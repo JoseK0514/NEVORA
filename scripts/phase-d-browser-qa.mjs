@@ -4,6 +4,7 @@ import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
 import {observeDocumentNavigation,observeWindowExceptions,verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
 import {observeRscCaughtErrors} from './rsc-caught-error-observer.mjs';
 import {verifyRscCaughtErrorDiagnostic} from './rsc-caught-error-diagnostic.mjs';
+import {finalizeRoleRedirectDiagnostics} from './role-redirect-diagnostic.mjs';
 import {openPeriodReports,reportNavigationStage} from './phase-d-report-navigation.mjs';
 import {verifyReportRecoveryNavigation} from './scoped-navigation-browser-check.mjs';
 import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
@@ -372,6 +373,7 @@ try{
     }
     await q('TRUNCATE timecard_revisions');
   }
+  report.scenarioComplete=true;
 }catch(error){
   if(currentPage){
     report.failurePage=await currentPage.evaluate(()=>({path:location.pathname.replace(/[A-Za-z0-9_-]{32,}/g,'[opaque]'),focused:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine,clockerPin:document.querySelector('[data-clocker-pin]')?.getAttribute('data-clocker-pin'),alerts:document.querySelectorAll('[role=alert]').length})).catch(()=>({state:'unavailable'}));
@@ -396,6 +398,8 @@ try{
 finally{
   lifecycle='browser-close';
   for(const browser of browsers)await browser.close();if(app)await app.close();if(smtp)await smtp.close();
+  report.runtimeClosed=true;
+  Object.assign(report,finalizeRoleRedirectDiagnostics(report,'D3-M'));
   await writeFile(join(evidence,'report.json'),JSON.stringify(report,null,2));
   if(report.errors.length)process.exitCode=1;
   console.log(JSON.stringify({checkpoint,sourceClean:report.sourceClean,checks:report.checks.length,errors:report.errors.length,evidence}));

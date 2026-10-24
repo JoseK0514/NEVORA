@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import vm from 'node:vm';
-import {installRscCaughtErrorObserver,observeRscCaughtErrors,projectRscCaughtError,requestFailureCategory} from './rsc-caught-error-observer.mjs';
+import {installRscCaughtErrorObserver,observeRscCaughtErrors,projectRscCaughtError,requestFailureCategory,rscFallbackResource} from './rsc-caught-error-observer.mjs';
 import {verifyRscCaughtErrorDiagnostic} from './rsc-caught-error-diagnostic.mjs';
 
 test('caught metadata distinguishes network wording from processing failures without retaining private values',()=>{
@@ -15,11 +15,12 @@ test('caught metadata distinguishes network wording from processing failures wit
 
 test('console observation preserves the original receiver, arguments, return and exception',()=>{
  const calls=[],observed=[],receiver={};const failure=new Error('private-sentinel');
- const sandbox={console:{error:function(...args){calls.push({receiver:this,args});if(args[0]==='throw')throw failure;return 17;}},performance:{timeOrigin:100,now:()=>12},document:{readyState:'complete'},__nevoraQaRscCaughtError:value=>{observed.push(value);return Promise.resolve();}};
- vm.runInNewContext('('+installRscCaughtErrorObserver.toString()+')('+projectRscCaughtError.toString()+');',sandbox);
- const error=new TypeError('Load failed'),message='Failed to fetch RSC payload for private-sentinel. Falling back to browser navigation.';
+ const sandbox={URL,location:{origin:'http://127.0.0.1:1'},console:{error:function(...args){calls.push({receiver:this,args});if(args[0]==='throw')throw failure;return 17;}},performance:{timeOrigin:100,now:()=>12},document:{readyState:'complete'},__nevoraQaRscCaughtError:value=>{observed.push(value);return Promise.resolve();}};
+ vm.runInNewContext('('+installRscCaughtErrorObserver.toString()+')('+projectRscCaughtError.toString()+','+rscFallbackResource.toString()+');',sandbox);
+ const error=new TypeError('Load failed'),message='Failed to fetch RSC payload for http://127.0.0.1:1/app?_rsc=private-sentinel. Falling back to browser navigation.';
  assert.equal(sandbox.console.error.call(receiver,message,error),17);assert.equal(calls[0].receiver,receiver);assert.deepEqual(calls[0].args,[message,error]);assert.equal(observed.length,1);assert.equal(observed[0].error.messageKind,'load-failed');assert(!JSON.stringify(observed).includes('private-sentinel'));
  assert.equal(sandbox.console.error('ordinary',failure),17);assert.equal(observed.length,1);assert.throws(()=>sandbox.console.error('throw'),error=>error===failure);
+ assert.equal(observed[0].targetResource,'role-home');assert.equal(observed[0].sequence,1);
 });
 
 test('binding persistence accepts only bounded fixed fields even for an arbitrary caller',async()=>{
@@ -27,6 +28,16 @@ test('binding persistence accepts only bounded fixed fields even for an arbitrar
  await observeRscCaughtErrors({exposeBinding:async(_name,fn)=>{binding=fn;},addInitScript:async value=>{script=value.content;}},(source,value)=>records.push({source,value}));
  binding({page},{error:{name:'private-sentinel',messageKind:'private-sentinel',createFetch:true,stack:'private-sentinel'},cause:{name:'Error',messageKind:'other',message:'private-sentinel'},timeOrigin:Infinity,elapsedMs:-1,readyState:'private-sentinel'});
  assert.equal(records[0].source,page);assert.equal(records[0].value.error.name,'other');assert.equal(records[0].value.timeOrigin,null);assert.equal(records[0].value.elapsedMs,null);assert(!JSON.stringify(records).includes('private-sentinel'));assert(script.includes('Reflect.apply'));
+ assert.equal(records[0].value.mainFrame,false);assert.equal(records[0].value.targetResource,'other');
+ const frame={};page.mainFrame=()=>frame;binding({page,frame},{targetResource:'role-home',sequence:1});assert.equal(records[1].value.mainFrame,true);assert.equal(records[1].value.targetResource,'role-home');assert.equal(records[1].value.sequence,1);
+ binding({page,frame:{}},{mainFrame:true,targetResource:'role-home',sequence:1});assert.equal(records[2].value.mainFrame,false,'A child frame cannot assert main-frame provenance');
+});
+
+test('fallback targets retain only a same-origin allowlisted category',()=>{
+ const message=target=>'Failed to fetch RSC payload for '+target+'. Falling back to browser navigation. TypeError: private-sentinel';
+ for(const [path,kind] of [['/app','role-home'],['/app/reports','report-route'],['/app/payroll-export','source-route'],['/__nextjs_original-stack-frames','next-frames']])assert.equal(rscFallbackResource(message('http://127.0.0.1:1'+path+'?private-sentinel'),'http://127.0.0.1:1'),kind);
+ for(const target of ['http://private-sentinel/app','http://127.0.0.1:1/private-sentinel','http://[private-sentinel','http://user:private-sentinel@127.0.0.1:1/app'])assert.equal(rscFallbackResource(message(target),'http://127.0.0.1:1'),'other');
+ assert.equal(rscFallbackResource('private-sentinel','http://127.0.0.1:1'),'other');
 });
 
 test('request failure categories retain cancellation evidence without arbitrary network text',()=>{

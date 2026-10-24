@@ -37,7 +37,7 @@ export async function verifyRscCaughtErrorDiagnostic(browser){
     await observeRscCaughtErrors(context,(_page,metadata)=>caught.push(metadata));
     const page=await context.newPage(),documentNavigation=observeDocumentNavigation(page,()=>origin);page.setDefaultTimeout(5000);
     page.on('pageerror',error=>nativeEvents.push({exactNative:error.name==='Fetch API cannot load http'&&error.message==='/'+origin.slice('http://'.length)+profile.path+' due to access control checks.',documentNavigation:documentNavigation.snapshot()}));
-    page.on('console',message=>{if(message.type()==='error')consoleEvents.push(message.text().includes('Failed to fetch RSC payload for fictional. Falling back to browser navigation.'));});
+    page.on('console',message=>{if(message.type()==='error')consoleEvents.push(message.text().includes('Failed to fetch RSC payload for ')&&message.text().includes('Falling back to browser navigation.'));});
     await page.goto(origin+'/initial');
     const handle=await page.evaluateHandle(()=>({id:globalThis.__fictionalDocument,pagehide:0,errors:0,rejections:0}));
     await handle.evaluate(state=>{addEventListener('pagehide',()=>state.pagehide++);addEventListener('error',()=>state.errors++);addEventListener('unhandledrejection',()=>state.rejections++);});
@@ -49,7 +49,7 @@ export async function verifyRscCaughtErrorDiagnostic(browser){
     const result=await handle.evaluate(async(state,profile)=>{
      async function createFetch(){return fetch(profile.path,{...profile.options,signal:new AbortController().signal});}
      try{const response=await createFetch();await response.json();return {...state,status:response.status,handled:false};}
-     catch(error){console.error('Failed to fetch RSC payload for fictional. Falling back to browser navigation.',error);return {...state,status:0,handled:true};}
+     catch(error){console.error('Failed to fetch RSC payload for '+new URL(profile.path,location.href).href+'. Falling back to browser navigation.',error);return {...state,status:0,handled:true};}
     },profile);
     if(navigation)await waitFor(()=>caught.length===1&&consoleEvents.length===1);
     const cell={kind:profile.kind,navigation,identityMatches:result.id===id,status:result.status,handled:result.handled,pagehide:result.pagehide,windowErrors:result.errors,unhandledRejections:result.rejections,serverReads:ingress-before,nativeEvents:[...nativeEvents],caught:[...caught],consolePreserved:consoleEvents.length===caught.length&&consoleEvents.every(Boolean)};
@@ -61,7 +61,7 @@ export async function verifyRscCaughtErrorDiagnostic(browser){
      assert.equal(cell.status,200);assert.equal(cell.serverReads,1);assert.deepEqual(cell.nativeEvents,[]);assert.deepEqual(cell.caught,[]);
      await page.evaluate(async()=>{
       try{const response=await fetch('/malformed');await response.json();}
-      catch(error){console.error('Failed to fetch RSC payload for fictional. Falling back to browser navigation.',error);}
+      catch(error){console.error('Failed to fetch RSC payload for '+new URL('/malformed',location.href).href+'. Falling back to browser navigation.',error);}
      });
      await waitFor(()=>caught.length===1&&consoleEvents.length===1);
      cell.processingControl={caught:caught[0],consolePreserved:consoleEvents.length===1&&consoleEvents[0]};
