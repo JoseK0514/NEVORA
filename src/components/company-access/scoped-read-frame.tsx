@@ -14,6 +14,31 @@ type Recovery={required:boolean;view:CurrentAuthority|null};
 type Body={authority:string|null;phase:'ready'|'expired'|'paused';content:ReactNode};
 const online=()=>document.visibilityState!=='hidden'&&navigator.onLine&&document.hasFocus();
 
+/** One browser tab's fence, shared by every frame instance (inspection Oct 24). Any instance's retirement (hidden,
+ * blur, pagehide, offline, storage, pageshow, online, expiry) is recorded here synchronously, so a frame that mounts
+ * later knows about it. `cutoff` is the SERVER observation of the first authority read after the latest retirement;
+ * `fence` is the latest such read (it anchors elapsed time and carries the authority). While no retirement has happened
+ * since that cutoff, a page rendered after the cutoff with the same authority is current without a second check and a
+ * second render; any retirement clears both, and the next frame fences again exactly as before. */
+const tab:{retiredAt:number;cutoff:string|null;fence:CurrentAuthority|null}={retiredAt:-Infinity,cutoff:null,fence:null};
+function noteFence(current:CurrentAuthority){
+ if(current.requestStartedAt<=tab.retiredAt)return;
+ if(tab.cutoff===null)tab.cutoff=current.observedAt;
+ tab.fence=current;
+}
+function retireTab(){tab.retiredAt=performance.now();tab.cutoff=null;tab.fence=null;}
+/** The proactive refresh re-renders only this page (a same-address replace), so the router cache of other pages, and
+ * the tabs' prefetches, survive; router.refresh() emptied it every ~10 s and every tab re-rendered in the background. */
+function refreshPage(router:{replace:(href:string,options?:{scroll?:boolean})=>void;refresh:()=>void},version?:{current:string}){
+ const before=version?.current;
+ router.replace(window.location.pathname+window.location.search+window.location.hash,{scroll:false});
+ // A page that came from a prefetch can be answered from the router cache (kept for minutes) with no new render. If no
+ // newer page arrived, refresh for real.
+ if(version)setTimeout(()=>{if(version.current===before)router.refresh();},1500);
+}
+/** Test seam: a fresh tab. */
+export function resetScopedReadTab(){tab.retiredAt=-Infinity;tab.cutoff=null;tab.fence=null;}
+
 /** Operational rows own a finite lifetime. After retirement, a separately fenced
  * authority request establishes a SERVER-clock cutoff. A page must be authorized
  * after that cutoff; merely being newer than the last displayed page is not enough.
@@ -29,26 +54,29 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  const [recovery,setRecovery]=useState<Recovery>({required:true,view:null});
  const required=useRef(true),latest=useRef(-Infinity),retiredThrough=useRef(-Infinity),proactiveVersion=useRef('');
  const anchor=useRef<CurrentAuthority|null>(null);
- const controls=useRef<{recover:()=>void;pause:()=>void;complete:(view:CurrentAuthority)=>void}|null>(null);
+ const observationRef=useRef(observation),versionRef=useRef('');
+ const controls=useRef<{recover:(tabWide?:boolean)=>void;pause:()=>void;complete:(view:CurrentAuthority)=>void}|null>(null);
  const observed=observation?Date.parse(observation.observedAt):NaN,duration=observation?.validForMs??0;
  const version=observation?JSON.stringify([observation.authority,observation.observedAt,duration]):'unavailable';
 
  useEffect(()=>{
   let active=true,foreground=false,requestStartedAt=0,lastRefresh='';
-  function retire(phase:'paused'|'expired'){
-   required.current=true;retiredThrough.current=Math.max(retiredThrough.current,latest.current);
+  // tabWide: a real retirement event clears the tab's fence; a frame's own mount or navigation barrier does not.
+  function retire(phase:'paused'|'expired',tabWide=true){
+   if(tabWide)retireTab();required.current=true;retiredThrough.current=Math.max(retiredThrough.current,latest.current);
    setBody(previous=>previous.authority===null&&previous.phase===phase&&previous.content===null?previous:{authority:null,phase,content:null});
    setRecovery(previous=>previous.required&&previous.view===null?previous:{required:true,view:null});
   }
   const controller=createPrivateSnapshotController<AuthoritySnapshot>(state=>{
    if(!active||!required.current)return;
    const current=!state.paused&&state.snapshot?.state==='ready'?state.snapshot:null;
+   if(current&&!state.refreshing)noteFence(current);
    setRecovery(previous=>previous.required&&previous.view===current?previous:{required:true,view:current});
    if(current&&!state.refreshing&&!navigation?.pending()){
     const key=JSON.stringify([current.authority,current.observedAt,current.requestStartedAt]);
     // A refresh waits behind an unfinished Server Action. A same-page replace
     // fetches fresh dynamic data while discarding that action's stale router result.
-    if(lastRefresh!==key){lastRefresh=key;if(anchor.current)router.replace(window.location.pathname+window.location.search+window.location.hash,{scroll:false});else router.refresh();}
+    if(lastRefresh!==key){lastRefresh=key;if(anchor.current)refreshPage(router,versionRef);else router.refresh();}
    }
   },async signal=>{
    requestStartedAt=performance.now();
@@ -64,20 +92,32 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    return {...result,requestStartedAt};
   },reason=>({state:'unavailable',reason}),()=> 'read_failed');
   function pause(){foreground=false;retire('paused');controller.pause();}
-  function recover(){foreground=online();retire('expired');lastRefresh='';controller.pause();if(foreground)controller.start();}
+  function recover(tabWide=true){foreground=online();retire('expired',tabWide);lastRefresh='';controller.pause();if(foreground)controller.start();}
+  const recoverTab=()=>recover();
   const focus=(event:Event)=>{if(event.target!==window||(foreground&&online()))return;recover();};
   function complete(current:CurrentAuthority){
    anchor.current=current;required.current=false;controller.pause();setRecovery({required:false,view:null});
   }
   controls.current={recover,pause,complete};
-  const resume=navigation?.subscribe(()=>{if(!active||!online())return;if(required.current)recover();else if(deferredRefresh.current){deferredRefresh.current=false;router.refresh();}});
+  const resume=navigation?.subscribe(()=>{if(!active||!online())return;if(required.current)recover(false);else if(deferredRefresh.current){deferredRefresh.current=false;refreshPage(router,versionRef);}});
   const visibility=()=>{if(document.visibilityState==='hidden')pause();else recover();};
   document.addEventListener('visibilitychange',visibility);
   for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);
   window.addEventListener('focus',focus);
-  for(const event of ['pageshow','online','storage'])window.addEventListener(event,recover);
-  queueMicrotask(()=>{if(active)recover();});
-  return()=>{active=false;resume?.();controller.stop();controls.current=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('focus',focus);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['pageshow','online','storage'])window.removeEventListener(event,recover);};
+  for(const event of ['pageshow','online','storage'])window.addEventListener(event,recoverTab);
+  // A page rendered after this tab's current cutoff, with the fence's authority, needs no second check or render.
+  function adoptTabFence(){
+   const fence=tab.fence,page=observationRef.current;
+   if(!fence||tab.cutoff===null||fence.requestStartedAt<=tab.retiredAt||!page||page.authority!==fence.authority||!online())return false;
+   const observedAt=Date.parse(page.observedAt);
+   if(!Number.isFinite(observedAt)||!(observedAt>Date.parse(tab.cutoff)))return false;
+   // Inside its own validity window, with a second to spare; an older page (a prefetch left in the cache) re-checks.
+   const age=Math.max(0,performance.now()-fence.requestStartedAt-(observedAt-Date.parse(fence.observedAt)));
+   if(!(page.validForMs>0&&page.validForMs<=15000&&page.validForMs-age>1000))return false;
+   foreground=true;complete(fence);return true;
+  }
+  queueMicrotask(()=>{if(active&&!adoptTabFence())recover(false);});
+  return()=>{active=false;resume?.();controller.stop();controls.current=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('focus',focus);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['pageshow','online','storage'])window.removeEventListener(event,recoverTab);};
  },[router,navigation]);
 
  useEffect(()=>{
@@ -96,19 +136,22 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    const valid=!!observation&&Number.isFinite(observed)&&duration>0&&duration<=15000&&remaining>0&&observed>retiredThrough.current&&observed>=latest.current;
    const afterBarrier=!required.current||(!!recovery.view&&observation?.authority===recovery.view.authority&&observed>Date.parse(recovery.view.observedAt));
    if(!valid||!afterBarrier){
-    if(!required.current)controls.current?.recover();
+    // This page is too old or predates the fence: re-check it. That says nothing about the tab, so its fence stays.
+    if(!required.current)controls.current?.recover(false);
     else setBody({authority:null,phase:'expired',content:null});
     return;
    }
    latest.current=observed;
    if(required.current&&recovery.view)controls.current?.complete(recovery.view);
    setBody({authority:observation!.authority,phase:'ready',content:children});
-   early=setTimeout(()=>{if(proactiveVersion.current!==version){proactiveVersion.current=version;if(navigation?.pending())deferredRefresh.current=true;else router.refresh();}},remaining*.65);
-   expiry=setTimeout(()=>controls.current?.recover(),remaining);
+   early=setTimeout(()=>{if(proactiveVersion.current!==version){proactiveVersion.current=version;if(navigation?.pending())deferredRefresh.current=true;else refreshPage(router,versionRef);}},remaining*.65);
+   expiry=setTimeout(()=>controls.current?.recover(false),remaining);
   });
   return()=>{active=false;if(early)clearTimeout(early);if(expiry)clearTimeout(expiry);};
  },[version,observed,duration,observation,children,recovery,router,navigation]);
 
+ // Effects run before any microtask, so the mount check (queued in the controller effect) reads this page's observation.
+ useEffect(()=>{observationRef.current=observation;versionRef.current=version;},[observation,version]);
  const refreshCurrent=()=>{navigation?.discard();controls.current?.recover();};
 
  if(!recovery.required&&observation&&body.phase==='ready'&&body.authority===observation.authority)return body.content;

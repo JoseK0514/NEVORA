@@ -48,7 +48,9 @@ See `after-*-tap-filmstrip.png`. Scrolling still shows 0 long tasks and 0 slow f
 - **New regressions:** Quiet skeleton, tab prefetch and pending feedback, idle spinner, no gsap imports.
 - **Browser:** Chromium phone timings and filmstrips; Owner, Employee light and dark, and desktop captures with no visual change except the static header hairline.
 
-## For Codex: the remaining server time
+## The remaining server time
+
+Update, Oct 24: Jose moved these items to Claude. Items 1 to 4 are done in `../phase-1b/README.md`; 5 to 7 remain open.
 
 1. **The access frame fetches each page twice.** On mount it reads `/api/company-access/operational-authority`, then requires a page observed *after* that read, so it always calls `router.refresh()` or `replace` for a second server render.
    - Hosted, that is an extra authority round trip plus a second full page render on every tab tap.

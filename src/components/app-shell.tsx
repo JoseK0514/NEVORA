@@ -435,7 +435,8 @@ function AppShellView({
                   <Link
                     key={item.href}
                     href={item.href}
-                    // Phase 1: the tabs load in full ahead of the tap. The access frame still checks each page when it opens.
+                    // Phase 1: the tabs load in full ahead of the tap. The access frame still checks each page when it opens, and its
+                    // periodic refresh re-renders only the open page, so these prefetches are not repeated every few seconds.
                     prefetch
                     className={active ? "mobile-nav-link active" : "mobile-nav-link"}
                     aria-current={active ? "page" : undefined}

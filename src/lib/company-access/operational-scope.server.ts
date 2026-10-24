@@ -1,4 +1,5 @@
 import 'server-only';
+import {cache} from 'react';
 import {createHash} from 'node:crypto';
 import type {Workspace,UserRole} from '@/lib/domain';
 import type {SqlExecutor,SqlStatement} from '@/lib/notifications/types';
@@ -103,7 +104,15 @@ function effective(row:Pick<Row,'roleGeneration'|'grantGeneration'|'scopeRevisio
  const scope=parseScopeSelection({mode:row.mode,locationIds:row.locationIds});
  return scope?{state:'ASSIGNED',scope,invalid:false}:{state:'UNASSIGNED',scope:null,invalid:true};
 }
-export async function readOperationalAuthority(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<OperationalAuthorityView> {
+/** The layout and the page each read authority for the same request; on the default executor they now share one
+ * read per proof within a server render (React cache, inspection Oct 24). The proof object is itself shared per render,
+ * so the key matches. An explicit executor (a transaction, a test) always reads fresh, and withOperationalCompany keeps
+ * its own in-transaction check. */
+const readDefaultAuthority=cache((proof:SessionMutationProof)=>readAuthority(proof,neonNotificationExecutor()));
+export async function readOperationalAuthority(proof:SessionMutationProof,executor?:SqlExecutor):Promise<OperationalAuthorityView> {
+ return executor?readAuthority(proof,executor):readDefaultAuthority(proof);
+}
+async function readAuthority(proof:SessionMutationProof,executor:SqlExecutor):Promise<OperationalAuthorityView> {
  try{assertManagementProof(proof,proof?.employee?.id);}catch{return {state:'unavailable',reason:'access_denied'};}
  try {
   const workspace=await getWorkspace(executor),start=locks(proof,workspace,[]);

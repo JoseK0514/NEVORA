@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { Workspace } from '../domain';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import { neonNotificationExecutor } from './sql-executor';
@@ -20,7 +21,13 @@ export class WorkspacePermissionError extends Error {
 // Keep exact PostgreSQL timestamp text: Date conversion loses microseconds.
 const fields = 'id, name, time_zone AS "timeZone", active, created_at::text AS "createdAt", updated_at::text AS "updatedAt"';
 export const workspaceReadSql = () => `SELECT ${fields} FROM workspaces WHERE singleton=true`;
-export async function getWorkspace(executor: SqlExecutor = neonNotificationExecutor()): Promise<Workspace> {
+/** The default read is shared within one server render (React cache): the layout and the page each asked for it
+ * (inspection Oct 24). A caller passing its own executor (a transaction, a test) always reads fresh. */
+const readDefaultWorkspace = cache(() => readWorkspace(neonNotificationExecutor()));
+export async function getWorkspace(executor?: SqlExecutor): Promise<Workspace> {
+  return executor ? readWorkspace(executor) : readDefaultWorkspace();
+}
+async function readWorkspace(executor: SqlExecutor): Promise<Workspace> {
   try {
     const rows = await executor.query<Workspace>({ text: workspaceReadSql(), values: [] });
     if (rows.length !== 1) throw new WorkspaceUnavailableError();
