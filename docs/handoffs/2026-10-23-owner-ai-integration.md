@@ -1,8 +1,8 @@
 # Owner AI combined candidate: independent review and integration handoff
 
-Status: COMBINED LOCAL CANDIDATE VERIFIED WITH CONDITIONS; JOSE APPROVED SIX ACTIVE REMOTES, INCLUDING CLAUDE'S BRANCH. Current source-gate, remote CI, development and hosted state is recorded in PR25 and the external `publication-receipt.json`.
+Status: PR25 MERGED INTO DEVELOPMENT; ACTUAL DEVELOPMENT-PUSH CI FAILED; LOCALLY VERIFIED REPAIR AWAITS FRESH CLOUD ACCEPTANCE. See the [current development-validation repair handoff](2026-10-23-owner-development-validation-repair.md). Jose approved six active remotes, including Claude's branch. Current remote workflow/development state is recorded in PR metadata and the external `publication-receipt.json`.
 
-Jose authorized full review and development integration of the Owner advisor, prioritized briefing and reviewed workflows. Production remains a separate decision. This handoff distinguishes the new local candidate from the previously published PR25 head. Earlier snapshots below retain their named source; the latest review section supersedes their pending-state statements.
+Jose authorized full review and development integration of the Owner advisor, prioritized briefing and reviewed workflows. Production remains a separate decision. The current repair handoff supersedes pending and ready-for-review statements below. Earlier snapshots retain their named source and do not establish current release acceptance.
 
 ## Source and scope
 

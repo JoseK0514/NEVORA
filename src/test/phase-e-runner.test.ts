@@ -73,7 +73,7 @@ it('ownership_marker_required even for a loopback fixture', () => {
 });
 it('propagates_child_failure and stops the invocation-owned cluster', () => {
   const f = fixture(23), result = invoke(['sql', '--suite', 'assignments'], f.env, f.root);
-  expect(result.status).toBe(23);
+  expect(result.status, result.stderr).toBe(23);
   const trace = readFileSync(f.trace, 'utf8'); expect(trace).toContain('STOP');
   expect(existsSync(trace.split('\n').find(line => line.startsWith('START='))!.slice(6))).toBe(false);
   const report = JSON.parse(readFileSync(join(f.evidence, 'sql-report.json'), 'utf8'));
