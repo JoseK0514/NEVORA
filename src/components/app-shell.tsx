@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import {NavigationLink as Link} from './navigation-link';
+import {AppNavigationProvider} from './app-navigation';
 import { NotificationBell } from "./notification-bell";
 import { useInboxCount } from "./use-inbox-count";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
@@ -50,7 +51,7 @@ type AppShellProps = {
 };
 
 export function AppShell(props:AppShellProps){
- return <AppShellView key={JSON.stringify([props.user.id,props.user.role])} {...props}/>;
+ return <AppNavigationProvider key={JSON.stringify([props.user.id,props.user.role])}><AppShellView {...props}/></AppNavigationProvider>;
 }
 
 function AppShellView({
