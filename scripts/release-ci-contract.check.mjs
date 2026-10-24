@@ -47,6 +47,20 @@ test('independent Attendance stages retain fatal outcomes and run after earlier 
  assert.match(steps.find(step=>step.name==='Verify whole-phase SHA and mandatory UX evidence').run,/report\.errors\.length/);
  assert.match(steps.find(step=>step.name==='Verify remediation SHA-bound evidence').run,/r\.runtimeErrors/);
 });
+test('Clocker rendering controls run before the unchanged authenticated regression and retain their receipt',()=>{
+ const steps=workflow.jobs['phase-d-attendance-ui'].steps;
+ const step=steps.find(value=>value.name==='Existing Clocker lifecycle and recovery browser regression');
+ assert.deepEqual(step.run.trim().split('\n'),[
+  'node scripts/clocker-break-filter-readiness.check.mjs',
+  'node scripts/phase-c-clocker-postgres.mjs --punch-ui',
+ ]);
+ assert.equal(step.env.PHASE_C_EXPECTED_SHA,'${{ github.sha }}');
+ assert.equal(step.env.PHASE_C_EVIDENCE_DIR,'${{ runner.temp }}/nevora-clocker-browser-evidence');
+ assert.equal(step['continue-on-error'],undefined);
+ const upload=steps.find(value=>value.name==='Upload whole Phase D browser evidence');
+ assert.equal(upload.if,'always()');assert.equal(upload.with['if-no-files-found'],'error');
+ assert(upload.with.path.includes('${{ runner.temp }}/nevora-clocker-browser-evidence/*.json'));
+});
 test('runtime installers prefer the existing official mirror before every apt dependency step',()=>{
  for(const name of ['clocker-postgres','release-postgres','phase-e-postgres','phase-d-attendance-ui','phase-e-ui-suite']){
   const steps=workflow.jobs[name].steps,preference=steps.findIndex(step=>step.name==='Prefer official Ubuntu archive');

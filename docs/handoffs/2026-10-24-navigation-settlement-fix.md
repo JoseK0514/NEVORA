@@ -1,5 +1,7 @@
 # Navigation settlement and role refresh correction
 
+Latest cloud outcome and the subsequent test-only Clocker correction are in [Clocker filter completion repair](2026-10-24-clocker-filter-readiness-fix.md). The navigation implementation documented below is retained.
+
 ## Current state
 
 Jose authorized Codex to implement the navigation corrections while preserving Claude's design. Code verification checkpoint: `393f3b110d1dcf14414cda7b277f0c8fd71dd93b`, on local `codex/quiet-ui-development-20261023`, descended from Claude's complete `a5470f79d0c47f5d6c2e8c56d7ae2bb454bfc0f3` and Codex's existing disclosure-readiness repairs. This document and source classification are subsequent documentation-only work.

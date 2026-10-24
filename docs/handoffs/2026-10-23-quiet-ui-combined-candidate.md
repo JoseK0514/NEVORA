@@ -1,5 +1,9 @@
 # Quiet v4 combined development candidate
 
+## Current follow-up: Clocker filter completion
+
+Cloud run40112046593 completed with ten of twelve jobs passing. The remaining primary failure is Clocker WebKit reactivation after87 checks; final evidence fails downstream. Actual-component reproduction, the bounded test-driver correction, six passing controls and authenticated two-engine persistence evidence are recorded in [Clocker filter completion repair](2026-10-24-clocker-filter-readiness-fix.md). Full matching CI remains required. Earlier rounds below are historical evidence.
+
 Status: PR30 remains OPEN into development, unmerged and undeployed by this work. Prior published source `d6ce3ef9d7014be9f0f11126781f6b7b67c4e500` completed run40099363010 with10/12 mandatory jobs successful, including all70 PhaseE cells. Attendance and final evidence fail. Jose subsequently authorized Codex to repair the remaining nonvisual navigation defects on top of Claude's a5470f79. The code checkpoint `393f3b110d1dcf14414cda7b277f0c8fd71dd93b` passes134 focused tests,158 release-engineering checks, types, targeted lint, nine direct coordinator controls and four native WebKit navigation scenarios. No styling changed. Jose authorized preservation of Claude's complete tip in a verified recoverable archive followed by retirement of that included branch; the source gate now passes with57 classified sources and six active branches. The combined candidate is ready for one publication through existing PR30, with full matching cloud acceptance still required. See `2026-10-24-navigation-settlement-fix.md` for evidence, scope and completed source consolidation. Earlier sections below remain historical source-specific evidence.
 
 ## Eleventh run completed; Claude navigation handoff
