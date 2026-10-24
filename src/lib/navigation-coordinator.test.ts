@@ -255,3 +255,103 @@ it('does not reload again when the shell unmounts after the wait already reloade
  identity.release();
  expect(reload).toHaveBeenCalledTimes(1);
 });
+
+// Review of d03e0e38: every attempt's destination stays attributable after a later begin() or discard(). A commit of an
+// address an older attempt targeted is stale for every later attempt, whatever navigation types came in between.
+
+it('keeps a router transition pending through a stale commit when a Link started in between',()=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ navigation.transition('/source','/old?name=Ana%20Rivera');
+ navigation.begin('/source','/middle','link');
+ const current=navigation.transition('/source','/new');
+ identity.request();navigation.committed('/old?name=Ana+Rivera');
+ expect(navigation.pending()).toBe(true);expect(navigation.current()).toBe(current);expect(reload).not.toHaveBeenCalled();
+ navigation.committed('/middle');
+ expect(navigation.pending()).toBe(true);expect(reload).not.toHaveBeenCalled();
+ navigation.committed('/new');
+ expect(navigation.pending()).toBe(false);expect(reload).toHaveBeenCalledTimes(1);
+});
+
+it.each(['history','imperative'] as const)('keeps a router transition pending through a stale commit when %s navigation started in between',kind=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ navigation.transition('/source','/old');navigation.begin('/source','/middle',kind);navigation.transition('/source','/new');
+ identity.request();navigation.committed('/old');navigation.committed('/middle');
+ expect(navigation.pending()).toBe(true);expect(navigation.current()?.destination).toBe('/new');expect(reload).not.toHaveBeenCalled();
+ navigation.committed('/new');expect(reload).toHaveBeenCalledTimes(1);
+});
+
+it('keeps a router transition pending through a commit of a navigation discarded before it started',()=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ navigation.transition('/source','/old');navigation.discard();
+ navigation.transition('/source','/new');identity.request();
+ navigation.committed('/old');
+ expect(navigation.pending()).toBe(true);expect(reload).not.toHaveBeenCalled();
+ navigation.committed('/new');
+ expect(navigation.pending()).toBe(false);expect(reload).toHaveBeenCalledTimes(1);
+});
+
+it('treats discarded Link and history destinations, with query variants, as stale for a later router transition',()=>{
+ const navigation=createNavigationCoordinator();
+ navigation.begin('/source','/app/reports?period=this%20week','link');navigation.discard();
+ navigation.begin('/source','/app/schedule','history');navigation.discard();
+ navigation.transition('/source','/app');
+ navigation.committed('/app/reports?period=this+week');navigation.committed('/app/schedule');
+ expect(navigation.pending()).toBe(true);expect(navigation.current()?.destination).toBe('/app');
+ navigation.committed('/app');expect(navigation.pending()).toBe(false);
+});
+
+it('ignores a late commit from an attempt superseded before an earlier navigation settled',()=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn();
+ navigation.transition('/source','/old');navigation.transition('/source','/second');navigation.committed('/second');
+ const third=navigation.transition('/second','/third'),identity=createIdentityReload(navigation,reload);
+ identity.request();navigation.committed('/old');
+ expect(navigation.current()).toBe(third);expect(reload).not.toHaveBeenCalled();
+ navigation.committed('/third');expect(reload).toHaveBeenCalledTimes(1);
+});
+
+it('ignores late Link completions from discarded or superseded attempts',()=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const discarded=navigation.begin('/source','/a','link');navigation.discard();
+ const superseded=navigation.begin('/source','/b','link');
+ const current=navigation.transition('/source','/c');identity.request();
+ if(!discarded||!superseded)throw Error('Expected navigation attempts');
+ navigation.observe(discarded,true);navigation.observe(discarded,false);navigation.observe(superseded,true);navigation.observe(superseded,false);
+ expect(navigation.current()).toBe(current);expect(reload).not.toHaveBeenCalled();
+ navigation.committed('/c');expect(reload).toHaveBeenCalledTimes(1);
+});
+
+it('still settles a further redirect to an address that already committed or whose navigation already settled',()=>{
+ const committed=createNavigationCoordinator();
+ committed.transition('/source','/a');committed.committed('/a');
+ committed.transition('/a','/b');committed.committed('/a');
+ expect(committed.pending()).toBe(true);// /a is the source of /b, the redirecting page's own commit
+ committed.transition('/b','/c');committed.committed('/a');
+ expect(committed.pending()).toBe(false);// a redirect back to a page that committed earlier
+ const failed=createNavigationCoordinator(),link=failed.begin('/source','/reports','link');
+ if(!link)throw Error('Expected a navigation attempt');
+ failed.observe(link,true);failed.observe(link,false);
+ failed.transition('/source','/settings');failed.committed('/reports');
+ expect(failed.pending()).toBe(false);// the Link settled, so it can no longer commit late
+});
+
+it('consumes a stale commit, so the same address committing again is a further redirect',()=>{
+ const navigation=createNavigationCoordinator();
+ navigation.transition('/source','/old');navigation.transition('/source','/new');
+ navigation.committed('/old');expect(navigation.pending()).toBe(true);
+ navigation.committed('/elsewhere');expect(navigation.pending()).toBe(false);
+ navigation.transition('/elsewhere','/next');navigation.committed('/old');
+ expect(navigation.pending()).toBe(false);
+});
+
+it('remembers the 64 most recent unsettled destinations, its own included, and forgets the oldest first',()=>{
+ const kept=createNavigationCoordinator();
+ for(let index=0;index<63;index++){kept.transition('/source',`/abandoned/${index}`);kept.discard();}
+ kept.transition('/source','/new');kept.committed('/abandoned/0');
+ expect(kept.pending()).toBe(true);
+ const bounded=createNavigationCoordinator();
+ for(let index=0;index<64;index++){bounded.transition('/source',`/abandoned/${index}`);bounded.discard();}
+ bounded.transition('/source','/new');
+ bounded.committed('/abandoned/1');expect(bounded.pending()).toBe(true);
+ // The 65th-newest destination was forgotten, so its commit now reads as a further redirect.
+ bounded.committed('/abandoned/0');expect(bounded.pending()).toBe(false);
+});
