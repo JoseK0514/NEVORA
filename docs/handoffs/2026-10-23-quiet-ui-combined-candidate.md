@@ -1,6 +1,6 @@
 # Quiet v4 combined development candidate
 
-Status: PR30 into development remains unmerged and undeployed. Current published source `f3f0e39f6c592322cb33d066b7ad8ce07d73e5b1` runs workflow40056641543 against generated merge `2cd28e23a96f7b22ff3132039de8193270660689` (matching tree `de3f7f50e6fb1d21d75d877123e7c9d0826641e0`). Validation, all three SQL jobs, Home, Communications and Calendar passed; Attendance and Navigation exposed stale test selectors. Attention remains running. The test-only corrections below require another full matching run. Jose explicitly approved the additional nonvisual Reports navigation repair after receiving its proposed scope. Claude's visual style remains intact.
+Status: PR30 into development remains unmerged and undeployed. Published source `f3f0e39f6c592322cb33d066b7ad8ce07d73e5b1` ran workflow40056641543 against generated merge `2cd28e23a96f7b22ff3132039de8193270660689` (matching tree `de3f7f50e6fb1d21d75d877123e7c9d0826641e0`). Validation, all three SQL jobs, Home, Communications, Calendar and Attention passed; Attendance and Navigation exposed stale test selectors. Those failures and their downstream gates prevent acceptance. The test-only corrections below are prepared for another full matching run. Jose explicitly approved the additional nonvisual Reports navigation repair after receiving its proposed scope. Claude's visual style remains intact.
 
 ## Inputs and preservation
 
