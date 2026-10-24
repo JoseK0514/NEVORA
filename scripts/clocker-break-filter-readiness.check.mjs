@@ -43,8 +43,8 @@ await new Promise(ready=>server.listen(0,'127.0.0.1',ready));
 const origin=`http://127.0.0.1:${server.address().port}`,results=[];
 try{for(const engine of ['chromium','webkit']){
  const browser=await pw[engine].launch({headless:true});
- try{for(const operation of ['Archive','Reactivate']){
-  const result={engine,operation,status:'failed',observations:[]};results.push(result);
+ try{for(const {operation,holdUntilTimeout} of [{operation:'Archive'},{operation:'Reactivate'},{operation:'Reactivate',holdUntilTimeout:true}]){
+  const result={engine,operation,holdUntilTimeout:Boolean(holdUntilTimeout),status:'failed',observations:[]};results.push(result);
   let context,page,change,settled=false,outcome;const errors=[];
   try{
    context=await browser.newContext();let externalRequests=0;
@@ -54,7 +54,8 @@ try{for(const engine of ['chromium','webkit']){
    await page.locator('button[data-break-type="ui-rest"]').waitFor();
    const frames=()=>page.evaluate(()=>new Promise(ready=>requestAnimationFrame(()=>requestAnimationFrame(ready))));
    result.phase='start actual driver';
-   change=archiveBreak(page,operation).then(()=>{settled=true;outcome={ok:true};},error=>{settled=true;outcome={ok:false,name:error.name,message:error.message};});
+   const started=performance.now();
+   change=archiveBreak(page,operation,holdUntilTimeout?200:15000).then(()=>{settled=true;outcome={ok:true};},error=>{settled=true;outcome={ok:false,name:error.name,message:error.message};});
    result.phase='await fictional action';
    await page.waitForFunction(()=>typeof window.resolveFictionalAction==='function');await frames();
    const nextActive=operation==='Reactivate';
@@ -69,6 +70,17 @@ try{for(const engine of ['chromium','webkit']){
    const rows=await page.locator('button[data-break-type="ui-rest"]').count();
    assert.equal(rows,1,'The actual component closes its dialog before React commits the new filtered rows');
    result.observations.push({phase:'Action returned, native dialog closed, real React rendering held',rows,settled,outcome});
+   assert.deepEqual(await page.evaluate(()=>window.fixtureInput),{id:'ui-rest',expectedVersion:'1',name:'Fixture rest',category:'REST',targetMinutes:'15',active:String(nextActive)});
+   assert.equal(await page.evaluate(()=>window.fixtureCalls),1);
+   if(holdUntilTimeout){
+    await change;
+    assert.equal(outcome?.ok,false);assert.equal(outcome?.name,'TimeoutError');assert.match(outcome.message,/detached/);
+    assert.equal(await page.locator('button[data-break-type="ui-rest"]').count(),1,'A permanently uncommitted row remains a fatal failure');
+    const elapsedMs=Math.round(performance.now()-started);assert(elapsedMs>=200&&elapsedMs<5000);
+    assert.equal(externalRequests,0);assert.deepEqual(errors,[]);
+    result.observations.push({phase:'A closed dialog with no filtered-row commit fails within its deadline',rowRemovalTimeoutMs:200,elapsedMs,outcome});
+    result.status='passed';continue;
+   }
    assert.equal(settled,false,'The driver must wait for the real filtered-row commit after native dialog closure');
    await page.evaluate(()=>window.releaseReactTasks());await change;
    assert.deepEqual(outcome,{ok:true});assert.equal(await page.locator('button[data-break-type="ui-rest"]').count(),0);
@@ -77,8 +89,6 @@ try{for(const engine of ['chromium','webkit']){
    await page.getByRole('button',{name:nextFilter+', 1',exact:true}).click();
    await page.locator('button[data-break-type="ui-rest"]').waitFor();
    assert.equal(await page.locator('button[data-break-type="ui-rest"]').count(),1);
-   assert.deepEqual(await page.evaluate(()=>window.fixtureInput),{id:'ui-rest',expectedVersion:'1',name:'Fixture rest',category:'REST',targetMinutes:'15',active:String(nextActive)});
-   assert.equal(await page.evaluate(()=>window.fixtureCalls),1);
    assert.equal(externalRequests,0);assert.deepEqual(errors,[]);
    result.observations.push({phase:'Actual React commit moves only the changed row to its new filter',rowsInPriorFilter:0,rowsInNewFilter:1,actionCalls:1});
    result.status='passed';
@@ -91,7 +101,7 @@ try{for(const engine of ['chromium','webkit']){
  }}finally{await browser.close();for(const result of results.filter(value=>value.engine===engine))result.browserClosed=!browser.isConnected();}
 }}finally{await new Promise(ready=>server.close(ready));}
 assertSourceUnchanged(source,custody);
-const passed=results.length===4&&results.every(result=>result.status==='passed'&&result.browserClosed);
+const passed=results.length===6&&results.every(result=>result.status==='passed'&&result.browserClosed);
 const report={checkpoint:custody.checkpoint,tree:custody.tree,sourceClean:true,sourceUnchanged:true,status:passed?'passed':'failed',componentSha256:createHash('sha256').update(component).digest('hex'),formStylesSha256:createHash('sha256').update(formStyles).digest('hex'),react:project('react/package.json').version,results,limitations:['Actual component, form stylesheet and React scheduler with fictional action/framework boundaries; not real Next/PostgreSQL acceptance or visual certification.','The full authenticated Clocker browser regression remains mandatory.']};
 await writeFile(join(evidence,'clocker-break-filter-readiness-custody.json'),JSON.stringify(report,null,2));
 console.log(JSON.stringify(report));if(!passed)process.exitCode=1;

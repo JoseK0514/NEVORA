@@ -223,7 +223,9 @@ jobs:
         env:
           PHASE_C_EVIDENCE_DIR: ${{ runner.temp }}/nevora-clocker-browser-evidence
           PHASE_C_EXPECTED_SHA: ${{ github.sha }}
-        run: node scripts/phase-c-clocker-postgres.mjs --punch-ui
+        run: |
+          node scripts/clocker-break-filter-readiness.check.mjs
+          node scripts/phase-c-clocker-postgres.mjs --punch-ui
       - name: Verify whole-phase SHA and mandatory UX evidence
         if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
         env:
