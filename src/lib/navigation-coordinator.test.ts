@@ -45,10 +45,34 @@ it('ignores source address observations and releases after router commitment to 
  navigation.committed('/destination');expect(navigation.pending()).toBe(false);expect(settled).toHaveBeenCalledTimes(1);
 });
 
-it('allows router commitment to an actual redirect without retaining the source latch',()=>{
+it('settles a redirect only through its own native Link completion',()=>{
  const navigation=createNavigationCoordinator();
- navigation.begin('/source','/destination','imperative');navigation.committed('/login');
+ const attempt=navigation.begin('/source','/destination','link');
+ if(!attempt)throw Error('Expected a navigation attempt');
+ navigation.observe(attempt,true);navigation.committed('/login');
+ expect(navigation.pending()).toBe(true);
+ navigation.observe(attempt,false);
  expect(navigation.pending()).toBe(false);
+});
+
+it('does not let an older destination address release a newer navigation',()=>{
+ const navigation=createNavigationCoordinator(),settled=vi.fn();
+ navigation.subscribe(settled);
+ const older=navigation.begin('/source','/first','link');
+ if(!older)throw Error('Expected a navigation attempt');
+ navigation.observe(older,true);
+ const current=navigation.begin('/source','/second','link');
+ navigation.committed('/first');navigation.observe(older,false);
+ expect(navigation.current()).toBe(current);expect(navigation.pending()).toBe(true);expect(settled).not.toHaveBeenCalled();
+ navigation.committed('/second');
+ expect(navigation.pending()).toBe(false);expect(settled).toHaveBeenCalledTimes(1);
+});
+
+it('requires the current destination query as well as its pathname for address commitment',()=>{
+ const navigation=createNavigationCoordinator(),attempt=navigation.begin('/source','/destination?period=current','link');
+ navigation.committed('/destination?period=old');
+ expect(navigation.current()).toBe(attempt);expect(navigation.pending()).toBe(true);
+ navigation.committed('/destination?period=current');expect(navigation.pending()).toBe(false);
 });
 
 it('defers history recovery until its actual router address is committed',()=>{

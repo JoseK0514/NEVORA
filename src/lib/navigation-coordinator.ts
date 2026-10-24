@@ -26,7 +26,7 @@ export function createNavigationCoordinator(){
    if(pending)seenPending=true;
    else if(seenPending)finish(attempt);
   },
-  committed(address:string){if(active&&address!==active.source)finish(active);},
+  committed(address:string){if(active&&address===active.destination)finish(active);},
   // A new explicit user choice supersedes the old navigation. Its caller starts
   // a new authority barrier; no deferred snapshot or callback is replayed.
   discard(){active=null;seenPending=false;},

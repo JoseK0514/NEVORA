@@ -1,10 +1,13 @@
 import assert from 'node:assert/strict';
 import {openPeriodReports} from './phase-d-report-navigation.mjs';
+import {runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
+import {assignOwnedManagerCompanyAccess} from '../src/test/integration/owned-app-fixture.ts';
 
 /** Real destination RSC timing control, using the original single-click/15s
  * Reports acceptance. Each case starts a separate source document; none rescues
  * an already failed navigation. Only the response timing/lifecycle event vary. */
-export async function verifyReportRecoveryNavigation(page,origin,engine,report){
+export async function verifyReportRecoveryNavigation(page,app,engine,report,managerId){
+ const origin=app.url;
  for(const recover of [false,true]){
   await page.goto(origin+'/app/payroll-export?start=2026-09-21&end=2026-09-27');
   await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
@@ -42,5 +45,75 @@ export async function verifyReportRecoveryNavigation(page,origin,engine,report){
    if(holdTask)await holdTask;
    await page.unroute('**/app/reports?*',handler);page.off('request',source);
   }
+ }
+ await verifyExplicitRecovery(page,origin,engine,report);
+ await verifyRoleRedirect(page,app,engine,report,managerId);
+ await page.goto(origin+'/app/payroll-export?start=2026-09-21&end=2026-09-27');
+ await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
+ await openPeriodReports(page,origin,engine,report);
+}
+
+async function verifyExplicitRecovery(page,origin,engine,report){
+ const source='/app/payroll-export?start=2026-09-21&end=2026-09-27';
+ const row={engine,case:'explicit-source-recovery',status:'pending'};report.scopedNavigation.push(row);
+ let release,held,terminal,intercepted,stop=()=>{};
+ const gate=new Promise(ready=>{release=ready;});
+ const incoming=new Promise(ready=>{intercepted=ready;});
+ const handler=route=>{
+  const request=route.request();if(held||request.headers().rsc!=='1')return route.continue();
+  held=request;
+  terminal=new Promise(ready=>{
+   const finished=r=>{if(r===request){stop();ready('finished');}};
+   const failed=r=>{if(r===request){stop();ready('failed');}};
+   stop=()=>{page.off('requestfinished',finished);page.off('requestfailed',failed);};
+   page.on('requestfinished',finished);page.on('requestfailed',failed);
+  });
+  intercepted();
+  return gate.then(()=>route.continue());
+ };
+ await page.goto(origin+source);await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
+ await page.route('**/app/reports?*',handler);
+ const deadline=performance.now()+15000;
+ try{
+  await runBeforeRecoveryDeadline(async()=>{
+   await Promise.all([incoming,page.locator('#desktop-primary-navigation a[href="/app/reports"]').click()]);
+   assert(held,'An actual destination RSC must be held');
+   await page.evaluate(()=>window.dispatchEvent(new Event('storage')));
+   await page.locator('main').getByRole('button',{name:'Refresh current view',exact:true}).click();
+   await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
+   release();row.destinationTerminal=await terminal;
+   await page.evaluate(()=>new Promise(ready=>requestAnimationFrame(()=>requestAnimationFrame(ready))));
+   assert.equal(new URL(page.url()).pathname+new URL(page.url()).search,source,'A discarded destination must not replace explicit fresh source recovery');
+   assert(await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).isVisible());
+   row.status='passed';
+  },deadline);
+ }catch(error){row.status='failed';throw error;}
+ finally{release();stop();await page.unroute('**/app/reports?*',handler);}
+}
+
+async function verifyRoleRedirect(page,app,engine,report,managerId){
+ const row={engine,case:'actual-role-redirect',status:'pending'};report.scopedNavigation.push(row);
+ let attempted=false,changed=false,used=false,mutation;
+ const handler=async route=>{
+  if(used||route.request().headers().rsc!=='1')return route.continue();used=true;
+  attempted=true;mutation=app.database.executor.query({text:"UPDATE employees SET role='EMPLOYEE' WHERE id=$1",values:[managerId]});await mutation;changed=true;
+  await page.evaluate(()=>window.dispatchEvent(new Event('storage')));
+  return route.continue();
+ };
+ await page.goto(app.url+'/app/payroll-export?start=2026-09-21&end=2026-09-27');
+ await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
+ await page.route('**/app/reports?*',handler);
+ try{
+  await Promise.all([page.waitForURL(url=>url.pathname==='/app'),page.locator('#desktop-primary-navigation a[href="/app/reports"]').click()]);
+  assert(used&&changed,'The actual Reports request must encounter the fictional actor role change');
+  await page.locator('.employee-home').waitFor();
+  assert.equal(await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).count(),0);
+  row.status='passed';
+ }catch(error){row.status='failed';throw error;}
+ finally{
+  try{
+   try{await page.unroute('**/app/reports?*',handler);}
+   finally{try{await mutation;}finally{if(attempted){await app.database.executor.query({text:"UPDATE employees SET role='MANAGER' WHERE id=$1",values:[managerId]});await assignOwnedManagerCompanyAccess(app.database.executor,managerId);}}}
+  }catch(error){row.status='failed';throw error;}
  }
 }
