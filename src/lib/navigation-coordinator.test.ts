@@ -1,5 +1,5 @@
 import {expect,it,vi} from 'vitest';
-import {createNavigationCoordinator} from './navigation-coordinator';
+import {createIdentityReload,createNavigationCoordinator,onRouterTransition,routerTransitionStarted} from './navigation-coordinator';
 
 it('keeps accepted navigation pending before native Link reports its first pending state',()=>{
  const navigation=createNavigationCoordinator(),attempt=navigation.begin('/source','/destination','link');
@@ -88,4 +88,72 @@ it('keeps same-address navigation free unless it supersedes an existing destinat
  navigation.begin('/source','/destination','link');
  expect(navigation.begin('/source','/source','link')).not.toBeNull();
  expect(navigation.current()?.destination).toBe('/source');
+});
+
+// Role-change navigation (WebKit actual-role-redirect): a server redirect's replace starts before the provider records
+// the redirecting page's commit, and an identity reload must not cancel it mid-flight.
+
+it('keeps a server redirect replace pending through its source commit and settles at its destination',()=>{
+ const navigation=createNavigationCoordinator(),settled=vi.fn();navigation.subscribe(settled);
+ navigation.begin('/app/payroll-export','/app/reports','link');
+ // Next commits Reports, its redirect boundary calls router.replace('/app'), then the provider records the commit.
+ navigation.transition('/app/reports','/app');
+ navigation.committed('/app/reports');
+ expect(navigation.pending()).toBe(true);expect(settled).not.toHaveBeenCalled();
+ navigation.committed('/app');
+ expect(navigation.pending()).toBe(false);expect(settled).toHaveBeenCalledTimes(1);
+});
+
+it('settles a router transition when the router commits a further redirect instead of its destination',()=>{
+ const navigation=createNavigationCoordinator();
+ navigation.transition('/app/reports','/app/settings');
+ navigation.committed('/app');
+ expect(navigation.pending()).toBe(false);
+});
+
+it('keeps a link attempt when the router reports the same destination, and ignores same-address router replaces',()=>{
+ const navigation=createNavigationCoordinator(),link=navigation.begin('/source','/destination','link');
+ expect(navigation.transition('/source','/destination')).toBe(link);
+ expect(navigation.current()?.kind).toBe('link');
+ const idle=createNavigationCoordinator();
+ expect(idle.transition('/source','/source')).toBeNull();expect(idle.pending()).toBe(false);
+});
+
+it('delivers router transition starts to every registered listener until it stops listening',()=>{
+ const heard=vi.fn(),stop=onRouterTransition(heard);
+ routerTransitionStarted('/app');stop();routerTransitionStarted('/app/reports');
+ expect(heard).toHaveBeenCalledTimes(1);expect(heard).toHaveBeenCalledWith('/app');
+});
+
+it('reloads at once for an identity change when no router navigation is in flight',()=>{
+ const reload=vi.fn(),identity=createIdentityReload(createNavigationCoordinator(),reload);
+ identity.request();identity.request();
+ expect(reload).toHaveBeenCalledTimes(1);
+});
+
+it('reloads for an identity change only after the in-flight redirect commits, exactly once',()=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ navigation.begin('/app/payroll-export','/app/reports','link');
+ navigation.transition('/app/reports','/app');navigation.committed('/app/reports');
+ identity.request();identity.request();
+ expect(reload).not.toHaveBeenCalled();
+ navigation.committed('/app');
+ expect(reload).toHaveBeenCalledTimes(1);
+ identity.request();identity.release();
+ expect(reload).toHaveBeenCalledTimes(1);
+});
+
+it('still reloads exactly once when the new identity remounts the shell at the redirect commit',()=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ navigation.transition('/app/reports','/app');identity.request();
+ // The remount discards the old provider's coordinator without settling it; the old shell's unmount releases.
+ navigation.discard();expect(reload).not.toHaveBeenCalled();
+ identity.release();identity.release();
+ expect(reload).toHaveBeenCalledTimes(1);
+});
+
+it('does not reload on unmount when no identity change was requested',()=>{
+ const reload=vi.fn(),identity=createIdentityReload(createNavigationCoordinator(),reload);
+ identity.release();
+ expect(reload).not.toHaveBeenCalled();
 });
