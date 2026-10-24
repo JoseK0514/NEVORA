@@ -50,7 +50,7 @@ try{
    await check(engine+' report native keyboard '+width,async()=>{
     if(phone){
      const root=page.locator('.q-insights-phone'),figures=root.getByRole('list',{name:'Period figures',exact:true}),recorded=figures.locator('details').filter({has:page.locator('summary .q-rt').getByText('Recorded time',{exact:true})}),recordedSummary=recorded.locator(':scope > summary');
-     assert.equal(await page.locator('.q-insights-desk').isVisible(),false,'Full report tools yield to the approved compact phone figures');assert.equal(await figures.locator(':scope > li').count(),4);
+     assert(await page.locator('.q-insights-desk').evaluateAll(nodes=>nodes.length>0&&nodes.every(e=>e.getClientRects().length===0)),'Every desktop report container yields to the approved compact phone figures');assert.equal(await figures.locator(':scope > li').count(),4);
      assert.equal(await recordedSummary.locator('.q-rv').innerText(),'8 h','The phone figure uses the persisted eight recorded hours');
      await recordedSummary.focus();await page.keyboard.press('Enter');assert(await recorded.evaluate(e=>e.open));assert(await recordedSummary.evaluate(e=>document.activeElement===e&&e.matches(':focus-visible')));
      const person=recorded.locator('.q-sublist > li').filter({hasText:'LongReportEmployee'.repeat(4)+' QA'});assert.equal(await person.count(),1);assert.equal(await person.locator('span').last().innerText(),'8 h');assert(await person.isVisible());

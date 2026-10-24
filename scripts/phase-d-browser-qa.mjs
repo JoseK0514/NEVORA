@@ -1,7 +1,7 @@
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
 import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
 import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
-import {openPeriodReports} from './phase-d-report-navigation.mjs';
+import {openPeriodReports,reportNavigationStage} from './phase-d-report-navigation.mjs';
 import {verifyReportRecoveryNavigation} from './scoped-navigation-browser-check.mjs';
 import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 import {parseCurrentTimecards} from '../src/lib/timecards/client.ts';
@@ -24,6 +24,7 @@ const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim
 const dirty=execFileSync('git',['status','--porcelain=v1'],{encoding:'utf8'}).trim();
 if(process.env.PHASE_D_EXPECTED_SHA){assert.equal(checkpoint,process.env.PHASE_D_EXPECTED_SHA);assert.equal(dirty,'','Exact candidate browser verification requires a clean worktree');}
 const report={checkpoint,tree,sourceClean:dirty==='',checks:[],errors:[],networkCancellations:[],screenshots:[],recovery:[],runtimeDiagnostics:[],limitations:['Owned local runtime is not hosted verification.','Chromium/WebKit automation is not physical-device or screen-reader acceptance.']};
+const runtimeStarted=performance.now();
 async function waitUntil(test){const deadline=Date.now()+15000;while(!test()){if(Date.now()>deadline)throw Error('Expected browser request did not arrive');await new Promise(resolve=>setTimeout(resolve,10));}}
 async function waitUntilAsync(test){const deadline=Date.now()+15000;while(!await test()){if(Date.now()>deadline)throw Error('Expected UI state did not arrive');await new Promise(resolve=>setTimeout(resolve,10));}}
 const checked=name=>{report.checks.push(name);console.log('[Phase D browser] PASS '+name);};
@@ -57,7 +58,7 @@ try{
     await context.route('**/*',route=>{const target=new URL(route.request().url());return ['http:','https:'].includes(target.protocol)&&target.origin!==app.url?route.abort():route.continue();});
     const page=await context.newPage();currentPage=page;page.setDefaultTimeout(15000);page.on('pageerror',error=>{
       if(error.message.endsWith('due to access control checks.')&&error.message.includes(new URL(app.url).host+'/api/'))report.networkCancellations.push(engineName(id)+': '+error.message);
-      else{report.errors.push(engineName(id)+': '+error.message);report.runtimeDiagnostics.push({portal:id,lifecycle,afterCheck:report.checks.at(-1),route:new URL(page.url()).pathname.replace(/[A-Za-z0-9_-]{32,}/g,'[opaque]'),failure:safeBrowserFailure(error),stack:safeBrowserFailure({message:error.stack}).summary});}
+      else{report.errors.push(engineName(id)+': '+error.message);report.runtimeDiagnostics.push({portal:id,lifecycle,elapsedMs:Math.round(performance.now()-runtimeStarted),reportControl:reportNavigationStage(page),afterCheck:report.checks.at(-1),route:new URL(page.url()).pathname.replace(/[A-Za-z0-9_-]{32,}/g,'[opaque]'),failure:safeBrowserFailure(error),stack:safeBrowserFailure({message:error.stack}).summary});}
     });
     await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
     await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click()]);
@@ -379,5 +380,6 @@ finally{
   lifecycle='browser-close';
   for(const browser of browsers)await browser.close();if(app)await app.close();if(smtp)await smtp.close();
   await writeFile(join(evidence,'report.json'),JSON.stringify(report,null,2));
+  if(report.errors.length)process.exitCode=1;
   console.log(JSON.stringify({checkpoint,sourceClean:report.sourceClean,checks:report.checks.length,errors:report.errors.length,evidence}));
 }

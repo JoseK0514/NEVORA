@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict';
 import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 
+const stages=new WeakMap();
+export function markReportNavigationStage(page,engine,control,phase){
+ stages.set(page,{engine,control,phase,started:performance.now()});
+}
+export function reportNavigationStage(page){
+ const stage=stages.get(page);
+ return stage?{engine:stage.engine,control:stage.control,phase:stage.phase,elapsedMs:Math.round(performance.now()-stage.started)}:null;
+}
+
 export async function finishPeriodReportResponse(response,period,deadline){
  return runBeforeRecoveryDeadline(async()=>{
   assert(response.status()===200,'Protected report response must succeed');
@@ -37,15 +46,20 @@ export function observeReportNavigation(page,origin,trace,onFrameworkFailure){
  return ()=>{for(const [name,listener] of Object.entries(listeners))page.off(name,listener);};
 }
 
-export async function openPeriodReports(page,origin,engine,report){
+export async function openPeriodReports(page,origin,engine,report,control='period-report'){
  const trace={engine,status:'pending',events:[],omittedEvents:0};(report.reportNavigation??=[]).push(trace);
+ trace.control=control;trace.attempt=report.reportNavigation.length;
+ const mark=phase=>markReportNavigationStage(page,engine,control,phase);
  const stop=observeReportNavigation(page,origin,trace,()=>report.errors.push('Reports navigation emitted a framework RSC fallback.'));
  try{
+  mark('link');
   await page.bringToFront();
   const insights=page.locator('#desktop-primary-navigation a[href="/app/reports"]');
   assert.equal(await insights.getAttribute('href'),'/app/reports');
   await Promise.all([page.waitForURL(url=>url.pathname==='/app/reports'),insights.click()]);
+  mark('destination-readiness');
   await page.getByRole('heading',{name:'Hours by person',exact:true}).waitFor();
+  mark('period-entry');
   await page.getByRole('button',{name:/^Report period:/}).click();
   await page.getByRole('button',{name:'Custom period…',exact:true}).click();
   const period={startDate:'2026-09-21',endDate:'2026-09-27'};
@@ -54,6 +68,7 @@ export async function openPeriodReports(page,origin,engine,report){
   assert.equal(await page.getByLabel('First day',{exact:true}).inputValue(),period.startDate);
   assert.equal(await page.getByLabel('Last day',{exact:true}).inputValue(),period.endDate);
   const deadline=performance.now()+15000;
+  mark('period-submit');
   const incoming=page.waitForResponse(response=>{
    const request=response.request(),url=new URL(request.url());
    if(url.origin!==origin||url.pathname!=='/api/reports'||request.method()!=='POST'||request.headers()['x-nevora-reports']!=='1')return false;
@@ -62,6 +77,7 @@ export async function openPeriodReports(page,origin,engine,report){
   const [response]=await runBeforeRecoveryDeadline(()=>Promise.all([incoming,page.getByRole('button',{name:'View period',exact:true}).click()]),deadline);
   trace.protectedRead=await finishPeriodReportResponse(response,period,deadline);
   await runBeforeRecoveryDeadline(()=>page.locator('main').getByText('8h',{exact:true}).first().waitFor(),deadline);
+  mark('complete');
   trace.status='passed';
  }catch(error){trace.status='failed';throw error;}
  finally{stop();}

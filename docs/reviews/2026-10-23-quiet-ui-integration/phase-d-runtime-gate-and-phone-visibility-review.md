@@ -1,0 +1,21 @@
+# Phase D runtime gate and phone visibility review
+
+codeQualityStatus: WATCH
+recommendation: REQUEST_CHANGES until command-level fatal error handling and the phone selector correction are implemented
+blockers: Retained Phase D runtime error must remain fatal; current script can exit zero with report.errors populated. Phone checks must cover every desktop container rather than assume one. No application defect or benign-error classification is established.
+
+Reviewed sources in /Users/josek0514/.codex/worktrees/verify-preview-33/Fuel Scheduler and raw reports under /Users/josek0514/.codex/quiet-ui-pr30-evidence-20261023/attempt6/phase-d. No working patch was present when inspected; this report reviews evidence and the proposed bounded corrections.
+
+CRITICAL/HIGH: None established in application code.
+MEDIUM M1 — command-level false success: scripts/phase-d-browser-qa.mjs pageerror collector at lines 58-60 appends errors, while the final block writes/logs the report without deriving failure from that array. Actual report has 207 checks and one Portal D3-M WebKit native __nextjs_original-stack-frames error despite the reported zero command exit. Smallest robust correction: after browser/app/SMTP teardown, set process.exitCode=1 if report.errors.length is nonzero, then retain raw report writing and summary. Do not reset a pre-existing nonzero exit code or filter the framework error. Teardown/report-write exceptions already reject and remain fatal.
+
+The final .github/workflows/ci.yml whole-phase evidence check already rejects any report.errors. Thus the defect is command-level false success and delayed gate placement, not absence of an ultimate CI validation. Moving or duplicating the same exact-SHA/sourceClean/errors validation immediately after Whole Phase D avoids executing later expensive steps after known failure. Keep the final custody/mandatory-evidence check as appropriate. A meaningful control should demonstrate that a populated error array yields nonzero exit while still retaining the raw report.
+
+MEDIUM M2 — duplicate desktop container assumption: scripts/phase-d-report-keyboard-qa.mjs:53 calls singular isVisible on .q-insights-desk. Actual source has two containers: src/app/app/reports/page.tsx:27 wraps the PageBand and src/components/reports.tsx:390 wraps full report tools. All eight phone cells fail strict-mode resolution before exercising their new phone assertions. Proposed correction is sound: require a nonempty set, then assert every matched element has no rendered client rects at phone widths. Do not select first or drop the visibility assertion. Keep all other phone/business/wide/axe checks. Implementation still needs review/run.
+
+## Actual evidence and unresolved error
+Whole report: 207 checks, one errors entry. All eight reportNavigation rows passed, each with protected-read results, and all eight scopedNavigation rows passed. WebKit explicit-source-recovery records destinationTerminal=finished; Chromium records failed. runtimeDiagnostics places the framework event after webkit mapping geometry 1440, on /app/reports, lifecycle scenario. This is the interval containing initial Reports navigation and subsequent held/scoped controls; it lacks an absolute timestamp or attempt identifier, so the precise arm cannot be inferred. Successful functional controls do not prove the native error benign. No suppression/classification recommended.
+
+Remediation report: eight phone strict-mode failures, twenty successful checks corresponding to six wide keyboard cells plus fourteen scroll accessibility cells. Account report has fourteen results, zero errors/runtimeErrors; missing report has six results, zero errors/runtimeErrors. These current artifacts do not show recurrence of the historical account TypeError. They do not certify future runs or dismiss the separate framework error.
+
+remove-ai-slops/programming perspectives applied from earlier consulted skills: all-match visibility and raw-error fatality strengthen meaningful contracts; no removal-only test or arbitrary delay is appropriate. No edits, suites/browser runs, network or external mutations performed. Prior reports preserved, including earlier audit misses. Established no-ULW-plan fallback used.
