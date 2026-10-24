@@ -34,14 +34,17 @@ async function enroll(owner,p,name){
  await goto(p,'/clocker/2');await p.getByRole('heading',{name:'Set up this tablet',exact:true}).waitFor();await p.evaluate(()=>document.fonts.ready);await shot(p,name.includes('Second')?'second-tablet-setup':name.split(' ')[0]+'-setup');await p.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await p.getByRole('button',{name:'Connect tablet',exact:true}).click();await idle(p);
 }
 async function editBreak(owner,name,category,minutes){
- await goto(owner,'/app/settings/breaks');const row=owner.locator('[data-break-type="ui-rest"]');
- await row.getByRole('button',{name:/^Edit /}).click();const d=owner.getByRole('dialog');
+ await goto(owner,'/app/settings/breaks');await owner.getByRole('button',{name:/^Active, \d+$/}).click();const row=owner.locator('button[data-break-type="ui-rest"]');
+ assert.match(await row.getAttribute('aria-label'),/^Edit /);await row.click();const d=owner.getByRole('dialog');await d.getByRole('heading',{name:'Edit break type',exact:true}).waitFor();
  await d.getByLabel('Break name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Classification',exact:true}).selectOption(category);await d.getByLabel(/^Reference time/).fill(String(minutes));
  await d.getByRole('button',{name:'Save changes',exact:true}).click();await d.waitFor({state:'hidden'});
 }
 async function archiveBreak(owner,operation){
- const row=owner.locator('[data-break-type="ui-rest"]');await row.getByRole('button',{name:new RegExp('^'+operation+' ')}).click();
- const d=owner.getByRole('dialog');await d.getByRole('button',{name:operation+' break type',exact:true}).click();await d.waitFor({state:'hidden'});
+ assert(['Archive','Reactivate'].includes(operation));const filter=operation==='Archive'?'Active':'Archived';await owner.getByRole('button',{name:new RegExp('^'+filter+', \\d+$')}).click();
+ const row=owner.locator('button[data-break-type="ui-rest"]');assert.match(await row.getAttribute('aria-label'),/^Edit /);await row.click();
+ const d=owner.getByRole('dialog');await d.getByRole('heading',{name:'Edit break type',exact:true}).waitFor();await d.getByRole('button',{name:operation+' break type',exact:true}).click();
+ await d.getByRole('heading',{name:operation+' this break type?',exact:true}).waitFor();await d.getByRole('button',{name:operation+' break type',exact:true}).click();await d.waitFor({state:'hidden'});
+ assert.equal(await owner.locator('button[data-break-type="ui-rest"]').count(),0,'The completed change removes the break from its prior filter');
 }
 async function idle(p){await p.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await p.waitForFunction(()=>{const i=document.querySelector('input[name=pin]');return i&&!i.matches(':disabled');});}
 async function verify(p,pin='2468'){await idle(p);for(const n of pin)await p.getByRole('button',{name:'Number '+n,exact:true}).click();await p.getByRole('button',{name:'Continue',exact:true}).click();}

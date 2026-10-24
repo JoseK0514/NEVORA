@@ -29,10 +29,10 @@ for(const engine of ['chromium','webkit']){
    await page.evaluate(()=>{const animations=document.querySelector('button').getAnimations();if(animations.length!==1)throw Error('Expected controlled CSS animation');animations[0].finish();});
    await waiting;await page.getByRole('button',{name:'Copy link',exact:true}).click();
    assert.equal(await page.evaluate(()=>window.fixtureClicks),1);result.observations.push({phase:'Animation completed, native click received',settled,clicks:1});
-   await page.setContent('<main data-nv-page><article id="request-fictional-review">Waiting</article></main>');
+   await page.setContent('<main class="q-timeoff"><article id="request-fictional-review">Waiting</article></main>');
    let reviewSettled=false;const reviewed=waitForReviewedTimeOff(page,'fictional-review').then(()=>{reviewSettled=true;});
    await render();result.observations.push({phase:'Reviewed navigation without fresh decision view',settled:reviewSettled});assert.equal(reviewSettled,false);
-   await page.evaluate(()=>document.querySelector('main').insertAdjacentHTML('beforeend','<div role="status"><p>Decision saved</p></div>'));await render();
+   await page.evaluate(()=>document.querySelector('main').insertAdjacentHTML('beforeend','<p role="status">Decision saved.</p>'));await render();
    result.observations.push({phase:'Decision notice with stale pending request',settled:reviewSettled});assert.equal(reviewSettled,false);
    await page.evaluate(()=>document.getElementById('request-fictional-review').remove());await reviewed;
    result.observations.push({phase:'Fresh decision notice and pending request removed',settled:reviewSettled});assert.equal(reviewSettled,true);

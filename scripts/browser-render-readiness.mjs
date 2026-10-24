@@ -14,7 +14,7 @@ export async function waitForCalendarCopyReady(page, noticeText) {
 
 export async function waitForReviewedTimeOff(page, requestId) {
   const ready = await page.waitForFunction(id =>
-    [...document.querySelectorAll('[data-nv-page] [role="status"] p')].some(element => element.textContent === 'Decision saved') &&
+    [...document.querySelectorAll('.q-timeoff [role="status"]')].some(element => element.textContent === 'Decision saved.') &&
     !document.getElementById('request-' + id), requestId);
   await ready.dispose();
 }
