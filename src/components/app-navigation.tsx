@@ -24,13 +24,12 @@ export function AppNavigationProvider({children}:{readonly children:ReactNode}){
   // a browser navigation): nothing is in flight any more.
   const resumed=(event:PageTransitionEvent)=>{if(event.persisted)coordinator.discard();};
   window.addEventListener('pageshow',resumed);
-  return()=>{stopTransitions();window.removeEventListener('popstate',restore);window.removeEventListener('pageshow',resumed);coordinator.discard();};
+  return()=>{stopTransitions();window.removeEventListener('popstate',restore);window.removeEventListener('pageshow',resumed);coordinator.dispose();};
  },[coordinator]);
  return <NavigationContext value={coordinator}>{children}</NavigationContext>;
 }
 
-/** The shell's identity-change reload, deferred until no navigation is in flight (see createIdentityReload). It is
- * created once per shell; when the shell unmounts, a reload still waiting runs. */
+/** The shell's identity-change reload, deferred until no navigation is in flight. Replacing the shell cancels its wait. */
 export function useIdentityReload(reload:()=>void=()=>window.location.reload()){
  const coordinator=useAppNavigation();
  const [identityReload]=useState(()=>createIdentityReload(coordinator,reload));

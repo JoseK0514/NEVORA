@@ -145,10 +145,9 @@ it('reloads for an identity change only after the in-flight redirect commits, ex
  expect(reload).toHaveBeenCalledTimes(1);
 });
 
-it('still reloads exactly once when the new identity remounts the shell at the redirect commit',()=>{
+it('reloads exactly once on explicit discard, including when the shell later unmounts',()=>{
  const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
  navigation.transition('/app/reports','/app');identity.request();
- // The remount discards the old provider's coordinator, which leaves it idle; the old shell's unmount then releases.
  navigation.discard();expect(reload).toHaveBeenCalledTimes(1);
  identity.release();identity.release();
  expect(reload).toHaveBeenCalledTimes(1);
@@ -257,6 +256,31 @@ it('does not reload again when the shell unmounts after the wait already reloade
  const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
  navigation.transition('/source','/new');identity.request();navigation.committed('/new');
  identity.release();
+ expect(reload).toHaveBeenCalledTimes(1);
+});
+
+it('cancels a deferred reload when a fresh server shell replaces the old identity',()=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ navigation.transition('/app/reports','/app');identity.request();
+ identity.release();
+ navigation.committed('/app');
+ expect(navigation.pending()).toBe(false);expect(reload).not.toHaveBeenCalled();
+});
+
+it('retires provider listeners without replaying identity reloads into the replacement shell',()=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),settled=vi.fn(),idle=vi.fn(),identity=createIdentityReload(navigation,reload);
+ navigation.subscribe(settled);navigation.transition('/app/reports','/app');identity.request();navigation.whenIdle(idle);
+ navigation.dispose();identity.release();navigation.committed('/app');
+ expect(navigation.pending()).toBe(false);expect(settled).not.toHaveBeenCalled();expect(idle).not.toHaveBeenCalled();expect(reload).not.toHaveBeenCalled();
+ navigation.transition('/source','/new');navigation.committed('/new');
+ expect(settled).not.toHaveBeenCalled();expect(idle).not.toHaveBeenCalled();expect(reload).not.toHaveBeenCalled();
+});
+
+it('allows a fresh effect setup to request a reload after an earlier setup was released',()=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ navigation.transition('/source','/first');identity.request();identity.release();
+ expect(reload).not.toHaveBeenCalled();
+ navigation.transition('/source','/new');identity.request();navigation.committed('/new');
  expect(reload).toHaveBeenCalledTimes(1);
 });
 
