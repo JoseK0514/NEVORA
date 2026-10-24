@@ -5,27 +5,48 @@ export type NavigationAttempt={
  readonly kind:'link'|'imperative'|'history'|'router';
 };
 
+/** One spelling per address: the router reports committed queries through URLSearchParams ("+" for a space), while
+ * destinations come from URL.search ("%20"). */
+function addressKey(address:string){
+ const query=address.indexOf('?');
+ if(query<0)return address;
+ const search=new URLSearchParams(address.slice(query+1)).toString();
+ return address.slice(0,query)+(search?'?'+search:'');
+}
+
 export function createNavigationCoordinator(){
  let active:NavigationAttempt|null=null,generation=0,seenPending=false;
- const settled=new Set<()=>void>();
+ // Destinations of the attempts the active router attempt superseded: their commits are stale, never its redirect.
+ let superseded=new Set<string>();
+ const settled=new Set<()=>void>(),idle=new Set<()=>void>();
+ const start=(attempt:NavigationAttempt,stale:Set<string>)=>{active=attempt;seenPending=false;superseded=stale;return attempt;};
+ const quiet=()=>{
+  if(active)return;
+  for(const listener of [...idle]){idle.delete(listener);listener();}
+ };
  const finish=(attempt:NavigationAttempt)=>{
   if(active!==attempt)return false;
-  active=null;seenPending=false;
+  active=null;seenPending=false;superseded=new Set();
   for(const listener of [...settled])listener();
+  // A settled listener may start the next navigation; idle listeners then wait for that one.
+  quiet();
   return true;
  };
  return {
   begin(source:string,destination:string,kind:NavigationAttempt['kind']):NavigationAttempt|null{
-   if(source===destination&&!active)return null;
-   active={generation:++generation,source,destination,kind};seenPending=false;return active;
+   if(addressKey(source)===addressKey(destination)&&!active)return null;
+   return start({generation:++generation,source,destination,kind},new Set());
   },
   /** A navigation the router starts itself (router.push or replace, including the replace a server redirect
    * issues after its page commits). A link already heading to the same destination keeps its own attempt.
-   * It settles when the router commits its destination, or commits any other address (a further redirect). */
+   * It settles when the router commits its destination, or commits an address that belongs to no earlier attempt:
+   * not its source (the redirecting page's own commit) and not a destination it superseded (a further redirect). */
   transition(source:string,destination:string):NavigationAttempt|null{
-   if(active?.destination===destination)return active;
-   if(source===destination&&!active)return null;
-   active={generation:++generation,source,destination,kind:'router'};seenPending=false;return active;
+   if(active&&addressKey(active.destination)===addressKey(destination))return active;
+   if(addressKey(source)===addressKey(destination)&&!active)return null;
+   const stale=new Set(active?.kind==='router'?superseded:[]);
+   if(active)stale.add(addressKey(active.destination));
+   return start({generation:++generation,source,destination,kind:'router'},stale);
   },
   pending:()=>active!==null,
   current:()=>active,
@@ -34,11 +55,22 @@ export function createNavigationCoordinator(){
    if(pending)seenPending=true;
    else if(seenPending)finish(attempt);
   },
-  committed(address:string){if(active&&(address===active.destination||active.kind==='router'&&address!==active.source))finish(active);},
+  committed(address:string){
+   if(!active)return;
+   const key=addressKey(address);
+   if(key===addressKey(active.destination)||active.kind==='router'&&key!==addressKey(active.source)&&!superseded.has(key))finish(active);
+  },
   // A new explicit user choice supersedes the old navigation. Its caller starts
-  // a new authority barrier; no deferred snapshot or callback is replayed.
-  discard(){active=null;seenPending=false;},
+  // a new authority barrier; no deferred snapshot or callback is replayed to settled listeners.
+  // The coordinator is idle afterwards, so idle listeners (an identity reload) no longer wait.
+  discard(){active=null;seenPending=false;superseded=new Set();quiet();},
   subscribe(listener:()=>void){settled.add(listener);return()=>{settled.delete(listener);};},
+  /** Calls the listener once, as soon as no navigation is in flight: now, or when the current one finishes or is
+   * discarded. The returned function stops the wait. */
+  whenIdle(listener:()=>void){
+   if(!active){listener();return()=>{};}
+   idle.add(listener);return()=>{idle.delete(listener);};
+  },
  };
 }
 export type NavigationCoordinator=ReturnType<typeof createNavigationCoordinator>;
@@ -51,16 +83,19 @@ export function onRouterTransition(listener:(href:string)=>void){routerTransitio
 
 /** An identity change reloads the whole document. Started while the router is navigating, the reload cancels that
  * navigation's RSC request, which WebKit rejects before pagehide, so Next logs a failed fetch and starts a competing
- * browser navigation. Reload once the router has committed instead: when it settles, or when the shell that asked
- * unmounts at that commit (a new identity remounts the shell). Exactly one reload either way. */
+ * browser navigation. Reload once no navigation is in flight instead: when it settles, when it is abandoned (discarded,
+ * including by the provider remount a new identity causes at that commit), or when the shell that asked unmounts.
+ * Exactly one reload either way, and a finished wait never fires into a later navigation. */
 export function createIdentityReload(navigation:NavigationCoordinator|null,reload:()=>void){
- let waiting:(()=>void)|null=null,done=false;
- const run=()=>{if(done)return;done=true;waiting?.();waiting=null;reload();};
+ let stop:(()=>void)|null=null,waiting=false,done=false;
+ const run=()=>{if(done)return;done=true;waiting=false;stop?.();stop=null;reload();};
  return {
   request(){
    if(done||waiting)return;
-   if(!navigation?.pending()){run();return;}
-   waiting=navigation.subscribe(run);
+   if(!navigation){run();return;}
+   waiting=true;
+   const stopWaiting=navigation.whenIdle(run);
+   if(waiting)stop=stopWaiting;
   },
   /** The shell is leaving: a deferred reload happens now, after the commit that replaced it. */
   release(){if(waiting)run();},

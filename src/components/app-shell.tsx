@@ -1,8 +1,7 @@
 "use client";
 
 import {NavigationLink as Link} from './navigation-link';
-import {AppNavigationProvider,useAppNavigation} from './app-navigation';
-import {createIdentityReload} from '@/lib/navigation-coordinator';
+import {AppNavigationProvider,useIdentityReload} from './app-navigation';
 import { NotificationBell } from "./notification-bell";
 import { useInboxCount } from "./use-inbox-count";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
@@ -79,9 +78,7 @@ function AppShellView({
   const employeeMoreKeyboardOpen = useRef(false);
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
   // An identity change still reloads the whole document, but never while the router is mid-navigation (see createIdentityReload).
-  const navigationCoordinator=useAppNavigation();
-  const [identityReload]=useState(()=>createIdentityReload(navigationCoordinator,()=>window.location.reload()));
-  useEffect(()=>()=>identityReload.release(),[identityReload]);
+  const identityReload=useIdentityReload();
   const accessChanged=useCallback((reason:'identity'|'scope')=>{if(reason==='identity')identityReload.request();else {window.dispatchEvent(new Event('nevora:notifications-changed'));router.refresh();}},[router,identityReload]);
   const operational=useOperationalNavigation(user.id,user.role,operationalAuthority,accessChanged);
   const inboxCount = useInboxCount(!employee && (user.role === 'OWNER' || operational.view?.state === 'ready' && operational.view.scope?.mode === 'COMPANY'), pathname);

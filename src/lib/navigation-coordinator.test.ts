@@ -146,8 +146,8 @@ it('reloads for an identity change only after the in-flight redirect commits, ex
 it('still reloads exactly once when the new identity remounts the shell at the redirect commit',()=>{
  const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
  navigation.transition('/app/reports','/app');identity.request();
- // The remount discards the old provider's coordinator without settling it; the old shell's unmount releases.
- navigation.discard();expect(reload).not.toHaveBeenCalled();
+ // The remount discards the old provider's coordinator, which leaves it idle; the old shell's unmount then releases.
+ navigation.discard();expect(reload).toHaveBeenCalledTimes(1);
  identity.release();identity.release();
  expect(reload).toHaveBeenCalledTimes(1);
 });
@@ -156,4 +156,102 @@ it('does not reload on unmount when no identity change was requested',()=>{
  const reload=vi.fn(),identity=createIdentityReload(createNavigationCoordinator(),reload);
  identity.release();
  expect(reload).not.toHaveBeenCalled();
+});
+
+// Review of 89a8b8f9: a router attempt settles only on its own commit (its destination or a genuine further redirect),
+// never on a commit belonging to a navigation it superseded; an abandoned navigation never strands an identity reload.
+
+it('keeps a newer router transition pending through a stale commit of the transition it superseded',()=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ navigation.transition('/source','/old');
+ const current=navigation.transition('/source','/new');
+ identity.request();navigation.committed('/old');
+ expect(navigation.pending()).toBe(true);expect(navigation.current()).toBe(current);expect(reload).not.toHaveBeenCalled();
+ navigation.committed('/new');
+ expect(navigation.pending()).toBe(false);expect(reload).toHaveBeenCalledTimes(1);
+});
+
+it('ignores stale commits from every transition in a superseded chain, including a superseded link',()=>{
+ const navigation=createNavigationCoordinator(),settled=vi.fn();navigation.subscribe(settled);
+ navigation.begin('/source','/first','link');navigation.transition('/source','/second');navigation.transition('/source','/third');
+ navigation.committed('/first');navigation.committed('/second');navigation.committed('/source');
+ expect(navigation.pending()).toBe(true);expect(navigation.current()?.destination).toBe('/third');expect(settled).not.toHaveBeenCalled();
+ navigation.committed('/third');
+ expect(navigation.pending()).toBe(false);expect(settled).toHaveBeenCalledTimes(1);
+});
+
+it('treats a superseded destination query as stale and requires the current destination query',()=>{
+ const navigation=createNavigationCoordinator();
+ navigation.transition('/source','/app/reports?period=week');navigation.transition('/source','/app/reports?period=month');
+ navigation.committed('/app/reports?period=week');
+ expect(navigation.pending()).toBe(true);expect(navigation.current()?.destination).toBe('/app/reports?period=month');
+ navigation.committed('/app/reports?period=month');
+ expect(navigation.pending()).toBe(false);
+});
+
+it('compares router addresses by their decoded query, as the router formats a committed address',()=>{
+ // The transition destination comes from URL.search (%20); the provider's committed address from URLSearchParams (+).
+ const stale=createNavigationCoordinator();
+ stale.transition('/source','/old?name=Ana%20Rivera');stale.transition('/source','/new');
+ stale.committed('/old?name=Ana+Rivera');
+ expect(stale.pending()).toBe(true);
+ const exact=createNavigationCoordinator(),link=exact.begin('/source','/team?name=Ana%20Rivera','link');
+ expect(exact.transition('/source','/team?name=Ana+Rivera')).toBe(link);
+ exact.committed('/team?name=Ana+Rivera');expect(exact.pending()).toBe(false);
+});
+
+it('still settles a superseding transition on a genuine further redirect',()=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ navigation.transition('/source','/old');navigation.transition('/source','/new');identity.request();
+ navigation.committed('/login');
+ expect(navigation.pending()).toBe(false);expect(reload).toHaveBeenCalledTimes(1);
+});
+
+it('waits for a navigation that a settled listener starts before reloading for an identity change',()=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const stop=navigation.subscribe(()=>{stop();navigation.transition('/new','/next');});
+ navigation.transition('/source','/new');identity.request();
+ navigation.committed('/new');
+ expect(navigation.pending()).toBe(true);expect(reload).not.toHaveBeenCalled();
+ navigation.committed('/next');
+ expect(reload).toHaveBeenCalledTimes(1);
+});
+
+it('reloads exactly once when the pending navigation is discarded, and never again for a later navigation',()=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ navigation.transition('/source','/new');identity.request();
+ navigation.discard();
+ expect(navigation.pending()).toBe(false);expect(reload).toHaveBeenCalledTimes(1);
+ identity.request();
+ expect(reload).toHaveBeenCalledTimes(1);
+ // Recovery: the coordinator keeps working for later navigations, and the old request does not fire into them.
+ navigation.transition('/source','/later');navigation.committed('/later');
+ expect(navigation.pending()).toBe(false);expect(reload).toHaveBeenCalledTimes(1);
+});
+
+it('reloads once when a failed Link navigation settles without committing an address',()=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ navigation.transition('/source','/new');
+ const link=navigation.begin('/source','/other','link');
+ if(!link)throw Error('Expected a navigation attempt');
+ identity.request();navigation.observe(link,true);
+ expect(reload).not.toHaveBeenCalled();
+ navigation.observe(link,false);
+ expect(navigation.pending()).toBe(false);expect(reload).toHaveBeenCalledTimes(1);
+});
+
+it('notifies idle listeners once when a navigation finishes or is discarded, and not after they stop listening',()=>{
+ const navigation=createNavigationCoordinator(),finished=vi.fn(),discarded=vi.fn(),stopped=vi.fn(),idle=vi.fn();
+ navigation.whenIdle(idle);expect(idle).toHaveBeenCalledTimes(1);
+ navigation.transition('/source','/a');navigation.whenIdle(finished);navigation.committed('/a');navigation.committed('/b');
+ navigation.transition('/a','/b');navigation.whenIdle(discarded);navigation.whenIdle(stopped)();navigation.discard();navigation.discard();
+ navigation.transition('/a','/c');navigation.committed('/c');
+ expect(finished).toHaveBeenCalledTimes(1);expect(discarded).toHaveBeenCalledTimes(1);expect(stopped).not.toHaveBeenCalled();
+});
+
+it('does not reload again when the shell unmounts after the wait already reloaded',()=>{
+ const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ navigation.transition('/source','/new');identity.request();navigation.committed('/new');
+ identity.release();
+ expect(reload).toHaveBeenCalledTimes(1);
 });
