@@ -12,6 +12,7 @@ const source=resolve(process.cwd()),custody=captureSource(source,process.env.PHA
 const evidence=externalEvidence(source,process.env.PHASE_C_EVIDENCE_DIR);
 const project=createRequire(join(source,'package.json')),runtime=createRequire(join(source,'tools/ci-browser-runtime/package.json'));
 const pw=runtime('playwright'),component=await readFile('src/components/clocker-break-types.tsx');
+const formStyles=await readFile('src/app/app/premium-wave-c.css');
 assert.equal(runtime('playwright/package.json').version,'1.62.1');
 const bundle=await project('esbuild').build({
  stdin:{contents:`import React from 'react';import{createRoot}from'react-dom/client';import{ClockerBreakTypes}from'./src/components/clocker-break-types';
@@ -35,7 +36,8 @@ const bundle=await project('esbuild').build({
 const server=createServer((request,response)=>{
  response.setHeader('Cache-Control','no-store');
  if(request.url==='/bundle.js'){response.setHeader('Content-Type','text/javascript');response.end(bundle.outputFiles[0].contents);return;}
- response.setHeader('Content-Type','text/html');response.end('<!doctype html><html lang="en"><head><title>Fictional break filter rendering control</title><script>'+schedulerControl+'</script></head><body><main id="root"></main><script src="/bundle.js"></script></body></html>');
+ if(request.url==='/form.css'){response.setHeader('Content-Type','text/css; charset=utf-8');response.end(formStyles);return;}
+ response.setHeader('Content-Type','text/html; charset=utf-8');response.end('<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Fictional break filter rendering control</title><link rel="stylesheet" href="/form.css"><script>'+schedulerControl+'</script></head><body><div class="app-shell nevora-portal"><main class="page-frame" id="root"></main></div><script src="/bundle.js"></script></body></html>');
 });
 await new Promise(ready=>server.listen(0,'127.0.0.1',ready));
 const origin=`http://127.0.0.1:${server.address().port}`,results=[];
@@ -84,11 +86,12 @@ try{for(const engine of ['chromium','webkit']){
   finally{
    if(page&&!page.isClosed())await page.evaluate(()=>window.releaseReactTasks?.()).catch(()=>{});
    await change;await context?.close();
+   console.log(JSON.stringify({engine,operation,status:result.status,failure:result.failure,diagnostic:result.diagnostic,observations:result.observations}));
   }
  }}finally{await browser.close();for(const result of results.filter(value=>value.engine===engine))result.browserClosed=!browser.isConnected();}
 }}finally{await new Promise(ready=>server.close(ready));}
 assertSourceUnchanged(source,custody);
 const passed=results.length===4&&results.every(result=>result.status==='passed'&&result.browserClosed);
-const report={checkpoint:custody.checkpoint,tree:custody.tree,sourceClean:true,sourceUnchanged:true,status:passed?'passed':'failed',componentSha256:createHash('sha256').update(component).digest('hex'),react:project('react/package.json').version,results,limitations:['Actual component and React scheduler with fictional action/framework boundaries; not real Next/PostgreSQL acceptance.','The full authenticated Clocker browser regression remains mandatory.']};
+const report={checkpoint:custody.checkpoint,tree:custody.tree,sourceClean:true,sourceUnchanged:true,status:passed?'passed':'failed',componentSha256:createHash('sha256').update(component).digest('hex'),formStylesSha256:createHash('sha256').update(formStyles).digest('hex'),react:project('react/package.json').version,results,limitations:['Actual component, form stylesheet and React scheduler with fictional action/framework boundaries; not real Next/PostgreSQL acceptance or visual certification.','The full authenticated Clocker browser regression remains mandatory.']};
 await writeFile(join(evidence,'clocker-break-filter-readiness-custody.json'),JSON.stringify(report,null,2));
 console.log(JSON.stringify(report));if(!passed)process.exitCode=1;
