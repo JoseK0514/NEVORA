@@ -77,8 +77,8 @@ function AppShellView({
   }
   const employeeMoreKeyboardOpen = useRef(false);
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
-  // An identity change still reloads the whole document, but never while the router is mid-navigation (see createIdentityReload).
-  const identityReload=useIdentityReload();
+  // Refresh the retained layout's server identity without interrupting the destination document's streamed content.
+  const identityReload=useIdentityReload(()=>router.refresh());
   const accessChanged=useCallback((reason:'identity'|'scope')=>{if(reason==='identity')identityReload.request();else {window.dispatchEvent(new Event('nevora:notifications-changed'));router.refresh();}},[router,identityReload]);
   const operational=useOperationalNavigation(user.id,user.role,operationalAuthority,accessChanged);
   const inboxCount = useInboxCount(!employee && (user.role === 'OWNER' || operational.view?.state === 'ready' && operational.view.scope?.mode === 'COMPANY'), pathname);

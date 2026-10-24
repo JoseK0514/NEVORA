@@ -122,6 +122,9 @@ async function verifyRoleRedirect(page,app,engine,report,managerId){
   await Promise.all([page.waitForURL(url=>url.pathname==='/app'),page.locator('#desktop-primary-navigation a[href="/app/reports"]').click()]);
   assert(used&&changed,'The actual Reports request must encounter the fictional actor role change');
   await page.locator('.employee-home').waitFor();
+  await page.locator('[data-nv-e5]').waitFor();
+  assert.equal(await page.locator('[data-nv-clean]').count(),0,'The server must replace the old management shell after the role change');
+  row.identityShellVerified=true;
   assert.equal(await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).count(),0);
   row.sourcePrivateAbsent=true;row.destinationVerified=true;
   mark('complete');
