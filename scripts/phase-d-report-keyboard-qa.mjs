@@ -6,6 +6,7 @@ import {homedir} from 'node:os';
 import {join,resolve} from 'node:path';
 import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
 import {seedOwnedApp,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
+import {waitForDisclosureReady} from './browser-render-readiness.mjs';
 const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'));
 const pw=runtime('playwright');
 const evidence=resolve(process.env.PHASE_D_REMEDIATION_EVIDENCE_DIR);
@@ -52,11 +53,11 @@ try{
      const root=page.locator('.q-insights-phone'),figures=root.getByRole('list',{name:'Period figures',exact:true}),recorded=figures.locator('details').filter({has:page.locator('summary .q-rt').getByText('Recorded time',{exact:true})}),recordedSummary=recorded.locator(':scope > summary');
      assert(await page.locator('.q-insights-desk').evaluateAll(nodes=>nodes.length>0&&nodes.every(e=>e.getClientRects().length===0)),'Every desktop report container yields to the approved compact phone figures');assert.equal(await figures.locator(':scope > li').count(),4);
      assert.equal(await recordedSummary.locator('.q-rv').innerText(),'8 h','The phone figure uses the persisted eight recorded hours');
-     await recordedSummary.focus();await page.keyboard.press('Enter');assert(await recorded.evaluate(e=>e.open));assert(await recordedSummary.evaluate(e=>document.activeElement===e&&e.matches(':focus-visible')));
+     await recordedSummary.focus();await page.keyboard.press('Enter');assert(await recorded.evaluate(e=>e.open));assert(await recordedSummary.evaluate(e=>document.activeElement===e&&e.matches(':focus-visible')));await waitForDisclosureReady(recorded);
      const person=recorded.locator('.q-sublist > li').filter({hasText:'LongReportEmployee'.repeat(4)+' QA'});assert.equal(await person.count(),1);assert.equal(await person.locator('span').last().innerText(),'8 h');assert(await person.isVisible());
      const geometry=await person.evaluate(e=>{const r=e.getBoundingClientRect();return {width:r.width,left:r.left,right:r.right,scroll:e.scrollWidth,client:e.clientWidth,text:[...e.querySelectorAll('span')].map(span=>{const range=document.createRange();range.selectNodeContents(span);const text=range.getBoundingClientRect(),box=span.getBoundingClientRect();return {left:text.left,right:text.right,visible:box.width>0&&box.height>0,unclipped:span.scrollWidth<=span.clientWidth+2&&text.left>=r.left-2&&text.right<=r.right+2};})};});report.geometry.push({engine,viewportWidth:width,kind:'phone-recorded-person',...geometry});assert(geometry.left>=-2&&geometry.right<=width+2&&geometry.scroll<=geometry.client+2&&geometry.text.every(text=>text.visible&&text.unclipped),'The complete fictional name and value fit the phone');
      await page.keyboard.press(tab);const next=figures.locator('summary').filter({hasText:'People with no time'});assert(await next.evaluate(e=>document.activeElement===e&&e.matches(':focus-visible')));await page.keyboard.press(backTab);assert(await recordedSummary.evaluate(e=>document.activeElement===e));
-     const counted=root.locator('details.q-counted'),countedSummary=counted.locator(':scope > summary');await countedSummary.focus();await page.keyboard.press('Enter');assert(await counted.evaluate(e=>e.open));await counted.getByText('Recorded time includes breaks. Breaks are shown separately; no pay or deduction rules are applied.',{exact:true}).waitFor();assert(await counted.locator('time[datetime]').isVisible());await page.keyboard.press('Enter');assert.equal(await counted.evaluate(e=>e.open),false);
+     const counted=root.locator('details.q-counted'),countedSummary=counted.locator(':scope > summary');await countedSummary.focus();await page.keyboard.press('Enter');assert(await counted.evaluate(e=>e.open));await waitForDisclosureReady(counted);await counted.getByText('Recorded time includes breaks. Breaks are shown separately; no pay or deduction rules are applied.',{exact:true}).waitFor();assert(await counted.locator('time[datetime]').isVisible());await page.keyboard.press('Enter');assert.equal(await counted.evaluate(e=>e.open),false);
      const timecards=figures.getByRole('link',{name:/^Timecards to finish/});assert.equal(await timecards.getAttribute('href'),'/app/timecards?start=2026-09-21&end=2026-09-27');await timecards.focus();await Promise.all([page.waitForURL(u=>u.pathname==='/app/timecards'),page.keyboard.press('Enter')]);const destination=new URL(page.url());assert.equal(destination.searchParams.get('start'),'2026-09-21');assert.equal(destination.searchParams.get('end'),'2026-09-27');await page.goBack({waitUntil:'domcontentloaded'});await root.getByRole('list',{name:'Period figures',exact:true}).waitFor();
      report.keyPaths.push({engine,viewportWidth:width,kind:'phone-figures',recordedDisclosure:true,forwardAndReverseKeyboard:true,countedDisclosure:true,canonicalTimecardsNavigation:true});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+2),'No page overflow');return;
     }
@@ -66,7 +67,7 @@ try{
     await details.getByRole('heading',{name:'Scheduled vs recorded',exact:true}).waitFor();
     // Native tab order observes the animated ::details-content visibility.
     // DOM open/heading presence alone can precede its discrete transition.
-    await details.evaluate(async e=>{await new Promise(requestAnimationFrame);await Promise.all(e.getAnimations({subtree:true}).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})));});
+    await waitForDisclosureReady(details);
     const scrolls=details.locator('.wb-table-scroll[role="region"]');
     const names=['Scheduled vs recorded columns','Hours by employee columns','Hours by location columns','Hours by position columns'];
     assert.deepEqual(await scrolls.evaluateAll(nodes=>nodes.map(e=>e.getAttribute('aria-label'))),names);

@@ -2,14 +2,14 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFile,writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
-import {waitForCalendarCopyReady,waitForReviewedTimeOff,restoreSheetMotion} from './browser-render-readiness.mjs';
+import {waitForCalendarCopyReady,waitForReviewedTimeOff,restoreSheetMotion,waitForDisclosureReady} from './browser-render-readiness.mjs';
 import {captureSource,assertSourceUnchanged,externalEvidence} from './phase-e-owned.mjs';
 
 const source=resolve(process.cwd()),custody=captureSource(source,process.env.PHASE_E_EXPECTED_SHA);
 const evidence=externalEvidence(source,process.env.PHASE_E_EVIDENCE_DIR);
 const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json')),pw=runtime('playwright');
 assert.equal(runtime('playwright/package.json').version,'1.62.1');
-const sheetCss=await readFile('src/components/signature/components.css','utf8'),axeFile=runtime.resolve('axe-core/axe.min.js');
+const sheetCss=await readFile('src/components/signature/components.css','utf8'),motionCss=await readFile('src/app/app/portal-motion.css','utf8'),axeFile=runtime.resolve('axe-core/axe.min.js');
 assert.equal(runtime('axe-core/package.json').version,'4.11.0');
 const results=[];
 for(const engine of ['chromium','webkit']){
@@ -36,6 +36,15 @@ for(const engine of ['chromium','webkit']){
    result.observations.push({phase:'Decision notice with stale pending request',settled:reviewSettled});assert.equal(reviewSettled,false);
    await page.evaluate(()=>document.getElementById('request-fictional-review').remove());await reviewed;
    result.observations.push({phase:'Fresh decision notice and pending request removed',settled:reviewSettled});assert.equal(reviewSettled,true);
+   await page.setContent('<!doctype html><html lang="en"><head><title>Fictional disclosure readiness control</title><style>'+motionCss+'</style></head><body><main class="app-shell nevora-portal"><div class="page-frame"><details><summary>Recorded time</summary><div><span data-recorded>8 h</span></div></details></div></main></body></html>');
+   const disclosure=page.locator('details');await disclosure.locator('summary').focus();await page.keyboard.press('Enter');
+   const opening=await disclosure.evaluate(element=>{element.getBoundingClientRect();const animations=element.getAnimations({subtree:true}).filter(animation=>Number.isFinite(animation.effect?.getComputedTiming().endTime));animations.forEach(animation=>{animation.pause();animation.currentTime=0;});return {open:element.open,renderedText:element.querySelector('[data-recorded]').innerText,animations:animations.length};});
+   assert.equal(opening.open,true);let disclosureReady=false;const openingReady=waitForDisclosureReady(disclosure).then(()=>{disclosureReady=true;});
+   await render();if(opening.animations){assert.equal(disclosureReady,false);await disclosure.evaluate(element=>element.getAnimations({subtree:true}).forEach(animation=>animation.finish()));}
+   await openingReady;assert.equal(await disclosure.locator('[data-recorded]').innerText(),'8 h');assert(await disclosure.locator('[data-recorded]').isVisible());
+   result.observations.push({phase:'Actual portal disclosure motion retains eight recorded hours and waits for rendered content',opening,ready:disclosureReady});
+   await disclosure.locator('summary').press('Enter');await assert.rejects(waitForDisclosureReady(disclosure,150),error=>error.name==='TimeoutError');
+   result.observations.push({phase:'A closed disclosure cannot pass readiness',rejected:true});
    if(reducedMotion==='reduce'){
     await page.setContent('<!doctype html><html lang="en"><head><title>Fictional sheet motion control</title><style>'+sheetCss+' [data-sig-sheet]{animation-play-state:paused;background:white;color:black;padding:30px}button{background:white;color:black;font-size:18px}</style></head><body><main data-sig-sheet><button>Fictional profile control</button></main></body></html>');
     await page.evaluate(()=>document.querySelector('[data-sig-sheet]').getAnimations().forEach(animation=>animation.finish()));
