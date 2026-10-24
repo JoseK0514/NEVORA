@@ -1,6 +1,6 @@
 # Claude handoff: role-change navigation, preserving Quiet v4
 
-Jose's direction: further application UI work belongs to Claude. Preserve the Quiet v4 design. No new styling, layout, assets or policy wording changes are requested.
+Jose's direction: preserve Claude's Quiet v4 design. Jose later explicitly authorized Codex to repair the nonvisual navigation logic. The locally verified correction and remaining publication gate are recorded in `2026-10-24-navigation-settlement-fix.md`. No styling, layout, assets or policy wording changes are requested. The investigation below is retained as the original Claude handoff and historical cloud evidence.
 
 ## Exact candidate and completed cloud result
 

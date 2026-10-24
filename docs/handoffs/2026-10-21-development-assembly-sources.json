@@ -3,13 +3,19 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "codex/premium-backend",
-  "observedAt": "2026-10-23",
+  "observedAt": "2026-10-24",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
       "sha": "3103829366dbf27b21c0860a7ef13fc458648563",
       "disposition": "included",
       "reason": "Quiet v4 and Claude's bounded functional repairs are included unchanged from 31038293, based directly on development 8d4a3792. Review and full matching cloud acceptance remain required before integration. Preserve Claude's branch and visual style."
+    },
+    {
+      "branch": "claude/role-nav-webkit",
+      "sha": "a5470f79d0c47f5d6c2e8c56d7ae2bb454bfc0f3",
+      "disposition": "included",
+      "reason": "Claude's complete navigation repair lineage is an ancestor of this candidate. Jose authorized Codex's additional nonvisual corrections, verified at 393f3b11. Full cloud acceptance remains pending. Preserve this active branch until its exact tip has an authorized, verified recoverable archive; the seven-versus-six branch ceiling still blocks assembly."
     },
     {
       "branch": "codex/development-ci-consolidation-20261022",
