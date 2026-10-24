@@ -293,6 +293,13 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-acts-form > .form-error, :is(#q-root, html) .q-acts-form > .form-success, :is(#q-root, html) .q-acts-note { margin: 0; padding: 0 20px 12px 72px; font-size: 13px; line-height: 18px; color: var(--q-grey); }
 :is(#q-root, html) .q-acts-form > .form-error { color: var(--q-red); }
 :is(#q-root, html) .q-done__body { padding-left: 72px; }
+/* A waiting request opens in place to show its shifts in full (who, the full date, start to end, where) above the decision. */
+:is(#q-root, html) .q-request > .q-details > summary.q-row::after { display: none; }
+:is(#q-root, html) .q-request__details > .q-details__body { padding-top: 4px; padding-bottom: 12px; }
+:is(#q-root, html) .q-facts { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+:is(#q-root, html) .q-facts > li { display: flex; flex-direction: column; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-facts > li > b { font-weight: 600; color: var(--q-ink); }
+:is(#q-root, html) .q-facts + .q-help { margin: 12px 0 0; }
 
 /* Availability (v4): the people sit 8 under the segments; sent hours open under the row. */
 :is(#q-root, html) .q-avail-list { margin-top: 8px; }
@@ -358,6 +365,27 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-tc-hold { display: block; }
 :is(#q-root, html) .q-tc-list button.q-row { width: 100%; border: 0; background: none; font: inherit; text-align: left; cursor: pointer; }
 :is(#q-root, html) .q-tc-list li:focus { outline: none; }
+/* Timecards select (v4 sheet style): a round check takes the avatar's place; the review, confirm and results read as grouped rows. */
+:is(#q-root, html) .q-tc-pick { cursor: pointer; }
+:is(#q-root, html) .q-tc-pick[data-off] { cursor: default; }
+:is(#q-root, html) .q-tc-pick[data-off] .q-rt b, :is(#q-root, html) .q-tc-pick[data-off] .q-rv { color: var(--q-faint); }
+:is(#q-root, html) .q-tc-box { flex: none; width: 24px; height: 24px; margin: 0 8px; border: 1.5px solid #C8C8C5; border-radius: 12px; background: #FFFFFF center / 14px 14px no-repeat; appearance: none; -webkit-appearance: none; cursor: inherit; transition: background-color 160ms ease-out, border-color 160ms ease-out; }
+:is(#q-root, html) .q-tc-box:checked { border-color: var(--q-teal); background-color: var(--q-teal); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M2.5 7.4l3 3 6-6.4' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+:is(#q-root, html) .q-tc-box:disabled { border-color: #E3E3E0; background-color: var(--q-fill); }
+:is(#q-root, html) .q-tc-box:focus-visible { outline: 2px solid var(--q-ink); outline-offset: 2px; }
+:is(#q-root, html) .q-tc-pick.q-row--one::after { left: 60px; }
+:is(#q-root, html) .q-tc-bulk { margin-bottom: 24px; }
+:is(#q-root, html) .q-tc-bulk .q-grp { margin-top: 16px; }
+:is(#q-root, html) .q-tc-bulk__list { margin-top: 8px; }
+:is(#q-root, html) .q-tc-bulk .q-btn { margin-top: 16px; }
+:is(#q-root, html) .q-tc-confirm .q-grp { margin-top: 28px; }
+:is(#q-root, html) .q-tc-confirm > .q-help { margin-top: 4px; }
+:is(#q-root, html) .q-tc-confirm > .q-list { margin-top: 8px; }
+:is(#q-root, html) .q-tc-confirm__check { padding-top: 12px; padding-bottom: 12px; cursor: pointer; }
+:is(#q-root, html) .q-tc-confirm__check .q-rt b { font-size: 15px; line-height: 20px; }
+:is(#q-root, html) .q-tc-confirm__check::after { display: none; }
+:is(#q-root, html) .q-tc-confirm .q-rv[data-tone="approved"], :is(#q-root, html) .q-tc-confirm .q-rv[data-tone="finalized"] { color: var(--q-teal); }
+:is(#q-root, html) .q-tc-confirm .q-rv[data-tone="outcome-unknown"], :is(#q-root, html) .q-tc-confirm .q-rv[data-tone="denied"], :is(#q-root, html) .q-tc-confirm .q-rv[data-tone="conflict"], :is(#q-root, html) .q-tc-confirm .q-rv[data-tone="blocked"] { color: var(--q-red); }
 /* Pages whose old wrapper still frames a Quiet page (Timecards): the wrapper adds nothing. */
 :is(#q-root, html) .nv-page:has(> .q-page) { margin: 0; padding: 0; background: #FFFFFF; min-height: 0; }
 

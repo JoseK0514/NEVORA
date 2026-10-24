@@ -15,6 +15,7 @@ import AccountDeletionPage from "./account-deletion/page";
 import { AccountPrivacyLinks } from "@/components/legal/account-privacy-links";
 import { BrandLegal } from "@/components/brand-legal";
 import { AccountDeletionForm } from "@/components/account-deletion-form";
+import { POLICY_FACTS } from "@/lib/legal/policies";
 
 const pages = [["Privacy Policy", PrivacyPage], ["Terms of Use", TermsPage], ["Support", SupportPage], ["Delete your NEVORA account", AccountDeletionPage]] as const;
 afterEach(() => vi.unstubAllEnvs());
@@ -30,6 +31,18 @@ describe("public policy pages", () => {
     // Every fact is confirmed, so no draft marker is left.
     expect(html).not.toContain("legal-unresolved");
     expect(html).not.toContain("CONFIRM_");
+  });
+
+  it("Support keeps the approved response commitment and mailing address word for word (Codex review, Oct 23)", () => {
+    const html = renderToStaticMarkup(createElement(SupportPage)).replace(/’/g, "'");
+    const fact = (key: string) => String(POLICY_FACTS[key]).replace(/’/g, "'");
+    // “We aim to respond … two business days … public holidays observed in Puerto Rico … may take longer”, never a promise.
+    expect(html).toContain(fact("SUPPORT_RESPONSE_TIME"));
+    expect(html).toContain("We aim to respond");
+    expect(html).toContain("excluding public holidays observed in Puerto Rico");
+    expect(html).toContain("may take longer to resolve");
+    expect(html).not.toMatch(/Reply within/i);
+    expect(html).toContain(fact("BUSINESS_CONTACT_DETAILS"));
   });
 
   it("starts deletion by signing in, never by typing an email address", () => {

@@ -17,7 +17,7 @@ const ready=(validForMs=45000)=>({state:'ready',observedAt:'2026-09-29T12:00:00Z
 let cleanup:void|(()=>void);let commands:TimecardCommand[]=[],actorId='OWNER',manager=true,employeeCorporate=false;
 function render(){host.cursor=0;return Timecards({initialPeriod:period,manager,actorId,employeeCorporate});}
 const html=()=>renderToStaticMarkup(render());
-function nodes(v:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(v))return v.flatMap(nodes);if(!v||typeof v!=='object'||!('props'in v))return [];const n=v as ReactElement<Record<string,unknown>>;return [n,...nodes(n.props.children as ReactNode)];}
+function nodes(v:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(v))return v.flatMap(nodes);if(!v||typeof v!=='object'||!('props'in v))return [];const n=v as ReactElement<Record<string,unknown>>;return [n,...nodes(n.props.children as ReactNode),...nodes(n.props.right as ReactNode)];}
 function control(test:(n:ReactElement<Record<string,unknown>>)=>boolean){const n=nodes(render()).find(test);if(!n)throw Error('Missing rendered control');return n.props;}
 const click=(label:string)=>(control(n=>n.type==='button'&&(n.props.children===label||n.props['aria-label']===label)).onClick as ()=>unknown)();
 const check=(label:string,value=true)=>(control(n=>n.type==='input'&&n.props['aria-label']===label).onChange as (e:unknown)=>void)({target:{checked:value}});
@@ -298,4 +298,52 @@ it('does not restore focus after a user close is followed by window blur',async(
  expect(focus.replacement.focus).not.toHaveBeenCalled();
  expect(focus.chooser.focus).not.toHaveBeenCalled();
  expect(html()).not.toContain('PRIVATE');
+});
+
+// Codex review (Oct 23): phones keep the reviewed batch. Select in the top bar, the eligible cards, the exact
+// reviewed set, an explicit confirmation, then each card's result, and resizing never drops any of it.
+let media:{matches:boolean;listener:(()=>void)|null};
+function phoneWindow(matches=true){media={matches,listener:null};vi.stubGlobal('window',Object.assign(new EventTarget(),{matchMedia:()=>({get matches(){return media.matches;},addEventListener:(_:string,l:()=>void)=>{media.listener=l;},removeEventListener:()=>{}})}));}
+async function mountAll(){render();host.mounted=true;const cleanups=host.effects.map(effect=>{try{return effect();}catch{return undefined;}});cleanup=()=>cleanups.forEach(c=>{if(typeof c==='function')c();});await flush();}
+const resize=(matches:boolean)=>{media.matches=matches;media.listener?.();};
+it('phone: Select in the top bar opens eligible cards; self-review stays excluded with its reason',async()=>{
+ phoneWindow();transport();await mountAll();
+ expect(html()).toContain('q-timecards');expect(html()).not.toContain('Selected timecard review');
+ click('Select');const page=html();
+ expect(page).toContain('Selected timecard review');expect(page).toContain('2 eligible · 1 excluded · Select up to 100 current timecards below.');
+ expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE OWNER').disabled).toBe(true);expect(page).toContain('A different manager must review');
+ expect(control(n=>n.type==='button'&&n.props.children==='Review selected timecards').disabled).toBe(true);
+ check('Select all eligible timecards');expect(html()).toContain('2 selected');
+});
+it('phone: review the exact set, confirm explicitly, then show each card’s result',async()=>{
+ phoneWindow();transport();await mountAll();click('Select');check('Select PRIVATE E1');click('Review selected timecards');
+ const reviewed=html();expect(reviewed).toContain('Reviewed approval set');expect(reviewed).toContain('Revision 0');expect(reviewed).toContain('Approval never automatically finalizes time.');
+ expect(reviewed).toContain('I reviewed this exact selected set and its recorded time for approval.');
+ expect(control(n=>n.type==='button'&&n.props.children==='Approve selected').disabled).toBe(true);
+ check('Confirm reviewed timecards');click('Approve selected');await flush();
+ expect(commands).toHaveLength(1);expect(commands[0]).toMatchObject({employeeId:'E1',action:'APPROVE',expectedRevision:0});
+ const done=html();expect(done).toContain('Per-card results');expect(done).toContain('approved');expect(done).toContain('Refresh timecards before reviewing another set.');
+ click('Refresh timecards');await flush();expect(html()).not.toContain('Per-card results');
+});
+it('phone: finalization stays its own action with its own wording',async()=>{
+ phoneWindow();transport();await mountAll();click('Select');
+ (control(n=>n.type==='select').onChange as (e:unknown)=>void)({target:{value:'FINALIZE'}});
+ expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').disabled).toBe(true);expect(html()).toContain('0 eligible · 3 excluded');
+});
+it('phone: a partial unknown result keeps not-submitted cards and retries only the original command',async()=>{
+ phoneWindow();transport('unknown');await mountAll();click('Select');check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('Confirm reviewed timecards');click('Approve selected');await flush();
+ expect(commands).toHaveLength(1);expect(html()).toContain('outcome unknown');expect(html()).toContain('not submitted');
+ const original=commands[0];click('Retry original attempted action');await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(original);
+});
+it('resizing desktop → phone mid-review keeps the reviewed set and confirmation; phone → desktop keeps the results',async()=>{
+ phoneWindow(false);transport();await mountAll();expect(html()).not.toContain('q-timecards');
+ check('Select PRIVATE E1');click('Review selected timecards');check('Confirm reviewed timecards');
+ resize(true);const phone=html();expect(phone).toContain('q-timecards');expect(phone).toContain('Reviewed approval set');
+ expect(control(n=>n.type==='input'&&n.props['aria-label']==='Confirm reviewed timecards').checked).toBe(true);
+ click('Approve selected');await flush();expect(commands).toHaveLength(1);
+ resize(false);const desk=html();expect(desk).not.toContain('q-timecards');expect(desk).toContain('Per-card results');expect(desk).toContain('approved');
+});
+it('phone: blur clears the selection and the reviewed private rows',async()=>{
+ phoneWindow();transport();await mountAll();click('Select');check('Select PRIVATE E1');click('Review selected timecards');window.dispatchEvent(new Event('blur'));
+ expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Reviewed approval set');
 });

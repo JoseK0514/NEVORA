@@ -1,6 +1,6 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { requireSession } from "@/lib/auth/session";
 import { getShiftValidationContext } from "@/lib/data/schedules";
 import CoverageSuggestionsPage from "../app/app/schedule/coverage/page";
@@ -143,3 +143,42 @@ it('honors company-read denial before team requests, availability and activity l
 
 // This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
 vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+
+describe("management sees every shift in full before deciding (Codex review, Oct 23)", () => {
+  const shift = (over: Record<string, unknown>) => ({ id: "s", scheduleId: "sched", employeeId: "e1", employeeName: "Fictional Ana", locationId: "north", locationName: "North Office", weekStart: "2026-10-05", date: "2026-10-05", startTime: "08:00", endTime: "12:00", ...over });
+  const plain = (html: string) => html.replace(/ /g, " ");
+  it("a swap shows both employees, full dates, start and end times and locations ahead of Approve", async () => {
+    vi.mocked(listPendingCallouts).mockResolvedValue([]);
+    vi.mocked(listManagerPendingExchanges).mockResolvedValue([{ id: "swap", requestRevision: 3, actionable: true, kind: "SWAP", status: "MANAGER_PENDING", requestedByEmployeeId: "e1", requestedByName: "Fictional Ana", requestedByRole: "EMPLOYEE", targetEmployeeId: "e2", targetEmployeeName: "Fictional Ben", createdAt: "2026-10-03T00:00:00Z",
+      sourceShift: shift({}) as never, targetShift: shift({ id: "t", employeeId: "e2", employeeName: "Fictional Ben", locationId: "south", locationName: "South Office", date: "2026-10-08", startTime: "14:00", endTime: "18:00" }) as never }]);
+    vi.mocked(readShiftChangeAvailability).mockResolvedValueOnce({ allowed: true } as never);
+    const html = plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" })));
+    const facts = html.slice(html.indexOf('class="q-facts"'), html.indexOf('class="q-acts"'));
+    for (const text of ["Fictional Ana’s shift", "Mon, Oct 5, 2026", "8:00 AM – 12:00 PM", "North Office", "Fictional Ben’s shift", "Thu, Oct 8, 2026", "2:00 PM – 6:00 PM", "South Office"]) expect(facts).toContain(text);
+    expect(html).toContain(">Approve<");
+    expect(html.indexOf("South Office")).toBeLessThan(html.indexOf(">Approve<"));
+    // Still a revision-bound decision on the same request.
+    expect(html).toContain('name="expectedRevision" value="3"');
+  });
+  it("coverage shows the affected shift and who picked it up, or that no one has", async () => {
+    vi.mocked(listPendingCallouts).mockResolvedValue([]);
+    const cover = { id: "cover", requestRevision: 2, actionable: true, kind: "COVERAGE" as const, status: "MANAGER_PENDING" as const, requestedByEmployeeId: "e1", requestedByName: "Fictional Ana", requestedByRole: "EMPLOYEE" as const, createdAt: "2026-10-03T00:00:00Z", sourceShift: shift({ endTime: "02:00", startTime: "18:00" }) as never };
+    vi.mocked(listManagerPendingExchanges).mockResolvedValue([{ ...cover, targetEmployeeId: "e2", targetEmployeeName: "Fictional Ben" }]);
+    const named = plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" })));
+    expect(named).toContain("Mon, Oct 5, 2026"); expect(named).toContain("6:00 PM – 2:00 AM, ends Tue, Oct 6, 2026"); expect(named).toContain("North Office"); expect(named).toContain("Picked up by Fictional Ben");
+    vi.mocked(listManagerPendingExchanges).mockResolvedValue([cover]);
+    expect(plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" })))).toContain("No one has picked it up yet");
+  });
+  it("an “Unable to work” report shows the affected shift with its reason and note", async () => {
+    vi.mocked(listManagerPendingExchanges).mockResolvedValue([]);
+    vi.mocked(listPendingCallouts).mockResolvedValue([{ id: "callout", requestRevision: 4, shiftId: "s", employeeId: "e1", employeeName: "Fictional Ana", locationId: "north", locationName: "North Office", weekStart: "2026-10-05", date: "2026-10-05", startTime: "08:00", endTime: "12:00", reasonCode: "TRANSPORTATION", reasonNote: "Fictional bus strike", status: "PENDING", createdAt: "2026-10-03T00:00:00Z" }]);
+    const html = plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" })));
+    const facts = html.slice(html.indexOf('class="q-facts"'));
+    for (const text of ["Fictional Ana’s shift", "Mon, Oct 5, 2026", "8:00 AM – 12:00 PM", "North Office", "Transportation issue", "Fictional bus strike"]) expect(facts).toContain(text);
+  });
+  it("a deep-linked request opens with its shifts showing", async () => {
+    vi.mocked(listPendingCallouts).mockResolvedValue([]);
+    vi.mocked(listManagerPendingExchanges).mockResolvedValue([{ id: "linked", requestRevision: 1, kind: "COVERAGE", status: "MANAGER_PENDING", requestedByEmployeeId: "e1", requestedByName: "Fictional Ana", requestedByRole: "EMPLOYEE", createdAt: "2026-10-03T00:00:00Z", sourceShift: shift({}) as never }]);
+    expect(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico", requestId: "linked" }))).toMatch(/<details class="q-details q-request__details" open="">/);
+  });
+});

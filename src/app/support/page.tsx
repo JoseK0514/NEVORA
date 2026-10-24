@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { QuietHeader, QuietNav } from "@/components/quiet/quiet";
 import { BlockView, QuietPolicyLinks } from "@/components/legal/legal-document";
-import { SUPPORT, SUPPORT_EMAIL, policiesVisible } from "@/lib/legal/policies";
+import { POLICY_FACTS, SUPPORT, SUPPORT_EMAIL, policiesVisible } from "@/lib/legal/policies";
 import "@/components/quiet/quiet.css";
 
 export const metadata: Metadata = { title: "Support · NEVORA" };
@@ -11,7 +11,8 @@ export const metadata: Metadata = { title: "Support · NEVORA" };
 const section = (heading: string) => SUPPORT.sections.find(item => item.heading === heading);
 
 /** Quiet (v4, approved Oct 23): Support on the white sign-in page. Email support, the one safety line, three common
- * questions that open their answers in place, then the mailing address. */
+ * questions that open their answers in place, then the mailing address. The response commitment and the address
+ * are the approved policy facts, word for word. */
 export default function Page() {
   if (!policiesVisible()) notFound();
   const contact = section("Contact support"), work = section("Questions about your work"), signIn = section("Signing in"), report = section("Reporting content");
@@ -26,7 +27,8 @@ export default function Page() {
         <QuietHeader title="Support" titleId="legal-title" />
         <p className="q-sr">{SUPPORT.summary}</p>
         <div className="q-grp"><h2>Contact</h2></div>
-        <ul className="q-list"><li><a className="q-row" href={`mailto:${SUPPORT_EMAIL}`}><span className="q-rt"><b>Email support</b><i>Reply within 2 business days</i></span><CaretRightIcon className="q-chev" aria-hidden="true" /></a></li></ul>
+        <ul className="q-list"><li><a className="q-row" href={`mailto:${SUPPORT_EMAIL}`}><span className="q-rt"><b>Email support</b><i>{SUPPORT_EMAIL}</i></span><CaretRightIcon className="q-chev" aria-hidden="true" /></a></li></ul>
+        <p className="q-help">{POLICY_FACTS.SUPPORT_RESPONSE_TIME}</p>
         <p className="q-help">Never email passwords, codes, bank details or pay documents.</p>
         <div className="q-grp"><h2>Common questions</h2></div>
         <ul className="q-list">
@@ -35,7 +37,7 @@ export default function Page() {
           {question("Report a problem", null, [...(contact?.blocks.slice(1) ?? []), ...(report?.blocks ?? [])])}
         </ul>
         <div className="q-grp"><h2>Mail</h2></div>
-        <p className="q-body" style={{ marginTop: 8 }}>VELANI LLC<br />1654 Calle Tulipan, Suite 100<br />San Juan, PR 00927</p>
+        <p className="q-body" style={{ marginTop: 8 }}>{POLICY_FACTS.BUSINESS_CONTACT_DETAILS}</p>
         <QuietPolicyLinks current="support" />
       </div>
     </main>

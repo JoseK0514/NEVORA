@@ -12,8 +12,10 @@ import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listManagerPendingExchanges, listManagementCoverage, listTeamExchangeActivity, type ExchangeRecord } from "@/lib/data/exchanges";
 import { listPendingCallouts, listTeamCalloutHistory, type CalloutRecord } from "@/lib/data/callouts";
 import { PendingButton } from "./wave-a/pending-button";
-import { agoLabel, initialsOf, QuietHeader, QuietNav, QuietPage, QuietRow, QuietSegments } from "./quiet/quiet";
-import { formatTime } from "@/lib/date-utils";
+import { agoLabel, initialsOf, QuietHeader, QuietNav, QuietPage, QuietSegments } from "./quiet/quiet";
+import { addDays, formatTime } from "@/lib/date-utils";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
+import type { ReactNode } from "react";
 
 const tabs = [{ id: "pending", label: "Waiting" }, { id: "coverage", label: "Open cover" }, { id: "activity", label: "Done" }] as const;
 // TC-WA-13: the same words the employee chose from (reviewed-callout-form.tsx).
@@ -45,6 +47,64 @@ function at(shift: { date: string; startTime: string }) {
 function exchangeLine(exchange: ExchangeRecord) {
   if (exchange.kind === "SWAP") return exchange.targetEmployeeName ? `Swap ${at(exchange.sourceShift)} with ${exchange.targetEmployeeName}` : `Swap ${at(exchange.sourceShift)}`;
   return exchange.targetEmployeeName ? `Give ${at(exchange.sourceShift)} to ${exchange.targetEmployeeName}` : `Offered ${at(exchange.sourceShift)}`;
+}
+
+/** "Mon, Oct 5, 2026" */
+function fullDate(date: string) {
+  return new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
+}
+
+type FactShift = { date: string; startTime: string; endTime: string; locationName: string; positionName?: string; positionId?: string; isDesignatedLead?: boolean };
+
+/** One shift in full: whose it is, the full date, start to end (an overnight end names its day), and where. */
+function ShiftFact({ label, shift }: { label: string; shift: FactShift }) {
+  const start = shift.startTime.slice(0, 5), end = shift.endTime.slice(0, 5);
+  const ends = end === "24:00" ? "midnight" : formatTime(end);
+  const overnight = end !== "24:00" && end < start;
+  const position = shift.positionName ?? (shift.positionId ? `Position ${shift.positionId}` : null);
+  return <li>
+    <b>{label}</b>
+    <span>{fullDate(shift.date)}</span>
+    <span>{formatTime(start)} – {ends}{overnight ? `, ends ${fullDate(addDays(shift.date, 1))}` : ""}</span>
+    <span>{[shift.locationName, position, shift.isDesignatedLead ? "Shift lead" : null].filter(Boolean).join(" · ")}</span>
+  </li>;
+}
+
+/** What opens under a request: both shifts of a swap, the shift and who picked it up for coverage. */
+function ExchangeFacts({ exchange }: { exchange: ExchangeRecord }) {
+  const source = <ShiftFact label={`${possessive(exchange.sourceShift.employeeName)} shift`} shift={exchange.sourceShift} />;
+  if (exchange.kind === "SWAP") return <>
+    <ul className="q-facts">{source}{exchange.targetShift ? <ShiftFact label={`${possessive(exchange.targetShift.employeeName)} shift`} shift={exchange.targetShift} /> : null}</ul>
+    <p className="q-help">{exchange.targetShift ? "Approving trades these two shifts." : "The other shift isn’t available right now. Reload to see the latest."}</p>
+  </>;
+  return <>
+    <ul className="q-facts">{source}<li><b>{exchange.targetEmployeeName ? `Picked up by ${exchange.targetEmployeeName}` : "No one has picked it up yet"}</b></li></ul>
+    <p className="q-help">{exchange.targetEmployeeName ? "Approving gives this shift to the person who picked it up." : `Closing stops anyone else from picking it up. The shift stays with ${exchange.requestedByName}.`}</p>
+  </>;
+}
+
+function CalloutFacts({ callout, reason }: { callout: CalloutRecord; reason: string }) {
+  return <>
+    <ul className="q-facts">
+      <ShiftFact label={`${possessive(callout.employeeName)} shift`} shift={callout} />
+      <li><b>Reason</b><span>{reason}</span></li>
+      {callout.reasonNote ? <li><b>Note</b><span>{callout.reasonNote}</span></li> : null}
+    </ul>
+    <p className="q-help">Approving takes the shift off their schedule. It will still need someone to cover it.</p>
+  </>;
+}
+
+/** A request row that opens in place (the Quiet disclosure) to show its shifts in full; the decision stays under it. */
+function RequestDetails({ name, line, sent, label, open, children }: { name: string; line: string; sent: string; label: string; open: boolean; children: ReactNode }) {
+  return <details className="q-details q-request__details" open={open}>
+    <summary className="q-row q-row--av" aria-label={label}>
+      <span className="q-av" aria-hidden="true">{initialsOf(name)}</span>
+      <span className="q-rt"><b>{name}</b><i>{line}</i></span>
+      <span className="q-rv">{sent}</span>
+      <CaretRightIcon className="q-chev" aria-hidden="true" />
+    </summary>
+    <div className="q-details__body q-done__body">{children}</div>
+  </details>;
 }
 
 function Decision({ id, revision, decline, approve, allowed, notice, what }: { id: string; revision?: number; decline: string; approve: string; allowed: boolean; notice?: string; what: string }) {
@@ -103,16 +163,16 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
       {livePending.map(exchange => {
         const what = `${exchange.kind === "SWAP" ? "swap" : "coverage"} request from ${exchange.requestedByName}`;
         return <li className="q-request" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id} data-selected={requestId === exchange.id ? "true" : undefined}>
-          <QuietRow bare avatar={initialsOf(exchange.requestedByName)} title={exchange.requestedByName} detail={exchangeLine(exchange)} value={sent(exchange.createdAt)}
-            label={`${exchange.requestedByName}, ${exchangeLine(exchange)}, ${exchange.kind === "SWAP" ? "approving trades the two shifts" : "approving gives the shift to the person who picked it up"}`} />
+          <RequestDetails name={exchange.requestedByName} line={exchangeLine(exchange)} sent={sent(exchange.createdAt)} open={requestId === exchange.id}
+            label={`${exchange.requestedByName}, ${exchangeLine(exchange)}. Show ${exchange.kind === "SWAP" ? "both shifts" : "the shift"}.`}><ExchangeFacts exchange={exchange} /></RequestDetails>
           <Decision id={exchange.id} revision={exchange.requestRevision} decline="MANAGER_DECLINE" approve="MANAGER_APPROVE" allowed={!!approvals.get(exchange.id)?.allowed} notice={approvals.get(exchange.id)?.notice ?? undefined} what={what} />
         </li>;
       })}
       {callouts.map(callout => {
         const reason = [reasons[callout.reasonCode] ?? callout.reasonCode, callout.reasonNote].filter(Boolean).join(" · ");
         return <li className="q-request" id={`request-${callout.id}`} tabIndex={-1} key={callout.id} data-selected={requestId === callout.id ? "true" : undefined}>
-          <QuietRow bare avatar={initialsOf(callout.employeeName)} title={callout.employeeName} detail={`Can’t work ${at(callout)} · ${reason}`} value={sent(callout.createdAt)}
-            label={`${callout.employeeName} can’t work ${at(callout)}, ${reason}. Approving takes the shift off their schedule; it will still need cover.`} />
+          <RequestDetails name={callout.employeeName} line={`Can’t work ${at(callout)} · ${reason}`} sent={sent(callout.createdAt)} open={requestId === callout.id}
+            label={`${callout.employeeName} can’t work ${at(callout)}, ${reason}. Show the shift.`}><CalloutFacts callout={callout} reason={reasons[callout.reasonCode] ?? callout.reasonCode} /></RequestDetails>
           <Decision id={callout.id} revision={callout.requestRevision} decline="DECLINE_CALLOUT" approve="APPROVE_CALLOUT" allowed={!!approvals.get(callout.id)?.allowed} notice={approvals.get(callout.id)?.notice ?? undefined} what={`the report from ${callout.employeeName}`} />
         </li>;
       })}
@@ -120,7 +180,8 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
 
     {selected.id === "coverage" ? (liveCoverage.length ? <ul className="q-list q-requests" aria-label="Open cover">
       {liveCoverage.map(exchange => <li className="q-request" key={exchange.id}>
-        <QuietRow bare avatar={initialsOf(exchange.requestedByName)} title={exchange.requestedByName} detail={exchangeLine(exchange)} value={sent(exchange.createdAt)} />
+        <RequestDetails name={exchange.requestedByName} line={exchangeLine(exchange)} sent={sent(exchange.createdAt)} open={false}
+          label={`${exchange.requestedByName}, ${exchangeLine(exchange)}. Show the shift.`}><ExchangeFacts exchange={exchange} /></RequestDetails>
         {exchange.requestRevision ? <ShiftChangeForm fields={{ kind: "MANAGER_CLOSE", requestId: exchange.id, expectedRevision: exchange.requestRevision }} className="q-acts-form">
           <div className="q-acts"><PendingButton className="q-bs" pending="Closing…" label={`Close the coverage request from ${exchange.requestedByName}. The shift stays with them.`}>Close request</PendingButton></div>
         </ShiftChangeForm> : null}
