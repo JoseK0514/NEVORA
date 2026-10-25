@@ -73,7 +73,9 @@ async function verifyExplicitRecovery(page,origin,engine,report){
    page.on('requestfinished',finished);page.on('requestfailed',failed);
   });
   intercepted();
-  return gate.then(()=>route.continue());
+  // A discarded destination may already be cancelled by the browser (the explicit refresh supersedes it); Playwright then
+  // counts its route as handled. The assertions below still require it to end and never replace the source.
+  return gate.then(()=>route.continue()).catch(error=>{if(!/already handled/i.test(String(error?.message)))throw error;});
  };
  mark('source-entry');await page.goto(origin+source);await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
  await page.route('**/app/reports?*',handler);

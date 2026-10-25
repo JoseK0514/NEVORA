@@ -596,3 +596,10 @@ html body .app-shell[data-nv-quiet] .portal-route-state[data-checking] > :not(.q
 :is(#q-root, html) .q-skel__rows span { flex: 1; display: grid; gap: 8px; }
 :is(#q-root, html) .q-skel__rows i { display: block; width: 52%; height: 14px; border-radius: 6px; background: var(--q-fill); }
 :is(#q-root, html) .q-skel__rows i + i { width: 74%; height: 12px; background: #F6F6F4; }
+/* A view that needs a fresh check, or is paused, in the Quiet shell: its words and the Refresh current view button. */
+html body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) { max-width: none; margin: 0; padding: calc(var(--q-safe-top, env(safe-area-inset-top, 0px)) + 24px) 20px 24px; border: 0; border-radius: 0; background: none; box-shadow: none; }
+html body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) h2 { margin: 0; font-size: 20px; line-height: 25px; font-weight: 600; letter-spacing: -.4px; }
+html body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) p { margin: 4px 0 0; font-size: 15px; line-height: 20px; color: #6B6B6B; }
+html body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) .button { display: flex; align-items: center; justify-content: center; width: 100%; height: 50px; margin-top: 16px; border: 0; border-radius: 12px; background: #F2F2F0; box-shadow: none; color: #111413; font-size: 17px; font-weight: 600; }
+html[data-theme="dark"] body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) .button { background: #1C1C1E; color: #F2F2F0; }
+html[data-theme="dark"] body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) p { color: #9A9A96; }

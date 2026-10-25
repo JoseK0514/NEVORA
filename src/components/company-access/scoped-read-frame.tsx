@@ -55,6 +55,8 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  const required=useRef(true),latest=useRef(-Infinity),retiredThrough=useRef(-Infinity),proactiveVersion=useRef('');
  const anchor=useRef<CurrentAuthority|null>(null);
  const observationRef=useRef(observation),versionRef=useRef('');
+ // Set by Refresh current view: that recovery fetches fresh at once instead of trying the router cache first.
+ const explicitRefresh=useRef(false);
  const controls=useRef<{recover:(tabWide?:boolean)=>void;pause:()=>void;complete:(view:CurrentAuthority)=>void}|null>(null);
  const observed=observation?Date.parse(observation.observedAt):NaN,duration=observation?.validForMs??0;
  const version=observation?JSON.stringify([observation.authority,observation.observedAt,duration]):'unavailable';
@@ -76,7 +78,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
     const key=JSON.stringify([current.authority,current.observedAt,current.requestStartedAt]);
     // A refresh waits behind an unfinished Server Action. A same-page replace
     // fetches fresh dynamic data while discarding that action's stale router result.
-    if(lastRefresh!==key){lastRefresh=key;if(anchor.current)refreshPage(router,versionRef);else router.refresh();}
+    if(lastRefresh!==key){lastRefresh=key;if(explicitRefresh.current){explicitRefresh.current=false;router.refresh();}else if(anchor.current)refreshPage(router,versionRef);else router.refresh();}
    }
   },async signal=>{
    requestStartedAt=performance.now();
@@ -152,9 +154,12 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
 
  // Effects run before any microtask, so the mount check (queued in the controller effect) reads this page's observation.
  useEffect(()=>{observationRef.current=observation;versionRef.current=version;},[observation,version]);
- const refreshCurrent=()=>{navigation?.discard();controls.current?.recover();};
+ const refreshCurrent=()=>{explicitRefresh.current=true;navigation?.discard();controls.current?.recover();};
 
  if(!recovery.required&&observation&&body.phase==='ready'&&body.authority===observation.authority)return body.content;
  if(!observation&&unavailable)return <div className="scoped-unavailable">{unavailable}<button className="button secondary scoped-unavailable__refresh" type="button" onClick={refreshCurrent}>Refresh current view</button></div>;
- return <section className="portal-route-state" role="status" data-checking={body.phase==='paused'?undefined:''}>{body.phase==='paused'?null:<QuietSkeleton/>}<h2>{body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…'}</h2><p>{body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.'}</p><button className="button secondary" type="button" onClick={refreshCurrent}>Refresh current view</button></section>;
+ // Only a plain check draws the page's own shape; a view that needs a fresh check (or is paused) shows its words and its
+ // Refresh current view button, so the way back is always visible.
+ const checking=body.phase!=='paused'&&!recovery.required;
+ return <section className="portal-route-state" role="status" data-checking={checking?'':undefined}>{checking?<QuietSkeleton/>:null}<h2>{body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…'}</h2><p>{body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.'}</p><button className="button secondary" type="button" onClick={refreshCurrent}>Refresh current view</button></section>;
 }
