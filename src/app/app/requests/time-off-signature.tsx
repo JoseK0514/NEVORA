@@ -27,7 +27,7 @@ function PickerRow({ id, name, type, label, value, min, required = true, onChang
   return <li><label htmlFor={id} className="q-row q-row--one q-row--picker">
     <span className="q-rt"><b>{label}</b></span>
     <span className={`q-rv ${value ? "q-rv--go" : "q-rv--ph"}`} aria-hidden="true">{shown}</span>
-    <input id={id} className="q-picker" type={type} name={name} required={required} min={min} value={value} aria-invalid={invalid || undefined} aria-describedby={describedBy}
+    <input id={id} className="q-picker" type={type} name={name} required={required} min={min} value={value} aria-label={label} aria-invalid={invalid || undefined} aria-describedby={describedBy}
       onClick={event => { try { event.currentTarget.showPicker(); } catch { /* Older browsers open their own picker. */ } }}
       onChange={event => onChange(event.target.value)} />
   </label></li>;
