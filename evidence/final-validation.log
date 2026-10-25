@@ -1,0 +1,70 @@
+{
+  "checked_at_utc": "2026-10-25T22:41:57.068475+00:00",
+  "scope": "Document/artifact integrity only; no application tests or live operations.",
+  "portable_local_links_checked": 105,
+  "csv_structure": {
+    "DECISIONS.csv": {
+      "columns": 8,
+      "records": 12
+    },
+    "RESPONSIBILITY-MATRIX.csv": {
+      "columns": 9,
+      "records": 14
+    },
+    "onboarding/EMPLOYEE-ROSTER.csv": {
+      "columns": 9,
+      "records": 0
+    },
+    "acceptance/ACCEPTANCE-CASES.csv": {
+      "columns": 12,
+      "records": 28
+    },
+    "commercial/INVOICE-TEMPLATE.csv": {
+      "columns": 25,
+      "records": 0
+    },
+    "infrastructure/SERVICE-INVENTORY.csv": {
+      "columns": 23,
+      "records": 15
+    },
+    "infrastructure/COST-WORKSHEET.csv": {
+      "columns": 17,
+      "records": 16
+    }
+  },
+  "acceptance_cases": {
+    "count": 28,
+    "status": "NOT_RUN",
+    "observed_results_and_evidence": "blank"
+  },
+  "responsibility_matrix": "One accountable role per activity; Jose alone executes production authorization.",
+  "workbook": {
+    "sheets": 10,
+    "formula_cells_tokenized": 87,
+    "cost_formulas_match_translated_csv": true,
+    "customer_records": 0,
+    "prices_and_currency_inputs": "blank",
+    "calculation_limit": "Structural checks only; full recalculation requested on open. No spreadsheet calculation engine was run."
+  },
+  "illustrative_arithmetic": {
+    "net_tax_total": "190.00 + 13.30 = 203.30",
+    "annual_normalization": "2 x 120 / 12 = 20",
+    "real_quote_or_invoice": false
+  },
+  "executive_brief": {
+    "pages": 3,
+    "text_extraction": "PASS",
+    "Inter_fonts_present": true,
+    "visual_review": "Pages 1 and 3 reviewed after embedding portable Inter instances."
+  },
+  "limited_secret_pattern_check": "No connection-string credentials, private-key blocks or selected token patterns found; not a security audit.",
+  "application_integrity": {
+    "source_sha": "8e9073974b52053e557382ec5199dbce9d5aa32c",
+    "baseline_sha": "8e9073974b52053e557382ec5199dbce9d5aa32c",
+    "tracked_files_compared": 5575,
+    "changed_or_missing_files": [],
+    "git_status": ""
+  },
+  "canonical_support_aim": "Exact qualified wording preserved.",
+  "result": "PASS"
+}

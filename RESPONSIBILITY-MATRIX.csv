@@ -1,0 +1,15 @@
+activity,Jose / Business Owner,NEVORA Onboarding Lead,NEVORA Operations Lead,Claude / Engineering Lead,Customer Owner,Customer Manager,Employee,Commercial Reviewer
+Scope and company intake,A,R,C,C,R,C,I,C
+Roster authority and access assignments,I,R,C,C,A,C,I,I
+Application implementation and candidate handoff,I,C,C,A/R,C,I,I,I
+Provider account ownership and budget,A,C,R,C,I,I,I,C
+Environment and schema compatibility handoff,I,C,A,R,C,I,I,I
+Invitation issuance after delivery is ready,I,C,C,C,A/R,I,I,I
+Personal account activation,I,C,C,I,A,C,R,I
+Acceptance rehearsal coordination,I,A/R,C,R,R,C,C,I
+Manager and employee training,I,A/R,C,C,R,R,R,I
+Pricing and commercial terms,A,C,C,C,C,I,I,R
+Support triage and incident coordination,I,R,A/R,C,C,C,I,I
+Production authorization,A/R,C,C,C,C,I,I,I
+Coordinated authorized deployment,I,C,A,R,I,I,I,I
+First-cycle customer acceptance,I,R,C,C,A,R,C,I

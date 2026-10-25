@@ -1,0 +1,1 @@
+Invoice_ID,Issue_Date,Due_Date,Issuer_Legal_Name,Customer_Legal_Name,Customer_Billing_Reference,Quote_ID,Agreement_Reference,Service_Period_Start,Service_Period_End,Currency,Charge_Cadence,Line_Number,Description,Quantity,Unit,Unit_Price,Discount_Amount,Tax_Treatment_Reference,Tax_Rate,Line_Net,Line_Tax,Line_Total,Invoice_Status,Payment_Method_Reference
