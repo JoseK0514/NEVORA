@@ -13,7 +13,7 @@ export default defineConfig({
     },
   },
   test: {
-    include: ["src/test/integration/payroll-native.integration.ts"],
+    include: ["src/test/integration/payroll-native.integration.ts", "src/test/integration/payroll-plain-setup.integration.ts"],
     fileParallelism: false,
     testTimeout: 30000,
     hookTimeout: 30000,

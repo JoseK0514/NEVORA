@@ -224,7 +224,96 @@ export type NativeConfigurationRevision = NativeConfiguration & {
     reason: string;
     createdAt: string;
 };
-export type NativeProfileCommand = {
+/** Plain Owner setup (Oct 25 2026 rule): the Owner enters ordinary facts and the
+ * server records who saved them, when, the revision, the form version and a SHA-256
+ * over the saved facts. Contract evidence/attestation fields are produced from that
+ * record; the Owner never types a reference, fingerprint or attestation flag. */
+export const NATIVE_PLAIN_SETUP_FORM_VERSION = "NEVORA_PLAIN_PAYROLL_SETUP_V1";
+/** Legacy full-contract saves (fixtures/accountant tooling) still get a server record. */
+export const NATIVE_FULL_CONTRACT_FORM_VERSION = "NEVORA_NATIVE_FULL_CONTRACT_V1";
+export type NativeEmployerProgramCode = "FUTA" | "PR_UI" | "CFSE";
+export type NativeBreakTreatment = "PAID_REST" | "UNPAID_RELIEVED_MEAL";
+/** Company-level defaults every plain-setup employee inherits. */
+export type NativeCompanyPayrollFacts = {
+    /** The Owner confirmed employees were not told a different workweek: Monday 00:01 (PR law). */
+    workweek: "STATUTORY_MONDAY_0001";
+    /** Exactly FUTA, PR_UI and CFSE in that order; basisPoints only when the program applies. */
+    employerPrograms: { code: NativeEmployerProgramCode; applies: boolean; basisPoints: number | null }[];
+    /** One treatment per break type, chosen once for the company. */
+    breakPay: { typeId: string; treatment: NativeBreakTreatment }[];
+    /** Owners stay out of the payroll population unless this is true. */
+    includeOwners: boolean;
+};
+export type NativePlainWithholding = {
+    personal: PrCertificate["personal"];
+    fullDependents: number;
+    halfDependents: number;
+    deductionAllowances: number;
+    veteran: boolean;
+    /** Extra withholding per paycheck in cents; "0" when none. */
+    extraWithholdingMinor: string;
+};
+export type NativePlainPayFacts = {
+    /** Cents per hour; up to four decimal places of a cent. */
+    hourlyRateMinor: string;
+    /** Puerto Rico local date the rate starts. */
+    rateStartsOn: string;
+    withholding: NativePlainWithholding;
+};
+export type NativePlainOpening = { kind: "FRESH" } | {
+    kind: "MID_YEAR";
+    grossMinor: string;
+    withheld: { socialSecurityMinor: string; medicareMinor: string; prIncomeTaxMinor: string; sinotMinor: string };
+    employerPaid: { socialSecurityMinor: string; medicareMinor: string; sinotMinor: string; futaMinor: string; prUiMinor: string; cfseMinor: string };
+};
+export type NativeSetupRecordKind = "COMPANY_DEFAULTS" | "EMPLOYEE_PAY" | "OPENING_TOTALS";
+/** Immutable server-written audit record behind every setup revision. */
+export type NativeSetupRecord = {
+    version: "NATIVE_SETUP_RECORD_V1";
+    kind: NativeSetupRecordKind;
+    /** "COMPANY" or the employee id. */
+    subjectId: string;
+    /** Opening totals only; 0 otherwise. */
+    taxYear: number;
+    revision: number;
+    formVersion: typeof NATIVE_PLAIN_SETUP_FORM_VERSION | typeof NATIVE_FULL_CONTRACT_FORM_VERSION;
+    operationId: string;
+    enteredBy: { employeeId: string; name: string };
+    enteredAt: string;
+    /** Plain words, e.g. "Entered by Ana Rivera on Oct 25, 2026". */
+    statement: string;
+    /** What saving confirmed, in plain words. */
+    attestation: string;
+    cause: "OWNER_ENTRY" | "COMPANY_DEFAULTS_APPLIED";
+    /** Other saved records these facts were combined with. */
+    derivedFrom: {
+        companyDefaults: { revision: number; sha256: string } | null;
+        opening: { taxYear: number; revision: number; sha256: string } | null;
+        locationIds: string[];
+    };
+    facts: unknown;
+    /** SHA-256 the server computes over every field above. */
+    factsSha256: string;
+    /** Short pointer used wherever a contract needs an evidence reference. */
+    reference: string;
+};
+export type NativeSetupState = {
+    companyDefaults: NativeSetupRecord | null;
+    /** Latest pay and opening records per employee (plain or full-contract). */
+    records: NativeSetupRecord[];
+};
+type NativeCommandBase = { operationId: string; expectedRevision: number };
+export type NativePlainSetupCommand = NativeCommandBase & ({
+    action: "SAVE_COMPANY_PAYROLL_DEFAULTS";
+    defaults: NativeCompanyPayrollFacts;
+} | {
+    action: "SAVE_EMPLOYEE_PAY_SETUP";
+    employeeId: string;
+    pay: NativePlainPayFacts;
+    /** null keeps the current year-to-date totals unchanged. */
+    opening: { taxYear: number; expectedRevision: number; totals: NativePlainOpening } | null;
+});
+export type NativeProfileCommand = NativePlainSetupCommand | ({
     operationId: string;
     reason: string;
     expectedRevision: number;
@@ -241,7 +330,7 @@ export type NativeProfileCommand = {
     review: boolean;
     approve: boolean;
     locationIds: string[];
-});
+}));
 export type NativeProfileReceipt = {
     operationId: string;
     action: NativeProfileCommand["action"];
@@ -250,6 +339,8 @@ export type NativeProfileReceipt = {
 };
 export type NativeProfilesResponse = {
     version: "PAYROLL_NATIVE_PROFILES_V1";
+    /** Server-recorded setup evidence; absent from older servers. */
+    setup?: NativeSetupState;
     configurations: NativeConfigurationRevision[];
     openingYtd: {
         employeeId: string;
