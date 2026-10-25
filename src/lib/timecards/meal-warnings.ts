@@ -1,11 +1,12 @@
 /** Jose (Oct 25, 2026): meal periods are warnings only, never penalty pay. Team P adds `mealWarnings` on the timecard
  * read models next to `paidSeconds`; the field is optional and anything malformed renders nothing. Display only. */
-export type MealWarning = { date: string; kind: 'NO_MEAL_5H' | 'MEAL_TOO_EARLY' | 'MEAL_TOO_SHORT'; minutes?: number; employeeId?: string };
-const kinds = ['NO_MEAL_5H', 'MEAL_TOO_EARLY', 'MEAL_TOO_SHORT'];
+export type MealWarning = { date: string; kind: 'NO_MEAL_5H' | 'MEAL_TOO_EARLY' | 'MEAL_TOO_SHORT' | 'REST_TOO_LONG'; minutes?: number; employeeId?: string };
+const kinds = ['NO_MEAL_5H', 'MEAL_TOO_EARLY', 'MEAL_TOO_SHORT', 'REST_TOO_LONG'];
 
 export function mealWarningText(warning: MealWarning): string {
   if (warning.kind === 'NO_MEAL_5H') return 'No meal break in the first 5 hours';
   if (warning.kind === 'MEAL_TOO_EARLY') return 'Meal break started before the 2nd hour ended';
+  if (warning.kind === 'REST_TOO_LONG') return warning.minutes === undefined ? 'Paid rest break ran long' : `Paid rest break was ${warning.minutes} min`;
   return warning.minutes === undefined ? 'Meal break was short' : `Meal break was ${warning.minutes} min`;
 }
 

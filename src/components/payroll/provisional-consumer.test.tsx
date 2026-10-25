@@ -36,7 +36,8 @@ describe('real provisional producer to payroll client/review consumers', () => {
     expect(html).toContain(policy.id); expect(html.toLowerCase()).toContain('provisional');
     expect(html).not.toContain('no entries intersecting'); expect(html).not.toContain('invariant under the two retained daily models');
     const legacy = renderToStaticMarkup(<NativeReview result={prepared(false).employee} />);
-    expect(legacy).toContain('no entries intersecting'); expect(legacy).toContain('two retained daily models'); expect(legacy).not.toContain(policy.id);
+    // Since 2026-10-25 every new result uses the shift-start-day rule, with or without the policy.
+    expect(legacy).toContain('counts wholly on the business day'); expect(legacy).not.toContain('two retained daily models'); expect(legacy).not.toContain(policy.id);
   });
   it.each(['missing policy', 'unknown id', 'false kind', 'broken hash', 'conflicting daily assessment', 'missing boundary', 'zero denominator', 'invalid operation cash', 'missing operations'] as const)('rejects malformed/coherence-breaking evidence:%s', malformed => {
     const { run, employee } = prepared(); const p = employee.provenance, policy = p.calculationPolicy;

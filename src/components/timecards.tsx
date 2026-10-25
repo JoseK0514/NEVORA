@@ -95,7 +95,7 @@ const noTime=(item:TimecardItem)=>!needsReview(item)&&!isApproved(item)&&!item.c
 const byName=(a:TimecardItem,b:TimecardItem)=>a.card.employeeName.localeCompare(b.card.employeeName);
 const reviewFirst=(a:TimecardItem,b:TimecardItem)=>Number(needsReview(b))-Number(needsReview(a))||byName(a,b);
 /** Meal-period warnings (Jose, Oct 25: warnings only, no penalty pay): one calm row each, with a warning icon. */
-const mealWarningsFor=(item:TimecardItem):MealWarning[]=>item.mealWarnings??mealWarningsOf((item.card as {mealWarnings?:unknown}).mealWarnings);
+const mealWarningsFor=(item:TimecardItem):MealWarning[]=>mealWarningsOf(item.card.mealWarnings);
 function MealRows({item,id}:{item:TimecardItem;id:string}){
   const warnings=mealWarningsFor(item);
   if(!warnings.length)return null;

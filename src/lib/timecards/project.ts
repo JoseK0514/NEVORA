@@ -1,4 +1,5 @@
 import {durationText} from '@/lib/duration-text';
+import {mealWarningsForDay,type MealDayEntry,type MealWarning} from '@/lib/payroll/native/meal-periods';
 import { Temporal } from '@js-temporal/polyfill';
 
 export type Period = { startDate: string; endDate: string };
@@ -23,8 +24,21 @@ export type TimecardSource = Period & {
 export type TimecardIssue = 'period_open' | 'open_entry' | 'open_break' | 'pending_correction' | 'overlapping_time';
 export type Timecard = TimecardSource & {
   observedAt: string; startAt: string; endAt: string; recordedNanoseconds: string; breakNanoseconds: string;
+  /** Paid time = elapsed − unpaid breaks of the entries that START in this period
+   * (shift-start-day attribution, as payroll pays them: an overnight entry counts wholly
+   * on its start day). Breaks are classified by the employee's payroll break rules (the
+   * rule native payroll applies). null when any such break is not classified yet;
+   * paidSeconds is the whole-second floor. recordedNanoseconds stays clipped elapsed. */
+  paidNanoseconds: string | null; paidSeconds: number | null; unpaidBreakNanoseconds: string | null;
+  /** Non-blocking meal-period review flags per attributed business day; days with an
+   * unclassified break are not evaluated. */
+  mealWarnings: MealWarning[];
   issues: TimecardIssue[];
 };
+/** Server-resolved payroll classification of one recorded break. */
+export type TimecardBreakClass = { pay: 'PAID' | 'UNPAID'; kind: 'MEAL' | 'REST'; mealMinimumMinutes: 30 | 60 };
+/** Per recorded break id; absent means not classified. */
+export type TimecardBreakPay = Record<string, TimecardBreakClass>;
 const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const text = (v: unknown, max = 300): v is string => typeof v === 'string' && v.trim() === v && v.length > 0 && v.length <= max && !/[\u0000-\u001f\u007f]/.test(v);
 const nullableText = (v: unknown): v is string | null => v === null || text(v);
@@ -80,13 +94,26 @@ function parseEntry(v: unknown): TimecardEntry {
     recordedVersion: v.recordedVersion as number | null, startAt, endAt, rawStartAt, rawEndAt, breaks };
 }
 
+function parseBreakPay(v: unknown, entries: TimecardEntry[]): TimecardBreakPay {
+  if (!record(v)) throw new Error('Invalid break pay');
+  const ids = new Set(entries.flatMap(e => e.breaks.map(b => b.id)));
+  const out: TimecardBreakPay = {};
+  for (const [id, value] of Object.entries(v)) {
+    if (!ids.has(id) || !record(value) || Object.keys(value).length !== 3 || (value.pay !== 'PAID' && value.pay !== 'UNPAID') ||
+        (value.kind !== 'MEAL' && value.kind !== 'REST') || (value.mealMinimumMinutes !== 30 && value.mealMinimumMinutes !== 60)) throw new Error('Invalid break pay');
+    out[id] = { pay: value.pay, kind: value.kind, mealMinimumMinutes: value.mealMinimumMinutes };
+  }
+  return out;
+}
+
 /**
  * Validate the complete source and total elapsed nanoseconds clipped to the period.
- * Break totals remain separate from recorded time; this projection does not apply
- * payroll deductions. Open intervals stop at observedAt and remain approval issues.
+ * Break totals remain separate from recorded time. Paid time counts entries by their
+ * start day and subtracts only breaks the server classified as unpaid with the payroll
+ * break rule; it never guesses. Open intervals stop at observedAt and remain approval issues.
  * Raw punches and adjustment provenance are retained alongside effective boundaries.
  */
-export function projectTimecard(source: unknown, observedAt: string): Timecard {
+export function projectTimecard(source: unknown, observedAt: string, breakPay: unknown = {}): Timecard {
   if (!record(source) || !text(source.employeeId) || !text(source.employeeName) || !text(source.timeZone,100) ||
       !text(source.startDate) || !text(source.endDate) || !Number.isSafeInteger(source.pendingCorrections) || Number(source.pendingCorrections) < 0 ||
       !Array.isArray(source.entries) || source.entries.length > 10000 || !Array.isArray(source.corrections) || source.corrections.length > 10000) throw new Error('Invalid timecard source');
@@ -102,10 +129,12 @@ export function projectTimecard(source: unknown, observedAt: string): Timecard {
     if (ns(endAt) <= ns(startAt)) throw new Error('Invalid correction interval');
     return { id:v.id,kind:String(v.kind),status:v.status as TimecardCorrection['status'],reason:v.reason,revision:Number(v.revision),startAt,endAt };
   });
+  const pay = parseBreakPay(breakPay, entries);
   const issues = new Set<TimecardIssue>();
   if (observed < end) issues.add('period_open');
   if (source.pendingCorrections) issues.add('pending_correction');
-  let recorded = BigInt(0), breakTime = BigInt(0), previousEnd: bigint | null = null;
+  let recorded = BigInt(0), breakTime = BigInt(0), unpaid = BigInt(0), paidTime = BigInt(0), classified = true, previousEnd: bigint | null = null;
+  const mealDays = new Map<string, { entries: MealDayEntry[]; classified: boolean }>();
   const elapsed = (a: string, b: string | null) => {
     const left = ns(a) > start ? ns(a) : start;
     const actualEnd = b === null ? observed : ns(b);
@@ -122,10 +151,28 @@ export function projectTimecard(source: unknown, observedAt: string): Timecard {
       if (b.endAt === null) issues.add('open_break');
       breakTime += elapsed(b.startAt,b.endAt);
     }
+    // Attribution: an entry belongs wholly to the business day it starts on.
+    if (ns(entry.startAt) < start || ns(entry.startAt) >= end) continue;
+    const date = Temporal.Instant.from(entry.startAt).toZonedDateTimeISO(source.timeZone).toPlainDate().toString();
+    const day = mealDays.get(date) ?? { entries: [], classified: true };
+    const meals: MealDayEntry['breaks'] = [];
+    paidTime += entryEnd - ns(entry.startAt);
+    for (const b of entry.breaks) {
+      const kind = pay[b.id];
+      if (!kind || b.endAt === null) { classified = false; day.classified = false; continue; }
+      if (kind.pay === 'UNPAID') { unpaid += ns(b.endAt) - ns(b.startAt); paidTime -= ns(b.endAt) - ns(b.startAt); }
+      meals.push({ start: ns(b.startAt), end: ns(b.endAt), kind: kind.kind, mealMinimumMinutes: kind.mealMinimumMinutes });
+    }
+    day.entries.push({ start: ns(entry.startAt), end: entryEnd, breaks: meals });
+    mealDays.set(date, day);
   }
+  const paid = classified ? paidTime : null;
+  const mealWarnings = [...mealDays.entries()].filter(([, d]) => d.classified).sort(([a],[b]) => a < b ? -1 : a > b ? 1 : 0).flatMap(([date, d]) => mealWarningsForDay(date, d.entries));
   return { ...period,...boundaries,employeeId:source.employeeId,employeeName:source.employeeName,timeZone:source.timeZone,
     pendingCorrections:Number(source.pendingCorrections),entries,corrections,observedAt:instant(observedAt),
-    recordedNanoseconds:recorded.toString(),breakNanoseconds:breakTime.toString(),issues:[...issues] };
+    recordedNanoseconds:recorded.toString(),breakNanoseconds:breakTime.toString(),
+    paidNanoseconds:paid === null ? null : paid.toString(),paidSeconds:paid === null ? null : Number(paid / BigInt(1_000_000_000)),
+    unpaidBreakNanoseconds:classified ? unpaid.toString() : null,mealWarnings,issues:[...issues] };
 }
 
 export function formatRecordedHours(nanoseconds: string): string {

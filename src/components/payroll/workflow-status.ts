@@ -1,5 +1,6 @@
 import type { PayrollBacklogSummary, PayrollCapabilities, PayrollJob } from '@/lib/payroll/contracts';
 export { mealWarningText, mealWarningsOf, type MealWarning } from '@/lib/timecards/meal-warnings';
+import { MEAL_PERIOD_REVIEW_COPY, mealWarningText as nativeMealWarningText, type MealWarning as NativeMealWarning } from '@/lib/payroll/native/meal-periods';
 
 export function noticeReadiness(capabilities: PayrollCapabilities) {
   return capabilities.noticeDelivery === 'ENABLED'
@@ -97,4 +98,13 @@ export function payrollFixGroups(exceptions: string[]): PayrollFixGroup[] {
     groups.set(key, group);
   }
   return [...groups.values()];
+}
+
+/** Non-blocking meal-period review items for the payroll period review (Jose,
+ * 2026-10-25: warnings only, no penalty pay). They never affect approval readiness. */
+export function mealPeriodReview(employees: readonly { employeeId: string; breakdown: { mealWarnings?: readonly NativeMealWarning[] } }[]) {
+  return employees.flatMap(e => (e.breakdown.mealWarnings ?? []).map(w => ({
+    employeeId: e.employeeId, date: w.date, kind: w.kind, minutes: w.minutes ?? null, blocking: false as const,
+    title: MEAL_PERIOD_REVIEW_COPY, detail: nativeMealWarningText[w.kind],
+  })));
 }

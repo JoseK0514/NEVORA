@@ -41,7 +41,7 @@ function moneyMap(v: unknown) {
         minor(value);
 }
 export function parseWage(v: unknown): NativeWageProfile {
-    const w = object(v, ["id", "revision", "effectiveFrom", "effectiveTo", "locationIds", "hourlyRateMinor", "compensation", "employment", "minimumWageCoverage", "overtime", "dailyBasis", "workweekAnchorDate", "workweekStartTime", "overtimeBasis", "wageCentRounding", "breakRules", "standardContextAttested", "evidenceReference"], ["workweekPolicy"]);
+    const w = object(v, ["id", "revision", "effectiveFrom", "effectiveTo", "locationIds", "hourlyRateMinor", "compensation", "employment", "minimumWageCoverage", "overtime", "dailyBasis", "workweekAnchorDate", "workweekStartTime", "overtimeBasis", "wageCentRounding", "breakRules", "standardContextAttested", "evidenceReference"], ["workweekPolicy", "mealReductionAgreement"]);
     check(text(w.id, 200) && text(w.evidenceReference));
     revision(w.revision);
     strings(w.locationIds);
@@ -58,6 +58,7 @@ export function parseWage(v: unknown): NativeWageProfile {
         check(text(b.typeId, 200) && !ids.has(b.typeId) && (b.treatment === "PAID_REST" || b.treatment === "UNPAID_RELIEVED_MEAL"));
         ids.add(b.typeId);
     }
+    check(w.mealReductionAgreement === undefined || typeof w.mealReductionAgreement === "boolean");
     return structuredClone(v) as NativeWageProfile;
 }
 export function parseTax(v: unknown): NativeTaxProfile {
