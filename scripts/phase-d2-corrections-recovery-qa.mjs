@@ -77,7 +77,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
     await page.getByText(UNCERTAIN_REQUEST,{exact:true}).first().waitFor();
     assert.equal(await employeeRetry(page).count(),1);
     // No second request while one is uncertain: Send (when the sheet is still open) and Request a correction are off.
-    assert.equal(await form.locator('button[type="submit"]').isDisabled(),true);
+    assert.equal(await page.locator(`${CORRECTION_CENTER} form.q-fix button[type="submit"]`).isDisabled(),true);
     assert.equal(await page.locator(CORRECTION_CENTER).getByRole('button',{name:'Request a correction',exact:true}).isDisabled(),true);
     // The inherited private reader really clears/unmounts its children on pause.
     await c.setOffline(true);await page.getByText('Updates paused',{exact:true}).waitFor();
