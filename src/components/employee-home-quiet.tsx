@@ -228,7 +228,7 @@ export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTim
       <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon className="q-ic" aria-hidden="true"/></QuietBarIcon></QuietBar>
       <div className="q-hello"><small>{date}</small><h1>{name && snapshot ? `${greeting(snapshot.observedAt, snapshot.timeZone)}, ${name}` : 'Home'}</h1></div>
       {snapshot ? <section aria-labelledby="employee-reviewed-next-heading">
-        <h2 id="employee-reviewed-next-heading" className="nv-sr">{underWay ? 'Scheduled now' : 'Next shift'}</h2>
+        <h2 id="employee-reviewed-next-heading" className="nv-sr">Your shift</h2>
         <NextCard snapshot={snapshot}/>
         {snapshot.publicationState === 'partial' ? <p className="q-next__note" role="status">{unpublishedNote(snapshot.unpublishedLocations ?? [])}</p> : null}
         {/* While a shift is under way, the clock status sits under the card. */}
