@@ -18,6 +18,7 @@ import { ProfileCalendarDisclosure } from "@/components/profile-calendar-disclos
 import "@/components/quiet/u3.css";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
 import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
+import { SparkleIcon } from "@phosphor-icons/react/dist/ssr/Sparkle";
 
 export const metadata = { title: "More" };
 
@@ -67,12 +68,15 @@ export default async function MorePage() {
   const navigation = navigationForRole(session.role, payroll, { operational, modules: brand.modules, words: wordPreset(brand.words).en, ownerAdvisorEnabled: process.env.NEVORA_OWNER_ADVISOR_ENABLED === "true" });
   const item = (href: string) => navigation.find(entry => entry.href === href);
   const work = WORK.map(item).filter(entry => entry !== undefined);
+  const advisor = item("/app/ai-manager");
   const account = ACCOUNT.map(item).filter(entry => entry !== undefined);
   return <QuietPage>
     <div className="q-bar" aria-hidden="true" />
     <QuietHeader title="More" />
     {work.length ? <QuietList label="Work" style={{ marginTop: 16 }}>
-      {work.map(entry => <QuietRow key={entry.href} href={entry.href} title={entry.label} />)}
+      {work.flatMap(entry => [<QuietRow key={entry.href} href={entry.href} title={entry.label} />,
+        // T-26: with the advisor switched on, Owners reach it here, under Insights (no bare button on Today).
+        entry.href === "/app/reports" && advisor ? <QuietRow key="/app/ai-manager" href="/app/ai-manager" icon={<SparkleIcon className="q-ic" aria-hidden="true" />} title="Ask NEVORA" /> : null])}
     </QuietList> : null}
     <QuietList label="Account" style={{ marginTop: 32 }}>
       {account.map(entry => <QuietRow key={entry.href} href={entry.href} title={entry.label} />)}

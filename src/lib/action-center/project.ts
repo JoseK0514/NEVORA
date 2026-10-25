@@ -3,6 +3,7 @@ import type {ManagerActionItem} from '../assistance/manager-actions';
 import type {AttendanceDisplayReview} from '../attendance/read-model';
 import type {ManagerTimeCorrections} from '../time-corrections/read-model';
 import type {TimecardsResult} from '../timecards/read-model';
+import {correctionLine} from '../time-corrections/present';
 export type ActionItem=Omit<ManagerActionItem,'type'>&{type:ManagerActionItem['type']|'ATTENDANCE'|'TIME_CORRECTION'|'TIMECARD';category:'scheduling'|'requests'|'timekeeping';request?:import('../data/action-request-facts.server').ActionRequestFacts};
 export type ActionCenter={state:'ready';observedAt:string;validForMs:number;weekStart:string;items:ActionItem[];counts:{total:number;scheduling:number;requests:number;timekeeping:number};limitedAttendance:boolean}|{state:'unavailable';reason:'access_denied'|'read_failed'};
 function validateRequestFacts(value:NonNullable<ActionItem['request']>) {
@@ -21,7 +22,7 @@ export function combineManagerActions(scheduling:ManagerActionItem[],attendance:
  const items:ActionItem[]=scheduling.map(item=>({...item,category:requestTypes.has(item.type)?'requests':'scheduling'}));
  const employees=new Map(attendance.labels.employees.map(e=>[e.id,e.name]));
  for(const group of attendance.groups)if(group.observations.length)items.push({id:'ATTENDANCE:'+group.entryId,type:'ATTENDANCE',category:'timekeeping',priority:'REVIEW',title:'Recorded attendance needs review',detail:`${employees.get(group.employeeId)??'Employee'} · ${group.observations.length} recorded observations.`,employeeId:group.employeeId,locationId:group.locationId,href:'/app?view=attendance#attendance-'+encodeURIComponent(group.entryId)});
- for(const request of corrections.requests)items.push({id:'TIME_CORRECTION:'+request.id,type:'TIME_CORRECTION',category:'timekeeping',priority:'REVIEW',title:request.isSelf?'Your correction needs another reviewer':'Time correction waiting for review',detail:`${request.employeeName} · ${request.kind==='MISSING_ENTRY'?'Recorded entry not sent yet':'Recorded time correction'}.`,dateTime:request.createdAt,href:'/app?view=attendance#correction-'+encodeURIComponent(request.id)});
+ for(const request of corrections.requests)items.push({id:'TIME_CORRECTION:'+request.id,type:'TIME_CORRECTION',category:'timekeeping',priority:'REVIEW',title:request.isSelf?'Your correction needs another reviewer':'Time correction waiting for review',detail:`${request.employeeName} · ${correctionLine(request,corrections.timeZone)}`,dateTime:request.createdAt,href:'/app?view=attendance#correction-'+encodeURIComponent(request.id)});
  for(const item of timecards.cards){const card=item.card;if(item.state==='FINALIZED'||(!card.entries.length&&!item.history.length))continue;
   items.push({id:`TIMECARD:${card.employeeId}:${card.startDate}:${card.endDate}`,type:'TIMECARD',category:'timekeeping',priority:'REVIEW',title:card.employeeId===actorId?'Your timecard needs another reviewer':item.state==='APPROVED'?'Approved timecard awaits finalization':'Period timecard needs review',detail:`${card.employeeName} · ${formatCalendarRange(card.startDate,card.endDate)}${card.issues.length?' · Fix recorded-time issues before finalizing.':'.'}`,employeeId:card.employeeId,href:`/app/timecards?start=${card.startDate}&end=${card.endDate}#timecard-${encodeURIComponent(card.employeeId)}`});
  }

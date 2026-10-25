@@ -1,10 +1,8 @@
 'use client';
 
-import { keepWhole } from "@/lib/keep-whole";
 import Link from 'next/link';
-import {ConfiguredAttendancePolicies} from './configured-attendance-policies';
 import {usePrivateFragmentFocus} from './private-fragment-focus';
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   createAttendanceReviewController,
   fetchAttendanceReview,
@@ -13,232 +11,102 @@ import {
 import type {
   AttendanceGroup,
   Observation,
-  ObservationKind,
 } from '@/lib/attendance/types';
+import {initialsOf} from './quiet/quiet';
+import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
+import { formatElapsed } from '@/lib/date-utils';
+import './quiet/u1.css';
 
-const KIND_LABELS: Record<ObservationKind, string> = {
-  TIME_HISTORY_INCONSISTENT: 'Time record needs review',
-  SCHEDULE_UNMATCHED: 'Schedule not matched',
-  SCHEDULE_AMBIGUOUS: 'Schedule match unclear',
-  CLOCK_IN_AFTER_SCHEDULE_START: 'Clock-in after scheduled start',
-  CLOCK_OUT_BEFORE_SCHEDULE_END: 'Clock-out before scheduled end',
-  OPEN_AFTER_SCHEDULE_END: 'No clock-out after scheduled end',
-  BREAK_TARGET_EXCEEDED: 'Break exceeded saved target',
-};
-
-const KIND_TONES: Record<ObservationKind, 'critical' | 'attention' | 'neutral'> = {
-  TIME_HISTORY_INCONSISTENT: 'critical',
-  SCHEDULE_UNMATCHED: 'attention',
-  SCHEDULE_AMBIGUOUS: 'attention',
-  CLOCK_IN_AFTER_SCHEDULE_START: 'attention',
-  CLOCK_OUT_BEFORE_SCHEDULE_END: 'attention',
-  OPEN_AFTER_SCHEDULE_END: 'critical',
-  BREAK_TARGET_EXCEEDED: 'attention',
-};
-
-function checkedAt(at: string, zone: string) {
-  return new Intl.DateTimeFormat('en-US', {
-    timeZone: zone,
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  }).format(new Date(at));
-}
-
-function differenceLabel(value?: string) {
+/** "15 min", "1 h 5 min" from the evidence's nanoseconds; null when there is no difference to say. */
+export function differenceLabel(value?: string) {
   if (!value) return null;
   try {
     const ns = BigInt(value);
     const minutes = Number(ns / BigInt(60_000_000_000));
-    if (!Number.isSafeInteger(minutes) || minutes < 1) return '<1 min';
-    if (minutes < 60) return `${minutes} min`;
-    const hours = Math.floor(minutes / 60);
-    const remainder = minutes % 60;
-    return remainder ? `${hours}h ${remainder}m` : `${hours}h`;
+    if (!Number.isSafeInteger(minutes) || minutes < 1) return 'under 1 min';
+    return formatElapsed(minutes);
   } catch {
     return null;
   }
 }
 
-function observationDetail(item: Observation) {
-  const delta = differenceLabel(item.evidence.differenceNanoseconds);
-  if (delta) return delta;
-  if (item.kind === 'SCHEDULE_UNMATCHED') return 'Recorded punch has no saved schedule match.';
-  if (item.kind === 'SCHEDULE_AMBIGUOUS') return 'Saved schedule context could not resolve one shift.';
-  if (item.kind === 'TIME_HISTORY_INCONSISTENT') return 'Recorded time history is internally inconsistent.';
-  return item.message;
+/** One plain, factual line per observation: what was recorded against the shift, never a verdict. */
+export function observationLine(item: Observation) {
+  const by = differenceLabel(item.evidence.differenceNanoseconds);
+  switch (item.kind) {
+    case 'CLOCK_IN_AFTER_SCHEDULE_START': return by ? `Clocked in ${by} after the shift began` : 'Clocked in after the shift began';
+    case 'CLOCK_OUT_BEFORE_SCHEDULE_END': return by ? `Clocked out ${by} early` : 'Clocked out early';
+    case 'OPEN_AFTER_SCHEDULE_END': return by ? `Still clocked in ${by} after the shift ended` : 'Still clocked in after the shift ended';
+    case 'BREAK_TARGET_EXCEEDED': return by ? `Break ran ${by} over` : 'Break ran over';
+    case 'SCHEDULE_UNMATCHED': return 'Clocked in with no shift';
+    case 'SCHEDULE_AMBIGUOUS': return 'Matches more than one shift';
+    case 'TIME_HISTORY_INCONSISTENT': return 'The time record doesn’t add up';
+  }
 }
 
-function initials(name: string) {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('');
-}
-
-function groupRows(
-  groups: readonly AttendanceGroup[],
-  labels: {
-    employees: readonly { id: string; name: string }[];
-    locations: readonly { id: string; name: string }[];
-  },
-) {
+function groupRows(groups: readonly AttendanceGroup[], labels: { employees: readonly { id: string; name: string }[]; locations: readonly { id: string; name: string }[] }) {
   const people = new Map(labels.employees.map((label) => [label.id, label.name]));
   const locations = new Map(labels.locations.map((label) => [label.id, label.name]));
-  return groups.map((group) => ({
+  return groups.filter(group => group.observations.length).map((group) => ({
     ...group,
-    employeeName: people.get(group.employeeId)!,
-    locationName: locations.get(group.locationId)!,
+    employeeName: people.get(group.employeeId) ?? 'Employee',
+    locationName: locations.get(group.locationId) ?? '',
   }));
 }
 
+/** On shift › To review (Quiet v4): one row per clock-in that may need a look, opening that person's timecard. A ready,
+ * empty review shows nothing; loading, paused, offline, failed and signed-out reviews say so with no names. */
 export function AttendanceReviewSurface({
   state,
   onRefresh,
 }: { state: AttendancePanelState; onRefresh: () => void }) {
   const { review, refreshing, paused } = state;
-  // IS-47: offline and "window in the background" both pause; the footer names which.
-  const online = useSyncExternalStore(subscribeOnline, () => navigator.onLine, () => true);
   const ready = !paused && review?.state === 'ready' ? review : null;
   usePrivateFragmentFocus('attendance-',!!ready);
   const denied = review?.state === 'unavailable' && review.reason === 'access_denied';
   const unavailable = review?.state === 'unavailable' && !denied;
   const rows = ready ? groupRows(ready.groups, ready.labels) : [];
-  // Busy only while the first read is in flight: desktop hides the footer (and Refresh) while busy.
   const loading = !ready && !paused && !denied && !unavailable;
+  const limited = ready?.coverage.state === 'limited';
+  if (ready && !rows.length && !limited) return null;
 
   return (
-    <section className="attendance-review" aria-labelledby="attendance-review-title" data-attendance-state={paused ? "paused" : denied ? "unauthorized" : ready ? "ready" : unavailable ? "unavailable" : "loading"}>
-      <ConfiguredAttendancePolicies />
-      <header className="attendance-review-header">
-        <div>
-          <p>Today</p>
-          <h2 id="attendance-review-title">Today’s clock-ins</h2>
-          <span>Clock-ins and breaks that may need a look.</span>
-        </div>
-        {/* The summary row is there while loading too ("–" for each count), so nothing moves when the numbers arrive.
-            It is busy only while loading: the desktop layout hides the footer while busy, and a failed, paused or
-            signed-out review needs its footer (Refresh, Sign in). */}
-        <div className="attendance-review-summary" aria-label="Attendance exception summary" aria-busy={ready || unavailable || denied || paused ? undefined : true}>
-          <span>
-            <strong>{ready ? ready.signalCount : '–'}</strong>
-            {' to review'}
-          </span>
-          <span>
-            <strong>{ready ? ready.affectedEmployeeCount : '–'}</strong>
-            {ready?.affectedEmployeeCount === 1 ? ' person affected' : ' people affected'}
-          </span>
-          <span>
-            <strong>{ready ? ready.pendingCorrectionCount : '–'}</strong>
-            {ready?.pendingCorrectionCount === 1 ? ' correction' : ' corrections'}
-          </span>
-        </div>
-      </header>
-
-      {ready?.coverage.state === 'limited' ? (
-        <div className="attendance-review-limited" role="status">
-          <strong>Some comparisons are limited</strong>
-          <span>
-            {ready.coverage.limitations.length} recorded item{ready.coverage.limitations.length === 1 ? '' : 's'} could not be fully compared with saved schedule or break context.
-          </span>
-        </div>
-      ) : null}
-
-      {ready ? (
-        rows.length ? (
-          <div className="attendance-review-list">
-            {rows.map((group) => (
-              <article className="attendance-review-row" key={group.entryId} tabIndex={-1} id={`attendance-${group.entryId}`}>
-                <div className="attendance-review-person">
-                  <span className="attendance-review-avatar" aria-hidden="true">
-                    {initials(group.employeeName)}
-                  </span>
-                  <div>
-                    <strong>{group.employeeName}</strong>
-                    <small>{group.locationName}</small>
-                  </div>
-                </div>
-                <div className="attendance-review-signals">
-                  {group.observations.map((item) => (
-                    <div className="attendance-review-signal" key={item.id}>
-                      <span className={`attendance-review-badge ${KIND_TONES[item.kind]}`}>
-                        {KIND_LABELS[item.kind]}
-                      </span>
-                      <small>{observationDetail(item)}</small>
-                    </div>
-                  ))}
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <div className="attendance-review-empty" role="status">
-            <span className="attendance-review-empty-mark" aria-hidden="true">✓</span>
-            <strong>Nothing to review</strong>
-            <small>No clock-ins need a look right now.</small>
-          </div>
-        )
-      ) : (
-        <div className="attendance-review-empty" role="status">
-          <strong>
-            {paused
-              ? (online ? 'Attendance paused' : 'You’re offline')
-              : denied
-                ? 'Sign in again'
-                : unavailable
-                  ? 'Attendance unavailable'
-                  : 'Loading attendance'}
-          </strong>
-          <small>
-            {/* TC-48: plain words, short enough for one line at 320 in every state (ST-23). */}
-            {paused
-              ? (online ? 'Updates when you’re back.' : 'Updates when you reconnect.')
-              : denied
-                ? 'Manager or Owner access is needed.'
-                : unavailable
-                  ? 'The latest records didn’t load.'
-                  : 'Checking today’s clock records.'}
-          </small>
-        </div>
-      )}
-
-      <footer className="attendance-review-footer">
-        <div>
-          {/* ST-16: always two lines, so the footer keeps its height from loading to ready.
-              TC-48: each state says what is true now; the dot is green live, grey checking, a coral ring when it can't update. */}
-          <small data-state={ready ? 'live' : unavailable || denied || paused ? 'stale' : 'checking'}>
-            {ready ? <>Updated <time dateTime={ready.observedAt}>{keepWhole(checkedAt(ready.observedAt, ready.timeZone))}</time></>
-              : paused ? (online ? 'Paused.' : 'Offline.')
-                : denied ? 'No access.'
-                  : unavailable ? 'Couldn’t update.'
-                    : 'Checking…'}
-            {/* TC-50: offline, paused and no access say what to do in the main block; the footer keeps just the state word. */}
-            {ready || !(unavailable || denied || paused) ? <span>Updates every 30s.</span> : unavailable ? <span>Try Refresh.</span> : null}
-          </small>
-        </div>
-        {denied ? (
-          <Link className="attendance-review-refresh" href="/login">Sign in</Link>
-        ) : (
-          <button
-            className="attendance-review-refresh"
-            type="button"
-            // IS-58: busy is aria-disabled, so keyboard focus stays on Refresh while it works.
-            onClick={() => { if (!refreshing) onRefresh(); }}
-            aria-disabled={refreshing || undefined}
-            disabled={paused}
-            aria-label={refreshing ? "Refreshing attendance review" : "Refresh attendance review"}
-          >
-            {refreshing ? 'Refreshing…' : 'Refresh'}
-          </button>
-        )}
-      </footer>
+    <section id="on-shift-review" aria-labelledby="on-shift-review-title" aria-busy={loading || undefined}
+      data-attendance-state={paused ? "paused" : denied ? "unauthorized" : ready ? "ready" : unavailable ? "unavailable" : "loading"}>
+      <div className="q-sec"><h2 id="on-shift-review-title">To review</h2></div>
+      {ready ? <>
+        {rows.length ? <ul className="q-list" aria-label="Clock-ins to review">
+          {rows.map((group) => {
+            const [first, ...more] = group.observations;
+            const detail = `${observationLine(first)}${more.length ? ` · ${more.length} more` : ''}`;
+            return <li key={group.entryId} id={`attendance-${group.entryId}`} tabIndex={-1}>
+              <Link className="q-row q-row--av" href={`/app/timecards#timecard-${encodeURIComponent(group.employeeId)}`}
+                aria-label={`${group.employeeName}${group.locationName ? `, ${group.locationName}` : ''}: ${[first, ...more].map(observationLine).join('; ')}. Open timecard`}>
+                <span className="q-av" aria-hidden="true">{initialsOf(group.employeeName)}</span>
+                <span className="q-rt"><b>{group.employeeName}</b><i>{detail}</i></span>
+                <CaretRightIcon className="q-chev" aria-hidden="true" />
+              </Link>
+            </li>;
+          })}
+        </ul> : null}
+        {limited ? <p className="q-help" role="status">Some clock-ins couldn’t be fully checked against the schedule.</p> : null}
+      </> : <>
+        <p className="q-empty" role="status">
+          {paused ? (typeof navigator !== 'undefined' && !navigator.onLine ? 'You’re offline. This updates when you reconnect.' : 'Paused while you’re away.')
+            : denied ? 'Sign in again to see clock-ins to review.'
+              : unavailable ? 'Clock-in checks aren’t available right now.'
+                : 'Checking clock-ins…'}
+        </p>
+        {denied ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link>
+          : unavailable ? <button className="q-btn q-btn--sec" type="button" aria-label="Refresh attendance review" aria-disabled={refreshing || undefined}
+            onClick={() => { if (!refreshing) onRefresh(); }}>{refreshing ? 'Trying…' : 'Try again'}</button> : null}
+      </>}
     </section>
   );
 }
 
-export function ManagerAttendanceReview() {
+/** The attendance review read (the same controller and lifecycle as before: paused while hidden, blurred or offline). */
+export function useAttendanceReview() {
   const [state, setState] = useState<AttendancePanelState>({
     review: null,
     refreshing: true,
@@ -285,16 +153,10 @@ export function ManagerAttendanceReview() {
     };
   }, []);
 
-  return (
-    <AttendanceReviewSurface
-      state={state}
-      onRefresh={() => controller.current?.refresh()}
-    />
-  );
+  return { state, refresh: () => controller.current?.refresh() };
 }
 
-function subscribeOnline(change: () => void) {
-  window.addEventListener('online', change);
-  window.addEventListener('offline', change);
-  return () => { window.removeEventListener('online', change); window.removeEventListener('offline', change); };
+export function ManagerAttendanceReview() {
+  const { state, refresh } = useAttendanceReview();
+  return <AttendanceReviewSurface state={state} onRefresh={refresh} />;
 }

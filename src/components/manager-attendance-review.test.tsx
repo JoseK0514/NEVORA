@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
 import { AttendanceReviewSurface } from './manager-attendance-review';
 
+vi.mock('./quiet/u1.css', () => ({}));
 vi.mock('next/link', () => ({
   default: ({ href, children, ...props }: ComponentProps<'a'>) =>
     createElement('a', { href, ...props }, children),
@@ -72,17 +73,19 @@ it('renders verified attendance signals with manager-readable names and factual 
       onRefresh={() => {}}
     />,
   );
-  expect(html).toContain('Alex Morgan');
+  expect(html).toContain('<b>Alex Morgan</b>');
   expect(html).toContain('Northside');
-  expect(html).toContain('Clock-in after scheduled start');
-  expect(html).toContain('<strong>1</strong> to review');
-  expect(html).toContain('<strong>1</strong> person');
-  expect(html).toContain('15 min');
+  expect(html).toContain('Clocked in 15 min after the shift began');
+  expect(html).toContain('>To review</h2>');
+  expect(html).toContain('href="/app/timecards#timecard-employee-1"');
+  expect(html).toContain('id="attendance-entry-1"');
+  // Quiet (T-1): no counters line.
+  expect(html).not.toContain('to review<');
   expect(html).not.toContain('Late');
-  expect(html).not.toContain('employee-1');
+  expect(html).not.toContain('>employee-1<');
 });
 
-it('distinguishes a healthy empty snapshot from unavailable data', () => {
+it('distinguishes a healthy empty snapshot (nothing shown) from unavailable data', () => {
   const empty = readyState();
   empty.review.groups = [];
   empty.review.recordCount = 0;
@@ -94,7 +97,7 @@ it('distinguishes a healthy empty snapshot from unavailable data', () => {
       onRefresh={() => {}}
     />,
   );
-  expect(emptyHtml).toContain('Nothing to review');
+  expect(emptyHtml).toBe('');
 
   const unavailableHtml = renderToStaticMarkup(
     <AttendanceReviewSurface
@@ -106,9 +109,7 @@ it('distinguishes a healthy empty snapshot from unavailable data', () => {
       onRefresh={() => {}}
     />,
   );
-  expect(unavailableHtml).toContain('Attendance unavailable');
-  expect(unavailableHtml).not.toContain('Nothing to review');
-  // A failed read isn't busy, so the desktop layout keeps its footer and the Refresh button visible.
+  expect(unavailableHtml).toContain('Clock-in checks aren’t available right now.');
   expect(unavailableHtml).not.toContain('aria-busy');
   expect(unavailableHtml).toContain('aria-label="Refresh attendance review"');
 });
@@ -129,7 +130,16 @@ it('shows access denial as a sign-in state and never retains people', () => {
   expect(html).not.toContain('Alex Morgan');
 });
 
-it('marks the summary busy only while loading, so desktop keeps Refresh after a failed read', () => {
+it('says a limited comparison once, even with nothing to list', () => {
+  const limited = readyState();
+  limited.review.groups = [];
+  (limited.review.coverage as { state: string }).state = 'limited';
+  const html = renderToStaticMarkup(<AttendanceReviewSurface state={limited} onRefresh={() => {}} />);
+  expect(html).toContain('Some clock-ins couldn’t be fully checked');
+  expect(html).not.toContain('Alex Morgan');
+});
+
+it('marks the section busy only while loading', () => {
   const render = (state: ComponentProps<typeof AttendanceReviewSurface>['state']) =>
     renderToStaticMarkup(<AttendanceReviewSurface state={state} onRefresh={() => {}} />);
   expect(render({ review: null, refreshing: false, paused: false })).toContain('aria-busy="true"');

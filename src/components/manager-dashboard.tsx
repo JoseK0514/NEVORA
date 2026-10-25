@@ -1,11 +1,9 @@
-import { ManagerAttendanceReview } from "./manager-attendance-review";
-import { ManagerTimeCorrections } from "./manager-time-corrections";
+import { ManagerOnShift } from "./manager-on-shift";
+import { ActivityPage, HoursPage, type HoursFilter } from "./manager-team-tools";
 import {HomeActionCenterProvider} from './manager-action-center';
 import {OwnerSetupQuietLive} from './owner-setup-card';
 import { formatBusinessTimestamp } from "@/lib/business-time";
-import Link from "next/link";
 import type { ManagerActionItem } from "@/lib/assistance/manager-actions";
-import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react/ssr';
 import './manager-home.css';
 import './manager-home-mobile.css';
 import './manager-home-gusto.css';
@@ -13,9 +11,6 @@ import type { ReactNode } from 'react';
 import type { ClockMonitor } from '@/lib/time-clock';
 import { PremiumHomeLive, PremiumHomeSurface, type PremiumHomeWeek } from './premium-home';
 import type { NextPay } from './payroll/my-pay';
-import { Avatar, Card, CardBody, FilterPills, KitLink, MetaParts, PageBand, Row, Rows, StatGrid, Status, Tile } from './kit/kit';
-import { presentItem } from '@/lib/action-center/present';
-import { CalendarBlankIcon, CalendarCheckIcon } from '@phosphor-icons/react/ssr';
 import type { Today } from '@/lib/today/project';
 import type { ActionCenter } from '@/lib/action-center/project';
 
@@ -59,6 +54,8 @@ export type DashboardHourItem = {
   scheduledHours: number;
   targetHours?: number;
   status: "UNDER" | "ON_TARGET" | "OVER" | "TARGET_MISSING";
+  /** The person's role, so Hours can leave out Owners with nothing scheduled and no target. */
+  role?: string;
 };
 
 export type DashboardRevisionItem = {
@@ -100,79 +97,10 @@ type Props = {
   days: DashboardDayItem[];
   hours: DashboardHourItem[];
   latestRevision: DashboardRevisionItem;
+  /** Hours (T-2): which people to list, and how many. */
+  hoursFilter?: HoursFilter;
+  hoursShown?: number;
 };
-
-const tabs: Array<{ id: ManagerDashboardView; label: string }> = [
-  { id: "overview", label: "Overview" },
-  { id: "attendance", label: "Attendance" },
-  { id: "team", label: "Team overview" },
-  { id: "activity", label: "Schedule activity" },
-];
-
-function dashboardHref(
-  weekStart: string,
-  view: ManagerDashboardView,
-) {
-  return view === "overview"
-    ? `/app?week=${encodeURIComponent(weekStart)}`
-    : `/app?week=${encodeURIComponent(weekStart)}&view=${view}`;
-}
-
-function revisionSourceLabel(sourceType: string) {
-  if (sourceType === "PUBLISH") return "Schedule published";
-  if (sourceType === "EXCHANGE") return "Shift exchange applied";
-  if (sourceType === "CALLOUT") return "Call-out applied";
-  return "Published schedule updated";
-}
-
-
-/** Team overview (Phase 7 rebuild): kit stats and rows from the dashboard's existing read. */
-function TeamTab(props: Props) {
-  const targetMissing = props.hours.filter(item => item.status === "TARGET_MISSING").length;
-  const outside = props.hours.filter(item => item.status === "UNDER" || item.status === "OVER").length;
-  const plural = (n: number, one: string, many: string) => `${n}\u00a0${n === 1 ? one : many}`;
-  return <>
-    <Card id="team-week" title="This week" meta={<KitLink href={`/app/availability?week=${encodeURIComponent(props.weekStart)}`}>View availability</KitLink>}>
-      <StatGrid stats={[
-        { label: "Active employees", value: props.activeEmployees },
-        { label: "Availability received", value: `${props.availabilitySubmitted} of ${props.availabilityEligible}`, ariaLabel: `${props.availabilitySubmitted} of ${props.availabilityEligible} employees and leads sent availability` },
-      ]} />
-      <StatGrid stats={[
-        { label: "No weekly hour target", value: targetMissing },
-        { label: "Outside hour target", value: outside },
-      ]} />
-    </Card>
-    <Card id="team-hours" title="Hours this week" meta={<KitLink href="/app/schedule/settings">Manage targets</KitLink>}
-      foot={props.hours.length > 8 ? `Showing 8 of ${plural(props.hours.length, "person", "people")}` : undefined}>
-      {props.hours.length ? <Rows label="Hours this week">{props.hours.slice(0, 8).map(item => <Row key={item.employeeId}
-        leading={<Avatar initials={item.employeeName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()} />}
-        title={item.employeeName}
-        meta={item.targetHours === undefined ? "No weekly hour target yet" : `${item.scheduledHours}h scheduled · ${item.targetHours}h target`}
-        status={<Status tone={item.status === "ON_TARGET" ? "done" : item.status === "TARGET_MISSING" ? "neutral" : "review"}>
-          {item.status === "UNDER" ? "Below target" : item.status === "OVER" ? "Above target" : item.status === "TARGET_MISSING" ? "Not set" : "On target"}</Status>} />)}
-      </Rows> : <CardBody><p className="premium-note">Hours appear here as shifts are added.</p></CardBody>}
-    </Card>
-  </>;
-}
-
-/** Schedule activity (Phase 7 rebuild): publications and dated events as kit rows. */
-function ActivityTab(props: Props) {
-  const datedActions = props.managerActions.filter(item => Boolean(item.dateTime)).slice(0, 8);
-  const hasActivity = Boolean(props.latestRevision) || datedActions.length > 0;
-  return <Card id="activity-list" title="Recent activity">
-    {hasActivity ? <Rows label="Recent activity">
-      {props.latestRevision ? <Row leading={<Tile tone="done"><CalendarCheckIcon size={20} weight="bold" /></Tile>}
-        title={revisionSourceLabel(props.latestRevision.sourceType)}
-        meta={`Revision ${props.latestRevision.revisionNumber} · ${formatBusinessTimestamp(props.latestRevision.createdAt, props.timeZone)}`} /> : null}
-      {datedActions.map(item => {
-        const shown = presentItem({ ...item, category: item.type === "TIME_OFF" || item.type === "EXCHANGE" || item.type === "CALLOUT" ? "requests" : "scheduling" }, "Open");
-        return <Row key={item.id} href={item.href} label={`${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`}
-          leading={<Tile tone={item.priority === "URGENT" ? "urgent" : "neutral"}><CalendarBlankIcon size={20} weight="bold" /></Tile>}
-          title={shown.title} meta={<MetaParts text={shown.detail} />} />;
-      })}
-    </Rows> : <CardBody><p className="premium-note">Schedule publications and requests show up here.</p></CardBody>}
-  </Card>;
-}
 
 /** The shared read runs only on live Home; the preview mounts no private reader. */
 function SharedHomeRead({live, children, ...read}: {live: boolean; weekStart: string; actorId: string; owner: boolean; initialItems: ManagerActionItem[]; children: ReactNode}) {
@@ -197,7 +125,8 @@ function homeDateLabel(timeZone: string) {
 
 /** Manager and Owner Home (premium direction, phase 2): band, Today, Next up, This week. */
 function PremiumOverview(props: Props) {
-  const common = { greeting: `${greeting(props.timeZone)}, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName };
+  const common = { greeting: `${greeting(props.timeZone)}, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName,
+    viewer: props.actorId && props.role ? { id: props.actorId, role: props.role } : undefined };
   const slots = props.overviewSlots;
   if (slots?.snapshots) return <PremiumHomeSurface {...common} setup={slots.setup ?? null} setupHoldsItems={!!slots.setup}
     today={slots.snapshots.today} monitor={slots.snapshots.monitor ?? null} actions={slots.snapshots.actions} actionsConnection="ready" />;
@@ -207,35 +136,18 @@ function PremiumOverview(props: Props) {
   </SharedHomeRead>;
 }
 
-const viewTitle: Record<Exclude<ManagerDashboardView, 'overview'>, { title: string; summary: string }> = {
-  attendance: { title: 'Attendance', summary: 'Clock-ins today and corrections to review.' },
-  team: { title: 'Team overview', summary: 'Hours and availability by person.' },
-  activity: { title: 'Schedule activity', summary: 'Publications and changes.' },
-};
-
-/** Home's other views (Phase 7, IS-9): the band, a Back to Home, and the views as pills on the band. */
-function PremiumHomeView(props: Props & { view: Exclude<ManagerDashboardView, 'overview'> }) {
-  const copy = viewTitle[props.view];
-  return <div className="manager-dashboard-v3 premium-legacy-page premium-home-view" data-nv-page="">
-    <PageBand back={{ href: `/app?week=${encodeURIComponent(props.weekStart)}`, label: 'Home' }} title={copy.title} summary={copy.summary}
-      aside={props.view === 'attendance' ? <span className="nv-masthead__eyebrow premium-band-aside">Today</span> : <span className="premium-week-eyebrow">
-        <Link className="nv-band-control premium-week-arrow" href={dashboardHref(props.previousWeek, props.view)} aria-label="Previous week"><CaretLeftIcon size={18} weight="bold" aria-hidden="true" /></Link>
-        <span>{props.weekLabel}</span>
-        <Link className="nv-band-control premium-week-arrow" href={dashboardHref(props.nextWeek, props.view)} aria-label="Next week"><CaretRightIcon size={18} weight="bold" aria-hidden="true" /></Link>
-      </span>}
-      extra={<FilterPills label="Home views" items={tabs.filter(tab => tab.id !== 'overview').map(tab => ({ href: dashboardHref(props.weekStart, tab.id), label: tab.label, current: tab.id === props.view }))} />} />
-    <div className="nv-content premium-legacy-content">
-      {props.view === 'attendance' ? <div className="manager-attendance-stack">
-        <ManagerAttendanceReview />
-        <ManagerTimeCorrections key={props.correctionAuthority??props.actorId} actorId={props.actorId} authority={props.correctionAuthority}/>
-        <Link className="nv-link" href="/app/clocker-recovery">Clocker recovery</Link>
-      </div> : props.view === 'team' ? <TeamTab {...props} /> : <ActivityTab {...props} />}
-    </div>
-  </div>;
+/** Home's other views (final pass, T-1 to T-3): On shift, Hours and Activity, each a Quiet page with its own way back. */
+function HomeView(props: Props & { view: Exclude<ManagerDashboardView, 'overview'> }) {
+  if (props.view === 'attendance') return <ManagerOnShift dateLabel={props.dateLabel ?? homeDateLabel(props.timeZone)} timeZone={props.timeZone}
+    actorId={props.actorId} correctionAuthority={props.correctionAuthority} key={props.correctionAuthority ?? props.actorId} />;
+  if (props.view === 'team') return <HoursPage weekStart={props.weekStart} previousWeek={props.previousWeek} nextWeek={props.nextWeek} hours={props.hours}
+    availabilitySubmitted={props.availabilitySubmitted} availabilityEligible={props.availabilityEligible} filter={props.hoursFilter} shown={props.hoursShown} />;
+  return <ActivityPage weekStart={props.weekStart} previousWeek={props.previousWeek} nextWeek={props.nextWeek} latestRevision={props.latestRevision}
+    managerActions={props.managerActions} timeZone={props.timeZone} />;
 }
 
 export function ManagerDashboard(props: Props) {
   // Clean Manager (v3): Home is "Today"; its views keep their addresses. The old Home layout is gone (deleted, not restyled).
   if (props.view === 'overview') return <PremiumOverview {...props} />;
-  return <PremiumHomeView {...props} view={props.view} />;
+  return <HomeView {...props} view={props.view} />;
 }

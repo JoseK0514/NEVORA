@@ -58,10 +58,40 @@ it("summarizes the selected planning week and counts only explicitly published s
   expect(week).toContain('2 locations aren’t published yet.');
 });
 
-it("offers Home's own views only; Schedule and Requests live in one place each (R1)", () => {
-  const html = renderToStaticMarkup(<ManagerDashboard {...dashboardProps} view="team"/>);
-  const tabs = html.split('aria-label="Home views"')[1]?.split('</nav>')[0] ?? '';
-  expect(tabs).toContain('>Team overview<');
-  expect(tabs).not.toContain('view=schedule');
-  expect(tabs).not.toContain('view=requests');
+it("opens each of Home's own views as its own Quiet page with its own way back (T-1 to T-3)", () => {
+  const team = renderToStaticMarkup(<ManagerDashboard {...dashboardProps} view="team" hours={[
+    {employeeId:"a",employeeName:"Alexandra Rivera",scheduledHours:44,targetHours:40,status:"OVER"},
+    {employeeId:"b",employeeName:"Dana Kim",scheduledHours:24,targetHours:32,status:"UNDER"},
+    {employeeId:"o",employeeName:"Owner Person",scheduledHours:0,status:"TARGET_MISSING",role:"OWNER"},
+    {employeeId:"c",employeeName:"Jordan Torres",scheduledHours:7.5,status:"TARGET_MISSING"},
+  ]}/>);
+  expect(team).not.toContain('aria-label="Home views"');
+  expect(team).not.toContain('view=schedule');
+  expect(team).not.toContain('view=requests');
+  expect(team).toContain('>Hours</h1>');
+  expect(team.replace(/\u00a0/g, ' ')).toContain('Sep 28 – Oct 4 · 2 of 3 sent availability');
+  // Segments carry the counts; an Owner with no target and nothing scheduled isn't part of the team's hours.
+  expect(team).toContain('>All · 3<'); expect(team).toContain('>Over target · 1<'); expect(team).toContain('>No target · 1<');
+  expect(team).not.toContain('Owner Person');
+  // The one red is an over-target value; numbers in sentence case.
+  expect(team).toMatch(/<span class="q-rv q-rv--alert">44 h<\/span>/);
+  expect(team).toContain('>7.5 h<'); expect(team).toContain('Target 32 h'); expect(team).toContain('No weekly target');
+  expect(team).not.toMatch(/nv-stat|Showing 8 of/);
+  expect(team).toContain('href="/app/schedule/settings#target-hours"');
+  const over = renderToStaticMarkup(<ManagerDashboard {...dashboardProps} view="team" hoursFilter="over" hours={[{employeeId:"a",employeeName:"Alexandra Rivera",scheduledHours:44,targetHours:40,status:"OVER"},{employeeId:"b",employeeName:"Dana Kim",scheduledHours:24,targetHours:32,status:"UNDER"}]}/>);
+  expect(over).toContain('Alexandra Rivera'); expect(over).not.toContain('Dana Kim');
+  const activity = renderToStaticMarkup(<ManagerDashboard {...dashboardProps} view="activity" latestRevision={{revisionNumber:1,sourceType:"PUBLISH",createdAt:"2026-09-28T19:46:00Z"}} managerActions={[
+    {id:"g1",type:"COVERAGE_GAP",priority:"URGENT",title:"Coverage gap at Main Office",detail:"Mon, Sep 28 · 12:00 AM–7:00 AM · Need 1 employee",href:"/app/schedule/coverage?x=1",dateTime:"2026-09-28T00:00"},
+    {id:"g2",type:"COVERAGE_GAP",priority:"URGENT",title:"Coverage gap at Main Office",detail:"Mon, Sep 28 · 12:00 AM–7:00 AM · Need 1 employee",href:"/app/schedule/coverage?x=2",dateTime:"2026-09-28T00:00"},
+  ]}/>);
+  expect(activity).toContain('>Activity</h1>');
+  expect(activity).toContain('<b>Schedule published</b>');
+  expect(activity).toContain('Revision 1 ·');
+  // Identical gaps on one day are one row with a count, and the row opens Find cover.
+  expect(activity.match(/<b>Main Office needs 1 more<\/b>/g)).toHaveLength(1);
+  expect(activity).toContain('<span class="q-rv">2</span>');
+  expect(activity.replace(/\u00a0/g, ' ')).toContain('Mon, Sep 28 · midnight – 7:00 AM');
+  expect(activity).toContain('href="/app/schedule/coverage?x=1"');
+  expect(activity).not.toMatch(/nv-tile|data-tone/);
+  expect(renderToStaticMarkup(<ManagerDashboard {...dashboardProps} view="activity"/>)).toContain('No activity this week.');
 });

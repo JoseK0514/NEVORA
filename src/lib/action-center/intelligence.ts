@@ -254,7 +254,7 @@ function projectFact(raw: unknown, source: Extract<IntelligenceSource, { state: 
       if (p.status !== 'PENDING') return { item: null, incomplete: false };
       item = { id: 'TIME_CORRECTION:' + p.id, type: 'HOURS_REVIEW', priority: 'REVIEW',
         title: p.isSelf ? 'Your correction needs another reviewer' : 'Time correction waiting for review',
-        detail: `${subject.employeeName} · ${p.kind === 'MISSING_ENTRY' ? 'Recorded entry not sent yet' : 'Recorded time correction'}.`,
+        detail: `${subject.employeeName} · ${p.kind === 'MISSING_ENTRY' ? 'Missed punch' : p.kind === 'BREAK_BOUNDARY' ? 'Break times' : 'Clock times'}`,
         href: '/app?view=attendance#correction-' + encodeURIComponent(p.id) };
       code = 'CORRECTION_' + p.kind; label = p.isSelf ? 'View your correction' : 'Open correction review'; category = 'timekeeping'; break;
     }

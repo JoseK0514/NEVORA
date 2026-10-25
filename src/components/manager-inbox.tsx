@@ -17,7 +17,8 @@ import { usePresentation } from "./presentation-context";
 import { pathEnabled } from "@/lib/workspace-presentation/modules";
 import { CLOCK_IN, presentItem } from "@/lib/action-center/present";
 import { groupInboxItems, inboxFilter, type InboxFilter } from "@/lib/action-center/inbox";
-import { needsYou, needsYouSentence } from "@/lib/action-center/needs-you";
+import { needsYou, needsYouSentence, type NeedsYouViewer } from "@/lib/action-center/needs-you";
+import { CorrectionDecisionRow, CorrectionNotice, useManagerTimeCorrections } from "./manager-time-corrections";
 import { keepWhole } from "@/lib/keep-whole";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
@@ -258,22 +259,27 @@ function Section({ id, title, count, note, children }: { id: string; title: stri
   </section>;
 }
 
-export function ManagerInbox({ contacts, ...props }: { weekStart: string; actorId: string; timeZone: string; contacts?: InboxContacts }) {
+export function ManagerInbox({ contacts, ...props }: { weekStart: string; actorId: string; timeZone: string; contacts?: InboxContacts; role?: string; correctionAuthority?: string }) {
   return <Phones.Provider value={contacts ?? null}><InboxView {...props} /></Phones.Provider>;
 }
 
-function InboxView({ weekStart, actorId, timeZone }: { weekStart: string; actorId: string; timeZone: string }) {
+function InboxView({ weekStart, actorId, timeZone, role, correctionAuthority }: { weekStart: string; actorId: string; timeZone: string; role?: string; correctionAuthority?: string }) {
   const { snapshot, connection, refresh } = useActionCenter(weekStart, actorId);
   const { snapshot: today, refresh: refreshToday } = useToday();
   // W2: ?filter= is the source of truth, so Back from a review restores it.
   const initialFilter = inboxFilter(useSearchParams()?.get("filter"));
   // Refresh asks both reads again: the action center and today's clock-ins.
-  return <InboxSurface snapshot={snapshot} today={today} connection={connection} onRefresh={() => { refresh(); refreshToday(); }} timeZone={timeZone} initialFilter={initialFilter} />;
+  return <InboxSurface snapshot={snapshot} today={today} connection={connection} onRefresh={() => { refresh(); refreshToday(); }} timeZone={timeZone} initialFilter={initialFilter}
+    viewer={role ? { id: actorId, role } : undefined} corrections={{ actorId, authority: correctionAuthority }} />;
 }
 
 /** Presentation only: receives the released action center observation and today's shifts. */
-export function InboxSurface({ snapshot, today = null, connection, onRefresh: refresh, timeZone, initialFilter = "all" }: {
+export function InboxSurface({ snapshot, today = null, connection, onRefresh: refresh, timeZone, initialFilter = "all", viewer, corrections }: {
   snapshot: ActionCenter | null; today?: Today | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string; initialFilter?: InboxFilter;
+  /** UX-O-09: a Manager's own items leave the Inbox (and its count). */
+  viewer?: NeedsYouViewer;
+  /** Correction decisions in Requests (UX-O-06): the queue reader's binding. Without it the rows link to On shift. */
+  corrections?: { actorId?: string; authority?: string };
 }) {
   const phones = useContext(Phones);
   // Quiet (v4): three segments; "all" (an old link) opens Act now.
@@ -315,15 +321,16 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const shifts = today?.state === "ready" ? today.missed : [];
   // IS-6: when clock-ins can't be read, say so instead of quietly dropping them.
   const todayFailed = today?.state === "unavailable";
-  const value = ready ? needsYou(ready.items, day, shifts) : null;
-  const total = value ? value.count + value.planning.length + value.past.length : 0;
+  const value = ready ? needsYou(ready.items, day, shifts, viewer) : null;
+  // UX-O-07: earlier coverage gaps can't be acted on, so they aren't listed.
+  const total = value ? value.count + value.planning.length : 0;
   const updated = ready ? clock(ready.observedAt, timeZone) : null;
   const show = (group: InboxFilter) => filter === "all" || filter === group;
   // The rows on screen, in order; the pane shows the selected one, or the first. The pane keeps an item's full title.
   const entries: InboxEntry[] = value ? [
     ...(show("now") ? [...value.noClockIn.map(shift => shiftEntry(shift, timeZone, ready?.observedAt, true, phones?.phones[shift.employeeId], phones?.observation)), ...value.now.map(item => itemEntry(item, false, filter, timeZone))] : []),
     ...(show("requests") ? value.requests.map(item => itemEntry(item, false, filter, timeZone)) : []),
-    ...(show("planning") ? [...value.planning.map(item => itemEntry(item, false, filter, timeZone)), ...value.past.map(item => itemEntry(item, true, filter, timeZone))] : []),
+    ...(show("planning") ? value.planning.map(item => itemEntry(item, false, filter, timeZone)) : []),
   ] : [];
   const current = entries.find(entry => entry.key === selectedKey) ?? entries[0] ?? null;
   const select = (entry: InboxEntry, event: MouseEvent<HTMLAnchorElement>) => {
@@ -385,7 +392,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const gapPlaces = [...new Set(gaps.map(gapPlace))].map(place => ({ place, items: gaps.filter(item => gapPlace(item) === place) }));
   const plan = value ? planGroups(value.planning) : [];
   const counts: Record<InboxFilter, number> = value
-    ? { all: value.count, now: value.noClockIn.length + value.now.length, requests: value.requests.length, planning: plan.length + (value.past.length ? 1 : 0) }
+    ? { all: value.count, now: value.noClockIn.length + value.now.length, requests: value.requests.length, planning: plan.length }
     : { all: 0, now: 0, requests: 0, planning: 0 };
   const missedShown = 3;
   const missedPlaces = value ? new Set(value.noClockIn.map(shift => shift.locationName)).size > 1 : false;
@@ -397,7 +404,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
     {/* ST-02: the segments are there from the first paint (disabled until the read is ready), so nothing moves. */}
     {!ready || total ? <div className="q-seg premium-inbox-filters" role="group" aria-label="Show">
       {filters.map(entry => <button key={entry.value} type="button" aria-pressed={filter === entry.value} disabled={!ready} onClick={() => choose(entry.value)}
-        aria-label={value && counts[entry.value] ? `${entry.label}, ${counts[entry.value]}` : undefined}>{entry.label}{value && counts[entry.value] && entry.value !== "planning" ? ` · ${counts[entry.value]}` : ""}</button>)}
+        aria-label={value && counts[entry.value] ? `${entry.label}, ${counts[entry.value]}` : undefined}>{entry.label}{value && counts[entry.value] ? ` · ${counts[entry.value]}` : ""}</button>)}
     </div> : null}
     <div>
       <Selection.Provider value={{ selected: shownKey, select }}>
@@ -434,32 +441,28 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
         </div> : null}
         {show("now") && value!.now.length ? <Section id="urgent" title={otherNow.length ? "Act now" : "Open shifts"} count={value!.now.length}>
           <ul className="q-list inbox-list">
-            {gapPlaces.map(({ place, items }) => items.length === 1
-              ? <KitRow key={items[0].id} entry={gapEntry(items[0], filter, timeZone)} />
-              : <Disclosure key={place} title={place} items={items} count={items.length}
-                  meta={<MetaParts text={items.map(item => mobileActionDetail(item.detail).split(" · ")[1]).filter(Boolean).join(" · ")} />}>
-                  {items.map(item => <KitRow key={item.id} entry={gapEntry(item, filter, timeZone)} />)}
-                </Disclosure>)}
+            {/* UX-O-08: one row per open shift, each with Find cover, whatever the place. */}
+            {gapPlaces.flatMap(({ items }) => items).map(item => <KitRow key={item.id} entry={gapEntry(item, filter, timeZone)} />)}
             {otherNow.map(item => <ItemRow key={item.id} item={item} filter={filter} timeZone={timeZone} />)}
           </ul>
         </Section> : null}
         {show("requests") && (value!.requests.length || filter === "requests") ? <Section id="requests" title="Requests" count={value!.requests.length}>
           <ul className="q-list inbox-list">
-            {groupInboxItems(value!.requests).flatMap(entry => entry.kind === "item" ? [entry.item] : entry.items).map(item => <ItemRow key={item.id} item={item} filter={filter} timeZone={timeZone} />)}
-            {/* Phones had no way to the request lists; this row is that way on every width (clean Manager v3). */}
-            <AllRequests />
+            {groupInboxItems(value!.requests.filter(item => item.type !== "TIME_CORRECTION")).flatMap(entry => entry.kind === "item" ? [entry.item] : entry.items).map(item => <ItemRow key={item.id} item={item} filter={filter} timeZone={timeZone} />)}
           </ul>
+          {/* UX-O-06 / F11: an employee's time correction is decided right here (the same row On shift and the timecard use). */}
+          {value!.requests.some(item => item.type === "TIME_CORRECTION") ? <InboxCorrections items={value!.requests.filter(item => item.type === "TIME_CORRECTION")}
+            filter={filter} timeZone={timeZone} binding={corrections} /> : null}
+          {/* Phones had no way to the request lists; this row is that way on every width (clean Manager v3). */}
+          <ul className="q-list inbox-list"><AllRequests /></ul>
         </Section> : null}
-        {show("planning") && (value!.planning.length || value!.past.length) ? <Section id="exceptions" title="Plan ahead" count={value!.planning.length}>
+        {show("planning") && value!.planning.length ? <Section id="exceptions" title="Plan ahead" count={value!.planning.length}>
           <ul className="q-list inbox-list">
             {plan.map(group => group.items.length === 1 && group.type !== "COVERAGE_GAP"
               ? <KitRow key={group.items[0].id} entry={planEntry(group.items[0], filter, timeZone)} />
               : <Disclosure key={group.type} title={planLabel[group.type] ?? group.items[0].title} items={group.items} count={group.items.length}>
                   {group.items.map(item => <ItemRow key={item.id} item={item} filter={filter} timeZone={timeZone} />)}
                 </Disclosure>)}
-            {value!.past.length ? <Disclosure title="Earlier this week" items={value!.past} count={value!.past.length}>
-              {value!.past.map(item => <ItemRow key={item.id} item={item} calm filter={filter} timeZone={timeZone} />)}
-            </Disclosure> : null}
           </ul>
 
         </Section> : null}
@@ -573,6 +576,26 @@ function AllRequests() {
 function hasEntries(filter: InboxFilter, value: ReturnType<typeof needsYou>) {
   if (filter === "now") return value.noClockIn.length + value.now.length > 0;
   if (filter === "requests") return value.requests.length > 0;
-  if (filter === "planning") return value.planning.length + value.past.length > 0;
+  if (filter === "planning") return value.planning.length > 0;
   return true;
+}
+
+/** Inbox > Requests, time corrections (UX-O-06): each waiting correction from the action center, with Decline and Approve
+ * once the protected correction queue confirms it (so the decision carries its current revision). Until then, or if the
+ * queue can't be read, the row opens On shift, where the same decision lives. Mounted only when there is one. */
+function InboxCorrections({ items, filter, timeZone, binding }: { items: ActionItem[]; filter: InboxFilter; timeZone: string; binding?: { actorId?: string; authority?: string } }) {
+  const queue = useManagerTimeCorrections(binding ?? {});
+  const ready = queue.connection === "ready" && queue.snapshot?.state === "ready" ? queue.snapshot : null;
+  const byId = new Map((ready?.requests ?? []).map(request => [`TIME_CORRECTION:${request.id}`, request]));
+  return <>
+    <CorrectionNotice notice={queue.notice} retry={queue.retry} busy={queue.busyId !== null} ready={!!ready} onRetry={queue.retryDecision} />
+    <ul className="q-list q-requests inbox-list" aria-label="Time corrections">
+      {items.map(item => {
+        const request = byId.get(item.id);
+        return request && ready ? <CorrectionDecisionRow key={item.id} item={request} zone={ready.timeZone} busy={queue.busyId === request.id}
+          locked={queue.busyId !== null || queue.retry !== null} onDecision={queue.decide} />
+          : <ItemRow key={item.id} item={item} filter={filter} timeZone={timeZone} />;
+      })}
+    </ul>
+  </>;
 }

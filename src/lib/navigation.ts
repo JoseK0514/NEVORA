@@ -85,9 +85,9 @@ export function sidebarActiveHref(role: UserRole, path: string | null | undefine
 /** Clean Manager (v3): the occasional tools that used to sit on Home. They keep their addresses (Home's views and the two
  * recovery pages); only their place in the navigation is new. Owners and Managers only. */
 const TEAM_TOOLS: NavigationItem[] = [
-  { href: "/app?view=attendance", label: "Attendance", icon: "hours" },
-  { href: "/app?view=team", label: "Team overview", icon: "employees" },
-  { href: "/app?view=activity", label: "Schedule activity", icon: "calendar" },
+  { href: "/app?view=attendance", label: "On shift", icon: "hours" },
+  { href: "/app?view=team", label: "Hours", icon: "employees" },
+  { href: "/app?view=activity", label: "Activity", icon: "calendar" },
   { href: "/app/clocker-recovery", label: "Clocker recovery", icon: "refresh" },
   { href: "/app/account-recovery", label: "Account recovery", icon: "employee" },
 ];

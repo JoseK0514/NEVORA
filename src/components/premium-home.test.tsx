@@ -62,7 +62,8 @@ describe("Home timeline (UI-1, PD2, UX6)", () => {
       actions: null, actionsConnection: "loading",
     }));
     expect(html).toContain("<b>1 on shift</b>");
-    expect(html).toContain('href="/app/schedule"');
+    // T-1 / P2-10: the row opens On shift.
+    expect(html).toContain('href="/app?view=attendance"');
   });
   it("attaches an open punch to only its current shift, preserving finished and future shifts", () => {
     const shifts = [

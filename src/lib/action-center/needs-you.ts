@@ -20,7 +20,13 @@ export type NeedsYou = {
   count: number;
 };
 
-export function needsYou(items: readonly ActionItem[], today: string | undefined, noClockIn: readonly TodayShift[] = []): NeedsYou {
+/** Who is looking. UX-O-09: a Manager never sees their own missed clock-in or their own timecard as work for them
+ * (another reviewer decides it), so it leaves every count and list. Owners keep theirs. */
+export type NeedsYouViewer = { id: string; role: string };
+
+export function needsYou(items: readonly ActionItem[], today: string | undefined, noClockIn: readonly TodayShift[] = [], viewer?: NeedsYouViewer): NeedsYou {
+  const own = viewer?.role === 'MANAGER' ? viewer.id : null;
+  if (own) { items = items.filter(item => item.employeeId !== own); noClockIn = noClockIn.filter(shift => shift.employeeId !== own); }
   const sections = inboxSections([...items], today);
   const pick = (id: string) => sections.find(section => section.id === id)?.items ?? [];
   const now = pick('urgent'), requests = pick('requests');

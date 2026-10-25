@@ -176,8 +176,9 @@ async function loadManagerDashboardDataCore(weekStart:string,proof:SessionMutati
               },
             ],
       ),
+      // UX-O-07: Owners aren't asked for a weekly hour target.
       ...employeeTargets
-        .filter((employee) => employee.targetWeeklyHours === undefined)
+        .filter((employee) => employee.targetWeeklyHours === undefined && employee.role !== "OWNER")
         .map((employee) => ({
           employeeId: employee.employeeId,
           employeeName: employee.employeeName,
@@ -273,6 +274,7 @@ async function loadManagerDashboardDataCore(weekStart:string,proof:SessionMutati
       employeeName: employee.employeeName,
       scheduledHours,
       targetHours: employee.targetWeeklyHours,
+      role: employee.role,
       status: balance
         ? balance.status
         : ("TARGET_MISSING" as const),

@@ -1,4 +1,5 @@
 import type {ActionItem} from './project';
+import {formatTimeRange} from '../date-utils';
 
 /* Phase 7: how an action center item reads on Home and in the Inbox.
  * Display only. The server's item (and the notifications built from it) is unchanged;
@@ -42,9 +43,19 @@ const sentDate = (iso: string | undefined, timeZone: string) => {
 
 /** The person an item is about, when its text names one. */
 export function itemPerson(item: ActionItem) {
+  if (item.type === 'TIME_CORRECTION') return item.detail.split(' · ')[0]?.trim() || null;
   if (item.category === 'requests') return item.detail.replace(WAITING, '').trim() || null;
   const named = /^(.+?) (?:is not included|has not acknowledged|has not submitted|has no weekly)/.exec(item.detail);
   return named ? named[1] : null;
+}
+
+/** UX-O-04 / F10: what a request asks for, from its facts: "Thu, Nov 12 · All day", "Thu, Nov 12 – Fri, Nov 13",
+ * "Sat, Oct 31 · 8:00 AM – 4:00 PM". Null without facts (the review page still has everything). */
+const factDay = (iso: string) => new Intl.DateTimeFormat('en-US', {weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC'}).format(new Date(`${iso}T12:00:00Z`));
+export function requestDates(facts: ActionItem['request']) {
+  if (!facts) return null;
+  if (facts.partialDay) return `${factDay(facts.startDate)} · ${formatTimeRange(facts.partialDay.start, facts.partialDay.end)}`;
+  return facts.startDate === facts.endDate ? `${factDay(facts.startDate)} · All day` : `${factDay(facts.startDate)} – ${factDay(facts.endDate)}`;
 }
 
 export type PresentedItem = {title: string; detail: string; person: string | null; action: string};
@@ -55,7 +66,11 @@ export function presentItem(item: ActionItem, actionLabel: string, timeZone = 'U
   switch (item.type) {
     case 'TIME_OFF': case 'EXCHANGE': case 'CALLOUT':
       title = person ?? title;
-      detail = [requestKind[item.type], sentDate(item.dateTime, timeZone)].filter(Boolean).join(' · ');
+      detail = [requestKind[item.type], requestDates(item.request) ?? sentDate(item.dateTime, timeZone)].filter(Boolean).join(' · ');
+      break;
+    case 'TIME_CORRECTION':
+      title = person ?? title;
+      detail = detail.split(' · ').slice(1).join(' · ') || 'Time correction';
       break;
     case 'TARGET_MISSING':
       title = 'No weekly hour target';

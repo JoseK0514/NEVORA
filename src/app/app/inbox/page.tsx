@@ -3,6 +3,7 @@ import { ManagerInbox } from "@/components/manager-inbox";
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
 import { readOperationalDirectory } from "@/lib/company-access/operational-read.server";
 import { isManagerRole } from "@/lib/auth/permissions";
+import { correctionAuthority } from "@/lib/time-corrections/authority.server";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import { weekStartFor } from "@/lib/date-utils";
@@ -19,10 +20,12 @@ export default async function InboxPage() {
   const weekStart = weekStartFor(businessDate(new Date(), workspace.timeZone));
   // PD5: Call and Text on a shift with no clock-in use the phone numbers this viewer already sees on Team. Only the
   // company-wide directory carries them; a location-scoped Manager, or a failed read, simply gets no Call or Text.
-  const directory = await readOperationalDirectory(await requireSessionMutationProof()).catch(() => null);
+  const proof = await requireSessionMutationProof();
+  const directory = await readOperationalDirectory(proof).catch(() => null);
   const contacts = directory?.state === "ready" && directory.data.mode === "COMPANY"
     ? { observation: { authority: directory.authority, observedAt: directory.observedAt, validForMs: directory.validForMs },
         phones: Object.fromEntries(directory.data.employees.filter(employee => employee.active && employee.phone).map(employee => [employee.id, employee.phone])) }
     : undefined;
-  return <ManagerInbox weekStart={weekStart} actorId={session.id} timeZone={workspace.timeZone} contacts={contacts} />;
+  // UX-O-06: time corrections are decided in Requests, through the same correction binding On shift uses.
+  return <ManagerInbox weekStart={weekStart} actorId={session.id} role={session.role} correctionAuthority={correctionAuthority(proof)} timeZone={workspace.timeZone} contacts={contacts} />;
 }

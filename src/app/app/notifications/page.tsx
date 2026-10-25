@@ -3,6 +3,7 @@ import {requireSessionMutationProof} from '@/lib/auth/session';
 import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
 import {EmployeeAccountPanel} from '@/components/employee-account-panel';
 import {QuietHeader,QuietNav,QuietPage} from '@/components/quiet/quiet';
+import {NotificationUnavailableToast} from '@/components/notification-unavailable-toast';
 export const metadata = { title: "Notifications" };
 
 export default async function NotificationsPage(){
@@ -14,8 +15,8 @@ export default async function NotificationsPage(){
  // v5 (mockup E14): Employees and Leads get the same Quiet page; back to Home. F5 (Oct 25): opening a row marks it read for
  // them too (no Mark read button). P2-26: the title fits at 320 without soft hyphens.
  if(!manager)return <QuietPage><QuietNav back={{href:'/app',label:'Home'}}/><QuietHeader title="Notifications"/>
-  <EmployeeAccountPanel key={authority} kind="notifications" authority={authority} endpoint="/api/notifications" quiet markReadAllowed/></QuietPage>;
+  <EmployeeAccountPanel key={authority} kind="notifications" authority={authority} endpoint="/api/notifications" quiet markReadAllowed/><NotificationUnavailableToast/></QuietPage>;
  // Quiet (v4, approved Oct 23): back to Today, the title, then the list.
  return <QuietPage><QuietNav back={{href:'/app',label:'Today'}}/><QuietHeader title={"Notifi\u00adca\u00adtions"}/>
-  <EmployeeAccountPanel key={authority} kind="notifications" authority={authority} endpoint="/api/notifications" markReadAllowed/></QuietPage>;
+  <EmployeeAccountPanel key={authority} kind="notifications" authority={authority} endpoint="/api/notifications" markReadAllowed/><NotificationUnavailableToast/></QuietPage>;
 }
