@@ -12,7 +12,8 @@ import {clockMonitorSnapshotStatement} from '@/lib/data/clock-monitor.server';
 import {projectClockMonitor} from '@/lib/clock-monitor';
 import {durationMinutes,isValidWeekStart} from '@/lib/date-utils';
 import {normalizeAssignmentOrigin} from '@/lib/scheduling/generation-provenance';
-import {readOperationalAuthority,readOwnerOperationalScope,operationalScopeStatements} from './operational-scope.server';
+import {readOperationalAuthority,readOwnerOperationalScope,operationalScopeStatements,currentAuthorityStatement} from './operational-scope.server';
+import {managementReadLimits,retryTransientRead} from '@/lib/data/read-snapshot';
 import type {AccessFailure,OperationalAuthorityView,OperationalRead,SourceCoverage,ScopedRosterEmployee,OperationalDirectoryData,OperationalScheduleData,OperationalShiftRow,OperationalShiftEditorData,OperationalEditableShift,OperationalClockMonitorData,OperationalEmployeeProfileData} from './model';
 // Reject oversized source sets rather than presenting a truncated roster or
 // schedule as complete coverage. Bounded SQL below fetches one extra row.
@@ -28,18 +29,26 @@ type Payload<T>={data:T;coverage?:SourceCoverage;observedAt?:string;validForMs?:
  * Preserve the original authority through the final protected check and spend
  * the source's observation budget while loading; this does not make the loader's
  * separate queries one database snapshot. Expired/changed data is withheld. */
-async function read<T>(proof:SessionMutationProof,load:(ctx:Context)=>Promise<Payload<T>>,ex:SqlExecutor,companyOnly=false):Promise<OperationalRead<T>>{
+async function read<T>(proof:SessionMutationProof,load:(ctx:Context)=>Promise<Payload<T>>,explicit:SqlExecutor|undefined,companyOnly=false):Promise<OperationalRead<T>>{
  try{
-  const workspace=await getWorkspace(ex),view=await readOperationalAuthority(proof,ex);
+  // Inspection F5: with the default executor the first authority read is the render's shared (React cache) read,
+  // the same one the layout made, instead of a third locking read. An explicit executor (a transaction, a test)
+  // still reads fresh. A stale first read cannot widen access: the final guard below binds that exact digest.
+  const ex=explicit??neonNotificationExecutor();
+  const workspace=await getWorkspace(explicit),view=await readOperationalAuthority(proof,explicit);
   if(view.state!=='ready')return view;
   if(!['OWNER','MANAGER'].includes(view.role)||!view.scope||(companyOnly&&view.scope.mode!=='COMPANY'))return {state:'unavailable',reason:'access_denied'};
   const ctx:Context={proof,workspace,view:view as View,ex,ids:view.scope.mode==='COMPANY'?null:[...view.scope.locationIds]};
   const payload=await load(ctx);
-  // A result projected outside a transaction crosses this current protected boundary before return.
-  await ex.transaction([...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},
-   ...operationalScopeStatements(proof,workspace,ctx.ids===null?{kind:'COMPANY'}:{kind:'LOCATIONS',locationIds:ctx.ids},view.authority)]);
-  const fresh=await readOperationalAuthority(proof,ex);
-  if(fresh.state!=='ready'||fresh.authority!==view.authority)return {state:'unavailable',reason:'source_changed'};
+  // A result projected outside a transaction crosses this current protected boundary before return. The fresh
+  // authority observation is the last statement of the same batch, after the guard's FOR SHARE waits, so one
+  // transaction both re-proves the original digest and measures the remaining budget (was two more round trips).
+  const guard=[...managementReadLimits,...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},
+   ...operationalScopeStatements(proof,workspace,ctx.ids===null?{kind:'COMPANY'}:{kind:'LOCATIONS',locationIds:ctx.ids},view.authority)];
+  const result=await retryTransientRead(()=>ex.transaction([...guard,currentAuthorityStatement(workspace,proof)]));
+  const row=result[guard.length]?.[0] as {authority:string;observedAt:string;validForMs:number}|undefined;
+  if(!row||row.authority!==view.authority||!(row.validForMs>0))return {state:'unavailable',reason:'source_changed'};
+  const fresh={authority:row.authority,observedAt:new Date(row.observedAt).toISOString(),validForMs:row.validForMs};
   const observedAt=payload.observedAt??fresh.observedAt;
   const age=payload.observedAt===undefined?0:Math.max(0,Date.parse(fresh.observedAt)-Date.parse(observedAt));
   const validForMs=Math.min(fresh.validForMs,15000-age,(payload.validForMs??15000)-age);
@@ -77,7 +86,7 @@ async function roster(ctx:Context,ids:string[]|null,weekStart:string|null=null):
 /** Company scope receives management/contact records. Location scope receives
  * only roster identity and memberships within the authorized locations; do not
  * widen that projection to the full Employee DTO in a limited-scope screen. */
-export async function readOperationalDirectory(proof:SessionMutationProof,ex:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<OperationalDirectoryData>>{
+export async function readOperationalDirectory(proof:SessionMutationProof,ex?:SqlExecutor):Promise<OperationalRead<OperationalDirectoryData>>{
  return read<OperationalDirectoryData>(proof,async ctx=>{
   const catalog=await locations(ctx);
   if(ctx.ids!==null)return {data:{mode:'LOCATIONS' as const,employees:await roster(ctx,ctx.ids),locations:catalog.map(minimalLocation)}};
@@ -108,7 +117,7 @@ function publicShift(s:ShiftRow):OperationalShiftRow{
 /** Read a validated week within the actor's scope or one selected permitted
  * location. Roster minutes are totals in that coverage only; inactive employees
  * with shifts in the week remain visible rather than disappearing from history. */
-export async function readOperationalSchedule(proof:SessionMutationProof,query:{weekStart:string;locationId?:string},ex:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<OperationalScheduleData>>{
+export async function readOperationalSchedule(proof:SessionMutationProof,query:{weekStart:string;locationId?:string},ex?:SqlExecutor):Promise<OperationalRead<OperationalScheduleData>>{
  return read(proof,async ctx=>{
   if(!query||typeof query.weekStart!=='string'||!isValidWeekStart(query.weekStart)||Object.keys(query).some(k=>!['weekStart','locationId'].includes(k)))return deny();
   const catalog=await locations(ctx),ids=selected(ctx,catalog,query.locationId),rows=await shifts(ctx,query.weekStart,ids),people=await roster(ctx,ids,query.weekStart);
@@ -122,7 +131,7 @@ export async function readOperationalSchedule(proof:SessionMutationProof,query:{
  * the returned data to the observed authority for client freshness; it grants no
  * write rights. Scoped Managers see Company-required status for published or
  * generated shifts even though the authorized shift remains readable. */
-export async function readOperationalShiftEditor(proof:SessionMutationProof,query:{shiftId:string}|{weekStart:string;locationId:string},ex:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<OperationalShiftEditorData>>{
+export async function readOperationalShiftEditor(proof:SessionMutationProof,query:{shiftId:string}|{weekStart:string;locationId:string},ex?:SqlExecutor):Promise<OperationalRead<OperationalShiftEditorData>>{
  return read(proof,async ctx=>{
   if(!query||typeof query!=='object'||Array.isArray(query))return deny();
   const catalog=await locations(ctx);let shift:ShiftRow|null=null,weekStart:string,locationId:string;
@@ -148,9 +157,9 @@ export async function readOperationalShiftEditor(proof:SessionMutationProof,quer
 }
 /** Preserve the clock monitor's own observation time/expiry when projecting
  * scoped attendance; the shared read boundary further reduces that budget. */
-export async function readOperationalClockMonitor(proof:SessionMutationProof,ex:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<OperationalClockMonitorData>>{
+export async function readOperationalClockMonitor(proof:SessionMutationProof,ex?:SqlExecutor):Promise<OperationalRead<OperationalClockMonitorData>>{
  return read(proof,async ctx=>{
-  const [row]=await ex.query<{snapshot:{rows:unknown[]}}>(clockMonitorSnapshotStatement(ctx.workspace,proof.sessionTokenHash,ctx.ids,true));
+  const [row]=await ctx.ex.query<{snapshot:{rows:unknown[]}}>(clockMonitorSnapshotStatement(ctx.workspace,proof.sessionTokenHash,ctx.ids,true));
   if(!row||!Array.isArray(row.snapshot?.rows))throw new ReadFailure('read_failed');bounded(row.snapshot.rows);
   const monitor=projectClockMonitor(row.snapshot);if(monitor.state!=='ready')throw new ReadFailure('read_failed');
   return {data:{timeZone:monitor.timeZone,employees:monitor.employees},observedAt:monitor.observedAt,validForMs:monitor.validForMs};
@@ -158,14 +167,14 @@ export async function readOperationalClockMonitor(proof:SessionMutationProof,ex:
 }
 /** Company-only full profile read. Owners additionally receive scope controls
  * only when their separate target-scope read matches the profile's exact version. */
-export async function readOperationalEmployeeProfile(proof:SessionMutationProof,employeeId:string,ex:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<OperationalEmployeeProfileData>>{
+export async function readOperationalEmployeeProfile(proof:SessionMutationProof,employeeId:string,ex?:SqlExecutor):Promise<OperationalRead<OperationalEmployeeProfileData>>{
  return read(proof,async ctx=>{
   if(!id(employeeId))return deny();
-  const catalog=await locations(ctx),profile=await getEmployeeManagementProfile(employeeId,ex);
+  const catalog=await locations(ctx),profile=await getEmployeeManagementProfile(employeeId,ctx.ex);
   if(!profile||!catalog.some(l=>l.id===profile.primaryLocationId)||profile.eligibleLocationIds.some(id=>!catalog.some(l=>l.id===id)))return deny();
   let ownerScope=null;
   if(ctx.view.role==='OWNER'){
-   const context=await readOwnerOperationalScope(proof,employeeId,ex);if(context.state!=='ready')throw new ReadFailure(context.reason);
+   const context=await readOwnerOperationalScope(proof,employeeId,ctx.ex);if(context.state!=='ready')throw new ReadFailure(context.reason);
    if(context.data.current.employeeUpdatedAt!==profile.updatedAt)throw new ReadFailure('source_changed');ownerScope=context.data.current;
   }
   return {data:{profile,locations:catalog,ownerScope}};
