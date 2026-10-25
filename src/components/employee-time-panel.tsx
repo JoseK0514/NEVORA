@@ -167,12 +167,12 @@ export function EmployeeTimeSignatureView({state,onRefresh,context}:{state:Emplo
 /** Home in the v5 "One look": while a shift is under way, the clock status is one Quiet row under the shift card that
  * opens My time (Oct 25, 2026; it replaces the older compact card with its own Refresh button). Same read and refresh. */
 function EmployeeClockRow({state}:{state:EmployeeTimePanelState}){
- const {time,paused}=state;
+ const {time,paused,refreshing}=state;
  const ready=!paused&&time?.state==='ready'?time:null;
  const current=ready?.current??null;
  const title=ready?status(current):paused?'Updates paused':time?.state==='unavailable'?(time.reason==='access_denied'?'Your session ended':'Clock status unavailable'):'Loading recorded time';
  const detail=ready?(current?<>{current.locationName} since <time dateTime={current.clockInAt}>{clockedInAt(current.clockInAt,ready.timeZone,ready.date)}</time></>:'Use your location’s Clocker to record punches.'):null;
- return <ul className="q-list"><li><Link className="q-row q-row--av" href="/app/my-time">
+ return <ul className="q-list"><li><Link className="q-row q-row--av" href="/app/my-time" data-clock-state={ready?current?.state??'OFF_CLOCK':undefined} aria-busy={refreshing||undefined}>
   <span className="q-av q-av--tint" aria-hidden="true"><ClockIcon className="q-ic"/></span>
   <span className="q-rt" role="status"><b>{title}</b>{detail?<i>{detail}</i>:null}</span>
   <CaretRightIcon className="q-chev" aria-hidden="true"/>

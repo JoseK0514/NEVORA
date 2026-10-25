@@ -30,8 +30,9 @@ export async function waitForFreshHome(page, freshLocation){
 export async function waitForRecordedTimeReady(page, expectedState){
  const ready=await page.waitForFunction(expected=>{
   const root=document.querySelector('aside[aria-label="Own recorded time"]');
-  const button=root?.querySelector('button[aria-label="Refresh recorded time"]');
-  if(button&&!button.disabled&&root.querySelector('.employee-time-badge')?.getAttribute('data-state')===expected)return {state:expected,refreshEnabled:true};
+  // v5 Home: the clock is one row; ready means its state has arrived and no refresh is still running.
+  const row=root?.querySelector('[data-clock-state]');
+  if(row&&row.getAttribute('aria-busy')!=='true'&&row.getAttribute('data-clock-state')===expected)return {state:expected,refreshEnabled:true};
   return false;
  },expectedState);
  try{return await ready.jsonValue();}finally{await ready.dispose();}
@@ -270,7 +271,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  for(let i=0;i<55;i++){await page.keyboard.press(tab);if(await link.evaluate(e=>e===document.activeElement)){reached=true;break;}}
  assert(reached);assert(await link.evaluate(e=>e.matches(':focus-visible')));const rect=await link.boundingBox();assert(rect&&rect.height>=44&&rect.width>=44);
  const measureContrast=()=>link.evaluate(measureRenderedContrast);details.linkContrast={focus:await measureContrast()};await link.evaluate(e=>e.blur());await page.mouse.move(0,0);details.linkContrast.normal=await measureContrast();await link.hover();details.linkContrast.hover=await measureContrast();await page.mouse.down();details.linkContrast.pressed=await measureContrast();await page.mouse.move(0,0);await page.mouse.up();for(const value of Object.values(details.linkContrast))assert(value.ratio>=4.5);await link.focus();
- const myTime=recorded().getByRole('link',{name:'My time',exact:true});await page.locator('h1').click();let clockFocus=false;
+ const myTime=recorded().locator('a[href="/app/my-time"]');await page.locator('h1').click();let clockFocus=false;
  for(let i=0;i<55;i++){await page.keyboard.press(tab);if(await myTime.evaluate(e=>e===document.activeElement)){clockFocus=true;break;}}
  assert(clockFocus);assert(await myTime.evaluate(e=>e.matches(':focus-visible')));details.clockRecoveryFocus=await myTime.evaluate(e=>({outlineStyle:getComputedStyle(e).outlineStyle,outlineWidth:getComputedStyle(e).outlineWidth}));assert.notEqual(details.clockRecoveryFocus.outlineStyle,'none');assert(parseFloat(details.clockRecoveryFocus.outlineWidth)>=2);await link.focus();
  await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.evaluate(()=>{document.documentElement.style.fontSize='';});await shot('focus');
@@ -351,10 +352,10 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  }finally{bellHold.release();await bellHold.done;await page.unroute(bellHold.path,bellHold.handler);page.off('request',observeBell);}
  checks.push('H11 duplicate foreground focus/pageshow retains one actual held authorized notification read; its returned current count is required');
  await page.bringToFront();await ready();await waitForRecordedTimeReady(page,'OFF_CLOCK');
- const earlyRefresh=recorded().getByRole('button',{name:'Refresh recorded time',exact:true});await earlyRefresh.focus();
+ // v5 Home has no Refresh button: the time panel re-reads on its own foreground signal (storage), the same read.
  details.earlyTimeBaseline=await waitForRecordedTimeReady(page,'OFF_CLOCK');
  assert.deepEqual(details.earlyTimeBaseline,{state:'OFF_CLOCK',refreshEnabled:true});
- const early=gate('**/api/employee/my-time');await page.route(early.path,early.handler);await earlyRefresh.click();await early.seen;
+ const early=gate('**/api/employee/my-time');await page.route(early.path,early.handler);await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await early.seen;
  await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');
  const earlyNavigation=await page.goto(app.url+'/app/schedule?week='+scenario.week,{waitUntil:'domcontentloaded'});assert(earlyNavigation?.ok());await page.getByRole('heading',{level:1,name:'Schedule',exact:true}).waitFor();
  await page.locator('.portal-notification-bell[data-state="ready"]').waitFor({state:'attached'});

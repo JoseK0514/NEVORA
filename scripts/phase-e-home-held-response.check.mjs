@@ -35,14 +35,14 @@ for(const engine of ['chromium','webkit']){
   assert.equal(result.observations[0].settled,false,'Prior ready snapshot must not release the fresh-generation wait');
   assert.equal(result.observations[1].settled,false,'Loading must not release the fresh-generation wait');
   assert.deepEqual(result.resolved,{state:'ready',busy:'false',fresh:true,old:false});
-  await page.setContent('<main data-home-state="ready"><aside aria-label="Own recorded time"><span class="employee-time-badge"></span><button aria-label="Refreshing recorded time" disabled>Refreshing</button></aside></main>');
+  await page.setContent('<main data-home-state="ready"><aside aria-label="Own recorded time"><a href="/app/my-time" data-clock-state="" aria-busy="true">Loading recorded time</a></aside></main>');
   let recordedSettled=false;result.recordedReadiness=[];
   const recordedWaiting=waitForRecordedTimeReady(page,'OFF_CLOCK').then(value=>{recordedSettled=true;result.recordedResolved=value;});
   const render=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
   await render();result.recordedReadiness.push({phase:'Home ready, recorded time still loading',settled:recordedSettled});assert.equal(recordedSettled,false);
-  await page.evaluate(()=>document.querySelector('.employee-time-badge').setAttribute('data-state','OFF_CLOCK'));
-  await render();result.recordedReadiness.push({phase:'Recorded state arrived, refresh still disabled',settled:recordedSettled});assert.equal(recordedSettled,false);
-  await page.evaluate(()=>{const button=document.querySelector('button');button.disabled=false;button.setAttribute('aria-label','Refresh recorded time');});
+  await page.evaluate(()=>document.querySelector('[data-clock-state]').setAttribute('data-clock-state','OFF_CLOCK'));
+  await render();result.recordedReadiness.push({phase:'Recorded state arrived, refresh still running',settled:recordedSettled});assert.equal(recordedSettled,false);
+  await page.evaluate(()=>document.querySelector('[data-clock-state]').removeAttribute('aria-busy'));
   await recordedWaiting;assert.deepEqual(result.recordedResolved,{state:'OFF_CLOCK',refreshEnabled:true});result.status='passed';
  }catch(error){result.failure={name:error.name,message:error instanceof assert.AssertionError?error.message:'Controlled readiness fixture failed'};process.exitCode=1;}
  finally{await context?.close();await browser.close();result.browserClosed=!browser.isConnected();await writeFile(join(evidence,'readiness-report.json'),JSON.stringify(results,null,2));}
