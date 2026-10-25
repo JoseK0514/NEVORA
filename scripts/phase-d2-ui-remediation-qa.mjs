@@ -7,6 +7,7 @@ import {hashPassword} from '../src/lib/auth/password.ts';
 import {TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {safeD2Error,safeD2Text,unexpectedD2Runtime} from './d2-runtime-failures.mjs';
 import {finishD2ForegroundRecovery} from './d2-foreground-recovery.mjs';
+import {CORRECTION_CENTER,CORRECTION_FORM,CORRECTION_QUEUE,CORRECTION_ROW,CORRECTION_SHEET,DECLINED} from './phase-d2-quiet-selectors.mjs';
 
 // Runs only inside the existing owned PostgreSQL / exact-clean-SHA D2 gate.
 export async function verifyD2UiRemediation({app,browser,engine,evidence,report,checked,context,login,geometry,widths}){
@@ -72,11 +73,12 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   }
   observations.states.push(state);
  };
- const safePause=async(label,selector='.manager-corrections')=>{
+ const safePause=async(label,selector=CORRECTION_QUEUE)=>{
   const text=await mp.locator(selector).innerText();
-  assert(!text.includes('No correction requests'));assert(!text.includes('No employee time corrections are waiting for review.'));
-  assert.equal(await mp.locator('.manager-corrections-count').count(),0);
-  assert.equal(await mp.locator('.manager-correction-row').count(),0);
+  // Paused or failed never reads as an empty queue, and shows no people.
+  assert(!text.includes(name));assert(!text.includes('No correction requests'));
+  assert.equal(await mp.locator(`${CORRECTION_QUEUE} .q-sec__aside`).count(),0);
+  assert.equal(await mp.locator(CORRECTION_ROW).count(),0);
   const [count]=await q('SELECT count(*)::int AS count FROM nevora_pending_time_corrections WHERE employee_id=$1',[employeeId]);
   assert.equal(count.count,2);observations.states.push({label,pendingCount:count.count});
  };
@@ -99,12 +101,14 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   observations.comparison={raw,rawBreak,canonical,canonicalBreak,requests:snapshot.requests.filter(r=>[pendingEntry,pendingBreak].includes(r.id))};
   stage='manager-initial';await mp.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
-  assert.equal(await mp.locator('.manager-correction-row').filter({hasText:name}).getByText('Current effective',{exact:true}).count(),2);
-  await shots(mp,'.manager-corrections','multiple-supersessions');
-  const contrast=await mp.locator('.manager-corrections').evaluate(root=>{
+  // Team U1's row: "Counts now" is the current effective time (inside the row's times).
+  assert.equal(await mp.locator(CORRECTION_ROW).filter({hasText:name}).getByText('Counts now',{exact:true}).count(),2);
+  for(const row of await mp.locator(CORRECTION_ROW).filter({hasText:name}).all())await row.locator('summary').click();
+  await shots(mp,CORRECTION_QUEUE,'multiple-supersessions');
+  const contrast=await mp.locator(CORRECTION_QUEUE).evaluate(root=>{
    const rgb=value=>value.match(/[\d.]+/g).map(Number);
    const luminance=colour=>rgb(colour).slice(0,3).map(v=>{v/=255;return v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4;}).reduce((sum,v,i)=>sum+v*[0.2126,0.7152,0.0722][i],0);
-   return [...root.querySelectorAll('.correction-comparison :is(small,strong),.correction-context-zone,.correction-prior-decisions :is(p,strong,span)')].map(el=>{
+   return [...root.querySelectorAll('.u1-correction .q-facts :is(b,span),.u1-correction .q-details__body > .q-help')].map(el=>{
     const foreground=getComputedStyle(el).color;let background='rgb(255, 255, 255)',opacity=1,foundBackground=false;
     for(let node=el;node;node=node.parentElement){const s=getComputedStyle(node);opacity*=Number(s.opacity);const c=rgb(s.backgroundColor);if(!foundBackground&&(c.length===3||c[3]===1)){background=s.backgroundColor;foundBackground=true;}}
     const a=luminance(foreground),b=luminance(background);
@@ -121,29 +125,35 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   const entryRow=ep.locator('ul[aria-labelledby^="employee-time-"] > li > button[aria-haspopup="dialog"]').first();
   await entryRow.focus();await entryRow.press('Enter');
   const details=ep.locator('dialog[open]');
-  const trigger=details.getByRole('button',{name:'Request a correction',exact:true});
+  const trigger=details.getByRole('button',{name:'Something wrong? Request a correction',exact:true});
   observations.keyboard.push({stage:'disclosure-before-settle',state:await details.evaluate(e=>({open:e.open,contentVisibility:getComputedStyle(e,'::details-content').contentVisibility,blockSize:getComputedStyle(e,'::details-content').blockSize,animations:e.getAnimations({subtree:true}).map(a=>a.playState)}))});
   await details.evaluate(async e=>{e.getBoundingClientRect();await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));await Promise.all(e.getAnimations({subtree:true}).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})));});
   observations.keyboard.push({stage:'disclosure-after-settle',state:await details.evaluate(e=>({open:e.open,contentVisibility:getComputedStyle(e,'::details-content').contentVisibility,blockSize:getComputedStyle(e,'::details-content').blockSize,animations:e.getAnimations({subtree:true}).map(a=>a.playState)}))});
   await trigger.focus();observations.keyboard.push({stage:'trigger-focus',state:await trigger.evaluate(e=>({documentFocused:document.hasFocus(),buttonFocused:document.activeElement===e,activeTag:document.activeElement?.tagName,enabled:!e.disabled}))});assert(await trigger.evaluate(e=>document.hasFocus()&&document.activeElement===e),'Correction trigger must have native foreground focus');await trigger.press('Enter');
-  const form=details.locator('.employee-time-correction-form');await form.waitFor();
-  await ep.waitForFunction(()=>document.querySelector('.employee-time-correction-form input[type="datetime-local"]')?.value);
-  assert.equal(await form.getByLabel('Start',{exact:true}).inputValue(),local(canonical.start));
-  assert.equal(await form.getByLabel('End',{exact:true}).inputValue(),local(canonical.finish));
-  await shots(ep,'.employee-time-correction-form','employee-effective-defaults');
-  await form.getByLabel('What needs correction?').selectOption(`break:${breakId}`);
-  await ep.waitForFunction(()=>document.querySelector('.employee-time-correction-form input[type="datetime-local"]')?.value);
-  assert.equal(await form.getByLabel('Start',{exact:true}).inputValue(),local(canonicalBreak.start));
-  assert.equal(await form.getByLabel('End',{exact:true}).inputValue(),local(canonicalBreak.finish));
-  await shots(ep,'.employee-time-correction-form','break-effective-defaults');
+  // Team U3's correction sheet opens filled in from the entry's current effective (canonical) times.
+  const form=ep.locator(CORRECTION_FORM);await form.waitFor();
+  await ep.waitForFunction(selector=>document.querySelector(selector+' input[type="time"]')?.value,CORRECTION_FORM);
+  const clock=at=>local(at).slice(11,16);
+  assert.equal(await form.getByLabel('Recorded entry',{exact:true}).inputValue(),`${entryId}:entry`);
+  assert.equal(await form.getByLabel('Starts',{exact:true}).inputValue(),clock(canonical.start));
+  await form.locator('label',{hasText:'Wrong clock-out'}).click();
+  assert.equal(await form.getByLabel('Ends',{exact:true}).inputValue(),clock(canonical.finish));
+  await shots(ep,CORRECTION_SHEET,'employee-effective-defaults');
+  await form.locator('label',{hasText:'Wrong break'}).click();
+  assert.equal(await form.getByLabel('Recorded break',{exact:true}).inputValue(),`${entryId}:${breakId}`);
+  await ep.waitForFunction(selector=>document.querySelector(selector+' input[type="time"]')?.value,CORRECTION_FORM);
+  assert.equal(await form.getByLabel('Starts',{exact:true}).inputValue(),clock(canonicalBreak.start));
+  assert.equal(await form.getByLabel('Ends',{exact:true}).inputValue(),clock(canonicalBreak.finish));
+  await shots(ep,CORRECTION_SHEET,'break-effective-defaults');
   // WebKit's native date control can keep DOM focus on the select after Tab.
   // Check an actual keyboard transition and direct focus separately, preserving both.
-  const select=form.getByLabel('What needs correction?');await select.focus();await select.press('Tab');
-  const focusDetails=()=>ep.evaluate(()=>{const el=document.activeElement,s=getComputedStyle(el);return {tag:el.tagName,type:el.getAttribute('type'),label:el.labels?.[0]?.textContent,outlineStyle:s.outlineStyle,outlineWidth:s.outlineWidth,focusVisible:el.matches(':focus-visible')};});
+  // A Quiet picker input is transparent over its row, so the row draws the focus ring.
+  const select=form.getByLabel('Recorded break',{exact:true});await select.focus();await select.press('Tab');
+  const focusDetails=()=>ep.evaluate(()=>{const el=document.activeElement,ring=el.closest('.q-row--picker')??el,s=getComputedStyle(ring);return {tag:el.tagName,type:el.getAttribute('type'),label:el.labels?.[0]?.textContent,outlineStyle:s.outlineStyle,outlineWidth:s.outlineWidth,focusVisible:el.matches(':focus-visible')};});
   let focus=await focusDetails();observations.keyboard.push({transition:'select → Tab',focus});
-  if(focus.type!=='datetime-local'){await select.press('Alt+Tab');focus=await focusDetails();observations.keyboard.push({transition:'select → Alt+Tab',focus});}
+  if(focus.type!=='time'){await select.press('Alt+Tab');focus=await focusDetails();observations.keyboard.push({transition:'select → Alt+Tab',focus});}
   const focusShot=join(evidence,`${engine}-ui-native-date-focus.png`);await ep.screenshot({path:focusShot,fullPage:true});report.screenshots.push(focusShot);
-  assert.equal(focus.type,'datetime-local',`${engine} native date input keyboard reachability`);
+  assert.equal(focus.type,'time',`${engine} native time input keyboard reachability`);
   // Actual visible focus is the contract; WebKit's recorded pseudo-class flag
   // remains false for its native date control despite a real Tab transition.
   assert.equal(focus.outlineStyle,'solid');assert(parseFloat(focus.outlineWidth)>=2);
@@ -153,14 +163,14 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   const freshCorrections=mp.waitForResponse(response=>{const request=response.request(),url=new URL(request.url());return url.origin===app.url&&url.pathname==='/api/manager/time-corrections'&&request.method()==='GET'&&(requests.get(request)??0)>priorRequest;});
   const [,foregroundResponse,correctionResponse]=await Promise.all([mp.bringToFront(),freshRsc,freshCorrections]);await finishD2ForegroundRecovery(foregroundResponse,correctionResponse,[pendingEntry,pendingBreak],refreshDeadline);
   assert(await mp.evaluate(()=>document.hasFocus()),'Manager native keyboard page must be foreground');
-  observations.keyboard.push({stage:'manager-return',state:await mp.evaluate(()=>({visibility:document.visibilityState,focused:document.hasFocus(),routeState:document.querySelector('.portal-route-state h2')?.textContent??null,correctionRows:document.querySelectorAll('.manager-correction-row').length}))});
+  observations.keyboard.push({stage:'manager-return',state:await mp.evaluate(row=>({visibility:document.visibilityState,focused:document.hasFocus(),routeState:document.querySelector('.portal-route-state h2')?.textContent??null,correctionRows:document.querySelectorAll(row).length}),CORRECTION_ROW)});
   // Foreground return starts a protected RSC recovery. Finish that tested
   // recovery before a separate hard reload, so the driver cannot cancel it.
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   await mp.waitForLoadState('networkidle');
   const recoveryDeadline=performance.now()+15000;
   while(managerRscRequests.size){assert(performance.now()<recoveryDeadline,'Foreground RSC recovery must finish before a separate hard reload');await new Promise(resolve=>setTimeout(resolve,25));}
-  assert.equal(await mp.locator('.manager-correction-row').filter({hasText:name}).count(),2);
+  assert.equal(await mp.locator(CORRECTION_ROW).filter({hasText:name}).count(),2);
   assert.equal(managerRscRequests.size,0,'Observed foreground RSC requests must be drained at the reload boundary');
   await Promise.all(consoleDetails);const beforeReload=unexpectedD2Runtime(observations);assert.deepEqual(beforeReload.runtime,[]);assert.deepEqual(beforeReload.console,[],'Foreground recovery must not emit a JavaScript exception');
   assert.equal(managerRscRequests.size,0,'Foreground RSC must remain drained after console extraction');
@@ -184,33 +194,38 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   const delayRoute=async route=>{if(route.request().method()==='GET')await delayed;await route.continue();};
   await mp.route('**/api/manager/time-corrections',delayRoute);
   await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
-  await mp.getByText('Loading correction requests',{exact:true}).waitFor();await shots(mp,'.manager-corrections','loading');release();
+  await mp.getByText('Checking correction requests…',{exact:true}).waitFor();await shots(mp,CORRECTION_QUEUE,'loading');release();
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();await mp.unroute('**/api/manager/time-corrections',delayRoute);
   const unavailable=route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({state:'unavailable',reason:'read_failed'})});
   stage='injected-503';phase='injected-503';await mp.route('**/api/manager/time-corrections',unavailable);observations.injectedFailures.push('503 protected correction read');
-  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.getByText('Correction requests unavailable',{exact:true}).waitFor();await safePause('read failure');await shots(mp,'.manager-corrections','unavailable');
+  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.getByText('Correction requests aren’t available right now.',{exact:true}).waitFor();await safePause('read failure');await shots(mp,CORRECTION_QUEUE,'unavailable');
   await mp.unroute('**/api/manager/time-corrections',unavailable);await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   phase='normal';
   stage='malformed-context';const malformed=route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({...snapshot,requests:snapshot.requests.map(r=>({...r,context:{state:'confirmed',sourceKind:'ADJUSTMENT',startAt:'invalid'}}))})});
   await mp.route('**/api/manager/time-corrections',malformed);observations.injectedFailures.push('Malformed protected effective context');
-  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.getByText('Correction requests unavailable',{exact:true}).waitFor();await safePause('malformed context');
+  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.getByText('Correction requests aren’t available right now.',{exact:true}).waitFor();await safePause('malformed context');
   await mp.unroute('**/api/manager/time-corrections',malformed);await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   stage='stale-source';await q('UPDATE time_entries SET version=version+1 WHERE id=$1',[entryId]);
   await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
-  await mp.getByText('The source or approved baseline changed since this request. The proposed time is not the current effective time.',{exact:true}).first().waitFor();
-  await shots(mp,'.manager-corrections','stale');
+  // The row's times say the time that counts changed (open the rows to see it, as a manager would).
+  const stale=mp.getByText('The time that counts changed after this request. Check the times before you decide.',{exact:true});
+  await stale.first().waitFor({state:'attached'});
+  for(const row of await mp.locator(CORRECTION_ROW).filter({hasText:name}).all())if(!await row.locator('details').evaluate(e=>e.open))await row.locator('summary').click();
+  await stale.first().waitFor();
+  await shots(mp,CORRECTION_QUEUE,'stale');
   // Declines do not consume stale-source approval authority; keyboard Enter is real.
   for(let i=0;i<2;i++){
    const decline=mp.getByRole('button',{name:`Decline correction for ${name}`,exact:true}).first();await decline.focus();await decline.press('Enter');
-   await mp.getByText('Correction declined. The original recorded punch remains unchanged.',{exact:true}).waitFor();
-   await mp.waitForFunction(n=>document.querySelectorAll('.manager-correction-row').length===n,1-i);
+   await mp.getByText(DECLINED,{exact:true}).waitFor();
+   await mp.waitForFunction(([row,n])=>document.querySelectorAll(row).length===n,[CORRECTION_ROW,1-i]);
   }
-  await mp.getByText('No correction requests',{exact:true}).waitFor();await shots(mp,'.manager-corrections','confirmed-empty');
+  // A ready queue with nothing waiting has no rows; the decision's notice stays until the next one.
+  assert.equal(await mp.locator(`${CORRECTION_QUEUE} ul.q-requests`).count(),0);await shots(mp,CORRECTION_QUEUE,'confirmed-empty');
   assert.equal((await q('SELECT count(*)::int AS count FROM nevora_pending_time_corrections WHERE employee_id=$1',[employeeId]))[0].count,0);
   observations.keyboard.push({decisions:'two declines activated with Enter'});
-  stage='completed-history';await ep.reload({waitUntil:'networkidle'});await ep.getByText('Declined',{exact:true}).first().waitFor();await shots(ep,'.employee-correction-center','completed-history');
+  stage='completed-history';await ep.reload({waitUntil:'networkidle'});await ep.getByText('Declined',{exact:true}).first().waitFor();await shots(ep,CORRECTION_CENTER,'completed-history');
   // Restore only this disposable version mutation to compare untouched raw evidence.
   await q('UPDATE time_entries SET version=version-1 WHERE id=$1',[entryId]);
   assert.deepEqual((await q('SELECT clock_in_at::text AS start,clock_out_at::text AS finish,device_id,schedule_context,version FROM time_entries WHERE id=$1',[entryId]))[0],raw);
@@ -218,7 +233,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   assert.equal((await q('SELECT count(*)::int AS count FROM time_correction_adjustments WHERE employee_id=$1',[employeeId]))[0].count,4);
   const unrelated=await owner.request.get(app.url+'/api/employee/time-corrections',{headers});assert.equal(unrelated.status(),403);
   stage='authority-denied';phase='authority-denied';await q("UPDATE employees SET role='LEAD' WHERE id='QAOWNER'");
-  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.locator('.manager-corrections').waitFor({state:'detached'});assert.equal(await mp.locator('.manager-correction-row').count(),0);
+  await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.locator(CORRECTION_QUEUE).waitFor({state:'detached'});assert.equal(await mp.locator(CORRECTION_ROW).count(),0);
   assert.equal((await owner.request.get(app.url+'/api/manager/time-corrections',{headers})).status(),403);
   await q("UPDATE employees SET role='OWNER' WHERE id='QAOWNER'");
   // Record all native errors. Only explicitly injected transport failures may be classified.
@@ -229,7 +244,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   assert.deepEqual(observations.unexpectedConsole,[],'React-handled JavaScript exceptions remain fatal');
   checked(`${engine}: 006 canonical comparisons/defaults/history, 008 lifecycle states and privacy`);
  }catch(error){
-  observations.failureState=await mp.evaluate(()=>({visibility:document.visibilityState,focused:document.hasFocus(),routeState:document.querySelector('.portal-route-state h2')?.textContent??null,correctionRows:document.querySelectorAll('.manager-correction-row').length,correctionStatus:document.querySelector('.manager-corrections-empty')?.textContent??null})).catch(()=>null);
+  observations.failureState=await mp.evaluate(([queue,row])=>({visibility:document.visibilityState,focused:document.hasFocus(),routeState:document.querySelector('.portal-route-state h2')?.textContent??null,correctionRows:document.querySelectorAll(row).length,correctionStatus:document.querySelector(queue+' [role="status"]')?.textContent??null}),[CORRECTION_QUEUE,CORRECTION_ROW]).catch(()=>null);
   await mp.screenshot({path:join(evidence,`${engine}-ui-manager-failure.png`),fullPage:true}).catch(()=>{});throw error;
  }finally{await employee.close();await owner.close();}
 }
