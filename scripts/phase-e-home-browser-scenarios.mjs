@@ -320,12 +320,14 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   // v5 Home has no Refresh button: start the held time read with the panel's own foreground signal.
   await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await time.seen;
   await q("UPDATE time_entries SET clock_out_at=clock_timestamp(),status='CLOCKED_OUT' WHERE id=$1",[label+'-time']);
+  // The foreground signal also re-reads Home itself; the claim is that pagehide adds no request of its own.
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));timeEvidence.beforeHide=timeEvidence.requests.filter(item=>item.event==='request').length;
   timeEvidence.afterDispatch=await page.evaluate(()=>{window.dispatchEvent(new Event('pagehide'));return {at:Date.now(),state:document.querySelector('[data-home-state]')?.getAttribute('data-home-state'),clockedIn:document.querySelector('aside[aria-label="Own recorded time"]')?.textContent.includes('Clocked in')??false};});
   // Synthetic lifecycle dispatch returns before React necessarily commits its
   // invalidated state. Keep the old response held until that commit is visible.
   await page.locator('[data-home-state="paused"]').waitFor({timeout:15000});assert.equal(await page.getByText('Clocked in',{exact:true}).count(),0);
   timeEvidence.pausedCommit={at:Date.now(),clockedInCount:await page.getByText('Clocked in',{exact:true}).count(),requestCount:timeEvidence.requests.filter(item=>item.event==='request').length};
-  assert.equal(timeEvidence.pausedCommit.requestCount,1,'Pagehide clearing must not require a new Home or MyTime request');
+  assert.equal(timeEvidence.pausedCommit.requestCount,timeEvidence.beforeHide,'Pagehide clearing must not require a new Home or MyTime request');
   time.release();await time.done;assert.equal(time.failure,undefined);timeEvidence.heldOutcome=time.outcome;
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));
   assert.equal(await page.locator('[data-home-state="paused"]').count(),1);assert.equal(await page.getByText('Clocked in',{exact:true}).count(),0);
