@@ -93,6 +93,28 @@ it('a page read that loses its authority between the first read and the final gu
  }finally{await f.db.dispose();}
 });
 
+/** Inspection B8: the batched validation-context read returns, for each employee, exactly what the single read
+ * returns (shifts across locations, normal and weekly availability, exceptions, approved time off), and nothing for
+ * an employee who does not exist. */
+it('batched shift validation contexts equal the single reads, employee by employee',async()=>{
+ const f=await companyAccessFixture();try{
+  const {getShiftValidationContext,getShiftValidationContexts}=await import('../../lib/data/schedules');
+  await f.q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('second','Second','QA','555009','EMPLOYEE','loc-1');
+   INSERT INTO employee_location_eligibility VALUES('target','loc-2');
+   INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('b8-s1','loc-1','2030-10-07','DRAFT','owner'),('b8-s2','loc-2','2030-10-07','DRAFT','owner');
+   INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('b8-a','b8-s1','target','2030-10-08','08:00','12:00'),('b8-b','b8-s2','target','2030-10-09','22:00','04:00'),('b8-c','b8-s1','second','2030-10-08','13:00','17:00');
+   INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) VALUES('b8-w1','target',2,'06:00','18:00'),('b8-w2','second',3,'09:00','15:00');
+   INSERT INTO availability_exceptions(id,employee_id,date,kind) VALUES('b8-x','target','2030-10-10','UNAVAILABLE');
+   INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status) VALUES('b8-t','second','2030-10-08','2030-10-08','Fictional','APPROVED')`);
+  const query={locationId:'loc-1',date:'2030-10-08',weekStart:'2030-10-07'};
+  const batch=await getShiftValidationContexts({...query,employeeIds:['target','second','missing','target']},f.db.executor);
+  expect([...batch.keys()].sort()).toEqual(['second','target']);
+  for(const employeeId of ['target','second'])expect(batch.get(employeeId)).toEqual(await getShiftValidationContext({...query,employeeId},f.db.executor));
+  expect(await getShiftValidationContext({...query,employeeId:'missing'},f.db.executor)).toBeNull();
+  expect(batch.get('target')?.existingShifts.map(s=>s.id).sort()).toEqual(['b8-a','b8-b']);
+ }finally{await f.db.dispose();}
+});
+
 /** Inspection B3/B4/B7: Employee reads run as READ ONLY snapshots with lock-free guards. An uncommitted sign-in,
  * employee edit or location edit (ROW EXCLUSIVE / row locks, which conflicted with the old LOCK TABLE … IN SHARE
  * MODE and FOR SHARE prefixes) no longer makes them wait, and the session is still checked in the same snapshot. */
