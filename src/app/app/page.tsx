@@ -23,6 +23,9 @@ import {currentPresentation} from '@/lib/workspace-presentation/current.server';
 import {requestTypeAllowed} from '@/lib/workspace-presentation/modules';
 import {addDays,formatWeekRange,isValidWeekStart,weekStartFor} from '@/lib/date-utils';
 import {redirect} from 'next/navigation';
+import {findMissedShifts} from '@/lib/employee-home/missed-shifts';
+import {getEmployeeTime} from '@/lib/data/employee-time';
+import {getEmployeeTimeCorrections} from '@/lib/data/time-corrections';
 import {readNextPay} from './my-pay/next-pay';
 import {retiredViewDestination} from '@/lib/retired-views';
 
@@ -48,6 +51,22 @@ function validWeek(value?: string) {
 
 export const metadata = { title: { absolute: "Home · NEVORA" } };
 
+/** Ended shifts today or yesterday with nothing recorded (UX-E-01). Reads the previous week only on its first day. */
+async function readMissedShifts(proof:Awaited<ReturnType<typeof requireSessionMutationProof>>,review:Awaited<ReturnType<typeof readEmployeeWeeklyReview>>,currentWeek:string,today:string,timeZone:string){
+  try{
+    const now=new Date(),yesterday=addDays(today,-1);
+    const previous=yesterday<currentWeek?await readEmployeeWeeklyReview(proof,addDays(currentWeek,-7)):null;
+    const shifts=[...review.shifts,...(previous&&previous.state!=='unavailable'?previous.shifts:[])];
+    const locations=[...review.locations,...(previous?.locations??[])];
+    // Nothing recorded can be missing before a shift today or yesterday has ended.
+    const candidates=findMissedShifts({shifts,entries:[],corrections:[],locations,today,now,timeZone});
+    if(!candidates.length)return [];
+    const [time,corrections]=await Promise.all([getEmployeeTime(),getEmployeeTimeCorrections()]);
+    if(time.state!=='ready'||corrections.state!=='ready')return [];
+    return findMissedShifts({shifts,entries:[...time.today.entries,...time.recent.entries],corrections:corrections.requests,locations,today,now,timeZone});
+  }catch{return [];}
+}
+
 export default async function DashboardPage({
   searchParams,
 }: {
@@ -64,7 +83,10 @@ export default async function DashboardPage({
     const proof=await requireSessionMutationProof();
     // v5 Home's week at a glance: the same own published-schedule read the Schedule page uses (read only).
     const review=await readEmployeeWeeklyReview(proof,currentWeek);
-    const week:HomeWeek|null=review.state==='unavailable'?null:{weekStart:currentWeek,today:currentDate,dates:Array.from({length:7},(_,day)=>addDays(currentWeek,day)),shifts:review.shifts.map(({date,startTime,endTime})=>({date,startTime,endTime}))};
+    // UX-E-01: an ended shift today or yesterday with no recorded time (and no correction over it) is a "Needs you" row.
+    // The own time and correction reads run only when such a shift exists; a failed read shows no row.
+    const missed=review.state==='unavailable'?[]:await readMissedShifts(proof,review,currentWeek,currentDate,workspace.timeZone);
+    const week:HomeWeek|null=review.state==='unavailable'?null:{weekStart:currentWeek,today:currentDate,dates:Array.from({length:7},(_,day)=>addDays(currentWeek,day)),shifts:review.shifts.map(({date,startTime,endTime})=>({date,startTime,endTime})),missed};
     // A Lead's Home adds Today's team: message everyone on today's team (the existing Updates compose), when Updates is on.
     const teamMessage=session.role==='LEAD'&&(await currentPresentation()).modules.updates;
     return <EmployeeDashboard authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage}/>;

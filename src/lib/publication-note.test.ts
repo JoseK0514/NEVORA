@@ -12,3 +12,10 @@ it('joins names plainly and drops repeats and blanks', () => {
   expect(joinNames(['A', 'B', 'C', 'A', ' '])).toBe('A, B and C');
   expect(joinNames([])).toBe('');
 });
+
+it('UX-E-03: says once which location’s schedule isn’t out yet', async () => {
+  const { notOutYetNote } = await import('./publication-note');
+  expect(notOutYetNote(['West Office'])).toBe('West Office’s schedule isn’t out yet.');
+  expect(notOutYetNote(['West Office', 'East Office', 'West Office'])).toBe('West Office and East Office schedules aren’t out yet.');
+  expect(notOutYetNote([' '])).toBe('Another location’s schedule isn’t out yet.');
+});

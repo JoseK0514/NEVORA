@@ -1,4 +1,5 @@
 "use client";
+import './quiet/u3.css';
 
 import { useEffect, useId, useRef, useState } from "react";
 import { useCalloutSent } from "./wave-a/callout-sent";
@@ -56,7 +57,7 @@ export function ReviewedCalloutForm({
   return (
     <ShiftChangeForm fields={fields ?? {}} className="shift-change-form q-scform" resolvedHref="/app/exchange?tab=requests">
       <div ref={body}>
-        <div className="q-nav"><SheetCancel href="/app/exchange?tab=my" /><h1 className="q-nav__t">Unable to work</h1><PendingButton pending="Sending…" disabled={!fields} className="q-nav__r q-nav__r--b" label="Send report">Send</PendingButton></div>
+        <div className="q-nav"><SheetCancel href="/app/schedule" /><h1 className="q-nav__t">Unable to work</h1><PendingButton pending="Sending…" disabled={!fields} className="q-nav__r q-nav__r--b" label="Send report">Send</PendingButton></div>
         {error ? <p className="q-help q-help--alert" role="alert">Your report wasn’t sent. {error}</p> : null}
         {shift ? <><div className="q-grp q-grp--m"><h2>Shift</h2></div><QuietList><SwapShiftRow shift={shift} /></QuietList></> : null}
         <fieldset className="q-fieldset" aria-describedby={`${reasonId}-hint`}>
@@ -94,7 +95,9 @@ export function ReviewedCalloutForm({
           />
           <p className="q-fl__help" id={detailsId}>{reason === "OTHER" ? "For Other, add at least 3 characters. Share only what your manager needs." : "Share only what your manager needs to review it."}</p>
         </div>
-        <p className="q-help">It’s still your shift until a manager approves your report. If they do, the shift opens for someone else to pick up. <Link href="/app/exchange?tab=requests">See my requests</Link></p>
+        <p className="q-help">It’s still your shift until a manager approves your report. If they do, the shift opens for someone else to pick up.</p>
+        {/* P2-17: a real footer link, not a bare inline line. */}
+        <Link className="q-link" href="/app/exchange?tab=requests">See my requests</Link>
         {!fields ? (
           <div role="alert">
             <p className="q-help q-help--alert">The shift changed. Your reason is kept. Refresh to see the shift as it is now, then send.</p>

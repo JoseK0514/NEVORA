@@ -17,8 +17,17 @@ export function groupNotifications(items:EmployeeNotificationItem[]){
  return [...groups.values()];
 }
 
+/** UX-E-40: a schedule notice names its week ("Schedule for Oct 26 – Nov 1"); without a valid week it stays generic. */
+export function scheduleNoticeLabel(weekStart:string){
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(weekStart))return 'Schedule update';
+ const start=new Date(`${weekStart}T12:00:00Z`);if(Number.isNaN(start.getTime()))return 'Schedule update';
+ const end=new Date(start.getTime()+6*86400000),md=(d:Date)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short',day:'numeric'}).format(d);
+ return `Schedule for ${md(start)} – ${start.getUTCMonth()===end.getUTCMonth()?end.getUTCDate():md(end)}`;
+}
+
 /** Each row names its destination's action (Codex mobile review M6), not a generic "Open record". */
 export function notificationPresentation(label:string){
+ if(label.startsWith('Schedule for '))return {icon:'schedule' as const,destination:'Review your current schedule',action:'Review schedule'};
  switch(label){
   case 'Schedule update':return {icon:'schedule' as const,destination:'Review your current schedule',action:'Review schedule'};
   case 'Time off update':return {icon:'timeOff' as const,destination:'Review your time off request',action:'View request'};

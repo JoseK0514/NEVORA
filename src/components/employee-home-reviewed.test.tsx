@@ -342,9 +342,10 @@ describe('Today Home (U2, v5 layout)', () => {
     expect([...order].sort((a, b) => a - b)).toEqual(order);
   });
   it('words the countdown for a glance', () => {
-    expect(untilLabel(25 * 60_000)).toBe('25m');
-    expect(untilLabel(9 * 3_600_000 + 11 * 60_000)).toBe('9h 11m');
-    expect(untilLabel(5 * 3_600_000)).toBe('5h');
+    // The lead's duration helper (Oct 25): spaced units, never "9h 11m".
+    expect(untilLabel(25 * 60_000)).toBe('25 min');
+    expect(untilLabel(9 * 3_600_000 + 11 * 60_000)).toBe('9 h 11 min');
+    expect(untilLabel(5 * 3_600_000)).toBe('5 h');
     expect(untilLabel(30 * 3_600_000)).toBe('1 day');
     expect(untilLabel(80 * 3_600_000)).toBe('3 days');
   });

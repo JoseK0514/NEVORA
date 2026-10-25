@@ -18,7 +18,7 @@ import {ArrowRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {XIcon} from '@phosphor-icons/react/dist/ssr/X';
 
-const changedEvent='nevora:time-correction-changed';
+export const changedEvent='nevora:time-correction-changed';
 
 // Owned by the authenticated My Time page, not by a temporarily cleared snapshot.
 export const EmployeeCorrectionRecoveryContext=createContext<{
@@ -27,7 +27,7 @@ export const EmployeeCorrectionRecoveryContext=createContext<{
   update:(key:string,command:CorrectionRequestCommand|null)=>void;
 }|null>(null);
 
-function useCorrectionRetry(key:string){
+export function useCorrectionRetry(key:string){
   const recovery=useContext(EmployeeCorrectionRecoveryContext);
   const [local,setLocal]=useState<CorrectionRequestCommand|null>(null);
   const retry=recovery?recovery.commands[key]??null:local;
@@ -40,17 +40,17 @@ function pad(value:number){return String(value).padStart(2,'0');}
 /** "OCT" / "20" for a history row's date block, and "7:55 AM" for its change line, in the workspace zone. */
 function dayPart(at:string,zone:string,part:'short'|'day'){return new Intl.DateTimeFormat('en-US',part==='short'?{timeZone:zone,month:'short'}:{timeZone:zone,day:'numeric'}).format(new Date(at));}
 function clock(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,hour:'numeric',minute:'2-digit'}).format(new Date(at));}
-function localValue(at:string,zone:string){
+export function localValue(at:string,zone:string){
   const value=Temporal.Instant.from(at).toZonedDateTimeISO(zone);
   return `${value.year}-${pad(value.month)}-${pad(value.day)}T${pad(value.hour)}:${pad(value.minute)}`;
 }
-function localInstant(value:string,zone:string){
+export function localInstant(value:string,zone:string){
   return Temporal.PlainDateTime.from(value).toZonedDateTime(zone,{disambiguation:'reject'}).toInstant().toString();
 }
 function stamp(at:string,zone:string){
   return new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(at));
 }
-function actionMessage(result:CorrectionActionResponse|null){
+export function actionMessage(result:CorrectionActionResponse|null){
   if(!result)return null;
   if(result.state==='pending')return 'Correction request sent for manager review.';
   if(result.state==='conflict')return 'This record changed or already has a pending correction. Refresh before trying again.';

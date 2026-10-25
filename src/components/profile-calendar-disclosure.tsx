@@ -7,7 +7,7 @@ import {NavIcon} from './nav-icon';
 const TARGET = '#employee-calendar-title';
 
 /** Calendar setup is optional, so Profile keeps it closed (Codex mobile review M3). The existing
- *  /app/profile#employee-calendar-title link (My schedule's "Add shifts to your calendar") opens it
+ *  /app/more#employee-calendar-title link (My schedule's "Add shifts to your calendar") opens it
  *  and moves focus to it. Opening it never issues a private link; the panel's own controls do that. */
 export function ProfileCalendarDisclosure({children}: {children: ReactNode}) {
   const ref = useRef<HTMLDetailsElement>(null);

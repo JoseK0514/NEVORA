@@ -44,9 +44,11 @@ it('management marking read requires an exact own-session binding and same-origi
  expect((await POST(req({Origin:'https://foreign.invalid'}))).status).toBe(403);
  expect((await POST(req({'X-Nevora-Employee-View':'wrong'}))).status).toBe(403);
  expect((await POST(req({}, {notificationId:'own-intent',employeeId:'foreign'}))).status).toBe(400);
- m.session={id:'self',role:'EMPLOYEE'};expect((await POST(req())).status).toBe(403);
+ // F5 (Oct 25): Employees and Leads mark their own notification read on open too; other roles still can't.
+ m.session={id:'self',role:'CLOCKER'};expect((await POST(req())).status).toBe(403);
  expect(m.read).not.toHaveBeenCalled();m.session={id:'self',role:'MANAGER'};
  expect((await POST(req())).status).toBe(200);expect(m.read).toHaveBeenCalledTimes(1);
+ m.session={id:'self',role:'EMPLOYEE'};expect((await POST(req())).status).toBe(200);expect(m.read).toHaveBeenCalledTimes(2);m.session={id:'self',role:'MANAGER'};
  m.read.mockRejectedValue(Error('private database detail'));const failed=await POST(req());expect(failed.status).toBe(503);expect(await failed.text()).not.toContain('private database');
 });
 

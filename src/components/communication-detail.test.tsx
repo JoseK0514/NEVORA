@@ -45,3 +45,16 @@ it('announces a pending review and offers sign-in after a signed-out action',asy
  const pending=await render({pending:true});expect(pending).toContain('Confirming your review…');
  const denied=await render({notice:'signed-out'});expect(denied).toContain('Your session ended');expect(denied).toContain('href="/login"');expect(denied).not.toContain('Last line');
 });
+const plain=(html:string)=>html.replace(/[  ]/g,' ');
+it('T-20: an Employee’s update is the Quiet page; a required one asks once and then shows when it was confirmed',async()=>{
+ const html=plain(await render({signature:true}));
+ expect(html).toContain('href="/app/updates"');expect(html).toContain('<h1>Full update</h1>');
+ expect(html).toContain('Management · Oct 8, 8:00 AM · Please confirm');
+ expect(html).toContain('Confirm I’ve read it');expect(html).not.toContain('Mark read');expect(html).not.toContain('ANNOUNCEMENT');expect(html).not.toContain('sg-band');
+ const done=plain(await render({signature:true,read:{...read,ownAcknowledgedAt:'2026-10-08T21:31:00Z'}}));
+ expect(done).toContain('Confirmed · 5:31 PM');expect(done).not.toContain('Confirm I’ve read it');expect(done).not.toContain('Please confirm');
+});
+it('T-20: an update that needs no confirmation has no Mark read card; opening it reads it',async()=>{
+ const html=await render({signature:true,read:{...read,acknowledgement:'OPTIONAL'}});
+ expect(html).not.toContain('Mark read');expect(html).not.toContain('Confirm I’ve read it');expect(html).toContain('Last line before acknowledgement');
+});

@@ -104,7 +104,6 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
      })}</ul>
      :<p className="q-empty q-first">{filter==='unread'?'You’re all caught up.':'No notifications yet.'}</p>}
     {readNotice&&readNotice.startsWith('We could not')?<p className="q-help" role="status">We couldn’t mark that one read.</p>:null}
-    {!onMarkRead&&sorted.length?<p className="q-help">Opening one doesn’t complete it.</p>:null}
    </>}
    </HoldHeight>
   </section>;

@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
-import { unstable_rethrow } from "next/navigation";
+import { unstable_rethrow, useRouter } from "next/navigation";
+import "./quiet/u3.css";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import type { AvailabilityState } from "@/lib/availability-presets";
@@ -60,7 +61,41 @@ function DaySheet({ day, value, open, disabled, onClose, onChange }: { day: (typ
   </QuietSheet>;
 }
 
-function Fields({ initialAvailability, weekStart, locked, status, after, header, notices, back }: { initialAvailability: AvailabilityState; weekStart?: string; locked: boolean; status: AvailabilityStatus; after: string; header: { title: string; sub: string }; notices?: ReactNode; back: { href: string; label: string } }) {
+/** UX-E-23: leaving with unsaved hours asks first. A reload or closing the tab gets the browser's own question; a link in
+ * the app opens "Discard changes?" with Discard and Keep editing. */
+function UnsavedGuard({ dirty }: { dirty: boolean }) {
+  const router = useRouter();
+  const [leaving, setLeaving] = useState<string | null>(null);
+  useEffect(() => {
+    if (!dirty) return;
+    const beforeUnload = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ""; };
+    const click = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = (event.target as HTMLElement | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
+      if (!link || link.target === "_blank" || link.closest("dialog") || link.getAttribute("href")?.startsWith("#")) return;
+      const url = new URL(link.href, window.location.href);
+      if (url.origin !== window.location.origin || (url.pathname === window.location.pathname && url.search === window.location.search)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      setLeaving(url.pathname + url.search + url.hash);
+    };
+    window.addEventListener("beforeunload", beforeUnload);
+    document.addEventListener("click", click, true);
+    return () => { window.removeEventListener("beforeunload", beforeUnload); document.removeEventListener("click", click, true); };
+  }, [dirty]);
+  return <QuietSheet open={leaving !== null} label="Discard changes?" onClose={() => setLeaving(null)}>
+    <div className="q-nav"><span /><span className="q-nav__t">Unsaved changes</span><span /></div>
+    <div className="q-confirm">
+      <p>Discard changes? Your availability wasn’t saved.</p>
+      <button type="button" className="q-btn q-btn--sec q-btn--danger" onClick={() => { const to = leaving; setLeaving(null); if (to) router.push(to); }}>Discard</button>
+      <button type="button" className="q-btn q-btn--quiet" onClick={() => setLeaving(null)}>Keep editing</button>
+    </div>
+  </QuietSheet>;
+}
+
+function Fields({ initialAvailability, weekStart, locked, status, after, header, notices, back, unset = false }: { initialAvailability: AvailabilityState; weekStart?: string; locked: boolean; status: AvailabilityStatus; after: string; header: { title: string; sub: string }; notices?: ReactNode; back: { href: string; label: string };
+  /** UX-E-22: nothing saved yet. Days read "Not set", not "Unavailable", until the person saves. */
+  unset?: boolean }) {
   const { pending } = useFormStatus();
   const [availability, setAvailability] = useState(initialAvailability);
   const [openDay, setOpenDay] = useState<number | null>(null);
@@ -71,6 +106,12 @@ function Fields({ initialAvailability, weekStart, locked, status, after, header,
   const availableDays = DAYS.filter(day => availability[day.dayOfWeek].available).length;
   const total = DAYS.reduce((sum, day) => { const span = availability[day.dayOfWeek].available ? spanOf(availability[day.dayOfWeek]) : null; return sum + (span ? span.end - span.start : 0); }, 0);
   const state = dirty ? "Unsaved changes" : status?.label ?? null;
+  const offLabel = unset ? "Not set" : "Unavailable";
+  const monday = availability[1];
+  // UX-E-24: one tap gives Tuesday to Friday Monday's hours.
+  function copyMonday() {
+    setAvailability(current => ({ ...current, ...Object.fromEntries([2, 3, 4, 5].map(day => [day, { ...current[1] }])) }));
+  }
   function updateDay(dayOfWeek: number, patch: Partial<AvailabilityState[number]>) {
     setAvailability(current => ({ ...current, [dayOfWeek]: { ...current[dayOfWeek], ...patch } }));
   }
@@ -78,9 +119,11 @@ function Fields({ initialAvailability, weekStart, locked, status, after, header,
   return <>
     <div className="q-nav">
       <Link className="q-nav__l" href={back.href}><CaretLeftIcon className="q-ic q-ic--s" aria-hidden="true" />{back.label}</Link><span />
-      <EmployeeSubmitButton className="q-nav__r q-nav__r--b" pendingText="Saving…" disabled={locked || (!weekStart && !dirty)}>{weekStart ? "Submit" : "Save"}</EmployeeSubmitButton>
+      {/* UX-E-24: one verb, Save, for the usual week and a schedule week. */}
+      <EmployeeSubmitButton className="q-nav__r q-nav__r--b" pendingText="Saving…" disabled={locked || (!weekStart && !dirty)}>Save</EmployeeSubmitButton>
     </div>
-    <div className="q-hd"><h1>{header.title}</h1><p>{header.sub} · {hoursLabel(total)}{state ? ` · ${state}` : ""}</p></div>
+    <UnsavedGuard dirty={dirty && !pending} />
+    <div className="q-hd"><h1>{header.title}</h1><p>{header.sub} · {unset && !dirty ? "Not set" : hoursLabel(total)}{state ? ` · ${state}` : ""}</p></div>
     {notices}
     {weekStart ? <><input type="hidden" name="weekStart" value={weekStart} /><input type="hidden" name="changedDays" value={changedDays.join(",")} /></> : null}
     {/* Every day's fields are always in the form; the day sheets only edit them. */}
@@ -94,22 +137,25 @@ function Fields({ initialAvailability, weekStart, locked, status, after, header,
         const value = availability[day.dayOfWeek];
         return <li key={day.dayOfWeek}>
           <button type="button" className="q-row q-row--one q-row--btn" aria-haspopup="dialog" disabled={disabled} onClick={() => setOpenDay(day.dayOfWeek)}
-            aria-label={`${day.label}, ${value.available ? (spanOf(value) ? hoursText(value) : "check the hours") : "unavailable"}`}>
+            aria-label={`${day.label}, ${value.available ? (spanOf(value) ? hoursText(value) : "check the hours") : offLabel.toLowerCase()}`}>
             <span className="q-rt"><b>{day.label}</b></span>
-            <span className={`q-rv ${value.available ? "q-rv--l" : "q-rv--ph"}`}>{value.available ? (spanOf(value) ? hoursText(value) : "Check the hours") : "Unavailable"}</span>
+            <span className={`q-rv ${value.available ? "q-rv--l" : unset ? "q-rv--ph q-rv--unset" : "q-rv--ph"}`}>{value.available ? (spanOf(value) ? hoursText(value) : "Check the hours") : offLabel}</span>
             <CaretRightIcon className="q-chev" aria-hidden="true" />
           </button>
           <DaySheet day={day} value={value} open={openDay === day.dayOfWeek} disabled={disabled} onClose={() => setOpenDay(null)} onChange={patch => updateDay(day.dayOfWeek, patch)} />
         </li>;
       })}
     </ul>
-    {weekStart && availableDays === 0 ? <p className="q-help q-help--alert">Submitting with every day unavailable tells your manager you cannot work this week.</p> : null}
-    <p className="q-help" role="status" aria-live="polite">{pending ? "Saving your availability…" : locked ? after : dirty ? "You have unsaved changes." : after} An end time of midnight includes the rest of that day.</p>
+    {unset && !dirty ? <p className="q-help">Tell your manager when you can work.</p> : null}
+    {monday.available && spanOf(monday) && !disabled ? <button type="button" className="q-btn q-btn--quiet" onClick={copyMonday}>Copy Monday to weekdays</button> : null}
+    {weekStart && availableDays === 0 && !unset ? <p className="q-help q-help--alert">Saving with every day unavailable tells your manager you cannot work this week.</p> : null}
+    {/* The midnight note lives in each day's sheet, once (UX-E-24). */}
+    <p className="q-help" role="status" aria-live="polite">{pending ? "Saving your availability…" : locked ? after : dirty ? "You have unsaved changes." : after}</p>
     {dirty && !disabled ? <button type="button" className="q-btn q-btn--quiet" onClick={() => setAvailability(initialAvailability)}>Reset changes</button> : null}
   </>;
 }
 
-export function AvailabilitySignatureEditor({ initialAvailability, weekStart, locked = false, status = null, after, header, notices, back = { href: "/app/requests/hub", label: "Requests" } }: { initialAvailability: AvailabilityState; weekStart?: string; locked?: boolean; status?: AvailabilityStatus; after: string; header: { title: string; sub: string }; notices?: ReactNode; back?: { href: string; label: string } }) {
+export function AvailabilitySignatureEditor({ initialAvailability, weekStart, locked = false, status = null, after, header, notices, back = { href: "/app/requests/hub", label: "Requests" }, unset = false }: { initialAvailability: AvailabilityState; weekStart?: string; locked?: boolean; status?: AvailabilityStatus; after: string; header: { title: string; sub: string }; notices?: ReactNode; back?: { href: string; label: string }; unset?: boolean }) {
   const [failed, setFailed] = useState(0);
   const failures = useRef(0);
   const feedback = useRef<HTMLParagraphElement>(null);
@@ -124,7 +170,7 @@ export function AvailabilitySignatureEditor({ initialAvailability, weekStart, lo
     finally { saving.current = false; }
   }
   return <form action={save} onReset={event => event.preventDefault()} className="q-availform" aria-label={weekStart ? "Weekly availability submission" : "Normal availability preferences"}>
-    <Fields initialAvailability={initialAvailability} weekStart={weekStart} locked={locked} status={status} after={after} header={header} notices={notices} back={back} />
+    <Fields initialAvailability={initialAvailability} weekStart={weekStart} locked={locked} status={status} after={after} header={header} notices={notices} back={back} unset={unset} />
     {failed ? <p ref={feedback} tabIndex={-1} className="q-help q-help--alert" role="alert">Your availability wasn’t saved. Check your connection and save again. If this keeps happening, <Link href="/login">sign in again</Link>.</p> : null}
   </form>;
 }

@@ -24,7 +24,10 @@ it('puts writing before delivery and requires audience review before any publica
 it('keeps employee authorship limited to today’s team without management requirements',()=>{
  const html=render({context:{...context,management:false},mode:'employee'});expect(html).toContain('Today’s team');
  expect(html).not.toContain('id="communication-type"');expect(html).not.toContain('id="communication-requirement"');
- expect(html).toContain('id="communication-location"');expect(html).toContain('Preview audience');
+ // T-18 (Oct 25): the Quiet compose; Next checks the audience before any Send exists.
+ expect(html).toContain('id="communication-location"');expect(html).toContain('>Message team<');expect(html).toContain('Next');
+ expect(html).not.toContain('>Send<');expect(html).not.toContain('Plain text · line breaks kept');expect(html).not.toContain('Nothing is published until');
+ expect(html).toContain('type="radio"');expect(html).toContain('<b>Expires</b>');
 });
 it('shows escaped complete editing content and explains version-specific acknowledgements',()=>{
  const html=render({editing,initial:draft});expect(html).toContain('Opening routine');expect(html).toContain('&lt;script&gt;plain text&lt;/script&gt;');

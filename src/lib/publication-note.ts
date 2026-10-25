@@ -14,3 +14,11 @@ export function unpublishedNote(unpublished: readonly string[], published: reado
   const pending = waiting ? `${waiting} ${many ? 'haven’t' : 'hasn’t'} published this week yet.` : 'Another location you work at hasn’t published this week yet.';
   return ready ? `Your ${ready} shifts are published. ${pending}` : `${pending} Shifts shown are published.`;
 }
+
+/** UX-E-03 (Oct 25, 2026): the one Schedule line for a week some of the person's locations haven't published:
+ *  "West Office’s schedule isn’t out yet." or "West Office and East Office schedules aren’t out yet." */
+export function notOutYetNote(unpublished: readonly string[]): string {
+  const names = [...new Set(unpublished.map(name => name.trim()).filter(Boolean))];
+  if (!names.length) return 'Another location’s schedule isn’t out yet.';
+  return names.length === 1 ? `${names[0]}’s schedule isn’t out yet.` : `${joinNames(names)} schedules aren’t out yet.`;
+}

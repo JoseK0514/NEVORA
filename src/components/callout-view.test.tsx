@@ -26,7 +26,8 @@ it("retains the six canonical reasons and submits the reviewed assignment identi
   for (const [name, value] of Object.entries(fields)) expect(html).toContain(`name="${name}" value="${value}"`);
   expect(html).toContain('maxLength="300"');
   expect(html).toContain('dateTime="2035-10-03"');
-  expect(html).toContain('href="/app/exchange?tab=my"');
+  // UX-E-18: Cancel on the full page goes back to Schedule, where the person started.
+  expect(html).toContain('href="/app/schedule"');
   expect(html).toContain('href="/app/exchange?tab=requests"');
 });
 

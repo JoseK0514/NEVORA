@@ -26,11 +26,12 @@
 }
 :root[data-theme="dark"] [data-nv-e5] .portal-account-avatar { background: #A9E2DA !important; color: #0C1817 !important; }
 
-/* Native fields that hard-code white. */
-:root[data-theme="dark"] :is([data-nv-e5], .ap, [data-mobile-clocker]) :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([name=pin]), select, textarea) {
+/* Native fields that hard-code white. Visual #10 (Oct 25): Quiet fields (.q-in, inside a .q-page) keep the kit's own dark
+ * colours, the same as the Owner's. */
+:root[data-theme="dark"] :is([data-nv-e5], .ap, [data-mobile-clocker]) :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([name=pin]):not(.q-in):not(.q-page *), select:not(.q-page *), textarea:not(.q-in):not(.q-page *)) {
   background-color: #172725 !important; color: #F5F2EB !important; border-color: #3A4846 !important;
 }
-:root[data-theme="dark"] :is([data-nv-e5], .ap, [data-mobile-clocker]) :is(input, textarea)::placeholder { color: #A9AAA4 !important; }
+:root[data-theme="dark"] :is([data-nv-e5], .ap, [data-mobile-clocker]) :is(input, textarea):not(.q-page *)::placeholder { color: #A9AAA4 !important; }
 
 /* Profile: calendar panel and the Appearance and Language switches. */
 :root[data-theme="dark"] [data-nv-e5] :is(.employee-calendar, .employee-calendar-example, .employee-calendar-status-box:not(:has(.employee-calendar-secret)), .employee-calendar-providers) {

@@ -80,12 +80,13 @@ function assignedReview(){
  f.reviewed={source:{timeZone:shift.timeZone,termsRevision:shift.termsRevision,shiftId:shift.id,scheduleId:shift.scheduleId,employeeId:shift.employeeId,locationId:shift.locationId,weekStart:shift.weekStart,date:shift.date,startTime:shift.startTime,endTime:shift.endTime,positionId:shift.positionId,isDesignatedLead:shift.isDesignatedLead,assignmentEpisodeId:'episode-current'},sourceTermsFingerprint:'v1:current',target:null,targetTermsFingerprint:null};
 }
 it.each(['unknown coverage policy','elapsed coverage submission cutoff'])('trade builder navigation remains independent of %s',async refusal=>{
- // v5: Your shifts open the shift's sheet on Schedule (Swap, Offer it for cover, Unable to work), whatever the coverage policy.
- assignedReview();f.coverageAllowed=false;f.coverageNotice=refusal;const result=await html();expect(result).toContain('&amp;shift=shift');expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).toContain('Unable to work');
+ // v5: a change starts from the shift on Schedule (Swap, Offer it for cover, Unable to work), whatever the coverage policy.
+ // UX-E-16 (Oct 25): Yours no longer repeats the shift list; one "Choose a shift" row opens Schedule.
+ assignedReview();f.coverageAllowed=false;f.coverageNotice=refusal;const result=await html();expect(result).toContain('href="/app/schedule"');expect(result).toContain('Choose a shift');expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).toContain('can’t work it');
 });
 it('builder navigation itself does not declare swap eligibility when only coverage is valid',async()=>{
  // v5: offering for cover starts from the shift (the swap route's cover mode re-reads and checks the terms); this page never posts it.
- assignedReview();f.coverageAllowed=true;const result=await html();expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).toContain('&amp;shift=shift');expect(result).not.toContain('Eligible to trade');
+ assignedReview();f.coverageAllowed=true;const result=await html();expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).toContain('Choose a shift');expect(result).not.toContain('Eligible to trade');
 });
 it.each<Record<string, string | boolean | number>>([{timeZone:'America/New_York'},{termsRevision:2},{assignmentEpisodeId:'new-episode'},{startTime:'10:00',endTime:'18:00'},{locationId:'replacement-site'},{positionId:'replacement-position'},{employeeId:'new-owner'},{date:'2035-10-06'},{scheduleId:'replacement-schedule'},{weekStart:'2035-10-08'},{isDesignatedLead:false}])('inter-read material source change %j refuses undisplayed creation consent',async change=>{
  // v5: no creation consent is rendered here at all; the shift sheet's routes re-read and refuse changed terms.
@@ -108,7 +109,21 @@ it('H10 explanatory notices stay outside employee action grids while recovery co
  expect(result).toContain('value="CANCEL"');expect(result).toContain('Unable to work');expect(result).toContain('Historical approval does not release the current assignment');
 });
 it('an empty shift board says so once, in the band (inspection Oct 24)',async()=>{
- const board=renderToStaticMarkup(await ExchangePage({searchParams:Promise.resolve({})})).replace(/<br\/?>/g,' ');
+ // P1-11 (Oct 25): Shift requests opens on For you / Yours; an Open shifts link (tab=available) is its own page back to Schedule.
+ const board=renderToStaticMarkup(await ExchangePage({searchParams:Promise.resolve({tab:'available'})})).replace(/<br\/?>/g,' ');
+ expect(board).toContain('href="/app/schedule?view=open"');
  expect(board).toContain('No open shifts right now');
  expect(board).not.toContain('The shift board is clear');
+});
+
+it('P1-11: Shift requests has For you and Yours only, and opens on Yours when nothing waits',async()=>{
+ const page=renderToStaticMarkup(await ExchangePage({searchParams:Promise.resolve({})}));
+ expect(page).toContain('href="/app/exchange?tab=foryou"');expect(page).toContain('href="/app/exchange?tab=requests"');
+ expect(page).not.toContain('href="/app/exchange?tab=available"');expect(page).toMatch(/<a(?=[^>]*href="\/app\/exchange\?tab=requests")(?=[^>]*aria-current="page")[^>]*>/);
+});
+it('UX-E-14: taking back an offer asks first, and the sheet says the status once',async()=>{
+ f.activity=[{...exchange('mine'),kind:'COVERAGE',status:'OPEN',requestRevision:1}];
+ const result=await html();
+ expect(result).toContain('Take back offer');expect(result).not.toContain('Cancel request');expect(result).not.toContain('Offered for cover');
+ expect(result).toContain('value="CANCEL"');
 });

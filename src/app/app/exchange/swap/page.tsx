@@ -56,8 +56,8 @@ export default async function SwapPage({
   const reviewedTargets=reads.filter(t=>t!==null&&t!=='changed');
 
   const sourceFields={sourceShiftId:reviewed.source.shiftId,sourceEpisodeId:reviewed.source.assignmentEpisodeId,sourceTermsFingerprint:reviewed.sourceTermsFingerprint};
-  // With no shift to swap into, the fallback is the real coverage offer, checked the same way as on Shift requests.
-  // Candidates that changed mid-read withhold every form; candidates the rules refuse still allow the coverage check.
-  const coverage=reviewedTargets.length||changedMidRead?null:await readShiftChangeAvailability(proof,{kind:'OFFER_COVERAGE',operationId:randomUUID(),...sourceFields}).catch(()=>({allowed:false,notice:'Current policy is unavailable.'}));
+  // Offer it for cover: the real coverage offer, checked the same way as on Shift requests. T-25: a swap with no one to
+  // trade with no longer turns into this form; it links to it instead, so only cover mode checks it.
+  const coverage=!cover||reviewedTargets.length||changedMidRead?null:await readShiftChangeAvailability(proof,{kind:'OFFER_COVERAGE',operationId:randomUUID(),...sourceFields}).catch(()=>({allowed:false,notice:'Current policy is unavailable.'}));
   return <SwapPageContent source={reviewedSource} sourceFields={sourceFields} targets={reviewedTargets} coverage={coverage} mode={cover ? 'cover' : 'swap'} />;
 }

@@ -2017,7 +2017,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame [data-pass="true"] 
 /* AL-P3-13: the schedule confirmation card uses the 40px tile + 12 recipe (text at 88). */
 html body .app-shell.nevora-portal.nevora-portal .page-frame .premium-employee-schedule .my-schedule-review:not(#nv-kit) { grid-template-columns: 40px minmax(0, 1fr); column-gap: 12px; }
 /* AL-P3-22: Home's own Refresh joins the one quiet Refresh shape. */
-html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] button[data-home-refresh]:not(#nv-kit) { min-height: 44px; padding: 0 var(--nv-s-3); border: 0; border-radius: var(--nv-r-control); background: transparent; color: var(--nv-accent); font: var(--nv-t-label); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame [data-nv-page] button[data-home-refresh]:not(.q-btn):not(#nv-kit) { min-height: 44px; padding: 0 var(--nv-s-3); border: 0; border-radius: var(--nv-r-control); background: transparent; color: var(--nv-accent); font: var(--nv-t-label); }
 /* AL-P3-25: the entry row's three columns are placed explicitly, so the row ends at the card's text edge. */
 html body .app-shell.nevora-portal[data-employee-corporate="true"] .page-frame .employee-time-entry > summary > .employee-time-entry-label:not(#nv-kit) { grid-column: 1; grid-row: 1; }
 html body .app-shell.nevora-portal[data-employee-corporate="true"] .page-frame .employee-time-entry > summary > .employee-time-entry-total:not(#nv-kit) { grid-column: 2; grid-row: 1; }

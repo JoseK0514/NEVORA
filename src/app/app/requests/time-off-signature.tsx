@@ -22,12 +22,15 @@ const fmt = (date: string, options: Intl.DateTimeFormatOptions) => new Intl.Date
 const minutes = (time: string) => { const [h, m] = time.split(":").map(Number); return h * 60 + m; };
 
 /** A row whose value opens the native picker: the label and value people see, with the real field over it. */
-function PickerRow({ id, name, type, label, value, min, required = true, onChange, invalid, describedBy }: { id: string; name: string; type: "date" | "time"; label: string; value: string; min?: string; required?: boolean; onChange: (value: string) => void; invalid?: boolean; describedBy?: string }) {
+function PickerRow({ id, name, type, label, value, min, required = true, onChange, invalid, describedBy, missing, early }: { id: string; name: string; type: "date" | "time"; label: string; value: string; min?: string; required?: boolean; onChange: (value: string) => void; invalid?: boolean; describedBy?: string;
+  /** UX-E-20: this field's own words when it is empty, and when it is before `min`. */
+  missing?: string; early?: string }) {
   const shown = !value ? "Choose" : type === "date" ? fmt(value, { weekday: "short", month: "short", day: "numeric" }) : formatTime(value);
   return <li><label htmlFor={id} className="q-row q-row--one q-row--picker">
     <span className="q-rt"><b>{label}</b></span>
     <span className={`q-rv ${value ? "q-rv--go" : "q-rv--ph"}`} aria-hidden="true">{shown}</span>
     <input id={id} className="q-picker" type={type} name={name} required={required} min={min} value={value} aria-label={label} aria-invalid={invalid || undefined} aria-describedby={describedBy}
+      data-error-missing={missing} data-error-min={early}
       onClick={event => { try { event.currentTarget.showPicker(); } catch { /* Older browsers open their own picker. */ } }}
       onChange={event => onChange(event.target.value)} />
   </label></li>;
@@ -77,12 +80,14 @@ function TimeOffForm({ requestId, draftOwner = "", notice }: { requestId: string
       <legend className="nv-sr">{partialDay ? "Date and time" : "Choose your dates"}</legend>
       <ul className="q-list" style={{ marginTop: 16 }}>
         {partialDay ? <>
-          <PickerRow id="timeoff-start-date" name="startDate" type="date" label="Date" value={startDate} onChange={setStartDate} />
-          <PickerRow id="timeoff-start-time" name="startTime" type="time" label="Start time" value={startTime} onChange={setStartTime} />
-          <PickerRow id="timeoff-end-time" name="endTime" type="time" label="End time" value={endTime} min={startTime || undefined} onChange={setEndTime} invalid={timesInvalid} describedBy={timesInvalid ? "timeoff-time-error" : undefined} />
+          <PickerRow id="timeoff-start-date" name="startDate" type="date" label="Date" value={startDate} onChange={setStartDate} missing="Choose the day you need" />
+          <PickerRow id="timeoff-start-time" name="startTime" type="time" label="Start time" value={startTime} onChange={setStartTime} missing="Choose when you leave" />
+          <PickerRow id="timeoff-end-time" name="endTime" type="time" label="End time" value={endTime} min={startTime || undefined} onChange={setEndTime} invalid={timesInvalid} describedBy={timesInvalid ? "timeoff-time-error" : undefined}
+            missing="Choose when you’re back" early={startTime ? `End after ${formatTime(startTime)}` : undefined} />
         </> : <>
-          <PickerRow id="timeoff-start-date" name="startDate" type="date" label="From" value={startDate} onChange={setStartDate} />
-          <PickerRow id="timeoff-end-date" name="endDate" type="date" label="Until" value={endDate} min={startDate || undefined} onChange={setEndDate} />
+          <PickerRow id="timeoff-start-date" name="startDate" type="date" label="From" value={startDate} onChange={setStartDate} missing="Choose your first day off" />
+          <PickerRow id="timeoff-end-date" name="endDate" type="date" label="Until" value={endDate} min={startDate || undefined} onChange={setEndDate}
+            missing="Choose your last day off" early={startDate ? `The last day can’t be before ${fmt(startDate, { weekday: "short", month: "short", day: "numeric" })}` : undefined} />
         </>}
       </ul>
       {partialDay ? <input type="hidden" name="endDate" value={startDate} /> : null}
@@ -100,6 +105,19 @@ function TimeOffForm({ requestId, draftOwner = "", notice }: { requestId: string
 /** The request form as a sheet over Time off; open while the URL says ?tab=new (Plus on Requests, Request time off). */
 export function TimeOffSheet({ open, closeHref, requestId, draftOwner, notice }: { open: boolean; closeHref: string; requestId: string; draftOwner?: string; notice?: ReactNode }) {
   const router = useRouter();
+  // a11y #14: when the sheet closes (Cancel, Escape, or after Send), focus goes back to "Request time off", not the page.
+  const wasOpen = useRef(open);
+  useEffect(() => {
+    if (wasOpen.current && !open) {
+      const frame = requestAnimationFrame(() => {
+        const active = document.activeElement;
+        if (!active || active === document.body || !document.contains(active)) document.querySelector<HTMLElement>("[data-timeoff-new]")?.focus();
+      });
+      wasOpen.current = open;
+      return () => cancelAnimationFrame(frame);
+    }
+    wasOpen.current = open;
+  }, [open]);
   return <QuietSheet open={open} label="Request time off" onClose={() => router.replace(closeHref, { scroll: false })}>
     <TimeOffForm key={requestId} requestId={requestId} draftOwner={draftOwner} notice={notice} />
   </QuietSheet>;

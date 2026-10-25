@@ -1,0 +1,86 @@
+/* Team U3 (Employee experience), final pass Oct 25, 2026. Additions on the Quiet kit for Employee and Lead pages only;
+ * quiet.css stays the lead's. Same selector weight as the kit (:is(#q-root, html) .q-…), sizes 34/20/17/15/13, 20pt
+ * margins, Phosphor icons. Every motion here is off under prefers-reduced-motion. */
+
+/* Home: the next-shift card's small text reaches AA on the gradient's light stop (visual #23, a11y P1-7). */
+:is(#q-root, html) .q-page .q-next__top { color: rgba(255, 255, 255, .94); }
+:is(#q-root, html) .q-page .q-next__meta, :is(#q-root, html) .q-page .q-next__recovery { color: #FFFFFF; }
+
+/* Home: a failed read is one plain row and Try again (UX-E-04, visual #1). */
+:is(#q-root, html) .q-home__failed { margin-top: 24px; }
+:is(#q-root, html) .q-home__failed .q-av { color: var(--q-grey); }
+:is(#q-root, html) .q-home__retry { margin: 16px 20px 0; }
+
+/* Sheets: the right nav action sits on the 20pt margin even while its pending label is a grid (visual #8), and a long
+ * title ends with an ellipsis instead of wrapping in the 44pt bar (visual #9). */
+:is(#q-root, html) .q-page .q-nav__r .sig-btn__label { justify-items: end; }
+:is(#q-root, html) .q-page .q-nav__t { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* A status chip on a row ("Offered", "Waiting", "Time off"): 13pt, sentence case, tinted. */
+:is(#q-root, html) .q-chip { display: inline-flex; align-items: center; flex: none; height: 24px; padding: 0 10px; border-radius: 12px; background: var(--q-tint); color: var(--q-tint-ink); font-size: 13px; line-height: 18px; font-weight: 600; white-space: nowrap; }
+:is(#q-root, html) .q-chip--grey { background: var(--q-fill); color: var(--q-grey); }
+:is(#q-root, html) .q-row .q-chip { margin-left: 8px; }
+
+/* A teal text row ("Offer it for cover instead", "Choose a shift"). */
+:is(#q-root, html) .q-row--go .q-rt b { color: var(--q-teal); }
+
+/* A confirm step inside a sheet ("Take back this offer?"): the question, then the two answers stacked. */
+:is(#q-root, html) .q-confirm { margin: 16px 20px 0; }
+:is(#q-root, html) .q-confirm > p { margin: 0 0 12px; font-size: 17px; line-height: 22px; color: var(--q-ink); }
+:is(#q-root, html) .q-confirm > .q-btn + .q-btn, :is(#q-root, html) .q-confirm > form + .q-btn { margin-top: 8px; }
+:is(#q-root, html) .q-confirm .q-scform, :is(#q-root, html) .q-confirm form { margin: 0; }
+:is(#q-root, html) .q-confirm .q-btn { width: 100%; margin-left: 0; margin-right: 0; }
+
+/* A footer link line ("See my requests"), P2-17. */
+:is(#q-root, html) .q-link { display: flex; align-items: center; justify-content: center; min-height: 44px; margin: 8px 20px 0; color: var(--q-teal); font-size: 17px; line-height: 22px; text-decoration: none; }
+:is(#q-root, html) .q-link:active { opacity: .45; }
+
+/* Corrections (T-19): the sheet's fields and the history rows. */
+:is(#q-root, html) .q-fix .q-fl { margin-top: 16px; }
+:is(#q-root, html) .q-fix__count { font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html) .q-fix .q-list .q-row--picker .q-rv--ph { color: var(--q-teal); }
+:is(#q-root, html) .q-fix fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+:is(#q-root, html) .q-fix legend.q-grp { width: 100%; }
+:is(#q-root, html) .q-corrections-e { margin-top: 8px; }
+:is(#q-root, html) .q-corrections-e > .q-btn { margin-top: 12px; }
+:is(#q-root, html) .q-rv--wait { color: var(--q-teal); }
+
+/* Update detail (T-20): a confirmed update's grey row with its check. */
+:is(#q-root, html) .q-done-row .q-row { color: var(--q-grey); }
+:is(#q-root, html) .q-done-row .q-row__ic { color: var(--q-teal); }
+:is(#q-root, html) .q-update-e .q-body { font-size: 17px; line-height: 24px; white-space: pre-wrap; }
+:is(#q-root, html) .q-update-e .q-hd h1 { font-size: 28px; line-height: 34px; }
+
+/* Message today's team (T-18): counters trail their label; the review step's read-only message. */
+:is(#q-root, html) .q-compose-e .q-fl__row .q-help { margin: 0; padding: 0; font-size: 13px; line-height: 18px; }
+:is(#q-root, html) .q-compose-e .q-preview-msg { margin: 0 20px; padding: 12px 0; }
+:is(#q-root, html) .q-compose-e .q-preview-msg b { display: block; font-size: 17px; line-height: 22px; font-weight: 600; color: var(--q-ink); }
+:is(#q-root, html) .q-compose-e .q-preview-msg p { margin: 4px 0 0; font-size: 17px; line-height: 22px; color: var(--q-ink); white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* Schedule: a day's approved time off, and the one-line note about a location that hasn't published (UX-E-03). */
+:is(#q-root, html) .q-wk i.is-off { background: var(--q-grey); }
+:is(#q-root, html) .q-sched-e .q-week-note { margin-top: 24px; }
+
+/* Availability: "Not set" reads as a placeholder, not as unavailable (UX-E-22). */
+:is(#q-root, html) .q-avail .q-rv--unset { color: var(--q-grey); font-style: normal; }
+
+@media (prefers-reduced-motion: reduce) {
+  :is(#q-root, html) .q-link:active { opacity: 1; }
+}
+
+/* Schedule: "What changed" is a row that opens its list (visual #41, UX-E-25). */
+:is(#q-root, html) .q-sched-e .q-changes .schedule-publication-change { margin: 12px 0 0; }
+:is(#q-root, html) .q-sched-e .q-changes summary.q-row { justify-content: flex-start; color: var(--q-ink); font-size: 17px; line-height: 22px; }
+:is(#q-root, html) .q-sched-e .q-changes summary.q-row::after { display: none; }
+:is(#q-root, html) .q-sched-e .q-changes li { margin: 0 20px; }
+
+/* Time off: Withdraw confirms with a switch row (visual #32); the row runs to the margins, the button and status keep 20pt. */
+:is(#q-root, html) .q-withdraw form { margin: 16px 0 0; }
+:is(#q-root, html) .q-withdraw form > .q-btn, :is(#q-root, html) .q-withdraw form > p[role="status"] { margin-left: 20px; margin-right: 20px; width: auto; }
+:is(#q-root, html) .q-withdraw label.q-row { gap: 0; font-size: 17px; }
+:is(#q-root, html) .q-withdraw input.q-tog { width: 51px; height: 31px; accent-color: auto; }
+
+/* More: the calendar row sits under the work rows (P1-10); its own hairline, no double line. */
+:is(#q-root, html):is(#q-root, html) .q-more-cal .profile-calendar-disclosure > summary { border-top: 0; padding-left: 20px; }
+:is(#q-root, html):is(#q-root, html) .q-more-cal { position: relative; }
+:is(#q-root, html):is(#q-root, html) .q-more-cal .profile-calendar-disclosure > summary { box-shadow: inset 0 -1px 0 var(--q-line); }

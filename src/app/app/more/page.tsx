@@ -12,7 +12,10 @@ import { employeeViewAuthority } from "@/lib/employee-view-authority.server";
 import { MegaphoneIcon } from "@phosphor-icons/react/dist/ssr/Megaphone";
 import { BellIcon } from "@phosphor-icons/react/dist/ssr/Bell";
 import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
-import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
+import { CalendarSubscriptionPanel } from "@/components/calendar-subscription-panel";
+import { calendarAuthority } from "@/lib/calendar/service.server";
+import { ProfileCalendarDisclosure } from "@/components/profile-calendar-disclosure";
+import "@/components/quiet/u3.css";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
 import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
 
@@ -23,7 +26,8 @@ const WORK = ["/app/timecards", "/app/payroll", "/app/reports", "/app/updates", 
 const ACCOUNT = ["/app/settings", "/app/profile"];
 
 /** v5 One look (approved Oct 24, mockup E15): an Employee's or Lead's More is a page too. The profile first, then the
- * places that aren't tabs, then help. The calendar row opens Profile's calendar setup (its existing deep link). */
+ * places that aren't tabs, then help. P1-10 (Oct 25): "Add shifts to your calendar" lives here only, and opens in place;
+ * Schedule's calendar icon links to it (#employee-calendar-title). Support and Privacy and terms live here. */
 async function EmployeeMore({ firstName, lastName, role }: { firstName: string; lastName: string; role: "EMPLOYEE" | "LEAD" }) {
   const [proof, brand] = await Promise.all([requireSessionMutationProof(), currentBrand()]);
   // Only places the company has switched on (Updates is a feature a company can turn off).
@@ -39,8 +43,10 @@ async function EmployeeMore({ firstName, lastName, role }: { firstName: string; 
       {has.has("/app/updates") ? <QuietRow href="/app/updates" icon={ic(MegaphoneIcon)} title="Updates" /> : null}
       {has.has("/app/notifications") ? <QuietRow href="/app/notifications" icon={ic(BellIcon)} title="Notifications" value={<NotificationCount authority={employeeViewAuthority(proof, "notifications")} />} /> : null}
       {has.has("/app/availability") ? <QuietRow href="/app/availability" icon={ic(ClockIcon)} title="Availability" /> : null}
-      <QuietRow href="/app/profile#employee-calendar-title" icon={ic(CalendarCheckIcon)} title="Add shifts to your calendar" />
     </QuietList>
+    <div className="q-profile-cal q-more-cal"><ProfileCalendarDisclosure>
+      <CalendarSubscriptionPanel key={calendarAuthority(proof)} authority={calendarAuthority(proof)} />
+    </ProfileCalendarDisclosure></div>
     <QuietList label="Help" style={{ marginTop: 24 }}>
       <QuietRow href="/support" icon={ic(InfoIcon)} title="Support" />
       <QuietRow href="/privacy" icon={ic(ShieldCheckIcon)} title="Privacy and terms" />
