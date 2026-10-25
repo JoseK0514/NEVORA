@@ -137,7 +137,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   const timeOff=page.locator('main').getByRole('link',{name:'Time off',exact:true}),shifts=page.locator('main').getByRole('link',{name:'Swap or cover a shift',exact:true});assert.equal(await timeOff.getAttribute('href'),'/app/requests');assert.equal(await shifts.getAttribute('href'),'/app/exchange');
   for(const [link,path] of [[timeOff,'/app/requests'],[shifts,'/app/exchange']]){
    await link.click();await page.waitForURL(u=>u.pathname===path);await settle();
-   assert.equal(await page.locator('.section-tabs').count(),0);assert.equal(await page.locator('main a.q-nav__l[href="/app/requests/hub"]').count(),1,'Back to Requests');
+   await page.locator('main a.q-nav__l[href="/app/requests/hub"]').waitFor();assert.equal(await page.locator('main a.q-nav__l[href="/app/requests/hub"]').count(),1,'Back to Requests');assert.equal(await page.locator('.section-tabs').count(),0);
    if(await page.locator('.mobile-nav').isVisible()){assert.equal(await page.locator('.mobile-nav a[aria-current="page"]').getAttribute('href'),'/app/requests/hub');assert.equal(await page.locator('.mobile-nav a[href="/app/more"]').evaluate(e=>e.classList.contains('active')),false);}
    await page.goBack();await settle();
   }
