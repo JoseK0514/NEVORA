@@ -177,7 +177,7 @@ try{
   }
   await correctionForm.getByRole('button',{name:'Send',exact:true}).click();
   await ep.getByText(SENT,{exact:true}).waitFor();
-  await ep.locator('.employee-correction-center').getByText('Waiting',{exact:true}).waitFor();
+  await ep.locator('.employee-correction-center').getByText('Waiting',{exact:true}).first().waitFor();
   checked(engine+': employee submits correction through real D2 API');
 
   const employeeState=await employee.request.get(app.url+'/api/employee/time-corrections',{headers:{'X-Nevora-Time-Correction':'1'}});
