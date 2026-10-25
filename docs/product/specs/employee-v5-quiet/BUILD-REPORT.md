@@ -72,3 +72,32 @@ Comparisons (mockup beside build) are in `build-run-1/`.
 - The GitHub cloud suites for this change.
 - Screen-reader passes (VoiceOver), beyond the semantic checks above.
 - Desktop layouts for the new pages (desktop comes after the phone, per the plan).
+
+## Run 2: CI fixes on PR #31 (Oct 24–25, 2026)
+
+The first GitHub run on the v5 build failed several jobs. Most failures were browser checks still written for the
+Signature markup; a few were real accessibility gaps that the checks caught. Logic, data contracts and server
+behaviour are unchanged.
+
+**Product fixes found by the checks**
+
+- Contrast (AA): tab labels, hints, placeholders, the Home week glance and the Schedule week strip now use the kit
+  grey (#6B6B6B) instead of lighter greys (2.5:1 at worst before).
+- Profile: the Signature frame removed its bottom padding, so a focused Sign out could sit under the tab bar.
+  The page now reserves the tab bar like every other page.
+- Schedule: the confirm row has a real heading; Confirm is a 44 pt target (the pill stays its drawn size); the
+  short Retry keeps the name "Retry confirmation"; the unavailable state is announced.
+- Home: the shift region is labelled; the card link has a concise name; week rows carry their dates; the card
+  text stays white over the kit's link colour.
+- Availability: a closed week says the deadline passed and the hours are kept; each day sheet is named for its day.
+- Time off: the From and Until pickers carry their label as their name.
+- My time: the state word ("Updates paused", "Your session ended") is its own text, so it is read on its own.
+- Sheets: Swap and Unable to work close by address instead of through a catch-all slot route (that route made
+  Next's link rule fail on ten untouched files).
+- A stale view that a refresh can't resolve now shows its recovery instead of the loading placeholder.
+
+**Checks updated to the v5 markup (same intent)**
+
+Phase E Home, Navigation and Attention scenarios; Phase D UX-03 (an unpublished week never reads as days off: the
+day says "Schedule not published yet", a published empty week says "Day off" and no day in the strip carries a
+shift); D2 corrections, recovery and keyboard checks open each entry's sheet instead of a disclosure.
