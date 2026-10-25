@@ -164,7 +164,22 @@ export function EmployeeTimeSignatureView({state,onRefresh,context}:{state:Emplo
  </div>;
 }
 
-export function EmployeeTimePanel({compact=false,corporate=false,authority,signature}:{compact?:boolean;corporate?:boolean;authority?:string;signature?:MyTimeContext}){
+/** Home in the v5 "One look": while a shift is under way, the clock status is one Quiet row under the shift card that
+ * opens My time (Oct 25, 2026; it replaces the older compact card with its own Refresh button). Same read and refresh. */
+function EmployeeClockRow({state}:{state:EmployeeTimePanelState}){
+ const {time,paused}=state;
+ const ready=!paused&&time?.state==='ready'?time:null;
+ const current=ready?.current??null;
+ const title=ready?status(current):paused?'Updates paused':time?.state==='unavailable'?(time.reason==='access_denied'?'Your session ended':'Clock status unavailable'):'Loading recorded time';
+ const detail=ready?(current?<>{current.locationName} since <time dateTime={current.clockInAt}>{clockedInAt(current.clockInAt,ready.timeZone,ready.date)}</time></>:'Use your location’s Clocker to record punches.'):null;
+ return <ul className="q-list"><li><Link className="q-row q-row--av" href="/app/my-time">
+  <span className="q-av q-av--tint" aria-hidden="true"><ClockIcon className="q-ic"/></span>
+  <span className="q-rt" role="status"><b>{title}</b>{detail?<i>{detail}</i>:null}</span>
+  <CaretRightIcon className="q-chev" aria-hidden="true"/>
+ </Link></li></ul>;
+}
+
+export function EmployeeTimePanel({compact=false,row=false,corporate=false,authority,signature}:{compact?:boolean;row?:boolean;corporate?:boolean;authority?:string;signature?:MyTimeContext}){
  const [state,setState]=useState<EmployeeTimePanelState>({time:null,refreshing:true,paused:false});
  const [commands,setCommands]=useState<Record<string,CorrectionRequestCommand>>({});
  const authorityLost=useRef(false);
@@ -191,5 +206,5 @@ export function EmployeeTimePanel({compact=false,corporate=false,authority,signa
   void Promise.resolve().then(()=>{if(mounted)sync();});
   return ()=>{mounted=false;time.stop();controller.current=null;document.removeEventListener('visibilitychange',sync);window.removeEventListener('online',sync);window.removeEventListener('offline',pause);window.removeEventListener('pagehide',pause);window.removeEventListener('pageshow',sync);window.removeEventListener('focus',sync);window.removeEventListener('storage',sync);};
  },[authority]);
- return <EmployeeCorrectionRecoveryContext.Provider value={{commands,update,authority}}>{signature&&!compact?<EmployeeTimeSignatureView state={state} context={signature} onRefresh={()=>controller.current?.refresh()}/>:<EmployeeTimeView state={state} compact={compact} corporate={corporate} onRefresh={()=>controller.current?.refresh()}/>}</EmployeeCorrectionRecoveryContext.Provider>;
+ return <EmployeeCorrectionRecoveryContext.Provider value={{commands,update,authority}}>{row?<EmployeeClockRow state={state}/>:signature&&!compact?<EmployeeTimeSignatureView state={state} context={signature} onRefresh={()=>controller.current?.refresh()}/>:<EmployeeTimeView state={state} compact={compact} corporate={corporate} onRefresh={()=>controller.current?.refresh()}/>}</EmployeeCorrectionRecoveryContext.Provider>;
 }

@@ -75,7 +75,7 @@ export function EmployeeHomeReviewedRenderer({state,timeAuthority,onRetry,author
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  const loading=!state.paused&&(!state.snapshot||replaced);
  const status=state.paused?'paused':snapshot?home!.state:denied?'unauthorized':loading?'loading':'unavailable';
- return <EmployeeHomeQuietView home={home} status={status} refreshing={state.refreshing} onRetry={onRetry} displayName={displayName} timeZone={timeZone} workspaceName={workspaceName} week={week} teamMessage={teamMessage} ownTimeSlot={snapshot?<EmployeeTimePanel key={timeAuthority} compact authority={timeAuthority}/>:null}/>;
+ return <EmployeeHomeQuietView home={home} status={status} refreshing={state.refreshing} onRetry={onRetry} displayName={displayName} timeZone={timeZone} workspaceName={workspaceName} week={week} teamMessage={teamMessage} ownTimeSlot={snapshot?<EmployeeTimePanel key={timeAuthority} row authority={timeAuthority}/>:null}/>;
 }
 // TC-P3-08: the signed-in first name reaches Home's band ("Hi, Alexandra."); the view shows it only once Home is read.
 export function EmployeeHomeActions({authority,timeAuthority,displayName,timeZone,workspaceName,week,teamMessage}:{authority:string;timeAuthority:string;displayName?:string;timeZone?:string;workspaceName?:string;week?:HomeWeek|null;teamMessage?:boolean}){

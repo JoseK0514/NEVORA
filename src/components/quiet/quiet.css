@@ -659,7 +659,7 @@ html[data-theme="dark"] body .app-shell[data-nv-quiet] .portal-route-state:not([
 :is(#q-root, html) .q-glance .is-work b { background: var(--q-tint); color: var(--q-tint-ink); font-weight: 600; }
 :is(#q-root, html) .q-glance .is-today b { box-shadow: inset 0 0 0 1.5px var(--q-ink); color: var(--q-ink); }
 :is(#q-root, html) .q-glance .is-today.is-work b { box-shadow: inset 0 0 0 1.5px var(--q-tint-ink); color: var(--q-tint-ink); }
-:is(#q-root, html) .q-home__clock { margin: 12px 20px 0; }
+:is(#q-root, html) .q-home__clock { margin: 8px 0 0; }
 :is(#q-root, html) .q-home__retry { margin: 32px 20px 0; }
 :is(#q-root, html) .q-next, :is(#q-root, html) .q-glance a { -webkit-tap-highlight-color: transparent; transition: transform 160ms cubic-bezier(.23, 1, .32, 1); }
 :is(#q-root, html) .q-next:active { transform: scale(.98); }

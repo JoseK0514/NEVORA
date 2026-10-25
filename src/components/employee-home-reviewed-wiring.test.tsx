@@ -57,20 +57,20 @@ function clockRegion(markup: string) {
 }
 
 describe('reviewed Home renderer uses the original release boundary', () => {
-  it('shows the real projected ready data with the original independent keyed compact clock panel', () => {
+  it('shows the real projected ready data with the original independent keyed clock panel as a Quiet row', () => {
     const state = released(), view = adapter(state);
     expect(view.type).toBe(EmployeeHomeQuietView);
     expect(view.props.home).toBe(state.snapshot?.state === 'ready' ? state.snapshot.home : null);
     expect(view.props.status).toBe('ready');
     const slot = view.props.ownTimeSlot;
     expect(isValidElement(slot)).toBe(true);
-    if (!isValidElement<{authority: string; compact: boolean}>(slot)) throw Error('Missing original clock panel');
+    if (!isValidElement<{authority: string; row: boolean}>(slot)) throw Error('Missing original clock panel');
     expect(slot.type).toBe(EmployeeTimePanel); expect(slot.key).toBe(timeAuthority);
-    expect(slot.props).toEqual({compact: true, authority: timeAuthority});
+    expect(slot.props).toEqual({row: true, authority: timeAuthority});
     const markup = html(state);
     expect(markup).toContain('PRIVATE_ASSIGNMENT_LOCATION'); expect(markup).toContain('PRIVATE_ACTION');
     expect(markup).toContain('Needs you'); noClock(markup); expect(markup).not.toContain('Clocked in');
-    // While a shift is under way, the original compact clock panel shows under the card.
+    // While a shift is under way, the original clock panel shows under the card as one Quiet row.
     const now = html(released(underWay())); expect(clockRegion(now)).toContain('Loading recorded time'); expect(now).toContain('Scheduled now');
     expect(markup).not.toContain(authority); expect(markup).not.toContain(timeAuthority);
   });
@@ -128,10 +128,10 @@ describe('reviewed Home renderer uses the original release boundary', () => {
   it('changes only the original clock key when its independent authority changes', () => {
     const state = released(), first = adapter(state), next = adapter(state, {timeAuthority: 'd'.repeat(64)});
     const before = first.props.ownTimeSlot, after = next.props.ownTimeSlot;
-    if (!isValidElement<{authority: string; compact: boolean}>(before) || !isValidElement<{authority: string; compact: boolean}>(after)) throw Error('Missing clock slot');
+    if (!isValidElement<{authority: string; row: boolean}>(before) || !isValidElement<{authority: string; row: boolean}>(after)) throw Error('Missing clock slot');
     expect(before.type).toBe(EmployeeTimePanel); expect(after.type).toBe(EmployeeTimePanel);
     expect(before.key).toBe(timeAuthority); expect(after.key).toBe('d'.repeat(64));
-    expect(after.props.authority).toBe('d'.repeat(64)); expect(after.props.compact).toBe(true);
+    expect(after.props.authority).toBe('d'.repeat(64)); expect(after.props.row).toBe(true);
     expect(first.props.home).toBe(next.props.home); expect(next.props.status).toBe('ready');
   });
 
