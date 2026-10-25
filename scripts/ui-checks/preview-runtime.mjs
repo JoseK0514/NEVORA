@@ -69,7 +69,10 @@ try{
  process.env.FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN='yes';process.env.NEVORA_PAYROLL_ENABLED='true';
  app=await createOwnedNextApp(evidence,{payrollEnabled:true,pinDevTypeReferences:true,clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true});
  report.sourceManifest=join(app.root,'source-manifest.json');await writeFile(join(evidence,'runtime.json'),JSON.stringify({url:app.url,root:app.root,checkpoint:report.checkpoint},null,2));console.log('READY '+app.url);
- await seedOwnedApp(app.database.executor);
+ // B23: keep Company Access adoption (0031/0032) out of the base seed. The default would install both
+ // before the AUDIT-* people exist, which leaves AUDIT-M without legacy COMPANY scope and makes the
+ // explicit 0032 and 0031 steps below fail. They run in the documented order instead.
+ await seedOwnedApp(app.database.executor,{adoptCompanyAccess:false});
  const password=await hashPassword(TEST_PASSWORD);
  for(const [id,first,last,role] of [['AUDIT-LEAD','Taylor','Rivera','LEAD'],['AUDIT-M','Morgan','Rivera','MANAGER'],['AUDIT-E','Alexandra','Rivera','EMPLOYEE'],['AUDIT-LONG','María José','Rivera Santiago With A Long Name','EMPLOYEE']]){
  await q("INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id) VALUES($1,$2,$3,'7875550101',$4,$5,'loc-1')",[id,first,last,id.toLowerCase()+'@example.invalid',role]);
