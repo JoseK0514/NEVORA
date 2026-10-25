@@ -9,7 +9,7 @@ import Link from 'next/link';
 import {Temporal} from '@js-temporal/polyfill';
 import {projectReports,type PeriodReports,type ReportHours} from '@/lib/reports/project';
 import {formatRecordedHours,parsePeriod,projectTimecard,type Period} from '@/lib/timecards/project';
-import {formatDateRange,formatDisplayDate} from '@/lib/date-utils';
+import {formatDateRange,formatDisplayDate,formatElapsed,formatHours} from '@/lib/date-utils';
 import {DownloadSimpleIcon} from '@phosphor-icons/react/dist/ssr/DownloadSimple';
 import {PrinterIcon} from '@phosphor-icons/react/dist/ssr/Printer';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
@@ -25,7 +25,8 @@ import {Avatar,Card,KitLink,Row,Rows,StatGrid,Status,Tile,type KitTone} from './
 import {keepWhole} from '../lib/keep-whole';
 import {timeZoneLabel} from '../lib/time-zone-label';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
-import {QuietHeader,QuietNav} from './quiet/quiet';
+import {initialsOf,QuietHeader,QuietNav} from './quiet/quiet';
+import './quiet/u4.css';
 type State='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'paused'|'access_lost';
 /** IS-B1, IS-B29: a fresh snapshot is read a third of the way through the current one's life (and retried while there's time)
  * and swapped in when verified, so the report only empties if every read fails before expiry.
@@ -50,7 +51,6 @@ const changeEvents:Record<string,string>={CREATED:'sent',SUBMITTED:'sent',APPROV
 const changeText=(e:PeriodReports['shiftChanges'][number])=>{const what=e.requestKind==='CALLOUT'?'Unable to work':e.kind==='COVERAGE'?'Coverage request':e.kind==='SWAP'?'Shift trade':'Older shift change';const event=e.kind==='COVERAGE'&&e.eventKind==='COMPLETED'?'filled':changeEvents[e.eventKind]??'updated';return `${what} ${event}`;};
 const sentence=(value:string)=>value.charAt(0).toUpperCase()+value.slice(1);
 const plural=(count:number,one:string,many:string)=>`${count} ${count===1?one:many}`;
-const initials=(name:string)=>name.split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
 const cardTone:Record<string,KitTone>={DRAFT:'neutral',APPROVED:'done',FINALIZED:'done',REOPENED:'review',NEEDS_REVIEW:'review'};
 const requestTone=(status:string):KitTone=>/approv|complet|fill/i.test(status)?'done':/declin|reject|cancel|withdr/i.test(status)?'neutral':/pend|wait|review|open/i.test(status)?'review':'neutral';
 const timecardsHref=(period:Period)=>`/app/timecards?start=${period.startDate}&end=${period.endDate}`;
@@ -101,7 +101,7 @@ function Plot({days}:{days:{date:string;minutes:number}[]}){
  return <>
   <div className="cm-chart__plot" aria-hidden="true" data-dense={dense||undefined} style={{'--cm-bars':days.length} as CSSProperties}>
    {[0,1,2].map(line=><span key={line} className="cm-chart__line" data-solid={line===2||undefined} style={{top:`${line*50}%`}}/>)}
-   {[top,top/2,0].map((value,line)=><span key={line} className="cm-chart__tick" style={{top:`${line*50}%`}}>{value?`${value}h`:'0'}</span>)}
+   {[top,top/2,0].map((value,line)=><span key={line} className="cm-chart__tick" style={{top:`${line*50}%`}}>{value?formatHours(value*60):'0'}</span>)}
    {days.map(day=><i key={day.date} className="cm-chart__bar" style={{height:`${Math.min(100,(day.minutes/(top*60))*100)}%`}}/>)}
   </div>
   <div className="cm-chart__days" aria-hidden="true" data-dense={dense||undefined} style={{'--cm-bars':days.length} as CSSProperties}>
@@ -199,7 +199,7 @@ export function ReportsView({report,state,onThisWeek}:{report:PeriodReports|null
    </Card>
    <Card id="report-people" title="Hours by person" meta={people?<KitLink href={href} label={`All ${people} timecards`}>All {people}</KitLink>:undefined}>
     {withTime.length||idle?<Rows>
-     {withTime.map(r=>{const count=shifts.get(r.id)??0,time=hours(r.recordedNanoseconds);return <Row key={r.id} leading={<Avatar initials={initials(r.name)}/>} title={r.name} meta={count?plural(count,'shift','shifts'):undefined} trailing={time} href={href} label={`${r.name}, ${count?plural(count,'shift','shifts')+', ':''}${time}`}/>;})}
+     {withTime.map(r=>{const count=shifts.get(r.id)??0,time=hours(r.recordedNanoseconds);return <Row key={r.id} leading={<Avatar initials={initialsOf(r.name)}/>} title={r.name} meta={count?plural(count,'shift','shifts'):undefined} trailing={time} href={href} label={`${r.name}, ${count?plural(count,'shift','shifts')+', ':''}${time}`}/>;})}
      {idle?<Row title={`${plural(idle,'person','people')} with no recorded time`} trailing="0h" href={href}/>:null}
     </Rows>:<div className="nv-card__body"><p className="wb-note">No hours recorded in this period.</p></div>}
    </Card>
@@ -229,7 +229,7 @@ export function ReportsView({report,state,onThisWeek}:{report:PeriodReports|null
  </div>;
 }
 /** Quiet (v4): "159.5 h". */
-const quietHours=(nanoseconds:string)=>{if(!/^-?\d+$/.test(nanoseconds))return '—';const negative=nanoseconds.startsWith('-');const minutes=Number(BigInt(negative?nanoseconds.slice(1):nanoseconds)/BigInt(60_000_000_000));return `${negative?'−':''}${Math.round(minutes/6)/10} h`;};
+const quietHours=(nanoseconds:string)=>{if(!/^-?\d+$/.test(nanoseconds))return '—';const negative=nanoseconds.startsWith('-');const minutes=Number(BigInt(negative?nanoseconds.slice(1):nanoseconds)/BigInt(60_000_000_000));return `${negative?'−':''}${formatElapsed(minutes)}`;};
 /** "Oct 19 – 23", or "Sep 28 – Oct 4". */
 const quietRange=(period:Period)=>{const month=(date:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short'}).format(new Date(`${date}T12:00:00Z`));
  return period.startDate.slice(0,7)===period.endDate.slice(0,7)?`${month(period.startDate)} ${Number(period.startDate.slice(8))} – ${Number(period.endDate.slice(8))}`:`${month(period.startDate)} ${Number(period.startDate.slice(8))} – ${month(period.endDate)} ${Number(period.endDate.slice(8))}`;};
@@ -238,6 +238,31 @@ function QuietFigure({title,value,children,href}:{title:string;value:string;chil
  const row=<><span className="q-rt"><b>{title}</b></span><span className="q-rv q-rv--l">{value}</span><CaretRightIcon className="q-chev" aria-hidden="true"/></>;
  if(href||!children)return <li>{href?<Link className="q-row q-row--one" href={href}>{row}</Link>:<div className="q-row q-row--one">{row}</div>}</li>;
  return <li><details className="q-details"><summary className="q-row q-row--one">{row}</summary><div className="q-figure__body">{children}</div></details></li>;
+}
+
+/** T-15 (final pass): how the figures are counted, in five plain lines on a sheet. The server's own definitions stay in the
+ * desktop report; none of their developer terms reach this page. */
+export const HOW_INSIGHTS_COUNT=[
+ 'Recorded time comes from clock-ins and approved fixes.',
+ 'Scheduled time is the last published schedule.',
+ 'Breaks are included and shown separately.',
+ 'Time off and Unable to work show their current status.',
+ 'These are not payroll hours.',
+] as const;
+function HowInsightsCount({observedAt,timeZone}:{observedAt:string;timeZone:string}){
+ // A native modal dialog drawn as the Quiet sheet: no state of its own (this view's protected-read hooks stay as they
+ // are), Escape and Done close it, and focus returns to the button.
+ return <>
+  <button type="button" className="q-btn q-btn--quiet" aria-haspopup="dialog" onClick={()=>(document.getElementById('q-insights-how') as HTMLDialogElement|null)?.showModal?.()}>How Insights count</button>
+  <dialog id="q-insights-how" className="q-page q-sheet" aria-labelledby="q-insights-how-title" onClick={event=>{if(event.target===event.currentTarget)event.currentTarget.close();}}>
+   <div className="q-sheet__in">
+    <div className="q-sheet__top"><div className="q-sheet__grab" aria-hidden="true"/></div>
+    <form method="dialog" className="q-nav"><span/><span className="q-nav__t" id="q-insights-how-title">How Insights count</span><button type="submit" className="q-nav__r q-nav__r--b">Done</button></form>
+    <ul className="q-u4-bullets">{HOW_INSIGHTS_COUNT.map(line=><li key={line}>{line}</li>)}</ul>
+    <p className="q-help">As of <time dateTime={observedAt}>{observedLabel(observedAt,timeZone)}</time> · {timeZoneLabel(timeZone)}</p>
+   </div>
+  </dialog>
+ </>;
 }
 
 /** Quiet (v4, approved Oct 23): four figures for the period, each opening what's behind it, then how they're counted. */
@@ -257,7 +282,6 @@ export function QuietReportsView({report,state}:{report:PeriodReports|null;state
  const toFinish=report.approvals.filter(card=>card.state!=='FINALIZED').length;
  const offDays=timeOffDays(report);
  const requests=[...report.callouts,...report.timeOff];
- const definitions=[...new Set([...report.definitions,'Recorded time includes breaks. Breaks are shown separately; no pay or deduction rules are applied.',report.coverageReliability.definition,report.scheduleStability.definition,report.overtime.reason])];
  return <>
   <ul className="q-list q-figures" aria-label="Period figures">
    <QuietFigure title="Recorded time" value={quietHours(report.summary.recordedNanoseconds)}>
@@ -271,11 +295,7 @@ export function QuietReportsView({report,state}:{report:PeriodReports|null;state
     {requests.length?<ul className="q-sublist">{requests.map(r=><li key={`${r.kind}:${r.id}`}><span>{r.employeeName}</span><span>{`${r.kind==='CALLOUT'?'Unable to work':'Time off'} · ${r.endDate!==r.date?formatDateRange(r.date,r.endDate):formatDisplayDate(r.date)}`}</span></li>)}</ul>:<p className="q-help">No time off in this period.</p>}
    </QuietFigure>
   </ul>
-  <details className="q-counted">
-   <summary className="q-btn q-btn--quiet">How these are counted</summary>
-   <ul className="q-counted__list">{definitions.map(d=><li key={d}>{d}</li>)}</ul>
-   <p className="q-help">As of <time dateTime={report.observedAt}>{observedLabel(report.observedAt,report.timeZone)}</time> · {timeZoneLabel(report.timeZone)}</p>
-  </details>
+  <HowInsightsCount observedAt={report.observedAt} timeZone={report.timeZone}/>
  </>;
 }
 

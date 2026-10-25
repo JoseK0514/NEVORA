@@ -37,10 +37,12 @@ it('withholds the clean team view when Company authority is denied',async()=>{
  expect(html).not.toContain('cm-timecards');
  expect(html).not.toContain('data-manager');
 });
-it('retains the employee rolling period without requesting Company management authority',async()=>{
+// T-17 (final pass): the employee view opens on the same Monday to Sunday week as Pay (This week / Last week).
+it('opens the employee current week without requesting Company management authority',async()=>{
  fixture.role='EMPLOYEE';
  const html=renderToStaticMarkup(await TimecardsPage({searchParams:Promise.resolve({})}));
- expect(html).toContain('2026-10-14 / 2026-10-20');
+ expect(html).toContain('2026-10-19 / 2026-10-25');
+ expect(html).toContain('data-today="2026-10-20"');
  expect(html).toContain('data-manager="false"');
  expect(html).not.toContain('data-company-frame');
  expect(fixture.company).not.toHaveBeenCalled();

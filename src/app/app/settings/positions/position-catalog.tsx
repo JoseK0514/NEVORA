@@ -14,6 +14,7 @@ import { Status } from "@/components/kit/kit";
 import { toast } from "@/components/toaster";
 import type { Position } from "@/lib/domain";
 import { EmptyState, SettingsFrame } from "../wave-c-kit";
+import "@/components/quiet/u4.css";
 import { Field, SettingsForm, SwitchRow } from "../wave-c-form";
 
 type PositionAction = (data: FormData) => Promise<ConfigurationResult>;
@@ -37,7 +38,7 @@ function PositionRow({ position, hidden, ready, action, people }: {
   return (
     <li hidden={hidden}>
       <details className="wc-editable" ref={details}>
-        <summary className={people === undefined ? "q-row q-row--one" : "q-row"} aria-label={`Edit ${position.name}, ${position.active ? "active" : "retired"}`}>
+        <summary className={people === undefined ? "q-row q-row--one" : "q-row"} aria-label={`Edit ${position.name}, ${position.active ? "active" : "archived"}`}>
           <span className="q-rt"><b>{position.name}</b>{people === undefined ? null : <i>{`${people} ${people === 1 ? "person" : "people"}`}</i>}</span>
           <CaretRightIcon className="q-chev" aria-hidden="true" />
         </summary>
@@ -50,7 +51,7 @@ function PositionRow({ position, hidden, ready, action, people }: {
             <input type="hidden" name="expectedUpdatedAt" value={position.updatedAt ?? ""} />
             <Field label="Name" id={`${id}-name`} name="name" defaultValue={position.name} required maxLength={80} autoComplete="off" />
             <ul className="q-list" style={{ marginTop: 16 }}><li><SwitchRow id={`${id}-active`} name="active" defaultChecked={position.active} label="Active" describedBy={`${id}-active-help`} /></li></ul>
-            <p id={`${id}-active-help`} className="q-help">Retired positions can’t be newly assigned. People keep their history.</p>
+            <p id={`${id}-active-help`} className="q-help">Archived positions can’t be newly assigned. People keep their history.</p>
           </SettingsForm>
         </div>
       </details>
@@ -96,7 +97,7 @@ export function PositionCatalog({ positions, available, createAction, updateActi
     if (result.success && !result.error) clearFilters();
     return result;
   }
-  // Quiet (v4, approved Oct 23): "+" in the bar opens Add; Active and Retired; one row per position with how many people hold it.
+  // Quiet (v4, approved Oct 23): "+" in the bar opens Add; Active and Archived (P2-5: one word everywhere); one row per position with how many people hold it.
   const [adding, setAdding] = useState(false);
   const addDialog = useRef<HTMLDialogElement>(null);
   useEffect(() => { const dialog = addDialog.current; if (adding && dialog && !dialog.open) dialog.showModal(); if (!adding && dialog?.open) dialog.close(); }, [adding]);
@@ -109,12 +110,12 @@ export function PositionCatalog({ positions, available, createAction, updateActi
         <noscript><p className="q-help">JavaScript is required to add or edit positions.</p></noscript>
         {positions.length ? <div className="q-seg" role="group" aria-label="Filter positions by status">
           <button type="button" aria-pressed={tab === "active"} onClick={() => setFilter("active")} aria-label={`Active, ${counts.active}`}>{`Active · ${counts.active}`}</button>
-          <button type="button" aria-pressed={tab === "inactive"} onClick={() => setFilter("inactive")} aria-label={`Retired, ${counts.inactive}`}>Retired</button>
+          <button type="button" aria-pressed={tab === "inactive"} onClick={() => setFilter("inactive")} aria-label={`Archived, ${counts.inactive}`}>Archived</button>
         </div> : null}
         <p className="q-sr" role="status" aria-live="polite">{positions.length ? `Showing ${positions.filter(position => position.active === (tab === "active")).length} of ${positions.length} positions` : ""}</p>
         {positions.length ? <ul className="q-list wc-editables" aria-label="Positions" style={{ marginTop: 16 }}>{positions.map(position => <PositionRow key={position.id} position={position}
           hidden={position.active !== (tab === "active")} ready={ready} action={update} people={people?.[position.id]} />)}</ul> : null}
-        {positions.length && !positions.some(position => position.active === (tab === "active")) ? <p className="q-empty" style={{ marginTop: 16 }}>{tab === "active" ? "No active positions." : "No retired positions."}</p> : null}
+        {positions.length && !positions.some(position => position.active === (tab === "active")) ? <p className="q-empty" style={{ marginTop: 16 }}>{tab === "active" ? "No active positions." : "No archived positions."}</p> : null}
         {!positions.length ? <EmptyState icon={null} title="No positions yet" action={<button type="button" className="q-btn" onClick={() => setAdding(true)} disabled={!ready}>Add position</button>}>
           Shifts can still be added without a position.</EmptyState> : null}
         <dialog ref={addDialog} className="wc-dialog" aria-labelledby="new-position-title" onClose={() => setAdding(false)} onCancel={() => setAdding(false)}>

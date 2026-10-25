@@ -10,13 +10,9 @@ import { EmployeeCoreProfileForm } from "@/components/employee-core-profile-form
 import { EmployeeSchedulingFields } from "@/components/employee-scheduling-fields";
 import { ConfigurationForm } from "@/components/configuration-form";
 import { OperationalRuleFields } from "@/components/operational-rule-fields";
-import { EmployeeProfileTabs } from "@/components/employee-profile-tabs";
-import { KeyIcon } from "@phosphor-icons/react/dist/ssr/Key";
-import { LockKeyIcon } from "@phosphor-icons/react/dist/ssr/LockKey";
-import { Card, Row, Rows, Tile } from "@/components/kit/kit";
-import { QuietGroup, QuietHeader, QuietNav, QuietPage, QuietRow } from "@/components/quiet/quiet";
+import { EmployeeSheetRow, EmployeeStatusAction } from "@/components/company-access/employee-sheet-row";
+import { QuietGroup, QuietNav, QuietPage, QuietRow } from "@/components/quiet/quiet";
 import { employeeInitials } from "@/lib/employee-display";
-import { FormActions, Notice } from "@/components/wave-a/parts";
 import { PendingButton } from "@/components/wave-a/pending-button";
 import { requireSessionMutationProof } from "@/lib/auth/session";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
@@ -29,6 +25,9 @@ import {
   saveEmployeeCoreProfileAction,
   saveEmployeeSchedulingProfileAction,
 } from "../actions";
+
+// a11y #20 (final pass): each page names itself; the layout template adds "· NEVORA".
+export const metadata = { title: "Employee" };
 
 export default async function EmployeeProfilePage({
   params, searchParams,
@@ -66,7 +65,13 @@ export default async function EmployeeProfilePage({
   const base = `/app/employees/${encodeURIComponent(employee.id)}`;
   const recoverable = employee.id !== actor.id && (actor.role === "OWNER" || employee.role === "EMPLOYEE" || employee.role === "LEAD");
   const dial = employee.phone ? employee.phone.replace(/(?!^\+)[^\d]/g, "") : "";
-  // Quiet (v4, approved Oct 23): who they are, Call, Message and Shifts, then Details and Access. Edit opens the editors below.
+  const invited = invitation?.state === "ready" && invitation.eligibility !== "ALREADY_ACTIVATED";
+  const accountValue = invitation?.state === "ready" ? (invitation.eligibility === "ALREADY_ACTIVATED" ? "Active" : invitation.invitation?.state === "ISSUED" ? "Invited" : "Not activated") : "Active";
+  const invitationPanel = actor.role === "OWNER" && invitation ? <EmployeeInvitationPanel actorId={actor.id} employeeId={employee.id} initialStatus={invitation} /> : null;
+  const statusAction = canManageCore && employee.id !== actor.id ? <EmployeeStatusAction employee={employee} ownerScope={ownerScope ?? null} actorRole={actor.role} locations={locations} action={saveEmployeeCoreProfileAction} /> : null;
+  // Quiet (v4, approved Oct 23): who they are, Call, Message and Shifts, then Details and Access. Edit opens the editor.
+  // Final pass: a person who hasn't activated gets "Invite to NEVORA" (not account recovery, UX-O-51); Deactivate is a
+  // danger row with its own confirm (T-11, UX-O-53).
   if (!editing) return (<ScopedReadFrame observation={source}>
     <QuietPage className="q-member">
       <QuietNav back={{ href: "/app/employees", label: "Team" }} right={canManageCore ? <Link className="q-nav__r" href={`${base}?edit=1`}>Edit</Link> : undefined} />
@@ -84,64 +89,53 @@ export default async function EmployeeProfilePage({
         <QuietRow title="Role" value={roleLabel} tone="l" />
       </ul></QuietGroup>
       {canManageCore && employee.active ? <QuietGroup label="Access" id="member-access"><ul className="q-list">
-        <QuietRow href={`${base}/clocker-pin`} title="Clocker PIN" value="Set" tone="l" />
-        {recoverable ? <QuietRow href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} title="Account" value={invitation?.state === "ready" && invitation.eligibility !== "ALREADY_ACTIVATED" ? (invitation.invitation?.state === "ISSUED" ? "Invited" : "Not activated") : "Active"} tone="l" /> : null}
+        <QuietRow href={`${base}/clocker-pin`} title="Clocker PIN" />
+        {invited && invitationPanel ? <EmployeeSheetRow title="Invite to NEVORA" value={accountValue} sheetTitle="Invite to NEVORA">{invitationPanel}</EmployeeSheetRow>
+          : recoverable ? <QuietRow href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} title="Account" value={accountValue} tone="l" /> : null}
       </ul></QuietGroup> : null}
+      {statusAction}
     </QuietPage>
   </ScopedReadFrame>);
-  // Phase 3.5 Wave A: Team member detail on the kit. Who they are in the band, contact at a glance,
-  // then Details (contact, access, tablet PIN, sign-in help) and Scheduling (positions, locations, Owner rules).
+  // T-11 (final pass, Oct 25, 2026): Edit employee is the AddEmployee modal (Cancel · Edit employee · Save). Fields for
+  // name and contact, Work as rows (ID, Role, Location, then Positions, Weekly target and Work rules), and Access as rows
+  // whose details open as sheets. The tabs, cards and bordered inputs are gone; every command is unchanged.
+  const ruleCount = operational ? (["minimumRest", "maximumShift", "maximumDaily", "breaks", "projectedOvertime"] as const).filter(key => operational[key].status === "CONFIGURED").length : 0;
+  const scopeValue = ownerScope?.scope?.mode === "COMPANY" ? "Company" : ownerScope?.scope?.mode === "LOCATIONS" ? ownerScope.scope.locationIds.map(id => locations.find(l => l.id === id)?.shortName ?? "Location").join(", ") : "None";
   return (<ScopedReadFrame observation={source}>
-    <div className="q-page wa-page wa-member" data-nv-page="">
-      <QuietNav back={{ href: base, label: name }} />
-      <QuietHeader title={`Edit ${employee.firstName}`} />
-      <div className="nv-content wa-narrow">
-        <EmployeeProfileTabs
-          details={<>
-            <Card title="Employee details" id="member-details">
-              {canManageCore ? (
-                <EmployeeCoreProfileForm employee={employee} locations={locations} actorId={actor.id} actorRole={actor.role} ownerScope={ownerScope} action={saveEmployeeCoreProfileAction} />
-              ) : (
-                <div className="wa-card-body"><p className="wa-text wa-muted">Only an Owner can change another Owner. Scheduling information remains available in Scheduling.</p></div>
-              )}
-            </Card>
-            {actor.role==='OWNER'&&invitation&&<EmployeeInvitationPanel actorId={actor.id} employeeId={employee.id} initialStatus={invitation}/>}
-            {actor.role==='OWNER'&&employee.role!=='OWNER'&&(ownerScope?<ManagerOperationalScopePanel actorId={actor.id} current={ownerScope} locations={locations}/>:<p role="status">Management access could not be confirmed. Refresh this employee before changing access.</p>)}
-            {canManageCore && employee.active ? <Card title="Access">
-              <Rows label="Access">
-                <Row href={`/app/employees/${encodeURIComponent(employee.id)}/clocker-pin`} title="Clocker PIN" meta="For the shared tablet. Separate from portal sign-in."
-                  leading={<Tile><KeyIcon size={20} weight="bold" /></Tile>} />
-                {/* Managers can help Employees and Leads; only an Owner can reset a Manager (matches the server rule). */}
-                {employee.id !== actor.id && (actor.role === "OWNER" || employee.role === "EMPLOYEE" || employee.role === "LEAD") ? <Row href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} title="Account recovery" meta="Help them back in after you check who they are."
-                  leading={<Tile><LockKeyIcon size={20} weight="bold" /></Tile>} /> : null}
-              </Rows>
-            </Card> : null}
-          </>}
-          scheduling={<>
-            <Card title="Scheduling profile" id="member-scheduling">
-              <p className="wa-card-lead">Positions and locations decide where they can be scheduled.</p>
-              <ConfigurationForm action={saveEmployeeSchedulingProfileAction} className="wa-form" reviewedUpdatedAt={employee.updatedAt}>
-                <input type="hidden" name="employeeId" value={employee.id} />
-                <div className="wa-fields"><EmployeeSchedulingFields employee={employee} locations={locations} positions={positions} /></div>
-                <div className="wa-card-body"><FormActions><PendingButton pending="Saving…" block>Save scheduling profile</PendingButton></FormActions></div>
-              </ConfigurationForm>
-            </Card>
-            <Card title="Operational rules" id="member-rules">
-              {profileUnavailable ? (
-                <div className="wa-card-body"><Notice tone="urgent" title="Couldn’t load the rules">Reconnect and reload the page.</Notice></div>
-              ) : operational ? (
-                <OperationalRuleFields employeeId={employee.id} profile={operational} canEdit={actor.role === "OWNER"} />
-              ) : (
-                <div className="wa-card-body">
-                  <p className="wa-text wa-muted">Set this person’s weekly hours first. No maximum is created by this review.</p>
-                  <KitLinkInline href={`/app/schedule/settings#target-${encodeURIComponent(employee.id)}`}>Set weekly hours</KitLinkInline>
-                </div>
-              )}
-            </Card>
-          </>}
-        />
-      </div>
-    </div>
+    <QuietPage className="q-member-edit">
+      <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href={base}>Cancel</Link>} title="Edit employee"
+        right={canManageCore ? <button type="submit" form="edit-employee-form" className="q-nav__r q-nav__r--b">Save</button> : undefined} />
+      <h1 className="q-sr">Edit {name}</h1>
+      {canManageCore ? (
+        <EmployeeCoreProfileForm employee={employee} locations={locations} actorId={actor.id} actorRole={actor.role} ownerScope={ownerScope} action={saveEmployeeCoreProfileAction} />
+      ) : (
+        <p className="q-empty q-first">Only an Owner can change another Owner. You can still update where they can be scheduled.</p>
+      )}
+      {canManageCore ? null : <div className="q-grp"><h2>Work</h2></div>}
+      <ul className="q-list q-u4-cont" aria-label="Scheduling">
+        <EmployeeSheetRow title="Positions" value={positionNames || "None"} placeholder={!positionNames} sheetTitle="Positions and locations">
+          <ConfigurationForm action={saveEmployeeSchedulingProfileAction} className="q-form q-u4-form q-u4-sched" reviewedUpdatedAt={employee.updatedAt}>
+            <input type="hidden" name="employeeId" value={employee.id} />
+            <div className="q-u4-sched__fields"><EmployeeSchedulingFields employee={employee} locations={locations} positions={positions} /></div>
+            <PendingButton pending="Saving…" block>Save positions and locations</PendingButton>
+          </ConfigurationForm>
+        </EmployeeSheetRow>
+        <QuietRow href={`/app/schedule/settings#target-${encodeURIComponent(employee.id)}`} title="Weekly target" detail="Set in Scheduling rules" />
+        <EmployeeSheetRow title="Work rules" value={profileUnavailable ? "Unavailable" : operational ? (ruleCount ? `${ruleCount} set` : "None") : "None"} placeholder={!ruleCount} sheetTitle="Work rules">
+          {profileUnavailable ? <p className="q-error" role="alert">Couldn’t load the rules. Reconnect and reload the page.</p>
+            : operational ? <div className="q-u4-rules"><OperationalRuleFields employeeId={employee.id} profile={operational} canEdit={actor.role === "OWNER"} /></div>
+            : <p className="q-empty q-first">Set this person’s weekly hours first. No maximum is created by this review. <KitLinkInline href={`/app/schedule/settings#target-${encodeURIComponent(employee.id)}`}>Set weekly hours</KitLinkInline></p>}
+        </EmployeeSheetRow>
+      </ul>
+      {canManageCore && employee.active ? <QuietGroup label="Access" id="member-access"><ul className="q-list">
+        <QuietRow href={`${base}/clocker-pin`} title="Clocker PIN" />
+        {invitationPanel ? <EmployeeSheetRow title="Account" value={accountValue} sheetTitle="Account">{invitationPanel}</EmployeeSheetRow>
+          : recoverable ? <QuietRow href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} title="Account recovery" /> : null}
+        {actor.role === "OWNER" && employee.role !== "OWNER" ? <EmployeeSheetRow title="Management access" value={ownerScope ? (employee.role === "MANAGER" ? scopeValue : "Managers only") : "Unavailable"} placeholder={!ownerScope || employee.role !== "MANAGER"} sheetTitle="Management access">
+          {ownerScope ? <ManagerOperationalScopePanel actorId={actor.id} current={ownerScope} locations={locations} /> : <p className="q-error" role="status">Management access could not be confirmed. Refresh this employee before changing access.</p>}
+        </EmployeeSheetRow> : null}
+      </ul></QuietGroup> : null}
+    </QuietPage>
   </ScopedReadFrame>);
 }
 

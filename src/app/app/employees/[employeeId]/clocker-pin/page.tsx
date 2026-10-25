@@ -11,6 +11,9 @@ import { getEmployeeManagementProfile } from '@/lib/data/employees';
 import { readEmployeeClockerPin, type EmployeePinView } from '@/lib/clocker/pins.server';
 import { readPinKey } from '@/lib/clocker/pin-crypto.server';
 import { saveClockerPinAction } from './actions';
+
+// a11y #20 (final pass): each page names itself; the layout template adds "· NEVORA".
+export const metadata = { title: "Clocker PIN" };
 export const dynamic='force-dynamic';
 
 /** Phase 3.5 Wave A: Clocker PIN on the kit. Back names the person; a closed state says why and where to go. */

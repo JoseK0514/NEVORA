@@ -1,9 +1,11 @@
 import type { PayrollBacklogSummary, PayrollCapabilities, PayrollJob } from '@/lib/payroll/contracts';
+export { mealWarningText, mealWarningsOf, type MealWarning } from '@/lib/timecards/meal-warnings';
 
 export function noticeReadiness(capabilities: PayrollCapabilities) {
   return capabilities.noticeDelivery === 'ENABLED'
     ? 'Notice transport is enabled. Current access, consent and saved notice preferences are checked for each delivery. A queued notice is not a delivery confirmation.'
-    : 'Notice delivery is disabled. Private notice requests may be queued, but this environment will not send them.';
+    // UX-O-34 / visual #44: owner words, no environment note.
+    : 'Pay notices are off, so nothing is sent to employees.';
 }
 
 export function noticeOutcome(outcome: PayrollJob['outcome']) {
@@ -60,4 +62,39 @@ export function payrollExceptionMessage(exception: string) {
   };
   if (native[code]) return `${native[code]}${reference ? ` Employee reference ${reference}.` : ''}`;
   return exception;
+}
+
+/** T-14 (final pass): the Owner's "Needs fixing" list. One row per kind of problem (not one per person), in the Owner's
+ * own voice ("Add wage profiles", never "Ask the Owner to…"). The full sentences stay in the detailed review. */
+export type PayrollFixGroup = { key: string; title: string; action: string; references: string[] };
+const fixKinds: { key: string; codes: string[]; title: string; action: string }[] = [
+  { key: 'wage', codes: ['WAGE_PROFILE_REQUIRED'], title: 'Wage profile missing', action: 'Add wage profiles' },
+  { key: 'tax', codes: ['TAX_PROFILE_REQUIRED'], title: 'Withholding facts missing', action: 'Add withholding facts' },
+  { key: 'time', codes: ['TIME_NOT_FINALIZED', 'FINALIZED_TIME_REQUIRED', 'TIME_FINALIZATION_REQUIRED', 'RECORDED_SOURCE_COVERAGE_MISSING'], title: 'Recorded time incomplete', action: 'Finalize their timecards, including weeks with no hours' },
+  { key: 'open', codes: ['OPEN_RECORDED_TIME'], title: 'Clock-in still open', action: 'Close open clock-ins and breaks' },
+  { key: 'stale', codes: ['RECORDED_SOURCE_STALE', 'RECORDED_SOURCE_UNAVAILABLE'], title: 'Timecards changed', action: 'Refresh timecards, then recalculate' },
+  { key: 'location', codes: ['LOCATION_COVERAGE_REQUIRED', 'YTD_LOCATION_COVERAGE_REQUIRED'], title: 'Location coverage incomplete', action: 'Check where each person worked' },
+  { key: 'ytd', codes: ['OPENING_YTD_REQUIRED', 'ATTESTED_YTD_REQUIRED', 'YTD_ATTESTATION_REQUIRED', 'EMPLOYER_YTD_BASE_REQUIRED', 'EMPLOYER_YTD_BASE_CONFLICT'], title: 'Year-to-date balances unverified', action: 'Verify opening balances' },
+  { key: 'workweek', codes: ['WORKWEEK_EVIDENCE_REQUIRED', 'INVALID_WORKWEEK_POLICY', 'WORKWEEK_EMPLOYEE_COVERAGE_REQUIRED', 'WORKWEEK_PROFILE_CONFLICT', 'WORKWEEK_EFFECTIVE_COVERAGE_REQUIRED', 'WORKWEEK_POLICY_TRANSITION_UNSUPPORTED'], title: 'Workweek not documented', action: 'Document the workweek' },
+  { key: 'facts', codes: ['INVALID_NATIVE_PROFILE', 'NATIVE_INPUT_REQUIRED'], title: 'Payroll facts incomplete', action: 'Review employee payroll facts' },
+  { key: 'population', codes: ['POPULATION_DISPOSITION', 'POPULATION_REVIEW_REQUIRED', 'POPULATION_SOURCE_CONFLICT', 'CORRECTION_POPULATION_CONFLICT'], title: 'People in this payroll unconfirmed', action: 'Review who is in this payroll' },
+  { key: 'midnight', codes: ['DAILY_BOUNDARY_SENSITIVE'], title: 'Time across midnight', action: 'A payroll rule is needed. Recorded entries are kept.' },
+  { key: 'rules', codes: ['NATIVE_RULE_MAPPING_REQUIRED', 'RULE_ACCEPTANCE_REQUIRED', 'ROUNDING_POLICY_ACCEPTANCE_REQUIRED', 'EXACT_CENT_REQUIRED', 'WAGE_ROUNDING_REQUIRED', 'PR_ROUNDING_REQUIRED'], title: 'Payroll rules need checking', action: 'Check them with your payroll administrator' },
+  { key: 'sequence', codes: ['BACKDATED_YTD_RECALCULATION_REQUIRED', 'YTD_DEPENDENT_RUNS_REQUIRED'], title: 'Later payroll depends on this', action: 'Check the order with your payroll administrator' },
+  { key: 'amounts', codes: ['WAITING_FOR_AMOUNTS'], title: 'Provider amounts needed', action: 'Import provider amounts' },
+];
+export function payrollFixGroups(exceptions: string[]): PayrollFixGroup[] {
+  const { blocking } = payrollReviewNotes(exceptions);
+  const groups = new Map<string, PayrollFixGroup>();
+  for (const exception of blocking) {
+    const [code, ...rest] = exception.split(':');
+    const reference = rest.join(':');
+    const kind = fixKinds.find(item => item.codes.includes(code));
+    const fallback = payrollExceptionMessage(exception).replace(/ Employee reference .*$/, '').replace(/^Ask the Owner to (\w)/, (_, letter: string) => letter.toUpperCase()).split('. ')[0].replace(/\.$/, '');
+    const key = kind?.key ?? `other:${code}`;
+    const group = groups.get(key) ?? { key, title: kind?.title ?? fallback, action: kind?.action ?? '', references: [] };
+    if (reference && !group.references.includes(reference)) group.references.push(reference);
+    groups.set(key, group);
+  }
+  return [...groups.values()];
 }

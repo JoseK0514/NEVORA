@@ -3,6 +3,7 @@ import {useState,useRef,useEffect} from "react";
 import {ArrowCounterClockwiseIcon} from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
 import {ShieldWarningIcon} from "@phosphor-icons/react/dist/ssr/ShieldWarning";
 import {CaretRightIcon} from "@phosphor-icons/react/dist/ssr/CaretRight";
+import "./quiet/u4.css";
 import {QuietHeader,QuietNav} from "./quiet/quiet";
 import {formatBusinessDateTimeInput,formatBusinessTimestamp,policyEffectiveInstant} from "@/lib/business-time";
 import type {CompanyPolicyHistory,PolicyScopeHistory,PolicyHistoryRevision} from "@/lib/business-improvements/company-policies/history";
@@ -52,7 +53,8 @@ function PrivateLaborReview({settings,scope,timeZone,open=false}:{settings:Compa
   const absent=(value:unknown)=>value===undefined?(scope?"Inherit company default":"Not set"):value===null?"Explicitly not configured":null;
   const location=(id:string|null)=>id?`Location ${id}`:"Whole company";
   return <details className="policy-private-review" open={open}>
-    <summary>Private labor settings <span>Owner only · preserved in this draft</span></summary>
+    {/* P2-28 (final pass): a normal row, title and detail, no wrapping value. */}
+    <summary className="q-row q-u4-plain"><span className="q-rt"><b>Private labor settings</b><i>Owner only</i></span><CaretRightIcon className="q-chev" aria-hidden="true"/></summary>
     <p>Review the private labor values in this snapshot. Attendance edits preserve them; a replacement draft includes them in full.</p>
     <dl><div><dt>Compensation reference</dt><dd>{absent(labor?.compensation)??<>{labor!.compensation!.ruleReference}<br/>{labor!.compensation!.breakTreatment==="INCLUDE_ALL_RECORDED_BREAKS"?"Include all recorded breaks":`Exclude break types: ${labor!.compensation!.excludedBreakTypeIds.join(", ")||"None"}`}<br/>Effective {formatBusinessTimestamp(labor!.compensation!.effectiveFrom,timeZone)}</>}</dd></div>
     <div><dt>Employee rates</dt><dd>{absent(labor?.rates)??(labor!.rates!.length?<ul>{labor!.rates!.map(rate=><li key={rate.id}><strong>{rate.rate} {rate.currency}</strong> · {rate.rateUnit==="HOUR"?"per hour":rate.rateUnit==="SHIFT"?"per shift":"per salary period"}<br/>Employee {rate.employeeId} · {location(rate.locationId)} · Reference {rate.id}<br/>{formatBusinessTimestamp(rate.validFrom,timeZone)} — {rate.validUntil?formatBusinessTimestamp(rate.validUntil,timeZone):"No end date"}</li>)}</ul>:"Empty rate override — no explicit rates")}</dd></div>
@@ -347,11 +349,22 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
           {pending||draft.recoveryFrom?<div className="policy-actions"><button className="q-btn" disabled={busy||conflict||!writable||(!pending&&draft.recoveryFrom!==null&&!reviewed)} type="submit">{busy?"Saving…":pending?"Retry retained save":"Save replacement revision"}</button></div>:null}
         </form>
       </>:null}
-      <p className="q-help q-policy-legal">These rules do not determine pay, discipline, or legal entitlements.</p>
-      <p className="q-help q-policy-legal">They decide which recorded times are flagged for review, from each rule’s effective date. A location can follow the company default or set its own.</p>
       <div className="q-grp"><h2>Records</h2></div>
       <ul className="q-list">{draft?<li className="q-policy-private"><PrivateLaborReview settings={draft.settings} scope={scope} timeZone={timeZone} open={draft.recoveryFrom!==null}/></li>:null}<li><details className="q-details"><summary className="q-row q-row--one"><span className="q-rt"><b>Policy history</b></span><span className="q-rv q-rv--l">{current.state==="not_configured"?"None":`Revision ${current.expectedRevision}`}</span><CaretRightIcon className="q-chev" aria-hidden="true"/></summary><div className="q-rule__body"><section className="policy-history"><h2>Policy history</h2><p>Saved evidence for this scope. An unavailable revision is retained and cannot be used as a trusted policy.</p><ul>{history.revisions.filter(item=>item.locationId===(scope||null)).sort((a,b)=>b.revision-a.revision).map(item=><li key={item.operationId}><strong>Revision {item.revision}</strong> · {formatBusinessTimestamp(item.changedAt,timeZone)}<br/>{item.state==="unavailable"?<span className="policy-history-unavailable">Revision unavailable — original history retained</span>:item.revision===current.expectedRevision?"Current saved revision":"Earlier valid revision"}<br/>{item.changedKeys===null?"Change details unavailable":item.changedKeys.map(key=>fields.find(([name])=>key.includes(name))?.[1]??({"labor.compensation":"Compensation reference","labor.rates":"Employee rates","labor.budgets":"Labor budgets","labor.calculationMethod":"Calculation method reference"}[key]??"Policy setting")).join(", ")||"No rule changes"}</li>)}</ul>{!history.revisions.some(item=>item.locationId===(scope||null))?<p>No saved policy changes for this scope yet.</p>:null}</section>
         <button className="q-btn q-btn--sec" type="button" disabled={busy} onClick={()=>void refresh()}>Refresh policy history</button></div></details></li></ul>
+      {/* P2-4 (final pass): the policy paragraph is a footer row that opens a sheet. The wording is unchanged. */}
+      <ul className="q-list q-u4-foot"><li><button type="button" className="q-row q-row--one q-row--btn" aria-haspopup="dialog" onClick={()=>(document.getElementById("q-policy-about") as HTMLDialogElement|null)?.showModal?.()}>
+        <span className="q-rt"><b>About these alerts</b></span><CaretRightIcon className="q-chev" aria-hidden="true"/></button></li></ul>
+      <dialog id="q-policy-about" className="q-page q-sheet" aria-labelledby="q-policy-about-title" onClick={event=>{if(event.target===event.currentTarget)event.currentTarget.close();}}>
+        <div className="q-sheet__in">
+          <div className="q-sheet__top"><div className="q-sheet__grab" aria-hidden="true"/></div>
+          <form method="dialog" className="q-nav"><span/><span className="q-nav__t" id="q-policy-about-title">About these alerts</span><button type="submit" className="q-nav__r q-nav__r--b">Done</button></form>
+          <ul className="q-u4-bullets">
+            <li>These rules do not determine pay, discipline, or legal entitlements.</li>
+            <li>They decide which recorded times are flagged for review, from each rule’s effective date. A location can follow the company default or set its own.</li>
+          </ul>
+        </div>
+      </dialog>
     </>}
   </div>;
 }

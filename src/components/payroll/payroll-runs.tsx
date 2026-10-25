@@ -12,6 +12,9 @@ import { formatPayrollMoney } from './money';
 import { usePayrollOperation, usePayrollResource } from './use-payroll';
 import { DocumentLink, OperationFeedback, PayrollFrame, PayrollPanel, PayrollState, PrivacyNote } from './payroll-ui';
 import { BacklogReview } from './backlog-review';
+import { PayrollDraftQuiet, PayrollReviewQuiet } from './payroll-review-quiet';
+import type { PayrollMissingPeriod, PayrollPeriod } from '@/lib/payroll/contracts';
+import '../quiet/u4.css';
 import { NativeReview } from './native-review';
 import { PortalStatements } from './portal-statements';
 import { noticeOutcome, noticeReadiness, payrollExceptionMessage, payrollReviewNotes } from './workflow-status';
@@ -34,20 +37,32 @@ const quietDay = (date: string) => new Intl.DateTimeFormat('en-US', { timeZone: 
 
 /** Quiet (v4, approved Oct 23): Payroll's first screen. The open period and its payday, one Review button, then past periods.
  * Review opens the existing review for that period (or the draft form for it when none exists yet). */
-function PayrollHome({ current, runs, today, canEditSettings, loading, error, onReload, onOpen, onPrepare }: {
-  current: OpenPayPeriod | null; runs: PayrollRun[]; today: string; canEditSettings: boolean; loading: boolean; error: string | null;
-  onReload: () => void; onOpen: (id: string) => void; onPrepare: () => void;
+/** Business P0-4: "Paid" only once a run is approved; a passed payday without approval says so. */
+export function pastPeriodDetail(item: Pick<PayrollRun, 'status' | 'payday'>, today: string): { text: string; late: boolean } {
+  if (item.status === 'APPROVED') return { text: `${item.payday < today ? 'Paid' : 'Payday'} ${quietDay(item.payday)}`, late: false };
+  return item.payday < today ? { text: `Payday ${quietDay(item.payday)} passed · Not approved`, late: true } : { text: `Payday ${quietDay(item.payday)}`, late: false };
+}
+const timecardsToFinish = (run: PayrollRun | undefined) => run ? new Set(run.exceptions.filter(item => item.startsWith('TIME_NOT_FINALIZED:')).map(item => item.slice('TIME_NOT_FINALIZED:'.length))).size : 0;
+
+function PayrollHome({ current, runs, missing = [], today, canEditSettings, loading, error, onReload, onOpen, onPrepare, onPrepareMissing }: {
+  current: OpenPayPeriod | null; runs: PayrollRun[]; missing?: PayrollMissingPeriod[]; today: string; canEditSettings: boolean; loading: boolean; error: string | null;
+  onReload: () => void; onOpen: (id: string) => void; onPrepare: () => void; onPrepareMissing?: (item: PayrollMissingPeriod) => void;
 }) {
   const open = current ? runs.find(item => item.period.startDate === current.period.startDate && item.period.endDate === current.period.endDate && !item.correctionOf) : undefined;
   const past = runs.filter(item => item.id !== open?.id).sort((a, b) => b.period.startDate.localeCompare(a.period.startDate));
+  // P0-4: completed periods with no payroll run are listed with the past ones ("No run"), newest first.
+  const gaps = [...missing].filter(item => !current || item.period.startDate !== current.period.startDate).sort((a, b) => b.period.startDate.localeCompare(a.period.startDate));
+  const rows: ({ kind: 'run'; run: PayrollRun } | { kind: 'gap'; gap: PayrollMissingPeriod })[] = [...past.map(run => ({ kind: 'run' as const, run })), ...gaps.map(gap => ({ kind: 'gap' as const, gap }))]
+    .sort((a, b) => (b.kind === 'run' ? b.run.period.startDate : b.gap.period.startDate).localeCompare(a.kind === 'run' ? a.run.period.startDate : a.gap.period.startDate));
+  const toFinish = timecardsToFinish(open);
   return <QuietPage className="q-payroll q-payroll-phone">
     <QuietNav back={{ href: '/app/more', label: 'More' }} right={canEditSettings ? <Link className="q-bar__icon q-nav__r q-nav__r--ink" href="/app/settings/payroll" aria-label="Payroll settings"><SlidersHorizontalIcon className="q-ic" aria-hidden="true" /></Link> : undefined} />
     <QuietHeader title="Payroll" sub={current?.frequency ? FREQUENCY[current.frequency] : undefined} />
     {loading ? <p className="q-empty q-first" role="status">Loading…</p>
-      : error ? <div className="q-emptyblock" role="alert"><p className="q-empty">{error}</p><div className="q-emptyblock__action"><button type="button" className="q-btn q-btn--sec" onClick={onReload}>Try again</button></div></div>
+      : error ? <div className="q-emptyblock" role="alert"><h2 className="q-emptyblock__title">Couldn’t load payroll runs</h2>{/^Request could not be completed/.test(error) ? null : <p className="q-empty">{error}</p>}<div className="q-emptyblock__action"><button type="button" className="q-btn q-btn--sec" onClick={onReload}>Try again</button></div></div>
       : <>
         {current ? <>
-          <div className="q-lead"><b>{quietRange(current.period.startDate, current.period.endDate)}</b><i>{`Payday ${quietDay(current.payday)}${open ? ` · ${statusLabels[open.status]}` : ''}`}</i></div>
+          <div className="q-lead"><b>{quietRange(current.period.startDate, current.period.endDate)}</b><i>{`Payday ${quietDay(current.payday)}${open ? ` · ${toFinish ? `${toFinish} ${toFinish === 1 ? 'timecard' : 'timecards'} to finalize` : statusLabels[open.status]}` : ''}`}</i></div>
           <button type="button" className="q-btn" onClick={() => open ? onOpen(open.id) : onPrepare()}>Review period</button>
           {/* Time exports opens from Payroll (its back link says Payroll); the mockup shows no other way in on a phone. */}
           <Link className="q-btn q-btn--quiet" href={`/app/payroll-export?start=${current.period.startDate}&end=${current.period.endDate}`}>Export time</Link>
@@ -56,11 +71,22 @@ function PayrollHome({ current, runs, today, canEditSettings, loading, error, on
           {canEditSettings ? <Link className="q-btn q-btn--sec" href="/app/settings/payroll">Payroll settings</Link> : null}
         </>}
         <div className="q-grp" style={{ marginTop: 40 }}><h2>Past periods</h2></div>
-        {past.length ? <ul className="q-list" aria-label="Past periods">{past.map(item => <li key={item.id}>
-          <button type="button" className="q-row q-row--btn" onClick={() => onOpen(item.id)}>
-            <span className="q-rt"><b>{quietRange(item.period.startDate, item.period.endDate)}{item.correctionOf ? ' · Correction' : ''}</b><i>{`${item.payday < today ? 'Paid' : 'Payday'} ${quietDay(item.payday)}`}</i></span>
-            <span className="q-rv">{statusLabels[item.status]}</span><CaretRightIcon className="q-chev" aria-hidden="true" />
-          </button></li>)}</ul> : <p className="q-empty">No past periods yet</p>}
+        {rows.length ? <ul className="q-list" aria-label="Past periods">{rows.map(row => {
+          if (row.kind === 'gap') {
+            const item = row.gap;
+            return <li key={`gap:${item.period.startDate}:${item.settingsRevision}`}>
+              <button type="button" className="q-row q-row--btn" disabled={!onPrepareMissing} onClick={() => onPrepareMissing?.(item)}>
+                <span className="q-rt"><b>{quietRange(item.period.startDate, item.period.endDate)}</b><i>{item.payday < today ? `Payday ${quietDay(item.payday)} passed` : `Payday ${quietDay(item.payday)}`}</i></span>
+                <span className="q-rv q-rv--alert">No run</span><CaretRightIcon className="q-chev" aria-hidden="true" />
+              </button></li>;
+          }
+          const item = row.run, detail = pastPeriodDetail(item, today);
+          return <li key={item.id}>
+            <button type="button" className="q-row q-row--btn" onClick={() => onOpen(item.id)}>
+              <span className="q-rt"><b>{quietRange(item.period.startDate, item.period.endDate)}{item.correctionOf ? ' · Correction' : ''}</b><i className={detail.late ? 'q-u4-late' : undefined}>{detail.text}</i></span>
+              <span className="q-rv">{statusLabels[item.status]}</span><CaretRightIcon className="q-chev" aria-hidden="true" />
+            </button></li>;
+        })}</ul> : <p className="q-empty">No past periods yet</p>}
       </>}
   </QuietPage>;
 }
@@ -73,11 +99,15 @@ export function PayrollRuns({ recoveryScope, current = null, canEditSettings = f
   // Quiet (v4): the summary first; Review or a past period opens the review below.
   const [home, setHome] = useState(true);
   const [today] = useState(() => new Date().toISOString().slice(0, 10));
+  // T-14: on phones a new draft is a modal page and a run's review a pushed page; "All payroll details" opens the
+  // detailed review below it (import, employee amounts, corrections, documents, delivery).
+  const [draftFor, setDraftFor] = useState<{ period: PayrollPeriod; payday: string; missing?: PayrollMissingPeriod } | null>(null);
+  const [details, setDetails] = useState(false);
   useEffect(() => {
     const runId = operation.receipt?.runId;
     if (!runId) return;
     let active = true;
-    queueMicrotask(() => { if (active) { setSelectedId(runId); setHome(false); } });
+    queueMicrotask(() => { if (active) { setSelectedId(runId); setDraftFor(null); setHome(false); } });
     return () => { active = false; };
   }, [operation.receipt]);
   const data = !resource.loading && resource.data?.capabilities.canReview ? resource.data : null;
@@ -86,9 +116,16 @@ export function PayrollRuns({ recoveryScope, current = null, canEditSettings = f
   // Phones open on the summary; wider screens show the review straight away (the summary is phone-only).
   const summary = <PayrollHome current={current} runs={data?.runs ?? []} today={today} canEditSettings={canEditSettings} loading={resource.loading}
     error={resource.error ?? (!data && resource.data ? 'Your account can’t review payroll.' : null)} onReload={() => void resource.reload()}
-    onOpen={id => { setSelectedId(id); setHome(false); }} onPrepare={() => { setPrepareOpen(true); setHome(false); }} />;
+    missing={data?.missingPeriods ?? []}
+    onOpen={id => { setSelectedId(id); setDraftFor(null); setDetails(false); setHome(false); }}
+    onPrepare={() => { setPrepareOpen(true); setDraftFor(current ? { period: current.period, payday: current.payday } : null); setDetails(false); setHome(false); }}
+    onPrepareMissing={item => { setPrepareOpen(true); setDraftFor({ period: item.period, payday: item.payday, missing: item }); setDetails(false); setHome(false); }} />;
   const onSummary = home && !operation.pending;
-  return <>{onSummary ? summary : null}<div className="q-payroll-review" data-home={onSummary ? "" : undefined}><div className="q-payroll-back"><button type="button" className="q-nav__l" onClick={() => setHome(true)}><CaretLeftIcon className="q-ic q-ic--s" aria-hidden="true" />Payroll</button></div><PayrollFrame title="Payroll" description="Review payroll, approve an exact revision and track private pay statements.">
+  const back = () => { setHome(true); setDraftFor(null); setDetails(false); };
+  const phoneReview = onSummary || !data ? null : draftFor
+    ? <PayrollDraftQuiet key={`${draftFor.period.startDate}:${draftFor.payday}`} initial={draftFor} operation={operation} locked={locked} onCancel={back} />
+    : run ? <PayrollReviewQuiet key={`${run.id}:${run.revision}`} run={run} capabilities={data.capabilities} operation={operation} locked={locked} details={details} onBack={back} onDetails={() => setDetails(value => !value)} /> : null;
+  return <>{onSummary ? summary : null}{phoneReview}<div className="q-payroll-review" data-home={onSummary ? "" : undefined} data-quiet={phoneReview && !details ? "" : undefined}><div className="q-payroll-back"><button type="button" className="q-nav__l" onClick={back}><CaretLeftIcon className="q-ic q-ic--s" aria-hidden="true" />Payroll</button></div><PayrollFrame title="Payroll" description="Review payroll, approve an exact revision and track private pay statements.">
     <div className="wb-payroll-feedback"><OperationFeedback operation={operation} /></div>
     {resource.loading ? <PayrollState title="Loading payroll">Checking your current access and payroll runs.</PayrollState> : resource.error ? <PayrollState title="Payroll unavailable" error retry={() => void resource.reload()}>{resource.error}</PayrollState> : !data && resource.data ? <PayrollState title="Payroll access unavailable">Your current account cannot review these payroll runs.</PayrollState> : data && <>
       <div className="pw-toolbar"><p><CalendarDotsIcon size={18} aria-hidden />{data.runs.length} payroll {data.runs.length === 1 ? 'run' : 'runs'}</p><div className="pw-actions"><button className="pw-button pw-secondary" onClick={() => void resource.reload()} disabled={resource.loading || locked}>Refresh</button><button className="pw-button" onClick={() => setPrepareOpen(value => !value)} disabled={locked}>Prepare a draft<ArrowRightIcon size={18} aria-hidden /></button></div></div>

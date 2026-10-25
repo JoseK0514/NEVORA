@@ -15,10 +15,11 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
  // Quiet (v4, approved Oct 23): name and phone as fields; then Work as rows (ID, role, location, positions, email).
  // The page's Save (top right) submits; nothing about access or scheduling changes.
  return (
-          <EmployeeAccessForm id="new-employee-form" action={action} build={(fields,id)=>createCommandFromForm(fields,actorRole,scope,id)} className="q-form">
+          <EmployeeAccessForm id="new-employee-form" action={action} build={(fields,id)=>createCommandFromForm(fields,actorRole,scope,id)} className="q-form q-u4-form"
+            savedLabel={fields=>`${String(fields.get('firstName')??'').trim()} ${String(fields.get('lastName')??'').trim()}`.trim()}>
             <input type="hidden" name="active" value="true"/>
-            <div className="q-fl q-first"><label className="q-fl__label" htmlFor="new-first">First name</label><input id="new-first" className="q-in" style={{marginTop:8}} name="firstName" autoComplete="given-name" required maxLength={160} /></div>
-            <div className="q-fl"><label className="q-fl__label" htmlFor="new-last">Last name</label><input id="new-last" className="q-in" style={{marginTop:8}} name="lastName" autoComplete="family-name" required maxLength={160} /></div>
+            <div className="q-fl q-first"><label className="q-fl__label" htmlFor="new-first">First name</label><input id="new-first" className="q-in" style={{marginTop:8}} name="firstName" autoComplete="given-name" required maxLength={160} placeholder="First name" /></div>
+            <div className="q-fl"><label className="q-fl__label" htmlFor="new-last">Last name</label><input id="new-last" className="q-in" style={{marginTop:8}} name="lastName" autoComplete="family-name" required maxLength={160} placeholder="Last name" /></div>
             <div className="q-fl"><label className="q-fl__label" htmlFor="new-phone">Phone</label><div style={{marginTop:8}}><PhoneInput id="new-phone" className="q-in" name="phone" autoComplete="tel-national" required /></div></div>
             <div className="q-grp"><h2 id="employee-access-heading">Work</h2></div>
             <ul className="q-list">

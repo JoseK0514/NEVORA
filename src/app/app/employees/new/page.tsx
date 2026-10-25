@@ -12,6 +12,9 @@ import { createEmployeeFormAction } from "@/app/app/employees/actions";
 
 import {NewEmployeeForm} from "@/components/company-access/new-employee-form";
 
+// a11y #20 (final pass): each page names itself; the layout template adds "· NEVORA".
+export const metadata = { title: "New employee" };
+
 const errors: Record<string, string> = {
   permission: "Only an Owner can add another Owner.",
   save: "Employee could not be saved. Check that the ID and email are unique and the selected locations and positions are active.",

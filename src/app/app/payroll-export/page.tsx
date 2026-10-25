@@ -11,6 +11,9 @@ import {PayrollExport} from '@/components/payroll-export';
 import {PageBand} from '@/components/kit/kit';
 import {redirect} from 'next/navigation';
 import './payroll-page.css';
+
+// a11y #20 (final pass): each page names itself; the layout template adds "· NEVORA".
+export const metadata = { title: "Time exports" };
 export default async function PayrollExportPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
   const session=await requireSession();
   if(!isManagerRole(session.role))redirect('/app');

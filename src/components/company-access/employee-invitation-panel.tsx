@@ -2,10 +2,9 @@
 
 import Link from 'next/link';
 import {useEffect,useRef,useState} from 'react';
-import {EnvelopeSimpleIcon} from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
 import type {InvitationCommand,InvitationResult,InvitationStatusResult} from '@/lib/auth/invitations/model';
 import {readInvitationResult,readInvitationStatus} from './commands';
-import styles from './company-access.module.css';
+import '../quiet/u4.css';
 
 const deliveryText={UNAVAILABLE:'Invitation email is not available.',PREPARED:'Prepared for email delivery. Receipt is not confirmed.',PROVIDER_ACCEPTED:'Accepted for email delivery. This does not confirm receipt or activation.',UNKNOWN:'Email delivery could not be confirmed.',FAILED:'Email delivery failed. Account activation is not confirmed.'};
 const invitationText={ISSUED:'Invitation issued',CONSUMED:'Invitation used',REVOKED:'Invitation revoked',EXPIRED:'Invitation expired',INVALIDATED:'Invitation no longer valid'};
@@ -66,26 +65,30 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
   finally{clearTimeout(timeout);if(isCurrent(version)){busy.current=false;setPending(false);request.current=null;}}
  }
  const available=status.state==='ready',deniedAccess=status.state==='unavailable'&&status.reason==='access_denied';
- return <section className={'panel '+styles.stack} aria-labelledby={'invitation-'+employeeId} aria-busy={pending}>
-  <h2 id={'invitation-'+employeeId} className={styles.heading}><EnvelopeSimpleIcon size={22} weight="duotone" aria-hidden="true"/> Account invitation</h2>
-  {available?<div className={styles.status}>
-   <p><strong>{status.eligibility==='ALREADY_ACTIVATED'?'Account activated':status.invitation?invitationText[status.invitation.state]:'No invitation yet'}</strong></p>
-   {status.registeredEmailMasked&&<p>Registered email: {status.registeredEmailMasked}</p>}
-   {status.eligibility==='NO_EMAIL'&&<p>Add a registered email in employee details before sending an invitation. An employee record can still be saved without email.</p>}
-   {status.eligibility==='INACTIVE'&&<p>This employee is inactive. Review their employee details before inviting them.</p>}
-   {status.eligibility==='SELF_ISSUE_DENIED'&&<p>Ask another authorized Owner to manage your invitation.</p>}
-   {status.invitation&&<p>{deliveryText[status.delivery]}</p>}
-  </div>:<p role="status">{deniedAccess?'Invitation management is unavailable for your current access.':'Current invitation information is unavailable. Refresh before taking an action.'}</p>}
-  {receipt&&<div className={styles.receipt}><strong>Confirmed action: {receipt.action==='ISSUE'?'Invitation issued':'Invitation revoked'}</strong><p>{deliveryText[receipt.delivery]}</p><small>This receipt records the completed action. Refresh for current employee and invitation status.</small></div>}
-  {message&&<p role={uncertain?'alert':'status'} aria-live="polite">{message}</p>}
-  {confirm&&<div className={styles.receipt} role="group" aria-label="Confirm invitation action"><p>{confirm==='REVOKE'?'Revoke this invitation? The employee will need a new invitation to activate.':status.state==='ready'&&status.invitation?'Send a new invitation to the registered email? The previous invitation will no longer be usable.':'Send an invitation to the registered employee email?'}</p><div className={styles.actions}><button type="button" className="button primary" disabled={pending} onClick={()=>void run()}>{confirm==='REVOKE'?'Revoke invitation':'Send invitation'}</button><button type="button" className="button secondary" disabled={pending} onClick={()=>setConfirm(null)}>Cancel</button></div></div>}
-  <div className={styles.actions}>
-   {uncertain?<button type="button" className="button secondary" disabled={pending} onClick={()=>void run(true)}>{pending?'Checking action…':'Check action outcome'}</button>:<>
-    {available&&status.allowedCommands.includes('ISSUE')&&<button type="button" className="button primary" disabled={pending||!!confirm} onClick={()=>setConfirm('ISSUE')}>{status.invitation?'Send new invitation':'Send invitation'}</button>}
-    {available&&status.allowedCommands.includes('REVOKE')&&<button type="button" className="button secondary" disabled={pending||!!confirm} onClick={()=>setConfirm('REVOKE')}>Revoke invitation</button>}
-    {!deniedAccess&&<button type="button" className="button secondary" disabled={pending||!!confirm} onClick={()=>void refresh()}>{pending?'Checking invitation…':'Refresh invitation'}</button>}
+ // T-11 / UX-O-51/52 (final pass): the invitation on Quiet rows. The commands, confirmation and receipts are unchanged.
+ const stateText=available?status.eligibility==='ALREADY_ACTIVATED'?'Active':status.invitation?invitationText[status.invitation.state]:'Not invited yet':'Unavailable';
+ return <section className="q-u4-panel" aria-labelledby={'invitation-'+employeeId} aria-busy={pending}>
+  <div className="q-grp"><h2 id={'invitation-'+employeeId}>Account invitation</h2></div>
+  {available?<ul className="q-list">
+   <li><div className="q-row q-row--one"><span className="q-rt"><b>Account</b></span><span className="q-rv q-rv--l">{stateText}</span></div></li>
+   {status.registeredEmailMasked?<li><div className="q-row q-row--one"><span className="q-rt"><b>Registered email</b></span><span className="q-rv q-rv--l">{status.registeredEmailMasked}</span></div></li>:null}
+   {status.invitation?<li><div className="q-row"><span className="q-rt"><b>Delivery</b><i>{deliveryText[status.delivery]}</i></span></div></li>:null}
+  </ul>:<p className="q-empty" role="status">{deniedAccess?'Invitation management is unavailable for your current access.':'Current invitation information is unavailable. Refresh before taking an action.'}</p>}
+  {available&&status.eligibility==='NO_EMAIL'?<p className="q-help">Add an email in Edit to send an invitation. You can save someone without one.</p>:null}
+  {available&&status.eligibility==='INACTIVE'?<p className="q-help">This person is inactive. Reactivate them before inviting them.</p>:null}
+  {available&&status.eligibility==='SELF_ISSUE_DENIED'?<p className="q-help">Ask another Owner to manage your invitation.</p>:null}
+  {receipt?<p className="q-help q-u4-saved">{`Done: ${receipt.action==='ISSUE'?'Invitation sent':'Invitation revoked'}. ${deliveryText[receipt.delivery]}`}</p>:null}
+  {message?<p className={uncertain?'q-error':'q-help'} role={uncertain?'alert':'status'} aria-live="polite">{message}</p>:null}
+  {confirm?<div className="q-u4-confirmbox" role="group" aria-label="Confirm invitation action"><p className="q-u4-confirm">{confirm==='REVOKE'?'Revoke this invitation? The employee will need a new invitation to activate.':status.state==='ready'&&status.invitation?'Send a new invitation to the registered email? The previous invitation will no longer be usable.':'Send an invitation to the registered employee email?'}</p>
+   <button type="button" className={confirm==='REVOKE'?'q-btn q-u4-danger':'q-btn'} disabled={pending} onClick={()=>void run()}>{confirm==='REVOKE'?'Revoke invitation':'Send invitation'}</button>
+   <button type="button" className="q-btn q-btn--quiet" disabled={pending} onClick={()=>setConfirm(null)}>Cancel</button></div>:null}
+  <div className="q-u4-actions">
+   {uncertain?<button type="button" className="q-btn q-btn--sec" disabled={pending} onClick={()=>void run(true)}>{pending?'Checking action…':'Check action outcome'}</button>:<>
+    {available&&status.allowedCommands.includes('ISSUE')&&!confirm?<button type="button" className="q-btn" disabled={pending} onClick={()=>setConfirm('ISSUE')}>{status.invitation?'Send new invitation':'Send invitation'}</button>:null}
+    {available&&status.allowedCommands.includes('REVOKE')&&!confirm?<button type="button" className="q-btn q-btn--sec" disabled={pending} onClick={()=>setConfirm('REVOKE')}>Revoke invitation</button>:null}
+    {!deniedAccess&&!confirm?<button type="button" className="q-btn q-btn--quiet" disabled={pending} onClick={()=>void refresh()}>{pending?'Checking invitation…':'Check invitation status'}</button>:null}
    </>}
-   {deniedAccess&&<Link href="/login" className="button secondary">Sign in again</Link>}
+   {deniedAccess?<Link href="/login" className="q-btn q-btn--sec">Sign in again</Link>:null}
   </div>
  </section>;
 }

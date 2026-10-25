@@ -79,7 +79,19 @@ it("shows core employee management to a Manager for a non-Owner employee", async
     await EmployeeProfilePage({ params: Promise.resolve({ employeeId: "worker" }), searchParams: Promise.resolve({ edit: "1" }) }),
   );
   expect(html).toContain("Employee details");
-  expect(html).toContain("Scheduling profile");
+  // T-11 (final pass): one modal page, no tabs; scheduling opens from the Positions row.
+  expect(html).toContain("Edit employee");
+  expect(html).toContain("Positions and locations");
+  expect(html).not.toContain("Scheduling profile");
+  expect(html).toContain('form="edit-employee-form"');
+});
+it("puts status on Person as a danger row with a confirm, and invites people who haven't activated (T-11, UX-O-51)", async () => {
+  m.actorRole = "OWNER";
+  const html = renderToStaticMarkup(await EmployeeProfilePage({ params: Promise.resolve({ employeeId: "worker" }) }));
+  expect(html).toContain("Deactivate Sam");
+  expect(html).toContain("They’re signed out right away. Their history is kept.");
+  expect(html).toContain("Invite to NEVORA");
+  expect(html).not.toContain('href="/app/account-recovery?employee=worker"');
 });
 
 it("withholds Owner core-management controls from a Manager", async () => {

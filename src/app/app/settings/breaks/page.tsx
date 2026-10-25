@@ -7,6 +7,9 @@ import { listBreakTypes } from '@/lib/clocker/break-types.server';
 import type { BreakType } from '@/lib/clocker/break-types';
 import { saveBreakTypeAction } from './actions';
 import { EmptyState, SettingsFrame } from '../wave-c-kit';
+
+// a11y #20 (final pass): each page names itself; the layout template adds "· NEVORA".
+export const metadata = { title: "Break types" };
 export const dynamic='force-dynamic';
 export default async function BreakTypesPage(){
   const moduleOff = await moduleGate("breaks");
