@@ -605,6 +605,7 @@ html body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) p {
 html body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) .button { display: flex; align-items: center; justify-content: center; width: 100%; height: 50px; margin-top: 16px; border: 0; border-radius: 12px; background: #F2F2F0; box-shadow: none; color: #111413; font-size: 17px; font-weight: 600; }
 html[data-theme="dark"] body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) .button { background: #1C1C1E; color: #F2F2F0; }
 html[data-theme="dark"] body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) p { color: #9A9A96; }
+html[data-theme="dark"] body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) h2 { color: #F2F2F0; }
 :is(#q-root, html) .q-skel__rows i + i { width: 74%; height: 12px; background: var(--q-skel2); }
 
 /* Dark (v5 "One look", approved Oct 24, 2026): every role follows the phone. True black, lifted greys and one lifted
@@ -799,7 +800,8 @@ html[data-q-sheet] { overflow: hidden; }
 :is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) .employee-time-correction-trigger > :is(.employee-time-correction-trigger__tile, .employee-time-correction-trigger__go), :is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) .employee-time-correction-trigger small { display: none; }
 :is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) .employee-time-correction-trigger b { font-weight: 600; }
 :is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) form { display: grid; gap: 16px; margin: 20px 20px 0; }
-:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) form label { display: grid; gap: 8px; font-size: 15px; line-height: 20px; color: var(--q-grey); }
+/* The form's own fields only: the Start/End ticket halves are labels too and keep their own layout. */
+:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) form > label { display: grid; gap: 8px; font-size: 15px; line-height: 20px; color: var(--q-grey); }
 :is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) form :is(select, textarea, input:not([type="hidden"])) { width: 100%; min-height: 50px; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-ink); font: inherit; font-size: 17px; }
 :is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) form textarea { min-height: 96px; padding-top: 14px; resize: none; }
 :is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) .employee-time-correction-submit { height: 50px; border: 0; border-radius: 12px; background: var(--q-teal-fill); color: #FFFFFF; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; }

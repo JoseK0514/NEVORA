@@ -11,6 +11,8 @@ export type ScopedObservation={authority:string;observedAt:string;validForMs:num
 type CurrentAuthority=Extract<OperationalAuthorityView,{state:'ready'}>&{requestStartedAt:number};
 type AuthoritySnapshot=CurrentAuthority|Extract<OperationalAuthorityView,{state:'unavailable'}>;
 type Recovery={required:boolean;view:CurrentAuthority|null};
+/** How long a check may run behind the quiet page shape before the frame shows its words and Refresh current view. */
+export const STUCK_MS=2500;
 type Body={authority:string|null;phase:'ready'|'expired'|'paused';content:ReactNode};
 const online=()=>document.visibilityState!=='hidden'&&navigator.onLine&&document.hasFocus();
 
@@ -155,11 +157,20 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  // Effects run before any microtask, so the mount check (queued in the controller effect) reads this page's observation.
  useEffect(()=>{observationRef.current=observation;versionRef.current=version;},[observation,version]);
  const refreshCurrent=()=>{explicitRefresh.current=true;navigation?.discard();controls.current?.recover();};
+ const ready=!recovery.required&&!!observation&&body.phase==='ready'&&body.authority===observation.authority;
+ // Every tab tap runs a fresh check (about a second on the hosted preview). It draws the page's own quiet shape; only a
+ // check still unresolved after STUCK_MS (or begun while a page change waits) shows its words and Refresh current view.
+ const [stuck,setStuck]=useState(false);
+ useEffect(()=>{
+  if(ready)return;
+  // A check that starts while a page change is still waiting is the stuck case: its way back shows at once.
+  const timer=setTimeout(()=>setStuck(true),navigation?.pending()?0:STUCK_MS);
+  // The check ended (or the frame left): the next check starts quiet again.
+  return()=>{clearTimeout(timer);setStuck(false);};
+ },[ready,navigation]);
 
- if(!recovery.required&&observation&&body.phase==='ready'&&body.authority===observation.authority)return body.content;
+ if(ready)return body.content;
  if(!observation&&unavailable)return <div className="scoped-unavailable">{unavailable}<button className="button secondary scoped-unavailable__refresh" type="button" onClick={refreshCurrent}>Refresh current view</button></div>;
- // Only a plain check draws the page's own shape; a view that needs a fresh check (or is paused) shows its words and its
- // Refresh current view button, so the way back is always visible.
- const checking=body.phase!=='paused'&&!recovery.required;
+ const checking=body.phase!=='paused'&&!stuck;
  return <section className="portal-route-state" role="status" data-checking={checking?'':undefined}>{checking?<QuietSkeleton/>:null}<h2>{body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…'}</h2><p>{body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.'}</p><button className="button secondary" type="button" onClick={refreshCurrent}>Refresh current view</button></section>;
 }
