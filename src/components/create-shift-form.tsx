@@ -76,3 +76,55 @@ export function CreateShiftForm({ action, employees, locations, positions, weekS
     </ul>
   </ConfigurationForm>;
 }
+
+export const EDIT_SHIFT_FORM_ID = "edit-shift-form";
+
+/** Edit shift on the same Quiet sheet as Add shift (Oct 25, 2026): the same rows, prefilled. A shift keeps its location,
+ * so Location reads as a fixed row. Notes stay editable. Same fields and action as before (shiftId, employeeId,
+ * positionId, isDesignatedLead, date, startTime, endTime, notes). */
+export function EditShiftForm({ action, shiftId, employees, positions, weekStart, weekEnd, date, employeeId, positionId = "", locationName, startTime, endTime, isDesignatedLead, notes = "" }: {
+  action: (data: FormData) => Promise<ConfigurationResult>;
+  shiftId: string; employees: Employee[]; positions: Position[];
+  weekStart: string; weekEnd: string; date: string; employeeId: string; positionId?: string; locationName: string;
+  startTime: string; endTime: string; isDesignatedLead: boolean; notes?: string;
+}) {
+  const [day, setDay] = useState(date);
+  const [start, setStart] = useState(startTime);
+  const [end, setEnd] = useState(endTime === "24:00" ? "00:00" : endTime);
+  const [lead, setLead] = useState(isDesignatedLead);
+  const [person, setPerson] = useState(employeeId);
+  const overnight = !!start && !!end && end < start;
+  const nextDay = overnight && isValidIsoDate(day) ? dayText(addDays(day, 1)) : null;
+  const length = start && end ? hoursText(durationMinutes(start, end)) : null;
+  const chosen = employees.find(item => item.id === person);
+  const fullName = chosen ? `${chosen.firstName} ${chosen.lastName}` : "";
+
+  return <ConfigurationForm action={action} className="q-shift-form" id={EDIT_SHIFT_FORM_ID}>
+    <input type="hidden" name="shiftId" value={shiftId} />
+    <div className="q-grp q-grp--m"><h2>Who and where</h2></div>
+    <ul className="q-list">
+      <ShiftAssignmentFields quiet employees={employees} positions={positions} employeeId={employeeId} positionId={positionId}
+        onSelectionChange={next => { setPerson(next.employeeId); setLead(current => designatedLeadAfterEmployeeChange({ checked: current, nextEmployeeId: next.employeeId, employees })); }}>
+        <li><div className="q-row q-row--one"><span className="q-rt"><b>Location</b></span><span className="q-rv">{locationName}</span></div></li>
+      </ShiftAssignmentFields>
+    </ul>
+    {/* A native select can cut a long name; the full name is read and shown here. */}
+    <p className="q-help" aria-live="polite">{fullName.length > 24 ? <>Selected employee: {fullName}. </> : null}A shift keeps its location. To move it, delete it and add a new one.</p>
+    <div className="q-grp"><h2>When</h2></div>
+    <ul className="q-list">
+      <PickerRow label="Date" type="date" name="date" value={day} onChange={setDay} display={isValidIsoDate(day) ? dayText(day) : ""} min={weekStart} max={weekEnd} />
+      <PickerRow label="Starts" type="time" name="startTime" value={start} onChange={setStart} display={start ? formatTime(start) : ""} />
+      <PickerRow label="Ends" type="time" name="endTime" value={end} onChange={setEnd} display={end ? formatTime(end) : ""} />
+    </ul>
+    <p className="q-help" aria-live="polite">{length ? (nextDay ? `${length}, ends ${nextDay}` : length) : `Any day from ${dayText(weekStart)} to ${dayText(weekEnd)}`}</p>
+    <ul className="q-list q-shift-form__more">
+      <li><label className="q-row q-row--one"><span className="q-rt"><b>Shift lead</b></span>
+        <input type="checkbox" role="switch" className="q-tog" name="isDesignatedLead" checked={lead} onChange={event => setLead(event.target.checked)} aria-label="Shift lead" /></label></li>
+    </ul>
+    <div className="q-fl">
+      <label className="q-fl__label" htmlFor="edit-shift-notes">Notes <span className="q-fl__opt">· optional</span></label>
+      <textarea id="edit-shift-notes" className="q-in" name="notes" rows={3} defaultValue={notes} placeholder="Anything the team should know" />
+    </div>
+    <p className="q-help">Everyone on this shift can read the notes. Availability, time off, other shifts and weekly hours are checked when you save.</p>
+  </ConfigurationForm>;
+}

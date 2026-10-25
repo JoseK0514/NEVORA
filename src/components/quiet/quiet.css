@@ -318,6 +318,7 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-picker-row:focus-within { box-shadow: inset 0 0 0 2px var(--q-teal); border-radius: 6px; }
 :is(#q-root, html) .q-shift-form .configuration-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
 :is(#q-root, html) .q-shift-form__more { margin-top: 24px; }
+:is(#q-root, html) .q-shift-delete { display: grid; gap: 4px; padding-bottom: 32px; }
 :is(#q-root, html) .q-shift-form > [role="status"], :is(#q-root, html) .q-shift-form > .form-error, :is(#q-root, html) .q-shift-form > .form-success { margin: 16px 20px 0; font-size: 13px; line-height: 18px; color: var(--q-grey); }
 :is(#q-root, html) .q-shift-form > .form-error { color: var(--q-red); }
 :is(#q-root, html) .q-select-row__control--ph { color: var(--q-faint); }

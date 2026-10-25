@@ -36,7 +36,7 @@ it("retains the editable assignment, notes, lead, and shift identity and restric
   expect(html).toContain("Opening team</textarea>");
   // Delete is its own form, behind a disclosure, after the edit form (never nested in it).
   expect(html.match(/<form/g)).toHaveLength(2);
-  expect(html.indexOf('<details class="wa-disclosure">')).toBeGreaterThan(html.indexOf('Save changes'));
+  expect(html.indexOf('id="edit-shift-delete"')).toBeGreaterThan(html.indexOf('id="edit-shift-form"'));
   expect(html).toContain('/app/schedule?week=2026-10-12');
   // W2: Cancel returns to this shift's location, day and person.
   expect(html).toContain('href="/app/schedule?week=2026-10-12&amp;location=main&amp;day=2026-10-14#schedule-employee-AVERY"');

@@ -6,19 +6,15 @@ import {OperationalUnavailable} from '@/components/company-access/operational-un
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {listPositions} from "@/lib/data/positions";
-import { ShiftEditAssignment } from "./shift-edit-assignment";
-import { ConfigurationForm } from "@/components/configuration-form";
+import { EditShiftForm, EDIT_SHIFT_FORM_ID } from "@/components/create-shift-form";
+import { QuietNav } from "@/components/quiet/quiet";
 import {ScheduleRouteFeedback} from '@/components/company-access/schedule-route-feedback';
 import {schedulingIssueMessage} from '@/lib/scheduling/validate-shift';
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ShiftEditTiming } from "./shift-edit-timing";
-import { DeleteShiftButton } from "./delete-shift-button";
+import { DeleteShiftButton, DeleteShiftRow } from "./delete-shift-button";
 import { ActionForm } from "@/components/wave-a/action-form";
-import { Card, MetaParts, PageBand } from "@/components/kit/kit";
-import { Field, FormActions, Notice } from "@/components/wave-a/parts";
-import { PendingButton } from "@/components/wave-a/pending-button";
-import { addDays, formatDayLabel, formatTime, formatWeekRange } from "@/lib/date-utils";
+import { addDays, formatDayLabel, formatTime } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
@@ -79,67 +75,26 @@ export default async function EditShiftPage({
   const returnUrl = `/app/schedule?week=${shift.weekStart}&location=${encodeURIComponent(shift.locationId)}&day=${shift.date}#schedule-employee-${encodeURIComponent(shift.employeeId)}`;
   const day = formatDayLabel(shift.date);
 
-  // Phase 3.5 Wave A: Edit shift on the kit. The band says whose shift and when; the form is the same three groups as Add shift.
+  // Quiet (Oct 25, 2026): Edit shift is the same sheet as Add shift. Cancel, Edit shift and Save in the bar; whose shift
+  // and when under it; the same rows, prefilled; Delete is a red row with its own confirmation.
+  const error = params.error ? (Object.hasOwn(ERROR_MESSAGES, params.error) ? ERROR_MESSAGES[params.error] : schedulingIssueMessage(params.error)) ?? "The shift could not be updated." : null;
   return (<ScopedReadFrame observation={source}>
-    <div className="nv-page wa-page wa-shift" data-nv-page="">
-      <PageBand back={{ href: returnUrl, label: "Schedule" }} eyebrow="Edit shift" title={shift.employeeName}
-        summary={<MetaParts text={keepWhole(`${day.weekday},\u00a0${day.day} · ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)} · ${location?.shortName ?? shift.locationId}`)} />} />
-      <div className="nv-content wa-narrow">
-        {params.error ? <Notice tone="urgent" title="The shift wasn’t saved">
-          {(Object.hasOwn(ERROR_MESSAGES, params.error) ? ERROR_MESSAGES[params.error] : schedulingIssueMessage(params.error)) ?? "The shift could not be updated."}
-        </Notice> : null}
-
-        <ConfigurationForm action={updateShiftAction} className="wa-form">
+    <div className="q-page" data-nv-page="" data-q-sheet="">
+      <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href={returnUrl}>Cancel</Link>} title="Edit shift"
+        right={<button type="submit" form={EDIT_SHIFT_FORM_ID} className="q-nav__r q-nav__r--b">Save</button>} />
+      <div className="q-hd"><h1>{shift.employeeName}</h1><p>{keepWhole(`${day.weekday}, ${day.day} · ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`)}</p></div>
+      {error ? <p className="q-error q-first" role="alert">The shift wasn’t saved. {error}</p> : null}
+      <EditShiftForm action={updateShiftAction} shiftId={shift.id} employees={employees} positions={positions}
+        weekStart={shift.weekStart} weekEnd={addDays(shift.weekStart, 6)} date={shift.date} employeeId={shift.employeeId}
+        positionId={shift.positionId ?? ""} locationName={location?.shortName ?? shift.locationId}
+        startTime={shift.startTime} endTime={shift.endTime} isDesignatedLead={shift.isDesignatedLead} notes={shift.notes ?? ""} />
+      <DeleteShiftRow>
+        <ActionForm action={deleteShiftAction} className="q-shift-delete" failure={{ title: "The shift wasn’t deleted", body: "Check your connection and try again." }}>
           <input type="hidden" name="shiftId" value={shift.id} />
-          <Card title="Who" id="edit-who">
-            <div className="wa-fields">
-              <ShiftEditAssignment employees={employees} positions={positions} employeeId={shift.employeeId} positionId={shift.positionId} />
-              <label className="wa-check">
-                <input type="checkbox" name="isDesignatedLead" defaultChecked={shift.isDesignatedLead} />
-                <span className="wa-check__text"><span className="wa-check__title">Shift lead</span><span className="wa-check__help">Only an Owner, Manager or Lead can lead a shift.</span></span>
-              </label>
-              <div className="wa-readonly">
-                <span className="wa-field__label">Location</span>
-                <span className="wa-readonly__value">{location?.shortName ?? shift.locationId}</span>
-                <span className="wa-field__help">A shift keeps its location. To move it, delete it and add a new one.</span>
-              </div>
-            </div>
-          </Card>
-
-          <Card title="When" id="edit-when">
-            <div className="wa-fields">
-              <Field label="Date" help={`Days in this schedule week: ${keepWhole(formatWeekRange(shift.weekStart))}.`} helpId="edit-shift-date-help">
-                <input type="date" name="date" defaultValue={shift.date} min={shift.weekStart} max={addDays(shift.weekStart, 6)} aria-describedby="edit-shift-date-help" required />
-              </Field>
-              <ShiftEditTiming date={shift.date} startTime={shift.startTime} endTime={shift.endTime} />
-            </div>
-          </Card>
-
-          <Card title="Notes" id="edit-notes" meta="Optional">
-            <div className="wa-fields">
-              <Field label="Notes for the team" help="Everyone on this shift can read them." helpId="edit-shift-notes-help">
-                <textarea id="edit-shift-notes" aria-describedby="edit-shift-notes-help" name="notes" defaultValue={shift.notes ?? ""} rows={3} placeholder="Anything the team should know" />
-              </Field>
-            </div>
-          </Card>
-
-          <FormActions note="Availability, time off, other shifts and weekly hours are checked when you save.">
-            <PendingButton pending="Saving…" block>Save changes</PendingButton>
-            <Link className="nv-btn" data-kind="secondary" data-block="true" href={returnUrl}>Cancel</Link>
-          </FormActions>
-        </ConfigurationForm>
-
-        <Card title="Delete this shift" id="edit-delete">
-          <details className="wa-disclosure">
-            <summary className="wa-disclosure__summary">Delete shift</summary>
-            <ActionForm action={deleteShiftAction} className="wa-card-body" failure={{ title: "The shift wasn’t deleted", body: "Check your connection and try again." }}>
-              <input type="hidden" name="shiftId" value={shift.id} />
-              <p className="wa-text">{keepWhole(`${shift.employeeName} won’t be scheduled on ${day.weekday},\u00a0${day.day}. This can’t be undone.`)}</p>
-              <DeleteShiftButton />
-            </ActionForm>
-          </details>
-        </Card>
-      </div>
+          <p className="q-help">{keepWhole(`${shift.employeeName} won’t be scheduled on ${day.weekday}, ${day.day}. This can’t be undone.`)}</p>
+          <DeleteShiftButton />
+        </ActionForm>
+      </DeleteShiftRow>
     </div>
   </ScopedReadFrame>);
 }
