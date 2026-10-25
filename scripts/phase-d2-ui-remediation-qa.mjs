@@ -117,8 +117,10 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   stage='employee-foreground';await ep.bringToFront();assert(await ep.evaluate(()=>document.hasFocus()),'Employee native keyboard page must be foreground');
   observations.keyboard.push({stage:'employee-after-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus())});
   await ep.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
-  const details=ep.locator('.employee-time-entry').first();
-  await details.locator('summary').focus();await details.locator('summary').press('Enter');
+  // v5 My time: each entry is a row that opens its punches and its correction as a sheet.
+  const entryRow=ep.locator('ul[aria-labelledby^="employee-time-"] > li > button[aria-haspopup="dialog"]').first();
+  await entryRow.focus();await entryRow.press('Enter');
+  const details=ep.locator('dialog[open]');
   const trigger=details.getByRole('button',{name:'Request a correction',exact:true});
   observations.keyboard.push({stage:'disclosure-before-settle',state:await details.evaluate(e=>({open:e.open,contentVisibility:getComputedStyle(e,'::details-content').contentVisibility,blockSize:getComputedStyle(e,'::details-content').blockSize,animations:e.getAnimations({subtree:true}).map(a=>a.playState)}))});
   await details.evaluate(async e=>{e.getBoundingClientRect();await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));await Promise.all(e.getAnimations({subtree:true}).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})));});
