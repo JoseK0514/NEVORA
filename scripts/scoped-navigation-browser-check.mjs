@@ -77,6 +77,8 @@ async function verifyExplicitRecovery(page,origin,engine,report){
   // counts its route as handled. The assertions below still require it to end and never replace the source.
   return gate.then(()=>route.continue()).catch(error=>{if(!/already handled/i.test(String(error?.message)))throw error;});
  };
+ // Dev servers compile a route on first open; warm the held destination so the deadline measures recovery, not compiling.
+ await page.goto(origin+'/app/reports');await page.waitForLoadState('load');
  mark('source-entry');await page.goto(origin+source);await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
  await page.route('**/app/reports?*',handler);
  const deadline=performance.now()+15000;
