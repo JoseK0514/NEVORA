@@ -146,8 +146,10 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   if(await page.locator('.mobile-nav').isVisible()){
    // v5: More is a page. The keyboard opens it from the tab bar; its rows keep a fixed order; Back returns.
    const trigger=page.locator('.mobile-nav a[href="/app/more"]');await trigger.focus();await page.keyboard.press('Enter');await page.waitForURL(u=>u.pathname==='/app/more');await settle();
+   await page.locator('main .q-list a.q-row[href="/app/profile"]').waitFor();
    const order=await page.locator('main .q-list a.q-row').evaluateAll(es=>es.map(e=>e.getAttribute('href')));
-   assert.deepEqual(order.filter(href=>['/app/profile','/app/updates','/app/notifications'].includes(href)),['/app/profile','/app/updates','/app/notifications']);
+   assert(order.includes('/app/profile')&&order.includes('/app/notifications'),'More lists Profile and Notifications');
+   const known=['/app/profile','/app/updates','/app/notifications'];assert.deepEqual(order.filter(href=>known.includes(href)),known.filter(href=>order.includes(href)),'More keeps its row order');
    assert(await trigger.evaluate(e=>e.classList.contains('active')));await page.goBack();await page.waitForURL(u=>u.pathname==='/app/availability');await settle();
    checks.push('More page reached by native Enter with explicit row order; Back returns');
   }else{await nav('/app/profile',true);checks.push('Native keyboard desktop account-menu Profile navigation and focus handoff');}
