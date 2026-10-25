@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {useRouter} from 'next/navigation';
+import {usePathname, useRouter} from 'next/navigation';
 import {createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode} from 'react';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 
@@ -87,9 +87,13 @@ export function QuietSheet({open, onClose, label, labelledBy, children}: {open: 
   </dialog>;
 }
 
-/** A route opened as a sheet over the page it came from (an intercepted route): closing goes back. */
-export function RouteSheet({label, children}: {label: string; children: ReactNode}) {
+/** A route opened as a sheet over the page it came from (an intercepted route): closing goes back. A parallel slot keeps
+ * its last content when a soft navigation lands on a page it has no route for, so the sheet shows only while the address
+ * is still one of its own (`match`). */
+export function RouteSheet({label, match, children}: {label: string; /** A pattern string (props from a server layout must serialize). */ match: string; children: ReactNode}) {
   const router = useRouter();
+  const pathname = usePathname();
+  if (!new RegExp(match).test(pathname)) return null;
   return <QuietSheet open label={label} onClose={() => router.back()}>{children}</QuietSheet>;
 }
 
