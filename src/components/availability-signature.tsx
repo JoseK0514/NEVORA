@@ -35,7 +35,7 @@ const hoursText = (value: AvailabilityState[number]) => `${formatTime(value.star
 
 function DaySheet({ day, value, open, disabled, onClose, onChange }: { day: (typeof DAYS)[number]; value: AvailabilityState[number]; open: boolean; disabled: boolean; onClose: () => void; onChange: (patch: Partial<AvailabilityState[number]>) => void }) {
   const invalid = value.available && !spanOf(value);
-  return <QuietSheet open={open} label={`${day.label} availability`} onClose={onClose}>
+  return <QuietSheet open={open} label={day.label} onClose={onClose}>
     <div className="q-nav"><span /><span className="q-nav__t">{day.label}</span><SheetCancel href="/app/availability" className="q-nav__r q-nav__r--b">Done</SheetCancel></div>
     <fieldset className="q-fieldset" disabled={disabled}>
       <legend className="nv-sr">{day.label} availability</legend>
