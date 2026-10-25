@@ -7,7 +7,8 @@ import {workspaceReadGuard} from '../data/workspaces';
 import {neonNotificationExecutor} from '../data/notification-transactions';
 import {readTimecards} from '../timecards/service';
 import {parsePeriod,type Period} from '../timecards/project';
-import {canonicalPayrollExport,mappedPayrollCsv,neutralProfile,parseExportProfile,type ExportProfile,type CanonicalPayrollExport} from './model';
+import {canonicalPayrollExport,isLegacyAdpProfile,mappedPayrollCsv,neutralProfile,parseExportProfile,type ExportProfile,type CanonicalPayrollExport} from './model';
+import {readPayableHours} from './payable.server';
 const object=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const uuid=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(v);
 const hash=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{32}$/.test(v);
@@ -29,7 +30,8 @@ export async function readExportProfiles(proof:SessionMutationProof,executor:Sql
  * replay and expectedRevision control; current company scope is rechecked on return. */
 export async function saveExportProfile(proof:SessionMutationProof,input:unknown,executor:SqlExecutor=neonNotificationExecutor()):Promise<SavedExportProfile>{
  management(proof);if(!object(input)||!uuid(input.operationId)||!uuid(input.id)||!Number.isSafeInteger(input.expectedRevision)||Number(input.expectedRevision)<0||Object.keys(input).some(k=>!['operationId','id','expectedRevision','profile'].includes(k)))throw new Error('Invalid mapping command');
- const profile=parseExportProfile(input.profile),access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor),{workspace,authority}=access,ids=[...new Set([proof.employee.id,...profile.employeeMappings.map(m=>m.employeeId)])].sort();
+ const profile=parseExportProfile(input.profile);if(isLegacyAdpProfile(profile))throw new Error('Choose the ADP RUN layout again to add the earnings codes');
+ const access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor),{workspace,authority}=access,ids=[...new Set([proof.employee.id,...profile.employeeMappings.map(m=>m.employeeId)])].sort();
  const guards=[...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE',values:[ids]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)];
  const result=await executor.transaction([...guards,{text:'SELECT nevora_payroll_profile_command($1,$2,$3::uuid,$4::uuid,$5::integer,$6,$7::jsonb) AS result',values:[workspace.id,proof.employee.id,input.operationId,input.id,input.expectedRevision,digest({...input,profile}),JSON.stringify(profile)]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)]);
  const row=result[guards.length]?.[0] as {result:unknown};const projected=saved(row?.result);await currentCompany(proof,access,executor);return projected;
@@ -44,7 +46,7 @@ export function parseExportCommand(v:unknown):ExportCommand{
 }
 export type PayrollExportPayload={operationId:string;model:CanonicalPayrollExport;profile:ExportProfile;profileId:string|null;profileRevision:number;csv:string;csvSha256:string;canonicalSha256:string};
 function payload(value:unknown,command:ExportCommand):PayrollExportPayload{
- if(!object(value)||value.operationId!==command.operationId||typeof value.csv!=='string'||typeof value.csvSha256!=='string'||typeof value.canonicalSha256!=='string'||!object(value.model)||value.model.version!==1||!Array.isArray(value.model.rows)||value.profileId!==command.profileId||value.profileRevision!==command.profileRevision||createHash('sha256').update(value.csv).digest('hex')!==value.csvSha256||digest(value.model)!==value.canonicalSha256)throw new Error('Export receipt could not be verified');
+ if(!object(value)||value.operationId!==command.operationId||typeof value.csv!=='string'||typeof value.csvSha256!=='string'||typeof value.canonicalSha256!=='string'||!object(value.model)||![1,2].includes(Number(value.model.version))||!Array.isArray(value.model.rows)||value.profileId!==command.profileId||value.profileRevision!==command.profileRevision||createHash('sha256').update(value.csv).digest('hex')!==value.csvSha256||digest(value.model)!==value.canonicalSha256)throw new Error('Export receipt could not be verified');
  parseExportProfile(value.profile);return value as PayrollExportPayload;
 }
 /** Create/recover an actor-scoped export receipt under current company authority.
@@ -57,10 +59,13 @@ export async function createPayrollExport(proof:SessionMutationProof,input:unkno
  const existing=await executor.transaction([...guards,{text:'SELECT command_hash AS hash,payload FROM payroll_export_receipts WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3::uuid',values:[workspace.id,proof.employee.id,command.operationId]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)]);
  const receipt=existing[guards.length]?.[0] as {hash:string;payload:unknown}|undefined;if(receipt){if(receipt.hash!==commandHash)throw new Error('nevora_export_CONFLICT');const verified=payload(receipt.payload,command);await currentCompany(proof,access,executor);return verified;}
  const cards=await readTimecards(proof,command,executor);if(cards.state!=='ready')throw new Error('Timecards unavailable');
- const model=canonicalPayrollExport(workspace.id,cards.observedAt,command,cards.cards,command.cards.map(c=>c.employeeId));
+ const scope=operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority);
+ const payable=await readPayableHours(workspace.id,command,command.cards.map(c=>c.employeeId),executor,[...workspaceReadGuard(workspace),...scope],scope);
+ const model=canonicalPayrollExport(workspace.id,cards.observedAt,command,cards.cards,command.cards.map(c=>c.employeeId),payable.payable);
  if(model.rows.some(r=>{const expected=command.cards.find(c=>c.employeeId===r.employeeId)!;return r.revision!==expected.revision||r.sourceHash!==expected.sourceHash||r.finalizationOperationId!==expected.finalizationOperationId;}))throw new Error('nevora_export_CONFLICT');
  let profile=neutralProfile();if(command.profileId){const available=await readExportProfiles(proof,executor),selected=available.find(p=>p.id===command.profileId);if(!selected||selected.revision!==command.profileRevision)throw new Error('nevora_export_CONFLICT');profile=selected.profile;}
  const csv=mappedPayrollCsv(model,profile),generated:PayrollExportPayload={operationId:command.operationId,model,profile,profileId:command.profileId,profileRevision:command.profileRevision,csv,csvSha256:createHash('sha256').update(csv).digest('hex'),canonicalSha256:digest(model)};
- const results=await executor.transaction([...guards,{text:'SELECT nevora_payroll_export_command($1,$2,$3::uuid,$4,$5::uuid,$6::integer,$7::jsonb) AS result',values:[workspace.id,proof.employee.id,command.operationId,commandHash,command.profileId,command.profileRevision,JSON.stringify(generated)]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)]);
- const result=results[guards.length]?.[0] as {result:unknown}|undefined;const verified=payload(result?.result,command);await currentCompany(proof,access,executor);return verified;
+ // The payable fences fail the receipt if any source the engine classified changed.
+ const results=await executor.transaction([...guards,...payable.fences,{text:'SELECT nevora_payroll_export_command($1,$2,$3::uuid,$4,$5::uuid,$6::integer,$7::jsonb) AS result',values:[workspace.id,proof.employee.id,command.operationId,commandHash,command.profileId,command.profileRevision,JSON.stringify(generated)]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)]);
+ const result=results[guards.length+payable.fences.length]?.[0] as {result:unknown}|undefined;const verified=payload(result?.result,command);await currentCompany(proof,access,executor);return verified;
 }
