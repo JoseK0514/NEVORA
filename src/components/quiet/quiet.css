@@ -853,3 +853,4 @@ html[data-q-sheet] { overflow: hidden; }
 :is(#q-root, html) .q-weekconf .q-bs { position: relative; isolation: isolate; height: 44px; background: none; }
 :is(#q-root, html) .q-weekconf .q-bs::before { content: ""; position: absolute; inset: 6px 0; z-index: -1; border-radius: 16px; background: var(--q-teal-fill); }
 :is(#q-root, html) .q-weekconf .q-bs:not(.q-bs--go)::before { background: var(--q-fill); }
+:is(#q-root, html) .q-page a.q-next, :is(#q-root, html) .q-page div.q-next { color: #FFFFFF; } /* outranks the kit's a { color: inherit } */
