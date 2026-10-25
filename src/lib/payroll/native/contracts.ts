@@ -61,6 +61,9 @@ export type NativeWageProfile = {
         typeId: string;
         treatment: "PAID_REST" | "UNPAID_RELIEVED_MEAL";
     }[];
+    /** A recorded written agreement reducing the meal period to 30 minutes (Puerto Rico).
+     * Absent means false: meals shorter than 60 minutes are flagged for review. */
+    mealReductionAgreement?: boolean;
     /** Explicit attestation that the evaluated context has no other wage premium. */
     standardContextAttested: boolean;
     evidenceReference: string;
@@ -174,6 +177,9 @@ export type NativePayrollReady = {
         regularNanoseconds: string;
         overtimeNanoseconds: string;
         unpaidBreakNanoseconds: string;
+        /** Non-blocking meal-period review flags (no penalty pay). Absent on results
+         * calculated before the meal rule. */
+        mealWarnings?: import("./meal-periods").MealWarning[];
         locationIds: string[];
         taxYear: number;
         ytdBefore: NativeYtd;

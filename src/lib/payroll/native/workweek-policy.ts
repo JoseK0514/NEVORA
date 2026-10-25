@@ -40,9 +40,11 @@ export type NativeBoundaryEvidence = {
     workweekPolicySha256: string;
     sourceWindow: WorkweekInterval;
     fullWeekWindow: WorkweekInterval;
-    dailyInterpretation: 'UNRESOLVED' | 'OWNER_AUTHORIZED_CIVIL_MIDNIGHT_24H';
-    dailyInputDisposition: 'INVARIANT_NO_FIRST_MINUTE_ENTRIES' | 'BOUNDARY_SENSITIVE' | 'OWNER_POLICY_APPLIED_ALL_INSTANTS';
-    dailyModels: readonly [ 'CIVIL_MIDNIGHT_24H' ] | readonly [
+    /** SHIFT_START_DAY (Jose, 2026-10-25): every entry wholly on the day it starts.
+     * The other values remain on results calculated before that rule. */
+    dailyInterpretation: 'SHIFT_START_DAY' | 'UNRESOLVED' | 'OWNER_AUTHORIZED_CIVIL_MIDNIGHT_24H';
+    dailyInputDisposition: 'SHIFT_START_DAY_ALL_ENTRIES' | 'INVARIANT_NO_FIRST_MINUTE_ENTRIES' | 'BOUNDARY_SENSITIVE' | 'OWNER_POLICY_APPLIED_ALL_INSTANTS';
+    dailyModels: readonly [ 'SHIFT_START_DAY' ] | readonly [ 'CIVIL_MIDNIGHT_24H' ] | readonly [
         'CIVIL_MIDNIGHT_24H',
         'CIVIL_00_01_24H'
     ];
@@ -52,6 +54,9 @@ export type NativeBoundaryEvidence = {
 export const NATIVE_BOUNDARY_RULE_SOURCES = Object.freeze({
     workweek: { ...PR_STATUTORY_WORKWEEK_SOURCE, sha256: 'cd1d9a0600e42a03768b01d23be2379aa1dd5611cda240e25409e2b5e6ebb896' },
     regulation: { id: 'DTRH_9017_2018', article: 'VI', pdfPage: 8, sha256: '9cae76ec16e25c9de3f613e0d10c9845d9f9dfc3f46146def69a565d2a007b43' },
+    // Owner decision that replaces the unresolved civil-midnight question for calculation.
+    dailyAttribution: { rule: 'SHIFT_START_DAY', decision: 'Owner (Jose) 2026-10-25: an entry that crosses midnight counts wholly on the business day and workweek it starts; daily overtime over 8 h in that day', reference: 'business.md B-02/B-15' },
+    mealPeriods: { rule: 'REVIEW_WARNINGS_ONLY', decision: 'Owner (Jose) 2026-10-25: flag >5 h without a meal, a meal before the end of the 2nd hour, a meal under 60 min (30 with a written agreement); an unpaid meal under 30 min is paid; a paid rest over 20 min stays paid; no penalty pay', reference: 'business.md B-14' },
     dailyPrecision: { interpretation: 'UNRESOLVED', guide2019: { pdfPages: [59, 73], sha256: 'dff56a2e4467a756c76e5cc4a64533af396e310232de6e08c874b7ad079aa60d' }, consultaC15824: { date: '2017-06-28', pdfPage: 4, sha256: 'ec776fc15e7510a965b35a69f79a8840786f5b322fbfadff622626ca228915f4' }, models: ['CIVIL_MIDNIGHT_24H', 'CIVIL_00_01_24H'] },
 });
 const ZONE = 'America/Puerto_Rico';
