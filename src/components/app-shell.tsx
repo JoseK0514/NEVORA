@@ -25,6 +25,7 @@ import { isPopoverOpen, hidePopover } from "./kit/popover-open";
 import { CommandFinder } from "./command-finder";
 import { PresentationProvider } from "./presentation-context";
 import { NUVORA_BRAND } from "../lib/brand";
+import { nameInitials } from "../lib/employee-display";
 import { handleRowNavigation } from "../lib/row-navigation";
 import type { PayrollCapabilities } from '@/lib/payroll/contracts';
 import type {OperationalAuthorityView} from '@/lib/company-access/model';
@@ -104,7 +105,7 @@ function AppShellView({
   // absent from the first frame, placeholder included, instead of disappearing once the review renders.
   const focusedReview = pathname === "/app/requests" && !!search?.get("requestId");
   const sectionTabs = pathname && !focusedReview ? sectionTabsFor(user.role, pathname, payrollCapabilities, context) : null;
-  const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
+  const initials = nameInitials(`${user.firstName} ${user.lastName}`);
   const activeHref = activeNavigationHref(user.role, pathname, payrollCapabilities, context);
   const sidebarItems = sidebarNavigation(user.role, navigation);
   // Clean Manager (v3): Home's occasional tools (its views and the two recovery pages) have their own group.

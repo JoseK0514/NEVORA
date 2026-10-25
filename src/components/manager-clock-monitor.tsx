@@ -4,9 +4,9 @@ import Link from 'next/link';
 import {useEffect,useRef,useState} from 'react';
 import {createMonitorController,fetchClockMonitor,type MonitorPanelState} from '../lib/clock-monitor-client';
 import {formatMonitorDuration} from '../lib/clock-monitor';
+import {nameInitials} from '../lib/employee-display';
 import {SkeletonRows} from './skeleton';
 
-function initials(name:string){return name.split(/\s+/).filter(Boolean).slice(0,2).map(p=>p[0]?.toUpperCase()).join('');}
 function checkedAt(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(at));}
 
 /** Renders only an unpaused ready snapshot; absent data must not imply nobody is clocked in. */
@@ -28,7 +28,7 @@ export function ClockMonitorCard({state,onRefresh}:{state:MonitorPanelState;onRe
    {ready.employees.length?<div className="manager-home-list">
     {ready.employees.map(person=><div className="manager-floor-row" key={person.timeEntryId}>
      <div className="manager-floor-person">
-      <span className="manager-floor-avatar" aria-hidden="true">{initials(person.employeeName)}</span>
+      <span className="manager-floor-avatar" aria-hidden="true">{nameInitials(person.employeeName)}</span>
       <span className="manager-floor-copy">
        <strong>{person.employeeName}</strong>
        <small>{person.locationName}{person.positionName?<span title="Position at clock-in"> · {person.positionName}</span>:null}</small>

@@ -16,7 +16,7 @@ import { BlockedOpenShifts } from './blocked-open-shifts';
 import { Celebration } from './celebration';
 import { ShiftSheetRow, type ShiftSheetShift } from './employee-shift-sheet';
 import { QuietBar, QuietBarIcon, QuietHeader, QuietList, QuietPage, QuietRow, QuietSection, QuietSegments } from './quiet/quiet';
-import { addDays, formatTime, formatTimeRange, weekDates, weekStartFor } from '../lib/date-utils';
+import { addDays, formatElapsed, formatHours, formatTime, formatTimeRange, weekDates, weekStartFor } from '../lib/date-utils';
 import { shiftBoundaryInstants } from '../lib/business-time';
 import { emptyScheduleLabel, type EmployeeScheduleRead } from '../lib/data/employee-schedule';
 import type { ScheduleShiftRow } from '../lib/data/schedules';
@@ -85,17 +85,8 @@ function shiftMinutes(shift: { startTime: string; endTime: string }) {
   return end > start ? end - start : end + 1440 - start;
 }
 
-/** "40 h" or "37.5 h", one unit at the size of its number. */
-function hoursLabel(minutes: number) {
-  const hours = Math.round(minutes / 6) / 10;
-  return `${Number.isInteger(hours) ? hours : hours.toFixed(1)} h`;
-}
-
-/** "8 hours" or "7 hours 30 min" for one shift. */
-function lengthLabel(minutes: number) {
-  const hours = Math.floor(minutes / 60), rest = minutes % 60;
-  return `${hours ? `${hours} ${hours === 1 ? 'hour' : 'hours'}` : ''}${hours && rest ? ' ' : ''}${rest ? `${rest} min` : ''}`;
-}
+/** "40 h" or "37.5 h" for a week or day; "8 h" or "7 h 30 min" for one shift (the shared duration style). */
+const hoursLabel = formatHours, lengthLabel = formatElapsed;
 
 /** "Oct 19 – 25", or "Oct 26 – Nov 1" across a month. */
 function weekRange(weekStart: string) {

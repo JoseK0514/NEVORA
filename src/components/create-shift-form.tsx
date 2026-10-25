@@ -7,7 +7,7 @@ import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { ConfigurationForm, type ConfigurationResult } from "./configuration-form";
 import { designatedLeadAfterEmployeeChange, positionAfterEmployeeChange } from "./shift-assignment-fields";
 import { QuietSheet, useSheetClose } from "./quiet/quiet-sheet";
-import { addDays, durationMinutes, formatTime, isValidIsoDate, weekStartFor } from "../lib/date-utils";
+import { addDays, durationMinutes, formatElapsed, formatTime, isValidIsoDate, weekStartFor } from "../lib/date-utils";
 import type { Employee, Location, Position } from "../lib/domain";
 
 /* New shift and Edit shift (Quiet v4 AddShift.png; Team U2, Oct 25, 2026: T-4, P2-11, F16, UX-O-21). One form in two modes:
@@ -24,12 +24,8 @@ const LEAD_ROLES = ["OWNER", "MANAGER", "LEAD"];
 export const schedulable = (employee: Employee) => employee.active && employee.id === employee.id.trim().toUpperCase();
 const fullName = (employee: Employee) => `${employee.firstName} ${employee.lastName}`;
 
-function hoursText(minutes: number) {
-  const hours = Math.floor(minutes / 60), rest = minutes % 60;
-  const h = hours ? `${hours} ${hours === 1 ? "hour" : "hours"}` : "";
-  const m = rest ? `${rest} min` : "";
-  return [h, m].filter(Boolean).join(" ") || "0 min";
-}
+/** "8 h" or "7 h 30 min" (the shared duration style). */
+const hoursText = formatElapsed;
 /** "8:00 AM"; the end of the day reads "midnight". */
 const clock = (time: string) => time === "00:00" || time === "24:00" ? "midnight" : formatTime(time);
 

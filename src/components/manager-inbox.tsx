@@ -12,7 +12,8 @@ import { actionCenterNavigation } from "./action-center-navigation";
 import { EmptyState } from "./empty-state";
 import { Celebration } from "./celebration";
 import { Avatar, Button, Card, Freshness, KitStack, MetaParts, PageBand, Status, Tile } from "./kit/kit";
-import { QuietHeader } from "./quiet/quiet";
+import { initialsOf, QuietHeader } from "./quiet/quiet";
+import { formatElapsed } from "@/lib/date-utils";
 import { usePresentation } from "./presentation-context";
 import { pathEnabled } from "@/lib/workspace-presentation/modules";
 import { CLOCK_IN, presentItem } from "@/lib/action-center/present";
@@ -40,7 +41,6 @@ const emptyText: Record<InboxFilter, string> = {
 };
 
 const clock = (iso: string, timeZone: string) => new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso));
-const initials = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
 
 /** What one Inbox row shows, and what the desktop detail pane shows for it (Phase 4). */
 type InboxEntry = {
@@ -143,7 +143,7 @@ function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, timeZon
   const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, action.label, timeZone);
   const facts = request ? (item as ActionItem & { request?: RequestFacts }).request : undefined;
   return { key: item.id, href: withFilter(action.href, filter, item.id), label: `${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, urgent,
-    leading: request && shown.person ? <span className="q-av" aria-hidden="true">{initials(shown.person)}</span> : undefined,
+    leading: request && shown.person ? <span className="q-av" aria-hidden="true">{initialsOf(shown.person)}</span> : undefined,
     title: shown.title, meta: <MetaParts text={shown.detail} />, action: shown.action,
     status: request ? <Status tone="review">Waiting</Status> : urgent ? <Status tone="urgent">Not covered</Status> : undefined,
     trailing: undefined,
@@ -156,13 +156,12 @@ function ItemRow({ item, calm = false, filter = "all", timeZone = "UTC" }: { ite
   return <KitRow entry={itemEntry(item, calm, filter, timeZone)} />;
 }
 
-/** "3h 15m" since the shift started, from the observation time (never the browser clock). */
+/** "3 h 15 min" since the shift started, from the observation time (never the browser clock). */
 function lateBy(shift: TodayShift, observedAt: string | undefined) {
   if (!observedAt) return undefined;
   const minutes = Math.floor((Date.parse(observedAt) - Date.parse(shift.startAt)) / 60_000);
   if (!(minutes > 0)) return undefined;
-  const h = Math.floor(minutes / 60), m = minutes % 60;
-  return h ? (m ? `${h} h ${m} min` : `${h} h`) : `${m} min`;
+  return formatElapsed(minutes);
 }
 
 export function shiftEntry(shift: TodayShift, timeZone: string, observedAt?: string, showPlace = true, phone?: string, observation?: ScopedObservation): InboxEntry {
@@ -174,7 +173,7 @@ export function shiftEntry(shift: TodayShift, timeZone: string, observedAt?: str
   const when = running ? `Shift began at ${clock(shift.startAt, timeZone)}` : `Shift ended at ${clock(shift.endAt, timeZone)}`;
   const condition = running ? "Not clocked in" : `No ${CLOCK_IN}`;
   return { key: `shift:${shift.id}`, href, label: `${action} for ${shift.employeeName}: ${condition}`, urgent: true,
-    leading: <span className="q-av" aria-hidden="true">{initials(shift.employeeName)}</span>, title: shift.employeeName,
+    leading: <span className="q-av" aria-hidden="true">{initialsOf(shift.employeeName)}</span>, title: shift.employeeName,
     // P3-WR-11: each part stays whole and moves to the next line as a unit, so nothing is clipped at large text.
     meta: showPlace ? <MetaParts text={`${keepWhole(when)} · ${shift.locationName}`} /> : keepWhole(when), action,
     status: <Status tone="urgent">{condition}</Status>,
