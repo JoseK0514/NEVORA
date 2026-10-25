@@ -68,6 +68,15 @@ try{
       report.caughtRscErrors.push({portal:id,lifecycle,monotonicMs:Math.round(performance.now()),reportControl:reportNavigationStage(page),...metadata});
     });
     await context.route('**/*',route=>{const target=new URL(route.request().url());return ['http:','https:'].includes(target.protocol)&&target.origin!==app.url?route.abort():route.continue();});
+    // Lifecycle record: window events, the access frame's state and the page body's identity (a remount replaces it).
+    // settled() reads it; a failure reports it.
+    await context.addInitScript(()=>{
+      const log=[];let frame,body;window.__nevoraLifecycle=log;window.__nevoraQuietSince=Date.now();
+      const note=(kind,detail)=>{window.__nevoraQuietSince=Date.now();if(log.length<300)log.push({at:Date.now(),kind,detail,focused:document.hasFocus(),visibility:document.visibilityState});};
+      for(const type of ['blur','focus','pagehide','pageshow','online','offline','storage'])window.addEventListener(type,event=>{if(event.target===window)note(type,event.persisted);},true);
+      document.addEventListener('visibilitychange',()=>note('visibility'),true);
+      new MutationObserver(()=>{const state=document.querySelector('.portal-route-state h2')?.textContent??'ready',page=document.querySelector('[data-nv-page]');if(state!==frame){frame=state;note('frame',state);}if(page!==body){body=page;note('page',page?'mounted':'none');}}).observe(document,{subtree:true,childList:true});
+    });
     const page=await context.newPage();currentPage=page;const documentNavigation=observeDocumentNavigation(page,()=>app.url);page.setDefaultTimeout(15000);page.on('pageerror',error=>{
       if(error.message.endsWith('due to access control checks.')&&error.message.includes(new URL(app.url).host+'/api/'))report.networkCancellations.push(engineName(id)+': '+error.message);
       else{
@@ -81,6 +90,9 @@ try{
     await page.waitForLoadState('networkidle');
     return {context,page};
   }
+  // WebKit can deliver window lifecycle events after a download; the access frame then re-checks and remounts its page.
+  // Act only once the page has been ready, with no lifecycle event or remount, for 750 ms.
+  const settled=page=>page.waitForFunction(()=>!document.querySelector('.portal-route-state')&&Date.now()-window.__nevoraQuietSince>=750,null,{polling:100});
   for(const [engine,type] of [['chromium',chromium],['webkit',webkit]].filter(([name])=>!process.env.PHASE_D_QA_ENGINES||process.env.PHASE_D_QA_ENGINES.split(',').includes(name))){
     lifecycle='scenario';
     const browser=await type.launch({headless:true});browsers.push(browser);
@@ -167,7 +179,7 @@ try{
     await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Approved$/}).waitFor();await card.getByRole('button',{name:'Finalize period',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Finalized$/}).waitFor();
     await mp.goto(app.url+'/app/payroll-export?start=2026-09-21&end=2026-09-27');await mp.getByRole('button',{name:'Export finalized time',exact:true}).click();await mp.locator('.q-export-phone').getByRole('button',{name:/^Time file/}).waitFor();checked(engine+': Quiet phone finalized export produces current files');await mp.setViewportSize({width:1440,height:1000});await mp.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
     await mp.getByRole('checkbox',{name:/Avery Period QA/}).check();await mp.getByRole('button',{name:'Generate reviewed export',exact:true}).click();await mp.getByRole('button',{name:'Download mapped CSV',exact:true}).waitFor();checked(engine+': finalized neutral export receipt verified');
-    for(const [name,extension] of [['Download mapped CSV','csv'],['Download canonical time record','json']]){const waiting=mp.waitForEvent('download');await mp.getByRole('button',{name,exact:true}).click();const file=await waiting;await file.saveAs(join(evidence,`${engine}-payroll-neutral.${extension}`));}checked(engine+': canonical and mapped export downloads');
+    for(const [name,extension] of [['Download mapped CSV','csv'],['Download canonical time record','json']]){const waiting=mp.waitForEvent('download');await mp.getByRole('button',{name,exact:true}).click();const file=await waiting;await file.saveAs(join(evidence,`${engine}-payroll-neutral.${extension}`));}checked(engine+': canonical and mapped export downloads');await settled(mp);
     await mp.getByText('Import mapping',{exact:true}).click();await mp.getByLabel('Profile name',{exact:true}).fill('Fictional customer CSV');await mp.getByLabel('Payroll product / edition',{exact:true}).fill('Fictional provider');await mp.getByRole('checkbox',{name:/I verified the required fields/}).check();await mp.getByRole('button',{name:'Save mapping profile',exact:true}).click();await mp.getByRole('status').filter({hasText:'Mapping saved as revision 1'}).waitFor();checked(engine+': current manager configurable mapping save');
     for(const width of [320,375,390,430,768,1024,1440]){await mp.setViewportSize({width,height:1000});const geometry=await mp.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,scrollX:window.scrollX,inner:window.innerWidth,overflow:[...document.querySelectorAll('*')].filter(e=>(e.getBoundingClientRect().right+window.scrollX>document.documentElement.clientWidth+2||e.scrollWidth>e.clientWidth+2)&&getComputedStyle(e).display!=='none').map(e=>({tag:e.tagName,class:e.className,width:e.getBoundingClientRect().width,right:e.getBoundingClientRect().right,scroll:e.scrollWidth,client:e.clientWidth,minWidth:getComputedStyle(e).minWidth,overflow:getComputedStyle(e).overflow,caption:e.tagName==='LABEL'?e.textContent.slice(0,140):null,children:e.tagName==='LABEL'?[...e.children].map(child=>({tag:child.tagName,width:child.getBoundingClientRect().width,scroll:child.scrollWidth,overflow:getComputedStyle(child).overflow})):undefined})).slice(-25)}));if(geometry.scroll>geometry.width+2){console.log(JSON.stringify(geometry));await mp.screenshot({path:join(evidence,`${engine}-mapping-overflow.png`),fullPage:true});}assert(geometry.scroll<=geometry.width+2,`${engine}: mapping overflow ${width}`);checked(`${engine}: mapping geometry ${width}`);}
     currentPage=mp;await openPeriodReports(mp,app.url,engine,report);
@@ -381,6 +393,7 @@ try{
 }catch(error){
   if(currentPage){
     report.failurePage=await currentPage.evaluate(()=>({path:location.pathname.replace(/[A-Za-z0-9_-]{32,}/g,'[opaque]'),focused:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine,clockerPin:document.querySelector('[data-clocker-pin]')?.getAttribute('data-clocker-pin'),alerts:document.querySelectorAll('[role=alert]').length})).catch(()=>({state:'unavailable'}));
+    report.failureLifecycle=await currentPage.evaluate(()=>window.__nevoraLifecycle?.slice(-120)??null).catch(()=>null);console.log(JSON.stringify({failureLifecycle:report.failureLifecycle}));
     await currentPage.screenshot({path:join(evidence,'recovery-failure.png'),fullPage:true,mask:[currentPage.locator('input,textarea')]}).catch(()=>{});
   }
   if(app){
