@@ -36,6 +36,7 @@ export type ValidationIssueCode = OperationalIssueCode
   | "OUTSIDE_AVAILABILITY"
   | "WEEKLY_AVAILABILITY_CONFLICT"
   | "AVAILABILITY_NOT_SUBMITTED"
+  | "AVAILABILITY_NOT_SET"
   | "MULTIPLE_SHIFTS_SAME_DAY"
   | "MAX_WEEKLY_HOURS"
   | "TARGET_HOURS_EXCEEDED"
@@ -132,6 +133,8 @@ const messages: Record<ValidationIssueCode, string> = {
     "This shift conflicts with the employee's availability change.",
   AVAILABILITY_NOT_SUBMITTED:
     "This week's availability has not been confirmed; normal availability was used.",
+  AVAILABILITY_NOT_SET:
+    "This employee has not set availability yet, so they were treated as available.",
   MULTIPLE_SHIFTS_SAME_DAY:
     "Employee already has a scheduled shift on this day.",
   MAX_WEEKLY_HOURS:
@@ -160,6 +163,11 @@ export function maximumScheduledWeeklyHours(
  * overlap/hour credit. Overnight work is split across business days/workweeks.
  * canSave reflects hard blockers; eligible additionally rejects operational
  * manager-review warnings so automatic planners cannot silently accept them.
+ * Oct 25, 2026 (business B-06/B-07): an employee with no saved availability at
+ * all is treated as available (AVAILABILITY_NOT_SET warning) when an Owner or
+ * Manager schedules by hand (MANAGER_SCHEDULE), who may also save outside
+ * availability or past the weekly hours ceiling as a warning. AUTOMATIC and
+ * SHIFT_EXCHANGE keep all three as blockers.
  * This pure result supplies no persistence or caller authorization.
  */
 export function validateShift(input: ValidateShiftInput) {
@@ -244,6 +252,13 @@ export function validateShift(input: ValidateShiftInput) {
         shiftId: record.shift.id ?? "",
       });
     const warnedWeeks = new Set<string>();
+    const manual = mode === "MANAGER_SCHEDULE";
+    const neverSet =
+      manual &&
+      input.availability.length === 0 &&
+      !(input.weeklyAvailability ?? []).some((week) => week.windows.length > 0) &&
+      !(input.availabilityExceptions ?? []).length;
+    let notSetWarned = false;
     for (const day of splitBusinessDays(period)) {
       const dayStart = businessDateStart(day.date);
       const sameDay = records.filter((record) =>
@@ -270,7 +285,12 @@ export function validateShift(input: ValidateShiftInput) {
         weeks: input.weeklyAvailability,
         exceptions: input.availabilityExceptions,
       });
-      if (
+      if (neverSet && resolved.source === "NORMAL") {
+        if (!notSetWarned) {
+          notSetWarned = true;
+          add("AVAILABILITY_NOT_SET", { date: day.date }, "warning");
+        }
+      } else if (
         !resolved.windows.some(
           (window) =>
             window.start <= day.startMinute && window.end >= day.endMinute,
@@ -281,6 +301,7 @@ export function validateShift(input: ValidateShiftInput) {
             ? "OUTSIDE_AVAILABILITY"
             : "WEEKLY_AVAILABILITY_CONFLICT",
           { date: day.date },
+          manual ? "warning" : "error",
         );
       if (
         resolved.submitted === false &&
@@ -341,11 +362,17 @@ export function validateShift(input: ValidateShiftInput) {
         source: "SCHEDULED",
       });
       if (total > maximum * 60)
-        add("MAX_WEEKLY_HOURS", {
-          weekStart,
-          projectedHours: total / 60,
-          maximumHours: maximum,
-        });
+        add(
+          "MAX_WEEKLY_HOURS",
+          {
+            weekStart,
+            projectedHours: total / 60,
+            maximumHours: maximum,
+          },
+          mode === "MANAGER_SCHEDULE" && policy.businessMaximumWeeklyHours === undefined
+            ? "warning"
+            : "error",
+        );
       if (
         employee.targetWeeklyHours !== undefined &&
         total > employee.targetWeeklyHours * 60

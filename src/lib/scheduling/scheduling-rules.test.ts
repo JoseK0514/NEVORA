@@ -77,10 +77,9 @@ describe("shared assignment rules", () => {
         ),
       ),
     ).toContain("LOCATION_NOT_ELIGIBLE"));
-  it("blocks outside normal availability in every workflow", () => {
+  it("blocks outside normal availability in automatic and exchange workflows", () => {
     for (const mode of [
       "AUTOMATIC",
-      "MANAGER_SCHEDULE",
       "SHIFT_EXCHANGE",
     ] as const) {
       const result = validateShift(
@@ -93,7 +92,17 @@ describe("shared assignment rules", () => {
       expect(codes(result)).toContain("OUTSIDE_AVAILABILITY");
     }
   });
-  it("does not treat missing normal hours as unrestricted availability", () =>
+  it("lets a manager save outside normal availability with a warning", () => {
+    const result = validateShift(
+      input({
+        mode: "MANAGER_SCHEDULE",
+        candidate: { ...candidate, startTime: "18:00", endTime: "20:00" },
+      }),
+    );
+    expect(result.canSave).toBe(true);
+    expect(result.warnings.map((issue) => issue.code)).toContain("OUTSIDE_AVAILABILITY");
+  });
+  it("does not treat missing normal hours as unrestricted availability outside manager scheduling", () =>
     expect(codes(validateShift(input({ availability: [] })))).toContain(
       "OUTSIDE_AVAILABILITY",
     ));

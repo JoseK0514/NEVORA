@@ -26,10 +26,16 @@ const editorErrors:Record<string,string>={
 const companyWarnings:Record<string,string>={
  OUTSIDE_AVAILABILITY:"Shift saved, but it is outside the employee's submitted availability.",
  WEEKLY_HOURS:'Shift saved, but the employee is now scheduled for more than 40 hours.',
+ WEEKLY_AVAILABILITY_CONFLICT:"Shift saved, but it is outside the employee's availability for that week.",
+ MAX_WEEKLY_HOURS:'Shift saved. This employee is now scheduled past their weekly hours, so overtime may apply.',
+ AVAILABILITY_NOT_SET:'Shift saved. This employee has not set availability yet.',
 };
 const scopedWarnings:Record<string,string>={
  OUTSIDE_AVAILABILITY:"Review this shift: it is outside the employee's submitted availability.",
  WEEKLY_HOURS:'Review this employee’s scheduled hours; they may exceed 40 hours.',
+ WEEKLY_AVAILABILITY_CONFLICT:"Review this shift: it is outside the employee's availability for that week.",
+ MAX_WEEKLY_HOURS:'Review this employee’s scheduled hours; overtime may apply.',
+ AVAILABILITY_NOT_SET:'Review this shift: the employee has not set availability yet.',
 };
 function knownMessage(messages:Record<string,string>,code:string){
  if(Object.hasOwn(messages,code))return messages[code];

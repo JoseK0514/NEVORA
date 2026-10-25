@@ -69,7 +69,7 @@ describe("validateShift", () => {
     );
   });
 
-  it("blocks manager assignments outside normal availability", () => {
+  it("warns, without blocking, on manager assignments outside normal availability", () => {
     const result = validateShift({
       ...baseInput,
       candidate: { ...baseInput.candidate, startTime: "18:00", endTime: "20:00" },
@@ -77,8 +77,28 @@ describe("validateShift", () => {
     });
 
     expect(result.issues).toContainEqual(
-      expect.objectContaining({ code: "OUTSIDE_AVAILABILITY", severity: "error" }),
+      expect.objectContaining({ code: "OUTSIDE_AVAILABILITY", severity: "warning" }),
     );
+    expect(result.canSave).toBe(true);
+  });
+
+  it("treats an employee with no saved availability as available for manager scheduling", () => {
+    const result = validateShift({ ...baseInput, availability: [], mode: "MANAGER_SCHEDULE" });
+    expect(result.canSave).toBe(true);
+    expect(result.issues.map((issue) => issue.code)).not.toContain("OUTSIDE_AVAILABILITY");
+    expect(result.issues).toContainEqual(
+      expect.objectContaining({ code: "AVAILABILITY_NOT_SET", severity: "warning" }),
+    );
+  });
+
+  it("keeps the weekly hours ceiling a warning for manager scheduling and a blocker for automatic planning", () => {
+    const existingShifts = ["2026-09-29", "2026-09-30", "2026-10-01", "2026-10-02", "2026-10-03"].map(date => ({ ...baseInput.candidate, date, startTime: "08:00", endTime: "15:00" }));
+    const manual = validateShift({ ...baseInput, existingShifts, mode: "MANAGER_SCHEDULE" });
+    expect(manual.issues).toContainEqual(expect.objectContaining({ code: "MAX_WEEKLY_HOURS", severity: "warning" }));
+    const automatic = validateShift({ ...baseInput, existingShifts, mode: "AUTOMATIC" });
+    expect(automatic.issues).toContainEqual(expect.objectContaining({ code: "MAX_WEEKLY_HOURS", severity: "error" }));
+    const capped = validateShift({ ...baseInput, existingShifts, mode: "MANAGER_SCHEDULE", policy: { businessMaximumWeeklyHours: 40 } });
+    expect(capped.issues).toContainEqual(expect.objectContaining({ code: "MAX_WEEKLY_HOURS", severity: "error" }));
   });
 
   it("blocks shift exchange claims outside normal availability", () => {
