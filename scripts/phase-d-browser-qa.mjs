@@ -244,7 +244,9 @@ try{
     const todayReply=await mp.request.get(app.url+'/api/manager/today',{headers:{'x-nevora-today':'1'}}),todaySource=await todayReply.json();assert(['ready','unavailable'].includes(todaySource.state));if(todaySource.state==='ready')assert.equal(todayReply.status(),200);
     const inboxDay=new Intl.DateTimeFormat('en-CA',{timeZone:todaySource.state==='ready'?todaySource.timeZone:'America/Puerto_Rico',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(inboxActions.observedAt));
     // UX-O-07 (Quiet Inbox): coverage gaps on earlier days can't be acted on, so the Inbox doesn't list them.
-    const expectedInboxKeys=[...inboxActions.items.filter(item=>!isPastCoverageGap(item,inboxDay)).map(item=>item.id),...(todaySource.state==='ready'?todaySource.missed.map(shift=>'shift:'+shift.id):[])].sort(),visibleInboxKeys=[];
+    // UX-O-09: a Manager (D3-M) never sees their own clock-in, hours or timecard as work for them.
+    const notOwn=employeeId=>employeeId!=='D3-M';
+    const expectedInboxKeys=[...inboxActions.items.filter(item=>!isPastCoverageGap(item,inboxDay)&&notOwn(item.employeeId)).map(item=>item.id),...(todaySource.state==='ready'?todaySource.missed.filter(shift=>notOwn(shift.employeeId)).map(shift=>'shift:'+shift.id):[])].sort(),visibleInboxKeys=[];
     for(const [value,label] of inboxFilters){await chooseInboxFilter(value,label);const keys=await center.locator('[data-inbox-key]').evaluateAll(nodes=>nodes.map(node=>node.dataset.inboxKey));assert.equal(keys.length,new Set(keys).size);visibleInboxKeys.push(...keys);(report.inboxVisibility??=[]).push({engine,filter:value,keys});}
     assert.equal(visibleInboxKeys.length,new Set(visibleInboxKeys).size,'Canonical actions appear in exactly one Inbox section');assert.deepEqual(visibleInboxKeys.sort(),expectedInboxKeys);checked(engine+': D7 three Inbox sections expose every actual current-week canonical action and current missed shift exactly once');
     await selectInboxItem('TIME_OFF:'+timeOffId);
