@@ -6,7 +6,7 @@ import {shiftBoundaryInstants} from '../business-time';
 import {addDays,isValidIsoDate,isValidWeekStart} from '../date-utils';
 import {businessDateStart,shiftPeriod} from '../scheduling/periods';
 import {neonNotificationExecutor} from './notification-transactions';
-import {assertEmployeeViewProof,employeeSnapshotGuards,employeeSnapshotLimits,readEmployeeWorkspace} from './employee-profile.server';
+import {assertEmployeeViewProof,employeeReadLimits,employeeSnapshotGuards,employeeSnapshotLimits,employeeViewGuards,readEmployeeWorkspace} from './employee-profile.server';
 import {employeeAllowedLocationsSql} from './employee-schedule';
 import {currentCalloutReleaseSql} from './shift-change-release';
 
@@ -71,16 +71,16 @@ const nextSql=`WITH clock AS MATERIALIZED (SELECT clock_timestamp() AS at), loca
 function validAllowedLocationIds(value:unknown):value is string[]{
  return Array.isArray(value)&&value.length>0&&value.every((id,i)=>typeof id==='string'&&id.length>0&&(i===0||value[i-1]<id));
 }
-/** A later READ ONLY snapshot re-checks the session and the exact eligible-location set after the observation.
- * A remaining authorized location cannot validate a stale observed location. Inspection B3: these reads hold no
- * locks (they used to take every location FOR SHARE and the eligibility table SHARE, which blocked location and
- * eligibility edits); each batch's guards and data come from one snapshot instead. */
+/** The final guard's location/eligibility locks precede this fresh comparison, so a location, eligibility, role or
+ * session change already in flight when the read finishes is waited for and honoured before any row is released.
+ * A remaining authorized location cannot validate a stale observed location. (The source observation itself is a
+ * lock-free READ ONLY snapshot, inspection B3; only this short release check keeps the locked guards.) */
 async function finalLocationAuthority(proof:SessionMutationProof,workspace:Awaited<ReturnType<typeof readEmployeeWorkspace>>,
  allowedLocationIds:string[],executor:SqlExecutor,signal:AbortSignal):Promise<boolean>{
- const guards=employeeSnapshotGuards(proof,workspace);
- const results=await executor.transaction([...employeeSnapshotLimits,...guards,{text:`WITH allowed AS (${employeeAllowedLocationsSql()})
+ const guards=employeeViewGuards(proof,workspace);
+ const results=await executor.transaction([...employeeReadLimits,...guards,{text:`WITH allowed AS (${employeeAllowedLocationsSql()})
   SELECT ARRAY(SELECT id FROM allowed ORDER BY id)=$3::text[] AS unchanged`,values:[workspace.id,proof.employee.id,allowedLocationIds]}],signal);
- return (results[employeeSnapshotLimits.length+guards.length]?.[0] as {unchanged?:unknown}|undefined)?.unchanged===true;
+ return (results[employeeReadLimits.length+guards.length]?.[0] as {unchanged?:unknown}|undefined)?.unchanged===true;
 }
 
 /** Protected own-assignment read. Workspace, employee, locations, eligibility,

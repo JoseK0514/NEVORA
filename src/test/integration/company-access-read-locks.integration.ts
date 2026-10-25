@@ -115,8 +115,11 @@ it('Employee profile, Home and Updates reads are not blocked by an uncommitted s
    return Date.now()-started;
   };
   const quiet=await reads();
+  // A sign-in (ROW EXCLUSIVE on employee_sessions) and another person's profile save (ROW EXCLUSIVE on employees):
+  // the old Home and Updates prefixes locked both tables IN SHARE MODE. The reads' release fences still take FOR SHARE
+  // on the reader's own rows (company, employee, locations), so a change to those is waited for by design.
   const held=await holder(f,["INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('8',64),'owner',clock_timestamp()+interval '1 hour')",
-   "UPDATE employees SET first_name='Edited' WHERE id='manager'","UPDATE locations SET name=name WHERE id='loc-2'"]);
+   "UPDATE employees SET first_name='Edited' WHERE id='manager'"]);
   try{
    // The old prefixes waited out the 1.5 s lock_timeout on these batches (and then failed them); now the same reads
    // take about as long as with nobody writing.

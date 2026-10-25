@@ -10,7 +10,7 @@ import {calloutReadSql} from './callouts';
 import {maintenanceReadSql} from './shift-change-maintenance';
 import {neonNotificationExecutor,notificationWeekReadSql} from './notification-transactions';
 import {workspaceReadSql} from './workspaces';
-import {assertEmployeeViewProof,employeeSnapshotGuards,readEmployeeWorkspace,employeeSnapshotLimits} from './employee-profile.server';
+import {assertEmployeeViewProof,employeeSnapshotGuards,employeeViewGuards,readEmployeeWorkspace,employeeReadLimits,employeeSnapshotLimits} from './employee-profile.server';
 import {isManagementAuthorizationError} from './management-session';
 import {payrollNoticeReadSql} from '../payroll/notices';
 import {attentionSourceVersion} from './employee-attention-receipts.server';
@@ -105,8 +105,9 @@ export async function readEmployeeNotificationList(proof:SessionMutationProof,en
  if(environment!=='test'&&environment!=='production')return {state:'unavailable',reason:'read_failed'};
  const signal=AbortSignal.timeout(BUDGET_MS),started=performance.now();
  const budget=()=>{signal.throwIfAborted();if(performance.now()-started>=BUDGET_MS)throw Error('Notification read budget');};
- // Inspection B3: every batch here only reads, so each is a READ ONLY snapshot whose lock-free guards (company
- // version, exact session and role) are checked in the same instant as the rows (no FOR SHARE / SHARE waits).
+ // Inspection B3: discovery and source collection are READ ONLY snapshots whose lock-free guards (company version,
+ // exact session and role) are checked in the same instant as their rows. The final protected observation below
+ // keeps the locked guards: it is the release check that waits for an in-flight role/session change.
  const limits=employeeSnapshotLimits;
  try{
   const workspace=await readEmployeeWorkspace(executor,signal);budget();
@@ -195,8 +196,9 @@ export async function readEmployeeNotificationList(proof:SessionMutationProof,en
     (SELECT LEAST(45000,FLOOR(EXTRACT(EPOCH FROM (s.expires_at-at))*1000)) FROM employee_sessions s JOIN employees e ON e.id=s.employee_id
       WHERE s.token_hash=$2 AND e.id=$1 AND e.active AND e.role=$3 AND s.expires_at>at) AS "validForMs",
     (SELECT active FROM workspaces WHERE id=$4 AND singleton=true) AS active FROM observed`;
-  const results=await executor.transaction([...limits,...guards,{text:finalSql,values}],signal);budget();
-  const final=results[limits.length+guards.length]?.[0] as {candidates:unknown;reads:unknown;observedAt:string;validForMs:number|null;active:boolean}|undefined;
+  const finalGuards=employeeViewGuards(proof,workspace,false);
+  const results=await executor.transaction([...employeeReadLimits,...finalGuards,{text:finalSql,values}],signal);budget();
+  const final=results[employeeReadLimits.length+finalGuards.length]?.[0] as {candidates:unknown;reads:unknown;observedAt:string;validForMs:number|null;active:boolean}|undefined;
   if(!final||!final.active||!final.validForMs)throw Error('Notification final authority unavailable');
   if(Buffer.byteLength(JSON.stringify(final))>MAX_BYTES)throw Error('Notification observation too large');
   const candidates=requireRows(final.candidates);

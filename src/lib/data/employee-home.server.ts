@@ -5,7 +5,7 @@ import type {SessionMutationProof} from '../shift-changes/types';
 import type {AttentionItem,EmployeeHomeRead,HomeSource,SourceObservation} from '../employee-home/types';
 import {isValidIsoDate} from '../date-utils';
 import {homeDestination,projectEmployeeHome} from '../employee-home/project';
-import {assertEmployeeViewProof,employeeReadLimits,employeeSessionCheck,employeeSnapshotGuards,employeeSnapshotLimits,readEmployeeWorkspace} from './employee-profile.server';
+import {assertEmployeeViewProof,employeeReadLimits,employeeSessionCheck,employeeSnapshotGuards,employeeSnapshotLimits,employeeViewGuards,readEmployeeWorkspace} from './employee-profile.server';
 import {employeeAllowedLocationsSql} from './employee-schedule';
 import {managementSessionStatements,isManagementAuthorizationError} from './management-session';
 import {neonNotificationExecutor} from './notification-transactions';
@@ -228,6 +228,12 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
    if(expiry)communications={...communications,validUntil:expiry};
   }catch(error){if(isManagementAuthorizationError(error))throw error;after=await authority();communications=observation('unavailable','read_failed',null);communicationItems=[];}
   if(JSON.stringify(before.locations)!==JSON.stringify(after.locations))return denied;
+  // Release fence: the reader's own authority rows only (company, employee, locations, eligibility, session), with the
+  // locked guards, so a role, session, location or eligibility change already in flight is waited for and honoured
+  // before Home is returned. It locks no source table, so sign-ins, shift edits and publishing are not blocked.
+  const fenceGuards=[...employeeReadLimits,...employeeViewGuards(proof,workspace)];
+  const fenced=(await executor.transaction([...fenceGuards,authorityStatement,...lockedSession()],signal))[fenceGuards.length]?.[0] as Authority|undefined;
+  if(!fenced||JSON.stringify(fenced.locations)!==JSON.stringify(before.locations))return denied;
   const validForMs=Math.min(45000,Date.parse(after.expiresAt)-Date.parse(after.observedAt),45000-(Date.parse(after.observedAt)-Date.parse(before.observedAt)));
   if(validForMs<=0)return unavailable;
   // Company modules (B2): a module that is off has nothing to show on Home.
