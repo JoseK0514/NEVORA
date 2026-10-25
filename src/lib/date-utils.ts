@@ -124,3 +124,17 @@ export function formatDateRange(start: string, end: string) {
 export function formatCalendarRange(start: string, end: string) {
   return `${monthDay.format(utcDate(start))} – ${monthDay.format(utcDate(end))}`;
 }
+
+/** Scheduled or total hours as the approved mockups write them: "40 h", "32.5 h",
+ * "0 h". Minutes round to the nearest tenth of an hour; never "0h" or "40hrs". */
+export function formatHours(minutes: number) {
+  const hours = Math.round((Math.max(0, minutes) / 60) * 10) / 10;
+  return `${Number.isInteger(hours) ? hours : hours.toFixed(1)} h`;
+}
+
+/** Exact recorded time for timecards and corrections: "7 h 23 min", "45 min", "8 h". */
+export function formatElapsed(minutes: number) {
+  const total = Math.max(0, Math.floor(minutes)), hours = Math.floor(total / 60), rest = total % 60;
+  if (!hours) return `${rest} min`;
+  return rest ? `${hours} h ${rest} min` : `${hours} h`;
+}
