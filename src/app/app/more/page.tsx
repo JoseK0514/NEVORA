@@ -55,7 +55,8 @@ export default async function MorePage() {
   const proof = await requireSessionMutationProof();
   const [operational, payroll, brand] = await Promise.all([
     readOperationalAuthority(proof),
-    payrollFeatureEnabled() ? readPayrollCapabilities(proof) : Promise.resolve(undefined),
+    // The layout already read these in this render (shared per proof); a failed read hides the payroll rows (B1).
+    payrollFeatureEnabled() ? readPayrollCapabilities(proof).catch(() => undefined) : Promise.resolve(undefined),
     currentBrand(),
   ]);
   const navigation = navigationForRole(session.role, payroll, { operational, modules: brand.modules, words: wordPreset(brand.words).en, ownerAdvisorEnabled: process.env.NEVORA_OWNER_ADVISOR_ENABLED === "true" });
