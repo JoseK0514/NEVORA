@@ -10,7 +10,7 @@ import {calloutReadSql} from './callouts';
 import {maintenanceReadSql} from './shift-change-maintenance';
 import {neonNotificationExecutor,notificationWeekReadSql} from './notification-transactions';
 import {workspaceReadSql} from './workspaces';
-import {assertEmployeeViewProof,employeeViewGuards,readEmployeeWorkspace,employeeReadLimits} from './employee-profile.server';
+import {assertEmployeeViewProof,employeeSnapshotGuards,readEmployeeWorkspace,employeeSnapshotLimits} from './employee-profile.server';
 import {isManagementAuthorizationError} from './management-session';
 import {payrollNoticeReadSql} from '../payroll/notices';
 import {attentionSourceVersion} from './employee-attention-receipts.server';
@@ -105,12 +105,14 @@ export async function readEmployeeNotificationList(proof:SessionMutationProof,en
  if(environment!=='test'&&environment!=='production')return {state:'unavailable',reason:'read_failed'};
  const signal=AbortSignal.timeout(BUDGET_MS),started=performance.now();
  const budget=()=>{signal.throwIfAborted();if(performance.now()-started>=BUDGET_MS)throw Error('Notification read budget');};
- const limits=employeeReadLimits;
+ // Inspection B3: every batch here only reads, so each is a READ ONLY snapshot whose lock-free guards (company
+ // version, exact session and role) are checked in the same instant as the rows (no FOR SHARE / SHARE waits).
+ const limits=employeeSnapshotLimits;
  try{
   const workspace=await readEmployeeWorkspace(executor,signal);budget();
   // Inbox history does not require a still-active operational location. Each
   // source's canonical open policy owns location eligibility, including history.
-  const guards=employeeViewGuards(proof,workspace,false);
+  const guards=employeeSnapshotGuards(proof,workspace,false);
   const discovery=await executor.transaction([...limits,...guards,{text:candidateSql(),values:[proof.employee.id]}],signal);
   const initial=requireRows(discovery[limits.length+guards.length]);
   const manifest=notificationReadManifest(),cache=new Map<string,Promise<Record<string,unknown>[]>>();

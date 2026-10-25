@@ -1,7 +1,7 @@
 import {notificationOperationalAllowedSql,notificationOperationalGuard,isNotificationOperationalAuthorizationError} from './notification-operational-sql';
 import 'server-only';
 import {readEmployeeNotificationList,notificationReadManifest} from './employee-notification-list.server';
-import {employeeReadLimits,employeeViewGuards} from './employee-profile.server';
+import {employeeReadLimits,employeeSessionCheck,employeeSnapshotGuards,employeeSnapshotLimits,employeeViewGuards} from './employee-profile.server';
 import {getWorkspace,workspaceReadGuard} from './workspaces';
 import {isManagementAuthorizationError,managementSessionStatements} from './management-session';
 import {parseEmployeeView} from '../employee-view';
@@ -30,13 +30,13 @@ function abortable<T>(work:()=>Promise<T>,signal:AbortSignal):Promise<T>{
   void work().then(resolve,reject).finally(()=>signal.removeEventListener('abort',abort));
  });
 }
-function boundedExecutor(executor:SqlExecutor,signal:AbortSignal):SqlExecutor{
+function boundedExecutor(executor:SqlExecutor,signal:AbortSignal,limits:SqlStatement[]=employeeReadLimits):SqlExecutor{
  return {
   query:async<T>(statement:SqlStatement)=>{
-   const result=await abortable(()=>executor.transaction([...employeeReadLimits,statement],signal),signal);
-   return result[employeeReadLimits.length] as T[];
+   const result=await abortable(()=>executor.transaction([...limits,statement],signal),signal);
+   return result[limits.length] as T[];
   },
-  transaction:statements=>abortable(()=>executor.transaction([...employeeReadLimits,...statements],signal),signal).then(result=>result.slice(employeeReadLimits.length)),
+  transaction:statements=>abortable(()=>executor.transaction([...limits,...statements],signal),signal).then(result=>result.slice(limits.length)),
  };
 }
 
@@ -47,9 +47,11 @@ export async function readPortalNotificationList(proof:SessionMutationProof,envi
  if(['EMPLOYEE','LEAD'].includes(proof.employee.role))return readEmployeeNotificationList(proof,environment,executor);
  if(!['OWNER','MANAGER'].includes(proof.employee.role)||!/^[a-f0-9]{64}$/.test(proof.sessionTokenHash))return {state:'unavailable',reason:'access_denied'};
  if(environment!=='test'&&environment!=='production')return {state:'unavailable',reason:'read_failed'};
- const started=performance.now(),signal=AbortSignal.timeout(8000),bounded=boundedExecutor(executor,signal);
+ // Inspection B3: the list only reads, so every batch is a READ ONLY snapshot with lock-free guards (company version,
+ // exact session and role) checked in the same instant as its rows; marking read below keeps the locked guards.
+ const started=performance.now(),signal=AbortSignal.timeout(8000),bounded=boundedExecutor(executor,signal,employeeSnapshotLimits);
  try{
-  const workspace=await getWorkspace(bounded),guards=employeeViewGuards(proof,workspace,false);
+  const workspace=await getWorkspace(bounded),guards=employeeSnapshotGuards(proof,workspace,false);
   const initial=await bounded.transaction([...guards,{text:candidatesSql(),values:[proof.employee.id,environment]},
    {text:`SELECT LEAST(15000,FLOOR(EXTRACT(EPOCH FROM(s.expires_at-clock_timestamp()))*1000)) AS "validForMs" FROM employee_sessions s JOIN employees e ON e.id=s.employee_id WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role=$3 AND s.expires_at>clock_timestamp()`,values:[proof.sessionTokenHash,proof.employee.id,proof.employee.role]}]);
   const originalBudget=Number((initial[guards.length+1]?.[0] as {validForMs:unknown}|undefined)?.validForMs);
@@ -107,7 +109,7 @@ export async function readPortalNotificationList(proof:SessionMutationProof,envi
    return observed.map(row=>entry.template.clockField?{...structuredClone(row),[entry.template.clockField]:final.observedAt}:structuredClone(row)) as T[];
   }};
   const projected=await project(replay,rows(final.candidates),new Date(final.observedAt));signal.throwIfAborted();
-  await bounded.transaction([...guards,...(projected.operationalAuthority?[notificationOperationalGuard(proof.employee.id,proof.employee.role,projected.operationalAuthority)]:[]),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])]);
+  await bounded.transaction([...guards,...(projected.operationalAuthority?[notificationOperationalGuard(proof.employee.id,proof.employee.role,projected.operationalAuthority)]:[]),employeeSessionCheck(proof)]);
   const now=performance.now(),validForMs=Math.floor(Math.min(Number(final.validForMs)-(now-finalStarted),originalBudget-(now-started),projected.expires-Date.parse(final.observedAt)));
   if(validForMs<=0)return {state:'unavailable',reason:'access_denied'};
   return parseEmployeeView({state:'ready',kind:'notifications',items:projected.items,coverage:projected.coverage,observedAt:final.observedAt,validForMs},'notifications');

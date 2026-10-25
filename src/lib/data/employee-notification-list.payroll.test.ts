@@ -3,7 +3,7 @@ vi.mock('server-only',()=>({}));
 import {notificationReadManifest} from './employee-notification-list.server';
 import {readPortalNotificationList} from './portal-notification-list.server';
 import {payrollNoticeReadSql} from '../payroll/notices';
-import {employeeReadLimits,employeeViewGuards} from './employee-profile.server';
+import {employeeReadLimits,employeeSessionCheck,employeeSnapshotGuards,employeeSnapshotLimits,employeeViewGuards} from './employee-profile.server';
 import {managementSessionStatements} from './management-session';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
@@ -24,7 +24,10 @@ async function read(role:'EMPLOYEE'|'LEAD'|'MANAGER'|'OWNER',mode:Mode='normal',
   if(finalized){
    // The new final role/session fence may execute, but source facts must replay
    // only from the protected observation. No financial/operational data fallback.
-   const allowed=new Set([...employeeReadLimits,...employeeViewGuards(proof,workspace,false),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])].map(s=>JSON.stringify(s)));
+   // The list's reads are READ ONLY snapshots (inspection B3), so its fence is the lock-free guard set; the locked set
+   // stays allowed for the command paths. Either way only authority statements, never a source read.
+   const allowed=new Set([...employeeReadLimits,...employeeViewGuards(proof,workspace,false),...managementSessionStatements(proof,proof.employee.id,[proof.employee.role]),
+    ...employeeSnapshotLimits,...employeeSnapshotGuards(proof,workspace,false),employeeSessionCheck(proof)].map(s=>JSON.stringify(s)));
    if(statements.every(s=>allowed.has(JSON.stringify(s)))){postFinalAuthorityFences++;return statements.map(()=>[]) as never;}
    readsAfterFinal++;throw Error('No executor source fallback after protected observation');
   }

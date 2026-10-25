@@ -6,7 +6,7 @@ import {shiftBoundaryInstants} from '../business-time';
 import {addDays,isValidIsoDate,isValidWeekStart} from '../date-utils';
 import {businessDateStart,shiftPeriod} from '../scheduling/periods';
 import {neonNotificationExecutor} from './notification-transactions';
-import {assertEmployeeViewProof,employeeViewGuards,employeeReadLimits,readEmployeeWorkspace} from './employee-profile.server';
+import {assertEmployeeViewProof,employeeSnapshotGuards,employeeSnapshotLimits,readEmployeeWorkspace} from './employee-profile.server';
 import {employeeAllowedLocationsSql} from './employee-schedule';
 import {currentCalloutReleaseSql} from './shift-change-release';
 
@@ -71,14 +71,16 @@ const nextSql=`WITH clock AS MATERIALIZED (SELECT clock_timestamp() AS at), loca
 function validAllowedLocationIds(value:unknown):value is string[]{
  return Array.isArray(value)&&value.length>0&&value.every((id,i)=>typeof id==='string'&&id.length>0&&(i===0||value[i-1]<id));
 }
-/** The final guard's location/eligibility locks precede this fresh comparison.
- * A remaining authorized location cannot validate a stale observed location. */
+/** A later READ ONLY snapshot re-checks the session and the exact eligible-location set after the observation.
+ * A remaining authorized location cannot validate a stale observed location. Inspection B3: these reads hold no
+ * locks (they used to take every location FOR SHARE and the eligibility table SHARE, which blocked location and
+ * eligibility edits); each batch's guards and data come from one snapshot instead. */
 async function finalLocationAuthority(proof:SessionMutationProof,workspace:Awaited<ReturnType<typeof readEmployeeWorkspace>>,
  allowedLocationIds:string[],executor:SqlExecutor,signal:AbortSignal):Promise<boolean>{
- const guards=employeeViewGuards(proof,workspace);
- const results=await executor.transaction([...employeeReadLimits,...guards,{text:`WITH allowed AS (${employeeAllowedLocationsSql()})
+ const guards=employeeSnapshotGuards(proof,workspace);
+ const results=await executor.transaction([...employeeSnapshotLimits,...guards,{text:`WITH allowed AS (${employeeAllowedLocationsSql()})
   SELECT ARRAY(SELECT id FROM allowed ORDER BY id)=$3::text[] AS unchanged`,values:[workspace.id,proof.employee.id,allowedLocationIds]}],signal);
- return (results[employeeReadLimits.length+guards.length]?.[0] as {unchanged?:unknown}|undefined)?.unchanged===true;
+ return (results[employeeSnapshotLimits.length+guards.length]?.[0] as {unchanged?:unknown}|undefined)?.unchanged===true;
 }
 
 /** Protected own-assignment read. Workspace, employee, locations, eligibility,
@@ -88,7 +90,7 @@ export async function readEmployeePublishedAssignments(proof:SessionMutationProo
  try{assertEmployeeViewProof(proof);}catch{return unavailable;}
  try{
   const signal=AbortSignal.timeout(8000),workspace=await readEmployeeWorkspace(executor,signal);
-  const guards=employeeViewGuards(proof,workspace),limits=employeeReadLimits;
+  const guards=employeeSnapshotGuards(proof,workspace),limits=employeeSnapshotLimits;
   const results=await executor.transaction([...limits,...guards,{text:nextSql,values:[workspace.id,proof.employee.id,workspace.timeZone]}],signal);
   const source=results[limits.length+guards.length]?.[0] as (Observation&SourceAuthority)|undefined;
   if(!source||!validAllowedLocationIds(source.allowedLocationIds)||!Array.isArray(source.future)||source.future.length>1||!Array.isArray(source.current)||source.current.length>MAX_WINDOW_ROWS)return unavailable;
@@ -111,13 +113,13 @@ export async function readEmployeePublishedAssignmentWindow(proof:SessionMutatio
  if(!isValidIsoDate(fromDate)||!isValidIsoDate(throughDate)||fromDate>throughDate)return unavailableWindow;
  try{assertEmployeeViewProof(proof);}catch{return unavailableWindow;}
  try{
-  const signal=AbortSignal.timeout(8000),workspace=await readEmployeeWorkspace(executor,signal),guards=employeeViewGuards(proof,workspace);
+  const signal=AbortSignal.timeout(8000),workspace=await readEmployeeWorkspace(executor,signal),guards=employeeSnapshotGuards(proof,workspace);
   const windowSql=`WITH clock AS MATERIALIZED (SELECT clock_timestamp() AS at),allowed AS MATERIALIZED (${employeeAllowedLocationsSql()}),
    own AS (${ownSelect('AND sh.date BETWEEN $3::date-1 AND $4::date ORDER BY sh.date,sh.start_time,sh.id LIMIT 501')})
    SELECT to_jsonb(clock.at) AS "observedAt",ARRAY(SELECT id FROM allowed ORDER BY id) AS "allowedLocationIds",
    COALESCE((SELECT jsonb_agg(to_jsonb(own)) FROM own),'[]'::jsonb) AS assignments FROM clock`;
-  const results=await executor.transaction([...employeeReadLimits,...guards,{text:windowSql,values:[workspace.id,proof.employee.id,fromDate,throughDate]}],signal);
-  const source=results[employeeReadLimits.length+guards.length]?.[0] as {observedAt:string;assignments:AssignmentRow[]}&SourceAuthority|undefined;
+  const results=await executor.transaction([...employeeSnapshotLimits,...guards,{text:windowSql,values:[workspace.id,proof.employee.id,fromDate,throughDate]}],signal);
+  const source=results[employeeSnapshotLimits.length+guards.length]?.[0] as {observedAt:string;assignments:AssignmentRow[]}&SourceAuthority|undefined;
   if(!source||!validAllowedLocationIds(source.allowedLocationIds)||!Number.isFinite(Date.parse(source.observedAt))||!Array.isArray(source.assignments)||source.assignments.length>MAX_WINDOW_ROWS)return unavailableWindow;
   const first=businessDateStart(fromDate),last=businessDateStart(addDays(throughDate,1));
   const assignments=source.assignments.filter(row=>{const period=shiftPeriod(row);return period.end>first&&period.start<last;})
