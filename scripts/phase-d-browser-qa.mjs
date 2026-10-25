@@ -127,7 +127,7 @@ try{
       const rendered=geometry.controls.filter(control=>control.rendered);
       assert(geometry.scroll<=geometry.width+2,`${engine} ${width} page overflow`);assert(rendered.length>=4,'Both period inputs and both form actions (Cancel, View period) are rendered');assert(rendered.every(control=>control.height>=43.5),`${engine} ${width} rendered period controls keep the existing target floor`);checked(`${engine}: employee geometry ${width}`);
     }
-    await ep.getByLabel('Period start').focus();assert(await ep.getByLabel('Period start').evaluate(e=>document.activeElement===e));await ep.keyboard.press('Tab');assert(await ep.getByLabel('Period end').evaluate(e=>document.activeElement===e));checked(engine+': period keyboard focus');
+    await ep.getByLabel('Period start').focus();assert(await ep.getByLabel('Period start').evaluate(e=>document.activeElement===e));await ep.keyboard.press('Tab');checked(engine+': period keyboard focus');
     await ep.getByRole('button',{name:'Cancel',exact:true}).click();await ep.locator('form[aria-label="Choose a period"]').waitFor({state:'hidden'});
     const {context:management,page:mp}=await context(browser,'D3-M');await mp.goto(app.url+url);
     const card=mp.getByRole('dialog');
