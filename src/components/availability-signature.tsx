@@ -104,7 +104,7 @@ function Fields({ initialAvailability, weekStart, locked, status, after, header,
       })}
     </ul>
     {weekStart && availableDays === 0 ? <p className="q-help q-help--alert">Submitting with every day unavailable tells your manager you cannot work this week.</p> : null}
-    <p className="q-help" role="status" aria-live="polite">{pending ? "Saving your availability…" : locked ? "This week is closed for changes." : dirty ? "You have unsaved changes." : after} An end time of midnight includes the rest of that day.</p>
+    <p className="q-help" role="status" aria-live="polite">{pending ? "Saving your availability…" : locked ? after : dirty ? "You have unsaved changes." : after} An end time of midnight includes the rest of that day.</p>
     {dirty && !disabled ? <button type="button" className="q-btn q-btn--quiet" onClick={() => setAvailability(initialAvailability)}>Reset changes</button> : null}
   </>;
 }
