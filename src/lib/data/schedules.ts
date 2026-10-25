@@ -317,10 +317,12 @@ export async function insertShift(input: {
 export async function insertShiftAtLocation(input:{
  locationId:string;weekStart:string;employeeId:string;date:string;startTime:string;endTime:string;
  notes?:string;positionId?:string|null;isDesignatedLead?:boolean;actorEmployeeId:string;proof:SessionMutationProof;
+ /** B19: the form's operation id, used as the new shift's id so a retried save cannot create a second shift. */
+ shiftId?:string;
 },executor:SqlExecutor=neonNotificationExecutor()) {
  assertManagementProof(input.proof,input.actorEmployeeId);
  await assertOperationalAccess(input.proof,{kind:'LOCATIONS',locationIds:[input.locationId]},executor);
- const id=randomUUID(),parentId=randomUUID();
+ const id=input.shiftId&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(input.shiftId)?input.shiftId:randomUUID(),parentId=randomUUID();
  const result=await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.actorEmployeeId,proof:input.proof,sourceType:'MANAGER_MUTATION',sourceId:id,build:state=>{
   const existing=state.schedules.find(s=>s.locationId===input.locationId&&s.weekStart===input.weekStart);
   const scheduleId=existing?.id??parentId;

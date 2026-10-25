@@ -32,8 +32,10 @@ function PickerRow({ label, type, name, value, onChange, display, min, max }: {
 
 /** Quiet (v4, approved Oct 23): Add shift is a sheet. Who and where, then when, then the shift lead switch.
  * Cancel and Add sit in the bar; Add submits this form by its id. */
-export function CreateShiftForm({ action, employees, locations, positions, weekStart, weekEnd, date, employeeId = "", positionId = "", locationId = "", startTime = "", endTime = "", isDesignatedLead = false }: {
+export function CreateShiftForm({ action, employees, locations, positions, weekStart, weekEnd, date, employeeId = "", positionId = "", locationId = "", startTime = "", endTime = "", isDesignatedLead = false, operationId }: {
   action: (data: FormData) => Promise<ConfigurationResult>;
+  /** B19: one id per opened form, so a retried save is recognised as the same shift. */
+  operationId?: string;
   employees: Employee[]; locations: Location[]; positions: Position[];
   weekStart: string; weekEnd: string; date: string;
   employeeId?: string; positionId?: string; locationId?: string;
@@ -51,6 +53,7 @@ export function CreateShiftForm({ action, employees, locations, positions, weekS
 
   return <ConfigurationForm action={action} className="q-shift-form" id={CREATE_SHIFT_FORM_ID}>
     <input type="hidden" name="weekStart" value={weekStart} />
+    {operationId ? <input type="hidden" name="shiftOperationId" value={operationId} /> : null}
     {missingCatalog ? <p className="q-error q-first" role="alert">{!locations.length ? "Add a location first. A shift needs one." : "Add an employee first. A shift needs someone to work it."}</p> : null}
     <div className="q-grp q-grp--m"><h2>Who and where</h2></div>
     <ul className="q-list">
