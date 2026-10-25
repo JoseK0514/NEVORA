@@ -6,9 +6,11 @@ import {Temporal} from '@js-temporal/polyfill';
 export type EmployeeBreak={id:string;startAt:string;endAt:string|null;name:string|null;elapsedSeconds:number;pay:'PAID'|'UNPAID'|null};
 /** corrected: an approved correction set these effective boundaries (or added the entry). */
 export type EmployeeTimeEntry={id:string;locationName:string;clockInAt:string;clockOutAt:string|null;state:'CLOCKED_IN'|'ON_BREAK'|'CLOCKED_OUT';elapsedSeconds:number;breakSeconds:number;corrected:boolean;breaks:EmployeeBreak[]};
-/** today.paidSeconds = recorded − unpaid breaks; null while any break today is unclassified. */
+/** today.paidSeconds = elapsed − unpaid breaks of the entries that start today (an
+ * overnight entry counts wholly on its start day, as payroll pays it); null while any
+ * of their breaks is unclassified. recordedSeconds stays clipped to today. */
 export type EmployeeTimeReady={state:'ready';observedAt:string;validForMs:number;timeZone:string;date:string;current:EmployeeTimeEntry|null;today:{entries:EmployeeTimeEntry[];recordedSeconds:number;breakSeconds:number;paidSeconds:number|null;unpaidBreakSeconds:number|null};recent:{entries:EmployeeTimeEntry[];total:number;limit:20}};
-export type EmployeeBreakPay=Record<string,'PAID'|'UNPAID'>;
+export type EmployeeBreakPay=Record<string,{pay:'PAID'|'UNPAID';kind?:'MEAL'|'REST';mealMinimumMinutes?:number}>;
 export type EmployeeTime=EmployeeTimeReady|{state:'unavailable';reason:'access_denied'|'read_failed'|'schema_missing'|'not_configured'};
 const object=(v:unknown):v is Record<string,unknown>=>Boolean(v)&&typeof v==='object'&&!Array.isArray(v);
 const text=(v:unknown,max=1000):v is string=>typeof v==='string'&&v.trim().length>0&&v.length<=max&&!/[\u0000-\u001f\u007f]/.test(v);
@@ -39,7 +41,7 @@ function projectEntry(row:unknown,employeeId:string,at:bigint,pay:EmployeeBreakP
   if(begin<last||begin<start||begin>at||finish<begin||finish>end||open>0)return fail();
   if(b.break_end_at===null)open++;
   last=finish;breakNs+=finish-begin;
-  return {id:b.id,startAt:b.break_start_at as string,endAt:b.break_end_at as string|null,name:breakName(b),elapsedSeconds:seconds(finish-begin),pay:pay[b.id]??null};
+  return {id:b.id,startAt:b.break_start_at as string,endAt:b.break_end_at as string|null,name:breakName(b),elapsedSeconds:seconds(finish-begin),pay:pay[b.id]?.pay??null};
  });
  if(open>1||(row.status==='ON_BREAK')!==(open===1)||breakNs>end-start)return fail();
  return {id:row.id,locationName:row.location_name,clockInAt:row.clock_in_at as string,clockOutAt:row.clock_out_at as string|null,
@@ -54,7 +56,7 @@ export function projectEmployeeTime(source:unknown,employeeId:string,breakPay:un
  const at=ns(source.observedAt),expiry=ns(source.expiresAt),zone=Temporal.Instant.from(source.observedAt as string).toZonedDateTimeISO(source.timeZone);
  const start=zone.startOfDay().epochNanoseconds,validForMs=Math.min(45000,Number((expiry-at)/BigInt(1_000_000)));
  if(validForMs<=0)return fail();
- if(!object(breakPay)||Object.values(breakPay).some(v=>v!=='PAID'&&v!=='UNPAID'))return fail();
+ if(!object(breakPay)||Object.values(breakPay).some(v=>!object(v)||(v.pay!=='PAID'&&v.pay!=='UNPAID')))return fail();
  const pay=breakPay as EmployeeBreakPay;
  const rows=source.entries.map(r=>projectEntry(r,employeeId,at,pay)).sort((a,b)=>ns(a.clockInAt)<ns(b.clockInAt)?-1:ns(a.clockInAt)>ns(b.clockInAt)?1:a.id.localeCompare(b.id));
  const seen=new Set<string>();let last:bigint|undefined;const current=rows.filter(r=>r.clockOutAt===null);
@@ -64,10 +66,14 @@ export function projectEmployeeTime(source:unknown,employeeId:string,breakPay:un
  const recent=rows.filter(r=>r.clockOutAt!==null&&ns(r.clockOutAt)<=start).reverse();
  if(recent.length!==Math.min(source.recentCount,20))return fail();
  if(Object.keys(pay).some(id=>!rows.some(r=>r.breaks.some(b=>b.id===id))))return fail();
- let recorded=BigInt(0),breaks=BigInt(0),unpaid=BigInt(0),classified=true;
- for(const row of today){recorded+=clipped(row.clockInAt,row.clockOutAt,at,start);for(const b of row.breaks){const inside=clipped(b.startAt,b.endAt,at,start);breaks+=inside;if(!inside)continue;if(b.pay==='UNPAID')unpaid+=inside;else if(b.pay!=='PAID')classified=false;}}
+ let recorded=BigInt(0),breaks=BigInt(0),unpaid=BigInt(0),paidTime=BigInt(0),classified=true;
+ for(const row of today){recorded+=clipped(row.clockInAt,row.clockOutAt,at,start);for(const b of row.breaks)breaks+=clipped(b.startAt,b.endAt,at,start);
+  // Attribution: only entries that start today count toward today's paid time, wholly.
+  if(ns(row.clockInAt)<start)continue;
+  paidTime+=(row.clockOutAt===null?at:ns(row.clockOutAt))-ns(row.clockInAt);
+  for(const b of row.breaks){if(b.pay===null||b.endAt===null){classified=false;continue;}if(b.pay==='UNPAID'){const length=ns(b.endAt)-ns(b.startAt);unpaid+=length;paidTime-=length;}}}
  return {state:'ready',observedAt:source.observedAt as string,validForMs,timeZone:source.timeZone,date:zone.toPlainDate().toString(),
-  current:current[0]??null,today:{entries:today,recordedSeconds:seconds(recorded),breakSeconds:seconds(breaks),paidSeconds:classified?seconds(recorded-unpaid):null,unpaidBreakSeconds:classified?seconds(unpaid):null},recent:{entries:recent,total:source.recentCount,limit:20}};
+  current:current[0]??null,today:{entries:today,recordedSeconds:seconds(recorded),breakSeconds:seconds(breaks),paidSeconds:classified?seconds(paidTime):null,unpaidBreakSeconds:classified?seconds(unpaid):null},recent:{entries:recent,total:source.recentCount,limit:20}};
 }
 function publicEntry(value:unknown):EmployeeTimeEntry{
  if(!object(value)||!integer(value.elapsedSeconds)||!integer(value.breakSeconds)||!Array.isArray(value.breaks)||typeof value.corrected!=='boolean')return fail();
@@ -91,7 +97,7 @@ export function parseEmployeeTime(source:unknown):EmployeeTime{
  const calculated=projectEmployeeTime({observedAt:source.observedAt,timeZone:source.timeZone,
   expiresAt:Temporal.Instant.from(source.observedAt as string).add({milliseconds:source.validForMs}).toString(),
   recentCount:source.recent.total,entries:[...unique.values()].map(rawEntry)},'self',
-  Object.fromEntries([...unique.values()].flatMap(e=>e.breaks.flatMap(b=>b.pay?[[b.id,b.pay]]:[]))));
+  Object.fromEntries([...unique.values()].flatMap(e=>e.breaks.flatMap(b=>b.pay?[[b.id,{pay:b.pay}]]:[]))));
  if(source.date!==calculated.date||JSON.stringify(current)!==JSON.stringify(calculated.current)||JSON.stringify(today)!==JSON.stringify(calculated.today.entries)||
   JSON.stringify(recent)!==JSON.stringify(calculated.recent.entries)||source.today.recordedSeconds!==calculated.today.recordedSeconds||source.today.breakSeconds!==calculated.today.breakSeconds||
   source.today.paidSeconds!==calculated.today.paidSeconds||source.today.unpaidBreakSeconds!==calculated.today.unpaidBreakSeconds)return fail();

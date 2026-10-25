@@ -1,9 +1,10 @@
 import { Temporal } from "@js-temporal/polyfill";
 import type { NativeWageProfile } from "./contracts";
 import { parseConfiguration } from "./model";
-import { nativeBreakTreatment } from "./time";
+import { nativeBreakClass } from "./time";
+import type { TimecardBreakClass } from "../../timecards/project";
 
-export type BreakPay = "PAID" | "UNPAID";
+export type BreakPay = TimecardBreakClass;
 /** One recorded break to classify: its recorded type and the effective boundaries
  * and location of the entry it belongs to. */
 export type BreakPayQuery = { id: string; employeeId: string; typeId: string | null; locationId: string; startAt: string; endAt: string | null };
@@ -40,10 +41,10 @@ export function resolveBreakPay(profiles: readonly PayProfileRow[], breaks: read
         if (eligible.length !== 1)
             continue;
         try {
-            out[b.id] = nativeBreakTreatment(eligible[0], b);
+            out[b.id] = nativeBreakClass(eligible[0], b);
         }
         catch {
-            // Blocked by the engine (unmapped type, short meal, long rest): unknown.
+            // Blocked by the engine (unmapped break type): unknown.
         }
     }
     return out;

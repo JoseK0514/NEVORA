@@ -86,8 +86,8 @@ export function decimalHours(nanoseconds:string,decimals:number,precision:Export
 }
 const payableMessages:Record<string,string>={
  WAGE_PROFILE_REQUIRED:'Needs a pay profile in Payroll settings',WORKWEEK_EVIDENCE_REQUIRED:'Needs a workweek in the pay profile',
- BREAK_PAY_BASIS_REQUIRED:'A break type needs Paid or Unpaid in the pay profile',UNSUPPORTED_UNPAID_BREAK_DURATION:'An unpaid meal is shorter than 30 minutes',
- UNSUPPORTED_PAID_BREAK_BASIS:'A paid rest is longer than 20 minutes',DAILY_BOUNDARY_SENSITIVE:'A shift crosses midnight and the overnight rule is not chosen',
+ BREAK_PAY_BASIS_REQUIRED:'A break type needs Paid or Unpaid in the pay profile',
+ UNSUPPORTED_PAID_BREAK_BASIS:'A break type has an unsupported pay rule',
  COMPLETE_CONTEXT_REQUIRED:'Finalize the full workweek and the 6 days before it',RECORDED_SOURCE_COVERAGE_MISSING:'Finalize the full workweek and the 6 days before it',
  RECORDED_SOURCE_NOT_FINALIZED:'Finalize the full workweek and the 6 days before it',FINALIZED_TIME_REQUIRED:'Finalize the full workweek and the 6 days before it',
  BELOW_APPLICABLE_MINIMUM_WAGE:'The pay rate is below the minimum wage',PAYROLL_SCHEMA_UNAVAILABLE:'Payroll is not set up',
