@@ -133,7 +133,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     : selection?.operation === 'REVOKE' ? 'Revoke this device’s access?' : 'Create a new setup code?';
   const submitLabel = selection?.operation === 'REGISTER' ? 'Create setup code' : selection?.operation === 'RENAME' ? 'Save name' : selection?.operation === 'REVOKE' ? 'Revoke access' : 'Create new code';
 
-  // Quiet (v4, approved Oct 23): "+" adds a device; Active, Needs setup and Removed; one row per tablet. A row opens its sheet.
+  // Quiet (v4, approved Oct 23): "+" adds a device; Active, Needs setup and Archived (P2-5); one row per tablet. A row opens its sheet.
   return <SettingsFrame title="Clocker devices"
     bandAside={<button className="q-nav__r q-nav__r--ink" type="button" aria-label="Add device" disabled={!hydrated || !activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}><Plus className="q-ic" aria-hidden="true" /></button>}>
     {!activeLocations.length ? <Notice tone="info" title="No active location"
@@ -152,7 +152,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
       <p role="status" className="q-sr">{copyMessage}</p>
     </section> : null}
     {devices.length ? <div className="q-seg" role="group" aria-label="Filter devices">
-      {([['ALL', 'Active', registered], ['SETUP', 'Needs setup', waiting], ['REVOKED', 'Removed', revoked]] as const).map(([value, label, count]) =>
+      {([['ALL', 'Active', registered], ['SETUP', 'Needs setup', waiting], ['REVOKED', 'Archived', revoked]] as const).map(([value, label, count]) =>
         <button key={value} type="button" aria-pressed={filter === value} aria-label={`${label}, ${count}`} onClick={() => setFilter(value)}>{value === 'ALL' ? `${label} · ${count}` : label}</button>)}
     </div> : null}
     <p className="q-sr" role="status">Showing {visibleDevices.length} of {devices.length} {devices.length === 1 ? 'device' : 'devices'}</p>
@@ -166,7 +166,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
           <CaretRight className="q-chev" aria-hidden="true" />
         </button>
       </li>;
-    })}</ul> : <EmptyState headingLevel={3} icon={null} title={devices.length ? (filter === 'ALL' ? 'No active devices' : filter === 'SETUP' ? 'Nothing needs setup' : 'No removed devices') : 'No devices yet'}
+    })}</ul> : <EmptyState headingLevel={3} icon={null} title={devices.length ? (filter === 'ALL' ? 'No active devices' : filter === 'SETUP' ? 'Nothing needs setup' : 'No archived devices') : 'No devices yet'}
       action={devices.length ? null : <button className="q-btn" type="button" disabled={!hydrated || !activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}>Add device</button>}>
       {devices.length ? '' : 'Add the shared tablet at each location.'}
     </EmptyState>}

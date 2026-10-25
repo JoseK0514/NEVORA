@@ -13,6 +13,7 @@ import { OperationFeedback } from './payroll-ui';
 import { KeepFocusClear } from '../wave-b-forms';
 import { PendingLabel } from '../employee-submit-button';
 import { noticeReadiness, reminderWindow } from './workflow-status';
+import '../quiet/u4.css';
 import { formatDateRange } from '@/lib/date-utils';
 import { keepWhole } from '@/lib/keep-whole';
 import { revealFeedback } from '@/lib/reveal-feedback';
@@ -89,11 +90,29 @@ export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone 
         {(nativeSources !== null || data.capabilities.internalCalculatorAvailable) && <details className="q-details q-rule"><QuietSummary title="Payroll setup" value="" /><div className="q-rule__body"><NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/></div></details>}
         <details className="q-details q-rule"><QuietSummary title="Change history" value={data.revisions.length ? String(data.revisions.length) : 'None'} /><div className="q-rule__body">{data.revisions.length ? <div className="wb-history">{[...data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>Revision {item.revision} · Effective {effectiveDate(item.effectiveFrom.slice(0, 10))}</strong><p>{item.reason}</p><small>Recorded {recordedAt(item.createdAt)}</small></div>)}</div> : <p className="wb-note">No settings revisions have been saved.</p>}</div></details>
       </div>
-      <p className="q-help q-pset-privacy">Only the owner can configure payroll and access grants. {data.capabilities.internalCalculatorAvailable ? 'Native payroll requires verified recorded time, employee facts and a separate human approval.' : 'Provider imports supply actual payroll amounts.'} {noticeReadiness(data.capabilities)}</p>
+      {/* P2-4, UX-O-34, visual #44: the policy paragraph is a footer row that opens a sheet, written for owners. */}
+      <ul className="q-list q-u4-foot"><li><button type="button" className="q-row q-row--one q-row--btn" aria-haspopup="dialog" onClick={() => (document.getElementById('q-pset-about') as HTMLDialogElement | null)?.showModal?.()}>
+        <span className="q-rt"><b>About payroll settings</b></span><CaretRightIcon className="q-chev" aria-hidden="true" /></button></li></ul>
+      <dialog id="q-pset-about" className="q-page q-sheet" aria-labelledby="q-pset-about-title" onClick={event => { if (event.target === event.currentTarget) event.currentTarget.close(); }}>
+        <div className="q-sheet__in">
+          <div className="q-sheet__top"><div className="q-sheet__grab" aria-hidden="true" /></div>
+          <form method="dialog" className="q-nav"><span /><span className="q-nav__t" id="q-pset-about-title">About payroll settings</span><button type="submit" className="q-nav__r q-nav__r--b">Done</button></form>
+          <ul className="q-u4-bullets">{aboutPayrollSettings(data.capabilities).map(line => <li key={line}>{line}</li>)}</ul>
+        </div>
+      </dialog>
     </>}
     {!data && !resource.loading && nativeSources !== null ? <NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/> : null}
     </SavingForm.Provider></BusinessZone.Provider>
   </div>;
+}
+
+/** The settings' policy in owner words: who can change payroll, what payroll needs, and whether notices are sent. */
+export function aboutPayrollSettings(capabilities: Parameters<typeof noticeReadiness>[0]) {
+  return [
+    'Only you, the Owner, can change payroll settings and who has payroll access.',
+    capabilities.internalCalculatorAvailable ? 'Payroll uses finalized timecards, each person’s pay facts and your approval.' : 'Amounts come from your payroll provider’s import.',
+    noticeReadiness(capabilities),
+  ];
 }
 
 /** Quiet (v4): a setting's row; it opens the setting's fields under it. */

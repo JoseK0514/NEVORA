@@ -12,7 +12,8 @@ describe('payroll operational status', () => {
     expect(backlogDescription(backlog)).toContain('2 completed periods');
   });
   it('treats absent readiness as disabled and enabled readiness as requiring access and consent', () => {
-    expect(noticeReadiness(capabilities)).toContain('delivery is disabled');
+    expect(noticeReadiness(capabilities)).toBe('Pay notices are off, so nothing is sent to employees.');
+    expect(noticeReadiness(capabilities)).not.toMatch(/environment/);
     expect(noticeReadiness({ ...capabilities, noticeDelivery: 'ENABLED' })).toContain('consent');
   });
   it('distinguishes durable queue results, disabled transport and ineligible recipients without claiming receipt', () => {

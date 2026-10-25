@@ -9,6 +9,9 @@ import { currentPayPeriod } from '@/lib/payroll/pay-calendar.server';
 import '../payroll-export/payroll-page.css';
 import './payroll-workflow.css';
 
+// a11y #20 (final pass): each page names itself; the layout template adds "· NEVORA".
+export const metadata = { title: "Payroll" };
+
 export default async function PayrollPage() {
   if (!payrollFeatureEnabled()) notFound();
   const proof = await requireSessionMutationProof();

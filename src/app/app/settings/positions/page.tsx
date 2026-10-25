@@ -5,6 +5,9 @@ import type { Position } from "@/lib/domain";
 import { createPositionAction, updatePositionAction } from "../actions";
 import { PositionCatalog } from "./position-catalog";
 
+// a11y #20 (final pass): each page names itself; the layout template adds "· NEVORA".
+export const metadata = { title: "Positions" };
+
 export default async function PositionsPage() {
   await requireRoles(["OWNER"]);
   let positions: Position[] = [];

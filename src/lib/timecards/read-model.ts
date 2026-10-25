@@ -1,9 +1,14 @@
+import { mealWarningsOf, type MealWarning } from './meal-warnings';
 import { projectTimecard, type Period, type Timecard, type TimecardSource } from './project';
 
 export type TimecardHistory = { operationId: string; revision: number; action:'APPROVE'|'FINALIZE'|'REOPEN';
   occurredAt:string; actorName:string; note:string|null; sourceHash:string; snapshot:TimecardSource };
 export type TimecardItem = { source:TimecardSource; card:Timecard; sourceHash:string; revision:number;
-  state:'DRAFT'|'APPROVED'|'FINALIZED'|'REOPENED'|'NEEDS_REVIEW'; history:TimecardHistory[] };
+  state:'DRAFT'|'APPROVED'|'FINALIZED'|'REOPENED'|'NEEDS_REVIEW'; history:TimecardHistory[];
+  /** Business P0-3: paid seconds (elapsed minus unpaid breaks) when the server supplies them. Display only. */
+  paidSeconds?:number;
+  /** Meal-period warnings (no penalty pay) when the server supplies them. Display only. */
+  mealWarnings?:MealWarning[] };
 export type TimecardProjection = {state:'ready';observedAt:string;period:Period;cards:TimecardItem[]};
 export type TimecardsResult = (TimecardProjection & {validForMs:number})|{
   state:'unavailable';reason:'access_denied'|'source_limit'|'read_failed'|'schema_missing'};
@@ -37,7 +42,9 @@ export function parseTimecardsResponse(v:unknown,period:Period):TimecardProjecti
         occurredAt:h.occurredAt,actorName:h.actorName,note:h.note,sourceHash:h.sourceHash,snapshot:h.snapshot as TimecardSource};
     });
     if(history.length!==Number(raw.revision)||history.some((h,i)=>h.revision!==Number(raw.revision)-i))throw new Error('Incomplete revision history');
-    return {source:raw.source as TimecardSource,card,sourceHash:raw.sourceHash,revision:Number(raw.revision),state:raw.state as TimecardItem['state'],history};
+    const paid=raw.paidSeconds;
+    if(paid!==undefined&&!(Number.isSafeInteger(paid)&&Number(paid)>=0))throw new Error('Invalid paid time');
+    return {source:raw.source as TimecardSource,card,sourceHash:raw.sourceHash,revision:Number(raw.revision),state:raw.state as TimecardItem['state'],history,...(paid===undefined?{}:{paidSeconds:Number(paid)}),...(raw.mealWarnings===undefined?{}:{mealWarnings:mealWarningsOf(raw.mealWarnings)})};
   });
   if(new Set(cards.map(c=>c.card.employeeId)).size!==cards.length)throw new Error('Duplicate timecards');
   return {state:'ready',observedAt:v.observedAt,period,cards};

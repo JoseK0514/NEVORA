@@ -1,11 +1,10 @@
 'use client';
 
 import {useEffect,useRef,useState} from 'react';
-import {ShieldCheckIcon} from '@phosphor-icons/react/dist/ssr/ShieldCheck';
 import type {OwnerScopeContext,ScopeCommand,ScopeResult,ScopeSelection} from '@/lib/company-access/model';
 import {readScope,readScopeResult} from './commands';
 import {ManagerOperationalScopeFields} from './manager-operational-scope-fields';
-import styles from './company-access.module.css';
+import '../quiet/u4.css';
 
 export function ManagerOperationalScopePanel(props:{current:OwnerScopeContext;locations:{id:string;name:string}[];actorId:string}){
  return <ScopePanel key={JSON.stringify([props.actorId,props.current.employeeId])} {...props}/>;
@@ -37,16 +36,20 @@ function ScopePanel({current,locations,actorId}:{current:OwnerScopeContext;locat
   finally{clearTimeout(timeout);if(mounted.current){busy.current=false;setPending(false);request.current=null;}}
  }
  const applicable=baseline.role==='MANAGER'&&baseline.active;
- return <section className={'panel '+styles.stack} aria-labelledby={'scope-'+baseline.employeeId} aria-busy={pending}>
-  <h2 id={'scope-'+baseline.employeeId} className={styles.heading}><ShieldCheckIcon size={22} weight="duotone" aria-hidden="true"/> Management access</h2>
-  {!denied&&applicable?<ManagerOperationalScopeFields current={baseline} locations={locations} value={value} onChange={setValue} disabled={pending||unknown||locked} error={null}/>:<p role="status">{denied?'Current management-access information is unavailable.':'Assign management access together with a Manager promotion or reactivation in employee details.'}</p>}
-  {receipt&&<p className={styles.receipt}>Confirmed action: {receipt.action==='REVOKE'?'Management access revoked':'Management access saved'}. This records the completed change; reload to review current permissions.</p>}
-  {message&&<p role={receipt?'status':'alert'}>{message}</p>}
-  {confirm&&<div className={styles.receipt} role="group" aria-label="Confirm management access change"><p>{confirm==='REVOKE'?'Revoke this Manager’s operational access? Their employee record and separate payroll permissions are preserved.':'Save this Manager’s selected operational access? This may add or remove the locations they can manage.'}</p><div className={styles.actions}><button type="button" className="button primary" disabled={pending} onClick={()=>void save()}>{confirm==='REVOKE'?'Revoke management access':'Save management access'}</button><button type="button" className="button secondary" disabled={pending} onClick={()=>setConfirm(null)}>Cancel</button></div></div>}
-  <div className={styles.actions}>
-   {!denied&&applicable&&!unknown&&!locked&&<><button type="button" className="button primary" disabled={pending||!!confirm} onClick={()=>setConfirm('ASSIGN')}>Save management access</button><button type="button" className="button secondary" disabled={pending||!!confirm||!baseline.scope} onClick={()=>setConfirm('REVOKE')}>Revoke management access</button></>}
-   {unknown&&<button type="button" className="button secondary" disabled={pending} onClick={()=>void save(true)}>Check original access change</button>}
-   {(locked||denied)&&<button type="button" className="button secondary" disabled={pending} onClick={()=>window.location.reload()}>Reload current employee</button>}
+ // T-11 (final pass): Management access on Quiet. The commands, confirmation and receipts are unchanged.
+ return <section className="q-u4-panel" aria-labelledby={'scope-'+baseline.employeeId} aria-busy={pending}>
+  <div className="q-grp"><h2 id={'scope-'+baseline.employeeId}>Management access</h2></div>
+  {!denied&&applicable?<div className="q-details__body q-u4-scope"><ManagerOperationalScopeFields current={baseline} locations={locations} value={value} onChange={setValue} disabled={pending||unknown||locked} error={null}/></div>
+   :<p className="q-empty" role="status">{denied?'Current management-access information is unavailable.':'Assign management access together with a Manager promotion or reactivation in Edit.'}</p>}
+  {receipt?<p className="q-help q-u4-saved">Done: {receipt.action==='REVOKE'?'Management access revoked':'Management access saved'}. Reload to see current permissions.</p>:null}
+  {message?<p className={receipt?'q-help':'q-error'} role={receipt?'status':'alert'}>{message}</p>:null}
+  {confirm?<div className="q-u4-confirmbox" role="group" aria-label="Confirm management access change"><p className="q-u4-confirm">{confirm==='REVOKE'?'Revoke this Manager’s operational access? Their employee record and separate payroll permissions are preserved.':'Save this Manager’s selected operational access? This may add or remove the locations they can manage.'}</p>
+   <button type="button" className={confirm==='REVOKE'?'q-btn q-u4-danger':'q-btn'} disabled={pending} onClick={()=>void save()}>{confirm==='REVOKE'?'Revoke management access':'Save management access'}</button>
+   <button type="button" className="q-btn q-btn--quiet" disabled={pending} onClick={()=>setConfirm(null)}>Cancel</button></div>:null}
+  <div className="q-u4-actions">
+   {!denied&&applicable&&!unknown&&!locked&&!confirm?<><button type="button" className="q-btn" disabled={pending} onClick={()=>setConfirm('ASSIGN')}>Save management access</button><button type="button" className="q-btn q-btn--sec" disabled={pending||!baseline.scope} onClick={()=>setConfirm('REVOKE')}>Revoke management access</button></>:null}
+   {unknown?<button type="button" className="q-btn q-btn--sec" disabled={pending} onClick={()=>void save(true)}>Check original access change</button>:null}
+   {(locked||denied)?<button type="button" className="q-btn q-btn--sec" disabled={pending} onClick={()=>window.location.reload()}>Reload current employee</button>:null}
   </div>
  </section>;
 }

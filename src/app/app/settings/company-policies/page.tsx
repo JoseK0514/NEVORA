@@ -6,6 +6,9 @@ import { readCompanyPolicyHistory } from "@/lib/business-improvements/company-po
 import { listLocations } from "@/lib/data/locations";
 import { CompanyPolicyEditor } from "@/components/company-policy-editor";
 import { SettingsFrame } from "../wave-c-kit";
+
+// a11y #20 (final pass): each page names itself; the layout template adds "· NEVORA".
+export const metadata = { title: "Company policies" };
 export const dynamic = "force-dynamic";
 export default async function CompanyPoliciesPage() {
   await requireRoles(["OWNER"]);

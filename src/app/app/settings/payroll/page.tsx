@@ -10,6 +10,9 @@ import { payrollRecoveryScope } from '@/components/payroll/recovery-scope';
 import '../../payroll-export/payroll-page.css';
 import '../../payroll/payroll-workflow.css';
 
+// a11y #20 (final pass): each page names itself; the layout template adds "· NEVORA".
+export const metadata = { title: "Payroll settings" };
+
 export default async function PayrollSettingsPage() {
   if (!payrollFeatureEnabled()) notFound();
   const proof = await requireSessionMutationProof();

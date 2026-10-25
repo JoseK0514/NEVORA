@@ -38,13 +38,13 @@ const render = (devices: ClockerDeviceView[], available = locations) => renderTo
   initialDevices: devices, locations: available, timeZone: 'America/Puerto_Rico', action: vi.fn(),
 }));
 
-// Quiet (v4, approved Oct 23): Active, Needs setup and Removed with their counts; each device is one row that opens
+// Quiet (v4, approved Oct 23): Active, Needs setup and Archived (P2-5) with their counts; each device is one row that opens
 // its sheet (Rename, a new setup code, Replace or Reconnect, Revoke access). Wider search and overview cards are gone.
 it('counts each state in its segment for assistive technology', () => {
   const html = render([device('active', 'ACTIVE'), device('pending', 'PENDING'), device('expired', 'EXPIRED'), device('revoked', 'REVOKED')]);
   expect(html).toContain('aria-label="Active, 1"');
   expect(html).toContain('aria-label="Needs setup, 2"');
-  expect(html).toContain('aria-label="Removed, 1"');
+  expect(html).toContain('aria-label="Archived, 1"');
   expect(html.match(/aria-pressed="true"/g)).toHaveLength(1);
 });
 
@@ -178,7 +178,7 @@ describe('device options, driven through the component’s handlers', () => {
   });
 
   it('Removed: options offer Reconnect tablet and no Revoke access', () => {
-    button('Removed, 1').onClick({});
+    button('Archived, 1').onClick({});
     press('Fictional removed tablet, options');
     expect(button('Reconnect tablet').disabled).toBeFalsy();
     expect(has('Revoke access')).toBe(false);

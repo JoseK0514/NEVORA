@@ -50,9 +50,12 @@ it("renders stable identity and account lifecycle guidance (presentation smoke)"
   expect(html).toContain("worker");
   expect(html.match(/maxLength="160"/g)).toHaveLength(2);
   expect(html).toMatch(/type="email"[^>]*maxLength="254"|maxLength="254"[^>]*type="email"/);
-  expect(html).toContain("Deactivation signs this employee out");
-  expect(html).toContain("Reactivation requires a fresh sign-in");
-  expect(html).toContain("History is preserved");
+  // T-11 (final pass): the edit form no longer offers Active/Inactive; Person has Deactivate with its own confirm
+  // ("They're signed out right away. Their history is kept."). The current status travels unchanged.
+  expect(html).not.toContain("Deactivation signs this employee out");
+  expect(html).toMatch(/type="hidden" name="active" value="false"/);
+  expect(html).not.toContain("<select class=\"q-select-row__control\" name=\"active\"");
+  expect(html).not.toContain("Employee IDs stay the same");
 });
 
 it("keeps the current inactive primary location visible without offering unrelated inactive locations", () => {
@@ -67,9 +70,21 @@ it("keeps the current inactive primary location visible without offering unrelat
   expect(html).toContain("Old (Inactive — can only be retained while inactive)");
   expect(html).toContain("Active");
   expect(html).not.toContain("Other Old");
-  expect(html).toContain('name="active"');
-  expect(html).toContain('value="true"');
-  expect(html).toContain('value="false"');
+  // Status is not chosen here (T-11); the inactive employee's status is kept as it is.
+  expect(html).toContain('name="active" value="false"');
+  expect(html).not.toContain('value="true"');
+});
+
+it("asks before a role change and keeps your own role read only (UX-O-53, UX-O-70)", async () => {
+  const { roleChangeQuestion } = await import("./employee-core-profile-form");
+  expect(roleChangeQuestion("Sam Rivera", "EMPLOYEE", "EMPLOYEE")).toBeNull();
+  expect(roleChangeQuestion("Sam Rivera", "EMPLOYEE", "OWNER")).toMatchObject({ action: "Change to Owner", danger: true });
+  expect(roleChangeQuestion("Sam Rivera", "EMPLOYEE", "MANAGER")?.body).toContain("becomes a Manager");
+  const self = renderToStaticMarkup(
+    <EmployeeCoreProfileForm employee={{ ...employee, id: "OWNER1", role: "OWNER", active: true, primaryLocationId: "active" }} locations={locations} actorId="OWNER1" actorRole="OWNER" action={vi.fn()} />,
+  );
+  expect(self).toContain('type="hidden" name="role" value="OWNER"');
+  expect(self).not.toContain('aria-label="Role"');
 });
 
 it("only offers Owner authority to an Owner actor", () => {

@@ -244,7 +244,7 @@ it.each(['escape','done'] as const)('returns focus to the replacement current ro
  click('Approve timecard');await flush();
  expect(commands).toHaveLength(1);
  expect(html()).toContain('PRIVATE E1');
- if(kind==='done')(control(n=>n.type==='button'&&n.props.className==='cm-tc-done').onClick as ()=>void)();
+ if(kind==='done')(control(n=>n.type==='button'&&String(n.props.className).split(' ').includes('cm-tc-done')).onClick as ()=>void)();
  else closeSheet();
  expect(focus.lookup).toHaveBeenCalledWith('timecard-E1');
  expect(focus.replacement.focus).toHaveBeenCalledOnce();
@@ -306,17 +306,24 @@ let media:{matches:boolean;listener:(()=>void)|null};
 function phoneWindow(matches=true){media={matches,listener:null};vi.stubGlobal('window',Object.assign(new EventTarget(),{matchMedia:()=>({get matches(){return media.matches;},addEventListener:(_:string,l:()=>void)=>{media.listener=l;},removeEventListener:()=>{}})}));}
 async function mountAll(){render();host.mounted=true;const cleanups=host.effects.map(effect=>effect());cleanup=()=>cleanups.forEach(c=>{if(typeof c==='function')c();});await flush();}
 const resize=(matches:boolean)=>{media.matches=matches;media.listener?.();};
+// T-13 (final pass): Select is Cancel · n selected · Approve in the nav; eligible people first, then "Can’t select yet"
+// with each reason. The reviewed set, explicit confirmation and per-card results below are unchanged.
 it('phone: Select in the top bar opens eligible cards; self-review stays excluded with its reason',async()=>{
  phoneWindow();transport();await mountAll();
  expect(html()).toContain('q-timecards');expect(html()).not.toContain('Selected timecard review');
  click('Select');const page=html();
- expect(page).toContain('Selected timecard review');expect(page).toContain('2 eligible · 1 excluded · Select up to 100 current timecards below.');
+ expect(page).toContain('Selected timecard review');expect(page).toContain('0 selected');
+ expect(page).toContain('Select all eligible');expect(page).toMatch(/Select all eligible<\/b><\/span><span class="q-rv">2</);
+ expect(page).toContain('Can’t select yet');
+ expect(page).not.toContain('Select up to 100 current timecards below.');expect(page).not.toContain('Selected action');expect(page).not.toContain('Review selected timecards');
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE OWNER').disabled).toBe(true);expect(page).toContain('A different manager must review');
- expect(control(n=>n.type==='button'&&n.props.children==='Review selected timecards').disabled).toBe(true);
+ expect(control(n=>n.type==='button'&&n.props.children==='Approve').disabled).toBe(true);
  check('Select all eligible timecards');expect(html()).toContain('2 selected');
+ expect(control(n=>n.type==='button'&&n.props.children==='Approve').disabled).toBe(false);
+ expect(commands).toHaveLength(0);
 });
 it('phone: review the exact set, confirm explicitly, then show each card’s result',async()=>{
- phoneWindow();transport();await mountAll();click('Select');check('Select PRIVATE E1');click('Review selected timecards');
+ phoneWindow();transport();await mountAll();click('Select');check('Select PRIVATE E1');click('Approve');expect(commands).toHaveLength(0);
  const reviewed=html();expect(reviewed).toContain('Reviewed approval set');expect(reviewed).toContain('Revision 0');expect(reviewed).toContain('Approval never automatically finalizes time.');
  expect(reviewed).toContain('I reviewed this exact selected set and its recorded time for approval.');
  expect(control(n=>n.type==='button'&&n.props.children==='Approve selected').disabled).toBe(true);
@@ -327,11 +334,14 @@ it('phone: review the exact set, confirm explicitly, then show each card’s res
 });
 it('phone: finalization stays its own action with its own wording',async()=>{
  phoneWindow();transport();await mountAll();click('Select');
- (control(n=>n.type==='select').onChange as (e:unknown)=>void)({target:{value:'FINALIZE'}});
- expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').disabled).toBe(true);expect(html()).toContain('0 eligible · 3 excluded');
+ click('Finalize approved timecards instead');
+ expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').disabled).toBe(true);
+ const page=html();expect(page).toMatch(/Select all eligible<\/b><\/span><span class="q-rv">0</);expect(page).toContain('Approve it first');
+ expect(control(n=>n.type==='button'&&n.props.children==='Finalize').disabled).toBe(true);
+ expect(page).toContain('Approve timecards instead');
 });
 it('phone: a partial unknown result keeps not-submitted cards and retries only the original command',async()=>{
- phoneWindow();transport('unknown');await mountAll();click('Select');check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('Confirm reviewed timecards');click('Approve selected');await flush();
+ phoneWindow();transport('unknown');await mountAll();click('Select');check('Select PRIVATE E1');check('Select PRIVATE E2');click('Approve');check('Confirm reviewed timecards');click('Approve selected');await flush();
  expect(commands).toHaveLength(1);expect(html()).toContain('outcome unknown');expect(html()).toContain('not submitted');
  const original=commands[0];click('Retry original attempted action');await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(original);
 });
@@ -344,6 +354,6 @@ it('resizing desktop → phone mid-review keeps the reviewed set and confirmatio
  resize(false);const desk=html();expect(desk).not.toContain('q-timecards');expect(desk).toContain('Per-card results');expect(desk).toContain('approved');
 });
 it('phone: blur clears the selection and the reviewed private rows',async()=>{
- phoneWindow();transport();await mountAll();click('Select');check('Select PRIVATE E1');click('Review selected timecards');window.dispatchEvent(new Event('blur'));
+ phoneWindow();transport();await mountAll();click('Select');check('Select PRIVATE E1');click('Approve');window.dispatchEvent(new Event('blur'));
  expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Reviewed approval set');
 });

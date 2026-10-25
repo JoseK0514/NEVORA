@@ -21,7 +21,7 @@ export function PayrollPanel({ title, description, children, aside }: { title: s
   return <section className="pw-panel"><header className="pw-panel-heading"><div><h2>{title}</h2>{description && <p>{description}</p>}</div>{aside}</header>{children}</section>;
 }
 export function PayrollState({ title, children, error = false, retry }: { title: string; children: ReactNode; error?: boolean; retry?: () => void }) {
-  return <div className={`pw-state${error ? ' pw-state-error' : ''}`} role={error ? 'alert' : 'status'}>
+  return <div className={`pw-state${error ? ' pw-state-error' : ''}`} role={error && retry ? 'alert' : 'status'}>
     {error ? <WarningCircleIcon size={25} aria-hidden /> : <FileTextIcon size={25} aria-hidden />}
     <div><strong>{title}</strong><p>{children}</p>{children === PAYROLL_SIGNED_OUT ? <Link className="pw-button" href="/login">Sign in</Link> : retry && <button type="button" className="pw-button pw-secondary" onClick={() => { retry(); focusAfterRetry('.payroll-workflow .pw-toolbar', '.pw-state .pw-button'); }}><ArrowsClockwiseIcon size={18} aria-hidden />Try again</button>}</div>
   </div>;

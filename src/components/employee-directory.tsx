@@ -60,10 +60,11 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
         <Link className={employees.length ? "q-btn q-btn--sec" : "q-btn"} href={employees.length ? "/app/employees" : "/app/employees/new"}>{employees.length ? "Clear search" : `Add ${person}`}</Link>
       </>}
       {/* Quiet (v4): the two recovery tools sit at the end of Team, where their pages lead back to. */}
-      {recovery ? <ul className="q-list" aria-label="Help someone get back in" style={{ marginTop: 40 }}>
+      {/* P2-20 (final pass): the two sign-in tools have their own 15pt group label under the people list. */}
+      {recovery ? <QuietGroup label="Help someone sign in" id="team-sign-in-help"><ul className="q-list">
         <QuietRow href="/app/account-recovery" title="Account recovery" />
         <QuietRow href="/app/clocker-recovery" title="Clocker recovery" />
-      </ul> : null}
+      </ul></QuietGroup> : null}
     </QuietPage>
   );
 }

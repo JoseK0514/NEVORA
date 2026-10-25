@@ -12,18 +12,21 @@ import { parseManagerProfile } from './contract';
 import { ManagerProfileLive } from './manager-profile-live';
 import { PasskeySection } from '@/components/passkeys/passkey-section';
 import { AccountPrivacyLinks } from '@/components/legal/account-privacy-links';
+import { ProfileSettingRows } from '@/components/employee-profile-rows';
+import { readAuthLang } from '@/lib/auth-lang.server';
 
 /** Phase 3.5: the Owner and Manager Profile, laid out like the employee Profile (band, details, settings, Sign out).
  * Name, role, company, time zone, My pay and device alerts come from today's reads. Contact, locations and
  * alert choices come from the management profile read in CODEX.md, which the client asks for. */
 export async function ManagerProfilePage({ proof }: { proof: SessionMutationProof }) {
-  const [workspace, brand, initial] = await Promise.all([
+  const [workspace, brand, initial, lang] = await Promise.all([
     getWorkspace(),
     currentBrand(),
     readManagementProfile(proof).then(value => {
       const profile = parseManagerProfile(value);
       return profile.state === 'ready' ? profile : null;
     }).catch(() => null),
+    readAuthLang(),
   ]);
   // My pay is offered exactly when the payroll feature is on and the company keeps pay statements: the rule its own
   // page and the shell's navigation apply (readPayrollCapabilities' "enabled" is that flag). Asking navigationForRole
@@ -45,6 +48,8 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
         payrollAlerts: payrollFeatureEnabled(),
       }} accountCards={<>
         {/* Right column, after Notifications and before Sign out (Jose, Oct 20). Each renders nothing while its feature is off. */}
+        {/* Visual #39 / UX-O-70 (final pass): Language and Appearance, the same rows as the employee Profile. */}
+        <section aria-labelledby="manager-profile-settings-title"><div className="q-grp"><h2 id="manager-profile-settings-title">Settings</h2></div><ul className="q-list"><ProfileSettingRows lang={lang} /></ul></section>
         <PasskeySection />
         <AccountPrivacyLinks variant="quiet" />
       </>} />

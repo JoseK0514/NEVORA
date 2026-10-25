@@ -1,0 +1,152 @@
+/* Team U4 (final pass, Oct 25, 2026): Owner pay, timecards and team admin on the Quiet kit.
+ * Same prefix as quiet.css (:is(#q-root, html)) so older element rules never resize Quiet text. Tokens only; dark mode
+ * comes from the kit's .q-page dark tokens. Type 34 / 20 / 17 / 15 / 13, 20pt margins, 44pt targets. */
+
+/* ---------- Timecards (T-12 sheet, T-13 Select, T-17 Employee) ---------- */
+:is(#q-root, html) .q-tc-sheet__hd { padding: 8px 20px 0; }
+:is(#q-root, html) .q-tc-sheet__hd h2 { margin: 0; color: var(--q-ink); font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -.5px; overflow-wrap: anywhere; }
+:is(#q-root, html) .q-tc-sheet__hd p { margin: 2px 0 0; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-tc-sheet__hd p[data-tone="review"] { color: var(--q-teal); }
+:is(#q-root, html) .q-tc-sheet__body .q-grp:first-child { margin-top: 20px; }
+:is(#q-root, html) .q-tc-sheet__act { margin-top: 12px; }
+:is(#q-root, html) .q-tc-sheet__act .q-btn { margin-top: 16px; }
+:is(#q-root, html) .q-tc-sheet__act > .q-help { margin-top: 8px; text-align: center; }
+:is(#q-root, html) .q-tc-sheet .q-row .q-rt i { overflow-wrap: anywhere; }
+:is(#q-root, html) .q-tc-decide { display: flex; justify-content: flex-end; gap: 8px; padding: 0 20px 12px; }
+:is(#q-root, html) .q-tc-decide .q-bs { position: relative; min-width: 88px; }
+:is(#q-root, html) .q-tc-decide .q-bs::before { content: ""; position: absolute; inset: -6px 0; } /* 44pt hit area on a 32pt pill */
+:is(#q-root, html) .q-tc-decide .q-bs:active:not(:disabled) { transform: scale(.96); transition: transform 120ms ease-out; }
+:is(#q-root, html) .q-tc-decide__note { margin: 0 20px 12px; }
+:is(#q-root, html) .q-tc-decide__msg { margin-top: 12px; }
+:is(#q-root, html) .q-tc-decide__msg[role="alert"] { color: var(--q-red); }
+:is(#q-root, html) .q-tc-foot { margin-top: 28px; }
+:is(#q-root, html) .q-tc-foot + .q-help { margin-top: 12px; }
+:is(#q-root, html) .q-tc-navbtn { padding: 0; border: 0; background: none; font: inherit; font-size: 17px; line-height: 22px; cursor: pointer; }
+:is(#q-root, html) .q-tc-select .q-grp { margin-top: 28px; }
+:is(#q-root, html) .q-tc-mine .q-seg + .q-sr + .q-tc-hold .q-grp:first-child,
+:is(#q-root, html) .q-tc-card > section:first-child .q-grp { margin-top: 24px; }
+:is(#q-root, html) .q-tc-card:focus { outline: none; }
+:is(#q-root, html) .q-tc-dates input[type="date"] { flex: 1; min-width: 0; height: 52px; padding: 0; border: 0; background: none; color: var(--q-grey); font: inherit; font-size: 17px; line-height: 22px; text-align: right; outline: none; -webkit-appearance: none; appearance: none; }
+:is(#q-root, html) .q-tc-dates input[type="date"]::-webkit-date-and-time-value { text-align: right; }
+:is(#q-root, html) .q-tc-dates .q-row:focus-within { box-shadow: inset 0 -2px 0 var(--q-ink); }
+:is(#q-root, html) .q-tc-day { margin-top: 16px; }
+:is(#q-root, html) .q-sheet form .q-btn { margin-top: 20px; }
+@media (prefers-reduced-motion: reduce) {
+  :is(#q-root, html) .q-tc-decide .q-bs:active:not(:disabled) { transform: none; }
+}
+
+/* ---------- Insights (T-15): five plain lines on a sheet ---------- */
+:is(#q-root, html) .q-u4-bullets { margin: 16px 20px 0; padding: 0 0 0 20px; font-size: 17px; line-height: 22px; color: var(--q-ink); letter-spacing: -.2px; }
+:is(#q-root, html) .q-u4-bullets li + li { margin-top: 10px; }
+:is(#q-root, html) .q-u4-bullets + .q-help { margin-top: 20px; }
+
+/* ---------- Payroll (T-14, P0-4, P2-23) ---------- */
+@media (max-width: 760px) {
+  :is(#q-root, html) .q-payroll-review[data-quiet] { display: none; }
+  /* "All payroll details" opens the detailed review under the Quiet page: no second title or back bar. */
+  :is(#q-root, html) .q-payroll-quiet ~ .q-payroll-review .q-payroll-back,
+  :is(#q-root, html) .q-payroll-quiet ~ .q-payroll-review .nv-pageband { display: none; }
+}
+:is(#q-root, html) .q-u4-navbtn { padding: 0; border: 0; background: none; font: inherit; font-size: 17px; line-height: 22px; color: var(--q-ink); cursor: pointer; }
+:is(#q-root, html) .q-u4-navbtn.q-nav__l--teal { color: var(--q-teal) !important; }
+:is(#q-root, html) .q-u4-late { color: var(--q-red) !important; }
+:is(#q-root, html) .q-u4-feedback { margin-top: 12px; }
+:is(#q-root, html) .q-u4-feedback code, :is(#q-root, html) .q-u4-refs { font-size: 13px; line-height: 18px; overflow-wrap: anywhere; }
+:is(#q-root, html) .q-u4-recovery .q-btn { margin-top: 12px; }
+:is(#q-root, html) .q-u4-refs { margin: 0; padding: 0; list-style: none; color: var(--q-grey); }
+:is(#q-root, html) .q-u4-refs li + li { margin-top: 4px; }
+:is(#q-root, html) .q-u4-check { padding-top: 12px; padding-bottom: 12px; cursor: pointer; }
+:is(#q-root, html) .q-u4-check .q-rt b { font-size: 15px; line-height: 20px; }
+:is(#q-root, html) .q-u4-approve { margin-top: 28px; }
+:is(#q-root, html) .q-u4-foot { margin-top: 28px; }
+:is(#q-root, html) .q-u4-first { margin-top: 16px; }
+:is(#q-root, html) .q-payroll-quiet .q-help--c { margin-top: 8px; }
+
+/* ---------- Payroll settings (visual #16, #40, a11y #12, #17) ---------- */
+/* #16: the opened setting's fields sit on the 20pt margins (the fieldset was flush at x=0). */
+:is(#q-root, html) .q-pset .q-rule__body { margin-right: 20px; }
+:is(#q-root, html) .q-pset .q-rule__body fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#q-root, html) .q-pset .q-rule__body.wb-form, :is(#q-root, html) .q-pset .q-rule__body .wb-form { display: flex; flex-direction: column; gap: 16px; }
+:is(#q-root, html) .q-pset .q-rule__body label:not(.wb-check) { display: flex; flex-direction: column; gap: 8px; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-pset .q-rule__body label:not(.wb-check) :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) { width: 100%; height: 50px; min-height: 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-ink); font: inherit; font-size: 17px; line-height: 22px; box-shadow: none; outline: none; }
+:is(#q-root, html) .q-pset .q-rule__body label:not(.wb-check) :is(input, select, textarea):focus-visible { box-shadow: inset 0 0 0 2px var(--q-ink); }
+:is(#q-root, html) .q-pset .q-rule__body .wb-note, :is(#q-root, html) .q-pset .q-rule__body .wb-help { margin: 0; font-size: 13px; line-height: 18px; color: var(--q-grey); letter-spacing: 0; }
+/* #17: each check is a 44pt row with a 24pt box; the label is the target. */
+:is(#q-root, html) .q-pset .wb-check { display: flex; align-items: center; gap: 12px; min-height: 44px; font-size: 17px; line-height: 22px; color: var(--q-ink); cursor: pointer; }
+:is(#q-root, html) .q-pset .wb-check input[type="checkbox"] { flex: none; width: 24px; height: 24px; margin: 0; accent-color: var(--q-teal-fill); }
+/* #40: history titles at row weight; the last entry has no hairline. */
+:is(#q-root, html) .q-pset .wb-history strong { font-weight: 400; color: var(--q-ink); }
+:is(#q-root, html) .q-pset .wb-history > div:last-child { border-bottom: 0; }
+/* a11y #12: legacy payroll panels inside the Quiet page follow its tokens (they stayed white in dark mode). */
+:is(#q-root, html) .q-pset .pw-panel { background: var(--q-bg); color: var(--q-ink); border-color: var(--q-line); box-shadow: none; }
+:is(#q-root, html) .q-pset .pw-panel :is(p, small, .pw-small) { color: var(--q-grey); }
+:is(#q-root, html)[data-theme="dark"] .q-pset .pw-panel { background: #1C1C1E; }
+
+/* ---------- Team admin (T-11 Edit employee, Person, New employee #31, P2-19) ---------- */
+:is(#q-root, html) .q-u4-form > fieldset.configuration-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#q-root, html) .q-u4-form .q-fl__opt { font-weight: 400; }
+:is(#q-root, html) .q-u4-cont { margin-top: 0; }
+:is(#q-root, html) .q-member-edit .q-u4-form + .q-u4-cont > li:first-child > .q-row::before { content: ""; position: absolute; left: 20px; right: 0; top: 0; height: 1px; background: var(--q-line); }
+:is(#q-root, html) .q-u4-actions { display: grid; gap: 0; }
+:is(#q-root, html) .q-u4-actions:empty { display: none; }
+:is(#q-root, html) .q-u4-saved { color: var(--q-ink) !important; }
+:is(#q-root, html) .q-u4-confirm { margin: 16px 20px 0; font-size: 17px; line-height: 22px; color: var(--q-body); letter-spacing: -.2px; }
+:is(#q-root, html) .q-u4-confirmbox { margin-top: 8px; }
+:is(#q-root, html) .q-u4-danger { background: var(--q-fill) !important; color: var(--q-red) !important; }
+:is(#q-root, html) .q-u4-panel .q-grp:first-child { margin-top: 20px; }
+:is(#q-root, html) .q-u4-panel .q-help, :is(#q-root, html) .q-u4-panel .q-error { margin-top: 12px; }
+/* #31: an invalid field is one red ring and its own line, never a pink ring inside a row or bullets. */
+:is(#q-root, html) .q-u4-form :is(input, select, textarea):invalid { box-shadow: none; }
+:is(#q-root, html) .q-u4-form .q-in:user-invalid { box-shadow: inset 0 0 0 2px var(--q-red); }
+:is(#q-root, html) .q-u4-form .q-input-row:has(input:user-invalid) .q-rt b, :is(#q-root, html) .q-u4-form .q-input-row input:user-invalid { color: var(--q-red); }
+:is(#q-root, html) .q-u4-form > p[role="alert"] { margin: 12px 20px 0; }
+:is(#q-root, html) .q-u4-form ul:not(.q-list) { margin: 0; padding: 0; list-style: none; }
+/* Positions and locations in their sheet: the Wave A checks drawn as Quiet rows with 24pt boxes and 44pt targets. */
+:is(#q-root, html) .q-u4-sched__fields .wa-fieldset { min-width: 0; margin: 20px 0 0; padding: 0; border: 0; }
+:is(#q-root, html) .q-u4-sched__fields .wa-fieldset__legend { display: block; margin: 0 20px 4px; padding: 0; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--q-grey); }
+:is(#q-root, html) .q-u4-sched__fields .wa-field__help { margin: 0 20px 8px; font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html) .q-u4-sched__fields .wa-checks { display: block; }
+:is(#q-root, html) .q-u4-sched__fields .wa-check { position: relative; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 20px; color: var(--q-ink); cursor: pointer; }
+:is(#q-root, html) .q-u4-sched__fields .wa-check::after { content: ""; position: absolute; left: 56px; right: 0; bottom: 0; height: 1px; background: var(--q-line); }
+:is(#q-root, html) .q-u4-sched__fields .wa-check input { flex: none; width: 24px; height: 24px; margin: 0; accent-color: var(--q-teal-fill); }
+:is(#q-root, html) .q-u4-sched__fields .wa-check__text { display: grid; gap: 1px; }
+:is(#q-root, html) .q-u4-sched__fields .wa-check__title { font-size: 17px; line-height: 22px; }
+:is(#q-root, html) .q-u4-sched__fields .wa-check__help { font-size: 15px; line-height: 20px; color: var(--q-grey); }
+:is(#q-root, html) .q-u4-sched .nv-btn, :is(#q-root, html) .q-u4-sched button[type="submit"] { display: flex; align-items: center; justify-content: center; width: calc(100% - 40px); height: 50px; margin: 24px 20px 0; border: 0; border-radius: 12px; background: var(--q-teal-fill); color: #FFFFFF; font: inherit; font-size: 17px; font-weight: 600; box-shadow: none; }
+/* Management access choices inside Quiet (company-access.module.css draws bordered cards). */
+:is(#q-root, html) .q-u4-scope { color: var(--q-ink); }
+:is(#q-root, html) .q-u4-scope fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#q-root, html) .q-u4-scope legend { padding: 0; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--q-grey); }
+:is(#q-root, html) .q-u4-scope p { color: var(--q-grey); font-size: 13px; line-height: 18px; }
+:is(#q-root, html) .q-u4-scope label { min-height: 44px; border-color: var(--q-line) !important; background: var(--q-bg) !important; color: var(--q-ink); }
+:is(#q-root, html) .q-u4-scope label:has(input:checked) { border-color: var(--q-teal) !important; background: var(--q-tint) !important; }
+:is(#q-root, html) .q-u4-scope small { color: var(--q-grey) !important; }
+:is(#q-root, html) .q-u4-rules { padding: 8px 20px 0; color: var(--q-ink); }
+:is(#q-root, html) .q-u4-rules :is(input, select) { min-height: 44px; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-ink); }
+/* P2-20: the sign-in help rows on Team get their own label. */
+:is(#q-root, html) .q-u4-help-label { margin-top: 32px; }
+
+/* ---------- Settings editors (visual #4, #35, a11y #8) ---------- */
+/* #4: the inline position editor follows the Quiet tokens, so dark mode keeps its title, fields and switch readable. */
+:is(#q-root, html) .q-page .wc-editable__body { margin: 0 20px 16px; padding: 16px; border-radius: 12px; background: var(--q-fill); color: var(--q-ink); box-shadow: none; }
+:is(#q-root, html) .q-page .wc-editable__body .q-in { background: var(--q-bg); }
+:is(#q-root, html) .q-page .wc-editable__body .q-fl { margin-left: 0; margin-right: 0; }
+:is(#q-root, html) .q-page .wc-editable__body .q-fl:first-child { margin-top: 0; }
+:is(#q-root, html) .q-page .wc-editable__body .q-help { margin-left: 0; margin-right: 0; }
+:is(#q-root, html) .q-page .wc-editable__body .q-btn { width: 100%; margin-left: 0; margin-right: 0; }
+:is(#q-root, html) .q-page .wc-editable__body .q-row { padding-left: 0; padding-right: 0; }
+:is(#q-root, html) .q-page .wc-editable__body .q-row::after { left: 0; }
+/* #35: the Settings editor sheets (wc-dialog) on the 20pt margins, raised above the page in dark mode like QuietSheet. */
+:is(#q-root, html) .q-page dialog.wc-dialog .wc-dialog__form, :is(#q-root, html) .q-page dialog.wc-dialog > section { padding-left: 20px; padding-right: 20px; }
+:is(#q-root, html) .q-page dialog.wc-dialog .wc-dialog__head { padding-left: 20px; padding-right: 8px; }
+:is(#q-root, html) .q-page dialog.wc-dialog .wc-dialog__title { color: var(--q-ink); font-size: 17px; line-height: 22px; font-weight: 600; }
+:is(#q-root, html) .q-page dialog.wc-dialog .wc-dialog__text { color: var(--q-grey); font-size: 15px; line-height: 20px; }
+:is(#q-root, html) .q-page dialog.wc-dialog .wc-dialog__close { color: var(--q-ink); }
+:is(#q-root, html)[data-theme="dark"] .q-page dialog.wc-dialog { --q-bg: #1C1C1E; --q-fill: #2C2C2E; --q-press: #2C2C2E; --q-line: #38383A; --q-border: #48484A; background: #1C1C1E; color: var(--q-ink); }
+
+/* ---------- Company policies (P2-28, #40) ---------- */
+:is(#q-root, html) .q-page summary.q-u4-plain { list-style: none; cursor: pointer; font-weight: 400; }
+:is(#q-root, html) .q-page summary.q-u4-plain::-webkit-details-marker { display: none; }
+:is(#q-root, html) .q-page summary.q-u4-plain .q-rt b { font-weight: 400; }
+:is(#q-root, html) .q-page details[open] > summary.q-u4-plain .q-chev { transform: rotate(90deg); }
+:is(#q-root, html) .q-page .q-list > li:last-child > details > summary.q-u4-plain::after { display: none; }

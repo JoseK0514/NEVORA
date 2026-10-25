@@ -124,3 +124,8 @@ export function formatDateRange(start: string, end: string) {
 export function formatCalendarRange(start: string, end: string) {
   return `${monthDay.format(utcDate(start))} – ${monthDay.format(utcDate(end))}`;
 }
+
+/** Scheduled and total hours: "40 h", "32.5 h" (lead, claude/quiet-everywhere 4992f2ec; copied verbatim). */
+export function formatHours(minutes:number){const h=Math.round((Math.max(0,minutes)/60)*10)/10;return `${Number.isInteger(h)?h:h.toFixed(1)} h`;}
+/** Recorded time: "7 h 23 min", "8 h", "45 min" (lead, claude/quiet-everywhere 2d91947e; copied verbatim). */
+export function formatElapsed(minutes:number){const t=Math.max(0,Math.floor(minutes)),h=Math.floor(t/60),r=t%60;if(!h)return `${r} min`;return r?`${h} h ${r} min`:`${h} h`;}
