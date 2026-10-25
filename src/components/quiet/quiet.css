@@ -800,7 +800,8 @@ html[data-q-sheet] { overflow: hidden; }
 :is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) .employee-time-correction-trigger > :is(.employee-time-correction-trigger__tile, .employee-time-correction-trigger__go), :is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) .employee-time-correction-trigger small { display: none; }
 :is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) .employee-time-correction-trigger b { font-weight: 600; }
 :is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) form { display: grid; gap: 16px; margin: 20px 20px 0; }
-:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) form label { display: grid; gap: 8px; font-size: 15px; line-height: 20px; color: var(--q-grey); }
+/* The form's own fields only: the Start/End ticket halves are labels too and keep their own layout. */
+:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) form > label { display: grid; gap: 8px; font-size: 15px; line-height: 20px; color: var(--q-grey); }
 :is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) form :is(select, textarea, input:not([type="hidden"])) { width: 100%; min-height: 50px; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-ink); font: inherit; font-size: 17px; }
 :is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) form textarea { min-height: 96px; padding-top: 14px; resize: none; }
 :is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) .employee-time-correction-submit { height: 50px; border: 0; border-radius: 12px; background: var(--q-teal-fill); color: #FFFFFF; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; }
