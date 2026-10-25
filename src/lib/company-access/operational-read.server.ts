@@ -14,6 +14,7 @@ import {durationMinutes,isValidWeekStart} from '@/lib/date-utils';
 import {normalizeAssignmentOrigin} from '@/lib/scheduling/generation-provenance';
 import {readOperationalAuthority,readOwnerOperationalScope,operationalScopeStatements,currentAuthorityStatement} from './operational-scope.server';
 import {managementReadLimits,retryTransientRead} from '@/lib/data/read-snapshot';
+import {logBoundaryError} from '@/lib/observability/log.server';
 import type {AccessFailure,OperationalAuthorityView,OperationalRead,SourceCoverage,ScopedRosterEmployee,OperationalDirectoryData,OperationalScheduleData,OperationalShiftRow,OperationalShiftEditorData,OperationalEditableShift,OperationalClockMonitorData,OperationalEmployeeProfileData} from './model';
 // Reject oversized source sets rather than presenting a truncated roster or
 // schedule as complete coverage. Bounded SQL below fetches one extra row.
@@ -57,7 +58,9 @@ async function read<T>(proof:SessionMutationProof,load:(ctx:Context)=>Promise<Pa
  }catch(error){
   if(error instanceof ReadFailure)return {state:'unavailable',reason:error.reason};
   const message=error instanceof Error?error.message:'';
-  return {state:'unavailable',reason:message.includes('operational_authorization')||message.includes('management_authorization')?'access_denied':'read_failed'};
+  if(message.includes('operational_authorization')||message.includes('management_authorization'))return {state:'unavailable',reason:'access_denied'};
+  logBoundaryError('reader:operational-read',error);
+  return {state:'unavailable',reason:'read_failed'};
  }
 }
 async function locations(ctx:Context):Promise<CatalogLocation[]>{

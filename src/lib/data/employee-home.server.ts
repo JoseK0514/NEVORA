@@ -18,6 +18,7 @@ import {readShiftChangeAvailability} from './shift-changes';
 import {listEmployeeCommunications} from '../communications/service.server';
 import {readActivePresentation} from '../workspace-presentation/service';
 import {isReadSnapshot} from './read-snapshot';
+import {logBoundaryError} from '../observability/log.server';
 import {communicationRecipientAllowedSql} from '../communications/sql';
 
 const hash=(value:unknown)=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
@@ -244,5 +245,5 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
   if(!modules.updates){communications=observation('complete',null);communicationItems=[];}
   const sources={schedule:assignments.publicationState==='unavailable'?observation('unavailable','read_failed',null):{...observation(assignments.publicationState,assignments.publicationState==='partial'?'unpublished':null,hash(assignments)),observedAt:assignments.observedAt},acknowledgements:acknowledgements.observation,exchanges:exchanges.observation,timeOff:timeOff.observation,ownTime:ownTime.observation,communications};
   return projectEmployeeHome({observedAt:after.observedAt,authority:homeAuthority(proof),timeZone:workspace.timeZone,validForMs,sources,publicationState:assignments.publicationState,...(assignments.publicationState==='partial'?{unpublishedLocations:assignments.unpublishedLocations??[]}:{}),nextShift:assignments.nextShift,currentShift:assignments.currentShift,attention:[...acknowledgements.items,...exchanges.items,...timeOff.items,...ownTime.items,...communicationItems]});
- }catch(error){return isManagementAuthorizationError(error)?denied:unavailable;}
+ }catch(error){if(isManagementAuthorizationError(error))return denied;logBoundaryError('reader:employee-home',error);return unavailable;}
 }

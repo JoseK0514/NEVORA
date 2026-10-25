@@ -1,4 +1,5 @@
 import {readCompanyResult} from '@/lib/company-access/company-result.server';
+import {failed} from '@/lib/observability/log.server';
 import {neonNotificationExecutor} from '@/lib/data/sql-executor';
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {readTimecards} from '@/lib/timecards/service';
@@ -25,5 +26,5 @@ export async function POST(request:Request):Promise<Response>{
       ?await readCompanyResult(proof,()=>readTimecards(proof,period),neonNotificationExecutor())
       :await readTimecards(proof,period);
     return correctionJson(result,result.state==='ready'?200:result.reason==='access_denied'?403:503);
-  }catch{return correctionJson({state:'unavailable'},503);}
+  }catch(error){return failed('/api/timecards',error,correctionJson({state:'unavailable'},503));}
 }

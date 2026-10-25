@@ -1,11 +1,14 @@
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
+import {failed} from '@/lib/observability/log.server';
 import {parseExportProfile} from '@/lib/payroll-export/model';
 import {readExportProfiles,saveExportProfile} from '@/lib/payroll-export/service';
 import {correctionBoundary,correctionJson,readCorrectionJson} from '@/lib/time-corrections/http.server';
 export const runtime='nodejs';export const dynamic='force-dynamic';
 export async function GET(request:Request){
  const boundary=correctionBoundary(request,false,'x-nevora-payroll-export');if(boundary)return correctionJson({state:'unavailable'},boundary);
- try{const session=await getSession();if(!session)return correctionJson({state:'unavailable'},401);if(request.headers.get('x-nevora-actor')&&request.headers.get('x-nevora-actor')!==session.id)return correctionJson({state:'unavailable'},403);if(!['OWNER','MANAGER'].includes(session.role))return correctionJson({state:'unavailable'},403);return correctionJson({state:'ready',profiles:await readExportProfiles(await requireSessionMutationProof())});}catch{return correctionJson({state:'unavailable'},503);}
+ try{const session=await getSession();if(!session)return correctionJson({state:'unavailable'},401);if(request.headers.get('x-nevora-actor')&&request.headers.get('x-nevora-actor')!==session.id)return correctionJson({state:'unavailable'},403);if(!['OWNER','MANAGER'].includes(session.role))return correctionJson({state:'unavailable'},403);return correctionJson({state:'ready',profiles:await readExportProfiles(await requireSessionMutationProof())});}catch(error){
+  // B15: the same mapping payroll/http.ts failure() uses: a permission refusal is 403, anything else 503.
+  return /authorization/.test(String(error))?correctionJson({state:'unavailable',reason:'access_denied'},403):failed('/api/payroll-export/profiles',error,correctionJson({state:'unavailable'},503));}
 }
 export async function POST(request:Request){
  const boundary=correctionBoundary(request,true,'x-nevora-payroll-export',65536);if(boundary)return correctionJson({state:'unavailable'},boundary);

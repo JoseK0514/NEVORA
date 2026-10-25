@@ -1,4 +1,7 @@
 import { getSession, requireSessionMutationProof } from "@/lib/auth/session";
+import {failed} from '@/lib/observability/log.server';
+import { isOperationalAuthorizationError, OperationalAuthorizationError } from "@/lib/company-access/operational-scope.server";
+import { isManagementAuthorizationError } from "@/lib/data/management-session";
 import {
   readPeriodClose,
   savePeriodPopulation,
@@ -20,6 +23,7 @@ export async function POST(request: Request) {
     262144,
   );
   if (boundary) return correctionJson({ state: "unavailable" }, boundary);
+  let write = false;
   try {
     const session = await getSession();
     if (!session) return correctionJson({ state: "unavailable" }, 401);
@@ -28,11 +32,20 @@ export async function POST(request: Request) {
       request.headers.get("x-nevora-actor") !== session.id
     )
       return correctionJson({ state: "unavailable" }, 403);
-    const body = (await readCorrectionJson(request, 262144)) as {
-        action?: string;
-        command?: unknown;
-      },
+    // B13: a malformed or non-object body is a client error, never "outcome unconfirmed".
+    let parsed: unknown;
+    try {
+      parsed = await readCorrectionJson(request, 262144);
+    } catch {
+      return correctionJson({ state: "invalid" }, 400);
+    }
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed))
+      return correctionJson({ state: "invalid" }, 400);
+    const body = parsed as { action?: string; command?: unknown },
       proof = await requireSessionMutationProof();
+    if (!["READ", "POPULATION", "MANIFEST", "HANDOFF"].includes(String(body.action)))
+      return correctionJson({ state: "invalid" }, 400);
+    write = body.action !== "READ";
     const result =
       body.action === "READ"
         ? await readPeriodClose(
@@ -56,6 +69,13 @@ export async function POST(request: Request) {
       );
     const invalid = /INVALID|Review every|ZERO_TIME/.test(message);
     const excludeWithTime = /EXCLUDE_WITH_RECORDED_TIME_REQUIRES_OWNER/.test(message);
+    // B13: a permission refusal is a 403 with its reason, not "retry the original operation". For a READ any refusal
+    // qualifies. A write is refused this way only by the admission check that runs before anything is written
+    // (OperationalAuthorizationError); a refusal from inside or after the transaction can follow a commit (the
+    // post-commit Company fence), so it keeps the honest "outcome unconfirmed" answer.
+    const denied = isOperationalAuthorizationError(error) || isManagementAuthorizationError(error) || /authorization/.test(message);
+    if (denied && (!write || error instanceof OperationalAuthorizationError))
+      return correctionJson({ state: "unavailable", reason: "access_denied" }, 403);
     if (excludeWithTime)
       return correctionJson(
         {
@@ -65,16 +85,19 @@ export async function POST(request: Request) {
         },
         400,
       );
-    return correctionJson(
+    const response = correctionJson(
       {
         state: conflict ? "conflict" : invalid ? "invalid" : "unavailable",
         message: conflict
           ? "Population, finalized revisions or selected export coverage changed. Reload and review."
           : invalid
             ? "Review every member, reason and employment attestation."
-            : "Outcome unconfirmed. Retry the original operation.",
+            : write
+              ? "Outcome unconfirmed. Retry the original operation."
+              : "Period close is unavailable right now. Try again.",
       },
       conflict ? 409 : invalid ? 400 : 503,
     );
+    return conflict || invalid ? response : failed("/api/period-close", error, response);
   }
 }

@@ -1,4 +1,5 @@
 import { getSession, requireSessionMutationProof } from "@/lib/auth/session";
+import {failed} from '@/lib/observability/log.server';
 import {
   executeScheduleCopy,
   parseCopyCommand,
@@ -29,7 +30,15 @@ export async function POST(request: Request) {
     )
       return correctionJson({ state: "unavailable" }, 403);
     const proof = await requireSessionMutationProof();
-    const body = (await readCorrectionJson(request)) as { recover?: unknown };
+    let parsed: unknown;
+    try {
+      parsed = await readCorrectionJson(request);
+    } catch {
+      return correctionJson({ state: "invalid" }, 400);
+    }
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed))
+      return correctionJson({ state: "invalid" }, 400);
+    const body = parsed as { recover?: unknown };
     let command;
     try {
       command =
@@ -46,11 +55,8 @@ export async function POST(request: Request) {
       operationId: receipt.operationId,
     });
   } catch (error) {
-    return correctionJson(
-      {
-        state: String(error).includes("CONFLICT") ? "conflict" : "unconfirmed",
-      },
-      String(error).includes("CONFLICT") ? 409 : 503,
-    );
+    const conflict = String(error).includes("CONFLICT");
+    const response = correctionJson({ state: conflict ? "conflict" : "unconfirmed" }, conflict ? 409 : 503);
+    return conflict ? response : failed("/api/schedule-copy", error, response);
   }
 }

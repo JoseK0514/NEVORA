@@ -1,4 +1,5 @@
 import {notificationOperationalAllowedSql,notificationOperationalGuard,isNotificationOperationalAuthorizationError} from './notification-operational-sql';
+import {logBoundaryError} from '../observability/log.server';
 import 'server-only';
 import {readEmployeeNotificationList,notificationReadManifest} from './employee-notification-list.server';
 import {employeeReadLimits,employeeSnapshotGuards,employeeSnapshotLimits,employeeViewGuards} from './employee-profile.server';
@@ -114,7 +115,7 @@ export async function readPortalNotificationList(proof:SessionMutationProof,envi
   const now=performance.now(),validForMs=Math.floor(Math.min(Number(final.validForMs)-(now-finalStarted),originalBudget-(now-started),projected.expires-Date.parse(final.observedAt)));
   if(validForMs<=0)return {state:'unavailable',reason:'access_denied'};
   return parseEmployeeView({state:'ready',kind:'notifications',items:projected.items,coverage:projected.coverage,observedAt:final.observedAt,validForMs},'notifications');
- }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)||isNotificationOperationalAuthorizationError(error)?'access_denied':'read_failed'};}
+ }catch(error){if(isManagementAuthorizationError(error)||isNotificationOperationalAuthorizationError(error))return {state:'unavailable',reason:'access_denied'};logBoundaryError('reader:management-notifications',error);return {state:'unavailable',reason:'read_failed'};}
 }
 
 /** Read only the exact canonical manifest, then fence the normalized source

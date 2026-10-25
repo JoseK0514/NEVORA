@@ -1,4 +1,5 @@
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
+import {failed} from '@/lib/observability/log.server';
 import {readInboxCount} from '@/lib/data/inbox-count.server';
 import {correctionJson} from '@/lib/time-corrections/http.server';
 import {isRedirectError} from 'next/dist/client/components/redirect-error';
@@ -12,6 +13,8 @@ export async function GET(request:Request) {
     if(!['OWNER','MANAGER'].includes(session.role))return correctionJson({state:'unavailable'},403);
     const proof=await requireSessionMutationProof();
     if(proof.employee.id!==session.id||proof.employee.role!==session.role)return correctionJson({state:'unavailable'},403);
-    return correctionJson(await readInboxCount(proof));
-  }catch(error){return correctionJson({state:'unavailable'},isRedirectError(error)?401:200);}
+    const result=await readInboxCount(proof);
+    // B17: an unconfirmed count is a 503, so monitoring and retries see the failure (the badge already hides it).
+    return correctionJson(result,result.state==='ready'?200:503);
+  }catch(error){return isRedirectError(error)?correctionJson({state:'unavailable'},401):failed('/api/manager/inbox-count',error,correctionJson({state:'unavailable'},503));}
 }

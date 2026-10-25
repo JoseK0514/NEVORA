@@ -10,6 +10,7 @@ import {WorkspaceInactiveError} from '@/lib/workspace/errors';
 import {assertManagementProof,managementSessionStatements,isManagementAuthorizationError} from '@/lib/data/management-session';
 import {parseScopeSelection} from './scope-selection';
 import {managementReadLimits,retryTransientRead} from '@/lib/data/read-snapshot';
+import {logBoundaryError} from '@/lib/observability/log.server';
 import type {ScopeSelection,ScopeCommand,ScopeReceipt,ScopeResult,OperationalFootprint,OperationalAuthorityView,OperationalRead,OwnerOperationalScopeData,OwnerScopeContext,OwnerScopeHistoryEntry} from './model';
 
 const uuid=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(v);
@@ -147,14 +148,25 @@ async function readAuthority(proof:SessionMutationProof,executor:SqlExecutor):Pr
    grant.state==='LIFECYCLE_CHANGED'?'LIFECYCLE_CHANGED':grant.state==='REVOKED'?'REVOKED':'UNASSIGNED';
   return {state:'ready',employeeId:row.employeeId,role:row.role,source,scope,scopeRevision:row.scopeRevision,authority:row.authority,
    locations:scope?row.locations:[],observedAt:new Date(row.observedAt).toISOString(),validForMs:row.validForMs};
- }catch(error){return {state:'unavailable',reason:error instanceof WorkspaceInactiveError||isOperationalAuthorizationError(error)||isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
+ }catch(error){
+  if(error instanceof WorkspaceInactiveError||isOperationalAuthorizationError(error)||isManagementAuthorizationError(error))return {state:'unavailable',reason:'access_denied'};
+  logBoundaryError('reader:operational-authority',error);
+  return {state:'unavailable',reason:'read_failed'};
+ }
 }
 
 /** Owner-only target lifecycle and scope history, read under current actor
  * guards. History is capped at 100 entries with an explicit truncation flag;
  * expected versions from this view are concurrency inputs, not access grants. */
 export async function readOwnerOperationalScope(proof:SessionMutationProof,employeeId:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<OwnerOperationalScopeData>> {
- if(!safeId(employeeId))return {state:'unavailable',reason:'access_denied'};
+ const result=await readOwnerOperationalScopeStatus(proof,employeeId,executor);
+ return result.state==='not_found'?{state:'unavailable',reason:'access_denied'}:result;
+}
+/** The same read for the HTTP status route (inspection B16): a current Owner asking about an employee that does not
+ * exist gets not_found (404), kept apart from a refusal (403) and an outage (503). In-app callers keep the
+ * OperationalRead contract above, where a missing target stays access_denied. */
+export async function readOwnerOperationalScopeStatus(proof:SessionMutationProof,employeeId:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<OwnerOperationalScopeData>|{state:'not_found'}> {
+ if(!safeId(employeeId))return {state:'not_found'};
  try {
   const workspace=await getWorkspace(executor),start=locks(proof,workspace,[employeeId],true,'read');
   const rows=await executor.transaction([...start,currentRow(workspace.id,proof.employee.id,proof.sessionTokenHash),
@@ -166,7 +178,8 @@ export async function readOwnerOperationalScope(proof:SessionMutationProof,emplo
    {text:'SELECT revision,role_generation::text AS "roleGeneration",action,mode,location_ids AS "locationIds",source,created_at::text AS "createdAt" FROM operational_scope_revisions WHERE workspace_id=$1 AND employee_id=$2 ORDER BY revision DESC LIMIT 101',values:[workspace.id,employeeId]},
    ...managementSessionStatements(proof,proof.employee.id,['OWNER'])]);
   const actor=rows[start.length]?.[0] as Row|undefined,target=rows[start.length+1]?.[0] as Row|undefined;
-  if(!actor||!target||actor.validForMs<=0)return {state:'unavailable',reason:'access_denied'};
+  if(!actor||actor.validForMs<=0)return {state:'unavailable',reason:'access_denied'};
+  if(!target)return {state:'not_found'};
   const grant=effective(target);
   const current:OwnerScopeContext={employeeId:target.employeeId,employeeUpdatedAt:target.employeeUpdatedAt,role:target.role,active:target.active,roleGeneration:target.roleGeneration,
    scopeRevision:target.scopeRevision,scopeState:grant.state,scope:grant.scope};

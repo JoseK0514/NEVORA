@@ -1,4 +1,5 @@
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
+import {failed} from '@/lib/observability/log.server';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {listEmployees,listLocations} from '@/lib/data/employees';
 import {employeeRoleLabel} from '@/lib/employee-display';
@@ -20,5 +21,5 @@ export async function GET(request:Request):Promise<Response>{
   return json({state:'ready',
    people:employees.filter(e=>e.active).map(e=>({id:e.id,name:`${e.firstName} ${e.lastName}`.trim(),role:employeeRoleLabel(e.role)})),
    locations:locations.filter(l=>l.active).map(l=>({id:l.id,name:l.shortName||l.name}))});
- }catch{return json({state:'unavailable',reason:'read_failed'},503);}
+ }catch(error){return failed('/api/manager/finder',error,json({state:'unavailable',reason:'read_failed'},503));}
 }

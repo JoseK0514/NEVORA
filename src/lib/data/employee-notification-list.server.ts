@@ -1,4 +1,5 @@
 import 'server-only';
+import {logBoundaryError} from '../observability/log.server';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {NotificationIntent,SqlExecutor,SqlStatement,SourceSnapshot} from '../notifications/types';
 import {parseEmployeeView,type EmployeeNotificationItem,type EmployeeViewSnapshot} from '../employee-view';
@@ -213,5 +214,5 @@ export async function readEmployeeNotificationList(proof:SessionMutationProof,en
   const projected=await project(replay,candidates,new Date(final.observedAt));budget();
   const validForMs=Math.min(Number(final.validForMs),projected.expires-Date.parse(final.observedAt));
   return parseEmployeeView({state:'ready',kind:'notifications',observedAt:final.observedAt,validForMs,coverage:projected.coverage,items:projected.items},'notifications');
- }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
+ }catch(error){if(isManagementAuthorizationError(error))return {state:'unavailable',reason:'access_denied'};logBoundaryError('reader:employee-notifications',error);return {state:'unavailable',reason:'read_failed'};}
 }

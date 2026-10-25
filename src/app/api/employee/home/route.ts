@@ -1,4 +1,5 @@
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
+import {failed} from '@/lib/observability/log.server';
 import {homeAuthority,readEmployeeHome} from '@/lib/data/employee-home.server';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
@@ -18,5 +19,5 @@ export async function GET(request:Request):Promise<Response>{
   if(proof.employee.id!==session.id||proof.employee.role!==session.role||request.headers.get('x-nevora-home')!==homeAuthority(proof))return json({state:'unauthorized',reason:'access_denied'},403);
   const read=await readEmployeeHome(proof);
   return json(read,read.state==='unauthorized'?403:read.state==='unavailable'?503:200);
- }catch{return json({state:'unavailable',reason:'read_failed'},503);}
+ }catch(error){return failed('/api/employee/home',error,json({state:'unavailable',reason:'read_failed'},503));}
 }
