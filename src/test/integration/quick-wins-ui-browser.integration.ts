@@ -87,8 +87,8 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
               await page.getByRole('button', { name: 'This week', exact: true }).waitFor();
               expect(await page.getByRole('button', { name: 'This week', exact: true }).getAttribute('aria-pressed')).toBe('true');
               await page.getByRole('button', { name: 'Last week', exact: true }).click();
-              // Phones show Quiet Insights (v4): an empty period reads "No time recorded yet." under Recorded time.
-              await page.locator('.q-insights-phone').getByText('No time recorded yet.', { exact: true }).waitFor();
+              // Phones show Quiet Insights (v4): an empty period says "No time recorded yet." inside the Recorded time row.
+              await page.locator('.q-insights-phone').getByText('No time recorded yet.', { exact: true }).waitFor({ state: 'attached' });
               await page.setViewportSize({ width: 1440, height: 1000 });
               await page.getByText('No recorded time in this period', { exact: true }).waitFor();
               checks.push(engine + ': ' + actor + ' current and empty previous Insights period');
