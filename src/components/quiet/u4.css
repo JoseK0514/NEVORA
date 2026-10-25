@@ -12,13 +12,7 @@
 :is(#q-root, html) .q-tc-sheet__act .q-btn { margin-top: 16px; }
 :is(#q-root, html) .q-tc-sheet__act > .q-help { margin-top: 8px; text-align: center; }
 :is(#q-root, html) .q-tc-sheet .q-row .q-rt i { overflow-wrap: anywhere; }
-:is(#q-root, html) .q-tc-decide { display: flex; justify-content: flex-end; gap: 8px; padding: 0 20px 12px; }
-:is(#q-root, html) .q-tc-decide .q-bs { position: relative; min-width: 88px; }
-:is(#q-root, html) .q-tc-decide .q-bs::before { content: ""; position: absolute; inset: -6px 0; } /* 44pt hit area on a 32pt pill */
-:is(#q-root, html) .q-tc-decide .q-bs:active:not(:disabled) { transform: scale(.96); transition: transform 120ms ease-out; }
 :is(#q-root, html) .q-tc-decide__note { margin: 0 20px 12px; }
-:is(#q-root, html) .q-tc-decide__msg { margin-top: 12px; }
-:is(#q-root, html) .q-tc-decide__msg[role="alert"] { color: var(--q-red); }
 :is(#q-root, html) .q-tc-foot { margin-top: 28px; }
 :is(#q-root, html) .q-tc-foot + .q-help { margin-top: 12px; }
 :is(#q-root, html) .q-tc-navbtn { padding: 0; border: 0; background: none; font: inherit; font-size: 17px; line-height: 22px; cursor: pointer; }
@@ -31,9 +25,6 @@
 :is(#q-root, html) .q-tc-dates .q-row:focus-within { box-shadow: inset 0 -2px 0 var(--q-ink); }
 :is(#q-root, html) .q-tc-day { margin-top: 16px; }
 :is(#q-root, html) .q-sheet form .q-btn { margin-top: 20px; }
-@media (prefers-reduced-motion: reduce) {
-  :is(#q-root, html) .q-tc-decide .q-bs:active:not(:disabled) { transform: none; }
-}
 
 /* ---------- Insights (T-15): five plain lines on a sheet ---------- */
 :is(#q-root, html) .q-u4-bullets { margin: 16px 20px 0; padding: 0 0 0 20px; font-size: 17px; line-height: 22px; color: var(--q-ink); letter-spacing: -.2px; }

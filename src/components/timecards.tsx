@@ -30,10 +30,9 @@ import {initialsOf,QuietGroup,QuietHeader,QuietNav,QuietPage,QuietRow} from './q
 import {QuietSheet} from './quiet/quiet-sheet';
 import {approvalBlocker,correctionDetail,correctionKind,correctionStatus,dayPunchRows,issueText,quietDay,quietLongDay,quietMonthDay,quietRange,quietState,Row,timecardDays} from './timecards-quiet';
 import {hoursFromNanoseconds,hoursText,paidSeconds} from '@/lib/timecards/paid-time';
-import {reviewManagerTimeCorrection} from '@/lib/time-corrections/client';
+import {CorrectionDecisionRow,CorrectionNotice,useManagerTimeCorrections} from './manager-time-corrections';
 import {mealWarningText,mealWarningsOf,type MealWarning} from '@/lib/timecards/meal-warnings';
 import {WarningIcon} from '@phosphor-icons/react/dist/ssr/Warning';
-import type {CorrectionReviewCommand} from '@/lib/time-corrections/validation';
 import type {TimecardCorrection} from '@/lib/timecards/project';
 
 const stamp=(at:string,zone:string)=>new Intl.DateTimeFormat('en-US',{timeZone:zone,dateStyle:'medium',timeStyle:'short'}).format(new Date(at));
@@ -121,6 +120,32 @@ function TimecardsState({title,message,failed,signIn,onRetry,className}:{title:s
     <NavIcon name={failed?'alert':'clock'} size={32}/><h2>{title}</h2><p>{message}</p>
     {signIn?<Link className="button primary" href="/login">Sign in</Link>:failed?<button type="button" className="button primary" onClick={onRetry}><NavIcon name="refresh" size={18}/>Try again</button>:null}
   </div>;
+}
+
+/** My time's address that opens Team U3's correction sheet, filled in with the day when there is one. */
+export const correctionHref=(day?:string)=>`/app/my-time?fix=${day&&/^\d{4}-\d{2}-\d{2}$/.test(day)?day:''}#corrections`;
+
+/** The timecard sheet's corrections when one is waiting (UX-O-30): each pending request the manager's correction queue
+ * confirms is Team U1's CorrectionDecisionRow (who, the times, Decline and Approve), decided through
+ * useManagerTimeCorrections with the page's actor and correction authority; the rest stay plain rows. A confirmed
+ * decision reads the timecards again. Until the queue confirms a request (or if it can't be read), its row says where
+ * the same decision lives. */
+export function SheetCorrections({corrections,timeZone,actorId,authority,locked,onDecided}:{corrections:TimecardCorrection[];timeZone:string;actorId:string;authority:string;locked:boolean;onDecided:()=>void}){
+  const queue=useManagerTimeCorrections({actorId,authority,onDecided});
+  const ready=queue.connection==='ready'&&queue.snapshot?.state==='ready'?queue.snapshot:null;
+  const byId=new Map((ready?.requests??[]).map(request=>[request.id,request]));
+  const checking=queue.connection==='loading'||queue.connection==='reconnecting';
+  return <>
+    <CorrectionNotice notice={queue.notice} retry={queue.retry} busy={queue.busyId!==null} ready={!!ready} onRetry={queue.retryDecision}/>
+    <ul className="q-list q-requests" aria-label="Corrections in this timecard">{corrections.map(correction=>{
+      const request=correction.status==='PENDING'?byId.get(correction.id):undefined;
+      return request&&ready?<CorrectionDecisionRow key={correction.id} item={request} zone={ready.timeZone} busy={queue.busyId===request.id}
+          locked={locked||queue.busyId!==null||queue.retry!==null} onDecision={queue.decide}/>
+        :<Row key={correction.id} title={correctionKind(correction.kind)} detail={correctionDetail(correction,timeZone)} value={correctionStatus(correction.status)} tone={correction.status==='PENDING'?'go':'l'}>
+          {correction.status==='PENDING'?<p className="q-help q-tc-decide__note">{checking?'Checking this request…':<Link className="q-link" href="/app?view=attendance">Decide it in On shift</Link>}</p>:null}
+        </Row>;
+    })}</ul>
+  </>;
 }
 
 export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false,today,signature=false,correctionAuthority}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean;
@@ -221,27 +246,6 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     }catch{if(own===generation.current){if(performance.now()>=validUntil.current)expireProtected();else setMessage('The result could not be confirmed. Retry the same action to reconcile it.');}}
     finally{running.current=false;if(own===generation.current)setBusy(false);}
   }
-  /* UX-O-30 / T-12: decide a pending correction inside the timecard. Team U1's shared correction row replaces this markup
-   * later; the call is the existing manager correction review API, unchanged (same command, same authority binding). */
-  async function decide(item:TimecardItem,correction:TimecardCorrection,choice:'APPROVE'|'REJECT',retry=false){
-    if(deciding.current||!correctionAuthority||!source.current||source.current.actorId!==actorId)return;
-    const command:CorrectionReviewCommand=retry&&decision?.command.requestId===correction.id?decision.command
-      :{operationId:crypto.randomUUID(),requestId:correction.id,expectedRevision:correction.revision,decision:choice};
-    const employeeId=item.card.employeeId,first=item.card.employeeName.split(/\s+/)[0];
-    deciding.current=true;setDecision({command,employeeId,state:'busy',message:command.decision==='APPROVE'?'Approving the correction…':'Declining the correction…'});
-    try{
-      const result=await reviewManagerTimeCorrection(command,actorId,correctionAuthority);
-      if(result.state==='approved'||result.state==='rejected'){
-        setDecision({command,employeeId,state:'done',message:result.state==='approved'?`Correction approved. ${first}’s timecard is updated.`:'Correction declined. The recorded time stays as it was.'});
-        await refresh(period);
-        return;
-      }
-      if(result.state==='outcome_unknown'){setDecision({command,employeeId,state:'unknown',message:'We couldn’t confirm that decision. Check again before doing anything else.'});return;}
-      const failure=result.state==='blocked'?({self_review:'Another manager decides your own correction.',stale_source:'This correction changed. Refresh and try again.',overlap:'That time overlaps other recorded time.',live_state:'They’re still clocked in. Decide after they clock out.',invalid_interval:'This correction’s times aren’t valid.',finalized_period:'This period is finalized. Reopen it first.'} as const)[result.reason]
-        :result.state==='conflict'?'This correction changed. Refresh and try again.':result.state==='unavailable'&&result.httpStatus?'Sign in again to decide corrections.':'Couldn’t save the decision. Try again.';
-      setDecision({command,employeeId,state:'failed',message:failure});
-    }finally{deciding.current=false;}
-  }
   function prepareBatch(){
     const current=source.current;
     if(!current)return;
@@ -303,8 +307,6 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   const [showNoTime,setShowNoTime]=useState(false);
   // Final pass: the employee day sheet and Other dates sheet (T-17), and a correction decided in the timecard sheet (T-12).
   const [dayOpen,setDayOpen]=useState<string|null>(null),[otherDates,setOtherDates]=useState(false);
-  const [decision,setDecision]=useState<{command:CorrectionReviewCommand;employeeId:string;state:'busy'|'unknown'|'done'|'failed';message:string}|null>(null);
-  const deciding=useRef(false);
   useEffect(()=>{
     if(!manager||typeof window.matchMedia!=='function')return;
     const query=window.matchMedia(PHONE_QUERY),sync=()=>setPhone(query.matches);
@@ -321,7 +323,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   if(manager){
     const ready=currentActor&&data?.state==='ready';
     const closeSheet=()=>{
-      const restore=userClosedSheet.current;userClosedSheet.current=false;setOpenId(null);if(!deciding.current)setDecision(null);
+      const restore=userClosedSheet.current;userClosedSheet.current=false;setOpenId(null);
       if(!restore||!activeView.current||document.visibilityState==='hidden'||!navigator.onLine||!document.hasFocus())return;
       const current=source.current;
       const row=openId&&current?.actorId===actorId&&performance.now()<validUntil.current&&current.cards.some(item=>item.card.employeeId===openId)
@@ -392,7 +394,6 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const sheetWarnings=sheetCard?sheetCard.issues.filter(issue=>issue!=='period_open'):[];
     const sheetDays=sheetCard?timecardDays(sheetCard,period,false):[];
     const blocker=openItem?approvalBlocker(openItem.card.issues,period.endDate,own):null;
-    const sheetDecision=decision&&openItem&&decision.employeeId===openItem.card.employeeId?decision:null;
     const sheetNode=<>
       <dialog ref={sheet} className="q-page q-sheet q-tc-sheet cm-tc-sheet" aria-labelledby="cm-tc-sheet-title" onCancel={()=>{userClosedSheet.current=true;}} onClose={closeSheet}>
         <div className="q-sheet__in">
@@ -414,20 +415,16 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             <QuietGroup label="Days" id="tc-sheet-days">{sheetDays.length?<ul className="q-list">
               {sheetDays.map(day=><Row key={day.date} title={day.title} detail={day.detail} value={hoursText(day.seconds)} tone="l"/>)}
             </ul>:<p className="q-empty">No punches in this period.</p>}</QuietGroup>
-            {sheetCard.corrections.length?<QuietGroup label={`Corrections (${sheetCard.corrections.length})`} id="tc-sheet-corrections"><ul className="q-list">
-              {sheetCard.corrections.map(correction=>{
-                const live=sheetDecision?.command.requestId===correction.id?sheetDecision:null;
-                const decidable=correction.status==='PENDING'&&!own&&!!correctionAuthority;
-                return <Row key={correction.id} title={correctionKind(correction.kind)} detail={correctionDetail(correction,sheetCard.timeZone)} value={correctionStatus(correction.status)} tone={correction.status==='PENDING'?'go':'l'}>
-                  {decidable?<div className="q-tc-decide">
-                    {live?.state==='unknown'?<button type="button" className="q-bs" onClick={()=>void decide(openItem,correction,live.command.decision,true)}>Check again</button>:<>
-                      <button type="button" className="q-bs" disabled={live?.state==='busy'||locked} onClick={()=>void decide(openItem,correction,'REJECT')}>Decline</button>
-                      <button type="button" className="q-bs q-bs--go" disabled={live?.state==='busy'||locked} onClick={()=>void decide(openItem,correction,'APPROVE')}>Approve</button></>}
-                  </div>:correction.status==='PENDING'&&own?<p className="q-help q-tc-decide__note">Another manager decides your own correction.</p>
+            {sheetCard.corrections.length?<QuietGroup label={`Corrections (${sheetCard.corrections.length})`} id="tc-sheet-corrections">
+              {/* UX-O-30: a pending correction is decided here with Team U1's shared row and queue (same review command and
+                * authority binding as On shift and the Inbox). Mounted only for a decidable request, so nothing else reads it. */}
+              {!own&&correctionAuthority&&sheetCard.corrections.some(c=>c.status==='PENDING')
+                ?<SheetCorrections corrections={sheetCard.corrections} timeZone={sheetCard.timeZone} actorId={actorId} authority={correctionAuthority} locked={locked} onDecided={()=>void refresh(period)}/>
+                :<ul className="q-list">{sheetCard.corrections.map(correction=><Row key={correction.id} title={correctionKind(correction.kind)} detail={correctionDetail(correction,sheetCard.timeZone)} value={correctionStatus(correction.status)} tone={correction.status==='PENDING'?'go':'l'}>
+                  {correction.status==='PENDING'&&own?<p className="q-help q-tc-decide__note">Another manager decides your own correction.</p>
                     :correction.status==='PENDING'?<p className="q-help q-tc-decide__note"><Link className="q-link" href="/app?view=attendance">Decide it in On shift</Link></p>:null}
-                </Row>;
-              })}
-            </ul>{sheetDecision?<p className="q-help q-tc-decide__msg" role={sheetDecision.state==='failed'||sheetDecision.state==='unknown'?'alert':'status'}>{sheetDecision.message}</p>:null}</QuietGroup>:null}
+                </Row>)}</ul>}
+            </QuietGroup>:null}
             {openItem.history.length?<QuietGroup label="History" id="tc-sheet-history"><ul className="q-list">
               {openItem.history.map(h=><Row key={h.operationId} title={`${h.action==='APPROVE'?'Approved':h.action==='FINALIZE'?'Finalized':'Reopened'} · Revision ${h.revision}`} detail={`${stamp(h.occurredAt,openItem.card.timeZone)} · ${h.actorName}${h.note?` · ${h.note}`:''}`}/>)}
             </ul></QuietGroup>:null}
@@ -655,7 +652,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           </ul></QuietGroup>
           {item.card.issues.length?<QuietGroup label="Needs attention" id="tc-attention"><ul className="q-list">
             {item.card.issues.map(issue=>issue==='pending_correction'
-              ?<QuietRow key={issue} href="/app/my-time" title={issueText[issue]}/>
+              ?<QuietRow key={issue} href="/app/my-time#corrections" title={issueText[issue]}/>
               :issue==='period_open'?<Row key={issue} title={issueText[issue]} detail={`Totals can change until ${quietMonthDay(period.endDate)}`}/>
               :<Row key={issue} title={issueText[issue]} detail="Request a correction in My time"/>)}
           </ul></QuietGroup>:null}
@@ -669,7 +666,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         </section>)}
       </HoldHeight>
       <ul className="q-list q-tc-foot">
-        <QuietRow href="/app/my-time" title="Something wrong? Request a correction"/>
+        {/* Team U3's correction sheet opens from its My time address (?fix=, UX-E-01): blank here, that day from a day's sheet. */}
+        <QuietRow href={correctionHref()} title="Something wrong? Request a correction"/>
         <li><button type="button" className="q-row q-row--one q-row--btn" aria-haspopup="dialog" disabled={paused||busy||!!pending} onClick={()=>setOtherDates(true)}>
           <span className="q-rt"><b>Other dates</b></span><CaretRightIcon className="q-chev" aria-hidden="true"/></button></li>
       </ul>
@@ -680,6 +678,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           <div className="q-hd q-tc-sheet__hd"><h2>{quietLongDay(openDay.date)}</h2><p>{`${hoursText(openDay.seconds)} worked${openDay.breakMinutes?` · ${openDay.breakMinutes} min on break`:''}`}</p></div>
           <ul className="q-list q-tc-day">{dayPunchRows(openDay,mine.card.timeZone).map(row=><Row key={row.key} title={row.title} detail={row.detail} value={row.value} tone="l"/>)}</ul>
           <p className="q-help">Times in {timeZoneLabel(mine.card.timeZone)}.</p>
+          <ul className="q-list q-tc-foot"><QuietRow href={correctionHref(openDay.date)} title="Something wrong? Request a correction"/></ul>
         </>:null}
       </QuietSheet>
       <QuietSheet open={otherDates} label="Other dates" onClose={()=>setOtherDates(false)}>

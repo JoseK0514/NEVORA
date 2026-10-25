@@ -62,8 +62,12 @@ export type ManagerCorrectionsState={
 
 /** The manager's correction queue and its decisions: the protected read (paused while hidden, offline or blurred,
  * cleared when access ends) and the review command with its retry. Shared by On shift, the Inbox and the timecard sheet. */
-export function useManagerTimeCorrections({actorId,authority}:{actorId?:string;authority?:string}={}):ManagerCorrectionsState{
+export function useManagerTimeCorrections({actorId,authority,onDecided}:{actorId?:string;authority?:string;
+  /** Told after a decision is confirmed (approved or declined), so a page showing the same time can read it again. */
+  onDecided?:(state:'approved'|'rejected')=>void}={}):ManagerCorrectionsState{
   const recovery=useManagerCorrectionRecovery();
+  const decided=useRef(onDecided);
+  useEffect(()=>{decided.current=onDecided;});
   const [snapshot,setSnapshot]=useState<ManagerTimeCorrections|null>(null);
   const [connection,setConnection]=useState<CorrectionQueueConnection>('loading');
   const [busyId,setBusyId]=useState<string|null>(null);
@@ -106,6 +110,7 @@ export function useManagerTimeCorrections({actorId,authority}:{actorId?:string;a
       if(result.state!=='outcome_unknown')recovery?.clear(command.operationId);
       if(result.state==='approved'||result.state==='rejected'){
         window.dispatchEvent(new Event(changedEvent));
+        decided.current?.(result.state);
       }
     }catch{
       if(!authorityLost.current&&epoch===commandEpoch.current){setNotice(unknownNotice);setRetry(command);}
