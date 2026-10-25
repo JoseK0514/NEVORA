@@ -8,7 +8,7 @@ import {EmployeeTimeView} from './employee-time-panel';
 import {HOME_SOURCES} from '../lib/employee-home/project';
 import type {AttentionItem, EmployeeHomeRead, HomeSnapshot, HomeSource, PublishedAssignment} from '../lib/employee-home/types';
 import styles from './employee-home-today.module.css';
-import {formatDisplayDate} from '../lib/date-utils';
+import {formatDisplayDate,formatElapsed} from '../lib/date-utils';
 import {unpublishedNote} from '../lib/publication-note';
 import {HoldHeight} from './kit/hold-height';
 import {keepWhole} from '../lib/keep-whole';
@@ -67,10 +67,9 @@ function zoneLabel(zone: string) {
 
 export function untilLabel(ms: number) {
   const minutes = Math.max(1, Math.round(ms / 60_000));
-  // TC-P3-12: the kit's one duration style ("1h 32m", "40h", "25m").
-  if (minutes < 60) return `${minutes}m`;
-  const hours = Math.floor(minutes / 60), rest = minutes % 60;
-  if (hours < 24) return rest ? `${hours}h ${rest}m` : `${hours}h`;
+  // The lead's one duration style (Oct 25, 2026): "1 h 32 min", "40 h", "25 min"; never "1h 32m".
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return formatElapsed(minutes);
   const days = Math.round(hours / 24);
   return `${days} ${days === 1 ? 'day' : 'days'}`;
 }

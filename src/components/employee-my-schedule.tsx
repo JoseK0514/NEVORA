@@ -3,16 +3,20 @@ import { keepWhole } from '@/lib/keep-whole';
 import { ALL_MODULES_ON, type EnabledModules } from '@/lib/workspace-presentation/modules';
 import type { ReactNode } from 'react';
 import { CalendarCheckIcon } from '@phosphor-icons/react/dist/ssr/CalendarCheck';
+import { CalendarPlusIcon } from '@phosphor-icons/react/dist/ssr/CalendarPlus';
+import { AirplaneTiltIcon } from '@phosphor-icons/react/dist/ssr/AirplaneTilt';
 import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';
 import { ArrowsLeftRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
-import { unpublishedNote } from '../lib/publication-note';
+import { notOutYetNote } from '../lib/publication-note';
+import { OfferedToast } from './employee-schedule-toast';
+import './quiet/u3.css';
 import { BlockedOpenShifts } from './blocked-open-shifts';
 import { Celebration } from './celebration';
 import { ShiftSheetRow, type ShiftSheetShift } from './employee-shift-sheet';
 import { QuietBar, QuietBarIcon, QuietHeader, QuietList, QuietPage, QuietRow, QuietSection, QuietSegments } from './quiet/quiet';
-import { addDays, formatTime, weekDates, weekStartFor } from '../lib/date-utils';
+import { addDays, formatTime, formatTimeRange, weekDates, weekStartFor } from '../lib/date-utils';
 import { shiftBoundaryInstants } from '../lib/business-time';
 import { emptyScheduleLabel, type EmployeeScheduleRead } from '../lib/data/employee-schedule';
 import type { ScheduleShiftRow } from '../lib/data/schedules';
@@ -53,6 +57,14 @@ export type EmployeeMyScheduleProps = {
   error?: boolean | string;
   receipt?: boolean;
   changes?: ReactNode;
+  /** F9: the person's approved time off that touches this week (dates inclusive; times for part of a day). */
+  timeOff?: readonly { startDate: string; endDate: string; startTime: string | null; endTime: string | null }[];
+  /** UX-E-13: the person's own pending change on a shift, by shift id ("Offered", "Swap sent", "Can’t work · waiting"). */
+  pendingChanges?: Readonly<Record<string, string>>;
+  /** Next week's own published shifts, for Coming up at the end of this week. */
+  nextWeekShifts?: readonly Shift[];
+  /** A one-time confirmation after a change was sent from a full page (?offered=1). */
+  shiftChanged?: 'offered';
 };
 
 function hasNotEnded(shift: Shift, observedAt: string, timeZone: string) {
@@ -111,13 +123,13 @@ function OpenShifts({ open }: { open: EmployeeMyScheduleProps['openShifts'] }) {
     {open.requested.length ? <QuietSection id="my-open-waiting" title="Waiting for approval" aside={String(open.requested.length)}>
       <QuietList><OpenShiftRows shifts={open.requested} requested /></QuietList>
     </QuietSection> : null}
-    <QuietSection id="my-open" title="Open shifts" aside={open.available.length ? String(open.available.length) : undefined}>
-      {open.available.length ? <QuietList label="Shifts you can claim"><OpenShiftRows shifts={open.available} /></QuietList>
-        : open.unavailable?.length ? <p className="q-empty">No open shifts fit your schedule right now.</p>
-        : <div className="q-emptyblock"><p className="q-emptyblock__title">No open shifts right now</p><p className="q-help">When a teammate offers a shift you can work, it shows up here.</p></div>}
-    </QuietSection>
+    {/* P2-16: the segment already says "Open shifts"; no second heading and one empty line. */}
+    <section id="my-open" aria-label="Open shifts">
+      {open.available.length ? <QuietList label="Shifts you can claim" style={{ marginTop: 16 }}><OpenShiftRows shifts={open.available} /></QuietList>
+        : <p className="q-empty q-first">{open.unavailable?.length ? 'No open shifts fit your schedule right now.' : 'No open shifts right now.'}</p>}
+    </section>
     {open.unavailable?.length ? <div className="q-blocked"><BlockedOpenShifts shifts={open.unavailable} /></div> : null}
-    <p className="q-help">Claiming sends a request to your manager. The shift is yours once it’s approved.</p>
+    {open.available.length ? <p className="q-help">Claiming sends a request to your manager. The shift is yours once it’s approved.</p> : null}
   </>;
 }
 
@@ -137,19 +149,25 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
   const keep = swapIntent ? '&intent=swap' : '';
   const nameOf = (id: string) => locations.find(location => location.id === id)?.shortName?.trim() ?? '';
   const unpublishedNames = (props.unpublishedLocationIds ?? []).map(nameOf).filter(Boolean);
-  const publishedNames = [...new Set(shifts.map(shift => nameOf(shift.locationId)).filter(Boolean))];
   const total = shifts.reduce((sum, shift) => sum + shiftMinutes(shift), 0);
+  // F17: a week every location published says so plainly; a partly published week waits only on the named locations.
+  const somePublished = state === 'unpublished' && locations.length > (props.unpublishedLocationIds ?? []).length;
+  const emptyWeek = state === 'published' ? 'No shifts for you this week' : somePublished ? 'No shifts yet' : 'Not published yet';
+  const timeOffOn = (date: string) => (props.timeOff ?? []).find(item => item.startDate <= date && item.endDate >= date) ?? null;
+  const pending = props.pendingChanges ?? {};
   const summary = view === 'open'
     ? (openCount ? `${openCount} open ${openCount === 1 ? 'shift' : 'shifts'} you can pick up` : 'Shifts your team offers')
     : state === 'unavailable' ? 'Your schedule couldn’t be checked'
-    : <>{weekRange(weekStart)}<span className="nv-sr">, {weekStart.slice(0, 4)}, {zoneName} time</span> · {shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : 'No published shifts'}</>;
+    : <>{weekRange(weekStart)}<span className="nv-sr">, {weekStart.slice(0, 4)}, {zoneName} time</span> · {shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : emptyWeek}</>;
   const review = confirmation && state !== 'unavailable' && view === 'mine';
   // The chosen day: the one asked for, else today in this week, else the week's first day.
   const chosen = selectedDay && dates.includes(selectedDay) ? selectedDay : dates.includes(today) ? today : dates[0];
   const dayShifts = shifts.filter(shift => shift.date === chosen);
+  const chosenOff = timeOffOn(chosen);
   // The rest of the week after the chosen day; on the current week, only shifts that haven't ended.
   const past = weekStart < currentWeek;
   const later = shifts.filter(shift => shift.date > chosen && (weekStart !== currentWeek || hasNotEnded(shift, observedAt, timeZone)));
+  const upcoming = weekStart === currentWeek && !later.length ? [...(props.nextWeekShifts ?? [])].sort((a, b) => `${a.date}${a.startTime}`.localeCompare(`${b.date}${b.startTime}`)).slice(0, 3) : [];
   const dayHref = (date: string) => `/app/schedule?week=${weekStart}&day=${date}${keep}`;
   const sheetShift = (shift: Shift): ShiftSheetShift => {
     const minutes = shiftMinutes(shift), ends = overnight(shift) ? addDays(shift.date, 1) : null;
@@ -160,6 +178,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
       lead: shift.isDesignatedLead, calloutApproved: shift.isCalloutApproved,
       canSwap: modules.marketplace && swappable(shift, today, observedAt, timeZone),
       canReport: modules.marketplace && !shift.isCalloutApproved && hasNotEnded(shift, observedAt, timeZone),
+      pending: pending[shift.id] ?? null,
     };
   };
   const tags = (shift: Shift) => [shift.isDesignatedLead ? 'Shift lead' : null, shift.isCalloutApproved ? 'Call-out approved' : null, overnight(shift) ? `Ends ${dayFmt(addDays(shift.date, 1), { weekday: 'short', month: 'short', day: 'numeric' })}` : null].filter(Boolean);
@@ -167,12 +186,13 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
     href={`${dayHref(chosen)}&shift=${encodeURIComponent(shift.id)}`} closeHref={dayHref(chosen)} initiallyOpen={props.selectedShift === shift.id} />;
 
   return <QuietPage className="q-sched-e">
-    <QuietBar start={<span className="q-weeknav">
+    <QuietBar start={view === 'open' ? undefined : <span className="q-weeknav">
       <Link className="q-bar__icon" href={`/app/schedule?week=${addDays(weekStart, -7)}${keep}`} aria-label="Previous week"><CaretLeftIcon className="q-ic" aria-hidden="true" /></Link>
       <Link className="q-bar__icon" href={`/app/schedule?week=${addDays(weekStart, 7)}${keep}`} aria-label="Next week"><CaretRightIcon className="q-ic" aria-hidden="true" /></Link>
       {weekStart !== currentWeek ? <Link className="q-weeknav__today" href={`/app/schedule?week=${currentWeek}&day=${today}`}>Today</Link> : null}
     </span>}>
-      <QuietBarIcon href="/app/profile#employee-calendar-title" label="Add shifts to your calendar"><CalendarCheckIcon className="q-ic" aria-hidden="true" /></QuietBarIcon>
+      {/* UX-E-10 / P1-10: the calendar feed lives in More, with its own icon (not the confirm icon). */}
+      <QuietBarIcon href="/app/more#employee-calendar-title" label="Add shifts to your calendar"><CalendarPlusIcon className="q-ic" aria-hidden="true" /></QuietBarIcon>
     </QuietBar>
     <QuietHeader title="Schedule" sub={summary} />
     {modules.marketplace ? <QuietSegments label="Schedule views" items={[
@@ -183,10 +203,10 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
     {view === 'open' ? <OpenShifts open={props.openShifts} /> : <>
       <nav className="q-wk" aria-label="Days in this week">
         {dates.map(date => {
-          const assigned = shifts.some(shift => shift.date === date);
+          const assigned = shifts.some(shift => shift.date === date), off = !!timeOffOn(date);
           return <Link key={date} href={dayHref(date)} scroll={false} className={date === chosen ? 'is-on' : undefined} aria-current={date === today ? 'date' : undefined}
-            aria-label={`${dayFmt(date, { weekday: 'long', month: 'long', day: 'numeric' })}${date === today ? ', today' : ''}${assigned ? ', assigned shift' : ''}${date === chosen ? ', selected day' : ''}`}>
-            <small aria-hidden="true">{dayFmt(date, { weekday: 'narrow' })}</small><b aria-hidden="true">{Number(date.slice(8))}</b><i className={assigned ? 'is-shift' : undefined} aria-hidden="true" />
+            aria-label={`${dayFmt(date, { weekday: 'long', month: 'long', day: 'numeric' })}${date === today ? ', today' : ''}${assigned ? ', assigned shift' : ''}${off ? ', time off' : ''}${date === chosen ? ', selected day' : ''}`}>
+            <small aria-hidden="true">{dayFmt(date, { weekday: 'narrow' })}</small><b aria-hidden="true">{Number(date.slice(8))}</b><i className={assigned ? 'is-shift' : off ? 'is-off' : undefined} aria-hidden="true" />
           </Link>;
         })}
       </nav>
@@ -213,23 +233,29 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
       </QuietList> : null}
       {changes && state !== 'unavailable' ? <div className="q-changes">{changes}</div> : null}
 
+      {props.shiftChanged === 'offered' ? <OfferedToast /> : null}
       {state === 'unavailable' ? <QuietSection id="my-agenda" title="Schedule unavailable">
         <p className="q-empty" role="status"><span className="nv-sr">Schedule unavailable. </span>We couldn’t load your schedule.</p>
         <Link className="q-btn" href={`/app/schedule?week=${weekStart}`}>Try again<span className="nv-sr"> to load your schedule</span></Link>
       </QuietSection> : <>
         <QuietSection id="my-day" title={<>{dayFmt(chosen, { weekday: 'long' })}<span className="nv-sr">, {dayFmt(chosen, { month: 'long', day: 'numeric' })}{chosen === today ? ', today' : ''}</span></>}
-          aside={dayShifts.length ? hoursLabel(dayShifts.reduce((sum, shift) => sum + shiftMinutes(shift), 0)) : state === 'published' ? 'Day off' : undefined}>
-          {dayShifts.length ? <QuietList>{dayShifts.map(shift => row(shift, hours(shift), [nameOf(shift.locationId) || 'Location unavailable', shift.positionName, ...tags(shift)].filter(Boolean).join(' · ')))}</QuietList>
-            : <p className="q-empty">{state === 'published' ? (chosen === today ? 'No shift today.' : 'No shift this day.') : emptyScheduleLabel(state)}</p>}
+          aside={dayShifts.length ? hoursLabel(dayShifts.reduce((sum, shift) => sum + shiftMinutes(shift), 0)) : chosenOff ? 'Time off' : state === 'published' ? 'Day off' : undefined}>
+          {dayShifts.length || chosenOff ? <QuietList>
+            {chosenOff ? <QuietRow icon={<AirplaneTiltIcon className="q-ic" aria-hidden="true" />} title="Time off" detail={chosenOff.startTime && chosenOff.endTime ? keepWhole(formatTimeRange(chosenOff.startTime, chosenOff.endTime)) : 'All day'} value={<span className="q-chip q-chip--grey">Approved</span>} /> : null}
+            {dayShifts.map(shift => row(shift, hours(shift), [nameOf(shift.locationId) || 'Location unavailable', shift.positionName, ...tags(shift)].filter(Boolean).join(' · ')))}
+          </QuietList>
+            : <p className="q-empty">{state === 'published' ? (chosen === today ? 'No shift today.' : 'No shift this day.') : somePublished ? 'No shift this day yet.' : emptyScheduleLabel(state)}</p>}
         </QuietSection>
-        {later.length ? <QuietSection id="my-later" title={past ? 'Later this week' : 'Coming up'} aside={`${later.length} ${later.length === 1 ? 'shift' : 'shifts'}`}>
+        {later.length ? <QuietSection id="my-later" title={past ? 'Later this week' : 'Coming up'} aside={`${later.length} ${later.length === 1 ? 'shift' : 'shifts'}`}>
           <QuietList>{later.map(shift => row(shift, dayFmt(shift.date, { weekday: 'long', month: 'short', day: 'numeric' }), [hours(shift), nameOf(shift.locationId) || 'Location unavailable', ...tags(shift)].filter(Boolean).join(' · ')))}</QuietList>
+        </QuietSection> : upcoming.length ? <QuietSection id="my-later" title="Coming up" aside="Next week">
+          <QuietList>{upcoming.map(shift => <QuietRow key={shift.id} href={`/app/schedule?week=${addDays(weekStart, 7)}&day=${shift.date}&shift=${encodeURIComponent(shift.id)}`}
+            title={keepWhole(dayFmt(shift.date, { weekday: 'long', month: 'short', day: 'numeric' }))} detail={[hours(shift), nameOf(shift.locationId) || 'Location unavailable'].join(' · ')} />)}</QuietList>
         </QuietSection> : null}
       </>}
       {/* A partly published week says what is final and who hasn't published yet, beside the week itself (Jose, 2026-10-18). */}
-      {state === 'unpublished' ? <p className="q-help" data-week-note="" role="status">{shifts.length
-        ? unpublishedNote(unpublishedNames, publishedNames)
-        : `${unpublishedNote(unpublishedNames)} An empty day isn’t a day off yet.`}</p> : null}
+      {/* UX-E-03 / P2-14: said once, here: who hasn't published yet. */}
+      {state === 'unpublished' ? <p className="q-help q-week-note" data-week-note="" role="status">{notOutYetNote(unpublishedNames)}</p> : null}
     </>}
   </QuietPage>;
 }

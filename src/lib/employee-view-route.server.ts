@@ -42,7 +42,8 @@ export function createManagementNotificationReadPost(mark:(proof:SessionMutation
   if(boundary)return json({state:'unavailable',reason:'access_denied'},boundary);
   try{
    const session=await getSession();if(!session)return json({state:'unavailable',reason:'access_denied'},401);
-   if(!['OWNER','MANAGER'].includes(session.role))return json({state:'unavailable',reason:'access_denied'},403);
+   // F5: every signed-in role reads its own inbox; the mark itself is limited to the reader's own notification.
+   if(!['OWNER','MANAGER','EMPLOYEE','LEAD'].includes(session.role))return json({state:'unavailable',reason:'access_denied'},403);
    const proof=await requireSessionMutationProof();
    if(proof.employee.id!==session.id||proof.employee.role!==session.role||request.headers.get('x-nevora-employee-view')!==employeeViewAuthority(proof,'notifications'))return json({state:'unavailable',reason:'access_denied'},403);
    const value:unknown=await readCorrectionJson(request,1024);

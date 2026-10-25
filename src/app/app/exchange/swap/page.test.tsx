@@ -23,17 +23,21 @@ beforeEach(()=>{state.source={timeZone:'America/Puerto_Rico',termsRevision:1,ass
 const render=async(mode?:string)=>renderToStaticMarkup(await SwapPage({searchParams:Promise.resolve({sourceShiftId:'source',...(mode?{mode}:{})})}));
 it('unchanged displayed assignments are bound to reviewed source and target without a default consent',async()=>{const result=await render();expect(result).toContain('value="v1:source"');expect(result).toContain('Cashier');expect(result).toContain('Fictional Partner');expect(result).toContain('Send swap request');expect(result).not.toContain('name="targetTermsFingerprint"');});
 it.each([{timeZone:'America/New_York'},{termsRevision:2},{assignmentEpisodeId:'new-episode'},{startTime:'12:00',endTime:'20:00'},{locationId:'replacement-location'},{positionId:'replacement-position'},{employeeId:'replacement-owner'}])('source material change refuses the undisplayed assignment: %j',async sourceChange=>{state.sourceChange=sourceChange;await expect(render()).rejects.toThrow('error=EXCHANGE_CHANGED');});
-it.each([{timeZone:'America/New_York'},{termsRevision:2},{assignmentEpisodeId:'new-episode'},{startTime:'12:00',endTime:'20:00'},{locationId:'replacement-location'},{positionId:'replacement-position'},{employeeId:'replacement-owner'}])('target material change excludes that undisplayed replacement: %j',async targetChange=>{state.targetChange=targetChange;const result=await render();expect(result).not.toContain('<form');expect(result).not.toContain('Fictional Partner');expect(result).toContain('No shifts to swap');});
+it.each([{timeZone:'America/New_York'},{termsRevision:2},{assignmentEpisodeId:'new-episode'},{startTime:'12:00',endTime:'20:00'},{locationId:'replacement-location'},{positionId:'replacement-position'},{employeeId:'replacement-owner'}])('target material change excludes that undisplayed replacement: %j',async targetChange=>{state.targetChange=targetChange;const result=await render();expect(result).not.toContain('<form');expect(result).not.toContain('Fictional Partner');expect(result).toContain('No one can swap this week');});
 it.each([{termsRevision:2},{startTime:'12:00',endTime:'20:00'},{employeeId:'replacement-owner'}])('v5 Offer it for cover (mode=cover) refuses a changed source the same way: %j',async sourceChange=>{state.sourceChange=sourceChange;await expect(render('cover')).rejects.toThrow('error=EXCHANGE_CHANGED');});
 it('v5 Offer it for cover (mode=cover) shows only the checked coverage offer, never swap candidates',async()=>{const result=await render('cover');expect(result).toContain('value="OFFER_COVERAGE"');expect(result).not.toContain('Fictional Partner');expect(result).not.toContain('value="PROPOSE_SWAP"');});
 it('source fingerprint changing while target is reviewed withholds the mixed-snapshot builder',async()=>{state.sourceFingerprintChange=true;expect(await render()).not.toContain('<form');});
 it('explains a rule refusal when the rules refuse every target and coverage too (deadline passed)', async()=>{
   state.refuse='The deadline for changes to this shift has passed.';
   const html=await render();
+  // T-25: Swap keeps its title and offers cover as a link; the cover sheet then names the refusal.
+  const cover=await render('cover');
   state.refuse=null;
-  expect(html).toContain('No shifts to swap');
-  expect(html).toContain('The deadline for changes to this shift has passed.');
+  expect(html).toContain('No one can swap this week');
+  expect(html).toContain('>Swap shift<');
   expect(html).not.toContain('<form');
+  expect(cover).toContain('The deadline for changes to this shift has passed.');
+  expect(cover).not.toContain('<form');
 });
 it('keeps explicit selection and a safe coverage path when there are no targets', async()=>{
   const html=await render();
@@ -43,10 +47,18 @@ it('keeps explicit selection and a safe coverage path when there are no targets'
   expect(html).toContain('Trade with');
   state.target=null;
   const empty=await render();
-  // F2: the fallback is the real coverage offer for this source, never the inability (callout) form.
-  expect(empty).toContain('value="OFFER_COVERAGE"');
-  expect(empty).toContain('Offer for cover');
+  // T-25 / P1-3: with no partner the sheet stays "Swap shift" and never turns into another form by itself; it links to
+  // Offer it for cover. F2: that fallback is the real coverage offer for this source, never the inability (callout) form.
+  expect(empty).toContain('>Swap shift<');
+  expect(empty).not.toContain('>Offer for cover<');
+  expect(empty).not.toContain('value="OFFER_COVERAGE"');
+  expect(empty).toContain('Offer it for cover instead');
+  expect(empty).toContain('href="/app/exchange/swap?sourceShiftId=source&amp;mode=cover"');
   expect(empty).not.toContain('/app/exchange/callout');
+  const cover=await render('cover');
+  expect(cover).toContain('value="OFFER_COVERAGE"');
+  expect(cover).toContain('Offer for cover');
+  expect(cover).not.toContain('/app/exchange/callout');
 });
 
 vi.mock('@/lib/data/shift-changes',()=>({readShiftChangeAvailability:async()=>state.refuse?{allowed:false,notice:state.refuse}:{allowed:true,notice:null}}));

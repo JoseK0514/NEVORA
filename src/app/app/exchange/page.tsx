@@ -15,6 +15,8 @@ import { ManagerShiftRequests } from "@/components/manager-shift-requests";
 import { shiftPlace } from "@/components/shift-requests-signature";
 import { QuietHeader, QuietNav, QuietPage, QuietRow, QuietSegments } from "@/components/quiet/quiet";
 import { SheetRow } from "@/components/quiet/quiet-sheet";
+import { ConfirmSubmit } from "@/components/confirm-submit";
+import "@/components/quiet/u3.css";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { requireSession,requireSessionMutationProof } from "@/lib/auth/session";
 import {
@@ -174,7 +176,10 @@ export default async function ExchangePage({
     // v5 "One look" (approved Oct 24, 2026; mockup E09). Same reads, forms and authority as before: Open shifts, the swaps
     // waiting for your answer, and your own requests and shifts. Each row opens its details and actions as a sheet.
     const zone = workspace.timeZone;
-    const view = params.tab === "foryou" || (!!params.requestId && incoming.some(row => row.id === params.requestId)) ? "foryou" : activeView;
+    // P1-11: Open shifts live on Schedule. Shift requests is "For you" and "Yours"; an Open shifts link (a claim, a
+    // notification) still opens here, as its own page back to Schedule. With no tab: For you when a swap waits, else Yours.
+    const view = params.tab === "foryou" || (!!params.requestId && incoming.some(row => row.id === params.requestId)) ? "foryou"
+      : params.tab === undefined && !params.requestId ? (incoming.length ? "foryou" : "requests") : activeView;
     const otherName = (row: (typeof visibleActivity)[number]) => marketplaceDisplayName(row.requestedByEmployeeId === session.id ? (row.targetEmployeeName ?? row.targetShift?.employeeName ?? "") : row.requestedByName);
     const when = (shift: { date: string; startTime: string; endTime: string }) => keepWhole(`${marketplaceDate(shift.date)} · ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`);
     const place = (shift: Parameters<typeof shiftPlace>[0]) => shiftPlace(shift, zone);
@@ -183,13 +188,13 @@ export default async function ExchangePage({
     const yours = visibleActivity.length + visibleCallouts.length;
     return (
       <QuietPage className="q-shiftreq employee-shift-requests-view">
+        {view === "available" ? <><QuietNav back={{ href: "/app/schedule?view=open", label: "Schedule" }} /><QuietHeader title="Open shifts" /></> : <>
         <QuietNav back={{ href: "/app/requests/hub", label: "Requests" }} />
         <QuietHeader title="Shift requests" />
         <QuietSegments label="Shift request views" items={[
-          { href: "/app/exchange?tab=available", label: claimable.length ? `Open shifts · ${claimable.length}` : "Open shifts", current: view === "available" },
           { href: "/app/exchange?tab=foryou", label: incoming.length ? `For you · ${incoming.length}` : "For you", current: view === "foryou" },
           { href: "/app/exchange?tab=requests", label: "Yours", current: view === "requests" },
-        ]} />
+        ]} /></>}
         {params.error ? <p className="q-help q-help--alert" role="alert">{ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "We couldn’t send that request. Try again."}</p> : null}
         {operation ? <p className="q-help" role="status">{shiftChangeFeedback(operation)}</p> : null}
 
@@ -237,7 +242,7 @@ export default async function ExchangePage({
               <SheetRow key={exchange.id} anchor={`request-${exchange.id}`} sheetTitle={exchange.kind === "COVERAGE" ? "Cover offer" : "Swap"}
                 title={exchange.kind === "COVERAGE" ? `Cover · ${keepWhole(marketplaceDate(exchange.sourceShift.date))}` : otherName(exchange) ? `Swap · ${otherName(exchange)}` : "Swap"}
                 detail={`${when(exchange.sourceShift)} · ${exchangeWord(exchange.status)}`}>
-                <div className="q-hd employee-shift-entry"><h1>{exchange.kind === "COVERAGE" ? "Offered for cover" : otherName(exchange) ? `Swap with ${otherName(exchange).split(" ")[0]}` : "Swap"}</h1><p>{exchangeWord(exchange.status)}</p></div>
+                <div className="q-hd employee-shift-entry"><h1>{exchange.kind === "COVERAGE" ? keepWhole(marketplaceDate(exchange.sourceShift.date)) : otherName(exchange) ? `Swap with ${otherName(exchange).split(" ")[0]}` : "Swap"}</h1><p><span className="q-chip">{exchangeWord(exchange.status)}</span></p></div>
                 <ul className="q-list" style={{ marginTop: 16 }}>
                   <QuietRow title="Your shift" detail={`${when(exchange.sourceShift)} · ${place(exchange.sourceShift)}`} />
                   {exchange.targetShift ? <QuietRow title="For" detail={`${when(exchange.targetShift)} · ${place(exchange.targetShift)}`} /> : null}
@@ -245,14 +250,16 @@ export default async function ExchangePage({
                 {exchange.actionable === false && ["OPEN", "EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(exchange.status) ? <p className="q-help shift-change-unavailable">This request changed or needs a manager’s review. Reload, or ask your manager.</p> : null}
                 <div className="q-history"><ShiftChangeHistory events={histories.get(exchange.id) ?? null} /></div>
                 <div className="q-sheet-acts employee-shift-entry-actions" data-status={exchange.status}>
-                  {exchange.requestedByEmployeeId === session.id && requestFields(exchange.id, exchange.requestRevision) && ["OPEN", "EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(exchange.status) ? <ShiftChangeForm fields={{ kind: "CANCEL", ...requestFields(exchange.id, exchange.requestRevision)! }} className="shift-change-form q-scform"><button className="q-btn q-btn--sec q-btn--danger" type="submit">Cancel request</button></ShiftChangeForm> : null}
-                  {exchange.status === "MANAGER_PENDING" && exchange.targetEmployeeId === session.id && requestFields(exchange.id, exchange.requestRevision) ? <ShiftChangeForm fields={{ kind: "WITHDRAW", ...requestFields(exchange.id, exchange.requestRevision)! }} className="shift-change-form q-scform"><button className="q-btn q-btn--sec q-btn--danger" type="submit">Withdraw</button></ShiftChangeForm> : null}
+                  {exchange.requestedByEmployeeId === session.id && requestFields(exchange.id, exchange.requestRevision) && ["OPEN", "EMPLOYEE_PENDING", "MANAGER_PENDING"].includes(exchange.status) ? <ShiftChangeForm fields={{ kind: "CANCEL", ...requestFields(exchange.id, exchange.requestRevision)! }} className="shift-change-form q-scform">{exchange.kind === "COVERAGE"
+                    ? <ConfirmSubmit label="Take back offer" question="Take back this offer?" confirm="Take back" />
+                    : <ConfirmSubmit label="Take back swap request" question="Take back this swap request?" confirm="Take back" />}</ShiftChangeForm> : null}
+                  {exchange.status === "MANAGER_PENDING" && exchange.targetEmployeeId === session.id && requestFields(exchange.id, exchange.requestRevision) ? <ShiftChangeForm fields={{ kind: "WITHDRAW", ...requestFields(exchange.id, exchange.requestRevision)! }} className="shift-change-form q-scform"><ConfirmSubmit label="Withdraw" question="Withdraw from this swap?" confirm="Withdraw" /></ShiftChangeForm> : null}
                 </div>
               </SheetRow>))}
             {visibleCallouts.map(callout => (
               <SheetRow key={callout.id} anchor={`request-${callout.id}`} sheetTitle="Unable to work" title={`Unable to work · ${keepWhole(marketplaceDate(callout.date))}`}
                 detail={`${keepWhole(`${formatTime(callout.startTime)} – ${formatTime(callout.endTime)}`)} · ${calloutWord(callout)}`}>
-                <div className="q-hd employee-shift-entry"><h1>{keepWhole(marketplaceDate(callout.date))}</h1><p>{calloutWord(callout)}</p></div>
+                <div className="q-hd employee-shift-entry"><h1>{keepWhole(marketplaceDate(callout.date))}</h1><p><span className="q-chip">{calloutWord(callout)}</span></p></div>
                 <ul className="q-list" style={{ marginTop: 16 }}>
                   <QuietRow one title="Shift" value={keepWhole(`${formatTime(callout.startTime)} – ${formatTime(callout.endTime)}`)} tone="l" />
                   <QuietRow one title="Location" value={callout.locationName} tone="l" />
@@ -261,16 +268,12 @@ export default async function ExchangePage({
                 {callout.status === "APPROVED" && !callout.releaseApplies ? <p className="q-help shift-change-unavailable">Historical approval does not release the current assignment. Ask management to review.</p> : null}
                 <div className="q-history"><ShiftChangeHistory events={histories.get(callout.id) ?? null} /></div>
                 <div className="q-sheet-acts employee-shift-entry-actions" data-status={callout.status}>
-                  {callout.status === "PENDING" && requestFields(callout.id, callout.requestRevision) ? <ShiftChangeForm fields={{ kind: "CANCEL_CALLOUT", ...requestFields(callout.id, callout.requestRevision)! }} className="shift-change-form q-scform"><button className="q-btn q-btn--sec q-btn--danger" type="submit">Cancel report</button></ShiftChangeForm> : null}
+                  {callout.status === "PENDING" && requestFields(callout.id, callout.requestRevision) ? <ShiftChangeForm fields={{ kind: "CANCEL_CALLOUT", ...requestFields(callout.id, callout.requestRevision)! }} className="shift-change-form q-scform"><ConfirmSubmit label="Take back report" question="Take back this report? You’ll be expected to work the shift." confirm="Take back" /></ShiftChangeForm> : null}
                 </div>
               </SheetRow>))}
           </ul> : <div className="q-emptyblock"><p className="q-emptyblock__title">No requests yet</p><p className="q-help">Your swaps, cover offers and Unable to work reports show up here.</p></div>}
-          {assignedShifts.length ? <section aria-labelledby="sr-shifts">
-            <div className="q-grp"><h2 id="sr-shifts">Your shifts</h2></div>
-            <ul className="q-list">{assignedShifts.map(shift => <QuietRow key={shift.id} href={`/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}&shift=${encodeURIComponent(shift.id)}`}
-              title={when(shift)} detail={place(shift)} label={`Shift options, ${when(shift)}`} />)}</ul>
-            <p className="q-help">Open a shift to swap it, offer it for cover, or report Unable to work.</p>
-          </section> : null}
+          {/* UX-E-16: My schedule already lists your shifts; one way there to start a change. */}
+          {assignedShifts.length ? <ul className="q-list" style={{ marginTop: 24 }}><QuietRow one href="/app/schedule" title="Choose a shift" detail="Swap it, offer it for cover, or say you can’t work it" /></ul> : null}
           {(selectedHistory === null || selectedHistory.length > 0) && !visibleActivity.some(e => e.id === params.requestId) && !visibleCallouts.some(e => e.id === params.requestId) ? <section aria-labelledby="sr-history"><div className="q-grp"><h2 id="sr-history">Original request history</h2></div><div className="q-history"><ShiftChangeHistory events={selectedHistory} /></div></section> : null}
         </>}
       </QuietPage>

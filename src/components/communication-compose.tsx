@@ -11,13 +11,13 @@ import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {Tile} from './kit/kit';
 import {QuietNav} from './quiet/quiet';
+import {QuietSheet} from './quiet/quiet-sheet';
+import './quiet/u3.css';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
-import {SigBand,SigHead,SigPage} from './signature/signature';
-import cc from './communication-compose-signature.module.css';
 import {PendingLabel} from './employee-submit-button';
 import {revealFeedback} from '@/lib/reveal-feedback';
 import {keepWhole} from '../lib/keep-whole';
-import {formatDisplayDate,formatTimeRange} from '../lib/date-utils';
+import {formatDisplayDate,formatTime,formatTimeRange} from '../lib/date-utils';
 import {timeZoneLabel} from '../lib/time-zone-label';
 import {localDateTimeToInstant} from '../lib/business-time';
 import {validateCommunicationDraft} from '../lib/communications/validation';
@@ -61,6 +61,8 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
  async function review(){if(staleEdit)return;const value=draft();if(!value)return;retain(values,reviewedRevisionId);const sequence=++previewGeneration.current;setError(null);setErrorField(null);setPreviewing(true);try{const result=await communicationRequest(mode,authority,'/preview',value) as {state:string;count:number;fingerprint:string};if(sequence!==previewGeneration.current)return;if(result.state==='ready'){action.setNotice(null);setError(null);setPreview({count:result.count,fingerprint:result.fingerprint});}else setError('Audience couldn’t be checked. You may not have access to this location.');}catch{if(sequence===previewGeneration.current)setError('Audience couldn’t be checked. Try again.');}finally{if(sequence===previewGeneration.current)setPreviewing(false);}}
  function publish(){if(staleEdit)return;const value=draft();if(!value||!preview)return;retain(values,reviewedRevisionId);void action.send({kind:editing?'REVISE':'PUBLISH',operationId:crypto.randomUUID(),authority,draft:value,audienceFingerprint:preview.fingerprint,...(editing?{communicationId:editing.id,expectedRevisionId:reviewedRevisionId}:{})});}
  const disabled=action.pending||action.notice==='unknown'||staleEdit;
+ const [expiryOpen,setExpiryOpen]=useState(false);
+ const endOfToday=`${context.businessDate}T23:59`;
  const location=context.locations.find(l=>l.id===locationId)?.label;
  if(action.notice==='signed-out')return <section className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon aria-hidden="true" size={24}/><div><h2 className="wb-notice__title">Your session ended</h2><p>Sign in again to continue.</p><div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link></div></div></section>;
  if(action.notice==='blocked')return <section className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon aria-hidden="true" size={24}/><div><h2 className="wb-notice__title">Publication unavailable</h2><p>Your current permission does not allow publication.</p><div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href="/login">Sign in again</Link><Link className="nv-btn" data-kind="secondary" href="/app/updates">Return to updates</Link></div></div></section>;
@@ -69,47 +71,80 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
  // as people will see it. Managers keep the shared form. Same fields, validation, preview and publish.
  const signature=mode==='employee'&&!context.management;
  const day=keepWhole(formatDisplayDate(context.businessDate));
- const sigReview=preview&&action.notice!=='conflict'&&!staleEdit?<section className={`compose-reviewed ${cc.ccReview}`} aria-label="Audience preview">
-   <div className={cc.ccCount}><b aria-hidden="true">{preview.count}</b><span><h2 ref={previewHeadingRef} tabIndex={-1}><span className="nv-sr">Audience preview: {preview.count} </span>{preview.count===1?'person':'people'} at {location}</h2><small>Everyone on today’s team · {day}</small></span></div>
-   {preview.count===0?<p className={cc.ccEmpty}>No eligible recipients in this audience. You can change the delivery settings before publishing.</p>:null}
-   <SigHead title="On their phone"/>
-   <div className={cc.ccLock} aria-hidden="true"><div className={cc.ccLockTime}><b>9:41</b><span>{day}</span></div>
-    <div className={cc.ccAlert}><span className={cc.ccApp}>N</span><span className={cc.ccAlertCopy}><b>NEVORA · {location}</b><span><b>{title.trim()||'Your title'}</b> {body.trim()||'Your message'}</span></span><small>now</small></div></div>
-   <SigHead title="In the app"/>
-   <div className={`sg-card ${cc.ccPreview}`} aria-hidden="true"><div className="sg-card-head"><span className="sg-tile"><UsersThreeIcon size={22}/></span><span className={cc.ccHeadCopy}><b>Today’s team</b><small>{day}</small></span></div>
-    <div className={cc.ccPreviewBody}><b>{title.trim()||'Your title'}</b><span>{body.trim()||'Your message'}</span></div></div>
-   <button className="sg-cta" type="button" disabled={!action.pending&&(action.notice==='unknown'||staleEdit)} aria-disabled={action.pending||undefined} aria-busy={action.pending||undefined} onClick={()=>{if(!action.pending)publish();}}><PaperPlaneTiltIcon size={20} aria-hidden="true"/><PendingLabel pending={action.pending} pendingText="Publishing…">Publish update</PendingLabel></button>
-   <p className="sg-after">Eligibility is checked again when you publish. Changing any field requires a new preview.</p>
-  </section>
-  :<div className={cc.ccSubmit}><button className="sg-cta" disabled={(disabled&&!previewing)||undefined} aria-disabled={previewing||undefined} aria-busy={previewing||undefined} onClick={event=>{if(previewing)event.preventDefault();}} type="submit"><PendingLabel pending={previewing} pendingText="Checking audience…">Preview audience</PendingLabel></button><p className="sg-after">Nothing is published until you review the audience and choose Publish.</p></div>;
+ // T-18 (Oct 25, 2026; owner CreateUpdate.png and the T-16 review): an Employee or Lead messages today's team on the Quiet
+ // page. "Cancel · Message team · Next", Title and Message, Send to (one radio row per location they work today) and
+ // Expires; Next checks the audience and opens Review ("‹ Edit · Review · Send"). Same draft, validation, preview,
+ // fingerprint and publish as before.
+ if(signature){
+  const people=(id:string)=>new Set(context.shifts.filter(s=>s.locationId===id&&s.date===context.businessDate).map(s=>s.assigneeLabel)).size;
+  const expiryText=!useExpiry||!expiration?'Never':expiration===endOfToday?'End of today':keepWhole(`${formatDisplayDate(expiration.slice(0,10))}${expiration.endsWith('Z')?'':`, ${formatTime(expiration.slice(11,16))}`}`);
+  const reviewing=!!preview&&action.notice!=='conflict'&&!staleEdit;
+  return <form ref={formRef} id="compose-form" className="wb-form q-compose-e" onSubmit={e=>{e.preventDefault();if(!reviewing)void review();}}>
+   {reviewing?<div className="q-nav"><button type="button" className="q-nav__l q-nav__l--teal" onClick={changed} disabled={action.pending}><CaretLeftIcon className="q-ic q-ic--s" aria-hidden="true"/>Edit</button><h1 className="q-nav__t">Review</h1>
+     <button type="button" className="q-nav__r q-nav__r--b" disabled={!action.pending&&(action.notice==='unknown'||staleEdit)} aria-disabled={action.pending||undefined} aria-busy={action.pending||undefined} onClick={()=>{if(!action.pending)publish();}}><PendingLabel pending={action.pending} pendingText="Sending…">Send</PendingLabel></button></div>
+    :<div className="q-nav"><Link className="q-nav__l q-nav__l--teal" href="/app/updates">Cancel</Link><h1 className="q-nav__t">Message team</h1>
+     <button type="submit" className="q-nav__r q-nav__r--b" disabled={(disabled&&!previewing)||undefined} aria-disabled={previewing||undefined} aria-busy={previewing||undefined}><PendingLabel pending={previewing} pendingText="Checking…">Next</PendingLabel></button></div>}
+   {reviewing?<section aria-label="Review before sending">
+     <div className="q-grp"><h2 ref={previewHeadingRef} tabIndex={-1}>Message</h2></div>
+     <div className="q-preview-msg"><b>{title.trim()}</b><p>{body.trim()}</p></div>
+     <div className="q-grp"><h2>Audience</h2></div>
+     <ul className="q-list">
+      <li><div className="q-row q-row--one"><span className="q-rt"><b>Send to</b></span><span className="q-rv q-rv--l">{keepWhole(`Today’s team · ${location??''}`)}</span></div></li>
+      <li><div className="q-row q-row--one"><span className="q-rt"><b>Recipients</b></span><span className="q-rv q-rv--l">{preview.count} {preview.count===1?'person':'people'}</span></div></li>
+      <li><div className="q-row q-row--one"><span className="q-rt"><b>Expires</b></span><span className="q-rv q-rv--l">{expiryText}</span></div></li>
+     </ul>
+     {preview.count===0?<p className="q-help">No one is on today’s team at {location} yet. You can go back and choose another location.</p>:null}
+     <p className="q-help">We check who can see it again when you send.</p>
+    </section>:<fieldset disabled={disabled} className="wb-form"><legend className="nv-sr">Message today’s team</legend>
+     <div className="q-fl q-first">
+      <div className="q-fl__row"><label className="q-fl__label" htmlFor="communication-title">Title</label><span id="communication-title-count" className="q-help" data-over={titleCount>120||undefined} aria-label={`${titleCount} of 120 characters`}>{titleCount}/120</span></div>
+      <input id="communication-title" className="q-in" placeholder="e.g. Delivery at 10" value={title} onChange={e=>{changed();setTitle(e.target.value);}} aria-describedby={errorField==='title'?'communication-title-error communication-title-count':'communication-title-count'} aria-invalid={titleCount>120||errorField==='title'}/>
+      {errorField==='title'&&error?<p className="q-fl__error" id="communication-title-error">{error}</p>:null}
+     </div>
+     <div className="q-fl">
+      <div className="q-fl__row"><label className="q-fl__label" htmlFor="communication-body">Message</label><span id="communication-body-count" className="q-help" data-over={bodyCount>2000||undefined} aria-label={`${bodyCount} of 2000 characters`}>{bodyCount}/2000</span></div>
+      <textarea id="communication-body" className="q-in" placeholder="What does your team need to know?" rows={5} value={body} onChange={e=>{changed();setBody(e.target.value);}} aria-describedby={errorField==='body'?'communication-body-error communication-body-count':'communication-body-count'} aria-invalid={bodyCount>2000||errorField==='body'}/>
+      {errorField==='body'&&error?<p className="q-fl__error" id="communication-body-error">{error}</p>:null}
+     </div>
+     <fieldset id="communication-location" className="q-fieldset" aria-labelledby="compose-delivery-heading" aria-describedby="compose-team-hint">
+      <div className="q-grp"><h2 id="compose-delivery-heading">Send to</h2></div>
+      <ul className="q-list">{context.locations.map(l=><li key={l.id}><label className="q-row q-row--pick">
+       <span className="q-rt"><b>{keepWhole(`Today’s team · ${l.label}`)}</b><i>{people(l.id)?`${people(l.id)} ${people(l.id)===1?'person':'people'} working ${day}`:`People working ${day}`}</i></span>
+       <input className="q-pick" type="radio" name="communication-location" value={l.id} checked={locationId===l.id} onChange={()=>{changed();setLocationId(l.id);setShiftId('');}}/><span className="q-radio" aria-hidden="true"/>
+      </label></li>)}</ul>
+      <p className="q-sr" id="compose-team-hint">Based on current published assignments, including overnight shifts.</p>
+     </fieldset>
+     <ul className="q-list" style={{marginTop:24}}><li><button type="button" className="q-row q-row--one q-row--btn" aria-haspopup="dialog" onClick={()=>setExpiryOpen(true)}>
+      <span className="q-rt"><b>Expires</b></span><span className="q-rv q-rv--l">{expiryText}</span><CaretRightIcon className="q-chev" aria-hidden="true"/></button></li></ul>
+     {errorField==='expiration'&&error?<p className="q-error" id="communication-expiration-error">{error}</p>:null}
+     <QuietSheet open={expiryOpen} label="Expires" onClose={()=>setExpiryOpen(false)}>
+      <div className="q-nav"><span/><span className="q-nav__t">Expires</span><button type="button" className="q-nav__r q-nav__r--b" onClick={()=>setExpiryOpen(false)}>Done</button></div>
+      <ul className="q-list" style={{marginTop:16}}>
+       {([['never','Never'],['today','End of today'],['custom','Custom']] as const).map(([value,label])=>{
+        const current=!useExpiry||!expiration?'never':expiration===endOfToday?'today':'custom';
+        return <li key={value}><label className="q-row q-row--one q-row--pick"><span className="q-rt"><b>{label}</b></span>
+         <input className="q-pick" type="radio" name="communication-expiry" value={value} checked={current===value} onChange={()=>{changed();if(value==='never'){setUseExpiry(false);setExpiration('');}else if(value==='today'){setExpiration(endOfToday);setUseExpiry(true);}else{setExpiration(expiration&&expiration!==endOfToday?expiration:`${context.businessDate}T18:00`);setUseExpiry(true);}}}/><span className="q-radio" aria-hidden="true"/></label></li>;
+       })}
+       {useExpiry&&expiration&&expiration!==endOfToday?<li><label className="q-row q-row--one q-row--picker"><span className="q-rt"><b>Until</b></span><span className="q-rv q-rv--go" aria-hidden="true">{expiryText}</span>
+        <input id="communication-expiration" className="q-picker" type="datetime-local" value={expiration.endsWith('Z')?'':expiration} aria-label={`Expires (${timeZoneLabel(context.timeZone)})`} aria-invalid={errorField==='expiration'||undefined}
+         onClick={event=>{try{event.currentTarget.showPicker?.();}catch{/* the browser opens its own picker */}}} onChange={e=>{changed();setExpiration(e.target.value);setUseExpiry(!!e.target.value);}}/></label></li>:null}
+      </ul>
+      <p className="q-help">Times in {timeZoneLabel(context.timeZone)}.</p>
+     </QuietSheet>
+    </fieldset>}
+   <div ref={feedbackRef} tabIndex={-1} aria-label="Update review feedback">
+    {error&&!errorField?<p id="communication-form-error" className="q-error" role="alert">{error}</p>:error?<p id="communication-form-error" className="q-sr" role="alert">{error}</p>:null}
+    {action.notice==='conflict'||staleEdit?<p className="q-note" data-tone="urgent" role="alert"><b className="q-note__title">Review the latest information</b><span className="q-note__body">Today’s team changed. Check the message again, then tap Next.</span></p>
+     :action.notice==='unavailable'&&!action.hasUnknown?<p className="q-note" data-tone="urgent" role="alert"><b className="q-note__title">We couldn’t send it</b><span className="q-note__body">Check status before trying again.</span></p>:null}
+    {previewing||action.pending?<p className="q-sr" role="status">{previewing?'Checking who gets it…':'Sending…'}</p>:null}
+    {action.notice==='unknown'||action.notice==='unavailable'&&action.hasUnknown?<div ref={recoveryRef} tabIndex={-1} role="status"><p className="q-note"><b className="q-note__title">We need to check if it was sent</b><span className="q-note__body">Check status before trying again.</span></p>
+     <button className="q-btn q-btn--sec" type="button" disabled={action.pending} onClick={()=>void action.lookup()}>Check status</button>{action.canRetry?<button className="q-btn q-btn--quiet" type="button" disabled={action.pending} onClick={()=>void action.retry()}>Retry original publication</button>:null}</div>:null}
+   </div>
+  </form>;
+ }
  return <form ref={formRef} id="compose-form" className="wb-form" onSubmit={e=>{e.preventDefault();void review();}}>
   <fieldset disabled={disabled} className="wb-form"><legend className="nv-sr">{editing?'Edit update':context.management?'Create update':'Message today’s team'}</legend>
-   {signature?<>
-   <SigHead id="compose-message-heading" title="Message"/>
-   <section className={cc.ccPaper} aria-labelledby="compose-message-heading">
-    <div className={cc.ccTag}><span><UsersThreeIcon size={15} aria-hidden="true"/>Today’s team</span><span id="communication-title-count" data-over={titleCount>120||undefined}><span className="nv-sr">Title: </span>{titleCount}/120</span></div>
-    <label htmlFor="communication-title" className="nv-sr">Title</label>
-    <input id="communication-title" className={cc.ccTitle} placeholder="Title" value={title} onChange={e=>{changed();setTitle(e.target.value);}} aria-describedby={errorField==='title'?'communication-title-error communication-title-count':'communication-title-count'} aria-invalid={titleCount>120||errorField==='title'}/>
-    {errorField==='title'&&error?<p className="wb-error" id="communication-title-error"><WarningCircleIcon size={18} aria-hidden="true"/><span>{error}</span></p>:null}
-    <label htmlFor="communication-body" className="nv-sr">Message</label>
-    <textarea id="communication-body" className={cc.ccBody} placeholder="What does your team need to know?" rows={5} value={body} onChange={e=>{changed();setBody(e.target.value);}} aria-describedby={errorField==='body'?'communication-body-error communication-body-count compose-body-hint':'communication-body-count compose-body-hint'} aria-invalid={bodyCount>2000||errorField==='body'}/>
-    {errorField==='body'&&error?<p className="wb-error" id="communication-body-error"><WarningCircleIcon size={18} aria-hidden="true"/><span>{error}</span></p>:null}
-    <p className={cc.ccFoot}><span id="compose-body-hint">Plain text · line breaks kept</span><span id="communication-body-count" data-over={bodyCount>2000||undefined}>{bodyCount} / 2000</span></p>
-   </section>
-   <SigHead id="compose-delivery-heading" title="Who gets it"/>
-   <fieldset id="communication-location" className={`sg-card ${cc.ccWho}`} aria-labelledby="compose-delivery-heading" aria-describedby="compose-team-hint">
-    {context.locations.map(l=><label key={l.id} className="sg-r" data-selected={locationId===l.id||undefined}>
-     <span className="sg-tile" aria-hidden="true"><UsersThreeIcon size={22}/></span>
-     <span className="sg-copy"><b>Today’s team · {l.label}</b><span>People working {day}</span></span>
-     <input type="radio" name="communication-location" value={l.id} checked={locationId===l.id} onChange={()=>{changed();setLocationId(l.id);setShiftId('');}}/><span className={cc.ccRadio} aria-hidden="true"/>
-    </label>)}
-   </fieldset>
-   <p className="sg-after" id="compose-team-hint">Based on current published assignments, including overnight shifts.</p>
-   <div className={`sg-card ${cc.ccExpiry}`}>
-    <label className={cc.ccCheck}><input type="checkbox" checked={useExpiry} aria-describedby={useExpiry?undefined:'compose-expiry-hint'} onChange={e=>{changed();setUseExpiry(e.target.checked);}}/><span><b>Set an expiration</b>{useExpiry?null:<small id="compose-expiry-hint">It stays available until it is withdrawn.</small>}</span></label>
-    {useExpiry?<div className={cc.ccWhen}><label htmlFor="communication-expiration">Available until ({timeZoneLabel(context.timeZone)})</label><input id="communication-expiration" type={expiration.endsWith('Z')?'text':'datetime-local'} value={expiration} aria-invalid={errorField==='expiration'||undefined} aria-describedby={errorField==='expiration'?'communication-expiration-error':undefined} onChange={e=>{changed();setExpiration(e.target.value);}}/>{errorField==='expiration'&&error?<p className="wb-error" id="communication-expiration-error"><WarningCircleIcon size={18} aria-hidden="true"/><span>{error}</span></p>:null}</div>:null}
-   </div>
-   </>:<>
+   <>
    {/* Quiet (v4, approved Oct 23): Title and Message, then Send to, Ask them to confirm and Expires as rows; Next (top
        right) checks the audience. Shift notes, important updates and Today's team stay under Type. */}
    <div className="q-fl q-first">
@@ -142,12 +177,12 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
     {type==='OPERATIONAL_UPDATE'?<li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b>Who receives it</b></span><select id="communication-scope" className="q-select-row__control" value={scopeKind} aria-label="Who receives it" onChange={e=>{changed();setScopeKind(e.target.value as typeof scopeKind);}}><option value="LOCATION">Location</option><option value="TODAYS_TEAM">Today’s team</option><option value="SHIFT">Published shift</option></select><CaretRightIcon className="q-chev" aria-hidden="true"/></label></li>:null}
    </ul>
    {errorField==='expiration'&&error?<p className="q-error" id="communication-expiration-error">{error}</p>:null}
-   </>}
+   </>
   </fieldset>
   <div ref={feedbackRef} tabIndex={-1} className="wb-form" aria-label="Update review feedback">
    <p id="communication-form-error" className={errorField?'nv-sr':'wb-error'} role={error?'alert':undefined}>{error?errorField?error:<><WarningCircleIcon size={18} aria-hidden="true"/><span>{error}</span></>:null}</p>
    {action.notice==='conflict'||staleEdit?<div className="wb-notice" data-tone="review" role="alert"><WarningCircleIcon size={24} aria-hidden="true"/><div><strong>Review the latest information</strong><p>{staleEdit?'A newer version is available. Your retained draft belongs to the version you originally reviewed. Review latest before editing again.':'This update or its audience changed. Review the latest context and preview again.'}</p>{editing?<div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href={'/app/updates/'+editing.id}>Review latest</Link></div>:null}</div></div>:action.notice==='unavailable'?<div className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon size={24} aria-hidden="true"/><div><p>We could not confirm the result. Check status before trying again.</p></div></div>:null}
-   {signature?sigReview:preview&&action.notice!=='conflict'&&!staleEdit?<section className="nv-card compose-reviewed" aria-label="Audience preview"><div className="nv-card__head"><h2 className="nv-card__title" ref={previewHeadingRef} tabIndex={-1}>Audience preview</h2></div><div className="wb-body"><div className="wb-receipt"><Tile tone={preview.count===0?'review':'done'}><UsersThreeIcon size={22}/></Tile><div><p className="wb-strong">{preview.count} eligible {preview.count===1?'recipient':'recipients'}</p><p className="wb-note">At {location}.</p>{scopeKind==='SHIFT'?<p className="wb-note">{context.shifts.filter(s=>s.id===shiftId&&s.locationId===locationId).map(s=><span key={s.id}>{keepWhole(`${s.assigneeLabel}${s.positionLabel?` · ${s.positionLabel}`:''} · ${formatDisplayDate(s.date)} · ${formatTimeRange(s.startTime,s.endTime)}`)}</span>)}</p>:null}</div></div><p className="wb-note">{preview.count===0?'No eligible recipients in this audience. You can change the delivery settings before publishing.':'Check your message and delivery settings, then publish.'}</p><div className="wb-actions"><button className="nv-btn" data-kind="primary" type="button" disabled={!action.pending&&(action.notice==='unknown'||staleEdit)} aria-disabled={action.pending||undefined} aria-busy={action.pending||undefined} onClick={()=>{if(!action.pending)publish();}}><PendingLabel pending={action.pending} pendingText="Publishing…">{editing?'Publish new version':'Publish update'}</PendingLabel><PaperPlaneTiltIcon size={20} aria-hidden="true"/></button></div><p className="wb-help">Eligibility is checked again when you publish. Changing any field requires a new preview.</p></div></section>:<section className="nv-card q-compose-next" aria-label="Review before publishing"><div className="nv-card__head"><h2 className="nv-card__title">Review before publishing</h2></div><div className="wb-body"><p className="wb-note">Check the eligible audience before your update goes live.</p><div className="wb-actions"><button className="nv-btn" data-kind="primary" disabled={disabled||previewing} aria-busy={previewing||undefined} type="submit">{previewing?'Checking audience…':'Preview audience'}<ArrowRightIcon size={20} aria-hidden="true"/></button></div></div></section>}
+   {preview&&action.notice!=='conflict'&&!staleEdit?<section className="nv-card compose-reviewed" aria-label="Audience preview"><div className="nv-card__head"><h2 className="nv-card__title" ref={previewHeadingRef} tabIndex={-1}>Audience preview</h2></div><div className="wb-body"><div className="wb-receipt"><Tile tone={preview.count===0?'review':'done'}><UsersThreeIcon size={22}/></Tile><div><p className="wb-strong">{preview.count} eligible {preview.count===1?'recipient':'recipients'}</p><p className="wb-note">At {location}.</p>{scopeKind==='SHIFT'?<p className="wb-note">{context.shifts.filter(s=>s.id===shiftId&&s.locationId===locationId).map(s=><span key={s.id}>{keepWhole(`${s.assigneeLabel}${s.positionLabel?` · ${s.positionLabel}`:''} · ${formatDisplayDate(s.date)} · ${formatTimeRange(s.startTime,s.endTime)}`)}</span>)}</p>:null}</div></div><p className="wb-note">{preview.count===0?'No eligible recipients in this audience. You can change the delivery settings before publishing.':'Check your message and delivery settings, then publish.'}</p><div className="wb-actions"><button className="nv-btn" data-kind="primary" type="button" disabled={!action.pending&&(action.notice==='unknown'||staleEdit)} aria-disabled={action.pending||undefined} aria-busy={action.pending||undefined} onClick={()=>{if(!action.pending)publish();}}><PendingLabel pending={action.pending} pendingText="Publishing…">{editing?'Publish new version':'Publish update'}</PendingLabel><PaperPlaneTiltIcon size={20} aria-hidden="true"/></button></div><p className="wb-help">Eligibility is checked again when you publish. Changing any field requires a new preview.</p></div></section>:<section className="nv-card q-compose-next" aria-label="Review before publishing"><div className="nv-card__head"><h2 className="nv-card__title">Review before publishing</h2></div><div className="wb-body"><p className="wb-note">Check the eligible audience before your update goes live.</p><div className="wb-actions"><button className="nv-btn" data-kind="primary" disabled={disabled||previewing} aria-busy={previewing||undefined} type="submit">{previewing?'Checking audience…':'Preview audience'}<ArrowRightIcon size={20} aria-hidden="true"/></button></div></div></section>}
    {previewing||action.pending?<p className="nv-sr" role="status">{previewing?'Checking audience…':'Confirming publication…'}</p>:null}
    {action.notice==='unknown'||action.notice==='unavailable'&&action.hasUnknown?<div ref={recoveryRef} tabIndex={-1} className="wb-notice" data-tone="review" role="status"><WarningCircleIcon size={24} aria-hidden="true"/><div><strong>Publication needs a status check</strong><p>We couldn’t confirm the result. Check status before trying again.</p><div className="wb-actions"><button className="nv-btn" data-kind="secondary" type="button" disabled={action.pending} onClick={()=>void action.lookup()}>Check status</button>{action.canRetry?<button className="nv-btn" data-kind="secondary" type="button" disabled={action.pending} onClick={()=>void action.retry()}>Retry original publication</button>:null}</div></div></div>:null}
   </div>
@@ -176,8 +211,14 @@ function BoundCommunicationCompose({authority,mode,updateId}:{authority:string;m
  useEffect(()=>{if(composeFailed){hadFailure.current=true;return;}if(context&&hadFailure.current){hadFailure.current=false;if(!document.activeElement||document.activeElement===document.body)document.getElementById('communication-title')?.focus({preventScroll:true});}},[composeFailed,context]);
  const title=updateId?'Edit update':mode==='manager'?'Create update':'Message today’s team';
  const content=<div className="nv-content">{context?<ComposeForm key={authority+':'+(editing?.revisionId??'new')} context={context} initial={editing?.management?.draft} editing={editing} mode={mode} authority={authority} retained={retained} retain={(values,revisionId)=>{retained.current={values,revisionId};}} action={action}/>:<section className="nv-card" role="status" aria-busy={resource.state.refreshing}><div className="wb-body"><div className="wb-receipt"><Tile tone="neutral">{resource.state.refreshing?<ClockIcon size={22}/>:<UsersThreeIcon size={22}/>}</Tile><div><h2 className="wb-strong">{offline?'You’re offline':signedOut?'Your session ended':resource.state.paused?'Paused while you were away':resource.state.refreshing?'Loading the form':'Couldn’t load the form'}</h2><p className="wb-note">{offline?'Connect to the internet, then try again.':signedOut?'Sign in again to keep writing.':resource.state.paused?'Come back to this page to keep writing.':resource.state.refreshing?'Getting your locations and today’s team…':'Check your connection, then try again.'}</p></div></div><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={resource.state.paused||resource.state.refreshing} onClick={resource.refresh}>Try again</button>{signedOut?<Link className="nv-btn" data-kind="secondary" href="/login">Sign in again</Link>:null}</div></div></section>}</div>;
- if(mode==='employee'&&!updateId)return <div ref={pageRef} className="nv-page wb-page wb-narrow wb-compose" data-nv-page="">
-  <SigPage className={cc.ccRoot} band={<SigBand eyebrow="Team updates · new"><h1 className="sg-head2">Message<br/>today’s team</h1><p className="sg-sub"><span>Write it once. Everyone working today sees it.</span></p><Link className="sg-band-link" href="/app/updates"><CaretLeftIcon size={14} aria-hidden="true"/>Updates</Link></SigBand>}>{content}</SigPage>
+ // T-18: Employees and Leads write on the Quiet page (the form draws its own Cancel · Message team · Next). Before the form
+ // is ready, one state at a time: loading, or what went wrong with one way forward (UX-E-46).
+ if(mode==='employee'&&!updateId)return <div ref={pageRef} className="q-page wb-compose q-compose q-compose-e" data-nv-page="" data-q-sheet="">
+  {context?<><h1 className="q-sr">Message today’s team</h1><ComposeForm key={authority+':new'} context={context} mode={mode} authority={authority} retained={retained} retain={(values,revisionId)=>{retained.current={values,revisionId};}} action={action}/></>
+   :<><QuietNav left={<Link className="q-nav__l q-nav__l--teal" href="/app/updates">Cancel</Link>} title="Message team"/>
+    <div className="q-hd"><h1>{offline?'You’re offline':signedOut?'Your session ended':resource.state.paused?'Paused while you were away':resource.state.refreshing?'Message today’s team':'Couldn’t load the form'}</h1>
+     <p role="status">{offline?'Connect to the internet, then try again.':signedOut?'Sign in again to keep writing.':resource.state.paused?'Come back to this page to keep writing.':resource.state.refreshing?'Getting today’s team…':'Check your connection, then try again.'}</p></div>
+    {signedOut?<Link className="q-btn q-btn--sec" href="/login">Sign in again</Link>:!resource.state.refreshing&&!resource.state.paused?<button type="button" className="q-btn q-btn--sec" onClick={resource.refresh}>Try again</button>:null}</>}
  </div>;
  // Quiet (v4, approved Oct 23): a sheet: Cancel, the title, and Next (review the audience) at the top right.
  return <div ref={pageRef} className="q-page wb-compose q-compose" data-nv-page="" data-q-sheet="">

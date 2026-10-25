@@ -55,7 +55,9 @@ export default async function RequestsPage({
   const mine = await listEmployeeTimeOffRequests(session.id);
   // v5 (mockups E07, E08): Time off is the list; ?tab=new (or a failed send) opens the request sheet over it.
   const sheetOpen = params.tab === "new" || !!params.error;
-  const view = params.filter === "decided" ? "decided" : "waiting";
+  // F6: a link to one request (a notification) opens the list that holds it, so a decided request lands on Decided.
+  const linked = params.requestId ? mine.find(request => request.id === params.requestId) : undefined;
+  const view = params.filter === "decided" || (linked && linked.status !== "PENDING") ? "decided" : "waiting";
 
   const zone = await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
   const sentOn = (at: string) => { try { return new Intl.DateTimeFormat("en-US", { timeZone: zone, month: "short", day: "numeric" }).format(new Date(at)); } catch { return ""; } };
@@ -101,7 +103,7 @@ export default async function RequestsPage({
         </section> : null}
       </SheetRow>))}</ul>
       : <p className="q-empty q-empty--lead">{view === "decided" ? "No decided requests yet." : mine.length ? "Nothing waiting." : "No time-off requests yet."}</p>}
-    <Link className="q-btn" href="/app/requests?tab=new" scroll={false}>Request time off</Link>
+    <Link className="q-btn" href="/app/requests?tab=new" scroll={false} data-timeoff-new="">Request time off</Link>
     <TimeOffSheet open={sheetOpen} closeHref={view === "decided" ? "/app/requests?filter=decided" : "/app/requests"} requestId={randomUUID()} draftOwner={session.id} notice={notice} />
   </QuietPage>;
 }

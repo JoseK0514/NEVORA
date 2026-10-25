@@ -55,7 +55,7 @@ export function ReviewedSwapForm({ source, sourceFields, targets }: {
 
   return <ShiftChangeForm fields={{ kind: 'PROPOSE_SWAP', ...sourceFields }} className="shift-change-form q-scform" resolvedHref="/app/exchange?tab=requests">
     <div ref={body}>
-      <div className="q-nav"><SheetCancel href="/app/exchange?tab=requests" /><h1 className="q-nav__t">Swap shift</h1><PendingButton pending="Sending…" disabled={!target} className="q-nav__r q-nav__r--b" label={target ? `Send swap request to ${target.shift.employeeName}` : 'Send swap request, choose a shift first'}>Send</PendingButton></div>
+      <div className="q-nav"><SheetCancel href="/app/schedule" /><h1 className="q-nav__t">Swap shift</h1><PendingButton pending="Sending…" disabled={!target} className="q-nav__r q-nav__r--b" label={target ? `Send swap request to ${target.shift.employeeName}` : 'Send swap request, choose a shift first'}>Send</PendingButton></div>
       <div className="q-grp q-grp--m"><h2>Your shift</h2></div>
       <QuietList><SwapShiftRow shift={source} /></QuietList>
       <fieldset className="q-fieldset" aria-describedby={`${id}-hint`}>

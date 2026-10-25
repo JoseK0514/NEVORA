@@ -25,3 +25,11 @@ it('groups dates in chronological order while preserving every notification',()=
  expect(groups).toHaveLength(2);
  expect(groups.flatMap(group=>group.items.map(item=>item.id))).toEqual(['unknown','read-required','unread-complete']);
 });
+
+it('UX-E-40: a schedule notice names its week and keeps the schedule icon', async () => {
+  const { scheduleNoticeLabel, notificationPresentation } = await import('./notification-inbox-view');
+  expect(scheduleNoticeLabel('2026-10-26')).toBe('Schedule for Oct 26 – Nov 1');
+  expect(scheduleNoticeLabel('2026-10-19')).toBe('Schedule for Oct 19 – 25');
+  expect(scheduleNoticeLabel('week')).toBe('Schedule update');
+  expect(notificationPresentation('Schedule for Oct 19 – 25').icon).toBe('schedule');
+});

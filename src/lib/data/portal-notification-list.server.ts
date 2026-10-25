@@ -8,6 +8,7 @@ import {parseEmployeeView} from '../employee-view';
 import {sqlNotificationStateRepository} from './notification-state';
 import {neonNotificationExecutor} from './notification-transactions';
 import {safeNotificationOpenPath,safeReturnTo} from '../notifications/destinations';
+import {scheduleNoticeLabel} from '../notification-inbox-view';
 import type {EmployeeViewSnapshot,EmployeeNotificationItem} from '../employee-view';
 import type {SqlExecutor,SqlStatement,SourceKind} from '../notifications/types';
 import type {SessionMutationProof} from '../shift-changes/types';
@@ -68,6 +69,8 @@ export async function readPortalNotificationList(proof:SessionMutationProof,envi
   async function project(db:SqlExecutor,candidates:Record<string,unknown>[],now:Date){
    const repository=sqlNotificationStateRepository(db,workspace),items:EmployeeNotificationItem[]=[];
    let expires=Infinity,requiresCompany=false;
+   // UX-E-40: one row per schedule week (the newest notice); a schedule row names its week.
+   const weeks=new Set<string>();
    for(const row of candidates.slice(0,LIMIT)){
     signal.throwIfAborted();if(typeof row.id!=='string'||typeof row.at!=='string')throw Error('Invalid notification candidate');
     const intent=await repository.findIntent(row.id);
@@ -78,7 +81,8 @@ export async function readPortalNotificationList(proof:SessionMutationProof,envi
     if(!check.deliverable||check.effectiveVersion!==intent.effectiveVersion||!href||!safeReturnTo(check.destination)||!(Date.parse(check.expiresAt)>now.getTime()))continue;
     expires=Math.min(expires,Date.parse(check.expiresAt));
     if(!['PAYROLL_PREPARATION','PAYROLL_STATEMENT','SELF_TEST'].includes(intent.source.kind))requiresCompany=true;
-    items.push({id:row.id,label:labels[intent.source.kind],at:new Date(row.at).toISOString(),href,reviewState:row.read?'read':'unread',actionState:'available'});
+    if(intent.source.kind==='SCHEDULE'){if(weeks.has(intent.source.id))continue;weeks.add(intent.source.id);}
+    items.push({id:row.id,label:intent.source.kind==='SCHEDULE'?scheduleNoticeLabel(intent.source.id):labels[intent.source.kind],at:new Date(row.at).toISOString(),href,reviewState:row.read?'read':'unread',actionState:'available'});
    }
    const access=requiresCompany?await repository.recipientAccess(proof.employee.id,'operational'):null;
    if(requiresCompany&&(!access?.operationalCompany||!access.operationalAuthority))throw Error('notification_operational_authorization');
@@ -117,8 +121,10 @@ export async function readPortalNotificationList(proof:SessionMutationProof,envi
 /** Read only the exact canonical manifest, then fence the normalized source
  * observation before/after the actual UPDATE. The only normalized intent field
  * is read_at, the timestamp this command itself changes. */
+/** F5 (Oct 25, 2026): Employees and Leads mark their own notification read when they open it, through the same fenced
+ * UPDATE (own row, deliverable source, current session and authority); the name stays for its callers. */
 export async function markManagementNotificationRead(proof:SessionMutationProof,id:string,environment:unknown,executor:SqlExecutor=neonNotificationExecutor()):Promise<boolean>{
- if(!['OWNER','MANAGER'].includes(proof.employee.role)||!/^[a-f0-9]{64}$/.test(proof.sessionTokenHash)||!id||id.length>100||(environment!=='test'&&environment!=='production'))return false;
+ if(!['OWNER','MANAGER','EMPLOYEE','LEAD'].includes(proof.employee.role)||!/^[a-f0-9]{64}$/.test(proof.sessionTokenHash)||!id||id.length>100||(environment!=='test'&&environment!=='production'))return false;
  const signal=AbortSignal.timeout(8000),bounded=boundedExecutor(executor,signal),workspace=await getWorkspace(bounded),guards=employeeViewGuards(proof,workspace,false);
  try{
   await bounded.transaction(guards);

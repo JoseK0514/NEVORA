@@ -67,7 +67,7 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
    await writeFile(join(evidenceDirectory,`calendar-login-${engine}-${width}-report.json`),JSON.stringify({engine,width,route:['/login','/app'].includes(url.pathname)?url.pathname:'other',reason:['busy','invalid','deleting'].includes(reason)?reason:null,failure:safeBrowserFailure(error,{suite:'calendar',engine,width,status:'failed'})},null,2));
    await page.screenshot({path:join(evidenceDirectory,`calendar-login-${engine}-${width}-failure.png`),fullPage:true});throw error;
   }
-  await page.goto(app.url+'/app/schedule');await currentPageReady();const calendarEntry=page.getByRole('link',{name:/^Add shifts to your calendar\b/});assert.equal(await calendarEntry.getAttribute('href'),'/app/profile#employee-calendar-title');await calendarEntry.click();await state('No calendar link');await currentPageReady();
+  await page.goto(app.url+'/app/schedule');await currentPageReady();const calendarEntry=page.getByRole('link',{name:/^Add shifts to your calendar\b/});assert.equal(await calendarEntry.getAttribute('href'),'/app/more#employee-calendar-title');await calendarEntry.click();await state('No calendar link');await currentPageReady();
  });
  await step('Deliberate create produces one transient URL and own private GET/HEAD feed',async()=>{
   await panel.getByRole('button',{name:'Create link',exact:true}).click();await panel.getByText('Link created.',{exact:true}).waitFor();firstUrl=await panel.getByLabel('Your private calendar link',{exact:true}).inputValue();assert.equal(new URL(firstUrl).origin,app.url);

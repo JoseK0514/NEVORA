@@ -37,6 +37,9 @@ function labelText(field: Field) {
 
 function message(field: Field) {
   const v = field.validity, label = labelText(field);
+  // UX-E-20: a field can say what is wrong in its own words ("Choose your first day off").
+  if (v.valueMissing && field.dataset.errorMissing) return field.dataset.errorMissing;
+  if (v.rangeUnderflow && field.dataset.errorMin) return field.dataset.errorMin;
   if (v.valueMissing) {
     if (field instanceof HTMLSelectElement) return label ? `Choose ${label}` : "Choose an option";
     if (field instanceof HTMLInputElement && (field.type === "checkbox" || field.type === "radio")) return "Select this to continue";

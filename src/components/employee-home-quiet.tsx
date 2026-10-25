@@ -14,7 +14,8 @@ import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {QuietBar, QuietBarIcon, QuietList, QuietPage, QuietRow, QuietSection} from './quiet/quiet';
 import {HOME_SOURCES} from '../lib/employee-home/project';
 import type {AttentionItem, EmployeeHomeRead, HomeSnapshot, HomeSource, PublishedAssignment} from '../lib/employee-home/types';
-import {unpublishedNote} from '../lib/publication-note';
+import type {MissedShift} from '../lib/employee-home/missed-shifts';
+import './quiet/u3.css';
 import {keepWhole} from '../lib/keep-whole';
 
 /* Employee and Lead Home in the v5 "One look" (Jose approved round 2 "exactly like this" on Oct 24, 2026; the target is
@@ -24,7 +25,9 @@ import {keepWhole} from '../lib/keep-whole';
  * Schedule page uses and shows only while Home's own data is released. */
 
 /** This week's own published shifts, read on the server for the glance. */
-export type HomeWeek = {weekStart: string; today: string; dates: readonly string[]; shifts: readonly {date: string; startTime: string; endTime: string}[]};
+export type HomeWeek = {weekStart: string; today: string; dates: readonly string[]; shifts: readonly {date: string; startTime: string; endTime: string}[];
+  /** UX-E-01: ended shifts today or yesterday with nothing recorded; each opens a filled-in correction on My time. */
+  missed?: readonly MissedShift[]};
 
 export type EmployeeHomeQuietViewProps = {
   home: EmployeeHomeRead | null;
@@ -143,6 +146,14 @@ function TodoRow({row, zone}: {row: ReturnType<typeof todoRows>[number]; zone: s
   return <QuietRow href={item.href} variant="tint" avatar={<TodoIcon item={item}/>} title={keepWhole(todoTitle(item))} detail={<>{detail}{item.required ? <><span className="nv-sr">, </span><small className="nv-sr">Review needed</small></> : null}</>}/>;
 }
 
+/** UX-E-01: "No clock-in for today's shift", with its hours and location; opens the correction on My time. */
+function MissedRow({shift}: {shift: MissedShift}) {
+  const when = shift.day === 'today' ? 'today’s' : 'yesterday’s';
+  return <QuietRow href={shift.href} variant="tint" avatar={<ClockIcon className="q-ic" aria-hidden="true"/>} title={keepWhole(`No clock-in for ${when} shift`)}
+    detail={keepWhole([shift.hours, shift.locationName, 'Fix it'].filter(Boolean).join(' · '))}
+    label={keepWhole(`No clock-in for ${when} shift, ${shift.hours}${shift.locationName ? `, ${shift.locationName}` : ''}. Request a correction`)}/>;
+}
+
 /** Complete, or only waiting on a location to publish (a known state, said under the card). */
 const isComplete = (source: HomeSnapshot['sources'][keyof HomeSnapshot['sources']]) =>
   source.state === 'complete' || (source.state === 'partial' && source.reason === 'unpublished');
@@ -209,7 +220,18 @@ export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTim
   const viewState = paused ? 'paused' : denied ? 'unauthorized' : snapshot ? (partial ? 'partial' : 'ready') : loading ? 'loading' : 'unavailable';
   // The name is private like the rest of Home: it shows only with released data and clears when Home pauses.
   const name = snapshot ? displayName?.trim() : undefined;
-  const todos = snapshot ? todoRows(snapshot.attention.filter(item => item.actionable || item.required)) : [];
+  // UX-E-02: don't ask to confirm a week that is over, or this week once its last shift has started. Display only; the
+  // Schedule page still confirms any week, and a review a manager required always stays.
+  const today = snapshot ? businessDate(snapshot.observedAt, snapshot.timeZone) : '';
+  const weekOver = (item: AttentionItem) => {
+    if (!confirmsWeek(item) || !/^\d{4}-\d{2}-\d{2}$/.test(item.ref.id)) return false;
+    const last = new Date(Date.parse(`${item.ref.id}T12:00:00Z`) + 6 * 86_400_000).toISOString().slice(0, 10);
+    if (last < today) return true;
+    if (!week || week.weekStart !== item.ref.id || !week.shifts.length) return false;
+    const lastShift = [...week.shifts].sort((a, b) => `${a.date}${a.startTime}`.localeCompare(`${b.date}${b.startTime}`)).at(-1)!;
+    return lastShift.date < today || (lastShift.date === today && snapshot!.currentShift == null && snapshot!.nextShift?.date !== today);
+  };
+  const todos = snapshot ? todoRows(snapshot.attention.filter(item => (item.actionable || item.required) && !(weekOver(item) && !item.required))) : [];
   const visible = showAll ? todos : todos.slice(0, 3);
   const allSet = !!snapshot && !partial && released!.allSet;
   // The card's two lines while Home isn't released: what state Home is in, then what happens to the shift.
@@ -221,30 +243,39 @@ export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTim
     // Before Home is read, the workspace's public date, so the line is there from the first frame.
     : <time suppressHydrationWarning>{keepWhole(fmt(timeZone ?? 'UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(new Date()))}</time>;
   const underWay = snapshot && snapshot.publicationState !== 'unavailable' ? snapshot.currentShift : null;
+  // UX-E-04: a failed read keeps the greeting (the time of day only; the name is private Home data) and says so once,
+  // in a plain row with Try again, never inside the shift card.
+  const failed = !snapshot && !loading && !paused && !denied;
+  const publicGreeting = (() => { try { return greeting(new Date().toISOString(), timeZone ?? 'UTC'); } catch { return 'Home'; } })();
+  const missed = snapshot && week ? week.missed ?? [] : [];
   const weekShown = snapshot && week && week.dates.length === 7 ? week : null;
 
   return <QuietPage>
     <div className="q-home" data-home-state={viewState} aria-busy={refreshing || loading}>
       <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon className="q-ic" aria-hidden="true"/></QuietBarIcon></QuietBar>
-      <div className="q-hello"><small>{date}</small><h1>{name && snapshot ? `${greeting(snapshot.observedAt, snapshot.timeZone)}, ${name}` : 'Home'}</h1></div>
+      <div className="q-hello"><small>{date}</small><h1>{name && snapshot ? `${greeting(snapshot.observedAt, snapshot.timeZone)}, ${name}` : failed ? <span suppressHydrationWarning>{publicGreeting}</span> : 'Home'}</h1></div>
       {snapshot ? <section aria-labelledby="employee-reviewed-next-heading">
         <h2 id="employee-reviewed-next-heading" className="nv-sr">Your shift</h2>
         <NextCard snapshot={snapshot}/>
-        {snapshot.publicationState === 'partial' ? <p className="q-next__note" role="status">{unpublishedNote(snapshot.unpublishedLocations ?? [])}</p> : null}
+        {/* UX-E-03 / P2-14: a location that hasn't published is said once, on Schedule, not here. */}
         {/* While a shift is under way, the clock status sits under the card. */}
         {underWay ? <aside className="q-home__clock" aria-label="Own recorded time">{ownTimeSlot}</aside> : null}
-      </section> : <div className="q-next q-next--wait" role="status">
+      </section> : failed ? <div className="q-home__failed" role="status">
+        <QuietList><QuietRow avatar={<WarningCircleIcon className="q-ic" aria-hidden="true"/>} title="Couldn’t load Home" detail="Check your connection, then try again."/></QuietList>
+      </div> : <div className="q-next q-next--wait" role="status">
         <div className="q-next__top"><span>{summary}</span><span/></div>
         <b className="q-next__time" aria-hidden="true">&nbsp;</b>
         <span className="q-next__day q-next__recovery">{recovery}</span>
       </div>}
       {!snapshot && !loading && !paused ? <div className="q-home__retry">
         {denied ? <Link className="q-btn" href="/login">Sign in</Link>
-          : <button className="q-btn" type="button" data-home-refresh onClick={onRetry} disabled={refreshing} aria-busy={refreshing || undefined}>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span></button>}
+          : <button className="q-btn q-btn--sec" type="button" data-home-refresh onClick={onRetry} disabled={refreshing} aria-busy={refreshing || undefined}>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span></button>}
       </div> : null}
       {snapshot ? <div data-home-group="actions"><QuietSection id="employee-home-todo" title="Needs you" aside={partial ? `${todos.length} known ${todos.length === 1 ? 'item' : 'items'}` : undefined}>
         <QuietList>
+          {missed.map(shift => <MissedRow key={`missed:${shift.id}`} shift={shift}/>)}
           {todos.length ? visible.map(row => <TodoRow key={row.key} row={row} zone={snapshot.timeZone}/>)
+            : missed.length ? null
             : <QuietRow variant="tint" avatar={<CheckIcon className="q-ic" aria-hidden="true"/>} title={<span role="status">{allSet ? 'You’re all set' : 'Nothing to do right now'}</span>} detail={partial ? 'In the sections that could be checked.' : 'Nothing needs your review.'}/>}
           {todos.length > 3 ? <li><button className="q-btn q-btn--quiet" type="button" aria-expanded={showAll} onClick={() => setShowAll(value => !value)}>{showAll ? 'Show fewer' : `Show all ${todos.length}`}</button></li> : null}
           {partial ? <SourceRows snapshot={snapshot}/> : null}

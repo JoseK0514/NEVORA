@@ -38,7 +38,7 @@ beforeEach(()=>{f.dashboard=null;f.statuses=[];f.positions=[];f.shifts=[];f.empl
 async function html(){return renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05'})}));}
 it('loads actual history and renders own changes behind authenticated access',async()=>{
  f.after.push({...f.after[0],sourceShiftId:'private',employeeId:'coworker',startTime:'15:00'});
- expect(await html()).toContain('What changed in your schedule');expect(await html()).not.toContain('3:00 PM');expect(f.reads.mock.calls.flat()).toContain('coherent');
+ expect(await html()).toContain('What changed');expect(await html()).toMatch(/\d (new shifts?|changes?|shifts? removed)/);expect(await html()).not.toContain('3:00 PM');expect(f.reads.mock.calls.flat()).toContain('coherent');
 });
 it('filters revoked location history on both sides and hides unchanged shifts',async()=>{
  f.after=[...f.before];expect(await html()).not.toContain('What changed');

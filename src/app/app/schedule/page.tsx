@@ -38,6 +38,8 @@ import {EmployeeWeeklyConfirmation} from "@/components/employee-weekly-confirmat
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
 import {emptyScheduleLabel} from '@/lib/data/employee-schedule';
 import { readShiftChangeAvailability } from "@/lib/data/shift-changes";
+import { listEmployeeCallouts } from "@/lib/data/callouts";
+import { listEmployeeTimeOffRequests } from "@/lib/data/requests";
 import { refusalLines } from "@/lib/shift-changes/eligibility-reasons";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
@@ -96,6 +98,7 @@ export default async function SchedulePage({
     intent?: string;
     shift?: string;
     copyOperation?: string;
+    offered?: string;
   }>;
 }) {
   const session = await requireSession();
@@ -163,10 +166,24 @@ export default async function SchedulePage({
     const toOpenShift = (row: ExchangeRecord, href: string) => ({ id: row.id, date: row.sourceShift.date, startTime: row.sourceShift.startTime, endTime: row.sourceShift.endTime, location: row.sourceShift.locationName, position: row.sourceShift.positionName ?? null, href });
     const {modules} = await currentPresentation();
     // Shift swaps turned off (B2): no open shifts to read or show.
-    const [openCoverage, ownActivity] = modules.marketplace ? await Promise.all([
-      listOpenCoverage(session.id, today).catch(() => null),
-      listEmployeeExchangeActivity(session.id).catch(() => null),
-    ]) : [null, null];
+    // F9: approved time off on the person's own week; UX-E-13: their own pending swaps, cover offers and Unable to work
+    // reports, shown on the shift. Read only; a failed read shows nothing extra.
+    const [openCoverage, ownActivity, ownCallouts, ownTimeOff] = await Promise.all([
+      modules.marketplace ? listOpenCoverage(session.id, today).catch(() => null) : null,
+      modules.marketplace ? listEmployeeExchangeActivity(session.id).catch(() => null) : null,
+      modules.marketplace ? listEmployeeCallouts(session.id).catch(() => null) : null,
+      modules.timeOff ? listEmployeeTimeOffRequests(session.id).catch(() => null) : null,
+    ]);
+    const weekEnd = addDays(weekStart, 6);
+    const timeOff = (ownTimeOff ?? []).filter(request => request.status === 'APPROVED' && request.startDate <= weekEnd && request.endDate >= weekStart)
+      .map(request => ({ startDate: request.startDate, endDate: request.endDate, startTime: request.startTime ?? null, endTime: request.endTime ?? null }));
+    const pendingChanges: Record<string, string> = {};
+    for (const row of ownActivity ?? []) if (row.requestedByEmployeeId === session.id && ['OPEN', 'EMPLOYEE_PENDING', 'MANAGER_PENDING'].includes(row.status)) pendingChanges[row.sourceShift.id] = row.kind === 'COVERAGE' ? 'Offered' : 'Swap sent';
+    for (const row of ownCallouts ?? []) if (row.employeeId === session.id && row.status === 'PENDING') pendingChanges[row.shiftId] = 'Can’t work · waiting';
+    // "Coming up" on the week's last days also shows the start of next week (visual #41).
+    const nextWeekShifts = weekStart === currentWeek && today >= addDays(weekStart, 5) && employeeSchedule!.state !== 'unavailable'
+      ? await readEmployeeWeeklyReview(await requireSessionMutationProof(), addDays(weekStart, 7)).then(next => next.state === 'unavailable' ? [] : next.shifts).catch(() => [])
+      : [];
     // B3: each open shift is checked with the same claim rules the marketplace enforces.
     // Ones that can't be claimed are listed apart with plain reasons. A failed check keeps
     // the shift listed as before; the marketplace re-checks it and the claim is checked on submit.
@@ -211,6 +228,10 @@ export default async function SchedulePage({
       error={params.error ? params.error === 'conflict' ? 'The schedule changed. Review the current week before confirming.' : params.error === 'blocked' ? 'This review is no longer authorized. Sign in and review the schedule again.' : 'The result could not be confirmed. Retry the original confirmation to check its outcome.' : false}
       receipt={!!params.acknowledged && employeeAcknowledgement.acknowledged}
       changes={<SchedulePublicationChange changes={publicationChanges} locationNames={Object.fromEntries(locations.map(location => [location.id, location.shortName]))} />}
+      timeOff={timeOff}
+      pendingChanges={pendingChanges}
+      nextWeekShifts={nextWeekShifts}
+      shiftChanged={params.offered === '1' ? 'offered' : undefined}
     />;
   }
   // Status chips and hour targets are optional context: a failed read hides them, never shows zero.

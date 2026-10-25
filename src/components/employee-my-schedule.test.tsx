@@ -12,10 +12,13 @@ it('a published empty day is distinguished from an unpublished date',()=>{
  const published=html({selectedDay:'2026-10-13'});
  expect(published).toContain('No shift this day.');expect(published).toContain('Day off');
  const partial=html({state:'unpublished',selectedDay:'2026-10-13'});
- expect(partial).toContain('Your North Office shifts are published. Another location you work at hasn’t published this week yet.');
+ // UX-E-03 / F17 (Oct 25): one footer line names who isn't out yet; a partly published day is never a day off.
+ expect(partial).toContain('Another location’s schedule isn’t out yet.');
  expect(partial).not.toContain('Your full week is not published yet');
- expect(partial).toContain('Schedule not published yet');
+ expect(partial).toContain('No shift this day yet.');
  expect(partial).not.toContain('Day off');
+ const nothing=html({state:'unpublished',shifts:[],unpublishedLocationIds:['north'],selectedDay:'2026-10-13'});
+ expect(nothing).toContain('Schedule not published yet');expect(nothing).not.toContain('Day off');
 });
 it('unavailable reads hide private shifts, actions, confirmation and change history even when stale props remain',()=>{
  const output=html({state:'unavailable',acknowledged:true,receipt:true,confirmation:createElement('button',null,'Confirm schedule'),changes:createElement('p',null,'Private change')});
@@ -50,7 +53,8 @@ it('selected day, today, current-week return and calendar destination retain nat
  // On the current week the arrows are enough; another week offers Today back to the current one.
  expect(output).not.toContain('>Today</a>');
  expect(html({weekStart:'2026-10-19'})).toContain('href="/app/schedule?week=2026-10-12&amp;day=2026-10-12">Today</a>');
- expect(output).toContain('/app/profile#employee-calendar-title');
+ // P1-10 / UX-E-10: the calendar feed lives in More, behind its own icon.
+ expect(output).toContain('/app/more#employee-calendar-title');
 });
 
 const open={id:'open-1',date:'2026-10-14',startTime:'09:00',endTime:'17:00',location:'North Office',position:'Barista',href:'/app/exchange?tab=available#request-open-1'};
@@ -105,9 +109,13 @@ it('says plainly what the review asks: confirm you have seen your own schedule (
 it('names the location that has not published, beside the week (Jose, 2026-10-18)', () => {
   const markup = html({state: 'unpublished', locations: [{id: 'north', shortName: 'North Office'}, {id: 'harbor', shortName: 'Harbor'}], unpublishedLocationIds: ['harbor']});
   expect(markup).toContain('data-week-note=""');
-  expect(markup).toContain('Your North Office shifts are published. Harbor hasn’t published this week yet.');
+  // UX-E-03 (Oct 25): said once, in plain words.
+  expect(markup).toContain('Harbor’s schedule isn’t out yet.');
+  expect(markup.match(/isn’t out yet/g)).toHaveLength(1);
   const none = html({state: 'unpublished', shifts: [], locations: [{id: 'harbor', shortName: 'Harbor'}], unpublishedLocationIds: ['harbor']});
-  expect(none).toContain('Harbor hasn’t published this week yet. Shifts shown are published. An empty day isn’t a day off yet.');
+  expect(none).toContain('Harbor’s schedule isn’t out yet.');
+  expect(none).toContain('Not published yet');
+  expect(none).not.toContain('Day off');
 });
 
 it('v5: the chosen day, then what is coming up later this week; earlier days stay one tap away on the strip', () => {
@@ -118,4 +126,35 @@ it('v5: the chosen day, then what is coming up later this week; earlier days sta
   expect(markup).not.toContain('shift=past');
   expect(markup).toContain('href="/app/schedule?week=2026-10-12&amp;day=2026-10-12"');
   expect(markup.match(/class="q-wk"/g)).toHaveLength(1);
+});
+
+it('F17: a week every location published, with no shifts for the person, says so plainly', () => {
+  const markup = html({shifts: [], selectedDay: '2026-10-13'});
+  expect(markup).toContain('No shifts for you this week');
+  expect(markup).toContain('Day off');
+  expect(markup).not.toContain('not published');
+});
+
+it('F9: approved time off shows on the person’s own day and in the week strip', () => {
+  const markup = html({shifts: [], selectedDay: '2026-10-14', timeOff: [{startDate: '2026-10-14', endDate: '2026-10-15', startTime: null, endTime: null}]}).replace(/[\u00a0\u202f]/g, ' ');
+  expect(markup).toContain('<b>Time off</b>');
+  expect(markup).toContain('All day');
+  expect(markup).toContain('Approved');
+  expect(markup).toContain('Wednesday, October 14, time off');
+  const part = html({selectedDay: '2026-10-12', timeOff: [{startDate: '2026-10-12', endDate: '2026-10-12', startTime: '09:00', endTime: '13:00'}]}).replace(/[\u00a0\u202f]/g, ' ');
+  expect(part).toContain('9:00 AM – 1:00 PM');
+});
+
+it('UX-E-13: a shift with a pending change shows its chip; swap and cover wait while it is pending', () => {
+  const markup = html({pendingChanges: {'self-shift': 'Offered'}, today: '2026-10-12', observedAt: '2026-10-12T11:00:00Z'});
+  expect(markup).toContain('<span class="q-chip">Offered</span>');
+  expect(markup).not.toContain('Offer it for cover');
+  expect(markup).not.toContain('Swap with a teammate');
+});
+
+it('P2-16: Open shifts has no week arrows and no repeated heading', () => {
+  const markup = html({view: 'open', openShifts: {available: [], requested: []}});
+  expect(markup).not.toContain('aria-label="Previous week"');
+  expect(markup).not.toContain('<h2 id="my-open-title">Open shifts</h2>');
+  expect(markup).toContain('No open shifts right now.');
 });

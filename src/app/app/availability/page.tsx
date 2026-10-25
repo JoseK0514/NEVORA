@@ -118,6 +118,8 @@ export default async function AvailabilityPage({
   ]);
 
   let initialAvailability = buildState(normalAvailability);
+  // UX-E-22: nothing saved for the usual week (or nothing sent for this week) reads "Not set", never "Unavailable".
+  let unset = normalAvailability.length === 0;
   let settings = null;
   let submissionStatus: AvailabilitySubmissionStatus | null = null;
 
@@ -131,6 +133,7 @@ export default async function AvailabilityPage({
     submissionStatus = status;
 
     initialAvailability = buildState(weekly);
+    unset = !status.submitted && weekly.length === 0;
   }
 
   // Server-rendered deadline status intentionally reflects the current request time.
@@ -180,6 +183,7 @@ export default async function AvailabilityPage({
         status={status}
         header={{ title: "Availability", sub: selectedWeek ? keepWhole(formatWeekRange(selectedWeek)) : "Your usual week" }}
         notices={notices}
+        unset={unset}
         after={selectedWeek
           ? (locked ? "The deadline passed. Your submitted hours are kept." : deadline ? `Send it by ${inZone(deadline, { weekday: "long", month: "short", day: "numeric" })}. Your usual week stays the same.` : "Hours for this week only. Your usual week stays the same.")
           : upcomingDue ?? "Your saved usual week."}

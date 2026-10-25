@@ -1,6 +1,7 @@
 'use client';
 
 import {useActionState,useEffect} from 'react';
+import './quiet/u3.css';
 import Link from 'next/link';
 import {useRouter,unstable_rethrow} from 'next/navigation';
 import {EmployeeSubmitButton} from './employee-submit-button';
@@ -21,16 +22,17 @@ export function TimeOffWithdrawal({requestId,dateLabel}:{requestId:string;dateLa
   <input type="hidden" name="requestId" value={requestId}/>
   <input type="hidden" name="operationId" value={withdrawalIdentity(requestId)}/>
   {!complete?<>
-   <label><input type="checkbox" name="confirmed" value="yes" required disabled={pending}/> Yes, withdraw this request</label>
-   <EmployeeSubmitButton className="button secondary" pendingText="Withdrawing…">{state.outcome==='unavailable'?'Try again':'Withdraw request'}</EmployeeSubmitButton>
+   {/* Visual #32: the confirmation is a Quiet switch row, not a bare checkbox. */}
+   <ul className="q-list"><li><label className="q-row q-row--one"><span className="q-rt"><b>Yes, withdraw this request</b></span><input type="checkbox" role="switch" className="q-tog" name="confirmed" value="yes" required disabled={pending}/></label></li></ul>
+   <EmployeeSubmitButton className="q-btn q-btn--sec q-btn--danger" pendingText="Withdrawing…">{state.outcome==='unavailable'?'Try again':'Withdraw request'}</EmployeeSubmitButton>
   </>:null}
-  <p role="status" aria-live="polite">
+  <p className="q-help" role="status" aria-live="polite">
    {pending?'Withdrawing…':
     state.outcome==='withdrawn'?'Your request was withdrawn. Your list is updating.':
     state.outcome==='conflict'?'This request can no longer be withdrawn. Your list is updating.':
     state.outcome==='unavailable'?'We couldn’t confirm the withdrawal. Try again; it won’t withdraw twice. If this keeps happening, sign in again.':
     state.outcome==='denied'?'Your session ended. Sign in again to see your requests.':
-    state.outcome==='invalid'?'Check the box to confirm, then withdraw.':null}
+    state.outcome==='invalid'?'Turn on “Yes, withdraw this request”, then withdraw.':null}
    {!pending&&(state.outcome==='denied'||state.outcome==='unavailable')?<> <Link href="/login">Sign in</Link></>:null}
   </p>
  </form>;

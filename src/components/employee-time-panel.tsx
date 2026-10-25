@@ -8,6 +8,7 @@ import {useCallback,useEffect,useRef,useState} from 'react';
 import {createEmployeeTimeController,fetchEmployeeTime,type EmployeeTimePanelState} from '../lib/employee-time-client';
 import {formatRecordedDuration,type EmployeeTimeEntry} from '../lib/employee-time';
 import {EmployeeCorrectionCenter,EmployeeCorrectionRecoveryContext,EmployeeEntryCorrection} from './employee-time-corrections';
+import {EmployeeCorrectionsQuiet,EntryCorrectionRow} from './employee-corrections-quiet';
 import type {CorrectionRequestCommand} from '@/lib/time-corrections/validation';
 import {employeeButtonClass} from './employee-corporate-ui';
 import {timeZoneLabel} from '../lib/time-zone-label';
@@ -123,7 +124,8 @@ function EntrySheetRow({entry,zone}:{entry:EmployeeTimeEntry;zone:string}){
    <li><div className="q-row q-row--one"><span className="q-rt"><b>Clock out</b></span><span className="q-rv q-rv--l">{entry.clockOutAt?<time dateTime={entry.clockOutAt}>{stamp(entry.clockOutAt,zone)}</time>:'Not recorded yet'}</span></div></li>
   </ul>
   <p className="q-help">{keepWhole(`Entry elapsed time: ${formatRecordedDuration(entry.elapsedSeconds)} · Breaks: ${formatRecordedDuration(entry.breakSeconds)}`)}</p>
-  <div className="q-entryfix"><EmployeeEntryCorrection entry={entry} zone={zone}/></div>
+  {/* T-19: the entry's correction opens the one correction sheet, filled in for this entry. */}
+  <EntryCorrectionRow timeEntryId={entry.id} closed={!!entry.clockOutAt}/>
  </SheetRow>;
 }
 export function EmployeeTimeSignatureView({state,onRefresh,context}:{state:EmployeeTimePanelState;onRefresh:()=>void;context:MyTimeContext}){
@@ -147,13 +149,13 @@ export function EmployeeTimeSignatureView({state,onRefresh,context}:{state:Emplo
     </ul>
     <div className="q-grp"><h2 id="employee-time-today-title">Today</h2></div>
     {ready.today.entries.length?<ul className="q-list" aria-labelledby="employee-time-today-title">{ready.today.entries.map(e=><EntrySheetRow key={e.id} entry={e} zone={ready.timeZone}/>)}</ul>:<p className="q-empty">No recorded punches today.</p>}
-    <p className="q-help">Today’s totals include breaks and aren’t payroll hours.</p>
+    <p className="q-help">Hours on breaks are shown separately.</p>
     {ready.recent.entries.length?<>
      <div className="q-grp"><h2 id="employee-time-recent-title">Earlier entries</h2></div>
      <ul className="q-list" aria-labelledby="employee-time-recent-title">{ready.recent.entries.map(e=><EntrySheetRow key={e.id} entry={e} zone={ready.timeZone}/>)}</ul>
      {ready.recent.entries.length<ready.recent.total?<p className="q-help">Showing {ready.recent.entries.length} of {ready.recent.total} earlier entries · most recent first.</p>:null}
     </>:null}
-    <div className="q-corrections"><EmployeeCorrectionCenter zone={ready.timeZone}/></div>
+    <EmployeeCorrectionsQuiet zone={ready.timeZone}/>
     <p className="q-help">{context.payLine?<>{context.payLine}. </>:null}Updated <time dateTime={ready.observedAt}>{new Intl.DateTimeFormat('en-US',{timeZone:ready.timeZone,hour:'numeric',minute:'2-digit'}).format(new Date(ready.observedAt))}</time> · {timeZoneLabel(ready.timeZone)}.</p>
    </>:<div role="status" style={{marginTop:24}}>
     <p className="q-empty">{paused?'Return online to check your latest records.':denied?'Sign in again to see your time.':unavailable?'Check your connection, then try again.':'Checking your actual punches and breaks.'}</p>

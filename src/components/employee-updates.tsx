@@ -11,6 +11,7 @@ import {HoldHeight} from './kit/hold-height';
 import {useTopBarSlot} from './clean/top-bar-slot';
 import {UpdateEntrance, updateKinds} from './update-visual';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
+import {MegaphoneIcon} from '@phosphor-icons/react/dist/ssr/Megaphone';
 import {useCommunicationResource, type CommunicationMode} from '../lib/communications/client';
 import type {CommunicationListRead, CommunicationRead} from '../lib/communications/types';
 import './updates-review.css';
@@ -104,27 +105,29 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
  const shortDate = (item: ReadyUpdate) => keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, month: 'short', day: 'numeric'}).format(new Date(item.publishedAt)));
  const status = (item: ReadyUpdate) => item.ownAcknowledgedAt ? 'Acknowledged' : item.acknowledgement === 'REQUIRED' ? 'Review needed' : item.ownReadAt ? 'Reviewed' : 'Not read';
  const stateText = paused ? 'Updates paused. Return online and to this page to refresh.' : signedOut ? 'Your session ended. Sign in again to see updates.' : unavailableReason ? 'Couldn’t load updates. Check your connection, then try again.' : 'Loading updates…';
- const sub = !current ? '\u00a0' : required ? `${required} to confirm` : toReview ? `${toReview} to review` : 'All caught up';
+ // UX-E-45: an empty list says so once, under the title's place in the list, not also as "All caught up".
+ const sub = !current ? '\u00a0' : !items.length ? undefined : required ? `${required} to confirm` : toReview ? `${toReview} to review` : 'All caught up';
  const kind = (item: ReadyUpdate) => updateKinds[item.type];
  return <div className="q-page q-updates-e" data-nv-page="">
-  <QuietNav back={{href: '/app/more', label: 'More'}} right={<Link className="q-nav__r q-nav__r--ink" href="/app/updates/compose" aria-label="Message today’s team"><PlusIcon className="q-ic" aria-hidden="true" /></Link>} />
+  {/* P2-18: Plus is teal (the nav's own colour), as in L02; it messages today's team. */}
+  <QuietNav back={{href: '/app/more', label: 'More'}} right={<Link className="q-nav__r" href="/app/updates/compose" aria-label="Message today’s team"><PlusIcon className="q-ic" aria-hidden="true" /></Link>} />
   <QuietHeader title="Updates" sub={sub} />
   <section aria-label="Workplace updates" aria-busy={refreshing}>
-   <div className="q-seg" role="group" aria-label="Filter updates">{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} disabled={!current} onClick={() => setFilter(option.id)}>{option.id !== 'all' && current && option.count ? `${option.label} · ${option.count}` : option.label}</button>)}</div>
+   {/* UX-E-45: no filters over an empty list. */}
+   {current && !items.length ? null : <div className="q-seg" role="group" aria-label="Filter updates">{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} disabled={!current} onClick={() => setFilter(option.id)}>{option.id !== 'all' && current && option.count ? `${option.label} · ${option.count}` : option.label}</button>)}</div>}
    {current?.state === 'partial' ? <p className="q-help" role="status">Some updates couldn’t load. Try again to check for the rest.</p> : null}
    {!current ? <div role="status" style={{marginTop: 24}}><p className="q-empty">{stateText}</p>
      {signedOut ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link> : unavailableReason ? <button type="button" className="q-btn q-btn--sec" disabled={paused || refreshing} onClick={onRefresh}>{refreshing ? 'Checking…' : 'Try again'}</button> : null}</div>
     : visible.length ? <ul className="q-list updates-list" style={{marginTop: 16}}>{visible.map(item => {
-     const {Icon, label} = kind(item);
+     const {label} = kind(item);
      return <li key={item.id}><Link className="q-row q-row--av" href={'/app/updates/' + item.id} prefetch={false} aria-label={`${item.title}, ${label}, ${status(item)}, ${longDate(item)}`}>
-      <span className={`q-av${!isReviewed(item) ? ' q-av--tint' : ''}`} aria-hidden="true"><Icon className="q-ic" /></span>
+      <span className={`q-av${!isReviewed(item) ? ' q-av--tint' : ''}`} aria-hidden="true"><MegaphoneIcon className="q-ic" /></span>
       <span className="q-rt"><b>{item.title}</b><i>{[item.authorContext, `${status(item)} ${shortDate(item)}`].filter(Boolean).join(' · ')}</i></span>
       <CaretRightIcon className="q-chev" aria-hidden="true" />
      </Link></li>;
     })}</ul>
-    : <div role="status" style={{marginTop: 24}}><p className="q-empty">{emptyTitle}. {emptyDescription}</p>{filter !== 'all' ? <button type="button" className="q-btn q-btn--quiet" onClick={() => setFilter('all')}>View all updates</button> : null}</div>}
+    : <div role="status" style={{marginTop: 24}}><p className="q-empty">{!items.length && current?.state !== 'partial' ? 'No updates yet.' : `${emptyTitle}. ${emptyDescription}`}</p>{filter !== 'all' && items.length ? <button type="button" className="q-btn q-btn--quiet" onClick={() => setFilter('all')}>View all updates</button> : null}</div>}
   </section>
-  <p className="q-help">Opening an update doesn’t confirm it.</p>
  </div>;
 }
 

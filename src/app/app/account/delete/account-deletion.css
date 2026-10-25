@@ -8,7 +8,8 @@
 :is(#q-root, html) .q-deletion__check::after { display: none; }
 :is(#q-root, html) .q-deletion__alert { margin-top: 16px; }
 :is(#q-root, html) .q-deletion__alert .q-help { margin-top: 4px; }
-:is(#q-root, html) .q-deletion .q-btn.q-deletion__confirm:not(:disabled) { background: var(--q-red); }
+/* Visual #50: armed, the confirm reads as the kit danger action (red words on the grey button), not a red slab. */
+:is(#q-root, html) .q-deletion .q-btn.q-deletion__confirm:not(:disabled) { background: var(--q-fill); color: var(--q-red) !important; }
 :is(#q-root, html) .q-deletion .q-btn.q-deletion__keep { margin-top: 12px; }
 :is(#q-root, html) .q-deletion__done { margin: 24px 20px 0; }
 :is(#q-root, html) .q-deletion__done:focus { outline: none; }
