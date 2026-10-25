@@ -79,6 +79,10 @@ The timeout values above are deployment-session bounds, not changes to productio
 
 Fresh installs: `scripts/company-setup.ts` consumes `BASE_MIGRATIONS` through `0035` from `db/migrations/order.ts`, creates the configured company, location and Owner, then applies `FINAL_MIGRATIONS` (`0031_native_payroll`, `0032_company_access_invitations`) last, all in one transaction. Its actual-Postgres regression creates an empty database, runs the real setup and reads the new Owner’s Profile. This does not replace the reviewed incremental migration procedure above. The held tenant-ownership files remain excluded.
 
+## Read-path index migration 0038 (October 25 addition)
+
+`0038_read_path_indexes.sql` is the last `BASE_MIGRATIONS` entry, after `0037_owner_briefing_reviews` (add it to step 4's base chain and to the fresh-install line when those are brought up to date). It only adds two indexes: `schedule_publication_revision_shifts(source_shift_id)` and `time_entries(clock_out_at)`. No data, constraint or behaviour changes. Both statements use `IF NOT EXISTS`, so on a large production table an operator may first build the same two indexes with `CREATE INDEX CONCURRENTLY` (outside a transaction, same names) and then run the file, which becomes a no-op. Applied only to disposable local databases; no hosted migration is authorized by this addition.
+
 ## Passkey migration 0035 (October 20 addition)
 
 `0035_passkeys.sql` is included for review and was applied only to disposable local databases with fictional accounts. **No production migration or passkey activation is authorized by this branch.** See [the server/UI handoff](PASSKEY-SERVER-HANDOFF.md) for the endpoint contract and local evidence.
