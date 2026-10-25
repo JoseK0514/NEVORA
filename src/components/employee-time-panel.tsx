@@ -137,7 +137,7 @@ export function EmployeeTimeSignatureView({state,onRefresh,context}:{state:Emplo
  const where=current&&ready?<> · {current.locationName} since <time dateTime={current.clockInAt}>{clockedInAt(current.clockInAt,ready.timeZone,ready.date)}</time></>:null;
  return <div className="q-page q-mytime" data-nv-page="">
   <div className="q-nav"><Link className="q-nav__l" href="/app/my-pay"><CaretLeftIcon className="q-ic q-ic--s" aria-hidden="true"/>Pay</Link><span/><span/></div>
-  <div className="q-hd"><h1>My time</h1><p role="status"><span data-state={ready?current?.state??'OFF_CLOCK':undefined} className="q-mytime__state">{todayLabel} · {word}</span>{where}</p></div>
+  <div className="q-hd"><h1>My time</h1><p role="status"><span data-state={ready?current?.state??'OFF_CLOCK':undefined} className="q-mytime__state">{todayLabel} · <span>{word}</span></span>{where}</p></div>
   <HoldHeight holding={!ready} memory="my-time-quiet">
    {ready?<>
     <ul className="q-list" style={{marginTop:16}}>
