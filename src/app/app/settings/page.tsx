@@ -31,7 +31,7 @@ export default async function SettingsPage() {
     listClockerDevices({ employeeId: proof.employee.id, sessionTokenHash: proof.sessionTokenHash }).then(rows => rows.filter(row => row.state === 'ACTIVE').length).catch(() => null),
   ]);
   const row = (href: string, title: string, value?: number | string | null) => pathEnabled(href, presentation.modules)
-    ? <QuietRow key={href} href={href} title={title} value={value === null || value === undefined ? undefined : String(value)} tone="l" /> : null;
+    ? <QuietRow key={href} prefetch href={href} title={title} value={value === null || value === undefined ? undefined : String(value)} tone="l" /> : null;
   return (
     <SettingsFrame back={{ href: "/app/more", label: "More" }} title="Settings">
       <QuietGroup label="Company" id="settings-company"><ul className="q-list">

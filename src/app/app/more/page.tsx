@@ -33,17 +33,17 @@ async function EmployeeMore({ firstName, lastName, role }: { firstName: string; 
     <div className="q-top-gap" aria-hidden="true" />
     <QuietHeader title="More" />
     <QuietList style={{ marginTop: 16 }}>
-      <QuietRow href="/app/profile" avatar={initialsOf(`${firstName} ${lastName}`)} title={`${firstName} ${lastName}`} detail={`${role === "LEAD" ? "Lead" : "Employee"} · Profile`} label={`Profile, ${firstName} ${lastName}`} />
+      <QuietRow prefetch href="/app/profile" avatar={initialsOf(`${firstName} ${lastName}`)} title={`${firstName} ${lastName}`} detail={`${role === "LEAD" ? "Lead" : "Employee"} · Profile`} label={`Profile, ${firstName} ${lastName}`} />
     </QuietList>
     <QuietList label="Your work" style={{ marginTop: 24 }}>
-      {has.has("/app/updates") ? <QuietRow href="/app/updates" icon={ic(MegaphoneIcon)} title="Updates" /> : null}
-      {has.has("/app/notifications") ? <QuietRow href="/app/notifications" icon={ic(BellIcon)} title="Notifications" value={<NotificationCount authority={employeeViewAuthority(proof, "notifications")} />} /> : null}
-      {has.has("/app/availability") ? <QuietRow href="/app/availability" icon={ic(ClockIcon)} title="Availability" /> : null}
-      <QuietRow href="/app/profile#employee-calendar-title" icon={ic(CalendarCheckIcon)} title="Add shifts to your calendar" />
+      {has.has("/app/updates") ? <QuietRow prefetch href="/app/updates" icon={ic(MegaphoneIcon)} title="Updates" /> : null}
+      {has.has("/app/notifications") ? <QuietRow prefetch href="/app/notifications" icon={ic(BellIcon)} title="Notifications" value={<NotificationCount authority={employeeViewAuthority(proof, "notifications")} />} /> : null}
+      {has.has("/app/availability") ? <QuietRow prefetch href="/app/availability" icon={ic(ClockIcon)} title="Availability" /> : null}
+      <QuietRow prefetch href="/app/profile#employee-calendar-title" icon={ic(CalendarCheckIcon)} title="Add shifts to your calendar" />
     </QuietList>
     <QuietList label="Help" style={{ marginTop: 24 }}>
-      <QuietRow href="/support" icon={ic(InfoIcon)} title="Support" />
-      <QuietRow href="/privacy" icon={ic(ShieldCheckIcon)} title="Privacy and terms" />
+      <QuietRow prefetch href="/support" icon={ic(InfoIcon)} title="Support" />
+      <QuietRow prefetch href="/privacy" icon={ic(ShieldCheckIcon)} title="Privacy and terms" />
     </QuietList>
   </QuietPage>;
 }
@@ -67,11 +67,11 @@ export default async function MorePage() {
     <div className="q-bar" aria-hidden="true" />
     <QuietHeader title="More" />
     {work.length ? <QuietList label="Work" style={{ marginTop: 16 }}>
-      {work.map(entry => <QuietRow key={entry.href} href={entry.href} title={entry.label} />)}
+      {work.map(entry => <QuietRow key={entry.href} prefetch href={entry.href} title={entry.label} />)}
     </QuietList> : null}
     <QuietList label="Account" style={{ marginTop: 32 }}>
-      {account.map(entry => <QuietRow key={entry.href} href={entry.href} title={entry.label} />)}
-      <QuietRow href="/support" title="Support" />
+      {account.map(entry => <QuietRow key={entry.href} prefetch href={entry.href} title={entry.label} />)}
+      <QuietRow prefetch href="/support" title="Support" />
     </QuietList>
   </QuietPage>;
 }
