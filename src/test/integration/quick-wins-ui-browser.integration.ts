@@ -128,7 +128,8 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
             await call.waitFor();
             holdRefresh = true;
             await call.waitFor({ state: 'detached', timeout: 20000 });
-            await page.getByRole('button', { name: 'Try again', exact: true }).click();
+            // The access frame's own way back (it replaced the older Try again).
+            await page.getByRole('button', { name: 'Refresh current view', exact: true }).click();
             await page.getByRole('link', { name: /Contact for Fictional Manager:/ }).waitFor();
             expect(await call.count()).toBe(0);
             expect(await page.getByRole('link', { name: 'Text Fictional Manager', exact: true }).count()).toBe(0);
