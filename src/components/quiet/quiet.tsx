@@ -1,6 +1,7 @@
 import "./quiet.css";
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
+import { nameInitials } from "@/lib/employee-display";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
@@ -112,7 +113,7 @@ export function QuietSkeleton({ rows = 6 }: { rows?: number }) {
 }
 
 export function initialsOf(name: string) {
-  return name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
+  return nameInitials(name);
 }
 
 /** Segmented control made of real links. */
