@@ -31,7 +31,8 @@
 :is(#q-root, html) .q-nav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; }
 :is(#q-root, html) .q-nav__l { justify-self: start; display: flex; align-items: center; gap: 4px; min-height: 44px; font-size: 17px; line-height: 22px; }
 :is(#q-root, html) .q-nav__l--teal { color: var(--q-teal) !important; }
-:is(#q-root, html) .q-nav__t { font-size: 17px; line-height: 22px; font-weight: 600; }
+:is(#q-root, html) .q-nav__t { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 17px; line-height: 22px; font-weight: 600; }
+:is(#q-root, html) .q-nav__r .sig-btn__label { justify-items: end; }
 :is(#q-root, html) .q-nav__r { justify-self: end; display: flex; align-items: center; min-height: 44px; padding: 0; border: 0; background: none; font: inherit; color: var(--q-teal) !important; cursor: pointer; }
 :is(#q-root, html) .q-nav__r--b { font-weight: 600; }
 :is(#q-root, html) .q-nav__r--ink { color: var(--q-ink) !important; }
@@ -53,7 +54,8 @@
 /* Rows */
 :is(#q-root, html) .q-list { margin: 0; padding: 0; list-style: none; }
 :is(#q-root, html) .q-list > li { font-size: 17px; line-height: 22px; }
-:is(#q-root, html) .q-row { position: relative; display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 0 20px; color: inherit; }
+:is(#q-root, html) .q-row { position: relative; display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 20px; color: inherit; }
+:is(#q-root, html) .q-row:focus-visible { outline-offset: -2px; border-radius: 0; }
 :is(#q-root, html) .q-row--one { min-height: 52px; }
 :is(#q-root, html) .q-row::after { content: ""; position: absolute; left: 20px; right: 0; bottom: 0; height: 1px; background: var(--q-line); }
 :is(#q-root, html) .q-row--av::after { left: 72px; }
@@ -97,9 +99,10 @@ a.q-row:active, button.q-row:active { background: var(--q-press); }
 :is(#q-root, html) .q-fl > label, :is(#q-root, html) .q-fl > .q-fl__label { display: block; margin-bottom: 8px; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
 :is(#q-root, html) .q-in { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; height: 50px; min-height: 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-ink); font: inherit; letter-spacing: inherit; }
 input.q-in, select.q-in, textarea.q-in { outline: none; }
-:is(#q-root, html) .q-in::placeholder { color: var(--q-soft); }
+:is(#q-root, html) .q-in::placeholder { color: var(--q-grey); }
 :is(#q-root, html) .q-in--ph { color: var(--q-soft); }
 :is(#q-root, html) .q-in:focus, :is(#q-root, html) .q-in:focus-within { box-shadow: inset 0 0 0 2px var(--q-ink); }
+:is(#q-root, html) .q-in:focus-visible { outline: none; }
 textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; align-items: flex-start; }
 :is(#q-root, html) .q-in__wrap { position: relative; }
 :is(#q-root, html) .q-in__wrap > .q-in { padding-right: 52px; }
@@ -150,7 +153,7 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 /* Schedule: the week strip and the location menu */
 :is(#q-root, html) .q-week { display: grid; grid-template-columns: repeat(7, 1fr); margin: 20px 12px 0; }
 :is(#q-root, html) .q-week > button { display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 0; padding: 0; border: 0; background: none; color: var(--q-ink, #111413); font: inherit; cursor: pointer; }
-:is(#q-root, html) .q-week small { font-size: 13px; line-height: 18px; font-weight: 500; color: var(--q-soft); letter-spacing: 0; }
+:is(#q-root, html) .q-week small { font-size: 13px; line-height: 18px; font-weight: 500; color: var(--q-grey); letter-spacing: 0; }
 :is(#q-root, html) .q-week b { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; font-size: 17px; line-height: 22px; font-weight: 400; font-variant-numeric: tabular-nums; }
 :is(#q-root, html) .q-week > button[aria-pressed="true"] b { background: var(--q-ink); color: var(--q-bg); font-weight: 600; }
 :is(#q-root, html) .q-sched-loc { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--q-ink); font: inherit; font-size: 17px; line-height: 22px; letter-spacing: -.2px; cursor: pointer; }
@@ -509,7 +512,7 @@ html:has(.q-auth), body:has(.q-auth) { background: var(--q-bg) !important; }
 :is(#q-root, html) .q-auth__links { display: flex; justify-content: space-between; margin: 8px 20px 0; }
 :is(#q-root, html) .q-auth__links a { display: flex; align-items: center; height: 44px; font-size: 17px; line-height: 22px; color: var(--q-teal); text-decoration: none; }
 :is(#q-root, html) .q-auth__foot { position: absolute; left: 0; right: 0; bottom: var(--q-safe-bottom, env(safe-area-inset-bottom)); padding: 0 20px; text-align: center; }
-:is(#q-root, html) .q-legal { margin: 0; font-size: 13px; line-height: 18px; color: var(--q-soft); letter-spacing: 0; }
+:is(#q-root, html) .q-legal { margin: 0; font-size: 13px; line-height: 18px; color: var(--q-grey); letter-spacing: 0; }
 :is(#q-root, html) .q-legal a { color: var(--q-grey); text-decoration: none; }
 :is(#q-root, html) .q-in__eye { position: absolute; top: 50%; right: 4px; display: grid; place-items: center; width: 44px; height: 44px; min-height: 0; padding: 0; border: 0; background: none; color: var(--q-grey); transform: translateY(-50%); cursor: pointer; }
 :is(#q-root, html) .q-in__eye svg { width: 24px; height: 24px; }
@@ -641,11 +644,11 @@ html[data-theme="dark"] body .app-shell[data-nv-quiet] .portal-route-state:not([
   background-image: linear-gradient(160deg, #0F7C75 0%, #0B6E69 52%, #08605B 100%); box-shadow: 0 14px 28px -16px rgba(8, 96, 91, .6), 0 2px 6px -2px rgba(8, 96, 91, .25); }
 :is(#q-root, html)[data-theme="dark"] .q-page .q-next { box-shadow: none; }
 :is(#q-root, html) .q-next:focus-visible { outline: 2px solid var(--q-teal); outline-offset: 3px; }
-:is(#q-root, html) .q-next__top { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; line-height: 20px; color: rgba(255, 255, 255, .78); letter-spacing: -.1px; }
+:is(#q-root, html) .q-next__top { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; line-height: 20px; color: rgba(255, 255, 255, .9); letter-spacing: -.1px; }
 :is(#q-root, html) .q-next__top > :last-child { color: #FFFFFF; font-weight: 600; }
 :is(#q-root, html) .q-next__time { display: block; margin: 10px 0 0; font-size: 28px; line-height: 34px; font-weight: 600; letter-spacing: -.5px; font-variant-numeric: tabular-nums; }
 :is(#q-root, html) .q-next__day { display: block; margin: 2px 0 0; font-size: 17px; line-height: 22px; color: rgba(255, 255, 255, .92); }
-:is(#q-root, html) .q-next__meta { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, .18); font-size: 15px; line-height: 20px; color: rgba(255, 255, 255, .86); }
+:is(#q-root, html) .q-next__meta { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, .18); font-size: 15px; line-height: 20px; color: #FFFFFF; }
 :is(#q-root, html) .q-next__meta > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 :is(#q-root, html) .q-next__meta .q-ic { flex: none; width: 18px; height: 18px; color: #FFFFFF; }
 :is(#q-root, html) .q-next--wait .q-next__time { color: transparent; }
