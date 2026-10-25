@@ -14,7 +14,7 @@ describe('saved native evidence presentation', () => {
     expect(html).toContain('Puerto Rico withholding');
     expect(html).toContain('Federal employee tax collection');
     expect(html).toContain('9 / 2'); expect(html).toContain('1 / 2'); expect(html).toContain('$0.05');
-    expect(html).toContain('UNRESOLVED'); expect(html).toContain('00:01');
+    expect(html).toContain('SHIFT_START_DAY'); expect(html).toContain('counts wholly on the business day');
   });
   it('does not invent a federal trace for historical results', () => {
     const r = result(); Reflect.deleteProperty(r.provenance, 'federalEmployeeTax'); Reflect.deleteProperty(r.provenance, 'boundaryEvidence');

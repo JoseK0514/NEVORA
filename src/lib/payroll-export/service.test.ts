@@ -29,6 +29,7 @@ function fixture(profile:unknown=neutralProfile()){
    queries.push(statement);
    if(statement.text.includes('FROM workspaces'))return [workspace] as T[];
    if(statement.text.includes('AS remaining'))return [{remaining:45000}] as T[];
+   if(statement.text.includes("to_regclass('native_payroll_ledger')"))return [{available:false}] as T[];
    throw new Error('Unexpected fixture query');
   },
   async transaction(statements){
@@ -88,7 +89,7 @@ describe('NVA-001 real export-service validation boundaries',()=>{
   expect(f.writes).toHaveLength(1);
  });
  it('retains strict rejection and explicit half-up rounding for saved profiles',async()=>{
-  const hours={...neutralProfile(),hourDecimals:0,columns:[{header:'Hours',source:'recordedHours' as const}]};
+  const hours={...neutralProfile(),hourDecimals:0,precision:'REJECT_INEXACT' as const,columns:[{header:'Hours',source:'recordedHours' as const}]};
   const strict=fixture(hours);
   await expect(createPayrollExport(proof,command,strict.executor)).rejects.toThrow('exactly');
   expect(strict.writes).toEqual([]);

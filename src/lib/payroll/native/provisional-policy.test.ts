@@ -77,23 +77,24 @@ describe('explicit owner-authorized provisional payroll policies', () => {
     i.deductions[0].authorizationReference = 'Fictional written election'; i.tax!.employerContributions = i.tax!.employerContributions.filter(p => p.code !== 'INSURANCE');
     expect(calculateNativePayroll(i)).toMatchObject({ state: 'blocked', issues: [{ code: 'INSURANCE_EMPLOYER_MATCH_REQUIRED' }] });
   });
-  it('assigns each midnight nanosecond once and preserves known sub-cent earnings even when cash is zero', () => {
+  it('assigns each midnight nanosecond once, to the start day, and preserves known sub-cent earnings even when cash is zero', () => {
     const i = selected(); i.timecards[0].entries = [entry('NS', '2026-10-05T23:59:59.999999999-04:00', '2026-10-06T00:00:00.000000001-04:00')];
-    const c = classifyRecordedTime(i); expect(c.pieces.map(p => [p.date, (p.end - p.start).toString()])).toEqual([['2026-10-05', '1'], ['2026-10-06', '1']]);
+    const c = classifyRecordedTime(i); expect(c.pieces.map(p => [p.date, (p.end - p.start).toString()])).toEqual([['2026-10-05', '2']]);
     const r = ready(i); expect(r.breakdown.regularNanoseconds).toBe('2'); expect(r.row.grossMinor).toBe('0'); expect(r.breakdown.earnings[0].exactAmount).toEqual({ numerator: '1', denominator: '1500000000' });
-    expect(r.provenance.boundaryEvidence).toMatchObject({ dailyInterpretation: 'OWNER_AUTHORIZED_CIVIL_MIDNIGHT_24H', dailyInputDisposition: 'OWNER_POLICY_APPLIED_ALL_INSTANTS' });
+    expect(r.provenance.boundaryEvidence).toMatchObject({ dailyInterpretation: 'SHIFT_START_DAY', dailyInputDisposition: 'SHIFT_START_DAY_ALL_ENTRIES' });
   });
   it('starts a new civil daily accumulator at midnight and includes the whole first minute', () => {
     const i = selected(); i.timecards[0].entries = [entry('DAY1', '2026-10-05T16:00:00-04:00', '2026-10-06T00:00:00-04:00'), entry('DAY2', '2026-10-06T00:00:00-04:00', '2026-10-06T00:01:00-04:00')];
     const r = ready(i); expect(r.row.grossMinor).toBe('9620'); expect(r.breakdown.regularNanoseconds).toBe('28860000000000'); expect(r.breakdown.overtimeNanoseconds).toBe('0');
   });
-  it('preserves a separate00:01 weekly split and exact5/12-cent pay for one boundary second', () => {
+  it('keeps one second across the 00:01 weekly boundary wholly in its start week (weekly overtime)', () => {
     const i = selected(); i.wages[0].workweekStartTime = '00:01'; i.wages[0].workweekPolicy = fictionalWorkweekPolicy('E1', { weekday: 1, startTime: '00:01', timeZone: 'America/Puerto_Rico' }, true);
     i.timecards[0].period = { startDate: '2026-09-22', endDate: '2026-10-12' };
     i.timecards[0].entries = ['2026-09-29', '2026-09-30', '2026-10-01', '2026-10-02', '2026-10-03'].map(d => entry(d, d + 'T08:00:00-04:00', d + 'T16:00:00-04:00'));
     i.timecards[0].entries.push(entry('EDGE', '2026-10-05T00:00:59.500-04:00', '2026-10-05T00:01:00.500-04:00'));
-    const r = ready(i); expect(r.row.grossMinor).toBe('0'); expect(r.breakdown.overtimeNanoseconds).toBe('500000000'); expect(r.breakdown.regularNanoseconds).toBe('500000000');
-    expect(r.breakdown.earnings.map(e => e.exactAmount)).toEqual([{ numerator: '1', denominator: '4' }, { numerator: '1', denominator: '6' }]);
+    const r = ready(i); expect(r.breakdown.overtimeNanoseconds).toBe('1000000000'); expect(r.breakdown.regularNanoseconds).toBe('0');
+    // 1 s at $12/h × 1.5 = 1/2 cent exact; the owner policy rounds the paycheck half up.
+    expect(r.breakdown.earnings.map(e => e.exactAmount)).toEqual([{ numerator: '1', denominator: '2' }]); expect(r.row.grossMinor).toBe('1');
   });
   it('retains rest premiums on seventh and eighth worked civil days until a full day off', () => {
     const i = selected(); i.period = { startDate: '2026-10-05', endDate: '2026-10-18' }; i.timecards[0].period.endDate = '2026-10-18';
