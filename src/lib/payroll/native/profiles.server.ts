@@ -8,7 +8,7 @@ import { parseNativeProfileCommand } from "./model";
 import { Temporal } from "@js-temporal/polyfill";
 import { NATIVE_FULL_CONTRACT_FORM_VERSION, NATIVE_PLAIN_SETUP_FORM_VERSION } from "./contracts";
 import type { NativeProfileReceipt, NativeProfilesResponse, NativeConfigurationRevision, NativeProfileCommand, NativePlainSetupCommand, NativeSetupRecord, NativeCompanyPayrollFacts, NativeYtd, NativeConfiguration } from "./contracts";
-import { buildSetupRecord, isPlainSetupCommand, materializeConfiguration, materializeOpening, nextRateHistory, parsePlainSetupCommand, verifySetupRecord, type PlainPayFactsRecord, type SetupRecordInput } from "./setup";
+import { buildSetupRecord, resolveMealAgreement, isPlainSetupCommand, materializeConfiguration, materializeOpening, nextRateHistory, parsePlainSetupCommand, verifySetupRecord, type PlainPayFactsRecord, type SetupRecordInput } from "./setup";
 const check = (condition: string, ...values: unknown[]): SqlStatement => q(`SELECT (CASE WHEN ${condition} THEN '1' ELSE 'NATIVE_PROFILE_CONFLICT' END)::integer`, ...values);
 const member = (employeeId: string) => check(`EXISTS(SELECT 1 FROM employees e JOIN locations l ON l.id=e.primary_location_id WHERE e.id=$1 AND l.workspace_id=${ws})`, employeeId);
 const locations = (ids: string[]) => check(`(SELECT count(*) FROM locations WHERE workspace_id=${ws} AND active AND id=ANY($1::text[]))=cardinality($1::text[])`, ids);
@@ -117,7 +117,7 @@ function employeeRevision(args: { proof: SessionMutationProof; operationId: stri
     const facts: PlainPayFactsRecord = { entered: args.entered, rates: args.rates };
     const record = buildSetupRecord({ kind: "EMPLOYEE_PAY", subjectId: employee.employeeId, taxYear: 0, revision, formVersion: NATIVE_PLAIN_SETUP_FORM_VERSION, operationId: args.operationId, enteredBy: actor(args.proof), enteredAt: args.enteredAt, cause: args.cause, derivedFrom: { companyDefaults: { revision: company.revision, sha256: company.factsSha256 }, opening: opening ? { taxYear: opening.ytd.year, revision: opening.ytd.revision, sha256: opening.record?.factsSha256 ?? opening.ytd.ledgerFingerprint } : null, locationIds: [...args.locationIds].sort() }, facts });
     // Authorized deductions saved through the detailed interface stay as recorded.
-    const configuration: NativeConfiguration = materializeConfiguration({ employeeId: employee.employeeId, revision, rates: args.rates, withholding: args.entered.withholding, pay: record, company, companyFacts: company.facts as NativeCompanyPayrollFacts, opening: opening?.ytd ?? null, locationIds: args.locationIds, deductions: employee.profile?.deductions ?? [] });
+    const configuration: NativeConfiguration = materializeConfiguration({ employeeId: employee.employeeId, revision, rates: args.rates, withholding: args.entered.withholding, mealReductionAgreement: args.entered.mealReductionAgreement, pay: record, company, companyFacts: company.facts as NativeCompanyPayrollFacts, opening: opening?.ytd ?? null, locationIds: args.locationIds, deductions: employee.profile?.deductions ?? [] });
     const payload = { ...configuration, revision, actorId: args.proof.employee.id, reason: args.cause === "COMPANY_DEFAULTS_APPLIED" ? "Company payroll defaults applied" : "Pay setup saved", createdAt: args.enteredAt, setupFormVersion: NATIVE_PLAIN_SETUP_FORM_VERSION, setupReference: record.reference };
     return { revision, record, payload, mutations: [member(employee.employeeId), profileRevision(employee.employeeId, employee.profile?.revision ?? 0), insertProfile(employee.employeeId, revision, payload), insertRecord(record, args.proof.employee.id)] };
 }
@@ -173,7 +173,8 @@ async function plainPlan(proof: SessionMutationProof, c: NativePlainSetupCommand
     else
         mutations.push(openingRevision(c.employeeId, year, employee.opening?.revision ?? 0));
     const previous = employee.payRecord?.formVersion === NATIVE_PLAIN_SETUP_FORM_VERSION && employee.profile?.revision === employee.payRecord.revision ? (employee.payRecord.facts as PlainPayFactsRecord).rates : null;
-    const next = employeeRevision({ proof, operationId: c.operationId, enteredAt, employee, company: state.company, entered: c.pay, rates: nextRateHistory(previous, c.pay), opening, locationIds: state.locations, cause: "OWNER_ENTRY" });
+    const entered = { ...c.pay, mealReductionAgreement: resolveMealAgreement(c.pay, employee.payRecord?.facts as PlainPayFactsRecord | undefined, employee.profile) };
+    const next = employeeRevision({ proof, operationId: c.operationId, enteredAt, employee, company: state.company, entered, rates: nextRateHistory(previous, c.pay), opening, locationIds: state.locations, cause: "OWNER_ENTRY" });
     mutations.push(...next.mutations);
     return { receipt: { operationId: c.operationId, action: c.action, employeeId: c.employeeId, revision: next.revision }, mutations };
 }

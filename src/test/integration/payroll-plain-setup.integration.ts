@@ -204,3 +204,16 @@ it("records mid-year totals as plain amounts and still records detailed full-con
     await saveNativeProfile(proof, { action: "ATTEST_OPENING_YTD", operationId: randomUUID(), reason: "Fictional detailed opening", expectedRevision: 0, employeeId: "c34-b", ytd: input().ytd }, f.db.executor);
     expect(await f.q("SELECT payload->>'formVersion' AS form,payload->>'statement' AS statement FROM native_payroll_setup_records WHERE subject_id='c34-b'")).toEqual([{ form: "NEVORA_NATIVE_FULL_CONTRACT_V1", statement: expect.stringMatching(/^Entered by Owner QA on /) }]);
 });
+
+it("keeps a recorded 30-minute meal agreement when a later save leaves it out", async () => {
+    await saveNativeProfile(proof, companyCommand(), f.db.executor);
+    const first = payCommand("c34-a");
+    await saveNativeProfile(proof, { ...first, pay: { ...first.pay, mealReductionAgreement: true } }, f.db.executor);
+    await saveNativeProfile(proof, payCommand("c34-a", { expectedRevision: 1, rate: "1300", opening: null }), f.db.executor);
+    const read = await nativeProfiles(proof, f.db.executor);
+    expect(read.configurations.find(c => c.employeeId === "c34-a")!.wages.map(w => w.mealReductionAgreement)).toEqual([true]);
+    expect((read.setup!.records.find(r => r.kind === "EMPLOYEE_PAY")!.facts as { entered: { mealReductionAgreement: boolean } }).entered.mealReductionAgreement).toBe(true);
+    // Company default changes keep it too.
+    await saveNativeProfile(proof, companyCommand(1, { includeOwners: true }), f.db.executor);
+    expect((await nativeProfiles(proof, f.db.executor)).configurations.find(c => c.employeeId === "c34-a")!.wages[0].mealReductionAgreement).toBe(true);
+});

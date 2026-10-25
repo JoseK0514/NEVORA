@@ -265,6 +265,9 @@ export type NativePlainPayFacts = {
     /** Puerto Rico local date the rate starts. */
     rateStartsOn: string;
     withholding: NativePlainWithholding;
+    /** A signed written agreement shortening the meal period to 30 minutes (Team P).
+     * Omitted keeps the stored value; the server always records the resolved value. */
+    mealReductionAgreement?: boolean;
 };
 export type NativePlainOpening = { kind: "FRESH" } | {
     kind: "MID_YEAR";

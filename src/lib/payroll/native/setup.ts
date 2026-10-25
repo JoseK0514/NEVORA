@@ -104,7 +104,9 @@ export function parseCompanyFacts(v: unknown): NativeCompanyPayrollFacts {
 }
 
 export function parsePlainPay(v: unknown): NativePlainPayFacts {
-    const o = exactKeys(v, "pay", ["hourlyRateMinor", "rateStartsOn", "withholding"]);
+    const o = exactKeys(v, "pay", ["hourlyRateMinor", "rateStartsOn", "withholding"], ["mealReductionAgreement"]);
+    if (o.mealReductionAgreement !== undefined && typeof o.mealReductionAgreement !== "boolean")
+        invalid("pay.mealReductionAgreement", "Choose whether you signed a 30-minute meal agreement.");
     try {
         hourlyRate(o.hourlyRateMinor);
     }
@@ -132,6 +134,7 @@ export function parsePlainPay(v: unknown): NativePlainPayFacts {
             veteran: w.veteran as boolean,
             extraWithholdingMinor: cents(w.extraWithholdingMinor, "pay.withholding.extraWithholding"),
         },
+        ...(o.mealReductionAgreement !== undefined ? { mealReductionAgreement: o.mealReductionAgreement as boolean } : {}),
     };
 }
 
@@ -220,7 +223,8 @@ export function verifySetupRecord(record: NativeSetupRecord): boolean {
 /* --------------------------------------------------------- materialization */
 
 export type PlainPayFactsRecord = {
-    entered: NativePlainPayFacts;
+    /** As entered, with mealReductionAgreement resolved to the value that was kept or set. */
+    entered: NativePlainPayFacts & { mealReductionAgreement: boolean };
     /** Rate history the server derived: earlier rates stay, a new start date replaces later ones. */
     rates: { startsOn: string; hourlyRateMinor: string }[];
 };
@@ -242,7 +246,7 @@ const openingWageBase = (opening: NativeYtd | null, code: string) => opening && 
 
 /** Combine one employee's plain facts with the company defaults into the unchanged
  * NEVORA_NATIVE_CONFIGURATION_V1 contract, with server references in every evidence field. */
-export function materializeConfiguration(args: { employeeId: string; revision: number; rates: PlainPayFactsRecord["rates"]; withholding: NativePlainPayFacts["withholding"]; pay: NativeSetupRecord; company: NativeSetupRecord; companyFacts: NativeCompanyPayrollFacts; opening: NativeYtd | null; locationIds: string[]; deductions: NativeConfiguration["deductions"] }): NativeConfiguration {
+export function materializeConfiguration(args: { employeeId: string; revision: number; rates: PlainPayFactsRecord["rates"]; withholding: NativePlainPayFacts["withholding"]; mealReductionAgreement: boolean; pay: NativeSetupRecord; company: NativeSetupRecord; companyFacts: NativeCompanyPayrollFacts; opening: NativeYtd | null; locationIds: string[]; deductions: NativeConfiguration["deductions"] }): NativeConfiguration {
     const { employeeId, revision, rates, withholding, pay, company, companyFacts, opening, locationIds } = args;
     if (!rates.length || !locationIds.length)
         throw new PayrollError("INVALID_NATIVE_PROFILE", 400);
@@ -254,7 +258,7 @@ export function materializeConfiguration(args: { employeeId: string; revision: n
         // Cents follow the Owner-authorized 2026 paycheck policy below, not a wage-level election.
         wageCentRounding: "UNVERIFIED",
         breakRules: companyFacts.breakPay.map(b => ({ typeId: b.typeId, treatment: b.treatment })),
-        standardContextAttested: true, evidenceReference: pay.reference,
+        standardContextAttested: true, evidenceReference: pay.reference, mealReductionAgreement: args.mealReductionAgreement === true,
     }));
     const tax: NativeTaxProfile = {
         id: "withholding", revision, effectiveFrom: rates[0].startsOn, effectiveTo: null, coverage: "PR_REGULAR_TAXABLE_RESIDENT",
@@ -305,4 +309,13 @@ export function excludedOwners(members: { employeeId: string; disposition: "INCL
     if (ownersIncluded(company))
         return [];
     return members.filter(m => m.disposition !== "EXCLUDE" && ownerIds.includes(m.employeeId) && !correctedEmployeeIds.includes(m.employeeId)).map(m => m.employeeId).sort();
+}
+
+/** "Saving keeps the stored value": an omitted meal agreement keeps the last recorded or saved one. */
+export function resolveMealAgreement(entered: NativePlainPayFacts, previous: { entered?: { mealReductionAgreement?: boolean } } | null | undefined, profile: { wages?: { mealReductionAgreement?: boolean }[] } | null | undefined): boolean {
+    if (entered.mealReductionAgreement !== undefined)
+        return entered.mealReductionAgreement;
+    if (typeof previous?.entered?.mealReductionAgreement === "boolean")
+        return previous.entered.mealReductionAgreement;
+    return profile?.wages?.at(-1)?.mealReductionAgreement === true;
 }

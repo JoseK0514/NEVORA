@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { buildSetupRecord, defaultBreakTreatment, excludedOwners, materializeConfiguration, materializeOpening, nextRateHistory, ownersIncluded, parsePlainSetupCommand, plainDate, verifySetupRecord, type SetupRecordInput } from "./setup";
+import { buildSetupRecord, resolveMealAgreement, defaultBreakTreatment, excludedOwners, materializeConfiguration, materializeOpening, nextRateHistory, ownersIncluded, parsePlainSetupCommand, plainDate, verifySetupRecord, type SetupRecordInput } from "./setup";
 import { NATIVE_PLAIN_SETUP_FORM_VERSION, type NativeCompanyPayrollFacts, type NativePayrollInput, type NativePlainPayFacts } from "./contracts";
 import { calculateNativePayroll } from "./calculate";
 import { parseConfiguration, parseYtd } from "./model";
@@ -25,7 +25,7 @@ function fictionalSetup(employeeId = "E1") {
     const opening = materializeOpening({ taxYear: 2026, revision: 1, totals: { kind: "FRESH" }, record: openingRecord, primaryLocationId: "L1" });
     const rates = nextRateHistory(null, pay);
     const payRecord = buildSetupRecord(base("EMPLOYEE_PAY", employeeId, { entered: pay, rates }, { derivedFrom: { companyDefaults: { revision: 1, sha256: company.factsSha256 }, opening: { taxYear: 2026, revision: 1, sha256: openingRecord.factsSha256 }, locationIds: ["L1"] } }));
-    const configuration = materializeConfiguration({ employeeId, revision: 1, rates, withholding: pay.withholding, pay: payRecord, company, companyFacts, opening, locationIds: ["L1"], deductions: [] });
+    const configuration = materializeConfiguration({ employeeId, revision: 1, rates, withholding: pay.withholding, mealReductionAgreement: false, pay: payRecord, company, companyFacts, opening, locationIds: ["L1"], deductions: [] });
     return { company, openingRecord, opening, payRecord, configuration };
 }
 const hash = "a".repeat(32);
@@ -124,6 +124,22 @@ describe("company defaults employees inherit", () => {
         const run = buildNativeRunCandidate(newRun(randomUUID(), { startDate: "2026-10-05", endDate: "2026-10-11" }, "2026-10-16"), { inputs: [payrollInput()], population: [{ employeeId: "E1", name: "Luis Ortiz", disposition: "INCLUDE" }, { employeeId: "O1", name: "Ana Rivera", disposition: "EXCLUDE" }], sourceFingerprint: hash, ruleRevision: 1, rulesVerified: true, employeeLocations: { E1: ["L1"], O1: ["L1"] }, unknownCoverageEmployeeIds: [], blockingIssues: [] });
         expect(run.exceptions).toEqual([]);
         expect(run.status).toBe("REVIEW_REQUIRED");
+    });
+});
+
+describe("written 30-minute meal agreement", () => {
+    it("keeps the stored value when a save omits it and records an explicit choice", () => {
+        expect(resolveMealAgreement(pay, null, null)).toBe(false);
+        expect(resolveMealAgreement(pay, { entered: { mealReductionAgreement: true } }, null)).toBe(true);
+        expect(resolveMealAgreement(pay, null, { wages: [{ mealReductionAgreement: true }] })).toBe(true);
+        expect(resolveMealAgreement({ ...pay, mealReductionAgreement: false }, { entered: { mealReductionAgreement: true } }, null)).toBe(false);
+        expect(parsePlainSetupCommand({ action: "SAVE_EMPLOYEE_PAY_SETUP", operationId: "6f1f0e0a-1b2c-4d3e-8f40-5a6b7c8d9e0f", expectedRevision: 0, employeeId: "E1", pay: { ...pay, mealReductionAgreement: true }, opening: null })).toMatchObject({ pay: { mealReductionAgreement: true } });
+        expect(() => parsePlainSetupCommand({ action: "SAVE_EMPLOYEE_PAY_SETUP", operationId: "6f1f0e0a-1b2c-4d3e-8f40-5a6b7c8d9e0f", expectedRevision: 0, employeeId: "E1", pay: { ...pay, mealReductionAgreement: "yes" }, opening: null })).toThrow("INVALID_PAY_SETUP");
+    });
+    it("puts the agreement on every rate the calculator reads", () => {
+        const { company, payRecord, opening } = fictionalSetup();
+        const configuration = materializeConfiguration({ employeeId: "E1", revision: 2, rates: [{ startsOn: "2026-01-01", hourlyRateMinor: "1250" }, { startsOn: "2026-10-01", hourlyRateMinor: "1300" }], withholding: pay.withholding, mealReductionAgreement: true, pay: payRecord, company, companyFacts, opening, locationIds: ["L1"], deductions: [] });
+        expect(configuration.wages.map(w => w.mealReductionAgreement)).toEqual([true, true]);
     });
 });
 
