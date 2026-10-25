@@ -130,8 +130,9 @@ function todoRows(items: readonly AttentionItem[]) {
 }
 
 function weeksDetail(weeks: AttentionItem[]) {
-  const ranges = weeks.map(week => weekRange(week.ref.id));
-  return ranges.length <= 2 ? ranges.join(' and ') : `${ranges[0]} and ${ranges.length - 1} more weeks`;
+  const range = (week: AttentionItem) => <time key={week.ref.id} dateTime={week.ref.id}>{weekRange(week.ref.id)}</time>;
+  return weeks.length <= 2 ? <>{range(weeks[0])}{weeks[1] ? <> and {range(weeks[1])}</> : null}</>
+    : <>{range(weeks[0])} and {weeks.length - 1} more weeks{weeks.slice(1).map(week => <time key={week.ref.id} dateTime={week.ref.id} hidden />)}</>;
 }
 
 function TodoRow({row, zone}: {row: ReturnType<typeof todoRows>[number]; zone: string}) {
@@ -139,7 +140,7 @@ function TodoRow({row, zone}: {row: ReturnType<typeof todoRows>[number]; zone: s
   const update = item.ref.kind === 'COMMUNICATION' && /^Review update: /.test(item.label) ? item.label.replace(/^Review update: /, '') : null;
   const due = item.deadlineAt ? `Respond by ${keepWhole(fmt(zone, {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}).format(new Date(item.deadlineAt)))}` : null;
   const detail = weeks ? weeksDetail(weeks) : due ?? (update ? keepWhole(update) : <>Recorded <time dateTime={item.changedAt}>{keepWhole(fmt(zone, {month: 'short', day: 'numeric'}).format(new Date(item.changedAt)))}</time></>);
-  return <QuietRow href={item.href} variant="tint" avatar={<TodoIcon item={item}/>} title={keepWhole(todoTitle(item))} detail={<>{detail}{item.required ? <span className="nv-sr"> · Review needed</span> : null}</>}/>;
+  return <QuietRow href={item.href} variant="tint" avatar={<TodoIcon item={item}/>} title={keepWhole(todoTitle(item))} detail={<>{detail}{item.required ? <><span className="nv-sr">, </span><small className="nv-sr">Review needed</small></> : null}</>}/>;
 }
 
 /** Complete, or only waiting on a location to publish (a known state, said under the card). */
@@ -164,13 +165,14 @@ function NextCard({snapshot}: {snapshot: HomeSnapshot}) {
     <span className="q-next__day">Your schedule couldn’t be checked.</span>
   </div>;
   const now = snapshot.currentShift, shift = now ?? snapshot.nextShift;
-  if (!shift) return <Link className="q-next" href="/app/schedule">
+  if (!shift) return <Link className="q-next" href="/app/schedule" aria-label="View schedule, no upcoming shift">
     <div className="q-next__top"><span>Next shift</span><span/></div>
     <b className="q-next__time">No upcoming shift</b>
     <span className="q-next__day">New shifts show here once they’re published.</span>
   </Link>;
   const where = [shift.locationLabel, shift.positionLabel, shift.designatedLead ? 'Shift lead' : null].filter(Boolean).join(' · ');
-  return <Link className="q-next" href={`/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}`}>
+  return <Link className="q-next" href={`/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}`}
+    aria-label={keepWhole(`View schedule, ${now ? 'scheduled now, ' : ''}${longDay(shift, zone)}, ${clock(shift.startAt, zone)} to ${clock(shift.endAt, zone)}, ${where}`)}>
     <div className="q-next__top"><span>{now ? 'Scheduled now' : 'Next shift'}</span><span>{now ? `Until ${clock(now.endAt, zone)}` : dayWord(shift, snapshot)}</span></div>
     <b className="q-next__time"><time dateTime={shift.startAt}>{clock(shift.startAt, zone)}</time><span aria-hidden="true"> – </span><span className="nv-sr"> to </span><time dateTime={shift.endAt}>{clock(shift.endAt, zone)}</time></b>
     <span className="q-next__day">{longDay(shift, zone)}</span>
@@ -225,7 +227,8 @@ export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTim
     <div className="q-home" data-home-state={viewState} aria-busy={refreshing || loading}>
       <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon className="q-ic" aria-hidden="true"/></QuietBarIcon></QuietBar>
       <div className="q-hello"><small>{date}</small><h1>{name && snapshot ? `${greeting(snapshot.observedAt, snapshot.timeZone)}, ${name}` : 'Home'}</h1></div>
-      {snapshot ? <section aria-label={underWay ? 'Scheduled now' : 'Next shift'}>
+      {snapshot ? <section aria-labelledby="employee-reviewed-next-heading">
+        <h2 id="employee-reviewed-next-heading" className="nv-sr">{underWay ? 'Scheduled now' : 'Next shift'}</h2>
         <NextCard snapshot={snapshot}/>
         {snapshot.publicationState === 'partial' ? <p className="q-next__note" role="status">{unpublishedNote(snapshot.unpublishedLocations ?? [])}</p> : null}
         {/* While a shift is under way, the clock status sits under the card. */}
@@ -239,14 +242,14 @@ export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTim
         {denied ? <Link className="q-btn" href="/login">Sign in</Link>
           : <button className="q-btn" type="button" data-home-refresh onClick={onRetry} disabled={refreshing} aria-busy={refreshing || undefined}>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span></button>}
       </div> : null}
-      {snapshot ? <QuietSection id="employee-home-todo" title="Needs you" aside={partial ? `${todos.length} known ${todos.length === 1 ? 'item' : 'items'}` : undefined}>
+      {snapshot ? <div data-home-group="actions"><QuietSection id="employee-home-todo" title="Needs you" aside={partial ? `${todos.length} known ${todos.length === 1 ? 'item' : 'items'}` : undefined}>
         <QuietList>
           {todos.length ? visible.map(row => <TodoRow key={row.key} row={row} zone={snapshot.timeZone}/>)
             : <QuietRow variant="tint" avatar={<CheckIcon className="q-ic" aria-hidden="true"/>} title={<span role="status">{allSet ? 'You’re all set' : 'Nothing to do right now'}</span>} detail={partial ? 'In the sections that could be checked.' : 'Nothing needs your review.'}/>}
           {todos.length > 3 ? <li><button className="q-btn q-btn--quiet" type="button" aria-expanded={showAll} onClick={() => setShowAll(value => !value)}>{showAll ? 'Show fewer' : `Show all ${todos.length}`}</button></li> : null}
           {partial ? <SourceRows snapshot={snapshot}/> : null}
         </QuietList>
-      </QuietSection> : null}
+      </QuietSection></div> : null}
       {snapshot && teamMessage ? <QuietSection id="employee-home-team" title="Today’s team" aside={(snapshot.currentShift ?? snapshot.nextShift)?.locationLabel}>
         <QuietList><QuietRow href="/app/updates/compose" variant="tint" avatar={<MegaphoneIcon className="q-ic" aria-hidden="true"/>} title="Message today’s team" detail="Everyone on shift today"/></QuietList>
       </QuietSection> : null}
