@@ -76,8 +76,9 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  // Profile keeps aria-hidden placeholder rows; inbox controls exist even in a ready empty view.
  async function ready(kind){await page.waitForFunction(k=>{const e=document.querySelector(`[data-private-view="${k}"]`);return e&&(k==='profile'?[...e.querySelectorAll('.q-rv--l')].some(value=>value.textContent!=='–'):!!e.querySelector('[aria-label="Filter notifications"] button:not([disabled])'));},kind);}
  const notifications=()=>page.locator('[data-private-view="notifications"]');
- // v5 has no manual Refresh: the inbox re-reads on its own change event (the same one Mark read and focus use).
- const refreshNotifications=()=>page.evaluate(()=>window.dispatchEvent(new Event('nevora:notifications-changed')));
+ // v5 has no manual Refresh: the inbox re-reads when the app returns to the front. A storage event reaches only the
+ // inbox panel (the bell ignores it), so each refresh is exactly one inbox read, as the old Refresh button was.
+ const refreshNotifications=()=>page.evaluate(()=>window.dispatchEvent(new Event('storage')));
  const refreshProfile=()=>page.evaluate(()=>window.dispatchEvent(new Event('storage')));
  async function screenshot(name){await page.screenshot({path:join(evidenceDirectory,`${prefix}-${name}.png`),fullPage:true});}
  async function accessibility(name){
