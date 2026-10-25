@@ -1,9 +1,11 @@
-import { projectTimecard, type Period, type Timecard, type TimecardSource } from './project';
+import { projectTimecard, type Period, type Timecard, type TimecardBreakPay, type TimecardSource } from './project';
 
 export type TimecardHistory = { operationId: string; revision: number; action:'APPROVE'|'FINALIZE'|'REOPEN';
   occurredAt:string; actorName:string; note:string|null; sourceHash:string; snapshot:TimecardSource };
 export type TimecardItem = { source:TimecardSource; card:Timecard; sourceHash:string; revision:number;
-  state:'DRAFT'|'APPROVED'|'FINALIZED'|'REOPENED'|'NEEDS_REVIEW'; history:TimecardHistory[] };
+  state:'DRAFT'|'APPROVED'|'FINALIZED'|'REOPENED'|'NEEDS_REVIEW'; history:TimecardHistory[];
+  /** Server-resolved payroll break classification; outside the hashed source. */
+  breakPay:TimecardBreakPay };
 export type TimecardProjection = {state:'ready';observedAt:string;period:Period;cards:TimecardItem[]};
 export type TimecardsResult = (TimecardProjection & {validForMs:number})|{
   state:'unavailable';reason:'access_denied'|'source_limit'|'read_failed'|'schema_missing'};
@@ -23,7 +25,8 @@ export function parseTimecardsResponse(v:unknown,period:Period):TimecardProjecti
   const cards=v.cards.map((raw):TimecardItem=>{
     if(!object(raw)||!sourceHash(raw.sourceHash)||!Number.isSafeInteger(raw.revision)||Number(raw.revision)<0||
       !['DRAFT','APPROVED','FINALIZED','REOPENED','NEEDS_REVIEW'].includes(String(raw.state))||!Array.isArray(raw.history)||raw.history.length>100)throw new Error('Invalid card');
-    const card=projectTimecard(raw.source,v.observedAt as string);
+    const breakPay=raw.breakPay===undefined?{}:raw.breakPay;
+    const card=projectTimecard(raw.source,v.observedAt as string,breakPay);
     if(card.startDate!==period.startDate||card.endDate!==period.endDate)throw new Error('Incorrect period');
     entries+=card.entries.length;corrections+=card.corrections.length;
     if(entries>10000||corrections>10000)throw new Error('Timecard source limit');
@@ -37,7 +40,8 @@ export function parseTimecardsResponse(v:unknown,period:Period):TimecardProjecti
         occurredAt:h.occurredAt,actorName:h.actorName,note:h.note,sourceHash:h.sourceHash,snapshot:h.snapshot as TimecardSource};
     });
     if(history.length!==Number(raw.revision)||history.some((h,i)=>h.revision!==Number(raw.revision)-i))throw new Error('Incomplete revision history');
-    return {source:raw.source as TimecardSource,card,sourceHash:raw.sourceHash,revision:Number(raw.revision),state:raw.state as TimecardItem['state'],history};
+    return {source:raw.source as TimecardSource,card,sourceHash:raw.sourceHash,revision:Number(raw.revision),state:raw.state as TimecardItem['state'],history,
+      breakPay:Object.fromEntries(Object.entries(breakPay as TimecardBreakPay).sort(([a],[b])=>a<b?-1:a>b?1:0))};
   });
   if(new Set(cards.map(c=>c.card.employeeId)).size!==cards.length)throw new Error('Duplicate timecards');
   return {state:'ready',observedAt:v.observedAt,period,cards};

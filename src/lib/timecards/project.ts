@@ -23,8 +23,14 @@ export type TimecardSource = Period & {
 export type TimecardIssue = 'period_open' | 'open_entry' | 'open_break' | 'pending_correction' | 'overlapping_time';
 export type Timecard = TimecardSource & {
   observedAt: string; startAt: string; endAt: string; recordedNanoseconds: string; breakNanoseconds: string;
+  /** Paid time = recorded elapsed − unpaid breaks, classified by the employee's payroll
+   * break rules (the rule native payroll applies). null when any break in the period
+   * has no payroll classification yet; paidSeconds is the whole-second floor. */
+  paidNanoseconds: string | null; paidSeconds: number | null; unpaidBreakNanoseconds: string | null;
   issues: TimecardIssue[];
 };
+/** Server-resolved pay treatment per recorded break id; absent means not classified. */
+export type TimecardBreakPay = Record<string, 'PAID' | 'UNPAID'>;
 const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const text = (v: unknown, max = 300): v is string => typeof v === 'string' && v.trim() === v && v.length > 0 && v.length <= max && !/[\u0000-\u001f\u007f]/.test(v);
 const nullableText = (v: unknown): v is string | null => v === null || text(v);
@@ -80,13 +86,24 @@ function parseEntry(v: unknown): TimecardEntry {
     recordedVersion: v.recordedVersion as number | null, startAt, endAt, rawStartAt, rawEndAt, breaks };
 }
 
+function parseBreakPay(v: unknown, entries: TimecardEntry[]): TimecardBreakPay {
+  if (!record(v)) throw new Error('Invalid break pay');
+  const ids = new Set(entries.flatMap(e => e.breaks.map(b => b.id)));
+  const out: TimecardBreakPay = {};
+  for (const [id, value] of Object.entries(v)) {
+    if (!ids.has(id) || (value !== 'PAID' && value !== 'UNPAID')) throw new Error('Invalid break pay');
+    out[id] = value;
+  }
+  return out;
+}
+
 /**
  * Validate the complete source and total elapsed nanoseconds clipped to the period.
- * Break totals remain separate from recorded time; this projection does not apply
- * payroll deductions. Open intervals stop at observedAt and remain approval issues.
+ * Break totals remain separate from recorded time. Paid time subtracts only breaks the
+ * server classified as unpaid with the payroll break rule; it never guesses. Open intervals stop at observedAt and remain approval issues.
  * Raw punches and adjustment provenance are retained alongside effective boundaries.
  */
-export function projectTimecard(source: unknown, observedAt: string): Timecard {
+export function projectTimecard(source: unknown, observedAt: string, breakPay: unknown = {}): Timecard {
   if (!record(source) || !text(source.employeeId) || !text(source.employeeName) || !text(source.timeZone,100) ||
       !text(source.startDate) || !text(source.endDate) || !Number.isSafeInteger(source.pendingCorrections) || Number(source.pendingCorrections) < 0 ||
       !Array.isArray(source.entries) || source.entries.length > 10000 || !Array.isArray(source.corrections) || source.corrections.length > 10000) throw new Error('Invalid timecard source');
@@ -102,10 +119,11 @@ export function projectTimecard(source: unknown, observedAt: string): Timecard {
     if (ns(endAt) <= ns(startAt)) throw new Error('Invalid correction interval');
     return { id:v.id,kind:String(v.kind),status:v.status as TimecardCorrection['status'],reason:v.reason,revision:Number(v.revision),startAt,endAt };
   });
+  const pay = parseBreakPay(breakPay, entries);
   const issues = new Set<TimecardIssue>();
   if (observed < end) issues.add('period_open');
   if (source.pendingCorrections) issues.add('pending_correction');
-  let recorded = BigInt(0), breakTime = BigInt(0), previousEnd: bigint | null = null;
+  let recorded = BigInt(0), breakTime = BigInt(0), unpaid = BigInt(0), classified = true, previousEnd: bigint | null = null;
   const elapsed = (a: string, b: string | null) => {
     const left = ns(a) > start ? ns(a) : start;
     const actualEnd = b === null ? observed : ns(b);
@@ -120,12 +138,19 @@ export function projectTimecard(source: unknown, observedAt: string): Timecard {
     recorded += elapsed(entry.startAt,entry.endAt);
     for (const b of entry.breaks) {
       if (b.endAt === null) issues.add('open_break');
-      breakTime += elapsed(b.startAt,b.endAt);
+      const inside = elapsed(b.startAt,b.endAt);
+      breakTime += inside;
+      if (!inside) continue;
+      if (pay[b.id] === 'UNPAID') unpaid += inside;
+      else if (pay[b.id] !== 'PAID') classified = false;
     }
   }
+  const paid = classified ? recorded - unpaid : null;
   return { ...period,...boundaries,employeeId:source.employeeId,employeeName:source.employeeName,timeZone:source.timeZone,
     pendingCorrections:Number(source.pendingCorrections),entries,corrections,observedAt:instant(observedAt),
-    recordedNanoseconds:recorded.toString(),breakNanoseconds:breakTime.toString(),issues:[...issues] };
+    recordedNanoseconds:recorded.toString(),breakNanoseconds:breakTime.toString(),
+    paidNanoseconds:paid === null ? null : paid.toString(),paidSeconds:paid === null ? null : Number(paid / BigInt(1_000_000_000)),
+    unpaidBreakNanoseconds:classified ? unpaid.toString() : null,issues:[...issues] };
 }
 
 export function formatRecordedHours(nanoseconds: string): string {
