@@ -92,3 +92,38 @@ it('a page read that loses its authority between the first read and the final gu
   expect(revoked).toBe(true);expect(read.state).toBe('unavailable');
  }finally{await f.db.dispose();}
 });
+
+/** Inspection B3/B4/B7: Employee reads run as READ ONLY snapshots with lock-free guards. An uncommitted sign-in,
+ * employee edit or location edit (ROW EXCLUSIVE / row locks, which conflicted with the old LOCK TABLE … IN SHARE
+ * MODE and FOR SHARE prefixes) no longer makes them wait, and the session is still checked in the same snapshot. */
+it('Employee profile, Home and Updates reads are not blocked by an uncommitted sign-in or employee edit',async()=>{
+ const f=await companyAccessFixture();try{
+  const {readEmployeeProfile}=await import('../../lib/data/employee-profile.server');
+  const {readEmployeeHome}=await import('../../lib/data/employee-home.server');
+  const {listEmployeeCommunications}=await import('../../lib/communications/service.server');
+  await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('9',64),'target',clock_timestamp()+interval '1 hour')");
+  const employee={employee:{id:'target',firstName:'Target',lastName:'QA',role:'EMPLOYEE' as const,primaryLocationId:'loc-1'},sessionTokenHash:'9'.repeat(64)};
+  const reads=async()=>{
+   const started=Date.now();
+   const profile=await readEmployeeProfile(employee,f.db.executor);
+   expect(profile.state).toBe('ready');
+   const home=await readEmployeeHome(employee,f.db.executor);
+   expect(['ready','partial']).toContain(home.state);
+   if('snapshot' in home)expect(home.snapshot.sources.communications.state).not.toBe('unavailable');
+   const updates=await listEmployeeCommunications(employee,f.db.executor);
+   expect(['complete','partial']).toContain(updates.state);
+   return Date.now()-started;
+  };
+  const quiet=await reads();
+  const held=await holder(f,["INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('8',64),'owner',clock_timestamp()+interval '1 hour')",
+   "UPDATE employees SET first_name='Edited' WHERE id='manager'","UPDATE locations SET name=name WHERE id='loc-2'"]);
+  try{
+   // The old prefixes waited out the 1.5 s lock_timeout on these batches (and then failed them); now the same reads
+   // take about as long as with nobody writing.
+   expect(await reads()).toBeLessThan(quiet+1000);
+  }finally{await held.release();}
+  // Same snapshot, same session check: an expired session is refused.
+  await f.q("UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE token_hash=repeat('9',64)");
+  expect(await readEmployeeProfile(employee,f.db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+ }finally{await f.db.dispose();}
+});
