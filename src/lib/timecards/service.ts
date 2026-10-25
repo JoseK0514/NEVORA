@@ -8,6 +8,7 @@ import { getWorkspace, workspaceReadGuard } from '../data/workspaces';
 import { parsePeriod, type Period } from './project';
 import type { TimecardActionCapture } from '../action-center/canonical-source';
 import { parseTimecardsResponse, type TimecardsResult } from './read-model';
+import { resolveBreakPay, type BreakPayQuery } from '../payroll/native/break-pay';
 export type { TimecardsResult } from './read-model';
 
 export type TimecardCommand = Period & { operationId:string;employeeId:string;expectedRevision:number;
@@ -109,6 +110,32 @@ SELECT clock_timestamp()::text AS "observedAt",COALESCE(jsonb_agg(jsonb_build_ob
 ) ORDER BY s.id),'[]'::jsonb) AS cards${includeInternalCapture ? `,
 COALESCE(jsonb_agg(jsonb_build_object('employeeId',s.id,'source',s.current_source,'sourceHash',md5(s.current_source::text),'correctionFootprint',${timecardCorrectionCaptureSql}) ORDER BY s.id),'[]'::jsonb) AS "internalCurrentSources"` : ''} FROM sources s`;
 export const timecardReadSql=timecardReadSqlFor();
+// Pay treatment of each recorded break comes from the employee's payroll break rules,
+// read beside the hashed source (never inside it) and resolved on the server.
+const timecardBreakTypesSql=`SELECT b.id,b.break_type_id AS "typeId",t.employee_id AS "employeeId" FROM break_entries b
+  JOIN time_entries t ON t.id=b.time_entry_id JOIN employees e ON e.id=t.employee_id JOIN locations l ON l.id=e.primary_location_id
+  WHERE l.workspace_id=$1 AND ($2::boolean OR e.id=$3) AND t.clock_in_at<($5::date+3)::timestamptz
+    AND (t.clock_out_at IS NULL OR t.clock_out_at>($4::date-2)::timestamptz) ORDER BY b.id`;
+const timecardPayProfilesSql=`SELECT p.employee_id AS "employeeId",p.payload AS configuration FROM native_payroll_profiles_current p
+  JOIN employees e ON e.id=p.employee_id JOIN locations l ON l.id=e.primary_location_id
+  WHERE p.workspace_id=$1 AND l.workspace_id=$1 AND ($2::boolean OR e.id=$3) ORDER BY p.employee_id`;
+const missingPayProfiles=(error:unknown)=>object(error)&&String(error.code)==='42P01'&&/native_payroll_profiles_current/.test(String(error.message));
+function withBreakPay(row:unknown,types:unknown[],profiles:unknown[]):unknown{
+  if(!object(row)||!Array.isArray(row.cards))return row;
+  const typeIds=new Map<string,{typeId:string|null;employeeId:string}>();
+  for(const t of types)if(object(t)&&typeof t.id==='string'&&typeof t.employeeId==='string')typeIds.set(t.id,{typeId:typeof t.typeId==='string'?t.typeId:null,employeeId:t.employeeId});
+  const rows=profiles.filter(object).map(p=>({employeeId:String(p.employeeId),configuration:p.configuration}));
+  return {...row,cards:row.cards.map(card=>{
+    if(!object(card)||!object(card.source)||!Array.isArray(card.source.entries))return card;
+    const employeeId=String(card.source.employeeId);
+    const breaks:BreakPayQuery[]=card.source.entries.filter(object).flatMap(e=>Array.isArray(e.breaks)?e.breaks.filter(object).flatMap(b=>{
+      const known=typeIds.get(String(b.id));
+      if(!known||known.employeeId!==employeeId||typeof b.startAt!=='string'||!(b.endAt===null||typeof b.endAt==='string'))return [];
+      return [{id:String(b.id),employeeId,typeId:known.typeId,locationId:String(e.locationId),startAt:b.startAt,endAt:b.endAt as string|null}];
+    }):[]);
+    try{return {...card,breakPay:resolveBreakPay(rows.filter(r=>r.employeeId===employeeId),breaks)};}catch{return {...card,breakPay:{}};}
+  })};
+}
 
 async function readTimecardsCore(proof:SessionMutationProof,requested:Period,executor:SqlExecutor=neonNotificationExecutor(),capture?: (value: TimecardActionCapture) => void):Promise<TimecardsResult> {
   try{assertManagementProof(proof,proof?.employee?.id);}catch{return {state:'unavailable',reason:'access_denied'};}
@@ -120,9 +147,13 @@ async function readTimecardsCore(proof:SessionMutationProof,requested:Period,exe
       {text:'SELECT e.id FROM employees e JOIN locations l ON l.id=e.primary_location_id WHERE l.workspace_id=$1 AND ($2::boolean OR e.id=$3) ORDER BY e.id FOR SHARE OF e',values:[workspace.id,manager(proof),proof.employee.id]},
       ...managementSessionStatements(proof,proof.employee.id,readRoles),
     ];
-    const results=await executor.transaction([...guards,{text:capture ? timecardReadSqlFor(true) : timecardReadSql,values:[workspace.id,manager(proof),proof.employee.id,period.startDate,period.endDate]},
+    const values=[workspace.id,manager(proof),proof.employee.id,period.startDate,period.endDate];
+    const read=(withProfiles:boolean)=>executor.transaction([...guards,{text:capture ? timecardReadSqlFor(true) : timecardReadSql,values},
+      {text:timecardBreakTypesSql,values},...(withProfiles?[{text:timecardPayProfilesSql,values:values.slice(0,3)}]:[]),
       ...managementSessionStatements(proof,proof.employee.id,readRoles)]);
-    const result=parseTimecardsResponse(results[guards.length]?.[0],period);
+    let results,withProfiles=true;
+    try{results=await read(true);}catch(error){if(!missingPayProfiles(error))throw error;withProfiles=false;results=await read(false);}
+    const result=parseTimecardsResponse(withBreakPay(results[guards.length]?.[0],results[guards.length+1]??[],withProfiles?results[guards.length+2]??[]:[]),period);
     if(!manager(proof)&&result.cards.some(c=>c.card.employeeId!==proof.employee.id))throw new Error('Incorrect scope');
     const authority=await executor.query<{remaining:number}>({text:`SELECT floor(LEAST(45000,EXTRACT(epoch FROM(s.expires_at-clock_timestamp()))*1000))::integer AS remaining
       FROM employee_sessions s JOIN employees e ON e.id=s.employee_id JOIN locations l ON l.id=e.primary_location_id

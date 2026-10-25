@@ -43,8 +43,8 @@ export function entryPaidSeconds(card: Pick<Timecard, 'startAt' | 'endAt' | 'obs
 }
 
 /** Paid seconds for the whole card: the server's `paidSeconds` when present, otherwise the sum of its entries. */
-export function paidSeconds(card: Timecard, item?: { paidSeconds?: unknown }): number {
-  const server = finiteSeconds(item?.paidSeconds) ?? finiteSeconds((card as Timecard & { paidSeconds?: unknown }).paidSeconds);
+export function paidSeconds(card: Timecard, item?: object): number {
+  const server = finiteSeconds((item as { paidSeconds?: unknown } | undefined)?.paidSeconds) ?? finiteSeconds(card.paidSeconds);
   if (server !== null) return server;
   return card.entries.reduce((sum, entry) => sum + entryPaidSeconds(card, entry), 0);
 }

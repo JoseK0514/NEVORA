@@ -13,7 +13,7 @@ import { fica2026, prIncomeWithholding, sinotContribution, PR_2026_RULE_SOURCES 
 import { authorizedAmounts, employerAmounts, validateEmployerCoverage, validateEmployerYtdCounters } from "./obligations";
 import { allocatePolicyEarnings, collectPolicyAmount, recordPolicyAmount, usesOwnerPayrollPolicy, OWNER_PAYROLL_POLICY, OWNER_PAYROLL_POLICY_SHA256, type NativePolicyOperation } from './provisional-policy';
 const hash = (value: unknown) => createHash("sha256").update(stableExportJson(value)).digest("hex");
-export const NATIVE_CALCULATOR_VERSION = "NEVORA_NATIVE_WAGE_V10_OWNER_PROVISIONAL_POLICIES";
+export const NATIVE_CALCULATOR_VERSION = "NEVORA_NATIVE_WAGE_V11_SHIFT_START_DAY_MEAL_REVIEW";
 export const NATIVE_RULES_SHA256 = hash({ calculatorVersion: NATIVE_CALCULATOR_VERSION, sources: PR_2026_RULE_SOURCES, federalEmployeeCents: FEDERAL_EMPLOYEE_CENT_RULE_SOURCE, prIncomeCents: PR_FINAL_PERIODIC_HALF_UP_GUIDANCE, ownerPolicy: OWNER_PAYROLL_POLICY, boundarySources: NATIVE_BOUNDARY_RULE_SOURCES, minimumWage: ORDINARY_PR_MINIMUM_2026 });
 /** Calculate one employee from finalized recorded time, effective wage/tax profiles
  * and attested YTD within the supported PR/2026 scope. Amounts are USD cent strings;
@@ -46,9 +46,8 @@ export function calculateNativePayroll(input: NativePayrollInput): NativePayroll
             fail("RULESET_NOT_APPLICABLE");
         if (tax.effectiveFrom > input.payday || (tax.effectiveTo !== null && tax.effectiveTo <= input.payday))
             fail("TAX_PROFILE_REQUIRED");
+        // Overnight work never blocks: each entry is attributed to its start day.
         const classified = classifyRecordedTime(input);
-        if (!ownerPolicy && classified.boundaryEvidence.dailyInputDisposition !== "INVARIANT_NO_FIRST_MINUTE_ENTRIES")
-            fail("DAILY_BOUNDARY_SENSITIVE");
         const exactnessOperations: NativeExactnessOperation[] = [];
         const exactOnly = !ownerPolicy && (tax.prCentRounding === "UNVERIFIED" || input.wages.some(w => w.wageCentRounding === "UNVERIFIED"));
         const groups = new Map<string, {
@@ -90,7 +89,7 @@ export function calculateNativePayroll(input: NativePayrollInput): NativePayroll
             weeklyTrueUps.set(week, { amount: deficit.numerator > BigInt(0) ? deficit : ratio(BigInt(0)), duration: federalDuration });
         }
         for (const p of classified.pieces) {
-            if (p.start < classified.payLeft || p.end > classified.payRight)
+            if (!p.inPayPeriod)
                 continue;
             const duration = p.end - p.start, kind = p.overtime ? "OVERTIME" : "REGULAR";
             const basis = premiumBasis(p);
@@ -148,7 +147,7 @@ export function calculateNativePayroll(input: NativePayrollInput): NativePayroll
         for (const contribution of employerContributions)
             after.employerContributions[contribution.code] = (minor(before.employerContributions[contribution.code] ?? "0") + minor(contribution.amountMinor)).toString();
         const canonical = { schema: input.schema, employeeId: input.employeeId, period: input.period, payday: input.payday, frequency: input.frequency, timeZone: input.timeZone, timecards: input.timecards, wages: input.wages, tax: input.tax, ytd: input.ytd, deductions: input.deductions, ...(input.calculationPolicyReference !== undefined ? { calculationPolicyReference: input.calculationPolicyReference } : {}) };
-        return { state: "ready", schema: "NEVORA_NATIVE_PAYROLL_RESULT_V1", employeeId: input.employeeId, sourceAuthority: "NATIVE_RECORDED_TIME", currency: "USD", row: { employeeId: input.employeeId, grossMinor: gross.toString(), employeeDeductions, employerContributions, netMinor: net.toString(), earnings: earnings.map(e => ({ code: e.code, label: e.kind.replaceAll("_", " "), amountMinor: e.amountMinor })) }, breakdown: { earnings, regularNanoseconds: regular.toString(), overtimeNanoseconds: overtime.toString(), unpaidBreakNanoseconds: classified.unpaidBreakNanoseconds.toString(), locationIds: [...new Set(earnings.map(e => e.locationId))].sort(), taxYear: payday.year, ytdBefore: before, ytdAfter: after, taxes }, provenance: { federalEmployeeTax: { version: "NATIVE_FEDERAL_EMPLOYEE_COLLECTION_V1", ruleId: "26_CFR_31_3102_1_D", operations: fica.employeeTaxOperations }, boundaryEvidence: classified.boundaryEvidence, inputSha256: hash(canonical), rulesetId: "PR_STANDARD_2026_V1", rulesSha256: NATIVE_RULES_SHA256, rounding: ownerPolicy ? "OWNER_PROVISIONAL_PAYCHECK_ALLOCATION" : input.wages.every(w => w.wageCentRounding === "UNVERIFIED") ? "EXACT_CENT_NO_ROUNDING_REQUIRED" : "EARNING_GROUP_HALF_UP", taxRounding: income.rounding, exactnessOperations, ...(ownerPolicy ? { calculationPolicy: { id: OWNER_PAYROLL_POLICY.id, sha256: OWNER_PAYROLL_POLICY_SHA256, kind: OWNER_PAYROLL_POLICY.kind, operations: policyOperations } } : {}) } };
+        return { state: "ready", schema: "NEVORA_NATIVE_PAYROLL_RESULT_V1", employeeId: input.employeeId, sourceAuthority: "NATIVE_RECORDED_TIME", currency: "USD", row: { employeeId: input.employeeId, grossMinor: gross.toString(), employeeDeductions, employerContributions, netMinor: net.toString(), earnings: earnings.map(e => ({ code: e.code, label: e.kind.replaceAll("_", " "), amountMinor: e.amountMinor })) }, breakdown: { earnings, regularNanoseconds: regular.toString(), overtimeNanoseconds: overtime.toString(), unpaidBreakNanoseconds: classified.unpaidBreakNanoseconds.toString(), mealWarnings: classified.mealWarnings, locationIds: [...new Set(earnings.map(e => e.locationId))].sort(), taxYear: payday.year, ytdBefore: before, ytdAfter: after, taxes }, provenance: { federalEmployeeTax: { version: "NATIVE_FEDERAL_EMPLOYEE_COLLECTION_V1", ruleId: "26_CFR_31_3102_1_D", operations: fica.employeeTaxOperations }, boundaryEvidence: classified.boundaryEvidence, inputSha256: hash(canonical), rulesetId: "PR_STANDARD_2026_V1", rulesSha256: NATIVE_RULES_SHA256, rounding: ownerPolicy ? "OWNER_PROVISIONAL_PAYCHECK_ALLOCATION" : input.wages.every(w => w.wageCentRounding === "UNVERIFIED") ? "EXACT_CENT_NO_ROUNDING_REQUIRED" : "EARNING_GROUP_HALF_UP", taxRounding: income.rounding, exactnessOperations, ...(ownerPolicy ? { calculationPolicy: { id: OWNER_PAYROLL_POLICY.id, sha256: OWNER_PAYROLL_POLICY_SHA256, kind: OWNER_PAYROLL_POLICY.kind, operations: policyOperations } } : {}) } };
     }
     catch (error) {
         const e = error as Error & {

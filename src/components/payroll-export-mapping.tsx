@@ -8,7 +8,11 @@ import styles from './payroll-export.module.css';
 
 const sourceNames: Record<string, string> = {
   employeeId: 'NEVORA employee ID', employeeName: 'Employee name', providerEmployeeId: 'Mapped provider employee ID',
-  periodStart: 'Period first day', periodEnd: 'Period last day', recordedHours: 'Recorded elapsed hours (includes breaks)',
+  periodStart: 'Period first day', periodEnd: 'Period last day', paidHours: 'Paid hours (unpaid breaks removed)',
+  regularHours: 'Regular hours', overtimeHours: 'Overtime hours (1.5×)', doubleTimeHours: 'Double-time hours (2×)',
+  restDayHours: '7th-day hours (part of overtime)', unpaidBreakHours: 'Unpaid break hours', payableStatus: 'Payable hours status',
+  earningsCode: 'Earnings code (one row per kind of hours)', earningsHours: 'Hours for that earnings code',
+  recordedHours: 'Elapsed hours incl. breaks (not payable)',
   breakHours: 'Break hours (separate)', recordedNanoseconds: 'Exact recorded nanoseconds', breakNanoseconds: 'Exact break nanoseconds',
   revision: 'Finalized revision', sourceHash: 'Source fingerprint', constant: 'Fixed value',
 };
@@ -33,7 +37,7 @@ export function PayrollExportMapping({draft, setDraft, cards, reviewed, setRevie
         <div className={styles.fieldGrid}>
           <label><span>Profile name</span><input value={draft.name} maxLength={120} onChange={e => setDraft({...draft, name: e.target.value})} /></label>
           <label><span>Payroll product / edition</span><input value={draft.product} maxLength={120} onChange={e => setDraft({...draft, product: e.target.value})} /></label>
-          <label className={styles.wideField}><span>File layout</span><span className={styles.selectFrame}><select aria-label="File layout" value={draft.format} onChange={e => setDraft({...draft, format: e.target.value as ExportProfile['format'], ...(e.target.value === 'ADP_RUN_GENERIC_V1' ? {columns: adpRunColumns(), dateFormat: 'US', hourDecimals: 2} : {columns: neutralProfile().columns})})}>
+          <label className={styles.wideField}><span>File layout</span><span className={styles.selectFrame}><select aria-label="File layout" value={draft.format} onChange={e => setDraft({...draft, format: e.target.value as ExportProfile['format'], ...(e.target.value === 'ADP_RUN_GENERIC_V1' ? {columns: adpRunColumns(), dateFormat: 'US', hourDecimals: 2, earningsCodes: draft.earningsCodes ?? {regular: '', overtime: null, doubleTime: null}} : {columns: neutralProfile().columns, earningsCodes: undefined})})}>
             <option value="CUSTOM_CSV">Configurable CSV from a verified template</option><option value="ADP_RUN_GENERIC_V1">ADP RUN generic v1 · verify account template</option>
           </select></span></label>
           <label className={styles.wideField}><span>Verified import requirements / template reference</span><textarea aria-label="Verified import requirements / template reference" value={draft.verifiedRequirements} maxLength={600} onChange={e => setDraft({...draft, verifiedRequirements: e.target.value})} /></label>
@@ -58,12 +62,18 @@ export function PayrollExportMapping({draft, setDraft, cards, reviewed, setRevie
         </div>)}
         <button type="button" className={styles.button} disabled={draft.format === 'ADP_RUN_GENERIC_V1' || draft.columns.length >= 20} onClick={() => setDraft({...draft, columns: [...draft.columns, {header: `Column ${draft.columns.length + 1}`, source: 'constant', constant: ''}]})}><PlusIcon size={18} aria-hidden="true" />Add column</button>
       </div>
+      {(draft.format === 'ADP_RUN_GENERIC_V1' || draft.columns.some(c => c.source === 'earningsCode' || c.source === 'earningsHours')) && <div className={styles.mappingSection}>
+        <h3>Earnings codes</h3><p className={styles.note}>Each person gets a row of regular hours, plus a row of overtime or double-time hours when they have them. Use the codes from your payroll system.</p>
+        <div className={styles.fieldGrid}>
+          {(['regular', 'overtime', 'doubleTime'] as const).map(kind => <label key={kind}><span>{kind === 'regular' ? 'Regular hours code' : kind === 'overtime' ? 'Overtime hours code' : 'Double-time hours code (if used)'}</span><input value={draft.earningsCodes?.[kind] ?? ''} maxLength={10} onChange={e => { const codes = draft.earningsCodes ?? {regular: '', overtime: null, doubleTime: null}; setDraft({...draft, earningsCodes: {...codes, [kind]: kind === 'regular' ? e.target.value : e.target.value || null}}); }} /></label>)}
+        </div>
+      </div>}
       <div className={styles.mappingSection}>
         <h3>Provider employee identifiers</h3><p className={styles.note}>Use the identifiers from your payroll system when your template requires them.</p>
         <div className={styles.fieldGrid}>{cards.map(c => <label key={c.card.employeeId}><span>{c.card.employeeName}</span><input value={draft.employeeMappings.find(m => m.employeeId === c.card.employeeId)?.providerEmployeeId ?? ''} maxLength={100} onChange={e => setDraft({...draft, employeeMappings: [...draft.employeeMappings.filter(m => m.employeeId !== c.card.employeeId), ...(e.target.value ? [{employeeId: c.card.employeeId, providerEmployeeId: e.target.value}] : [])]})} /></label>)}</div>
       </div>
       <div className={styles.mappingFooter}>
-        <label className={styles.reviewCheck}><input type="checkbox" checked={reviewed} onChange={e => setReviewed(e.target.checked)} /><span>I verified the required fields and employee identifiers. I reviewed the recorded-time basis, including breaks, and any selected rounding against my import requirements.</span></label>
+        <label className={styles.reviewCheck}><input type="checkbox" checked={reviewed} onChange={e => setReviewed(e.target.checked)} /><span>I verified the required fields, earnings codes and employee identifiers. I reviewed which hours each column exports and any selected rounding against my import requirements.</span></label>
         <button type="button" className={`${styles.button} ${styles.primary}`} disabled={!reviewed} onClick={save}><FloppyDiskIcon size={18} aria-hidden="true" />Save mapping profile</button>
       </div>
     </fieldset>

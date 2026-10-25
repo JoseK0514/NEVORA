@@ -131,20 +131,22 @@ it('shows the employee their paid time, breaks separately, and a day without pun
  expect(page).toContain('aria-label="Period start"');expect(page).toContain('aria-label="Period end"');expect(page).toContain('View period');
 });
 
-it('prefers the server’s paidSeconds when it is present (Team P)',async()=>{
- manager=false;actorId='E1';cardsFor=()=>[{...card('E1'),paidSeconds:8*3600+1800}];
+it('shows the payroll engine’s paid time when the server classifies the break (Team P)',async()=>{
+ // A paid rest is not taken off: 10 h elapsed stays 10 h paid. The fallback would have said 9 h.
+ manager=false;actorId='E1';cardsFor=()=>[{...card('E1'),breakPay:{'break-1':{pay:'PAID',kind:'REST',mealMinimumMinutes:60}}}];
  await mount();
- expect(html()).toMatch(/<b>Worked<\/b><\/span><span class="q-rv q-rv--l">8 h 30 min</);
+ expect(html()).toMatch(/<b>Worked<\/b><\/span><span class="q-rv q-rv--l">10 h</);
 });
 
 it('shows meal-period warnings as calm rows when the server sends them (Jose, Oct 25)',async()=>{
- manager=false;actorId='E1';cardsFor=()=>[{...card('E1'),mealWarnings:[{date:'2026-09-22',kind:'MEAL_TOO_EARLY'},{date:'2026-09-23',kind:'MEAL_TOO_SHORT',minutes:20},{date:'bad',kind:'NOPE'}]}];
+ // A 20-minute unpaid meal one hour into the shift (9:00 AM in Puerto Rico): too early and too short.
+ const early={...entry,breaks:[{...meal,startAt:'2026-09-22T13:00:00Z',endAt:'2026-09-22T13:20:00Z',rawStartAt:'2026-09-22T13:00:00Z',rawEndAt:'2026-09-22T13:20:00Z'}]};
+ manager=false;actorId='E1';cardsFor=()=>[{...card('E1',{entries:[early]}),breakPay:{'break-1':{pay:'UNPAID',kind:'MEAL',mealMinimumMinutes:60}}}];
  await mount();
  const page=html();
  expect(page).toContain('Meal periods');
  expect(page).toContain('<b>Meal break started before the 2nd hour ended</b><i>Tue, Sep 22</i>');
- expect(page).toContain('<b>Meal break was 20 min</b><i>Wed, Sep 23</i>');
- expect(page).not.toContain('NOPE');
+ expect(page).toContain('<b>Meal break was 20 min</b><i>Tue, Sep 22</i>');
 });
 
 it('renders no meal rows when the field is absent, on the Owner sheet too',async()=>{
