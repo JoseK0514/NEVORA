@@ -159,14 +159,15 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  const refreshCurrent=()=>{explicitRefresh.current=true;navigation?.discard();controls.current?.recover();};
  const ready=!recovery.required&&!!observation&&body.phase==='ready'&&body.authority===observation.authority;
  // Every tab tap runs a fresh check (about a second on the hosted preview). It draws the page's own quiet shape; only a
- // check still unresolved after STUCK_MS shows its words and Refresh current view, so a stuck view keeps a way back.
+ // check still unresolved after STUCK_MS (or begun while a page change waits) shows its words and Refresh current view.
  const [stuck,setStuck]=useState(false);
  useEffect(()=>{
   if(ready)return;
-  const timer=setTimeout(()=>setStuck(true),STUCK_MS);
+  // A check that starts while a page change is still waiting is the stuck case: its way back shows at once.
+  const timer=setTimeout(()=>setStuck(true),navigation?.pending()?0:STUCK_MS);
   // The check ended (or the frame left): the next check starts quiet again.
   return()=>{clearTimeout(timer);setStuck(false);};
- },[ready]);
+ },[ready,navigation]);
 
  if(ready)return body.content;
  if(!observation&&unavailable)return <div className="scoped-unavailable">{unavailable}<button className="button secondary scoped-unavailable__refresh" type="button" onClick={refreshCurrent}>Refresh current view</button></div>;
