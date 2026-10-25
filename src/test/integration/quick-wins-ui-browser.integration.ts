@@ -66,8 +66,8 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
               expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2), engine + ' ' + actor + ' ' + path + ' ' + width).toBe(true);
             }
             if (path === '/app') {
-              await page.locator('#home-timeline').waitFor();
-              expect(await page.locator('#home-timeline').textContent()).toContain('Fictional Owner');
+              // Quiet Home (Team U1/v4): Right now counts the unscheduled clock-in (no shift today), and opens On shift.
+              await page.locator('#home-working').getByRole('link', { name: '1 on shift, open On shift', exact: true }).waitFor();
               checks.push(engine + ': ' + actor + ' unscheduled-only Home timeline');
             }
             if (path === '/app/timecards') {
@@ -106,7 +106,9 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
           for (const path of ['/app/settings', '/app/settings/branding', '/app/settings/positions']) {
             await visit(path);
             if (actor === 'QW-MANAGER') {
-              await page.getByText('Only Owners can open Settings.', { exact: true }).waitFor();
+              // The Quiet "Owners only" system state (Team U1) in place of the old notice; nothing on the page is read.
+              await page.getByRole('heading', { name: 'Owners only', exact: true }).waitFor();
+              await page.getByText('Ask an Owner if you need a change here.', { exact: true }).waitFor();
               expect(new URL(page.url()).pathname).toBe(path);
               expect(await page.getByRole('button', { name: /Save/ }).count()).toBe(0);
             } else await page.locator('main').getByRole('heading', { level: 1 }).first().waitFor();
