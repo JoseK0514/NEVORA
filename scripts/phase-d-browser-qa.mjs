@@ -270,12 +270,19 @@ try{
         animations:target?.getAnimations().map(animation=>animation.playState)??[]};
     },'correction-'+submittedBody.requestId)});};
     try{
-      const correctionLink=await selectInboxItem('TIME_CORRECTION:'+submittedBody.requestId);await correctionLink.click({delay:100});await center.locator('.inbox-detail__actions a').first().click();
+      // Team U1: once the correction queue confirms it, Inbox › Requests shows the shared decision row, which opens in
+      // place by pointer. The Inbox's own link for the item (used when the queue can't be read) opens On shift at it.
+      await chooseInboxFilter('requests','Requests');const inboxRow=center.locator('[id="correction-'+submittedBody.requestId+'"]');
+      await inboxRow.locator('summary').click({delay:100});await inboxRow.locator('details[open]').waitFor();
+      await inboxRow.getByRole('button',{name:'Approve correction for Avery Period QA',exact:true}).waitFor();
+      const correctionHref=await center.locator('[data-inbox-key="TIME_CORRECTION:'+submittedBody.requestId+'"]').getAttribute('href');
+      assert.equal(correctionHref,'/app?view=attendance#correction-'+submittedBody.requestId);await mp.goto(app.url+correctionHref);
       const targetedCorrection=mp.locator('main [id="correction-'+submittedBody.requestId+'"]');
       await waitUntil(()=>releaseAttendance);await targetedCorrection.waitFor({state:'attached'});
       await mp.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
       await recordFocus('protected-row-ready-attendance-held');
-      assert.equal(focusEvidence.states.at(-1).sectionDisplay,'none');assert.equal(focusEvidence.states.at(-1).targetFocused,false);
+      // Focus never lands on a request that is not shown (On shift may show corrections before Attendance arrives).
+      {const held=focusEvidence.states.at(-1);assert(held.sectionDisplay!=='none'||held.targetFocused===false,'A hidden correction request is never focused');}
       await releaseAttendance();releaseAttendance=null;await mp.unroute(attendancePattern);
       await targetedCorrection.waitFor();await waitUntilAsync(()=>targetedCorrection.evaluate(e=>document.activeElement===e));
       await recordFocus('revealed-and-focused');checked(engine+': D7 pointer Inbox correction detail opens and focuses the protected request');
