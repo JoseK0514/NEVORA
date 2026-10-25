@@ -34,6 +34,10 @@ async function waitUntilAsync(test){const deadline=Date.now()+15000;while(!await
 const checked=name=>{report.checks.push(name);console.log('[Phase D browser] PASS '+name);};
 let app,smtp,currentPage,recoveryEmployee,lifecycle='setup';const browsers=[];
 const url='/app/timecards?start=2026-09-21&end=2026-09-27';
+// Quiet timecards (Team U4): the Employee's card, and the Owner/Manager sheet's status row and history rows.
+const MY_TIMECARD='section[aria-label="Your timecard"]';
+const sheetState=(card,state)=>card.locator('#tc-sheet-period li',{hasText:'Status'}).locator('.q-rv',{hasText:new RegExp(`^${state}$`)});
+const sheetHistory=(card,action)=>card.locator('#tc-sheet-history li').filter({hasText:new RegExp(`^${action} · Revision \\d+`)}).first();
 async function issueAssistedRecovery(page,employeeId,attestation){
  await page.getByLabel('Employee ID',{exact:true}).fill(employeeId);
  await page.getByRole('combobox',{name:'How you checked who they are',exact:true}).selectOption('other');
@@ -103,37 +107,44 @@ try{
       assert.equal(report.rscCaughtErrorControl.observerVerified,true,'Caught RSC error observation must retain both network and processing controls without suppressing console output');
     }
     const {context:employee,page:ep}=await context(browser,'D3-E');await ep.goto(app.url+url);
-    await ep.getByRole('heading',{name:'Your timecard',exact:true}).waitFor();assert.equal(await ep.getByRole('article').count(),1);
-    assert(await ep.getByRole('article').getByText('8h',{exact:true}).first().isVisible());assert(await ep.getByRole('article').getByText('30m',{exact:true}).first().isVisible());checked(engine+': employee self period and break totals');
+    // Team U4 (T-17) and Team P: the Quiet timecard. Totals: Worked is paid time (8 h less the unpaid 30 min break),
+    // Breaks are shown separately. The period fields are in the "Other dates" sheet.
+    await ep.locator(MY_TIMECARD).waitFor();assert.equal(await ep.locator(MY_TIMECARD).count(),1);
+    const totals=ep.locator(MY_TIMECARD).locator('#tc-totals');
+    assert.equal(await totals.locator('li',{hasText:'Worked'}).locator('.q-rv').innerText(),'7 h 30 min');
+    assert.equal(await totals.locator('li',{hasText:'Breaks'}).locator('.q-rv').innerText(),'30 min');
+    assert(await totals.locator('li',{hasText:'Worked'}).isVisible());checked(engine+': employee self period and break totals');
     await ep.getByRole('link',{name:/Request a correction/}).waitFor();
+    await ep.getByRole('button',{name:'Other dates',exact:true}).click();await ep.locator('form[aria-label="Choose a period"]').waitFor();
     for(const width of [320,375,390,430,768,1024,1440]){
       await ep.setViewportSize({width,height:1000});
       const geometry=await ep.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,
-        controls:[...document.querySelectorAll('section[aria-label="Your period timecard"] button,section[aria-label="Your period timecard"] input,form[aria-label="Choose a period"] input,form[aria-label="Choose a period"] button,button[aria-label="Refresh timecards"]')].map(e=>{const box=e.getBoundingClientRect(),style=getComputedStyle(e);return {tag:e.tagName,type:e.getAttribute('type'),label:e.getAttribute('aria-label')??(e.tagName==='BUTTON'?e.textContent?.trim():e.closest('label')?.textContent?.trim()),className:e.className,height:box.height,width:box.width,display:style.display,visibility:style.visibility,minimum:style.minHeight,rendered:e.getClientRects().length>0&&style.visibility!=='hidden'&&style.visibility!=='collapse'};})}));
+        controls:[...document.querySelectorAll('section[aria-label="Your timecard"] button,section[aria-label="Your timecard"] input,form[aria-label="Choose a period"] input,form[aria-label="Choose a period"] button')].map(e=>{const box=e.getBoundingClientRect(),style=getComputedStyle(e);return {tag:e.tagName,type:e.getAttribute('type'),label:e.getAttribute('aria-label')??(e.tagName==='BUTTON'?e.textContent?.trim():e.closest('label')?.textContent?.trim()),className:e.className,height:box.height,width:box.width,display:style.display,visibility:style.visibility,minimum:style.minHeight,rendered:e.getClientRects().length>0&&style.visibility!=='hidden'&&style.visibility!=='collapse'};})}));
       // A phone-only disclosure stays in the shared tree but is display:none on desktop.
       // Preserve every raw node; the same target threshold applies to actual rendered controls.
       (report.employeeControlGeometry??=[]).push({engine,viewport:width,...geometry});
       await writeFile(join(evidence,'employee-control-geometry-report.json'),JSON.stringify({checkpoint:report.checkpoint,tree:report.tree,measurements:report.employeeControlGeometry},null,2));
       const rendered=geometry.controls.filter(control=>control.rendered);
-      assert(geometry.scroll<=geometry.width+2,`${engine} ${width} page overflow`);assert(rendered.length>=4,'Both period inputs and both form actions are rendered');assert(rendered.every(control=>control.height>=43.5),`${engine} ${width} rendered period controls keep the existing target floor`);checked(`${engine}: employee geometry ${width}`);
+      assert(geometry.scroll<=geometry.width+2,`${engine} ${width} page overflow`);assert(rendered.length>=4,'Both period inputs and both form actions (Cancel, View period) are rendered');assert(rendered.every(control=>control.height>=43.5),`${engine} ${width} rendered period controls keep the existing target floor`);checked(`${engine}: employee geometry ${width}`);
     }
-    await ep.getByLabel('Period start').focus();assert(await ep.getByLabel('Period start').evaluate(e=>document.activeElement===e));await ep.keyboard.press('Tab');checked(engine+': period keyboard focus');
+    await ep.getByLabel('Period start').focus();assert(await ep.getByLabel('Period start').evaluate(e=>document.activeElement===e));await ep.keyboard.press('Tab');assert(await ep.getByLabel('Period end').evaluate(e=>document.activeElement===e));checked(engine+': period keyboard focus');
+    await ep.getByRole('button',{name:'Cancel',exact:true}).click();await ep.locator('form[aria-label="Choose a period"]').waitFor({state:'hidden'});
     const {context:management,page:mp}=await context(browser,'D3-M');await mp.goto(app.url+url);
     const card=mp.getByRole('dialog');
     const openCard=async()=>{await mp.locator('#timecard-D3-E').getByRole('button').click();await card.getByRole('heading',{name:/^(Avery|Renamed) Period QA$/}).waitFor();};
     const refreshCards=async()=>{await card.getByRole('button',{name:'Done',exact:true}).click();await mp.getByRole('button',{name:'Refresh timecards',exact:true}).click();await openCard();};
     await openCard();
-    await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Approved$/}).waitFor();
-    await card.getByRole('button',{name:'Finalize period',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Finalized$/}).waitFor();
+    await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await sheetState(card,'Approved').waitFor();
+    await card.getByRole('button',{name:'Finalize period',exact:true}).click();await sheetState(card,'Finalized').waitFor();
     const frozenRevisions=await q("SELECT to_jsonb(t) AS row FROM timecard_revisions t WHERE employee_id='D3-E' ORDER BY revision");
     const labels=await q("SELECT name,short_name FROM locations WHERE id='loc-1'");
     await q("UPDATE employees SET first_name='Renamed' WHERE id='D3-E'");await q("UPDATE locations SET name='Renamed historical location',short_name='Renamed' WHERE id='loc-1'");
-    await refreshCards();await card.getByRole('definition').filter({hasText:/^Finalized$/}).waitFor();
-    await card.getByLabel('Reopen reason').fill('Fictional correction review needs a new revision.');await card.getByRole('button',{name:'Reopen period',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Reopened$/}).waitFor();
+    await refreshCards();await sheetState(card,'Finalized').waitFor();
+    await card.getByLabel('Reopen reason').fill('Fictional correction review needs a new revision.');await card.getByRole('button',{name:'Reopen period',exact:true}).click();await sheetHistory(card,'Reopened').waitFor();
     assert.deepEqual(await q("SELECT to_jsonb(t) AS row FROM timecard_revisions t WHERE employee_id='D3-E' AND revision<=(SELECT max(revision)-1 FROM timecard_revisions WHERE employee_id='D3-E') ORDER BY revision"),frozenRevisions);
     await q("UPDATE employees SET first_name='Avery' WHERE id='D3-E'");await q("UPDATE locations SET name=$1,short_name=$2 WHERE id='loc-1'",[labels[0].name,labels[0].short_name]);
-    await refreshCards();await card.getByRole('definition').filter({hasText:/^Reopened$/}).waitFor();checked(engine+': D-AUD-001 actual reopen after employee/location labels change preserves finalized history');
-    assert.match(await card.textContent(),/Historical revisions \(3\)/);checked(engine+': actual Manager approve-finalize-reopen with history');
+    await refreshCards();await sheetHistory(card,'Reopened').waitFor();checked(engine+': D-AUD-001 actual reopen after employee/location labels change preserves finalized history');
+    assert.equal(await card.locator('#tc-sheet-history li').count(),3);checked(engine+': actual Manager approve-finalize-reopen with history');
     for(const width of [320,375,390,430,768,1024,1440]){
       await mp.setViewportSize({width,height:1000});
       const geometry=await mp.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,overflow:[...document.querySelectorAll('*')].filter(e=>getComputedStyle(e).display!=='none'&&(e.getBoundingClientRect().right+window.scrollX>document.documentElement.clientWidth+2||e.scrollWidth>e.clientWidth+2)).map(e=>({tag:e.tagName,class:e.className,width:e.getBoundingClientRect().width,right:e.getBoundingClientRect().right,scroll:e.scrollWidth,client:e.clientWidth,minWidth:getComputedStyle(e).minWidth,whiteSpace:getComputedStyle(e).whiteSpace})).slice(-25)}));
@@ -141,12 +152,14 @@ try{
       assert(geometry.scroll<=geometry.width+2,`${engine} ${width} manager overflow`);checked(`${engine}: manager geometry ${width}`);
     }
     const screen=join(evidence,`${engine}-timecards-390.png`);await mp.setViewportSize({width:390,height:1000});await mp.screenshot({path:screen,fullPage:true});report.screenshots.push(screen);
-    await employee.setOffline(true);await ep.evaluate(()=>window.dispatchEvent(new Event('offline')));assert.equal(await ep.getByRole('article').count(),0);checked(engine+': offline clears private period data');
-    await employee.setOffline(false);await ep.evaluate(()=>window.dispatchEvent(new Event('online')));await ep.getByRole('heading',{name:'Your timecard',exact:true}).waitFor();
+    await employee.setOffline(true);await ep.evaluate(()=>window.dispatchEvent(new Event('offline')));assert.equal(await ep.locator(MY_TIMECARD).count(),0);checked(engine+': offline clears private period data');
+    await employee.setOffline(false);await ep.evaluate(()=>window.dispatchEvent(new Event('online')));await ep.locator(MY_TIMECARD).waitFor();
     await ep.route('**/api/timecards',route=>route.fulfill({status:503,contentType:'application/json',body:'{"state":"unavailable","reason":"read_failed"}'}));
-    await ep.getByRole('button',{name:'Refresh timecards',exact:true}).click();await ep.getByRole('status').filter({hasText:'Couldn’t load timecards'}).waitFor();assert.equal(await ep.getByRole('article').count(),0);checked(engine+': read error clears stale totals');
+    // No Refresh button on the Quiet view: View period on the same dates reads the period again.
+    await ep.getByRole('button',{name:'Other dates',exact:true}).click();await ep.getByRole('button',{name:'View period',exact:true}).click();
+    await ep.getByRole('heading',{name:'Couldn’t load your timecard',exact:true}).waitFor();assert.equal(await ep.locator(MY_TIMECARD).count(),0);checked(engine+': read error clears stale totals');
     await ep.unroute('**/api/timecards');
-    const {context:lead,page:lp}=await context(browser,'D3-L');await lp.goto(app.url+url);await lp.getByRole('heading',{name:'Your timecard',exact:true}).waitFor();
+    const {context:lead,page:lp}=await context(browser,'D3-L');await lp.goto(app.url+url);await lp.locator(MY_TIMECARD).waitFor();
     assert.equal(await lp.getByRole('button',{name:'Approve timecard',exact:true}).count(),0);checked(engine+': Lead self-service without management controls');
     currentPage=mp;
     // Exercise the real protected return even where headless windows keep focus.
@@ -176,7 +189,7 @@ try{
       (report.managerReturn??=[]).push({engine,lifecycle:'explicit blur/focus',responseStatus:response.status(),bodyFinished:true,observedAt:current.observedAt,validForMs:current.validForMs,period:current.period,elapsedMs:15000-(returnDeadline-performance.now())});
     },returnDeadline);
     checked(engine+': controlled Manager return hides retired cards and completes a fresh exact-period read within the original deadline');
-    await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Approved$/}).waitFor();await card.getByRole('button',{name:'Finalize period',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Finalized$/}).waitFor();
+    await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await sheetState(card,'Approved').waitFor();await card.getByRole('button',{name:'Finalize period',exact:true}).click();await sheetState(card,'Finalized').waitFor();
     await mp.goto(app.url+'/app/payroll-export?start=2026-09-21&end=2026-09-27');await mp.getByRole('button',{name:'Export finalized time',exact:true}).click();await mp.locator('.q-export-phone').getByRole('button',{name:/^Time file/}).waitFor();checked(engine+': Quiet phone finalized export produces current files');await mp.setViewportSize({width:1440,height:1000});await mp.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
     await mp.getByRole('checkbox',{name:/Avery Period QA/}).check();await mp.getByRole('button',{name:'Generate reviewed export',exact:true}).click();await mp.getByRole('button',{name:'Download mapped CSV',exact:true}).waitFor();checked(engine+': finalized neutral export receipt verified');
     for(const [name,extension] of [['Download mapped CSV','csv'],['Download canonical time record','json']]){const waiting=mp.waitForEvent('download');await mp.getByRole('button',{name,exact:true}).click();const file=await waiting;await file.saveAs(join(evidence,`${engine}-payroll-neutral.${extension}`));}checked(engine+': canonical and mapped export downloads');await settled(mp);
@@ -201,14 +214,14 @@ try{
     await management.setOffline(false);await mp.evaluate(()=>window.dispatchEvent(new Event('online')));await mp.getByRole('heading',{name:'Hours by person',exact:true}).waitFor();
     await mp.route('**/api/reports',route=>route.fulfill({status:403,contentType:'application/json',body:'{"state":"unavailable"}'}));await mp.getByRole('button',{name:'Refresh',exact:true}).click();await mp.getByRole('heading',{name:'Your session ended',exact:true}).waitFor();assert.equal(await mp.getByRole('heading',{name:'Hours by person',exact:true}).count(),0);checked(engine+': report authorization-loss clearing');
     await lp.goto(app.url+'/app/reports');await lp.waitForURL(u=>u.pathname==='/app');checked(engine+': Lead denied reports');
-    await mp.bringToFront();currentPage=mp;const corrections=mp.locator('main .manager-corrections');let releaseQueue;await mp.route('**/api/manager/time-corrections',route=>new Promise(resolve=>{releaseQueue=()=>route.continue().then(resolve);}));
-    await mp.goto(app.url+'/app?view=attendance');await corrections.getByText('Loading correction requests',{exact:true}).waitFor();assert.equal(await corrections.getByText('No correction requests',{exact:true}).count(),0);checked(engine+': UX-04 loading never claims empty');
-    await waitUntil(()=>releaseQueue);assert(releaseQueue);await releaseQueue();await mp.unroute('**/api/manager/time-corrections');await corrections.getByText('No correction requests',{exact:true}).waitFor();checked(engine+': UX-04 verified empty');
+    await mp.bringToFront();currentPage=mp;const corrections=mp.locator('main #on-shift-corrections');let releaseQueue;await mp.route('**/api/manager/time-corrections',route=>new Promise(resolve=>{releaseQueue=()=>route.continue().then(resolve);}));
+    await mp.goto(app.url+'/app?view=attendance');await corrections.getByText('Checking correction requests…',{exact:true}).waitFor();assert.equal(await corrections.locator('li.u1-correction').count(),0);checked(engine+': UX-04 loading never claims empty');
+    await waitUntil(()=>releaseQueue);assert(releaseQueue);await releaseQueue();await mp.unroute('**/api/manager/time-corrections');await corrections.waitFor({state:'detached'});checked(engine+': UX-04 verified empty');
     const requestId=crypto.randomUUID(),submitted=await boundCorrectionPost(ep.request,app.url+'/api/employee/time-corrections',{headers:{origin:app.url,'x-nevora-time-correction':'1'},data:{operationId:requestId,kind:'MISSING_ENTRY',locationId:'loc-1',proposedStartAt:'2026-09-28T12:00:00Z',proposedEndAt:'2026-09-28T13:00:00Z',reason:'Fictional completed work for queue verification'}});assert(submitted.ok());const submittedBody=await submitted.json();
-    await mp.evaluate(()=>window.dispatchEvent(new Event('nevora:time-correction-changed')));await corrections.locator('.manager-correction-row').filter({hasText:'Avery Period QA'}).waitFor();checked(engine+': UX-04 actual pending queue');
-    await management.setOffline(true);await mp.evaluate(()=>window.dispatchEvent(new Event('offline')));await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();assert.equal(await corrections.locator('.manager-correction-row').count(),0);assert.equal(await corrections.getByText('No correction requests',{exact:true}).count(),0);checked(engine+': UX-04 offline clears names and no false all-clear');
-    releaseQueue=null;await mp.route('**/api/manager/time-corrections',route=>new Promise(resolve=>{releaseQueue=()=>route.continue().then(resolve);}));await management.setOffline(false);await mp.evaluate(()=>window.dispatchEvent(new Event('online')));await corrections.getByText('Loading correction requests',{exact:true}).waitFor();assert.equal(await corrections.getByText('No correction requests',{exact:true}).count(),0);await waitUntil(()=>releaseQueue);assert(releaseQueue);await releaseQueue();await mp.unroute('**/api/manager/time-corrections');await corrections.locator('.manager-correction-row').waitFor();checked(engine+': UX-04 reconnecting remains unconfirmed until response');
-    await mp.route('**/api/manager/time-corrections',route=>route.fulfill({status:403,contentType:'application/json',body:'{"state":"unavailable"}'}));await mp.evaluate(()=>window.dispatchEvent(new Event('nevora:time-correction-changed')));await corrections.getByText('Correction access ended',{exact:true}).waitFor();assert.equal(await corrections.locator('.manager-correction-row').count(),0);assert.equal(await corrections.getByText('No correction requests',{exact:true}).count(),0);checked(engine+': UX-04 authorization-loss privacy state');await mp.unroute('**/api/manager/time-corrections');
+    await mp.evaluate(()=>window.dispatchEvent(new Event('nevora:time-correction-changed')));await corrections.locator('li.u1-correction').filter({hasText:'Avery Period QA'}).waitFor();checked(engine+': UX-04 actual pending queue');
+    await management.setOffline(true);await mp.evaluate(()=>window.dispatchEvent(new Event('offline')));await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();assert.equal(await corrections.locator('li.u1-correction').count(),0);assert.equal(await corrections.locator('li.u1-correction').count(),0);checked(engine+': UX-04 offline clears names and no false all-clear');
+    releaseQueue=null;await mp.route('**/api/manager/time-corrections',route=>new Promise(resolve=>{releaseQueue=()=>route.continue().then(resolve);}));await management.setOffline(false);await mp.evaluate(()=>window.dispatchEvent(new Event('online')));await corrections.getByText('Checking correction requests…',{exact:true}).waitFor();assert.equal(await corrections.locator('li.u1-correction').count(),0);await waitUntil(()=>releaseQueue);assert(releaseQueue);await releaseQueue();await mp.unroute('**/api/manager/time-corrections');await corrections.locator('li.u1-correction').waitFor();checked(engine+': UX-04 reconnecting remains unconfirmed until response');
+    await mp.route('**/api/manager/time-corrections',route=>route.fulfill({status:403,contentType:'application/json',body:'{"state":"unavailable"}'}));await mp.evaluate(()=>window.dispatchEvent(new Event('nevora:time-correction-changed')));await corrections.getByText('Sign in again to review corrections.',{exact:true}).waitFor();assert.equal(await corrections.locator('li.u1-correction').count(),0);assert.equal(await corrections.locator('li.u1-correction').count(),0);checked(engine+': UX-04 authorization-loss privacy state');await mp.unroute('**/api/manager/time-corrections');
     assert.equal((await mp.request.post(app.url+'/api/timecards',{headers:{origin:app.url,'x-nevora-timecards':'1','x-nevora-actor':'D3-E'},data:{startDate:'2026-09-21',endDate:'2026-09-27'}})).status(),403);assert.equal((await mp.request.post(app.url+'/api/manager/timecards',{headers:{origin:app.url,'x-nevora-timecards':'1','x-nevora-actor':'D3-E'},data:{action:'APPROVE'}})).status(),403);checked(engine+': D8 identity-switched actor cannot read or replay timecard commands');
     const periodRead=await mp.request.post(app.url+'/api/timecards',{headers:{origin:app.url,'x-nevora-timecards':'1','x-nevora-actor':'D3-M'},data:{startDate:'2026-09-21',endDate:'2026-09-27'}});assert(periodRead.ok());const reviewed=(await periodRead.json()).cards.find(item=>item.card.employeeId==='D3-E');assert(reviewed);
     const reopened=await mp.request.post(app.url+'/api/manager/timecards',{headers:{origin:app.url,'x-nevora-timecards':'1','x-nevora-actor':'D3-M'},data:{operationId:crypto.randomUUID(),employeeId:'D3-E',startDate:'2026-09-21',endDate:'2026-09-27',expectedRevision:reviewed.revision,expectedSourceHash:reviewed.sourceHash,action:'REOPEN',note:'Fictional D7 context review.'}});assert(reopened.ok());
@@ -247,7 +260,7 @@ try{
       const target=document.getElementById(id),active=document.activeElement;
       return {path:location.pathname,hashMatches:location.hash==='#'+id,view:new URL(location.href).searchParams.get('view'),documentFocused:document.hasFocus(),visibility:document.visibilityState,readyState:document.readyState,
         activeTag:active?.tagName??null,targetFocused:active===target,targetConnected:!!target?.isConnected,targetTabIndex:target?.tabIndex??null,targetRects:target?.getClientRects().length??0,
-        sectionDisplay:target?.closest('.manager-corrections')?getComputedStyle(target.closest('.manager-corrections')).display:null,
+        sectionDisplay:target?.closest('#on-shift-corrections')?getComputedStyle(target.closest('#on-shift-corrections')).display:null,
         attendanceBusy:document.querySelector('.attendance-review-summary')?.getAttribute('aria-busy'),
         animations:target?.getAnimations().map(animation=>animation.playState)??[]};
     },'correction-'+submittedBody.requestId)});};
