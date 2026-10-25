@@ -653,8 +653,8 @@ html[data-theme="dark"] body .app-shell[data-nv-quiet] .portal-route-state:not([
 :is(#q-root, html) .q-glance { display: grid; grid-template-columns: repeat(7, 1fr); margin: 12px 12px 0; padding: 0; list-style: none; }
 :is(#q-root, html) .q-glance a { display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 44px; color: inherit; text-decoration: none; border-radius: 12px; }
 :is(#q-root, html) .q-glance a:focus-visible { outline: 2px solid var(--q-teal); outline-offset: 2px; }
-:is(#q-root, html) .q-glance small { font-size: 13px; line-height: 18px; font-weight: 500; color: var(--q-soft); }
-:is(#q-root, html) .q-glance b { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; font-size: 15px; line-height: 20px; font-weight: 500; color: var(--q-faint); font-variant-numeric: tabular-nums; }
+:is(#q-root, html) .q-glance small { font-size: 13px; line-height: 18px; font-weight: 500; color: var(--q-grey); }
+:is(#q-root, html) .q-glance b { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; font-size: 15px; line-height: 20px; font-weight: 500; color: var(--q-grey); font-variant-numeric: tabular-nums; } /* AA; work days keep their tint */
 :is(#q-root, html) .q-glance .is-work b { background: var(--q-tint); color: var(--q-tint-ink); font-weight: 600; }
 :is(#q-root, html) .q-glance .is-today b { box-shadow: inset 0 0 0 1.5px var(--q-ink); color: var(--q-ink); }
 :is(#q-root, html) .q-glance .is-today.is-work b { box-shadow: inset 0 0 0 1.5px var(--q-tint-ink); color: var(--q-tint-ink); }
@@ -710,7 +710,7 @@ html[data-q-sheet] { overflow: hidden; }
 :is(#q-root, html) .q-weeknav__today { font-size: 17px; line-height: 22px; color: var(--q-teal) !important; }
 :is(#q-root, html) .q-wk { display: grid; grid-template-columns: repeat(7, 1fr); margin: 20px 12px 0; }
 :is(#q-root, html) .q-wk a { display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 44px; border-radius: 12px; -webkit-tap-highlight-color: transparent; }
-:is(#q-root, html) .q-wk small { font-size: 13px; line-height: 18px; font-weight: 500; color: var(--q-soft); }
+:is(#q-root, html) .q-wk small { font-size: 13px; line-height: 18px; font-weight: 500; color: var(--q-grey); }
 :is(#q-root, html) .q-wk b { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; font-size: 17px; font-weight: 400; color: var(--q-ink); font-variant-numeric: tabular-nums; transition: background-color 160ms ease, color 160ms ease; }
 :is(#q-root, html) .q-wk .is-on b { background: var(--q-ink); color: var(--q-bg); font-weight: 600; }
 :is(#q-root, html) .q-wk i { display: block; width: 5px; height: 5px; margin-top: -2px; border-radius: 3px; background: transparent; }
