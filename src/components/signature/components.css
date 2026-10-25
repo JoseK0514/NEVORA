@@ -47,6 +47,7 @@
 .sig-btn--link .sig-btn__label { justify-items: start; }
 .sig-btn .sig-btn__idle, .sig-btn__busy { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 .sig-btn__spin { flex: none; transform-origin: 50% 50%; animation: sig-btn-spin .8s linear infinite; }
+.sig-btn__spin-slot { flex: none; display: inline-block; width: 16px; height: 16px; }
 @keyframes sig-btn-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .sig-btn__spin { animation: none; } }
 @media (forced-colors: active) {
@@ -243,7 +244,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] :is(.mobile-nav .mo
 .sig-skeleton__lines > span:nth-child(n + 3) { width: 40%; }
 .sig-skeleton__tile, .sig-skeleton__lines > span {
   background: linear-gradient(90deg, var(--sig-track, #EEECE7) 0%, var(--sig-fill-soft) 50%, var(--sig-track, #EEECE7) 100%) 0 0 / 200% 100%;
-  animation: sig-sheen 1.4s linear infinite;
+  /* Phase 1: static; a moving sheen repaints every frame while a page loads. */
 }
 @keyframes sig-sheen { to { background-position: -200% 0; } }
 

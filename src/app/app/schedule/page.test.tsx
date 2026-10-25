@@ -67,10 +67,11 @@ it('keeps all seven dates, multiple assignments and directly bound future shift 
  {id:'second',employeeId:'self',locationId:'2',date:'2099-10-06',startTime:'14:00',endTime:'18:00',scheduleStatus:'PUBLISHED'}];
  f.locations=[{id:'2',shortName:'Main Office'}];
  const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2099-10-05'})}));
- expect(output.match(/<article[^>]*id="schedule-/g)).toHaveLength(7);
+ // v5: the week strip keeps all seven dates as real URLs; the shifts open their sheets with the bound request links.
+ expect(output.match(/href="\/app\/schedule\?week=2099-10-05&amp;day=2099-10-\d\d"/g)?.length).toBeGreaterThanOrEqual(7);
  expect(output).toContain('/app/exchange/swap?sourceShiftId=shift%20a%26b');
  expect(output).toContain('/app/exchange/callout?shiftId=shift%20a%26b');
- expect(output).toContain('8:00 AM'); expect(output).toContain('2:00 PM');
+ const text=output.replace(/\u00a0/g,' ');expect(text).toContain('8:00 AM'); expect(text).toContain('2:00 PM');
 });
 
 vi.mock("@/lib/data/workspaces",()=>({getWorkspace:async()=>({timeZone:"America/Puerto_Rico"})}));
@@ -138,7 +139,7 @@ vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({
 beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scoped=false;});
 
 it('company denial withholds global schedule rows and all editing controls',async()=>{f.role='MANAGER';operationalPageFixture.denied=true;const output=await html();expect(output).toContain('current company-wide management access');expect(output).not.toContain('Add shift');expect(output).not.toContain('Publish');expect(f.managerReads).not.toHaveBeenCalled();});
-it('an operational company denial does not remove the Employee self schedule',async()=>{operationalPageFixture.denied=true;const output=await html();expect(output).toContain('my-schedule-motion');expect(output).toContain('aria-label="Schedule views"');expect(output).not.toContain('current company-wide management access');expect(f.managerReads).not.toHaveBeenCalled();});
+it('an operational company denial does not remove the Employee self schedule',async()=>{operationalPageFixture.denied=true;const output=await html();expect(output).toContain('q-sched-e');expect(output).toContain('aria-label="Schedule views"');expect(output).not.toContain('current company-wide management access');expect(f.managerReads).not.toHaveBeenCalled();});
 
 vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalSchedule:async(_proof:unknown,query:{weekStart:string;locationId?:string})=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['loc']},data:{weekStart:query.weekStart,selectedLocationId:query.locationId??null,locations:[{id:'loc',name:'Managed location',shortName:'Managed',active:true}],shifts:[{id:'local-shift',scheduleId:'local-week',employeeId:'local',employeeName:'Local Shift',locationId:'loc',date:'2026-10-05',startTime:'08:00',endTime:'12:00',positionName:'Recorded position',isDesignatedLead:false,isCalloutApproved:false,scheduleStatus:'PUBLISHED'}],roster:[],companyControls:{state:'requires_company'}}})}));
 it('uses the actual scoped schedule DTO without loading the canonical full roster',async()=>{f.role='MANAGER';operationalPageFixture.scoped=true;const output=await html();expect(output).toContain('Local Shift');expect(output).toContain('Recorded position');expect(output).not.toContain('Build and publish');expect(output).not.toContain('Copy previous week');expect(f.managerReads).not.toHaveBeenCalled();});

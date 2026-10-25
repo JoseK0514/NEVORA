@@ -94,18 +94,11 @@ html body .app-shell.nevora-portal .page-frame .mobile-home-disclosure[data-reve
  * scrolls under it, and a frosted phone tab bar. */
 /* H5 QA: not on landscape phones, where the header scrolls away (portal-gusto.css) so focus never hides under it. */
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  /* Phase 1: a solid bar with a static hairline. Live blur and a scroll-driven shadow repainted on every scroll frame. */
   html body .app-shell.nevora-portal.nevora-portal.nevora-portal .mobile-header {
     position: sticky; top: 0; z-index: 30;
-    background: var(--m-glass);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    backdrop-filter: blur(16px) saturate(180%);
-  }
-  @supports (animation-timeline: scroll()) {
-    html body .app-shell.nevora-portal .mobile-header {
-      animation: portal-scroll-edge linear both;
-      animation-timeline: scroll(root block);
-      animation-range: 0 32px;
-    }
+    background: var(--g-surface, #FFFFFF);
+    border-bottom: 1px solid var(--g-hairline, #ECEDEF);
   }
 }
 @keyframes portal-scroll-edge {
@@ -114,11 +107,8 @@ html body .app-shell.nevora-portal .page-frame .mobile-home-disclosure[data-reve
 }
 @media (max-width: 760px) {
   /* 92% white keeps every tab label at 4.5:1 or more over any content, even black. */
-  html body .app-shell.nevora-portal.nevora-portal .mobile-nav {
-    background: rgba(255, 255, 255, .92);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    backdrop-filter: blur(20px) saturate(180%);
-  }
+  /* Phase 1: solid, no live blur (recomposited on every scroll frame); labels stay well above 4.5:1. */
+  html body .app-shell.nevora-portal.nevora-portal .mobile-nav { background: #FFFFFF; }
 }
 
 /* Accessibility fallbacks. */
@@ -216,7 +206,7 @@ html body .nevora-skeleton-card > span { padding: 14px 16px; border: 1px solid #
 html body .nevora-skeleton i {
   display: block; height: 12px; border-radius: 6px;
   background: linear-gradient(90deg, #F1F2F4 0%, #F7F8F9 40%, #F1F2F4 80%) 0 0 / 300% 100%;
-  animation: nevora-shimmer 1.4s ease-in-out infinite;
+  /* Phase 1: static; a moving gradient repaints every frame while a page loads. */
 }
 html body .nevora-skeleton i:first-child { width: 58%; height: 14px; }
 html body .nevora-skeleton i:last-child { width: 82%; }
@@ -263,7 +253,7 @@ html body .app-shell.nevora-portal .route-skeleton-header { display: grid; gap: 
 html body .app-shell.nevora-portal .route-skeleton :is(.route-skeleton-header, .route-skeleton-grid, .route-skeleton-cards) i {
   display: block; border-radius: 8px;
   background: linear-gradient(90deg, #F1F2F4 0%, #F7F8F9 40%, #F1F2F4 80%) 0 0 / 300% 100%;
-  animation: nevora-shimmer 1.4s ease-in-out infinite;
+  /* Phase 1: static; a moving gradient repaints every frame while a page loads. */
 }
 html body .app-shell.nevora-portal .route-skeleton-header i:first-child { width: min(320px, 70%); height: 28px; }
 html body .app-shell.nevora-portal .route-skeleton-header i:last-child { width: min(460px, 90%); height: 14px; }

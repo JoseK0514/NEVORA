@@ -7,6 +7,7 @@ const navigationMock = vi.hoisted(() => ({ pathname: "/app/my-time" }));
 vi.mock("next/navigation", () => ({ usePathname: () => navigationMock.pathname, useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }), useSearchParams: () => new URLSearchParams() }));
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }: ComponentProps<"a">) => createElement("a", { href, ...props }, children),
+  useLinkStatus: () => ({ pending: false }),
 }));
 vi.mock("@/components/brand-mark", () => import("./brand-mark"));
 vi.mock("@/components/nav-icon", () => import("./nav-icon"));
@@ -66,24 +67,17 @@ it.each(['/app/schedule','/app/availability','/app/requests','/app/settings/loca
   expect(render('OWNER', pathname).html).toContain('data-mobile-workforce="true"');
 });
 
-it.each(["EMPLOYEE", "LEAD"] as const)("gives %s Home, Schedule, Requests and Hours tabs with the rest in More", (role) => {
+// v5 "One look" (approved Oct 24, 2026): every role uses the Quiet tab bar; an Employee's or Lead's More is a page.
+it.each(["EMPLOYEE", "LEAD"] as const)("gives %s Home, Schedule, Requests, Hours and More tabs, with More as a page", (role) => {
   const { html, mobile } = render(role);
-  const [primary, more] = mobile.split('id="employee-more-navigation"');
-  expect([...primary.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
-    "/app", "/app/schedule", "/app/requests/hub", "/app/my-time",
+  expect([...mobile.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
+    "/app", "/app/schedule", "/app/requests/hub", "/app/my-time", "/app/more",
   ]);
-  expect(primary).toContain('popoverTarget="employee-more-navigation"');
-  expect(primary).toMatch(/href="\/app\/my-time" class="mobile-nav-link active" aria-current="page"/);
-  expect(primary).toContain('<span>Hours</span>');
-  expect(more).toContain('popover="auto"');
-  expect([...more.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
-    "/app/updates", "/app/notifications", "/app/profile",
-  ]);
-  expect(html).toContain("app-shell employee-shell");
-  expect(html).not.toContain("sidebar-mantra");
+  expect(mobile).toContain('<span>Hours</span>');
+  expect(mobile).toContain('<span>More</span>');
+  expect(html).not.toContain('employee-more-navigation');
 });
 
-// Quiet (v4, approved Oct 23): More is a page (/app/more), not a sheet over the tabs.
 it.each(["MANAGER", "OWNER"] as const)("gives %s Home, Schedule, Inbox, Team and More tabs", (role) => {
   const { html, mobile } = render(role);
   expect([...mobile.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
@@ -194,33 +188,19 @@ it.each([['MANAGER','/app/exchange','/app/inbox'],['OWNER','/app/availability','
 
 // Clean Manager (v3): Owners and Managers move between the request pages from the band (RequestPagesNav), not section tabs.
 it('shows no section tabs on the request pages for OWNER', () => { expect(render('OWNER','/app/requests').html).not.toContain('class="section-tabs"'); });
-it.each([['EMPLOYEE','/app/requests/hub',['/app/requests/hub','/app/requests','/app/exchange','/app/availability']]] as const)('shows %s section tabs on %s with real URLs',(role,pathname,hrefs)=>{
- const {html}=render(role,pathname);
- const tabs=html.split('class="section-tabs"')[1].split('</nav>')[0];
- expect([...tabs.matchAll(/href="([^"]+)"/g)].map(match=>match[1])).toEqual(hrefs);
- expect(tabs).toContain(`href="${pathname}" class="section-tab" aria-current="page"`);
+// v5: an Employee's or Lead's pages switch views with segments and go back with the bar, so no tab row shows.
+it.each([['EMPLOYEE','/app/requests/hub'],['LEAD','/app/requests'],['EMPLOYEE','/app/my-time'],['EMPLOYEE','/app/timecards']] as const)('shows %s no section tabs on %s',(role,pathname)=>{
+ expect(render(role,pathname).html).not.toContain('class="section-tabs"');
 });
 
 it('shows no section tabs on pages outside a shared group',()=>{
  expect(render('OWNER','/app/schedule').html).not.toContain('class="section-tabs"');
 });
 
-it('M7: an employee reaches Timecards from the Pay section tabs',()=>{
- const {html}=render('EMPLOYEE','/app/my-time');
- const tabs=html.split('class="section-tabs"')[1]?.split('</nav>')[0]??'';
- expect(tabs).toContain('href="/app/my-time"');
- expect(tabs).toContain('href="/app/timecards"');
- expect(render('EMPLOYEE','/app/timecards').html).toContain('href="/app/timecards" class="section-tab" aria-current="page"');
-});
-
-it.each(['EMPLOYEE','LEAD'] as const)('keeps the %s Updates destination within the existing employee More navigation',role=>{
- const {html}=render(role,'/app/updates/own-update');
- const header=html.split('<header class="mobile-header">')[1].split('</header>')[0];
- // The desktop location trail (hidden on phones) links back to the section; no other header shortcut appears.
- const [before,rest]=header.split('<nav class="portal-location-nav"');
- expect(before+rest.slice(rest.indexOf('</nav>')+6)).not.toContain('href="/app/updates"');
- expect(rest).toContain('<li><a href="/app/updates">Updates</a></li>');
- expect(html).toContain('href="/app/updates" class="employee-more-link active" aria-current="page"');
+it.each(['EMPLOYEE','LEAD'] as const)('keeps the %s Updates destination under the More tab',role=>{
+ const {mobile}=render(role,'/app/updates/own-update');
+ // v5: Updates opens from the More page, so the More tab is the active one.
+ expect(mobile).toContain('href="/app/more" class="mobile-nav-link manager-more-trigger active"');
 });
 it('D1: the desktop top bar shows workspace, section and page, and pins Workspace in the sidebar',()=>{
  const {html}=render('OWNER','/app/timecards');

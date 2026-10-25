@@ -25,7 +25,8 @@ beforeEach(()=>{f.activity=Array.from({length:10},(_,i)=>exchange(`row-${i}`));f
 async function html(requestId?:string){return renderToStaticMarkup(await ExchangePage({searchParams:Promise.resolve({tab:'requests',requestId})}));}
 it.each(['OPEN','EMPLOYEE_PENDING','MANAGER_PENDING'] as const)('ordinary employee %s request status stays neutral',async status=>{
  f.activity=[{...exchange('pending'),status}];
- expect(await html()).toMatch(/class="status-pill neutral">(?:Offered|Awaiting employee|Manual review)</);
+ // v5: the status is said in the row and its sheet, never in a success tone.
+ const result=await html();expect(result).toMatch(/(?:Offered|Awaiting employee|Manual review)/);expect(result).not.toContain('status-pill success');
 });
 it('default retains first eight; an authorized selected later row is included and focusable',async()=>{
  expect(await html()).not.toContain('id="request-row-9"');expect(await html('row-9')).toContain('id="request-row-9" tabindex="-1"');
@@ -79,13 +80,16 @@ function assignedReview(){
  f.reviewed={source:{timeZone:shift.timeZone,termsRevision:shift.termsRevision,shiftId:shift.id,scheduleId:shift.scheduleId,employeeId:shift.employeeId,locationId:shift.locationId,weekStart:shift.weekStart,date:shift.date,startTime:shift.startTime,endTime:shift.endTime,positionId:shift.positionId,isDesignatedLead:shift.isDesignatedLead,assignmentEpisodeId:'episode-current'},sourceTermsFingerprint:'v1:current',target:null,targetTermsFingerprint:null};
 }
 it.each(['unknown coverage policy','elapsed coverage submission cutoff'])('trade builder navigation remains independent of %s',async refusal=>{
- assignedReview();f.coverageAllowed=false;f.coverageNotice=refusal;const result=await html();expect(result).toContain('>Request a swap<');expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).toContain('>Unable to work<');
+ // v5: Your shifts open the shift's sheet on Schedule (Swap, Offer it for cover, Unable to work), whatever the coverage policy.
+ assignedReview();f.coverageAllowed=false;f.coverageNotice=refusal;const result=await html();expect(result).toContain('&amp;shift=shift');expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).toContain('Unable to work');
 });
 it('builder navigation itself does not declare swap eligibility when only coverage is valid',async()=>{
- assignedReview();f.coverageAllowed=true;const result=await html();expect(result).toContain('value="OFFER_COVERAGE"');expect(result).not.toContain('Eligible to trade');
+ // v5: offering for cover starts from the shift (the swap route's cover mode re-reads and checks the terms); this page never posts it.
+ assignedReview();f.coverageAllowed=true;const result=await html();expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).toContain('&amp;shift=shift');expect(result).not.toContain('Eligible to trade');
 });
 it.each<Record<string, string | boolean | number>>([{timeZone:'America/New_York'},{termsRevision:2},{assignmentEpisodeId:'new-episode'},{startTime:'10:00',endTime:'18:00'},{locationId:'replacement-site'},{positionId:'replacement-position'},{employeeId:'new-owner'},{date:'2035-10-06'},{scheduleId:'replacement-schedule'},{weekStart:'2035-10-08'},{isDesignatedLead:false}])('inter-read material source change %j refuses undisplayed creation consent',async change=>{
- assignedReview();f.coverageAllowed=true;f.reviewed!.source={...f.reviewed!.source,...change};const result=await html();expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).not.toContain('value="v1:current"');expect(result).not.toContain('>Request a swap<');expect(result).toContain('Stale assignment');
+ // v5: no creation consent is rendered here at all; the shift sheet's routes re-read and refuse changed terms.
+ assignedReview();f.coverageAllowed=true;f.reviewed!.source={...f.reviewed!.source,...change};const result=await html();expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).not.toContain('value="v1:current"');expect(result).not.toContain('value="PROPOSE_SWAP"');
 });
 it.each(['pending','completed'] as const)('URL result render performs read-only %s lookup rather than cache-invalidating action',async status=>{
  const operationId='11111111-1111-4111-8111-111111111111';f.operation={status,operationId,requestId:'r1',revision:2};const result=renderToStaticMarkup(await ExchangePage({searchParams:Promise.resolve({operationId})}));expect(result).toContain(status==='pending'?'Request recorded':'Completed.');expect(reconcileShiftChangeAction).not.toHaveBeenCalled();expect(readShiftChangeOperationView).toHaveBeenCalledWith(expect.objectContaining({sessionTokenHash:'a'.repeat(64)}),operationId);
@@ -98,8 +102,13 @@ it('H10 explanatory notices stay outside employee action grids while recovery co
  assignedReview();f.coverageAllowed=false;
  f.activity=[{...exchange('stale'),status:'OPEN',actionable:false,requestRevision:1}];
  f.callouts=[{id:'legacy',shiftId:'shift',employeeId:'self',employeeName:'Fictional',locationId:'2',locationName:'Drive',weekStart:'2035-10-01',date:'2035-10-05',startTime:'08:00',endTime:'12:00',reasonCode:'OTHER',status:'APPROVED',releaseApplies:false,createdAt:'2026-10-03T12:00:00Z'}];
- const result=await html();const actions=[...result.matchAll(/<div class="employee-shift-entry-actions"[^>]*>([\s\S]*?)<\/div>/g)].map(match=>match[1]);
- expect(actions.length).toBeGreaterThanOrEqual(3);
+ const result=await html();const actions=[...result.matchAll(/<div class="q-sheet-acts employee-shift-entry-actions"[^>]*>([\s\S]*?)<\/div>/g)].map(match=>match[1]);
+ expect(actions.length).toBeGreaterThanOrEqual(2);
  for(const group of actions){expect(group).not.toContain('shift-change-unavailable');expect(group).not.toContain('review current assignment');}
  expect(result).toContain('value="CANCEL"');expect(result).toContain('Unable to work');expect(result).toContain('Historical approval does not release the current assignment');
+});
+it('an empty shift board says so once, in the band (inspection Oct 24)',async()=>{
+ const board=renderToStaticMarkup(await ExchangePage({searchParams:Promise.resolve({})})).replace(/<br\/?>/g,' ');
+ expect(board).toContain('No open shifts right now');
+ expect(board).not.toContain('The shift board is clear');
 });

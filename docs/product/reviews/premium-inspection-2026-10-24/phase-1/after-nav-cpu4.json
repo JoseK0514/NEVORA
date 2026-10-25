@@ -1,0 +1,72 @@
+[
+ {
+  "route": "/app/schedule",
+  "via": "link",
+  "fullReload": false,
+  "urlMs": 72,
+  "paintedMs": 205,
+  "idleMs": 205,
+  "longTasks": 0,
+  "longestTask": 0,
+  "scrollFrames": 182,
+  "jankyFrames": 0,
+  "worstFrameMs": 17,
+  "dom": 887
+ },
+ {
+  "route": "/app/inbox",
+  "via": "link",
+  "fullReload": false,
+  "urlMs": 40,
+  "paintedMs": 54,
+  "idleMs": 54,
+  "longTasks": 0,
+  "longestTask": 0,
+  "scrollFrames": 180,
+  "jankyFrames": 0,
+  "worstFrameMs": 17,
+  "dom": 455
+ },
+ {
+  "route": "/app/employees",
+  "via": "link",
+  "fullReload": false,
+  "urlMs": 43,
+  "paintedMs": 125,
+  "idleMs": 126,
+  "longTasks": 0,
+  "longestTask": 0,
+  "scrollFrames": 182,
+  "jankyFrames": 0,
+  "worstFrameMs": 10,
+  "dom": 432
+ },
+ {
+  "route": "/app/more",
+  "via": "link",
+  "fullReload": false,
+  "urlMs": 37,
+  "paintedMs": 42,
+  "idleMs": 42,
+  "longTasks": 0,
+  "longestTask": 0,
+  "scrollFrames": 181,
+  "jankyFrames": 0,
+  "worstFrameMs": 10,
+  "dom": 391
+ },
+ {
+  "route": "/app",
+  "via": "link",
+  "fullReload": false,
+  "urlMs": 42,
+  "paintedMs": 195,
+  "idleMs": 195,
+  "longTasks": 0,
+  "longestTask": 0,
+  "scrollFrames": 181,
+  "jankyFrames": 0,
+  "worstFrameMs": 10,
+  "dom": 402
+ }
+]

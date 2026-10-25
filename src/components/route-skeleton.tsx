@@ -1,4 +1,5 @@
 import { SkeletonRows } from "./skeleton";
+import { QuietSkeleton } from "./quiet/quiet";
 
 /** Page-shaped placeholder for a route segment while its server data loads.
  * The visible shape matches the page (grid, list or cards); the status line
@@ -20,5 +21,7 @@ export function RouteSkeleton({ label, shape = "list", band, overlap = true, rou
       : shape === "cards" ? <div className="route-skeleton-cards" aria-hidden="true">{Array.from({ length: 4 }, (_, index) => <i key={index} />)}</div>
         : null}
     <SkeletonRows rows={shape === "list" ? 6 : 3} variant={shape === "list" ? "card" : "line"} />
+    {/* Quiet shell (Owner and Manager): one static page shape instead of the band, grid and shimmer above. */}
+    <QuietSkeleton />
   </section>;
 }

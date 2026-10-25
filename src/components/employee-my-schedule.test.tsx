@@ -9,12 +9,13 @@ const base:EmployeeMyScheduleProps={weekStart:'2026-10-12',today:'2026-10-12',ob
 const html=(props:Partial<EmployeeMyScheduleProps>={})=>renderToStaticMarkup(createElement(EmployeeMySchedule,{...base,...props}));
 
 it('a published empty day is distinguished from an unpublished date',()=>{
- expect(html()).toContain('Off — no assignment');
- const partial=html({state:'unpublished'});
+ const published=html({selectedDay:'2026-10-13'});
+ expect(published).toContain('No shift this day.');expect(published).toContain('Day off');
+ const partial=html({state:'unpublished',selectedDay:'2026-10-13'});
  expect(partial).toContain('Your North Office shifts are published. Another location you work at hasn’t published this week yet.');
  expect(partial).not.toContain('Your full week is not published yet');
  expect(partial).toContain('Schedule not published yet');
- expect(partial).not.toContain('Off — no assignment');
+ expect(partial).not.toContain('Day off');
 });
 it('unavailable reads hide private shifts, actions, confirmation and change history even when stale props remain',()=>{
  const output=html({state:'unavailable',acknowledged:true,receipt:true,confirmation:createElement('button',null,'Confirm schedule'),changes:createElement('p',null,'Private change')});
@@ -27,41 +28,44 @@ it('known confirmation succeeds only with actual confirmation state',()=>{
 });
 it('closed and approved-callout shifts do not offer requests while future own shifts use encoded source identities',()=>{
  const ended=html({observedAt:'2026-10-12T22:00:00Z'});
- expect(ended).not.toContain('Request a swap');expect(ended).not.toContain('Unable to work');
- expect(html({shifts:[{...shift,isCalloutApproved:true}]})).not.toContain('Shift options');
+ expect(ended).not.toContain('Swap with a teammate');expect(ended).not.toContain('Unable to work this shift');
+ expect(html({shifts:[{...shift,isCalloutApproved:true}]})).not.toContain('Change this shift');
  const future=html({shifts:[{...shift,id:'source & /',date:'2026-10-13'}]});
  expect(future).toContain('sourceShiftId=source%20%26%20%2F');expect(future).toContain('shiftId=source%20%26%20%2F');
+ // v5: Offer it for cover opens the swap route's cover mode for the same shift.
+ expect(future).toContain('sourceShiftId=source%20%26%20%2F&amp;mode=cover');
 });
 it('an active overnight shift from yesterday retains callout but does not invent a same-day swap',()=>{
- const output=html({weekStart:'2026-10-05',shifts:[{...shift,date:'2026-10-11',startTime:'22:00',endTime:'08:00'}]});
- expect(output).toContain('Ends Mon, Oct 12');expect(output).toContain('Unable to work');expect(output).not.toContain('Request a swap');
+ const output=html({weekStart:'2026-10-05',selectedDay:'2026-10-11',shifts:[{...shift,date:'2026-10-11',startTime:'22:00',endTime:'08:00'}]});
+ expect(output).toContain('Ends Mon, Oct 12');expect(output).toContain('Unable to work this shift');expect(output).not.toContain('Swap with a teammate');
 });
 it('midnight end, real position names, lead and approved-callout labels remain explicit',()=>{
  const output=html({shifts:[{...shift,startTime:'16:00',endTime:'24:00',positionName:'Customer Support',isDesignatedLead:true,isCalloutApproved:true}]});
- for(const value of ['Ends Tue, Oct 13','Customer Support','Designated lead','Call-out approved']) expect(output).toContain(value);
+ for(const value of ['Ends Tue, Oct 13','Customer Support','Shift lead','Call-out approved']) expect(output).toContain(value);
 });
-it('selected day, today, current-week return and planning destinations retain native URLs',()=>{
+it('selected day, today, current-week return and calendar destination retain native URLs',()=>{
  const output=html({selectedDay:'2026-10-14'});
- expect(output).toContain('aria-current="date"');expect(output).toContain('Selected day');
- // Signature: on the current week the arrows are enough; another week offers Today back to the current one.
+ expect(output).toContain('aria-current="date"');expect(output).toContain('selected day');
+ expect(output).toContain('href="/app/schedule?week=2026-10-12&amp;day=2026-10-14"');
+ // On the current week the arrows are enough; another week offers Today back to the current one.
  expect(output).not.toContain('>Today</a>');
- expect(html({weekStart:'2026-10-19'})).toContain('/app/schedule?week=2026-10-12&amp;day=2026-10-12#schedule-2026-10-12');
- expect(output).toContain('/app/availability');expect(output).toContain('/app/requests');
+ expect(html({weekStart:'2026-10-19'})).toContain('href="/app/schedule?week=2026-10-12&amp;day=2026-10-12">Today</a>');
+ expect(output).toContain('/app/profile#employee-calendar-title');
 });
 
 const open={id:'open-1',date:'2026-10-14',startTime:'09:00',endTime:'17:00',location:'North Office',position:'Barista',href:'/app/exchange?tab=available#request-open-1'};
 it('My shifts and Open shifts are real URLs with an announced count',()=>{
  const mine=html({openShifts:{available:[open],requested:[]}});
  expect(mine).toContain('href="/app/schedule?week=2026-10-12" aria-current="page">My shifts');
- expect(mine).toContain('href="/app/schedule?week=2026-10-12&amp;view=open">Open shifts');
- // Phase 3: the count is part of the pill's visible name, so it is announced with it.
- expect(mine).toContain('view=open">Open shifts (1)</a>');
- expect(mine).toContain('data-s6-agenda');
+ // The count is part of the segment's visible name, so it is announced with it; a zero count is hidden.
+ expect(mine).toContain('href="/app/schedule?week=2026-10-12&amp;view=open">Open shifts · 1</a>');
+ expect(html({openShifts:{available:[],requested:[]}})).toContain('view=open">Open shifts</a>');
+ expect(mine).toContain('id="my-day"');
 });
 it('Open shifts lists claimable shifts and own claims waiting for approval without the week agenda',()=>{
- const output=html({view:'open',openShifts:{available:[open],requested:[{...open,id:'mine-1',href:'/app/exchange?tab=requests&requestId=mine-1'}]}});
- for(const value of ['Waiting for approval','Requested · waiting for approval','View request','View and claim','#request-open-1','North Office · Barista','Claiming sends a request to your manager']) expect(output.replace(/\u00a0/g," ")).toContain(value);
- expect(output).not.toContain('data-s6-agenda');
+ const output=html({view:'open',openShifts:{available:[open],requested:[{...open,id:'mine-1',href:'/app/exchange?tab=requests&requestId=mine-1'}]}}).replace(/ /g,' ');
+ for(const value of ['Waiting for approval','View request','View and claim','#request-open-1','North Office · Barista','Claiming sends a request to your manager']) expect(output).toContain(value);
+ expect(output).not.toContain('id="my-day"');
 });
 it('Open shifts shows a calm empty state and an honest unavailable state',()=>{
  expect(html({view:'open',openShifts:{available:[],requested:[]}})).toContain('No open shifts right now');
@@ -79,37 +83,26 @@ it('B3: shifts the claim rules refuse sit collapsed below the claimable ones, wi
  expect(onlyRefused).toContain('No open shifts fit your schedule right now');expect(onlyRefused).not.toContain('No open shifts right now');expect(onlyRefused).not.toContain('Update your availability');
 });
 
-it('opens swap choosing from Home: a banner, open options on upcoming shifts, and the mode kept across weeks (Codex F1)', () => {
+it('opens swap choosing from Home: a note, swap on upcoming shifts from their sheet, and the mode kept across weeks (Codex F1)', () => {
   const markup = html({intent: 'swap'});
   expect(markup).toContain('Choose the shift you want to swap');
-  expect(markup).toMatch(/<details class="[^"]*s6Options[^"]*" open="">/);
   expect(markup).toContain('href="/app/exchange/swap?sourceShiftId=self-shift"');
   expect(markup).toContain('href="/app/schedule?week=2026-10-19&amp;intent=swap"');
   const none = html({intent: 'swap', shifts: []});
   expect(none).toContain('No shifts to swap this week');
   expect(html()).not.toContain('Choose the shift you want to swap');
-  expect(html()).not.toMatch(/<details class="[^"]*s6Options[^"]*" open="">/);
-});
-
-it('lists Planning ahead as one group of rows with the same destinations (Jose phone notes)', () => {
-  const markup = html();
-  expect(markup).toContain('id="my-schedule-more-title">Planning ahead</h2>');
-  for (const href of ['/app/exchange?tab=my', '/app/availability', '/app/requests', '/app/profile#employee-calendar-title']) {
-    expect(markup).toMatch(new RegExp(`<a href="${href.replace(/[?#]/g, m => '\\' + m)}" class="[^"]*s6LinkRow[^"]*">`));
-  }
 });
 
 it('says plainly what the review asks: confirm you have seen your own schedule (Jose, 2026-10-18)', () => {
   const markup = html({confirmationNeeded: true, confirmation: createElement('button', null, 'Confirm schedule')});
-  // Signature: the review sits right under the week, before the shifts, so no jump link is needed.
-  expect(markup.indexOf('id="my-review-title"')).toBeLessThan(markup.indexOf('data-s6-agenda'));
-  expect(markup).not.toContain('>Your manager asks you to confirm this week</a>');
+  // The review sits right under the week strip, before the day and its shifts.
+  expect(markup.indexOf('id="my-review-title"')).toBeLessThan(markup.indexOf('id="my-day"'));
   expect(markup).toContain('Confirm this week');
-  expect(markup).toContain('Your manager asked you to check it.');
+  expect(markup).toContain('Your manager asked you to check it');
   expect(markup).not.toContain('below');
 });
 
-it('names the location that has not published, inside the week card (Jose, 2026-10-18)', () => {
+it('names the location that has not published, beside the week (Jose, 2026-10-18)', () => {
   const markup = html({state: 'unpublished', locations: [{id: 'north', shortName: 'North Office'}, {id: 'harbor', shortName: 'Harbor'}], unpublishedLocationIds: ['harbor']});
   expect(markup).toContain('data-week-note=""');
   expect(markup).toContain('Your North Office shifts are published. Harbor hasn’t published this week yet.');
@@ -117,14 +110,12 @@ it('names the location that has not published, inside the week card (Jose, 2026-
   expect(none).toContain('Harbor hasn’t published this week yet. Shifts shown are published. An empty day isn’t a day off yet.');
 });
 
-it('organizes the week: days still ahead first with the next shift marked, finished days folded under Earlier this week', () => {
+it('v5: the chosen day, then what is coming up later this week; earlier days stay one tap away on the strip', () => {
   const markup = html({today: '2026-10-14', observedAt: '2026-10-14T12:00:00Z', shifts: [{...shift, id: 'past', date: '2026-10-12'}, {...shift, id: 'next', date: '2026-10-15'}]});
-  const next = markup.indexOf('Next up'), earlier = markup.indexOf('Earlier this week');
-  expect(next).toBeGreaterThan(0);
-  expect(earlier).toBeGreaterThan(next);
-  // Every day keeps its own anchor; finished days live inside the closed disclosure.
-  expect(markup.match(/<article[^>]*id="schedule-/g)).toHaveLength(7);
-  expect(markup.indexOf('id="schedule-2026-10-12"')).toBeGreaterThan(earlier);
-  expect(markup.indexOf('id="schedule-2026-10-15"')).toBeLessThan(earlier);
-  expect(markup).toContain('Coming up');
+  const day = markup.indexOf('id="my-day"'), later = markup.indexOf('id="my-later"');
+  expect(day).toBeGreaterThan(0);expect(later).toBeGreaterThan(day);
+  expect(markup).toContain('Coming up');expect(markup).toContain('Thursday, Oct 15');
+  expect(markup).not.toContain('shift=past');
+  expect(markup).toContain('href="/app/schedule?week=2026-10-12&amp;day=2026-10-12"');
+  expect(markup.match(/class="q-wk"/g)).toHaveLength(1);
 });

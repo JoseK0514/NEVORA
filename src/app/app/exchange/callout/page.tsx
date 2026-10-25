@@ -22,8 +22,9 @@ export default async function CalloutPage({
   const workspace = await getWorkspace();
   const params = await searchParams;
 
+  // Opened without choosing a shift: back to My requests quietly (inspection Oct 24).
   if (!params.shiftId) {
-    redirect("/app/exchange?tab=my&error=INVALID_SHIFT");
+    redirect("/app/exchange?tab=my");
   }
 
   const shift = await getPublishedShift(params.shiftId);

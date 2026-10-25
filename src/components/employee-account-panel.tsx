@@ -1,4 +1,5 @@
 'use client';
+import {timeZoneLabel} from '../lib/time-zone-label';
 import {ArrowsClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
 import Link from 'next/link';
 import {useEffect,useRef,useState} from 'react';
@@ -9,9 +10,20 @@ import {NotificationInboxSignature} from './notification-inbox-signature';
 import {EmployeeProfileDetails} from './employee-profile-details';
 import {NavIcon} from './nav-icon';
 
-export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=false,onMarkRead,signature=false}:{kind:EmployeeViewKind;state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;notificationsEnabled?:boolean;onMarkRead?:(id:string)=>Promise<void>;signature?:boolean}){
- if(kind==='notifications')return signature&&!onMarkRead?<NotificationInboxSignature state={state} onRetry={onRetry}/>:<NotificationInbox state={state} onRetry={onRetry} onMarkRead={onMarkRead}/>;
+export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=false,onMarkRead,signature=false,quiet=false}:{kind:EmployeeViewKind;state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;notificationsEnabled?:boolean;onMarkRead?:(id:string)=>Promise<void>;signature?:boolean;quiet?:boolean}){
+ if(kind==='notifications')return signature&&!onMarkRead?<NotificationInboxSignature state={state} onRetry={onRetry}/>:<NotificationInbox state={state} onRetry={onRetry} onMarkRead={onMarkRead} quiet={quiet}/>;
  const ready=!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.kind==='profile'?state.snapshot:null;
+ // v5 Profile (mockup E16): the work details as two rows and the note; the Name, role and company sit in the header.
+ if(quiet&&kind==='profile'){const deniedQ=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied',failed=state.snapshot?.state==='unavailable';
+  return <section aria-labelledby="profile-work-title" data-private-view={kind}>
+   <div className="q-grp"><h2 id="profile-work-title">Work details</h2></div>
+   <ul className="q-list">
+    <li><div className="q-row q-row--one"><span className="q-rt"><b>Locations</b></span><span className="q-rv q-rv--l">{ready?ready.profile.locations.join(' · '):'–'}</span></div></li>
+    <li><div className="q-row q-row--one"><span className="q-rt"><b>Time zone</b></span><span className="q-rv q-rv--l">{ready?timeZoneLabel(ready.profile.timeZone).replace(/ time$/,''):'–'}</span></div></li>
+   </ul>
+   {ready?<p className="q-help">Something wrong here? Ask your manager to update it.</p>
+    :<p className="q-help" role="status">{state.paused?'Updates paused. Return to this window while online.':deniedQ?<>Your session ended. <Link href="/login">Sign in</Link></>:failed?<>Couldn’t load your details. <button type="button" className="q-linkbtn" disabled={state.refreshing} onClick={onRetry}>Try again</button></>:'Checking your current details…'}</p>}
+  </section>;}
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  const unavailable=state.snapshot?.state==='unavailable';
  const name='Profile';
@@ -28,7 +40,7 @@ export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=fal
    :<button type="button" className={kind==='profile'?'profile-refresh-link':'button secondary'} disabled={state.paused||state.refreshing} onClick={onRetry}>{state.refreshing?'Checking…':kind==='profile'?'Refresh details':'Refresh'}</button>}</footer>
  </section>;
 }
-export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,endpoint,markReadAllowed=false,signature=false}:{kind:EmployeeViewKind;authority:string;notificationsEnabled?:boolean;endpoint?:string;markReadAllowed?:boolean;
+export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,endpoint,markReadAllowed=false,signature=false,quiet=false}:{kind:EmployeeViewKind;authority:string;notificationsEnabled?:boolean;endpoint?:string;markReadAllowed?:boolean;quiet?:boolean;
  /** Employee Signature pages (phase 2): the Notifications page draws its own band and sheet. */
  signature?:boolean}){
  const [state,setState]=useState<PrivatePanelState<EmployeeViewSnapshot>>({snapshot:null,paused:false,refreshing:true});
@@ -53,7 +65,7 @@ export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,
   void Promise.resolve().then(()=>{if(mounted)sync();});
   return ()=>{mounted=false;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);if(kind==='notifications')window.removeEventListener('nevora:notifications-changed',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
  },[authority,kind,endpoint]);
- return <EmployeeAccountView kind={kind} state={state} onRetry={()=>control.current?.refresh()} notificationsEnabled={notificationsEnabled} signature={signature} onMarkRead={markReadAllowed?async id=>{
+ return <EmployeeAccountView kind={kind} state={state} onRetry={()=>control.current?.refresh()} notificationsEnabled={notificationsEnabled} signature={signature} quiet={quiet} onMarkRead={markReadAllowed?async id=>{
  const response=await fetch('/api/notifications/read',{method:'POST',credentials:'same-origin',cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000),headers:{'Content-Type':'application/json','X-Nevora-Notification-Read':'1','X-Nevora-Employee-View':authority},body:JSON.stringify({notificationId:id})});
  if(!response.ok)throw Error('Read not confirmed');control.current?.refresh();window.dispatchEvent(new Event('nevora:notifications-changed'));
  }:undefined}/>;

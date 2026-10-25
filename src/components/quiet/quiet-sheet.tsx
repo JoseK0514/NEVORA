@@ -1,0 +1,133 @@
+'use client';
+
+import Link from 'next/link';
+import {usePathname, useRouter} from 'next/navigation';
+import {createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode} from 'react';
+import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
+
+/* v5 "One look" bottom sheet (approved Oct 24, 2026; mockups E03–E05 and E08). A native modal dialog, so focus stays
+ * inside, Escape closes and the page behind is inert. It rises over the page with a grabber; drag the top down or
+ * tap outside to close. Wide screens get a centred card. Reduced motion: no travel. */
+
+const SheetClose = createContext<(() => void) | null>(null);
+
+/** Inside a sheet, closes it; on a full page, null. */
+export function useSheetClose() {
+  return useContext(SheetClose);
+}
+
+const reducedMotion = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+export function QuietSheet({open, onClose, label, labelledBy, children}: {open: boolean; onClose: () => void; label?: string; labelledBy?: string; children: ReactNode}) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  const closing = useRef(false);
+  const drag = useRef<{y: number; t: number; dy: number} | null>(null);
+
+  const close = useCallback(() => {
+    const node = dialog.current;
+    if (!node || closing.current) return;
+    closing.current = true;
+    const done = () => { closing.current = false; node.removeAttribute('data-closing'); node.style.transform = ''; if (node.open) node.close(); onClose(); };
+    if (reducedMotion()) { done(); return; }
+    node.setAttribute('data-closing', '');
+    node.style.transform = '';
+    window.setTimeout(done, 240);
+  }, [onClose]);
+
+  useEffect(() => {
+    const node = dialog.current;
+    if (!node) return;
+    if (open && !node.open) { node.removeAttribute('data-closing'); node.showModal(); node.focus({preventScroll: true}); document.documentElement.setAttribute('data-q-sheet', ''); }
+    if (!open && node.open) node.close();
+    return () => { if (!document.querySelector('dialog.q-sheet[open]')) document.documentElement.removeAttribute('data-q-sheet'); };
+  }, [open]);
+
+  useEffect(() => {
+    const node = dialog.current;
+    if (!node) return;
+    // Escape: animate out like every other close.
+    const cancel = (event: Event) => { event.preventDefault(); close(); };
+    const closed = () => { if (!document.querySelector('dialog.q-sheet[open]')) document.documentElement.removeAttribute('data-q-sheet'); };
+    node.addEventListener('cancel', cancel);
+    node.addEventListener('close', closed);
+    return () => { node.removeEventListener('cancel', cancel); node.removeEventListener('close', closed); };
+  }, [close]);
+
+  return <dialog ref={dialog} className="q-page q-sheet" aria-label={label} aria-labelledby={labelledBy} tabIndex={-1}
+    // A tap on the dim area outside the sheet (the dialog's own box, not its content) closes it.
+    onClick={event => { if (event.target === event.currentTarget) close(); }}
+    onPointerDown={event => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.q-sheet__top') || target.closest('a, button, input, textarea, select, label')) return;
+      drag.current = {y: event.clientY, t: performance.now(), dy: 0};
+      (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+    }}
+    onPointerMove={event => {
+      if (!drag.current) return;
+      const dy = Math.max(0, event.clientY - drag.current.y);
+      drag.current.dy = dy;
+      (event.currentTarget as HTMLElement).style.transform = `translateY(${dy}px)`;
+    }}
+    onPointerUp={event => {
+      const state = drag.current;
+      drag.current = null;
+      if (!state) return;
+      const node = event.currentTarget as HTMLElement;
+      const velocity = state.dy / Math.max(1, performance.now() - state.t);
+      if (state.dy > 120 || velocity > 0.5) close();
+      else { node.style.transition = 'transform 200ms cubic-bezier(.23, 1, .32, 1)'; node.style.transform = ''; window.setTimeout(() => { node.style.transition = ''; }, 220); }
+    }}
+    onPointerCancel={event => { drag.current = null; (event.currentTarget as HTMLElement).style.transform = ''; }}>
+    <SheetClose.Provider value={close}>
+      <div className="q-sheet__in">
+        <div className="q-sheet__top"><div className="q-sheet__grab" aria-hidden="true"/></div>
+        {children}
+      </div>
+    </SheetClose.Provider>
+  </dialog>;
+}
+
+/** A route opened as a sheet over the page it came from (an intercepted route): closing goes back. A parallel slot keeps
+ * its last content when a soft navigation lands on a page it has no route for, so the sheet shows only while the address
+ * is still one of its own (`match`). */
+export function RouteSheet({label, match, children}: {label: string; /** A pattern string (props from a server layout must serialize). */ match: string; children: ReactNode}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  if (!new RegExp(match).test(pathname)) return null;
+  return <QuietSheet open label={label} onClose={() => router.back()}>{children}</QuietSheet>;
+}
+
+/** The sheet's left action: closes the sheet, or on a full page goes to `href`. */
+export function SheetCancel({href, children = 'Cancel', className = 'q-nav__l q-nav__l--teal'}: {href: string; children?: ReactNode; className?: string}) {
+  const close = useSheetClose();
+  if (close) return <button type="button" className={className} onClick={close}>{children}</button>;
+  return <Link className={className} href={href}>{children}</Link>;
+}
+
+/** A row that opens its details as a sheet (a request, a decided item). `anchor` (an element id) also opens it when the
+ * page is reached with that #hash, so links that point at the item still land on it. */
+export function SheetRow({ title, detail, value, sheetTitle, anchor, avatar, status, children }: { title: ReactNode; detail?: ReactNode; value?: ReactNode; sheetTitle: string; anchor?: string; avatar?: ReactNode; /** The item's state, kept on the row for its readers (data-employee-status). */ status?: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (!anchor) return;
+    const check = () => { if (window.location.hash === `#${anchor}`) setOpen(true); };
+    check();
+    window.addEventListener('hashchange', check);
+    return () => window.removeEventListener('hashchange', check);
+  }, [anchor]);
+  return <li id={anchor} tabIndex={anchor ? -1 : undefined} data-employee-status={status}>
+    <button type="button" className={`q-row${detail ? '' : ' q-row--one'}${avatar ? ' q-row--av' : ''} q-row--btn`} aria-haspopup="dialog" onClick={() => setOpen(true)}>
+      {avatar ? <span className="q-av" aria-hidden="true">{avatar}</span> : null}
+      <span className="q-rt"><b>{title}</b>{detail ? <i>{detail}</i> : null}</span>
+      {value ? <span className="q-rv">{value}</span> : null}
+      <CaretRightIcon className="q-chev" aria-hidden="true" />
+    </button>
+    <QuietSheet open={open} label={sheetTitle} onClose={() => {
+      setOpen(false);
+      if (anchor && window.location.hash === `#${anchor}`) history.replaceState(history.state, '', window.location.pathname + window.location.search);
+    }}>
+      <div className="q-nav"><span /><span className="q-nav__t">{sheetTitle}</span><SheetCancel href="#" className="q-nav__r q-nav__r--b">Done</SheetCancel></div>
+      {children}
+    </QuietSheet>
+  </li>;
+}

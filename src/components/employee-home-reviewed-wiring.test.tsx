@@ -1,11 +1,11 @@
 // PREPARED / UNEXECUTED. Root owns adoption and actual QA.
-import {Children, isValidElement, type ReactElement, type ReactNode} from 'react';
+import {isValidElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {afterEach, describe, expect, it, vi} from 'vitest';
 import {EmployeeDashboard} from './employee-dashboard';
 import {EmployeeHomeActions, EmployeeHomeReviewedRenderer, createEmployeeHomeController, type HomeLifetime} from './employee-home-actions';
-import {EmployeeHomeReviewedView} from './employee-home-reviewed';
-import {EmployeeTimePanel, EmployeeTimeView} from './employee-time-panel';
+import {EmployeeHomeQuietView} from './employee-home-quiet';
+import {EmployeeTimePanel} from './employee-time-panel';
 import {HOME_SOURCES, projectEmployeeHome} from '../lib/employee-home/project';
 import type {HomeSnapshot} from '../lib/employee-home/types';
 import type {PrivatePanelState} from '../lib/private-snapshot-client';
@@ -48,18 +48,18 @@ function suppressPrivate(markup: string) {
   expect(markup).not.toContain('data-home-group=');
   expect(markup).not.toContain('Clocked in');
 }
+/** v5 (mockup E01): the clock sits under the card only while a shift is under way. */
+function noClock(markup: string) { expect(markup).not.toMatch(/aria-label="Own recorded time"/); }
+const underWay = () => snapshot({currentShift: {...snapshot().nextShift!, shiftId: 'shift-now', date: '2030-10-07', startAt: '2030-10-07T11:00:00Z', endAt: '2030-10-07T19:00:00Z'}});
 function clockRegion(markup: string) {
   const region = markup.match(/<aside[^>]*aria-label="Own recorded time"[^>]*>([\s\S]*?)<\/aside>/);
   expect(region).not.toBeNull(); return region![1];
-}
-function elements(node: ReactNode): ReactElement<Record<string, unknown>>[] {
-  return Children.toArray(node).flatMap(child => isValidElement<Record<string, unknown>>(child) ? [child, ...elements(child.props.children as ReactNode)] : []);
 }
 
 describe('reviewed Home renderer uses the original release boundary', () => {
   it('shows the real projected ready data with the original independent keyed compact clock panel', () => {
     const state = released(), view = adapter(state);
-    expect(view.type).toBe(EmployeeHomeReviewedView);
+    expect(view.type).toBe(EmployeeHomeQuietView);
     expect(view.props.home).toBe(state.snapshot?.state === 'ready' ? state.snapshot.home : null);
     expect(view.props.status).toBe('ready');
     const slot = view.props.ownTimeSlot;
@@ -69,8 +69,9 @@ describe('reviewed Home renderer uses the original release boundary', () => {
     expect(slot.props).toEqual({compact: true, authority: timeAuthority});
     const markup = html(state);
     expect(markup).toContain('PRIVATE_ASSIGNMENT_LOCATION'); expect(markup).toContain('PRIVATE_ACTION');
-    expect(markup).toContain('data-home-group="actions"'); expect(markup).toContain('1 item');
-    expect(markup).toContain('Loading recorded time'); expect(markup).not.toContain('Clocked in');
+    expect(markup).toContain('Needs you'); noClock(markup); expect(markup).not.toContain('Clocked in');
+    // While a shift is under way, the original compact clock panel shows under the card.
+    const now = html(released(underWay())); expect(clockRegion(now)).toContain('Loading recorded time'); expect(now).toContain('Scheduled now');
     expect(markup).not.toContain(authority); expect(markup).not.toContain(timeAuthority);
   });
 
@@ -78,47 +79,42 @@ describe('reviewed Home renderer uses the original release boundary', () => {
     const state = released(), view = adapter(state, {authority: 'c'.repeat(64)});
     expect(view.props.home).toBeNull(); expect(view.props.status).toBe('loading'); expect(view.props.ownTimeSlot).toBeNull();
     const markup = html(state, {authority: 'c'.repeat(64)}); suppressPrivate(markup);
-    expect(markup).toContain('Loading Home'); expect(clockRegion(markup)).toContain('href="/app/my-time"');
-    expect(clockRegion(markup)).toMatch(/aria-label="Refresh(?:ing)? recorded time"[^>]*disabled/);
+    expect(markup).toContain('Loading Home'); noClock(markup);
   });
 
   it('suppresses retained ready data and the clock component immediately on pause', () => {
     const state = {...released(), paused: true}, view = adapter(state);
     expect(view.props.home).toBeNull(); expect(view.props.status).toBe('paused'); expect(view.props.ownTimeSlot).toBeNull();
-    const markup = html(state); suppressPrivate(markup); expect(markup).toContain('Paused while you’re away');
-    expect(clockRegion(markup)).toContain('Updates paused'); expect(clockRegion(markup)).toContain('href="/app/my-time"');
-    expect(clockRegion(markup)).toMatch(/aria-label="Refresh(?:ing)? recorded time"[^>]*disabled/);
+    const markup = html(state); suppressPrivate(markup); expect(markup).toContain('Paused while you’re away'); noClock(markup);
+    expect(html({...released(underWay()), paused: true})).not.toMatch(/aria-label="Own recorded time"/);
   });
 
   it('uses original access-loss sign-in recovery without releasing prior clock or Home data', () => {
     const state: PrivatePanelState<HomeLifetime> = {snapshot: {state: 'unavailable', reason: 'access_denied'}, refreshing: false, paused: false};
     const view = adapter(state); expect(view.props.status).toBe('unauthorized'); expect(view.props.home).toBeNull(); expect(view.props.ownTimeSlot).toBeNull();
     const markup = html(state); suppressPrivate(markup);
-    expect(clockRegion(markup)).toContain('href="/login"'); expect(clockRegion(markup)).toContain('Sign in');
-    expect(clockRegion(markup)).toContain('href="/app/my-time"'); expect(clockRegion(markup)).not.toContain('aria-label="Refresh recorded time"');
+    expect(markup).toContain('href="/login"'); expect(markup).toContain('Sign in'); expect(markup).toContain('Your session ended'); noClock(markup);
   });
 
   it.each([{reason: 'read_failed'}, {reason: 'unexpected-read-failure'}])('keeps original nonprivate recovery on $reason', ({reason}) => {
     const state: PrivatePanelState<HomeLifetime> = {snapshot: {state: 'unavailable', reason}, refreshing: false, paused: false};
     const view = adapter(state); expect(view.props.status).toBe('unavailable'); expect(view.props.home).toBeNull(); expect(view.props.ownTimeSlot).toBeNull();
-    const markup = html(state); suppressPrivate(markup); expect(markup).toContain('Try again');
-    expect(clockRegion(markup)).toContain('Couldn’t load your time records'); expect(clockRegion(markup)).toContain('href="/app/my-time"');
-    expect(clockRegion(markup)).toContain('aria-label="Try again to load your time records"'); expect(clockRegion(markup)).not.toMatch(/aria-label="Try again to load your time records"[^>]*disabled/);
+    const markup = html(state); suppressPrivate(markup); expect(markup).toContain('Try again'); expect(markup).toContain('Couldn’t load Home');
+    expect(markup).toMatch(/data-home-refresh="true"/); expect(markup).not.toMatch(/data-home-refresh="true"[^>]*disabled/); noClock(markup);
   });
 
   it('keeps the initial pending state private and preserves disabled recorded-time loading controls', () => {
     const state: PrivatePanelState<HomeLifetime> = {snapshot: null, refreshing: true, paused: false};
     const view = adapter(state); expect(view.props.status).toBe('loading'); expect(view.props.refreshing).toBe(true); expect(view.props.ownTimeSlot).toBeNull();
-    const markup = html(state); suppressPrivate(markup); expect(markup).toContain('Loading Home'); expect(markup).toContain('Checking');
-    expect(clockRegion(markup)).toContain('Loading recorded time'); expect(clockRegion(markup)).toMatch(/aria-label="Refresh(?:ing)? recorded time"[^>]*disabled/);
+    const markup = html(state); suppressPrivate(markup); expect(markup).toContain('Loading Home'); expect(markup).toContain('aria-busy="true"'); noClock(markup);
   });
 
   it('keeps a still-released ready snapshot and independent clock while Home refresh is pending', () => {
     const state = {...released(), refreshing: true}, view = adapter(state);
     expect(view.props.status).toBe('ready'); expect(view.props.refreshing).toBe(true); expect(view.props.ownTimeSlot).not.toBeNull();
     const markup = html(state); expect(markup).toContain('PRIVATE_ASSIGNMENT_LOCATION'); expect(markup).toContain('PRIVATE_ACTION');
-    expect(markup).toMatch(/data-home-refresh="true"[^>]*disabled/); expect(markup).toContain('Checking');
-    const clock = clockRegion(markup); expect(clock).toContain('Loading recorded time'); expect(clock).not.toContain('Clocked in');
+    // v5: no manual Refresh; Home refreshes itself when it returns to the front, and says it is busy meanwhile.
+    expect(markup).not.toContain('data-home-refresh'); expect(markup).toContain('aria-busy="true"'); expect(markup).not.toContain('Clocked in');
   });
 
   it('preserves canonical partial coverage and its clock without promoting known counts to all-clear', () => {
@@ -126,7 +122,7 @@ describe('reviewed Home renderer uses the original release boundary', () => {
     const state = released(input), view = adapter(state); expect(view.props.status).toBe('partial'); expect(view.props.ownTimeSlot).not.toBeNull();
     const markup = html(state); expect(markup).toContain('PRIVATE_ASSIGNMENT_LOCATION'); expect(markup).toContain('1 known item');
     expect(markup).toContain('partially shown — more records are available'); expect(markup).not.toContain('all set');
-    expect(markup).toContain('href="/app/updates"'); expect(markup).toContain('Loading recorded time');
+    expect(markup).toContain('href="/app/updates"');
   });
 
   it('changes only the original clock key when its independent authority changes', () => {
@@ -142,13 +138,10 @@ describe('reviewed Home renderer uses the original release boundary', () => {
   it('forwards the same explicit retry to Home and original redacted clock controls without invoking it during render', () => {
     const onRetry = vi.fn(), state: PrivatePanelState<HomeLifetime> = {snapshot: {state: 'unavailable', reason: 'read_failed'}, paused: false, refreshing: false};
     const view = adapter(state, {onRetry}); expect(view.props.onRetry).toBe(onRetry);
-    const rendered = EmployeeHomeReviewedView(view.props), all = elements(rendered);
-    const homeButton = all.find(element => element.type === 'button' && element.props['data-home-refresh'] === true);
-    const clock = all.find(element => element.type === EmployeeTimeView);
-    expect(homeButton).toBeDefined(); expect(clock).toBeDefined(); expect(onRetry).not.toHaveBeenCalled();
-    expect(homeButton!.props.disabled).toBe(false); expect(clock!.props.onRefresh).toBe(onRetry);
-    (homeButton!.props.onClick as () => void)();
-    (clock!.props.onRefresh as () => void)(); expect(onRetry).toHaveBeenCalledTimes(2);
+    // The view holds state (Show all), so it is rendered rather than called; its Try again is the forwarded retry.
+    expect(view.type).toBe(EmployeeHomeQuietView); expect(onRetry).not.toHaveBeenCalled();
+    const markup = renderToStaticMarkup(view); expect(markup).toMatch(/data-home-refresh="true"/); expect(markup).not.toMatch(/data-home-refresh="true"[^>]*disabled/);
+    expect(markup).not.toContain('Own recorded time'); expect(onRetry).not.toHaveBeenCalled();
   });
 });
 
@@ -190,15 +183,14 @@ describe('original controller lifetime and late-result behavior reaches the revi
 describe('existing connected selection and Dashboard heading', () => {
   it('selects the reviewed renderer in the actual connected component without introducing a name or alternate reader', () => {
     const markup = renderToStaticMarkup(<EmployeeHomeActions authority={authority} timeAuthority={timeAuthority}/>);
-    expect(markup).toContain('data-home-state="loading"'); expect(markup).toContain('data-home-refresh="true"');
-    expect(markup).toContain('Loading recorded time'); expect(markup).toContain('href="/app/my-time"');
-    expect(markup).not.toContain('Hi,'); suppressPrivate(markup);
+    expect(markup).toContain('data-home-state="loading"'); expect(markup).toContain('Loading Home'); noClock(markup);
+    expect(markup).not.toContain('Hi,'); expect(markup).not.toContain('Good '); suppressPrivate(markup);
   });
 
   it('has one Home heading owned by the reviewed renderer inside the original Dashboard wrapper', () => {
     const markup = renderToStaticMarkup(<EmployeeDashboard authority={authority} timeAuthority={timeAuthority}/>);
     expect(markup.match(/<h1(?:\s|>)/g)).toHaveLength(1); expect(markup).toMatch(/<h1[^>]*>Home<\/h1>/);
     expect(markup).toContain('class="employee-dashboard employee-home"'); expect(markup).not.toContain('employee-home-heading');
-    expect(markup).toContain('data-home-refresh="true"'); expect(markup).toContain('Loading Home'); expect(markup).toContain('Loading recorded time');
+    expect(markup).toContain('Loading Home');
   });
 });

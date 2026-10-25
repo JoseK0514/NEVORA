@@ -1,20 +1,8 @@
 'use client';
-import { useRef, type ReactNode } from 'react';
-import { useGSAP } from '@gsap/react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import type { ReactNode } from 'react';
 
-gsap.registerPlugin(useGSAP, ScrollTrigger);
-
-export function EmployeeScheduleMotion({ children, weekStart }: { children: ReactNode; weekStart: string }) {
-  const scope=useRef<HTMLDivElement>(null);
-  useGSAP(()=>{
-    const media=gsap.matchMedia();
-    media.add('(prefers-reduced-motion: no-preference)',()=>{
-      gsap.fromTo('[data-s6-enter]',{y:6,opacity:.9},{y:0,opacity:1,duration:.32,stagger:.06,ease:'power2.out',clearProps:'transform,opacity'});
-      gsap.fromTo('[data-s6-heading]',{opacity:.9},{opacity:1,duration:.3,clearProps:'opacity',scrollTrigger:{trigger:'[data-s6-agenda]',start:'top 95%',once:true}});
-    });
-    return ()=>media.revert();
-  },{scope,dependencies:[weekStart],revertOnUpdate:true});
-  return <div ref={scope} className="my-schedule-motion">{children}</div>;
+/* Phase 1 (inspection Oct 24): page entrances are off. Content painted, jumped back and animated in on every visit,
+ * which read as lag; a page now appears in place. */
+export function EmployeeScheduleMotion({ children }: { children: ReactNode; weekStart: string }) {
+  return <div className="my-schedule-motion">{children}</div>;
 }

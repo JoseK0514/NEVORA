@@ -1,10 +1,4 @@
-@font-face {
-  font-family: 'Inter';
-  src: url('/fonts/typeface/inter/variable.woff2') format('woff2'), url('/fonts/typeface/inter/variable.ttf') format('truetype');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
+/* Phase 1: Inter comes once, as woff2, from src/app/typeface-theme.css (a second TTF declaration downloaded 876 KB again and re-wrapped text). */
 @font-face {
   font-family: 'JetBrains Mono';
   src: url('/fonts/typeface/jetbrains-mono/variable.ttf') format('truetype');

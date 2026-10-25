@@ -45,6 +45,13 @@ describe("public policy pages", () => {
     expect(html).toContain(fact("BUSINESS_CONTACT_DETAILS"));
   });
 
+  it("public Account deletion uses the Quiet legal layout like Privacy (inspection Oct 24)", () => {
+    const html = renderToStaticMarkup(createElement(AccountDeletionPage));
+    expect(html).toContain('class="q-page q-auth q-doc"');
+    expect(html).toMatch(/<a (?=[^>]*class="q-btn q-doc__start")(?=[^>]*href="\/login\?returnTo=%2Fapp%2Faccount%2Fdelete")[^>]*>Start deletion request<\/a>/);
+    expect(html).not.toContain("employee-login-submit");
+  });
+
   it("starts deletion by signing in, never by typing an email address", () => {
     const html = renderToStaticMarkup(createElement(AccountDeletionPage));
     expect(html).toContain('href="/login?returnTo=%2Fapp%2Faccount%2Fdelete"');
@@ -77,10 +84,19 @@ describe("Delete my account", () => {
   const account = { name: "Fictional Person", role: "Employee", employeeId: "FICTIONAL-E1" };
   it("reviews the account and effects, then asks for the password before the destructive action", () => {
     const html = renderToStaticMarkup(createElement(AccountDeletionForm, { account, period: null, retention: null, existing: null }));
-    for (const text of ["Fictional Person", "FICTIONAL-E1", "Your access ends now.", "What is removed:", "What may be kept:", "Confirm deletion request", "Keep my account"]) expect(html).toContain(text);
+    for (const text of ["Fictional Person", "FICTIONAL-E1", "Your access ends now.", "What is removed", "What may be kept", "Read the full details", "Confirm deletion request", "Keep my account"]) expect(html).toContain(text);
     expect(html).toMatch(/<input[^>]*type="password"[^>]*autoComplete="current-password"|<input[^>]*autoComplete="current-password"[^>]*type="password"/);
     expect(html).toMatch(/<button type="submit"[^>]*disabled=""/);
     expect(html).toContain("[CONFIRM_DELETION_COMPLETION_PERIOD]");
+  });
+
+  it("draws the review on Quiet rows with gutters, not the shell-scoped settings cards (inspection Oct 24)", () => {
+    const html = renderToStaticMarkup(createElement(AccountDeletionForm, { account, period: "Confirmed period", retention: "Fictional retention.", existing: null }));
+    expect(html).toContain('class="q-deletion"');
+    expect(html).toMatch(/<h2 id="deletion-account-title">Your account<\/h2>/);
+    expect(html.match(/class="q-row/g)?.length).toBeGreaterThanOrEqual(4);
+    expect(html).not.toMatch(/nv-card|wc-facts|wc-check/);
+    expect(html).toContain("I understand my NEVORA account will be deleted and I won’t be able to sign in again.");
   });
 
   it("shows an open request with its reference instead of a second form", () => {

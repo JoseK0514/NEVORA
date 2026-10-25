@@ -1,19 +1,9 @@
 'use client';
 
-import {useRef,type ReactNode} from 'react';
-import {gsap} from 'gsap';
-import {useGSAP} from '@gsap/react';
+import type {ReactNode} from 'react';
 
-gsap.registerPlugin(useGSAP);
-
+/* Phase 1 (inspection Oct 24): page entrances are off. Content painted, jumped back and animated in on every visit,
+ * which read as lag; a page now appears in place. */
 export function ReportsEntrance({children}:{children:ReactNode}) {
- const container=useRef<HTMLDivElement>(null);
- useGSAP(()=>{
-  const media=gsap.matchMedia();
-  media.add('(prefers-reduced-motion: no-preference)',()=>{
-   gsap.from('[data-report-entrance]',{y:8,opacity:.75,duration:.35,stagger:.04,ease:'power2.out',clearProps:'transform,opacity'});
-  },container);
-  return()=>media.revert();
- },{scope:container});
- return <div ref={container} className="nv-page wb-page wb-reports cm-page cm-insights" data-nv-page="">{children}</div>;
+ return <div className="nv-page wb-page wb-reports cm-page cm-insights" data-nv-page="">{children}</div>;
 }

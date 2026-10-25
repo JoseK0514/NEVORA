@@ -1,5 +1,4 @@
 import {redirect} from 'next/navigation';
-import Link from 'next/link';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
 import {EmployeeAccountPanel} from '@/components/employee-account-panel';
@@ -7,23 +6,15 @@ import {readNotificationConfig} from '@/lib/notifications/config';
 import {PortalSignout} from '@/components/portal-signout';
 import {CalendarSubscriptionPanel} from '@/components/calendar-subscription-panel';
 import {calendarAuthority} from '@/lib/calendar/service.server';
-import {ProfileFrame} from '@/components/profile-frame';
-import {NavIcon} from '@/components/nav-icon';
 import {ProfileCalendarDisclosure} from '@/components/profile-calendar-disclosure';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
-import {SigBand,SigPage} from '@/components/signature/signature';
-import pf from './profile-signature.module.css';
-import './profile.css';
-import './profile-premium.css';
+import {QuietNav,QuietPage,QuietRow} from '@/components/quiet/quiet';
+import {ProfileSettingRows} from '@/components/employee-profile-rows';
+import {policiesVisible} from '@/lib/legal/policies';
 import {ManagerProfilePage} from '@/components/manager-profile/manager-profile';
 import {PasskeySection} from '@/components/passkeys/passkey-section';
 import {getWorkspace} from '@/lib/data/workspaces';
 import {readAuthLang} from '@/lib/auth-lang.server';
-import {LangSwitch} from '@/components/auth-premium/lang-switch';
-import {GlobeIcon} from '@phosphor-icons/react/dist/ssr/Globe';
-import {CircleHalfIcon} from '@phosphor-icons/react/dist/ssr/CircleHalf';
-import {ThemeSwitch} from '@/components/theme-switch';
-import {AccountPrivacyLinks} from '@/components/legal/account-privacy-links';
 
 export const metadata = { title: "Profile" };
 export default async function ProfilePage(){
@@ -35,37 +26,38 @@ export default async function ProfilePage(){
  const {firstName,lastName,role}=proof.employee;
  const initials=`${firstName.trim()[0]??''}${lastName.trim()[0]??''}`.toUpperCase();
  const roleLabel=role==='LEAD'?'Lead':'Employee';
- // Signature (phase 2, approved Oct 20, 2026; target docs/product/specs/employee-style/signature/phase-2/p2c-profile.png):
- // the band is a membership card (initials, role, name and company, all from the session); the sheet holds Sign-in and
- // security, Settings, Work details and Sign out. Data reads, controls and the Phase E hooks are unchanged.
- return <ProfileFrame><SigPage className={pf.pfRoot} band={<SigBand eyebrow="Profile" mark={false}>
-  <div className={pf.pfCard}>
-   <svg className={pf.pfWatermark} viewBox="0 0 360 340" aria-hidden="true" focusable="false"><path d="M20 330 L180 30 L340 330 L276 330 L180 150 L84 330 Z"/></svg>
-   <div className={pf.pfCardTop}><span className={pf.pfMono} aria-hidden="true">{initials}</span><span className={pf.pfRole}>{roleLabel}</span></div>
-   <h1 className={pf.pfName}>{firstName} {lastName}</h1>
-   {workspaceName?<p className={pf.pfCompany}><span className="nv-sr">{roleLabel} · </span>{workspaceName}</p>:null}
-  </div>
- </SigBand>}>
-  <noscript><p>Enable JavaScript to view your current profile and calendar settings. You can still sign out below.</p></noscript>
-  <div className={`${pf.pfSection} ${pf.pfFirst}`}><PasskeySection/></div>
-  <section className={`profile-settings ${pf.pfSection}`} aria-labelledby="profile-settings-title">
-   <h2 id="profile-settings-title" className={pf.pfHeading}>Settings</h2>
-   <div className="profile-settings-list">
-    <div className="profile-setting-row pfx-lang-row"><span className="profile-setting-copy"><GlobeIcon size={20} aria-hidden="true"/><span><strong>Language</strong><small>Used on the sign-in pages for now.</small></span></span><LangSwitch lang={lang} label="Language"/></div>
-    <div className="profile-setting-row pfx-lang-row"><span className="profile-setting-copy"><CircleHalfIcon size={20} aria-hidden="true"/><span><strong>Appearance</strong><small>Light, dark, or match this device.</small></span></span><ThemeSwitch/></div>
-    <Link className="profile-setting-row" href="/app/notifications"><span className="profile-setting-copy"><NavIcon name="notifications" size={20}/><span><strong>Notifications</strong><small>Updates about your schedule and requests</small></span></span><CaretRightIcon className="profile-setting-caret" size={18} aria-hidden="true"/></Link>
-    {notificationsEnabled
-     ? <button type="button" className="profile-setting-row" popoverTarget="portal-device-settings"><span className="profile-setting-copy"><NavIcon name="settings" size={20}/><span><strong>Alerts on this device</strong><small>Choose how this device alerts you</small></span></span><CaretRightIcon className="profile-setting-caret" size={18} aria-hidden="true"/></button>
-     : <p className="profile-setting-note">Alerts on this device aren’t turned on for your workplace yet.</p>}
-    <ProfileCalendarDisclosure>
-     <CalendarSubscriptionPanel key={calendarAuthority(proof)} authority={calendarAuthority(proof)}/>
-    </ProfileCalendarDisclosure>
-   </div>
+ // v5 "One look" (Jose approved round 2 "exactly like this" on Oct 24, 2026; mockup E16): Back to More, who you are,
+ // Settings, Work details, Your account and Sign out. Kept from before, beyond the mockup: sign-in security (passkeys),
+ // alerts on this device and the calendar subscription. Data reads, controls and hooks are unchanged.
+ return <QuietPage className="q-profile-e">
+  <QuietNav back={{href:'/app/more',label:'More'}}/>
+  <div className="q-who"><span className="q-av q-av--lg" aria-hidden="true">{initials}</span><div><h1>{firstName} {lastName}</h1><p>{roleLabel}{workspaceName?` · ${workspaceName}`:''}</p></div></div>
+  <noscript><p className="q-help">Enable JavaScript to view your current profile and calendar settings. You can still sign out below.</p></noscript>
+  <section aria-labelledby="profile-settings-title">
+   <div className="q-grp"><h2 id="profile-settings-title">Settings</h2></div>
+   <ul className="q-list">
+    <ProfileSettingRows lang={lang}/>
+    <QuietRow one href="/app/notifications" title="Notifications"/>
+    {notificationsEnabled?<li><button type="button" className="q-row q-row--one q-row--btn" popoverTarget="portal-device-settings"><span className="q-rt"><b>Alerts on this device</b></span><CaretRightIcon className="q-chev" aria-hidden="true"/></button></li>:null}
+   </ul>
+   {notificationsEnabled?null:<p className="q-help">Alerts on this device aren’t turned on for your workplace yet.</p>}
   </section>
-  <div className={pf.pfSection}>
-   <EmployeeAccountPanel key={authority} kind="profile" authority={authority}/>
-  </div>
-  <AccountPrivacyLinks variant="settings" sectionClassName={pf.pfSection} headingClassName={pf.pfHeading}/>
-  <section className={`profile-signout ${pf.pfSignout}`} aria-label="Session"><PortalSignout><button type="submit" className="profile-setting-row profile-signout-row"><span className="profile-setting-copy"><NavIcon name="logout" size={20}/><strong>Sign out</strong></span></button></PortalSignout></section>
- </SigPage></ProfileFrame>;
+  <div className="q-profile-cal"><ProfileCalendarDisclosure>
+   <CalendarSubscriptionPanel key={calendarAuthority(proof)} authority={calendarAuthority(proof)}/>
+  </ProfileCalendarDisclosure></div>
+  <EmployeeAccountPanel key={authority} kind="profile" authority={authority} quiet/>
+  <div className="q-profile-security"><PasskeySection/></div>
+  <section aria-labelledby="profile-account-title">
+   <div className="q-grp"><h2 id="profile-account-title">Your account</h2></div>
+   <ul className="q-list">
+    {policiesVisible()?<>
+     <QuietRow one href="/privacy" title="Privacy Policy"/>
+     <QuietRow one href="/terms" title="Terms of Use"/>
+     <QuietRow one href="/support" title="Support"/>
+     <QuietRow one href="/app/account/delete" title="Delete my account" variant="danger"/>
+    </>:<QuietRow one href="/support" title="Support"/>}
+   </ul>
+  </section>
+  <section aria-label="Session"><PortalSignout><button type="submit" className="q-btn q-btn--sec q-btn--danger profile-signout-row">Sign out</button></PortalSignout></section>
+ </QuietPage>;
 }

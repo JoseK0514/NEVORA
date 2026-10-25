@@ -133,19 +133,21 @@ try{
   await ep.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
   await ep.bringToFront();
   await ep.waitForTimeout(1200);
-  const entryDetails=ep.locator('.employee-time-entry').first();
-  await entryDetails.waitFor();
-  await entryDetails.locator('summary').click();
-  const trigger=ep.locator('.employee-time-entry[open] .employee-time-correction-trigger').first();
+  // v5 My time: each entry is a row that opens its punches and its correction as a sheet.
+  const entryRow=ep.locator('ul[aria-labelledby^="employee-time-"] > li > button[aria-haspopup="dialog"]').first();
+  await entryRow.waitFor();
+  await entryRow.click();
+  const sheet=ep.locator('dialog[open]');
+  const trigger=sheet.locator('.employee-time-correction-trigger').first();
   await trigger.waitFor({state:'visible'});
   assert.equal(await trigger.getAttribute('aria-expanded'),'false');
   await trigger.click();
-  const correctionForm=ep.locator('.employee-time-entry[open] .employee-time-correction-form').first();
+  const correctionForm=sheet.locator('.employee-time-correction-form').first();
   await correctionForm.waitFor({state:'visible'});
   assert.equal(await trigger.getAttribute('aria-expanded'),'true');
-  await ep.getByLabel('Start',{exact:true}).fill(proposedStart);
-  await ep.getByLabel('End',{exact:true}).fill(proposedEnd);
-  await ep.getByLabel('Reason',{exact:true}).fill('Fictional D2 browser correction review.');
+  await correctionForm.getByLabel('Start',{exact:true}).fill(proposedStart);
+  await correctionForm.getByLabel('End',{exact:true}).fill(proposedEnd);
+  await correctionForm.getByLabel('Reason',{exact:true}).fill('Fictional D2 browser correction review.');
   checked(engine+': employee correction form expands with labeled controls');
 
   for(const width of WIDTHS){

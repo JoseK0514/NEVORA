@@ -36,11 +36,12 @@ export function SigSpinner() {
 }
 
 /** Idle label and pending words share one grid cell, so the button keeps the size of the longer one. The hidden cell is
- * visibility:hidden, which also takes it out of the accessible name. Works on any button, styled or not. */
+ * visibility:hidden, which also takes it out of the accessible name. Works on any button, styled or not.
+ * Phase 1: the spinner exists only while pending (a same-size slot otherwise), so idle buttons run no animation. */
 export function SigPendingLabel({ children, pendingText, pending, className = "" }: { children: ReactNode; pendingText?: ReactNode; pending: boolean; className?: string }) {
   return <span className={`sig-btn__label ${className}`.trim()}>
     <span className="sig-btn__idle" style={pending ? { visibility: "hidden" } : undefined}>{children}</span>
-    <span className="sig-btn__busy" style={pending ? undefined : { visibility: "hidden" }} aria-hidden={!pending || undefined}><SigSpinner />{pendingText ?? children}</span>
+    <span className="sig-btn__busy" style={pending ? undefined : { visibility: "hidden" }} aria-hidden={!pending || undefined}>{pending ? <SigSpinner /> : <span className="sig-btn__spin-slot" aria-hidden="true" />}{pendingText ?? children}</span>
   </span>;
 }
 

@@ -2,6 +2,8 @@ import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {join} from 'node:path';
+// v5 My time: each entry is a row that opens its punches and its correction as a sheet.
+const entryRow=page=>page.locator('ul[aria-labelledby^="employee-time-"] > li > button[aria-haspopup="dialog"]').first();
 import {Temporal} from '@js-temporal/polyfill';
 
 /** Real authenticated commands with deliberately lost delivery; owned fictional data only. */
@@ -31,7 +33,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
      await form.getByLabel('Start',{exact:true}).fill(local(Temporal.Instant.from(entry.start).subtract({hours:3}).toString()));
      await form.getByLabel('End',{exact:true}).fill(local(Temporal.Instant.from(entry.start).subtract({hours:2}).toString()));
     }else{
-     const details=page.locator('.employee-time-entry').first();await details.locator('summary').click();
+     await entryRow(page).click();const details=page.locator('dialog[open]');
      await details.getByRole('button',{name:'Request a correction',exact:true}).click();
      form=details.locator('.employee-time-correction-form');
      if(kind==='BREAK_BOUNDARY')await form.getByLabel('What needs correction?').selectOption({index:1});
@@ -58,10 +60,10 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
      await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));
      await page.getByText('Updates paused',{exact:true}).waitFor();
      await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
-     await page.locator('.employee-time-entry').first().waitFor();
-     if(kind!=='MISSING_ENTRY')await page.locator('.employee-time-entry').first().locator('summary').click();
+     await entryRow(page).waitFor();
+     if(kind!=='MISSING_ENTRY')await entryRow(page).click();
      await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).waitFor();
-     await page.locator(kind==='MISSING_ENTRY'?'main .employee-correction-center':'.employee-time-entry').first().getByRole('button',{name:'Request a correction',exact:true}).click();
+     await page.locator(kind==='MISSING_ENTRY'?'main .employee-correction-center':'dialog[open]').first().getByRole('button',{name:'Request a correction',exact:true}).click();
      releaseDelivery();
      checked(`${engine}: ${kind} in-flight private pause preserves the command before response classification`);
     }
@@ -72,8 +74,8 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
     await c.setOffline(true);await page.getByText('Updates paused',{exact:true}).waitFor();
     assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
     await c.setOffline(false);await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
-    await page.locator('.employee-time-entry').first().waitFor();
-    if(kind!=='MISSING_ENTRY')await page.locator('.employee-time-entry').first().locator('summary').click();
+    await entryRow(page).waitFor();
+    if(kind!=='MISSING_ENTRY')await entryRow(page).click();
     const retry=page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/});await retry.waitFor();
     if(kind==='ENTRY_BOUNDARY'&&loss==='after'){
      for(const width of [320,375,390,430,768,1024,1440]){
@@ -169,7 +171,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
   try{
    const page=await c.newPage();page.setDefaultTimeout(15000);watch(page);
    await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});await page.bringToFront();
-   const details=page.locator('.employee-time-entry').first();await details.locator('summary').click();
+   await entryRow(page).click();const details=page.locator('dialog[open]');
    await details.getByRole('button',{name:'Request a correction',exact:true}).click();
    await details.getByLabel('Reason',{exact:true}).fill('Fictional logout recovery boundary.');
    await page.route('**/api/employee/time-corrections',route=>route.request().method()==='POST'?route.abort('failed'):route.continue());
@@ -180,7 +182,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    await login(c,'QAOWNER');await page.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
    assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
    await login(c,'D2-E');await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
-   await page.locator('.employee-time-entry').first().waitFor();
+   await entryRow(page).waitFor();
    assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
    checked(`${engine}: sign-out/account-switch/sign-in clears uncertain Employee command memory`);
   }finally{await c.close();}
@@ -189,7 +191,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
   try{
    const page=await denied.newPage();page.setDefaultTimeout(15000);watch(page);
    await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});await page.bringToFront();
-   const details=page.locator('.employee-time-entry').first();await details.locator('summary').click();
+   await entryRow(page).click();const details=page.locator('dialog[open]');
    await details.getByRole('button',{name:'Request a correction',exact:true}).click();
    await details.getByLabel('Reason',{exact:true}).fill('Fictional current authority-loss regression.');
    await page.route('**/api/employee/time-corrections',route=>route.request().method()==='POST'?route.abort('failed'):route.continue());
@@ -201,8 +203,8 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
    await q("UPDATE employees SET active=true WHERE id='D2-E'");
    await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
-   await page.locator('.employee-time-entry').first().waitFor();
-   await page.locator('.employee-time-entry').first().locator('summary').click();
+   await entryRow(page).waitFor();
+   await entryRow(page).click();
    assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
    checked(`${engine}: current Employee authority denial clears uncertain recovery before re-entry`);
   }finally{await q("UPDATE employees SET active=true WHERE id='D2-E'");await denied.close();}

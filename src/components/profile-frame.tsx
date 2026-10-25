@@ -1,20 +1,9 @@
 'use client';
 
-import { useEffect, useRef, type ReactNode } from 'react';
-import { gsap } from 'gsap';
+import type { ReactNode } from 'react';
 
+/* Phase 1 (inspection Oct 24): page entrances are off. Content painted, jumped back and animated in on every visit,
+ * which read as lag; a page now appears in place. */
 export function ProfileFrame({ children }: { children: ReactNode }) {
-  const frame = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!frame.current) return;
-    const media = gsap.matchMedia();
-    media.add('(prefers-reduced-motion: no-preference)', () => {
-      const heading=frame.current?.querySelector('.profile-heading-copy');
-      const icons=frame.current?.querySelectorAll('.profile-icon-tile');
-      if(heading)gsap.from(heading, { y: 6, opacity: 0.75, duration: 0.4, ease: 'power2.out' });
-      if(icons?.length)gsap.from(icons, { scale: 0.92, opacity: 0.7, duration: 0.45, stagger: 0.05, ease: 'power2.out' });
-    }, frame.current);
-    return () => media.revert();
-  }, []);
-  return <div ref={frame} className="employee-view employee-account-view profile-view">{children}</div>;
+  return <div className="employee-view employee-account-view profile-view">{children}</div>;
 }

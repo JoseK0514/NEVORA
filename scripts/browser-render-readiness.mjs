@@ -20,7 +20,8 @@ export async function waitForReviewedTimeOff(page, requestId) {
 }
 
 export async function waitForSheetEntrance(page) {
-  const selector = '[data-sig-sheet]';
+  // A Signature sheet, or a v5 Quiet page root (its page itself is the sheet; it has no entrance motion).
+  const selector = '[data-sig-sheet], [data-nv-page]';
   await page.locator(selector).first().waitFor({state: 'visible'});
   const sample = () => page.locator(selector).evaluateAll(elements => elements.map(element => ({
     opacity: Number(getComputedStyle(element).opacity),

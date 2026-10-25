@@ -51,7 +51,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  await login();stage='full-review';await schedule('&acknowledged=1');
  assert.equal(await page.getByText('Schedule confirmed.',{exact:true}).count(),0,'query cannot fabricate success');assert(await confirm().isEnabled());
  details.reviewedRevision=await page.locator('input[name="expectedRevisionId"]').inputValue();
- assert.equal(await page.getByRole('heading',{level:1,name:'My schedule',exact:true}).count(),1);assert.equal(await page.getByRole('navigation',{name:'Schedule views',exact:true}).count(),1);assert.equal(await page.locator('#schedule-'+scenario.sourceDate).count(),1);assert.equal(await page.locator('input[name="sessionTokenHash"]').count(),0);
+ assert.equal(await page.getByRole('heading',{level:1,name:'Schedule',exact:true}).count(),1);assert.equal(await page.getByRole('navigation',{name:'Schedule views',exact:true}).count(),1);assert.equal(await page.getByRole('navigation',{name:'Days in this week',exact:true}).locator('a[href*="day='+scenario.sourceDate+'"]').count(),1);assert.equal(await page.locator('input[name="sessionTokenHash"]').count(),0);
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
  const rect=await confirm().boundingBox();assert(rect&&rect.height>=44&&rect.x>=0&&rect.x+rect.width<=width);
  await screenshot('review');checks.push('Actual authenticated weekly content and displayed revision; forged success query ignored; 44px bounded control; no raw session proof in form');
@@ -145,7 +145,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   }finally{await blocker.query('ROLLBACK');await blocker.end();}
  }
  // Empty week is a true source state, not a false success.
- stage='empty';const empty=new Date(scenario.week+'T12:00:00Z');empty.setUTCDate(empty.getUTCDate()+7);await page.goto(app.url+'/app/schedule?week='+empty.toISOString().slice(0,10));await page.waitForLoadState('networkidle');assert.equal(await confirm().count(),0);assert.equal(await page.getByText('Schedule not published yet',{exact:true}).count(),7);assert.equal(await page.getByText('Off — no assignment',{exact:true}).count(),0);assert(await page.getByRole('status').filter({hasText:'published this week yet'}).count());await screenshot('empty');checks.push('Unpublished empty week has no confirmation and no fabricated off/success state');
+ stage='empty';const empty=new Date(scenario.week+'T12:00:00Z');empty.setUTCDate(empty.getUTCDate()+7);await page.goto(app.url+'/app/schedule?week='+empty.toISOString().slice(0,10));await page.waitForLoadState('networkidle');assert.equal(await confirm().count(),0);assert.equal(await page.getByText('Schedule not published yet',{exact:true}).count(),1,'v5 shows the chosen day; an unpublished day says so');assert.equal(await page.getByText('Off — no assignment',{exact:true}).count(),0);assert(await page.getByRole('status').filter({hasText:'published this week yet'}).count());await screenshot('empty');checks.push('Unpublished empty week has no confirmation and no fabricated off/success state');
  // Return to real schedule for driver's WCAG scan.
  stage='layout';await schedule();details.responseCaptured=!!captured;
  return {checks};

@@ -1,22 +1,10 @@
 'use client';
 
-import { useRef } from 'react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
 import { FileCsvIcon, WalletIcon, FileTextIcon, SlidersHorizontalIcon } from '@phosphor-icons/react/ssr';
 
-gsap.registerPlugin(useGSAP);
-
+/* Phase 1 (inspection Oct 24): page entrances are off. Content painted, jumped back and animated in on every visit,
+ * which read as lag; a page now appears in place. */
 export function PayrollExportMotion({ kind = 'export' }: { kind?: 'export' | 'payroll' | 'statement' | 'settings' }) {
-  const scope = useRef<HTMLSpanElement>(null);
-  useGSAP(() => {
-    const media = gsap.matchMedia();
-    media.add('(prefers-reduced-motion: no-preference)', () => {
-      gsap.fromTo(scope.current, { rotate: -8, scale: 0.9 },
-        { rotate: 0, scale: 1, duration: 0.65, ease: 'power2.out' });
-    });
-    return () => media.revert();
-  }, { scope });
   const Icon = kind === 'payroll' ? WalletIcon : kind === 'statement' ? FileTextIcon : kind === 'settings' ? SlidersHorizontalIcon : FileCsvIcon;
-  return <span ref={scope} aria-hidden="true"><Icon size={28} weight="duotone" /></span>;
+  return <span aria-hidden="true"><Icon size={28} weight="duotone" /></span>;
 }

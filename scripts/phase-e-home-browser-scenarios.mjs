@@ -61,14 +61,18 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const shot=async name=>{const path=join(evidenceDirectory,`home-task11-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
  const next=()=>page.locator('[aria-labelledby="employee-reviewed-next-heading"]');
  const assignments=()=>next().getByRole('link',{name:'View schedule',exact:false});
- const items=()=>page.locator('[data-home-group] li');
+ // v5 (mockup E01): Needs you rows are links; the all-set row and Show all are not items.
+ const items=()=>page.locator('[data-home-group] li > a.q-row');
+ const actionHrefs=result=>{const rows=result.snapshot.attention.filter(item=>item.required||item.actionable),weeks=rows.filter(item=>item.ref.kind==='SCHEDULE'&&!item.label.startsWith('Schedule removed'));return rows.filter(item=>!weeks.includes(item)||item===weeks[0]).map(item=>item.href);};
+ const showAllRows=async()=>{const group=page.locator('[data-home-group="actions"]'),more=group.getByRole('button',{name:/^Show all \d+$/});if(await more.count()){await more.focus();await page.keyboard.press('Enter');await group.getByRole('button',{name:'Show fewer',exact:true}).waitFor();}};
  const recorded=()=>page.locator('aside[aria-label="Own recorded time"]');
  const ready=async()=>{await page.locator('[data-home-state="partial"],[data-home-state="ready"]').waitFor();await page.waitForLoadState('networkidle');};
  const refresh=async()=>{
   await page.bringToFront();await ready();
   try {
-   const [response]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/employee/home'),page.locator('[data-home-refresh]').click()]);
-   await response.finished();await page.getByRole('button',{name:/^(Refresh home|Retry home)$/}).waitFor();await ready();
+   // v5 has no manual Refresh: Home re-reads when the app returns to the front (the same lifecycle sync).
+   const [response]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/employee/home'),page.evaluate(()=>window.dispatchEvent(new Event('storage')))]);
+   await response.finished();await ready();await showAllRows();
   } catch(error) {
    const diagnostic=await page.evaluate(()=>{
     const button=document.querySelector('[data-home-refresh]'),root=document.querySelector('[data-home-state]');
@@ -145,36 +149,34 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  await q("INSERT INTO clocker_devices(id,location_id,name) VALUES($1,'loc-1','Fictional Home device')",[label+'-device']);
  await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES($1,$2,'loc-1',$3,clock_timestamp()-interval '20 minutes','CLOCKED_IN')",[label+'-time',actor,label+'-device']);
  stage='loading';const loading=gate('**/api/employee/home');await page.route(loading.path,loading.handler);await login(page,actor,{waitForIdle:false});await loading.seen;
- assert(await page.getByText('Loading Home…',{exact:true}).isVisible());assert.equal(await assignments().count(),0);assert.equal(await items().count(),0);assert(await recorded().getByRole('status').filter({hasText:'Loading recorded time'}).isVisible(),'the Signature clock keeps its loading placeholder without showing recorded facts');assert(await recorded().getByRole('button',{name:'Refreshing recorded time',exact:true}).isDisabled());assert.equal(await page.getByText('Clocked in',{exact:true}).count(),0);assert.equal(await recorded().locator('time').count(),0);await shot('loading');loading.release();await ready();await page.unroute(loading.path,loading.handler);
+ assert(await page.getByText('Loading Home…',{exact:true}).isVisible());assert.equal(await assignments().count(),0);assert.equal(await items().count(),0);assert.equal(await recorded().count(),0,'v5 Home mounts the clock only with released Home data and a shift under way');assert.equal(await page.getByText('Clocked in',{exact:true}).count(),0);await shot('loading');loading.release();await ready();await page.unroute(loading.path,loading.handler);
  await page.getByText('Clocked in',{exact:true}).waitFor();
  assert.equal(homeResponse.state,'partial');assert.equal(homeResponse.allSet,false);assert.equal(homeResponse.snapshot.sources.communications.state,'complete');assert.equal(homeResponse.snapshot.nextShift.shiftId,scenario.sourceId);assert.equal(homeResponse.snapshot.currentShift.shiftId,label+'-ongoing');
- assert.equal(await page.getByRole('heading',{level:1}).count(),1);assert.equal(homeResponse.snapshot.publicationState,'partial');assert.equal(await page.locator('[data-home-state="ready"]').count(),1,'complete source reads are ready while the publication note explains unpublished locations');assert(await next().getByRole('status').filter({hasText:/published this week yet\. Shifts shown are published\.$/}).isVisible());assert.equal(await page.getByText("You’re all set.",{exact:true}).count(),0);
+ assert.equal(await page.getByRole('heading',{level:1}).count(),1);assert.equal(homeResponse.snapshot.publicationState,'partial');assert.equal(await page.locator('[data-home-state="ready"]').count(),1,'complete source reads are ready while the publication note explains unpublished locations');assert(await next().getByRole('status').filter({hasText:/published this week yet\. Shifts shown are published\.$/}).isVisible());assert.equal(await page.getByText("You’re all set",{exact:true}).count(),0);
  assert.equal(await page.getByText('Some Home sections could not be fully checked. Counts show known items. Refresh Home below to check again.',{exact:true}).count(),0,'an unpublished location is explained by publication state, not a failed read');
  assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE HOME SENTINEL'));assert(await next().getByText('Scheduled now',{exact:true}).isVisible());
  const hierarchy=await page.locator('[aria-labelledby="employee-reviewed-next-heading"],[data-home-group="actions"]').evaluateAll(es=>({tops:es.map(e=>(e.querySelector('[aria-label="Scheduled now"]')?.parentElement??e).getBoundingClientRect().top),nextBeforeActions:es.length===2&&!!(es[0].compareDocumentPosition(es[1])&Node.DOCUMENT_POSITION_FOLLOWING)}));assert.equal(hierarchy.tops.length,2);assert(hierarchy.nextBeforeActions);assert(hierarchy.tops[0]<=hierarchy.tops[1]);details.homeHierarchy=hierarchy;
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await shot('ready');
  checks.push('H01 actual loading contains no private row/success; Scheduled now leads and the persisted future Next shift follows, with actual recorded Clocked In coexisting; six-source canonical communications complete and private notes absent');
- // Native disclosures are independent. Complete row membership/order comes only
- // from the actual canonical response; opening a summary grants no authority.
+ // v5 (mockup E01): Needs you lists what to do (weeks to confirm share one row); Show all reveals the rest by keyboard.
+ // Informational updates live in Notifications, not on Home. Row membership/order comes only from the canonical response.
  details.homeDisclosures=[];
- for(const kind of ['actions','updates']){
-  const group=page.locator(`[data-home-group="${kind}"]`),rows=homeResponse.snapshot.attention.filter(item=>kind==='actions'?item.required||item.actionable:!item.required&&!item.actionable),overflow=group.locator('details');
-  assert(await group.isVisible());assert.equal(await group.locator('li').count(),rows.length);
-  assert.equal(await overflow.count(),rows.length>3?1:0);
-  assert.equal(await group.locator('li a').evaluateAll(es=>es.map(e=>e.getAttribute('href'))).then(values=>JSON.stringify(values)),JSON.stringify(rows.map(item=>item.href)));
-  const disclosure={kind,rows:rows.length,hasOverflow:rows.length>3,keyboardObserved:false};
-  if(rows.length>3){
-   const summary=overflow.locator('summary'),peer=page.locator(`[data-home-group="${kind==='actions'?'updates':'actions'}"] details`),peerOpen=await peer.count()?await peer.evaluate(e=>e.open):null;
-   assert.equal(await overflow.evaluate(e=>e.open),false);await summary.focus();await page.keyboard.press('Enter');assert.equal(await overflow.evaluate(e=>e.open),true);assert(await summary.evaluate(e=>e.matches(':focus-visible')));
-   for(const link of await group.locator('li a').all()){await link.waitFor({state:'visible'});assert(await link.isVisible());}
-   await page.keyboard.press('Space');assert.equal(await overflow.evaluate(e=>e.open),false);await page.keyboard.press('Enter');assert.equal(await overflow.evaluate(e=>e.open),true);
-   if(peerOpen!==null)assert.equal(await peer.evaluate(e=>e.open),peerOpen);
-   disclosure.keyboardObserved=true;
+ {
+  const group=page.locator('[data-home-group="actions"]'),expected=actionHrefs(homeResponse),more=group.getByRole('button',{name:/^Show all \d+$/});
+  assert(await group.isVisible());assert.equal(await more.count(),expected.length>3?1:0);
+  const disclosure={kind:'actions',rows:expected.length,hasOverflow:expected.length>3,keyboardObserved:false};
+  if(expected.length>3){
+   assert.equal(await group.locator('li > a.q-row').count(),3);await more.focus();await page.keyboard.press('Enter');
+   const fewer=group.getByRole('button',{name:'Show fewer',exact:true});await fewer.waitFor();assert.equal(await fewer.getAttribute('aria-expanded'),'true');assert(await fewer.evaluate(e=>e===document.activeElement&&e.matches(':focus-visible')));
+   for(const link of await group.locator('li > a.q-row').all()){await link.waitFor({state:'visible'});assert(await link.isVisible());}
+   await page.keyboard.press('Enter');await group.getByRole('button',{name:/^Show all \d+$/}).waitFor();assert.equal(await group.locator('li > a.q-row').count(),3);await showAllRows();disclosure.keyboardObserved=true;
   }
+  assert.deepEqual(await group.locator('li > a.q-row').evaluateAll(es=>es.map(e=>e.getAttribute('href'))),expected);
   details.homeDisclosures.push(disclosure);
  }
- assert.equal(await items().count(),homeResponse.snapshot.attention.length);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);for(const item of homeResponse.snapshot.attention.filter(item=>item.ref.kind==='SCHEDULE'))assert(await page.locator(`[data-home-group] time[datetime="${item.ref.id}"]`).isVisible());assert.equal(await page.locator('[data-home-group] small').filter({hasText:'Recorded '}).count(),homeResponse.snapshot.attention.filter(item=>item.ref.kind!=='SCHEDULE').length);const leave=homeResponse.snapshot.attention.filter(item=>item.ref.kind==='TIME_OFF');assert.equal(new Set(leave.map(item=>item.label)).size,7);for(const item of leave)assert(await page.getByText(item.label,{exact:true}).isVisible());await shot('show-all');
- checks.push('H02 actual separate Actions/Updates membership and available native keyboard disclosures expose every returned item; weekly reviews show their own week and distinct time-off periods remain distinguishable; Home has canonical review links and no compact consent or Mark read');
+ assert.equal(await page.locator('[data-home-group="updates"]').count(),0,'Informational updates are read in Notifications');
+ assert.equal(await items().count(),actionHrefs(homeResponse).length);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);for(const item of homeResponse.snapshot.attention.filter(item=>item.ref.kind==='SCHEDULE'&&(item.required||item.actionable)))assert.equal(await page.locator(`[data-home-group] time[datetime="${item.ref.id}"]`).count(),1);const leave=homeResponse.snapshot.attention.filter(item=>item.ref.kind==='TIME_OFF');assert.equal(new Set(leave.map(item=>item.label)).size,7);for(const item of leave)assert.equal(await page.locator('.employee-home').getByText(item.label,{exact:true}).count(),0);await shot('show-all');
+ checks.push('H02 actual Needs you membership and order follow the canonical response (weeks share one row); keyboard Show all/Show fewer exposes every row; weekly reviews carry their own week dates; informational updates stay in Notifications; no compact consent or Mark read');
  stage='canonical-communications';
  const ownerId=await seedOwnedScenarioOwner(app.database.executor,label);
  managerContext=await browser.newContext({viewport:{width,height:900}});await managerContext.route('**/*',route=>new URL(route.request().url()).origin===new URL(app.url).origin?route.continue():route.abort());manager=await managerContext.newPage();await login(manager,ownerId);
@@ -194,8 +196,8 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  async function publishUpdate(acknowledgement){const draft={type:'LOCATION_ANNOUNCEMENT',scope:{kind:'LOCATION',locationId:'loc-1'},title:'Operational update '+label+' — revisión 👷',body:'PRIVATE COMPLETE CONTENT '+label,acknowledgement,expiresAt:null};
  const preview=await previewCommunicationAudience(owner,draft,app.database.executor);assert.equal(preview.state,'ready');const result=await executeCommunicationCommand(owner,{kind:'PUBLISH',operationId:randomUUID(),authority:preview.authority,draft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(result.status,'committed');return {result,draft};}
  const required=await publishUpdate('REQUIRED');await refresh();
- const row=()=>items().filter({has:page.locator('a[href="/app/updates/'+required.result.id+'"]')});
- assert(await row().getByText('Review needed',{exact:true}).isVisible());assert.equal(await page.getByText("You’re all set.",{exact:true}).count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
+ const row=()=>page.locator('[data-home-group="actions"] a.q-row[href="/app/updates/'+required.result.id+'"]');
+ assert(await row().getByText('Review needed',{exact:true}).isVisible());assert.equal(await page.getByText("You’re all set",{exact:true}).count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
  assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);
  assert.equal((await recordCommunicationRead(self,{kind:'MARK_READ',operationId:randomUUID(),authority:communicationAuthority(self),ref:{kind:'COMMUNICATION',id:required.result.id,version:required.result.version}},app.database.executor)).status,'blocked');
  await refresh();assert(await row().getByText('Review needed',{exact:true}).isVisible());await shot('required-push-off');
@@ -206,8 +208,12 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const revisedDraft={...required.draft,body:'PRIVATE REVISED CONTENT '+label},preview=await previewCommunicationAudience(owner,revisedDraft,app.database.executor);assert.equal(preview.state,'ready');
  const revised=await executeCommunicationCommand(owner,{kind:'REVISE',operationId:randomUUID(),authority:preview.authority,communicationId:required.result.id,expectedRevisionId:required.result.version,draft:revisedDraft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(revised.status,'committed');await refresh();assert(await row().getByText('Review needed',{exact:true}).isVisible());await shot('new-revision');
  assert.equal((await executeCommunicationCommand(owner,{kind:'WITHDRAW',operationId:randomUUID(),authority:communicationAuthority(owner),communicationId:required.result.id,expectedRevisionId:revised.version},app.database.executor)).status,'committed');await refresh();assert.equal(await row().count(),0);
- const optional=await publishUpdate('OPTIONAL');await refresh();assert.equal(await page.locator('a[href="/app/updates/'+optional.result.id+'"]').count(),1);
- const optionalDetail=await readCommunication(self,optional.result.id,app.database.executor);assert.equal(optionalDetail.state,'ready');assert.equal((await recordCommunicationRead(self,{kind:'MARK_READ',operationId:randomUUID(),authority:optionalDetail.authority,ref:{kind:'COMMUNICATION',id:optional.result.id,version:optional.result.version}},app.database.executor)).status,'committed');await refresh();assert.equal(await page.locator('a[href="/app/updates/'+optional.result.id+'"]').count(),0);
+ // v5: Home lists what needs you; an optional update is read in Updates. The canonical Home response still carries it.
+ const homeRead=()=>page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{cache:'no-store',headers:{'X-Nevora-Home':binding}});return response.json();},binding);
+ const optional=await publishUpdate('OPTIONAL');await refresh();
+ const optionalItem=(await homeRead()).snapshot.attention.find(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===optional.result.id);assert(optionalItem,'The canonical Home response carries the optional update');assert.equal(optionalItem.required,false);
+ assert.equal(await page.locator('[data-home-group="actions"] a[href="/app/updates/'+optional.result.id+'"]').count(),optionalItem.actionable?1:0);
+ const optionalDetail=await readCommunication(self,optional.result.id,app.database.executor);assert.equal(optionalDetail.state,'ready');assert.equal((await recordCommunicationRead(self,{kind:'MARK_READ',operationId:randomUUID(),authority:optionalDetail.authority,ref:{kind:'COMMUNICATION',id:optional.result.id,version:optional.result.version}},app.database.executor)).status,'committed');await refresh();assert.equal(await page.locator('a[href="/app/updates/'+optional.result.id+'"]').count(),0);assert.equal((await homeRead()).snapshot.attention.some(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===optional.result.id),false,'A read optional update leaves the canonical response');
  checks.push('H14 authenticated Home follows actual canonical required receipt, push-off/Mark read denial, revision reset, withdrawal and optional version read; private body is absent and full review stays on Updates');
  // ACTIONS_OVERFLOW_BROWSER_EXTENSION_BEGIN
  // Four actual REQUIRED publications make Actions overflow mandatory. The
@@ -216,44 +222,34 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const overflowEvidence=details.actionsOverflow={fixturePublicationCount:4,phase:'baseline',publications:[],withdrawals:[],keyboard:[]};
  const overflowPublished=[];
  const overflowRefresh=async()=>{const observed=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/employee/home');await refresh();const response=await observed;assert.equal(response.status(),200);const result=await response.json();assert(['ready','partial'].includes(result.state));assert.equal(result.snapshot.sources.communications.state,'complete');return result;};
- const overflowRows=(result,kind)=>result.snapshot.attention.filter(item=>kind==='actions'?item.required||item.actionable:!item.required&&!item.actionable);
- const overflowGroup=kind=>page.locator(`[data-home-group="${kind}"]`);
- const overflowOpen=async kind=>{const disclosure=overflowGroup(kind).locator('details');return await disclosure.count()?await disclosure.evaluate(e=>e.open):null;};
- const overflowToggle=async(kind,key)=>{const summary=overflowGroup(kind).locator('details summary');await summary.focus();await page.keyboard.press(key);const observation={kind,key,actionsOpen:await overflowOpen('actions'),updatesOpen:await overflowOpen('updates'),focus:await summary.evaluate(e=>({active:e===document.activeElement,visible:e.matches(':focus-visible'),outlineStyle:getComputedStyle(e).outlineStyle,outlineWidth:getComputedStyle(e).outlineWidth}))};overflowEvidence.keyboard.push(observation);assert(observation.focus.active);assert(observation.focus.visible);assert.notEqual(observation.focus.outlineStyle,'none');assert(parseFloat(observation.focus.outlineWidth)>=2);return observation;};
+ // v5: overflow is the Needs you Show all / Show fewer button; informational rows are not on Home.
+ const overflowRows=result=>actionHrefs(result);
+ const overflowGroup=()=>page.locator('[data-home-group="actions"]');
+ const overflowExpanded=async()=>{const fewer=overflowGroup().getByRole('button',{name:'Show fewer',exact:true});return await fewer.count()?true:await overflowGroup().getByRole('button',{name:/^Show all \d+$/}).count()?false:null;};
+ const overflowToggle=async key=>{const control=overflowGroup().getByRole('button',{name:/^(Show all \d+|Show fewer)$/});await control.focus();await page.keyboard.press(key);const after=overflowGroup().getByRole('button',{name:/^(Show all \d+|Show fewer)$/});const observation={key,expanded:await overflowExpanded(),focus:await after.evaluate(e=>({active:e===document.activeElement,visible:e.matches(':focus-visible'),outlineStyle:getComputedStyle(e).outlineStyle,outlineWidth:getComputedStyle(e).outlineWidth}))};overflowEvidence.keyboard.push(observation);assert(observation.focus.active);assert(observation.focus.visible);assert.notEqual(observation.focus.outlineStyle,'none');assert(parseFloat(observation.focus.outlineWidth)>=2);return observation;};
  const overflowBaseline=await overflowRefresh();
- const overflowBaselineOpen={actions:await overflowOpen('actions'),updates:await overflowOpen('updates')};
- overflowEvidence.baseline={state:overflowBaseline.state,allSet:overflowBaseline.allSet,hrefs:{actions:overflowRows(overflowBaseline,'actions').map(item=>item.href),updates:overflowRows(overflowBaseline,'updates').map(item=>item.href)},open:overflowBaselineOpen};
+ const overflowBaselineOpen={actions:await overflowExpanded()};
+ overflowEvidence.baseline={state:overflowBaseline.state,allSet:overflowBaseline.allSet,hrefs:{actions:overflowRows(overflowBaseline)},open:overflowBaselineOpen};
  let overflowCause=null;
  try{
   overflowEvidence.phase='publish';
   for(let i=0;i<4;i++){const published=await publishUpdate('REQUIRED');overflowPublished.push(published);overflowEvidence.publications.push({id:published.result.id,version:published.result.version,status:published.result.status});}
   assert.equal(new Set(overflowPublished.map(published=>published.result.id)).size,4);
   overflowEvidence.phase='refreshed-membership';const actual=await overflowRefresh();
-  const actionRows=overflowRows(actual,'actions'),updateRows=overflowRows(actual,'updates');
-  overflowEvidence.refreshed={state:actual.state,allSet:actual.allSet,communicationsState:actual.snapshot.sources.communications.state,attentionCount:actual.snapshot.attention.length,hrefs:{actions:actionRows.map(item=>item.href),updates:updateRows.map(item=>item.href)}};
-  assert.equal(actual.allSet,false);assert(actionRows.length>3);assert(updateRows.length>3);
+  const actionRows=overflowRows(actual);
+  overflowEvidence.refreshed={state:actual.state,allSet:actual.allSet,communicationsState:actual.snapshot.sources.communications.state,attentionCount:actual.snapshot.attention.length,hrefs:{actions:actionRows}};
+  assert.equal(actual.allSet,false);assert(actionRows.length>3);
   assert.equal(actionRows.length,overflowEvidence.baseline.hrefs.actions.length+4);
-  assert.deepEqual(updateRows.map(item=>item.href),overflowEvidence.baseline.hrefs.updates);
-  assert.deepEqual(actionRows.filter(item=>!overflowPublished.some(published=>item.ref.kind==='COMMUNICATION'&&item.ref.id===published.result.id)).map(item=>item.href),overflowEvidence.baseline.hrefs.actions);
-  for(const published of overflowPublished){const canonical=actionRows.filter(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===published.result.id);assert.equal(canonical.length,1);assert.equal(canonical[0].required,true);assert.equal(canonical[0].ref.version,published.result.version);assert.equal(canonical[0].href,'/app/updates/'+published.result.id);assert.equal(updateRows.filter(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===published.result.id).length,0);}
-  for(const kind of ['actions','updates']){const group=overflowGroup(kind),canonical=overflowRows(actual,kind);assert.equal(await group.locator('details').count(),1);assert.equal(await group.locator('li').count(),canonical.length);assert.deepEqual(await group.locator('li a').evaluateAll(es=>es.map(e=>e.getAttribute('href'))),canonical.map(item=>item.href));}
-  assert.equal(await items().count(),actual.snapshot.attention.length);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);assert.equal(await page.getByText("You’re all set.",{exact:true}).count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
+  assert.deepEqual(actionRows.filter(href=>!overflowPublished.some(published=>href==='/app/updates/'+published.result.id)),overflowEvidence.baseline.hrefs.actions);
+  for(const published of overflowPublished){const canonical=actual.snapshot.attention.filter(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===published.result.id);assert.equal(canonical.length,1);assert.equal(canonical[0].required,true);assert.equal(canonical[0].ref.version,published.result.version);assert.equal(canonical[0].href,'/app/updates/'+published.result.id);}
+  assert.deepEqual(await overflowGroup().locator('li > a.q-row').evaluateAll(es=>es.map(e=>e.getAttribute('href'))),actionRows);
+  assert.equal(await items().count(),actionRows.length);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);assert.equal(await page.getByText("You’re all set",{exact:true}).count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
   overflowEvidence.phase='native-keyboard';
-  // Exercise Actions with the peer Updates closed, then open, without setting
-  // details.open or replacing the actual controller/response.
-  if(await overflowOpen('updates'))await overflowToggle('updates','Space');
-  if(await overflowOpen('actions'))await overflowToggle('actions','Space');
-  assert.equal(await overflowOpen('actions'),false);assert.equal(await overflowOpen('updates'),false);
-  let observation=await overflowToggle('actions','Enter');assert.equal(observation.actionsOpen,true);assert.equal(observation.updatesOpen,false);
-  for(const link of await overflowGroup('actions').locator('li a').all()){await link.waitFor({state:'visible'});assert(await link.isVisible());}
-  observation=await overflowToggle('actions','Space');assert.equal(observation.actionsOpen,false);assert.equal(observation.updatesOpen,false);
-  for(const link of await overflowGroup('actions').locator('details li a').all()){await link.waitFor({state:'hidden'});assert.equal(await link.isVisible(),false);}
-  observation=await overflowToggle('actions','Enter');assert.equal(observation.actionsOpen,true);assert.equal(observation.updatesOpen,false);
-  observation=await overflowToggle('updates','Enter');assert.equal(observation.updatesOpen,true);assert.equal(observation.actionsOpen,true);
-  for(const link of await overflowGroup('updates').locator('li a').all()){await link.waitFor({state:'visible'});assert(await link.isVisible());}
-  observation=await overflowToggle('actions','Space');assert.equal(observation.actionsOpen,false);assert.equal(observation.updatesOpen,true);
-  observation=await overflowToggle('actions','Enter');assert.equal(observation.actionsOpen,true);assert.equal(observation.updatesOpen,true);
-  for(const link of await overflowGroup('actions').locator('li a').all()){await link.waitFor({state:'visible'});assert(await link.isVisible());}
+  let observation=await overflowToggle('Enter');assert.equal(observation.expanded,false);assert.equal(await overflowGroup().locator('li > a.q-row').count(),3);
+  observation=await overflowToggle('Enter');assert.equal(observation.expanded,true);
+  for(const link of await overflowGroup().locator('li > a.q-row').all()){await link.waitFor({state:'visible'});assert(await link.isVisible());}
+  observation=await overflowToggle('Space');assert.equal(observation.expanded,false);
+  observation=await overflowToggle('Space');assert.equal(observation.expanded,true);assert.equal(await overflowGroup().locator('li > a.q-row').count(),actionRows.length);
   await shot('actions-overflow');
  }catch(error){overflowCause=error;throw error;}finally{
   overflowEvidence.phase='withdraw-extra-publications';
@@ -264,11 +260,10 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   if(!overflowCause)assert.equal(overflowEvidence.withdrawalComplete,true,'Every extra REQUIRED publication must be withdrawn before later journeys');
  }
  overflowEvidence.phase='restored-home';const restored=await overflowRefresh();
- overflowEvidence.restored={state:restored.state,allSet:restored.allSet,hrefs:{actions:overflowRows(restored,'actions').map(item=>item.href),updates:overflowRows(restored,'updates').map(item=>item.href)}};
+ overflowEvidence.restored={state:restored.state,allSet:restored.allSet,hrefs:{actions:overflowRows(restored)}};
  assert.deepEqual(overflowEvidence.restored.hrefs,overflowEvidence.baseline.hrefs);assert.equal(restored.state,overflowBaseline.state);assert.equal(restored.allSet,overflowBaseline.allSet);
  for(const published of overflowPublished)assert.equal(await page.locator('a[href="/app/updates/'+published.result.id+'"]').count(),0);
- assert.equal(await items().count(),restored.snapshot.attention.length);
- for(const kind of ['actions','updates']){const target=overflowBaselineOpen[kind],current=await overflowOpen(kind);if(target!==null){assert.notEqual(current,null);if(current!==target)await overflowToggle(kind,'Space');assert.equal(await overflowOpen(kind),target);}else assert.equal(current,null);}
+ assert.equal(await items().count(),overflowRows(restored).length);
  overflowEvidence.phase='complete';
  // ACTIONS_OVERFLOW_BROWSER_EXTENSION_END
  stage='keyboard';await page.locator('h1').click();const link=next().getByRole('link',{name:'View schedule',exact:false}).first(),tab=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab';let reached=false;
@@ -283,7 +278,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='api';const api=await page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{cache:'no-store',headers:{'X-Nevora-Home':binding}});return {status:response.status,cache:response.headers.get('cache-control'),vary:response.headers.get('vary'),body:await response.json()};},binding);
  assert.equal(api.status,200);assert.equal(api.cache,'no-store, private');assert(api.vary.split(',').map(value=>value.trim().toLowerCase()).includes('cookie'));assert(!JSON.stringify(api.body).match(/PRIVATE HOME SENTINEL|sessionTokenHash|managerNotes/));
  const rejected=await page.evaluate(async()=>{const r=await fetch('/api/employee/home?employeeId=other',{headers:{'X-Nevora-Home':'invalid'}});return r.status;});assert.equal(rejected,400);checks.push('H04 actual authenticated Home API is private/no-store; client identity selectors refused; no source-note/raw-proof disclosure');
- stage='offline';await context.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await page.locator('[data-home-state="paused"]').waitFor();assert.equal(await assignments().count(),0);assert.equal(await page.getByText('Clocked in',{exact:true}).count(),0);assert.equal(await items().count(),0);assert.equal(await recorded().locator('time').count(),0);assert(await recorded().getByRole('link',{name:'My time',exact:true}).isVisible());assert(await recorded().getByRole('button',{name:'Refresh recorded time',exact:true}).isDisabled());await shot('offline');await context.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));await ready();await page.getByText('Clocked in',{exact:true}).waitFor();checks.push('H05 actual network offline clears assignment and clock rows; online re-entry performs fresh authorized reads');
+ stage='offline';await context.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await page.locator('[data-home-state="paused"]').waitFor();assert.equal(await assignments().count(),0);assert.equal(await page.getByText('Clocked in',{exact:true}).count(),0);assert.equal(await items().count(),0);assert.equal(await recorded().count(),0,'Paused Home unmounts the clock with its private rows');await shot('offline');await context.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));await ready();await page.getByText('Clocked in',{exact:true}).waitFor();checks.push('H05 actual network offline clears assignment and clock rows; online re-entry performs fresh authorized reads');
  stage='late-home';
  const lateEvidence={requests:[],observations:[]},requestIds=new Map();details.lateHome=lateEvidence;
  const requestEvent=(event,request)=>{if(new URL(request.url()).pathname!=='/api/employee/home')return;if(!requestIds.has(request))requestIds.set(request,requestIds.size+1);lateEvidence.requests.push({event,id:requestIds.get(request),at:Date.now()});};
@@ -298,7 +293,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const markLate=event=>page.evaluate(event=>window.__homeHeldEvidence.observe(event),event);
  const late=gate('**/api/employee/home');await page.route(late.path,late.handler);
  try{
-  await page.locator('[data-home-refresh]').click();await late.seen;await markLate('old-response-held');
+  await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await late.seen;await markLate('old-response-held');
   lateEvidence.oldResponse={fresh:JSON.stringify(homeResponse).includes('Fresh '+label),old:JSON.stringify(homeResponse).includes('Main Office Operations and Customer Support')};
   await q("UPDATE locations SET short_name=$1 WHERE id='loc-1'",['Fresh '+label+' Main Office']);await page.evaluate(()=>window.dispatchEvent(new Event('storage')));
   await waitForFreshHome(page,'Fresh '+label+' Main Office');await markLate('fresh-generation-rendered');
@@ -335,9 +330,9 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   timeEvidence.afterHeldSettled={at:Date.now(),state:'paused',clockedInCount:0};
  }finally{time.release();await time.done;await page.unroute(time.path,time.handler);page.off('request',timeStarted);page.off('requestfailed',timeFailed);page.off('requestfinished',timeFinished);await writeFile(join(evidenceDirectory,`home-held-time-${engine}-${width}.json`),JSON.stringify(timeEvidence,null,2));}
  await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));await ready();await page.getByText('Off clock',{exact:true}).waitFor();checks.push('H07 held actual MyTime response after pagehide/unmount cannot restore old Clocked In; fresh re-entry reflects persisted clock-out');
- stage='route-leave';const leaving=gate('**/api/employee/home');await page.route(leaving.path,leaving.handler);await page.locator('[data-home-refresh]').click();await leaving.seen;await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');const leavingNavigation=await page.goto(app.url+'/app/requests/hub',{waitUntil:'domcontentloaded'});assert(leavingNavigation?.ok());await page.getByRole('heading',{name:'Requests',exact:true}).waitFor();leaving.release('navigation');await leaving.done;assert.equal(leaving.failure,undefined);details.routeLeaveOutcome=leaving.outcome;await page.unroute(leaving.path,leaving.handler);await page.waitForLoadState('networkidle');assert.equal(await page.locator('[aria-labelledby="employee-reviewed-next-heading"] a[href^="/app/schedule"]').count(),0);await page.goto(app.url+'/app');await ready();checks.push('H08 hard route leave during actual Home read unmounts private Home; re-entry reads current sources');
- if(width===390){stage='sql-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE time_off_requests IN ACCESS EXCLUSIVE MODE');await refresh();await page.getByText('Time off unavailable',{exact:true}).waitFor();assert.equal(await assignments().count(),2);await shot('unavailable');await blocker.query('COMMIT');await refresh();assert.equal(await page.getByText('Time off unavailable',{exact:true}).count(),0);checks.push('H09 actual time-off lock timeout retains independently authorized assignments, discloses unavailable and Retry restores current source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
- stage='replaced-session';const other=await context.newPage();await login(other,scenario.actors[1]);await other.waitForLoadState('networkidle');await other.close();await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await page.locator('[data-home-state="unauthorized"]').waitFor();assert.equal(await assignments().count(),0);assert.equal(await items().count(),0);assert.equal(await recorded().locator('time').count(),0);assert(await recorded().getByRole('link',{name:'Sign in',exact:true}).isVisible());assert(await recorded().getByRole('link',{name:'My time',exact:true}).isVisible());assert.equal(await recorded().getByRole('button',{name:'Refresh recorded time',exact:true}).count(),0);await shot('session-replaced');checks.push('H10 actual same-browser account cookie replacement refuses former lifetime binding and clears every Home private row');
+ stage='route-leave';const leaving=gate('**/api/employee/home');await page.route(leaving.path,leaving.handler);await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await leaving.seen;await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');const leavingNavigation=await page.goto(app.url+'/app/requests/hub',{waitUntil:'domcontentloaded'});assert(leavingNavigation?.ok());await page.getByRole('heading',{name:'Requests',exact:true}).waitFor();leaving.release('navigation');await leaving.done;assert.equal(leaving.failure,undefined);details.routeLeaveOutcome=leaving.outcome;await page.unroute(leaving.path,leaving.handler);await page.waitForLoadState('networkidle');assert.equal(await page.locator('[aria-labelledby="employee-reviewed-next-heading"] a[href^="/app/schedule"]').count(),0);await page.goto(app.url+'/app');await ready();checks.push('H08 hard route leave during actual Home read unmounts private Home; re-entry reads current sources');
+ if(width===390){stage='sql-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE time_off_requests IN ACCESS EXCLUSIVE MODE');await refresh();const timeOffSource=()=>page.locator('[data-home-group="actions"] a.q-row[href="/app/requests?tab=my"]').filter({hasText:'Couldn’t be checked'});await timeOffSource().waitFor();assert.equal(await assignments().count(),1,'v5 shows one shift card (the shift under way)');await shot('unavailable');await blocker.query('COMMIT');await refresh();assert.equal(await timeOffSource().count(),0);checks.push('H09 actual time-off lock timeout retains independently authorized assignments, discloses unavailable and Retry restores current source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
+ stage='replaced-session';const other=await context.newPage();await login(other,scenario.actors[1]);await other.waitForLoadState('networkidle');await other.close();await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await page.locator('[data-home-state="unauthorized"]').waitFor();assert.equal(await assignments().count(),0);assert.equal(await items().count(),0);assert.equal(await recorded().count(),0);assert(await page.locator('main').getByRole('link',{name:'Sign in',exact:true}).isVisible());await shot('session-replaced');checks.push('H10 actual same-browser account cookie replacement refuses former lifetime binding and clears every Home private row');
  await page.bringToFront();await login();await ready();stage='early-my-time-route';
  const bellHold=gate('**/api/notifications');let bellReads=0;
  const observeBell=request=>{if(request.method()==='GET'&&new URL(request.url()).pathname==='/api/notifications')bellReads++;};
@@ -361,8 +356,8 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  assert.deepEqual(details.earlyTimeBaseline,{state:'OFF_CLOCK',refreshEnabled:true});
  const early=gate('**/api/employee/my-time');await page.route(early.path,early.handler);await earlyRefresh.click();await early.seen;
  await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');
- const earlyNavigation=await page.goto(app.url+'/app/schedule?week='+scenario.week,{waitUntil:'domcontentloaded'});assert(earlyNavigation?.ok());await page.getByRole('heading',{name:'My schedule',exact:true}).waitFor();
- await page.locator('.portal-notification-bell[data-state="ready"]').waitFor();
+ const earlyNavigation=await page.goto(app.url+'/app/schedule?week='+scenario.week,{waitUntil:'domcontentloaded'});assert(earlyNavigation?.ok());await page.getByRole('heading',{level:1,name:'Schedule',exact:true}).waitFor();
+ await page.locator('.portal-notification-bell[data-state="ready"]').waitFor({state:'attached'});
  details.earlyTimeDestination=await page.evaluate(()=>({route:location.pathname,bellState:document.querySelector('.portal-notification-bell')?.getAttribute('data-state')}));
  assert.deepEqual(details.earlyTimeDestination,{route:'/app/schedule',bellState:'ready'});
  early.release('navigation');await early.done;assert.equal(early.failure,undefined);details.earlyTimeRouteOutcome=early.outcome;await page.unroute(early.path,early.handler);await page.waitForLoadState('networkidle');await page.goto(app.url+'/app');await ready();checks.push('H11 actual MyTime read interrupted by early hard route navigation produces no stale Home rows or page runtime error; destination notification read is ready before the next departure');
@@ -374,18 +369,18 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const [published]=await q('SELECT id FROM schedule_publication_revisions WHERE week_start=$1 ORDER BY revision_number DESC LIMIT 1',[scenario.week]);
  assert.equal(ack.publication_revision_id,published.id);
  await page.goto(app.url+'/app');await ready();
- stage='empty';await q('DELETE FROM shifts WHERE employee_id=$1',[actor]);await refresh();await page.getByRole('region',{name:'Coming up',exact:true}).getByText('No upcoming published shift',{exact:true}).waitFor();assert.equal(await page.getByText('Scheduled now',{exact:true}).count(),0);assert.equal(await page.getByText("You’re all set.",{exact:true}).count(),0);await shot('empty');checks.push('H12 actual no-future-assignment state uses precise empty copy and incomplete publication/other attention prevents all-clear');
+ stage='empty';await q('DELETE FROM shifts WHERE employee_id=$1',[actor]);await refresh();await next().getByText('No upcoming shift',{exact:true}).waitFor();assert.equal(await page.getByText('Scheduled now',{exact:true}).count(),0);assert.equal(await page.getByText("You’re all set",{exact:true}).count(),0);await shot('empty');checks.push('H12 actual no-future-assignment state uses precise empty copy and incomplete publication/other attention prevents all-clear');
  stage='last-shift-removal';
  await publishScheduleWithRevision({locationId:'loc-1',weekStart:scenario.week,managerId:'QAOWNER'},app.database.executor);
  await refresh();
- const removed=items().filter({has:page.locator('a[href="/app/schedule?week='+scenario.week+'"]')});
+ const removed=page.locator('[data-home-group="actions"] a.q-row[href="/app/schedule?week='+scenario.week+'"]');
  await removed.getByText('Schedule removed',{exact:true}).waitFor();assert(await removed.getByText('Review needed',{exact:true}).isVisible());
  const removalResponse=await page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{headers:{'X-Nevora-Home':binding},cache:'no-store'});return response.json();},binding);
  details.removalSource=removalResponse.snapshot.sources.acknowledgements;
  assert.equal(details.removalSource.state,'partial');assert.equal(details.removalSource.reason,'unpublished');
  assert(removalResponse.snapshot.attention.some(item=>item.ref.kind==='SCHEDULE'&&item.ref.id===scenario.week&&item.required&&item.actionable));
  assert.equal(removalResponse.allSet,false);
- assert(await page.getByText('Time off approved · Nov 1, 2030 – Nov 2, 2030',{exact:true}).isVisible());
+ assert.equal(await page.locator('.employee-home').getByText('Time off approved · Nov 1, 2030 – Nov 2, 2030',{exact:true}).count(),0,'Informational time-off rows are read in Notifications');
  assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
  await shot('last-shift-removal');
@@ -393,10 +388,10 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='complete-zero';const clearActor='QA-'+label+'-CLEAR';
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,'Fictional','Clear','555-0197','EMPLOYEE','loc-1')",[clearActor]);
  await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[clearActor,await hashPassword(TEST_PASSWORD)]);
- await login(page,clearActor);await ready();await page.getByText("You’re all set.",{exact:true}).waitFor();assert.equal(await page.locator('[data-home-state="ready"]').count(),1);assert.equal(await items().count(),0);await shot('all-set');
+ await login(page,clearActor);await ready();await page.getByText("You’re all set",{exact:true}).waitFor();assert.equal(await page.locator('[data-home-state="ready"]').count(),1);assert.equal(await items().count(),0);await shot('all-set');
  const clearApi=await page.evaluate(async binding=>{const r=await fetch('/api/employee/home',{cache:'no-store',headers:{'X-Nevora-Home':binding}});return r.json();},binding);assert.equal(clearApi.allSet,true);assert.equal(clearApi.snapshot.publicationState,'complete');for(const source of Object.values(clearApi.snapshot.sources))assert.equal(source.state,'complete');
  checks.push('H15 actual new eligible account has no historical communication grants; all six canonical sources/publication complete and zero items yield exact all-set copy');
- if(width===390){stage='communication-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE communications IN ACCESS EXCLUSIVE MODE');await refresh();await page.getByText('Communications unavailable',{exact:true}).waitFor();assert.equal(await page.getByText("You’re all set.",{exact:true}).count(),0);await shot('communications-unavailable');await blocker.query('COMMIT');await refresh();await page.getByText("You’re all set.",{exact:true}).waitFor();checks.push('H16 actual communication SQL lock failure suppresses all-clear and Retry restores current complete zero source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
+ if(width===390){stage='communication-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE communications IN ACCESS EXCLUSIVE MODE');await refresh();await page.locator('[data-home-group="actions"] a.q-row[href="/app/updates"]').filter({hasText:'Couldn’t be checked'}).waitFor();assert.equal(await page.getByText("You’re all set",{exact:true}).count(),0);await shot('communications-unavailable');await blocker.query('COMMIT');await refresh();await page.getByText("You’re all set",{exact:true}).waitFor();checks.push('H16 actual communication SQL lock failure suppresses all-clear and Retry restores current complete zero source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
  stage='axe-diagnostic';await page.addScriptTag({path:axeFile});details.axe=await page.evaluate(async()=>{const result=await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}});return result.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>({target:n.target.map(t=>String(t).replace(/\[[^\]]*\]/g,'[attribute]')),contrast:n.any.filter(a=>a.id==='color-contrast').map(a=>({ratio:a.data?.contrastRatio,foreground:a.data?.fgColor,background:a.data?.bgColor}))}))}));});assert.deepEqual(details.axe,[]);
  details.runtimeErrors=runtimeErrors;assert.deepEqual(runtimeErrors,[]);details.html=await page.locator('.employee-home').innerHTML();await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-checks.json`),JSON.stringify(details,null,2));return {checks};
  }catch(error){details.failedStage=stage;details.failure={name:error.name,code:error.code??null,message:'Browser step failed; see named stage and source location',location:error.stack?.split('\n').find(line=>line.includes('phase-e-home-browser-scenarios.mjs'))};await shot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-failure.json`),JSON.stringify(details,null,2));throw error;}finally{page.off('request',notificationStart);page.off('requestfinished',notificationFinish);page.off('requestfailed',notificationFailed);page.off('pageerror',nativeError);await writeFile(join(evidenceDirectory,`home-lifecycle-${engine}-${width}-report.json`),JSON.stringify({engine,width,events:details.lifecycleTrace},null,2));await managerContext?.close();}

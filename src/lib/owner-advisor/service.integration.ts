@@ -164,7 +164,8 @@ it("published staffing reads publication snapshots, suppresses private text and 
       shifts: [{ startTime: "08:00", minutes: 240 }],
     },
   });
-  expect(JSON.stringify(result)).not.toMatch(/SECRET|555|example.invalid/);
+  // The fixture's private phones are "555001"–"555003"; a bare 555 also matches timestamps such as 22.7555 (CI flake).
+  expect(JSON.stringify(result)).not.toMatch(/SECRET|"55500\d"|example\.invalid/);
   const coverage = await tools.run({
     name: "coverage_investigation",
     args: { date: "2026-10-22" },
@@ -172,7 +173,7 @@ it("published staffing reads publication snapshots, suppresses private text and 
   expect(coverage).toMatchObject({
     data: { basis: "CURRENT_SCHEDULING_LEDGER_INCLUDES_DRAFT_COMMITMENTS" },
   });
-  expect(JSON.stringify(coverage)).not.toMatch(/SECRET|555|example.invalid/);
+  expect(JSON.stringify(coverage)).not.toMatch(/SECRET|"55500\d"|example\.invalid/);
 });
 it("reports fresh DB-clock remaining session life after a provider wait", async () => {
   const fetch = vi.fn(async () => {

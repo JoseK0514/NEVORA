@@ -1,5 +1,20 @@
-/* Delete my account: the Wave C settings frame and form pattern; only these few additions. */
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .ad-effects p { margin: 0; font: var(--nv-t-callout); color: var(--nv-ink-2); text-wrap: pretty; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .ad-reference { font-family: var(--nv-font-mono, ui-monospace, monospace); letter-spacing: .04em; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .ad-check { align-items: flex-start; }
-html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .legal-unresolved { padding: 0 4px; border-radius: 4px; background: #FDF0C4; color: #6B4E00; font-family: var(--nv-font-mono, ui-monospace, monospace); font-size: .875em; overflow-wrap: anywhere; word-break: break-all; }
+/* Delete my account (Quiet v4, inspection Oct 24): the Quiet kit's rows, field and buttons; only these additions. */
+:is(#q-root, html) .q-deletion__effects { margin-top: 8px; font-size: 15px; line-height: 21px; }
+:is(#q-root, html) .q-deletion__effects p { margin: 0 0 12px; }
+:is(#q-root, html) .q-deletion__effects strong { font-weight: 600; color: var(--q-ink); }
+:is(#q-root, html) .q-deletion__field { margin-top: 8px; }
+:is(#q-root, html) .q-deletion__check { padding-top: 12px; padding-bottom: 12px; margin-top: 8px; cursor: pointer; }
+:is(#q-root, html) .q-deletion__check .q-rt b { font-size: 15px; line-height: 20px; }
+:is(#q-root, html) .q-deletion__check::after { display: none; }
+:is(#q-root, html) .q-deletion__alert { margin-top: 16px; }
+:is(#q-root, html) .q-deletion__alert .q-help { margin-top: 4px; }
+:is(#q-root, html) .q-deletion .q-btn.q-deletion__confirm:not(:disabled) { background: var(--q-red); }
+:is(#q-root, html) .q-deletion .q-btn.q-deletion__keep { margin-top: 12px; }
+:is(#q-root, html) .q-deletion__done { margin: 24px 20px 0; }
+:is(#q-root, html) .q-deletion__done:focus { outline: none; }
+:is(#q-root, html) .q-deletion__done-icon { width: 32px; height: 32px; color: var(--q-teal); }
+:is(#q-root, html) .q-deletion__done h2 { margin: 12px 0 0; font-size: 20px; line-height: 25px; font-weight: 600; letter-spacing: -.4px; }
+:is(#q-root, html) .q-deletion__done p { margin: 4px 0 0; font-size: 15px; line-height: 20px; color: var(--q-grey); }
+:is(#q-root, html) .ad-reference { font-family: ui-monospace, "SF Mono", monospace; letter-spacing: .04em; color: var(--q-ink); }
+:is(#q-root, html) .q-delete .legal-unresolved { padding: 0 4px; border-radius: 4px; background: #FDF0C4; color: #6B4E00; font-family: ui-monospace, monospace; font-size: .875em; overflow-wrap: anywhere; }
+:is(#q-root, html) .q-deletion a.q-link { color: var(--q-teal); }

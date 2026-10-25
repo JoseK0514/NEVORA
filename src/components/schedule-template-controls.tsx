@@ -3,10 +3,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { useLinkStatus } from "next/link";
-import { gsap } from "gsap";
-import { useGSAP } from "@gsap/react";
 
-gsap.registerPlugin(useGSAP);
 
 export function TemplateSubmit({ label, pendingLabel, ariaLabel, className, kind, children }: {
   label: string; pendingLabel: string; ariaLabel?: string; className: string; kind?: "primary" | "secondary"; children?: ReactNode;
@@ -43,14 +40,5 @@ export function WeekPending() {
 
 export function TemplateMotion({ children }: { children: ReactNode }) {
   const container = useRef<HTMLDivElement>(null);
-  useGSAP(() => {
-    const media = gsap.matchMedia();
-    media.add("(prefers-reduced-motion: no-preference)", () => {
-      gsap.from("[data-template-entrance]", {
-        y: 8, duration: 0.32, stagger: 0.06, ease: "power2.out", clearProps: "transform",
-      });
-    });
-    return () => media.revert();
-  }, { scope: container });
   return <div ref={container}>{children}</div>;
 }

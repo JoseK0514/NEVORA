@@ -50,7 +50,10 @@ describe('phone tabs', () => {
     expect(mobileTabsForRole(role).map(tab => tab.label)).toEqual(['Home','Schedule','Requests','Hours']);
     expect(mobileTabsForRole(role, payroll).map(tab => [tab.label, tab.href])).toEqual([['Home','/app'],['Schedule','/app/schedule'],['Requests','/app/requests/hub'],['Pay','/app/my-pay']]);
     expect(activeMobileTab(role, '/app/my-time', payroll)).toBe('/app/my-pay');
-    expect(mobileMoreForRole(role, payroll).map(item => item.href)).toEqual(['/app/updates','/app/notifications','/app/profile']);
+    // v5 One look: Notifications opens from Home's bell (Home stays lit there), as for Owners; the More page lists it by name.
+    expect(activeMobileTab(role, '/app/notifications', payroll)).toBe('/app');
+    expect(activeMobileTab(role, '/app/exchange', payroll)).toBe('/app/requests/hub');
+    expect(mobileMoreForRole(role, payroll).map(item => item.href)).toEqual(['/app/updates','/app/profile']);
   });
   it.each(['MANAGER','OWNER'] as const)('gives %s Home, Schedule, Inbox and Team, with every other destination in More', role => {
     const context={operational:company};
@@ -71,14 +74,14 @@ describe('section tabs', () => {
   it('lists only destinations the role can open', () => {
     expect(sectionTabsFor('MANAGER', '/app/timecards', payroll,{operational:company})?.items.map(item => item.label)).toEqual(['Timecards','Time exports']);
     expect(sectionTabsFor('OWNER', '/app/payroll', { ...payroll, canReview: true, canConfigure: true })?.items.map(item => item.label)).toEqual(['Timecards','Payroll runs','Time exports','Payroll settings']);
-    expect(sectionTabsFor('EMPLOYEE', '/app/my-pay', payroll)?.items.map(item => item.href)).toEqual(['/app/my-pay','/app/my-time','/app/timecards']);
-    expect(sectionTabsFor('EMPLOYEE', '/app/my-time')?.items.map(item => item.href)).toEqual(['/app/my-time','/app/timecards']);
+    // v5: Employees and Leads move with segments and Back; Pay lists My time and Timecards as rows.
+    for (const role of ['EMPLOYEE', 'LEAD'] as const) for (const path of ['/app/my-pay', '/app/my-time', '/app/timecards']) expect(sectionTabsFor(role, path, payroll)).toBeNull();
   });
   it('keeps tabs off nested and unrelated pages', () => {
     expect(sectionTabsFor('EMPLOYEE', '/app/exchange/swap')).toBeNull();
     // Clean Manager (v3): the request pages link to each other in their band instead.
     expect(sectionTabsFor('MANAGER', '/app/requests?tab=pending',undefined,{operational:company})).toBeNull();
-    expect(sectionTabsFor('EMPLOYEE', '/app/requests')?.label).toBe('Requests');
+    expect(sectionTabsFor('EMPLOYEE', '/app/requests')).toBeNull();
     expect(sectionTabsFor('MANAGER', '/app/employees')).toBeNull();
   });
 });

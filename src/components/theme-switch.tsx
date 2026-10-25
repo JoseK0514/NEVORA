@@ -11,6 +11,15 @@ function subscribe(listener: () => void) {
   return () => { listeners.delete(listener); window.removeEventListener('storage', storage); };
 }
 
+/** The device's theme choice, live (v5 Profile's Appearance row). */
+export function useThemeChoice() {
+  return useSyncExternalStore(subscribe, readThemeChoice, () => 'system' as ThemeChoice);
+}
+export function setThemeChoice(choice: ThemeChoice) {
+  writeThemeChoice(choice);
+  listeners.forEach(listener => listener());
+}
+
 /** System / Light / Dark for this device, styled like the Language switch beside it. The pressed option is the choice. */
 export function ThemeSwitch({ label = 'Appearance' }: { label?: string }) {
   const choice = useSyncExternalStore(subscribe, readThemeChoice, () => 'system' as ThemeChoice);

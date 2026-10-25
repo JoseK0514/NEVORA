@@ -4,7 +4,7 @@ import type {ReactNode} from 'react';
 
 const fixture=vi.hoisted(()=>({refresh:vi.fn(),changed:undefined as undefined|((reason:'identity'|'scope')=>void)}));
 vi.mock('next/navigation',()=>({usePathname:()=>'/app/reports',useSearchParams:()=>new URLSearchParams(),useRouter:()=>({refresh:fixture.refresh})}));
-vi.mock('next/link',()=>({default:({children,...props}:{children:ReactNode})=><a {...props}>{children}</a>}));
+vi.mock('next/link',()=>({default:({children,...props}:{children:ReactNode})=><a {...props}>{children}</a>,useLinkStatus:()=>({pending:false})}));
 vi.mock('next/image',()=>({default:()=>null}));
 vi.mock('@/app/login/actions',()=>({logout:vi.fn()}));
 vi.mock('./app-navigation',()=>({
