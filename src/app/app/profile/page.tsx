@@ -6,7 +6,6 @@ import {readNotificationConfig} from '@/lib/notifications/config';
 import {PortalSignout} from '@/components/portal-signout';
 import {CalendarSubscriptionPanel} from '@/components/calendar-subscription-panel';
 import {calendarAuthority} from '@/lib/calendar/service.server';
-import {ProfileFrame} from '@/components/profile-frame';
 import {ProfileCalendarDisclosure} from '@/components/profile-calendar-disclosure';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {QuietNav,QuietPage,QuietRow} from '@/components/quiet/quiet';
@@ -30,7 +29,7 @@ export default async function ProfilePage(){
  // v5 "One look" (Jose approved round 2 "exactly like this" on Oct 24, 2026; mockup E16): Back to More, who you are,
  // Settings, Work details, Your account and Sign out. Kept from before, beyond the mockup: sign-in security (passkeys),
  // alerts on this device and the calendar subscription. Data reads, controls and hooks are unchanged.
- return <ProfileFrame><QuietPage className="q-profile-e">
+ return <QuietPage className="q-profile-e">
   <QuietNav back={{href:'/app/more',label:'More'}}/>
   <div className="q-who"><span className="q-av q-av--lg" aria-hidden="true">{initials}</span><div><h1>{firstName} {lastName}</h1><p>{roleLabel}{workspaceName?` · ${workspaceName}`:''}</p></div></div>
   <noscript><p className="q-help">Enable JavaScript to view your current profile and calendar settings. You can still sign out below.</p></noscript>
@@ -60,5 +59,5 @@ export default async function ProfilePage(){
    </ul>
   </section>
   <section aria-label="Session"><PortalSignout><button type="submit" className="q-btn q-btn--sec q-btn--danger profile-signout-row">Sign out</button></PortalSignout></section>
- </QuietPage></ProfileFrame>;
+ </QuietPage>;
 }
