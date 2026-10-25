@@ -1,4 +1,5 @@
 import { WalletIcon } from "@phosphor-icons/react/dist/ssr/Wallet";
+import { ReceiptIcon } from "@phosphor-icons/react/dist/ssr/Receipt";
 import { HouseIcon } from "@phosphor-icons/react/dist/ssr/House";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
 import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
@@ -36,6 +37,7 @@ import { DotsThreeCircleIcon } from "@phosphor-icons/react/dist/ssr/DotsThreeCir
 const icons = {
   payroll: WalletIcon,
   statement: FileTextIcon,
+  receipt: ReceiptIcon,
   dashboard: HouseIcon,
   schedule: CalendarBlankIcon,
   calendar: CalendarCheckIcon,

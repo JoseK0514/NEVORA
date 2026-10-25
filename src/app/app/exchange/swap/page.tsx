@@ -19,7 +19,7 @@ import {
 export default async function SwapPage({
   searchParams,
 }: {
-  searchParams: Promise<{ sourceShiftId?: string }>;
+  searchParams: Promise<{ sourceShiftId?: string; mode?: string }>;
 }) {
   const moduleOff = await moduleGate("marketplace");
   if (moduleOff) return moduleOff;
@@ -44,7 +44,9 @@ export default async function SwapPage({
     redirect("/app/exchange?error=INVALID_SHIFT");
   }
 
-  const targets = await listSwapTargets(source, session.id);
+  // Offer it for cover (v5 shift sheet): only the coverage check is needed, no swap candidates.
+  const cover = params.mode === 'cover';
+  const targets = cover ? [] : await listSwapTargets(source, session.id);
   const proof=await requireSessionMutationProof();
   const reviewed=await readShiftChangeTerms(proof,source.id);if(!reviewed||!matchesDisplayedShift(source,reviewed.source))redirect('/app/exchange?error=EXCHANGE_CHANGED');
   const reviewedSource=source;
@@ -57,5 +59,5 @@ export default async function SwapPage({
   // With no shift to swap into, the fallback is the real coverage offer, checked the same way as on Shift requests.
   // Candidates that changed mid-read withhold every form; candidates the rules refuse still allow the coverage check.
   const coverage=reviewedTargets.length||changedMidRead?null:await readShiftChangeAvailability(proof,{kind:'OFFER_COVERAGE',operationId:randomUUID(),...sourceFields}).catch(()=>({allowed:false,notice:'Current policy is unavailable.'}));
-  return <SwapPageContent source={reviewedSource} sourceFields={sourceFields} targets={reviewedTargets} coverage={coverage} />;
+  return <SwapPageContent source={reviewedSource} sourceFields={sourceFields} targets={reviewedTargets} coverage={coverage} mode={cover ? 'cover' : 'swap'} />;
 }

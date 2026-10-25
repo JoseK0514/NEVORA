@@ -15,15 +15,16 @@ async function render(props: Partial<ComponentProps<typeof import('./employee-up
 
 it('keeps required updates in the review group until acknowledged, even if marked read', async () => {
  const html = await render({list: {...list, items: [{...update, ownReadAt: update.observedAt}]}});
- expect(html).toContain('To review<span class="updates-filter-count">1');
- expect(html).toContain('Reviewed<span class="updates-filter-count">0');
+ expect(html).toContain('>To review · 1</button>');
+ expect(html).toContain('>Reviewed</button>'); // a zero count is hidden (v5)
  expect(html).toContain('Review needed');
 });
 
 it('groups dates in the update time zone and escapes previews while retaining detail navigation', async () => {
  const html = await render();
  expect(html).toContain('October 11, 2026');
- expect(html).toContain('&lt;script&gt;plain text&lt;/script&gt;');
+ // v5 rows carry no body preview (mockup E13); the body is read on the update itself.
+ expect(html).not.toContain('plain text');
  expect(html).not.toContain('<script>');
  expect(html).toContain('/app/updates/' + update.id);
 });
@@ -32,7 +33,7 @@ it('hides private rows and counts on pause, and preserves refresh and compose re
  const html = await render({paused: true});
  expect(html).not.toContain(update.title);
  expect(html).not.toContain(update.id);
- expect(html).not.toMatch(/updates-filter-count">\d/); expect(html).toContain('updates-filter-count">–');
+ expect(html).not.toMatch(/(?:To review|Reviewed) · \d/);
  expect(html).toContain('Updates paused');
  expect(html).toContain('/app/updates/compose');
 });

@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
 import RequestsPage from './page';
 
+vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{},replace:()=>{}})}));
 vi.mock('@/lib/auth/session', () => ({ requireSession: async () => ({ id: 'fictional', role: 'EMPLOYEE' }) }));
 vi.mock('@/lib/auth/permissions', () => ({ isTimeOffReviewerRole: () => false }));
 vi.mock('@/components/manager-time-off', () => ({ ManagerTimeOff: () => null }));
@@ -14,16 +15,17 @@ vi.mock('@/lib/data/requests', () => ({ listEmployeeTimeOffRequests: async () =>
 
 it('marks a waiting request amber and an approval green, with a timeline', async () => {
   const html = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ tab: 'my' }) }));
-  // Phase 3: kit status tags. Waiting is amber ("review"), approval is green ("done"); each row carries its timeline.
-  expect(html).toMatch(/data-tone="review"><svg[^]*?<\/svg>Waiting<\/span>/);
-  expect(html).toMatch(/data-tone="done"><svg[^]*?<\/svg>Approved<\/span>/);
+  // v5 (mockup E07): Waiting lists the waiting request; each request's sheet carries its status and timeline.
+  expect(html).toContain('data-employee-status="PENDING"');expect(html).toContain('>Waiting<');
+  const decided = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ filter: 'decided' }) }));
+  expect(decided).toContain('>Approved<');expect(decided).toContain('data-employee-status="APPROVED"');
   expect(html).toContain('aria-label="Request timeline"');
   expect(html).toContain('Waiting for approval');
   expect(html).toContain('Fictional pending request');
 });
 
 it('names who decided a request and when, and never names anyone on a withdrawal', async () => {
-  const html = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ tab: 'my' }) })).replace(/\u00a0/g, ' ');
+  const html = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ filter: 'decided' }) })).replace(/\u00a0/g, ' ');
   expect(html).toContain('Sent Oct 1');
   expect(html).toContain('Approved by Fictional Manager · Oct 2');
   expect(html).toContain('Withdrawn · Oct 3');

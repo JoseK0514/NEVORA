@@ -75,17 +75,23 @@ export type QuietRowProps = {
   id?: string;
   /** The row element alone, without its list item (a row followed by its own actions). */
   bare?: boolean;
+  /** v5 One look: a 24pt line icon before the title (the divider still starts at the margin). */
+  icon?: ReactNode;
+  /** v5 One look: "tint" draws the avatar as a teal-tinted circle (a row that needs you); "danger" makes the title red. */
+  variant?: "tint" | "danger";
 };
 
-export function QuietRow({ title, detail, value, tone, avatar, href, control, chevron, label, one, id, bare }: QuietRowProps) {
+export function QuietRow({ title, detail, value, tone, avatar, href, control, chevron, label, one, id, bare, icon, variant }: QuietRowProps) {
   const leading = avatar === undefined || avatar === null ? null
     : avatar === "open" ? <span className="q-av q-av--open" aria-hidden="true"><PlusIcon className="q-ic" aria-hidden="true" /></span>
-    : typeof avatar === "string" ? <span className="q-av" aria-hidden="true">{avatar}</span> : avatar;
+    : typeof avatar === "string" ? <span className={variant === "tint" ? "q-av q-av--tint" : "q-av"} aria-hidden="true">{avatar}</span>
+    : variant === "tint" ? <span className="q-av q-av--tint" aria-hidden="true">{avatar}</span> : avatar;
   const single = one ?? !detail;
-  const className = `q-row${single ? " q-row--one" : ""}${leading ? " q-row--av" : ""}`;
+  const className = `q-row${single ? " q-row--one" : ""}${leading ? " q-row--av" : ""}${variant === "danger" ? " q-row--danger" : ""}`;
   const showChev = chevron ?? (!!href && !control);
   const body = <>
     {leading}
+    {icon ? <span className="q-row__ic" aria-hidden="true">{icon}</span> : null}
     <span className="q-rt"><b>{title}</b>{detail ? <i>{detail}</i> : null}</span>
     {value !== undefined && value !== null && value !== "" ? <span className={`q-rv${tone ? ` q-rv--${tone}` : ""}`}>{value}</span> : null}
     {control}

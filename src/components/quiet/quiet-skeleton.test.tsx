@@ -24,6 +24,8 @@ it("shows the shape only in the Quiet shell, outranking the kit's own hide rule,
   const css = readFileSync(new URL("./quiet.css", import.meta.url), "utf8");
   expect(css).toContain(":is(#q-root, html) .q-skel-page { display: none; }");
   expect(css).toContain(":is(#q-root, html) .app-shell[data-nv-quiet] .q-skel-page { display: block;");
-  const skeleton = css.slice(css.indexOf("/* Loading (v4, Phase 1)"));
+  // The loading section runs to the next section comment (later sections, such as v5 sheets, animate on purpose).
+  const start = css.indexOf("/* Loading (v4, Phase 1)"), next = css.indexOf("\n/* ", start + 1);
+  const skeleton = css.slice(start, next === -1 ? undefined : next);
   expect(skeleton).not.toMatch(/animation|transition/);
 });

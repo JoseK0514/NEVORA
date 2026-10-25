@@ -52,7 +52,7 @@ export async function generateViewport(): Promise<Viewport> {
   return { themeColor: (await currentBrand()).tokens?.masthead ?? DEFAULT_TOKENS.masthead };
 }
 
-export default async function PlatformLayout({ children }: { children: ReactNode }) {
+export default async function PlatformLayout({ children, sheet }: { children: ReactNode; sheet: ReactNode }) {
   // Wave C ST-11: fetch Inter with the page, so the first visit doesn't paint in a fallback font and then rewrap.
   preload("/fonts/typeface/inter/variable.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   const session = await requireSession();
@@ -82,6 +82,8 @@ export default async function PlatformLayout({ children }: { children: ReactNode
       }}
     >
       {children}
+      {/* v5: shift changes opened from a shift rise as sheets over the page (intercepted routes in @sheet). */}
+      {sheet}
       {/* Face ID offer after a password sign-in (hidden unless NEXT_PUBLIC_NEVORA_PASSKEYS=on). */}
       <PasskeyOffer />
     </AppShell>

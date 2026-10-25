@@ -12,8 +12,9 @@ import type {CorrectionRequestCommand} from '@/lib/time-corrections/validation';
 import {employeeButtonClass} from './employee-corporate-ui';
 import {timeZoneLabel} from '../lib/time-zone-label';
 import {HoldHeight} from './kit/hold-height';
-import {Duration,SigBand,SigPage,SigSection} from './signature/signature';
-import sig from './employee-time-signature.module.css';
+import {SheetRow} from './quiet/quiet-sheet';
+import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
+import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 
 const status=(entry:EmployeeTimeEntry|null)=>!entry?'Off clock':entry.state==='ON_BREAK'?'On break':'Clocked in';
 /** Freshness needs minutes, not seconds: "Oct 15, 7:31 PM". */
@@ -109,48 +110,58 @@ export function EmployeeTimeView({state,compact=false,corporate=false,onRefresh}
  </HoldHeight>;
 }
 
-/** My time in the Signature style (phase 1, approved Oct 20, 2026; target:
- * docs/product/specs/employee-style/signature/phase-1/p1c-mytime.png). The band carries the clock status and today's
- * totals; the sheet holds freshness and refresh, today's and earlier entries (each with its correction), and the
- * correction requests. Same reads, refresh, pause and privacy rules as the view above. */
+/** My time in the v5 "One look" (Jose approved round 2 "exactly like this" on Oct 24, 2026; mockup E12). Back to Pay, the
+ * clock status under the title, today's totals as rows, today's and earlier entries (each opens its punches and its
+ * correction as a sheet), then corrections. Same reads, refresh, pause and privacy rules as the view above. */
 export type MyTimeContext={todayLabel:string;payLine?:string};
+function EntrySheetRow({entry,zone}:{entry:EmployeeTimeEntry;zone:string}){
+ return <SheetRow sheetTitle="Time entry" title={<><time dateTime={entry.clockInAt}>{keepWhole(entryDate(entry.clockInAt,zone))}</time></>} detail={<>{entryRange(entry,zone)} · {entry.locationName}</>} value={duration(entry.elapsedSeconds)}>
+  <div className="q-hd"><h1>{keepWhole(entryDate(entry.clockInAt,zone))}</h1><p>{entry.locationName} · {entry.clockOutAt?'Completed':'In progress'}</p></div>
+  <ul className="q-list" style={{marginTop:16}}>
+   <li><div className="q-row q-row--one"><span className="q-rt"><b>Clock in</b></span><span className="q-rv q-rv--l"><time dateTime={entry.clockInAt}>{stamp(entry.clockInAt,zone)}</time></span></div></li>
+   {entry.breaks.map(b=><li key={b.id}><div className="q-row"><span className="q-rt"><b>{b.name??'Break'}</b><i><time dateTime={b.startAt}>{stamp(b.startAt,zone)}</time> → {b.endAt?<time dateTime={b.endAt}>{stamp(b.endAt,zone)}</time>:'In progress'}</i></span><span className="q-rv">{duration(b.elapsedSeconds)}</span></div></li>)}
+   <li><div className="q-row q-row--one"><span className="q-rt"><b>Clock out</b></span><span className="q-rv q-rv--l">{entry.clockOutAt?<time dateTime={entry.clockOutAt}>{stamp(entry.clockOutAt,zone)}</time>:'Not recorded yet'}</span></div></li>
+  </ul>
+  <p className="q-help">{keepWhole(`Entry elapsed time: ${formatRecordedDuration(entry.elapsedSeconds)} · Breaks: ${formatRecordedDuration(entry.breakSeconds)}`)}</p>
+  <div className="q-entryfix"><EmployeeEntryCorrection entry={entry} zone={zone}/></div>
+ </SheetRow>;
+}
 export function EmployeeTimeSignatureView({state,onRefresh,context}:{state:EmployeeTimePanelState;onRefresh:()=>void;context:MyTimeContext}){
  const {time,paused,refreshing}=state;
  const ready=!paused&&time?.state==='ready'?time:null;
  const denied=time?.state==='unavailable'&&time.reason==='access_denied';
  const unavailable=!denied&&time?.state==='unavailable';
  const current=ready?.current??null;
- const word=ready?status(current):paused?'Updates paused':denied?'Your session ended':unavailable?'Couldn’t load your time records':'Loading recorded time';
  const todayLabel=ready?new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'long',month:'short',day:'numeric'}).format(new Date(ready.date+'T12:00:00Z')):context.todayLabel;
- const band=<SigBand eyebrow={<>Today · {todayLabel}</>} live={ready?(current?true:'idle'):false}>
-  <h1 className="nv-sr">My time</h1>
-  <p className={`sg-word ${ready?'':sig.mtWaiting}`} role="status"><span data-state={ready?current?.state??'OFF_CLOCK':undefined} className="employee-time-badge">{word}</span></p>
-  <p className={`sg-sub ${sig.mtWhere}`}>{current&&ready?<span>{current.locationName} · since <time dateTime={current.clockInAt}>{clockedInAt(current.clockInAt,ready.timeZone,ready.date)}</time>{current.state==='ON_BREAK'?<> · <b>{duration(current.breaks.at(-1)!.elapsedSeconds)}</b> on break</>:null}</span>:<span aria-hidden={!ready||undefined}>{ready?'Not clocked in right now':'\u00a0'}</span>}</p>
-  <dl className="sg-pair">
-   <div><dt>Worked today</dt><dd>{ready?<Duration seconds={ready.today.recordedSeconds} size="pair"/>:<span className={sig.mtDash} aria-hidden="true">–</span>}</dd></div>
-   <div><dt>On break</dt><dd>{ready?<Duration seconds={ready.today.breakSeconds} size="pair"/>:<span className={sig.mtDash} aria-hidden="true">–</span>}</dd></div>
-  </dl>
- </SigBand>;
- const refresh=denied?<Link className="sg-link" href="/login">Sign in</Link>:<button className="sg-link employee-time-refresh" type="button" aria-label={unavailable?'Try again to load your time records':refreshing?'Refreshing recorded time':'Refresh recorded time'} aria-busy={refreshing||undefined} onClick={onRefresh} disabled={paused||refreshing}>{unavailable?'Try again':'Refresh'}</button>;
- return <SigPage band={band} className={sig.mtRoot}>
-  <HoldHeight className={sig.mtPanel} holding={!ready}>
-   <div className="sg-quiet" style={{marginTop:0}}>
-    <span>{ready?<>Updated <time dateTime={ready.observedAt}>{new Intl.DateTimeFormat('en-US',{timeZone:ready.timeZone,hour:'numeric',minute:'2-digit'}).format(new Date(ready.observedAt))}</time></>:paused?'Return online to check your latest records.':denied?'Sign in again to see your time.':unavailable?'Check your connection, then try again.':'Checking your actual punches and breaks.'}</span>
-    <span className={sig.mtControls}>{refresh}{ready?<details className={`employee-corporate-record-details ${sig.mtDetails}`}><summary className="sg-link">Details</summary><div><p>Updated <time dateTime={ready.observedAt}>{stamp(ready.observedAt,ready.timeZone)}</time></p><p>{timeZoneLabel(ready.timeZone)} · Updates every 30s while active.</p></div></details>:null}</span>
-   </div>
-   <p className="sg-note" style={{marginTop:2}}><span>Your punches come from your location’s Clocker.{context.payLine?<> {context.payLine}.</>:null}</span></p>
+ const word=ready?status(current):paused?'Updates paused':denied?'Your session ended':unavailable?'Couldn’t load your time':'Loading recorded time';
+ const where=current&&ready?<> · {current.locationName} since <time dateTime={current.clockInAt}>{clockedInAt(current.clockInAt,ready.timeZone,ready.date)}</time></>:null;
+ return <div className="q-page q-mytime" data-nv-page="">
+  <div className="q-nav"><Link className="q-nav__l" href="/app/my-pay"><CaretLeftIcon className="q-ic q-ic--s" aria-hidden="true"/>Pay</Link><span/><span/></div>
+  <div className="q-hd"><h1>My time</h1><p role="status"><span data-state={ready?current?.state??'OFF_CLOCK':undefined} className="q-mytime__state">{todayLabel} · {word}</span>{where}</p></div>
+  <HoldHeight holding={!ready} memory="my-time-quiet">
    {ready?<>
-    <SigSection id="employee-time-today-title" title="Today">
-     {ready.today.entries.length?<div className={`sg-list ${sig.mtEntries}`}>{ready.today.entries.map(e=><EntryDetails key={e.id} entry={e} zone={ready.timeZone}/>)}</div>:<div className="sg-list"><p className="sg-empty">No recorded punches today.</p></div>}
-     <p className={sig.mtFine}>Today’s totals. Hours include breaks and aren’t payroll hours.</p>
-    </SigSection>
-    <SigSection id="employee-time-recent-title" title={<>Earlier entries{ready.recent.total?<span className={sig.mtCount}> · {ready.recent.total}</span>:null}</>}>
-     {ready.recent.entries.length?<><div className={`sg-list ${sig.mtEntries}`}>{ready.recent.entries.map(e=><EntryDetails key={e.id} entry={e} zone={ready.timeZone}/>)}</div>{ready.recent.entries.length<ready.recent.total?<p className={sig.mtFine}>Showing {ready.recent.entries.length} of {ready.recent.total} earlier entries · most recent first.</p>:null}</>:<div className="sg-list"><p className="sg-empty">No earlier entries.</p></div>}
-    </SigSection>
-    <div className={sig.mtCorrections}><EmployeeCorrectionCenter zone={ready.timeZone}/></div>
-   </>:null}
+    <ul className="q-list" style={{marginTop:16}}>
+     <li><div className="q-row q-row--one"><span className="q-rt"><b>Worked today</b></span><span className="q-rv q-rv--l">{duration(ready.today.recordedSeconds)}</span></div></li>
+     <li><div className="q-row q-row--one"><span className="q-rt"><b>On break</b></span><span className="q-rv q-rv--l">{current?.state==='ON_BREAK'?<>{duration(current.breaks.at(-1)!.elapsedSeconds)} now · </>:null}{duration(ready.today.breakSeconds)}</span></div></li>
+     <li><Link className="q-row q-row--one" href="/app/timecards"><span className="q-rt"><b>This week</b></span><span className="q-rv q-rv--l">Timecards</span><CaretRightIcon className="q-chev" aria-hidden="true"/></Link></li>
+    </ul>
+    <div className="q-grp"><h2 id="employee-time-today-title">Today</h2></div>
+    {ready.today.entries.length?<ul className="q-list" aria-labelledby="employee-time-today-title">{ready.today.entries.map(e=><EntrySheetRow key={e.id} entry={e} zone={ready.timeZone}/>)}</ul>:<p className="q-empty">No recorded punches today.</p>}
+    <p className="q-help">Today’s totals include breaks and aren’t payroll hours.</p>
+    {ready.recent.entries.length?<>
+     <div className="q-grp"><h2 id="employee-time-recent-title">Earlier entries</h2></div>
+     <ul className="q-list" aria-labelledby="employee-time-recent-title">{ready.recent.entries.map(e=><EntrySheetRow key={e.id} entry={e} zone={ready.timeZone}/>)}</ul>
+     {ready.recent.entries.length<ready.recent.total?<p className="q-help">Showing {ready.recent.entries.length} of {ready.recent.total} earlier entries · most recent first.</p>:null}
+    </>:null}
+    <div className="q-corrections"><EmployeeCorrectionCenter zone={ready.timeZone}/></div>
+    <p className="q-help">{context.payLine?<>{context.payLine}. </>:null}Updated <time dateTime={ready.observedAt}>{new Intl.DateTimeFormat('en-US',{timeZone:ready.timeZone,hour:'numeric',minute:'2-digit'}).format(new Date(ready.observedAt))}</time> · {timeZoneLabel(ready.timeZone)}.</p>
+   </>:<div role="status" style={{marginTop:24}}>
+    <p className="q-empty">{paused?'Return online to check your latest records.':denied?'Sign in again to see your time.':unavailable?'Check your connection, then try again.':'Checking your actual punches and breaks.'}</p>
+    {denied?<Link className="q-btn q-btn--sec" href="/login">Sign in</Link>:unavailable?<button className="q-btn q-btn--sec" type="button" aria-busy={refreshing||undefined} onClick={onRefresh} disabled={paused||refreshing}>Try again</button>:null}
+   </div>}
   </HoldHeight>
- </SigPage>;
+  <p className="q-help">Punches come from your location’s Clocker.</p>
+ </div>;
 }
 
 export function EmployeeTimePanel({compact=false,corporate=false,authority,signature}:{compact?:boolean;corporate?:boolean;authority?:string;signature?:MyTimeContext}){

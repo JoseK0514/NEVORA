@@ -35,3 +35,15 @@
   html body .app-shell[data-nv-quiet]:has(.q-page[data-q-sheet]) .mobile-nav { display: none !important; }
   html body .app-shell[data-nv-quiet] .page-frame:has(> .q-page[data-q-sheet]), html body .app-shell[data-nv-quiet] .page-frame:has(> * > .q-page[data-q-sheet]) { padding-bottom: var(--q-safe-bottom, env(safe-area-inset-bottom, 0px)) !important; }
 }
+
+/* Dark (v5 "One look", approved Oct 24, 2026): the shell follows the phone for every role. Black frame, a near-black
+ * tab bar with one hairline, grey labels and the lifted teal for the current and tapped tab. */
+@media (max-width: 767px) {
+  html[data-theme="dark"] body .app-shell[data-nv-quiet], html[data-theme="dark"] body .app-shell[data-nv-quiet] .app-main, html[data-theme="dark"] body .app-shell[data-nv-quiet] .page-frame { background: #000000 !important; }
+  html[data-theme="dark"], html[data-theme="dark"] body:has(.app-shell[data-nv-quiet]) { background: #000000; color-scheme: dark; }
+  html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav { background: #0A0A0A !important; box-shadow: 0 -1px 0 #262628 !important; }
+  html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link, html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link span { color: #8E8E93 !important; }
+  html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link.active, html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link.active span,
+  html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link:has(> .mobile-nav-pending), html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link:has(> .mobile-nav-pending) span { color: #5CC8BE !important; }
+  html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav:has(.mobile-nav-pending) .mobile-nav-link.active:not(:has(> .mobile-nav-pending)), html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav:has(.mobile-nav-pending) .mobile-nav-link.active:not(:has(> .mobile-nav-pending)) span { color: #8E8E93 !important; }
+}

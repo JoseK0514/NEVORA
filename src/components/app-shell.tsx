@@ -8,9 +8,9 @@ import { useInboxCount } from "./use-inbox-count";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { AuthBrand } from "./auth-brand";
-import { PlusIcon, XIcon } from "@phosphor-icons/react/ssr";
+import { PlusIcon } from "@phosphor-icons/react/ssr";
 import { NavIcon } from "@/components/nav-icon";
-import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
 import { PortalDeviceSetup } from "./portal-device-setup";
 import { PortalAccountMenu } from "./portal-account-menu";
@@ -18,7 +18,7 @@ import { SheetGestures } from "./sheet-gestures";
 import { Toaster } from "./toaster";
 import { FormValidation } from "./form-validation";
 import type { UserRole } from "@/lib/domain";
-import { teamToolsForRole, activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileMoreForRole, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
+import { teamToolsForRole, activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
 import { SectionTabs } from "./section-tabs";
 import { isPopoverOpen, hidePopover } from "./kit/popover-open";
 import { CommandFinder } from "./command-finder";
@@ -83,7 +83,6 @@ function AppShellView({
     const next = !collapsed; setCollapsed(next);
     if (/^[a-z0-9_]+$/i.test(preferenceCookie)) document.cookie = `${preferenceCookie}=${next ? "collapsed" : "expanded"}; Path=/app; Max-Age=31536000; SameSite=Lax`;
   }
-  const employeeMoreKeyboardOpen = useRef(false);
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
   // Refresh the retained layout's server identity without interrupting the destination document's streamed content.
   const identityReload=useIdentityReload(()=>router.refresh());
@@ -93,7 +92,6 @@ function AppShellView({
   const context:NavContext = {...presentation, operational:operational.view??undefined};
   const navigation = navigationForRole(user.role, payrollCapabilities, context);
   const mobileTabs = mobileTabsForRole(user.role, payrollCapabilities, context);
-  const mobileMore = mobileMoreForRole(user.role, payrollCapabilities, context);
   const activeTab = activeMobileTab(user.role, pathname ?? "", payrollCapabilities, context);
   // P3-ST-22: a single request's review is one task with no section tabs. Deciding it from the URL means the tabs are
   // absent from the first frame, placeholder included, instead of disappearing once the review renders.
@@ -251,7 +249,7 @@ function AppShellView({
       // Clean Manager and Owner app (v3): premium-clean-manager.css applies only under this attribute, so Employee and Lead pages never change.
       data-nv-clean={employee ? undefined : ""}
       // Quiet (v4, Jose approved Oct 23, docs/product/specs/owner-v4-quiet): the Owner and Manager pages and their tab bar.
-      data-nv-quiet={employee ? undefined : ""}
+      data-nv-quiet=""
       // Employee app, new style (Jose approved Oct 20, docs/product/specs/employee-style): employee-style.css applies only under this attribute.
       data-nv-e5={employee ? "" : undefined}
       style={brand?.style as CSSProperties | undefined} data-company-brand={brand?.style ? "custom" : undefined}
@@ -356,75 +354,7 @@ function AppShellView({
         <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{user.role==='MANAGER'&&operational.view?.state==='unavailable'&&!operational.refreshing&&<section className="portal-route-state" role="status"><h2>Management menu unavailable</h2><p>Your current management access could not be checked. Reconnect and refresh before opening another management page.</p><button className="button secondary" type="button" disabled={operational.paused} onClick={operational.retry}>Refresh management access</button></section>}{children}</PresentationProvider></main>
 
         <nav className="mobile-nav" aria-label="Mobile navigation" style={!employee?{gridTemplateColumns:`repeat(${Math.min(navigation.length,5)},minmax(0,1fr))`}:undefined}>
-          {employee ? (
-            <>
-              {mobileTabs.map((item) => (
-                <Link key={item.href} href={item.href}
-                  className={item.href === activeTab ? "mobile-nav-link active" : "mobile-nav-link"}
-                  aria-current={item.href === activeTab ? "page" : undefined}>
-                  <NavIcon name={item.icon} employee size={22} />
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-              <button
-                type="button"
-                popoverTarget="employee-more-navigation"
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    employeeMoreKeyboardOpen.current = true;
-                  }
-                }}
-                onPointerDown={() => {
-                  employeeMoreKeyboardOpen.current = false;
-                }}
-                aria-label="More"
-                className={activeTab === "more" ? "mobile-nav-link employee-more-trigger active" : "mobile-nav-link employee-more-trigger"}>
-                <NavIcon name="more" employee size={22} />
-                <span>More</span>
-              </button>
-              <div
-                id="employee-more-navigation"
-                className="employee-more-navigation"
-                popover="auto"
-                onToggle={(event) => {
-                  const surface = event.currentTarget;
-                  if (event.newState !== "open") {
-                    employeeMoreKeyboardOpen.current = false;
-                    return;
-                  }
-                  if (!employeeMoreKeyboardOpen.current) return;
-                  const first = surface.querySelector<HTMLElement>(
-                    ".employee-more-link,button:not([disabled])",
-                  );
-                  first?.focus({ preventScroll: true });
-                  employeeMoreKeyboardOpen.current = false;
-                }}
-              >
-                <p className="employee-more-label">More</p>
-                {/* Signature (phase 2): the links stay Updates, Notifications, Profile in that order; Profile is drawn as the
-                    person's small dark card (name and initials from attributes, so the link's own words stay "Profile"). */}
-                {mobileMore.map((item) => (
-                  <Link key={item.href} href={item.href}
-                    className={`employee-more-link${item.href === "/app/profile" ? " employee-more-card" : ""}${item.href === activeHref ? " active" : ""}`}
-                    data-name={item.href === "/app/profile" ? `${user.firstName} ${user.lastName}` : undefined}
-                    data-initials={item.href === "/app/profile" ? `${user.firstName.trim()[0] ?? ""}${user.lastName.trim()[0] ?? ""}`.toUpperCase() : undefined}
-                    aria-label={item.href === "/app/profile" ? `Profile, ${user.firstName} ${user.lastName}` : undefined}
-                    onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}
-                    aria-current={item.href === activeHref ? "page" : undefined}>
-                    <NavIcon name={item.icon} employee size={22} />
-                    <span>{item.label}</span>
-                  </Link>
-                ))}
-                <div className="employee-more-profile">
-                  <PortalSignout><button type="submit"><NavIcon name="logout" employee size={18} /><span>Sign out</span></button></PortalSignout>
-                </div>
-                <button className="mobile-workforce-sheet-close" type="button" aria-label="Close"
-                  onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
-                  <XIcon size={20} aria-hidden="true"/><span>Close</span>
-                </button>
-              </div>
-            </>
-          ) : (
+          {/* v5 One look (approved Oct 24): one Quiet tab bar for every role; More is a page. */}
             <>
               {mobileTabs.map((item) => {
                 const active = item.href === activeTab;
@@ -456,7 +386,6 @@ function AppShellView({
                 <TabPending />
               </Link>
             </>
-          )}
         </nav>
       </div>
       <SheetGestures />

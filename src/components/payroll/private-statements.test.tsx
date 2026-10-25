@@ -29,9 +29,9 @@ describe('private employee statement presentation', () => {
   });
   it('preserves the period/payday in own published history with a viewing action', () => {
     const html = renderToStaticMarkup(<MyPay />);
-    // Signature My pay (approved): the period in short form and the payday as a long date.
+    // v5 Pay (mockup E11): one row per statement, its payday then the period in short form.
     expect(html).toContain('Oct 5–11');
-    expect(html).toContain('Payday </span>October 16');
+    expect(html).toMatch(/Payday (?:[A-Z][a-z]{2}, )?[A-Z][a-z]{2} 16/);
     expect(html).toContain(statement.viewUrl);
   });
   it('clears the own statement identity while current private access is loading', () => {
@@ -50,7 +50,7 @@ describe('private employee statement presentation', () => {
     boundary.statements = [];
     expect(renderToStaticMarkup(<MyPay />)).toContain('No published statements yet');
     boundary.error = 'Fictional private access unavailable';
-    expect(renderToStaticMarkup(<MyPay />)).toContain('Statements unavailable');
+    expect(renderToStaticMarkup(<MyPay />)).toContain('Couldn’t load your statements');
     expect(renderToStaticMarkup(<MyPay />)).not.toContain('No published statements yet');
   });
 });

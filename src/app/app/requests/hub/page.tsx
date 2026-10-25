@@ -4,7 +4,6 @@ import { RequestHub } from "./request-hub";
 import { currentPresentation } from "@/lib/workspace-presentation/current.server";
 import { listEmployeeTimeOffRequests } from "@/lib/data/requests";
 import { getWorkspace } from "@/lib/data/workspaces";
-import "./request-hub.css";
 
 export default async function RequestsHubPage() {
   const { employee } = await requireSessionMutationProof();

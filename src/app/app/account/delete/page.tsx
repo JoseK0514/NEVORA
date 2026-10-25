@@ -25,10 +25,8 @@ export default async function DeleteAccountPage() {
         account={{ name: `${session.firstName} ${session.lastName}`, role: roleName[session.role], employeeId: session.id }}
         period={period} retention={retention} existing={existing ? { kind: "duplicate", reference: existing.reference, confirmedAt: existing.confirmedAt } : null} />
       <QuietGroup id="deletion-workplace" label="Your job and your workplace">
-        <div className="q-body q-deletion__effects">
-          <p>Deleting your NEVORA account doesn’t end your employment or remove records your employer has to keep.</p>
-          {session.role === "OWNER" ? <p>Your company’s workspace stays open for the rest of your team. To close it, email {SUPPORT_EMAIL}.</p> : null}
-        </div>
+        <p className="q-help">Deleting your NEVORA account doesn’t end your employment or remove records your employer has to keep.</p>
+        {session.role === "OWNER" ? <p className="q-help">Your company’s workspace stays open for the rest of your team. To close it, email {SUPPORT_EMAIL}.</p> : null}
       </QuietGroup>
     </QuietPage>
   );

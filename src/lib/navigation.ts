@@ -187,9 +187,10 @@ export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities,
   const schedule: MobileTab = { href: "/app/schedule", label: "Schedule", icon: "schedule", owns: ["/app/schedule", "/app/schedule/templates", "/app/schedule/settings"] };
   if (role === "EMPLOYEE" || role === "LEAD") {
     const pay: MobileTab = payroll?.enabled && (context.modules ?? ALL_MODULES_ON).payStatements
-      ? { href: "/app/my-pay", label: "Pay", icon: "statement", owns: ["/app/my-pay", "/app/my-time", "/app/timecards"] }
+      ? { href: "/app/my-pay", label: "Pay", icon: "receipt", owns: ["/app/my-pay", "/app/my-time", "/app/timecards"] }
       : { href: "/app/my-time", label: "Hours", icon: "clock", owns: ["/app/my-time", "/app/timecards"] };
-    return [home, schedule, { href: "/app/requests/hub", label: "Requests", icon: "requests", owns: ["/app/requests/hub", "/app/availability"] }, pay];
+    // v5 One look (approved Oct 24): Notifications opens from Home's bell, and every request page sits under Requests.
+    return [{ ...home, owns: ["/app", "/app/notifications"] }, schedule, { href: "/app/requests/hub", label: "Requests", icon: "requests", owns: ["/app/requests/hub", "/app/requests", "/app/exchange", "/app/exchange/swap", "/app/exchange/callout", "/app/availability"] }, pay];
   }
   const authorized = new Set(navigationForRole(role, payroll, context).map(item=>item.href));
   const tabs:MobileTab[] = [
@@ -223,30 +224,19 @@ export type SectionTabGroup = { label: string; items: { href: string; label: str
 export function sectionTabsFor(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext = {}): SectionTabGroup | null {
   const modules = context.modules ?? ALL_MODULES_ON;
   const pathname = path.split(/[?#]/, 1)[0];
-  const requests = [
-    { href: "/app/requests", label: "Time off" },
-    { href: "/app/exchange", label: "Shift requests" },
-    { href: "/app/availability", label: "Availability" },
+  // v5 "One look" (approved Oct 24, 2026): an Employee's or Lead's pages switch views with segments and go back with the
+  // bar's Back, so they have no tab row.
+  if (role === "EMPLOYEE" || role === "LEAD") return null;
+  // Clean Manager (v3): Owners and Managers move between the three request pages from the band (RequestPagesNav),
+  // so those pages have one pill row.
+  const groups: SectionTabGroup[] = [
+    { label: "Time and pay", items: [
+      { href: "/app/timecards", label: "Timecards" },
+      ...(navigationForRole(role, payroll, context).some(item => item.href === "/app/payroll") ? [{ href: "/app/payroll", label: "Payroll runs" }] : []),
+      { href: "/app/payroll-export", label: "Time exports" },
+      ...(payroll?.canConfigure ? [{ href: "/app/settings/payroll", label: "Payroll settings" }] : []),
+    ] },
   ];
-  const groups: SectionTabGroup[] = role === "EMPLOYEE" || role === "LEAD"
-    ? [
-      { label: "Requests", items: [{ href: "/app/requests/hub", label: "Overview" }, ...requests] },
-      // Timecards stays in the employee's Pay / Hours family (Codex mobile review M7).
-      ...(payroll?.enabled && modules.payStatements
-        // TCD-19: the tabs use the names the sidebar and page titles use.
-        ? [{ label: "Pay", items: [{ href: "/app/my-pay", label: "My pay" }, { href: "/app/my-time", label: "My time" }, { href: "/app/timecards", label: "Timecards" }] }]
-        : [{ label: "Hours", items: [{ href: "/app/my-time", label: "My time" }, { href: "/app/timecards", label: "Timecards" }] }]),
-    ]
-    : [
-      // Clean Manager (v3): Owners and Managers move between the three request pages from the band (RequestPagesNav),
-      // so those pages have one pill row. The employee Requests tabs above are unchanged.
-      { label: "Time and pay", items: [
-        { href: "/app/timecards", label: "Timecards" },
-        ...(navigationForRole(role, payroll, context).some(item => item.href === "/app/payroll") ? [{ href: "/app/payroll", label: "Payroll runs" }] : []),
-        { href: "/app/payroll-export", label: "Time exports" },
-        ...(payroll?.canConfigure ? [{ href: "/app/settings/payroll", label: "Payroll settings" }] : []),
-      ] },
-    ];
   // A turned-off module's pages leave the tabs; a lone tab is no tab row.
   const authorized = new Set(navigationForRole(role,payroll,context).map(item=>item.href));
   if(payroll?.canConfigure)authorized.add('/app/settings/payroll');

@@ -9,7 +9,7 @@ const server = () => false;
 
 /** Store the choice for a year and reload so the server renders the page in it. A recovery code already filled in
  * on Set a new password is kept: the page reads it from #proof on load. */
-function switchTo(next: AuthLang) {
+export function switchTo(next: AuthLang) {
   const secure = window.location.protocol === "https:" ? "; Secure" : "";
   document.cookie = `${AUTH_LANG_COOKIE}=${next}; Max-Age=31536000; Path=/; SameSite=Lax${secure}`;
   const proof = document.getElementById("reset-proof");

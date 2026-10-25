@@ -84,7 +84,7 @@ describe("Delete my account", () => {
   const account = { name: "Fictional Person", role: "Employee", employeeId: "FICTIONAL-E1" };
   it("reviews the account and effects, then asks for the password before the destructive action", () => {
     const html = renderToStaticMarkup(createElement(AccountDeletionForm, { account, period: null, retention: null, existing: null }));
-    for (const text of ["Fictional Person", "FICTIONAL-E1", "Your access ends now.", "What is removed:", "What may be kept:", "Confirm deletion request", "Keep my account"]) expect(html).toContain(text);
+    for (const text of ["Fictional Person", "FICTIONAL-E1", "Your access ends now.", "What is removed", "What may be kept", "Read the full details", "Confirm deletion request", "Keep my account"]) expect(html).toContain(text);
     expect(html).toMatch(/<input[^>]*type="password"[^>]*autoComplete="current-password"|<input[^>]*autoComplete="current-password"[^>]*type="password"/);
     expect(html).toMatch(/<button type="submit"[^>]*disabled=""/);
     expect(html).toContain("[CONFIRM_DELETION_COMPLETION_PERIOD]");

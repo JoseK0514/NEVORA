@@ -45,7 +45,15 @@ function when(at:string,now=new Date()){
 }
 const whenLong=(at:string)=>new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(at));
 
-export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;onMarkRead?:(id:string)=>Promise<void>}){
+/** v5: a schedule notice names its week ("Week of Oct 26 – Nov 1"), read from its own link. Display only. */
+function weekOf(href:string){
+ try{const week=new URL(href,'https://x.invalid').searchParams.get('week');if(!week||!/^\d{4}-\d{2}-\d{2}$/.test(week))return null;
+  const start=new Date(`${week}T12:00:00Z`),end=new Date(start.getTime()+6*86400000),md=(d:Date)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short',day:'numeric'}).format(d);
+  return `Week of ${md(start)} – ${start.getUTCMonth()===end.getUTCMonth()?end.getUTCDate():md(end)}`;}catch{return null;}
+}
+export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;onMarkRead?:(id:string)=>Promise<void>;
+ /** v5 (mockup E14): an Employee's or Lead's Notifications in the Quiet list, without Mark read (management only). */
+ quiet?:boolean}){
  const [pendingRead,setPendingRead]=useState<string|null>(null),[readNotice,setReadNotice]=useState('');
  const readGate=useRef(false);
  const markRead=async(id:string)=>{if(!onMarkRead||readGate.current)return;readGate.current=true;setPendingRead(id);setReadNotice('');try{await onMarkRead(id);setReadNotice('Marked read. Announcement acknowledgement and request actions are unchanged.');}catch{setReadNotice('We could not confirm the read status. Refresh to check it, or safely retry marking it read.');}finally{readGate.current=false;setPendingRead(null);}};
@@ -64,7 +72,7 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
  // A Refresh the reader asked for says so until a newer read lands (as on the Inbox); background polls stay quiet.
  const userRefreshing=refreshFrom!==null&&ready?.observedAt===refreshFrom;
  if(refreshFrom!==null&&!userRefreshing)setRefreshFrom(null);
- if(onMarkRead){
+ if(onMarkRead||quiet){
   // Quiet (v4, approved Oct 23): All and Unread, then one row per notification: what it is, then when.
   // Opening a row marks it read (as iOS does); there is no Mark read button, search or refresh foot.
   const unread=counts?.unread??0;
@@ -90,12 +98,13 @@ export function NotificationInbox({state,onRetry,onMarkRead}:{state:PrivatePanel
        <Link className="q-row q-row--av" href={item.href} prefetch={false} aria-label={`${item.label}, ${reviewLabels[review]}, ${whenLong(item.at)}`}
         onClick={()=>{if(review==='unread')void markRead(item.id);}}>
         <span className="q-av" aria-hidden="true"><Icon className="q-ic" aria-hidden="true"/></span>
-        <span className="q-rt"><b>{item.label}</b><i><time dateTime={item.at}>{when(item.at)}</time></i></span>
+        <span className="q-rt"><b>{item.label}</b><i>{weekOf(item.href)?<>{weekOf(item.href)} · </>:null}<time dateTime={item.at}>{when(item.at)}</time></i></span>
        </Link>
       </li>;
      })}</ul>
      :<p className="q-empty q-first">{filter==='unread'?'You’re all caught up.':'No notifications yet.'}</p>}
     {readNotice&&readNotice.startsWith('We could not')?<p className="q-help" role="status">We couldn’t mark that one read.</p>:null}
+    {!onMarkRead&&sorted.length?<p className="q-help">Opening one doesn’t complete it.</p>:null}
    </>}
    </HoldHeight>
   </section>;

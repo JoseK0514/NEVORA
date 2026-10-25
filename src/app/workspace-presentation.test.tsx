@@ -31,5 +31,6 @@ it('keeps recorded timekeeping guidance independent of customer identity', async
 it('keeps the employee dashboard kiosk guidance independent of customer identity', () => {
   const html=renderToStaticMarkup(<EmployeeDashboard authority={"a".repeat(64)} timeAuthority={"b".repeat(64)} />);
   expect(html).not.toContain('Fuel kiosk');
-  expect(html).toContain('Clocker');
+  // v5 Home (E01) carries no clock guidance; My time keeps the Clocker note (above).
+  expect(html).toContain('Loading Home');
 });

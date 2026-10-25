@@ -13,6 +13,8 @@ import {loadManagerDashboardData} from '@/lib/data/manager-dashboard';
 import {getWorkspace} from '@/lib/data/workspaces';
 import {businessDate} from '@/lib/business-time';
 import {EmployeeDashboard} from '@/components/employee-dashboard';
+import type {HomeWeek} from '@/components/employee-home-quiet';
+import {readEmployeeWeeklyReview} from '@/lib/data/employee-weekly-review.server';
 import {ManagerDashboard,type ManagerDashboardView} from '@/components/manager-dashboard';
 import {requireSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {homeAuthority} from '@/lib/data/employee-home.server';
@@ -60,7 +62,12 @@ export default async function DashboardPage({
 
   if (!manager) {
     const proof=await requireSessionMutationProof();
-    return <EmployeeDashboard authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone}/>;
+    // v5 Home's week at a glance: the same own published-schedule read the Schedule page uses (read only).
+    const review=await readEmployeeWeeklyReview(proof,currentWeek);
+    const week:HomeWeek|null=review.state==='unavailable'?null:{weekStart:currentWeek,today:currentDate,dates:Array.from({length:7},(_,day)=>addDays(currentWeek,day)),shifts:review.shifts.map(({date,startTime,endTime})=>({date,startTime,endTime}))};
+    // A Lead's Home adds Today's team: message everyone on today's team (the existing Updates compose), when Updates is on.
+    const teamMessage=session.role==='LEAD'&&(await currentPresentation()).modules.updates;
+    return <EmployeeDashboard authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage}/>;
   }
 
   const proof=await requireSessionMutationProof();

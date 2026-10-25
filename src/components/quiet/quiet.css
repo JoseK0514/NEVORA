@@ -8,7 +8,9 @@
 :is(#q-root, html) .q-page {
   --q-ink: #111413; --q-grey: #6B6B6B; --q-soft: #8A8A87; --q-faint: #A3A3A0; --q-chev: #B8B8B5;
   --q-line: #EDEDEB; --q-fill: #F2F2F0; --q-teal: #0B6E69; --q-red: #C42B1C; --q-av: #4A4A48;
-  position: relative; min-height: 100%; padding-bottom: 32px; background: #FFFFFF; color: var(--q-ink);
+  --q-bg: #FFFFFF; --q-teal-fill: #0B6E69; --q-press: #F7F7F6; --q-seg-on: #FFFFFF; --q-tog-off: #E3E3E0; --q-body: #3A3A38;
+  --q-tab: #7A7A77; --q-border: #D6D6D3; --q-skel2: #F6F6F4; --q-tint: #E8F2F1; --q-tint-ink: #0B6E69;
+  position: relative; min-height: 100%; padding-bottom: 32px; background: var(--q-bg); color: var(--q-ink);
   font: 400 17px/22px -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
   letter-spacing: -.2px; -webkit-font-smoothing: antialiased;
 }
@@ -37,7 +39,7 @@
 
 /* Title */
 :is(#q-root, html) .q-hd { padding: 4px 20px 0; }
-:is(#q-root, html) .q-hd h1 { margin: 0; font-size: 34px; line-height: 41px; font-weight: 700; letter-spacing: -.6px; }
+:is(#q-root, html) .q-hd h1 { margin: 0; color: var(--q-ink); font-size: 34px; line-height: 41px; font-weight: 700; letter-spacing: -.6px; }
 :is(#q-root, html) .q-hd p { margin: 2px 0 0; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
 
 /* Sections and group labels */
@@ -58,7 +60,7 @@
 :is(#q-root, html) .q-list > li:last-child > .q-row::after, :is(#q-root, html) .q-list > .q-row:last-child::after { display: none; }
 a.q-row, button.q-row { cursor: pointer; }
 button.q-row { width: 100%; border: 0; background: none; font: inherit; text-align: left; }
-a.q-row:active, button.q-row:active { background: #F7F7F6; }
+a.q-row:active, button.q-row:active { background: var(--q-press); }
 :is(#q-root, html) .q-rt { flex: 1; min-width: 0; }
 :is(#q-root, html) .q-rt b { display: block; font-weight: 400; font-size: 17px; line-height: 22px; overflow-wrap: anywhere; }
 :is(#q-root, html) .q-rt i { display: block; margin-top: 1px; font-style: normal; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
@@ -72,20 +74,20 @@ a.q-row:active, button.q-row:active { background: #F7F7F6; }
 :is(#q-root, html) .q-check { flex: none; width: 20px; height: 20px; color: var(--q-teal); }
 :is(#q-root, html) .q-av { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 20px; background: var(--q-fill); color: var(--q-av); font-size: 15px; line-height: 1; font-weight: 500; letter-spacing: 0; }
 :is(#q-root, html) .q-av--lg { width: 64px; height: 64px; border-radius: 32px; font-size: 20px; }
-:is(#q-root, html) .q-av--open { background: #FFFFFF; box-shadow: inset 0 0 0 1.5px #D6D6D3; color: var(--q-soft); }
+:is(#q-root, html) .q-av--open { background: var(--q-bg); box-shadow: inset 0 0 0 1.5px var(--q-border); color: var(--q-soft); }
 :is(#q-root, html) .q-av--open .q-ic { width: 18px; height: 18px; }
 
 /* Search, segments, toggles */
-:is(#q-root, html) .q-search { display: flex; align-items: center; gap: 8px; height: 40px; margin: 20px 20px 0; padding: 0 12px; border-radius: 12px; background: var(--q-fill); color: #7A7A77; font-size: 17px; line-height: 22px; }
+:is(#q-root, html) .q-search { display: flex; align-items: center; gap: 8px; height: 40px; margin: 20px 20px 0; padding: 0 12px; border-radius: 12px; background: var(--q-fill); color: var(--q-tab); font-size: 17px; line-height: 22px; }
 :is(#q-root, html) .q-search .q-ic { width: 18px; height: 18px; }
 :is(#q-root, html) .q-search input { flex: 1; min-width: 0; height: 100%; padding: 0; border: 0; background: none; font: inherit; color: var(--q-ink); letter-spacing: inherit; outline: none; }
-:is(#q-root, html) .q-search input::placeholder { color: #7A7A77; }
+:is(#q-root, html) .q-search input::placeholder { color: var(--q-tab); }
 :is(#q-root, html) .q-seg { display: flex; height: 36px; margin: 20px 20px 0; padding: 2px; border-radius: 10px; background: var(--q-fill); }
 :is(#q-root, html) .q-seg > a, :is(#q-root, html) .q-seg > button { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; padding: 0 6px; border: 0; border-radius: 8px; background: none; font-family: inherit; font-size: 15px; line-height: 20px; font-weight: 500; color: var(--q-grey); letter-spacing: -.1px; white-space: nowrap; cursor: pointer; }
-:is(#q-root, html) .q-seg > [aria-current="page"], :is(#q-root, html) .q-seg > [aria-pressed="true"] { background: #FFFFFF; color: var(--q-ink); box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
-:is(#q-root, html) .q-tog { flex: none; position: relative; width: 51px; height: 31px; margin: 0; border-radius: 16px; background: #E3E3E0; appearance: none; -webkit-appearance: none; cursor: pointer; transition: background-color 160ms ease-out; }
+:is(#q-root, html) .q-seg > [aria-current="page"], :is(#q-root, html) .q-seg > [aria-pressed="true"] { background: var(--q-seg-on); color: var(--q-ink); box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
+:is(#q-root, html) .q-tog { flex: none; position: relative; width: 51px; height: 31px; margin: 0; border-radius: 16px; background: var(--q-tog-off); appearance: none; -webkit-appearance: none; cursor: pointer; transition: background-color 160ms ease-out; }
 :is(#q-root, html) .q-tog::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 14px; background: #FFFFFF; box-shadow: 0 2px 4px rgba(0, 0, 0, .14); transition: transform 200ms cubic-bezier(.32, .72, 0, 1); }
-:is(#q-root, html) .q-tog:checked, :is(#q-root, html) .q-tog[aria-checked="true"] { background: var(--q-teal); }
+:is(#q-root, html) .q-tog:checked, :is(#q-root, html) .q-tog[aria-checked="true"] { background: var(--q-teal-fill); }
 :is(#q-root, html) .q-tog:checked::after, :is(#q-root, html) .q-tog[aria-checked="true"]::after { transform: translateX(20px); }
 :is(#q-root, html) .q-tog:disabled { opacity: .5; cursor: default; }
 
@@ -108,14 +110,14 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-error { margin: 8px 20px 0; font-size: 15px; line-height: 20px; color: var(--q-red); letter-spacing: -.1px; }
 
 /* Buttons */
-:is(#q-root, html) .q-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: calc(100% - 40px); height: 50px; margin: 24px 20px 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-teal); color: #FFFFFF !important; font-family: inherit; font-size: 17px; line-height: 22px; font-weight: 600; letter-spacing: -.2px; cursor: pointer; transition: transform 160ms ease-out; }
+:is(#q-root, html) .q-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: calc(100% - 40px); height: 50px; margin: 24px 20px 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-teal-fill); color: #FFFFFF !important; font-family: inherit; font-size: 17px; line-height: 22px; font-weight: 600; letter-spacing: -.2px; cursor: pointer; transition: transform 160ms ease-out; }
 :is(#q-root, html) .q-btn:active:not(:disabled) { transform: scale(.97); }
 :is(#q-root, html) .q-btn--sec { background: var(--q-fill); color: var(--q-ink) !important; }
 :is(#q-root, html) .q-btn--off, :is(#q-root, html) .q-btn:disabled { background: var(--q-fill); color: var(--q-faint) !important; cursor: default; opacity: 1; }
 :is(#q-root, html) .q-btn--quiet { height: 44px; margin-top: 8px; background: none; color: var(--q-teal) !important; font-weight: 400; }
 :is(#q-root, html) .q-btn--danger { height: 44px; background: none; color: var(--q-red) !important; font-weight: 400; }
 :is(#q-root, html) .q-bs { flex: none; display: inline-flex; align-items: center; justify-content: center; height: 32px; min-height: 0; padding: 0 14px; border: 0; border-radius: 16px; background: var(--q-fill); color: var(--q-ink) !important; font-family: inherit; font-size: 15px; line-height: 20px; font-weight: 600; letter-spacing: -.1px; white-space: nowrap; cursor: pointer; }
-:is(#q-root, html) .q-bs--go { background: var(--q-teal); color: #FFFFFF !important; }
+:is(#q-root, html) .q-bs--go { background: var(--q-teal-fill); color: #FFFFFF !important; }
 :is(#q-root, html) .q-bs:disabled { opacity: .5; cursor: default; }
 :is(#q-root, html) .q-acts { position: relative; display: flex; gap: 8px; padding: 0 20px 16px 72px; }
 :is(#q-root, html) .q-acts .q-bs { flex: 1; }
@@ -127,7 +129,7 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-lead { margin: 32px 20px 0; }
 :is(#q-root, html) .q-lead b { display: block; font-size: 20px; line-height: 25px; font-weight: 600; letter-spacing: -.4px; }
 :is(#q-root, html) .q-lead i { display: block; margin-top: 2px; font-style: normal; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
-:is(#q-root, html) .q-body { margin: 24px 20px 0; font-size: 17px; line-height: 25px; color: #3A3A38; letter-spacing: -.2px; }
+:is(#q-root, html) .q-body { margin: 24px 20px 0; font-size: 17px; line-height: 25px; color: var(--q-body); letter-spacing: -.2px; }
 :is(#q-root, html) .q-body p { margin: 0 0 16px; font-size: inherit; line-height: inherit; }
 :is(#q-root, html) .q-gap { height: 24px; }
 :is(#q-root, html) .q-gap--32 { height: 32px; }
@@ -148,31 +150,31 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 /* Schedule: the week strip and the location menu */
 :is(#q-root, html) .q-week { display: grid; grid-template-columns: repeat(7, 1fr); margin: 20px 12px 0; }
 :is(#q-root, html) .q-week > button { display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 0; padding: 0; border: 0; background: none; color: var(--q-ink, #111413); font: inherit; cursor: pointer; }
-:is(#q-root, html) .q-week small { font-size: 13px; line-height: 18px; font-weight: 500; color: #8A8A87; letter-spacing: 0; }
+:is(#q-root, html) .q-week small { font-size: 13px; line-height: 18px; font-weight: 500; color: var(--q-soft); letter-spacing: 0; }
 :is(#q-root, html) .q-week b { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; font-size: 17px; line-height: 22px; font-weight: 400; font-variant-numeric: tabular-nums; }
-:is(#q-root, html) .q-week > button[aria-pressed="true"] b { background: #111413; color: #FFFFFF; font-weight: 600; }
-:is(#q-root, html) .q-sched-loc { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0; border: 0; background: none; color: #111413; font: inherit; font-size: 17px; line-height: 22px; letter-spacing: -.2px; cursor: pointer; }
+:is(#q-root, html) .q-week > button[aria-pressed="true"] b { background: var(--q-ink); color: var(--q-bg); font-weight: 600; }
+:is(#q-root, html) .q-sched-loc { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--q-ink); font: inherit; font-size: 17px; line-height: 22px; letter-spacing: -.2px; cursor: pointer; }
 :is(#q-root, html) .q-bar .q-bar__icon > svg, :is(#q-root, html) .q-bar button.q-bar__icon svg { width: 24px; height: 24px; }
 
 /* Settings forms (src/app/app/settings/wave-c-*): field pieces, notes, actions */
 :is(#q-root, html) .q-fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
 :is(#q-root, html) .q-fl__row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
-:is(#q-root, html) .q-fl__label { display: block; font-size: 15px; line-height: 20px; font-weight: 400; color: #6B6B6B; letter-spacing: -.1px; }
-:is(#q-root, html) .q-fl__opt { color: #8A8A87; }
-:is(#q-root, html) .q-fl__error { margin: 8px 0 0; font-size: 15px; line-height: 20px; color: #C42B1C; letter-spacing: -.1px; }
-:is(#q-root, html) .q-fl__help, :is(#q-root, html) .q-fl__help p { margin: 8px 0 0; font-size: 13px; line-height: 18px; color: #6B6B6B; letter-spacing: 0; }
-:is(#q-root, html) .q-fl[data-invalid="true"] .q-in { box-shadow: inset 0 0 0 2px #C42B1C; }
+:is(#q-root, html) .q-fl__label { display: block; font-size: 15px; line-height: 20px; font-weight: 400; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-fl__opt { color: var(--q-soft); }
+:is(#q-root, html) .q-fl__error { margin: 8px 0 0; font-size: 15px; line-height: 20px; color: var(--q-red); letter-spacing: -.1px; }
+:is(#q-root, html) .q-fl__help, :is(#q-root, html) .q-fl__help p { margin: 8px 0 0; font-size: 13px; line-height: 18px; color: var(--q-grey); letter-spacing: 0; }
+:is(#q-root, html) .q-fl[data-invalid="true"] .q-in { box-shadow: inset 0 0 0 2px var(--q-red); }
 :is(#q-root, html) select.q-in { appearance: none; -webkit-appearance: none; padding-right: 40px; }
 :is(#q-root, html) .q-in__wrap { position: relative; display: block; }
-:is(#q-root, html) .q-in__caret { position: absolute; right: 16px; top: 18px; width: 14px; height: 14px; color: #8A8A87; pointer-events: none; }
+:is(#q-root, html) .q-in__caret { position: absolute; right: 16px; top: 18px; width: 14px; height: 14px; color: var(--q-soft); pointer-events: none; }
 :is(#q-root, html) .q-in__wrap--unit .q-in { padding-right: 56px; }
-:is(#q-root, html) .q-in__unit { position: absolute; right: 16px; top: 14px; font-size: 17px; line-height: 22px; color: #8A8A87; pointer-events: none; }
-:is(#q-root, html) .q-note { display: block; margin: 16px 20px 0; font-size: 15px; line-height: 20px; color: #6B6B6B; letter-spacing: -.1px; }
-:is(#q-root, html) .q-note__title { display: block; font-weight: 600; color: #111413; }
-:is(#q-root, html) .q-note[data-tone="urgent"] .q-note__title, :is(#q-root, html) .q-note[data-tone="urgent"] { color: #C42B1C; }
+:is(#q-root, html) .q-in__unit { position: absolute; right: 16px; top: 14px; font-size: 17px; line-height: 22px; color: var(--q-soft); pointer-events: none; }
+:is(#q-root, html) .q-note { display: block; margin: 16px 20px 0; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-note__title { display: block; font-weight: 600; color: var(--q-ink); }
+:is(#q-root, html) .q-note[data-tone="urgent"] .q-note__title, :is(#q-root, html) .q-note[data-tone="urgent"] { color: var(--q-red); }
 :is(#q-root, html) .q-note__action { margin-top: 8px; }
 :is(#q-root, html) .q-emptyblock { margin-top: 24px; }
-:is(#q-root, html) .q-emptyblock__title { margin: 0 20px; font-size: 17px; line-height: 22px; font-weight: 600; color: #111413; letter-spacing: -.2px; }
+:is(#q-root, html) .q-emptyblock__title { margin: 0 20px; font-size: 17px; line-height: 22px; font-weight: 600; color: var(--q-ink); letter-spacing: -.2px; }
 :is(#q-root, html) .q-emptyblock__action { margin-top: 8px; }
 :is(#q-root, html) .q-actions { display: flex; flex-direction: column; }
 :is(#q-root, html) .q-actions > .q-btn + .q-btn { margin-top: 12px; }
@@ -180,13 +182,13 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) label.q-row[data-disabled="true"] { cursor: default; opacity: .6; }
 
 /* Sheets: Settings editors (wc-dialog) open as a white bottom sheet on phones and a centred card on wide screens. */
-:is(#q-root, html) .q-page dialog.wc-dialog { position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; max-height: 92dvh; margin: 0; padding: 0 0 calc(24px + env(safe-area-inset-bottom, 0px)); border: 0; border-radius: 20px 20px 0 0; background: #FFFFFF; color: #111413; box-shadow: 0 -12px 40px rgba(0, 0, 0, .18); overflow: auto; overscroll-behavior: contain; }
+:is(#q-root, html) .q-page dialog.wc-dialog { position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; max-height: 92dvh; margin: 0; padding: 0 0 calc(24px + env(safe-area-inset-bottom, 0px)); border: 0; border-radius: 20px 20px 0 0; background: var(--q-bg); color: var(--q-ink); box-shadow: 0 -12px 40px rgba(0, 0, 0, .18); overflow: auto; overscroll-behavior: contain; }
 :is(#q-root, html) .q-page dialog.wc-dialog::backdrop { background: rgba(17, 20, 19, .42); }
 :is(#q-root, html) .q-page .wc-dialog__head { display: flex; align-items: flex-start; gap: 12px; padding: 20px 20px 0; }
 :is(#q-root, html) .q-page .wc-dialog__head > div { flex: 1; min-width: 0; }
-:is(#q-root, html) .q-page .wc-dialog__title { margin: 0; font-size: 20px; line-height: 25px; font-weight: 600; letter-spacing: -.4px; color: #111413; }
-:is(#q-root, html) .q-page .wc-dialog__text { margin: 4px 0 0; font-size: 15px; line-height: 20px; color: #6B6B6B; letter-spacing: -.1px; }
-:is(#q-root, html) .q-page .wc-dialog__close { display: grid; place-items: center; width: 44px; height: 44px; margin: -10px -12px 0 0; padding: 0; border: 0; background: none; color: #6B6B6B; cursor: pointer; }
+:is(#q-root, html) .q-page .wc-dialog__title { margin: 0; font-size: 20px; line-height: 25px; font-weight: 600; letter-spacing: -.4px; color: var(--q-ink); }
+:is(#q-root, html) .q-page .wc-dialog__text { margin: 4px 0 0; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-page .wc-dialog__close { display: grid; place-items: center; width: 44px; height: 44px; margin: -10px -12px 0 0; padding: 0; border: 0; background: none; color: var(--q-grey); cursor: pointer; }
 :is(#q-root, html) .q-page .wc-dialog__close svg { width: 22px; height: 22px; }
 :is(#q-root, html) .q-page .wc-dialog .wc-fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 :is(#q-root, html) .q-page .wc-dialog .wc-fact { margin-top: 16px; }
@@ -199,33 +201,33 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-swatch { flex: none; width: 22px; height: 22px; border-radius: 11px; }
 :is(#q-root, html) .q-logo { display: flex; align-items: center; height: 28px; }
 :is(#q-root, html) .q-logo img { display: block; max-height: 28px; max-width: 96px; object-fit: contain; }
-:is(#q-root, html) .q-preview { margin: 12px 20px 0; padding: 16px; border-radius: 12px; background: #F2F2F0; }
+:is(#q-root, html) .q-preview { margin: 12px 20px 0; padding: 16px; border-radius: 12px; background: var(--q-fill); }
 :is(#q-root, html) .q-preview b { display: block; font-size: 17px; line-height: 22px; font-weight: 600; }
-:is(#q-root, html) .q-preview i { display: block; font-style: normal; font-size: 15px; line-height: 20px; color: #6B6B6B; letter-spacing: -.1px; }
+:is(#q-root, html) .q-preview i { display: block; font-style: normal; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
 :is(#q-root, html) .q-preview span { display: inline-flex; align-items: center; height: 32px; margin-top: 12px; padding: 0 14px; border-radius: 16px; color: #FFFFFF; font-size: 15px; line-height: 20px; font-weight: 600; }
 :is(#q-root, html) .q-swatches { display: grid; grid-template-columns: repeat(4, 56px); justify-content: space-between; row-gap: 16px; margin: 20px 20px 0; }
 :is(#q-root, html) .q-swatches button { display: grid; place-items: center; width: 56px; height: 56px; min-height: 0; padding: 0; border: 0; border-radius: 28px; color: #FFFFFF; cursor: pointer; }
 :is(#q-root, html) .q-swatches button svg { width: 24px; height: 24px; }
-:is(#q-root, html) .q-swatches button[aria-pressed="true"] { box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 5px #111413; }
+:is(#q-root, html) .q-swatches button[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--q-bg), 0 0 0 5px var(--q-ink); }
 /* The Wave C containers were grids with 16px gaps; inside a Quiet page they are plain blocks, so the 24/28/40 spacing is the page's own. */
 :is(#q-root, html) .q-page :is(.wc-content, .wc-form, .wc-brand, .wc-main, .wc-fields, .wc-layout, .wc-hub, .wc-hub__column) { display: block; gap: 0; margin: 0; padding: 0; background: none; box-shadow: none; }
 :is(#q-root, html) .q-page .wc-feedback { margin: 0; padding: 0; background: none; outline: none; }
 /* A row whose value is a native picker: the select covers the value and the chevron. */
 :is(#q-root, html) .q-select-row { position: relative; }
-:is(#q-root, html) .q-select-row__control { flex: none; max-width: 60%; min-height: 0; height: 52px; padding: 0 4px 0 0; border: 0; background: none; color: #6B6B6B; font: inherit; font-size: 17px; line-height: 22px; text-align: right; text-align-last: right; appearance: none; -webkit-appearance: none; cursor: pointer; }
-:is(#q-root, html) .q-select-row__control:focus-visible { outline: 2px solid #0B6E69; border-radius: 6px; }
+:is(#q-root, html) .q-select-row__control { flex: none; max-width: 60%; min-height: 0; height: 52px; padding: 0 4px 0 0; border: 0; background: none; color: var(--q-grey); font: inherit; font-size: 17px; line-height: 22px; text-align: right; text-align-last: right; appearance: none; -webkit-appearance: none; cursor: pointer; }
+:is(#q-root, html) .q-select-row__control:focus-visible { outline: 2px solid var(--q-teal); border-radius: 6px; }
 
 /* Employee and Profile: avatar beside the name, three quick actions */
 :is(#q-root, html) .q-who { display: flex; align-items: center; gap: 16px; margin: 12px 20px 0; }
-:is(#q-root, html) .q-who h1 { margin: 0; font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -.5px; color: #111413; text-wrap: initial; }
-:is(#q-root, html) .q-who p { margin: 2px 0 0; font-size: 15px; line-height: 20px; color: #6B6B6B; letter-spacing: -.1px; }
+:is(#q-root, html) .q-who h1 { margin: 0; font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -.5px; color: var(--q-ink); text-wrap: initial; }
+:is(#q-root, html) .q-who p { margin: 2px 0 0; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
 :is(#q-root, html) .q-qa { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 24px 20px 0; }
 :is(#q-root, html) .q-qa .q-bs { height: 40px; border-radius: 12px; }
-:is(#q-root, html) .q-qa .q-bs[aria-disabled="true"] { color: #A3A3A0 !important; }
+:is(#q-root, html) .q-qa .q-bs[aria-disabled="true"] { color: var(--q-faint) !important; }
 /* A row whose value is typed in place, and a row that opens to show more fields. */
-:is(#q-root, html) .q-input-row input { flex: 1; min-width: 0; min-height: 0; height: 52px; padding: 0; border: 0; background: none; color: #111413; font: inherit; font-size: 17px; line-height: 22px; text-align: right; outline: none; }
-:is(#q-root, html) .q-input-row input::placeholder { color: #A3A3A0; }
-:is(#q-root, html) .q-input-row:focus-within { box-shadow: inset 0 -2px 0 #111413; }
+:is(#q-root, html) .q-input-row input { flex: 1; min-width: 0; min-height: 0; height: 52px; padding: 0; border: 0; background: none; color: var(--q-ink); font: inherit; font-size: 17px; line-height: 22px; text-align: right; outline: none; }
+:is(#q-root, html) .q-input-row input::placeholder { color: var(--q-faint); }
+:is(#q-root, html) .q-input-row:focus-within { box-shadow: inset 0 -2px 0 var(--q-ink); }
 :is(#q-root, html) .q-details > summary { list-style: none; cursor: pointer; }
 :is(#q-root, html) .q-details > summary::-webkit-details-marker { display: none; }
 :is(#q-root, html) .q-details[open] > summary .q-chev { transform: rotate(90deg); }
@@ -237,9 +239,9 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 /* Clocker PIN: four boxes over one field */
 :is(#q-root, html) .q-pin { position: relative; display: grid; grid-template-columns: repeat(4, 56px); gap: 12px; margin-top: 8px; }
 :is(#q-root, html) .q-pin input { position: absolute; inset: 0; z-index: 1; width: 100%; height: 56px; min-height: 0; margin: 0; padding: 0; border: 0; background: transparent; color: transparent; caret-color: transparent; font-size: 16px; opacity: .01; }
-:is(#q-root, html) .q-pin span { display: grid; place-items: center; height: 56px; border-radius: 12px; background: #F2F2F0; }
-:is(#q-root, html) .q-pin span i { width: 10px; height: 10px; border-radius: 5px; background: #111413; }
-:is(#q-root, html) .q-pin:focus-within span[data-on] { box-shadow: inset 0 0 0 2px #111413; }
+:is(#q-root, html) .q-pin span { display: grid; place-items: center; height: 56px; border-radius: 12px; background: var(--q-fill); }
+:is(#q-root, html) .q-pin span i { width: 10px; height: 10px; border-radius: 5px; background: var(--q-ink); }
+:is(#q-root, html) .q-pin:focus-within span[data-on] { box-shadow: inset 0 0 0 2px var(--q-ink); }
 
 /* The first field under a sheet's bar sits 16 below it (a page's first field sits 24 below its title). */
 :is(#q-root, html) .q-fl.q-first { margin-top: 16px; }
@@ -249,26 +251,26 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-compose .wb-form, :is(#q-root, html) .q-compose fieldset.wb-form { display: block; margin: 0; padding: 0; border: 0; min-width: 0; }
 :is(#q-root, html) .q-compose .nv-card { margin: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
 :is(#q-root, html) .q-compose .nv-card__head { display: block; margin: 28px 20px 0; padding: 0; }
-:is(#q-root, html) .q-compose .nv-card__title { margin: 0; font-size: 15px; line-height: 20px; font-weight: 600; color: #6B6B6B; letter-spacing: -.1px; }
+:is(#q-root, html) .q-compose .nv-card__title { margin: 0; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--q-grey); letter-spacing: -.1px; }
 :is(#q-root, html) .q-compose .nv-card__meta { display: none; }
 :is(#q-root, html) .q-compose .wb-body { margin: 0; padding: 0; }
 :is(#q-root, html) .q-compose .wb-field { margin: 16px 20px 0; }
 :is(#q-root, html) .q-compose .wb-label-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
-:is(#q-root, html) .q-compose .wb-field > label, :is(#q-root, html) .q-compose .wb-label-row label { display: block; margin-bottom: 8px; font-size: 15px; line-height: 20px; color: #6B6B6B; letter-spacing: -.1px; }
+:is(#q-root, html) .q-compose .wb-field > label, :is(#q-root, html) .q-compose .wb-label-row label { display: block; margin-bottom: 8px; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
 :is(#q-root, html) .q-compose .wb-label-row label { margin: 0; }
-:is(#q-root, html) .q-compose .wb-counter { font-size: 13px; line-height: 20px; color: #8A8A87; }
-:is(#q-root, html) .q-compose .wb-control { display: block; width: 100%; height: 50px; min-height: 0; padding: 0 16px; border: 0; border-radius: 12px; background: #F2F2F0; color: #111413; font: inherit; font-size: 17px; line-height: 22px; appearance: none; -webkit-appearance: none; outline: none; }
+:is(#q-root, html) .q-compose .wb-counter { font-size: 13px; line-height: 20px; color: var(--q-soft); }
+:is(#q-root, html) .q-compose .wb-control { display: block; width: 100%; height: 50px; min-height: 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-ink); font: inherit; font-size: 17px; line-height: 22px; appearance: none; -webkit-appearance: none; outline: none; }
 :is(#q-root, html) .q-compose textarea.wb-control { height: 120px; padding-top: 14px; resize: none; }
-:is(#q-root, html) .q-compose .wb-control:focus { box-shadow: inset 0 0 0 2px #111413; }
-:is(#q-root, html) .q-compose .wb-help, :is(#q-root, html) .q-compose .wb-note, :is(#q-root, html) .q-compose .wb-box { margin: 8px 20px 0; padding: 0; border: 0; background: none; font-size: 13px; line-height: 18px; color: #6B6B6B; letter-spacing: 0; }
+:is(#q-root, html) .q-compose .wb-control:focus { box-shadow: inset 0 0 0 2px var(--q-ink); }
+:is(#q-root, html) .q-compose .wb-help, :is(#q-root, html) .q-compose .wb-note, :is(#q-root, html) .q-compose .wb-box { margin: 8px 20px 0; padding: 0; border: 0; background: none; font-size: 13px; line-height: 18px; color: var(--q-grey); letter-spacing: 0; }
 :is(#q-root, html) .q-compose .wb-field .wb-help { margin: 8px 0 0; }
 :is(#q-root, html) .q-compose .wb-divider { display: none; }
-:is(#q-root, html) .q-compose .wb-check { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; font-size: 17px; line-height: 22px; color: #111413; }
-:is(#q-root, html) .q-compose .wb-error { margin: 8px 0 0; font-size: 15px; line-height: 20px; color: #C42B1C; }
+:is(#q-root, html) .q-compose .wb-check { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; font-size: 17px; line-height: 22px; color: var(--q-ink); }
+:is(#q-root, html) .q-compose .wb-error { margin: 8px 0 0; font-size: 15px; line-height: 20px; color: var(--q-red); }
 :is(#q-root, html) .q-compose .wb-actions { display: flex; flex-direction: column; gap: 12px; margin: 24px 20px 0; }
 :is(#q-root, html) .q-compose .wb-actions .nv-btn { height: 50px; border-radius: 12px; }
-:is(#q-root, html) .q-compose .nv-btn[data-kind="primary"] { background: #0B6E69; color: #FFFFFF; }
-:is(#q-root, html) .q-compose .nv-btn[data-kind="secondary"] { background: #F2F2F0; color: #111413; box-shadow: none; }
+:is(#q-root, html) .q-compose .nv-btn[data-kind="primary"] { background: var(--q-teal-fill); color: #FFFFFF; }
+:is(#q-root, html) .q-compose .nv-btn[data-kind="secondary"] { background: var(--q-fill); color: var(--q-ink); box-shadow: none; }
 :is(#q-root, html) .q-list > li:last-child > details > summary.q-row::after, :is(#q-root, html) .q-details[open] > summary.q-row::after { display: none; }
 :is(#q-root, html) .q-compose .nv-card__head, :is(#q-root, html) .q-compose .wb-box, :is(#q-root, html) .q-compose #compose-body-hint { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); }
 :is(#q-root, html) .q-compose .wb-counter { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
@@ -356,7 +358,7 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-rule-list .wb-savebar > p { display: block; margin: 0; font-size: 13px; line-height: 18px; color: var(--q-grey); }
 :is(#q-root, html) .q-rule-list .wb-savebar > p svg { display: none; }
 :is(#q-root, html) .q-rule-list .wb-savebar > .wb-error { color: var(--q-red); }
-:is(#q-root, html) .q-rule-list .wb-savebar > .nv-btn { display: flex; align-items: center; justify-content: center; width: 100%; height: 50px; min-height: 0; margin: 12px 0 0; border: 0; border-radius: 12px; background: var(--q-teal); color: #FFFFFF; font: inherit; font-size: 17px; font-weight: 600; box-shadow: none; }
+:is(#q-root, html) .q-rule-list .wb-savebar > .nv-btn { display: flex; align-items: center; justify-content: center; width: 100%; height: 50px; min-height: 0; margin: 12px 0 0; border: 0; border-radius: 12px; background: var(--q-teal-fill); color: #FFFFFF; font: inherit; font-size: 17px; font-weight: 600; box-shadow: none; }
 :is(#q-root, html) .q-rule-list > form > .configuration-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
 
 /* Timecards (v4): when approvals open sits 12 under the segments; the people 8 under that. */
@@ -369,9 +371,9 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-tc-pick { cursor: pointer; }
 :is(#q-root, html) .q-tc-pick[data-off] { cursor: default; }
 :is(#q-root, html) .q-tc-pick[data-off] .q-rt b, :is(#q-root, html) .q-tc-pick[data-off] .q-rv { color: var(--q-faint); }
-:is(#q-root, html) .q-tc-box { flex: none; width: 24px; height: 24px; margin: 0 8px; border: 1.5px solid #C8C8C5; border-radius: 12px; background: #FFFFFF center / 14px 14px no-repeat; appearance: none; -webkit-appearance: none; cursor: inherit; transition: background-color 160ms ease-out, border-color 160ms ease-out; }
+:is(#q-root, html) .q-tc-box { flex: none; width: 24px; height: 24px; margin: 0 8px; border: 1.5px solid var(--q-border); border-radius: 12px; background: var(--q-bg) center / 14px 14px no-repeat; appearance: none; -webkit-appearance: none; cursor: inherit; transition: background-color 160ms ease-out, border-color 160ms ease-out; }
 :is(#q-root, html) .q-tc-box:checked { border-color: var(--q-teal); background-color: var(--q-teal); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M2.5 7.4l3 3 6-6.4' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
-:is(#q-root, html) .q-tc-box:disabled { border-color: #E3E3E0; background-color: var(--q-fill); }
+:is(#q-root, html) .q-tc-box:disabled { border-color: var(--q-tog-off); background-color: var(--q-fill); }
 :is(#q-root, html) .q-tc-box:focus-visible { outline: 2px solid var(--q-ink); outline-offset: 2px; }
 :is(#q-root, html) .q-tc-pick.q-row--one::after { left: 60px; }
 :is(#q-root, html) .q-tc-bulk { margin-bottom: 24px; }
@@ -387,7 +389,7 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-tc-confirm .q-rv[data-tone="approved"], :is(#q-root, html) .q-tc-confirm .q-rv[data-tone="finalized"] { color: var(--q-teal); }
 :is(#q-root, html) .q-tc-confirm .q-rv[data-tone="outcome-unknown"], :is(#q-root, html) .q-tc-confirm .q-rv[data-tone="denied"], :is(#q-root, html) .q-tc-confirm .q-rv[data-tone="conflict"], :is(#q-root, html) .q-tc-confirm .q-rv[data-tone="blocked"] { color: var(--q-red); }
 /* Pages whose old wrapper still frames a Quiet page (Timecards): the wrapper adds nothing. */
-:is(#q-root, html) .nv-page:has(> .q-page) { margin: 0; padding: 0; background: #FFFFFF; min-height: 0; }
+:is(#q-root, html) .nv-page:has(> .q-page) { margin: 0; padding: 0; background: var(--q-bg); min-height: 0; }
 
 /* Payroll (v4): past periods are button rows; the review keeps its own layout under a Payroll back link. */
 :is(#q-root, html) button.q-row--btn { width: 100%; border: 0; background: none; font: inherit; text-align: left; cursor: pointer; }
@@ -438,7 +440,7 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-rule__body .wb-box { margin: 0; padding: 12px 16px; border: 0; border-radius: 12px; background: var(--q-fill); font-size: 13px; line-height: 18px; color: var(--q-grey); }
 :is(#q-root, html) .q-rule__body .wb-box strong { display: block; color: var(--q-ink); font-weight: 600; }
 :is(#q-root, html) .q-rule__body .nv-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 50px; min-height: 0; margin: 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-ink); font: inherit; font-size: 17px; font-weight: 600; box-shadow: none; }
-:is(#q-root, html) .q-rule__body .nv-btn[data-kind="primary"] { background: var(--q-teal); color: #FFFFFF; }
+:is(#q-root, html) .q-rule__body .nv-btn[data-kind="primary"] { background: var(--q-teal-fill); color: #FFFFFF; }
 :is(#q-root, html) .q-rule__body .wb-error { display: flex; gap: 6px; margin: 0; font-size: 13px; line-height: 18px; color: var(--q-red); }
 :is(#q-root, html) .q-rule__body .wb-history > div { padding: 12px 0; border-bottom: 1px solid var(--q-line); }
 :is(#q-root, html) .q-rule__body .wb-history p { margin: 4px 0; color: var(--q-grey); }
@@ -490,8 +492,8 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-policy-private .policy-private-review { padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
 
 /* Sign-in pages (v4): one white page; the column is phone-width on every screen; the legal line sits at the bottom. */
-html:has(.q-auth), body:has(.q-auth) { background: #FFFFFF !important; }
-:is(#q-root, html) .q-auth { position: relative; display: block; min-height: 100dvh; padding: var(--q-safe-top, env(safe-area-inset-top)) 0 calc(var(--q-safe-bottom, env(safe-area-inset-bottom)) + 52px); background: #FFFFFF; color: var(--q-ink); }
+html:has(.q-auth), body:has(.q-auth) { background: var(--q-bg) !important; }
+:is(#q-root, html) .q-auth { position: relative; display: block; min-height: 100dvh; padding: var(--q-safe-top, env(safe-area-inset-top)) 0 calc(var(--q-safe-bottom, env(safe-area-inset-bottom)) + 52px); background: var(--q-bg); color: var(--q-ink); }
 :is(#q-root, html) .q-auth__col { max-width: 430px; margin: 0 auto; }
 :is(#q-root, html) .q-auth__top { display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 20px; }
 :is(#q-root, html) .q-auth__wordmark { display: flex; align-items: center; color: var(--q-ink); }
@@ -603,3 +605,246 @@ html body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) p {
 html body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) .button { display: flex; align-items: center; justify-content: center; width: 100%; height: 50px; margin-top: 16px; border: 0; border-radius: 12px; background: #F2F2F0; box-shadow: none; color: #111413; font-size: 17px; font-weight: 600; }
 html[data-theme="dark"] body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) .button { background: #1C1C1E; color: #F2F2F0; }
 html[data-theme="dark"] body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) p { color: #9A9A96; }
+:is(#q-root, html) .q-skel__rows i + i { width: 74%; height: 12px; background: var(--q-skel2); }
+
+/* Dark (v5 "One look", approved Oct 24, 2026): every role follows the phone. True black, lifted greys and one lifted
+ * teal for text and the active tab; teal fills keep white text (5.9:1); a selected segment sits lighter than its track.
+ * Only tokens change here; the id weight in :is() matches the kit's own selectors. */
+:is(#q-root, html)[data-theme="dark"] .q-page {
+  --q-bg: #000000; --q-ink: #F2F2F0; --q-grey: #9A9A96; --q-soft: #8E8E93; --q-faint: #5A5A5E; --q-chev: #5A5A5E;
+  --q-line: #262628; --q-fill: #1C1C1E; --q-teal: #5CC8BE; --q-teal-fill: #0B6E69; --q-red: #FF6B5E; --q-av: #D6D6D3;
+  --q-press: #1C1C1E; --q-seg-on: #3A3A3C; --q-tog-off: #39393D; --q-body: #D6D6D3; --q-tab: #8E8E93; --q-border: #3A3A3C;
+  --q-skel2: #161618; --q-tint: #123C3A; --q-tint-ink: #5CC8BE;
+  color-scheme: dark;
+}
+:is(#q-root, html)[data-theme="dark"] .q-seg > [aria-current="page"], :is(#q-root, html)[data-theme="dark"] .q-seg > [aria-pressed="true"] { box-shadow: none; }
+:is(#q-root, html)[data-theme="dark"]:has(.q-auth), :is(#q-root, html)[data-theme="dark"] body:has(.q-auth) { background: #000000 !important; }
+:is(#q-root, html)[data-theme="dark"] .q-unavailable + .scoped-unavailable__refresh { color: #5CC8BE; }
+
+/* v5 One look: icon rows, tinted avatars for rows that need you, the red row, and counts. */
+:is(#q-root, html) .q-row__ic { flex: none; display: grid; color: var(--q-av); }
+:is(#q-root, html) .q-row__ic .q-ic { width: 24px; height: 24px; }
+:is(#q-root, html) .q-av--tint { background: var(--q-tint); color: var(--q-tint-ink); }
+:is(#q-root, html) .q-av--tint .q-ic { width: 20px; height: 20px; }
+:is(#q-root, html) .q-row--danger .q-rt b, :is(#q-root, html) .q-row--danger .q-row__ic { color: var(--q-red); }
+:is(#q-root, html) .q-count { flex: none; font-size: 15px; line-height: 20px; color: var(--q-grey); font-variant-numeric: tabular-nums; letter-spacing: -.1px; }
+:is(#q-root, html) .q-top-gap { height: calc(var(--q-safe-top, env(safe-area-inset-top, 0px)) + 4px); }
+
+/* v5 "One look" Home (approved Oct 24, mockup E01): the greeting, the next-shift card (the page's one teal block),
+ * Needs you with tinted icons, and the week at a glance. */
+:is(#q-root, html) .q-hello { padding: 4px 20px 0; }
+:is(#q-root, html) .q-hello small { display: block; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-hello h1 { margin: 2px 0 0; color: var(--q-ink); font-size: 34px; line-height: 41px; font-weight: 700; letter-spacing: -.6px; }
+:is(#q-root, html) .q-next { display: block; margin: 24px 20px 0; padding: 20px 20px 16px; border-radius: 20px; color: #FFFFFF; text-decoration: none;
+  background: linear-gradient(160deg, #0F7C75 0%, #0B6E69 52%, #08605B 100%); box-shadow: 0 14px 28px -16px rgba(8, 96, 91, .6), 0 2px 6px -2px rgba(8, 96, 91, .25); }
+:is(#q-root, html)[data-theme="dark"] .q-page .q-next { box-shadow: none; }
+:is(#q-root, html) .q-next:focus-visible { outline: 2px solid var(--q-teal); outline-offset: 3px; }
+:is(#q-root, html) .q-next__top { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; line-height: 20px; color: rgba(255, 255, 255, .78); letter-spacing: -.1px; }
+:is(#q-root, html) .q-next__top > :last-child { color: #FFFFFF; font-weight: 600; }
+:is(#q-root, html) .q-next__time { display: block; margin: 10px 0 0; font-size: 28px; line-height: 34px; font-weight: 600; letter-spacing: -.5px; font-variant-numeric: tabular-nums; }
+:is(#q-root, html) .q-next__day { display: block; margin: 2px 0 0; font-size: 17px; line-height: 22px; color: rgba(255, 255, 255, .92); }
+:is(#q-root, html) .q-next__meta { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, .18); font-size: 15px; line-height: 20px; color: rgba(255, 255, 255, .86); }
+:is(#q-root, html) .q-next__meta > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:is(#q-root, html) .q-next__meta .q-ic { flex: none; width: 18px; height: 18px; color: #FFFFFF; }
+:is(#q-root, html) .q-next--wait .q-next__time { color: transparent; }
+:is(#q-root, html) .q-next__recovery { font-size: 15px; line-height: 22px; color: rgba(255, 255, 255, .86); }
+:is(#q-root, html) .q-next__note { margin: 12px 20px 0; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-home .q-sec { margin-top: 36px; }
+:is(#q-root, html) .q-glance { display: grid; grid-template-columns: repeat(7, 1fr); margin: 12px 12px 0; padding: 0; list-style: none; }
+:is(#q-root, html) .q-glance a { display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 44px; color: inherit; text-decoration: none; border-radius: 12px; }
+:is(#q-root, html) .q-glance a:focus-visible { outline: 2px solid var(--q-teal); outline-offset: 2px; }
+:is(#q-root, html) .q-glance small { font-size: 13px; line-height: 18px; font-weight: 500; color: var(--q-soft); }
+:is(#q-root, html) .q-glance b { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; font-size: 15px; line-height: 20px; font-weight: 500; color: var(--q-faint); font-variant-numeric: tabular-nums; }
+:is(#q-root, html) .q-glance .is-work b { background: var(--q-tint); color: var(--q-tint-ink); font-weight: 600; }
+:is(#q-root, html) .q-glance .is-today b { box-shadow: inset 0 0 0 1.5px var(--q-ink); color: var(--q-ink); }
+:is(#q-root, html) .q-glance .is-today.is-work b { box-shadow: inset 0 0 0 1.5px var(--q-tint-ink); color: var(--q-tint-ink); }
+:is(#q-root, html) .q-home__clock { margin: 12px 20px 0; }
+:is(#q-root, html) .q-home__retry { margin: 32px 20px 0; }
+:is(#q-root, html) .q-next, :is(#q-root, html) .q-glance a { -webkit-tap-highlight-color: transparent; transition: transform 160ms cubic-bezier(.23, 1, .32, 1); }
+:is(#q-root, html) .q-next:active { transform: scale(.98); }
+@media (prefers-reduced-motion: reduce) { :is(#q-root, html) .q-next, :is(#q-root, html) .q-glance a { transition: none; } :is(#q-root, html) .q-next:active { transform: none; } }
+
+/* v5 bottom sheet (QuietSheet): rises over the page with a grabber; Cancel · title · action in its bar. */
+html[data-q-sheet] { overflow: hidden; }
+:is(#q-root, html) dialog.q-sheet { position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; height: calc(100dvh - max(var(--q-safe-top, env(safe-area-inset-top, 0px)) + 4px, 24px)); max-height: none; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 14px 14px 0 0; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
+  transform: translateY(0); transition: transform 360ms cubic-bezier(.32, .72, 0, 1); }
+:is(#q-root, html) dialog.q-sheet[data-closing] { transform: translateY(100%); transition-duration: 240ms; transition-timing-function: cubic-bezier(.32, 0, .67, 0); }
+@starting-style { :is(#q-root, html) dialog.q-sheet[open] { transform: translateY(100%); } }
+:is(#q-root, html) dialog.q-sheet::backdrop { background: rgba(0, 0, 0, .34); transition: opacity 360ms ease; }
+@starting-style { :is(#q-root, html) dialog.q-sheet[open]::backdrop { opacity: 0; } }
+:is(#q-root, html) dialog.q-sheet[data-closing]::backdrop { opacity: 0; transition-duration: 240ms; }
+:is(#q-root, html) .q-sheet__in { min-height: 100%; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+:is(#q-root, html) .q-sheet__top { position: sticky; top: 0; z-index: 1; height: 11px; background: var(--q-bg); cursor: grab; touch-action: none; }
+:is(#q-root, html) .q-sheet__grab { width: 36px; height: 5px; margin: 0 auto; padding: 0; border-radius: 3px; background: var(--q-border); transform: translateY(6px); }
+:is(#q-root, html) .q-sheet .q-nav { position: sticky; top: 11px; z-index: 1; height: 44px; padding: 2px 20px 0; background: var(--q-bg); touch-action: none; }
+:is(#q-root, html) .q-sheet .q-nav__l { padding: 0; border: 0; background: none; font: inherit; font-size: 17px; line-height: 22px; cursor: pointer; }
+:is(#q-root, html) .q-sheet .q-hd h1 { font-size: 28px; line-height: 34px; letter-spacing: -.5px; }
+:is(#q-root, html)[data-theme="dark"] .q-page.q-sheet { --q-bg: #1C1C1E; --q-fill: #2C2C2E; --q-press: #2C2C2E; --q-line: #38383A; --q-border: #48484A; --q-seg-on: #48484A; }
+@media (min-width: 768px) {
+  :is(#q-root, html) dialog.q-sheet { inset: 0; width: min(540px, calc(100% - 48px)); height: auto; max-height: min(86dvh, 820px); margin: auto; border-radius: 14px; }
+  :is(#q-root, html) dialog.q-sheet[data-closing], :is(#q-root, html) dialog.q-sheet { transform: none; }
+  @starting-style { :is(#q-root, html) dialog.q-sheet[open] { transform: translateY(24px); opacity: 0; } }
+  :is(#q-root, html) .q-sheet__top { height: 8px; cursor: default; }
+  :is(#q-root, html) .q-sheet__grab { display: none; }
+  :is(#q-root, html) .q-sheet .q-nav { top: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(#q-root, html) dialog.q-sheet, :is(#q-root, html) dialog.q-sheet::backdrop { transition: none; }
+}
+
+/* Choice rows: a native radio, drawn as the kit's ring (teal disc when chosen). */
+:is(#q-root, html) .q-row--pick { cursor: pointer; }
+:is(#q-root, html) .q-pick { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+:is(#q-root, html) .q-radio { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 11px; box-shadow: inset 0 0 0 1.5px var(--q-border); }
+:is(#q-root, html) .q-pick:checked + .q-radio { box-shadow: none; background: var(--q-teal-fill); }
+:is(#q-root, html) .q-pick:checked + .q-radio::after { content: ""; width: 8px; height: 8px; border-radius: 4px; background: #FFFFFF; }
+:is(#q-root, html) .q-pick:focus-visible + .q-radio { outline: 2px solid var(--q-teal); outline-offset: 2px; }
+:is(#q-root, html) .q-weekconf { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; max-width: 168px; }
+:is(#q-root, html) .q-weekconf form { display: contents; }
+:is(#q-root, html) .q-weekconf p { margin: 0; font-size: 13px; line-height: 18px; color: var(--q-grey); text-align: end; letter-spacing: 0; }
+:is(#q-root, html) .q-weekconf p[role="alert"] { color: var(--q-red); }
+:is(#q-root, html) .q-weekconf .q-bs[aria-disabled="true"] { opacity: .6; }
+
+/* v5 Schedule (mockup E02): week strip with a dot under days that have a shift; the chosen day is an ink disc. */
+:is(#q-root, html) .q-weeknav { display: flex; align-items: center; gap: 12px; margin-left: -4px; }
+:is(#q-root, html) .q-weeknav__today { font-size: 17px; line-height: 22px; color: var(--q-teal) !important; }
+:is(#q-root, html) .q-wk { display: grid; grid-template-columns: repeat(7, 1fr); margin: 20px 12px 0; }
+:is(#q-root, html) .q-wk a { display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 44px; border-radius: 12px; -webkit-tap-highlight-color: transparent; }
+:is(#q-root, html) .q-wk small { font-size: 13px; line-height: 18px; font-weight: 500; color: var(--q-soft); }
+:is(#q-root, html) .q-wk b { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; font-size: 17px; font-weight: 400; color: var(--q-ink); font-variant-numeric: tabular-nums; transition: background-color 160ms ease, color 160ms ease; }
+:is(#q-root, html) .q-wk .is-on b { background: var(--q-ink); color: var(--q-bg); font-weight: 600; }
+:is(#q-root, html) .q-wk i { display: block; width: 5px; height: 5px; margin-top: -2px; border-radius: 3px; background: transparent; }
+:is(#q-root, html) .q-wk i.is-shift { background: var(--q-border); }
+:is(#q-root, html) .q-sched-e .q-sec { margin-top: 32px; }
+:is(#q-root, html) .q-confrow { position: relative; }
+:is(#q-root, html) .q-help--alert { color: var(--q-red); }
+:is(#q-root, html) .q-blocked { margin: 24px 20px 0; }
+:is(#q-root, html) .q-changes .schedule-publication-change { margin: 12px 20px 0; }
+:is(#q-root, html) .q-changes summary { display: flex; align-items: center; justify-content: space-between; min-height: 44px; font-size: 15px; line-height: 20px; color: var(--q-teal); cursor: pointer; list-style: none; }
+:is(#q-root, html) .q-changes summary::-webkit-details-marker { display: none; }
+:is(#q-root, html) .q-changes ul { margin: 0; padding: 0; list-style: none; }
+:is(#q-root, html) .q-changes li { display: grid; gap: 2px; padding: 12px 0; border-top: 1px solid var(--q-line); font-size: 15px; line-height: 20px; color: var(--q-grey); }
+:is(#q-root, html) .q-changes li strong { font-size: 17px; line-height: 22px; font-weight: 400; color: var(--q-ink); }
+
+/* v5 shift-change sheets (E04, E05): forms whose bar holds Send; the form's own result lines in the kit's voice. */
+:is(#q-root, html)[data-theme="dark"] .q-sheet .q-page { --q-bg: #1C1C1E; --q-fill: #2C2C2E; --q-press: #2C2C2E; --q-line: #38383A; --q-border: #48484A; --q-seg-on: #48484A; }
+:is(#q-root, html) .q-sheet .q-page { min-height: 0; padding-bottom: 0; }
+:is(#q-root, html) .q-fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#q-root, html) .q-fieldset > legend.q-grp { display: block; float: left; width: calc(100% - 40px); margin-bottom: 0; padding: 0; }
+:is(#q-root, html) .q-fieldset > legend.q-grp + * { clear: both; }
+:is(#q-root, html) .q-fieldset > .q-list { clear: both; }
+:is(#q-root, html) .q-scform > fieldset.shift-change-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#q-root, html) .q-scform > p[role] { margin: 16px 20px 0; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .q-scform > p.form-error { color: var(--q-red); }
+:is(#q-root, html) .q-scform > p.form-success { color: var(--q-ink); }
+:is(#q-root, html) .q-scform > a, :is(#q-root, html) .q-scform > button { display: flex; align-items: center; justify-content: center; width: calc(100% - 40px); height: 50px; margin: 16px 20px 0; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-ink) !important; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; }
+:is(#q-root, html) .q-shiftchange .q-row .q-rv--l { flex: none; white-space: nowrap; }
+:is(#q-root, html) .q-sheet-skel__rows { display: grid; gap: 12px; margin: 24px 20px 0; }
+:is(#q-root, html) .q-sheet-skel__rows i { display: block; height: 52px; border-radius: 12px; background: var(--q-fill); }
+:is(#q-root, html) .q-sheet-skel__rows i:first-child { width: 40%; height: 20px; }
+:is(#q-root, html) .q-weekconf .q-bs { width: auto; min-width: 0; margin: 0; }
+:is(#q-root, html) .q-changes .schedule-publication-change { padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+:is(#q-root, html) .q-nav .q-nav__r { justify-content: flex-end; text-align: end; }
+
+/* v5 Requests (E06): the help opens under its quiet button. */
+:is(#q-root, html) .q-disclose { margin-top: 16px; }
+:is(#q-root, html) .q-disclose > summary { list-style: none; }
+:is(#q-root, html) .q-disclose > summary::-webkit-details-marker { display: none; }
+:is(#q-root, html) .q-disclose__body { margin: 4px 20px 0; padding: 16px; border-radius: 12px; background: var(--q-fill); }
+:is(#q-root, html) .q-disclose__body p { margin: 0; font-size: 15px; line-height: 20px; color: var(--q-body); letter-spacing: -.1px; }
+:is(#q-root, html) .q-disclose__body p + p { margin-top: 8px; }
+:is(#q-root, html) .q-disclose__body b { font-weight: 600; color: var(--q-ink); }
+:is(#q-root, html) .q-row--btn { width: 100%; border: 0; background: none; font: inherit; color: inherit; text-align: start; cursor: pointer; }
+/* Withdraw a request (the existing form, in the sheet). */
+:is(#q-root, html) .q-withdraw form { display: grid; gap: 12px; margin: 24px 20px 0; }
+:is(#q-root, html) .q-withdraw label { display: flex; align-items: center; gap: 12px; min-height: 44px; font-size: 17px; line-height: 22px; }
+:is(#q-root, html) .q-withdraw input[type="checkbox"] { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--q-teal-fill); }
+:is(#q-root, html) .q-withdraw button { display: flex; align-items: center; justify-content: center; height: 50px; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-red) !important; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; }
+:is(#q-root, html) .q-withdraw p[role="status"] { margin: 0; font-size: 15px; line-height: 20px; color: var(--q-grey); }
+:is(#q-root, html) .q-withdraw p[role="status"]:empty { display: none; }
+/* v5 Time off (E07, E08). */
+:is(#q-root, html) .q-empty--lead { margin-top: 24px; }
+:is(#q-root, html) .q-seg--sheet { margin-top: 12px; }
+:is(#q-root, html) .q-row--picker { position: relative; cursor: pointer; }
+:is(#q-root, html) .q-picker { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; opacity: 0; cursor: pointer; }
+:is(#q-root, html) .q-row--picker:has(.q-picker:focus-visible) { outline: 2px solid var(--q-teal); outline-offset: -2px; }
+:is(#q-root, html) .q-toform textarea.q-in { height: 96px; }
+/* v5 Shift requests (E09): actions in a request's sheet, and its history. */
+:is(#q-root, html) .q-sheet-acts { margin-top: 8px; }
+:is(#q-root, html) .q-sheet-acts:empty { display: none; }
+:is(#q-root, html) .q-sheet-acts .q-scform > fieldset.shift-change-fields { display: grid; gap: 0; }
+:is(#q-root, html) .q-sheet-acts .q-btn + .q-btn { margin-top: 12px; }
+:is(#q-root, html) .q-btn--danger { color: var(--q-red) !important; }
+:is(#q-root, html) .q-history .shift-change-history { margin: 16px 20px 0; font-size: 15px; line-height: 20px; color: var(--q-grey); }
+:is(#q-root, html) .q-history .shift-change-history summary { min-height: 44px; display: flex; align-items: center; color: var(--q-teal); cursor: pointer; }
+:is(#q-root, html) .q-history .shift-change-history ol { margin: 0; padding: 0 0 0 18px; display: grid; gap: 8px; }
+:is(#q-root, html) .q-history .shift-change-history li { display: grid; gap: 2px; }
+:is(#q-root, html) .q-history .shift-change-history strong { font-weight: 400; color: var(--q-ink); }
+:is(#q-root, html) .q-history .shift-change-unavailable { margin: 16px 20px 0; font-size: 15px; line-height: 20px; color: var(--q-grey); }
+:is(#q-root, html) dialog.q-sheet:focus, :is(#q-root, html) dialog.q-sheet:focus-visible { outline: none; }
+:is(#q-root, html) .q-nav h1.q-nav__t { margin: 0; padding: 0; color: var(--q-ink); font-size: 17px; line-height: 22px; font-weight: 600; letter-spacing: -.2px; }
+:is(#q-root, html) .q-withdraw form button { box-shadow: none; border: 0; outline-offset: 2px; min-height: 50px; width: 100%; }
+/* v5 Pay (E11): a statement's View sits beside its download row. */
+:is(#q-root, html) .q-pay__row { position: relative; }
+:is(#q-root, html) .q-pay__view { position: absolute; top: 50%; right: 44px; display: flex; align-items: center; min-height: 44px; padding: 0 8px; transform: translateY(-50%); font-size: 17px; line-height: 22px; color: var(--q-teal) !important; }
+
+/* v5 My time (E12): the existing correction tools in the kit's voice (layout only; their forms are unchanged).
+ * The doubled :is() outweighs the older employee rules that carry an id (portal-premium.css). */
+:is(#q-root, html) .q-mytime__state { color: inherit; }
+:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) section, :is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) .employee-time-correction { margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+:is(#q-root, html):is(#q-root, html) .q-corrections .employee-time-section-heading { display: block; margin: 0; padding: 0; }
+:is(#q-root, html):is(#q-root, html) .q-corrections .employee-time-section-heading h2 { margin: 28px 20px 0; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html):is(#q-root, html) .q-corrections .employee-time-section-heading p { display: none; }
+:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) .employee-time-correction-trigger { display: flex; align-items: center; justify-content: center; gap: 8px; width: calc(100% - 40px); height: 50px; margin: 12px 20px 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-fill); box-shadow: none; color: var(--q-ink); font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; }
+:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) .employee-time-correction-trigger > :is(.employee-time-correction-trigger__tile, .employee-time-correction-trigger__go), :is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) .employee-time-correction-trigger small { display: none; }
+:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) .employee-time-correction-trigger b { font-weight: 600; }
+:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) form { display: grid; gap: 16px; margin: 20px 20px 0; }
+:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) form label { display: grid; gap: 8px; font-size: 15px; line-height: 20px; color: var(--q-grey); }
+:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) form :is(select, textarea, input:not([type="hidden"])) { width: 100%; min-height: 50px; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-ink); font: inherit; font-size: 17px; }
+:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) form textarea { min-height: 96px; padding-top: 14px; resize: none; }
+:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) .employee-time-correction-submit { height: 50px; border: 0; border-radius: 12px; background: var(--q-teal-fill); color: #FFFFFF; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; }
+:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) :is(.employee-time-correction-note, .employee-time-correction-status, .employee-time-empty, .employee-correction-more) { display: block; margin: 8px 20px 0; font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) form .employee-time-correction-note { margin: 0; }
+:is(#q-root, html):is(#q-root, html) .q-corrections .employee-correction-history { margin-top: 8px; }
+:is(#q-root, html):is(#q-root, html) .q-corrections .employee-correction-history-row { position: relative; display: flex; align-items: flex-start; gap: 12px; padding: 12px 20px; border-top: 1px solid var(--q-line); font-size: 15px; line-height: 20px; color: var(--q-grey); }
+:is(#q-root, html):is(#q-root, html) .q-corrections .employee-correction-history-row > div { flex: 1; min-width: 0; display: grid; gap: 2px; }
+:is(#q-root, html):is(#q-root, html) .q-corrections .employee-correction-history-row strong { font-size: 17px; line-height: 22px; font-weight: 400; color: var(--q-ink); }
+:is(#q-root, html):is(#q-root, html) .q-corrections .employee-correction-day { display: none; }
+:is(#q-root, html):is(#q-root, html) .q-corrections .employee-correction-state { flex: none; font-size: 15px; color: var(--q-grey); }
+:is(#q-root, html):is(#q-root, html) .q-corrections .employee-time-correction-retry { margin: 8px 20px 0; padding: 0; border: 0; background: none; color: var(--q-teal); font: inherit; font-size: 15px; cursor: pointer; }
+:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) .employee-time-correction-form { margin: 20px 20px 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+:is(#q-root, html):is(#q-root, html) :is(.q-corrections, .q-entryfix) .employee-time-correction-submit { width: 100%; }
+/* v5 Profile: the calendar subscription (kept from before) as a Quiet row that opens in place. Layout only. */
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .profile-calendar-disclosure { margin: 0; padding: 0; border: 0; background: none; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .profile-calendar-disclosure > summary { display: flex; align-items: center; gap: 12px; min-height: 52px; margin: 0; padding: 0 20px; border: 0; border-top: 1px solid var(--q-line); border-radius: 0; background: none; box-shadow: none; list-style: none; cursor: pointer; font-size: 17px; line-height: 22px; color: var(--q-ink); }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .profile-calendar-disclosure > summary::-webkit-details-marker { display: none; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .profile-setting-copy { flex: 1; display: flex; align-items: center; gap: 12px; min-width: 0; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .profile-setting-copy > svg { flex: none; width: 24px; height: 24px; color: var(--q-av); }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .profile-setting-copy strong { font-weight: 400; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .profile-setting-copy small { display: none; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .profile-setting-caret { flex: none; width: 14px; height: 14px; color: var(--q-chev); transition: transform 160ms ease; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal details[open] > summary .profile-setting-caret { transform: rotate(180deg); }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar { margin: 0 20px; padding: 4px 0 8px; border: 0; border-radius: 0; background: none; box-shadow: none; font-size: 15px; line-height: 20px; color: var(--q-body); }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar .profile-section-heading { display: block; margin: 0; padding: 0; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar .profile-section-heading .profile-icon-tile { display: none; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar h2, :is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar h3 { margin: 12px 0 4px; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar p { margin: 4px 0 0; font-size: 15px; line-height: 20px; color: var(--q-grey); }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar :is(.button, .nv-btn) { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 50px; margin: 12px 0 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-fill); box-shadow: none; color: var(--q-ink); font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar .button.calendar-primary { background: var(--q-teal-fill); color: #FFFFFF; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar :is(.employee-calendar-status-box, .employee-calendar-secret, .employee-calendar-privacy, .employee-calendar-example) { margin: 12px 0 0; padding: 0; border: 0; background: none; box-shadow: none; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar .employee-calendar-example { display: none; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar .employee-calendar-state { display: inline-block; font-size: 15px; font-weight: 600; color: var(--q-ink); }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar .employee-calendar-privacy { display: flex; gap: 8px; font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar details { border-top: 1px solid var(--q-line); }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar details > summary { display: flex; align-items: center; gap: 12px; min-height: 52px; list-style: none; cursor: pointer; color: var(--q-ink); font-size: 17px; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar details > summary::-webkit-details-marker { display: none; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar details > summary > span { flex: 1; display: grid; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar details > summary small { font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar .employee-calendar-providers { margin-top: 12px; }
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar input { width: 100%; min-height: 50px; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-ink); font: inherit; font-size: 15px; }
+/* v5 Delete account (E17): each consequence is a row with its icon; long lines wrap inside the row. */
+:is(#q-root, html) .q-deletion__fact, :is(#q-root, html) .q-delete .q-row--btn.q-row--av { align-items: flex-start; padding-top: 12px; padding-bottom: 12px; }
+:is(#q-root, html) .q-deletion__fact .q-rt i, :is(#q-root, html) .q-delete .q-row--btn .q-rt i { white-space: normal; overflow: visible; text-overflow: clip; }
+:is(#q-root, html) .q-delete .q-row--btn.q-row--av .q-chev { align-self: center; }
+:is(#q-root, html) .q-noaccess { margin: 12px 20px 0; color: var(--q-grey); }
+:is(#q-root, html) .q-timeoff__note { margin-top: 8px; font-size: 17px; line-height: 22px; }

@@ -8,6 +8,12 @@ import { logout } from "@/app/login/actions";
 import { useFieldErrors } from "@/app/app/settings/wave-c-form";
 import { SUPPORT_EMAIL } from "@/lib/legal/policies";
 import { QuietGroup, QuietList, QuietRow } from "./quiet/quiet";
+import { SheetRow } from "./quiet/quiet-sheet";
+import { SignOutIcon } from "@phosphor-icons/react/dist/ssr/SignOut";
+import { EyeIcon } from "@phosphor-icons/react/dist/ssr/Eye";
+import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
+import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
+import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
 
 type Account = { name: string; role: string; employeeId: string };
 type Done = Extract<DeletionFormState, { reference: string }>;
@@ -22,6 +28,7 @@ export function AccountDeletionForm({ account, period, retention, existing }: {
 }) {
   const [state, action, pending] = useActionState<DeletionFormState, FormData>(requestAccountDeletion, existing ?? { kind: "idle" });
   const [confirmed, setConfirmed] = useState(false);
+  const [shown, setShown] = useState(false);
   const outcome = useRef<HTMLDivElement>(null);
   const password = useRef<HTMLInputElement>(null);
   const { errors, handlers } = useFieldErrors({ password: { missing: "Enter your password to confirm it’s you." } });
@@ -54,24 +61,36 @@ export function AccountDeletionForm({ account, period, retention, existing }: {
       onSubmit={event => { if (!event.currentTarget.checkValidity()) event.preventDefault(); }} {...handlers}>
       <QuietGroup id="deletion-account" label="Your account">
         <QuietList>
-          <QuietRow title="Name" value={account.name} />
-          <QuietRow title="Role" value={account.role} />
-          <QuietRow title="Employee ID" value={account.employeeId} />
+          <QuietRow one title="Name" value={account.name} tone="l" />
+          <QuietRow one title="Role" value={account.role} tone="l" />
+          <QuietRow one title="Employee ID" value={account.employeeId} tone="l" />
         </QuietList>
       </QuietGroup>
+      {/* v5 (Jose approved the regrouping, Oct 24): the same sentences as rows; the retention schedule opens from "What may be kept". */}
       <QuietGroup id="deletion-effects" label="What happens">
-        <div className="q-body q-deletion__effects">
-          <p><strong>Your access ends now.</strong> You’re signed out on every device and can’t sign in again. Calendar feed links stop working.</p>
-          <p><strong>What is removed:</strong> your profile, sign-in details, notification subscriptions, calendar links and the content you contributed, within {period ?? unresolved("DELETION_COMPLETION_PERIOD")}.</p>
-          <p><strong>What may be kept:</strong> some attendance, payroll, security or dispute records your employer or we must keep: {retention ?? unresolved("RETENTION_SCHEDULE")} They’re restricted and never used to restore your account.</p>
-          <p><Link className="q-link" href="/account-deletion">Read the full details</Link></p>
-        </div>
+        <QuietList>
+          <li><div className="q-row q-row--av q-deletion__fact"><span className="q-av" aria-hidden="true"><SignOutIcon className="q-ic" /></span>
+            <span className="q-rt"><b>Your access ends now.</b><i>You’re signed out on every device and can’t sign in again. Calendar feed links stop working.</i></span></div></li>
+          <li><div className="q-row q-row--av q-deletion__fact"><span className="q-av" aria-hidden="true"><TrashIcon className="q-ic" /></span>
+            <span className="q-rt"><b>What is removed</b><i>Your profile, sign-in details, notification subscriptions, calendar links and the content you contributed, within {period ?? unresolved("DELETION_COMPLETION_PERIOD")}.</i></span></div></li>
+          <SheetRow sheetTitle="What may be kept" avatar={<ShieldCheckIcon className="q-ic" />} title="What may be kept"
+            detail="Some attendance, payroll, security or dispute records your employer or we must keep. They’re restricted and never used to restore your account.">
+            <div className="q-hd"><h1>What may be kept</h1></div>
+            <div className="q-body q-deletion__effects">
+              <p>Some attendance, payroll, security or dispute records your employer or we must keep: {retention ?? unresolved("RETENTION_SCHEDULE")} They’re restricted and never used to restore your account.</p>
+              <p><Link className="q-link" href="/account-deletion">Read the full details</Link></p>
+            </div>
+          </SheetRow>
+        </QuietList>
       </QuietGroup>
       <QuietGroup id="deletion-confirm" label="Confirm it’s you">
         <div className="q-fl q-deletion__field">
           <label htmlFor="deletion-password">Password</label>
-          <input ref={password} className="q-in" id="deletion-password" name="password" type="password" required autoComplete="current-password" disabled={pending}
-            aria-describedby={passwordError ? "deletion-password-help deletion-password-error" : "deletion-password-help"} aria-invalid={passwordError ? true : undefined} />
+          <div className="q-in__wrap">
+            <input ref={password} className="q-in" id="deletion-password" name="password" type={shown ? "text" : "password"} required autoComplete="current-password" disabled={pending} placeholder="Password"
+              aria-describedby={passwordError ? "deletion-password-help deletion-password-error" : "deletion-password-help"} aria-invalid={passwordError ? true : undefined} />
+            <button type="button" className="q-in__eye" onClick={() => setShown(value => !value)} aria-pressed={shown} aria-label={shown ? "Hide password" : "Show password"}>{shown ? <EyeSlashIcon className="q-ic" aria-hidden="true" /> : <EyeIcon className="q-ic" aria-hidden="true" />}</button>
+          </div>
           <p className="q-fl__help" id="deletion-password-help">Enter the password you use to sign in.</p>
           {passwordError ? <p className="q-fl__error" id="deletion-password-error">{passwordError}</p> : null}
         </div>
@@ -85,7 +104,7 @@ export function AccountDeletionForm({ account, period, retention, existing }: {
         <p className="q-help">{state.kind === "failed" ? "Nothing was deleted and you’re still signed in." : <>Email <a className="q-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> and we’ll help you.</>}</p>
       </div> : null}
       <button type="submit" className="q-btn q-deletion__confirm" disabled={pending || !confirmed}>{pending ? "Sending request…" : "Confirm deletion request"}</button>
-      <Link className="q-btn q-btn--sec q-deletion__keep" href="/app/profile" aria-disabled={pending || undefined} tabIndex={pending ? -1 : undefined}
+      <Link className="q-btn q-btn--quiet q-deletion__keep" href="/app/profile" aria-disabled={pending || undefined} tabIndex={pending ? -1 : undefined}
         onClick={event => { if (pending) event.preventDefault(); }}>Keep my account</Link>
     </form>
   );

@@ -102,6 +102,7 @@ export default async function SchedulePage({
     day?: string;
     view?: string;
     intent?: string;
+    shift?: string;
   }>;
 }) {
   const session = await requireSession();
@@ -193,7 +194,7 @@ export default async function SchedulePage({
 
     const confirmation = employeeAcknowledgement.latestRevisionId && (hasPublishedShifts || employeeSchedule!.intent || employeeAcknowledgement.acknowledged) ? (
       employeeAcknowledgement.needsAcknowledgement && employeeSchedule!.intent ? (
-        <EmployeeWeeklyConfirmation key={employeeSchedule!.intent.operationId} weekStart={weekStart} expectedRevisionId={employeeSchedule!.displayedRevisionId!} intent={employeeSchedule!.intent} compact/>
+        <EmployeeWeeklyConfirmation key={employeeSchedule!.intent.operationId} weekStart={weekStart} expectedRevisionId={employeeSchedule!.displayedRevisionId!} intent={employeeSchedule!.intent} compact quiet/>
       ) : employeeAcknowledgement.acknowledged ? <span className="employee-quiet-status success">Confirmed</span> : <span className="employee-quiet-status">Confirmation unavailable — review the current schedule again.</span>
     ) : undefined;
     return <EmployeeMySchedule
@@ -206,6 +207,7 @@ export default async function SchedulePage({
       observedAt={observedAt.toISOString()}
       timeZone={workspace.timeZone}
       selectedDay={params.day}
+      selectedShift={params.shift}
       state={employeeSchedule!.state}
       shifts={employeeSchedule!.shifts}
       unpublishedLocationIds={employeeSchedule!.unpublishedLocationIds}
