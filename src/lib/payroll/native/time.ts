@@ -26,6 +26,26 @@ export type WorkedPiece = {
     premiumReason: "DAILY" | "REST_DAY" | "WEEKLY" | null;
     federalOvertime: boolean;
 };
+/** The one break pay rule native payroll applies: the wage profile must map the
+ * break type exactly once; an unpaid relieved meal must last at least 30 minutes and
+ * a paid rest at most 20. Anything else throws the engine's blocking code. Displays
+ * that show paid time use this same rule instead of guessing from a break name. */
+export function nativeBreakTreatment(wage: Pick<NativeWageProfile, "breakRules">, b: { id: string; typeId: string | null; startAt: string; endAt: string | null }): "PAID" | "UNPAID" {
+    const treatment = wage.breakRules.filter(x => x.typeId === b.typeId);
+    if (b.typeId === null || treatment.length !== 1)
+        fail("BREAK_PAY_BASIS_REQUIRED", b.id);
+    if (!b.endAt)
+        fail("OPEN_RECORDED_BREAK", b.id);
+    const duration = ns(b.endAt) - ns(b.startAt);
+    if (treatment[0].treatment === "UNPAID_RELIEVED_MEAL") {
+        if (duration < HOUR / BigInt(2))
+            fail("UNSUPPORTED_UNPAID_BREAK_DURATION", b.id);
+        return "UNPAID";
+    }
+    if (treatment[0].treatment !== "PAID_REST" || duration > HOUR / BigInt(3))
+        fail("UNSUPPORTED_PAID_BREAK_BASIS", b.id);
+    return "PAID";
+}
 /** Validate finalized provenance and split effective work at break, wage, civil-day,
  * pay-period and verified workweek boundaries. Returned starts/ends and unpaid time
  * are bigint nanoseconds; pieces include surrounding context for daily/rest/weekly
@@ -142,21 +162,11 @@ export function classifyRecordedTime(input: NativePayrollInput) {
             if (eligible.length !== 1)
                 fail(eligible.length ? "CONFLICTING_WAGE_PROFILE" : "WAGE_PROFILE_REQUIRED", e.locationId);
             const wage = eligible[0], activeBreak = e.breaks.find(x => ns(x.startAt) <= a && ns(x.endAt!) >= b);
-            if (activeBreak) {
-                const treatment = wage.breakRules.filter(x => x.typeId === activeBreak.typeId);
-                if (activeBreak.typeId === null || treatment.length !== 1)
-                    fail("BREAK_PAY_BASIS_REQUIRED", activeBreak.id);
-                const duration = ns(activeBreak.endAt!) - ns(activeBreak.startAt);
-                if (treatment[0].treatment === "UNPAID_RELIEVED_MEAL") {
-                    if (duration < HOUR / BigInt(2))
-                        fail("UNSUPPORTED_UNPAID_BREAK_DURATION", activeBreak.id);
-                    const clipped = (b < payRight ? b : payRight) - (a > payLeft ? a : payLeft);
-                    if (clipped > BigInt(0))
-                        unpaid += clipped;
-                    continue;
-                }
-                if (treatment[0].treatment !== "PAID_REST" || duration > HOUR / BigInt(3))
-                    fail("UNSUPPORTED_PAID_BREAK_BASIS", activeBreak.id);
+            if (activeBreak && nativeBreakTreatment(wage, activeBreak) === "UNPAID") {
+                const clipped = (b < payRight ? b : payRight) - (a > payLeft ? a : payLeft);
+                if (clipped > BigInt(0))
+                    unpaid += clipped;
+                continue;
             }
             const date = dateAt(a);
             rawPieces.push({ start: a, end: b, date, week: weekContainingInstant(resolved.policy.boundary, Temporal.Instant.fromEpochNanoseconds(a).toString()).startAt, locationId: e.locationId, wage, rate: hourlyRate(wage.hourlyRateMinor) });

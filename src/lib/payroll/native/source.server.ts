@@ -73,6 +73,16 @@ export function nativeSourceRequest(workspaceId: string, run: PayrollRun, employ
     // Retain all overlapping observations; capture proves which current finalized authority covers required time.
     return { workspaceId, employeeId, timeZone: 'America/Puerto_Rico', period: run.period, contexts: [resolved.sourceWindow], coverage: coverage.filter(c => c.employeeId === employeeId && c.startDate <= resolved.coveragePeriod.endDate && c.endDate >= resolved.coveragePeriod.startDate).map(c => ({ startDate: c.startDate, endDate: c.endDate })) };
 }
+/** Finalized, captured effective time as the engine's timecards. Shared by native
+ * payroll and the time export so both classify the identical source. */
+export function nativeTimecardsFromCapture(employeeId: string, capture: Extract<RecordedSourceCapture, { state: 'ready' }>): NativePayrollInput['timecards'] {
+    const entries = capture.entries.map(e => {
+        if (e.endAt === null || e.breaks.some(b => b.endAt === null))
+            throw Error('OPEN_RECORDED_TIME');
+        return { id: e.logicalId, locationId: e.locationId, startAt: e.startAt, endAt: e.endAt, sourceKind: e.sourceKind, recordedVersion: e.recordedVersion, adjustmentId: e.adjustmentId, breaks: e.breaks.map(b => ({ id: b.id, typeId: b.classification?.id ?? null, startAt: b.startAt, endAt: b.endAt, recordedVersion: b.recordedVersion, classification: b.classification })) };
+    });
+    return capture.coverage.map(c => ({ employeeId, period: { startDate: c.startDate, endDate: c.endDate }, revision: c.revision, state: 'FINALIZED', sourceHash: c.sourceHash, finalizedSourceHash: c.sourceHash, pendingCorrections: 0, entries, recordedSourceEvidence: { captureFence: capture.sourceFence, operationId: c.operationId, sourceHash: c.sourceHash, currentSourceHash: c.currentSourceHash } }));
+}
 function deductionInputs(configuration: NativeConfigurationRevision | ReturnType<typeof parseConfiguration>, opening: NativeYtd, heads: NativeLedgerEntry[], run: PayrollRun) {
     return configuration.deductions.map(d => {
         if (d.capMinor === null || d.revoked || d.effectiveFrom > run.payday || (d.effectiveTo !== null && d.effectiveTo <= run.payday))
@@ -165,13 +175,9 @@ export async function captureNativePayroll(seed: {
                 throw Error(`RECORDED_SOURCE_${capture.reason.toUpperCase()}`);
             captures.push(capture);
             employeeLocations[member.employeeId] = [...new Set([...employeeLocations[member.employeeId], ...capture.locationIds])].sort();
-            const entries = capture.entries.map(e => {
-                if (e.endAt === null || e.breaks.some(b => b.endAt === null))
-                    throw Error('OPEN_RECORDED_TIME');
-                return { id: e.logicalId, locationId: e.locationId, startAt: e.startAt, endAt: e.endAt, sourceKind: e.sourceKind, recordedVersion: e.recordedVersion, adjustmentId: e.adjustmentId, breaks: e.breaks.map(b => ({ id: b.id, typeId: b.classification?.id ?? null, startAt: b.startAt, endAt: b.endAt, recordedVersion: b.recordedVersion, classification: b.classification })) };
-            });
+            const timecards = nativeTimecardsFromCapture(member.employeeId, capture);
             const tax = configuration.tax ? projectEmployerYtdCounters(configuration.tax, opening.ytd, ytd) : null;
-            inputs.push({ schema: 'NEVORA_NATIVE_PAYROLL_INPUT_V1', employeeId: member.employeeId, period: run.period, payday: run.payday, frequency: settings.preferences.schedule.frequency, timeZone: 'America/Puerto_Rico', wages: configuration.wages, tax, ytd, deductions: deductionInputs(configuration, opening.ytd, heads, run), ...(configuration.calculationPolicyReference !== undefined ? { calculationPolicyReference: configuration.calculationPolicyReference } : {}), timecards: capture.coverage.map(c => ({ employeeId: member.employeeId, period: { startDate: c.startDate, endDate: c.endDate }, revision: c.revision, state: 'FINALIZED', sourceHash: c.sourceHash, finalizedSourceHash: c.sourceHash, pendingCorrections: 0, entries, recordedSourceEvidence: { captureFence: capture.sourceFence, operationId: c.operationId, sourceHash: c.sourceHash, currentSourceHash: c.currentSourceHash } })) });
+            inputs.push({ schema: 'NEVORA_NATIVE_PAYROLL_INPUT_V1', employeeId: member.employeeId, period: run.period, payday: run.payday, frequency: settings.preferences.schedule.frequency, timeZone: 'America/Puerto_Rico', wages: configuration.wages, tax, ytd, deductions: deductionInputs(configuration, opening.ytd, heads, run), ...(configuration.calculationPolicyReference !== undefined ? { calculationPolicyReference: configuration.calculationPolicyReference } : {}), timecards });
         }
         catch (error) {
             // A SQL/transport failure never becomes ready zero, nor is raw data exposed.
