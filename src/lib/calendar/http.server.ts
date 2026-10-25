@@ -6,6 +6,7 @@ import {calendarAuthority,getEmployeeCalendarSubscription,manageEmployeeCalendar
 import {correctionBoundary,readCorrectionJson} from '../time-corrections/http.server';
 export const calendarHeaders={'Cache-Control':'no-store, private','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Content-Security-Policy':"default-src 'none'; frame-ancestors 'none'"};
 const json=(body:object,status=200)=>Response.json(body,{status,headers:{...calendarHeaders,Vary:'Cookie'}});
+/** HEAD performs the same authorization/read as GET; unknown and revoked capabilities share a private generic 404. */
 export function createCalendarFeedHandler(read:(token:string)=>Promise<CalendarFeedRead>){
  return async(request:Request,context:{params:Promise<{token:string}>}):Promise<Response>=>{
   const head=request.method==='HEAD';

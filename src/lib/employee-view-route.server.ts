@@ -5,6 +5,11 @@ import {employeeViewAuthority,type EmployeeView} from './employee-view-authority
 import type {SessionMutationProof} from './shift-changes/types';
 import type {EmployeeViewSnapshot} from './employee-view';
 const json=(value:object,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store, private','Vary':'Cookie','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'}});
+/**
+ * Builds an Employee/Lead private GET with a session-bound view header and
+ * no-store responses. The supplied reader must still enforce database authority;
+ * the header only prevents a mounted panel from accepting another view lifetime.
+ */
 export function createEmployeeViewGet(kind:EmployeeView,read:(proof:SessionMutationProof)=>Promise<EmployeeViewSnapshot>){
  return createViewGet(kind,read,['EMPLOYEE','LEAD']);
 }
@@ -26,6 +31,11 @@ function createViewGet(kind:EmployeeView,read:(proof:SessionMutationProof)=>Prom
  };
 }
 
+/**
+ * Builds the management mark-read endpoint: same-origin boundary, current
+ * session/view binding and one bounded notification ID. The mark callback owns
+ * row-level authorization; false is access denial, while exceptions yield 503.
+ */
 export function createManagementNotificationReadPost(mark:(proof:SessionMutationProof,id:string)=>Promise<boolean>){
  return async(request:Request):Promise<Response>=>{
   const boundary=correctionBoundary(request,true,'x-nevora-notification-read',1024);

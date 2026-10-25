@@ -13,6 +13,7 @@ function contentParts(d:CommunicationDraft):(string|null)[]{
  d.scope.kind==='SHIFT'?d.scope.sourceShiftId:null,d.scope.kind==='SHIFT'?d.scope.assignmentEpisodeId:null,
  d.scope.kind==='SHIFT'?d.scope.termsFingerprint:null,d.title,d.body,d.acknowledgement,d.expiresAt];
 }
+/** Length-prefixed UTF-8 fields make content identity independent of JSON key order and delimiter characters inside text. */
 export function communicationContentHash(draft:CommunicationDraft):string{
  const content=contentParts(normalized(draft)).map(v=>v===null?'-1:':`${Buffer.byteLength(v,'utf8')}:${v}`).join('');
  return createHash('sha256').update(content).digest('hex');

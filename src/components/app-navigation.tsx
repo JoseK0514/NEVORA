@@ -5,6 +5,12 @@ import {createIdentityReload,createNavigationCoordinator,onRouterTransition,type
 
 const NavigationContext=createContext<NavigationCoordinator|null>(null);
 export const useAppNavigation=()=>useContext(NavigationContext);
+/**
+ * One coordinator per shell lifetime. Router starts, committed addresses and
+ * browser history provide separate signals; back-forward cache restoration
+ * discards attempts from the previous document lifetime. Teardown also releases
+ * deferred identity work by discarding the abandoned transition.
+ */
 export function AppNavigationProvider({children}:{readonly children:ReactNode}){
  const [coordinator]=useState(createNavigationCoordinator);
  const pathname=usePathname(),search=useSearchParams()?.toString();

@@ -7,6 +7,12 @@ import { requireSelfService } from "@/lib/auth/permissions";
 import { isValidWeekStart } from "@/lib/date-utils";
 import { acknowledgeScheduleWeek } from "@/lib/data/acknowledgements";
 
+/**
+ * Confirms the exact revision shown to an employee, not merely a week label.
+ * Forward the original revision, operation ID and authority binding unchanged;
+ * only a committed receipt triggers page revalidation. Other outcomes remain
+ * structured so the client can reconcile rather than invent a confirmation.
+ */
 export async function acknowledgeScheduleAction(formData: FormData) {
   await requireSelfService("/app/schedule");
   const weekStart = String(formData.get("weekStart") ?? "");

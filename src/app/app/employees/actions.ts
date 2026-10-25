@@ -10,6 +10,7 @@ import {saveEmployeeSchedulingProfile} from '@/lib/data/employees';
 import {saveEmployeeCoreAccessProfile,createEmployeeWithAccess} from '@/lib/company-access/employee-profile.server';
 import type {EmployeeCoreAccessCommand,CreateEmployeeWithAccessCommand,EmployeeCoreAccessResult} from '@/lib/company-access/model';
 
+/** Bounds one serialized command; detailed validation remains with the company-access service. */
 function readEmployeeCommand(data:FormData):unknown {
  const keys=[...data.keys()].filter(key=>!key.startsWith('$ACTION_'));
  const value=data.get('command');
@@ -19,6 +20,7 @@ function readEmployeeCommand(data:FormData):unknown {
 function refreshEmployee(receipt:Extract<EmployeeCoreAccessResult,{state:'saved'}>['receipt']) {
  try{revalidatePath('/app/employees');revalidatePath(`/app/employees/${encodeURIComponent(receipt.employeeId)}`);}catch{/* A committed receipt remains committed if refresh fails. */}
 }
+/** Saves core identity/access through the receipt-based service; refresh failure cannot undo a receipt. */
 export async function saveEmployeeCoreProfileAction(data:FormData):Promise<EmployeeCoreAccessResult> {
  const command=readEmployeeCommand(data);
  if(command===null)return {state:'invalid',fieldErrors:[{field:'command',message:'Submit one complete employee command.'}]};
@@ -28,6 +30,7 @@ export async function saveEmployeeCoreProfileAction(data:FormData):Promise<Emplo
   if(result.state==='saved')refreshEmployee(result.receipt);return result;
  }catch{return {state:'unavailable'};}
 }
+/** Creates an employee with explicit access configuration using the authenticated actor's proof. */
 export async function createEmployeeFormAction(data:FormData):Promise<EmployeeCoreAccessResult> {
  const command=readEmployeeCommand(data);
  if(command===null)return {state:'invalid',fieldErrors:[{field:'command',message:'Submit one complete employee command.'}]};
@@ -39,6 +42,11 @@ export async function createEmployeeFormAction(data:FormData):Promise<EmployeeCo
 }
 export async function createEmployeeAction(data:FormData):Promise<EmployeeCoreAccessResult>{return createEmployeeFormAction(data);}
 
+/**
+ * Updates scheduling qualifications and eligible locations separately from core
+ * access roles. expectedUpdatedAt protects a concurrently edited profile; return
+ * the committed version so the next edit uses the new concurrency token.
+ */
 export async function saveEmployeeSchedulingProfileAction(formData: FormData) {
   const actor = await requireRoles(MANAGER_ROLES);
   const proof = await requireSessionMutationProof();
@@ -66,6 +74,7 @@ export async function saveEmployeeSchedulingProfileAction(formData: FormData) {
 }
 
 
+/** Owner-only operational-policy form; configured/unknown rule states must be explicit. */
 export async function saveOperationalRulesAction(data:FormData):Promise<import('@/lib/shift-changes/types').PolicyWriteResult>{
  const input=parseOperationalProfileForm(data);if(!input)return {status:'invalid',fieldErrors:[{field:'profile',message:'Choose every rule status explicitly and complete configured values, time basis and routing.'}]};
  const proof=await requireSessionMutationProof();if(proof.employee.role!=='OWNER')return {status:'invalid',fieldErrors:[{field:'authorization',message:'Only an active Owner can review operational rules.'}]};

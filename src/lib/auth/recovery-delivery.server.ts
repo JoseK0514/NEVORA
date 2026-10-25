@@ -6,7 +6,10 @@ const developmentCapture:typeof import('../dev/capture-gate.cjs')|null=process.e
 import {localRequest} from '../dev/local-only';
 /** Sent after any password reset, including one a Manager or Owner started for the person. */
 export const PASSWORD_CHANGED_NOTICE=(origin:string)=>`The password for your NEVORA account was just changed, and every device was signed out.\n\nIf you did this, there's nothing else to do. If you didn't, contact your Owner right away and sign in at ${origin}/login to check your account.`;
-/** Explicit existing SMTP account configuration; no vendor preset or activation. */
+/** Select local capture when explicitly requested, otherwise the configured SMTP
+ * transport. An invalid requested capture or nonlocal capture request returns
+ * null instead of falling through to live delivery. Recovery bearers are placed
+ * in the URL fragment; the reset page must submit them explicitly. */
 export function recoveryDelivery(env:Record<string,string|undefined>=process.env,requestHeaders?:Pick<Headers,'get'>):RecoveryDelivery|null{
  if(process.env.NODE_ENV!=='production'&&developmentCapture){
   const directory=developmentCapture.captureDirectory(env);

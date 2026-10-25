@@ -52,6 +52,13 @@ export async function generateViewport(): Promise<Viewport> {
   return { themeColor: (await currentBrand()).tokens?.masthead ?? DEFAULT_TOKENS.masthead };
 }
 
+/**
+ * Server entry for the authenticated shell. Derive role, operational scope and
+ * feature capabilities from the current session rather than client preferences.
+ * The shell key remounts client state when employee identity changes; private
+ * readers also receive their own session-lifetime binding. `sheet` is Next's
+ * parallel route slot for contextual shift-change reviews.
+ */
 export default async function PlatformLayout({ children, sheet }: { children: ReactNode; sheet: ReactNode }) {
   // Wave C ST-11: fetch Inter with the page, so the first visit doesn't paint in a fallback font and then rewrap.
   preload("/fonts/typeface/inter/variable.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });

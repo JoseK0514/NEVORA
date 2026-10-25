@@ -124,6 +124,9 @@ function currentDevice(workspaceId: string, input: DeviceMutation) {
     WHERE d.id=$1 AND d.version=$2 AND l.workspace_id=$3)`, [input.deviceId, input.expectedVersion, workspaceId], 'clocker_device_stale');
 }
 
+/** Owner-only creation of a pending tablet with a ten-minute one-use enrollment
+ * token bound to the current Owner session. Return the token only to setup transport;
+ * the database stores its hash and the audit event in the same transaction. */
 export async function registerClockerDevice(
   proof: ClockerOwnerProof, input: { name: string; locationId: string }, executor: SqlExecutor = neonNotificationExecutor(),
 ): Promise<PendingDevice> {
@@ -183,6 +186,9 @@ export async function revokeClockerDevice(proof: ClockerOwnerProof, input: Devic
     values: [input.deviceId],
   },executor);
 }
+/** Replace current device access with a fresh ten-minute enrollment, guarded by
+ * expectedVersion. Clearing the active credential immediately removes old access;
+ * redemption later advances credentialVersion and records the replacement. */
 export async function rotateClockerDevice(proof: ClockerOwnerProof, input: DeviceMutation, executor: SqlExecutor = neonNotificationExecutor()): Promise<PendingDevice> {
   const enrollmentToken = token('enrollment');
   const device = await mutate(proof,input,'ROTATION_REQUESTED',{
@@ -242,6 +248,9 @@ export function clockerDeviceWriteGuards(proof: ClockerDeviceWriteProof): SqlSta
     [proof.deviceId,proof.locationId,proof.workspaceId,proof.credentialHash,proof.credentialVersion],'clocker_device_denied'),
   ];
 }
+/** Validate current credential/location/workspace and update lastSeenAt. Returned
+ * proof is an internal snapshot: future writes must execute device guards again
+ * because revocation or rotation can follow this authentication read. */
 export async function authenticateClockerDevice(
   input: { credential: string; locationKey: string }, executor: SqlExecutor = neonNotificationExecutor(),
 ): Promise<{ device: ClockerDeviceRecord; proof: ClockerDeviceWriteProof } | null> {

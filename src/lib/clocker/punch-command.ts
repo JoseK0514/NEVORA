@@ -26,6 +26,9 @@ export function parseCommandId(value:unknown):string{
  if(typeof value!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(value))throw new ClockerPunchError('INVALID_INPUT');
  return value;
 }
+/** Strict command shape and state/action validation. expected binds the displayed
+ * employee/time-entry/break revisions; verificationId binds the verified tablet
+ * context. Parsing cannot prove either is still current at the database writer. */
 export function parsePunchCommand(value:unknown):PunchCommand{
  if(!object(value)||!exact(value,value.action==='START_BREAK'?['commandId','action','verificationId','expected','breakType']:['commandId','action','verificationId','expected'])||
   typeof value.action!=='string'||!actions.includes(value.action)||

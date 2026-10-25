@@ -26,6 +26,7 @@ const order: Partial<Record<keyof GenerationSource,string>> = {
 export const generationSourceSql = `jsonb_build_object(${['workspaces',...tables].map(name =>
   `'${name}',COALESCE((SELECT jsonb_agg(to_jsonb(t) ORDER BY ${order[name as keyof GenerationSource] ?? 'id COLLATE "C"'}) FROM ${name} t),'[]'::jsonb)`
 ).join(',')})`;
+/** One MVCC observation of the complete conservative source; use its exact value in the later locked guard. */
 export async function readGenerationSource(executor: SqlExecutor): Promise<{source:GenerationSource;changedAt:string}> {
   const [row] = await executor.query<{source:GenerationSource;changedAt:string}>({
     text:`SELECT ${generationSourceSql} AS source,to_jsonb(clock_timestamp()) AS "changedAt"`,values:[],
@@ -58,6 +59,12 @@ export function generationInsertedSourceGuard(source:GenerationSource,insertedId
  NOT EXISTS(SELECT 1 FROM jsonb_array_elements(source->'shifts') row WHERE row->>'id'=ANY($2::text[]) AND (row->>'assignment_episode_id' IS NULL OR row->>'assignment_episode_id'=ANY($3::text[]))) AS fresh FROM actual)
  SELECT (CASE WHEN source=$1::jsonb AND fresh THEN '1' ELSE 'generation_source_conflict' END)::integer FROM normalized`,values:[JSON.stringify(source),[...insertedIds],[...previousEpisodes]]};
 }
+/**
+ * Global scheduling mutation protocol: workspace, sorted week locks, then input
+ * table locks and a fresh exact-source assertion. Do not narrow the source to the
+ * visible week: adjacent commitments and absent membership/configuration rows
+ * also affect eligibility. These statements belong in the business write batch.
+ */
 export function generationMutationGuards(source:GenerationSource,weeks:readonly string[]):SqlStatement[] {
   return [
     {text:"SET LOCAL lock_timeout='1500ms'",values:[]},
@@ -70,6 +77,7 @@ export function generationMutationGuards(source:GenerationSource,weeks:readonly 
     generationSourceGuard(source),
   ];
 }
+/** Retry only known snapshot/serialization aborts; work must reload and rebuild the entire proposed change. */
 export async function withGenerationRetry<T>(work:()=>Promise<T>):Promise<T> {
   for(let attempt=0;attempt<3;attempt++) {
     try{return await work();} catch(error) {

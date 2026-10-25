@@ -40,6 +40,9 @@ export function parseClockView(value:unknown):ClockView{
  if(elsewhere!==value.atOtherLocation||JSON.stringify(value.allowedActions)!==JSON.stringify(allowed))return invalid();
  return value as ClockView;
 }
+/** Verify that a receipt advances exactly the submitted expected state and retains
+ * its command/action/break classification. A successful HTTP response alone is not
+ * enough to retire the locally retained recovery intent. */
 export function parseReceiptReply(value:unknown,command:PunchCommand):PunchReceipt{
  if(!object(value)||value.state!=='committed'||!object(value.receipt))return invalid();
  const r=value.receipt,s=snapshot(r.snapshot),e=s.entry,b=s.break,expected=command.expected;
@@ -101,6 +104,8 @@ export function readSubjectPendingPunch(storage:Storage,location:string,subject:
  if(legacy?.subject===subject){if(own&&JSON.stringify(own)!==JSON.stringify(legacy))throw Error('Conflicting recovery records need manager review.');return legacy;}
  return own;
 }
+/** Persist and read back the exact subject-scoped intent before sending. Refuse
+ * overwrite while another unresolved command occupies this employee/device slot. */
 export function saveSubjectPendingPunch(storage:Storage,location:string,value:PendingPunch):void{
  const safe=pending(value),text=JSON.stringify(safe),previous=readSubjectPendingPunch(storage,location,safe.subject);
  if(previous&&JSON.stringify(previous)!==text)throw Error('Your previous action still needs verification.');
@@ -131,6 +136,8 @@ export function canRetirePendingPunch(command:PunchCommand,view:ClockView):boole
 export class PunchRequestError extends Error{
  constructor(readonly code:string,message:string,readonly status:number){super(message);}
 }
+/** Submit with a bounded HTTP wait. Timeout/fetch failure leaves commit status
+ * unknown; retain the original command and recover its receipt before any replay. */
 export async function postPunch(location:string,body:object):Promise<unknown>{
  const response=await fetch(`/api/clocker/${encodeURIComponent(location)}/punch`,{method:'POST',credentials:'same-origin',cache:'no-store',
   headers:{'Content-Type':'application/json','X-Nevora-Clocker':'1'},body:JSON.stringify(body),signal:AbortSignal.timeout(12000)});

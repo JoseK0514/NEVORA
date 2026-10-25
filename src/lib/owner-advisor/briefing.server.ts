@@ -8,6 +8,9 @@ import { checkOwner } from "./authority.server";
 import { deriveAttention, type AttentionCoverage } from "./briefing";
 import type { AdvisorStore } from "./store.server";
 
+/** Read current Today facts, optional bounded planning coverage and saved dispositions.
+ * Coverage failures remain null/partial, while Owner authority is checked before
+ * reads and after projection; absence of coverage evidence cannot prove all-clear. */
 export async function readOwnerAttention(store: AdvisorStore) {
   const { proof, original, ex } = store;
   await checkOwner(proof, original, ex);

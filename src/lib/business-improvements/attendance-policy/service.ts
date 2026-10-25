@@ -55,6 +55,10 @@ function normalizedRuntime(value: Record<string, unknown>) {
   delete output.expiresAt;
   return output;
 }
+/** Read canonical attendance, runtime census and allowed policy thresholds under
+ * current Company access, then persist a source-fenced observation for review. This
+ * read path writes observation evidence; it never changes punches or classifications.
+ * Return display lifetime only after the commit and final authority recheck. */
 export async function readAttendancePolicies(
   proof: SessionMutationProof,
   executor: SqlExecutor = neonNotificationExecutor(),

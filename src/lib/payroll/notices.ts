@@ -1,3 +1,8 @@
+/**
+ * Private payroll notifications reference metadata sources rather than embedding
+ * financial snapshots. Source/version, current access, publication and automation
+ * settings are checked again when an intent is queued and before delivery.
+ */
 import { randomUUID } from "node:crypto";
 import type { NotificationIntent, SqlExecutor, SqlStatement, SourceCheck, } from "../notifications/types";
 import type { Workspace } from "../domain";
@@ -71,6 +76,8 @@ export async function checkPayrollNotice(intent: NotificationIntent, recipientId
         return no("payroll_source_unavailable");
     }
 }
+/** Read candidate recipients and build fenced outbox/source/receipt statements for
+ * finishJob. Returning these statements does not send a push or prove delivery. */
 export async function payrollNoticeStatements(job: ClaimedJob, ex: SqlExecutor): Promise<SqlStatement[]> {
     const workspace = await getWorkspace(ex), config = readNotificationConfig(process.env), now = new Date();
     const preparation = job.payload.phase === "PREPARATION";

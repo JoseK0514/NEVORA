@@ -34,6 +34,12 @@ export type MaintenanceIntent = {
     reason: string;
     stage?: 'INITIAL' | 'URGENT';
 };
+/**
+ * Derive effective expiry even before the worker persists it. Current policy may
+ * shorten a recorded completion deadline, but cannot extend it; unverifiable
+ * terms/configuration remove actionability without pretending the request ended.
+ * Callout reports retain their separate manager-review lifecycle after shift start.
+ */
 export function projectShiftChangeState(snapshot: MaintenanceSnapshot, now: Date): EffectiveRequestState {
     const result: EffectiveRequestState = { status: snapshot.status, actionable: false, completionDeadline: null, attention: null };
     if (!['OPEN', 'EMPLOYEE_PENDING', 'MANAGER_PENDING', 'PENDING'].includes(snapshot.status))
@@ -62,6 +68,11 @@ export function projectShiftChangeState(snapshot: MaintenanceSnapshot, now: Date
         return { ...result, attention: 'CONFIGURATION_REQUIRED' };
     return { ...result, actionable: true, attention: snapshot.eligibilityUnverified && snapshot.eligibleCount === 0 ? 'CONFIGURATION_REQUIRED' : snapshot.status === 'MANAGER_PENDING' ? 'MANAGER_REVIEW' : snapshot.workflow === 'COVERAGE' ? (snapshot.eligibleCount === 0 ? 'NO_ELIGIBLE_CANDIDATES' : 'NO_VOLUNTEER') : null };
 }
+/**
+ * Plan revision-bound worker intents only. Retirement/expiry take precedence over
+ * invitations; persistence must recheck the revision and deduplicate escalation
+ * stages because this pure planner neither locks nor writes the request.
+ */
 export function planShiftChangeMaintenance(snapshot: MaintenanceSnapshot, now: Date, notificationPolicy: NotificationPolicy): readonly MaintenanceIntent[] {
     if (!['OPEN', 'EMPLOYEE_PENDING', 'MANAGER_PENDING', 'PENDING'].includes(snapshot.status))
         return [];

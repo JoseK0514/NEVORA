@@ -275,6 +275,7 @@ function requirementWrites(windowId: string, requirements: readonly PositionRequ
     })),
   ];
 }
+/** Create one same-day wall-time demand window and its position requirements atomically under company authority. */
 export async function createCoverageWindow(
   input: {
     locationId: string;
@@ -347,6 +348,7 @@ export async function deleteCoverageWindow(windowId: string, proof: SessionMutat
   return Boolean(result[index]?.[0]);
 }
 
+/** Replace the full requirement set; an inactive position can remain only with its already-held unchanged quantity. */
 export async function replaceCoverageWindowPositionRequirements(
   input: {
     windowId: string;

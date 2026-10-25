@@ -5,6 +5,11 @@ import { clockerOriginFailure, clockerSecurity } from '../../../../../lib/clocke
 import { readPinKey } from '@/lib/clocker/pin-crypto.server';
 import { setEmployeeClockerPin, ClockerPinError } from '@/lib/clocker/pins.server';
 export type PinActionResult={ok:true;version:number}|{ok:false;error:string;refresh?:boolean};
+/**
+ * Validates matching four-digit PINs and a concurrency version before calling
+ * the protected PIN writer. Manager role admits the form only; the service owns
+ * employee/location authority. Return a version, never PIN or cryptographic data.
+ */
 export async function saveClockerPinAction(data:FormData):Promise<PinActionResult>{
  const forbidden=clockerOriginFailure(await headers(),clockerSecurity());
  if(forbidden)return {ok:false,error:forbidden.error};

@@ -8,6 +8,9 @@ import type { AdvisorStore } from "./store.server";
 import type { ToolCall, ToolResult } from "./contracts";
 import { issueLabels, type PeriodReview } from "./workflow-contracts";
 
+/** Summarize bounded recorded timecard/payroll exception metadata for Owner review.
+ * Stored statuses are historical evidence: readiness always remains unverified,
+ * unavailable/disabled/overflow sources mark the result partial, and no pay is computed. */
 export async function readPeriodReview(store: AdvisorStore, args: Extract<ToolCall, { name: "attendance_payroll_review" }>["args"]): Promise<ToolResult> {
   const { proof, original, ex } = store;
   await checkOwner(proof, original, ex);

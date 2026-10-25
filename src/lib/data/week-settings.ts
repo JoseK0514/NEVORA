@@ -42,6 +42,12 @@ export async function getWeekSettings(
   };
 }
 
+/**
+ * Serialize deadline changes with weekly submissions and cancel obsolete reminder
+ * work in the same transaction. A supplied conversion workspace pins the zone and
+ * exact configuration version used to interpret the manager's civil-time input.
+ * Seeded normal windows alone do not mark an employee's week submitted.
+ */
 export async function setAvailabilityDeadline(input: {
   weekStart: string;
   deadlineIso?: string;
@@ -170,6 +176,12 @@ export async function listWeeklyAvailability(
 export class AvailabilityDeadlineError extends Error {}
 export class AvailabilityConcurrencyError extends Error {}
 
+/**
+ * Save an employee's effective weekly windows plus dated overrides under the
+ * shared availability lock. Recheck deadline and exact submission version after
+ * waiting; only version conflicts rebuild a fresh partial update. Submitted
+ * normal-based weeks continue to resolve future normal hours plus these overrides.
+ */
 export async function replaceWeeklyAvailability(
   employeeId: string,
   weekStart: string,

@@ -143,6 +143,9 @@ export function inspectPortalCurrentIssuanceSource(value: unknown, imageValue: u
 export function isPortalCurrentIssuanceSourceObservation(value: unknown): value is PortalCurrentIssuanceSourceObservation {
   return !!value && typeof value === 'object' && observed.has(value);
 }
+/** Compare only original locally parsed immutable observations. Native observed
+ * time may advance, but every retained source byte/version/set must remain equal;
+ * this equality cannot replace a protected current-source database recheck. */
 export function comparePortalCurrentIssuanceSources(first: unknown, last: unknown): boolean {
   if (!isPortalCurrentIssuanceSourceObservation(first) || !isPortalCurrentIssuanceSourceObservation(last)) return false;
   const instant = (value: string) => Temporal.Instant.from(value.replace(' ', 'T').replace(/\+00$/, '+00:00'));

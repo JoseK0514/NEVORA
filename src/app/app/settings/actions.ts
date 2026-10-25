@@ -8,6 +8,7 @@ import { createPosition, updatePosition, PositionConcurrencyError } from "@/lib/
 import type { ConfigurationResult } from "@/components/configuration-form";
 const value = (data: FormData, key: string) =>
   String(data.get(key) ?? "").trim();
+/** Exposes known configuration/concurrency messages without leaking arbitrary database errors. */
 function failure(error: unknown): ConfigurationResult {
   if (error instanceof LocationConcurrencyError || error instanceof PositionConcurrencyError) return { error: error.message };
   const message = error instanceof Error ? error.message : "";
@@ -19,6 +20,7 @@ function failure(error: unknown): ConfigurationResult {
       : "Changes could not be saved. Check the name and key for duplicates, then try again.",
   };
 }
+/** Owner-only profile edit; omitted timezone preserves the currently configured business timezone. */
 export async function saveWorkspaceProfileAction(
   data: FormData,
 ): Promise<ConfigurationResult> {
@@ -40,6 +42,7 @@ export async function saveWorkspaceProfileAction(
     return failure(error);
   }
 }
+/** Creates location identity; staffing and coverage rules require their own later configuration. */
 export async function createLocationAction(
   data: FormData,
 ): Promise<ConfigurationResult> {
@@ -62,6 +65,7 @@ export async function createLocationAction(
     return failure(error);
   }
 }
+/** Uses the rendered update version to reject stale edits; location Clocker identity is retained. */
 export async function updateLocationAction(
   data: FormData,
 ): Promise<ConfigurationResult> {
@@ -83,6 +87,7 @@ export async function updateLocationAction(
     return failure(error);
   }
 }
+/** Creates an operational qualification, which is independent of application access roles. */
 export async function createPositionAction(
   data: FormData,
 ): Promise<ConfigurationResult> {
@@ -100,6 +105,7 @@ export async function createPositionAction(
     return failure(error);
   }
 }
+/** Version-checked position edit; deactivation retains memberships and historical references. */
 export async function updatePositionAction(
   data: FormData,
 ): Promise<ConfigurationResult> {

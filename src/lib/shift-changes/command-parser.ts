@@ -6,6 +6,7 @@ const uuid=(v:unknown)=>typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{
 export function calloutReasonNoteError(reasonCode:unknown,reasonNote:unknown):string|null {
  return reasonCode==='OTHER'&&(typeof reasonNote!=='string'||reasonNote.trim().length<3)?'Please provide at least 3 characters of detail when selecting Other.':null;
 }
+/** Shape/size validation only; current actor, consent, revision and assignment authority are checked on the server. */
 export function isShiftChangeCommand(value:unknown):value is ShiftChangeCommand {
  if(!value||typeof value!=='object'||Array.isArray(value)||JSON.stringify(value).length>16384)return false;
  const c=value as Record<string,unknown>;if(!uuid(c.operationId))return false;
@@ -19,6 +20,7 @@ export function isShiftChangeCommand(value:unknown):value is ShiftChangeCommand 
  }else return false;
  return Object.keys(c).every(k=>fields.includes(k));
 }
+/** Reject duplicate fields and files; ignore only framework action metadata before applying the strict command allowlist. */
 export function parseShiftChangeCommand(form:FormData):ShiftChangeCommand|null {
  const c:Record<string,unknown>={};let length=0;
  for(const [k,v]of form.entries()) {

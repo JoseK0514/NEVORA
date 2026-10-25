@@ -32,6 +32,7 @@ function mapNotification(row: Record<string, unknown>): NotificationListItem {
   };
 }
 
+/** Legacy inbox insertion with its own null-environment dedupe key; versioned worker intents use notificationIntentStatements. */
 export async function createNotification(event: NotificationEvent) {
   const sql = getDb();
   const rows = queryRows<{ id: string }>(
@@ -170,6 +171,7 @@ export function notificationIntentStatements(intents: readonly NotificationInten
   });
 }
 
+/** Cancel the source's pending intents and leased deliveries together; revisioned shift changes also retire older/legacy versions. */
 export function cancelNotificationStatements(source: SourceRef, recipientId?: string): SqlStatement[] {
   return [{
     text: `WITH cancelled AS (

@@ -1,3 +1,8 @@
+/**
+ * Render approved payroll snapshots into downloadable artifacts. Generation returns
+ * bytes plus SQL inserts, without writing to the database; deterministic document IDs
+ * allow worker retries to converge when those statements are committed.
+ */
 import { nativeEmployeePresentation } from "./native/document-mapping";
 import { renderNativeEmployeePaystub, preflightNativePaystubGlyphs, NATIVE_PAYSTUB_TEMPLATE_VERSION } from "./native/paystub-document";
 import { hash } from "./store";
@@ -60,6 +65,8 @@ function stored(run: PayrollRun, kind: PayrollDocument["kind"], employeeId: stri
         statement: q(`INSERT INTO payroll_documents(workspace_id,id,run_id,employee_id,kind,filename,sha256,content,payload) VALUES(${ws},$1::uuid,$2::uuid,$3,$4,$5,$6,decode($7,'hex'),$8::jsonb) ON CONFLICT DO NOTHING`, id, run.id, employeeId, kind, filename, sha256, bytes.toString("hex"), JSON.stringify(metadata)),
     };
 }
+/** Produce neutral JSON payment instructions from approved amounts. This creates an
+ * artifact only: bank format compatibility and payment processing remain unverified. */
 export function paymentDocument(run: PayrollRun, snapshot: Snapshot) {
     if (run.status !== "APPROVED" || !run.totals || !run.rows)
         throw new PayrollError("APPROVAL_REQUIRED", 409);
@@ -165,6 +172,9 @@ function wrap(text: string, font: PDFFont) {
     lines.push(line);
     return lines;
 }
+/** Render employee statements and a company summary from the approved snapshot.
+ * progress lets the worker renew/check its lease between rendering steps; a rejected
+ * callback aborts generation, leaving persistence to the caller transaction. */
 export async function generatePdfs(run: PayrollRun, snapshot: Snapshot, progress?: () => Promise<void>) {
     if (run.status !== "APPROVED" || !run.rows || !run.totals || !run.approvedAt)
         throw new PayrollError("APPROVAL_REQUIRED", 409);

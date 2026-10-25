@@ -8,6 +8,12 @@ import type { ShiftChangeCommand,ShiftChangeResult } from '@/lib/shift-changes/t
 import { executeShiftChange,findShiftChangeOperation } from '@/lib/data/shift-changes';
 import { moduleEnabled } from '@/lib/workspace-presentation/current.server';
 function refreshShiftChangeResult(result:ShiftChangeResult){if(['completed','pending','closed'].includes(result.status)){revalidatePath('/app/exchange');revalidatePath('/app/schedule');revalidatePath('/app');}}
+/**
+ * Shared form boundary: select the required role, enforce the module switch,
+ * parse an allowed command kind and pass fresh session proof to the service.
+ * The service owns transactional eligibility and operation replay; this layer
+ * refreshes pages only for known pending/completed/closed results.
+ */
 async function perform(form:FormData,kinds:ShiftChangeCommand['kind'][],manager=false):Promise<ShiftChangeResult> {
  if(manager)await requireRoles(MANAGER_ROLES);else await requireSelfService('/app/exchange?tab=requests');
  if(!(await moduleEnabled('marketplace')))return {status:'unavailable'}; // turned off by the company (B2)
@@ -23,6 +29,7 @@ export async function shiftChangeAction(form:FormData):Promise<ShiftChangeResult
  const command=parseShiftChangeCommand(form);if(!command)return {status:'unavailable'};
  return perform(form,[command.kind],command.kind.startsWith('MANAGER_')||['APPROVE_CALLOUT','DECLINE_CALLOUT'].includes(command.kind));
 }
+/** Reads the original operation after a lost response; never creates a replacement command. */
 export async function reconcileShiftChangeAction(operationId:string):Promise<ShiftChangeResult|null> {
  if(!/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(operationId))return null;
  const result=await findShiftChangeOperation(await requireSessionMutationProof(),operationId);if(result)refreshShiftChangeResult(result);return result;

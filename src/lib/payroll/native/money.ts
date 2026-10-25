@@ -1,3 +1,8 @@
+/**
+ * Exact rational arithmetic for the native calculator. Cash amounts are bigint cents;
+ * hourly rates may contain fractional cents (up to four decimal places). Keep values
+ * rational until the applicable collection/rounding policy explicitly produces cash.
+ */
 export type Rational = {
     numerator: bigint;
     denominator: bigint;
@@ -43,6 +48,9 @@ export type NativeExactnessOperation = {
     denominator: string;
     amountMinor: string;
 };
+/** Accept only a nonnegative integral cent and append its exactness evidence. An
+ * inexact amount throws an operation-specific rule-unverified error; it never
+ * silently rounds when collection authority has not been established. */
 export function exactMinor(amount: Rational, operations: NativeExactnessOperation[], operation: string, reference: string | null = null): bigint {
     if (amount.numerator < BigInt(0) || amount.numerator % amount.denominator !== BigInt(0))
         throw Object.assign(Error(`${operation}_CENT_RULE_UNVERIFIED`), { reference });

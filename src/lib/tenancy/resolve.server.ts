@@ -16,6 +16,10 @@ import type {
 } from './types';
 export type { TenantProofFacts, ProvisionerScopeFacts } from './types';
 
+// Proofs are process-local object identities, with facts retained privately.
+// A matching JSON shape, TypeScript cast or copied facts object cannot reissue
+// one. Resolution checks observations; execution must still lock/recheck the
+// underlying authority before business work and before the transaction ends.
 const tenantFacts = new WeakMap<object, TenantProofFacts>();
 const portalCurrentSources = new WeakMap<object, PortalNativeCurrentSource>();
 const provisionerFacts = new WeakMap<object, ProvisionerScopeFacts>();
@@ -275,11 +279,16 @@ export function getTenantProofFacts(proof: TenantProof): TenantProofFacts {
   if (!facts || timestampMillis(facts.expiresAt) <= Date.now()) throw new Error('tenant_proof_denied');
   return facts;
 }
+/** Authenticate the private scope identity and local lifetime only. The returned
+ * request/purpose bindings do not confer DDL access or ordinary tenant authority. */
 export function getProvisionerScopeFacts(scope: ProvisionerScope): ProvisionerScopeFacts {
   const facts = scope && typeof scope === 'object' ? provisionerFacts.get(scope) : undefined;
   if (!facts || timestampMillis(facts.expiresAt) <= Date.now()) throw new Error('provisioner_scope_denied');
   return facts;
 }
+/** Existing Portal facts lane, without the new request lane's retained native
+ * source capsule. Callers must deliberately choose the appropriate protocol;
+ * resolvePortalRequestProof never falls back to this path on failure. */
 export async function resolvePortalProof(locator: string, sessionTokenHash: string): Promise<ProofResolution<PortalProof>> {
   const normalizedLocator = normalizeWorkspaceLocator(locator);
   if (!normalizedLocator || !validDigest(sessionTokenHash)) return DENY;
@@ -324,16 +333,23 @@ export function compileTenantProofExecutionPayload(proof: TenantProof): string {
   if (!nativeCurrentSource) return JSON.stringify(facts);
   return JSON.stringify({ ...facts, format: 'PORTAL_REQUEST_CURRENT_PROOF_PAYLOAD_V1', nativeCurrentSource });
 }
+/** Bind both device credential and employee PIN session with separate digest
+ * domains. Neither a valid device nor a PIN token alone yields Clocker scope. */
 export async function resolveClockerProof(deviceCredential: string, pinSessionToken: string): Promise<ProofResolution<ClockerProof>> {
   if (typeof deviceCredential !== 'string' || !/^nev_dev_[a-f0-9]{64}$/.test(deviceCredential) || typeof pinSessionToken !== 'string' || !/^nev_pin_[a-f0-9]{64}$/.test(pinSessionToken)) return DENY;
   const credentialHash = sha256(deviceCredential, 'nevora-clocker-v1\0');
   const pinSessionTokenHash = sha256(pinSessionToken, 'nevora-clocker-identity-v1\0');
   return resolve('clocker', [credentialHash, pinSessionTokenHash], parseClocker, facts => facts.kind === 'CLOCKER' && facts.credentialHash === credentialHash && facts.pinSessionTokenHash === pinSessionTokenHash);
 }
+/** Resolve a subscription digest into narrow calendar-read facts. This proof
+ * kind remains separate from portal sessions and cannot authorize their writes. */
 export async function resolveCalendarReadProof(subscriptionDigest: string): Promise<ProofResolution<CalendarReadProof>> {
   if (!validDigest(subscriptionDigest)) return DENY;
   return resolve('calendar', [subscriptionDigest], parseCalendar, facts => facts.kind === 'CALENDAR_READ' && facts.digest === subscriptionDigest);
 }
+/** Bind a worker identity/environment to one delivery generation and lease.
+ * Copy inert input before awaiting the lookup, hash the lease bearer, and reject
+ * returned facts that differ from any of those originally selected bindings. */
 export async function resolveWorkerProof(workerIdentity: WorkerIdentity, claim: WorkerLeaseClaim): Promise<ProofResolution<WorkerProof>> {
   const identity = inputSnapshot(workerIdentity), lease = inputSnapshot(claim);
   if (!identity || !validId(identity.workerId) || !validDigest(identity.credentialDigest) || (identity.environment !== 'test' && identity.environment !== 'production') || !lease || !validId(lease.deliveryId) || !validId(lease.generation) || typeof lease.leaseToken !== 'string' || !/^[A-Za-z0-9._:-]{16,256}$/.test(lease.leaseToken)) return DENY;
@@ -342,6 +358,9 @@ export async function resolveWorkerProof(workerIdentity: WorkerIdentity, claim: 
   const leaseTokenHash = sha256(leaseToken);
   return resolve('worker', [workerId, credentialDigest, environment, deliveryId, generation, leaseTokenHash], parseWorker, facts => facts.kind === 'WORKER' && facts.workerId === workerId && facts.workerCredentialDigest === credentialDigest && facts.environment === environment && facts.deliveryId === deliveryId && facts.generation === generation && facts.leaseTokenHash === leaseTokenHash);
 }
+/** Resolve a control-purpose scope bound to the exact operator, request,
+ * operation and payload digests. Only local/test environments are accepted;
+ * bootstrap carries a nonce where existing-tenant purposes carry ancestry. */
 export async function resolveProvisionerScope(operator: ProvisionerOperator, environment: ProvisionerEnvironment, purpose: ProvisionerPurpose): Promise<ScopeResolution> {
   const input = inputSnapshot(operator);
   if (!input || !validId(input.operatorId) || !validDigest(input.credentialDigest) || !validId(input.requestId) || !validDigest(input.requestDigest) || !validId(input.operationId) || !validDigest(input.payloadDigest) || !validEnvironment(environment) || !validPurpose(purpose)) return DENY;

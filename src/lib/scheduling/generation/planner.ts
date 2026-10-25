@@ -157,7 +157,15 @@ function compareScore(a: State, b: State): number {
   );
 }
 
-/** Pure planning: no persistence, actor lookup, notifications, time-based stopping or randomness. */
+/**
+ * Pure, deterministic planning over a cloned snapshot and explicit search budgets.
+ * BUILD_WEEK replaces only unprotected draft work in ready scope; published,
+ * manual and historical assignments remain fixed. Every addition must satisfy
+ * shared automatic rules and unreserved configured capacity, including a final
+ * check against the complete proposed ledger. BUDGET_EXHAUSTED describes bounded
+ * search, not proof that the remaining demand is impossible. Persistence must
+ * independently verify the snapshot and review before applying this plan.
+ */
 export function planWeek(source: GenerationInput): GenerationPlan {
   const input = canonicalInput(source);
   for (const value of Object.values(input.limits))

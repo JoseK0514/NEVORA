@@ -88,6 +88,12 @@ export async function readEmployeeAttentionDetail(proof:SessionMutationProof,ref
  }catch{return {state:'unavailable'};}
 }
 
+/**
+ * Commit the exact displayed source version under its session-bound intent.
+ * Informational read receipts cannot satisfy required actions; CONFIRM_WEEK writes
+ * the canonical schedule acknowledgement. Source/operation guards and the durable
+ * result share one transaction, so uncertain responses retain the original ID.
+ */
 export async function commitAttention(proof:SessionMutationProof,kind:Kind,command:{operationId:string;authority:string;ref:AttentionRef},executor:SqlExecutor):Promise<CommandResult>{
  let dispatched=false;
  try{

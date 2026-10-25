@@ -4,6 +4,9 @@ import { promisify } from "node:util";
 const scryptAsync = promisify(scrypt);
 const KEY_LENGTH = 64;
 
+/** Produce the persisted scrypt$salt$key format with a fresh 16-byte salt.
+ * This enforces only the minimum length; request-specific upper bounds belong
+ * to callers before they start the asynchronous password work. */
 export async function hashPassword(password: string) {
   if (password.length < 8) {
     throw new Error("Password must contain at least 8 characters.");
@@ -15,6 +18,8 @@ export async function hashPassword(password: string) {
   return `scrypt$${salt.toString("hex")}$${derivedKey.toString("hex")}`;
 }
 
+/** Verify the stored format without accepting truncated hex. Malformed hashes
+ * return false; valid-format derivation errors propagate to the auth boundary. */
 export async function verifyPassword(password: string, encoded: string) {
   if (typeof encoded !== "string") {
     return false;

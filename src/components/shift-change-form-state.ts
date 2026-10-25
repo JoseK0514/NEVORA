@@ -8,11 +8,13 @@ export class ShiftChangeFormState {
  constructor(private identity:()=>string){}
  get uncertain(){return this.result?.status==='outcome-unknown';}
  private data(){const data=new FormData();for(const [key,value] of this.payload??[])data.append(key,value);return data;}
+ /** Capture one payload/operation ID; a lost response keeps it immutable for reconciliation. */
  async submit(data:FormData,send:Send){
   if(this.pending||this.uncertain)return;
   data.set('operationId',this.identity());this.payload=[...data];this.pending=true;this.result=null;
   try{this.result=await send(this.data());}catch{this.result={status:'outcome-unknown',operationId:String(data.get('operationId'))};}finally{this.pending=false;}
  }
+ /** Check the receipt first, then resend the original payload only when no result is found. */
  async retry(reconcile:(id:string)=>Promise<ShiftChangeResult|null>,send:Send){
   if(this.pending||!this.uncertain||!this.payload||this.result?.status!=='outcome-unknown')return;
   this.pending=true;const operationId=this.result.operationId;

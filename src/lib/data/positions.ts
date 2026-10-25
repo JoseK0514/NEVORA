@@ -51,6 +51,7 @@ export async function createPosition(input: { name: string; actorEmployeeId: str
   const result = await transaction([...statements, ...managementSessionStatements(input.proof, input.actorEmployeeId, ['OWNER'])], sql);
   return result[statements.length - 1]![0] as Position;
 }
+/** Owner catalog edit; preserve exact updatedAt text from the read so microsecond changes invalidate stale forms. */
 export async function updatePosition(input: { id: string; name: string; active: boolean; expectedUpdatedAt: string; actorEmployeeId: string; proof: SessionMutationProof }, executor?: SqlExecutor): Promise<Position> {
   assertManagementProof(input.proof,input.actorEmployeeId);
   if (!input.expectedUpdatedAt) throw new PositionConcurrencyError();

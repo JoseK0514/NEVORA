@@ -21,6 +21,8 @@ function mapClaim(row: Record<string, unknown>): DeliveryClaim {
 export function sqlDeliveryRepository(environment: PushEnvironment, executor: SqlExecutor = neonNotificationExecutor()): DeliveryRepository {
   return {
     async materialize(intentIds) {
+      // Fan out only to current subscription generations. Event consent must
+      // predate the intent; enrolling a device must not replay earlier events.
       if (!intentIds.length) return;
       await executor.transaction([{text:`WITH intents AS (
         SELECT n.* FROM notifications n WHERE n.id = ANY($1::text[]) AND n.environment = $2 AND n.push_state = 'pending'
@@ -50,6 +52,8 @@ export function sqlDeliveryRepository(environment: PushEnvironment, executor: Sq
           values:[[...intentIds],environment]}]);
     },
     async claim(input) {
+      // SKIP LOCKED divides work among workers; the random lease token and fixed
+      // expiry fence every later finish/release/defer against a reclaimed claim.
       if (!Number.isInteger(input.limit) || input.limit < 1 || input.limit > 10 || input.leaseSeconds !== 120
         || !['new','retry','all'].includes(input.mode)) throw new Error('Invalid delivery claim limits');
       const results = await executor.transaction([
@@ -89,6 +93,8 @@ export function sqlDeliveryRepository(environment: PushEnvironment, executor: Sq
       return (results[1] as Record<string,unknown>[]).map(mapClaim);
     },
     async finish(claim, result) {
+      // Provider acceptance is a transport outcome, not proof of device receipt.
+      // A stale/expired lease cannot record completion or schedule another retry.
       if (!['provider_accepted','retry_pending','failed','expired','cancelled'].includes(result.state)
         || (result.state === 'retry_pending' && (!result.nextAttemptAt || !Number.isFinite(Date.parse(result.nextAttemptAt))))
         || (result.errorClass !== undefined && !/^[a-z][a-z0-9_]{0,63}$/.test(result.errorClass))) throw new Error('Invalid delivery completion');
@@ -118,6 +124,7 @@ export function sqlDeliveryRepository(environment: PushEnvironment, executor: Sq
       return rows.length > 0;
     },
     async release(claim) {
+      // No provider attempt was spent: restore its budget only while this lease owns the row.
       const rows = await executor.query({text:`UPDATE push_deliveries SET
         status = CASE WHEN attempt_count = 1 THEN 'queued' ELSE 'retry_pending' END,
         attempt_count = attempt_count - 1, lease_token = NULL, lease_expires_at = NULL, updated_at = now()
@@ -128,6 +135,8 @@ export function sqlDeliveryRepository(environment: PushEnvironment, executor: Sq
       return rows.length > 0;
     },
     async defer(claim, nextAttemptAt) {
+      // Quiet-window deferral restores attempt budget and moves the due time;
+      // expiry still wins when the next allowed time is outside the intent lifetime.
       if (!Number.isFinite(nextAttemptAt.getTime())) throw new Error('Invalid delivery deferral');
       const rows = await executor.query({text:`UPDATE push_deliveries d SET
         status = CASE WHEN $5::timestamptz >= d.expires_at THEN 'expired'

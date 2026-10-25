@@ -17,6 +17,9 @@ function employerLabel(language: 'es' | 'en', code: string, actualLabel?: string
     return actualLabel && !defaults.includes(actualLabel) ? actualLabel : localized ?? actualLabel ?? code.replaceAll('_', ' ');
 }
 const sum = (values: string[]) => values.reduce((n, s) => n + BigInt(s), BigInt(0)).toString();
+/** Map approved snapshot evidence into localized paystub fields without recalculating pay
+ * or reading the database. Exact row/template and full time/YTD location coverage must
+ * match; amounts remain cent strings and work rates retain rational provenance. */
 export function nativeEmployeePresentation(run: PayrollRun, snapshot: Snapshot, employeeId: string): NativePaystubPresentation {
     const native = snapshot.native, result = run.nativeCalculation?.employees.find(e => e.employeeId === employeeId), row = run.rows?.find(e => e.employeeId === employeeId);
     if (run.sourceAuthority !== 'NATIVE_RECORDED_TIME' || run.nativeCalculation?.state !== 'ready' || !native || !result || !row || !run.approvedAt || run.nativeCalculation.templateVersion !== NATIVE_PAYSTUB_TEMPLATE_VERSION || hash({ ...result.row, employeeName: row.employeeName }) !== hash(row))

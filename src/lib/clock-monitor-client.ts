@@ -8,6 +8,11 @@ export function createMonitorController(changed:(state:MonitorPanelState)=>void,
  return createPrivateSnapshotController<ClockMonitor>(({snapshot,refreshing,paused})=>changed({monitor:snapshot,refreshing,paused}),request,parseClockMonitor,reason=>({state:'unavailable',reason}));
 }
 
+/**
+ * Fetches a read-only monitor snapshot with the current cookie. Never infer a
+ * clock punch from this response: it is a bounded observation, not a command.
+ * 401/403 becomes access_denied; other failures enter the controller's retry path.
+ */
 export async function fetchClockMonitor(signal:AbortSignal):Promise<ClockMonitor>{
  const response=await fetch('/api/manager/clock-monitor',{method:'GET',credentials:'same-origin',cache:'no-store',redirect:'error',signal,
   headers:{'Accept':'application/json','X-Nevora-Monitor':'1'}});

@@ -3,6 +3,11 @@ import {correctionBoundary,correctionJson,readCorrectionJson} from '@/lib/time-c
 import {readClockerRecoveryReview} from '@/lib/clocker/recovery-review.server';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
+/**
+ * Reads a saved punch command's recovery evidence using one bounded commandId.
+ * This is a protected review read, not a punch retry or a manual time correction.
+ * The service decides whether the current actor can inspect that command.
+ */
 export async function POST(request:Request){
  const boundary=correctionBoundary(request,true,'x-nevora-clocker-recovery');if(boundary)return correctionJson({state:'unavailable'},boundary);
  try{

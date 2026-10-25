@@ -39,6 +39,10 @@ async function readActionCenterCore(proof:SessionMutationProof,weekStart:string,
  }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
 }
 
+/** Company-authorized aggregate of scheduling, attendance, corrections and timecards.
+ * Any failed canonical read makes the result unavailable; an empty successful list
+ * is therefore distinct from missing source evidence. validForMs is the shortest
+ * source/session lifetime after elapsed loading time is deducted. */
 export async function readActionCenter(proof:SessionMutationProof,weekStart:string,executor:SqlExecutor=neonNotificationExecutor(),readScheduling:SchedulingReader=schedulingReader):Promise<ActionCenter>{
  return readCompanyResult(proof,()=>readActionCenterCore(proof,weekStart,executor,readScheduling),executor);
 }

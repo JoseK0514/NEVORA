@@ -1,3 +1,8 @@
+/**
+ * Document access is evaluated at read time. Employees see their own published
+ * statements; management access additionally follows current payroll object coverage.
+ * Stored bytes are verified against their SHA-256 before returning a download.
+ */
 import { createHash } from "node:crypto";
 import type { SessionMutationProof } from "../shift-changes/types";
 import type { SqlExecutor } from "../notifications/types";
@@ -30,6 +35,8 @@ export async function statements(proof: SessionMutationProof, ex: SqlExecutor = 
         statements: docs.map((d) => ({ ...documentProjection(d), ...d.payload })),
     };
 }
+/** Return authorized bytes and metadata, concealing missing/unauthorized IDs as 404.
+ * A stored-content hash mismatch is unavailable (503), never an unchecked download. */
 export async function document(proof: SessionMutationProof, id: string, ex: SqlExecutor = neonNotificationExecutor()) {
     if (!uuid(id))
         throw new PayrollError("DOCUMENT_UNAVAILABLE", 404);

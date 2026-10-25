@@ -71,6 +71,10 @@ function add(map:Map<string,ReportHours>,id:string,name:string,recorded:string,b
   const prior=map.get(id);map.set(id,{id,name,recordedNanoseconds:(BigInt(prior?.recordedNanoseconds??'0')+BigInt(recorded)).toString(),
     breakNanoseconds:(BigInt(prior?.breakNanoseconds??'0')+BigInt(breakTime)).toString()});
 }
+/** Validate one captured report source and aggregate canonical effective/finalized
+ * time as decimal nanosecond strings. Recorded elapsed includes breaks; scheduled
+ * comparison uses the latest published plan and returns null for incomplete plans
+ * or unresolved boundaries. This projection does not calculate paid hours or scores. */
 export function projectReports(value:unknown):PeriodReports{
   if(!record(value)||!text(value.workspaceId)||!text(value.timeZone,100)||!at(value.observedAt)||!record(value.period))throw new Error('Invalid report source');
   const period=parsePeriod(String(value.period.startDate),String(value.period.endDate));

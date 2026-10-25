@@ -109,6 +109,11 @@ export async function listTemplateShifts(
     }));
 }
 
+/**
+ * Capture assignment references and weekday offsets from a guarded source week.
+ * Templates retain intended assignments, not approval or eligibility guarantees;
+ * applying a template revalidates each row against current destination facts.
+ */
 export async function createTemplateFromWeek(
   input: {
     name: string;
@@ -167,6 +172,7 @@ export async function createTemplateFromWeek(
   return templateId;
 }
 
+/** Retire future template selection while retaining its captured rows and historical copy receipts. */
 export async function archiveScheduleTemplate(
   templateId: string,
   proof: SessionMutationProof,

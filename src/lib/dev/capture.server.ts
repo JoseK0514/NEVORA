@@ -35,6 +35,10 @@ export function devRecoveryDelivery(env:Record<string,string|undefined>,headers?
     await record(directory,'email','.eml',message.message);
   }};
 }
+/** Replace provider delivery only in explicitly bound local capture mode.
+ * undefined leaves normal provider selection to the caller; a requested but
+ * invalid capture returns a failure instead of falling through to delivery.
+ * accepted means a local payload file was written, not that a push provider ran. */
 export async function capturePush(input:Parameters<PushSender['send']>[0],config:Pick<PushRuntimeConfig,'localCapture'>,context?:LocalCaptureContext):Promise<Awaited<ReturnType<PushSender['send']>>|undefined> {
   if(process.env.NODE_ENV==='production')return undefined;
   const binding=config.localCapture;

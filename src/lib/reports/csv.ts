@@ -6,6 +6,9 @@ export function csvCell(value:unknown):string{
  return `"${safe.replaceAll('"','""')}"`;
 }
 export function csvDocument(rows:readonly (readonly unknown[])[]):string{return rows.map(row=>row.map(csvCell).join(',')).join('\r\n')+'\r\n';}
+/** Serialize the observed report with BOM, exact nanosecond columns and explicit
+ * unavailable/definition rows. Keep source provenance and formula-safe cell escaping
+ * when adding categories so a spreadsheet cannot silently reinterpret source text. */
 export function reportCsv(r:PeriodReports):string{
  const rows:unknown[][]=[['model_version','workspace_id','period_start','period_end','time_zone','observed_at','category','record_id','employee_id','label','recorded_nanoseconds','break_nanoseconds','scheduled_nanoseconds','difference_nanoseconds','state','revision','source_hash','start_at','end_at','detail']];
  const scope=[1,r.workspaceId,r.period.startDate,r.period.endDate,r.timeZone,r.observedAt];

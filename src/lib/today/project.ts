@@ -24,6 +24,11 @@ const text = (v: unknown): v is string => typeof v === "string" && v.length > 0 
 const ms = (v: unknown) => (typeof v === "string" ? Date.parse(v) : NaN);
 const MINUTE = 60_000;
 
+/**
+ * Derives factual status from already-matched entries at one observation instant.
+ * Open entries take precedence; lateness uses the first recorded clock-in, while
+ * missing punches use a separate five-minute starting grace period.
+ */
 export function shiftStatus(shift: { startAt: string; endAt: string }, entries: RawEntry[], now: number): { status: TodayShiftStatus; firstClockInAt: string | null; late: boolean } {
   const start = ms(shift.startAt), end = ms(shift.endAt);
   const first = entries.map(e => e.clockInAt).sort((a, b) => ms(a) - ms(b))[0] ?? null;
@@ -45,6 +50,11 @@ export function overlaps(shift: RawShift, entry: RawEntry, now: number) {
   return inAt < ms(shift.endAt) && outAt > ms(shift.startAt) - EARLY_CLOCK_IN_MINUTES * MINUTE;
 }
 
+/**
+ * Projects validated shifts/punches into one expiring read, without writing time
+ * or declaring an absence. Counts use distinct open-punch employees; shift rows
+ * use overlap matching and can therefore have a different count.
+ */
 export function projectToday(source: unknown): Today {
   if (!object(source) || !Array.isArray(source.shifts) || !Array.isArray(source.entries) || !text(source.timeZone) || !text(source.today)) return fail();
   const now = ms(source.observedAt), expiry = ms(source.expiresAt);

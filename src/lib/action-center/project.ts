@@ -14,6 +14,9 @@ function validateRequestFacts(value:NonNullable<ActionItem['request']>) {
  if(value.partialDay!==undefined){const p=value.partialDay;if(!p||typeof p!=='object'||Object.keys(p).sort().join(',')!=='end,start'||!/^([01]\d|2[0-3]):[0-5]\d$/.test(p.start)||!/^(([01]\d|2[0-3]):[0-5]\d|24:00)$/.test(p.end))throw Error('Invalid request facts');}
 }
 const requestTypes=new Set(['TIME_OFF','EXCHANGE','CALLOUT']);
+/** Pure merge of already authorized ready sources. Conflicting duplicate identities
+ * fail rather than hiding one source; stable priority/time/ID ordering drives the
+ * view. Actions and links remain review prompts, not mutation permissions. */
 export function combineManagerActions(scheduling:ManagerActionItem[],attendance:Extract<AttendanceDisplayReview,{state:'ready'}>,corrections:Extract<ManagerTimeCorrections,{state:'ready'}>,timecards:Extract<TimecardsResult,{state:'ready'}>,actorId:string):ActionItem[]{
  const items:ActionItem[]=scheduling.map(item=>({...item,category:requestTypes.has(item.type)?'requests':'scheduling'}));
  const employees=new Map(attendance.labels.employees.map(e=>[e.id,e.name]));
@@ -26,6 +29,8 @@ export function combineManagerActions(scheduling:ManagerActionItem[],attendance:
  if(unique.size>1000)throw Error('Action source limit');
  const ranks={URGENT:0,REVIEW:1,MISSING_INPUT:2};return [...unique.values()].sort((a,b)=>ranks[a.priority]-ranks[b.priority]||(a.dateTime??'9999').localeCompare(b.dateTime??'9999')||a.id.localeCompare(b.id));
 }
+/** Verify the requested week, bounded display lifetime, unique items and recomputed
+ * category counts before exposing a server snapshot to its client view. */
 export function parseActionCenter(value:unknown,weekStart:string):ActionCenter{
  if(!value||typeof value!=='object'||Array.isArray(value))throw Error('Invalid action center');const v=value as ActionCenter;
  if(v.state==='unavailable'){if(!['access_denied','read_failed'].includes(v.reason))throw Error('Invalid unavailable state');return v;}

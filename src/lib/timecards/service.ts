@@ -85,6 +85,8 @@ SELECT jsonb_build_object(
     WHERE ids.id IS NOT NULL),'[]'::jsonb)
 ))`;
 
+// Finalization freezes the reviewed source. Approval remains tied to the current
+// source hash, so subsequent changes surface as NEEDS_REVIEW rather than approval.
 const timecardReadSqlFor=(includeInternalCapture = false)=>`WITH scope AS (
   SELECT e.id FROM employees e JOIN locations l ON l.id=e.primary_location_id
   WHERE l.workspace_id=$1 AND ($2::boolean OR e.id=$3)
@@ -156,6 +158,13 @@ export function payrollApprovedGuard(workspaceId:string,employeeId:string,startD
     THEN 'nevora_timecard_PAYROLL_APPROVED' ELSE '1' END)::integer`,values:[workspaceId,employeeId,startDate,endDate]};
 }
 
+/**
+ * Submit one revision/hash-bound command to the database lifecycle authority.
+ * Employee locks precede fresh company-scope guards; transient lock failures retry
+ * the same operation identity. An uncertain transport outcome must be recovered
+ * with that identity, because the database may already have committed the command.
+ * Malformed commands throw before any mutation is attempted.
+ */
 export async function mutateTimecard(proof:SessionMutationProof,input:unknown,executor:SqlExecutor=neonNotificationExecutor()):Promise<TimecardMutation> {
   try{assertManagementProof(proof,proof?.employee?.id);}catch{return {status:'unavailable'};}
   if(!manager(proof))return {status:'unavailable'};
@@ -195,9 +204,11 @@ export async function mutateTimecard(proof:SessionMutationProof,input:unknown,ex
   return {status:'conflict'};
 }
 
+/** Return a session-bounded view; consumers must stop treating it as current after validForMs. */
 export async function readTimecards(proof:SessionMutationProof,requested:Period,executor:SqlExecutor=neonNotificationExecutor()):Promise<TimecardsResult> {
  return readTimecardsCore(proof,requested,executor);
 }
+/** Keep action-center source/authority evidence server-side and separate from the public view. */
 export async function readTimecardsWithInternalCapture(proof:SessionMutationProof,requested:Period,executor:SqlExecutor=neonNotificationExecutor()) {
  const retained: {capture: TimecardActionCapture | null} = {capture:null};
  const view=await readTimecardsCore(proof,requested,executor,value => { retained.capture=value; });

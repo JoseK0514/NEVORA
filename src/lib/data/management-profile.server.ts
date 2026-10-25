@@ -12,6 +12,7 @@ function assertProfileProof(proof:SessionMutationProof) {
   if(!['OWNER','MANAGER'].includes(proof.employee.role))throw Error('management_authorization');
 }
 const limits=[{text:"SET LOCAL lock_timeout='1500ms'",values:[]},{text:"SET LOCAL statement_timeout='2500ms'",values:[]}];
+/** Return own contact/preferences only while the original management role, scope and authority remain current across the read. */
 export async function readManagementProfile(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<ManagementProfile> {
   try{assertProfileProof(proof);}catch{return {state:'unavailable',reason:'access_denied'};}
   try {
@@ -48,6 +49,7 @@ export async function readManagementProfile(proof:SessionMutationProof,executor:
       alerts:managementAlertTopics.filter(t=>proof.employee.role==='OWNER'||t.id!=='payroll-ready').map(t=>({...t,on:t.id==='payroll-ready'&&process.env.NEVORA_PAYROLL_ENABLED!=='true'?false:row.choices[t.id]??true}))};
   }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
 }
+/** Persist an own allowed topic choice and reapply queue suppression atomically; it never sends a test notification. */
 export async function saveManagementAlertChoice(proof:SessionMutationProof,value:unknown,executor:SqlExecutor=neonNotificationExecutor()):Promise<void> {
   assertProfileProof(proof);
   const choice=parseManagementAlertChoice(value,proof.employee.role),workspace=await getWorkspace(executor);

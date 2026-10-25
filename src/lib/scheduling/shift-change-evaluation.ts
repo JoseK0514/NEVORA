@@ -87,6 +87,12 @@ function evaluateAssignments(snapshot: ShiftChangeCandidateSnapshot, source: Shi
     review ||= policy?.mode === 'MANAGER_REVIEW' || snapshot.request?.recordedApprovalMode === 'MANAGER_REVIEW' || snapshot.request?.effectiveApprovalMode === 'MANAGER_REVIEW';
     return { decision: hard ? 'BLOCKED' : unknown ? 'UNVERIFIED' : review ? 'MANAGER_REVIEW' : 'ELIGIBLE', issues, affectedWeeks: [...weeks].sort(), proposedAssignments, scheduledProjections };
 }
+/**
+ * Evaluate reviewed material terms against the proposed final ledger, including
+ * both sides of a swap and whether coverage worsens. BLOCKED outranks UNVERIFIED,
+ * which outranks manager review; none of these pure outcomes authenticates an
+ * actor or replaces locked consent/revision checks in the command writer.
+ */
 export function evaluateShiftChange(snapshot: ShiftChangeSnapshot, command: ShiftChangeCommand): ShiftChangeEvaluation {
     const actor = snapshot.facts.employees.find(e => e.id === snapshot.actor.employee.id);
     if (!actor?.active || !snapshot.facts.workspace.active)

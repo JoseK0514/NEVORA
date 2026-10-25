@@ -84,6 +84,11 @@ function id(value: unknown): string {
   return value;
 }
 
+/**
+ * Accept only the fields for one correction kind and normalize explicit instants.
+ * A missing-entry supersession requires both base identity and revision; location,
+ * ownership and overlap authority are deliberately left to the server/SQL boundary.
+ */
 export function parseCorrectionRequestCommand(value: unknown): CorrectionRequestCommand {
   if (!object(value) || !uuid(value.operationId)) throw new Error('Invalid correction request');
   const kind = value.kind;

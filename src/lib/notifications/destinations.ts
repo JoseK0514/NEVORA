@@ -31,6 +31,8 @@ function validDate(value: string): boolean {
 export function safeNotificationOpenPath(notificationId: string): string | null {
   return safeId(notificationId) ? `/app/notifications/open?notificationId=${encodeURIComponent(notificationId)}` : null;
 }
+/** Admit only rooted portal routes with route-specific, nonduplicate query fields.
+ * This syntactic navigation allowlist grants no access to the referenced business data. */
 export function safeReturnTo(candidate: string | undefined): string | null {
   if (!candidate || candidate.length > 2048 || /[\\\u0000-\u0020\u007f#]/.test(candidate) || !candidate.startsWith('/') || candidate.startsWith('//')) return null;
   const rawPath = candidate.split('?')[0];

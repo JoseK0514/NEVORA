@@ -36,6 +36,7 @@ export async function createLocation(input: { name: string; shortName: string; c
  const sql=executor??neonNotificationExecutor(),workspace=await getWorkspace(sql);
  return mutate([...workspaceReadGuard(workspace),...actorGuard(input.actorEmployeeId),...managementSessionStatements(input.proof,input.actorEmployeeId,['OWNER']),{text:`INSERT INTO locations(id,workspace_id,clocker_key,name,short_name,active) VALUES($1,$2,$3,$4,$5,true) RETURNING ${fields}`,values:[id,workspace.id,key,profile.name,profile.shortName]}],sql,input.proof,input.actorEmployeeId);
 }
+/** Owner catalog edit with exact timestamp-text concurrency; catalog deactivation retains referenced operational history. */
 export async function updateLocation(input: { id: string; name: string; shortName: string; active: boolean; expectedUpdatedAt: string; actorEmployeeId: string; proof: SessionMutationProof }, executor?: SqlExecutor): Promise<CatalogLocation> {
  assertManagementProof(input.proof,input.actorEmployeeId);
  if(!input.expectedUpdatedAt)throw new LocationConcurrencyError();

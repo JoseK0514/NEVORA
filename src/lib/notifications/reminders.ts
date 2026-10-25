@@ -12,11 +12,16 @@ import type { NotificationIntent, SourceSnapshot, RecipientAccess, PushEnvironme
 /** Task 8 WorkerDeps extends this trigger-agnostic contract with delivery/provider dependencies. */
 export type ReminderDeps = {state:NotificationStateRepository;executor:SqlExecutor;config:NotificationConfig;clock():Date};
 type SummaryInput = {source:SourceSnapshot;expiresAt:string;seedId?:string;urgency?:NotificationIntent['urgency']};
+/** Reconcile a source as its own prior snapshot, preserving personal publication
+ * clocks instead of treating a scanner pass as a new schedule publication. */
 export function planSourceReminders(source:SourceSnapshot,recipients:readonly RecipientAccess[],now:Date,environment:PushEnvironment,policy:NotificationPolicy):NotificationIntent[] {
     if (source.kind!=='AVAILABILITY' && source.kind!=='SCHEDULE') return [];
     // The scanner is not a new publication. Preserve the effective personal clock.
     return buildNotificationIntents({after:source,before:source.kind==='SCHEDULE'?source:undefined,recipients,now,environment,policy}).filter(i=>i.purpose==='REMINDER');
 }
+/** Pure grouping of current, unconsumed manager items. Consumption keys use local
+ * delivery-day/deadline budgets; returned candidates still need locked persistence
+ * to prevent concurrent collectors from spending the same summary budget. */
 export function buildSummaryGroup(sources:readonly SummaryInput[],recipient:RecipientAccess,now:Date,environment:PushEnvironment,policy:NotificationPolicy,consumed:ReadonlySet<string>):NotificationIntent|null {
     if (!recipient.active || !isReviewRole(recipient)) return null;
     const candidates = sources.flatMap(input=>{

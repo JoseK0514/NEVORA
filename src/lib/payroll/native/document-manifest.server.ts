@@ -5,6 +5,9 @@ import { hash, statement as q, workspaceSql as ws } from '../store';
 import { PayrollError } from '../model';
 type Documents = Awaited<ReturnType<typeof generatePdfs>>;
 const documentsSql = `SELECT jsonb_agg(jsonb_build_object('id',d.id::text,'employeeId',d.employee_id,'kind',d.kind,'sha256',d.sha256,'metadata',d.payload) ORDER BY d.id) FROM payroll_documents d WHERE d.workspace_id=${ws} AND d.run_id=$1::uuid AND d.kind IN('EMPLOYEE_STATEMENT','COMPANY_SUMMARY')`;
+/** Build guards and a manifest binding exact persisted bytes/metadata to this approved
+ * calculation revision. Run after document inserts in the same transaction; retries
+ * must match the existing manifest rather than replacing an approved artifact set. */
 export function nativeDocumentManifestStatements(run: PayrollRun, documents: Documents) {
     if (run.nativeCalculation?.state !== 'ready' || run.sourceAuthority !== 'NATIVE_RECORDED_TIME' || run.status !== 'APPROVED')
         throw new PayrollError('NATIVE_APPROVAL_REQUIRED', 409);
@@ -20,6 +23,8 @@ export function nativeDocumentManifestStatements(run: PayrollRun, documents: Doc
         q(`SELECT (CASE WHEN (SELECT payload FROM native_payroll_document_manifests WHERE workspace_id=${ws} AND run_id=$1::uuid)=$2::jsonb THEN '1' ELSE 'NATIVE_DOCUMENT_MANIFEST_CONFLICT' END)::integer`, run.id, JSON.stringify(payload))
     ];
 }
+/** Require the stored document set and calculation fingerprint to match the approved
+ * manifest before publication. Document count alone cannot establish native readiness. */
 export function nativePublicationGuard(run: PayrollRun) {
     if (run.nativeCalculation?.state !== 'ready' || run.status !== 'APPROVED')
         throw new PayrollError('NATIVE_APPROVAL_REQUIRED', 409);

@@ -17,6 +17,8 @@ import { buildNativeRunCandidate, type NativePreparationFacts } from './preparat
 import { NATIVE_CALCULATOR_VERSION } from './calculate';
 import { buildRecordedSourceCapture, projectRecordedSourceCapture, type RecordedSourceRequest, type RecordedSourceCapture } from './recorded-source.server';
 export const EXACT_CENT_ASSESSMENT_SHA256 = 'c731b2e9afaa8771e14491b3a187edc49f4cc0539ec87ed53a1e9dd1020f075c';
+/** Detect ledger relation presence only. This is calculator-schema capability,
+ * not proof of configured profiles, attested inputs, accepted rules or ready payroll. */
 export async function nativeSchemaAvailable(ex: SqlExecutor) {
     const rows = await ex.query<{
         available: boolean;
@@ -25,6 +27,9 @@ export async function nativeSchemaAvailable(ex: SqlExecutor) {
         throw new PayrollError('NATIVE_SOURCE_UNAVAILABLE', 503);
     return rows[0].available === true;
 }
+/** Build a later SQL equality guard for captured rows, ignoring only capture time.
+ * Execute alongside the eventual write under the original locks/permission guards;
+ * constructing this statement does not freeze source data between transactions. */
 export function exactReadFence(query: SqlStatement, rows: unknown[]): SqlStatement {
     const retained = rows.map(row => {
         const copy = structuredClone(row) as {
@@ -91,6 +96,10 @@ export type NativeCapture = {
     guards: SqlStatement[];
 };
 /** All requests, profiles, sources and balances originate on the server. No client money. */
+/** Capture profiles, finalized effective entries and attested/ledger YTD into an
+ * unapproved candidate. Returned guards must accompany the caller’s commit because
+ * capture spans protected reads, not one long snapshot. Blocked facts suppress
+ * amounts; progress lets worker callers renew their lease between employee reads. */
 export async function captureNativePayroll(seed: {
     id: string;
     source: Source;

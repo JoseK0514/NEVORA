@@ -25,6 +25,8 @@ export async function readExportProfiles(proof:SessionMutationProof,executor:Sql
  const result=await executor.transaction([...guards,{text:`SELECT profile_id AS id,revision,profile FROM nevora_payroll_profile_latest WHERE workspace_id=$1 ORDER BY profile_id LIMIT 101`,values:[workspace.id]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)]);
  const rows=result[guards.length]??[];if(rows.length>100)throw new Error('Mapping profile limit');const projected=rows.map(saved);await currentCompany(proof,access,executor);return projected;
 }
+/** Save a reviewed mapping through the database command function with operation
+ * replay and expectedRevision control; current company scope is rechecked on return. */
 export async function saveExportProfile(proof:SessionMutationProof,input:unknown,executor:SqlExecutor=neonNotificationExecutor()):Promise<SavedExportProfile>{
  management(proof);if(!object(input)||!uuid(input.operationId)||!uuid(input.id)||!Number.isSafeInteger(input.expectedRevision)||Number(input.expectedRevision)<0||Object.keys(input).some(k=>!['operationId','id','expectedRevision','profile'].includes(k)))throw new Error('Invalid mapping command');
  const profile=parseExportProfile(input.profile),access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor),{workspace,authority}=access,ids=[...new Set([proof.employee.id,...profile.employeeMappings.map(m=>m.employeeId)])].sort();
@@ -45,6 +47,10 @@ function payload(value:unknown,command:ExportCommand):PayrollExportPayload{
  if(!object(value)||value.operationId!==command.operationId||typeof value.csv!=='string'||typeof value.csvSha256!=='string'||typeof value.canonicalSha256!=='string'||!object(value.model)||value.model.version!==1||!Array.isArray(value.model.rows)||value.profileId!==command.profileId||value.profileRevision!==command.profileRevision||createHash('sha256').update(value.csv).digest('hex')!==value.csvSha256||digest(value.model)!==value.canonicalSha256)throw new Error('Export receipt could not be verified');
  parseExportProfile(value.profile);return value as PayrollExportPayload;
 }
+/** Create/recover an actor-scoped export receipt under current company authority.
+ * Every selected card binds revision, source hash and finalization operation; profile
+ * revision and payload fingerprints must also match before CSV is returned. This
+ * records an export, without submitting it to a payroll provider. */
 export async function createPayrollExport(proof:SessionMutationProof,input:unknown,executor:SqlExecutor=neonNotificationExecutor()):Promise<PayrollExportPayload>{
  management(proof);const command=parseExportCommand(input),commandHash=digest(command),access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor),{workspace,authority}=access,ids=[...new Set([proof.employee.id,...command.cards.map(c=>c.employeeId)])].sort();
  const guards=[...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE',values:[ids]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)];

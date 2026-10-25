@@ -64,6 +64,10 @@ function resolution(review: AttentionReview, today: Extract<Today, { state: "rea
   return covered ? "resolved" : "not_current";
 }
 
+/** Derive ranked attention from captured Today/planning evidence without I/O. Saved
+ * dismiss/defer choices apply only to matching issue fingerprints; changed evidence
+ * reopens attention. Public items omit internal proof while issues retain it for
+ * a later authorized review command. At most three visible items enter the briefing. */
 export function deriveAttention(today: Today, coverage: AttentionCoverage | null, reviews: AttentionReview[] = []): { briefing: AttentionBriefing; issues: InternalAttention[] } {
   if (today.state !== "ready") return { briefing: { state: "unavailable", date: null, observedAt: new Date().toISOString(), partial: true, items: [], reviewed: [], total: 0, hidden: 0, sources: [] }, issues: [] };
   if (coverage && (coverage.health.coverageBlocks.length >= 10000 || new Intl.DateTimeFormat("en-CA", { timeZone: today.timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(coverage.observedAt)) !== today.today)) coverage = null;

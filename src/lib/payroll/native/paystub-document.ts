@@ -205,6 +205,9 @@ function checkGlyphs(p: NativePaystubPresentation, regular: PDFFont, bold: PDFFo
   })).map(([path]) => path);
   if (paths.length) throw new NativePaystubDocumentError("UNSUPPORTED_DOCUMENT_GLYPH", paths);
 }
+/** Validate a copied presentation and every dynamic string against both embedded
+ * font repertoires before approval. Reject unsupported text explicitly rather than
+ * replacing characters and changing the approved document’s meaning. */
 export async function preflightNativePaystubGlyphs(input: NativePaystubPresentation): Promise<void> {
   const p = presentation(input), pdf = await PDFDocument.create();
   const regular = await pdf.embedFont(StandardFonts.Helvetica), bold = await pdf.embedFont(StandardFonts.HelveticaBold);

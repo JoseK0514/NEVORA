@@ -174,6 +174,12 @@ function copyHistoricalShift(
   };
 }
 
+/**
+ * Copy a bounded, identity-consistent source before projection. Incomplete punch
+ * or break coverage refuses the whole source; incomplete publication coverage
+ * can still support raw-history observations with explicit comparison limits.
+ * Timestamp contradictions remain for the observer to report as integrity issues.
+ */
 export function validateAttendanceSource(
   value: unknown,
 ): ValidatedAttendanceSource | UnavailableProjection {

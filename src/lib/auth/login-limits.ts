@@ -2,6 +2,10 @@ import { createHash } from "node:crypto";
 import { neonNotificationExecutor } from "../data/notification-transactions";
 import type { SqlExecutor } from "../notifications/types";
 
+/** Count a passkey/auth attempt in a 15-minute database bucket before checking
+ * credentials. Each scope has a 300-attempt global cap and a hashed subject cap;
+ * attempts past the global cap do not create additional subject rows. Storage
+ * errors propagate so the caller can choose its unavailable response. */
 export async function consumeAuthLimit(scope: string, subject: string, limit: number, executor: SqlExecutor): Promise<boolean> {
   const key = createHash("sha256").update(scope + ":" + subject).digest("hex");
   const result = await executor.transaction([
@@ -21,6 +25,8 @@ export async function consumeAuthLimit(scope: string, subject: string, limit: nu
 export function consumeLoginAttempt(employeeId: string, executor: SqlExecutor = neonNotificationExecutor()) {
   return consumeAuthLimit("login", employeeId.trim().toUpperCase(), 10, executor);
 }
+/** Passkey-enabled password fallback shares the per-ID login budget. The flag
+ * off path skips this limiter; storage failures on the enabled path deny. */
 export async function passwordLoginAllowed(employeeId: string) {
   if (process.env.NEXT_PUBLIC_NEVORA_PASSKEYS !== "on") return true;
   try { return await consumeLoginAttempt(employeeId); } catch { return false; }

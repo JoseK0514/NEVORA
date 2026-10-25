@@ -23,6 +23,11 @@ async function configurationAdmission(proof:Awaited<ReturnType<typeof requireSes
  try{await assertOperationalAccess(proof,{kind:'COMPANY'});}
  catch(error){if(!inline&&(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error)))redirect('/app/schedule/settings?error=ACCESS_DENIED');throw error;}
 }
+/**
+ * Shared inline/redirect adapter for staffing and hour targets. Preserve explicit
+ * lead-choice markers: absent fields must not silently disable a lead rule.
+ * Targets are normalized to quarter hours; persistence owns final authority.
+ */
 async function saveSettings(formData: FormData, inline = false) {
   const proof = await requireSessionMutationProof();
   if (!MANAGER_ROLES.includes(proof.employee.role)) redirect('/app');
@@ -114,6 +119,7 @@ async function saveSettings(formData: FormData, inline = false) {
   if (inline) return { success: "Schedule health settings updated." };
   redirect("/app/schedule/settings?saved=1");
 }
+/** Adds a same-day coverage requirement; midnight end input is normalized to 24:00. */
 async function addWindow(formData: FormData, inline=false) {
   const proof = await requireSessionMutationProof();
   if (!MANAGER_ROLES.includes(proof.employee.role)) redirect('/app');

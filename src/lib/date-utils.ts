@@ -1,5 +1,11 @@
+/**
+ * Calendar-label helpers for YYYY-MM-DD values, using UTC noon so host timezone
+ * never moves the written day. These are not elapsed-time/payroll calculations;
+ * convert real business-time boundaries through business-time.ts instead.
+ */
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+/** Rejects impossible dates as well as malformed labels; Date alone normalizes overflow. */
 export function isValidIsoDate(date: string) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
   const value = new Date(`${date}T12:00:00Z`);
@@ -16,6 +22,7 @@ export function addDays(date: string, amount: number) {
   return value.toISOString().slice(0, 10);
 }
 
+/** Returns the Monday label containing a valid calendar date, including Sunday. */
 export function weekStartFor(date: string) {
   const value = new Date(`${date}T12:00:00Z`);
   const day = value.getUTCDay();
@@ -83,6 +90,11 @@ export function formatTimeRange(startTime: string, endTime: string) {
   return `${formatTime(startTime)} – ${endOfDay ? "midnight" : formatTime(endTime)}`;
 }
 
+/**
+ * Nominal wall-clock minutes, wrapping an earlier end into the next day.
+ * Inputs must already be valid times; equal endpoints mean zero, not 24 hours.
+ * This deliberately does not account for timezone/DST changes in elapsed time.
+ */
 export function durationMinutes(startTime: string, endTime: string) {
   const toMinutes = (time: string) => {
     const [hours, minutes] = time.slice(0, 5).split(":").map(Number);

@@ -39,12 +39,19 @@ function shiftReturnUrl(shift: { weekStart: string; locationId: string; date: st
 
 const accessError=()=>({error:'Operational access is unavailable. Reload and try again.',issueCode:'ACCESS_DENIED'});
 const denied=(error:unknown)=>isOperationalAuthorizationError(error)||isManagementAuthorizationError(error);
+/** Re-check the original scope after awaited work; a role alone cannot prove unchanged access. */
 async function currentAdmission(proof:Awaited<ReturnType<typeof requireSessionMutationProof>>,original:Awaited<ReturnType<typeof assertOperationalAccess>>){
  try{await assertOriginalOperationalAccess(proof,original);return true;}
  catch(error){if(denied(error))return false;throw error;}
 }
 
 
+/**
+ * Converts the manager form into a validated assignment in workspace local time.
+ * UI validation gives actionable issues; the data writer must also revalidate
+ * current authority and assignment facts when committing. Errors may return to
+ * the form, while committed saves revalidate and redirect to the affected row.
+ */
 export async function createShiftAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
   const proof = await requireSessionMutationProof();
@@ -132,6 +139,11 @@ export async function createShiftAction(formData: FormData) {
   );
 }
 
+/**
+ * Publishes one location/week through the revision writer. Warning confirmation
+ * is a review step, not a bypass of transactional publication guards. Re-check
+ * original company access after reads/writes before exposing their result.
+ */
 export async function publishScheduleAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
   const proof = await requireSessionMutationProof();
@@ -175,6 +187,12 @@ export async function publishScheduleAction(formData: FormData) {
 }
 
 
+/**
+ * Edits a shift using the current operational editor projection. Company-scoped
+ * edits also run detailed validation; limited scopes use only admitted options.
+ * An absent position field preserves the old position, whereas an empty field
+ * explicitly clears it. Persistence owns the final concurrent-source check.
+ */
 export async function updateShiftAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
   const proof = await requireSessionMutationProof();
@@ -249,6 +267,7 @@ export async function updateShiftAction(formData: FormData) {
   );
 }
 
+/** Uses the scoped editor before deletion; retained exchange history can refuse the write. */
 export async function deleteShiftAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
   const proof = await requireSessionMutationProof();
@@ -274,6 +293,7 @@ export async function deleteShiftAction(formData: FormData) {
   redirect(shiftReturnUrl(existing, "&deleted=1"));
 }
 
+/** Copies through the receipt-based service; retries must reuse the submitted operationId. */
 export async function copyPreviousWeekAction(formData: FormData) {
  await requireRoles(MANAGER_ROLES);
  const proof=await requireSessionMutationProof();
@@ -283,6 +303,12 @@ export async function copyPreviousWeekAction(formData: FormData) {
  redirect(`/app/schedule/copy-receipt?operation=${receipt.operationId}`);
 }
 
+/**
+ * Converts a datetime-local value using the workspace timezone before saving.
+ * Pass the conversion workspace to the writer so a concurrent timezone change
+ * rejects the save instead of silently moving the intended deadline instant.
+ * An empty deadline removes the cutoff; return destinations are allowlisted.
+ */
 export async function setAvailabilityDeadlineAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
   const proof = await requireSessionMutationProof();

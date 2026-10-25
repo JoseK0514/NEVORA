@@ -46,6 +46,11 @@ export async function requestPasswordRecovery(employeeId:string,email:string,del
   if(delivery&&issued?.email)await delivery.send(issued.email,token);
  }catch{ /* Public response never reveals account existence or mail/SQL errors. */ }
 }
+/** Issue a short-lived recovery bearer after current Company access and target
+ * role checks. Managers may assist employee/lead accounts; Owners may assist
+ * other roles too. Prior unused proofs retire in the issue transaction, and
+ * actor authority is checked again before returning the bearer to the caller.
+ * All failures collapse to unavailable; this path sends no recovery email. */
 export async function issueAssistedRecovery(proof:SessionMutationProof,employeeId:string,attestation:string,executor:SqlExecutor=neonNotificationExecutor()){
  try{
   assertManagementProof(proof,proof?.employee?.id);
@@ -64,7 +69,10 @@ export async function issueAssistedRecovery(proof:SessionMutationProof,employeeI
  }catch{return unavailable;}
 }
 /** Atomic credential replacement + single-use consumption + all portal session
- * revocation. Clocker device/PIN proofs and operational records are untouched. */
+ * revocation. The proof binds the employee and credential revisions at issuance,
+ * so later lifecycle/password changes invalidate it. Push detachment/cancellation
+ * commits with the reset; the optional registered-email notice is best effort
+ * after commit. Clocker device/PIN proofs and operational records are untouched. */
 export async function resetPasswordWithProof(token:string,password:string,executor:SqlExecutor=neonNotificationExecutor(),delivery:RecoveryDelivery|null=null):Promise<{state:'reset'|'invalid'|'unavailable'}>{
  if(!/^[A-Za-z0-9_-]{43}$/.test(token)||Buffer.from(token,'base64url').length!==32||Buffer.from(token,'base64url').toString('base64url')!==token||password.length<8||password.length>1024)return {state:'invalid'};
  try{

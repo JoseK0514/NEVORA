@@ -5,6 +5,9 @@ export const REQUEST_PUSH_KINDS = ['TIME_OFF_APPROVED','TIME_OFF_DENIED','CALLOU
 const REQUEST_TYPES = new Set<string>(REQUEST_PUSH_KINDS);
 /** Every kind buildPushEnvelope can send. public/fuel-portal-sw.js must accept each one (service-worker.test.ts checks). */
 export const PUSH_KINDS = ['COMMUNICATION', 'SCHEDULE_PUBLISHED', 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER', 'SCHEDULE_CHANGED', 'COVERAGE_ATTENTION', ...REQUEST_PUSH_KINDS] as const;
+/** Build the bounded service-worker envelope from supported intent kinds. Copy is
+ * deliberately generic and excludes source/financial details; ownership generation
+ * fences device display and the event-key hash supplies a stable replacement tag. */
 export function buildPushEnvelope(intent: NotificationIntent, ownershipGeneration: string): PushEnvelope {
   if (!/^[A-Za-z0-9_-]{1,128}$/.test(ownershipGeneration) || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(intent.id) || !Number.isFinite(Date.parse(intent.expiresAt))) throw new Error('Invalid push envelope metadata');
   let title: string;

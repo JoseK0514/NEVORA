@@ -24,6 +24,9 @@ export async function nativeProfiles(proof: SessionMutationProof, ex: SqlExecuto
     const [row] = await guarded<Omit<NativeProfilesResponse, "version">>(proof, "OWNER", q(`SELECT COALESCE((SELECT jsonb_agg(payload ORDER BY employee_id) FROM native_payroll_profiles_current WHERE workspace_id=${ws}),'[]') AS configurations,COALESCE((SELECT jsonb_agg(jsonb_build_object('employeeId',employee_id,'ytd',payload) ORDER BY employee_id,tax_year) FROM native_payroll_opening_ytd_current WHERE workspace_id=${ws}),'[]') AS "openingYtd",COALESCE((SELECT jsonb_agg(payload ORDER BY employee_id) FROM native_payroll_manager_scopes_current WHERE workspace_id=${ws}),'[]') AS "managerScopes"`), ex);
     return { ...row, version: "PAYROLL_NATIVE_PROFILES_V1" };
 }
+/** Owner-only append of configuration, opening-YTD attestation or Manager scope.
+ * Subject/location checks and expectedRevision run with actor-scoped receipt storage;
+ * replay accepts the same operation only when the normalized command hash matches. */
 export async function saveNativeProfile(proof: SessionMutationProof, value: unknown, ex: SqlExecutor = neonNotificationExecutor()): Promise<NativeProfileReceipt> {
     const c = parseNativeProfileCommand(value);
     const prior = await saved(proof, c, ex);

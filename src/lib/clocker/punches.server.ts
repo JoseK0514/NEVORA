@@ -68,6 +68,9 @@ export class ClockerPunchService {
    snapshot.entry.status==='ON_BREAK'?['END_BREAK','CLOCK_OUT']:breakTypes.length?['START_BREAK','CLOCK_OUT']:['CLOCK_OUT'];
   return {snapshot,verificationId:this.context(proof),allowedActions,atOtherLocation,breakTypes,...(breaksOn?{}:{breaksOff:true as const})};
  }
+ /** Apply a command through the canonical database transition and immutable ledger.
+  * The request hash binds its employee and exact payload for replay; CLOCK_IN also
+  * carries a fenced publication capture. Receipt lookup handles ambiguous replies. */
  async execute(proof:ClockerIdentityProof,input:unknown):Promise<PunchReceipt>{
   const command=parsePunchCommand(input),expected=this.context(proof);
   if(command.action==='START_BREAK'&&!(await readActivePresentation(proof.device.workspaceId,this.executor)).modules.breaks)throw new ClockerPunchError('CONTEXT_CHANGED');

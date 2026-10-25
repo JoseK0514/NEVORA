@@ -1,5 +1,7 @@
 import { parsePeriod, type Period } from "../timecards/project";
 
+/** Accept exactly two date-only endpoints, delegating inclusive ordering/range
+ * limits to the canonical timecard period parser. No browser time-zone conversion. */
 export function parseReportPeriod(value: unknown): Period {
   if (
     !value ||

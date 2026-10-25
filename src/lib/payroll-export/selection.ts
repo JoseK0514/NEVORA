@@ -1,4 +1,6 @@
 import type {TimecardItem} from '../timecards/read-model';
+/** Default to at most 100 finalized cards from the supplied view, reporting omitted
+ * non-finalized and over-limit counts separately. This selection is not authority. */
 export function selectVisibleFinalized(cards:readonly TimecardItem[]):{selected:string[];excluded:number;overLimit:number}{
  const finalized=cards.filter(c=>c.state==='FINALIZED');
  return {selected:finalized.slice(0,100).map(c=>c.card.employeeId),excluded:cards.length-finalized.length,overLimit:Math.max(0,finalized.length-100)};

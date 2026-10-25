@@ -25,6 +25,9 @@ function hashToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
 }
 
+/** Commit a session against the credential revision verified by the caller,
+ * then set the bearer cookie. Cookie-writing failure can occur after the database
+ * commit; callers must not treat this as an atomic database/browser operation. */
 export async function createSession(employeeId: string, reviewed: ReviewedLoginCredential) {
   const prepared = prepareSession(employeeId, reviewed);
   // Employee lifecycle precedes credentials/session locks. Separate statements
@@ -33,6 +36,8 @@ export async function createSession(employeeId: string, reviewed: ReviewedLoginC
   await writeSessionCookie(prepared);
 }
 
+/** Browser delivery only; this does not persist or verify a session. Call after
+ * the corresponding session transaction has acknowledged its commit. */
 export async function writeSessionCookie({ token, expiresAt }: Pick<PreparedSession, "token" | "expiresAt">) {
   const store = await cookies();
   store.set(SESSION_COOKIE, token, {
@@ -44,6 +49,8 @@ export async function writeSessionCookie({ token, expiresAt }: Pick<PreparedSess
   });
 }
 
+/** Delegate session/installation cleanup to the logout coordinator and always
+ * delete the authentication cookie, including when cleanup rejects. */
 export async function destroySession() {
   const store = await cookies();
   try {
@@ -56,6 +63,9 @@ export async function destroySession() {
   }
 }
 
+/** Read the active employee behind this request's unexpired session. This DTO
+ * supports rendering/role admission; protected writers still need their own
+ * current session and authority checks inside the business transaction. */
 export async function getSession(): Promise<SessionEmployee | null> {
   const store = await cookies();
   const token = store.get(SESSION_COOKIE)?.value;
@@ -105,6 +115,8 @@ const readSessionForToken = cache(async (token: string): Promise<SessionEmployee
   };
 });
 
+/** Redirect missing/expired/inactive sessions to login; database failures still
+ * propagate so an outage is not silently presented as a signed-out state. */
 export async function requireSession() {
   const session = await getSession();
   if (!session) redirect("/login");

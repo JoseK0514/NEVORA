@@ -294,6 +294,9 @@ export function parseCompanyPolicySettings(
   }
   return output;
 }
+/** Normalize the operation UUID and validate a complete scope revision. null location
+ * selects company defaults; a location ID selects that override stream. This shape
+ * validation does not establish current Owner rights or referenced-subject ownership. */
 export function parseCompanyPolicyCommand(
   value: unknown,
 ): CompanyPolicyCommand {

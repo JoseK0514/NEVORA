@@ -18,6 +18,9 @@ export function getTenantRuntimeDb(role: 'APP' | 'WORKER') {
   } catch { throw new Error('tenant_runtime_not_configured'); }
 }
 
+/** Shared legacy DATABASE_URL transport. Tenant-proof execution must select its
+ * dedicated runtime principal through getTenantRuntimeDb instead; caching this
+ * handle stores connection configuration and confers no workspace context. */
 export function getDb() {
   if (database) return database;
 
@@ -30,6 +33,9 @@ export function getDb() {
   return database;
 }
 
+/** Compatibility adapter for bare Neon row arrays and driver {rows} responses.
+ * Unrecognized results become an empty array and T is only a cast; security
+ * boundaries needing strict malformed/unavailable handling must decode directly. */
 export function queryRows<T = Record<string, unknown>>(result: unknown): T[] {
   if (Array.isArray(result)) {
     return result as T[];

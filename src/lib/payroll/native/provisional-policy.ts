@@ -39,6 +39,9 @@ export type NativeCalculationPolicyEvidence = {
   operations: NativePolicyOperation[];
 };
 
+/** Recognize the exact scoped provisional reference with its required profile inputs.
+ * Absence uses the non-provisional path; an incompatible claimed reference throws
+ * instead of silently falling back to another rounding/daily-boundary policy. */
 export function usesOwnerPayrollPolicy(input: Pick<NativePayrollInput, 'calculationPolicyReference' | 'tax' | 'wages' | 'payday'>): boolean {
   if (input.calculationPolicyReference === undefined || input.calculationPolicyReference === null) return false;
   if (input.calculationPolicyReference !== OWNER_PAYROLL_POLICY.id || !usesAcceptedProfessionalPrCents(input.tax, input.payday) ||

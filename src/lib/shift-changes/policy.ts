@@ -8,6 +8,7 @@ export function isWorkflowPolicy(raw: unknown): raw is WorkflowPolicy {
     && (raw.submissionAdvanceMinutes === null || minutes(raw.submissionAdvanceMinutes)) && (raw.completionAdvanceMinutes === null || minutes(raw.completionAdvanceMinutes))
     && (raw.submissionAdvanceMinutes === null || raw.completionAdvanceMinutes === null || raw.submissionAdvanceMinutes >= raw.completionAdvanceMinutes);
 }
+/** Preserve unknown/null cutoffs separately from configured zero; malformed policy has no default authority. */
 export function resolveShiftChangePolicy(raw: unknown): ShiftChangePolicy | null {
   if (!object(raw) || raw.version !== 1 || !revision(raw.revision) || !isWorkflowPolicy(raw.swap) || !isWorkflowPolicy(raw.coverage)) return null;
   const scope = (s: WorkflowPolicy): WorkflowPolicy => ({revision:s.revision,mode:s.mode,submissionAdvanceMinutes:s.submissionAdvanceMinutes,completionAdvanceMinutes:s.completionAdvanceMinutes});
@@ -26,10 +27,15 @@ function setting<T>(raw: unknown, valid: (value: unknown) => boolean): RuleSetti
   if (raw.status === 'CONFIGURED' && revision(raw.revision) && raw.revision > 0 && valid(raw.value)) return {status:'CONFIGURED',revision:raw.revision,value:raw.value as T};
   return {status:'UNKNOWN'};
 }
+/** Only explicit, structurally valid review evidence can mark a rule configured or not applicable. */
 export function resolveOperationalRuleProfile(raw: unknown): OperationalRuleProfile {
   if (!object(raw) || raw.version !== 1 || !revision(raw.revision) || typeof raw.reviewedBy !== 'string' || !raw.reviewedBy || !instant(raw.reviewedAt)) return unknownOperationalRuleProfile();
   return {version:1,revision:raw.revision,reviewedBy:raw.reviewedBy,reviewedAt:raw.reviewedAt,minimumRest:setting(raw.minimumRest,duration),maximumShift:setting(raw.maximumShift,duration),maximumDaily:setting(raw.maximumDaily,v=>duration(v) && object(v) && (v.window === 'BUSINESS_CALENDAR_DAY' || v.window === 'ROLLING_24_HOURS')),breaks:setting(raw.breaks,breakRule),projectedOvertime:setting(raw.projectedOvertime,overtime)};
 }
+/**
+ * Evaluate strict cutoffs: equality is already closed. Submission and completion
+ * are independent stages, while recorded consent caps any later policy loosening.
+ */
 export function evaluateRequestDeadlines(input: DeadlineInput): DeadlineResult {
   const {currentSubmissionAdvanceMinutes:submission,currentCompletionAdvanceMinutes:completion} = input;
   if (submission === null || completion === null) return {status:'UNVERIFIED',allowed:false};

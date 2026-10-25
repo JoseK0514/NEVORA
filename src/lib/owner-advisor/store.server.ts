@@ -14,6 +14,10 @@ import {
 } from "./contracts";
 export const commandHash = (command: AdvisorCommand) =>
   createHash("sha256").update(JSON.stringify(command)).digest("hex");
+/** Owner/workspace-scoped persistence. Each single-statement helper wraps current
+ * original admission guards on both sides; multi-statement completion applies the
+ * same guards plus request lease checks. Provider side effects cannot be rolled back
+ * by a database failure, so failed/ambiguous requests retain their recorded identity. */
 export class AdvisorStore {
   constructor(
     readonly proof: SessionMutationProof,
@@ -110,6 +114,8 @@ export class AdvisorStore {
       values: [...this.scope, requestId],
     });
   }
+  /** Commit bounded recent chat history and its recoverable answer while the running
+   * request lease is current; retain only the six latest completed ask payloads. */
   async complete(requestId: string, message: string, answer: AdvisorAnswer) {
     const guards = ownerGuards(this.proof, this.original);
     await this.ex.transaction([

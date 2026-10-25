@@ -154,6 +154,14 @@ export function maximumScheduledWeeklyHours(
     policy.businessMaximumWeeklyHours ?? Infinity,
   );
 }
+/**
+ * Shared assignment rules over the employee's complete dated, cross-location
+ * ledger. Exclude replaced shift IDs explicitly; released callouts receive no
+ * overlap/hour credit. Overnight work is split across business days/workweeks.
+ * canSave reflects hard blockers; eligible additionally rejects operational
+ * manager-review warnings so automatic planners cannot silently accept them.
+ * This pure result supplies no persistence or caller authorization.
+ */
 export function validateShift(input: ValidateShiftInput) {
   const { candidate, employee, mode = "AUTOMATIC", policy = {} } = input;
   const issues: ValidationIssue[] = [],

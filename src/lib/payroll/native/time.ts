@@ -26,6 +26,10 @@ export type WorkedPiece = {
     premiumReason: "DAILY" | "REST_DAY" | "WEEKLY" | null;
     federalOvertime: boolean;
 };
+/** Validate finalized provenance and split effective work at break, wage, civil-day,
+ * pay-period and verified workweek boundaries. Returned starts/ends and unpaid time
+ * are bigint nanoseconds; pieces include surrounding context for daily/rest/weekly
+ * classification, so consumers must select only pieces inside payLeft/payRight. */
 export function classifyRecordedTime(input: NativePayrollInput) {
     const ownerPolicy = usesOwnerPayrollPolicy(input);
     const { period, wages, timecards } = input;

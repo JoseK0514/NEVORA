@@ -11,6 +11,7 @@ export function currentShiftFingerprintSql(shift='sh',schedule='s'):string {
  const parts=fields(shift,schedule).map(([k,v])=>`'"${k}":',${k==='scheduledBreaks'?`'{"status":"UNKNOWN"}'`:`COALESCE(to_jsonb(${v})::text,'null')`}`);
  return `'v1:'||encode(sha256(convert_to(concat('{',${parts.join(",',',")},'}'),'UTF8')),'hex')`;
 }
+/** Shared release predicate: approved status alone cannot release a different assignment episode or changed material terms. */
 export function currentCalloutReleaseSql(callout='c',shift='sh',schedule='s'):string {
  return `${callout}.status='APPROVED' AND ${callout}.shift_id=${shift}.id AND ${callout}.employee_id=${shift}.employee_id AND ${callout}.assignment_episode_id=${shift}.assignment_episode_id AND ${callout}.reviewed_terms_fingerprint=${currentShiftFingerprintSql(shift,schedule)} AND ${callout}.source_terms=${currentShiftTermsSql(shift,schedule)}`;
 }

@@ -11,6 +11,12 @@ import {
 } from "@/lib/time-corrections/http.server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+/**
+ * Executes or recovers a copy operation with fresh proof. Recovery loads the
+ * stored command by its original ID before re-execution; it must not rebuild
+ * the command from current UI defaults. Unconfirmed responses preserve that ID
+ * for later reconciliation and do not establish that nothing was written.
+ */
 export async function POST(request: Request) {
   const boundary = correctionBoundary(request, true, "x-nevora-schedule-copy");
   if (boundary) return correctionJson({ state: "unavailable" }, boundary);

@@ -12,6 +12,7 @@ import { AdvisorError } from "@/lib/owner-advisor/contracts";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+/** Bounds streamed UTF-8 bytes, not just Content-Length, and releases the reader on abort/error. */
 async function readBody(
   request: Request,
   signal: AbortSignal,
@@ -51,6 +52,7 @@ async function readBody(
   }
 }
 
+/** Owner-only transport adapter; service owns feature switches, operation state and provider work. */
 async function execute(request: Request, write: boolean, signal: AbortSignal) {
   signal.throwIfAborted();
   const boundary = correctionBoundary(
@@ -85,6 +87,11 @@ async function execute(request: Request, write: boolean, signal: AbortSignal) {
   );
 }
 
+/**
+ * One cancellation budget spans authentication, streamed body parsing and the
+ * advisor call. Race the response as well as passing the signal downstream;
+ * non-cooperative pending I/O must not leave the HTTP request waiting forever.
+ */
 async function handle(request: Request, write: boolean) {
   // One entry deadline covers authentication, body consumption and all service work.
   const signal = AbortSignal.any([request.signal, AbortSignal.timeout(60000)]);

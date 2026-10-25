@@ -55,6 +55,9 @@ export function projectEmployerYtdCounters(tax: NativeTaxProfile, opening: Nativ
     validateEmployerYtdCounters(result, projected);
     return result;
 }
+/** Assess applicable employer programs in bigint cents against remaining attested
+ * wage caps. Optional evidence collectors choose explicit provisional collection or
+ * exact-cent validation; these employer costs never reduce the employee net. */
 export function employerAmounts(tax: NativeTaxProfile, gross: bigint, exactnessOperations?: NativeExactnessOperation[], policyOperations?: NativePolicyOperation[]) {
     return tax.employerContributions.filter(item => item.applicability === "APPLICABLE").map(item => {
         const left = item.capMinor === null ? gross : minor(item.capMinor) - minor(item.wagesBeforeMinor);
@@ -63,6 +66,9 @@ export function employerAmounts(tax: NativeTaxProfile, gross: bigint, exactnessO
         return { code: item.code, label: item.label, amountMinor: (policyOperations ? collectPolicyAmount(exact, policyOperations, 'EMPLOYER_ASSESSMENT', item.code) : exactnessOperations ? exactMinor(exact, exactnessOperations, "EMPLOYER_ASSESSMENT", item.code) : halfUp(exact)).toString() };
     });
 }
+/** Collect active, separately authorized post-tax deductions for this payday.
+ * Validate duplicate/reserved codes, election/cap history and supported employer
+ * matches; return cent strings while appending optional rounding/exactness evidence. */
 export function authorizedAmounts(input: NativePayrollInput, gross: bigint, statutoryCodes: string[], employer: {
     code: string;
     amountMinor: string;

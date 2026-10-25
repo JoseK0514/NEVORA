@@ -98,6 +98,8 @@ const zone=(value:unknown):value is string=>{
 };
 const interval=(start:unknown,end:unknown)=>instant(start)&&instant(end)&&Temporal.Instant.compare(start,end)<0;
 
+// The five displayed decisions are bounded context, not the complete adjustment
+// lineage used by server-side authority and action-center capture.
 function context(value:unknown):CorrectionContext{
   if(!object(value))throw new Error('Invalid correction context');
   if(value.state==='none'||value.state==='unavailable'){
@@ -171,6 +173,7 @@ function item(value: unknown): PublicCorrectionItem {
   };
 }
 
+/** Validate bounded request/target context before forms can use it; malformed ready data throws instead of becoming empty. */
 export function parseEmployeeTimeCorrections(value: unknown): EmployeeTimeCorrections {
   if (!object(value)) throw new Error('Invalid correction response');
   const failed = unavailable(value);
@@ -209,6 +212,7 @@ export function parseEmployeeTimeCorrections(value: unknown): EmployeeTimeCorrec
   };
 }
 
+/** Require a positive, at-most-45-second view lifetime as well as validated review rows. */
 export function parseManagerTimeCorrections(value: unknown): ManagerTimeCorrections {
   if (!object(value)) throw new Error('Invalid correction response');
   const failed = unavailable(value);

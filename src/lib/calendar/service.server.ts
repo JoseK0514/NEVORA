@@ -14,6 +14,7 @@ import {createCalendarToken,calendarDigest,validCalendarToken} from './token.ser
 import {businessDate,shiftBoundaryInstants} from '../business-time';
 import {addDays} from '../date-utils';
 import {serializeCalendar} from './ical';
+/** Bind management commands to the current portal session; feed tokens have an independent lifecycle. */
 export const calendarAuthority=(proof:SessionMutationProof)=>createHash('sha256').update(JSON.stringify(['nevora:calendar:v1',proof.employee.id,proof.sessionTokenHash])).digest('hex');
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const denied=(error:unknown)=>isOperationalAuthorizationError(error)||isManagementAuthorizationError(error)||!!(error&&typeof error==='object'&&'code' in error&&error.code==='22P02'&&'message' in error&&error.message==='invalid input syntax for type integer: "calendar_authorization"');
@@ -33,6 +34,7 @@ export async function getEmployeeCalendarSubscription(proof:SessionMutationProof
   return {state:row?row.revoked_at?'revoked':'active':'none',id:row?.id??null,generation:row?.generation??null,issuedAt:row?.issued_at??null,allowedLocationIds:row?.allowed_location_ids??[],authority:calendarAuthority(proof)};
  }catch(error){return {state:denied(error)?'unauthorized':'unavailable',reason:'read_failed'};}
 }
+/** Recover a committed receipt without recovering the plaintext feed credential, which is never stored here. */
 export async function findCalendarOperation(proof:SessionMutationProof,operationId:string,authority:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<CalendarManagementResult>{
  if(!uuid.test(operationId)||authority!==calendarAuthority(proof))return {status:'blocked',reason:'authority_changed'};
  try{ownProof(proof);}catch{return {status:'blocked',reason:'access_denied'};}
@@ -42,6 +44,12 @@ export async function findCalendarOperation(proof:SessionMutationProof,operation
   return (rows[guards.length]?.[0] as {result:CalendarManagementResult}|undefined)?.result??{status:'outcome_unknown',operationId};
  }catch{return unavailable;}
 }
+/**
+ * Serialize link lifecycle changes against current generation and location scope.
+ * Operation receipts retain only safe metadata: issue/rotate exposes a URL once,
+ * so an uncertain response can leave an active link whose URL requires rotation.
+ * Manager authority permits revocation only, never issuing another person's token.
+ */
 async function manage(proof:SessionMutationProof,employeeId:string,command:CalendarCommand,manager:boolean,executor:SqlExecutor):Promise<CalendarManagementResult>{
  try{assertManagementProof(proof,proof?.employee?.id);if(manager?!['OWNER','MANAGER'].includes(proof.employee.role):!['EMPLOYEE','LEAD'].includes(proof.employee.role))return {status:'blocked',reason:'access_denied'};}catch{return {status:'blocked',reason:'access_denied'};}
  if(!validCalendarCommand(command)||command.authority!==calendarAuthority(proof)||manager&&command.kind!=='REVOKE')return {status:'blocked',reason:'authority_changed'};
@@ -92,6 +100,13 @@ const event=(row:FeedRow,workspaceId:string,employeeId:string,timeZone:string):C
  const boundaries=shiftBoundaryInstants(row,timeZone);
  return {uid:calendarDigest(JSON.stringify(['nevora-calendar-v1',workspaceId,employeeId,row.sourceShiftId]))+'@nevora.calendar',sequence:row.sequence,stamp:new Date(row.modifiedAt).toISOString(),lastModified:new Date(row.modifiedAt).toISOString(),status:row.status,...boundaries,summary:'Work shift',location:row.status==='CANCELLED'?null:row.location};
 };
+/**
+ * Read a bounded replacement feed through a bearer capability. Both the issued
+ * location scope and current employee eligibility must still hold. Published
+ * assignments supply active events; retained removals supply cancellation events
+ * with the same stable UID and a newer publication sequence.
+ * Source/size failures are unavailable, never an empty successful calendar.
+ */
 export async function readCalendarFeed(token:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<CalendarFeedRead>{
  const unauthorized:CalendarFeedRead={state:'unauthorized',reason:'access_denied'};
  if(!validCalendarToken(token))return unauthorized;

@@ -1,5 +1,6 @@
 import type { SessionMutationProof } from '../shift-changes/types';
 import type { SqlStatement } from '../notifications/types';
+/** Recheck wall-clock session expiry and strict workflow deadline after waits; a captured observation cannot extend either. */
 export function shiftChangeSessionGuard(proof:SessionMutationProof,deadline?:string):SqlStatement {
  return {text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM employee_sessions s JOIN employees e ON e.id=s.employee_id WHERE s.token_hash=$1 AND e.id=$2 AND e.role=$3 AND e.active AND s.expires_at>clock_timestamp()) AND EXISTS(SELECT 1 FROM workspaces WHERE singleton AND active) THEN '1' ELSE 'shift_change_authorization' END)::integer, (CASE WHEN $4::timestamptz IS NULL OR clock_timestamp()<$4::timestamptz THEN '1' ELSE 'shift_change_deadline' END)::integer`,values:[proof.sessionTokenHash,proof.employee.id,proof.employee.role,deadline??null]};
 }

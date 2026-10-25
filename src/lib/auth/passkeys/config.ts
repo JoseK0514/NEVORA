@@ -1,5 +1,8 @@
 export type PasskeyConfig = { rpID: string; origin: string };
 
+/** Return the exact WebAuthn RP/origin pair or disable the route with null.
+ * Production uses explicit HTTPS configuration with host equal to rpID; only
+ * development derives an origin from the request, and only for localhost. */
 export function passkeyConfig(requestURL: string, env: Partial<NodeJS.ProcessEnv> = {
   NODE_ENV: process.env.NODE_ENV,
   NEXT_PUBLIC_NEVORA_PASSKEYS: process.env.NEXT_PUBLIC_NEVORA_PASSKEYS,

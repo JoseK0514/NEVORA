@@ -32,6 +32,7 @@ const instant = (v: unknown): string => { if (!text(v, 100)) throw new Error('In
 const nullableInstant = (v: unknown): string | null => v === null ? null : instant(v);
 const ns = (v: string) => Temporal.Instant.from(v).epochNanoseconds;
 
+/** Validate an inclusive business-date range of at most 31 days without date normalization. */
 export function parsePeriod(startDate: string, endDate: string): Period {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(endDate)) throw new Error('Choose a valid period');
   const start = Temporal.PlainDate.from(startDate, { overflow: 'reject' });
@@ -41,6 +42,7 @@ export function parsePeriod(startDate: string, endDate: string): Period {
   return { startDate, endDate };
 }
 
+/** Convert inclusive local dates to a half-open instant interval; DST changes its elapsed length. */
 export function periodInstants(period: Period, timeZone: string) {
   parsePeriod(period.startDate, period.endDate);
   return {
@@ -78,6 +80,12 @@ function parseEntry(v: unknown): TimecardEntry {
     recordedVersion: v.recordedVersion as number | null, startAt, endAt, rawStartAt, rawEndAt, breaks };
 }
 
+/**
+ * Validate the complete source and total elapsed nanoseconds clipped to the period.
+ * Break totals remain separate from recorded time; this projection does not apply
+ * payroll deductions. Open intervals stop at observedAt and remain approval issues.
+ * Raw punches and adjustment provenance are retained alongside effective boundaries.
+ */
 export function projectTimecard(source: unknown, observedAt: string): Timecard {
   if (!record(source) || !text(source.employeeId) || !text(source.employeeName) || !text(source.timeZone,100) ||
       !text(source.startDate) || !text(source.endDate) || !Number.isSafeInteger(source.pendingCorrections) || Number(source.pendingCorrections) < 0 ||

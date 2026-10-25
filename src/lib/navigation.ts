@@ -139,6 +139,11 @@ export function activeNavigationHref(role: UserRole, path: string, payroll?: Pay
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 }
 
+/**
+ * Projects links from server-provided role, scope, module and payroll capability
+ * views. Missing Manager scope stays conservative. This is UI composition, not
+ * authorization: direct requests must pass the destination's current guards.
+ */
 export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities, input: NavContext | OperationalAuthorityView = {}): NavigationItem[] {
   const context:NavContext = 'state' in input ? {operational:input} : input;
   const modules = context.modules ?? ALL_MODULES_ON, words = context.words ?? DEFAULT_WORDS.en;

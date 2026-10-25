@@ -10,6 +10,9 @@ import type { PasskeyConfig } from "./config";
 import { PasskeyStore } from "./store.server";
 import { PasskeyError, responseChallenge } from "./types";
 
+/** WebAuthn verification and error boundary. The store owns live session,
+ * lifecycle/version and counter checks; successful cryptographic verification
+ * alone is never enough to register a key or commit a portal session. */
 export class PasskeyService {
   private readonly store: PasskeyStore;
   constructor(private readonly config: PasskeyConfig, private readonly executor: SqlExecutor = neonNotificationExecutor()) {
@@ -26,6 +29,8 @@ export class PasskeyService {
   private async limit(subject: string) {
     if (!(await consumeAuthLimit("passkey_ceremony", subject, 30, this.executor))) throw new PasskeyError("rate_limited");
   }
+  /** Discoverable login reveals no account-specific credential list. The stored
+   * challenge is tied to the flow token, not an asserted employee identity. */
   async loginOptions(token: string) {
     return this.boundary(async () => {
       await this.limit(token);
@@ -34,6 +39,8 @@ export class PasskeyService {
       return options;
     });
   }
+  /** Use the account's stable random user handle and capture current employee/
+   * credential revisions for the later, session-bound registration commit. */
   async registrationOptions(proof: SessionMutationProof, token: string) {
     return this.boundary(async () => {
       await this.limit(proof.employee.id);
@@ -49,6 +56,8 @@ export class PasskeyService {
       return options;
     });
   }
+  /** Consume the challenge before signature verification. Even a failed response
+   * spends this ceremony; the client needs fresh options to attempt it again. */
   async register(proof: SessionMutationProof, token: string, response: unknown, name: unknown) {
     return this.boundary(async () => {
       await this.limit(proof.employee.id);
@@ -63,6 +72,10 @@ export class PasskeyService {
       return this.store.register(proof, challenge, verification.registrationInfo.credential, name.trim(), this.config.rpID);
     });
   }
+  /** Verify the WebAuthn response and user handle, then atomically
+   * advance the credential counter and create a session against captured login
+   * revisions. beforeSession runs after verification but before that commit for
+   * installation cleanup; the returned bearer is for cookie delivery afterward. */
   async login(token: string, response: unknown, beforeSession: (employeeId: string) => Promise<void> = async () => {}) {
     return this.boundary(async () => {
       await this.limit(token);

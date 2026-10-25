@@ -31,6 +31,11 @@ function authorize(source:GenerationSource,input:ScopeInput) {
   if(!location || !schedule || schedule.status!=='DRAFT') throw new GenerationScopeError();
   return {workspace,schedule};
 }
+/**
+ * Atomically remove an unprotected generated draft assignment and reserve its
+ * validated demand claims as manager exclusions. History/manual provenance is
+ * protected; merely deleting the row would let the planner recreate that work.
+ */
 export async function deleteGeneratedDraftShift(input:ScopeInput & {shiftId:string;proof:SessionMutationProof},executor:SqlExecutor=neonNotificationExecutor()):Promise<{status:'deleted'|'absent'|'protected';exclusionId?:string}> {
   assertManagementProof(input.proof,input.actorEmployeeId);
   validateInput(input);
@@ -71,6 +76,7 @@ export async function deleteGeneratedDraftShift(input:ScopeInput & {shiftId:stri
     return {status:'deleted',exclusionId:id};
   });
 }
+/** Clear the retained reservation event under the complete-source guard; this permits future planning without assigning anyone. */
 export async function clearGenerationExclusion(input:ScopeInput & {exclusionId:string;proof:SessionMutationProof},executor:SqlExecutor=neonNotificationExecutor()):Promise<{status:'cleared'|'already-cleared'}> {
   assertManagementProof(input.proof,input.actorEmployeeId);
   validateInput(input);

@@ -8,6 +8,9 @@ export type CommunicationPolicyContext={
  timeZone:string;observedAt:string;location:{id:string;workspaceId:string;active:boolean};
  assignments:readonly {employeeId:string;workspaceId:string;locationId:string;sourceShiftId:string;assignmentEpisodeId:string;termsFingerprint:string;published:boolean;released:boolean;startAt:string;endAt:string}[];
 };
+/** Evaluate authorship from a current server observation: staff may post to today’s
+ * assigned team without required acknowledgement, while broader scopes require
+ * management. This predicate performs no session/database verification itself. */
 export function canAuthorCommunication(input:unknown,c:CommunicationPolicyContext):boolean{
  try{
   const parsed=validateCommunicationDraft(input);if(!parsed.ok)return false;const d=parsed.value;

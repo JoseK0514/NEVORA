@@ -11,6 +11,12 @@ import { prepareInstallationForLogin } from "@/lib/notifications/logout";
 import { activeDeletionRequest } from "@/lib/account-deletion/requests.server";
 import { passwordLoginAllowed } from "@/lib/auth/login-limits";
 
+/**
+ * Password sign-in boundary: normalize the employee ID, admit the attempt before
+ * verification, check account state and issue an opaque session. Passwords are
+ * not trimmed. Successful authentication redirects only to a vetted return path;
+ * Next's redirect throws to end the action and must not be swallowed.
+ */
 export async function login(formData: FormData) {
   const returnTo = safeReturnTo(String(formData.get("returnTo") ?? ""));
   const returnQuery = returnTo ? `&returnTo=${encodeURIComponent(returnTo)}` : "";
@@ -52,6 +58,7 @@ export async function login(formData: FormData) {
   redirect(returnTo ?? "/app");
 }
 
+/** Ends the session and always leaves the protected app, even if cleanup fails. */
 export async function logout() {
   try { await destroySession(); } finally { redirect("/login"); }
 }

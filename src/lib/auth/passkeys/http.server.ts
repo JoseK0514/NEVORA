@@ -18,6 +18,10 @@ function fields(value: unknown, expected: string[]): value is Record<string, unk
   return record(value) && Object.keys(value).sort().join(",") === expected.sort().join(",");
 }
 
+/** Shared same-origin HTTP boundary for passkey ceremonies and management.
+ * Separate HttpOnly flow cookies bind login/registration challenges; registration
+ * and management additionally require the actual session mutation proof. Login
+ * writes the normal session cookie only after the service commits its session. */
 export async function passkeyHttp(request: Request, action: Action, id?: string): Promise<Response> {
   const config = passkeyConfig(request.url);
   if (!config) return errorJson("not_supported", 404);

@@ -17,6 +17,9 @@ export type NativePreparationFacts = {
 import { calculateNativePayroll } from "./calculate";
 import { hash } from "../store";
 import { parseImport, totals, PayrollError } from "../model";
+/** Project captured facts into an unapproved run and review token without I/O. Any
+ * blocking fact/calculation suppresses all visible rows, totals and ready employee
+ * results so zero placeholders cannot be mistaken for an approvable payroll. */
 export function buildNativeRunCandidate(run: PayrollRun, facts: NativePreparationFacts): PayrollRun {
     if (facts.population.length < 1 || facts.population.length > 300 || new Set(facts.population.map(e => e.employeeId)).size !== facts.population.length || new Set(facts.inputs.map(i => i.employeeId)).size !== facts.inputs.length || facts.inputs.some(i => !facts.population.some(e => e.employeeId === i.employeeId)))
         throw new PayrollError("NATIVE_POPULATION_CONFLICT", 409);

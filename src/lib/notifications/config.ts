@@ -12,6 +12,9 @@ export function decodePushKey(value: unknown, length: number): Buffer | null {
     const bytes = Buffer.from(value, 'base64url');
     return bytes.length === length && bytes.toString('base64url') === value ? bytes : null;
 }
+/** Parse runtime flags and validate origin/key material without reading workspace data.
+ * Feature availability, delivery readiness and test allowlisting are separate gates;
+ * this result describes configuration, not provider connectivity or successful delivery. */
 export function readNotificationConfig(env: Record<string, string | undefined>): PushRuntimeConfig {
     const environment = env.PUSH_ENVIRONMENT === 'production' ? 'production' : 'test';
     const validEnvironment = env.PUSH_ENVIRONMENT === 'test' || env.PUSH_ENVIRONMENT === 'production';
@@ -67,6 +70,8 @@ export function readNotificationConfig(env: Record<string, string | undefined>):
     };
     return process.env.NODE_ENV!=='production'&&developmentCapture?developmentCapture.captureNotificationRuntime(config,env):config;
 }
+/** Attach the current workspace time zone and active-state gates; workers should
+ * receive this bound config rather than silently using the default policy time zone. */
 export function bindWorkspaceNotificationConfig(runtime: PushRuntimeConfig, workspace: Workspace): NotificationConfig {
     return {...runtime, workspace, policy:notificationPolicyFor(workspace.timeZone),
         featureEnabled:runtime.featureEnabled && workspace.active,

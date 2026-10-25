@@ -24,6 +24,9 @@ export async function readEmployeeClockerPin(proof:ClockerOwnerProof,employeeId:
  await pinBatch(executor,[...workspaceReadGuard(workspace),...pinActorGuards(proof,employeeId,workspace.id,false),...authority()]);
  return row;
 }
+/** Replace a PIN under current management Company access and expectedVersion.
+ * Workspace-keyed lookup enforces PIN uniqueness; the salted verification hash,
+ * audit event and revocation of existing employee PIN identities commit together. */
 export async function setEmployeeClockerPin(proof:ClockerOwnerProof,input:{employeeId:string;pin:string;expectedVersion:number},key:Buffer,executor:SqlExecutor=neonNotificationExecutor()):Promise<EmployeePinView>{
  try{validatePin(input?.pin);}catch{throw new ClockerPinError('INVALID');}
  if(!Number.isSafeInteger(input.expectedVersion)||input.expectedVersion<0)throw new ClockerPinError('INVALID');
@@ -55,6 +58,9 @@ export async function setEmployeeClockerPin(proof:ClockerOwnerProof,input:{emplo
 }
 export type PinVerification = {state:'denied'} | {state:'limited';retryAfterSeconds:number} | {state:'verified';token:string;firstName:string;expiresAt:string};
 type PinRow={employeeId:string;pinHash:string;version:number;employeeUpdatedAt:string;eligible:boolean};
+/** Reserve the shared/tablet attempt budget before slow hashing, then issue a
+ * 60-second identity only if this remains the tablet’s latest attempt and current
+ * device/PIN/employee eligibility still matches. Denials do not release failure credit. */
 export async function verifyEmployeeClockerPin(device:ClockerDeviceWriteProof,pin:string,key:Buffer,executor:SqlExecutor=neonNotificationExecutor()):Promise<PinVerification>{
  try{validatePin(pin);}catch{throw new ClockerPinError('INVALID');}
  const workspace=await getWorkspace(executor);

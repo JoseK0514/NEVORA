@@ -8,6 +8,12 @@ import type {
   GenerationDemand,
 } from "./types";
 
+/**
+ * Measure configured demand against a supplied ledger, keeping configuration
+ * identity independent of incidental assignment splits. Scope limits attempted
+ * locations; readiness and zero configured coverage remain explicit rather than
+ * manufacturing demand from existing shifts.
+ */
 export function deriveGenerationDemand(
   input: GenerationInput,
   ledger = input.ledger,

@@ -96,6 +96,9 @@ function currentRow(workspaceId:string,employeeId:string,sessionHash:string):Sql
    AND(e.role='OWNER' OR(g.action='ASSIGN' AND g.role_generation=v.generation AND(g.mode='COMPANY' OR l.id=ANY(g.location_ids))))),'[]'::jsonb) AS locations
  ${joins} WHERE ${current}`,values:[workspaceId,employeeId,sessionHash]};
 }
+/** A scope revision applies only to the same role lifecycle generation. A
+ * restored/promoted Manager cannot inherit an assignment from an older lifecycle;
+ * malformed current selections are distinguished from a deliberate revocation. */
 function effective(row:Pick<Row,'roleGeneration'|'grantGeneration'|'scopeRevision'|'action'|'mode'|'locationIds'|'selectionValid'>):{state:OwnerScopeContext['scopeState'];scope:ScopeSelection|null;invalid:boolean} {
  if(row.scopeRevision===0)return {state:'UNASSIGNED',scope:null,invalid:false};
  if(row.grantGeneration!==row.roleGeneration)return {state:'LIFECYCLE_CHANGED',scope:null,invalid:false};
@@ -109,6 +112,10 @@ function effective(row:Pick<Row,'roleGeneration'|'grantGeneration'|'scopeRevisio
  * so the key matches. An explicit executor (a transaction, a test) always reads fresh, and withOperationalCompany keeps
  * its own in-transaction check. */
 const readDefaultAuthority=cache((proof:SessionMutationProof)=>readAuthority(proof,neonNotificationExecutor()));
+/** Read the live session's operational scope and short observation budget.
+ * Owners have Company scope; Managers require a valid current assignment.
+ * The authority digest binds this session/workspace/role/scope generation for
+ * later guards; the client-facing view itself is not a mutation proof. */
 export async function readOperationalAuthority(proof:SessionMutationProof,executor?:SqlExecutor):Promise<OperationalAuthorityView> {
  return executor?readAuthority(proof,executor):readDefaultAuthority(proof);
 }
@@ -129,6 +136,9 @@ async function readAuthority(proof:SessionMutationProof,executor:SqlExecutor):Pr
  }catch(error){return {state:'unavailable',reason:error instanceof WorkspaceInactiveError||isOperationalAuthorizationError(error)||isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
 }
 
+/** Owner-only target lifecycle and scope history, read under current actor
+ * guards. History is capped at 100 entries with an explicit truncation flag;
+ * expected versions from this view are concurrency inputs, not access grants. */
 export async function readOwnerOperationalScope(proof:SessionMutationProof,employeeId:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<OwnerOperationalScopeData>> {
  if(!safeId(employeeId))return {state:'unavailable',reason:'access_denied'};
  try {
@@ -170,6 +180,11 @@ function scopeReceipt(value:unknown):ScopeReceipt|null {
   ||!['ASSIGN','REVOKE'].includes(String(r.action))||(r.action==='ASSIGN'&&!scope)||(r.action==='REVOKE'&&r.scope!==null))return null;
  return {operationId:r.operationId,employeeId:r.employeeId,revision:r.revision,roleGeneration:r.roleGeneration,committedAt:r.committedAt,action:r.action as 'ASSIGN'|'REVOKE',scope};
 }
+/** Append an Owner assignment/revocation for an active Manager, checking employee,
+ * role-generation and scope revisions in the same transaction as the receipt.
+ * Operation IDs are actor/workspace scoped: identical retries recover a receipt,
+ * changed retries conflict. An uncertain commit remains outcome_unknown so the
+ * caller does not infer that no scope change occurred. */
 export async function assignOperationalScope(proof:SessionMutationProof,employeeId:string,value:ScopeCommand,executor:SqlExecutor=neonNotificationExecutor()):Promise<ScopeResult> {
  const command=parseCommand(value);
  if(!command||!safeId(employeeId))return {state:'invalid',fieldErrors:[{field:'scope',message:'Choose an explicit valid scope or revocation.'}]};
@@ -216,7 +231,10 @@ export async function assignOperationalScope(proof:SessionMutationProof,employee
  }
 }
 
-/** Read-only company-wide loaders only. Never use a projection wrapper around mutations. */
+/** Read-only company-wide loaders only. The callback runs between initial
+ * admission and a final check against the original authority digest; this is a
+ * disclosure fence, not a single snapshot transaction around callback queries.
+ * Never use a projection wrapper around mutations. */
 export async function withOperationalCompany<T>(proof:SessionMutationProof,load:()=>Promise<T>,executor:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<T>> {
  try {
   const workspace=await getWorkspace(executor),view=await readOperationalAuthority(proof,executor);

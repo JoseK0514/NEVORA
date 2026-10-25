@@ -49,6 +49,12 @@ function fenceResult(value: unknown): boolean {
 function principal(facts: TenantProofFacts) {
   return facts.kind === 'WORKER' ? facts.workerId : facts.employeeId;
 }
+/** Execute only registered statements for this private proof on its dedicated
+ * APP/WORKER transport. Every call owns one ReadCommitted transaction containing
+ * the catalog fence, role/context setup, locked proof check, business statements
+ * and final authority checks. Decode results only after commit acknowledgement;
+ * transport/decoder failures become execution-unavailable. Invalid proof/statement
+ * admission and an aborted signal retain their separate rejection paths. */
 export function createTenantExecutor(proof: TenantProof): TenantExecutor {
   // Authenticate identity before touching configuration or the transport.
   getTenantProofFacts(proof);

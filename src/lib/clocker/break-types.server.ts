@@ -43,6 +43,9 @@ export async function listBreakTypes(proof:ClockerOwnerProof,executor:SqlExecuto
   return result.at(-1) as BreakType[];
  }catch(error){return normalize(error);}
 }
+/** Owner-only catalog revision with optimistic version and audit-event checks.
+ * targetMinutes is a reference duration; saving a type does not classify payroll
+ * break treatment or rewrite snapshots already captured on recorded breaks. */
 export async function saveBreakType(proof:ClockerOwnerProof,input:BreakTypeInput & {id?:string;expectedVersion:number},executor:SqlExecutor=neonNotificationExecutor()):Promise<BreakType>{
  let settings:BreakTypeInput;
  try{settings=validateBreakType({name:input?.name,category:input?.category,targetMinutes:input?.targetMinutes,active:input?.active});}

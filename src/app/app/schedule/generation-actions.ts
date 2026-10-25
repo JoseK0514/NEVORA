@@ -46,6 +46,12 @@ function projection(result:GenerationResult,locations:{id:string;shortName:strin
   const notices=[...result.explanations.filter(e=>e.code!=='LOCATION_NOT_READY'||!result.excludedLocations.some(l=>l.locationId===e.locationId)).map(e=>`${e.locationId?`${locationName(e.locationId)} · `:''}${e.distinctEmployeeCount?`${e.distinctEmployeeCount} employees unavailable for this constraint. `:''}${messages[e.code] || schedulingIssueMessage(e.code) || 'A scheduling constraint prevented automatic assignment.'}`),...result.warnings.map(w=>schedulingIssueMessage(w.code) || 'Review a scheduling warning.')];
   return {status:result.status,changed:result.changed,setupExceptions:projectGenerationSetup(result.excludedLocations,locations),summary:{added:result.summary.added,removed:result.summary.removed,preserved:result.summary.preserved,coverage:{requiredMinutes:result.summary.coverage.requiredMinutes,coveredMinutes:result.summary.coverage.coveredMinutes,percentage:result.summary.coverage.percentage,unavailable:result.summary.coverage.unavailable},attempted:result.locationIds.length,needsSetup:result.excludedLocations.length},gaps:result.gaps.map(g=>({locationName:locationName(g.locationId),date:g.date,startTime:g.startTime,endTime:g.endTime,missingStaff:g.missingStaff,missingLead:g.missingLead,positions:g.positions.map(p=>({name:positionName(p.positionId),missing:p.missing}))})),notices:[...new Set(notices)]};
 }
+/**
+ * Admits a company-scoped draft-generation command and projects solver results
+ * into form state. Success can mean a partial/budget-limited draft; it does not
+ * imply publication or full coverage. The data layer owns locks and source
+ * checks; this adapter rechecks original access around asynchronous work.
+ */
 export async function generateWeekAction(_previous:GenerationActionState,form:FormData):Promise<GenerationActionState> {
   // Redirecting authentication remains outside error handling.
   const session=await requireRoles(MANAGER_ROLES);
@@ -66,6 +72,7 @@ export async function generateWeekAction(_previous:GenerationActionState,form:Fo
     return {status:'success',message,result:projection(result,locations,positions)};
   } catch(error) {if(original){try{await assertOriginalOperationalAccess(proof,original);}catch(lost){return failure(lost);}}return failure(error);}
 }
+/** Removes one explicit automatic-fill exclusion; generation still requires a separate command. */
 export async function clearGenerationExclusionAction(_previous:GenerationActionState,form:FormData):Promise<GenerationActionState> {
   const session=await requireRoles(MANAGER_ROLES);
   const proof=await requireSessionMutationProof();

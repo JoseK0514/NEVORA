@@ -1,3 +1,8 @@
+/**
+ * Payroll application commands and read projections. Mutations persist immutable run
+ * revisions and an actor-scoped operation receipt in one guarded transaction; parsing
+ * and a prior read never replace the permission/source checks at commit time.
+ */
 import { compatibleManagerScopeSql, payrollObjectScopeSql } from "./native/scope";
 import { payrollHistorySql } from "./history";
 import { missingPayrollPeriods } from "./backlog";
@@ -34,6 +39,8 @@ export type Source = {
     exceptions: PayrollExceptionRevision[];
 };
 export const sourceSql = `jsonb_build_object('roster',COALESCE((SELECT jsonb_agg(jsonb_build_object('employeeId',e.id,'name',trim(e.first_name||' '||e.last_name),'active',e.active,'locationId',e.primary_location_id) ORDER BY e.id COLLATE "C") FROM employees e),'[]'::jsonb),'timecards',(SELECT to_jsonb(t)-'observedAt' FROM (${timecardReadSql}) t),'population',(SELECT payload FROM payroll_period_populations WHERE workspace_id=$1 AND start_date=$4::date AND end_date=$5::date ORDER BY revision DESC LIMIT 1),'settings',COALESCE((SELECT jsonb_agg(payload ORDER BY revision) FROM payroll_setting_revisions WHERE workspace_id=$1),'[]'::jsonb),'exceptions',COALESCE((SELECT jsonb_agg(payload ORDER BY employee_id,revision) FROM payroll_exception_revisions WHERE workspace_id=$1),'[]'::jsonb))`;
+/** Capture the bounded roster, timecards and revision history used by review; callers
+ * must carry a matching sourceGuard into the eventual write transaction. */
 export async function source(proof: SessionMutationProof, p: {
     startDate: string;
     endDate: string;
@@ -94,6 +101,8 @@ async function replay(proof: SessionMutationProof, input: {
     operationId: string;
 }, ex: SqlExecutor) { const r = await readReceiptRecord(proof, input.operationId, ex); if (r && r.command_hash !== hash(input))
     throw new PayrollError("OPERATION_CONFLICT", 409); return r?.payload; }
+/** Commit effects and their recovery receipt together. A concurrent identical operation
+ * may win; replay returns that receipt only when the normalized command hash matches. */
 async function commit(proof: SessionMutationProof, permission: "OWNER" | "REVIEW" | "APPROVE", input: {
     operationId: string;
 }, result: PayrollReceipt, statements: SqlStatement[], ex: SqlExecutor) {
@@ -133,6 +142,9 @@ export async function settings(proof: SessionMutationProof, ex: SqlExecutor = ne
         capabilities: await capabilities(proof, ex),
     };
 }
+/** Owner-only append of settings, employee exceptions or grants. expectedRevision is
+ * optimistic concurrency control for the selected revision stream; operationId is
+ * reusable only for an identical command by this actor. */
 export async function saveSettings(proof: SessionMutationProof, input: unknown, ex: SqlExecutor = neonNotificationExecutor()): Promise<PayrollReceipt> {
     enabled();
     const c = parseSettingsCommand(input);
@@ -264,6 +276,8 @@ export async function readRun(proof: SessionMutationProof, id: string, ex: SqlEx
         throw new PayrollError("RUN_UNAVAILABLE", 404);
     return row;
 }
+/** Build an outbox insert without executing it. The workspace/business key deduplicates
+ * logical work independently of the generated job UUID; execute with the run mutation. */
 export function enqueue(runId: string | null, kind: PayrollJob["kind"], key: string, payload: unknown = {}, availableAt?: string) {
     return q(`INSERT INTO payroll_jobs(id,workspace_id,run_id,kind,business_key,payload,available_at) VALUES($1::uuid,${ws},$2::uuid,$3,$4,$5::jsonb,COALESCE($6::timestamptz,clock_timestamp())) ON CONFLICT(workspace_id,business_key) DO NOTHING`, randomUUID(), runId, kind, key, JSON.stringify(payload), availableAt ?? null);
 }
@@ -304,6 +318,7 @@ export function insertRevision(r: PayrollRun, s: Snapshot | null) {
 function revisionGuard(r: PayrollRun) {
     return check(`(SELECT revision FROM payroll_runs_current WHERE workspace_id=${ws} AND run_id=$1::uuid)=$2`, r.id, r.revision);
 }
+/** Resolve defaults by payday (not period start), then by revision for equal dates. */
 export function resolveSettings(s: Source, payday: string) {
     return s.settings
         .filter((r) => r.effectiveFrom <= payday)
@@ -319,6 +334,7 @@ export function resolveExceptions(s: Source, payday: string) {
         result.set(e.exception.employeeId, e);
     return [...result.values()];
 }
+/** Reject a commit if any captured source JSON changed after the review read. */
 export function sourceGuard(s: Awaited<ReturnType<typeof source>>, r: PayrollRun, proof: SessionMutationProof) {
     return check(`${sourceSql}=$6::jsonb`, s.id, true, proof.employee.id, r.period.startDate, r.period.endDate, JSON.stringify(s.source));
 }
@@ -362,6 +378,9 @@ function importSnapshot(s: Awaited<ReturnType<typeof source>>, amounts: PayrollI
         failures,
     };
 }
+/** Validate and authorize a payroll state transition, recovering identical operation
+ * receipts before doing new work. Review/approval tokens bind the captured inputs;
+ * approval schedules document work, while publication remains a separate job. */
 export async function command(proof: SessionMutationProof, input: unknown, ex: SqlExecutor = neonNotificationExecutor()): Promise<PayrollReceipt> {
     enabled();
     const c = parseRunCommand(input);

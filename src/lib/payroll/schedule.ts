@@ -7,6 +7,9 @@ import { enabled, locks, statement as q, workspaceSql as ws } from "./store";
 import { enqueue } from "./service";
 import { duePeriod, day } from "./calendar";
 export { duePeriod } from "./calendar";
+/** Enqueue the most recent eligible preparation/reminder work using workspace-local
+ * today. Business keys collapse repeated invocations; a settings payload guard
+ * rejects scheduling decisions made from a revision that changed during the read. */
 export async function schedulePayroll(
   ex: SqlExecutor = neonNotificationExecutor(),
 ) {

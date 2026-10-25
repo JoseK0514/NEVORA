@@ -14,6 +14,9 @@ export type PushEnvironment = 'test' | 'production';
 export type SourceKind = 'SCHEDULE' | 'TIME_OFF' | 'EXCHANGE' | 'CALLOUT' | 'AVAILABILITY' | 'MANAGER_SUMMARY' | 'SELF_TEST' | 'COMMUNICATION' | 'PAYROLL_PREPARATION' | 'PAYROLL_STATEMENT';
 /** SELF_TEST id = internal subscription id, version = verified ownership generation. */
 export type SourceRef = { kind: SourceKind; id: string; version: string };
+/** Durable logical intent, independent of device delivery attempts. dueAt/expiresAt
+ * are instants; source/effectiveVersion bind current business state and eventKey
+ * supplies logical deduplication. Persistence alone never establishes deliverability. */
 export type NotificationIntent = NotificationEvent & {
   id: string; environment: PushEnvironment; source: SourceRef; effectiveVersion: string;
   purpose: 'EVENT' | 'REMINDER' | 'SUMMARY' | 'TEST'; urgency: 'normal' | 'high';
@@ -43,6 +46,9 @@ export type SourceSnapshot =
   | (SnapshotBase<'SELF_TEST'> & { kind: 'SELF_TEST'; employeeId: string; expiresAt: string });
 export type PushEnvelope = { notificationId: string; kind: string; ownershipGeneration: string; expiresAt: string; tag: string; title: string; body: string };
 export type SqlStatement = { text: string; values: readonly unknown[] };
+/** transaction executes ordered statements atomically and returns matching result
+ * arrays by statement index. Abort signals bound I/O waits; an aborted caller must
+ * still treat an uncertain commit as unknown and use durable receipt/lease recovery. */
 export type SqlExecutor = { query<T>(statement: SqlStatement, signal?: AbortSignal): Promise<T[]>; transaction(statements: readonly SqlStatement[], signal?: AbortSignal): Promise<unknown[][]> };
 export type SourceCheck = { deliverable: boolean; reason: string; effectiveVersion: string; expiresAt: string; destination?: string };
 export type ProviderResult = { kind: 'accepted' } | { kind: 'retry'; errorClass: string; retryAfterSeconds?: number } | { kind: 'invalid_subscription' } | { kind: 'failed'; errorClass: string };
@@ -82,6 +88,9 @@ export type PushSubscriptionRecord = {
   sessionHash: string; consentAt: string; updatedAt: string; expiresAt: string | null;
   status: 'active'; lastTestAt: string | null;
 };
+/** Reservation identity is per intent/subscription generation and lease token.
+ * Repositories must condition later changes on that identity so a stale worker
+ * cannot complete or invalidate a replacement device generation. */
 export type DeliveryClaim = {
   deliveryId: string; intentId: string; subscriptionId: string; generation: string;
   leaseToken: string; leaseExpiresAt: string; attemptCount: number; intent: NotificationIntent;

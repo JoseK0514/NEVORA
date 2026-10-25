@@ -100,6 +100,13 @@ function overlaps(
   return toMinutes(itemStart) < segmentEnd && toMinutes(itemEnd) > segmentStart;
 }
 
+/**
+ * Segment coverage at assignment/configuration boundaries and count each eligible
+ * employee once per segment. Position and designated-Lead credit are evaluated
+ * separately; missing setup stays explicit rather than implying full coverage.
+ * Scheduled hour balances use nominal minutes clipped to the selected workweek,
+ * not captured attendance or payroll hours. Callers supply the complete ledger.
+ */
 export function calculateScheduleHealth({
   shifts,
   positions = [],

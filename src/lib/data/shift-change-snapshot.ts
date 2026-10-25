@@ -8,6 +8,12 @@ import { mapSchedulingSourceFacts } from './scheduling-source-facts';
 import { resolveShiftChangePolicy } from '../shift-changes/policy';
 import { materialShiftTerms, shiftTermsFingerprint, sourceShiftTerms } from '../shift-changes/terms';
 export type CommandSnapshot = ShiftChangeSnapshot & { weekState: GuardedWeekState; requestRow: GenerationSourceRow | null; operational:ShiftChangeCompanyAccess };
+/**
+ * Capture scheduling facts, request state and publication state in one MVCC
+ * statement. This private planning snapshot includes session proof and complete
+ * source rows; serialize only a dedicated display projection. The final writer
+ * must guard this exact source after lock waits before trusting any decision.
+ */
 export async function readShiftChangeSnapshot(proof:SessionMutationProof, command:ShiftChangeCommand | {kind:'REVIEW';sourceShiftId:string;targetShiftId?:string}, executor:SqlExecutor):Promise<CommandSnapshot> {
  const operational=await admitShiftChangeCompany(proof,executor);
  const [row]=await executor.query<{source:GenerationSource;state:GuardedWeekState;observedAt:string;workspaceUpdatedAt:string;authorized:boolean}>({text:`SELECT ${generationSourceSql} AS source, ${notificationStateSql.replaceAll('$1','ARRAY(SELECT DISTINCT week_start FROM schedules)')} AS state, to_jsonb(clock_timestamp()) AS "observedAt", (SELECT updated_at::text FROM workspaces WHERE singleton) AS "workspaceUpdatedAt", EXISTS(SELECT 1 FROM employee_sessions ss JOIN employees e ON e.id=ss.employee_id WHERE ss.token_hash=$1 AND e.id=$2 AND e.active AND e.role=$3 AND ss.expires_at>clock_timestamp()) AS authorized`,values:[proof.sessionTokenHash,proof.employee.id,proof.employee.role]});

@@ -1,3 +1,8 @@
+/**
+ * PIN secrets use separate keyed lookup and employee-bound verification purposes.
+ * Lookup supports workspace uniqueness; verification additionally uses random salt
+ * and fixed-cost asynchronous scrypt. Neither fingerprint/hash is browser authority.
+ */
 import 'server-only';
 import { createHash, createHmac, randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 

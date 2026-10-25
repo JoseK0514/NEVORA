@@ -8,6 +8,10 @@ import { readConfig } from "./config.server";
 import { AdvisorError, parseCommand, type AdvisorSnapshot } from "./contracts";
 import { investigate, type Transport } from "./loop.server";
 import { readOwnerAttention } from "./briefing.server";
+/** Owner-only orchestration for snapshots, saved priorities, review dispositions and
+ * bounded provider questions. ask reserves its request ID/daily allowance before
+ * provider I/O and persists answer/history together; identical completed requests
+ * replay. Final observation rechecks current authority and bounds private display. */
 export async function advisorService(
   proof: SessionMutationProof,
   ex: SqlExecutor,

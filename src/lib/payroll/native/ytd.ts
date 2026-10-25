@@ -16,6 +16,10 @@ export type NativeLedgerEntry = {
     locationCoverage?:{complete:boolean;locationIds:string[]}|null;
     deductionSources?: import("./contracts").NativeAuthorizedDeduction[];
 };
+/** Add active correction-chain heads to attested opening cent balances. A replacement
+ * excludes its target head and rejects later dependent runs; it does not sum both
+ * original and correction amounts. Location provenance includes the full ledger.
+ * The caller must provide the employee/year-scoped ledger under source guards. */
 export function projectNativeYtd(opening: NativeYtd, ledger: NativeLedgerEntry[], correctionOf: string | null = null): NativeYtd {
     if (!opening || opening.attested !== true || !opening.evidenceReference || opening.revision < 1)
         fail("ATTESTED_YTD_REQUIRED");

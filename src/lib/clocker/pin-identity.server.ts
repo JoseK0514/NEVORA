@@ -33,6 +33,9 @@ export function clockerIdentityWriteGuards(proof:ClockerIdentityProof):SqlStatem
      proof.employeeUpdatedAt,proof.device.workspaceId,proof.keyIdentity,proof.device.locationId],'IDENTITY_INVALID'),
  ];
 }
+/** Reconstruct only a currently valid short-lived PIN/device identity. Invalidated
+ * identities return null; database unavailability remains an error so callers do
+ * not mistake a failed authorization read for a verified signed-out state. */
 export async function readClockerIdentity(device:ClockerDeviceWriteProof,token:string,key:Buffer,executor:SqlExecutor=neonNotificationExecutor()):Promise<{
  firstName:string; expiresAt:string; proof:ClockerIdentityProof;
 }|null>{

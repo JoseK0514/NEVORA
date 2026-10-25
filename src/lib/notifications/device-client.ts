@@ -13,6 +13,8 @@ export type DeviceRuntime = {
 };
 export type DeviceSnapshot = { state: DeviceSetupState; server: DeviceStatusView; message?: string; standalone: boolean | 'unknown'; capabilities: DeviceCapabilities };
 const emptyStatus: DeviceStatusView = { supported: false, enabled: false, configurationAvailable: false, testAllowed: false, phase: 'loading' };
+/** Bound the UI wait only. Timing out does not cancel the underlying promise; native
+ * subscription operations still require ownership fences and their lifecycle lock. */
 export function bounded<T>(promise: Promise<T>, ms = 2500): Promise<T> {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error('Device operation timed out')), ms);

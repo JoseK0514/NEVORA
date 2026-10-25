@@ -1,3 +1,8 @@
+/**
+ * Date-only schedule arithmetic uses UTC midnight as a stable calendar container,
+ * not as the workspace clock. Callers supply today in the workspace time zone;
+ * period endpoints are inclusive and payday offsets are calendar days.
+ */
 import type { PayrollPreferences } from "./contracts";
 export const day = (s: string) => new Date(`${s}T00:00:00Z`),
   iso = (d: Date) => d.toISOString().slice(0, 10),

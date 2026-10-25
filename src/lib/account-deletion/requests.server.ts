@@ -57,6 +57,10 @@ export async function submitDeletionRequest(input: {
 
   const id = randomUUID(), reference = newDeletionReference();
   try {
+    // The employee lock serializes acceptance; the partial unique conflict target
+    // selects the existing open request on concurrent inserts. Revocations and
+    // the winning request are committed together. This records a support workflow;
+    // it does not perform the later account/data erasure from the runbook.
     const results = await neonNotificationExecutor().transaction([
       { text: "SELECT id FROM employees WHERE id = $1 FOR UPDATE", values: [input.employeeId] },
       { text: `INSERT INTO account_deletion_requests

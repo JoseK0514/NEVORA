@@ -11,6 +11,7 @@ export function sameShiftTerms(a: ShiftTerms, b: ShiftTerms): boolean { return s
 export function sourceShiftTerms(s: GenerationSourceRow, parent: Schedule, workspaceId: string, timeZone: string): ShiftTerms {
     return { shiftId: String(s.id), scheduleId: parent.id, workspaceId, timeZone, weekStart: parent.weekStart, date: String(s.date), startTime: String(s.start_time).slice(0, 5), endTime: String(s.end_time).slice(0, 5), locationId: parent.locationId, employeeId: String(s.employee_id), assignmentEpisodeId: String(s.assignment_episode_id ?? ''), termsRevision:Number(s.terms_revision), positionId: s.position_id == null ? null : String(s.position_id), isDesignatedLead: s.is_designated_lead === true, scheduledBreaks: { status: 'UNKNOWN' } };
 }
+/** Approval releases only the reviewed assignment episode and exact material terms, never a later reassignment. */
 export function calloutReleasesShift(c: GenerationSourceRow, s: GenerationSourceRow, parent: Schedule, workspaceId: string, timeZone: string): boolean {
     if (c.status !== 'APPROVED' || c.shift_id !== s.id || c.employee_id !== s.employee_id || !s.assignment_episode_id || c.assignment_episode_id !== s.assignment_episode_id || !c.source_terms)
         return false;

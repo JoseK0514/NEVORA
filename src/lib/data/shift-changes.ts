@@ -23,6 +23,7 @@ const conflict:ShiftChangeResult={status:'conflict'};
 const unavailable:ShiftChangeResult={status:'unavailable'};
 const blocked=(code:'STALE_TERMS'|'DEADLINE_PASSED'|'POLICY_UNKNOWN'|'CONSENT_REQUIRED',message:string):ShiftChangeResult=>({status:'blocked',issues:[{code,message}]});
 const fingerprint=(command:ShiftChangeCommand)=>createHash('sha256').update(JSON.stringify(Object.fromEntries(Object.entries(command).sort(([a],[b])=>a.localeCompare(b))))).digest('hex');
+/** Recover only this actor's stored result under current session/company authority; absence does not establish a failed write. */
 export async function findShiftChangeOperation(proof:SessionMutationProof,operationId:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<ShiftChangeResult|null> {
  try{return await readShiftChangeCompany(proof,async()=>{
  const [r]=await executor.query<{result:ShiftChangeResult}>({text:`SELECT o.result FROM shift_change_operations o JOIN workspaces w ON w.id=o.workspace_id AND w.active JOIN employees e ON e.id=o.actor_employee_id AND e.active JOIN employee_sessions s ON s.employee_id=e.id AND s.token_hash=$1 AND s.expires_at>clock_timestamp() WHERE o.actor_employee_id=$2 AND o.operation_id=$3::uuid AND e.role=$4`,values:[proof.sessionTokenHash,proof.employee.id,operationId,proof.employee.role]});
@@ -179,6 +180,14 @@ function planCommand(s:CommandSnapshot,c:ShiftChangeCommand):Plan|ShiftChangeRes
  } else return unavailable;
  return {result:{status:status as 'completed'|'pending'|'closed',operationId:c.operationId,requestId:id,revision},statements,afterShifts:shifts,deadline:guardDeadline,requestId:id,sourceType:callout?'CALLOUT':'EXCHANGE'};
 }
+/**
+ * Canonical consent-bearing request writer. Rebuild against one complete source,
+ * then atomically apply the transition, publication/calendar/outbox effects,
+ * history and actor-scoped operation receipt under ordered locks and fresh guards.
+ * Known transaction conflicts retry with the same command; delivery uncertainty
+ * returns outcome-unknown because a commit may already exist. Assignment episode
+ * and material-term fingerprints prevent consent from transferring to later work.
+ */
 export async function executeShiftChange(proof:SessionMutationProof,command:ShiftChangeCommand,executor:SqlExecutor=neonNotificationExecutor()):Promise<ShiftChangeResult> {
  if(!proof?.employee?.id||!/^[a-f0-9]{64}$/.test(proof.sessionTokenHash)||!isShiftChangeCommand(command))return unavailable;
  let originalAuthority:string|undefined;

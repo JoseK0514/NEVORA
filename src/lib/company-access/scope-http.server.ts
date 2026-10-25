@@ -3,6 +3,9 @@ import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {correctionBoundary,correctionJson,readCorrectionJson} from '@/lib/time-corrections/http.server';
 import {readOperationalAuthority,readOwnerOperationalScope,assignOperationalScope} from './operational-scope.server';
 import type {ScopeCommand} from './model';
+/** Route protocol for current self authority and Owner scope controls. Actor
+ * headers bind write intent to the cookie-derived session; the service still
+ * checks current authority and target revisions inside its transactions. */
 export async function scopeHttp(request:Request,action:'authority'|'status'|'command',employeeId=''):Promise<Response> {
  const write=action==='command',boundary=correctionBoundary(request,write,'x-nevora-company-access');
  if(boundary)return correctionJson({state:'unavailable',reason:'access_denied'},boundary);

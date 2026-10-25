@@ -2,6 +2,7 @@ import type {CalendarEvent} from './types';
 const escapeText=(value:string)=>value.replace(/\\/g,'\\\\').replace(/\r\n|\r|\n/g,'\\n').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g,'');
 function fold(line:string){let result='',part='';for(const character of line){if(Buffer.byteLength(part+character,'utf8')>75){result+=part+'\r\n';part=' ';}part+=character;}return result+part;}
 function instant(value:string){const date=new Date(value);if(!Number.isFinite(date.getTime()))throw Error('Invalid calendar instant');return date.toISOString().slice(0,19).replace(/[-:]/g,'')+'Z';}
+/** Serialize UTC events with escaped text and UTF-8 byte-aware folding; callers supply authoritative UID/sequence pairs. */
 export function serializeCalendar(events:CalendarEvent[]):string {
  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//NEVORA//Workforce schedule//EN','CALSCALE:GREGORIAN'];
  for(const event of [...events].sort((a,b)=>a.uid.localeCompare(b.uid))){

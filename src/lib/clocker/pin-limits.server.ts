@@ -7,6 +7,9 @@ import { clockerDeviceWriteGuards, type ClockerDeviceWriteProof } from './device
 import { statement as s, pinBatch, pinKeyGuard } from './pin-authority.server';
 export type PinReservation = { attemptId: string; windows: { scope: string; scopeId: string; failureWindow: string }[] };
 const lock = (workspaceId:string) => s("SELECT pg_advisory_xact_lock(hashtextextended('clocker-pin-budget:'||$1::text,0))",[workspaceId]);
+/** Atomically spend workspace/device rate and failure budgets before expensive hash
+ * work. Even a limited attempt invalidates the prior tablet identity/latest attempt;
+ * only a confirmed verification releases failure credit in the captured window. */
 export async function reservePinAttempt(device:ClockerDeviceWriteProof,workspace:Workspace,key:Buffer,executor:SqlExecutor):Promise<PinReservation|null>{
  const attemptId=randomUUID();
  const rows=await pinBatch(executor,[

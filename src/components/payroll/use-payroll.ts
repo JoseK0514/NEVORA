@@ -12,6 +12,12 @@ type WithoutOperation<T> = T extends unknown ? Omit<T, 'operationId'> : never;
 /** The read failed because the session ended (HTTP 401). */
 export const PAYROLL_SIGNED_OUT = 'Your session ended. Sign in again to see payroll.';
 
+/**
+ * Loads a decoded private payroll resource and ignores superseded responses.
+ * Hiding/leaving the page or going offline clears data and invalidates in-flight
+ * reads; becoming visible/online reloads current server authority. Keep decode
+ * referentially stable, because it is part of reload's effect dependencies.
+ */
 export function usePayrollResource<T>(path: string, decode: (value: unknown) => T) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
@@ -62,6 +68,13 @@ function confirmedMessage(command: { action?: string }) {
   }
 }
 
+/**
+ * Sends one receipt-based command at a time. Persist only its operation ID under
+ * the caller's recovery scope; command details remain in memory. An interrupted
+ * response stays unconfirmed and must be checked/retried with that same ID.
+ * After remount, check the receipt first; reconstruction requires the user to
+ * re-enter the original command, which the server compares against that ID.
+ */
 export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payroll/runs' | '/api/payroll/native-profiles', reload: () => Promise<void>, recoveryScope: string) {
   const referenceKey = `nevora-payroll-operation:${recoveryScope}`;
   const [pending, setPending] = useState<string | null>(null);

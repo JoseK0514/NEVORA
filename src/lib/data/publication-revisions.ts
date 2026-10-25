@@ -135,6 +135,7 @@ export async function recordPublishedWeekRevision(input: {
   return result.revisions[0];
 }
 
+/** Publish one location while capturing the resulting whole-week projection through the shared atomic protocol. */
 export async function publishScheduleWithRevision(input: {
   locationId: string; weekStart: string; managerId: string; proof: SessionMutationProof;
 }, executor?: SqlExecutor): Promise<{ published: boolean; revision?: PublicationRevision }> {

@@ -26,6 +26,9 @@ export type WorkerCommand = 'dispatch' | 'reminders';
 export const TRANSIENT_CHECK_REASONS: ReadonlySet<string> = new Set(['workspace_unavailable', 'workspace_changed']);
 export const TRANSIENT_RECHECK_MS = 60_000;
 const emptyReport = (): WorkerReport => ({ claimed: 0, accepted: 0, retried: 0, failed: 0, expired: 0, cancelled: 0, noSubscription: 0, disabled: false });
+/** Bind SQL repositories and provider transport to one environment/workspace config.
+ * withSignal combines invocation and caller cancellation; durable conditional lease
+ * identities, rather than cancellation alone, protect later recovery. */
 export function createWorkerDeps(config: NotificationConfig, clock: () => Date = () => new Date(),localContext?:import('../dev/local-only').LocalCaptureContext): WorkerDeps {
     const raw = neonNotificationExecutor();
     const bind = (signal?: AbortSignal): WorkerDeps => {
@@ -76,6 +79,10 @@ function allowed(intent: NotificationIntent, config: NotificationConfig) {
         && (intent.purpose !== 'TEST' || config.environment === 'test' && config.testDeliveryEnabled && intent.source.kind === 'SELF_TEST')
         && (intent.source.kind !== 'SELF_TEST' || intent.purpose === 'TEST');
 }
+/** Materialize/claim bounded per-device delivery work and revalidate source, account,
+ * subscription generation, quiet hours and expiry immediately before transport.
+ * accepted counts provider acceptance, not display/receipt. An ambiguous post-send
+ * failure retains the durable lease for recovery, so this is not exactly-once delivery. */
 export async function runDispatch(input: {
     mode: 'new' | 'retry' | 'all';
     deps: WorkerDeps;

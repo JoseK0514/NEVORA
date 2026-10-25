@@ -30,6 +30,11 @@ export function timeMinutes(time: string, allowEndOfDay = false) {
     throw new Error("Invalid business time");
   return hour * 60 + minute;
 }
+/**
+ * Construct a positive half-open wall-minute interval. An earlier end time rolls
+ * overnight only when endDate is omitted; equal times do not imply a 24-hour
+ * shift. These UTC-shaped coordinates must not be treated as elapsed instants.
+ */
 export function shiftPeriod(shift: ShiftPeriodInput): BusinessPeriod {
   const date = businessDateStart(shift.date);
   const start = date + timeMinutes(shift.startTime);

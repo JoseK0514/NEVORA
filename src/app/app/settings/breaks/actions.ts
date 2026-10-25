@@ -5,6 +5,11 @@ import { BreakTypeError, saveBreakType } from '@/lib/clocker/break-types.server'
 import { validateBreakType, type BreakType } from '../../../../lib/clocker/break-types';
 import { clockerOriginFailure, clockerSecurity } from '../../../../lib/clocker/setup.server';
 export type BreakTypeResult={ok:true;breakType:BreakType}|{ok:false;error:string;refresh:boolean};
+/**
+ * Parses one Owner break-type edit with explicit active state and version.
+ * targetMinutes is a reference duration, not an automatic punch/end command;
+ * unavailable or stale writes require a read before the user tries again.
+ */
 export async function saveBreakTypeAction(data:FormData):Promise<BreakTypeResult>{
  const forbidden=clockerOriginFailure(await headers(),clockerSecurity());
  if(forbidden)return {ok:false,error:forbidden.error,refresh:false};

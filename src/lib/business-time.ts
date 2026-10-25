@@ -1,3 +1,8 @@
+/**
+ * Business-local calendar values cross into elapsed time only through an explicit
+ * IANA zone. Scheduling periods use nominal wall minutes; clock and calendar
+ * events use instants, so converting either model with the host zone is unsafe.
+ */
 import { Temporal } from '@js-temporal/polyfill';
 import { shiftPeriod, type ShiftPeriodInput } from './scheduling/periods';
 
@@ -13,6 +18,7 @@ export function businessDate(now: Date, timeZone: string): string {
 export function businessTime(now: Date, timeZone: string): string {
   return zoned(now, timeZone).toPlainTime().toString({ smallestUnit: 'minute' });
 }
+/** Reject DST gaps and repeated times instead of guessing which instant a form meant. */
 export function localDateTimeToInstant(local: string, timeZone: string): string {
   try {
     if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(local)) throw new Error();

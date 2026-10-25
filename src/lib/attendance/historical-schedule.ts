@@ -200,6 +200,12 @@ function matchedEvidence(
   };
 }
 
+/**
+ * Resolve only the publication evidence captured at clock-in; never rematch a
+ * record against today's schedule. Identity, revision and interval must all
+ * agree. Missing/invalid evidence yields a comparison limitation, while a saved
+ * unmatched/ambiguous result preserves the historical matching outcome.
+ */
 export function resolveHistoricalSchedule(
   source: ValidatedAttendanceSource,
   entry: RecordedEntry,

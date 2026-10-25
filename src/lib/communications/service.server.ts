@@ -1,3 +1,9 @@
+/**
+ * Communication lifecycle over immutable revisions, recipient grants and actor/session
+ * operation receipts. Development activation, current Company authority for management,
+ * and exact source/grant checks are enforced in protected transactions. Reads carry
+ * short display lifetimes; a suppressed response does not undo an already committed write.
+ */
 import 'server-only';
 import {assertOperationalAccess,operationalScopeStatements,OperationalAuthorizationError,isOperationalAuthorizationError} from '../company-access/operational-scope.server';
 import {createHash,randomUUID} from 'node:crypto';
@@ -24,6 +30,8 @@ import {currentCalloutReleaseSql,currentShiftFingerprintSql} from '../data/shift
 
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i,hex=/^[a-f0-9]{64}$/;
 const blocked:CommandResult={status:'blocked',reason:'access_denied'};
+/** Derive a session-bound client lifetime discriminator. This hash is compared with
+ * the current server proof, but is never sufficient authentication on its own. */
 export function communicationAuthority(proof:SessionMutationProof):string{
  assertManagementProof(proof,proof?.employee?.id);
  return createHash('sha256').update(JSON.stringify(['nevora:communication:lifetime:v1',proof.employee.id,proof.sessionTokenHash])).digest('hex');
@@ -99,6 +107,8 @@ async function observe(proof:SessionMutationProof,w:CommunicationWorkspace,draft
  const observation=r[prefix.length]?.[0] as Observation|undefined;if(!observation||!hex.test(observation.fingerprint))throw Error('communication_source_unavailable');
  return {...observation,...projectCommunicationAudience(draft,observation.facts,w,observation.observedAt)};
 }
+/** Preview the bounded current audience and its source fingerprint. The count is
+ * advisory until the command re-observes and locks that exact audience at publication. */
 export async function previewCommunicationAudience(proof:SessionMutationProof,draft:CommunicationDraft,executor:SqlExecutor=neonNotificationExecutor()):Promise<{state:'ready';count:number;fingerprint:string;authority:string}|{state:'blocked'|'unavailable';reason:string}>{
  try{proofValid(proof);const d=validateCommunicationDraft(draft);if(!d.ok)return {state:'blocked',reason:'invalid_draft'};
   const signal=AbortSignal.timeout(8000),w=await communicationWorkspace(proof,executor,signal),o=await observe(proof,w,d.value,executor,signal);
@@ -128,6 +138,9 @@ type Operation={payloadHash:string;sessionHash:string;id:string;version:string};
 function operationStatement(proof:SessionMutationProof,w:CommunicationWorkspace,id:string):SqlStatement{return {text:`SELECT payload_hash AS "payloadHash",session_hash AS "sessionHash",communication_id::text AS id,revision_id::text AS version FROM communication_operations WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3::uuid
  UNION ALL SELECT command_hash::text AS "payloadHash",$4::text AS "sessionHash",result->>'id' AS id,result->>'version' AS version FROM employee_attention_operations WHERE workspace_id=$1 AND employee_id=$2 AND operation_id=$3::uuid AND result->>'kind'='COMMUNICATION_READ' AND result->>'authority'=$5 LIMIT 1`,values:[w.id,proof.employee.id,id,proof.sessionTokenHash,communicationAuthority(proof)]};}
 const committed=(id:string,version:string,operationId:string):CommandResult=>({status:'committed',id,version,operationId});
+/** Recover only this actor/session operation identity without returning former content
+ * or recipient grants. operation_not_found permits deliberate replay of the original
+ * payload; other unavailable outcomes do not establish whether a write committed. */
 export async function findCommunicationOperation(proof:SessionMutationProof,operationId:string,authority:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommandResult>{
  try{proofValid(proof);if(!uuid.test(operationId)||authority!==communicationAuthority(proof))return blocked;
   const signal=AbortSignal.timeout(8000),w=await communicationWorkspace(proof,executor,signal),p=guards(proof,w),r=await executor.transaction([...p,operationStatement(proof,w,operationId),...currentAuthority(proof,w)],signal),o=r[p.length]?.[0] as Operation|undefined;
@@ -145,6 +158,10 @@ function cancelStatements(id:string):SqlStatement[]{return [{text:`WITH cancelle
  WHERE source_kind='COMMUNICATION' AND source_id=$1 AND push_state IN('pending','materialized','no_active_subscription') RETURNING id)
  UPDATE push_deliveries SET status='cancelled',lease_token=NULL,lease_expires_at=NULL,updated_at=clock_timestamp()
  WHERE notification_id IN(SELECT id FROM cancelled) AND status IN('queued','retry_pending','processing')`,values:[id]}];}
+/** Publish/revise/withdraw/acknowledge with one operation ID and immutable command hash.
+ * Expected revision, audience fingerprint and content hash guard different transitions.
+ * After dispatch, an unclassified failure is outcome_unknown: recover the same ID
+ * instead of creating a replacement command. Notification work is queued atomically. */
 export async function executeCommunicationCommand(proof:SessionMutationProof,c:CommunicationCommand,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommandResult>{
  if(!validCommand(c))return {status:'blocked',reason:'invalid_command'};
  let dispatched=false;
@@ -215,6 +232,9 @@ function recipientStatement(proof:SessionMutationProof,w:CommunicationWorkspace,
  FROM communication_recipients g WHERE g.workspace_id=$1 AND g.communication_id=$2::uuid AND g.revision_id=$3::uuid AND g.employee_id=$4`,values:[w.id,r.id,r.revisionId,proof.employee.id]};}
 function lifetimeStatement(proof:SessionMutationProof):SqlStatement{return {text:`/* communication_lifetime */ SELECT to_jsonb(clock_timestamp()) AS "observedAt",LEAST(45000,FLOOR(EXTRACT(EPOCH FROM(expires_at-clock_timestamp()))*1000))::integer AS "validForMs" FROM employee_sessions WHERE token_hash=$1 AND employee_id=$2 AND expires_at>clock_timestamp()`,values:[proof.sessionTokenHash,proof.employee.id]};}
 function statusStatement(proof:SessionMutationProof,w:CommunicationWorkspace,r:Root):SqlStatement{return {text:`SELECT count(*)::integer AS count,CASE WHEN $4 IN('OWNER','MANAGER') THEN COALESCE(jsonb_agg(jsonb_build_object('name',trim(e.first_name||' '||e.last_name),'acknowledgedAt',(SELECT to_jsonb(acknowledged_at) FROM communication_receipts receipt WHERE receipt.workspace_id=g.workspace_id AND receipt.communication_id=g.communication_id AND receipt.revision_id=g.revision_id AND receipt.employee_id=g.employee_id)) ORDER BY e.id),'[]') ELSE NULL END AS recipients FROM communication_recipients g JOIN employees e ON e.id=g.employee_id WHERE g.workspace_id=$1 AND g.communication_id=$2::uuid AND g.revision_id=$3::uuid`,values:[w.id,r.id,r.revisionId,proof.employee.role]};}
+/** Intersect the saved revision grant with current membership and assignment terms,
+ * then recheck response authority. validForMs bounds private display, not how long
+ * the recipient is authorized to perform a later command. */
 export async function readCommunication(proof:SessionMutationProof,id:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommunicationRead>{
  try{
   proofValid(proof);if(!uuid.test(id))return {state:'unauthorized',reason:'update_unavailable'};
@@ -240,6 +260,9 @@ export async function readCommunication(proof:SessionMutationProof,id:string,exe
  * grants intersect current exact assignment and current location eligibility. */
 function recipientCommandGuard(proof:SessionMutationProof,w:CommunicationWorkspace,id:string,revision:string,contentHash?:string):SqlStatement{return {text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id WHERE c.workspace_id=$1 AND c.id=$3::uuid AND r.id=$4::uuid
  AND c.state='PUBLISHED' AND (r.expires_at IS NULL OR r.expires_at>clock_timestamp()) AND ($5::text IS NULL OR r.content_hash=$5) AND ${communicationRecipientAllowedSql()}) THEN '1' ELSE 'communication_recipient_denied' END)::integer`,values:[w.id,proof.employee.id,id,revision,contentHash??null]};}
+/** Record a version-bound read receipt idempotently for Employee/Lead recipients.
+ * Required acknowledgements must use the explicit acknowledge transition; marking
+ * content read cannot satisfy that obligation. */
 export async function recordCommunicationRead(proof:SessionMutationProof,c:AttentionCommand,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommandResult>{
  let dispatched=false;
  try{
@@ -266,6 +289,9 @@ function communicationIndex(proof:SessionMutationProof,w:CommunicationWorkspace)
  (SELECT acknowledged_at::text FROM communication_receipts WHERE workspace_id=c.workspace_id AND communication_id=c.id AND revision_id=c.head_revision_id AND employee_id=$2) AS acknowledged,
  (SELECT read_at::text FROM employee_attention_receipts WHERE workspace_id=c.workspace_id AND source_kind='COMMUNICATION' AND source_id=c.id::text AND source_version=c.head_revision_id::text AND employee_id=$2) AS read FROM communications c WHERE c.workspace_id=$1 AND c.state='PUBLISHED' AND
  ($3 IN('OWNER','MANAGER') OR c.author_employee_id=$2 OR EXISTS(SELECT 1 FROM communication_recipients g WHERE g.workspace_id=c.workspace_id AND g.communication_id=c.id AND g.revision_id=c.head_revision_id AND g.employee_id=$2)) ORDER BY c.created_at DESC,c.id LIMIT 101`,values:[w.id,proof.employee.id,proof.employee.role]};}
+/** Read at most 100 current items and revalidate each item/index before returning.
+ * partial means the bounded list changed or some source was unavailable, so clients
+ * must not interpret it as a complete count of all communication obligations. */
 export async function listEmployeeCommunications(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommunicationListRead>{
  try{proofValid(proof);const signal=AbortSignal.timeout(8000),w=await communicationWorkspace(proof,executor,signal),p=guards(proof,w),results=await executor.transaction([...p,communicationIndex(proof,w)],signal);
   const rows=results[p.length] as {id:string}[],items:CommunicationRead[]=[];let partial=rows.length>100;

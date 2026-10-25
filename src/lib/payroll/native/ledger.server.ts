@@ -3,6 +3,9 @@ import type { PayrollRun } from '../contracts';
 import type { Snapshot } from '../service';
 import { statement as q, workspaceSql as ws } from '../store';
 import { PayrollError } from '../model';
+/** Build immutable employee ledger inserts for the approved native snapshot. Execute
+ * them atomically with approval under current authority/source guards; opening
+ * revision and correction lineage are retained for future YTD replacement projection. */
 export function nativeLedgerStatements(run: PayrollRun, snapshot: Snapshot) {
     if (run.sourceAuthority !== 'NATIVE_RECORDED_TIME' || run.status !== 'APPROVED' || run.nativeCalculation?.state !== 'ready' || !snapshot.native)
         throw new PayrollError('NATIVE_APPROVAL_REQUIRED', 409);

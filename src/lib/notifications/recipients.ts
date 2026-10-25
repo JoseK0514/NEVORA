@@ -14,6 +14,10 @@ import { destinationForSource, isReviewRole, isSelfServiceRecipient, canAccessPu
 import { nextRoutineTime, notificationEventKey, planReminder, notificationBoundary, notificationShiftStart } from './policy';
 import type { SourceSnapshot, RecipientAccess, PushEnvironment, NotificationPolicy, NotificationIntent, ScheduleSourceSnapshot } from './types';
 const HOUR_MS = 3600000;
+/** Derive candidate intents from a captured transition without persisting or sending.
+ * Active recipient deduplication, personal schedule clocks and local quiet hours feed
+ * stable event keys; manager SUMMARY seeds require collection before dispatch.
+ * Database persistence and dispatch independently recheck current source/access. */
 export function buildNotificationIntents(input: { before?: SourceSnapshot; after: SourceSnapshot; actorEmployeeId?: string; recipients: readonly RecipientAccess[]; environment: PushEnvironment; now: Date; policy: NotificationPolicy }): NotificationIntent[] {
   const { after, before, now, policy, environment, actorEmployeeId } = input;
   const shiftStart = (shift: {date:string;startTime:string;endTime:string}) => notificationShiftStart(shift,policy.timeZone);

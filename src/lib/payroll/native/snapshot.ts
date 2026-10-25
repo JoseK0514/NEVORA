@@ -1,3 +1,9 @@
+/**
+ * Retained server-side native evidence for review, approval, documents and corrections.
+ * Location coverage includes time and YTD dependencies, while ruleEvidence preserves
+ * which exact/statutory/attested/provisional policy path produced the approved result.
+ * Do not substitute this financial snapshot for a browser-safe run projection.
+ */
 import type { NativePreparationFacts } from './preparation';
 export type NativeSnapshot = {
     version: 'NATIVE_SNAPSHOT_V1';

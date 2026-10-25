@@ -15,6 +15,11 @@ import { allocatePolicyEarnings, collectPolicyAmount, recordPolicyAmount, usesOw
 const hash = (value: unknown) => createHash("sha256").update(stableExportJson(value)).digest("hex");
 export const NATIVE_CALCULATOR_VERSION = "NEVORA_NATIVE_WAGE_V10_OWNER_PROVISIONAL_POLICIES";
 export const NATIVE_RULES_SHA256 = hash({ calculatorVersion: NATIVE_CALCULATOR_VERSION, sources: PR_2026_RULE_SOURCES, federalEmployeeCents: FEDERAL_EMPLOYEE_CENT_RULE_SOURCE, prIncomeCents: PR_FINAL_PERIODIC_HALF_UP_GUIDANCE, ownerPolicy: OWNER_PAYROLL_POLICY, boundarySources: NATIVE_BOUNDARY_RULE_SOURCES, minimumWage: ORDINARY_PR_MINIMUM_2026 });
+/** Calculate one employee from finalized recorded time, effective wage/tax profiles
+ * and attested YTD within the supported PR/2026 scope. Amounts are USD cent strings;
+ * durations are nanosecond strings and rational provenance retains exact bases.
+ * Unsupported or inconsistent inputs return blocked issues rather than partial pay.
+ * This pure calculation does not authorize, persist, approve or pay the result. */
 export function calculateNativePayroll(input: NativePayrollInput): NativePayrollResult {
     try {
         if (!input || input.schema !== "NEVORA_NATIVE_PAYROLL_INPUT_V1" || typeof input.employeeId !== "string" || !input.employeeId || input.timeZone !== "America/Puerto_Rico")

@@ -70,6 +70,9 @@ Repository agents must follow [AGENTS.md](AGENTS.md). Material work loads the ex
 
 ## Local development
 
+Start with the [developer guide](docs/development/developer-guide.md) for the code
+map, request flow, method contracts, safe verification commands and common traps.
+
 ```bash
 npm install
 npm run dev

@@ -5,6 +5,9 @@ export type ProviderConfig = {
   key: string;
   dailyLimit: number;
 };
+/** Return provider settings only when feature/data approval, model, bounded daily
+ * cap and an allowed endpoint/key are configured. Availability here is configuration
+ * evidence, without a provider health/authentication request or retention guarantee. */
 export function readConfig(
   env: Record<string, string | undefined>,
 ): ProviderConfig | null {

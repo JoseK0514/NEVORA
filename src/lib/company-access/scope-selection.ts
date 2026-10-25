@@ -1,4 +1,7 @@
 import type {ScopeSelection} from './model';
+/** Parse explicit finite scope input without a default-to-Company fallback.
+ * Locations must be unique and nonempty; sorting gives command hashing a stable
+ * order. Existence, tenant membership and active state are checked by SQL later. */
 export function parseScopeSelection(value:unknown):ScopeSelection|null {
  if(!value||typeof value!=='object'||Array.isArray(value))return null;
  const v=value as Record<string,unknown>;

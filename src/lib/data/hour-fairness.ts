@@ -16,6 +16,11 @@ export type HourFairnessRecord = {
   }>;
 };
 
+/**
+ * Rank recent consecutive under-target weeks from nominal scheduled hours across
+ * locations, excluding released callouts. This is a scheduling preference signal;
+ * it does not measure worked time, wages or entitlement to an assignment.
+ */
 export async function listHourFairness(
   currentWeekStart: string,
   weeks = 3,

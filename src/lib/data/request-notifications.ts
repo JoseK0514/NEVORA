@@ -28,6 +28,7 @@ export function requestStateGuard(table: 'shift_exchanges' | 'shift_callouts', i
     values: [id, JSON.stringify(expected)],
   };
 }
+/** Assemble supersession and new outbox intent statements for the caller's business transaction; no provider is contacted here. */
 export function requestNotificationStatements(input: { before?: RequestSnapshot; after: RequestSnapshot; actorEmployeeId?: string; recipients: readonly RecipientAccess[]; config: NotificationConfig; observedAt?:string }): SqlStatement[] {
   const {config} = input;
   return [

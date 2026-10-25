@@ -15,6 +15,7 @@ function templateUrl(weekStart: string, suffix = "") {
   return `/app/schedule/templates?week=${encodeURIComponent(weekStart)}${suffix}`;
 }
 
+/** Saves a named week template under current company authority; does not apply or publish it. */
 export async function saveTemplateAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
   const proof = await requireSessionMutationProof();
@@ -45,6 +46,7 @@ export async function saveTemplateAction(formData: FormData) {
   redirect(templateUrl(weekStart, "&saved=1"));
 }
 
+/** Applies a template via the shared copy transaction and redirects to its operation receipt. */
 export async function applyTemplateAction(formData: FormData) {
  await requireRoles(MANAGER_ROLES);
  const proof=await requireSessionMutationProof();
@@ -54,6 +56,7 @@ export async function applyTemplateAction(formData: FormData) {
  redirect(`/app/schedule/copy-receipt?operation=${receipt.operationId}`);
 }
 
+/** Archives a template under current company authority while preserving its history. */
 export async function archiveTemplateAction(formData: FormData) {
   await requireRoles(MANAGER_ROLES);
   const proof = await requireSessionMutationProof();

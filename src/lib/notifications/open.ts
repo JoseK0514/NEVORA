@@ -11,6 +11,9 @@ function unavailable() { return new Response('This notification is unavailable.'
 // Callers supply only validated rooted local paths. A relative Location keeps
 // the browser origin even when a reverse proxy supplies a different request URL.
 function redirectTo(path: string) { return new Response(null, { status: 303, headers: { Location: path, 'Cache-Control': 'no-store' } }); }
+/** Resolve clicks against the current signed-in recipient and current source access.
+ * Login preserves only a validated local return path; unavailable, expired or revoked
+ * sources return the same no-store 404 instead of disclosing their existence. */
 export function createNotificationOpenHandler(deps: NotificationOpenDeps) {
     return async (request: Request): Promise<Response> => {
         try {

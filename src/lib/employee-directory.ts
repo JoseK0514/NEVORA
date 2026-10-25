@@ -7,6 +7,7 @@ export const DIRECTORY_ROLES: UserRole[] = ["OWNER", "MANAGER", "LEAD", "EMPLOYE
 const single = (value: string | string[] | undefined) => typeof value === "string" ? value : "";
 const searchable = (value: string) => value.normalize("NFKD").replace(/\p{M}/gu, "").toLocaleLowerCase("en");
 
+/** Normalizes untrusted query parameters against known roles/locations and bounds search text. */
 export function readDirectoryFilters(params: DirectorySearchParams, locations: readonly Location[]): DirectoryFilters {
   const status = single(params.status);
   const location = single(params.location);
@@ -18,6 +19,11 @@ export function readDirectoryFilters(params: DirectorySearchParams, locations: r
   };
 }
 
+/**
+ * Presentation filtering over an already-authorized employee set. Location means
+ * primary location, not scheduling eligibility; accent-insensitive name/ID search
+ * must never be used to decide the caller's access to employee records.
+ */
 export function filterDirectoryEmployees(employees: readonly Employee[], filters: DirectoryFilters): Employee[] {
   const query = searchable(filters.query);
   return employees.filter(employee =>

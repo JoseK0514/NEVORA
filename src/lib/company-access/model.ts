@@ -12,6 +12,9 @@ export type ScopeSelection =
 export type AccessFailure = 'access_denied' | 'not_configured' | 'source_changed'
   | 'read_failed' | 'source_limit';
 export type SourceCoverage = { kind: 'COMPANY' | 'LOCATIONS'; locationIds: string[] };
+/** Client observation metadata. coverage describes the projected source set;
+ * authority is a freshness binding, and validForMs must be spent as time passes.
+ * None of these client-visible values replace server-side session guards. */
 export type OperationalRead<T> =
   | { state:'ready'; data:T; coverage:SourceCoverage; authority:string;
       observedAt:string; validForMs:number }
@@ -51,6 +54,8 @@ export type EmployeeCoreAccessReceipt = {
   scopeState:'ASSIGNED'|'UNASSIGNED'|'REVOKED'|'LIFECYCLE_CHANGED';
   scope:ScopeSelection|null;
 };
+/** outcome_unknown preserves commit uncertainty. Keep the same operation ID for
+ * recovery/retry instead of interpreting transport failure as a rolled-back write. */
 export type EmployeeCoreAccessResult =
   | { state:'saved'; receipt:EmployeeCoreAccessReceipt }
   | { state:'conflict'; reason:'employee_changed'|'scope_changed'|'changed_replay' }

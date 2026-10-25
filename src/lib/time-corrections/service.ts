@@ -98,6 +98,7 @@ const uncertain = (error: unknown) => {
   return !code || /^(ECONN|ETIMEDOUT|UND_ERR|FETCH|57014)/.test(code);
 };
 
+/** Retry transaction aborts with the original operation; transport uncertainty must not become a fresh submission. */
 async function transactResult(
   statements: readonly SqlStatement[],
   operationId: string,
@@ -123,6 +124,12 @@ async function transactResult(
   return { status: 'conflict' };
 }
 
+/**
+ * Submit a proposal for the authenticated employee; callers cannot choose its
+ * employee identity. The SQL function owns source freshness and adjustment rules,
+ * bracketed by fresh session guards after the employee lock. No punch is edited
+ * merely by creating a pending request. Invalid command shapes throw before I/O.
+ */
 export async function submitTimeCorrection(
   proof: SessionMutationProof,
   input: CorrectionRequestCommand,
@@ -177,6 +184,12 @@ export async function submitTimeCorrection(
   return transactResult(statements, command.operationId, executor);
 }
 
+/**
+ * Review the displayed request revision under current company-wide management
+ * authority. The source pre-read selects lock identities only; ordered employee
+ * locks and the database command recheck lifecycle/source rules in the transaction.
+ * Approval records an adjustment through SQL rather than rewriting raw punches.
+ */
 export async function reviewTimeCorrection(
   proof: SessionMutationProof,
   input: CorrectionReviewCommand,

@@ -126,6 +126,10 @@ async function readJson(request: Request): Promise<Record<string, unknown>> {
         return reject();
     }
 }
+/** Session/origin-protected installation operations with generation-based concurrency.
+ * Status may reconcile cleanup and issue a proof cookie; subscribe persists encrypted
+ * device ownership, and test queues an intent subject to the test allowlist/cooldown.
+ * None of these responses proves that a push reached or displayed on the device. */
 export function createPushHandlers(deps: PushHandlerDeps) {
     const { config } = deps;
     function protectionKey() { return decodePushKey(config.subscriptionEncryptionKey, 32); }

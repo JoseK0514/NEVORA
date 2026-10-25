@@ -19,6 +19,8 @@ export function notificationPolicyFor(timeZone: string): NotificationPolicy {
 export function notificationBoundary(local: string, timeZone: string): number {
   try { return Date.parse(localDateTimeToInstant(local,timeZone)); } catch { return NaN; }
 }
+/** Return now outside workspace-local quiet hours, otherwise the next quiet-end
+ * instant. This plans routine delivery only; urgent decisions belong to producers. */
 export function nextRoutineTime(now: Date, policy: NotificationPolicy): Date {
   const hour=Number(businessTime(now,policy.timeZone).slice(0,2));
   if (hour>=policy.quietEndHour && hour<policy.quietStartHour) return new Date(now);
@@ -26,6 +28,8 @@ export function nextRoutineTime(now: Date, policy: NotificationPolicy): Date {
   const target=hour>=policy.quietStartHour ? addDays(day,1) : day;
   return new Date(localDateTimeToInstant(`${target}T${String(policy.quietEndHour).padStart(2,'0')}:00`,policy.timeZone));
 }
+/** Stable logical-event identity across generated intent UUIDs and worker retries;
+ * environment, source version, recipient and purpose each participate in deduplication. */
 export function notificationEventKey(intent: Pick<NotificationIntent, 'environment' | 'source' | 'effectiveVersion' | 'employeeId' | 'purpose'>): string {
   return [intent.environment, intent.source.kind, intent.source.id, intent.effectiveVersion, intent.employeeId, intent.purpose].map(encodeURIComponent).join(':');
 }
@@ -62,6 +66,9 @@ export function planReminder(input: { intent: NotificationIntent; now: Date; res
   reminder.itemKeys = [reminderItemKey(reminder, businessDate(due,policy.timeZone))];
   return reminder;
 }
+/** Select a bounded retry using minute-based policy delays, provider Retry-After in
+ * seconds and deterministic per-delivery jitter. Exhausted attempts fail; a retry
+ * that would reach expiry expires instead. This decision performs no scheduling I/O. */
 export function retryDecision(input: { attempt: number; now: Date; expiresAt: Date; result: ProviderResult; deliveryId: string; policy: NotificationPolicy }): { retryAt?: Date; terminal?: 'failed' | 'expired' } {
   const { attempt, now, expiresAt, result, deliveryId, policy } = input;
   if (result.kind === 'accepted') return {};

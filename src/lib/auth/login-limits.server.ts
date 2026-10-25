@@ -11,6 +11,9 @@ export const LOGIN_LIMITS={perId:10,perAddress:60} as const;
 const BUCKET='floor(EXTRACT(epoch FROM clock_timestamp())/900)';
 const scope=(kind:'id'|'address',value:string)=>createHash('sha256').update(`NEVORA login limit ${kind} v1:${value}`).digest('hex');
 
+/** Consume ID and optional address budgets atomically before password work.
+ * Only hashed scopes are persisted. All applicable counters must be readable
+ * and within their cap; executor failures are left to the caller's error path. */
 export async function admitLoginAttempt(employeeId:string,address:string|null,executor:SqlExecutor=neonNotificationExecutor()):Promise<boolean>{
  const scopes:[string,number][]=[[scope('id',employeeId.trim().toUpperCase()),LOGIN_LIMITS.perId]];
  if(address)scopes.push([scope('address',address),LOGIN_LIMITS.perAddress]);

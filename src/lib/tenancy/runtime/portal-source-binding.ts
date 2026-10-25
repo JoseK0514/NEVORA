@@ -65,6 +65,10 @@ function uniqueStrings(v: unknown, validate: (v: unknown) => string): readonly s
 }
 const same = (left: string, right: string) => { if (left !== right) return mismatch(); };
 
+/** Detach the closed native row observation and match its employee/workspace,
+ * session issuance and version bindings. A coherent but inactive/expired source
+ * has a distinct result from malformed or mismatched data. Successful parsing
+ * establishes correspondence only; it does not authenticate the supplied binding. */
 export function inspectPortalSourceBinding(rawValue: unknown, bindingValue: unknown) {
   // These bindings must originate in the existing protected resolver lane. The
   // shape or equality checks here cannot authenticate that origin. UTC strings

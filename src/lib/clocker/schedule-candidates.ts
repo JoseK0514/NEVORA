@@ -80,6 +80,9 @@ export function prepareScheduleCapture(source:PublishedScheduleSource,scope:Sche
   reviewedRevisionIds:[...byId.keys()].sort(),candidates};
 }
 
+/** Match the server clock-in instant against half-open published shift intervals.
+ * No grace/tolerance window is applied; overlapping or unresolved local-time
+ * candidates remain ambiguous rather than choosing an arbitrary assignment. */
 export function captureScheduleContext(prepared:PreparedScheduleCapture,clockInAt:string):CapturedScheduleContext{
  const at=Temporal.Instant.from(clockInAt);
  if(Temporal.Instant.compare(at,prepared.windowStartAt)<0||Temporal.Instant.compare(at,prepared.windowEndAt)>=0)

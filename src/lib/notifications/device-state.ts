@@ -4,6 +4,8 @@ import { diffPublishedShifts, type PublishedShiftSnapshot } from '../assistance/
 export type DeviceCapabilities = { secure: boolean; serviceWorker: boolean; push: boolean; notifications: boolean; requiresStandalone: boolean; installPrompt: boolean };
 export type DeviceSetupState = 'loading' | 'unavailable' | 'install' | 'ready' | 'enabled' | 'denied' | 'revoked' | 'pending' | 'error' | 'dismissed';
 export type DeviceStatusView = DeviceStatus & { phase?: 'loading' | 'pending' | 'error'; localOwned?: boolean; subscriptionMissing?: boolean };
+/** Pure UI precedence for capability, permission and server/local ownership evidence.
+ * A server enrollment alone remains pending until this browser confirms its generation. */
 export function deriveDeviceState(input: { capabilities: DeviceCapabilities; permission: NotificationPermission | 'unsupported'; standalone: boolean | 'unknown'; server: DeviceStatusView; dismissed: boolean }): DeviceSetupState {
   const { capabilities: c, permission, standalone, server, dismissed } = input;
   if (server.phase) return server.phase;

@@ -228,6 +228,14 @@ export async function readScheduleCopyReceipt(
     (await authorizedOperation(proof, id, executor)).operation?.payload ?? null
   );
 }
+/**
+ * Capture a durable source under the actor's operation ID, then append each valid
+ * copied row to the destination ledger with a per-row receipt. Source drift after
+ * capture is recorded as skipped work rather than silently copying a new source.
+ * Existing destination assignments are retained and participate in validation.
+ * Reuse the original command to recover uncertain results; a changed command with
+ * the same operation ID conflicts, and only an authorized stored receipt proves success.
+ */
 export async function executeScheduleCopy(
   proof: SessionMutationProof,
   input: unknown,

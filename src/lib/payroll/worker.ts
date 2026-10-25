@@ -1,3 +1,8 @@
+/**
+ * Leased payroll outbox processor. External preparation/rendering runs outside the
+ * final transaction; workspace, source and lease guards fence the resulting writes.
+ * Jobs share business-key deduplication with producers and may be reclaimed after expiry.
+ */
 import { payrollNoticeStatements } from "./notices";
 import { randomUUID } from "node:crypto";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
@@ -12,6 +17,8 @@ export type ClaimedJob = PayrollJob & {
     lease_token: string;
     business_key: string;
 };
+/** Claim one available job with SKIP LOCKED, increment attempts and grant a 60-second
+ * lease. Expired RUNNING jobs are eligible while fewer than five attempts exist. */
 export async function claimJob(ex: SqlExecutor = neonNotificationExecutor()): Promise<ClaimedJob | null> {
     enabled();
     const token = randomUUID();
@@ -24,6 +31,8 @@ export function fence(job: ClaimedJob) {
         q(`SELECT (CASE WHEN EXISTS(SELECT 1 FROM payroll_jobs WHERE id=$1::uuid AND lease_token=$2::uuid AND status='RUNNING' AND lease_until>clock_timestamp()) THEN '1' ELSE 'PAYROLL_LEASE_LOST' END)::integer`, job.id, job.lease_token),
     ];
 }
+/** Execute all job effects and mark success atomically, rechecking the lease before
+ * and after effects. A worker whose lease expired cannot publish its computed result. */
 export async function finishJob(job: ClaimedJob, statements: SqlStatement[], ex: SqlExecutor) {
     await ex.transaction([
         ...locks(),
@@ -39,6 +48,10 @@ export async function finishJob(job: ClaimedJob, statements: SqlStatement[], ex:
         q(`UPDATE payroll_jobs SET status='SUCCEEDED',lease_token=NULL,lease_until=NULL,error=NULL WHERE id=$1::uuid AND lease_token=$2::uuid`, job.id, job.lease_token),
     ]);
 }
+/** Process an already claimed job. Failure bookkeeping conditionally releases the
+ * owned lease and requeues with 30 seconds per attempt (capped at one hour), except
+ * terminal schedule/payday/glyph conflicts or the fifth attempt. The processing
+ * error is rethrown after bookkeeping succeeds; bookkeeping can itself reject. */
 export async function processJob(job: ClaimedJob, ex: SqlExecutor = neonNotificationExecutor()) {
     enabled();
     try {

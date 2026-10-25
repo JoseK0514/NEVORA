@@ -7,6 +7,9 @@ export type CommunicationFacts={
  actor:CommunicationPolicyContext['actor'];location:CommunicationPolicyContext['location'];
  members:{id:string}[];assignments:{employeeId:string;sourceShiftId:string;assignmentEpisodeId:string;termsFingerprint:string;date:string;startTime:string;endTime:string;published:boolean;released:boolean}[];
 };
+/** Pure projection of server-observed facts into sorted grants. Location grants use
+ * current members; day/shift grants pin an exact published assignment episode and
+ * terms fingerprint. Overnight overlap uses workspace-local day boundaries. */
 export function projectCommunicationAudience(draft:CommunicationDraft,facts:CommunicationFacts,workspace:{id:string;active:boolean;timeZone:string},observedAt:string){
  if(!facts?.actor||!facts.location||!Array.isArray(facts.members)||!Array.isArray(facts.assignments)||facts.members.length>1000||facts.assignments.length>1000)throw Error('communication_source_unavailable');
  const assignments=facts.assignments.map(a=>({...a,workspaceId:workspace.id,locationId:facts.location.id,...shiftBoundaryInstants(a,workspace.timeZone)}));

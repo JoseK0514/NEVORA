@@ -136,6 +136,12 @@ export async function listTeamTimeOffRequests(status: "PENDING" | "APPROVED" | "
   return rows.map(mapRequest);
 }
 
+/**
+ * Create an own pending request and its outbox intents atomically. A repeated
+ * request ID is accepted only when an authorized read matches the same employee
+ * and exact original dates/times/reason; ID reuse never overwrites an old request.
+ * Input date/time validation belongs to the calling action.
+ */
 export async function createTimeOffRequest(input: {
   requestId?: string;
   employeeId: string;
@@ -184,6 +190,7 @@ export async function createTimeOffRequest(input: {
   }
 }
 
+/** Decide only a still-pending request under current company authority; concurrent terminal transitions return false. */
 export async function reviewTimeOffRequest(input: {
   requestId: string;
   managerId: string;

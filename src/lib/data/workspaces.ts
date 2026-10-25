@@ -60,6 +60,11 @@ const operationalRecords = `EXISTS (SELECT 1 FROM schedules)
  OR EXISTS (SELECT 1 FROM schedule_week_settings WHERE availability_deadline IS NOT NULL)
  OR EXISTS (SELECT 1 FROM time_off_requests)
  OR EXISTS (SELECT 1 FROM time_entries)`;
+/**
+ * Save under an exclusive workspace lock and current Owner session. Once any
+ * operational calendar/time record exists, timezone conversion needs a separate
+ * reviewed workflow; changing the zone here would reinterpret existing local data.
+ */
 export async function saveWorkspaceProfile(input: { name: string; timeZone: string; actorEmployeeId: string; proof: SessionMutationProof }, executor: SqlExecutor = neonNotificationExecutor()): Promise<Workspace> {
   assertManagementProof(input.proof,input.actorEmployeeId);
   const profile = validateWorkspaceProfile(input);

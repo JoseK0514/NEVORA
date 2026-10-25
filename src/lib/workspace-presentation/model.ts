@@ -34,6 +34,11 @@ function exactKeys(value: Record<string, unknown>, allowed: string[]) {
   if (keys.length !== allowed.length || keys.some(k => !allowed.includes(k))) throw Error("Invalid presentation command");
 }
 
+/**
+ * Validates exactly one editable section and canonicalizes IDs, colour and
+ * module ordering before command hashing. Call this before comparing/replaying
+ * operation IDs; semantically identical submissions need the same hash.
+ */
 export function parsePresentationCommand(value: unknown): PresentationCommand {
   if (!plain(value)) throw Error("Invalid presentation command");
   const { operationId, expectedRevision, section } = value;
@@ -100,6 +105,7 @@ export function mergeSettings(latest: unknown, command: PresentationCommand): Pr
   return next;
 }
 
+/** Hashes a parsed canonical command, including expectedRevision, for operation replay checks. */
 export function presentationCommandHash(command: PresentationCommand): string {
   return createHash("sha256").update("nevora:workspace-presentation:command:v2\0").update(JSON.stringify(command)).digest("hex");
 }

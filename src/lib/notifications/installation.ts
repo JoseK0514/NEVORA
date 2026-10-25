@@ -1,3 +1,9 @@
+/**
+ * Protected browser-installation material has separate HKDF purposes for installation
+ * proofs, cleanup receipts and subscriptions. Subscription authenticated context binds
+ * environment/hash/generation, so rotating ownership invalidates old ciphertext use.
+ * A cryptographically valid proof is identity evidence; repositories enforce current ownership.
+ */
 import { createCipheriv, createDecipheriv, createHash, createHmac, timingSafeEqual, hkdfSync, randomBytes, randomUUID } from 'node:crypto';
 import { decodePushKey } from './config';
 import type { InstallationProof, PushEnvironment, VerifiedCleanupReceipt } from './types';
@@ -88,6 +94,9 @@ export function sealCleanupReceipt(receipt: VerifiedCleanupReceipt, key: Uint8Ar
     if (Buffer.byteLength(value, 'utf8') > MAX_CLEANUP_RECEIPT_BYTES) throw new Error('Cleanup recovery capacity exceeded');
     return value;
 }
+/** Verify bounded signed/encrypted cleanup obligations and every retained lifetime.
+ * Invalid, future-issued or expired material returns null; it must not be treated as
+ * completed cleanup by callers deciding whether an installation can be inherited. */
 export function openCleanupReceipt(value: string, key: Uint8Array, now: Date): VerifiedCleanupReceipt | null {
     try {
         if (Buffer.byteLength(value, 'utf8') > MAX_CLEANUP_RECEIPT_BYTES)

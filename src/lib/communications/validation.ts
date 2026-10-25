@@ -15,6 +15,9 @@ function scope(v:unknown):CommunicationScope|null{
  if(v.kind==='SHIFT'&&keys(v,['kind','locationId','sourceShiftId','assignmentEpisodeId','termsFingerprint'])&&id(v.sourceShiftId)&&id(v.assignmentEpisodeId)&&id(v.termsFingerprint))return {kind:v.kind,locationId:v.locationId,sourceShiftId:v.sourceShiftId,assignmentEpisodeId:v.assignmentEpisodeId,termsFingerprint:v.termsFingerprint};
  return null;
 }
+/** Normalize CRLF/outer whitespace while rejecting hidden controls, unexpected fields
+ * and incompatible type/scope pairs. Text limits count Unicode code points; transport
+ * capacity counts UTF-8 bytes. Authorization and future-expiry checks are separate. */
 export function validateCommunicationDraft(input:unknown):Validation{
  try{
   if(new TextEncoder().encode(JSON.stringify(input)).byteLength>COMMUNICATION_TRANSPORT_BYTES)return {ok:false,reason:'transport'};

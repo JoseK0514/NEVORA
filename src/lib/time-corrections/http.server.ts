@@ -38,6 +38,11 @@ function allowedOrigin(request: Request): string | null {
   catch{return null;}
 }
 
+/**
+ * Shared browser-request admission, separate from session and domain authority.
+ * Writes require the allowed origin and JSON; reads still reject cross-site
+ * metadata, missing intent markers and query parameters.
+ */
 export function correctionBoundary(request: Request, write: boolean, header='x-nevora-time-correction',maxBytes=8192): 400 | 403 | 503 | null {
   const fetchSite=request.headers.get('sec-fetch-site');
   if((fetchSite&&fetchSite!=='same-origin')||
@@ -57,6 +62,7 @@ export function correctionBoundary(request: Request, write: boolean, header='x-n
   return null;
 }
 
+/** Enforce the limit while streaming actual UTF-8 bytes, even when Content-Length was absent or inaccurate. */
 export async function readCorrectionJson(request: Request,maxBytes=8192): Promise<unknown> {
   const reader=request.body?.getReader();
   if(!reader) throw new Error('invalid_body');

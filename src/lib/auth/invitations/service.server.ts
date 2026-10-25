@@ -14,7 +14,9 @@ const safeId = (v: unknown): v is string => typeof v==='string' && v.length>0 &&
 const revision = (v: unknown): v is number => typeof v==='number' && Number.isInteger(v) && v>=0 && v<2147483647;
 const emailValid = (v: unknown): v is string => typeof v==='string' && v.length<=254 && /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(v);
 const sha256 = (v: string) => createHash('sha256').update(v).digest('hex');
+/** Domain-separated custody key; persist this digest, never the invitation bearer. */
 export const invitationProofDigest = (proof: string) => sha256('NEVORA invitation proof v1\0'+proof);
+/** Must stay byte-compatible with the SQL fingerprint used during claim checks. */
 export const invitationEmailFingerprint = (email: string) => sha256('NEVORA invitation email v1\0'+email.trim().toLowerCase());
 const unavailable = (): InvitationResult => ({state:'unavailable',reason:'source_unavailable'});
 const bucket = "date_bin(interval '15 minutes',clock_timestamp(),timestamptz '2000-01-01 00:00:00Z')";
@@ -35,6 +37,8 @@ function parseCommand(value: unknown): InvitationCommand | null {
 function commandHash(employeeId: string, command: InvitationCommand) {
  return sha256(JSON.stringify({employeeId,command}));
 }
+/** Serialize workspace/employee lifecycle before the live Owner session and
+ * adoption checks. Reuse this order for receipt reads as well as commands. */
 function ownerGuards(proof: SessionMutationProof, workspace: Workspace, employeeIds: readonly string[]=[]): SqlStatement[] {
  assertManagementProof(proof,proof?.employee?.id);
  return [
@@ -108,6 +112,8 @@ async function operationRead(proof: SessionMutationProof, workspace: Workspace, 
  if(!clean) throw Error('company_access_invalid_receipt');
  return {...row,receipt:clean};
 }
+/** Owner-only current eligibility/status view. Exposes a masked registered email
+ * and derived lifecycle state, never a stored proof digest or bearer. */
 export async function readInvitationStatus(proof: SessionMutationProof, employeeId: string, executor: SqlExecutor=neonNotificationExecutor()): Promise<InvitationStatusResult> {
  if(!safeId(employeeId)) return {state:'unavailable',reason:'access_denied'};
  try {
@@ -121,6 +127,8 @@ export async function readInvitationStatus(proof: SessionMutationProof, employee
    delivery:target.delivery??'UNAVAILABLE',allowedCommands:[...(eligible==='INVITABLE'?['ISSUE' as const]:[]),...(target.invitationState==='ISSUED'?['REVOKE' as const]:[])],retryAfterMs:null};
  } catch {return {state:'unavailable',reason:'access_denied'};}
 }
+/** Recover this actor's historical receipt after an uncertain command response.
+ * Reading a receipt rechecks current Owner access and never retries delivery. */
 export async function readInvitationOperation(proof: SessionMutationProof, operationId: string, executor: SqlExecutor=neonNotificationExecutor()): Promise<InvitationResult> {
  if(!uuid(operationId)) return {state:'invalid',fieldErrors:[{field:'operationId',message:'Invalid operation.'}]};
  try {const workspace=await getWorkspace(executor),row=await operationRead(proof,workspace,operationId,executor);return row?{state:'saved',receipt:row.receipt}:unavailable();}
@@ -129,6 +137,11 @@ export async function readInvitationOperation(proof: SessionMutationProof, opera
 function assertion(text: string, values: readonly unknown[], reason: string): SqlStatement {
  return {text:`SELECT(CASE WHEN ${text} THEN '1' ELSE '${reason}' END)::integer`,values};
 }
+/** Commit a versioned Owner command and actor-scoped idempotency receipt before
+ * external SMTP work. Replaying identical input returns the original receipt;
+ * changing input under the same operation ID conflicts. Delivery acceptance is
+ * tracked separately from invitation validity, and uncertain commit/delivery
+ * outcomes require receipt lookup rather than a new blind issue attempt. */
 export async function issueOrRevokeInvitation(proof: SessionMutationProof, employeeId: string, value: InvitationCommand,
  delivery: InvitationDelivery|null, executor: SqlExecutor=neonNotificationExecutor()): Promise<InvitationResult> {
  const command=parseCommand(value);

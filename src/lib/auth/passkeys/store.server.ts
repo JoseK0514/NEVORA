@@ -22,6 +22,8 @@ function assertion(proof: SessionMutationProof) {
     WHERE ss.token_hash=$1 AND e.id=$2 AND e.active AND ss.expires_at>clock_timestamp())
     THEN '1' ELSE 'passkey_not_found' END)::integer`, [proof.sessionTokenHash, proof.employee.id]);
 }
+/** Use the shared employee -> credential -> session lock order, then check the
+ * live session. Callers append a final assertion after their work as well. */
 function guards(proof: SessionMutationProof): SqlStatement[] {
   if (!proof?.employee?.id || !/^[a-f0-9]{64}$/.test(proof.sessionTokenHash ?? "")) throw new PasskeyError("not_found");
   return [s("SELECT id FROM employees WHERE id=$1 FOR SHARE", [proof.employee.id]),
@@ -34,9 +36,14 @@ const revisionGuard = (employee: string, updated: string | null, credential: str
     WHERE e.id=$1 AND e.active AND e.updated_at=$2::timestamptz AND c.password_updated_at=$3::timestamptz)
     THEN '1' ELSE 'passkey_not_found' END)::integer`, [employee, updated, credential]);
 
+/** Persistence boundary for passkeys. Challenge deletion runs before the final
+ * registration/login transaction, whose guards recheck expiry and lifecycle
+ * state instead of making the consumed challenge replayable on error. */
 export class PasskeyStore {
   constructor(private readonly executor: SqlExecutor) {}
 
+  /** Create the account's opaque user handle once and read RP-specific active
+   * credentials, retaining exact login revisions for challenge issuance. */
   async registrationContext(proof: SessionMutationProof, rpID: string): Promise<RegistrationContext> {
     const prefix = guards(proof);
     const result = await this.executor.transaction([...prefix,
@@ -52,6 +59,9 @@ export class PasskeyStore {
     return row;
   }
 
+  /** At most one current challenge per flow token and purpose. Reissuing options
+   * replaces the old challenge; registration also binds the session and captured
+   * account revisions, while anonymous login carries no employee binding. */
   async issueChallenge(purpose: "login" | "register", token: string, challenge: string,
     proof?: SessionMutationProof, account?: RegistrationContext) {
     const prefix = purpose === "register" && proof && account ? [
@@ -71,6 +81,8 @@ export class PasskeyStore {
     ]);
   }
 
+  /** DELETE ... RETURNING gives only one concurrent verifier the live challenge.
+   * Registration must match the issuing employee and session digest. */
   async consumeChallenge(purpose: "login" | "register", token: string, challenge: string, proof?: SessionMutationProof): Promise<Challenge> {
     const [row] = await this.executor.query<Challenge>(s(`DELETE FROM auth_passkey_challenges
       WHERE token_hash=$1 AND purpose=$2 AND challenge=$3 AND expires_at>clock_timestamp()
@@ -82,6 +94,8 @@ export class PasskeyStore {
     return row;
   }
 
+  /** Verification snapshot only, including disabled/revoked state. The service
+   * evaluates eligibility and commitLogin rechecks mutable state under locks. */
   async credential(credentialId: string, rpID: string): Promise<StoredCredential | null> {
     if (typeof credentialId !== "string" || credentialId.length > 4096 || !/^[A-Za-z0-9_-]+$/.test(credentialId)) throw new PasskeyError("not_found");
     const [row] = await this.executor.query<StoredCredential>(s(`SELECT p.id::text,p.employee_id AS "employeeId",p.credential_id AS "credentialId",
@@ -92,6 +106,9 @@ export class PasskeyStore {
     return row ?? null;
   }
 
+  /** Serialize on the stable user-handle row so concurrent registrations cannot
+   * exceed ten live keys. Session, issuance revisions and challenge expiry guard
+   * the insert/audit transaction; only display metadata leaves this boundary. */
   async register(proof: SessionMutationProof, challenge: Challenge, credential: {
     id: string; publicKey: Uint8Array; counter: number; transports?: string[];
   }, name: string, rpID: string): Promise<PasskeyMetadata> {
@@ -111,6 +128,10 @@ export class PasskeyStore {
     return metadata(result[prefix.length][0] as PasskeyMetadata);
   }
 
+  /** Commit counter advancement, audit and session insertion together. Compare
+   * against the originally verified counter after locking the key: increasing
+   * counters must advance, while authenticators reporting zero may remain zero.
+   * Session guards invalidate a concurrent password/lifecycle change. */
   async commitLogin(credential: StoredCredential, counter: number, challenge: Challenge, session: PreparedSession) {
     await this.executor.transaction([...session.guards,
       s("SELECT id FROM employee_passkeys WHERE id=$1::uuid FOR UPDATE", [credential.id]),
@@ -125,6 +146,8 @@ export class PasskeyStore {
     ]);
   }
 
+  /** Return only this live session's unrevoked key metadata; public keys and
+   * credential IDs are kept inside verification/storage paths. */
   async list(proof: SessionMutationProof): Promise<PasskeyMetadata[]> {
     const prefix = guards(proof), results = await this.executor.transaction([...prefix,
       s(`SELECT ${metadataFields} FROM employee_passkeys WHERE employee_id=$1 AND revoked_at IS NULL ORDER BY created_at,id`, [proof.employee.id]),
@@ -133,6 +156,8 @@ export class PasskeyStore {
     return (results[prefix.length] as PasskeyMetadata[]).map(metadata);
   }
 
+  /** Retire an owned key rather than deleting its history. Repeated removal of
+   * an existing retired key succeeds without adding another remove audit event. */
   async remove(proof: SessionMutationProof, id: string) {
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) throw new PasskeyError("not_found");
     await this.executor.transaction([...guards(proof),

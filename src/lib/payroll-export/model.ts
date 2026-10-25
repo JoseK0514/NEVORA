@@ -1,3 +1,8 @@
+/**
+ * Pure export projection and provider mapping. Canonical durations are decimal
+ * nanosecond strings of recorded elapsed time INCLUDING breaks; break duration is
+ * reported separately and is not automatically subtracted to imply paid hours.
+ */
 import {parseTimecardsResponse,type TimecardItem} from '../timecards/read-model';
 import {parsePeriod,projectTimecard,type TimecardEntry,type Period} from '../timecards/project';
 import {csvDocument} from '../reports/csv';
@@ -9,6 +14,9 @@ export const mappingSources:MappingSource[]=['employeeId','employeeName','provid
 const object=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const text=(v:unknown,max=200):v is string=>typeof v==='string'&&v.length>0&&v.length<=max&&v===v.trim()&&!/[\u0000-\u001f\u007f]/.test(v);
 const safeImport=(s:string)=>!/^\s*[=+@-]/.test(s);
+/** Revalidate 1–100 selected cards as currently finalized, with matching source hashes
+ * and one shared time zone. Produces stable employee ordering without persistence
+ * or authorization; the service owns current company access and receipt creation. */
 export function canonicalPayrollExport(workspaceId:string,observedAt:string,period:Period,cards:unknown,employeeIds:readonly string[]):CanonicalPayrollExport{
  if(!text(workspaceId)||employeeIds.length<1||employeeIds.length>100||employeeIds.some(id=>!text(id))||new Set(employeeIds).size!==employeeIds.length)throw new Error('Choose 1 to 100 distinct employees');
  const normalizedPeriod=parsePeriod(period.startDate,period.endDate);
@@ -37,6 +45,8 @@ function validateAdp(p:ExportProfile){
  const constant=(i:number)=>p.columns[i].constant??'';
  if(!/^[A-Za-z0-9]{1,10}$/.test(constant(0))||!['B','W','S','M','Q'].includes(constant(1))||!text(constant(5),10)||!text(constant(10),10)||constant(7)!==''||!/^[0-9]$/.test(constant(8))||!/^\d{0,6}$/.test(constant(9))||p.employeeMappings.some(m=>m.providerEmployeeId.length>15||!/^[A-Za-z0-9]+$/.test(m.providerEmployeeId)))throw new Error('Verify RUN company, frequency, employee, earnings, department and rate codes');
 }
+/** Convert nonnegative nanoseconds with integer arithmetic. A reviewed HALF_UP profile
+ * may round; REJECT_INEXACT fails when the requested decimal scale loses precision. */
 export function decimalHours(nanoseconds:string,decimals:number,precision:ExportProfile['precision']):string{
  if(!/^\d+$/.test(nanoseconds))throw new Error('Invalid canonical time');
  const divisor=BigInt(3_600_000_000_000),scale=BigInt(10)**BigInt(decimals),numerator=BigInt(nanoseconds)*scale;
@@ -44,6 +54,8 @@ export function decimalHours(nanoseconds:string,decimals:number,precision:Export
  const result=numerator/divisor+(precision==='HALF_UP'&&remainder*BigInt(2)>=divisor?BigInt(1):BigInt(0));
  if(!decimals)return result.toString();const value=result.toString().padStart(decimals+1,'0');return `${value.slice(0,-decimals)}.${value.slice(-decimals)}`;
 }
+/** Apply a validated mapping and its explicit precision policy. Missing provider IDs
+ * fail the entire file; RUN output uses its marker while custom CSV starts with BOM. */
 export function mappedPayrollCsv(model:CanonicalPayrollExport,input:ExportProfile):string{
  const profile=parseExportProfile(input);const date=(d:string)=>profile.dateFormat==='US'?`${d.slice(5,7)}/${d.slice(8,10)}/${d.slice(0,4)}`:d;
  const rows=model.rows.map(row=>profile.columns.map(column=>{

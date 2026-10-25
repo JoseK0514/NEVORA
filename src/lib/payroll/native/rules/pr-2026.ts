@@ -60,6 +60,10 @@ const brackets: Record<NativeFrequency, readonly (readonly [
     SEMIMONTHLY: [[37500, 0, 0], [104170, 700, 2630], [172920, 1400, 9920], [256250, 2500, 28940], [null, 3300, 49440]],
     MONTHLY: [[75000, 0, 0], [208330, 700, 5250], [345830, 1400, 19830], [512500, 2500, 57870], [null, 3300, 98870]],
 };
+/** Compute the selected periodic PR table formula from cent amounts and certificate
+ * elections. UNVERIFIED demands exact cents for separate percentage operations;
+ * an explicit rounding mode collects the combined nonnegative base plus extra.
+ * The caller owns eligibility and acceptance of the selected cent policy. */
 export function prIncomeWithholding(input: unknown) {
     if (!record(input) || typeof input.frequency !== "string" || !Object.hasOwn(exemptions, input.frequency) || !record(input.certificate) || (input.rounding !== "HALF_UP" && input.rounding !== "TRUNCATE" && input.rounding !== "UNVERIFIED"))
         return invalid();
@@ -104,6 +108,9 @@ function applicable2026(payday: unknown) {
         throw Error("RULESET_NOT_APPLICABLE");
     }
 }
+/** Apply the supported 2026 wage cap/withholding threshold to current gross and
+ * same-employer YTD cent strings. Employee collection includes exact/rule evidence;
+ * employer amounts are separate and receive further consumer policy checks. */
 export function fica2026(input: unknown) {
     if (!record(input))
         return invalid();
@@ -115,6 +122,9 @@ export function fica2026(input: unknown) {
     // Employer fractional figures retain their prior conditional formula; the live consumer independently requires exact cents.
     return { socialSecurityMinor: employeeTaxOperations[0].collectedMinor, medicareMinor: employeeTaxOperations[1].collectedMinor, additionalMedicareMinor: employeeTaxOperations[2].collectedMinor, employerSocialSecurityMinor: rounded(ssTaxable * BigInt(620), BigInt(10000), "HALF_UP").toString(), employerMedicareMinor: rounded(gross * BigInt(145), BigInt(10000), "HALF_UP").toString(), socialSecurityTaxableMinor: ssTaxable.toString(), medicareTaxableMinor: gross.toString(), additionalMedicareTaxableMinor: additionalTaxable.toString(), employeeTaxOperations };
 }
+/** Split the capped supported SINOT base using an explicit employee basis-point
+ * share. UNVERIFIED requires each share to be integral cents; the caller separately
+ * handles provisional combined-share allocation when that policy is selected. */
 export function sinotContribution(input: unknown) {
     if (!record(input))
         return invalid();

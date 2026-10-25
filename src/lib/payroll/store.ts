@@ -1,3 +1,8 @@
+/**
+ * Shared payroll SQL guards. Authority is checked against the current database
+ * session/role, with locks and a second check around protected work. These helpers
+ * produce statements; callers must preserve their order in one transaction.
+ */
 import { createHash } from "node:crypto";
 import { stableExportJson } from "../payroll-export/json";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
@@ -32,6 +37,9 @@ export function authority(proof: SessionMutationProof, permission: "OWNER" | "RE
         statement(`SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations l ON l.id=e.primary_location_id JOIN workspaces w ON w.id=l.workspace_id WHERE w.singleton AND w.active AND e.id=$1 AND e.active AND ($2='SELF' OR e.role='OWNER' OR ($2 IN('REVIEW','APPROVE') AND e.role='MANAGER' AND ${manager}))) THEN '1' ELSE 'payroll_authorization' END)::integer`, proof.employee.id, permission),
     ];
 }
+/** Feature-gated read/write envelope. SELF proves an active session but does not
+ * restrict which payroll object the supplied query reads; the query must add its
+ * own employee, publication and/or location-coverage predicate. */
 export async function guarded<T>(proof: SessionMutationProof, permission: "OWNER" | "REVIEW" | "APPROVE" | "SELF", query: SqlStatement, executor: SqlExecutor): Promise<T[]> {
     enabled();
     const first = [...locks(), ...authority(proof, permission)];

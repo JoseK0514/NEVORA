@@ -188,6 +188,11 @@ function canonicalShifts(shifts: readonly PublishedShiftSnapshot[]) {
         startTime: s.startTime, endTime: s.endTime, positionId:s.positionId || null, notes: s.notes || null, isDesignatedLead: s.isDesignatedLead, isCalloutApproved: s.isCalloutApproved,
     }));
 }
+/**
+ * Derive each recipient's latest material personal version, which may precede
+ * the global week revision when another employee's assignment changed. The
+ * acknowledgement comparison still uses the latest published week snapshot.
+ */
 export function personalProjections(state: GuardedWeekState, week: string): Record<string, EmployeePublicationProjection> {
     const history = state.revisions.filter(r => r.weekStart === week);
     const latest = history.at(-1);
@@ -226,6 +231,14 @@ function supersedePersonalStatements(week: string, employeeId: string, environme
 /** The only publication/write protocol. Ordinary callers rebuild a conflicted
  * whole batch at most three times; gap repairs require an explicit fresh review. */
 type ManagementWeekAuthority = { sourceType: 'MANAGER_MUTATION' | 'PUBLISH'; proof: SessionMutationProof } | { sourceType: 'EXCHANGE' | 'CALLOUT'; proof?: never };
+/**
+ * Commit business statements, publication snapshots, calendar removals and
+ * notification intents atomically. The builder runs outside the SQL transaction
+ * and may run again after conflicts, so it must describe effects without sending
+ * notifications or performing independent writes. Exact before/after guards turn
+ * stale or conditional no-op writes into failures instead of false success.
+ * Gap repairs retain the original review and require user review after conflict.
+ */
 export async function commitPublishedWeekChange(input: ManagementWeekAuthority & {
     weekStarts: readonly string[];
     actorEmployeeId: string;
@@ -291,7 +304,13 @@ export type PublishedChangePlanInput = ManagementWeekAuthority & {
     coverageRepairReview?: string;
 };
 export type PreparedPublishedChange = { guards: SqlStatement[]; statements: SqlStatement[]; revisions: PublicationRevision[] };
-/** Pure batch assembly. The caller owns execution and retries. */
+/**
+ * Assemble the guarded publication protocol from before/after values without I/O.
+ * Changed assignments receive current capability/rule validation; retained history
+ * is preserved. Draft-only work has no publication revision, while a changed
+ * published projection captures the whole week and its outbox in the same batch.
+ * The caller owns execution/retries and must not reorder the returned guards.
+ */
 export function preparePublishedWeekChange(input: PublishedChangePlanInput): PreparedPublishedChange {
  const {state,batch,config}=input;
  const weeks=[...new Set(input.weekStarts)].sort();

@@ -245,7 +245,13 @@ function checkParticipantHistory(intent: NotificationIntent, recipient: Recipien
     return destination ? {deliverable:true,reason:'participant_history',effectiveVersion:source.source.version,expiresAt:new Date(expiry).toISOString(),destination} : rejected(intent,'history_access_lost');
 }
 
-/** Persisted lifetime is always an upper bound, including for request outcomes. */
+/**
+ * Re-evaluate an intent against current canonical business facts and recipient
+ * access; its copied title/body never grants delivery authority. Personal
+ * publication versions and semantic invitation campaigns may differ from the
+ * newest global revision. Persisted expiry remains an upper bound, and routine
+ * delivery must still fit before expiry after the next allowed routine time.
+ */
 export function evaluateNotificationSource(intent: NotificationIntent, recipient: RecipientAccess | null, source: SourceSnapshot | null, now: Date, policy: import('../notifications/types').NotificationPolicy): SourceCheck {
     const shiftStart = (shift:{date:string;startTime:string;endTime:string}) => notificationShiftStart(shift,policy.timeZone);
     if (!recipient?.active || recipient.employeeId!==intent.employeeId || !source) return rejected(intent,'source_or_access_lost');

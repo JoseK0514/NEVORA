@@ -310,6 +310,11 @@ function schemaMissing(error: unknown) {
     ['42P01','42703','42883'].includes(String(error.code)));
 }
 
+/**
+ * Read only the authenticated employee's bounded requests, eligible locations
+ * and closed raw targets. Effective context comes from canonical adjustment views;
+ * total counts disclose the recent-history window instead of implying completeness.
+ */
 export async function readEmployeeTimeCorrections(
   proof: SessionMutationProof,
   executor: SqlExecutor = neonNotificationExecutor(),
@@ -345,6 +350,11 @@ export async function readEmployeeTimeCorrections(
   }
 }
 
+/**
+ * Produce an all-or-unavailable pending queue with a session/observation-bounded
+ * lifetime. Internal capture retains full connected correction footprints for
+ * protected consumers; the public rows expose only bounded decision context.
+ */
 async function readManagerTimeCorrectionsCore(
   proof: SessionMutationProof,
   executor: SqlExecutor = neonNotificationExecutor(),

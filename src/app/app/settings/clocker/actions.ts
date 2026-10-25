@@ -15,6 +15,12 @@ function field(form: FormData, name: string): string {
   return values[0];
 }
 
+/**
+ * Owner/origin-checked device administration with exact per-operation fields.
+ * Mutations use expectedVersion; register/rotate exposes the enrollment secret
+ * only in the immediate setup result. If a response is uncertain, refresh device
+ * state before another mutation rather than blindly replaying registration.
+ */
 export async function manageClockerDeviceAction(form: FormData): Promise<ClockerOwnerResult> {
   const session = await requireSessionMutationProof();
   if (session.employee.role !== 'OWNER') {

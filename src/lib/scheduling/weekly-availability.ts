@@ -7,6 +7,11 @@ import {
   type WeeklyAvailability,
 } from "./availability";
 
+/**
+ * Build effective windows and dated overrides without writing them. Partial edits
+ * retain untouched days; an empty submission means the whole week is unavailable.
+ * Converting a legacy weekly snapshot expands all seven days to preserve intent.
+ */
 export function buildWeeklyAvailabilityUpdate(input: {
   weekStart: string;
   normal: readonly AvailabilityHours[];

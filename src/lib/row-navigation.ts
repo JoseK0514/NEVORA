@@ -7,6 +7,7 @@ const TEXT_ENTRY = 'input:not([type="checkbox"]):not([type="radio"]),select,text
 
 const visible = (element: HTMLElement) => element.getClientRects().length > 0;
 
+/** Resolves an opt-in list target without moving focus or consuming keys used by text inputs. */
 export function rowNavigationTarget(event: Pick<KeyboardEvent, 'key' | 'altKey' | 'ctrlKey' | 'metaKey' | 'shiftKey' | 'target'>): HTMLElement | null {
   if ((event.key !== 'ArrowDown' && event.key !== 'ArrowUp') || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return null;
   const target = event.target instanceof HTMLElement ? event.target : null;
@@ -26,6 +27,7 @@ export function rowNavigationTarget(event: Pick<KeyboardEvent, 'key' | 'altKey' 
   return options[Math.min(Math.max(0, controls(row).indexOf(target)), options.length - 1)] ?? null;
 }
 
+/** Prevents default scrolling only when a visible neighbouring focus target exists. */
 export function handleRowNavigation(event: KeyboardEvent) {
   const destination = rowNavigationTarget(event);
   if (!destination) return;

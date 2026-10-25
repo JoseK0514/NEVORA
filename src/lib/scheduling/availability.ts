@@ -39,6 +39,12 @@ function merge(items: Interval[]) {
   }
   return result;
 }
+/**
+ * Resolve wall-time windows: a submitted legacy weekly snapshot replaces normal
+ * hours, dated AVAILABLE windows replace that day's base, then UNAVAILABLE cuts
+ * are subtracted. Missing submission remains distinguishable from confirmed
+ * normal hours so validation can warn without inventing an unavailable week.
+ */
 export function resolveAvailabilityDay({
   date,
   normal,

@@ -17,11 +17,12 @@ export type ActiveBrand = { style: Record<string, string> | undefined; tokens: B
 export type ActivePresentation = ActiveBrand & { modules: EnabledModules; words: WordPresetId };
 const NO_PRESENTATION: ActivePresentation = { style: undefined, tokens: null, logoAssetId: null, revision: 0, modules: ALL_MODULES_ON, words: "standard" };
 
-/** The brand, words and modules every page renders with. Read on each
- * request, so it never throws: a missing table or an unreadable row falls
- * back to NEVORA teal, standard words and every module on. */
-/** `strict` (module gates): only "not installed" (missing table/column) means the default all-on presentation; any
- * other read failure throws, so a gate can't treat a database blip as "every module on". */
+/**
+ * Reads the latest stored presentation. The default mode falls back on any read
+ * failure. Module gates must use strict mode: only missing table/column errors
+ * mean not installed and allow defaults; other failures throw so a database
+ * outage cannot reopen a module the company disabled.
+ */
 export async function readActivePresentation(workspaceId: string, executor: SqlExecutor = neonNotificationExecutor(), { strict = false }: { strict?: boolean } = {}): Promise<ActivePresentation> {
   try {
     const rows = await executor.query<{ revision: number; settings: unknown }>({
@@ -41,6 +42,7 @@ export async function readActivePresentation(workspaceId: string, executor: SqlE
 }
 export const readActiveBrand = readActivePresentation;
 
+/** Reads the latest 20 revisions with Owner/session guards before and after the query. */
 export async function readPresentationHistory(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<PresentationRevision[]> {
   assertManagementProof(proof, proof.employee.id);
   const workspace = await getWorkspace(executor);
@@ -60,6 +62,7 @@ export async function readPresentationHistory(proof: SessionMutationProof, execu
   return result[guards.length] as PresentationRevision[];
 }
 
+/** Serializes writes on the singleton workspace and binds the actual workspace into the statement. */
 async function ownerTransaction(proof: SessionMutationProof, statement: { text: string; values: unknown[] }, executor: SqlExecutor) {
   assertManagementProof(proof, proof.employee.id);
   const workspace = await getWorkspace(executor);
@@ -80,6 +83,12 @@ const WORKSPACE = Symbol("workspace");
 
 export class ModuleBusy extends Error { constructor(readonly module: ModuleId, readonly count: number) { super(`module_busy:${module}`); } }
 
+/**
+ * Saves one section with an expected revision and operation hash. Existing
+ * operations replay their settings; new stale commands conflict. PostgreSQL
+ * owns final serialization and module-busy checks. Missing results are uncertain
+ * outcomes: retry the same command rather than generate a new operation ID.
+ */
 export async function saveWorkspacePresentation(proof: SessionMutationProof, input: unknown, executor: SqlExecutor = neonNotificationExecutor()) {
   const command = parsePresentationCommand(input);
   const workspace = await getWorkspace(executor);
@@ -122,6 +131,11 @@ export async function readModuleBlockers(proof: SessionMutationProof, executor: 
 
 export class LogoRejected extends Error { constructor(readonly problem: LogoProblem) { super(problem); } }
 
+/**
+ * Inspects decoded image bytes before an Owner-guarded asset write. Uploading
+ * stores an asset; selecting it for the brand is a separate presentation command.
+ * Preserve operationId when retrying an unconfirmed upload result.
+ */
 export async function uploadWorkspaceLogo(proof: SessionMutationProof, input: unknown, executor: SqlExecutor = neonNotificationExecutor()) {
   const command = parseLogoCommand(input);
   const bytes = Buffer.from(command.dataBase64, "base64");

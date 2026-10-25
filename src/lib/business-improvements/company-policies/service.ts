@@ -69,6 +69,10 @@ export async function readCompanyPolicyHistory(
 ): Promise<CompanyPolicyHistory> {
   return projectCompanyPolicyHistory(await readPolicyRows(proof, executor));
 }
+/** Owner-only immutable policy revision through the canonical database command.
+ * expectedRevision and the normalized operation hash protect concurrency/replay;
+ * referenced employees/locations/break types are locked for workspace validation.
+ * An uncertain reply must recover/retry the same operation, not invent a replacement. */
 export async function saveCompanyPolicy(
   proof: SessionMutationProof,
   input: unknown,

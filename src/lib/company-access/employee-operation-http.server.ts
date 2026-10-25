@@ -2,6 +2,9 @@ import 'server-only';
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {correctionBoundary,correctionJson} from '@/lib/time-corrections/http.server';
 import {readEmployeeCoreAccessOperation} from './employee-profile.server';
+/** Read-only recovery endpoint for an uncertain employee command. Current
+ * cookie identity and service authorization remain required even if a caller
+ * already knows a valid operation UUID. */
 export async function employeeOperationHttp(request:Request,operationId:string):Promise<Response> {
  const boundary=correctionBoundary(request,false,'x-nevora-company-access');
  if(boundary)return correctionJson({state:'unavailable'},boundary);

@@ -2,7 +2,10 @@ import 'server-only';
 import nodemailer from 'nodemailer';
 export const validRegisteredEmail=(email:string)=>email.length<=254 && /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email);
 
-/** Existing explicitly configured SMTP account. No provider presets or activation. */
+/** Build transport settings for the explicitly configured SMTP account; null
+ * means missing/invalid configuration, not a failed connectivity probe. Remote
+ * delivery requires HTTPS origin and SMTP credentials/TLS; development loopback
+ * is the bounded exception. Construction does not send or verify an email. */
 export function validatedMailTransport(env:Record<string,string|undefined>=process.env) {
  try {
   const host=env.NEVORA_RECOVERY_SMTP_HOST?.trim(),port=Number(env.NEVORA_RECOVERY_SMTP_PORT??465),from=env.NEVORA_RECOVERY_FROM?.trim(),origin=new URL(env.FUEL_PORTAL_ORIGIN??'');

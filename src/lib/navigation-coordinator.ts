@@ -14,6 +14,12 @@ function addressKey(address:string){
  return address.slice(0,query)+(search?'?'+search:'');
 }
 
+/**
+ * Tracks one current navigation for the shell's pending UI and identity reloads.
+ * Attempts are compared by object identity, so a late completion from a replaced
+ * attempt cannot settle the new one. This coordinates lifecycle only; it grants
+ * no data access and does not perform router navigation itself.
+ */
 export function createNavigationCoordinator(){
  let active:NavigationAttempt|null=null,generation=0,seenPending=false;
  const settled=new Set<()=>void>(),idle=new Set<()=>void>();

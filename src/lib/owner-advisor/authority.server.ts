@@ -31,6 +31,9 @@ export function ownerGuards(
     ),
   ];
 }
+/** Establish current Owner plus Company admission. Retain this original authority
+ * and recheck it through checkOwner/ownerGuards across subsequent awaited work;
+ * a client role or an earlier admission alone cannot authorize a later tool read. */
 export async function admitOwner(
   proof: SessionMutationProof,
   ex: SqlExecutor,

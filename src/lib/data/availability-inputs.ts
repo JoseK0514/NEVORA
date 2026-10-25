@@ -43,6 +43,11 @@ export async function readAvailabilityInputs(
   );
 }
 
+/**
+ * Preserve submission presence independently of windows: zero windows may mean a
+ * confirmed unavailable week, while seeded windows without a submission are still
+ * unconfirmed. Keep the exact database submission version for optimistic writes.
+ */
 export function mapAvailabilityInputs(
   normalRaw: unknown,
   weeklyRaw: unknown,

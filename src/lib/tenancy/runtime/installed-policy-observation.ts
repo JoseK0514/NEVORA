@@ -147,6 +147,10 @@ function nativeBundleText(value: unknown): string {
   return '{' + keys.map(key => JSON.stringify(key) + ': ' + nativeBundleText(object[key])).join(', ') + '}';
 }
 
+/** Compare exact retained policy/vocabulary/PRD preimages, installation identity
+ * and native bundle serialization against explicit expectations. Neither matching
+ * hashes nor coherent bytes prove that those expectations were independently
+ * approved or that the executing database uses this policy. Errors return BLOCKED. */
 export function inspectInstalledPortalPolicyObservation(rawValue: unknown, expectedValue: unknown) {
   try {
     const expected = record(expectedValue, ['workspaceId', 'workspaceIncarnation', 'installationEpoch', 'policyId', 'policyRevision',

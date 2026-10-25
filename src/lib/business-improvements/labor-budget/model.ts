@@ -74,6 +74,9 @@ const instant = (v: unknown): v is string => {
 };
 const location = (v: unknown): v is string | null => v === null || text(v);
 
+/** Preserve bounded lexical decimal rates/budgets with their explicit currency/unit
+ * and instant windows. Same employee/location rate windows may not overlap; no
+ * rounding, currency conversion, monetary scale or approved Finance method is inferred. */
 export function parseLaborPlanningInputs(v: unknown): LaborPlanningInputs {
   if (
     !object(v) ||

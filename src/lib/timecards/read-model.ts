@@ -12,6 +12,11 @@ const uuid = (v:unknown):v is string => typeof v==='string' && /^[0-9a-f]{8}-[0-
 const sourceHash = (v:unknown):v is string => typeof v==='string' && /^[a-f0-9]{32}$/.test(v);
 const safeText=(v:unknown,max=300):v is string=>typeof v==='string'&&v===v.trim()&&v.length>0&&v.length<=max&&!/[\u0000-\u001f\u007f]/.test(v);
 
+/**
+ * Rebuild every card and historical snapshot from validated source, requiring a
+ * complete descending revision chain for this period. A partial or mixed-identity
+ * response throws rather than presenting incomplete review evidence as ready.
+ */
 export function parseTimecardsResponse(v:unknown,period:Period):TimecardProjection {
   if(!object(v)||!safeText(v.observedAt,100)||!Array.isArray(v.cards)||v.cards.length>300)throw new Error('Invalid timecards');
   let entries=0,corrections=0;

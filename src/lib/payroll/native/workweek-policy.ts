@@ -121,6 +121,10 @@ const ns = (value: string) => Temporal.Instant.from(value).epochNanoseconds;
 const serialize = (value: bigint) => Temporal.Instant.fromEpochNanoseconds(value).toString();
 const localDate = (value: bigint) => Temporal.Instant.fromEpochNanoseconds(value).toZonedDateTimeISO(ZONE).toPlainDate();
 const midnight = (date: Temporal.PlainDate) => date.toZonedDateTime(ZONE).epochNanoseconds;
+/** Resolve one evidenced recurring week policy across the full dependency window.
+ * sourceWindow extends beyond the inclusive civil pay dates for complete weekly
+ * and consecutive-day context; policy transitions or incomplete effective coverage
+ * block rather than letting pay-period boundaries reset overtime/rest history. */
 export function resolveNativeWorkweek(employeeId: string, wages: NativeWageProfile[], period: WorkweekPayPeriod): ResolvedNativeWorkweek {
     const payLeft = midnight(Temporal.PlainDate.from(period.startDate)), payRight = midnight(Temporal.PlainDate.from(period.endDate).add({ days: 1 }));
     const intersects = (w: NativeWageProfile, left: bigint, right: bigint) => ns(w.effectiveFrom) < right && (w.effectiveTo === null || ns(w.effectiveTo) > left);

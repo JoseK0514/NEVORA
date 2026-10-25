@@ -20,12 +20,14 @@ export type AcknowledgementSummary = {
   acknowledgedEmployees: number;
 };
 
+/** Confirm the displayed publication through the canonical attention command; opening a schedule never acknowledges it. */
 export async function acknowledgeScheduleWeek(input:{proof:SessionMutationProof;weekStart:string;expectedRevisionId:string;operationId:string;authority:string},executor:SqlExecutor=neonNotificationExecutor()):Promise<CommandResult>{
   try { assertEmployeeViewProof(input.proof); } catch { return {status:'blocked',reason:'session_unavailable'}; }
   if(!isValidWeekStart(input.weekStart))return {status:'blocked',reason:'invalid_week'};
   return commitAttention(input.proof,'CONFIRM_WEEK',{operationId:input.operationId,authority:input.authority,ref:{kind:'SCHEDULE',id:input.weekStart,version:input.expectedRevisionId}},executor);
 }
 
+/** An older global revision can remain acknowledged when this employee's own material assignments have not changed. */
 export async function getEmployeeAcknowledgementState(
   weekStart: string,
   employeeId: string,

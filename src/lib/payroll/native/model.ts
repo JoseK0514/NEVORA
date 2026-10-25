@@ -88,6 +88,9 @@ export function parseDeduction(v: unknown): NativeAuthorizedDeduction {
     check((d.legalBasis === "PR_LAW_17_5_C" && d.method === "FIXED" && d.employerContributionCode === null) || (d.legalBasis === "PR_LAW_17_5_G" && code(d.employerContributionCode)));
     return structuredClone(v) as NativeAuthorizedDeduction;
 }
+/** Validate attested same-employer cent balances and gross-minus-deductions = net.
+ * Wage bases cannot exceed gross; this parser does not prove attestation provenance
+ * or project later immutable ledger heads, which the protected source capture owns. */
 export function parseYtd(v: unknown): NativeYtd {
     const y = object(v, ["year", "revision", "evidenceReference", "attested", "grossMinor", "netMinor", "socialSecurityWagesMinor", "medicareWagesMinor", "sinotWagesMinor", "deductions", "employerContributions", "ledgerFingerprint", "locationIds", "employerWagesMinor"]);
     check(typeof y.year === "number" && Number.isSafeInteger(y.year) && y.year >= 2026 && y.year <= 2100 && y.attested === true && text(y.evidenceReference));
@@ -108,6 +111,9 @@ export function parseYtd(v: unknown): NativeYtd {
         throw new PayrollError("YTD_TAXABLE_BASE_CONFLICT", 400);
     return structuredClone(v) as NativeYtd;
 }
+/** Validate and clone supported profile data, rejecting overlapping wage/location
+ * intervals and duplicate deduction identities/codes. Incomplete optional workweek
+ * evidence may remain stored; the calculator separately blocks unsupported readiness. */
 export function parseConfiguration(v: unknown): NativeConfiguration {
     const c = object(v, ["schema", "employeeId", "wages", "tax", "deductions"], ['calculationPolicyReference']);
     check(c.calculationPolicyReference === undefined || c.calculationPolicyReference === null || c.calculationPolicyReference === OWNER_PAYROLL_POLICY.id);

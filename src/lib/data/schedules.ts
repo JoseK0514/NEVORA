@@ -48,6 +48,11 @@ function timeValue(value: unknown) {
   return String(value).slice(0, 5);
 }
 
+/**
+ * Read by owning schedule week by default. Business-workweek mode includes prior
+ * Sunday overnight carry-in and excludes archived parents; callers calculating
+ * hours still clip each returned interval to the requested week.
+ */
 export async function listWeekShifts({
   weekStart,
   employeeId,
@@ -150,6 +155,11 @@ export async function listScheduleStatuses(weekStart: string): Promise<LocationS
   });
 }
 
+/**
+ * Gather preview rules, including all nonarchived commitments across locations.
+ * These parallel reads are advisory; the canonical mutation protocol reloads and
+ * guards the complete source before saving rather than trusting this preview.
+ */
 export async function getShiftValidationContext({
   employeeId,
   locationId,
@@ -423,6 +433,12 @@ export async function getShiftForManagement(
   };
 }
 
+/**
+ * A manual edit takes ownership from generation and clears generated claims.
+ * Omitted positionId retains the current position; null/empty explicitly removes
+ * it. The publication protocol validates the final assignment and derives any
+ * published revision/notifications atomically.
+ */
 export async function updateShift(input: {
   shiftId: string; employeeId: string; date: string; startTime: string;
   endTime: string; notes?: string; positionId?: string | null; isDesignatedLead?: boolean; actorEmployeeId: string; proof: SessionMutationProof;
@@ -443,6 +459,11 @@ export async function updateShift(input: {
   return result.committed;
 }
 
+/**
+ * Route generated draft removal through semantic exclusions so regeneration
+ * respects manager intent. Ordinary removal preserves exchange-linked history;
+ * a missing/protected target returns false rather than claiming a deletion.
+ */
 export async function deleteShift(shiftId: string, proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()) {
   const actorEmployeeId = proof?.employee?.id;
   assertManagementProof(proof, actorEmployeeId);

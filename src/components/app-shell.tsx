@@ -58,6 +58,12 @@ function TabPending() {
   return pending ? <span className="mobile-nav-pending" aria-hidden="true" /> : null;
 }
 
+/**
+ * Client shell for server-projected identity/capabilities. Remount navigation
+ * coordination when identity or role changes so pending attempts cannot leak
+ * across accounts. Navigation visibility is presentation; each destination and
+ * mutation still enforces current server/database authorization.
+ */
 export function AppShell(props:AppShellProps){
  return <AppNavigationProvider key={JSON.stringify([props.user.id,props.user.role])}><AppShellView {...props}/></AppNavigationProvider>;
 }

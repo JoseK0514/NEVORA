@@ -14,6 +14,11 @@ import {
   withdrawTimeOffRequest,
 } from "@/lib/data/requests";
 
+/**
+ * Validates an employee-owned time-off request and preserves its client request
+ * UUID for persistence. Actor identity always comes from the session. Partial
+ * days must fit one calendar date; full-day ranges are inclusive date labels.
+ */
 export async function requestTimeOffAction(formData: FormData) {
   const session = await requireSelfService("/app/requests");
   if (!(await moduleEnabled("timeOff"))) redirect("/app/requests"); // turned off by the company (B2)
@@ -57,6 +62,11 @@ export async function requestTimeOffAction(formData: FormData) {
   redirect("/app/requests?tab=my&submitted=1");
 }
 
+/**
+ * Routes an authorized approve/deny decision to the guarded writer, then returns
+ * to an allowlisted list/home/inbox context. A false write result means no review
+ * was recorded; do not show the success redirect for that outcome.
+ */
 export async function reviewTimeOffAction(formData: FormData) {
   const session = await requireRoles(TIME_OFF_REVIEW_ROLES);
   if (!(await moduleEnabled("timeOff"))) redirect("/app/requests");
@@ -98,6 +108,11 @@ export async function reviewTimeOffAction(formData: FormData) {
 import { parseWithdrawalCommand, type WithdrawalActionState } from '@/lib/time-off-withdrawal';
 import { isManagementAuthorizationError } from '@/lib/data/management-session';
 
+/**
+ * Withdraws with explicit confirmation and a deterministic command identity.
+ * Unknown transport outcomes remain unavailable so the same command can be
+ * retried; only a returned receipt proves the withdrawal was recorded.
+ */
 export async function withdrawTimeOffAction(_previous:WithdrawalActionState, formData:FormData):Promise<WithdrawalActionState> {
   const session=await requireSelfService('/app/requests');
   if(!(await moduleEnabled('timeOff')))return {outcome:'unavailable'};

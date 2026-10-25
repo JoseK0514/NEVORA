@@ -90,6 +90,9 @@ function retainPending(cookies: CookieReaderWriter, deps: LogoutDeps, installati
     value = cookies.get(INSTALLATION_COOKIE)?.value ?? null;
     if (value) cookies.set(CLEANUP_COOKIE, value, options(deps.secureCookies));
 }
+/** Attempt independent session revocation and installation detach within one budget.
+ * Always remove the browser session cookie; unresolved server effects retain protected
+ * recovery evidence and return pending rather than claiming the writes rolled back. */
 export async function terminatePortalSession(input: {
     sessionToken?: string;
     installation?: InstallationProof;
@@ -129,6 +132,9 @@ export function createLogoutDeps(config: PushRuntimeConfig): LogoutDeps {
         openReceipt: value => key ? openCleanupReceipt(value, key, new Date()) : null,
     };
 }
+/** Replay protected cleanup obligations before device inheritance. Missing keys/proofs,
+ * ambiguous writes and saturated recovery bundles stay pending; delete the cleanup
+ * cookie only when all retained revocations and installation reconciliation complete. */
 export async function reconcilePendingInstallation(cookies: CookieReaderWriter, config: PushRuntimeConfig, deps: LogoutDeps = createLogoutDeps(config)): Promise<CleanupResult> {
     const pending = cookies.get(CLEANUP_COOKIE)?.value;
     if (!pending)

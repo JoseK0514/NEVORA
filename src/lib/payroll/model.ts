@@ -1,3 +1,8 @@
+/**
+ * Pure transport validation for payroll imports and commands. Monetary amounts are
+ * nonnegative base-10 USD cent strings; aggregate arithmetic uses bigint. These
+ * parsers establish shape and arithmetic consistency, not actor or source authority.
+ */
 const enumValue = (value: unknown, allowed: string[]) =>
   typeof value === "string" && allowed.includes(value);
 import type {
@@ -200,6 +205,9 @@ export function parsePreferences(v: unknown): PayrollPreferences {
   rules(p.rules);
   return structuredClone(p) as PayrollPreferences;
 }
+/** Clone a balanced provider import: deductions must reconcile gross to net, optional
+ * earnings must sum to gross, and a supplied population requires exactly one row
+ * per employee, including zero/excluded dispositions handled by the service. */
 export function parseImport(v: unknown, population?: string[]): PayrollImport {
   const p = record(v, [
     "schema",

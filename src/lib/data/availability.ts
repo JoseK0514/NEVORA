@@ -43,6 +43,7 @@ export async function listAvailability(employeeId: string): Promise<Availability
   });
 }
 
+/** Replace the authenticated employee's normal weekly pattern atomically; dated overrides and weekly confirmation remain separate. */
 export async function replaceAvailability(
   employeeId: string,
   windows: Array<{ dayOfWeek: number; startTime: string; endTime: string }>,
@@ -64,6 +65,7 @@ export async function replaceAvailability(
   await executor.transaction(statements);
 }
 
+/** A selected week resolves weekly/dated overrides; omitting it returns only the stored normal pattern. */
 export async function listTeamAvailabilityWindows(weekStart?: string): Promise<Array<AvailabilityRecord & { employeeId: string }>> {
   if (weekStart) {
     const team = await readTeamAvailabilityInputs(weekStart);

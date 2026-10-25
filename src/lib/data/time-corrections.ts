@@ -1,3 +1,4 @@
+/** Portal adapters derive the actor from the actual cookie; shared services still enforce fresh database authority and lifecycle rules. */
 import 'server-only';
 
 import { requireSessionMutationProof } from '../auth/session';

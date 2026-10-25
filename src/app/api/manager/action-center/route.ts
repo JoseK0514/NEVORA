@@ -3,6 +3,11 @@ import {correctionBoundary,correctionJson,readCorrectionJson} from '@/lib/time-c
 import {readActionCenter} from '@/lib/action-center/service';
 import {isValidWeekStart} from '@/lib/date-utils';
 export const runtime='nodejs';export const dynamic='force-dynamic';
+/**
+ * POST carries a bounded read selector, not a mutation: one Monday weekStart.
+ * The actor header must match the cookie session; the service receives fresh
+ * proof and determines current operational scope before projecting action items.
+ */
 export async function POST(request:Request){
  const boundary=correctionBoundary(request,true,'x-nevora-action-center');if(boundary)return correctionJson({state:'unavailable'},boundary);
  try{

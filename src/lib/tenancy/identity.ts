@@ -21,6 +21,8 @@ export function normalizeWorkspaceLocator(input: unknown): string | null {
 /** Preserve the documented existing comparison, including its Unicode casing.
  * Do not substitute PostgreSQL UPPER/collation or normalize historical bytes. */
 export function normalizeEmployeeNumber(input: string): string { return input.trim().toUpperCase(); }
+/** Restricted syntax for newly assigned numbers. Legacy number comparison uses
+ * normalizeEmployeeNumber directly and must not be narrowed by this new-input rule. */
 export function newEmployeeNumber(input: string): string | null {
   if (typeof input !== 'string') return null;
   const value = normalizeEmployeeNumber(input);

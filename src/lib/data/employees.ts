@@ -130,6 +130,13 @@ export type EmployeeCreationMutationInput = {
   proof: SessionMutationProof;
 };
 
+/**
+ * Prepare employee, eligibility, position and optional credential writes under
+ * fresh actor/catalog guards. Preparation reads configuration but does not write;
+ * callers must execute guards, writes and finalAuthority in the same transaction.
+ * The primary location is always included in eligibility, and only Owners can
+ * create another Owner. Profile text/password preparation belongs to the caller.
+ */
 export async function prepareEmployeeCreationMutation(input: EmployeeCreationMutationInput, executor?: SqlExecutor) {
   assertManagementProof(input.proof, input.actorEmployeeId);
   const sql = executor ?? neonNotificationExecutor();
@@ -256,6 +263,13 @@ export type EmployeeCoreMutationInput = {
     proof: SessionMutationProof;
   };
 
+/**
+ * Prepare an optimistic core-profile edit against exact PostgreSQL updated_at
+ * text. Lock active Owners when demoting/deactivating an Owner so concurrent
+ * edits cannot remove the last one. Deactivation removes sessions atomically;
+ * intentional self-edits retain only the captured, still-unexpired authority.
+ * Execute all returned pieces in order within one transaction.
+ */
 export async function prepareEmployeeProfileMutation(input: EmployeeCoreMutationInput, executor?: SqlExecutor) {
   assertManagementProof(input.proof, input.actorEmployeeId);
   if (!["OWNER", "MANAGER", "LEAD", "EMPLOYEE"].includes(input.role)) {
@@ -429,6 +443,12 @@ export async function updateEmployeeProfile(input: EmployeeCoreMutationInput, ex
   return written;
 }
 
+/**
+ * Replace scheduling memberships under current company authority and the reviewed
+ * employee version. Keep the primary location eligible and allow existing inactive
+ * catalog references to remain, while refusing new inactive references. The
+ * employee version advances with the membership change to invalidate stale forms.
+ */
 export async function saveEmployeeSchedulingProfile(
   input: {
     employeeId: string;

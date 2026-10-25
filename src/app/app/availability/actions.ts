@@ -14,6 +14,11 @@ import {
 import { businessDateStart, timeMinutes } from "@/lib/scheduling/periods";
 import { isValidWeekStart } from "@/lib/date-utils";
 
+/**
+ * Replaces the signed-in employee's recurring windows. Day numbers use Sunday=0;
+ * an unchecked day contributes no window, and an end entered as 00:00 is stored
+ * as 24:00 to distinguish end-of-day from the start of the same day.
+ */
 export async function saveAvailabilityAction(formData: FormData) {
   const session = await requireSelfService("/app/availability");
   const proof = await requireSessionMutationProof();
@@ -41,6 +46,12 @@ export async function saveAvailabilityAction(formData: FormData) {
 }
 
 
+/**
+ * Submits weekly overrides for a Monday-start week. changedDays preserves the
+ * distinction between untouched recurring days and explicitly unavailable days.
+ * The early deadline read improves feedback; the writer must still reject a
+ * deadline or concurrency conflict at commit time.
+ */
 export async function saveWeeklyAvailabilityAction(formData: FormData) {
   const session = await requireSelfService("/app/availability");
   const proof = await requireSessionMutationProof();

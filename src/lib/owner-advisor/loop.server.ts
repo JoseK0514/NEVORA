@@ -95,6 +95,11 @@ async function responseJson(
     reader.releaseLock();
   }
 }
+/** Run a bounded read-tool/provider investigation with current authority checks around
+ * every awaited provider/tool result. The initial briefing consumes one tool slot;
+ * conversation/context/output limits and deadlines stop unbounded loops. Sends
+ * store:false but does not establish a provider-wide retention policy. No tool here
+ * commits a proposed business action; exact review evidence stays outside model copy. */
 export async function investigate(
   config: ProviderConfig,
   history: AdvisorMessage[],

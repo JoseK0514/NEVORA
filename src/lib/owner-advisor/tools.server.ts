@@ -21,6 +21,10 @@ import {
   type BriefingResult,
 } from "./contracts";
 const short = (v: string) => v.slice(0, 200);
+/** Allowlisted, bounded company evidence for the advisor. Published staffing remains
+ * separate from planning coverage that includes drafts. Coverage proposals are
+ * alternatives with exact review payloads, requiring Scheduling to recheck/save;
+ * these tools do not mutate schedules, timecards, payroll or send communications. */
 export class AdvisorTools {
   constructor(readonly store: AdvisorStore) {}
   async briefing(captured?: Today): Promise<BriefingResult> {

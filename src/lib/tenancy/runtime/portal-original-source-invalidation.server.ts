@@ -212,6 +212,10 @@ const CONTROL_POSTCONDITION = `SELECT (CASE WHEN EXISTS(SELECT 1 FROM nevora_ten
 export function isPortalOriginalSourceInvalidationComponent(value:unknown):value is PortalOriginalSourceInvalidationComponent {
   return !!value&&typeof value==='object'&&issued.has(value);
 }
+/** Prepare the ordered fences, version advancement and postconditions around a
+ * separately reviewed original-source mutation. The consumer must compose prefix,
+ * mutation and suffix in one owning transaction. No SQL executes here, and a
+ * compiled component supplies neither installer authentication nor tenant rights. */
 export function compilePortalOriginalSourceInvalidation(value:unknown):SourceInvalidationCompilation {
   const r=closed(value,['format','kind','databaseOid','installerRole','installerRoleOid','phase','fenceGeneration',
     'captureManifestSha256','workspaceId','workspaceIncarnation','lockEmployeeIds','subjects']);

@@ -4,6 +4,11 @@ import {getEmployeeTime} from '@/lib/data/employee-time';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
 const json=(value:object,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'no-store, private','Vary':'Cookie','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'}});
+/**
+ * Reads only the signed-in Employee/Lead's recorded time; URL selectors are
+ * forbidden. The optional correction binding must match the active session,
+ * and the data reader independently resolves current read authority.
+ */
 export async function GET(request:Request):Promise<Response>{
  if(request.headers.get('sec-fetch-site')==='cross-site'||request.headers.get('x-nevora-my-time')!=='1')return json({state:'unavailable',reason:'access_denied'},403);
  if(new URL(request.url).search)return json({state:'unavailable',reason:'access_denied'},400);

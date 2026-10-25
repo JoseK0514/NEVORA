@@ -42,6 +42,8 @@ export function fromBase64url(value: string): ArrayBuffer {
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
   return bytes.buffer;
 }
+/** Preserve a view's byte offset/length when serializing WebAuthn binary data;
+ * encoding its backing buffer would include unrelated bytes. */
 export function toBase64url(buffer: ArrayBuffer | ArrayBufferView | null | undefined): string | undefined {
   if (!buffer) return undefined;
   const bytes = buffer instanceof ArrayBuffer ? new Uint8Array(buffer) : new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
@@ -53,6 +55,8 @@ export function toBase64url(buffer: ArrayBuffer | ArrayBufferView | null | undef
 type Json = Record<string, unknown>;
 type Descriptor = { id: string; type: string; transports?: string[] };
 
+/** Prefer the browser's WebAuthn JSON parser; older browsers need the binary
+ * challenge and credential IDs decoded before navigator.credentials.get. */
 function requestOptions(json: Json): PublicKeyCredentialRequestOptions {
   const native = (PublicKeyCredential as unknown as { parseRequestOptionsFromJSON?: (j: Json) => PublicKeyCredentialRequestOptions }).parseRequestOptionsFromJSON;
   if (native) return native(json);
@@ -143,6 +147,8 @@ export const listPasskeys = () => call<{ passkeys: Passkey[] }>("/api/auth/passk
 export const removePasskey = (id: string) => call<void>(`/api/auth/passkeys/${encodeURIComponent(id)}`, { method: "DELETE" });
 
 /* ---------- One-time offer after a password sign-in ---------- */
+// These storage markers control presentation only. They neither prove a login
+// succeeded nor authorize passkey registration; the server checks the session.
 const OFFER_PENDING = "nv-passkey-offer";
 const OFFER_DISMISSED = "nv-passkey-offer-dismissed";
 const DAY = 24 * 60 * 60 * 1000;

@@ -1,3 +1,10 @@
+/**
+ * Native calculation evidence contracts. Unless stated otherwise, *Minor amounts
+ * are base-10 USD cent strings, basisPoints use 1/100 of one percent, instants include
+ * an offset, and period endpoints are inclusive local dates. Hourly rate strings may
+ * contain fractional cents; duration outputs use integer nanoseconds. These types
+ * describe captured facts and results rather than issuing authorization.
+ */
 import type { PayrollImportRow, PayrollPeriod } from "../contracts";
 import type { NativeCentRounding, NativeFrequency, PrCertificate } from "./rules/pr-2026";
 /** Client-safe identity shared by the protected profile and result readers. */
@@ -86,7 +93,7 @@ export type NativeTaxProfile = {
     ficaCoverage: "STANDARD";
     sinotCoverage: "STANDARD";
     sinotEmployeeBasisPoints: number;
-    /** UNVERIFIED prevents ready payroll until a supported cent rule is supplied. */
+    /** UNVERIFIED permits exact-cent results only; fractional operations require an accepted rule. */
     prCentRounding: NativeCentRounding | "UNVERIFIED";
     ruleEvidenceReference: string | null;
     employerContributions: {

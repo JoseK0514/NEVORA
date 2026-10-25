@@ -1,4 +1,5 @@
 /** PAYROLL_API_V1: browser-safe contract. No session proofs or raw bank/tax data. */
+/** Inclusive YYYY-MM-DD dates in the workspace calendar, without a time-zone offset. */
 export type PayrollPeriod = {
     startDate: string;
     endDate: string;

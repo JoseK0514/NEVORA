@@ -13,6 +13,9 @@ export type WorkerProof = Issued<'WORKER'>;
 export type TenantProof = PortalProof | ClockerProof | CalendarReadProof | WorkerProof;
 export type ProvisionerScope = Readonly<{ kind: 'PROVISIONER'; [provisionerScopeBrand]: true }>;
 
+/** Immutable resolution observations. Incarnation distinguishes tenant lifecycle
+ * generations; versions/expiry constrain reuse but must be checked again against
+ * current database state by the owning executor. */
 type TenantFactsBase<K extends TenantProof['kind']> = Readonly<{
   kind: K; workspaceId: string; workspaceVersion: string; workspaceIncarnation: string;
   resolvedAt: string; expiresAt: string;

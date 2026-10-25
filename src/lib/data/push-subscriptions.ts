@@ -83,6 +83,9 @@ export function sqlSubscriptionRepository(executor: SqlExecutor = neonNotificati
       return !!results[1]?.length;
     },
     async enroll(input) {
+      // Installation and endpoint locks serialize ownership decisions. Expected
+      // generation is a compare-and-swap fence; a new generation cancels queued
+      // deliveries for the old one instead of transferring them to a new owner.
       const results = await executor.transaction([
         lockStatements([`push-install:${input.environment}:${input.installationHash}`,`push-endpoint:${input.environment}:${input.endpointFingerprint}`]),
         { text: `WITH enrolled AS (

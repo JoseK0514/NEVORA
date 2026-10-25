@@ -9,6 +9,7 @@ import {SkeletonRows} from './skeleton';
 function initials(name:string){return name.split(/\s+/).filter(Boolean).slice(0,2).map(p=>p[0]?.toUpperCase()).join('');}
 function checkedAt(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(at));}
 
+/** Renders only an unpaused ready snapshot; absent data must not imply nobody is clocked in. */
 export function ClockMonitorCard({state,onRefresh}:{state:MonitorPanelState;onRefresh:()=>void}){
  const {monitor,paused,refreshing}=state;
  const ready=!paused&&monitor?.state==='ready'?monitor:null;
@@ -48,6 +49,12 @@ export function ClockMonitorCard({state,onRefresh}:{state:MonitorPanelState;onRe
  </section>;
 }
 
+/**
+ * Wires the private snapshot controller to browser lifecycle events. Hiding the
+ * document, page caching or losing connectivity clears private people data;
+ * return/focus/storage events trigger a fresh authorized read. Cleanup stops
+ * timers and invalidates callbacks, including StrictMode's discarded mount.
+ */
 export function ManagerClockMonitor(){
  const [state,setState]=useState<MonitorPanelState>({monitor:null,refreshing:true,paused:false});
  const controller=useRef<ReturnType<typeof createMonitorController>|null>(null);

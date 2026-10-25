@@ -4,6 +4,9 @@ export type LocalCaptureContext={kind:'request';headers:Pick<Headers,'get'>}|{ki
 export function loopbackOrigin(value:string|undefined):boolean {
   try {const u=new URL(value??'');return ['http:','https:'].includes(u.protocol)&&hosts.has(u.hostname)&&!u.username&&!u.password&&u.pathname==='/'&&!u.search&&!u.hash;}catch{return false;}
 }
+/** Admit only an exact loopback Host with compatible forwarding/origin headers.
+ * Ambiguous proxy forwarding disables development helpers instead of treating a
+ * loopback Origin alone as evidence that the whole request stayed local. */
 export function localRequest(headers:Pick<Headers,'get'>):boolean {
   const host=headers.get('host');
   if(!host||!loopbackOrigin('http://'+host))return false;
@@ -15,6 +18,8 @@ export function localRequest(headers:Pick<Headers,'get'>):boolean {
   const origin=headers.get('origin');
   return !origin||loopbackOrigin(origin);
 }
+/** Both the real process and supplied environment must be nonproduction; an
+ * injected environment cannot enable a development flag in a production process. */
 export function localDevEnabled(env:Record<string,string|undefined>,flag:string):boolean {
   return process.env.NODE_ENV!=='production'&&env.NODE_ENV!=='production'&&env[flag]==='1';
 }

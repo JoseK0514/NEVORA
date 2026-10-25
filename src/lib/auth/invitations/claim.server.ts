@@ -34,6 +34,8 @@ function current(digest:string,row:Custody,consumedHash?:string):SqlStatement{
   AND EXISTS(SELECT 1 FROM employee_credentials c WHERE c.employee_id=e.id AND c.password_hash=$3)`;
  return assertion(`EXISTS(SELECT 1 ${joins} WHERE i.proof_digest=$1 AND i.id=$2::uuid AND ${binding} AND ${phase})`,consumedHash===undefined?[digest,row.id]:[digest,row.id,consumedHash]);
 }
+/** Parent lifecycle locks precede credentials and invitation custody. Every
+ * admission/consume transaction repeats these locks and its current binding. */
 function locks(row:Custody):SqlStatement[]{
  return [...workspaceReadGuard(workspace(row)),
   {text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE',values:[[row.employeeId,row.issuerId].sort()]},
@@ -47,7 +49,11 @@ function failure(error:unknown,commitAttempted:boolean,aborted:boolean):Activati
  if(commitAttempted&&(!/^[0-9A-Z]{5}$/.test(code)||code.startsWith('08')))return {state:'outcome_unknown'};
  return {state:aborted?'invalid':'unavailable'};
 }
-/** The public path. Identity is returned only following a known credential+consume commit. */
+/** Public single-use activation. A known eligible proof is required before
+ * consuming a claim counter or CPU slot; password hashing occurs outside row
+ * locks, then the original target/email/issuer generation is checked again in
+ * the credential+consume transaction. Identity is disclosed only after a known
+ * commit. An unresolved commit returns outcome_unknown and creates no session. */
 export async function claimInvitation(proof:string,password:string,executor:SqlExecutor=neonNotificationExecutor(),signal?:AbortSignal):Promise<ActivationResult>{
  if(!validProof(proof)||typeof password!=='string'||password.length<8||password.length>1024||signal?.aborted)return {state:'invalid'};
  let release:(()=>void)|null=null,commitAttempted=false;

@@ -1,3 +1,9 @@
+/**
+ * Pure observations over captured raw time history. These comparisons describe
+ * recorded timing; they do not decide lateness policy, overtime or payroll.
+ * Contradictory history emits integrity evidence and suppresses derived timing
+ * signals, while incomplete comparison evidence is retained as a limitation.
+ */
 import { Temporal } from "@js-temporal/polyfill";
 import { resolveHistoricalSchedule } from "./historical-schedule";
 import type {
@@ -595,6 +601,7 @@ function projectAttendanceWindow(sourceValue: unknown, periodScope?: {start:Temp
   };
 }
 
+/** Observe today's overlapping records plus all open records in the supplied business zone and observation time. */
 export function projectAttendance(sourceValue:unknown):AttendanceProjection {
   return projectAttendanceWindow(sourceValue);
 }

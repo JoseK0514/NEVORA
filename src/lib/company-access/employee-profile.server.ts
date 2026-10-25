@@ -66,6 +66,9 @@ function replay(row:Operation,hash:string):EmployeeCoreAccessResult {
  if(row.kind!=='EMPLOYEE'||row.hash!==hash)return {state:'conflict',reason:'changed_replay'};
  const receipt=cleanReceipt(row.receipt);return receipt?{state:'saved',receipt}:{state:'unavailable'};
 }
+/** Recover a committed profile receipt under current Company access. The actor
+ * can inspect their own operation; an Owner may inspect another actor's unique
+ * match. Ambiguous matches are withheld rather than selecting a receipt. */
 export async function readEmployeeCoreAccessOperation(proof:SessionMutationProof,operationId:string,ex:SqlExecutor=neonNotificationExecutor()):Promise<EmployeeCoreAccessResult> {
  if(!uuid(operationId))return invalid('operationId','Invalid operation.');
  try {const row=await lookup(proof,operationId,ex,true),receipt=row?.kind==='EMPLOYEE'?cleanReceipt(row.receipt):null;return receipt?{state:'saved',receipt}:{state:'unavailable'};}
@@ -80,6 +83,8 @@ async function target(proof:SessionMutationProof,employeeId:string,ex:SqlExecuto
 }
 function check(expression:string,values:readonly unknown[],reason:string):SqlStatement{return {text:`SELECT(CASE WHEN ${expression} THEN '1' ELSE '${reason}' END)::integer`,values};}
 function operationAbsent(workspaceId:string,proof:SessionMutationProof,id:string){return check('NOT EXISTS(SELECT 1 FROM company_access_operations WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3)',[workspaceId,proof.employee.id,id],'company_access_profile_replay');}
+/** Append after the employee mutation so the new scope uses the resulting role
+ * generation. Execute in the same transaction; do not assign it as a later step. */
 function scopeAppend(workspaceId:string,employeeId:string,proof:SessionMutationProof,id:string,prior:number,scope:ScopeSelection):SqlStatement {
  return {text:`INSERT INTO operational_scope_revisions(workspace_id,employee_id,revision,role_generation,action,mode,location_ids,source,actor_employee_id,operation_id)
   SELECT $1,$2,company_access_next_revision($3),v.generation,'ASSIGN',$4,$5,'OWNER_ASSIGNMENT',$6,$7 FROM operational_subject_versions v WHERE v.workspace_id=$1 AND v.employee_id=$2`,values:[workspaceId,employeeId,prior,scope.mode,scope.locationIds,proof.employee.id,id]};
@@ -111,6 +116,11 @@ async function failure(error:unknown,proof:SessionMutationProof,id:string,hash:s
  return attempted&&!(/^[0-9A-Z]{5}$/.test(code)&&!code.startsWith('08'))?{state:'outcome_unknown',operationId:id}:{state:'unavailable'};
 }
 
+/** Compose canonical employee writes with Company authority, lifecycle/scope
+ * conflict checks and an idempotency receipt in one transaction. An Owner's
+ * Manager activation/role transition also appends the explicitly chosen scope
+ * against its resulting generation. A saved receipt is historical outcome, not
+ * a grant to repeat the mutation with different input. */
 export async function saveEmployeeCoreAccessProfile(proof:SessionMutationProof,value:EmployeeCoreAccessCommand,ex:SqlExecutor=neonNotificationExecutor()):Promise<EmployeeCoreAccessResult> {
  const c=parseUpdate(value);if(!c)return invalid('profile','Complete all required employee details and versions.');
  const hash=createHash('sha256').update(JSON.stringify({kind:'UPDATE',command:c})).digest('hex');let attempted=false;
@@ -135,6 +145,9 @@ export async function saveEmployeeCoreAccessProfile(proof:SessionMutationProof,v
   return receipt?{state:'saved',receipt}:{state:'outcome_unknown',operationId:c.operationId};
  }catch(error){return failure(error,proof,c.operationId,hash,attempted,ex);}
 }
+/** Create the employee, any Owner-selected initial Manager scope and the operation
+ * receipt atomically. Account credentials/invitation delivery are separate flows;
+ * retry this command with the same operation ID to resolve an uncertain outcome. */
 export async function createEmployeeWithAccess(proof:SessionMutationProof,value:CreateEmployeeWithAccessCommand,ex:SqlExecutor=neonNotificationExecutor()):Promise<EmployeeCoreAccessResult> {
  const c=parseCreate(value);if(!c)return invalid('employee','Complete all required employee details.');
  const hash=createHash('sha256').update(JSON.stringify({kind:'CREATE',command:c})).digest('hex');let attempted=false;
