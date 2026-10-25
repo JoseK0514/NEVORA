@@ -203,16 +203,18 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
       {review ? <QuietList style={{ marginTop: 20 }}>
         <li className="q-confrow">
           {acknowledged && props.acknowledgedRevisionId ? <Celebration kind="SCHEDULE_CONFIRMED" eventKey={`${weekStart}:${props.acknowledgedRevisionId}`} confirmed /> : null}
-          <QuietRow bare variant="tint" avatar={acknowledged ? <CheckIcon className="q-ic" aria-hidden="true" /> : <CalendarCheckIcon className="q-ic" aria-hidden="true" />}
-            title={<span id="my-review-title">{acknowledged ? 'You’re up to date' : confirmationNeeded ? 'Confirm this week' : 'Schedule review'}</span>}
-            detail={acknowledged ? 'You’ve confirmed this week.' : confirmationNeeded ? (shifts.length ? 'Your manager asked you to check it' : 'No assignments remain this week. Review the changes, then confirm.') : 'Review the current week again.'}
-            control={acknowledged ? undefined : confirmation} />
+          <div className="q-row q-row--av">
+            <span className="q-av q-av--tint" aria-hidden="true">{acknowledged ? <CheckIcon className="q-ic" /> : <CalendarCheckIcon className="q-ic" />}</span>
+            <div className="q-rt"><h2 id="my-review-title" className="q-confrow__t">{acknowledged ? 'You’re up to date' : confirmationNeeded ? 'Confirm this week' : 'Schedule review'}</h2>
+              <i>{acknowledged ? 'You’ve confirmed this week.' : confirmationNeeded ? (shifts.length ? 'Your manager asked you to check it' : 'No assignments remain this week. Review the changes, then confirm.') : 'Review the current week again.'}</i></div>
+            {acknowledged ? null : confirmation}
+          </div>
         </li>
       </QuietList> : null}
       {changes && state !== 'unavailable' ? <div className="q-changes">{changes}</div> : null}
 
       {state === 'unavailable' ? <QuietSection id="my-agenda" title="Schedule unavailable">
-        <p className="q-empty">We couldn’t load your schedule.</p>
+        <p className="q-empty" role="status"><span className="nv-sr">Schedule unavailable. </span>We couldn’t load your schedule.</p>
         <Link className="q-btn" href={`/app/schedule?week=${weekStart}`}>Try again<span className="nv-sr"> to load your schedule</span></Link>
       </QuietSection> : <>
         <QuietSection id="my-day" title={<>{dayFmt(chosen, { weekday: 'long' })}<span className="nv-sr">, {dayFmt(chosen, { month: 'long', day: 'numeric' })}{chosen === today ? ', today' : ''}</span></>}

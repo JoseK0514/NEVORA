@@ -848,3 +848,8 @@ html[data-q-sheet] { overflow: hidden; }
 :is(#q-root, html) .q-delete .q-row--btn.q-row--av .q-chev { align-self: center; }
 :is(#q-root, html) .q-noaccess { margin: 12px 20px 0; color: var(--q-grey); }
 :is(#q-root, html) .q-timeoff__note { margin-top: 8px; font-size: 17px; line-height: 22px; }
+/* Schedule's confirmation row: its title is the week review's heading; Confirm keeps the 32pt pill inside a 44pt target. */
+:is(#q-root, html) .q-confrow .q-rt > .q-confrow__t { margin: 0; font-size: 17px; line-height: 22px; font-weight: 400; letter-spacing: -.2px; color: var(--q-ink); text-wrap: initial; }
+:is(#q-root, html) .q-weekconf .q-bs { position: relative; isolation: isolate; height: 44px; background: none; }
+:is(#q-root, html) .q-weekconf .q-bs::before { content: ""; position: absolute; inset: 6px 0; z-index: -1; border-radius: 16px; background: var(--q-teal-fill); }
+:is(#q-root, html) .q-weekconf .q-bs:not(.q-bs--go)::before { background: var(--q-fill); }
