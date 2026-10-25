@@ -78,8 +78,10 @@ export function ScheduleCopyForm({
       ) {
         localStorage.removeItem(key);
         window.dispatchEvent(new Event("nevora-copy-pending"));
+        // T-6: the result shows on the week it was copied into, as a toast read from the stored receipt; the
+        // receipt page stays for links and for "Not copied" reasons.
         router.push(
-          `/app/schedule/copy-receipt?operation=${original.operationId}`,
+          `/app/schedule?week=${encodeURIComponent(original.weekStart)}&copyOperation=${encodeURIComponent(original.operationId)}`,
         );
         return;
       }

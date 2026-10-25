@@ -43,8 +43,10 @@ it("shows and submits only the server-reviewed assignment, ignoring forged query
 it("explains the midnight boundary without changing canonical 24:00", async () => {
   // Times and dates are kept whole with no-break spaces; compare the words.
   const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) })).replace(/\u00a0/g, " ");
-  expect(html).toContain("8:00 PM – 12:00 AM");
-  expect(html).toContain("Ends Tue, Oct 8");
+  // T-7: "midnight" already says the shift ends with the day, so no separate end day.
+  expect(html).toContain("midnight");
+  expect(html).not.toContain("12:00 AM");
+  expect(html).not.toContain("Ends Tue, Oct 8");
   expect(html).toContain('name="endTime" value="24:00"');
 });
 it("retains a non-Lead staffing repair with no inferred position or Lead flag", async () => {
@@ -58,7 +60,7 @@ it("retains a non-Lead staffing repair with no inferred position or Lead flag", 
 it("a stale selection removes the save action and keeps a trusted refresh path", async () => {
   state.read.mockRejectedValue(new CoverageRepairConflictError());
   const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "stale-review" }) }));
-  expect(html).toContain("Coverage changed");
+  expect(html).toContain("This shift changed");
   expect(html).toContain("Open current review");
   expect(html).toContain("refresh=1");
   expect(html).not.toContain("Save replacement");

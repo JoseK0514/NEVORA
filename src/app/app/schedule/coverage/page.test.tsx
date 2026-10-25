@@ -60,10 +60,11 @@ beforeEach(() => {
 
 it('actual manager position/Lead action opens the matching location/interval and excludes unqualified employees', async () => {
   const html = renderToStaticMarkup(await CoveragePage({ searchParams: Promise.resolve(params(action().href)) }));
-  expect(html).toContain('Fictional South'); expect(html).toContain('barista'); expect(html).toContain('<dt>Shift lead</dt><dd>Needed</dd>');
+  expect(html).toContain('Fictional South'); expect(html).toContain('barista'); expect(html).toContain('<b>Shift lead</b></span><span class="q-rv q-rv--l">Needed');
   expect(html).toContain('Fictional Qualified'); expect(html).not.toContain('Fictional Unqualified'); expect(html).toContain('1\u00a0person'); expect(html).toContain('No target set');
   expect(html).toContain('loc-1'); expect(html).toContain('location=loc-1'); expect(html).toContain('Earlier weeks under target are shown for context only');
-  const link = html.match(/href="([^"]*\/app\/schedule\/new\?review=[^"]+)"/)![1]; const p = params(link.replaceAll('&amp;', '&'));
+  // T-5: each person is a radio row whose value is their review link; Assign opens the chosen one.
+  const link = html.match(/value="([^"]*\/app\/schedule\/new\?review=[^"]+)"/)![1]; const p = params(link.replaceAll('&amp;', '&'));
   const selected = assertCoverageRepairReview(m.source, p.review, managementProof('M'));
   expect(selected.locator).toMatchObject({ locationId: 'loc-1', startTime: '08:00', endTime: '12:00', positionId: 'barista' });
   const form = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve(p) }));
@@ -88,7 +89,7 @@ it('stale first review, stale second visit and stale selected form never refresh
     expect(html).toContain('Coverage changed'); expect(html).toContain('Refresh</a>'); expect(html).not.toContain('Review replacement');
   }
   const form = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review }) }));
-  expect(form).toContain('Coverage changed'); expect(form).not.toContain('Save replacement');
+  expect(form).toContain('This shift changed'); expect(form).not.toContain('Save replacement');
 });
 
 it('known successful position/Lead return truthfully shows the remaining staffing chooser without a refresh loop', async () => {

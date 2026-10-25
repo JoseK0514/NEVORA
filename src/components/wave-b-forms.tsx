@@ -89,7 +89,8 @@ export function ActionForm({ action, submit, failure, confirm, className, childr
         <button type="button" className="nv-btn" data-kind="secondary" disabled={pending} onClick={() => { asked.current = true; setAsking(false); }}>{confirm!.keepLabel}</button>
       </div>
     </div> : <button ref={openRef} type="submit" className={submit.className} data-kind={submit.kind === "danger" ? undefined : submit.kind} aria-label={pending ? submit.pendingLabel : submit.ariaLabel} aria-disabled={pending || undefined} aria-busy={pending || undefined}>
-      <span aria-live="polite">{label}</span>{submit.icon}
+      {/* a11y #27: the button's aria-busy says it is working; a live region inside every button made lists chatter. */}
+      <span>{label}</span>{submit.icon}
     </button>}
     {error ? <p ref={errorRef} className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true" /><span>{error}</span></p> : null}
   </form>;

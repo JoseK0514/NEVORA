@@ -7,6 +7,7 @@ vi.mock('@/lib/auth/permissions',()=>({MANAGER_ROLES:['OWNER','MANAGER'],require
 vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'manager',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
 vi.mock('@/lib/data/schedule-copy',()=>({readScheduleCopyReceipt:async()=>null,readScheduleCopyCommand:async()=>null}));
 vi.mock('@/components/schedule-copy-form',()=>({ScheduleCopyForm:()=>null}));
+vi.mock('next/navigation',()=>({redirect:(href:string)=>{throw new Error(`redirect:${href}`);}}));
 import Page from './page';
 it('offers safe schedule inspection without inviting a new copy when the outcome is unknown',async()=>{
  const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({operation:'11111111-1111-4111-8111-111111111111'})}));
@@ -24,3 +25,8 @@ vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({
 beforeEach(()=>{operationalPageFixture.denied=false;});
 
 it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({searchParams:Promise.resolve({operation:'11111111-1111-4111-8111-111111111111'})}));expect(html).toContain('current company-wide management access');expect(html).not.toContain('Retry saved copy');expect(html).not.toContain('Schedule copy result');});
+
+it('UX-O-24: a link without a copy opens the Schedule instead of an empty receipt',async()=>{
+ await expect(Page({searchParams:Promise.resolve({})})).rejects.toThrow('redirect:/app/schedule');
+ await expect(Page({searchParams:Promise.resolve({operation:'not-an-id'})})).rejects.toThrow('redirect:/app/schedule');
+});

@@ -1,0 +1,155 @@
+/* Team U2 (Owner and Manager Schedule, Oct 25, 2026). Quiet kit pieces for the Schedule bar, its sheets (Location, "…",
+ * Plan, Publish), New and Edit shift, Find cover, the copy result and the Scheduling rules editors. Tokens only
+ * (--q-*), so light and dark follow the kit. Every rule carries the kit's one id of weight (:is(#q-root, html)).
+ * Motion: transform and opacity only, and none under prefers-reduced-motion. */
+
+/* ---------- Sheets ---------- */
+:is(#q-root, html) .q-nav .u2-sheet-title { margin: 0; padding: 0; color: var(--q-ink); font-size: 17px; line-height: 22px; font-weight: 600; letter-spacing: -.2px; text-wrap: initial; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:is(#q-root, html) .u2-sheet-list { margin-top: 8px; }
+:is(#q-root, html) .q-page .u2-choice .q-check { margin-left: auto; }
+:is(#q-root, html) .u2-choice__space { flex: none; width: 20px; height: 20px; }
+:is(#q-root, html) .q-page .u2-row--go .q-rt b { color: var(--q-teal); }
+:is(#q-root, html) .u2-confirm { padding: 8px 0 0; }
+:is(#q-root, html) .u2-confirm__title { margin: 16px 20px 0; color: var(--q-ink); font-size: 20px; line-height: 25px; font-weight: 600; letter-spacing: -.4px; }
+:is(#q-root, html) .q-page .u2-confirm__detail { margin-top: 6px; font-size: 15px; line-height: 20px; letter-spacing: -.1px; }
+:is(#q-root, html) .u2-confirm form { display: block; margin: 0; }
+:is(#q-root, html) .u2-confirm .q-btn + .q-btn, :is(#q-root, html) .u2-confirm form + .q-btn { margin-top: 12px; }
+:is(#q-root, html) .q-page .u2-btn--danger { background: var(--q-red); color: #FFFFFF !important; }
+:is(#q-root, html) .u2-confirm .q-shift-delete { display: block; padding: 0; }
+:is(#q-root, html) .u2-confirm .q-shift-delete .wb-error, :is(#q-root, html) .u2-confirm .q-shift-delete [role="alert"] { margin: 12px 20px 0; font-size: 15px; line-height: 20px; color: var(--q-red); }
+
+/* A 17pt spinner for a button that is sending. */
+:is(#q-root, html) .u2-spin { display: inline-block; flex: none; width: 17px; height: 17px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: u2-spin 700ms linear infinite; }
+@keyframes u2-spin { to { transform: rotate(360deg); } }
+
+/* ---------- Schedule bar and title (UX-O-12) ---------- */
+:is(#q-root, html) .q-schedule .q-bar { gap: 16px; }
+:is(#q-root, html) .q-schedule .q-bar > .u2-loc { flex: 0 1 auto; min-width: 0; max-width: 60%; }
+:is(#q-root, html) .u2-loc__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:is(#q-root, html) .u2-weekarrows { display: flex; align-items: center; gap: 16px; }
+:is(#q-root, html) .u2-sched-hd__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+:is(#q-root, html) .q-page .u2-today { position: relative; }
+:is(#q-root, html) .q-page .u2-today::before { content: ""; position: absolute; inset: -6px -4px; }
+@media (max-width: 359px) {
+  :is(#q-root, html) .q-schedule .q-bar, :is(#q-root, html) .u2-weekarrows { gap: 12px; }
+}
+
+/* The route's error and warning copy (ScheduleRouteFeedback) as Quiet notes. */
+:is(#q-root, html) .u2-route-feedback:empty { display: none; }
+:is(#q-root, html) .q-page .u2-route-feedback .form-error { margin: 16px 20px 0; padding: 0; border: 0; background: none; font-size: 15px; line-height: 20px; color: var(--q-red); letter-spacing: -.1px; }
+:is(#q-root, html) .q-page .u2-route-feedback .form-warning { margin: 16px 20px 0; padding: 12px 16px; border: 0; border-radius: 12px; background: var(--q-fill); box-shadow: none; font-size: 15px; line-height: 20px; color: var(--q-ink); letter-spacing: -.1px; }
+:is(#q-root, html) .q-page .u2-notice-list { margin-top: 16px; }
+:is(#q-root, html) .q-page .u2-notice-list .q-bs { position: relative; }
+:is(#q-root, html) .q-page .u2-notice-list .q-bs::before { content: ""; position: absolute; inset: -6px -4px; }
+
+/* ---------- Plan sheet (T-9) ---------- */
+:is(#q-root, html) .u2-plan { outline: none; padding-bottom: 8px; }
+:is(#q-root, html) .u2-gen form { display: block; margin: 0; }
+:is(#q-root, html) .q-page .u2-seg { position: relative; }
+:is(#q-root, html) .u2-seg__opt { position: relative; flex: 1; display: flex; min-width: 0; cursor: pointer; }
+:is(#q-root, html) .u2-seg__opt > input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+:is(#q-root, html) .u2-seg__opt > span { flex: 1; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 15px; line-height: 20px; font-weight: 500; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .u2-seg__opt > input:checked + span { background: var(--q-seg-on); color: var(--q-ink); box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
+:is(#q-root, html) .u2-seg__opt > input:focus-visible + span { outline: 2px solid var(--q-teal); outline-offset: -2px; }
+:is(#q-root, html) .u2-seg__opt > input:disabled, :is(#q-root, html) .u2-seg__opt:has(> input:disabled) { cursor: default; }
+:is(#q-root, html)[data-theme="dark"] .u2-seg__opt > input:checked + span { box-shadow: none; }
+:is(#q-root, html) .u2-gen .q-btn[aria-busy="true"] { gap: 10px; }
+:is(#q-root, html) .u2-gen-feedback { margin: 16px 0 0; }
+:is(#q-root, html) .u2-gen-feedback__title { margin: 0 20px; font-size: 17px; line-height: 22px; color: var(--q-ink); letter-spacing: -.2px; }
+:is(#q-root, html) .u2-gen-feedback--error .u2-gen-feedback__title { color: var(--q-red); }
+:is(#q-root, html) .u2-gen-feedback__link { display: inline-flex; align-items: center; min-height: 44px; margin: 0 20px; font-size: 17px; }
+:is(#q-root, html) .q-page .u2-gen-feedback__line { margin-top: 4px; }
+:is(#q-root, html) .u2-disclosure { margin-top: 8px; }
+:is(#q-root, html) .u2-disclosure > summary .q-rt b { color: var(--q-teal); }
+:is(#q-root, html) .u2-disclosure[open] > summary.q-row::after { display: none; }
+:is(#q-root, html) .q-page .u2-notice { margin: 0; padding: 8px 20px; }
+:is(#q-root, html) .u2-setup { padding: 8px 20px 12px; }
+:is(#q-root, html) .u2-setup__title { margin: 0; font-size: 17px; line-height: 22px; color: var(--q-ink); }
+:is(#q-root, html) .q-page .u2-setup__issue { margin: 4px 0 0; }
+:is(#q-root, html) .u2-setup__links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+:is(#q-root, html) .u2-exclusion form { display: block; margin: 0; }
+:is(#q-root, html) .u2-exclusion .q-row { align-items: center; }
+:is(#q-root, html) .u2-publish { margin-top: 12px; }
+:is(#q-root, html) .u2-publish__form { display: block; margin: 0; }
+:is(#q-root, html) .q-page .u2-publish__form .q-bs { position: relative; }
+:is(#q-root, html) .q-page .u2-publish__form .q-bs::before { content: ""; position: absolute; inset: -6px -4px; }
+:is(#q-root, html) .q-page .u2-publish__form .q-bs[aria-busy="true"] { gap: 8px; }
+:is(#q-root, html) .u2-publish__review { padding: 0 0 16px; }
+:is(#q-root, html) .u2-publish__lead { margin: 0 20px; font-size: 15px; line-height: 20px; color: var(--q-ink); letter-spacing: -.1px; }
+:is(#q-root, html) .u2-publish__issues { margin: 8px 20px 0; padding: 0 0 0 18px; font-size: 15px; line-height: 20px; color: var(--q-grey); }
+:is(#q-root, html) .u2-publish__issues > li + li { margin-top: 4px; }
+:is(#q-root, html) .u2-publish__review .q-btn + .q-btn, :is(#q-root, html) .u2-publish__review form + .q-btn { margin-top: 12px; }
+
+/* "…" › Copy previous week, confirmed in place; the copy form's own status lines. */
+:is(#q-root, html) .u2-copy { padding-bottom: 8px; }
+:is(#q-root, html) .u2-copy > div > p, :is(#q-root, html) .u2-copy--page p { margin: 12px 20px 0; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .u2-copy > div > p a { color: var(--q-teal); }
+:is(#q-root, html) .u2-copy > .q-btn--sec { margin-top: 12px; }
+:is(#q-root, html) .q-page .u2-copy .q-btn[disabled] { background: var(--q-fill); color: var(--q-faint) !important; }
+
+/* ---------- New and Edit shift (T-4, P2-11) ---------- */
+:is(#q-root, html) .u2-shift .u2-save { position: relative; min-width: 44px; justify-content: flex-end; }
+:is(#q-root, html) .u2-save__spin { display: none; }
+:is(#q-root, html) .u2-shift:has(form[aria-busy="true"]) .u2-save__label { visibility: hidden; }
+:is(#q-root, html) .u2-shift:has(form[aria-busy="true"]) .u2-save__spin { display: inline-block; position: absolute; right: 0; top: calc(50% - 8.5px); }
+:is(#q-root, html) .q-page .u2-form-alert { margin-top: 12px; font-size: 15px; line-height: 20px; letter-spacing: -.1px; }
+:is(#q-root, html) .q-page .u2-note-value { max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--q-ink); }
+:is(#q-root, html) .q-page .u2-note-value--ph { color: var(--q-grey); }
+:is(#q-root, html) .q-page label.q-row[data-disabled] { opacity: .6; cursor: default; }
+:is(#q-root, html) .u2-delete { margin-top: 40px; }
+
+/* ---------- Find cover (T-5) ---------- */
+:is(#q-root, html) .u2-target { outline: none; }
+:is(#q-root, html) .q-page .u2-help-top { margin-top: 4px; }
+:is(#q-root, html) .q-page .u2-sec { margin-top: 32px; }
+:is(#q-root, html) .u2-radio-row { cursor: pointer; padding-top: 10px; padding-bottom: 10px; }
+:is(#q-root, html) .u2-radio-row .q-rt i { overflow-wrap: anywhere; }
+:is(#q-root, html) .u2-radio-row:has(.q-pick:focus-visible) { outline: 2px solid var(--q-teal); outline-offset: -2px; border-radius: 0; }
+:is(#q-root, html) .u2-radio-row:active { background: var(--q-press); }
+
+/* ---------- Copy receipt (T-6) ---------- */
+:is(#q-root, html) .q-page .u2-receipt__list { margin-top: 16px; }
+
+/* ---------- Scheduling rules editors (visual #3, #13, #14, #15) ---------- */
+:is(#q-root, html) .q-page .u2-rule { padding-right: 20px; }
+:is(#q-root, html) .q-page .u2-rule__form .q-btn { width: 100%; margin: 16px 0 0; }
+:is(#q-root, html) .q-page .u2-rule__form .q-help { margin: 8px 0 0; }
+:is(#q-root, html) .u2-field { display: block; margin: 0; }
+:is(#q-root, html) .u2-field > .q-fl__label { margin-bottom: 8px; }
+:is(#q-root, html) .u2-field > .q-in { width: 100%; }
+:is(#q-root, html) .u2-staff { outline: none; }
+:is(#q-root, html) .u2-staff + .u2-staff { margin-top: 12px; }
+:is(#q-root, html) .u2-rule__sub { margin: 16px 0 0; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--q-grey); letter-spacing: -.1px; }
+:is(#q-root, html) .u2-rule__flag { font-weight: 400; color: var(--q-red); }
+:is(#q-root, html) .q-rule__body .u2-staff .q-row { padding-left: 0; }
+:is(#q-root, html) .q-rule__body .u2-staff .q-row::after { left: 0; }
+:is(#q-root, html) .q-page .u2-unit-row input { max-width: 96px; }
+:is(#q-root, html) .u2-unit { flex: none; font-size: 17px; line-height: 22px; color: var(--q-grey); }
+:is(#q-root, html) .q-page .u2-hours-search { margin: 4px 0 0; }
+:is(#q-root, html) .q-page .u2-hours-seg { margin: 12px 0 0; }
+:is(#q-root, html) .u2-hours-seg .rules-hours-count { margin-left: 6px; color: var(--q-grey); font-variant-numeric: tabular-nums; }
+:is(#q-root, html) .q-page .u2-hours { margin-top: 8px; }
+:is(#q-root, html) .u2-hours__person { padding-bottom: 12px; border-bottom: 1px solid var(--q-line); outline: none; }
+:is(#q-root, html) .u2-hours__person:last-child { border-bottom: 0; }
+:is(#q-root, html) .q-rule__body .u2-hours__who { padding-left: 0; padding-right: 0; }
+:is(#q-root, html) .u2-hours__who::after { display: none; }
+:is(#q-root, html) .u2-hours__fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-left: 52px; }
+:is(#q-root, html) .u2-unit-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html) .q-page .u2-unit-field .q-in { height: 44px; }
+:is(#q-root, html) .q-page .u2-unit-field .q-in__unit { top: 11px; color: var(--q-grey); }
+@media (max-width: 359px) { :is(#q-root, html) .u2-hours__fields { padding-left: 0; } }
+:is(#q-root, html) .q-page .u2-add { width: auto; margin: 0; padding: 0; justify-content: flex-start; list-style: none; cursor: pointer; }
+:is(#q-root, html) .q-page .u2-add::-webkit-details-marker { display: none; }
+:is(#q-root, html) .u2-add__ic { width: 18px; height: 18px; }
+:is(#q-root, html) .q-page .u2-group-sum { padding-left: 0; list-style: none; cursor: pointer; }
+:is(#q-root, html) .q-page .u2-group-sum::-webkit-details-marker { display: none; }
+:is(#q-root, html) .q-page .u2-group-sum::after { left: 0; }
+:is(#q-root, html) details[open] > .u2-group-sum .u2-group-sum__caret { transform: rotate(180deg); }
+/* a11y #12: the period's "Save quantities" reads in dark mode. */
+:is(#q-root, html) .q-rules .wb-quantities .nv-btn[data-kind="secondary"] { background: var(--q-fill); color: var(--q-ink); box-shadow: none; }
+
+/* Motion off when asked. */
+@media (prefers-reduced-motion: reduce) {
+  :is(#q-root, html) .u2-spin { animation: none; border-right-color: currentColor; opacity: .5; }
+  :is(#q-root, html) details[open] > .u2-group-sum .u2-group-sum__caret { transform: none; }
+}

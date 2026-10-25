@@ -3,22 +3,19 @@ import {readOperationalSchedule} from '@/lib/company-access/operational-read.ser
 import {ScopedOperationalSchedule} from '@/components/company-access/scoped-operational-views';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
-import {ScheduleCopyForm} from '@/components/schedule-copy-form';
 import { currentPresentation } from '@/lib/workspace-presentation/current.server';
 import { randomUUID } from "node:crypto";
-import { ActionMenu } from "@/components/action-menu";
 import {ManagerIssueFocus} from '@/components/manager-issue-focus';
 import { EmployeeMySchedule } from "@/components/employee-my-schedule";
 import './employee-schedule.css';
 import { getWorkspace } from "@/lib/data/workspaces";
-import { businessDate, formatBusinessDateTimeInput } from "@/lib/business-time";
+import { businessDate } from "@/lib/business-time";
 import { SchedulePublicationChange } from "@/components/schedule-publication-change";
 import { listCapturedShiftPositions } from "@/lib/data/publication-revisions";
 import {ScheduleRouteFeedback} from '@/components/company-access/schedule-route-feedback';
 import Link from "next/link";
-import { Fragment, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { QuietBar, QuietHeader, QuietPage, QuietRow } from "@/components/quiet/quiet";
-import { FocusOnArrival } from "@/components/kit/focus-on-arrival";
 import { ManagerWeeklyRoster, type RosterOpenShift } from "@/components/manager-weekly-roster";
 import { scheduleWeekFacts } from "@/components/clean/week-summary";
 import { DayAwareLink } from "@/components/clean/day-aware-link";
@@ -27,11 +24,11 @@ import { loadManagerDashboardData } from "@/lib/data/manager-dashboard";
 import { assignedHours, type RosterEmployee } from "@/lib/scheduling/manager-roster-presentation";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
-import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
-import { DotsThreeCircleIcon } from "@phosphor-icons/react/dist/ssr/DotsThreeCircle";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
-import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
 import "./manager-schedule.css";
+import { LocationSheet, PublishWeekButton, ScheduleMoreSheet } from "@/components/quiet/u2-schedule-sheets";
+import { RouteParamSheet, SheetBar, ToastOnArrival } from "@/components/quiet/u2-sheets";
+import { readScheduleCopyReceipt } from "@/lib/data/schedule-copy";
 import { ScheduleGenerationControls } from "@/components/schedule-generation-controls";
 import { SchedulePublicationControls } from "@/components/schedule-publication-controls";
 import { getSchedulePublishReadiness } from "@/lib/data/schedule-publication-review";
@@ -47,7 +44,6 @@ import { listEmployees, listLocations } from "@/lib/data/employees";
 import { listScheduleStatuses, listWeekShifts } from "@/lib/data/schedules";
 import { listEmployeeHourTargets } from "@/lib/data/schedule-health";
 import { listEmployeeExchangeActivity, listOpenCoverage, type ExchangeRecord } from "@/lib/data/exchanges";
-import { PrintScheduleButton } from "@/components/print-schedule-button";
 import { Celebration } from "@/components/celebration";
 import {
   addDays,
@@ -57,10 +53,6 @@ import {
   weekDates,
   isValidWeekStart, weekStartFor,
 } from "@/lib/date-utils";
-import {
-  setAvailabilityDeadlineAction,
-} from "@/app/app/schedule/actions";
-import { getWeekSettings } from "@/lib/data/week-settings";
 import {readEmployeeWeeklyReview} from "@/lib/data/employee-weekly-review.server";
 import { employeeRoleLabel } from "@/lib/employee-display";
 
@@ -103,6 +95,7 @@ export default async function SchedulePage({
     view?: string;
     intent?: string;
     shift?: string;
+    copyOperation?: string;
   }>;
 }) {
   const session = await requireSession();
@@ -126,7 +119,7 @@ export default async function SchedulePage({
   async function renderSchedule(){
   const dates = weekDates(weekStart);
   const employeeSchedule=manager?null:await readEmployeeWeeklyReview(await requireSessionMutationProof(),weekStart);
-  const [locations, allShifts, employees, weekSettings, employeeAcknowledgement] =
+  const [locations, allShifts, employees, employeeAcknowledgement] =
     await Promise.all([
       manager?listLocations():Promise.resolve(employeeSchedule!.locations),
       manager?listWeekShifts({
@@ -135,7 +128,6 @@ export default async function SchedulePage({
         publishedOnly: !manager,
       }):Promise.resolve(employeeSchedule!.shifts),
       manager ? listEmployees() : Promise.resolve([]),
-      manager ? getWeekSettings(weekStart) : Promise.resolve(null),
       !manager
         ? Promise.resolve(employeeSchedule!.acknowledgement)
         : Promise.resolve({
@@ -305,99 +297,91 @@ export default async function SchedulePage({
     ...(facts.availabilityShort ? [facts.availabilityShort] : []),
   ];
   const addShiftHref = `/app/schedule/new?week=${weekStart}${selectedLocation === "all" ? "" : `&locationId=${encodeURIComponent(selectedLocation)}`}`;
-  // Phones: one row per location in view that the team can't see yet, with Plan or Review (the old Next up card).
+  // Phones: one row per location in view that the team can't see yet: a draft offers Publish (UX-O-14, the week's main
+  // action), a week with nothing planned offers Plan.
   const toPlan = scheduleStatuses && !params.publishCheck && !params.published
     ? locations.filter(location => (selectedLocation === "all" || location.id === selectedLocation) && statusFor(location.id) !== "PUBLISHED") : [];
+  // Shifts on each location's week (the draft that would be published, or what is published).
+  const shiftCounts = Object.fromEntries(locations.map(location => [location.id, allShifts.filter(shift => shift.locationId === location.id && !shift.isCalloutApproved).length]));
+  const locationName = (id: string) => locations.find(location => location.id === id)?.shortName ?? "";
+  const currentLocationName = selectedLocation === "all" ? "All locations" : locationName(selectedLocation);
+  const weekText = compactWeekRange(weekStart);
+  const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+  // T-6: a copy's result, read from its stored receipt (never from the address alone).
+  const copyOperation = params.copyOperation && /^[0-9a-f-]{36}$/i.test(params.copyOperation) ? params.copyOperation : null;
+  const copyReceipt = copyOperation ? await readScheduleCopyReceipt(await requireSessionMutationProof(), copyOperation).catch(() => null) : null;
+  const copied = copyReceipt ? copyReceipt.rows.filter(row => row.status === "COMMITTED").length : 0;
+  const skipped = copyReceipt ? copyReceipt.rows.filter(row => row.status === "SKIPPED").length : 0;
+  const publishedName = params.published ? locationName(params.published) : "";
 
   return (
-    // Quiet (v4, approved Oct 23): location menu and Add shift in the bar, the week line under the title, the week strip,
-    // then the chosen day. The "…" menu keeps the week, Templates, Build and publish and Scheduling rules one tap away.
+    // Quiet (v4, approved Oct 23; Team U2 Oct 25): the location picker, the week arrows, "…" and Add shift in the bar; the
+    // week line under the title; the week strip; then the chosen day. Build and publish opens as the Plan sheet.
     <QuietPage className="q-schedule">
-      <QuietBar start={<ActionMenu id="schedule-location-menu" label="Location" ariaLabel={`Location: ${selectedLocation === "all" ? "All locations" : locations.find(location => location.id === selectedLocation)?.shortName ?? ""}`} align="start"
-          triggerClassName="q-sched-loc" triggerContent={<>{selectedLocation === "all" ? "All locations" : locations.find(location => location.id === selectedLocation)?.shortName}<CaretDownIcon className="q-ic q-ic--s" aria-hidden="true" /></>}>
-          <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}`} aria-current={selectedLocation === "all" ? "true" : undefined}>All locations</Link>
-          {locations.map(location => <Link key={location.id} className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=${location.id}`} aria-current={selectedLocation === location.id ? "true" : undefined}>{location.shortName}</Link>)}
-        </ActionMenu>}>
-        <ActionMenu id="schedule-more-actions" label="More" ariaLabel="More schedule actions" triggerClassName="q-bar__icon" triggerContent={<DotsThreeCircleIcon className="q-ic" aria-hidden="true" />}>
-          <Link className="nevora-action-menu-item" href={`/app/schedule?week=${previousWeek}${locationQuery}`}><strong>Previous week</strong><span>{formatWeekRange(previousWeek)}</span></Link>
-          <Link className="nevora-action-menu-item" href={`/app/schedule?week=${currentWeek}${locationQuery}`} aria-current={weekStart === currentWeek ? "date" : undefined}><strong>This week</strong><span>{formatWeekRange(currentWeek)}</span></Link>
-          <Link className="nevora-action-menu-item" href={`/app/schedule?week=${nextWeek}${locationQuery}`}><strong>Next week</strong><span>{formatWeekRange(nextWeek)}</span></Link>
-          <div className="nevora-action-menu-divider" />
-          <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}${locationQuery}&plan=1#schedule-planning`}><strong>Build and publish</strong><span>Fill the draft and publish it</span></Link>
-          <ScheduleCopyForm actorId={session.id} command={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}} />
-          <Link className="nevora-action-menu-item" href={`/app/schedule/templates?week=${weekStart}`}><strong>Templates</strong><span>Reusable weeks</span></Link>
-          <Link className="nevora-action-menu-item" href={`/app/schedule/settings?week=${weekStart}`}><strong>Scheduling rules</strong><span>Coverage and hour targets</span></Link>
-          <PrintScheduleButton />
-          <div className="nevora-action-menu-divider" />
-          <form action={setAvailabilityDeadlineAction} className="schedule-menu-deadline manager-issue-target" id="schedule-deadline" tabIndex={-1}>
-            <input type="hidden" name="weekStart" value={weekStart} />
-            <label><span>Availability deadline</span><input type="datetime-local" name="availabilityDeadline" defaultValue={params.availabilityDeadline ?? formatBusinessDateTimeInput(weekSettings?.availabilityDeadline, workspace.timeZone)} /></label>
-            <button className="button secondary" type="submit">{weekSettings?.availabilityDeadline ? "Update" : "Set deadline"}</button>
-          </form>
-        </ActionMenu>
+      <QuietBar start={<LocationSheet current={currentLocationName} options={[
+          { href: `/app/schedule?week=${weekStart}`, label: "All locations", current: selectedLocation === "all" },
+          ...locations.map(location => ({ href: `/app/schedule?week=${weekStart}&location=${location.id}`, label: location.shortName, current: selectedLocation === location.id })),
+        ]} />}>
+        <span className="u2-weekarrows">
+          <Link className="q-bar__icon" href={`/app/schedule?week=${previousWeek}${locationQuery}`} aria-label={`Previous week, ${compactWeekRange(previousWeek)}`}><CaretLeftIcon className="q-ic" aria-hidden="true" /></Link>
+          <Link className="q-bar__icon" href={`/app/schedule?week=${nextWeek}${locationQuery}`} aria-label={`Next week, ${compactWeekRange(nextWeek)}`}><CaretRightIcon className="q-ic" aria-hidden="true" /></Link>
+        </span>
+        <ScheduleMoreSheet planHref={`/app/schedule?week=${weekStart}${locationQuery}&plan=1#schedule-planning`} templatesHref={`/app/schedule/templates?week=${weekStart}`}
+          activityHref={`/app?view=activity&week=${weekStart}`} rulesHref={`/app/schedule/settings?week=${weekStart}`}
+          previousLabel={compactWeekRange(previousWeek)} weekLabel={weekText} actorId={session.id} copyCommand={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}} />
         <DayAwareLink className="q-bar__icon" href={addShiftHref} aria-label="Add shift"><PlusIcon className="q-ic" aria-hidden="true" /></DayAwareLink>
       </QuietBar>
-      <QuietHeader title="Schedule" sub={`${compactWeekRange(weekStart)}${phonePublished ? ` · ${phonePublished}` : ""}`} />
-      <ScheduleRouteFeedback error={params.error} warning={params.warning}/>
-      {params.published ? (
-        <section className="nevora-success-panel" role="status" aria-labelledby="schedule-published-title">
-          <CalendarCheckIcon size={28} weight="duotone" aria-hidden="true" />
-          <Celebration kind="SCHEDULE_PUBLISHED" eventKey={`${weekStart}:${params.published}`} confirmed />
-          <div>
-            <h2 id="schedule-published-title">{locations.find((location) => location.id === params.published)?.shortName ?? "Schedule"} published.</h2>
-            <p>Employees can now see their {formatWeekRange(weekStart)} shifts in NEVORA.</p>
-          </div>
-          <div className="nevora-success-actions">
-            <Link className="button secondary" href="/app/updates/compose">Send an update</Link>
-            <Link className="nevora-success-link" href={`/app?week=${encodeURIComponent(weekStart)}`}>Back to Home <CaretRightIcon size={16} aria-hidden="true" /></Link>
-          </div>
-        </section>
-      ) : null}
-      {params.updated ? <p className="form-success" role="status">Shift updated.</p> : null}
-      {params.deleted ? <p className="form-success" role="status">Shift deleted.</p> : null}
-      {params.deadlineSaved ? (
-        <p className="form-success" role="status">Availability deadline updated.</p>
-      ) : null}
-      {params.copied !== undefined ? (
-        <p
-          role="status"
-          className={
-            Number(params.skipped ?? 0) > 0 ? "form-warning" : "form-success"
-          }
-        >
-          Copied {params.copied} shift{params.copied === "1" ? "" : "s"} from
-          the previous week.
-          {Number(params.skipped ?? 0) > 0
-            ? ` ${params.skipped} shift${params.skipped === "1" ? "" : "s"} skipped because of current scheduling conflicts.`
-            : ""}
-          {Number(params.copyWarnings ?? 0) > 0
-            ? ` ${params.copyWarnings} copied shift${params.copyWarnings === "1" ? "" : "s"} include manager warnings.`
-            : ""}
-        </p>
-      ) : null}
+      <div className="q-hd u2-sched-hd">
+        <div className="u2-sched-hd__row"><h1>Schedule</h1>{weekStart !== currentWeek ? <Link className="q-bs u2-today" href={`/app/schedule?week=${currentWeek}${locationQuery}`}>Today</Link> : null}</div>
+        <p>{`${weekText}${phonePublished ? ` · ${phonePublished}` : ""}`}</p>
+      </div>
+      {/* The route's error and warning copy, drawn as Quiet notes (a saved shift's warning is calm, not an error). */}
+      <div className="u2-route-feedback"><ScheduleRouteFeedback error={params.error} warning={params.warning}/></div>
+      {params.published && publishedName ? <>
+        <Celebration kind="SCHEDULE_PUBLISHED" eventKey={`${weekStart}:${params.published}`} confirmed />
+        <ToastOnArrival id={`published:${weekStart}:${params.published}`} message={`${publishedName} published · ${weekText} · ${plural(shiftCounts[params.published] ?? 0, "shift", "shifts")}`} />
+        <p className="q-sr" role="status">{`${publishedName} published. Your team can now see ${formatWeekRange(weekStart)}.`}</p>
+      </> : null}
+      {params.updated ? <ToastOnArrival id={`updated:${weekStart}:${params.day ?? ""}`} message="Shift saved" /> : null}
+      {params.deleted ? <ToastOnArrival id={`deleted:${weekStart}:${params.day ?? ""}`} message="Shift deleted" /> : null}
+      {params.deadlineSaved ? <ToastOnArrival id={`deadline:${weekStart}`} message="Availability deadline saved" /> : null}
+      {params.copied !== undefined ? <ToastOnArrival id={`copied:${weekStart}:${params.copied}`} message={`${plural(Number(params.copied) || 0, "shift", "shifts")} copied as drafts${Number(params.skipped ?? 0) > 0 ? ` · ${params.skipped} skipped` : ""}`} /> : null}
+      {copyReceipt && copyOperation ? <>
+        <ToastOnArrival id={`copy:${copyOperation}`} dropParams={["copyOperation"]} message={copied ? `${plural(copied, "shift", "shifts")} copied as drafts${skipped ? ` · ${skipped} skipped` : ""}` : "Nothing was copied"} />
+        {skipped || !copied ? <ul className="q-list u2-notice-list" aria-label="Copy result">
+          <QuietRow href={`/app/schedule/copy-receipt?operation=${copyOperation}`} title={copied ? `${plural(skipped, "shift", "shifts")} weren’t copied` : "Nothing was copied"} detail="See why" />
+        </ul> : null}
+      </> : copyOperation ? <ul className="q-list u2-notice-list" aria-label="Copy result">
+        <QuietRow href={`/app/schedule/copy-receipt?operation=${copyOperation}`} title="Check the copy" detail="We couldn’t confirm it yet" />
+      </ul> : null}
 
-      <p className="mws-print-title" aria-hidden="true">{workspace.name} · {formatWeekRange(weekStart)} · {selectedLocation === "all" ? "All locations" : locations.find(location => location.id === selectedLocation)?.shortName} · Times in {workspace.timeZone.replaceAll("_", " ")}</p>
+      <p className="mws-print-title" aria-hidden="true">{workspace.name} · {formatWeekRange(weekStart)} · {currentLocationName} · Times in {workspace.timeZone.replaceAll("_", " ")}</p>
       <ManagerIssueFocus prefix="schedule-" />
-      {params.plan === "1" || params.publishCheck ? <FocusOnArrival targetId="schedule-planning" /> : null}
+      {params.plan === "1" || params.publishCheck ? <RouteParamSheet label="Plan" params={["plan", "publishCheck"]}>
+        <SheetBar title="Plan" cancel titleId="schedule-planning-title" />
+        <div className="u2-plan manager-issue-target" id="schedule-planning" tabIndex={-1}>
+          <ScheduleGenerationControls key={`${weekStart}:${selectedLocation}`} weekStart={weekStart} selectedLocation={selectedLocation} review={generationReview}
+            availability={weekRead ? { submitted: weekRead.availabilitySubmissionSummary.submittedEmployees, eligible: weekRead.availabilitySubmissionSummary.eligibleEmployees } : null} weekLabel={weekText} />
+          <SchedulePublicationControls weekStart={weekStart} locations={selectedLocation === "all" ? locations : locations.filter(location => location.id === selectedLocation)} review={publicationReview}
+            status={statusFor} shiftCounts={shiftCounts} />
+        </div>
+      </RouteParamSheet> : null}
       <ManagerWeeklyRoster key={`${weekStart}:${selectedLocation}:${reviewDay ?? "all"}`} employees={roster} dates={dates} today={today} reviewDay={reviewDay} timeZone={workspace.timeZone}
         absences={absences} locationId={selectedLocation === "all" ? undefined : selectedLocation} openShifts={openShifts}
         notices={<>
-          {toPlan.length ? <ul className="q-list" aria-label="Locations the team can’t see yet" style={{ marginTop: 16 }}>
+          {toPlan.length ? <ul className="q-list u2-notice-list" aria-label="Locations the team can’t see yet">
             {toPlan.map(location => {
               const drafted = statusFor(location.id) === "DRAFT";
               return <QuietRow key={location.id} title={drafted ? `${location.shortName} isn’t published` : `${location.shortName} isn’t planned`}
-                detail={drafted ? "The team can’t see this week yet" : "Nothing scheduled this week"}
-                control={<Link className="q-bs" href={planHref(location.id)} aria-label={drafted ? `Review and publish ${location.shortName}` : `Plan ${location.shortName}`}>{drafted ? "Review" : "Plan"}</Link>} />;
+                detail={drafted ? `Draft · ${plural(shiftCounts[location.id] ?? 0, "shift", "shifts")}` : "Not planned yet"}
+                control={drafted ? <PublishWeekButton weekStart={weekStart} locationId={location.id} locationName={location.shortName} weekLabel={weekText} shifts={shiftCounts[location.id] ?? 0} />
+                  : <Link className="q-bs" href={planHref(location.id)} aria-label={`Plan ${location.shortName}`}>Plan</Link>} />;
             })}
           </ul> : null}
-          {publicationReview || params.publishCheck || params.plan === "1" ? <details className={`mws-planning manager-issue-target${publicationReview || params.publishCheck ? " review-open" : ""}`} id="schedule-planning" tabIndex={-1} open>
-            <summary><CalendarCheckIcon size={22} aria-hidden="true" /><span><strong>Build and publish</strong><small>Automatic scheduling and publication by location</small></span><CaretRightIcon size={18} aria-hidden="true" /></summary>
-            <div className="mws-planning-body"><p>Build or fill your draft, review the assignments, then publish to make the schedule visible to your team.</p>
-              <ScheduleGenerationControls key={`${weekStart}:${selectedLocation}`} weekStart={weekStart} selectedLocation={selectedLocation} review={generationReview} />
-              <SchedulePublicationControls weekStart={weekStart} locations={selectedLocation === "all" ? locations : locations.filter(location => location.id === selectedLocation)} review={publicationReview}/>
-            </div>
-          </details> : null}
-          {reviewDay?<div className="manager-schedule-context manager-issue-target" id="schedule-review" tabIndex={-1}><p>Opened for review: {formatDayLabel(reviewDay).weekday} {formatDayLabel(reviewDay).day} · {selectedLocation==='all'?'All locations':locations.find(location=>location.id===selectedLocation)?.shortName}</p><Link href={`/app/schedule?week=${weekStart}${locationQuery}`}>Show full week</Link></div>:null}
+          {reviewDay ? <ul className="q-list u2-notice-list manager-issue-target" id="schedule-review" tabIndex={-1} aria-label="Opened for review">
+            <QuietRow title="Opened for review" detail={`${formatDayLabel(reviewDay).weekday} ${formatDayLabel(reviewDay).day} · ${currentLocationName}`}
+              control={<Link className="q-bs" href={`/app/schedule?week=${weekStart}${locationQuery}`}>Full week</Link>} />
+          </ul> : null}
         </>} />
     </QuietPage>
   );

@@ -99,3 +99,16 @@ it.each(['UNTRUSTED_QUERY_TEXT','constructor'])('scoped edit uses safe generic f
  operationalPageFixture.scoped=true;const {default:Page}=await import('./page');const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift',error})}));
  expect(html).toContain('role="alert"');expect(html).toContain('The shift could not be updated.');expect(html).not.toContain(error);
 });
+
+it("T-4: Delete is a red row whose confirmation sheet names the shift and holds the only delete form", async () => {
+  const { default: Page } = await import("./page");
+  const html = renderToStaticMarkup(await Page({ searchParams: Promise.resolve({ shiftId: "test-shift" }) })).replace(/\u00a0/g, " ");
+  expect(html).toMatch(/class="q-row q-row--one q-row--btn q-row--danger" aria-haspopup="dialog"/);
+  expect(html).toContain("Delete this shift?");
+  expect(html).toContain("Avery Rivera · Wed, Oct 14 · 8:00 AM – 4:00 PM");
+  expect(html).toContain(">Keep shift<");
+  expect(html.indexOf('id="edit-shift-delete"')).toBeLessThan(html.lastIndexOf("<form"));
+  // The tab bar stays hidden on this modal page, and the old header (eyebrow, name title) is gone.
+  expect(html).toContain('data-q-sheet=""');
+  expect(html).not.toContain('<div class="q-hd"><h1>Avery Rivera</h1>');
+});

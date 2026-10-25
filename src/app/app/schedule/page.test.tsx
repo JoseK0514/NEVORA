@@ -29,7 +29,7 @@ vi.mock('@/lib/data/weekly-approved-absences.server',()=>({readWeeklyApprovedAbs
 vi.mock('@/lib/data/manager-dashboard',()=>({loadManagerDashboardData:async()=>{f.managerReads('dashboard');return f.dashboard;}}));
 vi.mock('@/lib/data/acknowledgements',()=>({getEmployeeAcknowledgementState:async()=>({latestRevisionId:'latest',acknowledgedRevisionId:'before',needsAcknowledgement:true,acknowledged:false})}));
 vi.mock('@/app/app/schedule/acknowledge-actions',()=>({acknowledgeScheduleAction:vi.fn()}));
-vi.mock('@/lib/employee-display',()=>({employeeRoleLabel:()=>''}));
+vi.mock('@/lib/employee-display',async importOriginal=>({...await importOriginal<typeof import('../../../lib/employee-display')>(),employeeRoleLabel:()=>''}));
 vi.mock('@/lib/notifications/config',()=>({readNotificationConfig:()=>({featureEnabled:f.enabled})}));
 vi.mock('@/lib/data/publication-revisions',()=>({getLatestPublicationRevision:async()=>({id:'latest'}),listCapturedShiftPositions:async({weekStart,shiftIds}:{weekStart:string;shiftIds:string[]})=>{f.managerReads({weekStart,shiftIds});return f.history.length?f.history:f.captured;},listRevisionShifts:async(id:string)=>{f.reads(id);return f.role==='MANAGER'?f.captured:id==='before'?f.before:f.after;}}));
 vi.mock('@/lib/data/notification-state',()=>({sqlNotificationStateRepository:()=>({recipientAccess:async()=>({employeeId:'self',role:f.role,active:f.active,allowedLocationIds:['2']})})}));
@@ -91,10 +91,10 @@ it('renders every location through the measured selector with a safe expanded fa
   ];
   for (const names of catalogs) {
     f.locations = names.map((shortName, i) => ({ id: String(i), shortName }));
-    // Quiet (v4): the location picker is one menu that lists every location.
+    // Quiet (v4; T-10): the location picker is one sheet that lists every location.
     const output = await html();
-    expect(output).toContain('>All locations</a>');
-    for (const name of names) expect(output).toContain(`>${name}</a>`);
+    expect(output).toContain('<b>All locations</b>');
+    for (const name of names) expect(output).toContain(`<b>${name}</b>`);
   }
 });
 
@@ -102,7 +102,7 @@ vi.mock('@/lib/data/positions',()=>({listPositions:async()=>{f.managerReads('pos
 vi.mock('@/lib/data/schedule-generation-review',()=>({getScheduleGenerationReview:async()=>{f.managerReads('review');return {editable:true,exclusions:[],coverage:null,attempted:0,needsSetup:0};}}));
 vi.mock('@/components/schedule-generation-controls',()=>import('../../../components/schedule-generation-controls'));
 vi.mock('@/app/app/schedule/generation-actions',()=>({generateWeekAction:vi.fn(),clearGenerationExclusionAction:vi.fn()}));
-it('Manager Schedule uses the shared viewport-safe action menu instead of a page-local details dropdown',async()=>{f.role='MANAGER';const output=await html();expect(output).toContain('class="nevora-action-menu"');expect(output).toContain('popover="auto"');expect(output).not.toContain('<details class="schedule-more-menu"');});
+it('Manager Schedule opens its Location and More actions as Quiet sheets (modal dialogs), not a page-local details dropdown',async()=>{f.role='MANAGER';const output=await html();expect(output).toContain('aria-label="More schedule actions"');expect(output.match(/<dialog[^>]*class="q-page q-sheet"/g)?.length).toBeGreaterThanOrEqual(2);expect(output).toContain('aria-haspopup="dialog"');expect(output).not.toContain('<details class="schedule-more-menu"');expect(output).not.toContain('mobile-workforce-sheet-close');});
 it('Manager renders actual assigned positions and captured published names without invented labels',async()=>{f.role='MANAGER';f.positions=[{id:'cashier',name:'Renamed Cashier'}];f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];f.shifts=[{id:'draft',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-05',startTime:'08:00',endTime:'12:00',scheduleStatus:'DRAFT'},{id:'published',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-06',startTime:'08:00',endTime:'12:00',scheduleStatus:'PUBLISHED'},{id:'legacy',employeeId:'worker',locationId:'north',date:'2026-10-07',startTime:'08:00',endTime:'12:00',scheduleStatus:'DRAFT'}];f.captured=[{sourceShiftId:'published',positionName:'Captured Cashier'}];const output=await html();expect(output).toContain('Renamed Cashier');expect(output).toContain('Captured Cashier');expect(output.match(/schedule-assigned-position/g)).toHaveLength(2);expect(output).toContain('plan=1#schedule-planning');expect(renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',plan:'1'})}))).toContain('Build week');});
 it('Employee/Lead do not load Manager review or position catalogs',async()=>{for(const role of ['EMPLOYEE','LEAD']){f.role=role;expect(await html()).not.toContain('Build week');}expect(f.managerReads).not.toHaveBeenCalled();});
 it('protected generated deletion reports scheduling history truthfully',async()=>{f.role='MANAGER';const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',error:'SHIFT_HAS_EXCHANGE_HISTORY'})}));expect(output).toContain('scheduling history');});
@@ -114,6 +114,7 @@ it('uncaptured legacy non-Draft assignments keep actual catalog fallback while p
 // Quiet (v4): Build and publish (the … menu) opens the planning panel, which publishes each location.
 it.each(['OWNER','MANAGER'])('%s can reach publication for each displayed location',async role=>{
  f.role=role;f.locations=[{id:'loc-1',shortName:'Main Office'},{id:'loc-2',shortName:'West Office'}];
+ f.statuses=[{locationId:'loc-1',status:'DRAFT'},{locationId:'loc-2',status:'DRAFT'}];
  expect(await html()).toContain('href="/app/schedule?week=2026-10-05&amp;plan=1#schedule-planning"');
  const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',plan:'1'})}));expect(output).toContain('Publish Main Office');expect(output).toContain('Publish West Office');
 });
@@ -204,4 +205,31 @@ it('v3: a failed dashboard read leaves availability and open shifts out instead 
  const output=await html();
  expect(output).toContain('Fictional Worker');
  expect(output).not.toContain('availability 0');expect(output).not.toContain('Availability received');expect(output).not.toContain('Open shifts');
+});
+
+// Team U2 (Oct 25, 2026)
+it('UX-O-12/14: week arrows sit in the bar, Today returns from another week, and the "…" sheet holds no week items or deadline field',async()=>{
+ f.role='MANAGER';f.locations=[{id:'main',shortName:'Main Office'}];
+ const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',location:'main'})}));
+ expect(output).toContain('href="/app/schedule?week=2026-09-28&amp;location=main"');expect(output).toContain('href="/app/schedule?week=2026-10-12&amp;location=main"');
+ expect(output).toMatch(/aria-label="Previous week, Sep 28 – Oct 4"/);
+ expect(output).toContain('>Today</a>');
+ expect(output).not.toContain('Previous week</strong>');expect(output).not.toContain('This week</strong>');expect(output).not.toContain('name="availabilityDeadline"');
+ for(const item of ['Build and publish','Copy previous week','Templates','Activity','Scheduling rules','Print schedule'])expect(output).toContain(`<b>${item}</b>`);
+});
+it('UX-O-14/16: a drafted week offers Publish on the week, and a confirmed publish becomes a toast with the count',async()=>{
+ f.role='MANAGER';f.locations=[{id:'main',shortName:'Main Office'}];f.statuses=[{locationId:'main',status:'DRAFT'}];
+ f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];
+ f.shifts=[{id:'s1',employeeId:'worker',locationId:'main',date:'2026-10-05',startTime:'06:00',endTime:'14:00',scheduleStatus:'DRAFT'}];
+ const draft=(await html()).replace(/\u00a0/g,' ');
+ expect(draft).toContain('Main Office isn’t published');expect(draft).toContain('Draft · 1 shift');
+ expect(draft).toContain('aria-label="Publish Main Office"');expect(draft).toContain('Publish Oct 5 – 11 for Main Office?');
+ f.statuses=[{locationId:'main',status:'PUBLISHED'}];
+ const done=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',published:'main'})}));
+ expect(done).toContain('Main Office published. Your team can now see');expect(done).not.toContain('nevora-success-panel');
+});
+it('a saved shift with a scheduling warning shows the warning as a calm note, not an error',async()=>{
+ f.role='MANAGER';
+ const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',warning:'AVAILABILITY_NOT_SET'})}));
+ expect(output).toMatch(/<div class="u2-route-feedback"><p class="form-warning" role="status">/);
 });

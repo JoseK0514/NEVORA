@@ -34,6 +34,8 @@ function needLabel({ target, label, count, positionName }: NeedTarget) {
   return label;
 }
 
+export const metadata = { title: "Find cover" };
+
 export default async function CoverageSuggestionsPage({
   searchParams,
 }: {
@@ -77,6 +79,7 @@ export default async function CoverageSuggestionsPage({
       repair
       saved={params.saved === '1'}
       refreshHref={coverageRepairUrl(locator, true)}
+      addAnywayHref={`/app/schedule/new?week=${encodeURIComponent(locator.weekStart)}&date=${encodeURIComponent(locator.date)}&locationId=${encodeURIComponent(locator.locationId)}&start=${encodeURIComponent(locator.startTime)}&end=${encodeURIComponent(locator.endTime)}${locator.target === 'LEAD' ? '&lead=1' : ''}${locator.positionId ? `&positionId=${encodeURIComponent(locator.positionId)}` : ''}`}
       requirements={review?.targets.map(target => ({
         label: needLabel(target as NeedTarget),
         selected: target.target === review.locator.target && (target.target !== 'POSITION' || target.positionId === review.locator.positionId),
@@ -176,6 +179,7 @@ export default async function CoverageSuggestionsPage({
     positionName={position?.name}
     designatedLead={params.lead === '1'}
     backHref={`/app/schedule?week=${weekStart}&location=${encodeURIComponent(locationId)}`}
+    addAnywayHref={`/app/schedule/new?week=${weekStart}&date=${date}&locationId=${encodeURIComponent(locationId)}&start=${startTime}&end=${endTime}${params.lead === "1" ? "&lead=1" : ""}${params.positionId ? `&positionId=${encodeURIComponent(params.positionId)}` : ''}`}
     status="READY"
     candidates={candidates.map(candidate => ({
       employeeId: candidate.employeeId,

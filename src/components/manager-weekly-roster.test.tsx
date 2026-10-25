@@ -31,7 +31,7 @@ it("renders truthful shift status, captured position, lead and next-day ending l
   expect(output).toContain("Captured support");
   expect(output).toContain("Published");
   expect(output).toContain("Draft");
-  expect(output).toContain("12h assigned this week");
+  expect(output).toContain("12 h assigned this week");
   expect(output).toContain("schedule-employee-fictional");
   expect(output).toContain("No assignments this week");
   expect(output).not.toContain("Off duty");
@@ -40,7 +40,7 @@ it("respects an Action Center day focus while keeping full-week totals and contr
   const output = html("2026-10-06");
   expect(output).not.toContain("shiftId=overnight");
   expect(output).toContain("shiftId=midnight");
-  expect(output).toContain("12h assigned this week");
+  expect(output).toContain("12 h assigned this week");
   expect(output).toContain("Full week");
   expect(output).toContain("No assignments on this day");
 });
@@ -64,15 +64,15 @@ it("tints shifts by position name, stably and within six tints", async () => {
 });
 it("shows weekly hours against target and flags hours over the limit", () => {
   const withHours = (hours: RosterEmployee["hours"]) => html(undefined, [{ ...employees[0], hours }]);
-  expect(withHours({ week: 12, target: 30, maximum: 40 })).toContain("12 of 30h target");
-  expect(withHours({ week: 12, target: null, maximum: 40 })).toContain("12 of 40h limit");
-  expect(withHours({ week: 44, target: 30, maximum: 40 })).toContain("4h over the 40h limit");
+  expect(withHours({ week: 12, target: 30, maximum: 40 })).toContain("12 of 30 h target");
+  expect(withHours({ week: 12, target: null, maximum: 40 })).toContain("12 of 40 h limit");
+  expect(withHours({ week: 44, target: 30, maximum: 40 })).toContain("4 h over the 40 h limit");
   // MK3 / PD3: the visible label says how far over and which limit, not "over limit".
-  expect(withHours({ week: 56, target: null, maximum: 40 })).toContain(" · 16h over 40h");
-  expect(withHours({ week: 42.5, target: null, maximum: 40 })).toContain("2.5h over 40h");
+  expect(withHours({ week: 56, target: null, maximum: 40 })).toContain(" · 16 h over 40 h");
+  expect(withHours({ week: 42.5, target: null, maximum: 40 })).toContain("2.5 h over 40 h");
   expect(withHours({ week: 56, target: null, maximum: 40 })).not.toContain("over limit");
   expect(html()).not.toContain("mws-hours");
-  expect(withHours({ week: 12, target: 30, maximum: 40 })).toContain("12h assigned this week");
+  expect(withHours({ week: 12, target: 30, maximum: 40 })).toContain("12 h assigned this week");
 });
 
 it("keeps people without a shift that day one tap away on a single day too (U2)", () => {

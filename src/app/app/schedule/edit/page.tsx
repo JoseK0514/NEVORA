@@ -6,15 +6,13 @@ import {OperationalUnavailable} from '@/components/company-access/operational-un
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {listPositions} from "@/lib/data/positions";
-import { EditShiftForm, EDIT_SHIFT_FORM_ID } from "@/components/create-shift-form";
-import { QuietNav } from "@/components/quiet/quiet";
+import { EditShiftForm } from "@/components/create-shift-form";
 import {ScheduleRouteFeedback} from '@/components/company-access/schedule-route-feedback';
 import {schedulingIssueMessage} from '@/lib/scheduling/validate-shift';
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { DeleteShiftButton, DeleteShiftRow } from "./delete-shift-button";
 import { ActionForm } from "@/components/wave-a/action-form";
-import { addDays, formatDayLabel, formatTime } from "@/lib/date-utils";
+import { addDays, formatDayLabel, formatTimeRange } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
@@ -32,6 +30,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   INVALID_TIME_RANGE: "Enter a valid date, start and end time.",
   INVALID_SHIFT_LEAD: "Only an Owner, Manager or Lead can lead a shift.",
 };
+
+export const metadata = { title: "Edit shift" };
 
 export default async function EditShiftPage({
   searchParams,
@@ -75,23 +75,22 @@ export default async function EditShiftPage({
   const returnUrl = `/app/schedule?week=${shift.weekStart}&location=${encodeURIComponent(shift.locationId)}&day=${shift.date}#schedule-employee-${encodeURIComponent(shift.employeeId)}`;
   const day = formatDayLabel(shift.date);
 
-  // Quiet (Oct 25, 2026): Edit shift is the same sheet as Add shift. Cancel, Edit shift and Save in the bar; whose shift
-  // and when under it; the same rows, prefilled; Delete is a red row with its own confirmation.
+  // Quiet (Team U2, Oct 25, 2026, T-4): Edit shift is the New shift sheet in edit mode. Cancel · Edit shift · Save in the
+  // bar (Save waits for a change), the same rows prefilled, the error under the bar, and Delete as a red row with its
+  // own confirmation sheet. The tab bar stays hidden (data-q-sheet).
   const error = params.error ? (Object.hasOwn(ERROR_MESSAGES, params.error) ? ERROR_MESSAGES[params.error] : schedulingIssueMessage(params.error)) ?? "The shift could not be updated." : null;
+  const when = keepWhole(`${day.weekday}, ${day.day} · ${formatTimeRange(shift.startTime, shift.endTime)}`);
   return (<ScopedReadFrame observation={source}>
     <div className="q-page" data-nv-page="" data-q-sheet="">
-      <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href={returnUrl}>Cancel</Link>} title="Edit shift"
-        right={<button type="submit" form={EDIT_SHIFT_FORM_ID} className="q-nav__r q-nav__r--b">Save</button>} />
-      <div className="q-hd"><h1>{shift.employeeName}</h1><p>{keepWhole(`${day.weekday}, ${day.day} · ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`)}</p></div>
-      {error ? <p className="q-error q-first" role="alert">The shift wasn’t saved. {error}</p> : null}
-      <EditShiftForm action={updateShiftAction} shiftId={shift.id} employees={employees} positions={positions}
+      <h1 className="q-sr">{`Edit shift, ${shift.employeeName}, ${when}`}</h1>
+      <EditShiftForm action={updateShiftAction} shiftId={shift.id} employees={employees} positions={positions} cancelHref={returnUrl}
         weekStart={shift.weekStart} weekEnd={addDays(shift.weekStart, 6)} date={shift.date} employeeId={shift.employeeId}
-        positionId={shift.positionId ?? ""} locationName={location?.shortName ?? shift.locationId}
-        startTime={shift.startTime} endTime={shift.endTime} isDesignatedLead={shift.isDesignatedLead} notes={shift.notes ?? ""} />
-      <DeleteShiftRow>
+        positionId={shift.positionId ?? ""} locationId={shift.locationId} locationName={location?.shortName ?? shift.locationId}
+        startTime={shift.startTime} endTime={shift.endTime} isDesignatedLead={shift.isDesignatedLead} notes={shift.notes ?? ""}
+        notice={error ? <p className="q-help q-help--alert u2-form-alert" role="alert">The shift wasn’t saved. {error}</p> : null} />
+      <DeleteShiftRow detail={`${shift.employeeName} · ${when}`}>
         <ActionForm action={deleteShiftAction} className="q-shift-delete" failure={{ title: "The shift wasn’t deleted", body: "Check your connection and try again." }}>
           <input type="hidden" name="shiftId" value={shift.id} />
-          <p className="q-help">{keepWhole(`${shift.employeeName} won’t be scheduled on ${day.weekday}, ${day.day}. This can’t be undone.`)}</p>
           <DeleteShiftButton />
         </ActionForm>
       </DeleteShiftRow>

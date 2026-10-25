@@ -19,6 +19,8 @@ import {
   saveTemplateAction,
 } from "@/app/app/schedule/templates/actions";
 
+export const metadata = { title: "Templates" };
+
 export default async function ScheduleTemplatesPage({
   searchParams,
 }: {

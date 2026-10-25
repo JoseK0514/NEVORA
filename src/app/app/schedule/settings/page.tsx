@@ -3,7 +3,8 @@ import {withOperationalCompany} from '@/lib/company-access/operational-scope.ser
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import Link from "next/link";
-import { QuietHeader, QuietNav, QuietPage } from "@/components/quiet/quiet";
+import "@/components/quiet/u2.css";
+import { QuietHeader, QuietNav, QuietPage, weekLabel } from "@/components/quiet/quiet";
 import { keepWhole } from "@/lib/keep-whole";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
@@ -26,7 +27,7 @@ import { setAvailabilityDeadlineAction } from "../actions";
 import { getWeekSettings } from "@/lib/data/week-settings";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate, formatBusinessDateTimeInput } from "@/lib/business-time";
-import { formatWeekRange, isValidWeekStart, weekStartFor } from "@/lib/date-utils";
+import { isValidWeekStart, weekStartFor } from "@/lib/date-utils";
 
 const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -36,6 +37,8 @@ function Summary({ title, value }: { title: string; value: string }) {
     <span className="q-rt"><b>{title}</b></span><span className="q-rv q-rv--l">{value}</span><CaretRightIcon className="q-chev" aria-hidden="true" />
   </summary>;
 }
+
+export const metadata = { title: "Scheduling rules" };
 
 export default async function ScheduleSettingsPage({ searchParams }: {
   searchParams: Promise<{ error?: string; saved?: string; windowSaved?: string; windowDeleted?: string; week?: string; deadlineSaved?: string; availabilityDeadline?: string; employeeId?: string }>;
@@ -109,13 +112,13 @@ export default async function ScheduleSettingsPage({ searchParams }: {
       <div className="q-list q-rule-list" style={{ marginTop: 16 }}>
         <details className="q-details q-rule" open={open.deadline || undefined}>
           <Summary title="Availability deadline" value={deadlineValue} />
-          <div className="q-rule__body" id="rules-deadline">
-            <ActionForm action={setAvailabilityDeadlineAction} className="q-rule-form" failure="The availability deadline could not be saved. Try again." submit={{label: weekSettings?.availabilityDeadline ? "Update deadline" : "Set deadline", pendingLabel: "Saving…", className: "q-btn"}}>
+          <div className="q-rule__body u2-rule" id="rules-deadline">
+            <ActionForm action={setAvailabilityDeadlineAction} className="q-rule-form u2-rule__form" failure="The availability deadline could not be saved. Try again." submit={{label: weekSettings?.availabilityDeadline ? "Update deadline" : "Set deadline", pendingLabel: "Saving…", className: "q-btn"}}>
               <input type="hidden" name="returnTo" value="/app/schedule/settings" />
               <input type="hidden" name="weekStart" value={weekStart} />
-              <div className="q-fl"><label htmlFor="rules-deadline-input">{`Deadline for ${formatWeekRange(weekStart)}`}</label>
+              <div className="u2-field"><label className="q-fl__label" htmlFor="rules-deadline-input">{`Deadline for ${weekLabel(weekStart)}`}</label>
                 <input id="rules-deadline-input" className="q-in" type="datetime-local" name="availabilityDeadline" aria-describedby="deadline-help" defaultValue={params.availabilityDeadline ?? formatBusinessDateTimeInput(weekSettings?.availabilityDeadline, workspace.timeZone)} /></div>
-              <p className="q-help" id="deadline-help">{`${workspace.timeZone.replaceAll("_", " ")} time. Leave it blank to clear it.`}</p>
+              <p className="q-help" id="deadline-help">{`${workspace.timeZone.split("/").at(-1)?.replaceAll("_", " ") ?? workspace.timeZone} time. Leave it blank to clear it.`}</p>
             </ActionForm>
           </div>
         </details>
@@ -124,25 +127,29 @@ export default async function ScheduleSettingsPage({ searchParams }: {
             <Summary title="Staffing per location" value={staffingValue} />
             <div className="q-rule__body manager-issue-target" id="coverage-staffing" tabIndex={-1}>
               <p className="q-help">The fewest people working at once, and whether a shift lead must be there.</p>
-              <ul className="wb-setting-list">
-                {staffing.map(location => {
-                  const name = locationLabel(location.locationId, location.locationName);
-                  const needsSetup = location.minimumStaffPerShift === null || location.requiresDesignatedLead === null;
-                  return (
-                    <li className="wb-setting manager-issue-target" id={"staffing-" + location.locationId} tabIndex={-1} key={location.locationId}>
-                      <div className="wb-setting__name"><span className="wb-record__title">{name}</span>{needsSetup ? <span className="wb-record__meta">Needs setup</span> : null}</div>
-                      <div className="wb-setting__fields">
-                        <label className="wb-field"><span>Minimum staff</span><span className="wb-suffix"><input type="number" name={"staffing-" + location.locationId} aria-label={name + " minimum staff per shift"} defaultValue={location.minimumStaffPerShift ?? undefined} min={1} max={100} step={1} required /><span aria-hidden="true">people</span></span></label>
-                        {location.requiresDesignatedLead === null ? (
-                          <label className="wb-field"><span>Shift lead</span><select name={"lead-choice-" + location.locationId} defaultValue="" required aria-label={name + " designated lead rule"}><option value="" disabled>Choose</option><option value="true">Required</option><option value="false">Not required</option></select></label>
-                        ) : (
-                          <label className="wb-check"><input type="hidden" name={"lead-configured-" + location.locationId} value="true" /><input type="checkbox" name={"lead-" + location.locationId} defaultChecked={location.requiresDesignatedLead} aria-label={name + " designated lead required"} /><span>Shift lead required</span></label>
-                        )}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
+              {staffing.map(location => {
+                const name = locationLabel(location.locationId, location.locationName);
+                const needsSetup = location.minimumStaffPerShift === null || location.requiresDesignatedLead === null;
+                return (
+                  <section className="u2-staff manager-issue-target" id={"staffing-" + location.locationId} tabIndex={-1} key={location.locationId} aria-label={name}>
+                    <p className="u2-rule__sub">{name}{needsSetup ? <span className="u2-rule__flag"> · Needs setup</span> : null}</p>
+                    <ul className="q-list">
+                      <li><label className="q-row q-row--one q-input-row u2-unit-row"><span className="q-rt"><b>Minimum staff</b></span>
+                        <input type="number" inputMode="numeric" name={"staffing-" + location.locationId} aria-label={name + " minimum staff per shift"} defaultValue={location.minimumStaffPerShift ?? undefined} min={1} max={100} step={1} required placeholder="Not set" />
+                        <span className="u2-unit" aria-hidden="true">people</span></label></li>
+                      {location.requiresDesignatedLead === null ? (
+                        <li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b>Shift lead</b></span>
+                          <select className="q-select-row__control" name={"lead-choice-" + location.locationId} defaultValue="" required aria-label={name + " designated lead rule"}><option value="" disabled>Choose</option><option value="true">Required</option><option value="false">Not required</option></select>
+                          <CaretRightIcon className="q-chev" aria-hidden="true" /></label></li>
+                      ) : (
+                        <li><label className="q-row q-row--one"><span className="q-rt"><b>Shift lead required</b></span>
+                          <input type="hidden" name={"lead-configured-" + location.locationId} value="true" />
+                          <input type="checkbox" role="switch" className="q-tog" name={"lead-" + location.locationId} defaultChecked={location.requiresDesignatedLead} aria-label={name + " designated lead required"} /></label></li>
+                      )}
+                    </ul>
+                  </section>
+                );
+              })}
               {!staffing.length ? <p className="q-empty">Add a location first. <Link className="q-link" href="/app/settings/locations">Locations</Link></p> : null}
             </div>
           </details>
@@ -163,7 +170,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
           <div className="q-rule__body manager-issue-target" id="coverage-windows" tabIndex={-1}>
             <p className="q-help">Periods you expect every week. The schedule flags open coverage even before shifts are added.</p>
             {locations.length ? <details className="wb-disclosure wb-disclosure--ruled wb-add-period" open={!coverageWindows.length}>
-              <summary><span className="wb-inline-icon"><PlusIcon size={20} aria-hidden="true" />Add coverage period</span><CaretDownIcon size={20} aria-hidden="true" /></summary>
+              <summary className="q-btn q-btn--quiet u2-add"><PlusIcon className="q-ic q-ic--s u2-add__ic" aria-hidden="true" />Add coverage period</summary>
               <InlineConfigForm action={addCoverageWindowFormAction} className="wb-period-form" submit={{ label: "Add coverage period", pendingLabel: "Adding…", kind: "primary" }} successText="Coverage period added.">
                 <div className="wb-grid">
                   <label className="wb-field wb-field--wide"><span>Location</span><select name="locationId" required defaultValue={locations[0]?.id}>{locations.map(location => <option key={location.id} value={location.id}>{locationLabel(location.id, location.shortName)}</option>)}</select></label>
@@ -177,13 +184,13 @@ export default async function ScheduleSettingsPage({ searchParams }: {
             </details> : <p className="q-empty">Add a location first. <Link className="q-link" href="/app/settings/locations">Locations</Link></p>}
             {coverageGroups.map(group => (
               <details className="wb-disclosure wb-disclosure--ruled wb-period-group" key={group.locationId} open={coverageGroups.length === 1 || group.needsReview}>
-                <summary><span className="wb-summary-text"><span className="wb-record__title">{group.label}</span><span>{group.windows.length} {group.windows.length === 1 ? "period" : "periods"} · {group.days} {group.days === 1 ? "day" : "days"} a week</span></span><CaretDownIcon size={20} aria-hidden="true" /></summary>
+                <summary className="q-row u2-group-sum"><span className="q-rt"><b>{group.label}</b><i>{`${group.windows.length} ${group.windows.length === 1 ? "period" : "periods"} · ${group.days} ${group.days === 1 ? "day" : "days"} a week`}</i></span><CaretDownIcon className="q-chev u2-group-sum__caret" aria-hidden="true" /></summary>
                 <ul className="wb-periods">
                   {group.windows.map(window => (
                     <li className="wb-period manager-issue-target" id={"coverage-" + window.id} tabIndex={-1} key={window.id}>
                       <div className="wb-period__head">
                         <span className="wb-day" aria-hidden="true">{dayNames[window.dayOfWeek].slice(0, 3)}</span>
-                        <div className="wb-period__copy"><h3 className="wb-record__title">{dayNames[window.dayOfWeek]}</h3><p className="wb-record__meta">{keepWhole(formatTimeRange(window.startTime, window.endTime))}</p><p className="wb-record__meta">{window.minimumStaff ? window.minimumStaff + " staff required" : "Uses location staffing requirement"}</p></div>
+                        <div className="wb-period__copy"><p className="wb-record__title">{dayNames[window.dayOfWeek]}</p><p className="wb-record__meta">{keepWhole(formatTimeRange(window.startTime, window.endTime))}</p><p className="wb-record__meta">{window.minimumStaff ? `${window.minimumStaff} ${window.minimumStaff === 1 ? "person" : "people"} needed` : "Uses the location’s staffing"}</p></div>
                         <ActionForm action={deleteCoverageWindowAction} className="wb-period-remove" failure="Not removed. Check your connection and try again." confirm={{ prompt: `Remove ${dayNames[window.dayOfWeek]}, ${formatTimeRange(window.startTime, window.endTime)}?`, keepLabel: "Keep period" }} submit={{ label: "Remove", pendingLabel: "Removing…", ariaLabel: "Remove " + locationLabel(window.locationId, window.locationId) + " " + dayNames[window.dayOfWeek] + " " + formatTimeRange(window.startTime, window.endTime) + " coverage period", className: "wb-remove", kind: "danger" }}><input type="hidden" name="windowId" value={window.id} /></ActionForm>
                       </div>
                       <details className="wb-quantities" open={window.positionRequirements.some(requirement => positions.some(position => position.id === requirement.positionId && !position.active))}>

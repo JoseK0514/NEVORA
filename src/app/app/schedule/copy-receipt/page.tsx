@@ -4,15 +4,16 @@ import {OperationalUnavailable} from '@/components/company-access/operational-un
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import { ScheduleCopyForm } from "@/components/schedule-copy-form";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { requireSessionMutationProof } from "@/lib/auth/session";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import {
   readScheduleCopyReceipt,
   readScheduleCopyCommand,
 } from "@/lib/data/schedule-copy";
-import { Card, MetaParts, PageBand, StatGrid } from "@/components/kit/kit";
-import { Notice } from "@/components/wave-a/parts";
-import { formatDayLabel, formatTime, formatWeekRange } from "@/lib/date-utils";
+import { QuietHeader, QuietNav, QuietPage, QuietRow, weekLabel as compactWeek } from "@/components/quiet/quiet";
+import { SheetRowButton } from "@/components/quiet/u2-sheets";
+import { addDays, formatDayLabel, formatTimeRange } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
 
 /* Why a shift wasn't copied. The server gives codes only; the row's person, day and time are a Codex read (CODEX.md). */
@@ -32,18 +33,22 @@ const described = (row: object): row is DescribedRow => {
 };
 const rowWhen = (row: DescribedRow) => {
   const day = formatDayLabel(row.date);
-  return keepWhole([`${day.weekday},\u00a0${day.day}`, `${formatTime(row.startTime)} – ${formatTime(row.endTime)}`, row.locationName].filter(Boolean).join(" · "));
+  return keepWhole([`${day.weekday}, ${day.day}`, formatTimeRange(row.startTime, row.endTime), row.locationName].filter(Boolean).join(" · "));
 };
 const reasonText = (code: string | null) => (code ? SKIP_REASONS[code] ?? "It didn’t pass the schedule checks" : "Not copied");
 
-function Frame({ title, summary, back = "/app/schedule", children }: { title: string; summary: string; back?: string; children: ReactNode }) {
-  return <div className="nv-page wa-page wa-copy" data-nv-page="">
-    <PageBand back={{ href: back, label: "Schedule" }} eyebrow="Copy week" title={title} summary={summary} />
-    <div className="nv-content wa-narrow">{children}</div>
-  </div>;
+/** T-6 (Team U2, Oct 25, 2026): the copy result on Quiet. The Schedule shows the result as a toast; this page stays for
+ * links and for the reasons some shifts weren't copied. */
+function Frame({ title, sub, back = "/app/schedule", children }: { title: string; sub: string; back?: string; children: ReactNode }) {
+  return <QuietPage className="u2-receipt">
+    <QuietNav back={{ href: back, label: "Schedule" }} />
+    <QuietHeader title={title} sub={sub} />
+    {children}
+  </QuietPage>;
 }
 
-/** Phase 3.5 Wave A: the Copy-week receipt on the kit. What was copied, what wasn't and why, and the reference. */
+export const metadata = { title: "Week copied" };
+
 export default async function CopyReceiptPage({
   searchParams,
 }: {
@@ -52,15 +57,8 @@ export default async function CopyReceiptPage({
   // IS-WA-9: like every other schedule management page, the receipt is for Owners and Managers.
   await requireRoles(MANAGER_ROLES);
   const { operation } = await searchParams;
-  if (!operation || !/^[0-9a-f-]{36}$/i.test(operation))
-    return <Frame title="Copy not found" summary="This link doesn’t point to a schedule copy.">
-      <Card title="Nothing to show">
-        <div className="wa-card-body">
-          <p className="wa-text">Open the schedule to see the current week.</p>
-          <Link className="nv-btn" data-kind="secondary" data-block="true" href="/app/schedule">Back to schedule</Link>
-        </div>
-      </Card>
-    </Frame>;
+  // UX-O-24: a link without a copy goes to the Schedule.
+  if (!operation || !/^[0-9a-f-]{36}$/i.test(operation)) redirect("/app/schedule");
   const proof = await requireSessionMutationProof();
   const source=await withOperationalCompany(proof,async()=>{
   const receipt = await readScheduleCopyReceipt(proof, operation);
@@ -72,19 +70,12 @@ export default async function CopyReceiptPage({
   const {receipt,command}=source.data;
   if (!receipt) {
     const back = command ? `/app/schedule?week=${command.weekStart}` : "/app/schedule";
-    return <ScopedReadFrame observation={source}><Frame title="Copy not confirmed" back={back} summary={command ? `We couldn’t confirm the copy into ${keepWhole(formatWeekRange(command.weekStart))}.` : "We couldn’t confirm whether shifts were copied."}>
-      <Notice tone="review" title="Check the schedule first">Do not start a new copy while this one is unconfirmed. Some shifts may already be on the schedule.</Notice>
-      <Card title="What you can do">
-        <div className="wa-card-body">
-          <p className="wa-text">{command ? "Look at the schedule. If the shifts aren’t there, retry this same copy; it won’t copy anything twice." : "Open the schedule to check whether the shifts were copied."}</p>
-          <Link className="nv-btn" data-kind="primary" data-block="true" href={back}>Back to schedule</Link>
-          {command ? <div className="wa-retry"><ScheduleCopyForm actorId={proof.employee.id} command={command} label="Retry this copy" className="nv-btn wa-retry__button" /></div> : null}
-        </div>
-        <details className="wa-disclosure" data-tone="neutral">
-          <summary className="wa-disclosure__summary">Reference</summary>
-          <p className="wa-card-note"><code className="wa-code">{operation}</code></p>
-        </details>
-      </Card>
+    return <ScopedReadFrame observation={source}><Frame title="Copy not confirmed" back={back} sub={command ? `We couldn’t confirm the copy into ${keepWhole(compactWeek(command.weekStart))}.` : "We couldn’t confirm whether shifts were copied."}>
+      <p className="q-note" data-tone="urgent"><span className="q-note__title">Check the schedule first</span>Do not start a new copy while this one is unconfirmed. Some shifts may already be on the schedule.</p>
+      <p className="q-help">{command ? "If the shifts aren’t there, retry this same copy; it won’t copy anything twice." : "Open the schedule to check whether the shifts were copied."}</p>
+      <Link className="q-btn" href={back}>Back to schedule</Link>
+      {command ? <div className="u2-copy u2-copy--page"><ScheduleCopyForm actorId={proof.employee.id} command={command} label="Retry this copy" className="q-btn q-btn--sec" /></div> : null}
+      <p className="q-help">{`Reference ${operation}`}</p>
     </Frame></ScopedReadFrame>;
   }
   const copied = receipt.rows.filter((r) => r.status === "COMMITTED");
@@ -94,45 +85,26 @@ export default async function CopyReceiptPage({
   for (const row of skipped) why.set(reasonText(row.reason), (why.get(reasonText(row.reason)) ?? 0) + 1);
   const warnings = receipt.rows.flatMap((row) => row.warnings);
   const back = `/app/schedule?week=${receipt.command.weekStart}`;
+  const from = receipt.command.kind === "PREVIOUS_WEEK" ? ` · from ${compactWeek(addDays(receipt.command.weekStart, -7))}` : "";
   return <ScopedReadFrame observation={source}><Frame title={receipt.reason || !copied.length ? "Nothing copied" : "Week copied"} back={back}
-    summary={`${copied.length} ${copied.length === 1 ? "shift" : "shifts"} copied into ${keepWhole(formatWeekRange(receipt.command.weekStart))}.`}>
-    {receipt.reason ? <Notice tone="review" title="No shifts were copied">
+    sub={`${compactWeek(receipt.command.weekStart)}${from}`}>
+    {receipt.reason ? <p className="q-note" data-tone="urgent"><span className="q-note__title">No shifts were copied</span>
       {receipt.reason === "TEMPLATE_UNAVAILABLE" ? "The template isn’t available anymore." : "The week it came from changed while copying."} Go back to the schedule and start a new copy.
-    </Notice> : null}
-    <Card title="Result" id="copy-result">
-      <StatGrid stats={[{ label: "Copied", value: copied.length }, { label: "Not copied", value: skipped.length }]} />
-    </Card>
-    {describedSkipped?.length ? <Card title="Not copied" id="copy-skipped" meta={`${skipped.length}\u00a0${skipped.length === 1 ? "shift" : "shifts"}`}>
-      <ul className="nv-rows">
-        {describedSkipped.map((row, index) => <li key={index}><div className="nv-row"><span className="nv-row__text">
-          <span className="nv-row__title">{row.employeeName ?? "Open shift"}</span>
-          <span className="nv-row__meta"><MetaParts text={rowWhen(row)} /></span>
-          <span className="nv-row__meta">{reasonText(row.reason)}</span>
-        </span></div></li>)}
-      </ul>
-    </Card> : why.size ? <Card title="Why some weren’t copied" id="copy-skipped">
-      <ul className="nv-rows">
-        {[...why].map(([text, count]) => <li key={text}><div className="nv-row"><span className="nv-row__text"><span className="nv-row__title">{text}</span></span><span className="nv-row__trail">{count}</span></div></li>)}
-      </ul>
-    </Card> : null}
-    {warnings.length ? <Card title="Worth a look" id="copy-warnings">
-      <ul className="nv-rows">
-        {warnings.map((warning, index) => <li key={`${warning.code}-${index}`}><div className="nv-row"><span className="nv-row__text"><span className="nv-row__meta wa-ink">{warning.message}</span></span></div></li>)}
-      </ul>
-    </Card> : null}
-    <Card title="Reference" id="copy-reference">
-      <details className="wa-disclosure" data-tone="neutral">
-        <summary className="wa-disclosure__summary">Copy details</summary>
-        <p className="wa-card-note">Request <code className="wa-code">{receipt.operationId}</code></p>
-        <ul className="nv-rows">
-          {receipt.rows.map((row, i) => <li key={i}><div className="nv-row"><span className="nv-row__text">
-            {described(row) ? <span className="nv-row__meta wa-ink">{row.employeeName ?? "Open shift"}{"\u00a0· "}<MetaParts text={rowWhen(row)} /></span> : null}
-            <span className="nv-row__meta"><code className="wa-code">{row.sourceId}</code></span>
-            <span className="nv-row__meta">{row.status === "COMMITTED" ? "Copied" : `Not copied · ${reasonText(row.reason)}`}</span>
-          </span></div></li>)}
+    </p> : null}
+    <ul className="q-list u2-receipt__list" id="copy-result" aria-label="Result">
+      <QuietRow title="Shifts added" value={String(copied.length)} />
+      {skipped.length ? <SheetRowButton title="Skipped" value={String(skipped.length)} sheetTitle="Not copied">
+        <ul className="q-list" id="copy-skipped">
+          {describedSkipped ? describedSkipped.map((row, index) => <QuietRow key={index} title={row.employeeName ?? "Open shift"} detail={`${rowWhen(row)} · ${reasonText(row.reason)}`} />)
+            : [...why].map(([text, count]) => <QuietRow key={text} title={text} value={String(count)} />)}
         </ul>
-      </details>
-    </Card>
-    <Link className="nv-btn" data-kind="primary" data-block="true" href={back}>Back to schedule</Link>
+      </SheetRowButton> : <QuietRow title="Skipped" value="0" />}
+      <QuietRow title="Status" value="Draft" />
+    </ul>
+    {warnings.length ? <><div className="q-grp"><h2>Worth a look</h2></div><ul className="q-list" id="copy-warnings">
+      {warnings.map((warning, index) => <QuietRow key={`${warning.code}-${index}`} title={warning.message} />)}
+    </ul></> : null}
+    <Link className="q-btn" href={back}>Open schedule</Link>
+    <p className="q-help">{`Reference ${receipt.operationId}`}</p>
   </Frame></ScopedReadFrame>;
 }

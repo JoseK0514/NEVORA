@@ -9,8 +9,8 @@ import { CalendarXIcon } from "@phosphor-icons/react/dist/ssr/CalendarX";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { EmptyState } from "./empty-state";
 import { Avatar } from "./kit/kit";
-import { QuietGroup, QuietRow, QuietSection } from "./quiet/quiet";
-import { addDays, formatDayLabel, formatTime } from "../lib/date-utils";
+import { QuietGroup, QuietRow, QuietSection, initialsOf } from "./quiet/quiet";
+import { addDays, formatDayLabel, formatHours, formatTime, formatTimeRange } from "../lib/date-utils";
 import { absencesOn, fullDayAbsence, type WeeklyApprovedAbsences, assignedHours, type RosterEmployee, type RosterShift } from "../lib/scheduling/manager-roster-presentation";
 
 /* Manager and Owner Schedule, rebuilt for the clean Manager app (v3, approved Oct 19; spec "Schedule" in
@@ -40,7 +40,6 @@ function brief(time: string) {
 const range = (start: string, end: string) => { const h = (t: string) => t.slice(0, 5); return h(start) === "00:00" && (h(end) === "24:00" || h(end) === "00:00") ? "All day" : `${brief(start)} – ${brief(end)}`; };
 const longWeekday = (date: string) => new Intl.DateTimeFormat("en-US", { weekday: "long", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
 const narrowWeekday = (date: string) => new Intl.DateTimeFormat("en-US", { weekday: "narrow", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
-const initials = (name: string) => name.split(" ").filter(Boolean).slice(0, 2).map(part => part[0]).join("");
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 const statusWord = (status: string) => status === "DRAFT" ? "Draft" : status === "ARCHIVED" ? "Archived" : status === "PUBLISHED" ? "Published" : status;
 const overnight = (shift: { startTime: string; endTime: string }) => shift.endTime < shift.startTime || shift.endTime.startsWith("24:00");
@@ -78,10 +77,10 @@ function OpenBlock({ open }: { open: RosterOpenShift }) {
 /** Weekly hours across all locations against the person's target and limit, said in words. */
 function hoursText(hours: NonNullable<RosterEmployee["hours"]>) {
   const over = hours.week > hours.maximum;
-  return over ? `${overBy(hours)} over the ${hours.maximum}h limit` : hours.target !== null ? `${hours.week} of ${hours.target}h target` : `${hours.week} of ${hours.maximum}h limit`;
+  return over ? `${overBy(hours)} over the ${formatHours(hours.maximum * 60)} limit` : hours.target !== null ? `${hours.week} of ${formatHours(hours.target * 60)} target` : `${hours.week} of ${formatHours(hours.maximum * 60)} limit`;
 }
 /** MK3 / PD3: how far over the person's weekly limit, from the hours the grid already has ("16h", "2.5h"). */
-const overBy = (hours: NonNullable<RosterEmployee["hours"]>) => `${Number((hours.week - hours.maximum).toFixed(1))}h`;
+const overBy = (hours: NonNullable<RosterEmployee["hours"]>) => formatHours((hours.week - hours.maximum) * 60);
 
 export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZone, locationId, openShifts = [], absences = { state: "unavailable", reason: "read_failed" }, footnote, controls, notices }: {
   employees: RosterEmployee[];
@@ -118,7 +117,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   const dayOpen = openShifts.filter(open => open.date === phoneDay).sort((a, b) => a.startTime.localeCompare(b.startTime));
   // Quiet (v4, approved Oct 23): the week strip, then the chosen day: avatar, name, "8:00 AM – 4:00 PM · Front desk".
   const shiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <QuietRow key={shift.id} href={editHref(shift)} label={shiftLabel(shift, employee.name)} chevron={false}
-    avatar={initials(employee.name).toUpperCase()} title={employee.name}
+    avatar={initialsOf(employee.name)} title={employee.name}
     detail={[`${clock(shift.startTime)} – ${clock(shift.endTime)}`, shift.position || shift.location || employee.role, shift.status === "PUBLISHED" ? null : statusWord(shift.status), shift.lead ? "Lead" : null].filter(Boolean).join(" · ")} />;
   const weekStrip = <div className="q-week" role="group" aria-label="Schedule day">
     {dates.map(date => {
@@ -136,7 +135,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   const dayRows = [
     ...dayShifts.map(entry => ({ start: entry.shift.startTime, node: shiftRow(entry) })),
     ...dayOpen.map(open => ({ start: open.startTime, node: <QuietRow key={open.id} avatar="open"
-      title={!locationId && open.location ? open.location : "Open shift"} detail={`Open · ${span(open.startTime, open.endTime)}`}
+      title={!locationId && open.location ? open.location : "Open shift"} detail={`Open · ${formatTimeRange(open.startTime, open.endTime)}`}
       control={<Link className="q-bs" href={open.href} aria-label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>Find cover</Link>} /> })),
   ].sort((a, b) => a.start.localeCompare(b.start));
   // "Show N more" opens the rest of this day only; a new day starts collapsed. Focus moves to the first row it revealed.
@@ -145,7 +144,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   const showMore = () => { setMoreDay(phoneDay); requestAnimationFrame(() => document.querySelector<HTMLElement>(`#schedule-day .q-list > li:nth-child(${SHOWN_QUIET + 1}) :is(a, button)`)?.focus()); };
   const absenceKnown = (employeeId: string) => absences.state === "ready" && absences.employeeIds.includes(employeeId);
   const dayAbsences = employees.map(employee => ({employee, rows: absencesOn(absences, employee.id, phoneDay)})).filter(entry => entry.rows.length);
-  const dayList = <QuietSection id="schedule-day" title={longWeekday(phoneDay)} aside={plural(dayRows.length, "shift", "shifts")}>
+  const dayList = <QuietSection id="schedule-day" title={longWeekday(phoneDay)} aside={dayOpen.length ? `${plural(dayShifts.length, "shift", "shifts")} · ${dayOpen.length} open` : plural(dayShifts.length, "shift", "shifts")}>
     <ul className="q-list" aria-label={`Shifts on ${longWeekday(phoneDay)}`}>
       {(showAll ? dayRows : dayRows.slice(0, SHOWN_QUIET)).map(row => row.node)}
       {!showAll && dayRows.length > SHOWN_QUIET ? <li className="cm-more"><button type="button" className="q-row q-row--one cm-more__button" onClick={showMore}><span className="q-rt"><b>{`Show ${dayRows.length - SHOWN_QUIET} more`}</b></span></button></li> : null}
@@ -153,7 +152,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
     {!dayRows.length ? <p className="q-empty">Nothing scheduled.</p> : null}
     {absences.state === "unavailable" || employees.some(employee => !absenceKnown(employee.id)) ? <p className="q-help" role="status">Time off unavailable. Reload before adding shifts.</p> : null}
     {dayAbsences.length ? <QuietGroup label="Time off"><ul className="q-list" aria-label={`Approved time off on ${longWeekday(phoneDay)}`}>
-      {dayAbsences.map(({employee, rows}) => <QuietRow key={employee.id} avatar={initials(employee.name).toUpperCase()} title={employee.name} detail={absenceText(rows).replace("Time off · ", "")} />)}
+      {dayAbsences.map(({employee, rows}) => <QuietRow key={employee.id} avatar={initialsOf(employee.name)} title={employee.name} detail={absenceText(rows).replace("Time off · ", "")} />)}
     </ul></QuietGroup> : null}
   </QuietSection>;
 
@@ -168,11 +167,11 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
     const over = employee.hours ? employee.hours.week > employee.hours.maximum : false;
     return <tr className="cm-grid__row manager-issue-target" id={`schedule-employee-${employee.id}`} tabIndex={-1} key={employee.id} hidden={hidden || undefined}>
       <th scope="row" className="cm-person">
-        <Avatar initials={initials(employee.name)} />
+        <Avatar initials={initialsOf(employee.name)} />
         <span className="cm-person__text">
           <span className="cm-person__name">{employee.name}</span>
-          <span className="cm-person__sub" aria-hidden="true" title={employee.hours ? hoursText(employee.hours) : undefined}>{week}h{over && employee.hours ? <em>{` · ${overBy(employee.hours)} over ${employee.hours.maximum}h`}</em> : null}</span>
-          <span className="sr-only">{week}h assigned this week</span>
+          <span className="cm-person__sub" aria-hidden="true" title={employee.hours ? hoursText(employee.hours) : undefined}>{formatHours(week * 60)}{over && employee.hours ? <em>{` · ${overBy(employee.hours)} over ${formatHours(employee.hours.maximum * 60)}`}</em> : null}</span>
+          <span className="sr-only">{`${formatHours(week * 60)} assigned this week`}</span>
           {employee.hours ? <span className="sr-only mws-hours" data-over={over || undefined}>{`, ${hoursText(employee.hours)}`}</span> : null}
           {!shown(employee).length ? <span className="sr-only">{focus === "all" ? ", No assignments this week" : ", No assignments on this day"}</span> : null}
         </span>
@@ -197,7 +196,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
       <table className="cm-grid" data-days={visibleDates.length}>
         <caption className="sr-only">{`Team schedule. Times in ${timeZone.split("/").at(-1)?.replaceAll("_", " ") ?? timeZone}. Select a shift to edit.`}</caption>
         <thead><tr>
-          <th scope="col" className="cm-grid__corner">{`${plural(scheduled.length, "person", "people")} · ${totalHours}h`}</th>
+          <th scope="col" className="cm-grid__corner">{`${plural(scheduled.length, "person", "people")} · ${formatHours(totalHours * 60)}`}</th>
           {visibleDates.map(date => <th scope="col" key={date} data-today={date === today || undefined}>
             <span>{formatDayLabel(date).weekday}</span> <b>{Number(date.slice(8))}</b>{date === today ? <span className="sr-only">, today</span> : null}
           </th>)}

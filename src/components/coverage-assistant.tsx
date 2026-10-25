@@ -1,14 +1,14 @@
-import Link from "next/link";
-import { keepDuration } from "./wave-a/keep-duration";
-import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowClockwise";
-import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
-import { addDays, durationMinutes, formatDayLabel, formatTime } from "@/lib/date-utils";
-import { durationText } from "@/lib/duration-text";
+"use client";
+
+import "./quiet/u2.css";
+import Link, { useLinkStatus } from "next/link";
+import { useState } from "react";
+import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
+import { addDays, durationMinutes, formatDayLabel, formatHours, formatTimeRange } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
-import { Avatar, Card, PageBand, Status } from "./kit/kit";
-import { Fact, Facts, Notice } from "./wave-a/parts";
+import { initialsOf } from "./quiet/quiet";
 import { ManagerIssueFocus } from "./manager-issue-focus";
-import { CoverageReviewContent } from "./coverage-review-content";
+import { SheetRowButton, ToastOnArrival } from "./quiet/u2-sheets";
 
 export type CoverageEmployee = {
   employeeId: string;
@@ -36,108 +36,105 @@ export type CoverageAssistantProps = {
   refreshHref?: string;
   saved?: boolean;
   repair?: boolean;
+  /** T-5: when no one fits, "Add a shift anyway" opens New shift on this day, time and place (no one pre-chosen). */
+  addAnywayHref?: string;
 };
 
-const hours = (value: number) => durationText(Math.round(value * 60));
+const hours = (value: number) => formatHours(Math.round(value * 60));
+const roleWord = (role?: string) => role ? role[0] + role.slice(1).toLowerCase() : "Employee";
 
-function initials(name: string) {
-  const parts = name.trim().split(/\s+/).map(part => part[0]).filter(Boolean);
-  return `${parts[0] ?? ""}${parts.length > 1 ? parts[parts.length - 1] : ""}`;
-}
-
-function Candidate({ employee, index, repair }: { employee: CoverageEmployee; index: number; repair?: boolean }) {
-  const role = employee.role ? employee.role[0] + employee.role.slice(1).toLowerCase() : "Employee";
+/** "Employee · 12 h of 32 h this week · 20 h under target · Under target 2 earlier weeks". */
+function candidateDetail(employee: CoverageEmployee) {
   const week = employee.targetHours === undefined ? `${hours(employee.scheduledHours)} this week` : `${hours(employee.scheduledHours)} of ${hours(employee.targetHours)} this week`;
-  return <li className="wa-candidate" id={`coverage-candidate-${employee.employeeId}`}>
-    <div className="wa-candidate__main">
-      <span className="wa-candidate__rank" aria-hidden="true">{index + 1}</span>
-      <Avatar initials={initials(employee.employeeName)} />
-      <span className="wa-candidate__text">
-        <span className="nv-row__title"><span className="nv-sr">Suggestion {index + 1}: </span>{employee.employeeName}</span>
-        <span className="nv-row__meta">{role}{employee.primaryLocationName ? ` · ${employee.primaryLocationName}` : ""}</span>
-        <span className="nv-row__meta">{week}</span>
-      </span>
-    </div>
-    <div className="wa-candidate__actions">
-      <details className="wa-disclosure" data-tone="neutral">
-        <summary className="wa-disclosure__summary">Details</summary>
-        <Facts label={`${employee.employeeName} details`}>
-          <Fact label="Employee ID">{employee.employeeId}</Fact>
-          <Fact label="Hours to target">{employee.hoursNeeded > 0 ? `${hours(employee.hoursNeeded)} under` : employee.targetHours === undefined ? "No target set" : "At or above"}</Fact>
-          <Fact label="Earlier weeks under target">{employee.priorUnderTargetWeeks}</Fact>
-        </Facts>
-        <p className="wa-card-note">Fits availability, qualifications and scheduling rules for this shift. They’re checked again before saving.</p>
-      </details>
-      <Link className="nv-link wa-candidate__go" href={employee.href} prefetch={false} aria-label={`${repair ? "Review replacement" : "Review shift"} for ${employee.employeeName}`}>
-        <CoverageReviewContent repair={repair} />
-      </Link>
-    </div>
-  </li>;
+  const target = employee.hoursNeeded > 0 ? `${hours(employee.hoursNeeded)} under target` : employee.targetHours === undefined ? "No target set" : "At or above target";
+  const earlier = employee.priorUnderTargetWeeks > 0 ? `Under target ${employee.priorUnderTargetWeeks} earlier ${employee.priorUnderTargetWeeks === 1 ? "week" : "weeks"}` : null;
+  return [roleWord(employee.role), employee.primaryLocationName, week, target, earlier].filter(Boolean).join(" · ");
 }
 
-/** Phase 3.5 Wave A: Coverage on the kit. The shift to cover first, then who can work it, in suggested order. */
+export function AssignLabel() {
+  const { pending } = useLinkStatus();
+  return <span role={pending ? "status" : undefined} aria-live="polite" aria-atomic="true">{pending ? "Opening review…" : "Assign"}</span>;
+}
+
+/** T-5 (Team U2, Oct 25, 2026): "Find cover" on the shift sheet. The shift, then who can work it as radio rows (best
+ * match first); Assign opens the chosen person's review. Nothing is saved on this page. With no one, the next steps:
+ * add a shift anyway, or ask the team. */
 export function CoverageAssistant(props: CoverageAssistantProps) {
+  const [chosen, setChosen] = useState<string | null>(null);
   const day = formatDayLabel(props.date);
   const minutes = durationMinutes(props.startTime, props.endTime);
-  const overnight = props.endTime < props.startTime || props.endTime.slice(0, 5) === "24:00";
-  const nextDay = overnight ? formatDayLabel(addDays(props.date, 1)) : null;
-  const when = keepWhole(`${day.weekday},\u00a0${day.day} · ${formatTime(props.startTime)} – ${formatTime(props.endTime)}`);
+  const midnight = props.endTime.slice(0, 5) === "24:00" || props.endTime.slice(0, 5) === "00:00";
+  // "midnight" already says the shift ends with the day; any other early end names the next day.
+  const nextDay = !midnight && props.endTime < props.startTime ? formatDayLabel(addDays(props.date, 1)) : null;
+  const time = `${formatTimeRange(props.startTime, props.endTime.slice(0, 5) === "00:00" ? "24:00" : props.endTime)} · ${formatHours(minutes)}`;
   const count = props.candidates.length;
-  return <div className="nv-page wa-page wa-coverage" data-nv-page="">
-    <PageBand back={{ href: props.backHref, label: "Schedule" }} eyebrow={props.repair ? "Coverage gap" : "Coverage"} title="Cover this shift"
-      summary={props.status === "READY" && count ? `${when}. Choose someone, then review before saving.` : `${when}.`} />
-    <div className="nv-content">
-      <ManagerIssueFocus prefix="coverage-" />
-      {props.saved ? <Notice tone="done" title="Replacement saved">What’s below is the schedule as it is now.</Notice> : null}
-      <div className="wa-columns">
-        <div className="wa-columns__side">
-          <div className="wa-target" id="coverage-issue" tabIndex={-1}>
-            <Card title="Shift to cover" id="coverage-shift">
-              <Facts label="Shift to cover">
-                <Fact label="Day">{keepWhole(`${day.weekday},\u00a0${day.day}`)}</Fact>
-                <Fact label="Time">{keepWhole(`${formatTime(props.startTime)} – ${formatTime(props.endTime)}`)}<span className="wa-muted">{"\u00a0·"}</span>{" "}<span className="wa-muted nv-keep">{keepDuration(minutes)}</span>{nextDay ? <span className="wa-fact__more">{keepWhole(`Ends ${nextDay.weekday},\u00a0${nextDay.day}`)}</span> : null}</Fact>
-                <Fact label="Location">{props.locationName}</Fact>
-                {props.positionName ? <Fact label="Position">{props.positionName}</Fact> : null}
-                {props.designatedLead ? <Fact label="Shift lead">Needed</Fact> : null}
-              </Facts>
-            </Card>
-          </div>
-          {props.requirements?.length && (props.status === "READY" || props.status === "CHOOSE") ? <Card title="What it needs" id="coverage-needs">
-            <p className="wa-card-note wa-card-note--top">{props.status === "CHOOSE" ? "Choose one to see who can fill it." : "Showing people for the selected need."}</p>
-            <nav aria-label="Choose what to fill">
-              <ul className="nv-rows">
-                {props.requirements.map(requirement => <li key={requirement.href}>
-                  <Link className="nv-row" href={requirement.href} aria-current={requirement.selected ? "true" : undefined}>
-                    <span className="nv-row__text"><span className="nv-row__title">{requirement.label}</span>
-                      {requirement.selected ? <span className="nv-row__status"><Status tone="done">Selected</Status></span> : null}</span>
-                  </Link>
-                </li>)}
-              </ul>
-            </nav>
-          </Card> : null}
-        </div>
-        <div className="wa-columns__main">
-          {props.status === "READY" ? <Card title="Who can work it" id="coverage-people" meta={`${count} ${count === 1 ? "person" : "people"}`}>
-            <details className="wa-disclosure wa-disclosure--intro" data-tone="neutral">
-              <summary className="wa-disclosure__summary">How the order is chosen</summary>
-              <p className="wa-card-note">People who are qualified and available come first by confirmed weekly availability, then by how far they are under a weekly target, then by fewer scheduled hours. A rotating tie break keeps it fair. Earlier weeks under target are shown for context only. These are planned hours, not recorded time or pay.</p>
-            </details>
-            {count ? <ol className="wa-candidates">{props.candidates.map((employee, index) => <Candidate employee={employee} index={index} repair={props.repair} key={employee.employeeId} />)}</ol>
-              : <div className="wa-card-body">
-                <p className="wa-text wa-strong">No one can work it</p>
-                <p className="wa-text wa-muted">{props.repair ? "No one meets this position, lead, location, availability and scheduling need right now." : "Everyone is unavailable, already working, on approved time off, inactive, or can’t work at this location."}</p>
-                <Link className="nv-btn" data-kind="secondary" data-block="true" href={props.backHref}>Back to schedule</Link>
-              </div>}
-            {count ? <p className="wa-card-note wa-card-note--rule">Choosing someone opens a review. Nothing is saved on this page.</p> : null}
-          </Card> : <Card title={props.status === "RESOLVED" ? "This shift is covered" : props.status === "STALE" ? "Coverage changed" : "Choose what to fill"} id="coverage-people">
-            <div className="wa-card-body">
-              <p className="wa-text">{props.status === "RESOLVED" ? "No replacement is needed for this gap anymore." : props.status === "STALE" ? "The schedule changed since you opened this. Refresh to see who can cover it now." : "Pick a need under “What it needs” to see who can fill it."}</p>
-              {props.status === "STALE" && props.refreshHref ? <Link className="nv-btn" data-kind="primary" data-block="true" href={props.refreshHref}><ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true" />Refresh</Link>
-                : props.status === "RESOLVED" ? <Link className="nv-btn" data-kind="secondary" data-block="true" href={props.backHref}><CheckCircleIcon size={18} weight="bold" aria-hidden="true" />Back to schedule</Link> : null}
-            </div>
-          </Card>}
-        </div>
-      </div>
+  const ready = props.status === "READY";
+  const choice = props.candidates.find(employee => employee.href === chosen);
+  const row = (title: string, value: string) => <li><div className="q-row q-row--one"><span className="q-rt"><b>{title}</b></span><span className="q-rv q-rv--l">{value}</span></div></li>;
+
+  return <div className="q-page u2-cover" data-nv-page="" data-q-sheet="">
+    <div className="q-nav">
+      <Link className="q-nav__l q-nav__l--teal" href={props.backHref}>Cancel</Link>
+      <span className="q-nav__t">Find cover</span>
+      {ready && count ? choice ? <Link className="q-nav__r q-nav__r--b" href={choice.href} prefetch={false} aria-label={`Assign ${choice.employeeName}: ${props.repair ? "review replacement" : "review shift"}`}><AssignLabel /></Link>
+        : <button type="button" className="q-nav__r q-nav__r--b" disabled>Assign</button> : <span />}
     </div>
+    <h1 className="q-sr">{`Find cover, ${day.weekday} ${day.day}`}</h1>
+    <ManagerIssueFocus prefix="coverage-" />
+    {props.saved ? <>
+      <ToastOnArrival id={`replacement:${props.date}:${props.startTime}`} message="Replacement saved" />
+      <p className="q-note" role="status">Replacement saved. What’s below is the schedule as it is now.</p>
+    </> : null}
+
+    <section aria-labelledby="coverage-shift-title" id="coverage-issue" tabIndex={-1} className="u2-target">
+      <div className="q-grp q-grp--m"><h2 id="coverage-shift-title">Shift</h2></div>
+      <ul className="q-list" id="coverage-shift">
+        {row("Day", keepWhole(`${day.weekday}, ${day.day}`))}
+        {row("Time", nextDay ? `${time} · Ends ${nextDay.weekday}, ${nextDay.day}` : time)}
+        {row("Location", props.locationName)}
+        {props.positionName ? row("Position", props.positionName) : null}
+        {props.designatedLead ? row("Shift lead", "Needed") : null}
+      </ul>
+    </section>
+
+    {props.requirements?.length && (ready || props.status === "CHOOSE") ? <nav aria-labelledby="coverage-needs-title" id="coverage-needs">
+      <div className="q-grp"><h2 id="coverage-needs-title">What it needs</h2></div>
+      {props.status === "CHOOSE" ? <p className="q-help u2-help-top">Choose one to see who can fill it.</p> : null}
+      <ul className="q-list">
+        {props.requirements.map(requirement => <li key={requirement.href}>
+          <Link className="q-row q-row--one u2-choice" href={requirement.href} aria-current={requirement.selected ? "true" : undefined}>
+            <span className="q-rt"><b>{requirement.label}</b></span>
+            {requirement.selected ? <CheckIcon className="q-check" aria-hidden="true" /> : <span className="u2-choice__space" aria-hidden="true" />}
+          </Link>
+        </li>)}
+      </ul>
+    </nav> : null}
+
+    {ready ? <section aria-labelledby="coverage-people-title" id="coverage-people">
+      <div className="q-sec u2-sec"><h2 id="coverage-people-title">Who can work it</h2><span className="q-sec__aside">{`${count}\u00a0${count === 1 ? "person" : "people"}`}</span></div>
+      {count ? <ul className="q-list" role="radiogroup" aria-labelledby="coverage-people-title">
+        {props.candidates.map((employee, index) => <li key={employee.employeeId} id={`coverage-candidate-${employee.employeeId}`}>
+          <label className="q-row q-row--av u2-radio-row">
+            <span className="q-av" aria-hidden="true">{initialsOf(employee.employeeName)}</span>
+            <span className="q-rt"><b><span className="q-sr">{`Suggestion ${index + 1}: `}</span>{employee.employeeName}</b><i>{candidateDetail(employee)}</i></span>
+            <input type="radio" className="q-pick q-sr" name="coverage-candidate" value={employee.href} checked={chosen === employee.href} onChange={() => setChosen(employee.href)} />
+            <span className="q-radio" aria-hidden="true" />
+          </label>
+        </li>)}
+        <SheetRowButton title="How the order is chosen" sheetTitle="How the order is chosen">
+          <p className="q-body">People who are qualified and available come first by confirmed weekly availability, then by how far they are under a weekly target, then by fewer scheduled hours. A rotating tie break keeps it fair.</p>
+          <p className="q-body">Earlier weeks under target are shown for context only. These are planned hours, not recorded time or pay. Everything is checked again when you save.</p>
+        </SheetRowButton>
+      </ul> : <ul className="q-list">
+        <li><div className="q-row"><span className="q-rt"><b>No one can work it right now</b><i>{props.repair ? "No one meets this position, lead, location and availability." : "Everyone is unavailable, already working, on approved time off, inactive, or can’t work at this location."}</i></span></div></li>
+        {props.addAnywayHref ? <li><Link className="q-row q-row--one u2-row--go" href={props.addAnywayHref}><span className="q-rt"><b>Add a shift anyway</b></span></Link></li> : null}
+        <li><Link className="q-row q-row--one u2-row--go" href="/app/updates/compose"><span className="q-rt"><b>Ask the team</b></span></Link></li>
+      </ul>}
+    </section> : <section aria-labelledby="coverage-people-title" id="coverage-people">
+      <div className="q-sec u2-sec"><h2 id="coverage-people-title">{props.status === "RESOLVED" ? "This shift is covered" : props.status === "STALE" ? "Coverage changed" : "Choose what to fill"}</h2></div>
+      <p className="q-empty">{props.status === "RESOLVED" ? "No replacement is needed for this gap anymore." : props.status === "STALE" ? "The schedule changed since you opened this. Refresh to see who can cover it now." : "Pick a need under What it needs to see who can fill it."}</p>
+      {props.status === "STALE" && props.refreshHref ? <Link className="q-btn" href={props.refreshHref}>Refresh</Link>
+        : props.status === "RESOLVED" ? <Link className="q-btn q-btn--sec" href={props.backHref}>Back to schedule</Link> : null}
+    </section>}
   </div>;
 }
