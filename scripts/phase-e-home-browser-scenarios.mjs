@@ -357,7 +357,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const early=gate('**/api/employee/my-time');await page.route(early.path,early.handler);await earlyRefresh.click();await early.seen;
  await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');
  const earlyNavigation=await page.goto(app.url+'/app/schedule?week='+scenario.week,{waitUntil:'domcontentloaded'});assert(earlyNavigation?.ok());await page.getByRole('heading',{level:1,name:'Schedule',exact:true}).waitFor();
- await page.locator('.portal-notification-bell[data-state="ready"]').waitFor();
+ await page.locator('.portal-notification-bell[data-state="ready"]').waitFor({state:'attached'});
  details.earlyTimeDestination=await page.evaluate(()=>({route:location.pathname,bellState:document.querySelector('.portal-notification-bell')?.getAttribute('data-state')}));
  assert.deepEqual(details.earlyTimeDestination,{route:'/app/schedule',bellState:'ready'});
  early.release('navigation');await early.done;assert.equal(early.failure,undefined);details.earlyTimeRouteOutcome=early.outcome;await page.unroute(early.path,early.handler);await page.waitForLoadState('networkidle');await page.goto(app.url+'/app');await ready();checks.push('H11 actual MyTime read interrupted by early hard route navigation produces no stale Home rows or page runtime error; destination notification read is ready before the next departure');
