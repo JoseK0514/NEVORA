@@ -9,7 +9,7 @@
   --q-ink: #111413; --q-grey: #6B6B6B; --q-soft: #8A8A87; --q-faint: #A3A3A0; --q-chev: #B8B8B5;
   --q-line: #EDEDEB; --q-fill: #F2F2F0; --q-teal: #0B6E69; --q-red: #C42B1C; --q-av: #4A4A48;
   --q-bg: #FFFFFF; --q-teal-fill: #0B6E69; --q-press: #F7F7F6; --q-seg-on: #FFFFFF; --q-tog-off: #E3E3E0; --q-body: #3A3A38;
-  --q-tab: #7A7A77; --q-border: #D6D6D3; --q-skel2: #F6F6F4; --q-tint: #E8F2F1; --q-tint-ink: #0B6E69;
+  --q-tab: #6B6B6B; --q-border: #D6D6D3; --q-skel2: #F6F6F4; --q-tint: #E8F2F1; --q-tint-ink: #0B6E69;
   position: relative; min-height: 100%; padding-bottom: 32px; background: var(--q-bg); color: var(--q-ink);
   font: 400 17px/22px -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
   letter-spacing: -.2px; -webkit-font-smoothing: antialiased;
@@ -66,7 +66,7 @@ a.q-row:active, button.q-row:active { background: var(--q-press); }
 :is(#q-root, html) .q-rt i { display: block; margin-top: 1px; font-style: normal; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
 :is(#q-root, html) .q-rv { flex: none; max-width: 55%; font-size: 15px; line-height: 20px; color: var(--q-grey); font-variant-numeric: tabular-nums; letter-spacing: -.1px; text-align: right; }
 :is(#q-root, html) .q-rv--l, :is(#q-root, html) .q-rv--ph, :is(#q-root, html) .q-rv--ink, :is(#q-root, html) .q-rv--go { font-size: 17px; line-height: 22px; letter-spacing: -.2px; }
-:is(#q-root, html) .q-rv--ph { color: var(--q-faint); }
+:is(#q-root, html) .q-rv--ph { color: var(--q-grey); } /* AA: a placeholder value such as "Unavailable" carries meaning */
 :is(#q-root, html) .q-rv--ink { color: var(--q-ink); }
 :is(#q-root, html) .q-rv--go { color: var(--q-teal); }
 :is(#q-root, html) .q-rv--alert { color: var(--q-red); }
@@ -160,7 +160,7 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
 :is(#q-root, html) .q-fl__row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
 :is(#q-root, html) .q-fl__label { display: block; font-size: 15px; line-height: 20px; font-weight: 400; color: var(--q-grey); letter-spacing: -.1px; }
-:is(#q-root, html) .q-fl__opt { color: var(--q-soft); }
+:is(#q-root, html) .q-fl__opt { color: var(--q-grey); }
 :is(#q-root, html) .q-fl__error { margin: 8px 0 0; font-size: 15px; line-height: 20px; color: var(--q-red); letter-spacing: -.1px; }
 :is(#q-root, html) .q-fl__help, :is(#q-root, html) .q-fl__help p { margin: 8px 0 0; font-size: 13px; line-height: 18px; color: var(--q-grey); letter-spacing: 0; }
 :is(#q-root, html) .q-fl[data-invalid="true"] .q-in { box-shadow: inset 0 0 0 2px var(--q-red); }
