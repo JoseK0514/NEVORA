@@ -1,49 +1,80 @@
-import { Temporal } from '@js-temporal/polyfill';
-import type { NativeConfiguration, NativeYtd, NativeTaxProfile, NativeAuthorizedDeduction } from '@/lib/payroll/native/contracts';
-import type { NativeWorkweekPolicy } from '@/lib/payroll/native/workweek-policy';
+import type { NativeBreakTreatment, NativeCompanyPayrollFacts, NativeEmployerProgramCode, NativePlainOpening, NativePlainPayFacts } from '@/lib/payroll/native/contracts';
 import { dollarsToMinor } from './money';
 
+/* Plain payroll setup (Oct 25 2026): the Owner types ordinary facts only. The
+ * server records who saved them, when and a fingerprint; nothing here asks for an
+ * evidence reference, attestation flag or SHA-256. */
 const raw = (f: FormData, k: string) => String(f.get(k) ?? '').trim();
 const list = (f: FormData, k: string) => f.getAll(k).map(v => String(v).trim());
-function text(f: FormData, key: string, label = key) { const v = raw(f,key); if (!v || v.length > 300 || /[\u0000-\u001f\u007f]/.test(v)) throw Error(`Enter ${label}.`); return v; }
-function choice<const T extends string>(f: FormData, key: string, choices: readonly T[], label = key): T { const v = raw(f,key); if (!choices.includes(v as T)) throw Error(`Choose ${label}.`); return v as T; }
-function confirm(f: FormData, key: string, label: string) { if (!f.has(key)) throw Error(`Confirm ${label}.`); return true as const; }
-function number(f: FormData,key:string,max:number) { const v=text(f,key); if(!/^\d+$/.test(v) || !Number.isSafeInteger(Number(v)) || Number(v)>max) throw Error(`Enter a whole number from 0 to ${max} for ${key}.`); return Number(v); }
-function date(f:FormData,key:string) { const v=text(f,key); try { return Temporal.PlainDate.from(v).toString(); } catch { throw Error(`Enter a valid date for ${key}.`); } }
-function instant(f:FormData,key:string) { const v=text(f,key); try { return Temporal.PlainDateTime.from(v).toZonedDateTime('America/Puerto_Rico').toInstant().toString(); } catch { throw Error(`Enter a valid Puerto Rico date and time for ${key}.`); } }
-const end = (f:FormData,key:string,asInstant=false) => raw(f,key) ? (asInstant ? instant(f,key) : date(f,key)) : null;
-const money=(f:FormData,key:string)=>dollarsToMinor(text(f,key));
-const optionalMoney=(f:FormData,key:string)=>raw(f,key) ? money(f,key) : null;
-function percent(f:FormData,key:string,max=10000) { const v=money(f,key); if(BigInt(v)>BigInt(max)) throw Error(`Check the percentage for ${key}.`); return Number(v); }
-function locations(f:FormData,key:string,required=true) { const v=list(f,key); if((required&&!v.length) || v.some(id=>!id||id==='*') || new Set(v).size!==v.length) throw Error('Choose explicit payroll locations.'); return v; }
-function map(f:FormData,key:string) { const result:Record<string,string>={}; for(const code of list(f,`${key}Code`)) { if(!/^[A-Z][A-Z0-9_]{0,79}$/.test(code)||Object.hasOwn(result,code)) throw Error('Use unique payroll balance codes.'); result[code]=money(f,`${key}.${code}`); } return result; }
-function rate(f:FormData,key:string) { const v=text(f,key); if(!/^(0|[1-9]\d*)(\.\d{1,6})?$/.test(v)) throw Error('Enter an hourly wage with up to six decimal places.'); const [whole,decimal='']=v.split('.'); const fraction=decimal.padEnd(6,'0'); const units=BigInt(whole)*BigInt(100)+BigInt(fraction.slice(0,2)); const sub=fraction.slice(2).replace(/0+$/,''); const result=units.toString()+(sub?`.${sub}`:''); if(/^0(?:\.0+)?$/.test(result)) throw Error('Enter a positive hourly wage.'); return result; }
-function policy(f:FormData,employeeId:string,previous:NativeWorkweekPolicy|null): NativeWorkweekPolicy|null {
-  const kind=choice(f,'policyKind',['UNKNOWN','STATUTORY_DEFAULT','EMPLOYER_NOTICE']); if(kind==='UNKNOWN') return null;
-  confirm(f,'federalMatch','the same fixed federal workweek');
-  const origin:NativeWorkweekPolicy['origin']=kind==='STATUTORY_DEFAULT'
-    ? {kind,noticeAbsenceConfirmed:confirm(f,'noticeAbsence','the reviewed absence of employer notice'),evidenceReference:text(f,'policyEvidence','the notice search evidence reference')}
-    : {kind,noticeReference:text(f,'noticeReference','the actual employer notice reference'),deliveredAt:instant(f,'noticeDelivered'),deliveryMethod:choice(f,'noticeMethod',['POSTED_ACCESSIBLE','WRITTEN_EMPLOYEE','ELECTRONIC_ACCESSIBLE']),employeeCoverageConfirmed:confirm(f,'noticeCoverage','this employee’s notice coverage'),noticeKind:choice(f,'noticeKind',['INITIAL','CHANGE']),previousPolicyReference:raw(f,'noticeKind')==='CHANGE'?text(f,'previousPolicyReference','the preceding policy reference'):null};
-  const weekday=kind==='STATUTORY_DEFAULT'?1:number(f,'policyWeekday',7); if(weekday<1) throw Error('Choose the workweek day.');
-  const startTime=kind==='STATUTORY_DEFAULT'?'00:01':text(f,'policyClock','the documented workweek time'); if(!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(startTime)) throw Error('Enter the documented time as HH:mm.');
-  return {version:'PR_WORKWEEK_POLICY_V1',id:previous?.id??text(f,'policyId'),revision:(previous?.revision??0)+1,employeeId,effectiveFrom:instant(f,'policyFrom'),effectiveTo:end(f,'policyTo',true),boundary:{weekday:weekday as 1|2|3|4|5|6|7,startTime,timeZone:'America/Puerto_Rico'},federalWorkweek:'SAME_VERIFIED_BOUNDARY',federalEvidenceReference:text(f,'federalEvidence','the federal week evidence reference'),origin};
+function locations(f: FormData, key: string, required = true) { const v = list(f, key); if ((required && !v.length) || v.some(id => !id || id === '*') || new Set(v).size !== v.length) throw Error('Choose explicit payroll locations.'); return v; }
+export function scopeFromForm(f: FormData) { const review = f.has('review'), approve = f.has('approve'); if (approve && !review) throw Error('Approval requires review permission.'); return { review, approve, locationIds: review ? locations(f, 'scopeLocations') : [] }; }
+
+function amount(f: FormData, key: string, label: string, optional = false) {
+  const v = raw(f, key).replace(/^\$/, '').replaceAll(',', '');
+  if (!v && optional) return '0';
+  try { return dollarsToMinor(v); } catch { throw Error(`Enter ${label} in dollars and cents, like 1250.00.`); }
 }
-export function profileFromForm(f:FormData,employeeId:string,previous:NativeConfiguration|null):NativeConfiguration {
-  const wageIds=list(f,'wageId'); if(!wageIds.length) throw Error('Add an effective wage.');
-  const wages=wageIds.map(id=>{ const p=`wage.${id}.`, before=previous?.wages.find(w=>w.id===id);
-    const scoped=new FormData();for(const [key,value] of f)if(key.startsWith(p))scoped.append(key.slice(p.length),value);
-    const workweekPolicy=scoped.has('policyKind')?policy(scoped,employeeId,before?.workweekPolicy??null):wageIds.length===1&&f.has('policyKind')?policy(f,employeeId,before?.workweekPolicy??null):before?.workweekPolicy??null;
-    choice(f,p+'scope',['CONFIRMED'],'the supported employment and minimum wage coverage');
-    const retainLegacy = !workweekPolicy || (!!before?.workweekAnchorDate && Temporal.PlainDate.from(before.workweekAnchorDate).dayOfWeek === workweekPolicy.boundary.weekday && before.workweekStartTime === workweekPolicy.boundary.startTime);
-    return {id,revision:(before?.revision??0)+1,effectiveFrom:instant(f,p+'from'),effectiveTo:end(f,p+'to',true),locationIds:locations(f,p+'locations'),hourlyRateMinor:rate(f,p+'rate'),compensation:'HOURLY' as const,employment:'PR_PRIVATE_NONEXEMPT' as const,minimumWageCoverage:'PR_ACT_47_STANDARD_2026' as const,overtime:choice(f,p+'overtime',['TIME_AND_HALF','DOUBLE_PRESERVED']),dailyBasis:'CALENDAR_DAY' as const,workweekAnchorDate:retainLegacy?before?.workweekAnchorDate??null:null,workweekStartTime:retainLegacy?before?.workweekStartTime??null:null,workweekPolicy,overtimeBasis:'WEIGHTED_WEEKLY' as const,wageCentRounding:before?.wageCentRounding??'UNVERIFIED' as const,breakRules:list(f,p+'breakId').filter(typeId=>raw(f,p+'break.'+typeId)).map(typeId=>({typeId,treatment:choice(f,p+'break.'+typeId,['PAID_REST','UNPAID_RELIEVED_MEAL'])})),standardContextAttested:confirm(f,p+'attest','the documented standard wage context'),evidenceReference:text(f,p+'evidence','the wage/context evidence reference')}; });
-  let tax:NativeTaxProfile|null=null;
-  if(f.has('taxEnabled')) {
-    choice(f,'taxCoverage',['CONFIRMED'],'the supported PR resident/FICA/SINOT coverage'); const method=choice(f,'certificateMethod',['FIXED','PERCENTAGE']); const before=previous?.tax;
-    tax={id:before?.id??text(f,'taxId'),revision:(before?.revision??0)+1,effectiveFrom:date(f,'taxFrom'),effectiveTo:end(f,'taxTo'),coverage:'PR_REGULAR_TAXABLE_RESIDENT',certificate:{personal:choice(f,'personal',['INDIVIDUAL_FULL','MARRIED_JOINT_FULL','MARRIED_HALF_OR_OPTIONAL_FULL','NONE']),fullDependents:number(f,'fullDependents',99),halfDependents:number(f,'halfDependents',99),deductionAllowances:number(f,'deductionAllowances',1000),veteran:choice(f,'veteran',['YES','NO'])==='YES',additionalMethod:method,additionalMinor:method==='FIXED'?money(f,'certificateAmount'):null,additionalBasisPoints:method==='PERCENTAGE'?percent(f,'certificatePercent'):null,wageDollarRounding:choice(f,'wageDollarRounding',['NONE','NEAREST_DOLLAR'])},certificateReference:text(f,'certificateEvidence','the actual withholding certificate reference'),ficaCoverage:'STANDARD',sinotCoverage:'STANDARD',sinotEmployeeBasisPoints:percent(f,'sinotRate',30),prCentRounding:before?.prCentRounding??'UNVERIFIED',ruleEvidenceReference:before?.ruleEvidenceReference??null,employerCoverageAttested:confirm(f,'employerAttest','documented employer applicability and rates'),employerContributions:list(f,'employerId').map(id=>{const p=`employer.${id}.`, applicability=choice(f,p+'applicability',['APPLICABLE','EXEMPT']); return {code:text(f,p+'code'),label:text(f,p+'label'),applicability,basisPoints:applicability==='APPLICABLE'?percent(f,p+'rate'):null,capMinor:applicability==='APPLICABLE'?optionalMoney(f,p+'cap'):null,wagesBeforeMinor:money(f,p+'opening'),evidenceReference:text(f,p+'evidence','the actual employer applicability/rate reference')};})};
-  }
-  confirm(f,'deductionsReviewed','the reviewed employee deduction records, including any absence');
-  const deductions:NativeAuthorizedDeduction[]=list(f,'deductionId').map(id=>{const p=`deduction.${id}.`,before=previous?.deductions.find(d=>d.id===id),method=choice(f,p+'method',['FIXED','PERCENTAGE']),legalBasis=choice(f,p+'basis',['PR_LAW_17_5_C','PR_LAW_17_5_G']);confirm(f,p+'authorization','documented written post-tax authorization');return {id,revision:(before?.revision??0)+1,code:text(f,p+'code'),label:text(f,p+'label'),effectiveFrom:date(f,p+'from'),effectiveTo:end(f,p+'to'),method,amountMinor:method==='FIXED'?money(f,p+'amount'):null,basisPoints:method==='PERCENTAGE'?percent(f,p+'rate'):null,capMinor:optionalMoney(f,p+'cap'),deductedBeforeMinor:money(f,p+'opening'),authorization:'WRITTEN_POST_TAX',authorizationReference:text(f,p+'evidence'),revoked:f.has(p+'revoked'),legalBasis,complianceReference:text(f,p+'compliance'),employerContributionCode:legalBasis==='PR_LAW_17_5_G'?text(f,p+'employerCode'):null};});
-  return {schema:'NEVORA_NATIVE_CONFIGURATION_V1',employeeId,wages,tax,deductions,...(previous?.calculationPolicyReference!==undefined?{calculationPolicyReference:previous.calculationPolicyReference}:{})};
+function whole(f: FormData, key: string, label: string, max: number) {
+  const v = raw(f, key) || '0';
+  if (!/^\d+$/.test(v) || Number(v) > max) throw Error(`Enter ${label} as a whole number from 0 to ${max}.`);
+  return Number(v);
 }
-export function openingFromForm(f:FormData,revision:number):NativeYtd { const fingerprint=text(f,'openingFingerprint','the documented opening record fingerprint'); if(!/^[a-f0-9]{64}$/.test(fingerprint)) throw Error('Use the documented 64-character opening record SHA-256.');return {year:number(f,'year',2100),revision:revision+1,evidenceReference:text(f,'openingEvidence'),attested:confirm(f,'openingAttest','the documented balances before the first native payroll'),grossMinor:money(f,'gross'),netMinor:money(f,'net'),socialSecurityWagesMinor:money(f,'socialSecurity'),medicareWagesMinor:money(f,'medicare'),sinotWagesMinor:money(f,'sinot'),deductions:map(f,'deductions'),employerContributions:map(f,'employerContributions'),employerWagesMinor:map(f,'employerWages'),ledgerFingerprint:fingerprint,locationIds:locations(f,'openingLocations',false)}; }
-export function scopeFromForm(f:FormData) { const review=f.has('review'),approve=f.has('approve'); if(approve&&!review) throw Error('Approval requires review permission.'); return {review,approve,locationIds:review?locations(f,'scopeLocations'):[]}; }
+/** Dollars per hour with up to six decimal places → cents with up to four decimal places. */
+export function hourlyRateMinor(value: string) {
+  const v = value.trim().replace(/^\$/, '');
+  if (!/^(0|[1-9]\d*)(\.\d{1,6})?$/.test(v)) throw Error('Enter the hourly rate in dollars, like 12.50.');
+  const [dollars, decimal = ''] = v.split('.'); const fraction = decimal.padEnd(6, '0');
+  const cents = (BigInt(dollars) * BigInt(100) + BigInt(fraction.slice(0, 2))).toString(), sub = fraction.slice(2).replace(/0+$/, '');
+  if (/^0$/.test(cents) && !sub) throw Error('Enter an hourly rate above zero.');
+  return cents + (sub ? `.${sub}` : '');
+}
+/** Cents with optional fractional cents → "12.50" for the rate field. */
+export function hourlyRateDollars(minor: string | undefined) {
+  if (!minor) return '';
+  const [whole, sub = ''] = minor.split('.'); const n = BigInt(whole);
+  return `${n / BigInt(100)}.${(n % BigInt(100)).toString().padStart(2, '0')}${sub}`;
+}
+/** "0.6" percent → 60 basis points. */
+function percent(f: FormData, key: string, label: string) {
+  const v = raw(f, key).replace(/%$/, '').trim();
+  let bp: string;
+  try { bp = dollarsToMinor(v); } catch { throw Error(`Enter ${label} as a percent, like 3.4.`); }
+  if (BigInt(bp) > BigInt(10000)) throw Error(`Enter ${label} as a percent from 0 to 100.`);
+  return Number(bp);
+}
+export const percentText = (basisPoints: number | null | undefined) => basisPoints == null ? '' : `${Math.floor(basisPoints / 100)}${basisPoints % 100 ? `.${String(basisPoints % 100).padStart(2, '0').replace(/0$/, '')}` : ''}`;
+
+export const PROGRAMS: { code: NativeEmployerProgramCode; label: string; help: string }[] = [
+  { code: 'FUTA', label: 'Federal unemployment (FUTA)', help: 'Most employers pay 0.6% on the first $7,000 of each person’s pay.' },
+  { code: 'PR_UI', label: 'Puerto Rico unemployment', help: 'Use the rate on your notice from the PR Department of Labor.' },
+  { code: 'CFSE', label: 'State Insurance Fund (CFSE)', help: 'Use the rate on your CFSE policy.' },
+];
+export function companyDefaultsFromForm(f: FormData, breakTypeIds: string[]): NativeCompanyPayrollFacts {
+  if (!f.has('workweekConfirmed')) throw Error('Confirm the workweek to continue.');
+  return {
+    workweek: 'STATUTORY_MONDAY_0001',
+    employerPrograms: PROGRAMS.map(p => { const applies = raw(f, `program.${p.code}`) !== 'NO'; return { code: p.code, applies, basisPoints: applies ? percent(f, `program.${p.code}.rate`, `the ${p.label} rate`) : null }; }),
+    breakPay: breakTypeIds.map(typeId => { const treatment = raw(f, `break.${typeId}`); if (treatment !== 'PAID_REST' && treatment !== 'UNPAID_RELIEVED_MEAL') throw Error('Choose how each break is paid.'); return { typeId, treatment: treatment as NativeBreakTreatment }; }),
+    includeOwners: f.has('includeOwners'),
+  };
+}
+export function payFromForm(f: FormData): NativePlainPayFacts {
+  const startsOn = raw(f, 'rateStartsOn');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(startsOn)) throw Error('Enter the date this rate starts.');
+  const personal = raw(f, 'personal');
+  if (!['INDIVIDUAL_FULL', 'MARRIED_JOINT_FULL', 'MARRIED_HALF_OR_OPTIONAL_FULL', 'NONE'].includes(personal)) throw Error('Choose the filing status from Form 499R-4.');
+  return {
+    hourlyRateMinor: hourlyRateMinor(raw(f, 'hourlyRate')), rateStartsOn: startsOn,
+    withholding: { personal: personal as NativePlainPayFacts['withholding']['personal'], fullDependents: whole(f, 'fullDependents', 'dependents', 99), halfDependents: whole(f, 'halfDependents', 'shared dependents', 99), deductionAllowances: whole(f, 'deductionAllowances', 'allowances for deductions', 1000), veteran: f.has('veteran'), extraWithholdingMinor: amount(f, 'extraWithholding', 'extra withholding', true) },
+    mealReductionAgreement: f.has('mealReductionAgreement'),
+  };
+}
+export function openingFromPlainForm(f: FormData): NativePlainOpening {
+  if (raw(f, 'yearStart') !== 'MID_YEAR') return { kind: 'FRESH' };
+  const a = (key: string, label: string, optional = false) => amount(f, key, label, optional);
+  return {
+    kind: 'MID_YEAR', grossMinor: a('ytdGross', 'gross pay so far'),
+    withheld: { socialSecurityMinor: a('ytdSocialSecurity', 'Social Security withheld', true), medicareMinor: a('ytdMedicare', 'Medicare withheld', true), prIncomeTaxMinor: a('ytdIncomeTax', 'income tax withheld', true), sinotMinor: a('ytdSinot', 'SINOT withheld', true) },
+    employerPaid: { socialSecurityMinor: a('ytdEmployerSocialSecurity', 'employer Social Security', true), medicareMinor: a('ytdEmployerMedicare', 'employer Medicare', true), sinotMinor: a('ytdEmployerSinot', 'employer SINOT', true), futaMinor: a('ytdFuta', 'FUTA paid', true), prUiMinor: a('ytdPrUi', 'PR unemployment paid', true), cfseMinor: a('ytdCfse', 'CFSE paid', true) },
+  };
+}

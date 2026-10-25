@@ -33,7 +33,23 @@ export function payrollReviewNotes(exceptions: string[]) {
   };
 }
 
-export function payrollExceptionMessage(exception: string) {
+/** Who is reading: the Owner fixes setup in Payroll settings; anyone else asks the Owner. */
+export type PayrollViewer = 'OWNER' | 'OTHER';
+/** Plain-setup problems in the reader's own voice (Oct 25 2026 plain payroll setup). */
+const setupFix: Record<string, { owner: string; other: string }> = {
+  WAGE_PROFILE_REQUIRED: { owner: 'Add this person’s hourly rate in Payroll settings, under People.', other: 'Ask the Owner to add this person’s hourly rate.' },
+  TAX_PROFILE_REQUIRED: { owner: 'Add this person’s Form 499R-4 withholding in Payroll settings, under People.', other: 'Ask the Owner to add this person’s Form 499R-4 withholding.' },
+  ATTESTED_YTD_REQUIRED: { owner: 'In Payroll settings, choose “Starting fresh this year” or enter this person’s year-to-date totals.', other: 'Ask the Owner to enter this person’s year-to-date totals.' },
+  OPENING_YTD_REQUIRED: { owner: 'In Payroll settings, choose “Starting fresh this year” or enter this person’s year-to-date totals.', other: 'Ask the Owner to enter this person’s year-to-date totals.' },
+  YTD_ATTESTATION_REQUIRED: { owner: 'In Payroll settings, choose “Starting fresh this year” or enter this person’s year-to-date totals.', other: 'Ask the Owner to enter this person’s year-to-date totals.' },
+  WORKWEEK_EVIDENCE_REQUIRED: { owner: 'Confirm the workweek in Payroll settings, under Company defaults.', other: 'Ask the Owner to confirm the workweek.' },
+  BREAK_PAY_BASIS_REQUIRED: { owner: 'Choose how this break type is paid in Payroll settings, under Company defaults.', other: 'Ask the Owner to choose how this break type is paid.' },
+  EMPLOYER_COVERAGE_REQUIRED: { owner: 'Confirm employer taxes in Payroll settings, under Company defaults.', other: 'Ask the Owner to confirm employer taxes.' },
+};
+export function payrollExceptionMessage(exception: string, viewer: PayrollViewer = 'OTHER'): string {
+  const [setupCode, setupReference] = exception.split(':');
+  if (setupFix[setupCode]) return `${setupFix[setupCode][viewer === 'OWNER' ? 'owner' : 'other']}${setupReference ? ` Employee reference ${setupReference}.` : ''}`;
+  if (viewer === 'OWNER') { const message: string = payrollExceptionMessage(exception, 'OTHER'); return message.replace(/^Ask the Owner to (\w)/, (_, letter: string) => letter.toUpperCase()); }
   if (exception === 'WAITING_FOR_AMOUNTS') return 'Import provider or accountant amounts to review this draft.';
   if (exception.startsWith('TIME_NOT_FINALIZED:')) return `Finalize timecards for employee reference ${exception.slice('TIME_NOT_FINALIZED:'.length)} before approval.`;
   if (exception.startsWith('POPULATION_DISPOSITION:')) return `Review the period population disposition for employee reference ${exception.slice('POPULATION_DISPOSITION:'.length)} before approval.`;
@@ -69,14 +85,14 @@ export function payrollExceptionMessage(exception: string) {
  * own voice ("Add wage profiles", never "Ask the Owner to…"). The full sentences stay in the detailed review. */
 export type PayrollFixGroup = { key: string; title: string; action: string; references: string[] };
 const fixKinds: { key: string; codes: string[]; title: string; action: string }[] = [
-  { key: 'wage', codes: ['WAGE_PROFILE_REQUIRED'], title: 'Wage profile missing', action: 'Add wage profiles' },
-  { key: 'tax', codes: ['TAX_PROFILE_REQUIRED'], title: 'Withholding facts missing', action: 'Add withholding facts' },
+  { key: 'wage', codes: ['WAGE_PROFILE_REQUIRED'], title: 'Hourly rate missing', action: 'Add their hourly rate in Payroll settings' },
+  { key: 'tax', codes: ['TAX_PROFILE_REQUIRED'], title: 'Withholding missing', action: 'Add their Form 499R-4 withholding in Payroll settings' },
   { key: 'time', codes: ['TIME_NOT_FINALIZED', 'FINALIZED_TIME_REQUIRED', 'TIME_FINALIZATION_REQUIRED', 'RECORDED_SOURCE_COVERAGE_MISSING'], title: 'Recorded time incomplete', action: 'Finalize their timecards, including weeks with no hours' },
   { key: 'open', codes: ['OPEN_RECORDED_TIME'], title: 'Clock-in still open', action: 'Close open clock-ins and breaks' },
   { key: 'stale', codes: ['RECORDED_SOURCE_STALE', 'RECORDED_SOURCE_UNAVAILABLE'], title: 'Timecards changed', action: 'Refresh timecards, then recalculate' },
   { key: 'location', codes: ['LOCATION_COVERAGE_REQUIRED', 'YTD_LOCATION_COVERAGE_REQUIRED'], title: 'Location coverage incomplete', action: 'Check where each person worked' },
-  { key: 'ytd', codes: ['OPENING_YTD_REQUIRED', 'ATTESTED_YTD_REQUIRED', 'YTD_ATTESTATION_REQUIRED', 'EMPLOYER_YTD_BASE_REQUIRED', 'EMPLOYER_YTD_BASE_CONFLICT'], title: 'Year-to-date balances unverified', action: 'Verify opening balances' },
-  { key: 'workweek', codes: ['WORKWEEK_EVIDENCE_REQUIRED', 'INVALID_WORKWEEK_POLICY', 'WORKWEEK_EMPLOYEE_COVERAGE_REQUIRED', 'WORKWEEK_PROFILE_CONFLICT', 'WORKWEEK_EFFECTIVE_COVERAGE_REQUIRED', 'WORKWEEK_POLICY_TRANSITION_UNSUPPORTED'], title: 'Workweek not documented', action: 'Document the workweek' },
+  { key: 'ytd', codes: ['OPENING_YTD_REQUIRED', 'ATTESTED_YTD_REQUIRED', 'YTD_ATTESTATION_REQUIRED', 'EMPLOYER_YTD_BASE_REQUIRED', 'EMPLOYER_YTD_BASE_CONFLICT'], title: 'Year-to-date totals missing', action: 'Choose “Starting fresh this year” or enter their totals' },
+  { key: 'workweek', codes: ['WORKWEEK_EVIDENCE_REQUIRED', 'INVALID_WORKWEEK_POLICY', 'WORKWEEK_EMPLOYEE_COVERAGE_REQUIRED', 'WORKWEEK_PROFILE_CONFLICT', 'WORKWEEK_EFFECTIVE_COVERAGE_REQUIRED', 'WORKWEEK_POLICY_TRANSITION_UNSUPPORTED'], title: 'Workweek not confirmed', action: 'Confirm it in Payroll settings, Company defaults' },
   { key: 'facts', codes: ['INVALID_NATIVE_PROFILE', 'NATIVE_INPUT_REQUIRED'], title: 'Payroll facts incomplete', action: 'Review employee payroll facts' },
   { key: 'population', codes: ['POPULATION_DISPOSITION', 'POPULATION_REVIEW_REQUIRED', 'POPULATION_SOURCE_CONFLICT', 'CORRECTION_POPULATION_CONFLICT'], title: 'People in this payroll unconfirmed', action: 'Review who is in this payroll' },
   { key: 'midnight', codes: ['DAILY_BOUNDARY_SENSITIVE'], title: 'Time across midnight', action: 'A payroll rule is needed. Recorded entries are kept.' },
@@ -84,7 +100,8 @@ const fixKinds: { key: string; codes: string[]; title: string; action: string }[
   { key: 'sequence', codes: ['BACKDATED_YTD_RECALCULATION_REQUIRED', 'YTD_DEPENDENT_RUNS_REQUIRED'], title: 'Later payroll depends on this', action: 'Check the order with your payroll administrator' },
   { key: 'amounts', codes: ['WAITING_FOR_AMOUNTS'], title: 'Provider amounts needed', action: 'Import provider amounts' },
 ];
-export function payrollFixGroups(exceptions: string[]): PayrollFixGroup[] {
+const SETUP_KINDS = new Set(['wage', 'tax', 'ytd', 'workweek']);
+export function payrollFixGroups(exceptions: string[], viewer: PayrollViewer = 'OWNER'): PayrollFixGroup[] {
   const { blocking } = payrollReviewNotes(exceptions);
   const groups = new Map<string, PayrollFixGroup>();
   for (const exception of blocking) {
@@ -93,7 +110,9 @@ export function payrollFixGroups(exceptions: string[]): PayrollFixGroup[] {
     const kind = fixKinds.find(item => item.codes.includes(code));
     const fallback = payrollExceptionMessage(exception).replace(/ Employee reference .*$/, '').replace(/^Ask the Owner to (\w)/, (_, letter: string) => letter.toUpperCase()).split('. ')[0].replace(/\.$/, '');
     const key = kind?.key ?? `other:${code}`;
-    const group = groups.get(key) ?? { key, title: kind?.title ?? fallback, action: kind?.action ?? '', references: [] };
+    // Only the Owner can change payroll setup; anyone else is told who to ask.
+    const action = kind && viewer !== 'OWNER' && SETUP_KINDS.has(kind.key) ? 'Ask the Owner to fix this in Payroll settings' : kind?.action ?? '';
+    const group = groups.get(key) ?? { key, title: kind?.title ?? fallback, action, references: [] };
     if (reference && !group.references.includes(reference)) group.references.push(reference);
     groups.set(key, group);
   }

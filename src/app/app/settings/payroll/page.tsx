@@ -24,7 +24,7 @@ export default async function PayrollSettingsPage() {
   if (capabilities.internalCalculatorAvailable) {
     try {
       const [employees,locations,breakTypes] = await Promise.all([listEmployees(),listLocations({includeInactive:true}),listBreakTypes({employeeId:proof.employee.id,sessionTokenHash:proof.sessionTokenHash})]);
-      nativeSources = {employees:employees.map(e=>({id:e.id,name:`${e.firstName} ${e.lastName}`,role:e.role,active:e.active})),locations:locations.map(l=>({id:l.id,name:l.name,active:l.active})),breakTypes:breakTypes.map(b=>({id:b.id,name:b.name,active:b.active}))};
+      nativeSources = {employees:employees.map(e=>({id:e.id,name:`${e.firstName} ${e.lastName}`,role:e.role,active:e.active})),locations:locations.map(l=>({id:l.id,name:l.name,active:l.active})),breakTypes:breakTypes.map(b=>({id:b.id,name:b.name,active:b.active,category:b.category}))};
     } catch { nativeSources = null; }
   }
   if (nativeSources && !(await readPayrollCapabilities(proof)).canConfigure) redirect('/app');

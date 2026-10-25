@@ -14,7 +14,7 @@ it('explains native company preferences and automatic publication without asking
   expect(html).toContain('Native payroll uses verified recorded time');
   expect(html).toContain('automatically after generation');
   expect(html).toContain('Save company preferences');
-  expect(html).toContain('specific payroll locations');
+  expect(html).toContain('Save company defaults');
   expect(html).not.toContain('name="bankProfile"');
   expect(html).not.toContain('name="sourceProvider"');
   expect(html).not.toContain('name="publish"');

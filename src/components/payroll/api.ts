@@ -68,10 +68,16 @@ export async function payrollRequest(path: string, command?: object): Promise<un
       REVIEW_CONFLICT: 'This payroll review changed. Refresh and review the current revision before approving.',
       FINALIZED_TIME_REQUIRED: 'Finalize the included employee timecards before approving payroll.',
       SETTINGS_REQUIRED: 'Save company payroll settings before preparing this payroll run.',
+      COMPANY_PAYROLL_DEFAULTS_REQUIRED: 'Save the company defaults first. Then save this person’s pay setup.',
+      OPENING_TOTALS_LOCKED: 'Year-to-date totals are locked because payroll for this year was approved.',
+      NATIVE_PROFILE_CONFLICT: 'Someone saved this setup first. Reload the page and try again.',
+      PAYROLL_LOCATION_REQUIRED: 'Add an active location before setting up pay.',
+      INVALID_PAY_SETUP: 'Check the pay setup.',
     };
     const message = messages[code] ?? (record(value) && typeof value.message === 'string' ? value.message : 'Payroll could not complete this request.');
-    const issues = record(value) && Array.isArray(value.issues) ? value.issues.filter(record).filter(issue => typeof issue.path === 'string' && typeof issue.message === 'string').map(issue => `${issue.path}: ${issue.message}`).join(' ') : '';
-    throw new PayrollRequestError(`${message}${issues ? ` ${issues}` : ''}`, response.status, code);
+    // Plain setup issues are already full sentences for the Owner; show them without field paths.
+    const issues = record(value) && Array.isArray(value.issues) ? value.issues.filter(record).filter(issue => typeof issue.path === 'string' && typeof issue.message === 'string').map(issue => code === 'INVALID_PAY_SETUP' ? String(issue.message) : `${issue.path}: ${issue.message}`).join(' ') : '';
+    throw new PayrollRequestError(code === 'INVALID_PAY_SETUP' && issues ? issues : `${message}${issues ? ` ${issues}` : ''}`, response.status, code);
   }
   return value;
 }

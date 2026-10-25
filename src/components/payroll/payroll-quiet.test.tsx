@@ -24,9 +24,9 @@ describe('Paid only for completed runs (business P0-4)', () => {
 describe('Payroll period review on Quiet (T-14)', () => {
   it('groups the problems by kind in the Owner’s voice, one row per kind', () => {
     const groups = payrollFixGroups(['WAGE_PROFILE_REQUIRED:E1', 'WAGE_PROFILE_REQUIRED:E2', 'TIME_NOT_FINALIZED:E1', 'LOCATION_COVERAGE_REQUIRED', 'CORRECTION_REASON:kept']);
-    expect(groups.map(group => [group.title, group.references.length])).toEqual([['Wage profile missing', 2], ['Recorded time incomplete', 1], ['Location coverage incomplete', 0]]);
+    expect(groups.map(group => [group.title, group.references.length])).toEqual([['Hourly rate missing', 2], ['Recorded time incomplete', 1], ['Location coverage incomplete', 0]]);
     expect(groups.map(group => group.action).join(' ')).not.toMatch(/Ask the Owner/);
-    expect(groups[0].action).toBe('Add wage profiles');
+    expect(groups[0].action).toBe('Add their hourly rate in Payroll settings');
   });
   it('renders steps, Needs fixing, meal warnings and Recalculate with no kit tab strip or repeated sentences', () => {
     const run = { ...nativeRun({ status: 'BLOCKED', rows: null, totals: null, reviewToken: null, exceptions: Array.from({ length: 11 }, (_, i) => `WAGE_PROFILE_REQUIRED:E${i}`) }),
@@ -34,8 +34,8 @@ describe('Payroll period review on Quiet (T-14)', () => {
     const html = renderToStaticMarkup(<PayrollReviewQuiet run={run} capabilities={nativeCapabilities} operation={operation} locked={false} details={false} onBack={() => {}} onDetails={() => {}} />);
     expect(html).toContain('<h1>Oct 5 – 11</h1><p>Payday Fri, Oct 16 · Revision 2</p>');
     expect(html).toContain('Needs fixing');
-    expect(html).toContain('<b>Wage profile missing</b><i>Add wage profiles</i></span><span class="q-rv">11 people</span>');
-    expect(html.match(/<b>Wage profile missing<\/b>/g)).toHaveLength(1);
+    expect(html).toContain('<b>Hourly rate missing</b><i>Add their hourly rate in Payroll settings</i></span><span class="q-rv">11 people</span>');
+    expect(html.match(/<b>Hourly rate missing<\/b>/g)).toHaveLength(1);
     expect(html).not.toMatch(/Ask the Owner|nv-pageband|section-tabs|pw-stepper/);
     expect(html).toContain('Meal periods to review');
     expect(html).toContain('No meal break in the first 5 hours · Meal break was 20 min');

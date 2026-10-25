@@ -53,7 +53,7 @@ export function PayrollReviewQuiet({ run, capabilities, operation, locked, detai
   const [reviewed, setReviewed] = useState(false);
   const native = run.sourceAuthority === 'NATIVE_RECORDED_TIME';
   const notes = payrollReviewNotes(run.exceptions);
-  const groups = payrollFixGroups(run.exceptions);
+  const groups = payrollFixGroups(run.exceptions, capabilities.canConfigure ? 'OWNER' : 'OTHER');
   const meals = mealWarningsOf((run as PayrollRun & { mealWarnings?: unknown }).mealWarnings);
   const steps = payrollSteps(run);
   const order = ['hours', 'review', 'amounts', 'approve', 'publish'] as const;
