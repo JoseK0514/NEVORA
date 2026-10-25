@@ -317,7 +317,8 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  page.on('request',timeStarted);page.on('requestfailed',timeFailed);page.on('requestfinished',timeFinished);
  const time=gate('**/api/employee/my-time');await page.route(time.path,time.handler);
  try{
-  await page.getByRole('button',{name:'Refresh recorded time',exact:true}).click();await time.seen;
+  // v5 Home has no Refresh button: start the held time read with the panel's own foreground signal.
+  await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await time.seen;
   await q("UPDATE time_entries SET clock_out_at=clock_timestamp(),status='CLOCKED_OUT' WHERE id=$1",[label+'-time']);
   timeEvidence.afterDispatch=await page.evaluate(()=>{window.dispatchEvent(new Event('pagehide'));return {at:Date.now(),state:document.querySelector('[data-home-state]')?.getAttribute('data-home-state'),clockedIn:document.querySelector('aside[aria-label="Own recorded time"]')?.textContent.includes('Clocked in')??false};});
   // Synthetic lifecycle dispatch returns before React necessarily commits its
