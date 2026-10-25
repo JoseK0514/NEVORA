@@ -72,3 +72,15 @@ describe("parseToday", () => {
     expect(parseToday("x").state).toBe("unavailable");
   });
 });
+
+describe("F12: an approved missed-punch correction", () => {
+  it("takes a covered shift out of no clock-in, and keeps an uncovered one there", () => {
+    const today = ready(projectToday(source([shift("A", -600, -120, { adjusted: true }), shift("B", -60, 420, { adjusted: true }), shift("C", -600, -120, { adjusted: false })])));
+    expect(Object.fromEntries(today.shifts.map(s => [s.id, s.status]))).toEqual({ A: "done", C: "no_punches", B: "done" });
+    expect(today.missed.map(s => s.id)).toEqual(["C"]);
+    expect(today.counts.notClockedIn).toBe(0);
+  });
+  it("rejects a malformed adjusted flag", () => {
+    expect(projectToday(source([shift("A", -60, 420, { adjusted: "yes" })])).state).toBe("unavailable");
+  });
+});

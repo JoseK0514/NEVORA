@@ -1,7 +1,6 @@
-import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise";
 import {correctionAuthority} from '@/lib/time-corrections/authority.server';
 import Link from 'next/link';
-import {Card,CardBody,KitStack,PageBand} from '@/components/kit/kit';
+import {QuietSystemState} from '@/components/quiet-system-state';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
@@ -51,7 +50,7 @@ export const metadata = { title: { absolute: "Home · NEVORA" } };
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string; week?: string; day?: string; location?: string; employee?: string }>;
+  searchParams: Promise<{ view?: string; week?: string; day?: string; location?: string; employee?: string; show?: string; shown?: string }>;
 }) {
   const session = await requireSession();
   const workspace = await getWorkspace();
@@ -86,26 +85,18 @@ export default async function DashboardPage({
   const dashboardData=source.state==='ready'?source.data:null;
   const reviewAuthority=correctionAuthority(proof);
   const recoveryKey=managerReviewRecoveryKey(session.id,reviewAuthority,source.state==='ready'?source.authority:authority.authority,view);
-  // WR-59: the same kit error page as app/app/error.tsx. IS-50: "Try again" reloads this exact view (week, day, location, person).
-  // IS-51: only the view's own context; one-time flags (decided=…) stay out so a toast never repeats.
-  const retry=new URLSearchParams((['view','week','day','location','employee'] as const).flatMap(key=>{const value=params[key];return typeof value==='string'&&value?[[key,value]]:[];})).toString();
-  if(!dashboardData)return <ManagerCorrectionRecoveryBoundary key={recoveryKey}><div className="nv-page premium-error" data-nv-page="">
-    <PageBand title="This page could not be loaded" summary="Your current information is unavailable."/>
-    <KitStack><Card><CardBody><div className="premium-error__body">
-      <p className="premium-error__text">Try loading the page again before taking an action.</p>
-      <div className="premium-error__actions">
-        <Link className="nv-btn" data-kind="primary" href={retry?`/app?${retry}`:'/app'}><ArrowsClockwiseIcon size={18} aria-hidden="true"/>Try again</Link>
-        {view!=='overview'?<Link className="nv-btn" data-kind="secondary" href="/app">Back to Home</Link>:null}
-      </div>
-    </div></CardBody></Card></KitStack>
-  </div></ManagerCorrectionRecoveryBoundary>;
+    // IS-51: only the view's own context; one-time flags (decided=…) stay out so a toast never repeats.
+  const retry=new URLSearchParams((['view','week','day','location','employee','show'] as const).flatMap(key=>{const value=params[key];return typeof value==='string'&&value?[[key,value]]:[];})).toString();
+  // T-21: the one Quiet error state. IS-50: "Try again" reloads this exact view (week, day, location, person).
+  if(!dashboardData)return <ManagerCorrectionRecoveryBoundary key={recoveryKey}><QuietSystemState kind="error" alert
+    primary={<Link className="q-btn q-btn--sec" href={retry?`/app?${retry}`:'/app'}>Try again</Link>}
+    secondary={view!=='overview'?<Link className="q-btn q-btn--quiet" href="/app">Back to Home</Link>:undefined}/></ManagerCorrectionRecoveryBoundary>;
   const {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,daySummaries,hourRows,latestRevision}=dashboardData;
 
   const {modules}=await currentPresentation();
   // MK1: Home's "Next payday" row, from the date My pay shows (none when pay statements are off or there's no schedule).
   const nextPay=view==='overview'&&modules.payStatements?await readNextPay(workspace.timeZone):null;
   return (<ManagerCorrectionRecoveryBoundary key={recoveryKey}><ScopedReadFrame observation={source.state==='ready'?source:null}>
-    {session.role === "OWNER" && process.env.NEVORA_OWNER_ADVISOR_ENABLED === "true" ? <Link className="nv-btn" data-kind="secondary" href="/app/ai-manager">AI manager</Link> : null}
     <ManagerDashboard
       role={session.role === "OWNER" ? "OWNER" : "MANAGER"}
       actorId={session.id}
@@ -132,6 +123,8 @@ export default async function DashboardPage({
       days={daySummaries}
       hours={hourRows}
       nextPay={nextPay}
+      hoursFilter={params.show==='over'||params.show==='none'?params.show:'all'}
+      hoursShown={Math.min(1000,Math.max(50,Math.floor(Number(params.shown))||50))}
       latestRevision={
         latestRevision
           ? {

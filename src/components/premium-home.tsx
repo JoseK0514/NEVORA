@@ -49,6 +49,8 @@ export type PremiumHomeProps = {
   nextPay?: NextPay;
   /** Quiet (v4): the workspace name in Home's top bar. */
   workspaceName?: string;
+  /** UX-O-09: a Manager's own items leave Needs you (the Inbox and its badge do the same). */
+  viewer?: { id: string; role: string };
 };
 
 const clock = (iso: string, timeZone: string) => {
@@ -97,7 +99,7 @@ export type PremiumHomeSurfaceProps = PremiumHomeProps & {
 };
 
 /** Presentation only, so the fictional preview can show Home without a session. */
-export function PremiumHomeSurface({ dateLabel, timeZone, workspaceName, setup, setupHoldsItems = false, today, monitor = null, monitorPending = false, todayRefreshing = false, onRetryToday,
+export function PremiumHomeSurface({ dateLabel, timeZone, workspaceName, viewer, setup, setupHoldsItems = false, today, monitor = null, monitorPending = false, todayRefreshing = false, onRetryToday,
   actions, actionsConnection, onRetryActions, liveReaders, offline = false }: PremiumHomeSurfaceProps) {
   const readyToday = today?.state === "ready" ? today : null;
   // r4 QA: Home remembers whether the Owner setup card shows, so the next route placeholder starts with its shape.
@@ -107,7 +109,7 @@ export function PremiumHomeSurface({ dateLabel, timeZone, workspaceName, setup, 
   const items = readyActions?.state === "ready" ? readyActions.items : [];
   const day = readyActions?.state === "ready" ? workspaceDay(readyActions.observedAt, timeZone) : undefined;
   const todayFailed = today?.state === "unavailable";
-  const value = readyActions && (readyToday || todayFailed) ? needsYou(items, day, readyToday?.missed ?? []) : null;
+  const value = readyActions && (readyToday || todayFailed) ? needsYou(items, day, readyToday?.missed ?? [], viewer) : null;
   const retryAll = () => { onRetryActions?.(); onRetryToday?.(); focusAfterRetry("#home-needs-you .nv-card__title", ".premium-pending-failed .nv-btn"); };
   // The band's one live line. Once Home has numbers the Needs you card says them, so the line is for screen readers only.
   const summary = value ? needsYouSentence(value.count)
@@ -178,7 +180,8 @@ function QuietRightNow({ today, monitor, monitorPending = false, refreshing, onR
     : scheduled ? `${onShift} of ${scheduled} on shift` : `${onShift} on shift`;
   const detail = next ? (onShift === 0 ? `First shift at ${clock(next.startAt, timeZone)}` : `${next.employeeName} starts at ${clock(next.startAt, timeZone)}`)
     : onShift === 0 && scheduled ? "No more shifts start today" : undefined;
-  return section(<QuietRow href="/app/schedule" title={title} detail={detail} label={[title, detail].filter(Boolean).join(", ") + ", open Schedule"} />);
+  // T-1 / P2-10: the row is about who's on shift, so it opens On shift.
+  return section(<QuietRow href="/app?view=attendance" title={title} detail={detail} label={[title, detail].filter(Boolean).join(", ") + ", open On shift"} />);
 }
 
 /** Needs you: one row per kind, said as one phrase ("2 open shifts"). The one red is how late someone is. */
@@ -194,7 +197,7 @@ function QuietNeedsYou({ value, timeZone, observedAt }: { value: NeedsYou; timeZ
   const one = late.length === 1 ? late[0] : null;
   const minutes = one && Number.isFinite(now) ? Math.max(1, Math.round((now - Date.parse(one.startAt)) / 60_000)) : 0;
   const ended = one ? one.status === "no_punches" : false;
-  const kinds = [...new Set(requests.map(item => item.type === "TIME_OFF" ? "time off" : item.type === "EXCHANGE" ? "a shift swap" : "a can’t-work report"))];
+  const kinds = [...new Set(requests.map(item => item.type === "TIME_OFF" ? "time off" : item.type === "EXCHANGE" ? "a shift swap" : item.type === "TIME_CORRECTION" ? "a time correction" : "a can’t-work report"))];
   const requestDetail = requests.length === 1 ? `${kinds[0][0].toUpperCase()}${kinds[0].slice(1)}${person(requests[0]) ? ` from ${person(requests[0])}` : ""}`
     : kinds.length === 1 ? `${kinds[0][0].toUpperCase()}${kinds[0].slice(1)}` : `${kinds.slice(0, -1).join(", ").replace(/^./, c => c.toUpperCase())} and ${kinds.at(-1)}`;
   return <QuietSection id="home-needs-you" title="Needs you">

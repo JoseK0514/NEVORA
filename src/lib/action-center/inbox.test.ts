@@ -6,7 +6,7 @@ const item = (id: string, type: ActionItem['type'], category: ActionItem['catego
   ({id, type, category, priority, title: id, detail: '', href: '/app'} as ActionItem);
 
 describe('inbox sections', () => {
-  it('puts urgent first, then exceptions in review order, then requests', () => {
+  it('puts urgent first, then exceptions in review order, then requests (a time correction is a request: UX-O-06)', () => {
     const sections = inboxSections([
       item('TIME_OFF:a', 'TIME_OFF', 'requests'), item('TIMECARD:x', 'TIMECARD', 'timekeeping'),
       item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT'), item('TIME_CORRECTION:c', 'TIME_CORRECTION', 'timekeeping'),
@@ -14,8 +14,8 @@ describe('inbox sections', () => {
     ]);
     expect(sections.map(section => [section.id, section.items.map(entry => entry.id)])).toEqual([
       ['urgent', ['gap']],
-      ['exceptions', ['TIME_CORRECTION:c', 'hours', 'TIMECARD:x']],
-      ['requests', ['TIME_OFF:a', 'TIME_OFF:b', 'EXCHANGE:e']],
+      ['exceptions', ['hours', 'TIMECARD:x']],
+      ['requests', ['TIME_OFF:a', 'TIME_OFF:b', 'EXCHANGE:e', 'TIME_CORRECTION:c']],
     ]);
   });
   it('omits empty sections and never invents items', () => {

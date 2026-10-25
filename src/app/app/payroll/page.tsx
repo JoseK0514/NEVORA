@@ -14,7 +14,7 @@ export default async function PayrollPage() {
   const proof = await requireSessionMutationProof();
   const capabilities = await readPayrollCapabilities(proof);
   // PD9 / UX10: someone without payroll access who opens the link is told why, instead of a silent move to Home.
-  if (!capabilities.canReview) return <OwnerOnlyNotice title="Payroll" reason="Payroll is open to Owners and the people they give payroll access." help="Ask an Owner if you need it." />;
+  if (!capabilities.canReview) return <OwnerOnlyNotice help="Ask an Owner if you need payroll access." />;
   const workspace = await getWorkspace();
   const recoveryScope = payrollRecoveryScope(workspace.id, proof.employee.id);
   const current = await currentPayPeriod().catch(() => null);

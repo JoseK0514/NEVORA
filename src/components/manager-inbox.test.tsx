@@ -117,3 +117,46 @@ it('offers Call and Text on a shift with no clock-in when Team has the number, a
   // No number (a location-scoped Manager, or none on file): no Call or Text.
   expect(detail()).not.toMatch(/tel:|sms:/);
 });
+
+// Final pass (Oct 25): dates on requests, corrections in Requests, a cleaner Plan ahead, one open-shift row style, own items.
+const plainText = (text: string) => text.replace(/ /g, ' ');
+it('UX-O-04 / F10: request rows say the dates asked for, so two requests from one person read apart', () => {
+  const request = (id: string, startDate: string, endDate: string, partialDay?: {start: string; end: string}) => ({...item(id, 'TIME_OFF', 'requests'), detail: 'Alexandra Rivera is waiting for review.',
+    request: {startDate, endDate, ...(partialDay ? {partialDay} : {}), lengthText: '1 day', locationName: 'Main Office', reviewHref: `/app/requests?tab=pending&requestId=${id}`}} as ActionItem);
+  const output = plainText(surface(ready([request('TIME_OFF:a', '2026-11-12', '2026-11-12'), request('TIME_OFF:b', '2026-12-28', '2026-12-29'), request('TIME_OFF:c', '2026-11-20', '2026-11-20', {start: '09:00', end: '13:00'})]), 'requests'));
+  expect(output).toContain('Time off · Thu, Nov 12 · All day');
+  expect(output).toContain('Time off · Mon, Dec 28 – Tue, Dec 29');
+  expect(output).toContain('Time off · Fri, Nov 20 · 9:00 AM – 1:00 PM');
+});
+it('UX-O-06 / F11: a waiting correction sits in Requests (counted), not Plan ahead, with the asked-for time and no old wording', () => {
+  const correction = {...item('TIME_CORRECTION:c1', 'TIME_CORRECTION', 'timekeeping'), title: 'Time correction waiting for review', detail: 'Alexandra Rivera · Missed punch · Oct 25, 8:00 AM – 4:00 PM', href: '/app?view=attendance#correction-c1'} as ActionItem;
+  const output = plainText(surface(ready([correction]), 'requests'));
+  expect(output).toContain('aria-label="Requests, 1">Requests · 1</button>');
+  expect(output).toContain('<b>Alexandra Rivera</b>');
+  const text = output.replace(/<[^>]+>/g, '');
+  expect(text).toContain('Missed punch');
+  expect(text).toContain('Oct 25, 8:00 AM – 4:00 PM');
+  // Until the protected queue confirms it, the row opens On shift, where the same decision lives.
+  expect(output).toContain('href="/app?view=attendance#correction-c1"');
+  expect(output).not.toContain('Recorded entry not sent yet');
+  expect(surface(ready([correction]), 'planning')).not.toContain('id="inbox-exceptions"');
+});
+it('UX-O-07: Plan ahead shows its count like the others and lists no earlier, past gaps', () => {
+  const past = {...item('gap-past', 'COVERAGE_GAP', 'scheduling', 'URGENT'), dateTime: '2026-10-13T08:00'} as ActionItem;
+  const output = surface(ready([past, item('target', 'TARGET_MISSING', 'scheduling', 'MISSING_INPUT')]), 'planning');
+  expect(output).toContain('aria-label="Plan ahead, 1">Plan ahead · 1</button>');
+  expect(output).not.toContain('Earlier this week');
+  expect(output).not.toContain('Title gap-past');
+});
+it('UX-O-08: every open shift is its own row with Find cover, never a collapsed group', () => {
+  const gap = (id: string) => ({...item(id, 'COVERAGE_GAP', 'scheduling', 'URGENT'), title: 'Coverage gap at Main Office', detail: 'Fri, Oct 16 · 8:00 AM–4:00 PM · Need 1 employee', dateTime: '2026-10-16T08:00'} as ActionItem);
+  const output = surface(ready([gap('g1'), gap('g2'), gap('g3')]));
+  expect(output.match(/>Find cover<\/a>/g)).toHaveLength(3);
+  expect(output).not.toContain('<details');
+});
+it('UX-O-09: a Manager never sees their own missed clock-in or timecard; an Owner does', () => {
+  const own = {...item('TIMECARD:me', 'TIMECARD', 'timekeeping'), employeeId: 'me'} as ActionItem;
+  const render = (role: string) => renderToStaticMarkup(createElement(InboxSurface, {snapshot: ready([own]), connection: 'ready', onRefresh: () => {}, timeZone: 'America/Puerto_Rico', initialFilter: 'planning', viewer: {id: 'me', role}}));
+  expect(render('MANAGER')).toContain('Nothing needs you right now.');
+  expect(render('OWNER')).toContain('Timecards to review');
+});

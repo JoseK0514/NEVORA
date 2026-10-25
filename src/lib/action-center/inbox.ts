@@ -8,7 +8,10 @@ const exceptionRank: Partial<Record<ActionItem['type'], number>> = {
   TIME_CORRECTION: 0, ATTENDANCE: 1, COVERAGE_GAP: 2, HOURS_REVIEW: 3, TARGET_MISSING: 4,
   DEADLINE_MISSING: 5, COVERAGE_RULES_MISSING: 6, TIMECARD: 7, AVAILABILITY_MISSING: 8, ACKNOWLEDGEMENT_MISSING: 9,
 };
-const requestRank: Partial<Record<ActionItem['type'], number>> = {TIME_OFF: 0, EXCHANGE: 1, CALLOUT: 2};
+const requestRank: Partial<Record<ActionItem['type'], number>> = {TIME_OFF: 0, EXCHANGE: 1, CALLOUT: 2, TIME_CORRECTION: 3};
+
+/** UX-O-06 / F11: an employee's time correction is their request, so it sits (and counts) with the other requests. */
+export const isRequestItem = (item: ActionItem) => item.category === 'requests' || item.type === 'TIME_CORRECTION';
 
 function ordered(items: ActionItem[], rank: Partial<Record<ActionItem['type'], number>>) {
   // Stable: items keep the action center's own order within a type.
@@ -36,8 +39,8 @@ export function inboxSections(items: ActionItem[], today?: string): InboxSection
   const rest = current.filter(item => item.priority !== 'URGENT' || isLaterCoverageGap(item, today));
   return [
     {id: 'urgent' as const, title: 'Needs attention now', items: ordered(urgent, {...exceptionRank, ...requestRank})},
-    {id: 'exceptions' as const, title: 'To review', items: ordered(rest.filter(item => item.category !== 'requests'), exceptionRank)},
-    {id: 'requests' as const, title: 'Requests', items: ordered(rest.filter(item => item.category === 'requests'), requestRank)},
+    {id: 'exceptions' as const, title: 'To review', items: ordered(rest.filter(item => !isRequestItem(item)), exceptionRank)},
+    {id: 'requests' as const, title: 'Requests', items: ordered(rest.filter(isRequestItem), requestRank)},
     {id: 'past' as const, title: 'Earlier this week', items: past},
   ].filter(section => section.items.length);
 }

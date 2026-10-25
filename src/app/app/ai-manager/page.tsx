@@ -5,14 +5,13 @@ import {
 } from "@/lib/auth/session";
 import { readOperationalAuthority } from "@/lib/company-access/operational-scope.server";
 import { OwnerAdvisor } from "@/components/owner-advisor/advisor";
+import { OwnersOnlyState } from "@/components/quiet-system-state";
 export const metadata = { title: "AI manager" };
 export default async function AiManagerPage() {
   const session = await requireSession();
-  if (
-    session.role !== "OWNER" ||
-    process.env.NEVORA_OWNER_ADVISOR_ENABLED !== "true"
-  )
-    notFound();
+  if (process.env.NEVORA_OWNER_ADVISOR_ENABLED !== "true") notFound();
+  // UX-E-47: with the feature on, anyone else sees "Owners only" with Back to Home.
+  if (session.role !== "OWNER") return <OwnersOnlyState />;
   const authority = await readOperationalAuthority(
     await requireSessionMutationProof(),
   );

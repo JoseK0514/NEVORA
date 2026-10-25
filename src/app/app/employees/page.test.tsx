@@ -94,7 +94,7 @@ vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({
 
 beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scoped=false;});
 
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'actor',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
+vi.mock('@/lib/auth/session',()=>({requireSession:async()=>({id:'actor',role:'MANAGER'}),requireSessionMutationProof:async()=>({employee:{id:'actor',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
 
 it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({}));expect(html).toContain('current company-wide management access');expect(fixture.events).toEqual(['authorize']);expect(html).not.toContain('Active Person');});
 

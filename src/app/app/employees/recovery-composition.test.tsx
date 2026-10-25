@@ -4,7 +4,7 @@ import {beforeEach,expect,it,vi} from 'vitest';
 
 const m=vi.hoisted(()=>({role:'MANAGER',denied:false,workspace:vi.fn(async()=>({timeZone:'America/Puerto_Rico'}))}));
 vi.mock('@/lib/auth/permissions',()=>({requireRoles:async()=>({id:'reviewer',role:m.role})}));
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'reviewer',role:m.role},sessionTokenHash:'fixture'})}));
+vi.mock('@/lib/auth/session',()=>({requireSession:async()=>({id:'actor',role:m.role}),requireSessionMutationProof:async()=>({employee:{id:'reviewer',role:m.role},sessionTokenHash:'fixture'})}));
 vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async()=>m.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:null,authority:'fictional-authority',observedAt:'2026-10-20T12:00:00.000Z',validForMs:15000}}));
 vi.mock('@/lib/data/workspaces',()=>({getWorkspace:m.workspace}));
 vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));

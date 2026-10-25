@@ -6,6 +6,6 @@ import { OwnerOnlyNotice } from "@/components/owner-only-notice";
  * sees why, instead of landing on Home with no word. The page itself is never rendered for them. */
 export default async function SettingsLayout({ children }: { children: ReactNode }) {
   const session = await requireSession();
-  if (session.role !== "OWNER") return <OwnerOnlyNotice title="Settings" reason="Only Owners can open Settings." />;
+  if (session.role !== "OWNER") return <OwnerOnlyNotice />;
   return children;
 }

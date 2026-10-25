@@ -1,7 +1,9 @@
 'use client';
 
 import {usePrivateFragmentFocus} from './private-fragment-focus';
-import { useEffect, useRef, useState } from 'react';
+import {useCallback,useEffect,useRef,useState} from 'react';
+import Link from 'next/link';
+import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {
   fetchManagerTimeCorrections,
   reviewManagerTimeCorrection,
@@ -9,99 +11,58 @@ import {
 } from '@/lib/time-corrections/client';
 import {parseManagerTimeCorrections,type ManagerCorrectionItem,type ManagerTimeCorrections} from '@/lib/time-corrections/read-model';
 import type { CorrectionReviewCommand } from '@/lib/time-corrections/validation';
-import {CorrectionComparison,PriorCorrectionDecisions} from './time-correction-context';
+import {timeZoneLabel} from '@/lib/time-zone-label';
+import {correctionInterval,correctionKindLabel,correctionLine} from '@/lib/time-corrections/present';
+import {initialsOf} from './quiet/quiet';
+import './quiet/u1.css';
 
 import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {useManagerCorrectionRecovery} from './manager-correction-recovery';
 export type CorrectionQueueConnection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
 const changedEvent='nevora:time-correction-changed';
-const unknownNotice='The server outcome could not be confirmed. Retry the same decision safely.';
-const approvedNotice='Correction approved. The original recorded punch remains unchanged.';
-const rejectedNotice='Correction declined. The original recorded punch remains unchanged.';
+const unknownNotice='We couldn’t confirm that decision. Try again; it won’t be applied twice.';
+const approvedNotice='Correction approved. The original Clocker record is kept.';
+const rejectedNotice='Correction declined. The original Clocker record is kept.';
 /** Only fixed, non-identifying receipt feedback survives a private pause. */
 export function pausedCorrectionNotice(notice:string|null){return [unknownNotice,approvedNotice,rejectedNotice].includes(notice??'')?notice:null;}
+export const SELF_REVIEW='Another manager or owner must review your request.';
 
-function requestLabel(item:ManagerCorrectionItem){
-  if(item.kind==='MISSING_ENTRY')return 'Missing time';
-  if(item.kind==='BREAK_BOUNDARY')return item.breakName?item.breakName+' break':'Recorded break';
-  return 'Clock in / Clock out';
-}
+export {correctionInterval,correctionKindLabel,correctionLine};
+const dayFmt=(iso:string,zone:string)=>new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric'}).format(new Date(iso));
+
 function noticeFor(result:CorrectionActionResponse){
   if(result.state==='approved')return approvedNotice;
   if(result.state==='rejected')return rejectedNotice;
-  if(result.state==='conflict')return 'This request changed while you were reviewing it. Refresh and review the latest state.';
+  if(result.state==='conflict')return 'This request changed while you were looking. Check the latest and decide again.';
   if(result.state==='outcome_unknown')return unknownNotice;
   if(result.state==='blocked'){
-    if(result.reason==='finalized_period')return 'Reopen the finalized timecard period before reviewing this correction.';
-    if(result.reason==='self_review')return 'Another manager or owner must review your request.';
-    if(result.reason==='stale_source')return 'The recorded source changed. Refresh before deciding.';
-    if(result.reason==='overlap')return 'The proposed correction overlaps another effective entry.';
-    if(result.reason==='live_state')return 'This record is still live in Clocker and cannot be corrected here.';
-    return 'The proposed correction interval is not valid.';
+    if(result.reason==='finalized_period')return 'Reopen the finalized timecard period before deciding this correction.';
+    if(result.reason==='self_review')return SELF_REVIEW;
+    if(result.reason==='stale_source')return 'The recorded time changed. Refresh before deciding.';
+    if(result.reason==='overlap')return 'These times overlap another entry that already counts.';
+    if(result.reason==='live_state')return 'They’re still clocked in. Decide after they clock out.';
+    return 'These times aren’t valid.';
   }
-  return 'The correction action could not be completed.';
+  return 'That decision didn’t go through. Try again.';
 }
 
-export function ManagerTimeCorrectionsSurface({
-  snapshot,
-  loading,
-  connection,
-  busyId,
-  notice,
-  onDecision,
-  onRetry,
-  retry,
-}:{
+export type ManagerCorrectionsState={
   snapshot:ManagerTimeCorrections|null;
-  loading:boolean;
-  connection?:CorrectionQueueConnection;
+  connection:CorrectionQueueConnection;
   busyId:string|null;
   notice:string|null;
-  onDecision:(item:ManagerCorrectionItem,decision:'APPROVE'|'REJECT')=>void;
-  onRetry:()=>void;
   retry:CorrectionReviewCommand|null;
-}){
-  const requestedMode=connection??(loading?'loading':snapshot?.state==='ready'?'ready':snapshot?.state==='unavailable'?(snapshot.reason==='access_denied'?'access_lost':'unavailable'):'paused');
-  const mode=requestedMode==='ready'&&snapshot?.state!=='ready'?'unavailable':requestedMode;
-  const ready=mode==='ready'&&snapshot?.state==='ready'?snapshot:null;
-  usePrivateFragmentFocus('correction-',!!ready);
-  return <section className="manager-corrections" aria-labelledby="manager-corrections-title">
-    <header className="manager-corrections-header">
-      <div>
-        <p>Time corrections</p>
-        <h2 id="manager-corrections-title">Correction requests</h2>
-        <span>Fixes to past clock times wait here for your decision. The original Clocker record is kept.</span>
-      </div>
-      {ready?<strong className="manager-corrections-count">{ready.requests.length}</strong>:null}
-    </header>
-    {notice?<div className="manager-corrections-notice" role="status">{notice}</div>:null}
-    {retry?<button className="manager-corrections-retry" type="button" disabled={busyId!==null||mode!=='ready'} onClick={onRetry}>Retry same decision</button>:null}
-    {mode!=='ready'?<div className="manager-corrections-empty" role="status"><strong>{({loading:'Loading correction requests',offline:'Correction requests unavailable offline',reconnecting:'Reconnecting to correction requests',unavailable:'Correction requests unavailable',access_lost:'Correction access ended',paused:'Updates paused'})[mode]}</strong><small>{mode==='access_lost'?'Sign in with a currently authorized management account.':'The correction queue is unconfirmed. Check a current protected snapshot before reviewing requests.'}</small></div>:
-      ready?.requests.length?<div className="manager-corrections-list">
-        {ready.requests.map(item=><article className="manager-correction-row" key={item.id} tabIndex={-1} id={`correction-${item.id}`}>
-          <div className="manager-correction-topline">
-            <div>
-              <strong>{item.employeeName}</strong>
-              <small>{item.locationName} · {requestLabel(item)}</small>
-            </div>
-            <span>Pending</span>
-          </div>
-          <CorrectionComparison recordedLabel={item.kind==='MISSING_ENTRY'&&item.originalStartAt?'Approved missing time':'Recorded'} recordedStartAt={item.originalStartAt} recordedEndAt={item.originalEndAt} context={item.context} zone={ready.timeZone} proposedStartAt={item.proposedStartAt} proposedEndAt={item.proposedEndAt}/>
-          <PriorCorrectionDecisions context={item.context} zone={ready.timeZone}/>
-          {item.baseChanged?<p className="manager-correction-self" role="status">The source or approved baseline changed since this request. The proposed time is not the current effective time.</p>:null}
-          <p className="manager-correction-reason">{item.reason}</p>
-          <p className="manager-correction-provenance">Original recorded punches stay unchanged. Approval creates an auditable effective adjustment.</p>
-          {item.isSelf?<p className="manager-correction-self" role="note">Another manager or owner must review your request.</p>:null}
-          <div className="manager-correction-actions">
-            <button type="button" aria-label={`Decline correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'REJECT')}>Decline</button>
-            <button className="primary" type="button" aria-label={`Approve correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'APPROVE')}>Approve</button>
-          </div>
-        </article>)}
-      </div>:<div className="manager-corrections-empty" role="status"><span aria-hidden="true">✓</span><strong>No correction requests</strong><small>No employee time corrections are waiting for review.</small></div>}
-  </section>;
-}
+  /** Approve or decline one request (a new operation each time). */
+  decide:(item:ManagerCorrectionItem,decision:'APPROVE'|'REJECT')=>void;
+  /** Send the uncertain decision again with the same operation, so it can't apply twice. */
+  retryDecision:()=>void;
+  /** Ask every correction reader on the page to read again. */
+  refresh:()=>void;
+};
 
-export function ManagerTimeCorrections({actorId,authority}:{actorId?:string;authority?:string}={}){
+/** The manager's correction queue and its decisions: the protected read (paused while hidden, offline or blurred,
+ * cleared when access ends) and the review command with its retry. Shared by On shift, the Inbox and the timecard sheet. */
+export function useManagerTimeCorrections({actorId,authority}:{actorId?:string;authority?:string}={}):ManagerCorrectionsState{
   const recovery=useManagerCorrectionRecovery();
   const [snapshot,setSnapshot]=useState<ManagerTimeCorrections|null>(null);
   const [connection,setConnection]=useState<CorrectionQueueConnection>('loading');
@@ -132,7 +93,7 @@ export function ManagerTimeCorrections({actorId,authority}:{actorId?:string;auth
     return()=>{disposed=true;authorityProbe?.abort();advanceCommandEpoch();controller.stop();window.removeEventListener(changedEvent,refresh);window.removeEventListener('focus',refresh);window.removeEventListener('pageshow',refresh);window.removeEventListener('storage',refresh);window.removeEventListener('online',reconnect);window.removeEventListener('offline',offline);window.removeEventListener('pagehide',hide);window.removeEventListener('blur',hide);document.removeEventListener('visibilitychange',visibility);};
   },[actorId,authority,recovery]);
 
-  const send=async(command:CorrectionReviewCommand)=>{
+  const send=useCallback(async(command:CorrectionReviewCommand)=>{
     if(authorityLost.current)return;
     const epoch=commandEpoch.current;
     recovery?.remember(command);
@@ -149,16 +110,148 @@ export function ManagerTimeCorrections({actorId,authority}:{actorId?:string;auth
     }catch{
       if(!authorityLost.current&&epoch===commandEpoch.current){setNotice(unknownNotice);setRetry(command);}
     }finally{setBusyId(null);}
-  };
+  },[actorId,authority,recovery]);
 
+  return {
+    snapshot,connection,busyId,notice,retry,
+    decide:(item,decision)=>void send({operationId:crypto.randomUUID(),requestId:item.id,expectedRevision:item.revision,decision}),
+    retryDecision:()=>{if(retry)void send(retry);},
+    refresh:()=>window.dispatchEvent(new Event(changedEvent)),
+  };
+}
+
+/** One correction request as a Quiet row: who and what (opens in place to show the recorded, current and asked-for times,
+ * the reason and earlier decisions), then Decline and Approve under it. Reusable: the On shift page, Inbox › Requests and
+ * the timecard sheet render the same row. Decisions go through the caller's `onDecision` (useManagerTimeCorrections). */
+export function CorrectionDecisionRow({item,zone,busy=false,locked=false,onDecision,open=false}:{
+  item:ManagerCorrectionItem;
+  /** The workspace time zone the read reported. */
+  zone:string;
+  /** This row's decision is in flight. */
+  busy?:boolean;
+  /** Another decision (or an uncertain one) is in flight: no new decisions. */
+  locked?:boolean;
+  onDecision:(item:ManagerCorrectionItem,decision:'APPROVE'|'REJECT')=>void;
+  /** Start open (a link that points at this request). */
+  open?:boolean;
+}){
+  const anchor=`correction-${item.id}`;
+  const [opened,setOpened]=useState(open);
+  // A link to #correction-… lands on this row open, so the times are in view before the decision.
+  useEffect(()=>{
+    const check=()=>{try{if(decodeURIComponent(window.location.hash.slice(1))===anchor)setOpened(true);}catch{/* a malformed hash opens nothing */}};
+    check();window.addEventListener('hashchange',check);return()=>window.removeEventListener('hashchange',check);
+  },[anchor]);
+  const kind=correctionKindLabel(item);
+  const when=correctionInterval(item.proposedStartAt,item.proposedEndAt,zone);
+  const line=correctionLine(item,zone);
+  const context=item.context;
+  const recorded=item.originalStartAt&&item.originalEndAt?correctionInterval(item.originalStartAt,item.originalEndAt,zone):null;
+  const disabled=item.isSelf||busy||locked;
+  return <li className="q-request u1-correction" id={anchor} tabIndex={-1}>
+    <details className="q-details q-request__details" open={opened} onToggle={event=>setOpened((event.currentTarget as HTMLDetailsElement).open)}>
+      <summary className="q-row q-row--av" aria-label={`${item.employeeName}, ${kind}, ${when}. Show the times.`}>
+        <span className="q-av" aria-hidden="true">{initialsOf(item.employeeName)}</span>
+        <span className="q-rt"><b>{item.employeeName}</b><i>{line}</i></span>
+        <CaretRightIcon className="q-chev" aria-hidden="true"/>
+      </summary>
+      <div className="q-details__body q-done__body">
+        <ul className="q-facts">
+          <li><b>{item.kind==='MISSING_ENTRY'&&item.originalStartAt?'Approved missing time':'Recorded'}</b><span>{recorded??'Nothing recorded'}</span></li>
+          <li><b>Counts now</b><span>{context.state==='confirmed'?correctionInterval(context.startAt,context.endAt,zone):context.state==='none'?'Nothing yet':'Not confirmed'}</span>
+            {context.state==='confirmed'&&context.sourceKind==='ADJUSTMENT'?<span>From an approved correction</span>:null}</li>
+          <li><b>Asked for</b><span>{when}</span></li>
+          <li><b>Reason</b><span>{item.reason}</span></li>
+          {context.state==='confirmed'&&context.decisions.length?<li><b>{context.totalDecisions>context.decisions.length?`Earlier decisions · latest ${context.decisions.length} of ${context.totalDecisions}`:'Earlier decisions'}</b>
+            {context.decisions.map((decision,index)=><span key={index}>{decision.status==='APPROVED'?'Approved':'Declined'} {dayFmt(decision.decidedAt,zone)} · {correctionInterval(decision.startAt,decision.endAt,zone)}{decision.note?` · ${decision.note}`:''}</span>)}
+          </li>:null}
+        </ul>
+        {item.baseChanged?<p className="q-help q-help--alert" role="status">The time that counts changed after this request. Check the times before you decide.</p>:null}
+        <p className="q-help">Times in {timeZoneLabel(zone)}. The original Clocker record is kept.</p>
+      </div>
+    </details>
+    {item.isSelf?<p className="q-help q-acts-note" role="note">{SELF_REVIEW}</p>:null}
+    <div className="q-acts" aria-busy={busy||undefined}>
+      <button type="button" className="q-bs" aria-label={`Decline correction for ${item.employeeName}`} disabled={disabled} onClick={()=>onDecision(item,'REJECT')}>{busy?'Saving…':'Decline'}</button>
+      <button type="button" className="q-bs q-bs--go" aria-label={`Approve correction for ${item.employeeName}`} disabled={disabled} onClick={()=>onDecision(item,'APPROVE')}>{busy?'Saving…':'Approve'}</button>
+    </div>
+  </li>;
+}
+
+const waitingText:Record<Exclude<CorrectionQueueConnection,'ready'>,string>={
+  loading:'Checking correction requests…',
+  offline:'You’re offline. Corrections update when you reconnect.',
+  reconnecting:'Reconnecting to correction requests…',
+  unavailable:'Correction requests aren’t available right now.',
+  access_lost:'Sign in again to review corrections.',
+  paused:'Updates paused while you’re away.',
+};
+
+/** The decision's result and, after an uncertain one, the way to send it again. */
+export function CorrectionNotice({notice,retry,busy,ready,onRetry}:{notice:string|null;retry:CorrectionReviewCommand|null;busy:boolean;ready:boolean;onRetry:()=>void}){
+  if(!notice&&!retry)return null;
+  return <div className="u1-notice">
+    {notice?<p className="q-help" role="status">{notice}</p>:null}
+    {retry?<button className="q-btn q-btn--sec" type="button" disabled={busy||!ready} onClick={onRetry}>Try again</button>:null}
+  </div>;
+}
+
+/** On shift › Correction requests (Quiet v4): the count beside the title, one row per request with Decline and Approve,
+ * and one help line. A ready, empty queue shows nothing; any other state says so without names or counts. */
+export function ManagerTimeCorrectionsSurface({
+  snapshot,
+  loading,
+  connection,
+  busyId,
+  notice,
+  onDecision,
+  onRetry,
+  onRefresh,
+  retry,
+}:{
+  snapshot:ManagerTimeCorrections|null;
+  loading:boolean;
+  connection?:CorrectionQueueConnection;
+  busyId:string|null;
+  notice:string|null;
+  onDecision:(item:ManagerCorrectionItem,decision:'APPROVE'|'REJECT')=>void;
+  onRetry:()=>void;
+  onRefresh?:()=>void;
+  retry:CorrectionReviewCommand|null;
+}){
+  const requestedMode=connection??(loading?'loading':snapshot?.state==='ready'?'ready':snapshot?.state==='unavailable'?(snapshot.reason==='access_denied'?'access_lost':'unavailable'):'paused');
+  const mode=requestedMode==='ready'&&snapshot?.state!=='ready'?'unavailable':requestedMode;
+  const ready=mode==='ready'&&snapshot?.state==='ready'?snapshot:null;
+  usePrivateFragmentFocus('correction-',!!ready);
+  if(ready&&!ready.requests.length&&!notice&&!retry)return null;
+  const heading=<div className="q-sec"><h2 id="on-shift-corrections-title">Correction requests</h2>{ready&&ready.requests.length?<span className="q-sec__aside">{ready.requests.length}</span>:null}</div>;
+  return <section id="on-shift-corrections" aria-labelledby="on-shift-corrections-title" aria-busy={mode==='loading'||mode==='reconnecting'||undefined}>
+    {heading}
+    <CorrectionNotice notice={notice} retry={retry} busy={busyId!==null} ready={mode==='ready'} onRetry={onRetry}/>
+    {mode!=='ready'?<>
+      <p className="q-empty" role="status">{waitingText[mode]}</p>
+      {mode==='access_lost'?<Link className="q-btn q-btn--sec" href="/login">Sign in</Link>
+        :mode==='unavailable'&&onRefresh?<button className="q-btn q-btn--sec" type="button" onClick={onRefresh}>Try again</button>:null}
+    </>:ready?.requests.length?<>
+      <ul className="q-list q-requests" aria-label="Correction requests">
+        {ready.requests.map(item=><CorrectionDecisionRow key={item.id} item={item} zone={ready.timeZone} busy={busyId===item.id} locked={busyId!==null||retry!==null} onDecision={onDecision}/>)}
+      </ul>
+      <p className="q-help">The original Clocker record is kept.</p>
+    </>:null}
+  </section>;
+}
+
+export function ManagerTimeCorrections({actorId,authority}:{actorId?:string;authority?:string}={}){
+  const state=useManagerTimeCorrections({actorId,authority});
   return <ManagerTimeCorrectionsSurface
-    snapshot={snapshot}
-    loading={connection==='loading'}
-    connection={connection}
-    busyId={busyId}
-    notice={notice}
-    retry={retry}
-    onRetry={()=>{if(retry)void send(retry);}}
-    onDecision={(item,decision)=>void send({operationId:crypto.randomUUID(),requestId:item.id,expectedRevision:item.revision,decision})}
+    snapshot={state.snapshot}
+    loading={state.connection==='loading'}
+    connection={state.connection}
+    busyId={state.busyId}
+    notice={state.notice}
+    retry={state.retry}
+    onRetry={state.retryDecision}
+    onRefresh={state.refresh}
+    onDecision={state.decide}
   />;
 }

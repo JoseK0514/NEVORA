@@ -5,6 +5,7 @@ import {useLinkStatus} from 'next/link';
 import {AppNavigationProvider,useIdentityReload} from './app-navigation';
 import { NotificationBell } from "./notification-bell";
 import { useInboxCount } from "./use-inbox-count";
+import "./quiet/u1.css";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { AuthBrand } from "./auth-brand";
@@ -30,7 +31,7 @@ import type {OperationalAuthorityView} from '@/lib/company-access/model';
 import {useOperationalNavigation} from './company-access/use-operational-navigation';
 
 /** Home's views share Home's address; the trail names them as their bands do. */
-const HOME_VIEWS = { attendance: "Attendance", team: "Team overview", activity: "Schedule activity" } as const;
+const HOME_VIEWS = { attendance: "On shift", team: "Hours", activity: "Activity" } as const;
 
 type AppShellProps = {
   brand?: { style?: Record<string, string>; logoUrl?: string | null };
@@ -357,7 +358,7 @@ function AppShellView({
           </div>
         </header>
 
-        <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{user.role==='MANAGER'&&operational.view?.state==='unavailable'&&!operational.refreshing&&<section className="portal-route-state" role="status"><h2>Management menu unavailable</h2><p>Your current management access could not be checked. Reconnect and refresh before opening another management page.</p><button className="button secondary" type="button" disabled={operational.paused} onClick={operational.retry}>Refresh management access</button></section>}{children}</PresentationProvider></main>
+        <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{/* T-23: one quiet line under the bar; it steps aside when the page shows its own unavailable state (u1.css). */}{user.role==='MANAGER'&&operational.view?.state==='unavailable'&&!operational.refreshing&&<p className="q-help q-help--alert u1-access-alert" role="status">We couldn’t check your access. Refresh to keep working. <button className="u1-access-alert__refresh" type="button" disabled={operational.paused} onClick={operational.retry}>Refresh</button></p>}{children}</PresentationProvider></main>
 
         <nav className="mobile-nav" aria-label="Mobile navigation" style={!employee?{gridTemplateColumns:`repeat(${Math.min(navigation.length,5)},minmax(0,1fr))`}:undefined}>
           {/* v5 One look (approved Oct 24): one Quiet tab bar for every role; More is a page. */}
@@ -378,9 +379,11 @@ function AppShellView({
                     aria-current={active ? "page" : undefined}
                     aria-label={needsYou !== null ? `${item.label}, ${needsYou} need${needsYou === 1 ? "s" : ""} you` : undefined}
                   >
-                    {/* Quiet (v4): outline glyphs, filled only for the current tab; the count is spoken, not drawn. */}
+                    {/* Quiet (v4): outline glyphs, filled only for the current tab. */}
                     <NavIcon name={item.icon === "employees" ? "team" : item.icon} size={24} weight={active ? "fill" : "regular"} />
                     <span>{item.label}</span>
+                    {/* UX-O-02: the Inbox count is drawn as well as spoken (the link's name says it). */}
+                    {needsYou !== null ? <b className="u1-tab-badge" aria-hidden="true">{needsYou > 99 ? "99+" : needsYou}</b> : null}
                     <TabPending />
                   </Link>
                 );

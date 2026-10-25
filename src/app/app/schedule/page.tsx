@@ -326,6 +326,8 @@ export default async function SchedulePage({
           <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}${locationQuery}&plan=1#schedule-planning`}><strong>Build and publish</strong><span>Fill the draft and publish it</span></Link>
           <ScheduleCopyForm actorId={session.id} command={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}} />
           <Link className="nevora-action-menu-item" href={`/app/schedule/templates?week=${weekStart}`}><strong>Templates</strong><span>Reusable weeks</span></Link>
+          {/* T-3: the week's activity, one tap from the schedule. */}
+          <Link className="nevora-action-menu-item" href={`/app?view=activity&week=${weekStart}`}><strong>Activity</strong><span>Publications and changes</span></Link>
           <Link className="nevora-action-menu-item" href={`/app/schedule/settings?week=${weekStart}`}><strong>Scheduling rules</strong><span>Coverage and hour targets</span></Link>
           <PrintScheduleButton />
           <div className="nevora-action-menu-divider" />

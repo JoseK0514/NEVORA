@@ -3,6 +3,7 @@ import {requireSessionMutationProof} from '@/lib/auth/session';
 import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
 import {EmployeeAccountPanel} from '@/components/employee-account-panel';
 import {QuietHeader,QuietNav,QuietPage} from '@/components/quiet/quiet';
+import {NotificationUnavailableToast} from '@/components/notification-unavailable-toast';
 export const metadata = { title: "Notifications" };
 
 export default async function NotificationsPage(){
@@ -13,8 +14,8 @@ export default async function NotificationsPage(){
  // Signature (phase 2): employees and Leads get the Signature page (its own band and sheet); managers keep the clean page.
  // v5 (mockup E14): Employees and Leads get the same Quiet page, without Mark read (management only); back to Home.
  if(!manager)return <QuietPage><QuietNav back={{href:'/app',label:'Home'}}/><QuietHeader title={"Notifi\u00adca\u00adtions"}/>
-  <EmployeeAccountPanel key={authority} kind="notifications" authority={authority} endpoint="/api/notifications" quiet/></QuietPage>;
+  <EmployeeAccountPanel key={authority} kind="notifications" authority={authority} endpoint="/api/notifications" quiet/><NotificationUnavailableToast/></QuietPage>;
  // Quiet (v4, approved Oct 23): back to Today, the title, then the list.
  return <QuietPage><QuietNav back={{href:'/app',label:'Today'}}/><QuietHeader title={"Notifi\u00adca\u00adtions"}/>
-  <EmployeeAccountPanel key={authority} kind="notifications" authority={authority} endpoint="/api/notifications" markReadAllowed/></QuietPage>;
+  <EmployeeAccountPanel key={authority} kind="notifications" authority={authority} endpoint="/api/notifications" markReadAllowed/><NotificationUnavailableToast/></QuietPage>;
 }

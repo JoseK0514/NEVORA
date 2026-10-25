@@ -15,7 +15,9 @@ export type Today =
   | { state: "ready"; observedAt: string; validForMs: number; timeZone: string; today: string; counts: TodayCounts; shifts: TodayShift[]; missed: TodayShift[] }
   | { state: "unavailable"; reason: "access_denied" | "read_failed" | "schema_missing" };
 
-type RawShift = { id: string; employeeId: string; employeeName: string; locationId: string; locationName: string; positionName: string | null; date: string; startAt: string; endAt: string };
+type RawShift = { id: string; employeeId: string; employeeName: string; locationId: string; locationName: string; positionName: string | null; date: string; startAt: string; endAt: string;
+  /** F12: an approved missed-punch correction covers this shift (its time counts though nothing was punched). */
+  adjusted?: boolean };
 type RawEntry = { id: string; employeeId: string; locationId: string; clockInAt: string; clockOutAt: string | null; onBreak: boolean };
 
 const fail = (): Today => ({ state: "unavailable", reason: "read_failed" });
@@ -72,14 +74,17 @@ export function projectToday(source: unknown): Today {
   for (const row of source.shifts) {
     if (!object(row) || !text(row.id) || !text(row.employeeId) || !text(row.employeeName) || !text(row.locationId) || !text(row.locationName) ||
         !(row.positionName === null || text(row.positionName)) || !text(row.date) || !Number.isFinite(ms(row.startAt)) || !Number.isFinite(ms(row.endAt)) ||
-        ms(row.endAt) <= ms(row.startAt) || seen.has(row.id)) return fail();
+        ms(row.endAt) <= ms(row.startAt) || seen.has(row.id) || (row.adjusted !== undefined && typeof row.adjusted !== "boolean")) return fail();
     seen.add(row.id);
     const raw = row as RawShift;
     // Yesterday's overnight shifts only count while they are still running today.
     if (raw.date !== source.today && ms(raw.endAt) <= now) continue;
     const matched = entries.filter(e => overlaps(raw, e, now));
+    const status = shiftStatus(raw, matched, now);
+    // F12: once its missing time is approved, a shift with no punches is finished, not "no clock-in".
+    if (raw.adjusted === true && (status.status === "not_clocked_in" || status.status === "no_punches")) status.status = "done";
     shifts.push({ id: raw.id, employeeId: raw.employeeId, employeeName: raw.employeeName, locationId: raw.locationId, locationName: raw.locationName,
-      positionName: raw.positionName, startAt: raw.startAt, endAt: raw.endAt, ...shiftStatus(raw, matched, now) });
+      positionName: raw.positionName, startAt: raw.startAt, endAt: raw.endAt, ...status });
   }
   shifts.sort((a, b) => ms(a.startAt) - ms(b.startAt) || a.employeeName.localeCompare(b.employeeName) || a.id.localeCompare(b.id));
   const missed = shifts.filter(s => s.status === "not_clocked_in" || s.status === "no_punches");

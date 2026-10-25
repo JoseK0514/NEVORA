@@ -10,7 +10,8 @@ import { managerLocationsSql, managerScopeStatements, readManagerScopeStorage, t
 // One SQL snapshot and database clock. Published shifts come from the latest
 // publication revision of each week (an empty latest revision hides older
 // assignments), so the list matches what employees were shown. Approved
-// callouts are excluded. Punches are read as recorded; nothing is inferred.
+// callouts are excluded. Punches are read as recorded; nothing is inferred. F12: a shift an approved (current)
+// missed-punch correction covers is marked "adjusted", so it no longer reads as "no clock-in".
 // Shifts and punches are limited to the locations the actor manages.
 const todaySql = (storage: ManagerScopeStorage) => `WITH observed AS MATERIALIZED (SELECT clock_timestamp() AS at),
 scope AS MATERIALIZED (${managerLocationsSql(storage, '$1', '$4')}),
@@ -39,7 +40,10 @@ entry_rows AS (
 )
 SELECT jsonb_build_object('observedAt',o.at,'expiresAt',(SELECT expires_at FROM employee_sessions WHERE token_hash=$2),'timeZone',$3::text,'today',d.today::text,
  'shifts',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',s.id,'employeeId',s."employeeId",'employeeName',s."employeeName",'locationId',s."locationId",
-   'locationName',s."locationName",'positionName',s."positionName",'date',s.date,'startAt',s.start_at,'endAt',s.end_at) ORDER BY s.start_at,s.id) FROM shift_rows s),'[]'::jsonb),
+   'locationName',s."locationName",'positionName',s."positionName",'date',s.date,'startAt',s.start_at,'endAt',s.end_at,
+   'adjusted',EXISTS(SELECT 1 FROM time_correction_adjustments a WHERE a.workspace_id=$1 AND a.employee_id=s."employeeId" AND a.location_id=s."locationId"
+    AND a.kind='MISSING_ENTRY' AND a.effective_start_at<s.end_at AND a.effective_end_at>s.start_at
+    AND NOT EXISTS(SELECT 1 FROM time_correction_adjustments n WHERE n.workspace_id=$1 AND n.supersedes_adjustment_id=a.id))) ORDER BY s.start_at,s.id) FROM shift_rows s),'[]'::jsonb),
  'entries',COALESCE((SELECT jsonb_agg(x ORDER BY x."clockInAt",x.id) FROM entry_rows x),'[]'::jsonb)) AS snapshot
 FROM observed o CROSS JOIN day d`;
 

@@ -52,9 +52,11 @@ it('the clean Overview is "Today", drops the tab row, and Home\'s own views stil
   expect(html).not.toContain('manager-planning-summary');
   expect(html).toContain('Needs you');
   expect(html).not.toContain('Team tools');
+  // Final pass (T-2): Hours is its own Quiet page, back to Team, with no view pills.
   const team = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome} view="team"/>);
-  expect(team).toContain('aria-label="Home views"');
-  expect(team).toContain('class="nv-masthead__back"');
+  expect(team).not.toContain('aria-label="Home views"');
+  expect(team).toContain('>Hours</h1>');
+  expect(team).toContain('href="/app/employees"');
 });
 
 it('the sample route is closed in production and opens only in development or by explicit preview configuration', () => {

@@ -64,3 +64,23 @@ describe('needs you (F1)', () => {
     expect(needsYouDetail(value) + needsYouSentence(value.count)).not.toMatch(/miss/i);
   });
 });
+
+describe('final pass (Oct 25): corrections and the viewer', () => {
+  it('UX-O-06 / F11: a waiting time correction is a request and counts', () => {
+    const value = needsYou([item('TIME_CORRECTION:c', 'TIME_CORRECTION', 'timekeeping')], '2026-10-18');
+    expect(value.requests.map(entry => entry.id)).toEqual(['TIME_CORRECTION:c']);
+    expect(value.planning).toEqual([]);
+    expect(value.count).toBe(1);
+  });
+  it('UX-O-09: a Manager’s own missed clock-in and timecard leave the list and the count; an Owner keeps theirs', () => {
+    const mine = { ...item('TIMECARD:me', 'TIMECARD', 'timekeeping'), employeeId: 'me' } as ActionItem;
+    const theirs = { ...item('TIMECARD:you', 'TIMECARD', 'timekeeping'), employeeId: 'you' } as ActionItem;
+    const manager = needsYou([mine, theirs], '2026-10-18', [shift('me'), shift('you')], { id: 'me', role: 'MANAGER' });
+    expect(manager.noClockIn.map(entry => entry.employeeId)).toEqual(['you']);
+    expect(manager.planning.map(entry => entry.id)).toEqual(['TIMECARD:you']);
+    expect(manager.count).toBe(1);
+    const owner = needsYou([mine, theirs], '2026-10-18', [shift('me'), shift('you')], { id: 'me', role: 'OWNER' });
+    expect(owner.noClockIn).toHaveLength(2);
+    expect(owner.planning).toHaveLength(2);
+  });
+});

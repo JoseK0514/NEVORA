@@ -16,6 +16,10 @@ const GROUP_ORDER: FinderGroup[] = ['Actions', 'Pages', 'People', 'Locations'];
 /** C1: earlier page names still find their page. */
 const PAGE_KEYWORDS: Record<string, string> = {
   '/app/payroll-export': 'payroll export exports csv',
+  // Final pass (Oct 25): the team tools' earlier names.
+  '/app?view=attendance': 'attendance clock-ins clocked in corrections late',
+  '/app?view=team': 'team overview hours targets scheduled',
+  '/app?view=activity': 'schedule activity publications changes',
   // UX7: the words people type for each page.
   '/app/inbox': 'requests decisions approve decline',
   '/app/schedule': 'roster week shifts plan',
@@ -54,7 +58,7 @@ export function finderItems(role: UserRole, payroll: PayrollCapabilities | undef
   ];
   const known = new Set(pages.map(page => page.href));
   const tools = teamToolsForRole(role, context).filter(item => !known.has(item.href))
-    .map(item => ({ id: `page:${item.href}`, group: 'Pages' as const, label: item.label, detail: 'Team tools', href: item.href, searchOnly: true }));
+    .map(item => ({ id: `page:${item.href}`, group: 'Pages' as const, label: item.label, detail: 'Team tools', href: item.href, keywords: PAGE_KEYWORDS[item.href], searchOnly: true }));
   const settings = known.has('/app/settings') ? SETTINGS_PAGES.filter(page => !known.has(page.href) && pathEnabled(page.href, context.modules))
     .map(page => ({ id: `page:${page.href}`, group: 'Pages' as const, label: page.label, detail: 'Settings', href: page.href, keywords: page.keywords, searchOnly: true })) : [];
   const people = (data?.people ?? []).map(person => ({ id: `person:${person.id}`, group: 'People' as const, label: person.name, detail: person.role, href: `/app/employees/${encodeURIComponent(person.id)}`, keywords: person.id }));

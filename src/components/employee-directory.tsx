@@ -7,8 +7,11 @@ import { formatPhoneNumber } from "@/lib/phone";
 import { hasDirectoryFilters, type DirectoryFilters } from "@/lib/employee-directory";
 import { QuietBar, QuietBarIcon, QuietGroup, QuietHeader, QuietPage, QuietRow } from "./quiet/quiet";
 import { EmployeeDirectoryFilters } from "./employee-directory-filters";
+import "./quiet/u1.css";
 
-export function EmployeeDirectory({ employees, visibleEmployees, locations, filters, positions = [], recovery = true, words = DEFAULT_WORDS.en }: {
+export function EmployeeDirectory({ employees, visibleEmployees, locations, filters, positions = [], recovery = true, words = DEFAULT_WORDS.en, hoursHref }: {
+  /** T-2: the Hours page, for company-wide managers (the first row, above Search). */
+  hoursHref?: string;
   /** Position names for each person's detail line. */
   positions?: readonly Pick<Position, "id" | "name">[];
   /** Quiet (v4): the recovery tools, for roles that have them. */
@@ -34,6 +37,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
     <QuietPage className="premium-team">
       <QuietBar><QuietBarIcon href="/app/employees/new" label={`Add ${person}`}><UserPlus className="q-ic" aria-hidden="true" /></QuietBarIcon></QuietBar>
       <QuietHeader title="Team" sub={`${employees.length} ${employees.length === 1 ? person : people}`} />
+      {hoursHref ? <ul className="q-list u1-hours-entry" aria-label="Team tools"><QuietRow href={hoursHref} title="Hours this week" detail="Scheduled hours and weekly targets" /></ul> : null}
       <EmployeeDirectoryFilters className="q-team-form">
         {/* Without scripts, Enter and this button apply the search; with scripts it applies as you type (IS-35). */}
         <button type="submit" name="status" value={filters.status} className="q-sr" data-apply="">Apply search</button>
