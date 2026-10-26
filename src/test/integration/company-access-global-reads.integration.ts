@@ -49,7 +49,16 @@ const reads=[
  {name:'action center',run:(p:SessionMutationProof,ex:SqlExecutor)=>readActionCenter(p,period.startDate,ex,async()=>[])},
  {name:'attendance policy observation',run:(p:SessionMutationProof,ex:SqlExecutor)=>readAttendancePolicies(p,ex)},
 ];
-it.each(reads)('$name denies a selected-location Manager without exposing global payloads or creating observations',async test=>{
+// B-12: corrections and the Inbox action center accept a location scope and return only that scope's people.
+const scopedReads=new Set(['corrections','action center']);
+it.each(reads.filter(test=>scopedReads.has(test.name)))('$name gives a selected-location Manager only their locations\' people',async test=>{
+ const f=await setup();try{
+  const value=await test.run(f.manager,f.db.executor);expect(value.state).toBe('ready');
+  expect(JSON.stringify(value)).not.toContain('global-private-b');
+  if(test.name==='action center')expect(JSON.stringify(value)).toContain('TIMECARD:target:');
+ }finally{await close(f);}
+});
+it.each(reads.filter(test=>!scopedReads.has(test.name)))('$name denies a selected-location Manager without exposing global payloads or creating observations',async test=>{
  const f=await setup();try{
   const before=await f.q('SELECT id,payload FROM attendance_policy_observations ORDER BY id');
   expect(await test.run(f.manager,f.db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
@@ -84,7 +93,13 @@ const apiReads=[
  {name:'corrections GET',run:()=>correctionsGET(new Request('http://127.0.0.1/api/manager/time-corrections',{headers:{'x-nevora-time-correction':'1'}}))},
  {name:'manager timecards POST',run:()=>timecardsPOST(new Request('http://127.0.0.1/api/timecards',{method:'POST',headers:{'x-nevora-timecards':'1','x-nevora-actor':ctx.proof!.employee.id,'content-type':'application/json',origin:'http://127.0.0.1'},body:JSON.stringify(period)}))},
 ];
-it.each(apiReads)('$name enforces Company at the actual API boundary',async test=>{
+const scopedApis=new Set(['action center POST','corrections GET','manager timecards POST']);
+it.each(apiReads.filter(test=>scopedApis.has(test.name)))('B-12: $name serves a selected-location Manager only their locations\' people',async test=>{
+ const f=await setup();try{vi.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1');const response=await test.run();expect(response.status).toBe(200);const body=await response.text();
+  expect(body).not.toContain('global-private-b');if(test.name==='manager timecards POST')expect(JSON.parse(body).cards.map((c:{card:{employeeId:string}})=>c.card.employeeId).sort()).toEqual(['manager','target']);
+  expect(response.headers.get('cache-control')).toContain('no-store');}finally{await close(f);}
+});
+it.each(apiReads.filter(test=>!scopedApis.has(test.name)))('$name enforces Company at the actual API boundary',async test=>{
  const f=await setup();try{vi.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1');const response=await test.run();expect(response.status).toBe(403);expect(await response.json()).toEqual({state:'unavailable',reason:'access_denied'});expect(response.headers.get('cache-control')).toContain('no-store');}finally{await close(f);}
 });
 it.each(['EMPLOYEE','LEAD'] as const)('mixed timecards API preserves %s own source and canonical complete manager source stays unfiltered',async role=>{

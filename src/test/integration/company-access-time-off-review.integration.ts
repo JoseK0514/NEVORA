@@ -27,25 +27,44 @@ async function choose(f:Awaited<ReturnType<typeof companyAccessFixture>>,mode:'C
  expect((await assignOperationalScope(f.owner,'manager',mode==='REVOKE'?{...base,action:'REVOKE'}:{...base,action:'ASSIGN',scope:mode==='COMPANY'?{mode,locationIds:[]}:{mode,locationIds:['loc-1']}},f.db.executor)).state).toBe('saved');
 }
 async function setup(){const f=await companyAccessFixture();ctx.ex=f.db.executor;ctx.proof=f.manager;try{
- await f.q("INSERT INTO employee_location_eligibility VALUES('target','loc-1'),('target','loc-2');INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'target',clock_timestamp()+interval '1 hour')");
+ // 'target' works at loc-1 (in a loc-1 Manager's scope); 'remote' works only at loc-2 (outside it).
+ await f.q(`INSERT INTO employee_location_eligibility VALUES('target','loc-1'),('target','loc-2');INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'target',clock_timestamp()+interval '1 hour');
+  INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('remote','Remote','QA','NONE','EMPLOYEE','loc-2');
+  INSERT INTO employee_location_eligibility VALUES('remote','loc-2');INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('e',64),'remote',clock_timestamp()+interval '1 hour')`);
  const employee:SessionMutationProof={...f.manager,employee:{...f.manager.employee,id:'target',role:'EMPLOYEE'},sessionTokenHash:'d'.repeat(64)},requestId=randomUUID();
+ const remote:SessionMutationProof={...f.manager,employee:{...f.manager.employee,id:'remote',role:'EMPLOYEE',primaryLocationId:'loc-2'},sessionTokenHash:'e'.repeat(64)},remoteRequestId=randomUUID();
  await createTimeOffRequest({requestId,employeeId:'target',proof:employee,startDate:'2030-10-21',endDate:'2030-10-22',reason:'Owned private request'},f.db.executor);
- return {...f,employee,requestId};
+ await createTimeOffRequest({requestId:remoteRequestId,employeeId:'remote',proof:remote,startDate:'2030-10-21',endDate:'2030-10-22',reason:'Owned private request at B'},f.db.executor);
+ return {...f,employee,requestId,remoteRequestId};
  }catch(error){await f.db.dispose();throw error;}}
 async function close(f:Fixture){ctx.ex=null;ctx.proof=null;await f.db.dispose();}
 const command=(f:Fixture,p=f.manager,id=f.requestId)=>({requestId:id,managerId:p.employee.id,proof:p,status:'APPROVED' as const});
 async function snapshot(f:Fixture){return f.q(`SELECT jsonb_build_object('requests',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM time_off_requests t),'notifications',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM notifications t),'deliveries',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM push_deliveries t)) AS state`);}
 async function denied(work:()=>Promise<unknown>){let error:unknown;try{await work();}catch(e){error=e;}expect(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error)).toBe(true);}
-it.each(['pending','absent','terminal'] as const)('team review denies selected-location access before reading a private %s request',async kind=>{
- const f=await setup();try{
-  if(kind==='terminal')expect(await reviewTimeOffRequest(command(f),f.db.executor)).toBe(true);await choose(f,'LOCATIONS');const before=await snapshot(f);let read=false;const base=f.db.executor,ex={...base,query:async<T>(s:SqlStatement,signal?:AbortSignal)=>{if(s.text.includes('SELECT * FROM time_off_requests WHERE id='))read=true;return base.query<T>(s,signal);}};
-  await denied(()=>reviewTimeOffRequest(command(f,f.manager,kind==='absent'?randomUUID():f.requestId),ex));expect(read).toBe(false);expect(await snapshot(f)).toEqual(before);
+// B-12: a location-scoped Manager decides time off for the people of their locations.
+it('a selected-location Manager approves an in-scope request exactly once',async()=>{
+ const f=await setup();try{await choose(f,'LOCATIONS');
+  expect(await reviewTimeOffRequest(command(f),f.db.executor)).toBe(true);
+  expect(await f.q('SELECT status,reviewed_by FROM time_off_requests WHERE id=$1',[f.requestId])).toEqual([{status:'APPROVED',reviewed_by:'manager'}]);
+  const after=await snapshot(f);expect(await reviewTimeOffRequest(command(f),f.db.executor)).toBe(false);expect(await snapshot(f)).toEqual(after);
  }finally{await close(f);}
 });
-it('custom terminal transition cannot bypass Company with a valid stored before/after snapshot',async()=>{
+it.each(['out-of-scope','absent','terminal'] as const)('a selected-location Manager gets the unknown-id answer for an %s request, with no writes',async kind=>{
  const f=await setup();try{
-  const before=await getTimeOffRequest(f.requestId,f.db.executor);if(!before)throw Error('Owned request');await choose(f,'LOCATIONS');const state=await snapshot(f);
-  await denied(()=>commitRequestTransition({before:requestSnapshot('TIME_OFF',before),after:requestSnapshot('TIME_OFF',{...before,status:'DENIED'}),actorEmployeeId:'manager',managementProof:f.manager,mutation:{text:"UPDATE time_off_requests SET status='DENIED',reviewed_by=$2,reviewed_at=clock_timestamp() WHERE id=$1 AND status='PENDING' RETURNING id",values:[f.requestId,'manager']}},f.db.executor));expect(await snapshot(f)).toEqual(state);
+  if(kind==='terminal')expect(await reviewTimeOffRequest({...command(f,f.owner,f.remoteRequestId)},f.db.executor)).toBe(true);await choose(f,'LOCATIONS');const before=await snapshot(f);
+  expect(await reviewTimeOffRequest(command(f,f.manager,kind==='absent'?randomUUID():f.remoteRequestId),f.db.executor)).toBe(false);expect(await snapshot(f)).toEqual(before);
+ }finally{await close(f);}
+});
+it('custom terminal transition cannot bypass the location scope with a valid stored before/after snapshot',async()=>{
+ const f=await setup();try{
+  const before=await getTimeOffRequest(f.remoteRequestId,f.db.executor);if(!before)throw Error('Owned request');await choose(f,'LOCATIONS');const state=await snapshot(f);
+  await denied(()=>commitRequestTransition({before:requestSnapshot('TIME_OFF',before),after:requestSnapshot('TIME_OFF',{...before,status:'DENIED'}),actorEmployeeId:'manager',managementProof:f.manager,mutation:{text:"UPDATE time_off_requests SET status='DENIED',reviewed_by=$2,reviewed_at=clock_timestamp() WHERE id=$1 AND status='PENDING' RETURNING id",values:[f.remoteRequestId,'manager']}},f.db.executor));expect(await snapshot(f)).toEqual(state);
+ }finally{await close(f);}
+});
+it.each(['Owner','Company Manager','Location Manager'] as const)('%s cannot decide their own time-off request',async role=>{
+ const f=await setup();try{const p=role==='Owner'?f.owner:f.manager;if(role==='Location Manager')await choose(f,'LOCATIONS');const own=randomUUID();
+  await f.q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason) VALUES($1,$2,'2030-11-04','2030-11-05','Own fictional request')",[own,p.employee.id]);const before=await snapshot(f);
+  expect(await reviewTimeOffRequest(command(f,p,own),f.db.executor)).toBe(false);expect(await snapshot(f)).toEqual(before);
  }finally{await close(f);}
 });
 it.each(['Owner','Company Manager'] as const)('current %s makes one terminal decision and keeps the repeat a no-op',async role=>{
@@ -69,7 +88,8 @@ it('team decision expires after actual writes and the final DB-clock guard rolls
  }finally{await worker.end();await close(f);}
 });
 const form=(f:Fixture)=>{const body=new FormData();body.set('requestId',f.requestId);body.set('decision','APPROVED');body.set('managerId','owner');return body;};
-it('normal time-off review action denies a scoped Manager with a generic review redirect and no writes',async()=>{const f=await setup();try{await choose(f,'LOCATIONS');const before=await snapshot(f);await expect(reviewTimeOffAction(form(f))).rejects.toMatchObject({destination:'/app/requests?tab=team&error=review'});expect(await snapshot(f)).toEqual(before);}finally{await close(f);}});
+it('normal time-off review action decides an in-scope request for a scoped Manager',async()=>{const f=await setup();try{await choose(f,'LOCATIONS');await expect(reviewTimeOffAction(form(f))).rejects.toMatchObject({destination:'/app/requests?tab=pending&reviewed=1'});expect(await f.q('SELECT status,reviewed_by FROM time_off_requests WHERE id=$1',[f.requestId])).toEqual([{status:'APPROVED',reviewed_by:'manager'}]);}finally{await close(f);}});
+it('normal time-off review action gives a scoped Manager the generic review redirect for an out-of-scope request and no writes',async()=>{const f=await setup();try{await choose(f,'LOCATIONS');const before=await snapshot(f);const body=form(f);body.set('requestId',f.remoteRequestId);await expect(reviewTimeOffAction(body)).rejects.toMatchObject({destination:'/app/requests?tab=pending&error=review'});expect(await snapshot(f)).toEqual(before);}finally{await close(f);}});
 it('normal Company review action uses the session actor and retains its known successful decision',async()=>{const f=await setup();try{await expect(reviewTimeOffAction(form(f))).rejects.toMatchObject({destination:'/app/requests?tab=pending&reviewed=1'});expect(await f.q('SELECT status,reviewed_by FROM time_off_requests WHERE id=$1',[f.requestId])).toEqual([{status:'APPROVED',reviewed_by:'manager'}]);}finally{await close(f);}});
 it.each(['EMPLOYEE','LEAD'] as const)('%s own submission/withdrawal/replay remains identity-based after Manager restriction',async role=>{
  const f=await setup();try{await f.q('UPDATE employees SET role=$1 WHERE id=\'target\'',[role]);f.employee={...f.employee,employee:{...f.employee.employee,role}};await choose(f,'LOCATIONS');const ownRequest=randomUUID();await createTimeOffRequest({requestId:ownRequest,employeeId:'target',proof:f.employee,startDate:'2030-11-04',endDate:'2030-11-05',reason:'Owned self-service submission after restriction'},f.db.executor);const input={requestId:ownRequest,operationId:withdrawalIdentity(ownRequest),employeeId:'target',proof:f.employee};const receipt=await withdrawTimeOffRequest(input,f.db.executor);expect(receipt).toMatchObject({requestId:ownRequest,status:'CANCELLED',reviewedBy:'target'});const before=await snapshot(f);expect(await withdrawTimeOffRequest(input,f.db.executor)).toEqual(receipt);expect(await snapshot(f)).toEqual(before);}finally{await close(f);}
