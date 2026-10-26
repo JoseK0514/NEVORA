@@ -1,4 +1,5 @@
-import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
+import {assertOperationalAccess,operationalScopeStatements,operationalMembersStatements} from '../company-access/operational-scope.server';
+import {scopeFootprint} from '../company-access/scope-sql';
 import { getWorkspace, workspaceReadGuard } from './workspaces';
 import { buildNotificationIntents } from '../notifications/recipients';
 import { readNotificationConfig, bindWorkspaceNotificationConfig } from '../notifications/config';
@@ -59,20 +60,24 @@ export async function commitRequestTransition(input: { before?: RequestSnapshot;
   const proof = submission ? input.selfServiceProof : input.managementProof;
   if (input.after.kind === 'TIME_OFF' && input.after.record.status === 'PENDING' && (!proof || input.after.record.employeeId !== input.actorEmployeeId)) throw new Error('management_authorization');
   if (proof) assertManagementProof(proof, input.actorEmployeeId);
-  // Global team decisions require Company; own submission and the separate
-  // withdrawal protocol keep their existing identity-only authorization.
+  // Team decisions run under the actor's current operational scope (B-12: Company, or a location scope that must hold
+  // the request's employee, re-checked in this transaction). Own submission and the separate withdrawal protocol keep
+  // their existing identity-only authorization.
   const operational=input.after.kind==='TIME_OFF'&&!submission&&proof
-    ?await assertOperationalAccess(proof,{kind:'COMPANY'},executor):null;
+    ?await assertOperationalAccess(proof,undefined,executor):null;
+  const footprint=operational?scopeFootprint(operational.scope):null;
   const workspace = operational?.workspace??await getWorkspace(executor);
-  const authority = () => proof ? operational
-    ?operationalScopeStatements(proof,workspace,{kind:'COMPANY'},operational.authority)
+  const authority = () => proof ? operational&&footprint
+    ?operationalScopeStatements(proof,workspace,footprint,operational.authority)
     :managementSessionStatements(proof,input.actorEmployeeId,submission?['EMPLOYEE','LEAD']:['OWNER','MANAGER']) : [];
+  const members = operational&&footprint&&input.after.kind==='TIME_OFF' ? operationalMembersStatements(workspace,footprint,[input.after.record.employeeId]) : [];
   const recipients = await executor.query<RecipientAccess>({ text: requestRecipientSql, values: [] });
   try {
     await executor.transaction([
       ...workspaceReadGuard(workspace),
       ...timeOffTransitionLocks(proof && input.after.kind === 'TIME_OFF' ? input.after.record.id : undefined, input.actorEmployeeId, recipients),
       ...authority(),
+      ...members,
       { text: `SELECT (CASE WHEN COALESCE((SELECT jsonb_agg(r ORDER BY r."employeeId") FROM (${requestRecipientSql}) r),'[]'::jsonb)=$1::jsonb THEN '1' ELSE 'request_transition_conflict' END)::integer AS access_guarded`, values: [JSON.stringify(recipients)] },
       guardedRequestMutation(input.mutation),
       ...requestNotificationStatements({ before: input.before, after: input.after, actorEmployeeId: input.actorEmployeeId, recipients,config:bindWorkspaceNotificationConfig(readNotificationConfig(process.env),workspace) }),

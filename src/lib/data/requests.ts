@@ -1,5 +1,6 @@
 import { databaseDate as dateValue } from './database-date';
-import {assertOperationalAccess} from '../company-access/operational-scope.server';
+import {assertOperationalAccess,readWithinOperationalScope} from '../company-access/operational-scope.server';
+import {employeeInScopeSql,footprintIds,scopeFootprint} from '../company-access/scope-sql';
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
 import { neonNotificationExecutor } from "./notification-transactions";
@@ -136,6 +137,26 @@ export async function listTeamTimeOffRequests(status: "PENDING" | "APPROVED" | "
   return rows.map(mapRequest);
 }
 
+/** B-12: the team time-off list for the actor's current operational scope, read in one transaction that re-proves
+ * that scope; a location-scoped Manager gets only requests from employees of their locations. */
+export async function listScopedTimeOffRequests(proof: SessionMutationProof, status: "PENDING" | "APPROVED" | "DENIED", executor?: SqlExecutor) {
+  return readWithinOperationalScope(proof, ctx => [{
+    text: `SELECT r.id, r.employee_id,
+       e.first_name || ' ' || e.last_name AS employee_name,
+       r.start_date, r.end_date, r.start_time, r.end_time,
+       r.reason, r.status, r.created_at, r.reviewed_at,
+       CASE WHEN r.reviewed_by IS NOT NULL AND r.reviewed_by <> r.employee_id
+         THEN rv.first_name || ' ' || rv.last_name END AS reviewer_name
+     FROM time_off_requests r
+     JOIN employees e ON e.id = r.employee_id
+     JOIN locations home ON home.id = e.primary_location_id AND home.workspace_id = $2
+     LEFT JOIN employees rv ON rv.id = r.reviewed_by
+     WHERE r.status = $1 AND ${employeeInScopeSql('e.id', '$2', '$3::text[]')}
+     ORDER BY ${status === 'PENDING' ? 'r.start_date, r.created_at' : 'r.start_date DESC, r.created_at DESC'}`,
+    values: [status, ctx.workspace.id, ctx.ids],
+  }], rows => (rows[0] ?? []).map(mapRequest), executor);
+}
+
 /**
  * Create an own pending request and its outbox intents atomically. A repeated
  * request ID is accepted only when an authorized read matches the same employee
@@ -190,7 +211,9 @@ export async function createTimeOffRequest(input: {
   }
 }
 
-/** Decide only a still-pending request under current company authority; concurrent terminal transitions return false. */
+/** Decide only a still-pending request under the actor's current operational scope; concurrent terminal transitions
+ * return false. B-12: a location-scoped Manager reaches only requests of employees in their scope, and any other id
+ * reads exactly like an unknown one (false). Nobody decides their own request. */
 export async function reviewTimeOffRequest(input: {
   requestId: string;
   managerId: string;
@@ -198,11 +221,12 @@ export async function reviewTimeOffRequest(input: {
   status: "APPROVED" | "DENIED";
 }, executor: SqlExecutor = neonNotificationExecutor()) {
   assertManagementProof(input.proof,input.managerId);
-  await assertOperationalAccess(input.proof,{kind:'COMPANY'},executor);
-  const [row] = await executor.query({ text: 'SELECT * FROM time_off_requests WHERE id=$1', values: [input.requestId] });
+  const access=await assertOperationalAccess(input.proof,undefined,executor);
+  const [row] = await executor.query({ text: `SELECT r.* FROM time_off_requests r WHERE r.id=$1 AND ${employeeInScopeSql('r.employee_id', '$2', '$3::text[]')}`,
+    values: [input.requestId, access.workspace.id, footprintIds(scopeFootprint(access.scope))] });
   if (!row) return false;
   const before = mapRequest(row);
-  if (before.status !== 'PENDING') return false;
+  if (before.status !== 'PENDING' || before.employeeId === input.managerId) return false;
   return commitRequestTransition({
     before: requestSnapshot('TIME_OFF', before),
     after: requestSnapshot('TIME_OFF', { ...before, status: input.status }),
@@ -210,7 +234,7 @@ export async function reviewTimeOffRequest(input: {
     managementProof: input.proof,
     mutation: {
       text: `UPDATE time_off_requests SET status=$3, reviewed_by=$2, reviewed_at=now()
-        WHERE id=$1 AND status='PENDING' AND employee_id=$4 RETURNING id`,
+        WHERE id=$1 AND status='PENDING' AND employee_id=$4 AND employee_id<>$2 RETURNING id`,
       values: [input.requestId,input.managerId,input.status,before.employeeId],
     },
   }, executor);
