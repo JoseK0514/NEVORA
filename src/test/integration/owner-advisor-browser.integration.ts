@@ -276,7 +276,8 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               await page.getByText('Your AI manager isn’t connected yet.', { exact: true }).waitFor();
               const attention = page.getByRole("region", { name: "Needs your attention", exact: true });
               await attention.getByRole("heading", { name: "Needs your attention", exact: true }).waitFor();
-              const firstIssue = attention.locator("ol > li").first();
+              // Before the first coverage block starts, issues sort by start time, so pick the loc-1 issue whose evidence changes below.
+              const firstIssue = attention.locator("ol > li").filter({ hasText: "Main Office" });
               await firstIssue.getByRole("button", { name: "Track this issue", exact: true }).click();
               await page.getByText("Briefing choice saved. Current records were checked again.", { exact: true }).waitFor();
               await firstIssue.getByRole("button", { name: "Later · 1 hour", exact: true }).click();
