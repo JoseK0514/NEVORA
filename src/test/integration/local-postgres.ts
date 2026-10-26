@@ -41,6 +41,7 @@ export const CURRENT_MIGRATIONS = [
   '0030_notification_source_kinds.sql', '0031_workspace_presentation.sql', '0032_workspace_words_modules.sql',
   '0033_management_alert_preferences.sql', '0034_account_deletion_requests.sql', '0035_passkeys.sql', '0036_owner_advisor.sql', '0037_owner_briefing_reviews.sql',
   '0038_read_path_indexes.sql',
+  '0039_native_payroll_setup_records.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every

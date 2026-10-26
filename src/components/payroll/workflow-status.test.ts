@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { PayrollBacklogSummary, PayrollCapabilities } from '@/lib/payroll/contracts';
-import { backlogDescription, noticeOutcome, noticeReadiness, payrollExceptionMessage, payrollReviewNotes, reminderWindow } from './workflow-status';
+import { backlogDescription, noticeOutcome, noticeReadiness, payrollExceptionMessage, payrollFixGroups, payrollReviewNotes, reminderWindow } from './workflow-status';
 
 const capabilities: PayrollCapabilities = { enabled: true, canConfigure: true, canReview: true, canApprove: true, internalCalculatorAvailable: false, bankCompatibility: 'UNVERIFIED' };
 const backlog: PayrollBacklogSummary = { asOfDate: '2026-10-12', rangeStart: '2026-09-01', rangeEnd: '2026-10-12', missingCount: 2, remainingCount: 0, returnedCount: 2, ambiguousCount: 0, overflow: false };
@@ -51,5 +51,15 @@ describe('payroll operational status', () => {
     expect(payrollExceptionMessage('ATTESTED_YTD_REQUIRED:fictional-a')).toContain('year-to-date');
     expect(payrollExceptionMessage('RECORDED_SOURCE_STALE:fictional-a')).toContain('timecards');
     expect(payrollExceptionMessage('ROUNDING_POLICY_ACCEPTANCE_REQUIRED:fictional-a')).toContain('verification');
+  });
+});
+
+describe('setup problems in the reader’s own voice', () => {
+  it('tells the Owner what to do and tells anyone else to ask the Owner', () => {
+    expect(payrollExceptionMessage('WAGE_PROFILE_REQUIRED:E1', 'OWNER')).toBe('Add this person’s hourly rate in Payroll settings, under People. Employee reference E1.');
+    expect(payrollExceptionMessage('WAGE_PROFILE_REQUIRED:E1', 'OTHER')).toBe('Ask the Owner to add this person’s hourly rate. Employee reference E1.');
+    expect(payrollExceptionMessage('INVALID_NATIVE_PROFILE:E1', 'OWNER')).toMatch(/^Review the saved employee payroll facts/);
+    expect(payrollFixGroups(['WAGE_PROFILE_REQUIRED:E1'], 'OWNER')[0]).toMatchObject({ title: 'Hourly rate missing', action: 'Add their hourly rate in Payroll settings' });
+    expect(payrollFixGroups(['WAGE_PROFILE_REQUIRED:E1'], 'OTHER')[0].action).toBe('Ask the Owner to fix this in Payroll settings');
   });
 });

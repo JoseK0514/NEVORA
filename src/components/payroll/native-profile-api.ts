@@ -32,5 +32,10 @@ export function readNativeProfiles(value:unknown):NativeProfilesResponse {
   }
   if(!(value.openingYtd as unknown[]).every(o=>{if(!record(o)||!text(o.employeeId)||!record(o.ytd))return false;const y=o.ytd;return revision(y.revision)&&Number.isInteger(y.year)&&['grossMinor','netMinor','socialSecurityWagesMinor','medicareWagesMinor','sinotWagesMinor'].every(k=>money(y[k]))&&['deductions','employerContributions','employerWagesMinor'].every(k=>moneyMap(y[k]))&&ids(y.locationIds)&&text(y.evidenceReference)&&text(y.ledgerFingerprint)&&typeof y.attested==='boolean';})) throw Error('The opening payroll balances could not be read.');
   if(!(value.managerScopes as unknown[]).every(s=>record(s)&&text(s.employeeId)&&revision(s.revision)&&typeof s.review==='boolean'&&typeof s.approve==='boolean'&&(!s.approve||s.review)&&ids(s.locationIds)&&(!s.review||s.locationIds.length>0)&&text(s.subjectEmployeeVersion))) throw Error('The current Manager payroll scope could not be read.');
+  if(value.setup!==undefined){
+    const setup=value.setup;
+    const valid=(r:unknown)=>record(r)&&r.version==='NATIVE_SETUP_RECORD_V1'&&['COMPANY_DEFAULTS','EMPLOYEE_PAY','OPENING_TOTALS'].includes(String(r.kind))&&text(r.subjectId)&&revision(r.revision)&&text(r.statement)&&text(r.attestation)&&typeof r.factsSha256==='string'&&/^[a-f0-9]{64}$/.test(r.factsSha256)&&text(r.reference)&&record(r.enteredBy);
+    if(!record(setup)||!(setup.companyDefaults===null||valid(setup.companyDefaults))||!Array.isArray(setup.records)||!setup.records.every(valid)) throw Error('The recorded payroll setup could not be read. Reload this page.');
+  }
   return value as NativeProfilesResponse;
 }
