@@ -67,7 +67,7 @@ export function MyPay({ nextPay = null }: { nextPay?: NextPay }) {
         <div className="q-emptyblock__action">{error === PAYROLL_SIGNED_OUT ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link> : <button type="button" className="q-btn q-btn--sec" onClick={() => void reload()}>Try again</button>}</div></div>
       : statements.length ? <QuietList label="Statements">{statements.map((statement, index) => <li key={statement.id} className="q-pay__row">
           {index === 0 ? <Celebration kind="PAYDAY_AVAILABLE" eventKey={statement.id} confirmed={statement.published} /> : null}
-          <QuietRow bare href={documentHref(statement)} title={`Payday ${formatDisplayDate(statement.payday)}`} detail={`${periodLabel(statement.period.startDate, statement.period.endDate)} · PDF`} label={`Download ${statement.filename}`} />
+          <QuietRow bare native href={documentHref(statement)} title={`Payday ${formatDisplayDate(statement.payday)}`} detail={`${periodLabel(statement.period.startDate, statement.period.endDate)} · PDF`} label={`Download ${statement.filename}`} />
           {statement.viewUrl ? <a className="q-pay__view" href={`${documentHref(statement)}/view`} aria-label={`View ${statement.filename}`}>View</a> : null}
         </li>)}</QuietList>
       : <p className="q-empty">No published statements yet.</p>}
@@ -89,7 +89,7 @@ export function QuietMyPay({ nextPay = null }: { nextPay?: NextPay }) {
     {loading ? <p className="q-empty" role="status">Loading…</p>
       : error ? <div className="q-emptyblock" role="alert"><p className="q-empty">{error === PAYROLL_SIGNED_OUT ? 'Sign in again to see your statements.' : 'Couldn’t load your statements.'}</p>
         <div className="q-emptyblock__action">{error === PAYROLL_SIGNED_OUT ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link> : <button type="button" className="q-btn q-btn--sec" onClick={() => void reload()}>Try again</button>}</div></div>
-      : statements.length ? <QuietList label="Statements">{statements.map(statement => <QuietRow key={statement.id} href={documentHref(statement)}
+      : statements.length ? <QuietList label="Statements">{statements.map(statement => <QuietRow key={statement.id} native href={documentHref(statement)}
           title={`Payday ${formatDisplayDate(statement.payday)}`} detail={`${periodLabel(statement.period.startDate, statement.period.endDate)} · PDF`} label={`Download ${statement.filename}`} />)}</QuietList>
       : <p className="q-empty">No statements yet. Only you can see them.</p>}
   </QuietPage>;
