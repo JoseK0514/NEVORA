@@ -511,9 +511,9 @@ describe('EQ-F-FUNC-001 canonical end-of-day coverage boundaries', () => {
       title: canonical.title, reason: { code: 'STAFF_COVERAGE_MISSING', text: canonical.detail },
       relevantAt: window.relevantAt, source: 'scheduling', sourceVersion: 's1', rowVersion: '1', observedAt: NOW,
       nextAction: { label: 'Open coverage review', href: canonical.href } });
-    // People read 12-hour times; a gap ending at 24:00 reads "midnight" and a whole day "all day".
+    // People read 12-hour times in the one range form ("8:00 PM – 11:59 PM"); a gap ending at 24:00 reads "midnight" and a whole day "All day".
     const clock = (time: string) => { const [h, m] = time.split(':').map(Number); return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h % 24 >= 12 ? 'PM' : 'AM'}`; };
-    expect(result.items[0].reason.text).toContain(window.startTime === '00:00' && window.endTime === '24:00' ? 'all day' : `${clock(window.startTime)}–${window.endTime === '24:00' ? 'midnight' : clock(window.endTime)}`);
+    expect(result.items[0].reason.text).toContain(window.startTime === '00:00' && window.endTime === '24:00' ? 'All day' : `${clock(window.startTime)} – ${window.endTime === '24:00' ? 'midnight' : clock(window.endTime)}`);
     expect(value).toEqual(before);
   });
 

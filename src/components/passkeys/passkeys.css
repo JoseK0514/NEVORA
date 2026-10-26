@@ -1,23 +1,9 @@
-/* Face ID and passkeys in Profile, and the one-time offer sheet. Kit tokens; rem sizes. */
-.pk-body { display: flex; flex-direction: column; gap: 12px; }
+/* Face ID and passkeys in Profile, and the one-time offer sheet. The offer keeps the kit tokens; the Profile section is
+ * Quiet (v4/v5): rows, a teal action row, the help line and a Quiet confirmation. */
 .pk-muted { margin: 0; font: var(--nv-t-callout, 400 .9375rem/1.375rem system-ui); color: var(--nv-muted, #5F625E); text-wrap: pretty; }
-.pk-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
-.pk-item { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 0; border-top: 1px solid var(--nv-hairline, #ECECEA); }
-.pk-item:first-child { border-top: 0; }
-.pk-item__text { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
-.pk-item__name { font: var(--nv-t-row, 500 1rem/1.375rem system-ui); color: var(--nv-ink, #161C1B); overflow-wrap: anywhere; }
-.pk-item__meta { font: var(--nv-t-callout, 400 .875rem/1.25rem system-ui); color: var(--nv-muted, #5F625E); }
-.pk-section .pk-remove { flex: none; min-height: 44px; margin: 0 -8px 0 0; padding: 0 8px; border: 0; border-radius: 8px; background: none; color: var(--nv-accent-strong, #055C5A); font: 600 .9375rem/1.25rem system-ui, -apple-system, sans-serif; cursor: pointer; }
-.pk-section .pk-remove:hover:not(:disabled) { background: var(--nv-inset, #F2F4F3); }
-.pk-section .pk-remove:focus-visible { outline: 2px solid var(--nv-accent, #077572); outline-offset: 2px; }
-.pk-section .pk-remove:disabled { color: var(--nv-muted, #5F625E); cursor: default; }
-.pk-add { align-self: flex-start; }
 .pk-notice { margin: 0; padding: 10px 12px; border-radius: 10px; font: 500 .875rem/1.25rem system-ui, -apple-system, sans-serif; }
 .pk-notice[data-tone="done"] { background: var(--nv-done-fill, #E7F4EC); color: var(--nv-done-ink, #1D5B36); }
 .pk-notice[data-tone="error"] { background: var(--nv-urgent-fill, #FDECEC); color: var(--nv-urgent-ink, #B42318); }
-/* "Try again" inside the error reads as a link, not a boxed button (the kit gives bare buttons a border). */
-.pk-section .pk-notice .nv-link { display: inline; min-height: 0; margin: 0 0 0 4px; padding: 0; border: 0; border-radius: 4px; background: none; color: inherit; font: 600 .875rem/1.25rem system-ui, -apple-system, sans-serif; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-.pk-section .pk-notice .nv-link:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 .pk-dialog { width: min(440px, calc(100vw - 32px)); max-width: none; padding: 0; border: 0; border-radius: 20px; background: var(--nv-canvas, #FFFFFF); color: var(--nv-ink, #161C1B); box-shadow: 0 24px 64px rgba(16, 40, 38, .28); }
 .pk-dialog::backdrop { background: rgba(16, 40, 38, .45); }
 .pk-dialog__form { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 24px; }
@@ -28,4 +14,26 @@
 @media (max-width: 599px) {
   .pk-dialog { width: 100vw; margin: auto 0 0; border-radius: 20px 20px 0 0; }
   .pk-dialog__form { padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* Profile (Quiet). The rows and the help line are the kit's own (q-list, q-row, q-help); these rules add only what the
+ * kit has no class for: the 44pt hit area of the small Remove button, the teal action row and the confirmation. */
+:is(#q-root, html) .pk-section .pk-remove { position: relative; }
+:is(#q-root, html) .pk-section .pk-remove::before { content: ""; position: absolute; inset: -6px -4px; }
+:is(#q-root, html) .pk-section .pk-add .q-rt b { color: var(--q-teal); }
+:is(#q-root, html) .pk-section .pk-add:disabled { cursor: default; }
+:is(#q-root, html) .pk-section .pk-add:disabled .q-rt b { color: var(--q-faint); }
+:is(#q-root, html) .pk-section .pk-add .sig-btn__label { display: inline-grid; justify-items: start; }
+:is(#q-root, html) .pk-dialog--q { width: min(400px, calc(100vw - 48px)); border-radius: 14px; background: var(--q-bg); color: var(--q-ink); box-shadow: none; }
+:is(#q-root, html) .pk-dialog--q::backdrop { background: rgba(0, 0, 0, .34); }
+:is(#q-root, html) .pk-dialog--q .pk-dialog__form { gap: 0; padding: 24px 20px 20px; }
+:is(#q-root, html) .pk-dialog--q .pk-dialog__title { font-size: 20px; line-height: 25px; font-weight: 600; letter-spacing: -.4px; }
+:is(#q-root, html) .pk-dialog--q .pk-dialog__body { margin: 8px 0 0; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; text-wrap: pretty; }
+:is(#q-root, html) .pk-dialog--q .pk-dialog__actions { gap: 0; margin-top: 16px; }
+:is(#q-root, html) .pk-dialog--q .q-btn { width: 100%; margin: 0; }
+:is(#q-root, html) .pk-dialog--q .q-btn + .q-btn { margin-top: 8px; }
+:is(#q-root, html)[data-theme="dark"] .pk-dialog--q { --q-bg: #1C1C1E; --q-fill: #2C2C2E; --q-line: #38383A; }
+@media (max-width: 599px) {
+  :is(#q-root, html) .pk-dialog--q { width: 100vw; margin: auto 0 0; border-radius: 14px 14px 0 0; }
+  :is(#q-root, html) .pk-dialog--q .pk-dialog__form { padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)); }
 }

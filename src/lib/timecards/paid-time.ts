@@ -49,7 +49,7 @@ export function paidSeconds(card: Timecard, item?: object): number {
   return card.entries.reduce((sum, entry) => sum + entryPaidSeconds(card, entry), 0);
 }
 
-/** Recorded or paid time from seconds, in the lead's one duration format: "8 h", "7 h 23 min", "0 min". */
+/** Recorded or paid time from seconds, in the lead's one duration format: "8 h", "7 h 23 min", "45 min", "0 h". */
 export function hoursText(seconds: number): string {
   return formatElapsed(Number.isFinite(seconds) ? seconds / 60 : 0);
 }

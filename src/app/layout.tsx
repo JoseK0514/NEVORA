@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { NUVORA_BRAND } from "../lib/brand";
 import { THEME_SCRIPT } from "../lib/theme";
+import { MODAL_TAB_SCRIPT } from "../lib/modal-tab-wrap";
 import "../components/signature/tokens.css";
 import "./globals.css";
 import "./typeface-theme.css";
@@ -38,6 +39,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <script dangerouslySetInnerHTML={{ __html: TEXT_SCALE_SCRIPT }} />
         {/* Appearance: light or dark from the choice in Profile and the device setting, set before first paint. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        {/* Keyboard: Tab stays inside an open modal dialog instead of leaving for the browser (which pauses private pages). */}
+        <script dangerouslySetInnerHTML={{ __html: MODAL_TAB_SCRIPT }} />
       </head>
       <body>{children}</body>
     </html>

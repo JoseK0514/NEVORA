@@ -8,6 +8,7 @@ import {RoleUnavailableState} from '@/components/quiet-system-state';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 
+export const metadata = { title: "Account recovery" };
 export default async function AccountRecoveryPage({searchParams}:{searchParams?:Promise<{employee?:string;from?:string}>} = {}) {
  // UX-E-47: Employees and Leads get the one "Not available for your role" page.
  const session=await requireSession();

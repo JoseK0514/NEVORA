@@ -83,9 +83,12 @@ export type QuietRowProps = {
   /** Inspection F8/F9: true loads a short fixed list's destinations in full ahead of the tap (no skeleton flash);
    * false stops a long list's rows each prefetching a page. Omitted keeps Next's default. */
   prefetch?: boolean;
+  /** A plain anchor instead of a Next Link: for a file download or an API route, which must not be prefetched or
+   * fetched as a page (a Link asks the route for page data first and logs a 400). */
+  native?: boolean;
 };
 
-export function QuietRow({ title, detail, value, tone, avatar, href, control, chevron, label, one, id, bare, icon, variant, prefetch }: QuietRowProps) {
+export function QuietRow({ title, detail, value, tone, avatar, href, control, chevron, label, one, id, bare, icon, variant, prefetch, native }: QuietRowProps) {
   const leading = avatar === undefined || avatar === null ? null
     : avatar === "open" ? <span className="q-av q-av--open" aria-hidden="true"><PlusIcon className="q-ic" aria-hidden="true" /></span>
     : typeof avatar === "string" ? <span className={variant === "tint" ? "q-av q-av--tint" : "q-av"} aria-hidden="true">{avatar}</span>
@@ -101,7 +104,8 @@ export function QuietRow({ title, detail, value, tone, avatar, href, control, ch
     {control}
     {showChev ? <CaretRightIcon className="q-chev" aria-hidden="true" /> : null}
   </>;
-  const row = href ? <Link className={className} href={href} aria-label={label} prefetch={prefetch}>{body}</Link> : <div className={className} aria-label={label}>{body}</div>;
+  const row = href && native ? <a className={className} href={href} aria-label={label}>{body}</a>
+    : href ? <Link className={className} href={href} aria-label={label} prefetch={prefetch}>{body}</Link> : <div className={className} aria-label={label}>{body}</div>;
   return bare ? row : <li id={id}>{row}</li>;
 }
 

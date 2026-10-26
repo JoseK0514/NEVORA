@@ -1,5 +1,5 @@
 /**
- * Phase A of the fictional demo company "Isla Verde Cafés (fictional)": structure.
+ * Phase A of the fictional demo company "Isla Verde Cafés": structure.
  *
  * Run after `npm run setup:company`, against the same database, with every
  * private value in an env file (never on the command line):
@@ -109,7 +109,7 @@ const LOCATIONS: { key: Exclude<LocationKey, 'condado'>; name: string; shortName
   { key: 'viejo', name: 'Isla Verde Viejo San Juan', shortName: 'Viejo San Juan', clockerKey: 'viejo-san-juan' },
   { key: 'santurce', name: 'Isla Verde Santurce', shortName: 'Santurce', clockerKey: 'santurce' },
   { key: 'rio', name: 'Isla Verde Río Piedras', shortName: 'Río Piedras', clockerKey: 'rio-piedras' },
-  { key: 'aeropuerto', name: 'Isla Verde Cafetería y Tostaduría Artesanal del Aeropuerto Internacional Luis Muñoz Marín, Terminal B (fictional)', shortName: 'Aeropuerto LMM', clockerKey: 'aeropuerto-lmm' },
+  { key: 'aeropuerto', name: 'Isla Verde Cafetería y Tostaduría Artesanal del Aeropuerto Internacional Luis Muñoz Marín, Terminal B, Puerta B12', shortName: 'Aeropuerto LMM', clockerKey: 'aeropuerto-lmm' },
 ];
 const POSITIONS: { key: PositionKey; name: string }[] = [
   { key: 'barista', name: 'Barista' }, { key: 'cashier', name: 'Cashier' },
@@ -275,7 +275,7 @@ try {
   }
   const submitted = scheduled.filter(p => p.availability !== false).slice(0, 20);
   for (const person of submitted) await q('INSERT INTO weekly_availability_submissions(week_start,employee_id,submitted_at,updated_at,uses_normal_availability) VALUES($1,$2,now(),now(),true) ON CONFLICT DO NOTHING', [nextWeek, person.id]);
-  await q("INSERT INTO availability_exceptions(id,employee_id,date,kind,start_time,end_time,note) VALUES($1,'IVC-407',$2,'UNAVAILABLE',NULL,NULL,'Fictional university exam')", [randomUUID(), addDays(nextWeek, 2)]);
+  await q("INSERT INTO availability_exceptions(id,employee_id,date,kind,start_time,end_time,note) VALUES($1,'IVC-407',$2,'UNAVAILABLE',NULL,NULL,'University exam')", [randomUUID(), addDays(nextWeek, 2)]);
   log(`availability for ${scheduled.length - 2} people, 2 with none, 1 exception; ${submitted.length} submitted next week`);
 
   // 5. Four weeks of shifts: two past weeks, the current week and next week (left as a draft).

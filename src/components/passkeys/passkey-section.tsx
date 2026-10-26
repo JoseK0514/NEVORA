@@ -64,38 +64,42 @@ export function PasskeySection() {
   }
 
   const passkeys = load.state === "ready" ? load.passkeys : [];
+  // Quiet (v4/v5): a group label, the saved passkeys as rows with Remove, a teal "Add a passkey" row and the help line
+  // under it, the same shape as Work details above. No card, shadow or bordered button.
   return (
-    <section className="nv-card pk-section" aria-labelledby="passkeys-title">
-      <div className="nv-card__head"><h2 className="nv-card__title" id="passkeys-title">{t.sectionTitle}</h2></div>
-      <div className="nv-card__body pk-body">
-        {load.state === "loading" ? <p className="pk-muted" role="status">{t.loading}</p> : null}
-        {load.state === "failed" ? <p className="pk-notice" data-tone="error" role="alert">{t.loadFailed} <button type="button" className="nv-link" onClick={() => void refresh()}>{t.tryAgain}</button></p> : null}
-        {load.state === "ready" && passkeys.length === 0 ? <p className="pk-muted">{t.empty}</p> : null}
-        {passkeys.length ? <ul className="pk-list">
+    <section className="pk-section" aria-labelledby="passkeys-title">
+      <div className="q-grp"><h2 id="passkeys-title">{t.sectionTitle}</h2></div>
+      <div className="pk-body">
+        {passkeys.length || supported ? <ul className="q-list pk-list">
           {passkeys.map(passkey => (
             <li key={passkey.id} className="pk-item">
-              <span className="pk-item__text">
-                <span className="pk-item__name">{passkey.name}</span>
-                <span className="pk-item__meta">{t.added(dateLabel(passkey.createdAt))} · {passkey.lastUsedAt ? t.lastUsed(dateLabel(passkey.lastUsedAt)) : t.neverUsed}</span>
-              </span>
-              <button type="button" className="nv-link pk-remove" aria-label={t.removeLabel(passkey.name)} disabled={busy !== null}
-                onClick={event => { opener.current = event.currentTarget; setConfirm(passkey); }}>{t.remove}</button>
+              <div className="q-row">
+                <span className="q-rt"><b>{passkey.name}</b><i>{t.added(dateLabel(passkey.createdAt))} · {passkey.lastUsedAt ? t.lastUsed(dateLabel(passkey.lastUsedAt)) : t.neverUsed}</i></span>
+                <button type="button" className="q-bs pk-remove" aria-label={t.removeLabel(passkey.name)} disabled={busy !== null}
+                  onClick={event => { opener.current = event.currentTarget; setConfirm(passkey); }}>{t.remove}</button>
+              </div>
             </li>
           ))}
+          {supported ? <li className="pk-add-row">
+            <button ref={addButton} type="button" className="q-row q-row--one q-row--btn q-row--go pk-add" onClick={() => void add()} disabled={busy === "remove"} aria-disabled={busy === "add" || undefined} aria-busy={busy === "add"}>
+              <span className="q-rt"><b><SigPendingLabel pending={busy === "add"} pendingText={t.settingUp}>{phone ? t.setUpPhone : t.setUpDesktop}</SigPendingLabel></b></span>
+            </button>
+          </li> : null}
         </ul> : null}
-        {notice ? <p className="pk-notice" data-tone={notice.tone} role={notice.tone === "error" ? "alert" : "status"}>{notice.text}</p> : null}
-        {supported ? <button ref={addButton} type="button" className="nv-btn pk-add" data-kind="secondary" onClick={() => void add()} disabled={busy === "remove"} aria-disabled={busy === "add" || undefined} aria-busy={busy === "add"}>
-          <SigPendingLabel pending={busy === "add"} pendingText={t.settingUp}>{phone ? t.setUpPhone : t.setUpDesktop}</SigPendingLabel>
-        </button> : <p className="pk-muted">{t.notSupported}</p>}
+        {load.state === "loading" ? <p className="q-help" role="status">{t.loading}</p> : null}
+        {load.state === "failed" ? <p className="q-help q-help--alert" role="alert">{t.loadFailed} <button type="button" className="q-linkbtn" onClick={() => void refresh()}>{t.tryAgain}</button></p> : null}
+        {notice ? <p className={notice.tone === "error" ? "q-help q-help--alert" : "q-help"} data-tone={notice.tone} role={notice.tone === "error" ? "alert" : "status"}>{notice.text}</p> : null}
+        {load.state === "ready" && passkeys.length === 0 ? <p className="q-help">{t.empty}</p> : null}
+        {supported ? null : <p className="q-help">{t.notSupported}</p>}
       </div>
-      <dialog ref={dialog} className="pk-dialog" aria-labelledby="passkey-remove-title" aria-describedby="passkey-remove-body"
+      <dialog ref={dialog} className="pk-dialog pk-dialog--q" aria-labelledby="passkey-remove-title" aria-describedby="passkey-remove-body"
         onClose={() => { if (confirm) { setConfirm(null); opener.current?.focus(); } }}>
         {confirm ? <form method="dialog" className="pk-dialog__form" onSubmit={event => event.preventDefault()}>
           <h2 id="passkey-remove-title" className="pk-dialog__title">{t.confirmTitle(confirm.name)}</h2>
-          <p id="passkey-remove-body" className="pk-muted">{t.confirmBody}</p>
+          <p id="passkey-remove-body" className="pk-dialog__body">{t.confirmBody}</p>
           <div className="pk-dialog__actions">
-            <button type="button" className="nv-btn" data-kind="danger" onClick={() => void remove(confirm)} aria-disabled={busy === "remove" || undefined} aria-busy={busy === "remove"}><SigPendingLabel pending={busy === "remove"} pendingText={t.removing}>{t.remove}</SigPendingLabel></button>
-            <button type="button" className="nv-btn" data-kind="secondary" data-autofocus="" onClick={() => setConfirm(null)} disabled={busy === "remove"}>{t.keep}</button>
+            <button type="button" className="q-btn q-btn--sec q-btn--danger" onClick={() => void remove(confirm)} aria-disabled={busy === "remove" || undefined} aria-busy={busy === "remove"}><SigPendingLabel pending={busy === "remove"} pendingText={t.removing}>{t.remove}</SigPendingLabel></button>
+            <button type="button" className="q-btn q-btn--quiet" data-autofocus="" onClick={() => setConfirm(null)} disabled={busy === "remove"}>{t.keep}</button>
           </div>
         </form> : null}
       </dialog>

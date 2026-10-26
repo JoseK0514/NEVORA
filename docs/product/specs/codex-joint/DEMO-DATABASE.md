@@ -20,6 +20,7 @@ The seed builds one production-like fictional company in two phases:
 - Shift changes at Condado: one swap approved by the company-wide Manager, one swap waiting for the partner, two open coverage offers, one callout waiting for a Manager.
 - Both past weeks' timecards approved and finalized; the previous week's pay-period population saved; native payroll settings, wage/tax profiles and opening balances for everyone who worked; one native run prepared, approved, and its documents (26 statements and a company summary) generated and published by the payroll worker. The current week stays open.
 - `NEVORA_DEMO_ACCOUNTS_FILE` receives the account list (IDs, names, roles, Manager scope; never passwords).
+- Screens read like a real business: names, places, notes and updates carry no "(fictional)" label. Everything is still fictional (this document, the `nevora_demo*` name guard and the `example.invalid` addresses say so), and the payroll evidence references keep their "Fictional demo" wording.
 
 ## Before you start
 
@@ -37,7 +38,7 @@ The seed builds one production-like fictional company in two phases:
 NEVORA_SETUP_ENVIRONMENT=development
 NEVORA_SETUP_DATABASE_URL=postgresql://<role>:<password>@<direct-host>/nevora_demo?sslmode=require
 NEVORA_SETUP_DATABASE_NAME=nevora_demo
-COMPANY_NAME="Isla Verde Cafés (fictional)"
+COMPANY_NAME="Isla Verde Cafés"
 COMPANY_TIME_ZONE=America/Puerto_Rico
 COMPANY_LOCATION_NAME="Isla Verde Condado"
 COMPANY_LOCATION_SHORT_NAME=Condado

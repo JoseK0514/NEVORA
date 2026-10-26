@@ -177,7 +177,7 @@ describe("buildManagerActionItems", () => {
     expect(item).toMatchObject({
       type: "COVERAGE_GAP",
       title: "No lead scheduled at FUEL - 2",
-      detail: "Wed, Sep 30 · 8:00 AM–12:00 PM · Designated lead required",
+      detail: "Wed, Sep 30 · 8:00 AM – 12:00 PM · Designated lead required",
     });
   });
 

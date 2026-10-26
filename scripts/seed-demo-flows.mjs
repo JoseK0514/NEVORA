@@ -388,7 +388,7 @@ try {
       const page = (await as(S.callout)).page;
       await page.goto(appUrl + `/app/exchange/callout?shiftId=${calloutShift.id}`, { waitUntil: 'networkidle' });
       await page.getByText('Illness / sick', { exact: true }).click();
-      await page.locator('textarea[name="reasonNote"]').fill('Fever since last night; fictional demo callout.');
+      await page.locator('textarea[name="reasonNote"]').fill('Fever since last night.');
       await formSubmit(page, /^Send/, async () => (await q('SELECT id FROM shift_callouts WHERE shift_id=$1', [calloutShift.id]))[0]);
       out.callout = calloutShift.id;
     } else summary.warnings.push('Callout: no future published shift this week.');
@@ -414,9 +414,9 @@ try {
       return 'published';
     };
     const results = [
-      await publish(ownerId, 'Nuevo menú de otoño', 'Starting Monday every location serves the autumn menu: pumpkin spice latte, quesito de guayaba and mallorca. Tasting at 8:00 AM in Condado. Fictional demo content.', false),
-      await publish(ownerId, 'Safety: new espresso machine procedure', 'Please read the new steam wand cleaning procedure before your next shift and confirm you have read it. Fictional demo content.', true),
-      await publish(S.companyManager, 'Parking at Aeropuerto LMM', 'Staff parking moves to Lot C next week. Bring your badge. Fictional demo content.', false),
+      await publish(ownerId, 'Nuevo menú de otoño', 'Starting Monday every location serves the autumn menu: pumpkin spice latte, quesito de guayaba and mallorca. Tasting at 8:00 AM in Condado.', false),
+      await publish(ownerId, 'Safety: new espresso machine procedure', 'Please read the new steam wand cleaning procedure before your next shift and confirm you have read it.', true),
+      await publish(S.companyManager, 'Parking at Aeropuerto LMM', 'Staff parking moves to Lot C next week. Bring your badge.', false),
     ];
     if (results.includes('held')) summary.skipped.push('Updates: not published. The app holds Updates (D04 activation hold, src/lib/communications/sql.ts) everywhere except owned loopback test databases, so a nevora_demo database cannot publish them.');
     return { published: results.filter(r => r === 'published').length, held: results.filter(r => r === 'held').length };

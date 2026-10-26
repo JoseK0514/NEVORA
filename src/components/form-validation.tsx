@@ -42,7 +42,8 @@ function message(field: Field) {
   if (v.rangeUnderflow && field.dataset.errorMin) return field.dataset.errorMin;
   if (v.valueMissing) {
     if (field instanceof HTMLSelectElement) return label ? `Choose ${label}` : "Choose an option";
-    if (field instanceof HTMLInputElement && (field.type === "checkbox" || field.type === "radio")) return "Select this to continue";
+    if (field instanceof HTMLInputElement && field.type === "radio") return "Choose one to continue";
+    if (field instanceof HTMLInputElement && field.type === "checkbox") return "Select this to continue";
     return label ? `Enter ${label}` : "Fill in this field";
   }
   if (v.typeMismatch && field instanceof HTMLInputElement && field.type === "email") return "Enter an email like name@example.com";
@@ -58,7 +59,29 @@ function errorId(field: Field) {
   return field.dataset.errorId;
 }
 
+/** A radio group reports once: its first radio carries the message, and every radio in it is marked invalid and
+ * described by that one message (the form used to repeat it under each option). */
+function radioGroup(field: Field): HTMLInputElement[] | null {
+  if (!(field instanceof HTMLInputElement) || field.type !== "radio" || !field.name || !field.form) return null;
+  return Array.from(field.form.elements).filter((item): item is HTMLInputElement => item instanceof HTMLInputElement && item.type === "radio" && item.name === field.name);
+}
+
 function show(field: Field) {
+  const group = radioGroup(field);
+  if (group && group.length > 1) {
+    const lead = group[0];
+    showOne(lead);
+    for (const other of group.slice(1)) {
+      other.dataset.errorId = lead.dataset.errorId;
+      if (!(other.getAttribute("aria-describedby") ?? "").split(" ").includes(lead.dataset.errorId!)) other.setAttribute("aria-describedby", [other.getAttribute("aria-describedby"), lead.dataset.errorId].filter(Boolean).join(" "));
+      other.setAttribute("aria-invalid", "true");
+    }
+    return;
+  }
+  showOne(field);
+}
+
+function showOne(field: Field) {
   const id = errorId(field);
   let node = document.getElementById(id);
   if (!node) {
@@ -72,6 +95,12 @@ function show(field: Field) {
 }
 
 function clear(field: Field) {
+  const group = radioGroup(field);
+  if (group && group.length > 1) { for (const item of group) clearOne(item); return; }
+  clearOne(field);
+}
+
+function clearOne(field: Field) {
   const id = field.dataset.errorId;
   if (!id) return;
   document.getElementById(id)?.remove();
