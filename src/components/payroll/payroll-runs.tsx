@@ -183,7 +183,7 @@ function RunReview({ run, capabilities, operation }: { run: PayrollRun; capabili
     <PayrollStepper run={run} />
     {run.correctionOf && <p className="pw-notice">Correction linked to payroll run <code>{run.correctionOf}</code>. The original approval and statements remain in history.{run.nativeCorrection && <><br /><strong>Correction reason:</strong> {run.nativeCorrection.reason}</>}</p>}
     {notes.corrections.map((reason, index) => <p className="pw-notice" key={index}><strong>Correction reason:</strong> {reason}</p>)}
-    {notes.blocking.length > 0 && <PayrollState title={run.status === 'WAITING_FOR_AMOUNTS' ? 'Provider amounts needed' : 'Resolve these exceptions'} error={run.status !== 'WAITING_FOR_AMOUNTS'}>{notes.blocking.map((exception, index) => <span className="pw-exception" key={index}>{payrollExceptionMessage(exception)}</span>)}</PayrollState>}
+    {notes.blocking.length > 0 && <PayrollState title={run.status === 'WAITING_FOR_AMOUNTS' ? 'Provider amounts needed' : 'Resolve these exceptions'} error={run.status !== 'WAITING_FOR_AMOUNTS'}>{notes.blocking.map((exception, index) => <span className="pw-exception" key={index}>{payrollExceptionMessage(exception, capabilities.canConfigure ? 'OWNER' : 'OTHER')}</span>)}</PayrollState>}
     {run.totals && <dl className="pw-totals">
       <div><dt>Gross pay</dt><dd>{formatPayrollMoney(run.totals.grossMinor)}</dd></div>
       <div><dt>Employee deductions</dt><dd>{formatPayrollMoney(run.totals.deductionsMinor)}</dd></div>

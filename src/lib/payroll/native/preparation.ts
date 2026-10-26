@@ -13,6 +13,8 @@ export type NativePreparationFacts = {
     employeeLocations: Record<string, string[]>;
     unknownCoverageEmployeeIds: string[];
     blockingIssues?: string[];
+    /** Present when Owners were left out of payroll by the company default (B-09). */
+    populationRule?: { version: 'OWNERS_EXCLUDED_BY_DEFAULT_V1'; excludedOwnerIds: string[]; companyDefaultsRevision: number | null };
 };
 import { calculateNativePayroll } from "./calculate";
 import { hash } from "../store";

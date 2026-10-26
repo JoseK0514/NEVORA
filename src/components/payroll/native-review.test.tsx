@@ -20,7 +20,7 @@ describe('source-aware payroll review presentation', () => {
     boundary.data!.runs = [nativeRun({ status: 'BLOCKED', rows: null, totals: null, reviewToken: null, exceptions: ['WAGE_PROFILE_REQUIRED:E1'], nativeCalculation: { version: 'NATIVE_RUN_V1', state: 'blocked', ruleRevision: 1, templateVersion: 'NEVORA_NATIVE_PAYSTUB_PDF_V1', employees: [] } })];
     const html = render();
     expect(html).toContain('Needs attention');
-    expect(html).toContain('wage profile');
+    expect(html).toContain('hourly rate');
     expect(html).toContain('Recalculate draft');
     expect(html).not.toContain('Import provider amounts');
     expect(html).not.toContain('$0.00');

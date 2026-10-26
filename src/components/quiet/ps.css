@@ -1,0 +1,18 @@
+/* Team PS: plain payroll setup on the Quiet kit (inside .q-pset). Same type scale and tokens; no new colours. */
+:is(#q-root, html) .q-pset .q-ps-form { margin: 0; }
+:is(#q-root, html) .q-pset .q-ps-form fieldset.wb-form { display: flex; flex-direction: column; gap: 16px; min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#q-root, html) .q-pset .q-ps-h { margin: 12px 0 0; padding: 0; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--q-ink); letter-spacing: -.1px; }
+:is(#q-root, html) .q-pset .q-ps-form fieldset.wb-form > .q-ps-h:first-child { margin-top: 4px; }
+:is(#q-root, html) .q-pset .q-ps-pair { display: flex; flex-direction: column; gap: 8px; }
+:is(#q-root, html) .q-pset .q-ps-locs { display: flex; flex-direction: column; min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#q-root, html) .q-pset .q-ps-audit { margin-top: 4px; border-top: 1px solid var(--q-line); }
+:is(#q-root, html) .q-pset .q-ps-audit > .q-rule__body { margin-left: 0; border-bottom: 0; }
+:is(#q-root, html) .q-pset .q-ps-dl { display: flex; flex-direction: column; gap: 12px; margin: 0 0 20px; }
+:is(#q-root, html) .q-pset .q-ps-dl + .q-ps-dl { padding-top: 16px; border-top: 1px solid var(--q-line); }
+:is(#q-root, html) .q-pset .q-ps-dl dt { font-size: 13px; line-height: 18px; color: var(--q-grey); }
+:is(#q-root, html) .q-pset .q-ps-dl dd { margin: 2px 0 0; font-size: 15px; line-height: 20px; color: var(--q-ink); overflow-wrap: anywhere; }
+:is(#q-root, html) .q-pset .q-ps-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px !important; line-height: 18px !important; }
+:is(#q-root, html) .q-pset .q-rule__body .wb-check input[type="radio"] { flex: none; width: 24px; height: 24px; margin: 0; accent-color: var(--q-teal-fill); }
+/* quiet.css resets margin on .q-rule__body.wb-form, which put field rows flush with the screen edge; keep the 20px row inset. */
+:is(#q-root, html) .q-pset .q-rule__body.wb-form { margin-left: 20px; }
+:is(#q-root, html) .q-pset .q-ps-audit > summary.q-row { padding-left: 0; }

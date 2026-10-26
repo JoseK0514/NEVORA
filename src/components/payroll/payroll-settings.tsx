@@ -84,10 +84,10 @@ export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone 
         <CompanyPreferences key={revision?.revision ?? 0} preferences={revision?.preferences ?? defaults} revision={revision?.revision ?? 0} data={data} operation={operation} />
         <details className="q-details q-rule"><QuietSummary title="Exceptions" value={exceptionCount ? String(exceptionCount) : 'None'} /><div className="q-rule__body"><EmployeeException data={data} preferences={revision?.preferences ?? defaults} operation={operation} /></div></details>
       </div>
+      {(nativeSources !== null || data.capabilities.internalCalculatorAvailable) && <NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/>}
       <div className="q-grp"><h2>Records</h2></div>
       <div className="q-list q-rule-list">
         {!data.capabilities.internalCalculatorAvailable && <details className="q-details q-rule"><QuietSummary title="Payroll access" value={data.grants.length ? String(data.grants.length) : 'Owner only'} /><div className="q-rule__body"><PayrollAccess data={data} operation={operation} /></div></details>}
-        {(nativeSources !== null || data.capabilities.internalCalculatorAvailable) && <details className="q-details q-rule"><QuietSummary title="Payroll setup" value="" /><div className="q-rule__body"><NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/></div></details>}
         <details className="q-details q-rule"><QuietSummary title="Change history" value={data.revisions.length ? String(data.revisions.length) : 'None'} /><div className="q-rule__body">{data.revisions.length ? <div className="wb-history">{[...data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>Revision {item.revision} · Effective {effectiveDate(item.effectiveFrom.slice(0, 10))}</strong><p>{item.reason}</p><small>Recorded {recordedAt(item.createdAt)}</small></div>)}</div> : <p className="wb-note">No settings revisions have been saved.</p>}</div></details>
       </div>
       {/* P2-4, UX-O-34, visual #44: the policy paragraph is a footer row that opens a sheet, written for owners. */}

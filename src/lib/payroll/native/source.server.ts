@@ -15,6 +15,7 @@ import { projectNativeYtd, type NativeLedgerEntry } from './ytd';
 import { projectEmployerYtdCounters } from './obligations';
 import { buildNativeRunCandidate, type NativePreparationFacts } from './preparation';
 import { NATIVE_CALCULATOR_VERSION } from './calculate';
+import { excludedOwners } from './setup';
 import { buildRecordedSourceCapture, projectRecordedSourceCapture, type RecordedSourceRequest, type RecordedSourceCapture } from './recorded-source.server';
 export const EXACT_CENT_ASSESSMENT_SHA256 = 'c731b2e9afaa8771e14491b3a187edc49f4cc0539ec87ed53a1e9dd1020f075c';
 /** Detect ledger relation presence only. This is calculator-schema capability,
@@ -58,13 +59,19 @@ type DatabaseFacts = {
         startDate: string;
         endDate: string;
     }[];
+    /** Roster members whose current role is Owner (B-09 population default). */
+    owners?: string[];
+    /** Current company payroll defaults record, if the Owner saved one. */
+    companyDefaults?: { revision: number; factsSha256: string; facts: { includeOwners?: boolean } } | null;
 };
 export function nativeDatabaseFactsQuery(workspaceId: string, run: PayrollRun, ids: string[]): SqlStatement {
     return q(`SELECT (SELECT time_zone FROM workspaces WHERE id=$1 AND active AND singleton) AS "timeZone",
  COALESCE((SELECT jsonb_agg(payload ORDER BY employee_id) FROM native_payroll_profiles_current WHERE workspace_id=$1 AND employee_id=ANY($2::text[])),'[]'::jsonb) AS profiles,
  COALESCE((SELECT jsonb_agg(jsonb_build_object('employeeId',employee_id,'revision',revision,'ytd',payload) ORDER BY employee_id) FROM native_payroll_opening_ytd_current WHERE workspace_id=$1 AND employee_id=ANY($2::text[]) AND tax_year=EXTRACT(YEAR FROM $3::date)),'[]'::jsonb) AS openings,
  COALESCE((SELECT jsonb_agg(value ORDER BY sequence) FROM (SELECT sequence,jsonb_build_object('runId',run_id::text,'correctionOf',correction_of::text,'employeeId',employee_id,'period',jsonb_build_object('startDate',start_date::text,'endDate',end_date::text),'payday',payday::text,'sequence',sequence,'result',payload->'result','locationCoverage',(SELECT approved.snapshot#>ARRAY['native','employeeCoverage',native_payroll_ledger.employee_id] FROM payroll_runs_current approved WHERE approved.workspace_id=native_payroll_ledger.workspace_id AND approved.run_id=native_payroll_ledger.run_id),'deductionSources',COALESCE((SELECT item->'deductions' FROM payroll_runs_current approved CROSS JOIN LATERAL jsonb_array_elements(approved.snapshot#>'{native,facts,inputs}') item WHERE approved.workspace_id=native_payroll_ledger.workspace_id AND approved.run_id=native_payroll_ledger.run_id AND item->>'employeeId'=native_payroll_ledger.employee_id),'[]'::jsonb)) AS value FROM native_payroll_ledger WHERE workspace_id=$1 AND employee_id=ANY($2::text[]) AND tax_year=EXTRACT(YEAR FROM $3::date) ORDER BY sequence LIMIT 5001) selected),'[]'::jsonb) AS ledger,
- COALESCE((SELECT jsonb_agg(value ORDER BY employee_id,start_date,end_date) FROM (SELECT employee_id,start_date,end_date,jsonb_build_object('employeeId',employee_id,'startDate',start_date::text,'endDate',end_date::text) AS value FROM nevora_timecard_latest WHERE workspace_id=$1 AND employee_id=ANY($2::text[]) AND start_date<=$5::date+8 AND end_date>=$4::date-14 ORDER BY employee_id,start_date,end_date LIMIT 19201) selected),'[]'::jsonb) AS coverage`, workspaceId, ids, run.payday, run.period.startDate, run.period.endDate);
+ COALESCE((SELECT jsonb_agg(value ORDER BY employee_id,start_date,end_date) FROM (SELECT employee_id,start_date,end_date,jsonb_build_object('employeeId',employee_id,'startDate',start_date::text,'endDate',end_date::text) AS value FROM nevora_timecard_latest WHERE workspace_id=$1 AND employee_id=ANY($2::text[]) AND start_date<=$5::date+8 AND end_date>=$4::date-14 ORDER BY employee_id,start_date,end_date LIMIT 19201) selected),'[]'::jsonb) AS coverage,
+ COALESCE((SELECT jsonb_agg(id ORDER BY id) FROM employees WHERE role='OWNER' AND id=ANY($2::text[])),'[]'::jsonb) AS owners,
+ (SELECT payload FROM native_payroll_setup_records_current WHERE workspace_id=$1 AND kind='COMPANY_DEFAULTS') AS "companyDefaults"`, workspaceId, ids, run.payday, run.period.startDate, run.period.endDate);
 }
 export function nativeSourceRequest(workspaceId: string, run: PayrollRun, employeeId: string, wages: NativePayrollInput['wages'], coverage: DatabaseFacts['coverage']): RecordedSourceRequest {
     if (!wages.length)
@@ -144,11 +151,15 @@ export async function captureNativePayroll(seed: {
     const inputs: NativePayrollInput[] = [], captures: Extract<RecordedSourceCapture, {
         state: 'ready';
     }>[] = [], employeeLocations: Record<string, string[]> = {}, unknownCoverageEmployeeIds: string[] = [];
+    // B-09: Owners are not in the payroll population unless company defaults include them.
+    // A correction keeps everyone its original run paid, so CORRECTION_POPULATION_CONFLICT cannot arise from this rule.
+    const excludedOwnerIds = excludedOwners(population.members, database.owners ?? [], database.companyDefaults, run.correctionOf ? database.ledger.filter(e => e.runId === run.correctionOf).map(e => e.employeeId) : []);
+    const disposition = (m: { employeeId: string; disposition: 'INCLUDE' | 'ZERO_TIME' | 'EXCLUDE' }) => excludedOwnerIds.includes(m.employeeId) ? 'EXCLUDE' as const : m.disposition;
     for (const member of population.members) {
         await progress?.();
         const employee = seed.source.roster.find(e => e.employeeId === member.employeeId)!;
         employeeLocations[member.employeeId] = [employee.locationId];
-        if (member.disposition === 'EXCLUDE')
+        if (disposition(member) === 'EXCLUDE')
             continue;
         try {
             const revision = database.profiles.find(e => e.employeeId === member.employeeId);
@@ -190,7 +201,7 @@ export async function captureNativePayroll(seed: {
     }
     if (captures.reduce((n, c) => n + c.entries.length, 0) > 10000)
         issues.push('NATIVE_SOURCE_LIMIT');
-    const facts: NativePreparationFacts = { inputs, population: population.members.map(m => ({ employeeId: m.employeeId, name: seed.source.roster.find(e => e.employeeId === m.employeeId)!.name, disposition: m.disposition })), sourceFingerprint: hash({ source: seed.source, database, captures }), ruleRevision: 1, rulesVerified: true, employeeLocations, unknownCoverageEmployeeIds, blockingIssues: issues };
+    const facts: NativePreparationFacts = { inputs, population: population.members.map(m => ({ employeeId: m.employeeId, name: seed.source.roster.find(e => e.employeeId === m.employeeId)!.name, disposition: disposition(m) })), sourceFingerprint: hash({ source: seed.source, database, captures }), ruleRevision: 1, rulesVerified: true, employeeLocations, unknownCoverageEmployeeIds, blockingIssues: issues, ...(excludedOwnerIds.length ? { populationRule: { version: 'OWNERS_EXCLUDED_BY_DEFAULT_V1' as const, excludedOwnerIds, companyDefaultsRevision: database.companyDefaults?.revision ?? null } } : {}) };
     const next = { ...buildNativeRunCandidate(run, facts), settingsRevision: settings.revision, populationRevision: population.revision, exceptionRevisions: exceptions.map(e => ({ employeeId: e.exception.employeeId, revision: e.revision })) };
     if (run.correctionOf && next.nativeCalculation?.state === 'ready' && hash(database.ledger.filter(e => e.runId === run.correctionOf).map(e => e.employeeId).sort()) !== hash(next.nativeCalculation.employees.map(e => e.employeeId).sort()))
         return { run: blocked(next, ['CORRECTION_POPULATION_CONFLICT']), snapshot: null, guards };

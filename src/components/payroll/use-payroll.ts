@@ -64,6 +64,8 @@ function confirmedMessage(command: { action?: string }) {
     case 'APPROVE': return 'Payroll revision approved';
     case 'PUBLISH': return 'Statements published to employees';
     case 'PAYMENT_EXPORT': return 'Payment instructions prepared';
+    case 'SAVE_COMPANY_PAYROLL_DEFAULTS': return 'Company defaults saved';
+    case 'SAVE_EMPLOYEE_PAY_SETUP': return 'Pay setup saved';
     default: return 'Action recorded';
   }
 }
