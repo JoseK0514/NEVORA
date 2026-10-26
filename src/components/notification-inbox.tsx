@@ -95,11 +95,13 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
       const Icon=icons[notificationPresentation(item.label).icon];
       const review=item.reviewState??'unavailable';
       return <li key={item.id} data-inbox-row>
-       <Link className="q-row q-row--av" href={item.href} prefetch={false} aria-label={`${item.label}, ${reviewLabels[review]}, ${whenLong(item.at)}`}
+       {/* A plain link: the guarded open is a route that answers with a redirect, so it loads as a new document (a
+         * client-side RSC fetch of it carries an extra query and is refused as unavailable). */}
+       <a className="q-row q-row--av" href={item.href} aria-label={`${item.label}, ${reviewLabels[review]}, ${whenLong(item.at)}`}
         onClick={()=>{if(review==='unread')void markRead(item.id);}}>
         <span className="q-av" aria-hidden="true"><Icon className="q-ic" aria-hidden="true"/></span>
         <span className="q-rt"><b>{item.label}</b><i>{weekOf(item.href)?<>{weekOf(item.href)} · </>:null}<time dateTime={item.at}>{when(item.at)}</time></i></span>
-       </Link>
+       </a>
       </li>;
      })}</ul>
      :<p className="q-empty q-first">{filter==='unread'?'You’re all caught up.':'No notifications yet.'}</p>}
@@ -129,14 +131,14 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
     <ul className={styles.list}>{group.items.map(item=>{
      const presentation=notificationPresentation(item.label),Icon=icons[presentation.icon];
      const review=item.reviewState??'unavailable',action=item.actionState??'unavailable';
-     return <li key={item.id} data-inbox-row><Link className={styles.row} data-unread={review==='unread'} href={item.href} prefetch={false}>
+     return <li key={item.id} data-inbox-row><a className={styles.row} data-unread={review==='unread'} href={item.href}>
       <span className={styles.icon}><Icon size={22} weight="regular" aria-hidden="true"/></span>
       <div className={styles.copy}><div className={styles.rowHeading}><strong>{item.label}</strong><time dateTime={item.at}>{keepWhole(new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit'}).format(new Date(item.at)))}</time></div>
        <div className={styles.statuses}><span className={styles.review} data-state={review}>{review==='unread'?<span className={styles.dot} aria-hidden="true"/>:review==='confirmed'?<CheckCircleIcon size={15} aria-hidden="true"/>:null}{reviewLabels[review]}</span>{/* One status per row for Owners and Managers (v3); employees keep both. */}{onMarkRead?null:<span className={styles.action} data-state={action}>{actionLabels[action]}</span>}</div>
        <span className={styles.destination}>{presentation.destination}</span>
       </div>
       <span className={styles.open}>{presentation.action}<CaretRightIcon size={18} aria-hidden="true"/></span>
-     </Link>{onMarkRead&&review==='unread'?<button type="button" className={styles.markRead} disabled={pendingRead!==null} onClick={()=>void markRead(item.id)} aria-label={`Mark ${item.label} read`}>{pendingRead===item.id?'Marking read…':'Mark read'}</button>:null}</li>;
+     </a>{onMarkRead&&review==='unread'?<button type="button" className={styles.markRead} disabled={pendingRead!==null} onClick={()=>void markRead(item.id)} aria-label={`Mark ${item.label} read`}>{pendingRead===item.id?'Marking read…':'Mark read'}</button>:null}</li>;
     })}</ul>
    </section>)}</div>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} weight="regular" aria-hidden="true"/></span>
     <h3>{search?'No matching notifications':filter==='unread'?'No unread notifications in this view':filter==='required'?'No notifications requiring action in this view':ready.coverage==='complete'?'No notifications here.':'No available notifications to show'}</h3>
