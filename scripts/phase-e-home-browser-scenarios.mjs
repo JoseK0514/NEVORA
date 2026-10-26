@@ -393,6 +393,10 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='complete-zero';const clearActor='QA-'+label+'-CLEAR';
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,'Fictional','Clear','555-0197','EMPLOYEE','loc-1')",[clearActor]);
  await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[clearActor,await hashPassword(TEST_PASSWORD)]);
+ // The fixture's week is "now minus 1 hour": from midnight to 1 AM on a Monday (Puerto Rico) that is still last week, and
+ // the real current week has no publication, so Home is honestly partial. Publish the current week too when they differ.
+ {const [current]=await q("SELECT date_trunc('week',clock_timestamp() AT TIME ZONE 'America/Puerto_Rico')::date::text AS week");const [fixture]=await q("SELECT date_trunc('week',(clock_timestamp()-interval '1 hour') AT TIME ZONE 'America/Puerto_Rico')::date::text AS week");
+  if(current.week!==fixture.week){await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES($1,'loc-1',$2,'DRAFT','QAOWNER') ON CONFLICT(location_id,week_start) DO NOTHING",['home-boundary-'+current.week,current.week]);await publishScheduleWithRevision({locationId:'loc-1',weekStart:current.week,managerId:'QAOWNER'},app.database.executor);}}
  await login(page,clearActor);await ready();await page.getByText("You’re all set",{exact:true}).waitFor();assert.equal(await page.locator('[data-home-state="ready"]').count(),1);assert.equal(await items().count(),0);await shot('all-set');
  const clearApi=await page.evaluate(async binding=>{const r=await fetch('/api/employee/home',{cache:'no-store',headers:{'X-Nevora-Home':binding}});return r.json();},binding);assert.equal(clearApi.allSet,true);assert.equal(clearApi.snapshot.publicationState,'complete');for(const source of Object.values(clearApi.snapshot.sources))assert.equal(source.state,'complete');
  checks.push('H15 actual new eligible account has no historical communication grants; all six canonical sources/publication complete and zero items yield exact all-set copy');
