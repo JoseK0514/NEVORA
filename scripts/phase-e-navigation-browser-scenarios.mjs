@@ -156,11 +156,14 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   }else{await nav('/app/profile',true);checks.push('Native keyboard desktop account-menu Profile navigation and focus handoff');}
   stage='layout';await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);assert(await page.getByText('Your workplace hasn’t turned on alerts yet.',{exact:true}).isVisible());await bounds();await screenshot('profile');await accessibility('Profile');await contrastStates();
   await nav('/app/notifications');await ready('notifications');assert.equal(await page.locator('[data-inbox-row] > a').count(),1);assert.equal(await page.locator('[data-inbox-row] > a').getAttribute('href'),'/app/notifications/open?notificationId='+noticeId);assert(!await page.locator('[data-private-view]').innerText().then(t=>t.includes('STORED PRIVATE')));await bounds();await screenshot('inbox');await accessibility('Notifications');
-  const before=await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]);await page.locator('[data-inbox-row] > a').click();await page.waitForURL(u=>u.pathname==='/app/requests');
+  // The guarded open itself never mutates read state (checked on its own: the Quiet inbox row also marks an unread item
+  // read when tapped, by its own explicit request).
+  const before=await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]);const guarded=await page.request.get(app.url+'/app/notifications/open?notificationId='+noticeId,{maxRedirects:0});assert.equal(guarded.status(),303);assert.equal(new URL(guarded.headers().location,app.url).pathname,'/app/requests');assert.deepEqual(await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]),before);
+  await page.locator('[data-inbox-row] > a').click();await page.waitForURL(u=>u.pathname==='/app/requests');
   // The guarded open loads a new document. Wait for its current bell read before Back;
   // a URL alone does not mean the destination's async reads have completed.
   await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');await settle();
-  const opened=new URL(page.url());assert.equal(opened.searchParams.get('requestId'),requestId);assert.equal(opened.searchParams.get('tab'),'my');assert.equal(opened.hash,'#request-'+requestId);assert.deepEqual(await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]),before);await page.goBack();await ready('notifications');await settle();
+  const opened=new URL(page.url());assert.equal(opened.searchParams.get('requestId'),requestId);assert.equal(opened.searchParams.get('tab'),'my');assert.equal(opened.hash,'#request-'+requestId);const afterOpen=await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]);await page.goBack();await ready('notifications');await settle();
   checks.push('push_disabled_profile_and_inbox_accessible persisted own source, guarded open preserves request ID/tab and causes no read mutation');
   stage='private-lifetime';for(const event of ['blur','pagehide']){await page.evaluate(e=>window.dispatchEvent(new Event(e)),event);await page.waitForFunction(()=>!document.querySelector('[data-inbox-row]'));assert.equal(await page.locator('[data-inbox-row]').count(),0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('notifications');}
   await context.setOffline(true);await page.waitForFunction(()=>!document.querySelector('[data-inbox-row]'));await context.setOffline(false);await ready('notifications');
@@ -213,7 +216,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    const currentRead=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/notifications'&&response.request().method()==='GET');
    await page.evaluate(()=>{delete document.visibilityState;document.dispatchEvent(new Event('visibilitychange'));});
    const currentResponse=await currentRead,currentView=await currentResponse.json();assert.equal(currentResponse.status(),200);assert.deepEqual(currentView.items,[]);await ready('notifications');await page.getByText('No notifications yet.',{exact:true}).waitFor();assert.equal(await page.locator('[data-inbox-row]').count(),0);
-   visibilityEvidence.reentry={status:currentResponse.status(),currentItems:currentView.items.length,rows:0};assert.deepEqual(await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]),before);
+   visibilityEvidence.reentry={status:currentResponse.status(),currentItems:currentView.items.length,rows:0};assert.deepEqual(await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]),afterOpen);
    await q("UPDATE time_off_requests SET status='APPROVED' WHERE id=$1",[requestId]);await refreshNotifications();await ready('notifications');assert.equal(await page.locator('[data-inbox-row]').count(),1);
   }finally{
    release();if(used)await done;await page.unroute('**/api/notifications',heldHandler);
