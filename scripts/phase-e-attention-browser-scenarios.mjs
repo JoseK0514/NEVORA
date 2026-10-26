@@ -45,6 +45,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  async function schedule(extra=''){await page.goto(app.url+`/app/schedule?week=${scenario.week}${extra}`);await page.waitForLoadState('networkidle');}
  async function publish(start){if(start)await q('UPDATE shifts SET start_time=$1 WHERE id=$2',[start,scenario.sourceId]);await publishScheduleWithRevision({locationId:'loc-1',weekStart:scenario.week,managerId:'QAOWNER'},app.database.executor);}
  const confirm=()=>page.getByRole('button',{name:'Confirm schedule',exact:true});
+ const shiftRows=()=>page.locator('.q-sched-e a.q-row[href*="shift="]');
  const operation=()=>page.locator('input[name="operationId"]').inputValue();
  let scenarioFailure;
  try{
@@ -139,8 +140,11 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
     throw error;
    }
    assert.equal((await q('SELECT * FROM employee_attention_operations WHERE employee_id=$1 AND operation_id=$2',[actor,unavailableOperation])).length,1);
+   // The Quiet schedule's shift rows link to their sheet (?shift=). Prove the selector matches the actor's real row first,
+   // so the count of 0 below shows the blocked source hid the assignment rather than a stale selector.
+   await schedule('&day='+scenario.sourceDate);assert(await shiftRows().count()>0,'the Quiet shift-row selector matches the published source shift');
    await blocker.query('BEGIN');await blocker.query('LOCK TABLE schedule_publication_revisions IN ACCESS EXCLUSIVE MODE');
-   await schedule();assert.equal(await confirm().count(),0);assert.equal(await page.locator('.employee-schedule-shift').count(),0);assert(await page.getByRole('status').filter({hasText:'Schedule unavailable'}).count());await screenshot('source-unavailable');
+   await schedule('&day='+scenario.sourceDate);assert.equal(await confirm().count(),0);assert.equal(await shiftRows().count(),0);assert(await page.getByRole('status').filter({hasText:'Schedule unavailable'}).count());await screenshot('source-unavailable');
    await blocker.query('COMMIT');checks.push('Actual lock timeout renders unavailable and original-operation retry commits once; blocked weekly source displays no private assignments');
   }finally{await blocker.query('ROLLBACK');await blocker.end();}
  }
