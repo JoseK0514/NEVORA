@@ -723,6 +723,10 @@ html[data-q-sheet] { overflow: hidden; }
 :is(#q-root, html) .q-sched-e .q-sec { margin-top: 32px; }
 :is(#q-root, html) .q-confrow { position: relative; }
 :is(#q-root, html) .q-help--alert { color: var(--q-red); }
+/* "Try again" inside a help line: a teal word, with a 44pt hit area, never a boxed button. */
+:is(#q-root, html) .q-linkbtn { position: relative; display: inline; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 4px; background: none; box-shadow: none; color: var(--q-teal); font: inherit; font-weight: 600; letter-spacing: inherit; cursor: pointer; }
+:is(#q-root, html) .q-linkbtn::before { content: ""; position: absolute; inset: -13px -6px; }
+:is(#q-root, html) .q-linkbtn:disabled { color: var(--q-faint); cursor: default; }
 :is(#q-root, html) .q-blocked { margin: 24px 20px 0; }
 :is(#q-root, html) .q-changes .schedule-publication-change { margin: 12px 20px 0; }
 :is(#q-root, html) .q-changes summary { display: flex; align-items: center; justify-content: space-between; min-height: 44px; font-size: 15px; line-height: 20px; color: var(--q-teal); cursor: pointer; list-style: none; }
