@@ -220,11 +220,12 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               await proposals.getByRole('link', { name: 'Review exact replacement', exact: true }).first().waitFor();
               expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM shifts WHERE date=$1", values: [coverageDate] })).toEqual([{ n: 0 }]);
               await proposals.getByRole('link', { name: 'Review exact replacement', exact: true }).first().click();
-              await page.getByRole('heading', { name: 'Review replacement', exact: true }).waitFor();
-              await page.getByText('Draft assignment', { exact: true }).waitFor();
+              // T-7 (Oct 25, 2026): the Quiet Replacement sheet; its page heading names the person and day.
+              await page.getByRole('heading', { name: /^Review replacement: / }).waitFor();
+              await page.getByText('Saving adds a draft. Publish when you’re ready.', { exact: true }).waitFor();
               await page.getByRole('button', { name: 'Save replacement', exact: true }).click();
               await page.waitForURL(/saved=1/);
-              await page.getByText('Replacement saved', { exact: true }).waitFor();
+              await page.getByText('Replacement saved', { exact: true }).first().waitFor();
               expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM shifts WHERE date=$1", values: [coverageDate] })).toEqual([{ n: 1 }]);
               expect(await app.database.executor.query({ text: "SELECT status FROM schedules WHERE week_start=$1", values: [coverageDate] })).toEqual([{ status: 'DRAFT' }]);
               expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM notifications", values: [] })).toEqual(beforeNotifications);
@@ -236,7 +237,8 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               await page.getByRole('button', { name: 'Prepare coverage options', exact: true }).focus();
               await page.keyboard.press('Enter');
               await proposals.getByRole('link', { name: 'Review exact replacement', exact: true }).first().click();
-              const consent = page.getByRole('checkbox', { name: 'I also approve publishing this replacement and queuing the applicable employee notifications.', exact: true });
+              // T-7: the separate publication consent is the required 'Publish this change' switch, still unchecked by default.
+              const consent = page.getByRole('switch', { name: /^Publish this change/ });
               await consent.waitFor();
               expect(await consent.isChecked()).toBe(false);
               await page.getByRole('button', { name: 'Save replacement', exact: true }).click();
@@ -246,7 +248,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               expect(await consent.isChecked()).toBe(true);
               await page.getByRole('button', { name: 'Save replacement', exact: true }).click();
               await page.waitForURL(/saved=1/);
-              await page.getByText('Replacement saved', { exact: true }).waitFor();
+              await page.getByText('Replacement saved', { exact: true }).first().waitFor();
               expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM schedule_publication_revisions WHERE week_start=$1", values: [publishedDate] })).toEqual([{ n: 1 }]);
               checks.push(engine + ': published replacement requires separate unchecked consent; keyboard confirmation and canonical revision receipt');
               await page.goto(origin + '/app/ai-manager');
