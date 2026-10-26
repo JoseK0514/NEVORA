@@ -180,6 +180,8 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               ).toBe(0);
               // T-26 (Oct 25, 2026): the Owner's entry point is the "Ask NEVORA" row in More; nobody else gets it.
               await page.goto(origin + "/app/more");
+              // Let More's own reads finish so leaving it does not abort them (WebKit logs aborted fetches as errors).
+              await page.waitForLoadState("networkidle");
               expect(
                 await page
                   .getByRole("link", { name: "Ask NEVORA", exact: true })
@@ -198,6 +200,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               await app.database.executor.query({ text: "DELETE FROM owner_advisor_briefing_reviews WHERE owner_id='QAOWNER'", values: [] });
               // T-26 (Oct 25, 2026): no bare button on Today; the Owner opens it from More › Ask NEVORA.
               await page.goto(origin + "/app/more");
+              await page.waitForLoadState("networkidle");
               await page
                 .locator("main")
                 .getByRole("link", { name: "Ask NEVORA", exact: true })
