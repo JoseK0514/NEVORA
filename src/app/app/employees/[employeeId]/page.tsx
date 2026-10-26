@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import {companyOnlyRefusal} from '@/components/company-access/company-only-state';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {readOperationalEmployeeProfile} from '@/lib/company-access/operational-read.server';
@@ -49,7 +50,7 @@ export default async function EmployeeProfilePage({
     const invitation=proof.employee.role==='OWNER'?await readInvitationStatus(proof,employeeId):null;
     return {profile,positions,operational,profileUnavailable,invitation};
   });
-  if(source.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={source.reason}/>;
+  if(source.state==='unavailable')return companyOnlyRefusal(proof,'Employee profile unavailable',source.reason);
   const {profile,positions,operational,profileUnavailable,invitation}=source.data;
   if(profile.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={profile.reason}/>;
   const {profile:employee,locations,ownerScope}=profile.data;

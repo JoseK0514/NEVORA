@@ -60,10 +60,14 @@ function Details({card}:{card:Timecard}){
     </details>:null}
   </div>;
 }
+/* B-12: what a location-scoped Manager is told where the server keeps a decision with Owners and company-wide Managers. */
+const OUTSIDE_SCOPE_TEXT='This timecard has time at a location you don’t manage. An Owner or a company-wide manager reviews it.';
+const REOPEN_COMPANY_TEXT='Reopening a finalized period is for Owners and company-wide managers.';
+const exclusionReason={self:'a different manager must review',scope:'time at a location you don’t manage',issues:'resolve timecard issues first',state:'incompatible current state'} as const;
 /** Sentence case for a timecard state: "Draft", "Approved", "Finalized". */
 const stateLabel=(state:string)=>{const text=state.replaceAll('_',' ').toLowerCase();return text.charAt(0).toUpperCase()+text.slice(1);};
 function commandMessage(result:TimecardMutation):string{
-  if(result.status==='blocked')return ({self_review:'A different manager must review your timecard.',unresolved_time:'Resolve open time, overlaps and pending corrections before approval.',approval_required:'Approve the current source revision before finalizing.',period_state:'Refresh the period and choose an action for its current state.',overlapping_period:'This period overlaps finalized time. Reopen that period first.',payroll_approved:'Payroll for this period is approved. Start a payroll correction for it first, then reopen.'})[result.reason];
+  if(result.status==='blocked')return ({self_review:'A different manager must review your timecard.',unresolved_time:'Resolve open time, overlaps and pending corrections before approval.',approval_required:'Approve the current source revision before finalizing.',period_state:'Refresh the period and choose an action for its current state.',overlapping_period:'This period overlaps finalized time. Reopen that period first.',payroll_approved:'Payroll for this period is approved. Start a payroll correction for it first, then reopen.',outside_scope:OUTSIDE_SCOPE_TEXT,company_required:REOPEN_COMPANY_TEXT})[result.reason];
   if(result.status==='conflict')return 'This period changed. Refresh and review the latest time before acting.';
   if(result.status==='outcome-unknown')return 'The result could not be confirmed. Retry the same action to reconcile it.';
   if(result.status==='unavailable')return 'The action could not be completed. Refresh your current session and try again.';
@@ -123,7 +127,10 @@ function TimecardsState({title,message,failed,signIn,onRetry,className}:{title:s
   </div>;
 }
 
-export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false,today,signature=false,correctionAuthority}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean;
+export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false,today,signature=false,correctionAuthority,companyWide=true}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean;
+  /** B-12: false for a location-scoped Manager. Time exports and reopening finalized periods stay with Owners and
+   * company-wide Managers, so those controls are not offered. */
+  companyWide?:boolean;
   /** Employee and Lead on Quiet (final pass T-17; E12 My time and the owner Timecards mockup). The prop keeps its old name. */
   signature?:boolean;
   /** The workspace's date: sets This week and Last week and whether approvals are open yet. */
@@ -362,7 +369,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     };
     const select=(id:string,checked:boolean)=>{setSelected(ids=>checked?ids.length<100&&!ids.includes(id)?[...ids,id]:ids:ids.filter(value=>value!==id));setReview(null);setConfirmed(false);};
     const pickDisabled=(item:TimecardItem)=>locked||!!batchExclusion(item,actorId,batchAction)||(!selected.includes(item.card.employeeId)&&selected.length>=100);
-    const exclusionText=(item:TimecardItem)=>{const exclusion=batchExclusion(item,actorId,batchAction);return exclusion?`Not selectable for ${batchAction==='APPROVE'?'approval':'finalization'}: ${{self:'a different manager must review',issues:'resolve timecard issues first',state:'incompatible current state'}[exclusion]}.`:undefined;};
+    const exclusionText=(item:TimecardItem)=>{const exclusion=batchExclusion(item,actorId,batchAction);return exclusion?`Not selectable for ${batchAction==='APPROVE'?'approval':'finalization'}: ${exclusionReason[exclusion]}.`:undefined;};
     const tools=<div className="cm-tc-tools" role="group" aria-label="Period and export">
       <button type="button" className="cm-tc-kbtn cm-tc-step" aria-label="Previous period" disabled={paused||busy||!!pending} onClick={()=>goTo(shiftPeriod(period,-1))}><CaretLeftIcon size={13} weight="bold" aria-hidden="true"/></button>
       <details className="cm-tc-period" ref={periodRef}>
@@ -374,7 +381,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         </form>
       </details>
       <button type="button" className="cm-tc-kbtn cm-tc-step" aria-label="Next period" disabled={paused||busy||!!pending} onClick={()=>goTo(shiftPeriod(period,1))}><CaretRightIcon size={13} weight="bold" aria-hidden="true"/></button>
-      <Link className="cm-tc-kbtn cm-tc-export" href={`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`}><ExportIcon size={14} aria-hidden="true"/>Export</Link>
+      {companyWide?<Link className="cm-tc-kbtn cm-tc-export" href={`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`}><ExportIcon size={14} aria-hidden="true"/>Export</Link>:null}
     </div>;
     const phoneRow=(item:TimecardItem,inReview:boolean)=>{
       const id=item.card.employeeId,name=item.card.employeeName,status=rowStatus(item),anchor=inReview||selecting||!needsReview(item);
@@ -417,14 +424,15 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             {sheetCard.corrections.length?<QuietGroup label={`Corrections (${sheetCard.corrections.length})`} id="tc-sheet-corrections"><ul className="q-list">
               {sheetCard.corrections.map(correction=>{
                 const live=sheetDecision?.command.requestId===correction.id?sheetDecision:null;
-                const decidable=correction.status==='PENDING'&&!own&&!!correctionAuthority;
+                const decidable=correction.status==='PENDING'&&!own&&!!correctionAuthority&&!openItem.outsideScope;
                 return <Row key={correction.id} title={correctionKind(correction.kind)} detail={correctionDetail(correction,sheetCard.timeZone)} value={correctionStatus(correction.status)} tone={correction.status==='PENDING'?'go':'l'}>
                   {decidable?<div className="q-tc-decide">
                     {live?.state==='unknown'?<button type="button" className="q-bs" onClick={()=>void decide(openItem,correction,live.command.decision,true)}>Check again</button>:<>
                       <button type="button" className="q-bs" disabled={live?.state==='busy'||locked} onClick={()=>void decide(openItem,correction,'REJECT')}>Decline</button>
                       <button type="button" className="q-bs q-bs--go" disabled={live?.state==='busy'||locked} onClick={()=>void decide(openItem,correction,'APPROVE')}>Approve</button></>}
                   </div>:correction.status==='PENDING'&&own?<p className="q-help q-tc-decide__note">Another manager decides your own correction.</p>
-                    :correction.status==='PENDING'?<p className="q-help q-tc-decide__note"><Link className="q-link" href="/app?view=attendance">Decide it in On shift</Link></p>:null}
+                    :correction.status==='PENDING'&&openItem.outsideScope?<p className="q-help q-tc-decide__note">An Owner or a company-wide manager decides this one.</p>
+                    :correction.status==='PENDING'?<p className="q-help q-tc-decide__note"><Link className="q-link" href={companyWide?'/app?view=attendance':'/app/inbox?filter=requests'}>{companyWide?'Decide it in On shift':'Decide it in Inbox'}</Link></p>:null}
                 </Row>;
               })}
             </ul>{sheetDecision?<p className="q-help q-tc-decide__msg" role={sheetDecision.state==='failed'||sheetDecision.state==='unknown'?'alert':'status'}>{sheetDecision.message}</p>:null}</QuietGroup>:null}
@@ -433,6 +441,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             </ul></QuietGroup>:null}
             <div className="q-tc-sheet__act">
               {pending?.employeeId===openItem.card.employeeId?<button type="button" className="q-btn" disabled={busy} onClick={()=>void act(openItem,pending.action)}>Retry pending action</button>:
+                openItem.state==='FINALIZED'&&!companyWide?<p className="q-help">{REOPEN_COMPANY_TEXT}</p>:
+                openItem.outsideScope&&!own?<p className="q-help">{OUTSIDE_SCOPE_TEXT}</p>:
                 openItem.state==='FINALIZED'?<><div className="q-fl"><label className="q-fl__label" htmlFor="tc-reopen-reason">Reopen reason</label><input id="tc-reopen-reason" className="q-in" style={{marginTop:8}} value={notes[openItem.card.employeeId]??''} maxLength={500} onChange={e=>setNotes({...notes,[openItem.card.employeeId]:e.target.value})}/></div>
                   <button type="button" className="q-btn q-btn--sec" disabled={locked||own||!notes[openItem.card.employeeId]?.trim()} onClick={()=>void act(openItem,'REOPEN')}>Reopen period</button>
                   {own?<p className="q-help">Another manager reopens your timecard.</p>:null}</>:
@@ -456,7 +466,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const toggleSelecting=()=>{setSelecting(!selecting);if(selecting&&!review&&!outcomes&&!pending)setSelected([]);};
     const cancelSelecting=()=>{if(!pending)clearBatch();setSelecting(false);};
     const showBulk=!!(selected.length||review||outcomes||pending||selecting);
-    const exclusionShort=(item:TimecardItem)=>{const exclusion=batchExclusion(item,actorId,batchAction);return exclusion?{self:'A different manager must review',issues:'Resolve timecard issues first',state:batchAction==='APPROVE'?'Already approved':'Approve it first'}[exclusion]:null;};
+    const exclusionShort=(item:TimecardItem)=>{const exclusion=batchExclusion(item,actorId,batchAction);return exclusion?{self:'A different manager must review',scope:'Time at a location you don’t manage',issues:'Resolve timecard issues first',state:batchAction==='APPROVE'?'Already approved':'Approve it first'}[exclusion]:null;};
     const allEligible=eligible.length>0&&eligible.slice(0,100).every(item=>selected.includes(item.card.employeeId));
     const selectAll=(checked:boolean)=>{setSelected(checked?eligible.slice(0,100).map(item=>item.card.employeeId):[]);setReview(null);setConfirmed(false);};
     const nameOf=(employeeId:string)=>cards.find(item=>item.card.employeeId===employeeId)?.card.employeeName;
@@ -521,7 +531,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               <span className="q-rt"><b>{name}</b><i>{row.text}</i></span><span className="q-rv q-rv--l">{hours}</span><CaretRightIcon className="q-chev" aria-hidden="true"/>
             </button></li>;
           })}</ul>:null}
-          {ready&&!selecting?<ul className="q-list q-tc-foot"><QuietRow href={`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`} title="Export time"/></ul>:null}
+          {ready&&!selecting&&companyWide?<ul className="q-list q-tc-foot"><QuietRow href={`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`} title="Export time"/></ul>:null}
         </HoldHeight>
         <p className="q-sr" role="status" aria-live="polite">{!data&&!busy?'':message}</p>
         {sheetNode}
@@ -755,7 +765,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         </div>
         <details className={styles.rowDetails}><summary>Details<span className="sr-only"> for {name}</span><NavIcon name="chevronRight" size={16}/></summary>
           {item.card.issues.length?<div className={styles.issues} data-tone={tone}><NavIcon name={tone==='neutral'?'clock':'alert'} size={20}/><div><h3>{tone==='neutral'?'Period information':'Needs attention'}</h3><ul>{item.card.issues.map(issue=><li key={issue}>{issueNames[issue]}</li>)}</ul><p>{tone==='neutral'?`Totals can change until the period ends. Approval opens after ${shortDate(period.endDate)}.`:'Review the entries and resolve open time or corrections before approval.'}</p></div></div>:null}
-          {exclusion&&!item.card.issues.length?<p className={styles.note}>Not selectable for {batchAction==='APPROVE'?'approval':'finalization'}: {{self:'a different manager must review',issues:'resolve timecard issues first',state:'incompatible current state'}[exclusion]}.</p>:null}
+          {exclusion&&!item.card.issues.length?<p className={styles.note}>Not selectable for {batchAction==='APPROVE'?'approval':'finalization'}: {exclusionReason[exclusion]}.</p>:null}
           <Details card={item.card}/>
           {item.state==='FINALIZED'&&pending?.employeeId!==id?<div className={styles.actions}><label>Reopen reason<input value={notes[id]??''} maxLength={500} onChange={e=>setNotes({...notes,[id]:e.target.value})}/></label>
             <button type="button" className="button secondary" disabled={busy||!!pending||!!outcomes||own||!notes[id]?.trim()} onClick={()=>void act(item,'REOPEN')}>Reopen period</button></div>:null}
@@ -779,7 +789,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       <MobileHomeDisclosure id={`mobile-timecard-${item.card.employeeId}`} label="Review timecard" expandedLabel="Close timecard review"
         available={!busy && pending?.employeeId !== item.card.employeeId && !outcomes && !review}>
       <Details card={item.card}/>
-      {manager?<label className={styles.selection}><input type="checkbox" aria-label={`Select ${item.card.employeeName}`} checked={selected.includes(item.card.employeeId)} disabled={busy||!!pending||!!outcomes||!!batchExclusion(item,actorId,batchAction)||(!selected.includes(item.card.employeeId)&&selected.length>=100)} onChange={e=>{setSelected(ids=>e.target.checked?ids.length<100?[...ids,item.card.employeeId]:ids:ids.filter(id=>id!==item.card.employeeId));setReview(null);setConfirmed(false);}}/>Select for {batchAction==='APPROVE'?'approval':'finalization'}{batchExclusion(item,actorId,batchAction)?` · Excluded: ${{self:'a different manager must review',issues:'resolve timecard issues first',state:'incompatible current state'}[batchExclusion(item,actorId,batchAction)!]}`:''}</label>:null}
+      {manager?<label className={styles.selection}><input type="checkbox" aria-label={`Select ${item.card.employeeName}`} checked={selected.includes(item.card.employeeId)} disabled={busy||!!pending||!!outcomes||!!batchExclusion(item,actorId,batchAction)||(!selected.includes(item.card.employeeId)&&selected.length>=100)} onChange={e=>{setSelected(ids=>e.target.checked?ids.length<100?[...ids,item.card.employeeId]:ids:ids.filter(id=>id!==item.card.employeeId));setReview(null);setConfirmed(false);}}/>Select for {batchAction==='APPROVE'?'approval':'finalization'}{batchExclusion(item,actorId,batchAction)?` · Excluded: ${exclusionReason[batchExclusion(item,actorId,batchAction)!]}`:''}</label>:null}
       {manager?<div className={styles.actions}>
         {pending?.employeeId===item.card.employeeId?<button type="button" className="button primary" disabled={busy} onClick={()=>void act(item,pending.action)}>Retry pending action</button>:
           item.state==='FINALIZED'?<><label>Reopen reason<input value={notes[item.card.employeeId]??''} maxLength={500} onChange={e=>setNotes({...notes,[item.card.employeeId]:e.target.value})}/></label>

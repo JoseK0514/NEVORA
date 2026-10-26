@@ -1,4 +1,5 @@
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {companyOnlyRefusal} from '@/components/company-access/company-only-state';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import Link from 'next/link';
@@ -31,7 +32,8 @@ export default async function EmployeeClockerPinPage({params}:{params:Promise<{e
   }
   return {employee,allowed,pin};
  });
- if(source.state==='unavailable')return <OperationalUnavailable title="Clocker PIN unavailable" reason={source.reason}/>;
+ // B-12: Clocker PIN resets stay with Owners and company-wide Managers.
+ if(source.state==='unavailable')return companyOnlyRefusal(proof,'Clocker PIN unavailable',source.reason);
  const {employee,allowed,pin}=source.data;if(!employee)notFound();
  const employeeHref=`/app/employees/${encodeURIComponent(employeeId)}`;
  const name=`${employee.firstName} ${employee.lastName}`;

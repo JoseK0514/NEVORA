@@ -259,17 +259,19 @@ function Section({ id, title, count, note, children }: { id: string; title: stri
   </section>;
 }
 
-export function ManagerInbox({ contacts, ...props }: { weekStart: string; actorId: string; timeZone: string; contacts?: InboxContacts; role?: string; correctionAuthority?: string }) {
+export function ManagerInbox({ contacts, ...props }: { weekStart: string; actorId: string; timeZone: string; contacts?: InboxContacts; role?: string; correctionAuthority?: string;
+  /** B-12: false for a location-scoped Manager, whose Inbox has their people's decisions but not company-wide clock-ins. */
+  companyWide?: boolean }) {
   return <Phones.Provider value={contacts ?? null}><InboxView {...props} /></Phones.Provider>;
 }
 
-function InboxView({ weekStart, actorId, timeZone, role, correctionAuthority }: { weekStart: string; actorId: string; timeZone: string; role?: string; correctionAuthority?: string }) {
+function InboxView({ weekStart, actorId, timeZone, role, correctionAuthority, companyWide = true }: { weekStart: string; actorId: string; timeZone: string; role?: string; correctionAuthority?: string; companyWide?: boolean }) {
   const { snapshot, connection, refresh } = useActionCenter(weekStart, actorId);
   const { snapshot: today, refresh: refreshToday } = useToday();
   // W2: ?filter= is the source of truth, so Back from a review restores it.
   const initialFilter = inboxFilter(useSearchParams()?.get("filter"));
   // Refresh asks both reads again: the action center and today's clock-ins.
-  return <InboxSurface snapshot={snapshot} today={today} connection={connection} onRefresh={() => { refresh(); refreshToday(); }} timeZone={timeZone} initialFilter={initialFilter}
+  return <InboxSurface snapshot={snapshot} today={companyWide ? today : null} connection={connection} onRefresh={() => { refresh(); refreshToday(); }} timeZone={timeZone} initialFilter={initialFilter}
     viewer={role ? { id: actorId, role } : undefined} corrections={{ actorId, authority: correctionAuthority }} />;
 }
 

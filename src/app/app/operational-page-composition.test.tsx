@@ -3,7 +3,8 @@ import {renderToStaticMarkup} from 'react-dom/server';
 const fixture=vi.hoisted(()=>({role:'MANAGER',denied:false,company:vi.fn()}));
 vi.mock('@/lib/auth/session',()=>({requireSession:async()=>({id:'actor',role:fixture.role}),requireSessionMutationProof:async()=>({employee:{id:'actor',role:fixture.role},sessionTokenHash:'a'.repeat(64)})}));
 vi.mock('@/lib/auth/permissions',()=>({isManagerRole:(role:string)=>role==='MANAGER'||role==='OWNER',requireRoles:async()=>({id:'actor',role:fixture.role})}));
-vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>{fixture.company();return fixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000};}}));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>{fixture.company();return fixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000};},
+ withOperationalScope:async(_proof:unknown,load:(ctx:unknown)=>Promise<unknown>)=>{fixture.company();return fixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load({ids:null}),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000};}}));
 vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 vi.mock('next/navigation',()=>({redirect:(href:string)=>{throw Error(href);},notFound:()=>{throw Error('NEXT_NOT_FOUND');}}));
 vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({id:'fixture',timeZone:'America/Puerto_Rico'})}));

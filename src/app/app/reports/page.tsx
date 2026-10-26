@@ -1,4 +1,5 @@
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {companyOnlyRefusal} from '@/components/company-access/company-only-state';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -16,7 +17,8 @@ export const metadata = { title: "Insights" };
 export default async function ReportsPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
   const session=await requireSession();
   if(!isManagerRole(session.role))redirect('/app');
-  const access=await withOperationalCompany(await requireSessionMutationProof(),async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title="Reports unavailable" reason={access.reason}/>;
+  const proof=await requireSessionMutationProof();
+  const access=await withOperationalCompany(proof,async()=>null);if(access.state==='unavailable')return companyOnlyRefusal(proof,'Reports unavailable',access.reason);
   const workspace=await getWorkspace(),params=await searchParams;
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
   // MK5 / PD4: the default is this week so far, Monday to today (the This week preset); Last week is one tap away.

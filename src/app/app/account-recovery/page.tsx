@@ -1,4 +1,5 @@
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {companyOnlyRefusal} from '@/components/company-access/company-only-state';
 import {requireRoles} from '@/lib/auth/permissions';
 import {AccountRecovery} from '@/components/account-recovery';
 import {getWorkspace} from '@/lib/data/workspaces';
@@ -12,8 +13,10 @@ export default async function AccountRecoveryPage({searchParams}:{searchParams?:
  const session=await requireSession();
  if(session.role!=='OWNER'&&session.role!=='MANAGER')return <RoleUnavailableState/>;
  const actor=await requireRoles(['OWNER','MANAGER']);
- const access=await withOperationalCompany(await requireSessionMutationProof(),async()=>null);
- if(access.state==='unavailable')return <OperationalUnavailable title="Account recovery unavailable" reason={access.reason}/>;
+ const proof=await requireSessionMutationProof();
+ // B-12: account recovery stays with Owners and company-wide Managers.
+ const access=await withOperationalCompany(proof,async()=>null);
+ if(access.state==='unavailable')return companyOnlyRefusal(proof,'Account recovery unavailable',access.reason);
  const params=await searchParams;
  // Only a prefill; the server still checks the employee and attestation.
  const employee=params?.employee?.trim().slice(0,200)||undefined;

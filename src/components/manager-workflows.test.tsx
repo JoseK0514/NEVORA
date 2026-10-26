@@ -14,7 +14,9 @@ import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
 import { listPendingCallouts } from "@/lib/data/callouts";
 
 const access=vi.hoisted(()=>({denied:false}));
-vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+const companyCtx={ids:null,workspace:{id:'workspace'},view:{locations:[]}};
+vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000},
+ withOperationalScope:async(_proof:unknown,load:(ctx:unknown)=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(companyCtx),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
 vi.mock("@/lib/auth/session", () => ({ requireSession: vi.fn(),requireSessionMutationProof:async()=>({employee:{id:"reviewer",role:"MANAGER"},sessionTokenHash:"a".repeat(64)}) }));
 vi.mock("@/lib/auth/permissions", () => import("../lib/auth/permissions"));
 vi.mock("@/lib/scheduling/periods", () => import("../lib/scheduling/periods"));
@@ -32,7 +34,13 @@ vi.mock("@/lib/data/schedules", () => {
 });
 vi.mock("@/lib/scheduling/coverage-ranking", () => import("../lib/scheduling/coverage-ranking"));
 vi.mock("@/lib/scheduling/validate-shift", () => import("../lib/scheduling/validate-shift"));
-vi.mock("@/lib/data/requests", () => ({ listPendingTimeOffRequests: vi.fn(async () => []), listTeamTimeOffRequests: vi.fn(async () => []) }));
+vi.mock("@/lib/data/requests", () => {
+  const listPendingTimeOffRequests = vi.fn(async () => []), listTeamTimeOffRequests = vi.fn(async (_status: string) => []);
+  // B-12: the page reads through the scoped list; Company scope here, so it is the same team list.
+  const listScopedTimeOffRequests = vi.fn(async (_proof: unknown, status: string) => access.denied ? { state: "unavailable", reason: "access_denied" }
+    : { state: "ready", data: status === "PENDING" ? await listPendingTimeOffRequests() : await listTeamTimeOffRequests(status), coverage: { kind: "COMPANY", locationIds: [] }, authority: "fixture", observedAt: "2026-10-14T12:00:00Z", validForMs: 15000 });
+  return { listPendingTimeOffRequests, listTeamTimeOffRequests, listScopedTimeOffRequests };
+});
 vi.mock("@/lib/data/availability-submissions", () => ({ listAvailabilitySubmissionStatuses: vi.fn(async () => [
   {employeeId:"missing",employeeName:"Missing Person",submitted:false,windowCount:0,state:"NOT_SUBMITTED"},
   {employeeId:"unavailable",employeeName:"Unavailable Person",submitted:true,windowCount:0,state:"SUBMITTED_UNAVAILABLE"},

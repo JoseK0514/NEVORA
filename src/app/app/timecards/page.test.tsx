@@ -2,16 +2,17 @@ import type {ReactElement, ReactNode} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {afterEach, beforeEach, expect, it, vi} from 'vitest';
 
-const fixture=vi.hoisted(()=>({role:'MANAGER',denied:false,company:vi.fn(),observation:{state:'ready',data:null,authority:'fictional-company',observedAt:'2026-10-20T12:00:00Z',validForMs:15000}}));
+const fixture=vi.hoisted(()=>({role:'MANAGER',denied:false,scoped:false,company:vi.fn(),observation:{state:'ready',data:null,coverage:{kind:'COMPANY',locationIds:[]},authority:'fictional-company',observedAt:'2026-10-20T12:00:00Z',validForMs:15000},
+ scopedObservation:{state:'ready',data:null,coverage:{kind:'LOCATIONS',locationIds:['loc-1']},authority:'fictional-scoped',observedAt:'2026-10-20T12:00:00Z',validForMs:15000}}));
 vi.mock('@/lib/auth/session',()=>({requireSession:async()=>({id:'actor',role:fixture.role}),requireSessionMutationProof:async()=>({employee:{id:'actor',role:fixture.role},sessionTokenHash:'a'.repeat(64)})}));
-vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async()=>{fixture.company();return fixture.denied?{state:'unavailable',reason:'access_denied'}:fixture.observation;}}));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalScope:async()=>{fixture.company();return fixture.denied?{state:'unavailable',reason:'access_denied'}:fixture.scoped?fixture.scopedObservation:fixture.observation;}}));
 vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({timeZone:'America/Puerto_Rico'})}));
 vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:ReactNode;unavailable?:ReactNode})=><section data-company-frame="">{children??unavailable}</section>}));
-vi.mock('@/components/timecards',()=>({Timecards:({initialPeriod,manager,today}:{initialPeriod:{startDate:string;endDate:string};manager:boolean;today?:string})=><p data-manager={manager} data-today={today}>{initialPeriod.startDate} / {initialPeriod.endDate}</p>}));
+vi.mock('@/components/timecards',()=>({Timecards:({initialPeriod,manager,today,companyWide}:{initialPeriod:{startDate:string;endDate:string};manager:boolean;today?:string;companyWide?:boolean})=><p data-manager={manager} data-today={today} data-company={String(companyWide)}>{initialPeriod.startDate} / {initialPeriod.endDate}</p>}));
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import TimecardsPage from './page';
 
-beforeEach(()=>{fixture.role='MANAGER';fixture.denied=false;fixture.company.mockReset();vi.useFakeTimers();vi.setSystemTime(new Date('2026-10-20T12:00:00Z'));});
+beforeEach(()=>{fixture.role='MANAGER';fixture.denied=false;fixture.scoped=false;fixture.company.mockReset();vi.useFakeTimers();vi.setSystemTime(new Date('2026-10-20T12:00:00Z'));});
 afterEach(()=>vi.useRealTimers());
 
 it.each(['MANAGER','OWNER'])('keeps the clean current-week %s view inside the current Company lifetime frame',async role=>{
@@ -24,6 +25,18 @@ it.each(['MANAGER','OWNER'])('keeps the clean current-week %s view inside the cu
  expect(html).toContain('2026-10-19 / 2026-10-25');
  expect(html).toContain('data-today="2026-10-20"');
  expect(fixture.company).toHaveBeenCalledOnce();
+});
+it('B-12: a location-scoped Manager gets the team view framed by their scope, without company-only controls',async()=>{
+ fixture.scoped=true;
+ const page=await TimecardsPage({searchParams:Promise.resolve({})});
+ expect((page as ReactElement<{observation:unknown}>).props.observation).toBe(fixture.scopedObservation);
+ const html=renderToStaticMarkup(page);
+ expect(html).toContain('data-manager="true"');
+ expect(html).toContain('data-company="false"');
+ expect(html).not.toContain('company-wide management access');
+});
+it('passes company-wide controls to an Owner and a company-wide Manager',async()=>{
+ expect(renderToStaticMarkup(await TimecardsPage({searchParams:Promise.resolve({})}))).toContain('data-company="true"');
 });
 it('honors an explicit timecard period without removing the Company frame',async()=>{
  const page=await TimecardsPage({searchParams:Promise.resolve({start:'2026-09-21',end:'2026-09-27'})});

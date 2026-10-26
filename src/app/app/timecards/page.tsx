@@ -1,5 +1,5 @@
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
-import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {withOperationalScope} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {Temporal} from '@js-temporal/polyfill';
 import {requireSession,requireSessionMutationProof} from '@/lib/auth/session';
@@ -14,7 +14,8 @@ export const metadata = { title: "Timecards" };
 export default async function TimecardsPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
   const session=await requireSession(),workspace=await getWorkspace(),params=await searchParams;
   const proof=isManagerRole(session.role)?await requireSessionMutationProof():null;
-  const access=proof?await withOperationalCompany(proof,async()=>null):null;
+  // B-12: Owners, company-wide Managers and location-scoped Managers (who see only the people of their locations).
+  const access=proof?await withOperationalScope(proof,async()=>null):null;
   if(access?.state==='unavailable')return <OperationalUnavailable title="Timecards unavailable" reason={access.reason}/>;
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
   const manager=isManagerRole(session.role);
@@ -25,7 +26,7 @@ export default async function TimecardsPage({searchParams}:{searchParams:Promise
     let managerPeriod={startDate:weekStart,endDate:addDays(weekStart,6)};
     try{if(params.start&&params.end)managerPeriod=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current week. */}
     return <ScopedReadFrame observation={access!}><div className="employee-view premium-legacy-page nv-page cm-page cm-timecards" data-nv-page="">
-      <Timecards key={session.id} initialPeriod={managerPeriod} manager actorId={session.id} employeeCorporate={false} today={today.toString()} correctionAuthority={correctionAuthority(proof!)}/>
+      <Timecards key={session.id} initialPeriod={managerPeriod} manager actorId={session.id} employeeCorporate={false} today={today.toString()} correctionAuthority={correctionAuthority(proof!)} companyWide={access?.state==='ready'&&access.coverage.kind==='COMPANY'}/>
     </div></ScopedReadFrame>;
   }
   // T-17 (final pass): Employees and Leads see the same Monday to Sunday week as Pay, with This week / Last week;
