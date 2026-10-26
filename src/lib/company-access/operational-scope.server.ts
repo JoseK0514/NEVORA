@@ -9,6 +9,7 @@ import {getWorkspace,workspaceReadGuard} from '@/lib/data/workspaces';
 import {WorkspaceInactiveError} from '@/lib/workspace/errors';
 import {assertManagementProof,managementSessionStatements,isManagementAuthorizationError} from '@/lib/data/management-session';
 import {parseScopeSelection} from './scope-selection';
+import {employeeInScopeSql,scopeFootprint,footprintIds} from './scope-sql';
 import {managementReadLimits,retryTransientRead} from '@/lib/data/read-snapshot';
 import {logBoundaryError} from '@/lib/observability/log.server';
 import type {ScopeSelection,ScopeCommand,ScopeReceipt,ScopeResult,OperationalFootprint,OperationalAuthorityView,OperationalRead,OwnerOperationalScopeData,OwnerScopeContext,OwnerScopeHistoryEntry} from './model';
@@ -80,6 +81,18 @@ export function operationalScopeStatements(proof:SessionMutationProof,workspace:
  AND NOT EXISTS(SELECT 1 FROM unnest($4::text[]) requested(id) WHERE NOT EXISTS(SELECT 1 FROM locations l WHERE l.id=requested.id AND l.workspace_id=w.id))`;
  return [...managementSessionStatements(proof,proof.employee.id),{text:`SELECT(CASE WHEN EXISTS(SELECT 1 ${joins} WHERE ${current} AND (${permitted}) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR ${authoritySql}=$5)) THEN '1' ELSE 'operational_authorization' END)::integer`,
   values:[workspace.id,proof.employee.id,proof.sessionTokenHash,ids,expectedAuthority??null]}];
+}
+export {employeeInScopeSql,scopeFootprint,footprintIds};
+/** Append after operationalScopeStatements inside a writer's transaction: refuse unless every listed employee is in a
+ * LOCATIONS footprint. Company adds nothing, so company-wide behaviour is unchanged. The refusal is the operational
+ * sentinel, so an out-of-scope employee fails exactly like an id the actor has no authority over. */
+export function operationalMembersStatements(workspace:Workspace,footprint:OperationalFootprint,employeeIds:readonly string[]):SqlStatement[]{
+ const ids=footprintIds(footprint);
+ if(ids===null)return [];
+ if(!employeeIds.length||employeeIds.some(id=>!safeId(id)))throw new OperationalAuthorizationError();
+ return [{text:`SELECT(CASE WHEN NOT EXISTS(SELECT 1 FROM unnest($2::text[]) target(id) WHERE NOT EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id
+   WHERE home.workspace_id=$1 AND e.id=target.id AND ${employeeInScopeSql('e.id','$1','$3::text[]')})) THEN '1' ELSE 'operational_authorization' END)::integer`,
+  values:[workspace.id,[...new Set(employeeIds)].sort(),ids]}];
 }
 /** Lock order is always workspace, then the sorted employees, then the session. `write` (scope assignment and its
  * receipt recovery) excludes every other holder. `read` (authority and Owner scope reads, inspection B2) takes
@@ -276,4 +289,50 @@ export async function withOperationalCompany<T>(proof:SessionMutationProof,load:
   const message=error instanceof Error?error.message:'';
   return {state:'unavailable',reason:message.includes('operational_authorization')||message.includes('management_authorization')?'access_denied':'read_failed'};
  }
+}
+
+export type OperationalScopeContext={workspace:Workspace;ids:string[]|null;footprint:OperationalFootprint;
+ view:Extract<OperationalAuthorityView,{state:'ready'}>&{scope:ScopeSelection}};
+async function admitScope(proof:SessionMutationProof,executor:SqlExecutor|undefined):Promise<{state:'ready';ctx:OperationalScopeContext}|Extract<OperationalAuthorityView,{state:'unavailable'}>>{
+ const workspace=await getWorkspace(executor),view=await readOperationalAuthority(proof,executor);
+ if(view.state!=='ready')return view;
+ if(!['OWNER','MANAGER'].includes(view.role)||!view.scope)return {state:'unavailable',reason:'access_denied'};
+ const footprint=scopeFootprint(view.scope);
+ return {state:'ready',ctx:{workspace,ids:footprintIds(footprint),footprint,view:{...view,scope:view.scope}}};
+}
+const coverageOf=(ctx:OperationalScopeContext)=>ctx.ids===null?{kind:'COMPANY' as const,locationIds:[]}:{kind:'LOCATIONS' as const,locationIds:ctx.ids};
+function scopeFailure(error:unknown):'access_denied'|'read_failed'{
+ const message=error instanceof Error?error.message:'';
+ if(error instanceof WorkspaceInactiveError||message.includes('operational_authorization')||message.includes('management_authorization'))return 'access_denied';
+ logBoundaryError('reader:operational-scope',error);
+ return 'read_failed';
+}
+/** B-12: one transaction that re-proves the actor's admitted authority digest (Company or Locations), runs the
+ * caller's statements, which filter to `ctx.ids` in SQL (employeeInScopeSql), and measures the remaining budget.
+ * The actor's employee row is held FOR SHARE first, so a scope change waits until this read has committed. */
+export async function readWithinOperationalScope<T>(proof:SessionMutationProof,build:(ctx:OperationalScopeContext)=>SqlStatement[],
+ project:(rows:unknown[][],ctx:OperationalScopeContext)=>T,executor?:SqlExecutor):Promise<OperationalRead<T>>{
+ try{
+  const admitted=await admitScope(proof,executor);if(admitted.state!=='ready')return admitted;
+  const {ctx}=admitted,ex=executor??neonNotificationExecutor(),statements=build(ctx);
+  const guard=[...workspaceReadGuard(ctx.workspace),{text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},
+   ...operationalScopeStatements(proof,ctx.workspace,ctx.footprint,ctx.view.authority)];
+  const result=await retryTransientRead(()=>ex.transaction([...guard,...statements,currentAuthorityStatement(ctx.workspace,proof)]));
+  const row=result[guard.length+statements.length]?.[0] as {authority:string;observedAt:string;validForMs:number}|undefined;
+  if(!row||row.authority!==ctx.view.authority||!(row.validForMs>0))return {state:'unavailable',reason:'source_changed'};
+  return {state:'ready',data:project(result.slice(guard.length,guard.length+statements.length),ctx),coverage:coverageOf(ctx),
+   authority:row.authority,observedAt:new Date(row.observedAt).toISOString(),validForMs:row.validForMs};
+ }catch(error){return {state:'unavailable',reason:scopeFailure(error)};}
+}
+/** withOperationalCompany for loaders that accept a location scope: the loader receives `ctx.ids` and filters every
+ * query to it in SQL. The final check binds the original digest, so a scope change after admission withholds the
+ * result. Read-only loaders only. */
+export async function withOperationalScope<T>(proof:SessionMutationProof,load:(ctx:OperationalScopeContext)=>Promise<T>,executor:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<T>>{
+ try{
+  const admitted=await admitScope(proof,executor);if(admitted.state!=='ready')return admitted;
+  const {ctx}=admitted,data=await load(ctx);
+  await executor.transaction([...workspaceReadGuard(ctx.workspace),{text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},
+   ...operationalScopeStatements(proof,ctx.workspace,ctx.footprint,ctx.view.authority)]);
+  return {state:'ready',data,coverage:coverageOf(ctx),authority:ctx.view.authority,observedAt:ctx.view.observedAt,validForMs:ctx.view.validForMs};
+ }catch(error){return {state:'unavailable',reason:scopeFailure(error)};}
 }
