@@ -634,8 +634,10 @@ html[data-theme="dark"] body .app-shell[data-nv-quiet] .portal-route-state:not([
  * the compose form's error state and Inbox's "All requests" rows take the dark tokens. Colours only. */
 :is(#q-root, html)[data-theme="dark"] .q-page .u2-btn--danger, :is(#q-root, html)[data-theme="dark"] .q-acts__form .wb-confirm .nv-btn[data-kind="primary"] { background: #C42B1C; }
 :is(#q-root, html)[data-theme="dark"] .q-policies .policy-history { background: var(--q-fill); border-color: var(--q-line); }
+:is(#q-root, html)[data-theme="dark"] .q-policies .policy-private-review dd:not(#q-dark-a) { color: var(--q-grey); }
 :is(#q-root, html)[data-theme="dark"] .q-page .wb-strong { color: var(--q-ink); }
-:is(#q-root, html)[data-theme="dark"] .q-page .wb-actions .nv-btn:not([data-kind="primary"]) { color: var(--q-teal); }
+/* The clean-manager rule for secondary buttons carries an id (:not(#cm-btn)); this one needs two to win in dark. */
+:is(#q-root, html)[data-theme="dark"] .q-page .wb-actions .nv-btn:not([data-kind="primary"]):not(#q-dark-a):not(#q-dark-b) { color: var(--q-teal); }
 :is(#q-root, html)[data-theme="dark"] .q-page .cm-all-requests .nv-row__title { color: var(--q-teal); }
 :is(#q-root, html)[data-theme="dark"] .q-page .cm-all-requests .nv-row__meta { color: var(--q-grey); }
 
