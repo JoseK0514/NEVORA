@@ -629,6 +629,15 @@ html[data-theme="dark"] body .app-shell[data-nv-quiet] .portal-route-state:not([
 :is(#q-root, html)[data-theme="dark"] .q-seg > [aria-current="page"], :is(#q-root, html)[data-theme="dark"] .q-seg > [aria-pressed="true"] { box-shadow: none; }
 :is(#q-root, html)[data-theme="dark"]:has(.q-auth), :is(#q-root, html)[data-theme="dark"] body:has(.q-auth) { background: #000000 !important; }
 :is(#q-root, html)[data-theme="dark"] .q-unavailable + .scoped-unavailable__refresh { color: #5CC8BE; }
+/* Dark contrast (round 2): older pieces still inside Quiet pages kept light-theme colours on the dark page.
+ * Filled red buttons keep the deep red under white (the lifted red text colour gave 2.8:1); Policy history's panel,
+ * the compose form's error state and Inbox's "All requests" rows take the dark tokens. Colours only. */
+:is(#q-root, html)[data-theme="dark"] .q-page .u2-btn--danger, :is(#q-root, html)[data-theme="dark"] .q-acts__form .wb-confirm .nv-btn[data-kind="primary"] { background: #C42B1C; }
+:is(#q-root, html)[data-theme="dark"] .q-policies .policy-history { background: var(--q-fill); border-color: var(--q-line); }
+:is(#q-root, html)[data-theme="dark"] .q-page .wb-strong { color: var(--q-ink); }
+:is(#q-root, html)[data-theme="dark"] .q-page .wb-actions .nv-btn:not([data-kind="primary"]) { color: var(--q-teal); }
+:is(#q-root, html)[data-theme="dark"] .q-page .cm-all-requests .nv-row__title { color: var(--q-teal); }
+:is(#q-root, html)[data-theme="dark"] .q-page .cm-all-requests .nv-row__meta { color: var(--q-grey); }
 
 /* v5 One look: icon rows, tinted avatars for rows that need you, the red row, and counts. */
 :is(#q-root, html) .q-row__ic { flex: none; display: grid; color: var(--q-av); }
