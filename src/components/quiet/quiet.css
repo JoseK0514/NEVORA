@@ -16,6 +16,9 @@
 }
 :is(#q-root, html) .q-page *, :is(#q-root, html) .q-page *::before, :is(#q-root, html) .q-page *::after { box-sizing: border-box; }
 :is(#q-root, html) .q-page a { color: inherit; text-decoration: none; }
+/* The link reset above outweighs the kit's white label on a filled link button (Inbox "Review time off" read black on
+ * teal, 3.8:1). A filled primary link keeps its white label. */
+:is(#q-root, html) .q-page a.nv-btn[data-kind="primary"]:not([aria-disabled="true"]) { color: #FFFFFF; }
 :is(#q-root, html) .q-page :focus-visible { outline: 2px solid var(--q-teal); outline-offset: 2px; border-radius: 6px; }
 :is(#q-root, html) .q-ic { flex: none; display: block; width: 24px; height: 24px; }
 :is(#q-root, html) .q-ic--s { width: 14px; height: 14px; }
