@@ -178,6 +178,13 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
                   .getByRole("link", { name: "AI manager", exact: true })
                   .count(),
               ).toBe(0);
+              // T-26 (Oct 25, 2026): the Owner's entry point is the "Ask NEVORA" row in More; nobody else gets it.
+              await page.goto(origin + "/app/more");
+              expect(
+                await page
+                  .getByRole("link", { name: "Ask NEVORA", exact: true })
+                  .count(),
+              ).toBe(0);
               await page.goto(origin + "/app/ai-manager");
               expect(await page.getByLabel("Your question").count()).toBe(0);
               const api = await context.request.get(
@@ -189,9 +196,11 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
             } else {
               const beforeNotifications = await app.database.executor.query({ text: "SELECT count(*)::int n FROM notifications", values: [] });
               await app.database.executor.query({ text: "DELETE FROM owner_advisor_briefing_reviews WHERE owner_id='QAOWNER'", values: [] });
+              // T-26 (Oct 25, 2026): no bare button on Today; the Owner opens it from More › Ask NEVORA.
+              await page.goto(origin + "/app/more");
               await page
                 .locator("main")
-                .getByRole("link", { name: "AI manager", exact: true })
+                .getByRole("link", { name: "Ask NEVORA", exact: true })
                 .click();
               await page.waitForURL(origin + "/app/ai-manager");
               await page
