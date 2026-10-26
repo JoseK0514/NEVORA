@@ -273,9 +273,13 @@ try{
       // Team U1: once the correction queue confirms it, Inbox › Requests shows the shared decision row, which opens in
       // place by pointer. The Inbox's own link for the item (used when the queue can't be read) opens On shift at it.
       await chooseInboxFilter('requests','Requests');const inboxRow=center.locator('[id="correction-'+submittedBody.requestId+'"]');
-      await inboxRow.locator('summary').click({delay:100});await inboxRow.locator('details[open]').waitFor();
+      // chooseInboxFilter opens every group, this row's times included; a pointer press on a closed one opens it too.
+      const rowDetails=inboxRow.locator('details');
+      if(!await rowDetails.evaluate(d=>d.open)){await inboxRow.locator('summary').click({delay:100});}
+      await inboxRow.locator('details[open]').waitFor();
       await inboxRow.getByRole('button',{name:'Approve correction for Avery Period QA',exact:true}).waitFor();
-      const correctionHref=await center.locator('[data-inbox-key="TIME_CORRECTION:'+submittedBody.requestId+'"]').getAttribute('href');
+      // The canonical action's link (the Inbox row's link whenever the queue can't confirm it) opens On shift at it.
+      const correctionHref=inboxActions.items.find(item=>item.id==='TIME_CORRECTION:'+submittedBody.requestId)?.href;
       assert.equal(correctionHref,'/app?view=attendance#correction-'+submittedBody.requestId);await mp.goto(app.url+correctionHref);
       const targetedCorrection=mp.locator('main [id="correction-'+submittedBody.requestId+'"]');
       await waitUntil(()=>releaseAttendance);await targetedCorrection.waitFor({state:'attached'});
