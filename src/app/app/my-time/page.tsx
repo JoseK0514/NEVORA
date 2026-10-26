@@ -6,6 +6,7 @@ import { requireSession,requireSessionMutationProof } from "@/lib/auth/session";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { currentPayPeriod } from "@/lib/payroll/pay-calendar.server";
 
+export const metadata = { title: "My time" };
 export default async function MyTimePage() {
   const session = await requireSession();
 

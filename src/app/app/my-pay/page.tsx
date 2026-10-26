@@ -8,6 +8,7 @@ import { currentPayPeriod } from '@/lib/payroll/pay-calendar.server';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { businessDate } from '@/lib/business-time';
 
+export const metadata = { title: "Pay" };
 export default async function MyPayPage() {
   const moduleOff = await moduleGate("payStatements");
   if (moduleOff) return moduleOff;

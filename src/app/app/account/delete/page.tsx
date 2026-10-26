@@ -11,6 +11,7 @@ const roleName = { OWNER: "Owner", MANAGER: "Manager", LEAD: "Lead", EMPLOYEE: "
 
 /** Delete my account, for every role. Identity is the server session; the form asks for the password again.
  * Quiet (v4, inspection Oct 24): the same white page and grouped rows for every role, wording unchanged. */
+export const metadata = { title: "Delete account" };
 export default async function DeleteAccountPage() {
   if (!policiesVisible()) notFound();
   const session = await requireSession();

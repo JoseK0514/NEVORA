@@ -13,6 +13,7 @@ import { QuietGroup, QuietRow } from "@/components/quiet/quiet";
 import { SettingsFrame } from "./wave-c-kit";
 
 /** Quiet (v4, approved Oct 23): three short groups of one-line rows, each with its current value. */
+export const metadata = { title: "Settings" };
 export default async function SettingsPage() {
   await requireRoles(["OWNER"]);
   const proof = await requireSessionMutationProof();
