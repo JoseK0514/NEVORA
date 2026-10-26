@@ -315,7 +315,11 @@ try{
     await ep.reload();await ep.getByText('Day off',{exact:true}).waitFor();await ep.getByText(/^No shift (today|this day)\.$/).waitFor();const uxDays=ep.locator('nav[aria-label="Days in this week"] a');assert.equal(await uxDays.count(),7);for(const label of await uxDays.evaluateAll(links=>links.map(link=>link.getAttribute('aria-label'))))assert(!/assigned shift/.test(label),label);checked(engine+': UX-03 published empty week confirms no assignment');
     await q('ALTER TABLE schedules RENAME TO ux3_unavailable_schedules');
     try{await ep.goto(app.url+'/app/schedule?week='+uxWeek);await ep.getByText('Schedule unavailable',{exact:true}).first().waitFor();assert.equal(await ep.getByText(/^(Off — no assignment|Day off)$/).count(),0);checked(engine+': UX-03 actual unavailable schedule never confirms days off');}finally{await q('ALTER TABLE ux3_unavailable_schedules RENAME TO schedules');}
-    await ep.goto(app.url+'/app');await ep.getByText(/published this week yet\. Shifts shown are published\.$|shifts are published\./).waitFor();assert.equal(await ep.getByText("You're all set.",{exact:true}).count(),0);assert.equal(await ep.getByText('You’re all caught up',{exact:true}).count(),0);checked(engine+': UX-03 Home unpublished stays unconfirmed');
+    await ep.goto(app.url+'/app');
+    // Quiet Home (Team U3, UX-E-03): an unpublished location is said once, on Schedule. Home's Needs you shows what it
+    // could check and never says "You're all set".
+    await ep.locator('#employee-home-todo').waitFor();
+    assert.equal(await ep.getByText('You’re all set',{exact:true}).count(),0);assert.equal(await ep.getByText("You're all set.",{exact:true}).count(),0);assert.equal(await ep.getByText('You’re all caught up',{exact:true}).count(),0);checked(engine+': UX-03 Home unpublished stays unconfirmed');
     const {context:ownerContext,page:op}=await context(browser,'QAOWNER');
     const clockContext=await browser.newContext({viewport:{width:390,height:1000},serviceWorkers:'block'});await clockContext.route('**/*',route=>new URL(route.request().url()).origin===app.url?route.continue():route.abort());const cp=await clockContext.newPage();cp.setDefaultTimeout(15000);
     const pinA=engine==='chromium'?'2468':'6812',pinB=engine==='chromium'?'3579':'7935';
