@@ -49,9 +49,9 @@ it('verifies the combined auth, policy, employee and passkey UI in owned browser
       await page.setViewportSize({width:390,height:900});
       await page.goto(origin+'/login');
       for (const label of ['Privacy','Terms','Support']) expect(await page.getByRole('navigation',{name:'Policies and help'}).getByRole('link',{name:label,exact:true}).count()).toBe(1);
-      await page.getByRole('button',{name:'Español',exact:true}).click();
+      await page.getByRole('button',{name:/(^|: )Español$/}).click();
       await page.getByLabel('ID de empleado',{exact:true}).waitFor();
-      await page.getByRole('button',{name:'English',exact:true}).click();
+      await page.getByRole('button',{name:/(^|: )English$/}).click();
       await page.getByLabel('Employee ID',{exact:true}).fill(engine==='chromium'?'UI-EMPLOYEE':'UI-LEAD');
       await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
       await page.getByRole('button',{name:'Sign in',exact:true}).click();
