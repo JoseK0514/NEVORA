@@ -597,7 +597,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               </tr>;
             }):<tr><td colSpan={showRole?6:5} className="cm-tc-none">{tab==='review'?'No timecards need review.':'No approved timecards yet.'}</td></tr>}
             {fold?<tr className="cm-tc-idle"><td className="cm-tc-check" aria-hidden="true"/><td colSpan={showRole?5:4}>
-              <button type="button" className="cm-tc-idle__open" aria-expanded="false" onClick={()=>{setShowNoTime(true);const first=idle[0].card.employeeId;if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>document.getElementById(`timecard-${first}`)?.querySelector<HTMLElement>('.cm-tc-person')?.focus());}}>{`${idle.length} people with no time yet`}<span className="cm-tc-idle__hours" aria-hidden="true">0 min</span><CaretDownIcon size={13} weight="bold" aria-hidden="true"/></button>
+              <button type="button" className="cm-tc-idle__open" aria-expanded="false" onClick={()=>{setShowNoTime(true);const first=idle[0].card.employeeId;if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>document.getElementById(`timecard-${first}`)?.querySelector<HTMLElement>('.cm-tc-person')?.focus());}}>{`${idle.length} people with no time yet`}<span className="cm-tc-idle__hours" aria-hidden="true">0 h</span><CaretDownIcon size={13} weight="bold" aria-hidden="true"/></button>
             </td></tr>:null}</tbody>
           </table></div>
         </>:null}
@@ -614,7 +614,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
                 <ul className="nv-rows">{hidden.map(item=>phoneRow(item,false))}</ul>
               </details></li>:null}
               {phoneFold?<li className="cm-tc-more cm-tc-idle"><details open={phoneIdle.some(item=>target===`timecard-${item.card.employeeId}`)||undefined}>
-                <summary className="nv-row"><span className="nv-row__text"><span className="nv-row__title">{`${phoneIdle.length} people with no time yet`}</span></span><span className="nv-row__trail">0 min</span><CaretDownIcon className="nv-row__chev" size={16} weight="bold" aria-hidden="true"/></summary>
+                <summary className="nv-row"><span className="nv-row__text"><span className="nv-row__title">{`${phoneIdle.length} people with no time yet`}</span></span><span className="nv-row__trail">0 h</span><CaretDownIcon className="nv-row__chev" size={16} weight="bold" aria-hidden="true"/></summary>
                 <ul className="nv-rows">{phoneIdle.map(item=>phoneRow(item,false))}</ul>
               </details></li>:null}
             </ul>

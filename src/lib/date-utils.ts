@@ -132,9 +132,10 @@ export function formatHours(minutes: number) {
   return `${Number.isInteger(hours) ? hours : hours.toFixed(1)} h`;
 }
 
-/** Exact recorded time for timecards and corrections: "7 h 23 min", "45 min", "8 h". */
+/** Exact recorded time for timecards and corrections: "7 h 23 min", "45 min", "8 h"; nothing is "0 h", as the mockups write it. */
 export function formatElapsed(minutes: number) {
   const total = Math.max(0, Math.floor(minutes)), hours = Math.floor(total / 60), rest = total % 60;
+  if (!total) return '0 h';
   if (!hours) return `${rest} min`;
   return rest ? `${hours} h ${rest} min` : `${hours} h`;
 }

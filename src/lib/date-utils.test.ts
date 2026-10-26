@@ -46,6 +46,6 @@ describe("duration formatters", () => {
   });
   it("writes exact recorded time", async () => {
     const { formatElapsed } = await import("./date-utils");
-    expect([0, 45, 480, 443].map(formatElapsed)).toEqual(["0 min", "45 min", "8 h", "7 h 23 min"]);
+    expect([0, 45, 480, 443, -5].map(formatElapsed)).toEqual(["0 h", "45 min", "8 h", "7 h 23 min", "0 h"]);
   });
 });
