@@ -5,8 +5,10 @@ import {parseTimecardReceipt} from './client';
 export type BatchAction='APPROVE'|'FINALIZE';
 export type ReviewedBatch={period:Period;actorId:string;commands:readonly TimecardCommand[]};
 export type BatchOutcome={command:TimecardCommand;status:'approved'|'finalized'|'blocked'|'conflict'|'unavailable'|'denied'|'outcome-unknown'|'not-submitted'};
-export function batchExclusion(item:TimecardItem,actorId:string,action:BatchAction):'self'|'issues'|'state'|null{
+export function batchExclusion(item:TimecardItem,actorId:string,action:BatchAction):'self'|'scope'|'issues'|'state'|null{
  if(item.card.employeeId===actorId)return 'self';
+ // B-12: a location-scoped Manager reviews only cards whose time is all at their locations; the server refuses the rest.
+ if(item.outsideScope)return 'scope';
  if(item.card.issues.length)return 'issues';
  if(action==='FINALIZE'?item.state!=='APPROVED':!['DRAFT','REOPENED','NEEDS_REVIEW'].includes(item.state))return 'state';
  return null;

@@ -77,3 +77,17 @@ it('finalizes only the separately reviewed approved revisions without issuing ap
  const outcomes=await runReviewedBatch(r,()=>true,async c=>{expect(c.action).toBe('FINALIZE');expect(c.expectedRevision).toBe(3);return {httpStatus:200,body:{status:'finalized',operationId:ids[0],revision:4}};});
  expect(outcomes.map(o=>o.status)).toEqual(['finalized']);
 });
+it('B-12: a card a location-scoped reader cannot review is excluded from every reviewed set',()=>{
+ const scoped=card('E1');scoped.outsideScope=true;
+ expect(batchExclusion(scoped,'OWNER','APPROVE')).toBe('scope');expect(batchExclusion({...scoped,state:'APPROVED'},'OWNER','FINALIZE')).toBe('scope');
+ expect(()=>reviewTimecards(period,'OWNER',[scoped],['E1'],'APPROVE',()=>ids[0])).toThrow();
+ expect(batchExclusion({...scoped,card:{...scoped.card,employeeId:'OWNER'}},'OWNER','APPROVE')).toBe('self');
+ expect(card('E1').outsideScope).toBe(false);
+});
+it('B-12: the read keeps a server outsideScope flag and rejects a malformed one',()=>{
+ const source={...period,employeeId:'E1',employeeName:'Fictional E1',timeZone:'America/Puerto_Rico',pendingCorrections:0,entries:[],corrections:[]};
+ const raw=(outsideScope:unknown)=>({state:'ready',observedAt:'2026-09-29T12:00:00Z',cards:[{source,sourceHash:'a'.repeat(32),revision:0,state:'DRAFT',history:[],outsideScope}]});
+ expect(parseTimecardsResponse(raw(true),period).cards[0].outsideScope).toBe(true);
+ expect(parseTimecardsResponse(raw(false),period).cards[0].outsideScope).toBe(false);
+ expect(()=>parseTimecardsResponse(raw('yes'),period)).toThrow();
+});

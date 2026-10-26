@@ -1,4 +1,6 @@
-import {assertOperationalAccess,operationalScopeStatements,isOperationalAuthorizationError} from '../company-access/operational-scope.server';
+import {assertOperationalAccess,operationalScopeStatements,isOperationalAuthorizationError,readOperationalAuthority,operationalMembersStatements} from '../company-access/operational-scope.server';
+import {scopeFootprint,footprintIds,employeeInScopeSql} from '../company-access/scope-sql';
+import type {OperationalFootprint} from '../company-access/model';
 import { createHash } from 'node:crypto';
 import type { SqlExecutor } from '../notifications/types';
 import type { SessionMutationProof } from '../shift-changes/types';
@@ -14,7 +16,7 @@ export type { TimecardsResult } from './read-model';
 export type TimecardCommand = Period & { operationId:string;employeeId:string;expectedRevision:number;
   expectedSourceHash:string;action:'APPROVE'|'FINALIZE'|'REOPEN';note?:string };
 export type TimecardMutation = { status:'approved'|'finalized'|'reopened';operationId:string;revision:number } |
-  {status:'blocked';reason:'self_review'|'unresolved_time'|'approval_required'|'period_state'|'overlapping_period'|'payroll_approved'} |
+  {status:'blocked';reason:'self_review'|'unresolved_time'|'approval_required'|'period_state'|'overlapping_period'|'payroll_approved'|'outside_scope'|'company_required'} |
   {status:'conflict'|'unavailable'} | {status:'outcome-unknown';operationId:string};
 const object = (v:unknown):v is Record<string,unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const uuid = (v:unknown):v is string => typeof v==='string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
@@ -88,9 +90,18 @@ SELECT jsonb_build_object(
 
 // Finalization freezes the reviewed source. Approval remains tied to the current
 // source hash, so subsequent changes surface as NEEDS_REVIEW rather than approval.
-const timecardReadSqlFor=(includeInternalCapture = false)=>`WITH scope AS (
+// B-12: a scoped read adds $6, the actor's location scope (NULL for Company and for an employee's own card); the
+// filter runs in the same statement, inside the transaction that re-proves that scope. Unscoped text is unchanged,
+// because period close embeds and fingerprints it.
+const inScope=(scoped:boolean,employee:string,ids='$6::text[]')=>scoped?` AND ${employeeInScopeSql(employee,'$1',ids)}`:'';
+const outsideScopeSql=`
+  'outsideScope',$6::text[] IS NOT NULL AND (
+    EXISTS(SELECT 1 FROM jsonb_array_elements((CASE WHEN s.action='FINALIZE' THEN s.snapshot ELSE s.current_source END)->'entries') x WHERE NOT (x->>'locationId'=ANY($6::text[])))
+    OR EXISTS(SELECT 1 FROM jsonb_array_elements((CASE WHEN s.action='FINALIZE' THEN s.snapshot ELSE s.current_source END)->'corrections') c
+      JOIN time_correction_requests r ON r.id::text=c->>'id' WHERE r.workspace_id=$1 AND NOT (r.location_id=ANY($6::text[])))),`;
+const timecardReadSqlFor=(includeInternalCapture = false,scoped = false)=>`WITH scope AS (
   SELECT e.id FROM employees e JOIN locations l ON l.id=e.primary_location_id
-  WHERE l.workspace_id=$1 AND ($2::boolean OR e.id=$3)
+  WHERE l.workspace_id=$1 AND ($2::boolean OR e.id=$3)${inScope(scoped,'e.id')}
 ), sources AS (
   SELECT s.id,nevora_timecard_source($1,s.id,$4::date,$5::date) AS current_source,
     c.revision,c.action,c.source_hash,c.snapshot
@@ -98,7 +109,7 @@ const timecardReadSqlFor=(includeInternalCapture = false)=>`WITH scope AS (
 )
 SELECT clock_timestamp()::text AS "observedAt",COALESCE(jsonb_agg(jsonb_build_object(
   'source',CASE WHEN s.action='FINALIZE' THEN s.snapshot ELSE s.current_source END,
-  'sourceHash',CASE WHEN s.action='FINALIZE' THEN s.source_hash ELSE md5(s.current_source::text) END,
+  'sourceHash',CASE WHEN s.action='FINALIZE' THEN s.source_hash ELSE md5(s.current_source::text) END,${scoped?outsideScopeSql:''}
   'revision',COALESCE(s.revision,0),'state',CASE WHEN s.action='FINALIZE' THEN 'FINALIZED'
     WHEN s.action='REOPEN' THEN 'REOPENED' WHEN s.action='APPROVE' AND s.source_hash=md5(s.current_source::text) THEN 'APPROVED'
     WHEN s.action='APPROVE' THEN 'NEEDS_REVIEW' ELSE 'DRAFT' END,
@@ -112,13 +123,13 @@ COALESCE(jsonb_agg(jsonb_build_object('employeeId',s.id,'source',s.current_sourc
 export const timecardReadSql=timecardReadSqlFor();
 // Pay treatment of each recorded break comes from the employee's payroll break rules,
 // read beside the hashed source (never inside it) and resolved on the server.
-const timecardBreakTypesSql=`SELECT b.id,b.break_type_id AS "typeId",t.employee_id AS "employeeId" FROM break_entries b
+const timecardBreakTypesSql=(scoped:boolean)=>`SELECT b.id,b.break_type_id AS "typeId",t.employee_id AS "employeeId" FROM break_entries b
   JOIN time_entries t ON t.id=b.time_entry_id JOIN employees e ON e.id=t.employee_id JOIN locations l ON l.id=e.primary_location_id
-  WHERE l.workspace_id=$1 AND ($2::boolean OR e.id=$3) AND t.clock_in_at<($5::date+3)::timestamptz
+  WHERE l.workspace_id=$1 AND ($2::boolean OR e.id=$3)${inScope(scoped,'e.id')} AND t.clock_in_at<($5::date+3)::timestamptz
     AND (t.clock_out_at IS NULL OR t.clock_out_at>($4::date-2)::timestamptz) ORDER BY b.id`;
-const timecardPayProfilesSql=`SELECT p.employee_id AS "employeeId",p.payload AS configuration FROM native_payroll_profiles_current p
+const timecardPayProfilesSql=(scoped:boolean)=>`SELECT p.employee_id AS "employeeId",p.payload AS configuration FROM native_payroll_profiles_current p
   JOIN employees e ON e.id=p.employee_id JOIN locations l ON l.id=e.primary_location_id
-  WHERE p.workspace_id=$1 AND l.workspace_id=$1 AND ($2::boolean OR e.id=$3) ORDER BY p.employee_id`;
+  WHERE p.workspace_id=$1 AND l.workspace_id=$1 AND ($2::boolean OR e.id=$3)${inScope(scoped,'e.id','$4::text[]')} ORDER BY p.employee_id`;
 const missingPayProfiles=(error:unknown)=>object(error)&&String(error.code)==='42P01'&&/native_payroll_profiles_current/.test(String(error.message));
 function withBreakPay(row:unknown,types:unknown[],profiles:unknown[]):unknown{
   if(!object(row)||!Array.isArray(row.cards))return row;
@@ -137,29 +148,43 @@ function withBreakPay(row:unknown,types:unknown[],profiles:unknown[]):unknown{
   })};
 }
 
-async function readTimecardsCore(proof:SessionMutationProof,requested:Period,executor:SqlExecutor=neonNotificationExecutor(),capture?: (value: TimecardActionCapture) => void):Promise<TimecardsResult> {
+async function readTimecardsCore(proof:SessionMutationProof,requested:Period,executor:SqlExecutor=neonNotificationExecutor(),capture?: (value: TimecardActionCapture) => void,scoped=false):Promise<TimecardsResult> {
   try{assertManagementProof(proof,proof?.employee?.id);}catch{return {state:'unavailable',reason:'access_denied'};}
   const period=parsePeriod(requested.startDate,requested.endDate);
   const readRoles=manager(proof)?['OWNER','MANAGER'] as const:['EMPLOYEE','LEAD'] as const;
   try {
     const workspace=await getWorkspace(executor),started=performance.now();
+    // B-12: a scoped read covers the Manager's or Owner's current operational scope (Company, or the employees of
+    // their locations) and re-proves that exact authority digest inside the read transaction, before and after the
+    // rows. Unscoped reads are for callers that already hold Company authority (payroll export, Owner review).
+    let footprint:OperationalFootprint|null=null,authority:string|undefined,scopeBudget=Infinity;
+    if(scoped&&manager(proof)){
+      const view=await readOperationalAuthority(proof,executor);
+      if(view.state!=='ready')return {state:'unavailable',reason:view.reason==='access_denied'?'access_denied':'read_failed'};
+      if(!view.scope)return {state:'unavailable',reason:'access_denied'};
+      footprint=scopeFootprint(view.scope);authority=view.authority;scopeBudget=view.validForMs;
+    }
+    const ids=footprint?footprintIds(footprint):null;
+    const scopeGuard=()=>footprint?operationalScopeStatements(proof,workspace,footprint,authority):[];
     const guards=[...workspaceReadGuard(workspace),
       {text:'SELECT e.id FROM employees e JOIN locations l ON l.id=e.primary_location_id WHERE l.workspace_id=$1 AND ($2::boolean OR e.id=$3) ORDER BY e.id FOR SHARE OF e',values:[workspace.id,manager(proof),proof.employee.id]},
-      ...managementSessionStatements(proof,proof.employee.id,readRoles),
+      ...managementSessionStatements(proof,proof.employee.id,readRoles),...scopeGuard(),
     ];
-    const values=[workspace.id,manager(proof),proof.employee.id,period.startDate,period.endDate];
-    const read=(withProfiles:boolean)=>executor.transaction([...guards,{text:capture ? timecardReadSqlFor(true) : timecardReadSql,values},
-      {text:timecardBreakTypesSql,values},...(withProfiles?[{text:timecardPayProfilesSql,values:values.slice(0,3)}]:[]),
-      ...managementSessionStatements(proof,proof.employee.id,readRoles)]);
+    const base=[workspace.id,manager(proof),proof.employee.id,period.startDate,period.endDate],values=scoped?[...base,ids]:base;
+    const read=(withProfiles:boolean)=>executor.transaction([...guards,{text:capture||scoped ? timecardReadSqlFor(!!capture,scoped) : timecardReadSql,values},
+      {text:timecardBreakTypesSql(scoped),values},...(withProfiles?[{text:timecardPayProfilesSql(scoped),values:scoped?[...base.slice(0,3),ids]:base.slice(0,3)}]:[]),
+      ...managementSessionStatements(proof,proof.employee.id,readRoles),...scopeGuard()]);
     let results,withProfiles=true;
     try{results=await read(true);}catch(error){if(!missingPayProfiles(error))throw error;withProfiles=false;results=await read(false);}
     const result=parseTimecardsResponse(withBreakPay(results[guards.length]?.[0],results[guards.length+1]??[],withProfiles?results[guards.length+2]??[]:[]),period);
     if(!manager(proof)&&result.cards.some(c=>c.card.employeeId!==proof.employee.id))throw new Error('Incorrect scope');
-    const authority=await executor.query<{remaining:number}>({text:`SELECT floor(LEAST(45000,EXTRACT(epoch FROM(s.expires_at-clock_timestamp()))*1000))::integer AS remaining
+    const session=await executor.query<{remaining:number}>({text:`SELECT floor(LEAST(45000,EXTRACT(epoch FROM(s.expires_at-clock_timestamp()))*1000))::integer AS remaining
       FROM employee_sessions s JOIN employees e ON e.id=s.employee_id JOIN locations l ON l.id=e.primary_location_id
       WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role=ANY($3::text[]) AND l.workspace_id=$4 AND s.expires_at>clock_timestamp()`,values:[proof.sessionTokenHash,proof.employee.id,readRoles,workspace.id]});
-    if(!authority[0])return {state:'unavailable',reason:'access_denied'};
-    const validForMs=Math.floor(authority[0].remaining-(performance.now()-started));if(validForMs<1)throw Error('Timecards expired');
+    if(!session[0])return {state:'unavailable',reason:'access_denied'};
+    // A scoped projection crosses the admitted authority once more before it is returned.
+    if(footprint)await executor.transaction([...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},...scopeGuard()]);
+    const validForMs=Math.floor(Math.min(session[0].remaining,scopeBudget)-(performance.now()-started));if(validForMs<1)throw Error('Timecards expired');
     if (capture) {
       const capturedRow = results[guards.length]?.[0] as { internalCurrentSources?: unknown } | undefined;
       const raw = capturedRow?.internalCurrentSources;
@@ -169,7 +194,7 @@ async function readTimecardsCore(proof:SessionMutationProof,requested:Period,exe
     }
     return {...result,validForMs};
   }catch(error){
-    if(isManagementAuthorizationError(error))return {state:'unavailable',reason:'access_denied'};
+    if(isManagementAuthorizationError(error)||isOperationalAuthorizationError(error))return {state:'unavailable',reason:'access_denied'};
     const message=error instanceof Error?error.message:'';
     const code=object(error)?String(error.code):'';
     return {state:'unavailable',reason:/SOURCE_LIMIT|source limit/.test(message)?'source_limit':['42P01','42883'].includes(code)?'schema_missing':'read_failed'};
@@ -189,6 +214,21 @@ export function payrollApprovedGuard(workspaceId:string,employeeId:string,startD
     THEN 'nevora_timecard_PAYROLL_APPROVED' ELSE '1' END)::integer`,values:[workspaceId,employeeId,startDate,endDate]};
 }
 
+/** B-12, location-scoped Managers only (Company adds nothing). Reopening finalized, payroll-facing time stays with
+ * Owners and company-wide Managers. Approve and finalize also need every entry and correction on the card to be at a
+ * location in the scope: the card being reviewed is the live source the command function hashes, read here in the
+ * same transaction. */
+function locationScopedTimecardStatements(workspaceId:string,command:TimecardCommand,footprint:OperationalFootprint){
+  const ids=footprintIds(footprint);
+  if(ids===null)return [];
+  if(command.action==='REOPEN')return [{text:"SELECT 'nevora_timecard_COMPANY_REQUIRED'::integer",values:[]}];
+  return [{text:`WITH source AS (SELECT nevora_timecard_source($1,$2,$3::date,$4::date) AS s)
+    SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM source,jsonb_array_elements(source.s->'entries') x WHERE NOT (x->>'locationId'=ANY($5::text[])))
+      AND NOT EXISTS(SELECT 1 FROM source,jsonb_array_elements(source.s->'corrections') c JOIN time_correction_requests r ON r.id::text=c->>'id'
+        WHERE r.workspace_id=$1 AND NOT (r.location_id=ANY($5::text[])))
+    THEN '1' ELSE 'nevora_timecard_OUTSIDE_SCOPE' END)::integer`,values:[workspaceId,command.employeeId,command.startDate,command.endDate,ids]}];
+}
+
 /**
  * Submit one revision/hash-bound command to the database lifecycle authority.
  * Employee locks precede fresh company-scope guards; transient lock failures retry
@@ -202,16 +242,21 @@ export async function mutateTimecard(proof:SessionMutationProof,input:unknown,ex
   const command=parseTimecardCommand(input);
   let workspace;
   let authority:string;
-  try{const access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor);workspace=access.workspace;authority=access.authority;}catch{return {status:'unavailable'};}
+  let footprint:OperationalFootprint;
+  // B-12: admit the actor's actual scope (Company or Locations), never a wider one.
+  try{const access=await assertOperationalAccess(proof,undefined,executor);workspace=access.workspace;authority=access.authority;footprint=scopeFootprint(access.scope);}catch{return {status:'unavailable'};}
   const actor=proof.employee.id;
   const statements=[...workspaceReadGuard(workspace),
     {text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE',values:[[...new Set([actor,command.employeeId])].sort()]},
-    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
+    ...operationalScopeStatements(proof,workspace,footprint,authority),
+    // An out-of-scope employee fails here with the same receipt as an unknown one.
+    ...operationalMembersStatements(workspace,footprint,[command.employeeId]),
+    ...locationScopedTimecardStatements(workspace.id,command,footprint),
     ...(command.action==='REOPEN'?[payrollApprovedGuard(workspace.id,command.employeeId,command.startDate,command.endDate)]:[]),
     {text:'SELECT nevora_timecard_command($1::uuid,$2,$3,$4,$5::date,$6::date,$7::integer,$8,$9,$10,$11) AS result',
       values:[command.operationId,workspace.id,command.employeeId,actor,command.startDate,command.endDate,command.expectedRevision,
         command.expectedSourceHash,command.action,command.note??null,createHash('sha256').update(JSON.stringify(command)).digest('hex')]},
-    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
+    ...operationalScopeStatements(proof,workspace,footprint,authority),
   ];
   for(let attempt=0;attempt<3;attempt++){
     try{
@@ -224,7 +269,7 @@ export async function mutateTimecard(proof:SessionMutationProof,input:unknown,ex
       if(isManagementAuthorizationError(error)||isOperationalAuthorizationError(error))return {status:'unavailable'};
       const message=error instanceof Error?error.message:'';const code=object(error)?String(error.code??''):'';
       if(/nevora_timecard_CONFLICT/.test(message)||code==='23505')return {status:'conflict'};
-      const reasons=[['SELF_REVIEW','self_review'],['UNRESOLVED','unresolved_time'],['APPROVAL_REQUIRED','approval_required'],['PAYROLL_APPROVED','payroll_approved'],['STATE','period_state'],['OVERLAPPING_PERIOD','overlapping_period']] as const;
+      const reasons=[['OUTSIDE_SCOPE','outside_scope'],['COMPANY_REQUIRED','company_required'],['SELF_REVIEW','self_review'],['UNRESOLVED','unresolved_time'],['APPROVAL_REQUIRED','approval_required'],['PAYROLL_APPROVED','payroll_approved'],['STATE','period_state'],['OVERLAPPING_PERIOD','overlapping_period']] as const;
       for(const [pattern,reason] of reasons)if(message.includes('nevora_timecard_'+pattern))return {status:'blocked',reason};
       if(['40001','40P01','55P03'].includes(code)){if(attempt<2)continue;return {status:'conflict'};}
       if(/AUTH_REQUIRED|SOURCE_LIMIT|INVALID/.test(message)||['42P01','42883','23503','23514'].includes(code))return {status:'unavailable'};
@@ -235,7 +280,13 @@ export async function mutateTimecard(proof:SessionMutationProof,input:unknown,ex
   return {status:'conflict'};
 }
 
-/** Return a session-bounded view; consumers must stop treating it as current after validForMs. */
+/** B-12: the team timecards of the actor's current operational scope (Company, or the people of a location-scoped
+ * Manager's locations), with the scope re-proved inside the read. An Employee or Lead gets their own card. */
+export async function readScopedTimecards(proof:SessionMutationProof,requested:Period,executor:SqlExecutor=neonNotificationExecutor()):Promise<TimecardsResult> {
+ return readTimecardsCore(proof,requested,executor,undefined,true);
+}
+/** Return a session-bounded view; consumers must stop treating it as current after validForMs. Managers' callers
+ * must already hold current Company authority; use readScopedTimecards otherwise. */
 export async function readTimecards(proof:SessionMutationProof,requested:Period,executor:SqlExecutor=neonNotificationExecutor()):Promise<TimecardsResult> {
  return readTimecardsCore(proof,requested,executor);
 }

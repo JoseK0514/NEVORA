@@ -1,7 +1,7 @@
 import {beforeEach,describe,expect,it,vi} from 'vitest';
 const state=vi.hoisted(()=>({session:{id:'E1',role:'EMPLOYEE'} as {id:string;role:string}|null,read:vi.fn()}));
 vi.mock('@/lib/auth/session',()=>({getSession:async()=>state.session,requireSessionMutationProof:async()=>({employee:state.session,sessionTokenHash:'a'.repeat(64)})}));
-vi.mock('@/lib/timecards/service',()=>({readTimecards:state.read}));
+vi.mock('@/lib/timecards/service',()=>({readScopedTimecards:state.read}));
 import {POST} from './route';
 const req=(body:unknown={startDate:'2026-09-21',endDate:'2026-09-27'},headers:Record<string,string>={})=>new Request('https://example.test/api/timecards',{
   method:'POST',headers:{origin:'https://example.test','content-type':'application/json','x-nevora-timecards':'1','x-nevora-actor':'E1',...headers},body:JSON.stringify(body)});

@@ -5,7 +5,10 @@ export type TimecardHistory = { operationId: string; revision: number; action:'A
 export type TimecardItem = { source:TimecardSource; card:Timecard; sourceHash:string; revision:number;
   state:'DRAFT'|'APPROVED'|'FINALIZED'|'REOPENED'|'NEEDS_REVIEW'; history:TimecardHistory[];
   /** Server-resolved payroll break classification; outside the hashed source. */
-  breakPay:TimecardBreakPay };
+  breakPay:TimecardBreakPay;
+  /** B-12: for a location-scoped reader, the card has time or a correction at a location outside that scope, so it is
+   * read-only for them. Always false for Company and for an employee's own card. Outside the hashed source. */
+  outsideScope:boolean };
 export type TimecardProjection = {state:'ready';observedAt:string;period:Period;cards:TimecardItem[]};
 export type TimecardsResult = (TimecardProjection & {validForMs:number})|{
   state:'unavailable';reason:'access_denied'|'source_limit'|'read_failed'|'schema_missing'};
@@ -40,7 +43,8 @@ export function parseTimecardsResponse(v:unknown,period:Period):TimecardProjecti
         occurredAt:h.occurredAt,actorName:h.actorName,note:h.note,sourceHash:h.sourceHash,snapshot:h.snapshot as TimecardSource};
     });
     if(history.length!==Number(raw.revision)||history.some((h,i)=>h.revision!==Number(raw.revision)-i))throw new Error('Incomplete revision history');
-    return {source:raw.source as TimecardSource,card,sourceHash:raw.sourceHash,revision:Number(raw.revision),state:raw.state as TimecardItem['state'],history,
+    if(!(raw.outsideScope===undefined||typeof raw.outsideScope==='boolean'))throw new Error('Invalid card scope');
+    return {source:raw.source as TimecardSource,card,sourceHash:raw.sourceHash,revision:Number(raw.revision),state:raw.state as TimecardItem['state'],history,outsideScope:raw.outsideScope===true,
       breakPay:Object.fromEntries(Object.entries(breakPay as TimecardBreakPay).sort(([a],[b])=>a<b?-1:a>b?1:0))};
   });
   if(new Set(cards.map(c=>c.card.employeeId)).size!==cards.length)throw new Error('Duplicate timecards');
