@@ -9,7 +9,14 @@ vi.mock('react',async()=>({...await vi.importActual<typeof import('react')>('rea
  useEffect:(effect:()=>void|(()=>void))=>{if(!host.mounted)host.effects.push(effect);},
 }));
 vi.mock('./clean/top-bar-slot',()=>({useTopBarSlot:()=>null}));
-import {Timecards} from './timecards';
+// Team W: the sheet decides through Team U1's shared queue. The queue's protected read and command are its own (and the
+// Phase D browser suites drive them end to end); here it is a stand-in that records its binding and each decision.
+const queue=vi.hoisted(()=>({binding:null as null|{actorId?:string;authority?:string;onDecided?:(state:'approved'|'rejected')=>void},decisions:[] as unknown[][],
+ state:null as unknown}));
+vi.mock('./manager-time-corrections',async()=>({...await vi.importActual<typeof import('./manager-time-corrections')>('./manager-time-corrections'),
+ useManagerTimeCorrections:(binding:typeof queue.binding)=>{queue.binding=binding;return queue.state;}}));
+import {SheetCorrections,Timecards} from './timecards';
+import {CorrectionDecisionRow} from './manager-time-corrections';
 
 /* Final pass (Oct 25, 2026), Team U4: T-12 timecard sheet with the correction decided in place (UX-O-30), and
  * business P0-3 (Worked is paid time; breaks shown separately) on the Owner sheet and the Employee Quiet view. */
@@ -29,7 +36,12 @@ function control(test:(n:ReactElement<Record<string,unknown>>)=>boolean){const n
 const button=(label:string)=>control(n=>n.type==='button'&&(n.props.children===label||n.props['aria-label']===label));
 const flush=()=>vi.advanceTimersByTimeAsync(0);
 async function mount(){render();host.mounted=true;cleanup=host.effects[0]();await flush();}
-beforeEach(()=>{manager=true;actorId='OWNER';reads=0;posts=[];cardsFor=()=>[card('E1',{pendingCorrections:1,corrections:[correction]})];host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];
+const queued={id:REQUEST,revision:2,kind:'MISSING_ENTRY',status:'PENDING',employeeId:'E1',employeeName:'Fictional E1',isSelf:false,reason:'Forgot to clock in',
+ locationId:'office',originalStartAt:null,originalEndAt:null,proposedStartAt:'2026-09-24T12:00:00Z',proposedEndAt:'2026-09-24T20:00:00Z',baseChanged:false,context:{state:'none'}};
+beforeEach(()=>{queue.binding=null;queue.decisions=[];
+ queue.state={snapshot:{state:'ready',timeZone:'America/Puerto_Rico',requests:[queued]},connection:'ready',busyId:null,notice:null,retry:null,
+  decide:(...args:unknown[])=>{queue.decisions.push(args);},retryDecision:()=>{},refresh:()=>{}};
+ manager=true;actorId='OWNER';reads=0;posts=[];cardsFor=()=>[card('E1',{pendingCorrections:1,corrections:[correction]})];host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];
  vi.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});
  vi.stubGlobal('window',new EventTarget());vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));vi.stubGlobal('navigator',{onLine:true});
  vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{
@@ -49,26 +61,44 @@ it('shows paid time with breaks separate, the day row and the reason Approve is 
  expect(sheet).toMatch(/<b>Breaks<\/b><\/span><span class="q-rv q-rv--l">1 h</);
  expect(sheet).toContain('<b>Tue, Sep 22</b><i>8:00 AM – 6:00 PM · Main Office</i>');
  expect(sheet).toContain('Corrections (1)');
- expect(sheet).toContain('<b>Missed punch</b><i>Sep 24, 8:00 AM – 4:00 PM · Forgot to clock in</i>');
+ // The waiting correction is Team U1's shared row (who, what and when; the reason is inside it).
+ expect(sheet).toContain('<b>Fictional E1</b><i>Missed punch · Sep 24, 8:00 AM – 4:00 PM</i>');
+ expect(sheet).toContain('<b>Reason</b><span>Forgot to clock in</span>');
  expect(button('Approve timecard').disabled).toBe(true);
  expect(sheet).toContain('Decide the correction first.');
  // No 2x2 stat grid, no bullets, no "Period information" card.
  expect(sheet).not.toContain('cm-tc-figures');expect(sheet).not.toContain('Period information');
 });
 
-it('approves the correction inside the timecard with the existing review command, then reads fresh timecards',async()=>{
+it('decides the correction inside the timecard with Team U1’s shared row and queue, then reads fresh timecards',async()=>{
  await mount();
  (control(n=>n.type==='button'&&n.props.className==='cm-tc-person').onClick as ()=>void)();
  expect(reads).toBe(1);
- (button('Approve').onClick as ()=>void)();await flush();
- expect(posts).toHaveLength(1);
- expect(posts[0].path).toBe('/api/manager/time-corrections');
- expect(posts[0].body).toMatchObject({requestId:REQUEST,expectedRevision:2,decision:'APPROVE'});
- expect(Object.keys(posts[0].body as object).sort()).toEqual(['decision','expectedRevision','operationId','requestId']);
- expect(posts[0].headers['X-Nevora-Correction-Authority']).toBe('b'.repeat(64));
- expect(posts[0].headers['X-Nevora-Actor']).toBe('OWNER');
+ const sheet=html();
+ // The shared row: who, then Decline and Approve labelled for the person.
+ expect(sheet).toContain('q-request u1-correction');
+ expect(sheet).toContain('aria-label="Approve correction for Fictional E1"');expect(sheet).toContain('aria-label="Decline correction for Fictional E1"');
+ // The queue is bound to the page's actor and correction authority (the same command binding as before).
+ expect(queue.binding).toMatchObject({actorId:'OWNER',authority:'b'.repeat(64)});
+ const list=control(n=>n.type===SheetCorrections);
+ const row=nodes(SheetCorrections(list as Parameters<typeof SheetCorrections>[0])).find(n=>n.type===CorrectionDecisionRow)!.props;
+ expect(row.item).toMatchObject({id:REQUEST,revision:2});
+ (row.onDecision as (item:unknown,decision:string)=>void)(row.item,'APPROVE');
+ expect(queue.decisions).toEqual([[queued,'APPROVE']]);
+ expect(posts).toHaveLength(0);
+ // Once the queue confirms the decision, the timecards are read again.
+ queue.binding!.onDecided!('approved');await flush();
  expect(reads).toBe(2);
- expect(html()).toContain('Correction approved. Fictional’s timecard is updated.');
+});
+
+it('keeps a pending correction the queue hasn’t confirmed as a plain row that points to On shift',async()=>{
+ queue.state={...(queue.state as object),snapshot:{state:'ready',timeZone:'America/Puerto_Rico',requests:[]}};
+ await mount();
+ (control(n=>n.type==='button'&&n.props.className==='cm-tc-person').onClick as ()=>void)();
+ const sheet=html();
+ expect(sheet).toContain('<b>Missed punch</b><i>Sep 24, 8:00 AM – 4:00 PM · Forgot to clock in</i>');
+ expect(sheet).toContain('href="/app?view=attendance"');
+ expect(sheet).not.toContain('Approve correction for');
 });
 
 it('never offers the decision on the actor’s own correction',async()=>{
@@ -76,6 +106,7 @@ it('never offers the decision on the actor’s own correction',async()=>{
  await mount();
  (control(n=>n.type==='button'&&n.props.className==='cm-tc-person').onClick as ()=>void)();
  const sheet=html();
+ expect(queue.binding).toBeNull();expect(sheet).not.toContain('Approve correction for');
  expect(sheet).toContain('Another manager decides your own correction.');
  expect(()=>button('Approve')).toThrow('Missing rendered control');
  expect(sheet).toContain('Another manager approves your timecard.');
@@ -85,6 +116,10 @@ it('shows the employee their paid time, breaks separately, and a day without pun
  manager=false;actorId='E1';cardsFor=()=>[card('E1')];
  await mount();
  const page=html();
+ // Team W: "Request a correction" opens Team U3's correction sheet on My time; a day's sheet fills in that day.
+ expect(page).toContain('href="/app/my-time?fix=#corrections"');expect(queue.binding).toBeNull();
+ (control(n=>n.type==='button'&&n.props['aria-haspopup']==='dialog'&&n.props.className==='q-row q-row--btn').onClick as ()=>void)();
+ expect(html()).toContain('href="/app/my-time?fix=2026-09-22#corrections"');
  expect(page).toContain('q-page q-tc-mine');expect(page).toContain('href="/app/my-pay"');
  expect(page).toContain('<h1>Timecards</h1><p>Sep 21 – 27 · In progress</p>');
  expect(page).toMatch(/<b>Worked<\/b><\/span><span class="q-rv q-rv--l">9 h</);

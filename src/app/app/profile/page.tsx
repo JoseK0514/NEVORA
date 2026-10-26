@@ -5,7 +5,7 @@ import {EmployeeAccountPanel} from '@/components/employee-account-panel';
 import {readNotificationConfig} from '@/lib/notifications/config';
 import {PortalSignout} from '@/components/portal-signout';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
-import {QuietNav,QuietPage,QuietRow} from '@/components/quiet/quiet';
+import {initialsOf,QuietNav,QuietPage,QuietRow} from '@/components/quiet/quiet';
 import {ProfileSettingRows} from '@/components/employee-profile-rows';
 import {policiesVisible} from '@/lib/legal/policies';
 import {ManagerProfilePage} from '@/components/manager-profile/manager-profile';
@@ -21,7 +21,7 @@ export default async function ProfilePage(){
  const workspaceName=await getWorkspace().then(workspace=>workspace.name).catch(()=>null);
  const lang=await readAuthLang();
  const {firstName,lastName,role}=proof.employee;
- const initials=`${firstName.trim()[0]??''}${lastName.trim()[0]??''}`.toUpperCase();
+ const initials=initialsOf(`${firstName} ${lastName}`);
  const roleLabel=role==='LEAD'?'Lead':'Employee';
  // v5 "One look" (Jose approved round 2 "exactly like this" on Oct 24, 2026; mockup E16): Back to More, who you are,
  // Settings, Work details, Your account and Sign out. Kept from before, beyond the mockup: sign-in security (passkeys)

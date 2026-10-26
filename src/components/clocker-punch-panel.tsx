@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { formatElapsed } from '../lib/date-utils';
 import { canRetirePendingPunch, forgetSubjectPendingPunch, makePunchCommand, parseClockView, parseReceiptReply,
  postPunch, punchActions, PunchRequestError, readSubjectPendingPunch, saveSubjectPendingPunch, pendingPunchReferences, type ClockView, type PendingPunch } from '../lib/clocker/punch-client';
 import type { PunchAction, PunchReceipt } from '../lib/clocker/punch-types';
@@ -30,7 +31,7 @@ function shortTime(value:string,timeZone:string,now:number):string {
 function elapsed(value:string,now:number):string {
  const minutes=Math.max(0,Math.floor((now-new Date(value).getTime())/60000));
  if(minutes<1)return 'under a minute';
- const h=Math.floor(minutes/60),m=minutes%60;return h?`${h}h ${m}m`:`${m}m`;
+ return formatElapsed(minutes);
 }
 const breakIcon=(category:string):ClockerIconName=>category==='REST'?'rest':category==='MEAL'?'meal':'break';
 export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:string;timeZone:string;onDone:()=>void}) {

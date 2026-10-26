@@ -5,6 +5,13 @@ import {join} from 'node:path';
 // v5 My time: each entry is a row that opens its punches and its correction as a sheet.
 const entryRow=page=>page.locator('ul[aria-labelledby^="employee-time-"] > li > button[aria-haspopup="dialog"]').first();
 import {Temporal} from '@js-temporal/polyfill';
+import {APPROVED,CORRECTION_CENTER,CORRECTION_FORM,CORRECTION_QUEUE,CORRECTION_ROW,DECLINED,SENT,UNCERTAIN_DECISION,UNCERTAIN_REQUEST,employeeRetry,managerRetry} from './phase-d2-quiet-selectors.mjs';
+/** Team U3: an entry's sheet opens the one correction sheet filled in for that entry. */
+async function openEntryCorrection(page){
+ await entryRow(page).click();
+ await page.locator('dialog[open]').getByRole('button',{name:'Something wrong? Request a correction',exact:true}).click();
+ const form=page.locator(CORRECTION_FORM);await form.waitFor();return form;
+}
 
 /** Real authenticated commands with deliberately lost delivery; owned fictional data only. */
 export async function verifyCorrectionRecovery({browser,engine,app,q,context,login,checked,report,evidence,geometry}){
@@ -28,17 +35,18 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
     await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});await page.bringToFront();
     let form;
     if(kind==='MISSING_ENTRY'){
-     await page.locator('main .employee-correction-center').getByRole('button',{name:'Request a correction',exact:true}).click();
-     form=page.locator('#employee-missing-time-correction');
-     await form.getByLabel('Start',{exact:true}).fill(local(Temporal.Instant.from(entry.start).subtract({hours:3}).toString()));
-     await form.getByLabel('End',{exact:true}).fill(local(Temporal.Instant.from(entry.start).subtract({hours:2}).toString()));
+     await page.locator(CORRECTION_CENTER).getByRole('button',{name:'Request a correction',exact:true}).click();
+     form=page.locator(CORRECTION_FORM);await form.waitFor();
+     assert.equal(await form.getByRole('radio',{name:/^Missing time/}).isChecked(),true);
+     const from=local(Temporal.Instant.from(entry.start).subtract({hours:3}).toString()),to=local(Temporal.Instant.from(entry.start).subtract({hours:2}).toString());
+     await form.getByLabel('Day',{exact:true}).fill(from.slice(0,10));
+     await form.getByLabel('Starts',{exact:true}).fill(from.slice(11,16));
+     await form.getByLabel('Ends',{exact:true}).fill(to.slice(11,16));
     }else{
-     await entryRow(page).click();const details=page.locator('dialog[open]');
-     await details.getByRole('button',{name:'Request a correction',exact:true}).click();
-     form=details.locator('.employee-time-correction-form');
-     if(kind==='BREAK_BOUNDARY')await form.getByLabel('What needs correction?').selectOption({index:1});
+     form=await openEntryCorrection(page);
+     if(kind==='BREAK_BOUNDARY'){await form.locator('label',{hasText:'Wrong break'}).click();assert.equal(await form.getByRole('radio',{name:/^Wrong break/}).isChecked(),true);}
     }
-    await form.getByLabel('Reason',{exact:true}).fill('Fictional uncertain '+kind+' '+loss+' command.');
+    await form.getByLabel('Note',{exact:true}).fill('Fictional uncertain '+kind+' '+loss+' command.');
     const commands=[];
     let confirmCommit;
     const committedBeforeDelivery=new Promise(resolve=>{confirmCommit=resolve;});
@@ -53,7 +61,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
      }
      await route.abort('failed');
     });
-    await form.getByRole('button',{name:'Send request',exact:true}).click();
+    await form.getByRole('button',{name:'Send',exact:true}).click();
     if(loss==='after'){
      await committedBeforeDelivery;
      // Clear the real private reader while the first POST is still unresolved.
@@ -61,26 +69,26 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
      await page.getByText('Updates paused',{exact:true}).waitFor();
      await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
      await entryRow(page).waitFor();
-     if(kind!=='MISSING_ENTRY')await entryRow(page).click();
-     await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).waitFor();
-     await page.locator(kind==='MISSING_ENTRY'?'main .employee-correction-center':'dialog[open]').first().getByRole('button',{name:'Request a correction',exact:true}).click();
+     // The pause closed the sheet; the page keeps the command and offers the same send again.
+     await employeeRetry(page).waitFor();
      releaseDelivery();
      checked(`${engine}: ${kind} in-flight private pause preserves the command before response classification`);
     }
-    await page.getByText('The server outcome could not be confirmed. Retry the same request safely.',{exact:true}).waitFor();
-    assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),1);
-    assert.equal(await form.getByRole('button',{name:'Send request',exact:true}).isDisabled(),true);
+    await page.getByText(UNCERTAIN_REQUEST,{exact:true}).first().waitFor();
+    assert.equal(await employeeRetry(page).count(),1);
+    // No second request while one is uncertain: Send (when the sheet is still open) and Request a correction are off.
+    assert.equal(await page.locator(`${CORRECTION_CENTER} form.q-fix button[type="submit"]`).isDisabled(),true);
+    assert.equal(await page.locator(CORRECTION_CENTER).getByRole('button',{name:'Request a correction',exact:true}).isDisabled(),true);
     // The inherited private reader really clears/unmounts its children on pause.
     await c.setOffline(true);await page.getByText('Updates paused',{exact:true}).waitFor();
-    assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
+    assert.equal(await employeeRetry(page).count(),0);
     await c.setOffline(false);await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
     await entryRow(page).waitFor();
-    if(kind!=='MISSING_ENTRY')await entryRow(page).click();
-    const retry=page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/});await retry.waitFor();
+    const retry=employeeRetry(page);await retry.waitFor();
     if(kind==='ENTRY_BOUNDARY'&&loss==='after'){
      for(const width of [320,375,390,430,768,1024,1440]){
       await page.setViewportSize({width,height:width<=430?844:1000});
-      await geometry(page,'.employee-time-correction','employee uncertain request',engine,width);
+      await geometry(page,CORRECTION_CENTER,'employee uncertain request',engine,width);
       const shot=join(evidence,`${engine}-employee-recovery-${width}.png`);await page.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
      }
     }
@@ -91,7 +99,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
     observations.nativeRetries??=[];const receipt={engine,kind,loss,...native,postCallsBefore:commands.length};observations.nativeRetries.push(receipt);
     assert(native.documentFocused&&native.buttonFocused&&native.enabled,'Native retry must have foreground focus and be enabled');
     await page.keyboard.press('Enter');
-    await page.getByText('Correction request sent for manager review.',{exact:true}).waitFor();receipt.postCallsAfter=commands.length;
+    await page.getByText(SENT,{exact:true}).waitFor();receipt.postCallsAfter=commands.length;
     assert.equal(commands.length,2);assert.deepEqual(commands[1],commands[0]);
     assert.deepEqual(await q('SELECT count(*)::int AS count FROM time_correction_requests WHERE id=$1',[commands[0].operationId]),[{count:1}]);
     await decide(owner,commands[0].operationId);
@@ -119,24 +127,24 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
      await route.abort('failed');
     });
     await page.getByRole('button',{name:`${decision==='APPROVE'?'Approve':'Decline'} correction for Avery Correction QA`,exact:true}).click();
-    await page.getByText('The server outcome could not be confirmed. Retry the same decision safely.',{exact:true}).waitFor();
+    await page.getByText(UNCERTAIN_DECISION,{exact:true}).waitFor();
     await c.setOffline(true);
-    await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await page.getByRole('heading',{name:'View paused',exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);assert.equal(await page.locator('.manager-correction-row').count(),0);
+    await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await page.getByRole('heading',{name:'View paused',exact:true}).waitFor();assert.equal(await managerRetry(page).count(),0);assert.equal(await page.locator(CORRECTION_ROW).count(),0);
     await c.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));
     const ready=await c.request.get(app.url+'/api/manager/time-corrections',{headers});
     assert.equal((await ready.json()).requests.some(item=>item.id===pending.requestId),loss==='before');
     if(loss!=='before')await page.getByRole('button',{name:'Approve correction for Avery Correction QA',exact:true}).waitFor({state:'detached'});
-    const retry=page.getByRole('button',{name:'Retry same decision',exact:true});await retry.waitFor();
+    const retry=managerRetry(page);await retry.waitFor();
     // UX-04 keeps retry disabled until this tab has a current authorized snapshot.
     // The separate API inspection above does not establish the browser's authority.
-    await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(button=>button.textContent==='Retry same decision'&&!button.disabled));
+    await page.waitForFunction(selector=>[...document.querySelectorAll(selector)].some(button=>button.textContent==='Try again'&&!button.disabled),`${CORRECTION_QUEUE} .u1-notice button`);
     assert.equal(await retry.isEnabled(),true);
     if(decision==='APPROVE'&&loss==='after')for(const width of [320,375,390,430,768,1024,1440]){
-     await page.setViewportSize({width,height:width<=430?844:1000});await geometry(page,'.manager-corrections','manager uncertain decision',engine,width);
+     await page.setViewportSize({width,height:width<=430?844:1000});await geometry(page,CORRECTION_QUEUE,'manager uncertain decision',engine,width);
      const shot=join(evidence,`${engine}-manager-recovery-${width}.png`);await page.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
     }
     await retry.focus();await page.keyboard.press('Enter');
-    await page.getByText(decision==='APPROVE'?'Correction approved. The original recorded punch remains unchanged.':'Correction declined. The original recorded punch remains unchanged.',{exact:true}).waitFor();
+    await page.getByText(decision==='APPROVE'?APPROVED:DECLINED,{exact:true}).waitFor();
     assert.equal(commands.length,2);assert.deepEqual(commands[1],commands[0]);
     assert.deepEqual(await q("SELECT count(*)::int AS count FROM time_correction_events WHERE request_id=$1 AND event_kind IN ('APPROVED','REJECTED')",[pending.requestId]),[{count:1}]);
     assert.deepEqual(await q('SELECT count(*)::int AS count FROM time_correction_adjustments WHERE request_id=$1',[pending.requestId]),[{count:decision==='APPROVE'?1:0}]);
@@ -154,11 +162,11 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    await page.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});await page.bringToFront();
    await page.route('**/api/manager/time-corrections',route=>route.request().method()==='POST'?route.abort('failed'):route.continue());
    await page.getByRole('button',{name:'Approve correction for Avery Correction QA',exact:true}).click();
-   await page.getByRole('button',{name:'Retry same decision',exact:true}).waitFor();
+   await managerRetry(page).waitFor();
    await q("UPDATE employees SET role='LEAD' WHERE id='QAOWNER'");
    await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
-   await page.locator('.manager-corrections').waitFor({state:'detached'});
-   assert.equal(await page.getByRole('button',{name:'Retry same decision',exact:true}).count(),0);
+   await page.locator(CORRECTION_QUEUE).waitFor({state:'detached'});
+   assert.equal(await managerRetry(page).count(),0);
    assert.equal((await manager.request.get(app.url+'/api/manager/time-corrections',{headers})).status(),403);
    checked(`${engine}: current Manager authority loss clears uncertain recovery`);
   }finally{
@@ -171,19 +179,18 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
   try{
    const page=await c.newPage();page.setDefaultTimeout(15000);watch(page);
    await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});await page.bringToFront();
-   await entryRow(page).click();const details=page.locator('dialog[open]');
-   await details.getByRole('button',{name:'Request a correction',exact:true}).click();
-   await details.getByLabel('Reason',{exact:true}).fill('Fictional logout recovery boundary.');
+   const form=await openEntryCorrection(page);
+   await form.getByLabel('Note',{exact:true}).fill('Fictional logout recovery boundary.');
    await page.route('**/api/employee/time-corrections',route=>route.request().method()==='POST'?route.abort('failed'):route.continue());
-   await details.getByRole('button',{name:'Send request',exact:true}).click();
-   await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).waitFor();
+   await form.getByRole('button',{name:'Send',exact:true}).click();
+   await employeeRetry(page).waitFor();
    await page.goto(app.url+'/app/profile',{waitUntil:'networkidle'});
    await Promise.all([page.waitForURL(url=>url.pathname==='/login',{waitUntil:'commit'}),page.getByRole('region',{name:'Session',exact:true}).getByRole('button',{name:'Sign out',exact:true}).click()]);
    await login(c,'QAOWNER');await page.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
-   assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
+   assert.equal(await employeeRetry(page).count(),0);
    await login(c,'D2-E');await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
    await entryRow(page).waitFor();
-   assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
+   assert.equal(await employeeRetry(page).count(),0);
    checked(`${engine}: sign-out/account-switch/sign-in clears uncertain Employee command memory`);
   }finally{await c.close();}
 
@@ -191,21 +198,20 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
   try{
    const page=await denied.newPage();page.setDefaultTimeout(15000);watch(page);
    await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});await page.bringToFront();
-   await entryRow(page).click();const details=page.locator('dialog[open]');
-   await details.getByRole('button',{name:'Request a correction',exact:true}).click();
-   await details.getByLabel('Reason',{exact:true}).fill('Fictional current authority-loss regression.');
+   const form=await openEntryCorrection(page);
+   await form.getByLabel('Note',{exact:true}).fill('Fictional current authority-loss regression.');
    await page.route('**/api/employee/time-corrections',route=>route.request().method()==='POST'?route.abort('failed'):route.continue());
-   await details.getByRole('button',{name:'Send request',exact:true}).click();
-   await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).waitFor();
+   await form.getByRole('button',{name:'Send',exact:true}).click();
+   await employeeRetry(page).waitFor();
    await q("UPDATE employees SET active=false WHERE id='D2-E'");
    await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
    await page.locator('main').getByText('Your session ended',{exact:true}).waitFor();
-   assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
+   assert.equal(await employeeRetry(page).count(),0);
    await q("UPDATE employees SET active=true WHERE id='D2-E'");
    await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
    await entryRow(page).waitFor();
    await entryRow(page).click();
-   assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
+   assert.equal(await employeeRetry(page).count(),0);
    checked(`${engine}: current Employee authority denial clears uncertain recovery before re-entry`);
   }finally{await q("UPDATE employees SET active=true WHERE id='D2-E'");await denied.close();}
   assert.deepEqual(observations.runtimeErrors,[]);

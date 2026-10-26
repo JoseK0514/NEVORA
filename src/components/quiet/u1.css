@@ -26,6 +26,9 @@
 :is(#q-root, html) .u1-correction .q-facts > li > span + span { margin-top: 2px; }
 :is(#q-root, html) .u1-correction .q-details__body > .q-help { margin: 12px 0 0; }
 :is(#q-root, html) .u1-correction:focus { outline: none; }
+/* Decline and Approve are 32pt pills with a 44pt hit area (the timecard sheet's pills had the same). */
+:is(#q-root, html) .u1-correction .q-acts .q-bs { position: relative; }
+:is(#q-root, html) .u1-correction .q-acts .q-bs::before { content: ""; position: absolute; inset: -6px 0; }
 :is(#q-root, html) .u1-notice > .q-help { margin-top: 12px; }
 :is(#q-root, html) .u1-notice > .q-btn { margin-top: 12px; }
 

@@ -71,6 +71,16 @@ const checked = (name) => {
 };
 const q = (text, values = []) => app.database.executor.query({ text, values });
 const endpoint = '/api/manager/attendance';
+// On shift › To review (Quiet v4, Team U1) replaced the Attendance panel: same read, lifecycle and states, new copy.
+const REVIEW = '#on-shift-review';
+const ROW_LINE = 'Clocked in 15 min after the shift began';
+const LOADING = 'Checking clock-ins…';
+const DENIED = 'Sign in again to see clock-ins to review.';
+const UNAVAILABLE = 'Clock-in checks aren’t available right now.';
+const LIMITED = 'Some clock-ins couldn’t be fully checked against the schedule.';
+/** A ready review has no manual Refresh; a correction decision (this event) re-reads it, as in the app. */
+const rereadReview = (page) => page.evaluate(() => window.dispatchEvent(new Event('nevora:time-correction-changed')));
+const reviewRow = (page, location) => page.locator(REVIEW).getByRole('link', { name: new RegExp(`^Alexandria Attendance Review Employee With A Long Name, ${location}: `) });
 
 function fixtureReady(locationId = 'loc-1') {
   const locationName = locationId === 'd13-retired' ? 'Retired Historical Location' : 'Main Office';
@@ -161,7 +171,7 @@ async function actualAttendance(context) {
 
 async function geometry(page, engine, width) {
   const value = await page.evaluate(() => {
-    const surface = document.querySelector('.attendance-review');
+    const surface = document.querySelector('#on-shift-review');
     if (!surface) throw new Error('Attendance surface missing');
     const bounds = surface.getBoundingClientRect();
     const visible = (element) => {
@@ -173,7 +183,7 @@ async function geometry(page, engine, width) {
       const rect = element.getBoundingClientRect();
       return { text: element.textContent, height: rect.height, left: rect.left, right: rect.right };
     });
-    const text = [...surface.querySelectorAll('strong,small,span')].filter(visible).flatMap((element) => {
+    const text = [...surface.querySelectorAll('b,i,span,p')].filter(visible).flatMap((element) => {
       const rect = element.getBoundingClientRect();
       return rect.left < bounds.left - 2 || rect.right > bounds.right + 2
         ? [{ text: element.textContent, left: rect.left, right: rect.right }]
@@ -198,7 +208,7 @@ async function geometry(page, engine, width) {
     await page.waitForTimeout(30);
     const clearance = await page.evaluate(() => {
       const nav = document.querySelector('.mobile-nav');
-      const control = document.querySelector('.attendance-review-refresh');
+      const control = [...document.querySelectorAll('#on-shift-review a,#on-shift-review button')].at(-1);
       if (!nav || !control) return null;
       const navBox = nav.getBoundingClientRect();
       const controlBox = control.getBoundingClientRect();
@@ -261,7 +271,8 @@ try {
     assert.equal((await actualAttendance(employee)).status(), 403);
     const employeePage = await employee.newPage();
     await employeePage.goto(app.url + '/app?view=attendance', { waitUntil: 'networkidle' });
-    assert.equal(await employeePage.getByText('Today’s clock-ins', { exact: true }).count(), 0);
+    assert.equal(await employeePage.locator(REVIEW).count(), 0);
+    assert.equal(await employeePage.getByRole('heading', { name: 'On shift', exact: true }).count(), 0);
     checked(engine + ': Employee cannot enter Manager attendance surface');
     await employee.close();
 
@@ -292,7 +303,7 @@ try {
           page.waitForRequest(request => new URL(request.url()).pathname === endpoint),
           trigger(),
         ]);
-        await page.getByText('Loading attendance', { exact: true }).waitFor();
+        await page.locator(REVIEW).getByText(LOADING, { exact: true }).waitFor();
         assert.equal(
           await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(),
           0,
@@ -303,40 +314,42 @@ try {
       }
     }
     await page.goto(app.url + '/app?view=attendance', { waitUntil: 'networkidle' });
-    await page.getByRole('heading', { name: 'Today’s clock-ins', exact: true }).waitFor();
-    await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
+    await page.getByRole('heading', { name: 'On shift', exact: true }).waitFor();
+    await page.getByRole('heading', { name: 'To review', exact: true }).waitFor();
+    await page.getByText(ROW_LINE, { exact: true }).waitFor();
     const body = await page.locator('body').innerText();
     assert.match(body, /Alexandria Attendance Review Employee With A Long Name/);
-    assert.match(body, /Main Office/);
+    // The location is in the row's accessible name (the visible line stays one fact).
+    await reviewRow(page, 'Main Office').waitFor();
     assert.match(body, /15 min/);
     assert.doesNotMatch(body, /D13-A/);
     assert.doesNotMatch(body, /\bLate\b/);
     checked(engine + ': populated factual attendance exception state');
-    await page.getByText('Some comparisons are limited', { exact: true }).waitFor();
+    await page.getByText(LIMITED, { exact: true }).waitFor();
     checked(engine + ': limited source state is explicitly disclosed');
 
     await expectClearedDuringRevalidation(() => page.evaluate(() => window.dispatchEvent(new StorageEvent('storage', { key: 'nevora-session-check' }))), 403);
-    await page.getByText('Sign in again', { exact: true }).waitFor();
+    await page.getByText(DENIED, { exact: true }).waitFor();
     checked(engine + ': lifecycle reauthorization clears protected snapshot before the response');
     fixture = { payload: fixtureReady(), status: 200 };
     await page.reload({ waitUntil: 'networkidle' });
-    await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
+    await page.getByText(ROW_LINE, { exact: true }).waitFor();
 
     await expectClearedDuringRevalidation(() => page.evaluate(() => document.dispatchEvent(new Event('visibilitychange'))));
-    await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
+    await page.getByText(ROW_LINE, { exact: true }).waitFor();
     checked(engine + ': visibility revalidation clears protected snapshot before refresh');
 
     await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
     await page.getByRole('heading', { name: 'View paused', exact: true }).waitFor();
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
     await expectClearedDuringRevalidation(() => page.evaluate(() => window.dispatchEvent(new Event('pageshow'))));
-    await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
+    await page.getByText(ROW_LINE, { exact: true }).waitFor();
     checked(engine + ': pagehide/pageshow requires a fresh protected snapshot');
 
     fixture = { payload: fixtureReady('d13-retired'), status: 200 };
-    await page.getByRole('button', { name: 'Refresh attendance review' }).click();
-    await page.getByText('Retired Historical Location', { exact: true }).waitFor();
-    assert.equal(await page.getByText('Recorded location', { exact: true }).count(), 0);
+    await rereadReview(page);
+    await reviewRow(page, 'Retired Historical Location').waitFor();
+    assert.equal(await reviewRow(page, 'Main Office').count(), 0);
     checked(engine + ': historical inactive location keeps its recorded label');
 
     fixture = {
@@ -349,17 +362,15 @@ try {
       },
       status: 200,
     };
-    await page.getByRole('button', { name: 'Refresh attendance review' }).click();
-    // The review rows carry the refreshed labels. The configured-policies panel above them reads location
-    // names from its own endpoint (?policies=1, not intercepted here), so it rightly still says "Main Office".
-    const reviewRows = page.locator('.attendance-review-list');
-    await reviewRows.getByText('Renamed Main Office', { exact: true }).waitFor();
-    assert.equal(await reviewRows.getByText('Main Office', { exact: true }).count(), 0);
+    await rereadReview(page);
+    // The review rows carry the refreshed labels.
+    await reviewRow(page, 'Renamed Main Office').waitFor();
+    assert.equal(await reviewRow(page, 'Main Office').count(), 0);
     checked(engine + ': refreshed server labels replace stale page-load labels');
 
     fixture = { payload: fixtureReady(), status: 200 };
-    await page.getByRole('button', { name: 'Refresh attendance review' }).click();
-    await reviewRows.getByText('Main Office', { exact: true }).waitFor();
+    await rereadReview(page);
+    await reviewRow(page, 'Main Office').waitFor();
 
     for (const width of WIDTHS) {
       await page.setViewportSize({ width, height: width <= 430 ? 844 : 1000 });
@@ -369,46 +380,52 @@ try {
       report.screenshots.push(shot);
     }
 
+    // Keyboard: the review row (which opens the timecard) takes focus.
+    const row = reviewRow(page, 'Main Office');
+    await row.focus();
+    assert.equal(await row.evaluate((element) => document.activeElement === element), true);
+    checked(engine + ': keyboard focus on attendance review row');
+    // A ready, empty review shows no section; unavailable shows its own line and "Try again" (Refresh attendance review).
     const refresh = page.getByRole('button', { name: 'Refresh attendance review' });
-    await refresh.focus();
-    assert.equal(await refresh.evaluate((element) => document.activeElement === element), true);
-    checked(engine + ': keyboard focus on attendance Refresh');
 
     fixture = {
       status: 200,
       payload: { ...fixtureReady(), groups: [], recordCount: 0, signalCount: 0, affectedEmployeeCount: 0, labels: { employees: [], locations: [] }, coverage: { ...fixtureReady().coverage, state: 'complete', limitations: [] } },
     };
-    await refresh.click();
-    await page.getByText('Nothing to review', { exact: true }).waitFor();
+    await rereadReview(page);
+    await page.locator(REVIEW).waitFor({ state: 'detached' });
+    assert.equal(await page.getByText(UNAVAILABLE, { exact: true }).count(), 0);
     checked(engine + ': empty is distinct from unavailable');
 
     fixture = { status: 503, payload: { state: 'unavailable', reason: 'read_failed' } };
-    await refresh.click();
-    await page.getByText('Attendance unavailable', { exact: true }).waitFor();
-    assert.equal(await page.getByText('Nothing to review', { exact: true }).count(), 0);
+    await rereadReview(page);
+    await page.getByText(UNAVAILABLE, { exact: true }).waitFor();
+    await refresh.focus();
+    assert.equal(await refresh.evaluate((element) => document.activeElement === element), true);
+    checked(engine + ': keyboard focus on attendance Refresh');
     checked(engine + ': unavailable clears healthy empty state');
 
     fixture = { status: 200, payload: { ...fixtureReady(), validForMs: 120 } };
     await refresh.click();
-    await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
-    await page.getByText('Attendance unavailable', { exact: true }).waitFor({ timeout: 3000 });
-    assert.equal(await page.getByText('Sign in again', { exact: true }).count(), 0);
+    await page.getByText(ROW_LINE, { exact: true }).waitFor();
+    await page.getByText(UNAVAILABLE, { exact: true }).waitFor({ timeout: 3000 });
+    assert.equal(await page.getByText(DENIED, { exact: true }).count(), 0);
     checked(engine + ': expired source freshness is not mislabeled as sign-in failure');
 
     fixture = { status: 403, payload: { state: 'unavailable', reason: 'access_denied' } };
     await refresh.click();
-    await page.getByText('Sign in again', { exact: true }).waitFor();
+    await page.getByText(DENIED, { exact: true }).waitFor();
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
     checked(engine + ': access denial clears protected people');
 
     fixture = { status: 200, payload: fixtureReady() };
     await page.goto(app.url + '/app?view=attendance', { waitUntil: 'networkidle' });
-    await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
+    await page.getByText(ROW_LINE, { exact: true }).waitFor();
     await owner.setOffline(true);
     await page.getByRole('heading', { name: 'View paused', exact: true }).waitFor();
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
     await owner.setOffline(false);
-    await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
+    await page.getByText(ROW_LINE, { exact: true }).waitFor();
     checked(engine + ': offline pause removes stale protected attendance data');
 
     await owner.close();
@@ -424,10 +441,10 @@ try {
         path: location.pathname,
         visibility: document.visibilityState,
         online: navigator.onLine,
-        attendanceSurfaces: document.querySelectorAll('.attendance-review').length,
-        status: document.querySelector('.attendance-review-empty')?.textContent?.slice(0, 500) ?? null,
+        attendanceSurfaces: document.querySelectorAll('#on-shift-review').length,
+        status: document.querySelector('#on-shift-review [role="status"]')?.textContent?.slice(0, 500) ?? null,
         headings: [...document.querySelectorAll('h1, h2')].map(element => element.textContent?.slice(0, 160)),
-        controls: [...document.querySelectorAll('.attendance-review button, .attendance-review a')].map(element => ({
+        controls: [...document.querySelectorAll('#on-shift-review button, #on-shift-review a')].map(element => ({
           tag: element.tagName,
           label: element.getAttribute('aria-label'),
           text: element.textContent?.slice(0, 160),

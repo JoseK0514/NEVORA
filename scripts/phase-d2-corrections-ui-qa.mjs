@@ -11,6 +11,7 @@ import { hashPassword } from '../src/lib/auth/password.ts';
 import { verifyCorrectionRecovery } from './phase-d2-corrections-recovery-qa.mjs';
 import {verifyD2UiRemediation} from './phase-d2-ui-remediation-qa.mjs';
 import { missingTimeBrowserScenarios } from './phase-d2-missing-time-browser-scenarios.mjs';
+import { APPROVED, CORRECTION_FORM, CORRECTION_QUEUE, CORRECTION_SHEET, SENT } from './phase-d2-quiet-selectors.mjs';
 
 const WIDTHS=[320,375,390,430,768,1024,1440];
 const ENGINES=['chromium','webkit'];
@@ -81,10 +82,19 @@ async function geometry(page,selector,label,engine,width){
   if(!root)throw new Error('D2 surface missing: '+rootSelector);
   const rb=root.getBoundingClientRect();
   const visible=(el)=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return r.width>0&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden';};
+  const target=(el)=>{
+   // Quiet radios and pickers are visually hidden inputs; their row (the label) is what is tapped.
+   const own=el.getBoundingClientRect(),label=el.labels?.[0]??el.closest('label');
+   if(label&&(own.height<2||getComputedStyle(el).opacity==='0'))return label.getBoundingClientRect();
+   // A 32pt pill with a 44pt ::before hit area is a 44pt target.
+   const before=getComputedStyle(el,'::before');
+   if(before.content!=='none'&&before.position==='absolute'){const top=parseFloat(before.top),bottom=parseFloat(before.bottom);if(top<0||bottom<0)return {height:own.height-Math.min(top,0)-Math.min(bottom,0),left:own.left,right:own.right};}
+   return own;
+  };
   const controls=[...root.querySelectorAll('button,a,input,select,textarea')].filter(visible).map((el)=>{
-   const r=el.getBoundingClientRect();return {tag:el.tagName,text:el.getAttribute('aria-label')||el.textContent||'',height:r.height,left:r.left,right:r.right};
+   const r=target(el);return {tag:el.tagName,text:el.getAttribute('aria-label')||el.textContent||'',height:r.height,left:r.left,right:r.right};
   });
-  const clipped=[...root.querySelectorAll('strong,small,p,label,span')].filter(visible).flatMap((el)=>{
+  const clipped=[...root.querySelectorAll('strong,small,p,label,span,b,i')].filter(visible).flatMap((el)=>{
    const r=el.getBoundingClientRect();return r.left<rb.left-2||r.right>rb.right+2?[{text:el.textContent,left:r.left,right:r.right}]:[];
   });
   return {doc:document.documentElement.scrollWidth,view:document.documentElement.clientWidth,controls,clipped};
@@ -138,27 +148,36 @@ try{
   await entryRow.waitFor();
   await entryRow.click();
   const sheet=ep.locator('dialog[open]');
-  const trigger=sheet.locator('.employee-time-correction-trigger').first();
+  // Team U3 (T-19): the entry's sheet has "Something wrong? Request a correction", which opens the one correction
+  // sheet ("Cancel · Correction · Send") filled in for this entry.
+  const trigger=sheet.getByRole('button',{name:'Something wrong? Request a correction',exact:true});
   await trigger.waitFor({state:'visible'});
-  assert.equal(await trigger.getAttribute('aria-expanded'),'false');
+  assert.equal(await trigger.getAttribute('aria-haspopup'),'dialog');
   await trigger.click();
-  const correctionForm=sheet.locator('.employee-time-correction-form').first();
+  const correctionForm=ep.locator(CORRECTION_FORM);
   await correctionForm.waitFor({state:'visible'});
-  assert.equal(await trigger.getAttribute('aria-expanded'),'true');
-  await correctionForm.getByLabel('Start',{exact:true}).fill(proposedStart);
-  await correctionForm.getByLabel('End',{exact:true}).fill(proposedEnd);
-  await correctionForm.getByLabel('Reason',{exact:true}).fill('Fictional D2 browser correction review.');
+  assert.equal(await correctionForm.getByRole('radio',{name:/^Wrong clock-in/}).isChecked(),true);
+  assert.equal(await correctionForm.getByLabel('Recorded entry',{exact:true}).inputValue(),'d2-browser-entry:entry');
+  // The same proposal as before: the recorded start, the end five minutes earlier.
+  // Quiet radios are visually hidden inputs; their row is what is tapped.
+  await correctionForm.locator('label',{hasText:'Wrong clock-out'}).click();
+  assert.equal(await correctionForm.getByRole('radio',{name:/^Wrong clock-out/}).isChecked(),true);
+  await correctionForm.getByLabel('Recorded entry',{exact:true}).selectOption('d2-browser-entry:entry');
+  assert.equal(await correctionForm.locator('input[type="time"]').count(),1);
+  await correctionForm.getByLabel('Ends',{exact:true}).fill(proposedEnd.slice(11,16));
+  await correctionForm.getByLabel('Note',{exact:true}).fill('Fictional D2 browser correction review.');
+  assert.equal(proposedStart.slice(0,10),proposedEnd.slice(0,10),'the fixture entry stays on one local day');
   checked(engine+': employee correction form expands with labeled controls');
 
   for(const width of WIDTHS){
    await ep.setViewportSize({width,height:width<=430?844:1000});
-   await geometry(ep,'.employee-time-correction-form','employee correction form',engine,width);
+   await geometry(ep,CORRECTION_SHEET,'employee correction form',engine,width);
    const shot=join(evidence,`${engine}-employee-correction-${width}.png`);
    await ep.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
   }
-  await ep.getByRole('button',{name:'Send request',exact:true}).click();
-  await ep.getByText('Correction request sent for manager review.',{exact:true}).waitFor();
-  await ep.getByText('Pending',{exact:true}).waitFor();
+  await correctionForm.getByRole('button',{name:'Send',exact:true}).click();
+  await ep.getByText(SENT,{exact:true}).waitFor();
+  await ep.locator('.employee-correction-center').getByText('Waiting',{exact:true}).first().waitFor();
   checked(engine+': employee submits correction through real D2 API');
 
   const employeeState=await employee.request.get(app.url+'/api/employee/time-corrections',{headers:{'X-Nevora-Time-Correction':'1'}});
@@ -176,14 +195,14 @@ try{
   const mp=await owner.newPage();mp.setDefaultTimeout(15000);
   await mp.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
   await mp.getByRole('heading',{name:'Correction requests',exact:true}).waitFor();
-  await mp.getByText('Avery Correction QA',{exact:true}).waitFor();
-  await mp.getByText('Original recorded punches stay unchanged. Approval creates an auditable effective adjustment.',{exact:true}).waitFor();
+  await mp.locator(CORRECTION_QUEUE).getByText('Avery Correction QA',{exact:true}).waitFor();
+  await mp.locator(CORRECTION_QUEUE).getByText('The original Clocker record is kept.',{exact:true}).last().waitFor();
   assert.equal(await mp.getByRole('button',{name:'Approve correction for Avery Correction QA'}).isEnabled(),true);
   checked(engine+': populated manager correction review state');
 
   for(const width of WIDTHS){
    await mp.setViewportSize({width,height:width<=430?844:1000});
-   await geometry(mp,'.manager-corrections','manager correction review',engine,width);
+   await geometry(mp,CORRECTION_QUEUE,'manager correction review',engine,width);
    const shot=join(evidence,`${engine}-manager-correction-${width}.png`);
    await mp.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
   }
@@ -192,8 +211,9 @@ try{
   assert.equal(await approve.evaluate((el)=>document.activeElement===el),true);
   checked(engine+': keyboard focus reaches employee-specific approval control');
   await approve.click();
-  await mp.getByText('Correction approved. The original recorded punch remains unchanged.',{exact:true}).waitFor();
-  await mp.getByText('No correction requests',{exact:true}).waitFor();
+  await mp.getByText(APPROVED,{exact:true}).waitFor();
+  // A ready queue with nothing waiting has no rows (the decision's notice stays).
+  await mp.locator(`${CORRECTION_QUEUE} li.u1-correction`).first().waitFor({state:'detached'});
   checked(engine+': manager approves through real D2 API and inbox clears');
 
   const managerState=await owner.request.get(app.url+'/api/manager/time-corrections',{headers:{'X-Nevora-Time-Correction':'1'}});

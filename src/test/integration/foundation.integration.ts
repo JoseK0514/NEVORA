@@ -593,6 +593,8 @@ describe('notification workspace policy',()=>{
    const open=createNotificationOpenHandler({state,environment:'test',clock:()=>now,session:async()=>({id:'notify-test',firstName:'Test',lastName:'Worker',role:'EMPLOYEE',primaryLocationId:'loc-1'})});
    const opening=()=>open(new Request('https://portal.example/app/notifications/open?notificationId=notify-event'));
    const expectHistoryOpen=async()=>{const response=await opening();expect(response.status).toBe(303);expect(response.headers.get('location')).toBe(`/app/exchange?tab=${kind==='EXCHANGE'?'history':'requests'}&requestId=${source.id}#request-${source.id}`);expect(response.headers.get('cache-control')).toBe('no-store');};
+   // F18 (Oct 25, 2026): a stale or revoked source returns the one no-store redirect to the list, never its destination.
+   const expectUnavailable=async()=>{const response=await opening();expect(response.status).toBe(303);expect(response.headers.get('location')).toBe('/app/notifications?unavailable=1');expect(response.headers.get('cache-control')).toBe('no-store');};
    expect((await state.check(event,'notify-test',now)).deliverable).toBe(true);
    await db.executor.query({text:accessChange==='inactive_location' ? "UPDATE locations SET active=false WHERE id='loc-1'" : "DELETE FROM employee_location_eligibility WHERE employee_id='notify-test'",values:[]});
    expect((await state.check(event,'notify-test',now)).deliverable).toBe(false);
@@ -600,10 +602,10 @@ describe('notification workspace policy',()=>{
    const history=await state.readSource(source),access=await state.recipientAccess('notify-test');
    expect(destinationForSource(history!,access!)).toContain(`requestId=${source.id}`);
    await db.executor.query({text:"UPDATE notifications SET effective_version='stale' WHERE id='notify-event'",values:[]});
-   expect((await opening()).status).toBe(404);
+   await expectUnavailable();
    await db.executor.query({text:"UPDATE notifications SET effective_version=$1 WHERE id='notify-event';",values:[version]});
    await db.executor.query({text:"UPDATE employees SET active=false WHERE id='notify-test'",values:[]});
-   expect((await opening()).status).toBe(404);
+   await expectUnavailable();
   }finally{await db.dispose();}
  });
 });

@@ -2,6 +2,7 @@ import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { join } from 'node:path';
+import {APPROVED,CORRECTION_FORM,CORRECTION_ROW,CORRECTION_SHEET,SENT} from './phase-d2-quiet-selectors.mjs';
 
 // Real authenticated HTTP and rendered UI on the caller's newly owned loopback app.
 export async function missingTimeBrowserScenarios({app,browser,engine,employee,page,context,login,geometry,checked,localValue,evidence,report}) {
@@ -36,13 +37,22 @@ export async function missingTimeBrowserScenarios({app,browser,engine,employee,p
 
     await page.reload({waitUntil:'networkidle'});
     const center=page.locator('.employee-correction-center');
-    // Each engine owns a distinct missing-time chain; unrelated current roots also stay selectable.
-    const correct=center.locator('.employee-correction-history-row').first().getByRole('button',{name:'Correct missing time',exact:true});
+    // Team U3: each request is a row that opens its detail sheet; an approved missing time's sheet has "Correct this
+    // time". Each engine owns a distinct missing-time chain; unrelated current roots also stay selectable.
+    const aRow=center.locator('li[data-employee-status="APPROVED"]').filter({hasText:'Missing time'}).first();
+    const aOpen=aRow.locator(':scope > button');
+    // Counted with CSS (closed sheets included); the role locator below is the visible one in the open sheet.
+    const correctButtons=center.locator('button',{hasText:'Correct this time'});
+    await aOpen.waitFor();
+    assert.equal(await aRow.locator('button',{hasText:'Correct this time'}).count(),1);
+    await aOpen.click();
+    const requestSheet=page.locator('dialog[open]').filter({has:page.getByRole('button',{name:'Correct this time',exact:true})});
+    const correct=requestSheet.getByRole('button',{name:'Correct this time',exact:true});
     await correct.waitFor();
     assert.equal(await correct.count(),1);
     for(const width of [320,375,390,430,768,1024,1440]) {
       await page.setViewportSize({width,height:width<=430?844:1000});
-      await geometry(page,'.employee-correction-center','missing-time history action',engine,width);
+      await geometry(page,'dialog[open]','missing-time history action',engine,width);
     }
     const replacement={...rootCommand,operationId:randomUUID(),targetAdjustmentId:a.adjustmentId,expectedBaseRevision:a.revision,proposedStartAt:`2026-01-${day}T08:05:00Z`};
     const stale=await post(employee,employeePath,{...replacement,expectedBaseRevision:1});
@@ -58,27 +68,29 @@ export async function missingTimeBrowserScenarios({app,browser,engine,employee,p
     await correct.focus();
     assert.equal(await correct.evaluate(el=>document.activeElement===el),true);
     await correct.press('Enter');
-    const form=center.locator('form');
+    const form=page.locator(CORRECTION_FORM);
     await form.waitFor();
-    const locationControl=form.locator('select');
-    assert.equal(await locationControl.count(),1);
-    assert.equal(await locationControl.isDisabled(),true);
+    // A replacement keeps A's day and location: no location choice, the day is fixed.
+    assert.equal(await form.getByLabel('Location',{exact:true}).count(),0);
+    assert.equal(await form.getByLabel('Day',{exact:true}).isDisabled(),true);
+    const locationRow=form.locator('li',{has:page.getByText('Location',{exact:true})});
     report.missingTimeLocationLabels??=[];
-    report.missingTimeLocationLabels.push({engine,label:await locationControl.evaluate(el=>el.closest('label').textContent.trim())});
-    await form.getByLabel('Start',{exact:true}).fill(localValue(replacement.proposedStartAt));
-    await form.getByLabel('Reason',{exact:true}).fill('Fictional approved interval replacement.');
+    report.missingTimeLocationLabels.push({engine,label:(await locationRow.innerText()).replace(/\s+/g,' ').trim()});
+    assert.equal(await form.getByLabel('Day',{exact:true}).inputValue(),localValue(replacement.proposedStartAt).slice(0,10));
+    await form.getByLabel('Starts',{exact:true}).fill(localValue(replacement.proposedStartAt).slice(11,16));
+    await form.getByLabel('Note',{exact:true}).fill('Fictional approved interval replacement.');
     for(const width of [320,375,390,430,768,1024,1440]) {
       await page.setViewportSize({width,height:width<=430?844:1000});
-      await geometry(page,'.employee-time-correction-form.missing','missing-time replacement form',engine,width);
+      await geometry(page,CORRECTION_SHEET,'missing-time replacement form',engine,width);
     }
     await page.setViewportSize({width:375,height:844});
     const shot=join(evidence,engine+'-missing-time-replacement.png');
     await page.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
     const requestPromise=page.waitForRequest(request=>request.url().endsWith(employeePath)&&request.method()==='POST');
-    await form.getByRole('button',{name:'Send request',exact:true}).click();
+    await form.getByRole('button',{name:'Send',exact:true}).click();
     const submitted=(await requestPromise).postDataJSON();
     assert.equal(submitted.targetAdjustmentId,a.adjustmentId);assert.equal(submitted.expectedBaseRevision,2);
-    await center.getByText('Correction request sent for manager review.',{exact:true}).waitFor();
+    await center.getByText(SENT,{exact:true}).waitFor();
     checked(engine+': keyboard-driven B submission carries exact effective A identity');
     const bReplay=await post(employee,employeePath,submitted);
     assert.equal(bReplay.status(),202);
@@ -88,11 +100,14 @@ export async function missingTimeBrowserScenarios({app,browser,engine,employee,p
     const managerPage=await manager.newPage();managerPage.setDefaultTimeout(15000);
     managerPage.on('pageerror',error=>errors.push(String(error)));
     await managerPage.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
-    await managerPage.getByText('Approved missing time',{exact:true}).waitFor();
+    // The shared row opens in place to show the times; a replacement says what it replaces.
+    const bRow=managerPage.locator(CORRECTION_ROW).filter({hasText:'Avery Correction QA'});
+    await bRow.locator('summary').click();
+    await bRow.getByText('Approved missing time',{exact:true}).waitFor();
     const approvalRequest=managerPage.waitForRequest(request=>request.url().endsWith(managerPath)&&request.method()==='POST');
     await managerPage.getByRole('button',{name:'Approve correction for Avery Correction QA'}).click();
     const bDecision=(await approvalRequest).postDataJSON();
-    await managerPage.getByText('Correction approved. The original recorded punch remains unchanged.',{exact:true}).waitFor();
+    await managerPage.getByText(APPROVED,{exact:true}).waitFor();
     const approvedReplay=await post(manager,managerPath,bDecision);
     assert.equal(approvedReplay.status(),200);
     const accepted=await approvedReplay.json();
@@ -102,11 +117,13 @@ export async function missingTimeBrowserScenarios({app,browser,engine,employee,p
     checked(engine+': B approved by independent Owner; receipt replay and changed/stale operations protected');
 
     await page.reload({waitUntil:'networkidle'});
-    assert.equal(await correct.count(),1);
+    await aOpen.waitFor();
+    // The current leaf (B, the newest approved missing time) carries the one action for this chain.
+    assert.equal(await aRow.locator('button',{hasText:'Correct this time'}).count(),1);
     const history=await (await employee.request.get(app.url+employeePath,{headers:{'X-Nevora-Time-Correction':'1'}})).json();
     assert.equal(history.requests.find(item=>item.id===aRequest.requestId).currentAdjustmentId,null);
     assert.equal(history.requests.find(item=>item.id===b.requestId).currentAdjustmentId,accepted.adjustmentId);
-    assert.equal(await center.getByRole('button',{name:'Correct missing time',exact:true}).count(),
+    assert.equal(await correctButtons.count(),
       history.requests.slice(0,5).filter(item=>item.currentAdjustmentId).length);
     assert.deepEqual(await q('SELECT id,supersedes_adjustment_id FROM time_correction_adjustments WHERE id=ANY($1::uuid[]) ORDER BY created_at',[[a.adjustmentId,accepted.adjustmentId]]),[
       {id:a.adjustmentId,supersedes_adjustment_id:null},{id:accepted.adjustmentId,supersedes_adjustment_id:a.adjustmentId},
@@ -118,10 +135,11 @@ export async function missingTimeBrowserScenarios({app,browser,engine,employee,p
     // The new action uses the existing loading and unavailable history states.
     await page.route('**/api/employee/time-corrections',route=>route.fulfill({status:503,contentType:'application/json',body:'{"state":"unavailable"}'}));
     await page.reload({waitUntil:'networkidle'});
-    await center.getByText('Correction history is unavailable right now.',{exact:true}).waitFor();
-    assert.equal(await correct.count(),0);
+    await center.getByText('Corrections are unavailable right now.',{exact:true}).waitFor();
+    assert.equal(await correctButtons.count(),0);
     await page.unroute('**/api/employee/time-corrections');
-    await page.reload({waitUntil:'networkidle'});await correct.waitFor();
+    await page.reload({waitUntil:'networkidle'});await aOpen.waitFor();
+    assert.equal(await aRow.locator('button',{hasText:'Correct this time'}).count(),1);
     assert.deepEqual(errors,[]);
     checked(engine+': unavailable history offers no supersession action; reload recovers without runtime errors');
   } finally {await manager.close();}

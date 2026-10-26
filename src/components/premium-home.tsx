@@ -6,6 +6,7 @@ import { useEffect, useLayoutEffect, useRef, useSyncExternalStore, type ReactNod
 import { AirplaneTiltIcon, ArrowsClockwiseIcon, CalendarXIcon, WalletIcon, UserCheckIcon, UserMinusIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { Avatar, Button, Card, CardBody, Freshness, KitLink, Row, Rows, Tile } from "@/components/kit/kit";
 import { QuietBar, QuietBarIcon, QuietHeader, QuietList, QuietRow, QuietSection } from "@/components/quiet/quiet";
+import { formatElapsed } from "@/lib/date-utils";
 import { BellIcon } from "@phosphor-icons/react/dist/ssr/Bell";
 import { CLOCK_IN, presentItem } from "@/lib/action-center/present";
 import { useToday } from "./manager-today";
@@ -62,7 +63,6 @@ const workspaceDay = (iso: string, timeZone: string) => {
   catch { return undefined; }
 };
 const plural = (n: number, one: string, many: string) => `${n}\u00a0${n === 1 ? one : many}`;
-const initials = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
 
 /** Live Home: one Today read and the shared action center read. */
 export function PremiumHomeLive(props: PremiumHomeProps) {
@@ -204,7 +204,7 @@ function QuietNeedsYou({ value, timeZone, observedAt }: { value: NeedsYou; timeZ
     <QuietList label="Needs you">
       {one ? <QuietRow href="/app/inbox?filter=now" title={ended ? `${one.employeeName} didn’t clock in` : `${one.employeeName} is late`}
         detail={ended ? `Shift ended at ${clock(one.endAt, timeZone)}` : `Shift began at ${clock(one.startAt, timeZone)}`}
-        value={ended || !minutes ? undefined : minutes >= 60 ? `${Math.floor(minutes / 60)} h ${minutes % 60 ? `${minutes % 60} min` : ""}`.trim() : `${minutes} min`} tone="alert"
+        value={ended || !minutes ? undefined : formatElapsed(minutes)} tone="alert"
         label={`${one.employeeName} hasn’t clocked in, open in Inbox`} />
       : late.length ? <QuietRow href="/app/inbox?filter=now" title={`${late.length} people haven’t clocked in`} detail={firstNames(late.map(shift => shift.employeeName))}
         label={`${late.length} shifts with no ${CLOCK_IN}, open in Inbox`} /> : null}

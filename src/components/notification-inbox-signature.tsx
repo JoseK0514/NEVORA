@@ -41,11 +41,11 @@ function when(at:string){
 function Row({item}:{item:EmployeeNotificationItem}){
  const presentation=notificationPresentation(item.label);
  const unread=item.reviewState==='unread';
- return <li data-inbox-row><Link className={styles.ntRow} data-unread={unread||undefined} href={item.href} prefetch={false}>
+ return <li data-inbox-row><a className={styles.ntRow} data-unread={unread||undefined} href={item.href}>
   <span className={styles.ntDot} aria-hidden="true"/>
   <span className="sg-copy"><b>{titles[presentation.icon]??presentation.destination}</b><span>{item.label} · <time dateTime={item.at}>{when(item.at)}</time>{unread?<span className="nv-sr"> · Unread</span>:null}</span></span>
   <SigChevron/>
- </Link></li>;
+ </a></li>;
 }
 
 export function NotificationInboxSignature({state,onRetry}:{state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void}){

@@ -6,7 +6,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { EmployeeSubmitButton } from "@/components/employee-submit-button";
 import { QuietSheet, SheetCancel } from "@/components/quiet/quiet-sheet";
 import { requestTimeOffAction } from "@/app/app/requests/actions";
-import { formatTime } from "@/lib/date-utils";
+import { formatElapsed, formatTime } from "@/lib/date-utils";
 import { revealFeedback } from "@/lib/reveal-feedback";
 
 /* New time-off request in the v5 "One look" (Jose approved round 2 "exactly like this" on Oct 24, 2026; mockup E08):
@@ -64,7 +64,7 @@ function TimeOffForm({ requestId, draftOwner = "", notice }: { requestId: string
   const days = datesValid ? Math.round((Date.parse(effectiveEnd) - Date.parse(startDate)) / 86400000) + 1 : 0;
   const span = partialDay && startTime && endTime && !timesInvalid ? minutes(endTime) - minutes(startTime) : 0;
   const length = partialDay
-    ? span ? `${Math.floor(span / 60) ? `${Math.floor(span / 60)} h` : ""}${span % 60 ? ` ${span % 60} min` : ""} away`.trim() : "One date and the hours you need away"
+    ? span ? `${formatElapsed(span)} away` : "One date and the hours you need away"
     : datesValid ? `${days} full ${days === 1 ? "day" : "days"}` : "Choose the first and last day you need away";
 
   return <form action={send} className="nto-form q-toform" onSubmit={() => { unsent = null; }}>

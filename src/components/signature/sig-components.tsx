@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Children, cloneElement, isValidElement, type ReactElement, type ReactNode } from "react";
 import { SigChevron } from "./signature";
+import { nameInitials } from "@/lib/employee-display";
 
 /* The Signature component set (server-safe). Rows, cards and pills render the existing `sg-*` classes, so they look
  * exactly like the hand-written markup and are styled inside a SigPage (`.sgRoot`). Fields, tabs, banners, empty
@@ -108,7 +109,6 @@ export function SigEmpty({ icon, title, children, action }: { icon?: ReactNode; 
 
 /* ── Avatar ──────────────────────────────────────────────────────────────── */
 
-const initialsOf = (name: string) => name.trim().split(/\s+/).slice(0, 2).map(part => part[0]?.toUpperCase() ?? "").join("");
 
 /** A person: their photo, or initials in deep teal on a mint wash (11.5:1). Decorative by default (the name is
  * usually written next to it); pass `labelled` when it stands alone. */
@@ -116,7 +116,7 @@ export function SigAvatar({ name, src, size = 40, labelled = false }: { name: st
   const a11y = labelled ? { role: "img" as const, "aria-label": name } : { "aria-hidden": true as const };
   return <span className="sig-avatar" data-size={size} {...a11y}>
     {/* eslint-disable-next-line @next/next/no-img-element -- avatars come from arbitrary storage URLs at fixed small sizes */}
-    {src ? <img src={src} alt="" width={size} height={size} /> : initialsOf(name)}
+    {src ? <img src={src} alt="" width={size} height={size} /> : nameInitials(name)}
   </span>;
 }
 

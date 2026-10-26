@@ -19,6 +19,8 @@ function card(id:string){const source={...period,employeeId:id,employeeName:`PRI
 // wrapper attributes already present in f27216df added explicitly for dark-mode surface scoping. It is not auto-updated.
 // Final pass (Oct 25): T-17 deliberately rebuilt the Signature views (signature: true) on Quiet; their part of the fixture
 // was regenerated once for that change. The two non-Signature views are byte-for-byte unchanged.
+// Team W (Oct 25): the Signature foot row now opens Team U3's correction sheet (/app/my-time?fix=#corrections); only that
+// href changed in the Signature part.
 const entry={id:'punch-1',locationId:'fixture-office',locationName:'Fixture office',positionId:'p1',positionName:'Front desk',sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:'2026-09-22T12:00:00Z',endAt:'2026-09-22T20:00:00Z',rawStartAt:'2026-09-22T12:00:00Z',rawEndAt:'2026-09-22T20:00:00Z',breaks:[]};
 const open={...entry,id:'punch-2',startAt:'2026-09-23T12:00:00Z',endAt:null,rawStartAt:'2026-09-23T12:00:00Z',rawEndAt:null};
 const withEntries=(id:string,entries:unknown[])=>{const c=card(id);return {...c,source:{...c.source,entries}};};

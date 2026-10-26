@@ -772,7 +772,8 @@ html[data-q-sheet] { overflow: hidden; }
 :is(#q-root, html) .q-seg--sheet { margin-top: 12px; }
 :is(#q-root, html) .q-row--picker { position: relative; cursor: pointer; }
 :is(#q-root, html) .q-picker { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; opacity: 0; cursor: pointer; }
-:is(#q-root, html) .q-row--picker:has(.q-picker:focus-visible) { outline: 2px solid var(--q-teal); outline-offset: -2px; }
+/* :focus, not :focus-visible: WebKit never marks a native date or time input :focus-visible, even after Tab. */
+:is(#q-root, html) .q-row--picker:has(.q-picker:focus) { outline: 2px solid var(--q-teal); outline-offset: -2px; }
 :is(#q-root, html) .q-toform textarea.q-in { height: 96px; }
 /* v5 Shift requests (E09): actions in a request's sheet, and its history. */
 :is(#q-root, html) .q-sheet-acts { margin-top: 8px; }
