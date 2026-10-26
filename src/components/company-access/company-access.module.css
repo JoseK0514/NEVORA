@@ -21,6 +21,9 @@
 :global(.app-shell.nevora-portal) .coreForm :global(.configuration-fields) :global(.form-footer) {display:grid;width:100%;grid-template-columns:minmax(0,1fr)}
 .receipt {padding:.75rem;border:1px solid var(--design-border);border-radius:var(--design-radius-control);background:var(--design-surface-inset);line-height:1.5}
 .scopedPage {display:grid;gap:24px;min-width:0}
+/* These scoped Manager pages have no dark colours yet. Under the phone's dark theme their headings and labels kept
+ * their light-theme ink on the black page (1.2:1). Until they move to the Quiet kit they stay on their light surface. */
+:global(html[data-theme="dark"]) :global(.app-main):has(.scopedPage), :global(html[data-theme="dark"]) .scopedPage {color-scheme:light;background:#F7F6F3;color:#1C1C1C}
 .scopedPage .stack {align-content:start}
 .scopedPage .stack>:is(h2,p) {margin:0}
 .scopedPage header p {color:var(--design-text-secondary);line-height:1.6;max-width:70ch}
