@@ -5,6 +5,7 @@ import {
 } from "@/lib/assistance/availability-submission";
 
 import { readAvailabilityInputs, readTeamAvailabilityInputs } from "./availability-inputs";
+import { employeeInScopeSql } from "../company-access/scope-sql";
 import { resolveAvailabilityWeek } from "../scheduling/availability";
 
 type SubmissionStatusRow = {
@@ -104,16 +105,21 @@ export async function getAvailabilitySubmissionSummary(weekStart: string) {
 export type AvailabilitySubmissionListItem = AvailabilitySubmissionStatus & {
   employeeId: string;
   employeeName: string;
+  /** Present on a location-scoped list (B-12), to name the person's location without a company-wide roster read. */
+  primaryLocationId?: string;
 };
 
 export async function listAvailabilitySubmissionStatuses(
   weekStart: string,
+  /** B-12: a location scope; only employees in it are listed (filtered in the query). */
+  scope?: { workspaceId: string; locationIds: readonly string[] },
 ): Promise<AvailabilitySubmissionListItem[]> {
   const sql = getDb();
   const rows = queryRows<{
     uses_normal_availability?: boolean;
     employee_id: string;
     employee_name: string;
+    primary_location_id?: string;
     submitted_at: Date | string | null;
     updated_at: Date | string | null;
     window_count: string | number;
@@ -134,6 +140,7 @@ export async function listAvailabilitySubmissionStatuses(
        SELECT
          e.id AS employee_id,
          e.first_name || ' ' || e.last_name AS employee_name,
+         e.primary_location_id,
          s.uses_normal_availability,
          s.submitted_at,
          s.updated_at,
@@ -144,13 +151,13 @@ export async function listAvailabilitySubmissionStatuses(
          ON s.employee_id = e.id
         AND s.week_start = $1
        LEFT JOIN window_counts w ON w.employee_id = e.id
-       WHERE e.active = true AND e.role IN ('EMPLOYEE', 'LEAD')
+       WHERE e.active = true AND e.role IN ('EMPLOYEE', 'LEAD')${scope ? ` AND ${employeeInScopeSql('e.id', '$2', '$3::text[]')}` : ''}
        ORDER BY e.first_name, e.last_name`,
-      [weekStart],
+      scope ? [weekStart, scope.workspaceId, [...scope.locationIds]] : [weekStart],
     ),
   );
 
-  const team = rows.some(row => row.uses_normal_availability) ? await readTeamAvailabilityInputs(weekStart) : new Map();
+  const team = rows.some(row => row.uses_normal_availability) ? await readTeamAvailabilityInputs(weekStart, scope ? rows.map(row => row.employee_id) : undefined) : new Map();
   return rows.map((row) => {
     const submitted = Boolean(row.submitted_at);
     const inputs = team.get(row.employee_id);
@@ -164,6 +171,7 @@ export async function listAvailabilitySubmissionStatuses(
     return {
       employeeId: row.employee_id,
       employeeName: row.employee_name,
+      ...(scope && row.primary_location_id ? { primaryLocationId: row.primary_location_id } : {}),
       ...state,
       windowCount,
       submittedAt: isoValue(row.submitted_at),

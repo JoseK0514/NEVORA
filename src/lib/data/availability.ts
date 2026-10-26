@@ -66,9 +66,9 @@ export async function replaceAvailability(
 }
 
 /** A selected week resolves weekly/dated overrides; omitting it returns only the stored normal pattern. */
-export async function listTeamAvailabilityWindows(weekStart?: string): Promise<Array<AvailabilityRecord & { employeeId: string }>> {
+export async function listTeamAvailabilityWindows(weekStart?: string, employeeIds?: readonly string[]): Promise<Array<AvailabilityRecord & { employeeId: string }>> {
   if (weekStart) {
-    const team = await readTeamAvailabilityInputs(weekStart);
+    const team = await readTeamAvailabilityInputs(weekStart, employeeIds);
     return [...team].flatMap(([employeeId, inputs]) => resolveAvailabilityWeek({ weekStart, ...inputs }).map((window, index) => ({ id: `${employeeId}:${weekStart}:${index}`, employeeId, ...window })));
   }
   const sql = getDb();

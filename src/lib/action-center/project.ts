@@ -18,7 +18,7 @@ const requestTypes=new Set(['TIME_OFF','EXCHANGE','CALLOUT']);
 /** Pure merge of already authorized ready sources. Conflicting duplicate identities
  * fail rather than hiding one source; stable priority/time/ID ordering drives the
  * view. Actions and links remain review prompts, not mutation permissions. */
-export function combineManagerActions(scheduling:ManagerActionItem[],attendance:Extract<AttendanceDisplayReview,{state:'ready'}>,corrections:Extract<ManagerTimeCorrections,{state:'ready'}>,timecards:Extract<TimecardsResult,{state:'ready'}>,actorId:string):ActionItem[]{
+export function combineManagerActions(scheduling:ManagerActionItem[],attendance:Pick<Extract<AttendanceDisplayReview,{state:'ready'}>,'labels'|'groups'>,corrections:Extract<ManagerTimeCorrections,{state:'ready'}>,timecards:Extract<TimecardsResult,{state:'ready'}>,actorId:string):ActionItem[]{
  const items:ActionItem[]=scheduling.map(item=>({...item,category:requestTypes.has(item.type)?'requests':'scheduling'}));
  const employees=new Map(attendance.labels.employees.map(e=>[e.id,e.name]));
  for(const group of attendance.groups)if(group.observations.length)items.push({id:'ATTENDANCE:'+group.entryId,type:'ATTENDANCE',category:'timekeeping',priority:'REVIEW',title:'Recorded attendance needs review',detail:`${employees.get(group.employeeId)??'Employee'} · ${group.observations.length} recorded observations.`,employeeId:group.employeeId,locationId:group.locationId,href:'/app?view=attendance#attendance-'+encodeURIComponent(group.entryId)});

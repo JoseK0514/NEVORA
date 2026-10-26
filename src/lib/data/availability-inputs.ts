@@ -125,9 +125,16 @@ export function mapAvailabilityInputs(
   };
 }
 
-export async function readTeamAvailabilityInputs(weekStart: string) {
+/** Every employee's availability inputs for a week, or (B-12) only the listed employees, filtered in each query. */
+export async function readTeamAvailabilityInputs(weekStart: string, employeeIds?: readonly string[]) {
   const sql = getDb();
-  const [normal, weekly, submissions, exceptions] = await Promise.all([
+  const only = employeeIds ? [...employeeIds] : null;
+  const [normal, weekly, submissions, exceptions] = await Promise.all(only ? [
+    sql.query(`SELECT employee_id, day_of_week, start_time, end_time FROM availability_windows WHERE employee_id = ANY($1::text[]) ORDER BY employee_id, day_of_week, start_time`, [only]),
+    sql.query(`SELECT employee_id, week_start, day_of_week, start_time, end_time FROM weekly_availability_windows WHERE week_start = $1 AND employee_id = ANY($2::text[]) ORDER BY employee_id, day_of_week, start_time`, [weekStart, only]),
+    sql.query(`SELECT employee_id, week_start, uses_normal_availability, updated_at::text AS submission_version FROM weekly_availability_submissions WHERE week_start = $1 AND employee_id = ANY($2::text[])`, [weekStart, only]),
+    sql.query(`SELECT employee_id, date, kind, start_time, end_time FROM availability_exceptions WHERE date >= $1 AND date < $2 AND employee_id = ANY($3::text[]) ORDER BY employee_id, date, start_time`, [weekStart, addDays(weekStart, 7), only]),
+  ] : [
     sql.query(
       `SELECT employee_id, day_of_week, start_time, end_time FROM availability_windows ORDER BY employee_id, day_of_week, start_time`,
     ),
