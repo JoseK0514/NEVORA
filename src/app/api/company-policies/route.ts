@@ -1,4 +1,5 @@
 import { parseCompanyPolicyCommand } from "@/lib/business-improvements/company-policies/model";
+import {failed} from '@/lib/observability/log.server';
 import { getSession, requireSessionMutationProof } from "@/lib/auth/session";
 import {
   readCompanyPolicyHistory,
@@ -22,9 +23,7 @@ export async function GET(request: Request) {
     if (session.role !== "OWNER") return correctionJson({ state: "unavailable" }, 403);
     const history = await readCompanyPolicyHistory(await requireSessionMutationProof());
     return correctionJson({ state: "ready", history });
-  } catch {
-    return correctionJson({ state: "unavailable" }, 503);
-  }
+  } catch(error){return failed('/api/company-policies',error,correctionJson({ state: "unavailable" },503));}
 }
 export async function POST(request: Request) {
   const boundary = correctionBoundary(

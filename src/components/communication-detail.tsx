@@ -54,8 +54,12 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
   const loading=pending&&!read;
   const offline=paused&&typeof navigator!=='undefined'&&navigator.onLine===false;
   const signedOut=notice==='signed-out'||read?.state==='unauthorized'&&read.reason==='session_ended';
-  const title=signedOut?'Your session ended':offline?'You’re offline':paused?'Paused while you were away':notice==='blocked'?'Access changed':notice==='conflict'?'This update changed':read?.state==='withdrawn'?'Update withdrawn':read?.state==='unauthorized'?'Access changed':loading?'Loading update…':'Couldn’t load this update';
-  const description=signedOut?'Sign in again to check your current access.':offline?'Connect to the internet, then try again.':paused?'Come back to this page to see the current update.':notice==='blocked'?'You no longer have access to this update. Refresh to check.':notice==='conflict'?'Review the latest version before acknowledging it.':read?.state==='withdrawn'?'This update is no longer available.':read?.state==='unauthorized'?'Your current permission does not allow this update. Sign in to check your access.':loading?'Getting the latest version and your review status.':'Check your connection, then try again.';
+  // B21: the server answers a missing update and one this person may not read with the same reason (no existence
+  // disclosure). That is a broken or old link, not a sign-in problem: say so and lead back to Updates. "Access
+  // changed" stays for a real refusal (access_denied, or a command that was blocked).
+  const missing=!signedOut&&notice!=='blocked'&&read?.state==='unauthorized'&&read.reason==='update_unavailable';
+  const title=signedOut?'Your session ended':offline?'You’re offline':paused?'Paused while you were away':notice==='blocked'?'Access changed':notice==='conflict'?'This update changed':read?.state==='withdrawn'?'Update withdrawn':missing?'This update isn’t available':read?.state==='unauthorized'?'Access changed':loading?'Loading update…':'Couldn’t load this update';
+  const description=signedOut?'Sign in again to check your current access.':offline?'Connect to the internet, then try again.':paused?'Come back to this page to see the current update.':notice==='blocked'?'You no longer have access to this update. Refresh to check.':notice==='conflict'?'Review the latest version before acknowledging it.':read?.state==='withdrawn'?'This update is no longer available.':missing?'It may have been removed, or the link is incomplete.':read?.state==='unauthorized'?'Your current permission does not allow this update. Sign in to check your access.':loading?'Getting the latest version and your review status.':'Check your connection, then try again.';
   // T-20 (Oct 25, 2026): Employees and Leads get this Quiet state too (no Signature band in light or dark).
   // Quiet (v4): the state in words and one way forward.
   return <>
@@ -63,7 +67,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
    <div className="q-hd"><h1 style={{fontSize:28,lineHeight:'34px'}}>{title}</h1><p>{description}</p></div>
    <section ref={surface} aria-busy={loading} aria-label={title}>
     <p className="q-sr" role="status">{title}. {description}</p>
-    {loading?null:signedOut||read?.state==='unauthorized'||notice==='blocked'?<Link href="/login" className="q-btn q-btn--sec">Sign in</Link>:read?.state==='withdrawn'?<Link href="/app/updates" className="q-btn q-btn--sec">All updates</Link>:<button type="button" className="q-btn q-btn--sec" onClick={onRefresh} disabled={paused||pending}>{notice==='conflict'?'Review latest':'Try again'}</button>}
+    {loading?null:!missing&&(signedOut||read?.state==='unauthorized'||notice==='blocked')?<Link href="/login" className="q-btn q-btn--sec">Sign in</Link>:read?.state==='withdrawn'||missing?<Link href="/app/updates" className="q-btn q-btn--sec">All updates</Link>:<button type="button" className="q-btn q-btn--sec" onClick={onRefresh} disabled={paused||pending}>{notice==='conflict'?'Review latest':'Try again'}</button>}
    </section>
   </>;
  }

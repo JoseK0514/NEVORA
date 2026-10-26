@@ -26,6 +26,22 @@ export const sourceSql = `WITH observed AS MATERIALIZED (
   SELECT o.at,
     ((o.at AT TIME ZONE $3)::date::timestamp AT TIME ZONE $3) AS start_at
   FROM observed o
+), seed_candidates AS MATERIALIZED (
+  -- Inspection B6: every seed below is open or closed at/after the day's start. The table CHECK
+  -- (clock_out_at IS NULL OR clock_out_at >= clock_in_at) makes the other seed arms imply that too, so this bound
+  -- drops no seed, and time_entries_clock_out_idx answers it without reading all history.
+  SELECT t.id,t.employee_id,t.clock_in_at,t.clock_out_at
+  FROM time_entries t JOIN locations l ON l.id=t.location_id CROSS JOIN day d
+  WHERE l.workspace_id=$1 AND (t.clock_out_at IS NULL OR t.clock_out_at>=d.start_at)
+), reachable_ids AS MATERIALIZED (
+  -- The candidates plus every same-employee entry overlapping one of them: every row seed_ids and selected_ids
+  -- below can reach (a support must overlap an actual seed, which is one of these candidates). Driven from the
+  -- candidates through time_entries(employee_id, clock_in_at), so only those employees' entries are probed.
+  SELECT id FROM seed_candidates
+  UNION
+  SELECT t.id FROM seed_candidates c CROSS JOIN observed o
+  JOIN time_entries t ON t.employee_id=c.employee_id
+   AND t.clock_in_at<COALESCE(c.clock_out_at,o.at) AND c.clock_in_at<COALESCE(t.clock_out_at,o.at)
 ), all_entries AS MATERIALIZED (
   SELECT
     t.id,
@@ -38,7 +54,7 @@ export const sourceSql = `WITH observed AS MATERIALIZED (
     t.schedule_context
   FROM time_entries t
   JOIN locations l ON l.id=t.location_id
-  WHERE l.workspace_id=$1
+  WHERE l.workspace_id=$1 AND t.id IN (SELECT id FROM reachable_ids)
 ), seed_ids AS MATERIALIZED (
   SELECT e.id
   FROM all_entries e CROSS JOIN day d

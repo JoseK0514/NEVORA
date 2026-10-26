@@ -20,6 +20,7 @@ import {communicationContentHash,communicationPayloadHash,communicationRootInser
 import {assertManagementProof,managementSessionStatements,isManagementAuthorizationError} from '../data/management-session';
 import {readEmployeeWorkspace,employeeReadLimits} from '../data/employee-profile.server';
 import {workspaceReadGuard} from '../data/workspaces';
+import {READ_SNAPSHOT} from '../data/read-snapshot';
 import {neonNotificationExecutor} from '../data/notification-transactions';
 import {communicationDevelopmentAllowedSql,communicationRecipientAllowedSql} from './sql';
 export {communicationRecipientAllowedSql} from './sql';
@@ -84,6 +85,17 @@ function guards(proof:SessionMutationProof,w:CommunicationWorkspace,root?:string
   {text:'LOCK TABLE employee_location_eligibility, schedules, shifts, shift_callouts IN SHARE MODE',values:[]},
   ...(root?[{text:'SELECT id FROM communications WHERE workspace_id=$1 AND id=$2::uuid FOR UPDATE',values:[w.id,root]}]:[]),
   ...currentAuthority(proof,w)];
+}
+/** Lock-free counterpart of guards() for list batches that open with READ_SNAPSHOT (inspection B4/B7): the activation
+ * gate, the company version, the exact session and, for management, the original Company digest are checked in the
+ * same REPEATABLE READ snapshot as the rows read, instead of after SHARE locks on employees, locations, eligibility,
+ * schedules, shifts and callouts. Commands keep guards() and its range locks. */
+function snapshotGuards(proof:SessionMutationProof,w:CommunicationWorkspace):SqlStatement[]{
+ return [READ_SNAPSHOT,...employeeReadLimits,communicationDevelopmentGuard,workspaceReadGuard(w)[1],...snapshotAuthority(proof,w)];
+}
+/** currentAuthority() without its FOR SHARE session lock: the session check and, for management, the Company check. */
+function snapshotAuthority(proof:SessionMutationProof,w:CommunicationWorkspace):SqlStatement[]{
+ return currentAuthority(proof,w).filter(statement=>!/\bFOR SHARE\s*$/.test(statement.text));
 }
 type Observation={facts:CommunicationFacts;fingerprint:string;observedAt:string};
 function snapshot(proof:SessionMutationProof,w:CommunicationWorkspace,draft:CommunicationDraft):SqlStatement{
@@ -241,7 +253,20 @@ export async function readCommunication(proof:SessionMutationProof,id:string,exe
   const signal=AbortSignal.timeout(8000),w=await communicationWorkspace(proof,executor,signal),r=await rootRead(proof,w,id,executor,signal);
   if(!r)return {state:'unauthorized',reason:'update_unavailable'};
   const o=await observe(proof,w,r.draft,executor,signal,id),p=guards(proof,w,id),observationStarted=performance.now(),result=await executor.transaction([...p,sourceGuard(proof,w,r.draft,o.fingerprint),rootStatement(w,id),recipientStatement(proof,w,r),lifetimeStatement(proof),statusStatement(proof,w,r),...currentAuthority(proof,w)],signal);
-  const current=result[p.length+1]?.[0] as Root|undefined,grant=result[p.length+2]?.[0] as {kind:string;sourceShiftId:string;assignmentEpisodeId:string;termsFingerprint:string;acknowledgedAt:string|null;readAt:string|null}|undefined;
+  const projected=projectCommunicationRead(proof,w,r,o,{current:result[p.length+1]?.[0] as Root|undefined,grant:result[p.length+2]?.[0] as Grant|undefined,lifetime:result[p.length+3]?.[0] as Lifetime|undefined,status:result[p.length+4]?.[0] as Status});
+  if(projected.state!=='ready')return projected;
+  await responseFence(proof,w,executor,signal);
+  return finishCommunicationRead(projected,w,observationStarted);
+ }catch(error){return {state:authorizationDenied(error)?'unauthorized':'unavailable',reason:'update_unavailable'};}
+}
+type Grant={kind:string;sourceShiftId:string;assignmentEpisodeId:string;termsFingerprint:string;acknowledgedAt:string|null;readAt:string|null};
+type Lifetime={observedAt:string;validForMs:number};
+type Status={count:number;recipients:{name:string;acknowledgedAt:string|null}[]|null};
+type Projected=Extract<CommunicationRead,{state:'ready'}>&{lifetime:Lifetime};
+/** One item's disclosure decision from its root, audience observation, current root, own grant, session lifetime and
+ * status. Shared by readCommunication and the batched list so both apply exactly the same rules. */
+function projectCommunicationRead(proof:SessionMutationProof,w:CommunicationWorkspace,r:Root,o:Awaited<ReturnType<typeof observe>>,read:{current:Root|undefined;grant:Grant|undefined;lifetime:Lifetime|undefined;status:Status}):Projected|Exclude<CommunicationRead,{state:'ready'}>{
+  const {current,grant,lifetime,status}=read;
   const management=canManageCommunication(o.context),member=o.facts.members.some(m=>m.id===proof.employee.id);
   const assignmentValid=grant&&o.context.assignments.some(a=>a.employeeId===proof.employee.id&&a.published&&!a.released&&a.sourceShiftId===grant.sourceShiftId&&a.assignmentEpisodeId===grant.assignmentEpisodeId&&a.termsFingerprint===grant.termsFingerprint);
   const allowed=management||(o.context.location.active&&o.context.location.workspaceId===w.id&&member&&grant&&(grant.kind==='LOCATION'||assignmentValid));
@@ -249,12 +274,13 @@ export async function readCommunication(proof:SessionMutationProof,id:string,exe
   if(!current||current.revisionId!==r.revisionId)return {state:'unavailable',reason:'update_changed'};
   if(current.state==='WITHDRAWN')return {state:'withdrawn',reason:'update_unavailable'};
   if(current.draft.expiresAt&&Date.parse(current.draft.expiresAt)<=Date.now())return {state:'withdrawn',reason:'update_unavailable'};
-  const lifetime=result[p.length+3]?.[0] as {observedAt:string;validForMs:number}|undefined,status=result[p.length+4]?.[0] as {count:number;recipients:{name:string;acknowledgedAt:string|null}[]|null};
   if(!lifetime||lifetime.validForMs<=0)return {state:'unauthorized',reason:'update_unavailable'};
-  await responseFence(proof,w,executor,signal);
-  const currentLifetime=limitedLifetime(lifetime,w,observationStarted);
-  return {state:'ready',id:r.id,revisionId:r.revisionId,contentHash:r.contentHash,title:r.draft.title,body:r.draft.body,type:r.draft.type,publishedAt:r.publishedAt,editedAt:r.version>1?r.publishedAt:null,acknowledgement:r.draft.acknowledgement,ownAcknowledgedAt:grant?.acknowledgedAt??null,ownReadAt:grant?.readAt??null,authority:communicationAuthority(proof),...currentLifetime,validForMs:Math.min(currentLifetime.validForMs,r.draft.expiresAt?Date.parse(r.draft.expiresAt)-Date.parse(lifetime.observedAt):45000),timeZone:w.timeZone,expiresAt:r.draft.expiresAt,authorContext:r.authorContext??'Team member',canWithdraw:canWithdrawCommunication(r.draft,r.authorId,o.context),...(r.authorId===proof.employee.id?{sentCount:status.count}:{}),...(management?{management:{draft:r.draft,recipients:status.recipients??[]}}:{})};
- }catch(error){return {state:authorizationDenied(error)?'unauthorized':'unavailable',reason:'update_unavailable'};}
+  return {state:'ready',id:r.id,revisionId:r.revisionId,contentHash:r.contentHash,title:r.draft.title,body:r.draft.body,type:r.draft.type,publishedAt:r.publishedAt,editedAt:r.version>1?r.publishedAt:null,acknowledgement:r.draft.acknowledgement,ownAcknowledgedAt:grant?.acknowledgedAt??null,ownReadAt:grant?.readAt??null,authority:communicationAuthority(proof),observedAt:lifetime.observedAt,validForMs:lifetime.validForMs,timeZone:w.timeZone,expiresAt:r.draft.expiresAt,authorContext:r.authorContext??'Team member',canWithdraw:canWithdrawCommunication(r.draft,r.authorId,o.context),...(r.authorId===proof.employee.id?{sentCount:status.count}:{}),...(management?{management:{draft:r.draft,recipients:status.recipients??[]}}:{}),lifetime};
+}
+/** Spend the observation budget (and the management Company budget) after the response fence. */
+function finishCommunicationRead(projected:Projected,w:CommunicationWorkspace,observationStarted:number):Extract<CommunicationRead,{state:'ready'}>{
+  const {lifetime,...item}=projected,currentLifetime=limitedLifetime(lifetime,w,observationStarted);
+  return {...item,...currentLifetime,validForMs:Math.min(currentLifetime.validForMs,item.expiresAt?Date.parse(item.expiresAt)-Date.parse(lifetime.observedAt):45000)};
 }
 /** Final protected membership check for list/Home/ack consumers. Immutable
  * grants intersect current exact assignment and current location eligibility. */
@@ -293,17 +319,40 @@ function communicationIndex(proof:SessionMutationProof,w:CommunicationWorkspace)
  * partial means the bounded list changed or some source was unavailable, so clients
  * must not interpret it as a complete count of all communication obligations. */
 export async function listEmployeeCommunications(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommunicationListRead>{
- try{proofValid(proof);const signal=AbortSignal.timeout(8000),w=await communicationWorkspace(proof,executor,signal),p=guards(proof,w),results=await executor.transaction([...p,communicationIndex(proof,w)],signal);
+ try{proofValid(proof);const signal=AbortSignal.timeout(8000),w=await communicationWorkspace(proof,executor,signal);
+  // Inspection B7: the up-to-100 items are read in three set-sized READ ONLY batches (index, roots, then every
+  // item's audience, grant, status and lifetime) instead of one guarded readCommunication per item in sequence.
+  // Each item still gets exactly readCommunication's decision (projectCommunicationRead), and the final batch below
+  // still re-proves every item, the index and authority after projection, as before.
+  const p=snapshotGuards(proof,w),results=await executor.transaction([...p,communicationIndex(proof,w)],signal);
   const rows=results[p.length] as {id:string}[],items:CommunicationRead[]=[];let partial=rows.length>100;
-  for(const row of rows.slice(0,100)){const r=await readCommunication(proof,row.id,executor);if(r.state==='ready')items.push(r);else if(r.state==='unavailable')partial=true;}
+  const ids=rows.slice(0,100).map(row=>row.id).filter(id=>uuid.test(id));
+  const rootPrefix=snapshotGuards(proof,w),rootResult=ids.length?await executor.transaction([...rootPrefix,...ids.map(id=>rootStatement(w,id)),...snapshotAuthority(proof,w)],signal):[];
+  const roots=ids.map((id,i)=>rootResult[rootPrefix.length+i]?.[0] as Root|undefined);
+  const visible=roots.filter((r):r is Root=>!!r);
+  const detailPrefix=snapshotGuards(proof,w),observationStarted=performance.now();
+  const detailStatements=visible.flatMap(r=>[snapshot(proof,w,r.draft),rootStatement(w,r.id),recipientStatement(proof,w,r),statusStatement(proof,w,r)]);
+  const details=visible.length?await executor.transaction([...detailPrefix,...detailStatements,lifetimeStatement(proof),...snapshotAuthority(proof,w)],signal):[];
+  const lifetimeRow=details[detailPrefix.length+detailStatements.length]?.[0] as Lifetime|undefined;
+  const projected:Projected[]=[];
+  visible.forEach((r,i)=>{
+   try{
+    const at=detailPrefix.length+i*4,observation=details[at]?.[0] as Observation|undefined;
+    if(!observation||!hex.test(observation.fingerprint))throw Error('communication_source_unavailable');
+    const o={...observation,...projectCommunicationAudience(r.draft,observation.facts,w,observation.observedAt)};
+    const item=projectCommunicationRead(proof,w,r,o,{current:details[at+1]?.[0] as Root|undefined,grant:details[at+2]?.[0] as Grant|undefined,lifetime:lifetimeRow,status:details[at+3]?.[0] as Status});
+    if(item.state==='ready')projected.push(item);else if(item.state==='unavailable')partial=true;
+   }catch{partial=true;}
+  });
+  for(const item of projected)items.push(finishCommunicationRead(item,w,observationStarted));
   const ready=items.filter((i):i is Extract<CommunicationRead,{state:'ready'}>=>i.state==='ready');
-  const finalPrefix=[...guards(proof,w),{text:'LOCK TABLE communications IN SHARE MODE',values:[]},{text:'SELECT id FROM communications WHERE workspace_id=$1 AND id=ANY($2::uuid[]) ORDER BY id FOR SHARE',values:[w.id,ready.map(i=>i.id).sort()]}];
-  const observationStarted=performance.now(),final=await executor.transaction([...finalPrefix,...ready.map(i=>finalItemStatement(proof,w,i)),communicationIndex(proof,w),lifetimeStatement(proof),...currentAuthority(proof,w)],signal);
+  const finalPrefix=snapshotGuards(proof,w);
+  const finalStarted=performance.now(),final=await executor.transaction([...finalPrefix,...ready.map(i=>finalItemStatement(proof,w,i)),communicationIndex(proof,w),lifetimeStatement(proof),...snapshotAuthority(proof,w)],signal);
   if(JSON.stringify(final[finalPrefix.length+ready.length])!==JSON.stringify(rows))partial=true;
   const current=ready.filter((_,i)=>(final[finalPrefix.length+i]?.[0] as {allowed:boolean}|undefined)?.allowed===true);if(current.length!==ready.length)partial=true;
-  const lifetime=final[finalPrefix.length+ready.length+1]?.[0] as {observedAt:string;validForMs:number}|undefined;if(!lifetime||lifetime.validForMs<=0)return {state:'unauthorized',reason:'updates_unavailable'};
+  const lifetime=final[finalPrefix.length+ready.length+1]?.[0] as Lifetime|undefined;if(!lifetime||lifetime.validForMs<=0)return {state:'unauthorized',reason:'updates_unavailable'};
   await responseFence(proof,w,executor,signal);
-  const currentLifetime=limitedLifetime({...lifetime,validForMs:Math.min(lifetime.validForMs,...current.map(i=>i.validForMs-(Date.parse(lifetime.observedAt)-Date.parse(i.observedAt))))},w,observationStarted);
+  const currentLifetime=limitedLifetime({...lifetime,validForMs:Math.min(lifetime.validForMs,...current.map(i=>i.validForMs-(Date.parse(lifetime.observedAt)-Date.parse(i.observedAt))))},w,finalStarted);
   return {state:partial?'partial':'complete',...currentLifetime,authority:communicationAuthority(proof),timeZone:w.timeZone,items:current,reason:partial?'source_unavailable':null};
  }catch(error){return {state:authorizationDenied(error)?'unauthorized':'unavailable',reason:'updates_unavailable'};}
 }

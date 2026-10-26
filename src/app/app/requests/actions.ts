@@ -1,5 +1,5 @@
 "use server";
-import { moduleEnabled } from "@/lib/workspace-presentation/current.server";
+import { moduleEnabled, moduleState } from "@/lib/workspace-presentation/current.server";
 
 import {isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
 
@@ -19,11 +19,18 @@ import {
  * UUID for persistence. Actor identity always comes from the session. Partial
  * days must fit one calendar date; full-day ranges are inclusive date labels.
  */
+const REQUEST_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+/** B12/B20: "not sent, try again", keeping the same request id so the retry is the same idempotent request. */
+const unsent = (requestId: string): never => redirect(`/app/requests?error=unavailable${REQUEST_ID.test(requestId) ? `&requestId=${requestId}` : ""}`);
+
 export async function requestTimeOffAction(formData: FormData) {
   const session = await requireSelfService("/app/requests");
-  if (!(await moduleEnabled("timeOff"))) redirect("/app/requests"); // turned off by the company (B2)
-  const proof = await requireSessionMutationProof();
   const requestId = String(formData.get("requestId") ?? "");
+  const gate = await moduleState("timeOff");
+  if (gate === "off") redirect("/app/requests"); // turned off by the company (B2)
+  // B12: settings that could not be read must not drop the request silently.
+  if (gate === "unknown") unsent(requestId);
+  const proof = await requireSessionMutationProof();
   const startDate = String(formData.get("startDate") ?? "");
   const endDate = String(formData.get("endDate") ?? "");
   const partialDay = formData.get("partialDay") === "on";
@@ -32,7 +39,7 @@ export async function requestTimeOffAction(formData: FormData) {
   const reason = String(formData.get("reason") ?? "").trim();
 
   if (
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId) ||
+    !REQUEST_ID.test(requestId) ||
     !isValidIsoDate(startDate) ||
     !isValidIsoDate(endDate) ||
     startDate > endDate ||
@@ -47,16 +54,24 @@ export async function requestTimeOffAction(formData: FormData) {
     redirect("/app/requests?error=invalid");
   }
 
-  await createTimeOffRequest({
-    requestId,
-    employeeId: session.id,
-    proof,
-    startDate,
-    endDate,
-    startTime,
-    endTime,
-    reason: reason || undefined,
-  });
+  try {
+    await createTimeOffRequest({
+      requestId,
+      employeeId: session.id,
+      proof,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      reason: reason || undefined,
+    });
+  } catch (error) {
+    // B20: a refusal still reaches the error screen as before. Anything else (a timeout, a lost connection) may or
+    // may not have committed; the request id is idempotent (ON CONFLICT (id) DO NOTHING), so the form comes back
+    // with the same id and sending again cannot create a second request.
+    if (isOperationalAuthorizationError(error) || isManagementAuthorizationError(error)) throw error;
+    unsent(requestId);
+  }
 
   revalidatePath("/app/requests");
   redirect("/app/requests?tab=my&submitted=1");
@@ -69,7 +84,10 @@ export async function requestTimeOffAction(formData: FormData) {
  */
 export async function reviewTimeOffAction(formData: FormData) {
   const session = await requireRoles(TIME_OFF_REVIEW_ROLES);
-  if (!(await moduleEnabled("timeOff"))) redirect("/app/requests");
+  const gate = await moduleState("timeOff");
+  if (gate === "off") redirect("/app/requests");
+  // B12: an unreadable setting reports "review not recorded" instead of silently dropping the decision.
+  if (gate === "unknown") redirect("/app/requests?tab=pending&error=review");
   const proof = await requireSessionMutationProof();
   const requestId = String(formData.get("requestId") ?? "");
   const decision = String(formData.get("decision") ?? "");

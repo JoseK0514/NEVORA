@@ -1,3 +1,4 @@
+import {notFound} from 'next/navigation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -5,4 +6,6 @@ import {requireSessionMutationProof} from '@/lib/auth/session';
 import { moduleGate } from "@/lib/workspace-presentation/current.server";
 import {communicationAuthority} from '@/lib/communications/service.server';
 import {CommunicationDetail} from '@/components/communication-detail';
-export default async function UpdatePage({params}:{params:Promise<{id:string}>}){const moduleOff=await moduleGate('updates');if(moduleOff)return moduleOff;const proof=await requireSessionMutationProof(),{id}=await params,authority=communicationAuthority(proof);const access=['OWNER','MANAGER'].includes(proof.employee.role)?await withOperationalCompany(proof,async()=>null):null;if(access?.state==='unavailable')return <OperationalUnavailable title="Updates unavailable" reason={access.reason}/>;const content=<CommunicationDetail key={authority+id} id={id} authority={authority} mode={['OWNER','MANAGER'].includes(proof.employee.role)?'manager':'employee'}/>;return access?<ScopedReadFrame observation={access}>{content}</ScopedReadFrame>:content;}
+export default async function UpdatePage({params}:{params:Promise<{id:string}>}){const moduleOff=await moduleGate('updates');if(moduleOff)return moduleOff;const proof=await requireSessionMutationProof(),{id}=await params,authority=communicationAuthority(proof);
+// B21: an id that cannot be an update is not found, without any read.
+if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(id))notFound();const access=['OWNER','MANAGER'].includes(proof.employee.role)?await withOperationalCompany(proof,async()=>null):null;if(access?.state==='unavailable')return <OperationalUnavailable title="Updates unavailable" reason={access.reason}/>;const content=<CommunicationDetail key={authority+id} id={id} authority={authority} mode={['OWNER','MANAGER'].includes(proof.employee.role)?'manager':'employee'}/>;return access?<ScopedReadFrame observation={access}>{content}</ScopedReadFrame>:content;}

@@ -12,9 +12,16 @@ function scopeIdentity(view:Extract<OperationalAuthorityView,{state:'ready'}>){r
 export function useOperationalNavigation(employeeId:string,role:UserRole,initial?:OperationalAuthorityView,onAccessChange:(reason:'identity'|'scope')=>void=reloadCurrent){
  const [state,setState]=useState<PrivatePanelState<OperationalAuthorityView>>({snapshot:initial??null,refreshing:false,paused:false});
  const controllerRef=useRef<ReturnType<typeof createPrivateSnapshotController<OperationalAuthorityView>>|null>(null);
+ // Inspection F10: every layout render passes a new `initial` object (a fresh observation of the same scope), which
+ // restarted this poll and its immediate read. The poll now restarts only when the scope identity itself changes;
+ // the baseline it compares against is that same identity, so a real scope change is still caught at once.
+ const initialKey=initial?.state==='ready'?scopeIdentity(initial):initial?.state??'none';
+ const accessChange=useRef(onAccessChange);
+ useEffect(()=>{accessChange.current=onAccessChange;},[onAccessChange]);
  useEffect(()=>{
   if(role!=='MANAGER')return;
-  let mounted=true,changed=false,baseline=initial?.state==='ready'?scopeIdentity(initial):null;
+  const onAccessChange=(reason:'identity'|'scope')=>accessChange.current(reason);
+  let mounted=true,changed=false,baseline=initialKey.startsWith('[')?initialKey:null;
   function identityChanged(){if(!changed){changed=true;onAccessChange('identity');}}
   const controller=createPrivateSnapshotController<OperationalAuthorityView>(setState,async signal=>{
    const response=await fetch('/api/company-access/operational-authority',{cache:'no-store',credentials:'same-origin',redirect:'error',headers:{'x-nevora-company-access':'1'},signal});
@@ -41,7 +48,7 @@ export function useOperationalNavigation(employeeId:string,role:UserRole,initial
   for(const event of ['focus','pageshow','online','storage'])window.addEventListener(event,sync);
   queueMicrotask(()=>{if(mounted)sync();});
   return()=>{mounted=false;controller.stop();controllerRef.current=null;document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
- },[employeeId,role,initial,onAccessChange]);
+ },[employeeId,role,initialKey]);
  const view=!state.paused?state.snapshot:null;
  return {view:view?.state==='ready'&&(view.employeeId!==employeeId||view.role!==role)?null:view,refreshing:state.refreshing,paused:state.paused,retry:()=>controllerRef.current?.refresh()};
 }

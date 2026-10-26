@@ -1,4 +1,5 @@
 import {matchesCorrectionAuthority} from '@/lib/time-corrections/authority.server';
+import {failed} from '@/lib/observability/log.server';
 import {getSession} from '@/lib/auth/session';
 import {getEmployeeTime} from '@/lib/data/employee-time';
 export const runtime='nodejs';
@@ -20,5 +21,5 @@ export async function GET(request:Request):Promise<Response>{
   if(binding&&!await matchesCorrectionAuthority(binding))return json({state:'unavailable',reason:'access_denied'},403);
   const time=await getEmployeeTime();
   return json(time,time.state==='ready'?200:time.reason==='access_denied'?403:503);
- }catch{return json({state:'unavailable',reason:'read_failed'},503);}
+ }catch(error){return failed('/api/employee/my-time',error,json({state:'unavailable',reason:'read_failed'},503));}
 }

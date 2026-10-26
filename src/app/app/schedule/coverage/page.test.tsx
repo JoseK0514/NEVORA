@@ -35,11 +35,17 @@ vi.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({ timeZone:
 vi.mock('@/lib/data/employees', () => ({ listEmployees: async () => m.source!.employees.map(e => ({ id: e.id, firstName: e.first_name, lastName: e.last_name, role: e.role, active: e.active, positionIds: m.source!.employee_positions.filter(p => p.employee_id === e.id).map(p => p.position_id) })), listLocations: async () => [{ id: 'loc-1', shortName: 'Fictional South' }] }));
 vi.mock('@/lib/data/positions', () => ({ listPositions: async () => assignmentFacts().positions }));
 vi.mock('@/lib/data/hour-fairness', () => ({ listHourFairness: async () => [] }));
-vi.mock('@/lib/data/schedules', () => ({ getShiftValidationContext: async (input: Record<string, unknown>) => {
-  m.calls.push(input); const e = m.source!.employees.find(e => e.id === input.employeeId)!;
-  return { workspace: { id: 'test-workspace', active: true, timeZone: 'America/Puerto_Rico' }, location: { id: 'loc-1', workspaceId: 'test-workspace', active: true }, position: assignmentFacts().positions.find(p => p.id === input.positionId),
-    employee: { active: true, role: e.role, eligibleLocationIds: ['loc-1'], positionIds: m.source!.employee_positions.filter(p => p.employee_id === e.id).map(p => p.position_id), maximumWeeklyHours: 40 }, existingShifts: [], availability: [{ dayOfWeek: 1, startTime: '00:00', endTime: '24:00' }], weeklyAvailability: [], approvedTimeOff: [] };
-} }));
+vi.mock('@/lib/data/schedules', () => {
+  const getShiftValidationContext = async (input: Record<string, unknown>) => {
+    m.calls.push(input); const e = m.source!.employees.find(e => e.id === input.employeeId)!;
+    return { workspace: { id: 'test-workspace', active: true, timeZone: 'America/Puerto_Rico' }, location: { id: 'loc-1', workspaceId: 'test-workspace', active: true }, position: assignmentFacts().positions.find(p => p.id === input.positionId),
+      employee: { active: true, role: e.role, eligibleLocationIds: ['loc-1'], positionIds: m.source!.employee_positions.filter(p => p.employee_id === e.id).map(p => p.position_id), maximumWeeklyHours: 40 }, existingShifts: [], availability: [{ dayOfWeek: 1, startTime: '00:00', endTime: '24:00' }], weeklyAvailability: [], approvedTimeOff: [] };
+  };
+  // B8: the page reads every employee's context in one batched call; each entry is the single read's context.
+  const getShiftValidationContexts = async ({ employeeIds, ...input }: Record<string, unknown> & { employeeIds: string[] }) =>
+    new Map(await Promise.all(employeeIds.map(async employeeId => [employeeId, await getShiftValidationContext({ employeeId, ...input })] as const)));
+  return { getShiftValidationContext, getShiftValidationContexts };
+});
 import CoveragePage from './page';
 import NewShiftPage from '../new/page';
 

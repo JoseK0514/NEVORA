@@ -6,7 +6,7 @@ import { CoverageAssistant } from "@/components/coverage-assistant";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
 import { listHourFairness } from "@/lib/data/hour-fairness";
-import { getShiftValidationContext } from "@/lib/data/schedules";
+import { getShiftValidationContexts } from "@/lib/data/schedules";
 import { listPositions } from "@/lib/data/positions";
 import { requireSessionMutationProof } from "@/lib/auth/session";
 import { readCoverageRepair } from "@/lib/data/coverage-repair.server";
@@ -131,15 +131,11 @@ export default async function CoverageSuggestionsPage({
     fairness.map((item) => [item.employeeId, item.priorUnderTargetWeeks]),
   );
 
+  // B8: one set-based read of every employee's rules instead of one read per employee.
+  const contexts = await getShiftValidationContexts({ employeeIds: employees.map(employee => employee.id), locationId, date, weekStart, positionId: params.positionId });
   const inputs = await Promise.all(
     employees.map(async (employee) => {
-      const context = await getShiftValidationContext({
-        employeeId: employee.id,
-        locationId,
-        date,
-        weekStart,
-        positionId: params.positionId,
-      });
+      const context = contexts.get(employee.id);
       if (!context) return null;
       return {
         employeeName: `${employee.firstName} ${employee.lastName}`,

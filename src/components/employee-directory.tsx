@@ -55,7 +55,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
           const location = locationsById.get(employee.primaryLocationId);
           const name = `${employee.firstName} ${employee.lastName}`;
           const where = location ? `${location.shortName}${location.active ? "" : " (Inactive)"}` : "Location not assigned";
-          return <QuietRow key={employee.id} href={`/app/employees/${encodeURIComponent(employee.id)}`} chevron={false}
+          return <QuietRow key={employee.id} href={`/app/employees/${encodeURIComponent(employee.id)}`} prefetch={false} chevron={false}
             avatar={employeeInitials(employee.firstName, employee.lastName)} title={name} detail={detail(employee)}
             label={`${name}, ${employeeRoleLabel(employee.role)}, ${where}${employee.phone ? `, ${formatPhoneNumber(employee.phone)}` : ""}${employee.active ? "" : ", inactive"}`} />;
         })}</ul>
@@ -66,8 +66,8 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
       {/* Quiet (v4): the two recovery tools sit at the end of Team, where their pages lead back to. */}
       {/* P2-20 (final pass): the two sign-in tools have their own 15pt group label under the people list. */}
       {recovery ? <QuietGroup label="Help someone sign in" id="team-sign-in-help"><ul className="q-list">
-        <QuietRow href="/app/account-recovery" title="Account recovery" />
-        <QuietRow href="/app/clocker-recovery" title="Clocker recovery" />
+        <QuietRow href="/app/account-recovery" title="Account recovery" prefetch={false} />
+        <QuietRow href="/app/clocker-recovery" title="Clocker recovery" prefetch={false} />
       </ul></QuietGroup> : null}
     </QuietPage>
   );

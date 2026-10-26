@@ -1,4 +1,5 @@
 import {matchesCorrectionAuthority} from '@/lib/time-corrections/authority.server';
+import {failed} from '@/lib/observability/log.server';
 import { getSession } from '@/lib/auth/session';
 import {
   getEmployeeTimeCorrections,
@@ -26,9 +27,7 @@ export async function GET(request: Request): Promise<Response> {
     const result=await getEmployeeTimeCorrections();
     if (result.state==='ready') return correctionJson(result);
     return correctionJson(result,result.reason==='access_denied'?403:503);
-  } catch {
-    return correctionJson({state:'unavailable'},503);
-  }
+  } catch(error){return failed('/api/employee/time-corrections',error,correctionJson({state:'unavailable'},503));}
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -60,7 +59,5 @@ export async function POST(request: Request): Promise<Response> {
       return correctionJson({state:'outcome_unknown',operationId:result.operationId},503);
     }
     return correctionJson({state:'unavailable'},503);
-  } catch {
-    return correctionJson({state:'unavailable'},503);
-  }
+  } catch(error){return failed('/api/employee/time-corrections',error,correctionJson({state:'unavailable'},503));}
 }

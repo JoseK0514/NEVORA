@@ -1,4 +1,5 @@
 import {claimInvitation} from '@/lib/auth/invitations/claim.server';
+import {failed} from '@/lib/observability/log.server';
 import {correctionBoundary,correctionJson,readCorrectionJson} from '@/lib/time-corrections/http.server';
 export async function POST(request:Request):Promise<Response>{
  const boundary=correctionBoundary(request,true,'x-nevora-activation');
@@ -14,5 +15,5 @@ export async function POST(request:Request):Promise<Response>{
  try{
   const result=await claimInvitation(proof,password,undefined,request.signal);
   return correctionJson(result,result.state==='activated'?200:result.state==='invalid'?400:503);
- }catch{return correctionJson({state:'unavailable'},503);}
+ }catch(error){return failed('/api/auth/activate',error,correctionJson({state:'unavailable'},503));}
 }

@@ -1,4 +1,5 @@
 import {correctionBoundary,correctionJson,readCorrectionJson} from '@/lib/time-corrections/http.server';
+import {failed} from '@/lib/observability/log.server';
 import {resetPasswordWithProof} from '@/lib/auth/recovery.server';
 import {recoveryDelivery} from '@/lib/auth/recovery-delivery.server';
 export const runtime='nodejs';
@@ -8,5 +9,5 @@ export async function POST(request:Request){
  try{
   const body=await readCorrectionJson(request);if(!body||typeof body!=='object'||Array.isArray(body)||Object.keys(body).sort().join(',')!=='password,proof'||!('proof' in body)||!('password' in body)||typeof body.proof!=='string'||typeof body.password!=='string')return correctionJson({state:'invalid'},400);
   const result=await resetPasswordWithProof(body.proof,body.password,undefined,recoveryDelivery(undefined,request.headers));return correctionJson(result,result.state==='reset'?200:result.state==='invalid'?400:503);
- }catch{return correctionJson({state:'unavailable'},503);}
+ }catch(error){return failed('/api/auth/reset-access',error,correctionJson({state:'unavailable'},503));}
 }

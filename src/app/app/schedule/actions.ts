@@ -38,6 +38,7 @@ function shiftReturnUrl(shift: { weekStart: string; locationId: string; date: st
 }
 
 const accessError=()=>({error:'Operational access is unavailable. Reload and try again.',issueCode:'ACCESS_DENIED'});
+const OPERATION_ID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const denied=(error:unknown)=>isOperationalAuthorizationError(error)||isManagementAuthorizationError(error);
 /** Re-check the original scope after awaited work; a role alone cannot prove unchanged access. */
 async function currentAdmission(proof:Awaited<ReturnType<typeof requireSessionMutationProof>>,original:Awaited<ReturnType<typeof assertOperationalAccess>>){
@@ -98,6 +99,26 @@ export async function createShiftAction(formData: FormData) {
     redirect(scheduleUrl(weekStart || date, "&error=INVALID_SHIFT"));
   }
 
+  // B19: the form carries an operation id that becomes the new shift's id. A retry after a lost response finds its
+  // own saved shift and returns the saved result instead of "Employee already has an overlapping shift". The id only
+  // matches the form's own submission; a shift with that id but different details is a conflict, never a success.
+  const shiftId = OPERATION_ID.test(String(formData.get("shiftOperationId") ?? "")) ? String(formData.get("shiftOperationId")).toLowerCase() : undefined;
+  const alreadySaved = async () => {
+    if (!shiftId) return null;
+    const prior = await getShiftForManagement(shiftId);
+    if (!prior) return null;
+    return prior.locationId === locationId && prior.weekStart === weekStart && prior.employeeId === employeeId && prior.date === date
+      && prior.startTime.slice(0, 5) === startTime.slice(0, 5) && prior.endTime.slice(0, 5) === endTime.slice(0, 5) ? "same" as const : "different" as const;
+  };
+  const savedResult = async (saved: "same" | "different") => {
+    if (!await currentAdmission(proof, admission)) return accessError();
+    if (saved === "different") return { error: "This save was already used for different details. Reload and review the schedule.", issueCode: "SOURCE_CHANGED" };
+    revalidatePath("/app/schedule");
+    redirect(shiftReturnUrl({ weekStart, locationId, date, employeeId }));
+  };
+  const prior = await alreadySaved();
+  if (prior) return savedResult(prior);
+
   const workspace = await getWorkspace();
   try { shiftBoundaryInstants({ date, startTime, endTime }, workspace.timeZone); }
   catch { redirect(scheduleUrl(weekStart, "&error=INVALID_SHIFT")); }
@@ -120,9 +141,11 @@ export async function createShiftAction(formData: FormData) {
     if(blocking)return {error:blocking.message,issueCode:blocking.code};
   }
   try{
-    await insertShiftAtLocation({actorEmployeeId:session.id,proof,locationId,weekStart,employeeId,date,startTime,endTime,notes:notes||undefined,positionId,isDesignatedLead});
+    await insertShiftAtLocation({actorEmployeeId:session.id,proof,locationId,weekStart,employeeId,date,startTime,endTime,notes:notes||undefined,positionId,isDesignatedLead,shiftId});
   }catch(error){
     if(denied(error))return accessError();
+    // A concurrent double submit of the same form: the other request saved this exact shift (primary key conflict).
+    if(shiftId&&error&&typeof error==='object'&&'code' in error&&error.code==='23505'){const saved=await alreadySaved();if(saved)return savedResult(saved);}
     if(error instanceof ManualAssignmentConflictError){if(company&&!await currentAdmission(proof,admission))return accessError();return company?{error:error.message,issueCode:error.code}:{error:'Assignment is unavailable. Reload and try again.',issueCode:'SOURCE_CHANGED'};}
     throw error;
   }

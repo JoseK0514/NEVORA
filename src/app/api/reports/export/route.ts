@@ -1,4 +1,5 @@
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
+import {failed} from '@/lib/observability/log.server';
 import {readReports} from '@/lib/reports/service';
 import {reportCsv} from '@/lib/reports/csv';
 import {parseReportPeriod} from '@/lib/reports/period';
@@ -13,5 +14,5 @@ export async function POST(request:Request):Promise<Response>{
   try{period=parseReportPeriod(await readCorrectionJson(request));}catch{return correctionJson({state:'invalid'},400);}
   const result=await readReports(await requireSessionMutationProof(),period);if(result.state!=='ready')return correctionJson(result,result.reason==='access_denied'?403:503);
   return new Response(reportCsv(result.report),{headers:{'content-type':'text/csv; charset=utf-8','content-disposition':`attachment; filename="nevora-reports-${period.startDate}-${period.endDate}.csv"`,'cache-control':'private, no-store, max-age=0','pragma':'no-cache','x-content-type-options':'nosniff','referrer-policy':'no-referrer'}});
- }catch{return correctionJson({state:'unavailable'},503);}
+ }catch(error){return failed('/api/reports/export',error,correctionJson({state:'unavailable'},503));}
 }

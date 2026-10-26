@@ -1,4 +1,5 @@
 import 'server-only';
+import {logBoundaryError} from '../observability/log.server';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {NotificationIntent,SqlExecutor,SqlStatement,SourceSnapshot} from '../notifications/types';
 import {parseEmployeeView,type EmployeeNotificationItem,type EmployeeViewSnapshot} from '../employee-view';
@@ -10,7 +11,7 @@ import {calloutReadSql} from './callouts';
 import {maintenanceReadSql} from './shift-change-maintenance';
 import {neonNotificationExecutor,notificationWeekReadSql} from './notification-transactions';
 import {workspaceReadSql} from './workspaces';
-import {assertEmployeeViewProof,employeeViewGuards,readEmployeeWorkspace,employeeReadLimits} from './employee-profile.server';
+import {assertEmployeeViewProof,employeeSnapshotGuards,employeeViewGuards,readEmployeeWorkspace,employeeReadLimits,employeeSnapshotLimits} from './employee-profile.server';
 import {isManagementAuthorizationError} from './management-session';
 import {payrollNoticeReadSql} from '../payroll/notices';
 import {attentionSourceVersion} from './employee-attention-receipts.server';
@@ -105,12 +106,15 @@ export async function readEmployeeNotificationList(proof:SessionMutationProof,en
  if(environment!=='test'&&environment!=='production')return {state:'unavailable',reason:'read_failed'};
  const signal=AbortSignal.timeout(BUDGET_MS),started=performance.now();
  const budget=()=>{signal.throwIfAborted();if(performance.now()-started>=BUDGET_MS)throw Error('Notification read budget');};
- const limits=employeeReadLimits;
+ // Inspection B3: discovery and source collection are READ ONLY snapshots whose lock-free guards (company version,
+ // exact session and role) are checked in the same instant as their rows. The final protected observation below
+ // keeps the locked guards: it is the release check that waits for an in-flight role/session change.
+ const limits=employeeSnapshotLimits;
  try{
   const workspace=await readEmployeeWorkspace(executor,signal);budget();
   // Inbox history does not require a still-active operational location. Each
   // source's canonical open policy owns location eligibility, including history.
-  const guards=employeeViewGuards(proof,workspace,false);
+  const guards=employeeSnapshotGuards(proof,workspace,false);
   const discovery=await executor.transaction([...limits,...guards,{text:candidateSql(),values:[proof.employee.id]}],signal);
   const initial=requireRows(discovery[limits.length+guards.length]);
   const manifest=notificationReadManifest(),cache=new Map<string,Promise<Record<string,unknown>[]>>();
@@ -193,8 +197,9 @@ export async function readEmployeeNotificationList(proof:SessionMutationProof,en
     (SELECT LEAST(45000,FLOOR(EXTRACT(EPOCH FROM (s.expires_at-at))*1000)) FROM employee_sessions s JOIN employees e ON e.id=s.employee_id
       WHERE s.token_hash=$2 AND e.id=$1 AND e.active AND e.role=$3 AND s.expires_at>at) AS "validForMs",
     (SELECT active FROM workspaces WHERE id=$4 AND singleton=true) AS active FROM observed`;
-  const results=await executor.transaction([...limits,...guards,{text:finalSql,values}],signal);budget();
-  const final=results[limits.length+guards.length]?.[0] as {candidates:unknown;reads:unknown;observedAt:string;validForMs:number|null;active:boolean}|undefined;
+  const finalGuards=employeeViewGuards(proof,workspace,false);
+  const results=await executor.transaction([...employeeReadLimits,...finalGuards,{text:finalSql,values}],signal);budget();
+  const final=results[employeeReadLimits.length+finalGuards.length]?.[0] as {candidates:unknown;reads:unknown;observedAt:string;validForMs:number|null;active:boolean}|undefined;
   if(!final||!final.active||!final.validForMs)throw Error('Notification final authority unavailable');
   if(Buffer.byteLength(JSON.stringify(final))>MAX_BYTES)throw Error('Notification observation too large');
   const candidates=requireRows(final.candidates);
@@ -209,5 +214,5 @@ export async function readEmployeeNotificationList(proof:SessionMutationProof,en
   const projected=await project(replay,candidates,new Date(final.observedAt));budget();
   const validForMs=Math.min(Number(final.validForMs),projected.expires-Date.parse(final.observedAt));
   return parseEmployeeView({state:'ready',kind:'notifications',observedAt:final.observedAt,validForMs,coverage:projected.coverage,items:projected.items},'notifications');
- }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
+ }catch(error){if(isManagementAuthorizationError(error))return {state:'unavailable',reason:'access_denied'};logBoundaryError('reader:employee-notifications',error);return {state:'unavailable',reason:'read_failed'};}
 }

@@ -5,7 +5,7 @@ vi.mock('@/lib/auth/session',()=>({requireSession:async()=>({id:'actor',role:fix
 vi.mock('@/lib/auth/permissions',()=>({isManagerRole:(role:string)=>role==='MANAGER'||role==='OWNER',requireRoles:async()=>({id:'actor',role:fixture.role})}));
 vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>{fixture.company();return fixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000};}}));
 vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
-vi.mock('next/navigation',()=>({redirect:(href:string)=>{throw Error(href);}}));
+vi.mock('next/navigation',()=>({redirect:(href:string)=>{throw Error(href);},notFound:()=>{throw Error('NEXT_NOT_FOUND');}}));
 vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({id:'fixture',timeZone:'America/Puerto_Rico'})}));
 vi.mock('@/lib/communications/service.server',()=>({communicationAuthority:()=> 'fictional-authority'}));
 vi.mock('@/components/employee-updates',()=>({EmployeeUpdates:({mode}:{mode:string})=><p>Updates: {mode}</p>}));
@@ -25,14 +25,14 @@ const query={searchParams:Promise.resolve({})};
 beforeEach(()=>{fixture.role='MANAGER';fixture.denied=false;fixture.company.mockReset();});
 it('current company denial withholds management communication, attendance, export, report and recovery surfaces',async()=>{
  fixture.denied=true;
- for(const read of [()=>Updates(),()=>Detail({params:Promise.resolve({id:'fictional'})}),()=>Compose(query),()=>Timecards(query),()=>Reports(query),()=>Export(query),()=>Recovery(),()=>DeviceRecovery()]){const html=renderToStaticMarkup(await read());expect(html).toContain('current company-wide management access');expect(html).not.toMatch(/Protected |Updates:|Detail:|Compose:|Team timecards/);}
+ for(const read of [()=>Updates(),()=>Detail({params:Promise.resolve({id:'00000000-0000-4000-8000-000000000001'})}),()=>Compose(query),()=>Timecards(query),()=>Reports(query),()=>Export(query),()=>Recovery(),()=>DeviceRecovery()]){const html=renderToStaticMarkup(await read());expect(html).toContain('current company-wide management access');expect(html).not.toMatch(/Protected |Updates:|Detail:|Compose:|Team timecards/);}
  expect(fixture.company).toHaveBeenCalledTimes(8);
 });
 it.each(['EMPLOYEE','LEAD'])('retains %s self timecards and recipient communications without company management authority',async role=>{
  fixture.role=role;fixture.denied=true;
  expect(renderToStaticMarkup(await Timecards(query))).toContain('Own timecards');
  expect(renderToStaticMarkup(await Updates())).toContain('Updates: employee');
- expect(renderToStaticMarkup(await Detail({params:Promise.resolve({id:'fictional'})}))).toContain('Detail: employee');
+ expect(renderToStaticMarkup(await Detail({params:Promise.resolve({id:'00000000-0000-4000-8000-000000000001'})}))).toContain('Detail: employee');
  expect(renderToStaticMarkup(await Compose(query))).toContain('Compose: employee');
  expect(fixture.company).not.toHaveBeenCalled();
 });
