@@ -1,4 +1,6 @@
-import {readCompanyResult} from '../company-access/company-result.server';
+import {readOperationalAuthority,operationalScopeStatements,isOperationalAuthorizationError} from '../company-access/operational-scope.server';
+import {scopeFootprint,footprintIds} from '../company-access/scope-sql';
+import {correctionInScopeSql} from '../time-corrections/scope';
 import {correctionAuthority} from '../time-corrections/authority.server';
 import 'server-only';
 import { parseCorrectionActionCapture, type CorrectionActionCapture } from '../action-center/canonical-source';
@@ -269,7 +271,7 @@ const managerSqlFor = (includeInternalCapture = false) => `WITH observed AS MATE
     ORDER BY e.revision DESC
     LIMIT 1
   ) latest ON true
-  WHERE r.workspace_id=$1
+  WHERE r.workspace_id=$1 AND ${correctionInScopeSql('r','$1','$4::text[]')}
   ORDER BY r.created_at,r.id
 ), rows AS MATERIALIZED (
   SELECT (${publicRequestJson('r')} ||
@@ -367,15 +369,21 @@ async function readManagerTimeCorrectionsCore(
   }
   try {
     const workspace=await getWorkspace(executor);
+    // B-12: the queue covers the actor's current operational scope. The digest is re-proved inside the read
+    // transaction, and the rows are filtered to that scope in the same statement.
+    const view=await readOperationalAuthority(proof,executor);
+    if(view.state!=='ready')return {state:'unavailable',reason:view.reason==='access_denied'?'access_denied':'read_failed'};
+    if(!view.scope)return {state:'unavailable',reason:'access_denied'};
+    const footprint=scopeFootprint(view.scope),scope=()=>operationalScopeStatements(proof,workspace,footprint,view.authority);
     const guards=[
       ...workspaceReadGuard(workspace),
       {text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},
-      ...managementSessionStatements(proof,proof.employee.id,managerRoles),
+      ...managementSessionStatements(proof,proof.employee.id,managerRoles),...scope(),
     ];
     const result=await executor.transaction([
       ...guards,
-      {text:capture ? managerSqlFor(true) : managerSql,values:[workspace.id,proof.employee.id,workspace.timeZone]},
-      ...managementSessionStatements(proof,proof.employee.id,managerRoles),
+      {text:capture ? managerSqlFor(true) : managerSql,values:[workspace.id,proof.employee.id,workspace.timeZone,footprintIds(footprint)]},
+      ...managementSessionStatements(proof,proof.employee.id,managerRoles),...scope(),
     ]);
     const row=result[guards.length]?.[0] as {pendingCount?:number;snapshot?:unknown|null;internalCapture?:unknown}|undefined;
     if (!row || !Number.isSafeInteger(row.pendingCount)) return {state:'unavailable',reason:'read_failed'};
@@ -390,12 +398,14 @@ async function readManagerTimeCorrectionsCore(
       WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role IN ('OWNER','MANAGER') AND s.expires_at>clock_timestamp()`,
       values:[proof.sessionTokenHash,proof.employee.id,source.state==='ready'?source.observedAt:null]});
     if(!final)return {state:'unavailable',reason:'access_denied'};
-    const remaining=final.validForMs-Math.ceil(performance.now()-started);
+    // The projection crosses the admitted authority once more before it is returned (a fence, as withOperationalCompany).
+    await executor.transaction([...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},...scope()]);
+    const remaining=Math.min(final.validForMs,view.validForMs)-Math.ceil(performance.now()-started);
     if(source.state!=='ready'||remaining<1)return {state:'unavailable',reason:'read_failed'};
     if (capture) capture(parseCorrectionActionCapture(row.internalCapture, source, workspace.id, proof.employee.id, remaining));
     return {...source,validForMs:remaining,authority:correctionAuthority(proof)};
   } catch (error) {
-    if (isManagementAuthorizationError(error)) return {state:'unavailable',reason:'access_denied'};
+    if (isManagementAuthorizationError(error)||isOperationalAuthorizationError(error)) return {state:'unavailable',reason:'access_denied'};
     if (schemaMissing(error)) return {state:'unavailable',reason:'schema_missing'};
     return {state:'unavailable',reason:'read_failed'};
   }
@@ -403,7 +413,7 @@ async function readManagerTimeCorrectionsCore(
 
 // Public DTO/parser unchanged; the new internal reader is not a F10 authority boundary.
 export async function readManagerTimeCorrections(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<ManagerTimeCorrections> {
- return readCompanyResult(proof,()=>readManagerTimeCorrectionsCore(proof,executor),executor);
+ return readManagerTimeCorrectionsCore(proof,executor);
 }
 export async function readManagerTimeCorrectionsWithInternalCapture(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()) {
  const retained: {capture: CorrectionActionCapture | null} = {capture:null};

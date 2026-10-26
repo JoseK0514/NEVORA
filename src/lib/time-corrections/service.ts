@@ -1,4 +1,7 @@
 import {assertOperationalAccess,operationalScopeStatements,isOperationalAuthorizationError} from '../company-access/operational-scope.server';
+import {scopeFootprint,footprintIds} from '../company-access/scope-sql';
+import type {OperationalFootprint} from '../company-access/model';
+import {correctionInScopeSql} from './scope';
 import { createHash } from 'node:crypto';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import type { SessionMutationProof } from '../shift-changes/types';
@@ -185,8 +188,8 @@ export async function submitTimeCorrection(
 }
 
 /**
- * Review the displayed request revision under current company-wide management
- * authority. The source pre-read selects lock identities only; ordered employee
+ * Review the displayed request revision under the actor's current operational
+ * scope (Company, or the request's employee and locations for a scoped Manager). The source pre-read selects lock identities only; ordered employee
  * locks and the database command recheck lifecycle/source rules in the transaction.
  * Approval records an adjustment through SQL rather than rewriting raw punches.
  */
@@ -205,17 +208,21 @@ export async function reviewTimeCorrection(
 
   let workspace;
   let authority:string;
+  let footprint:OperationalFootprint;
+  // B-12: admit the actor's actual scope. A location-scoped Manager reaches only requests whose employee and every
+  // touched location are in the scope; any other request id reads exactly like an unknown one.
   try {
-    const access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor);
-    workspace=access.workspace;authority=access.authority;
+    const access=await assertOperationalAccess(proof,undefined,executor);
+    workspace=access.workspace;authority=access.authority;footprint=scopeFootprint(access.scope);
   } catch {
     return { status: 'unavailable' };
   }
+  const ids=footprintIds(footprint);
   let source: { employeeId: string; workspaceId: string } | undefined;
   try {
     [source] = await executor.query<{ employeeId: string; workspaceId: string }>({
-      text: 'SELECT employee_id AS "employeeId",workspace_id AS "workspaceId" FROM time_correction_requests WHERE id=$1::uuid',
-      values: [command.requestId],
+      text: `SELECT r.employee_id AS "employeeId",r.workspace_id AS "workspaceId" FROM time_correction_requests r WHERE r.id=$1::uuid AND ($2::text[] IS NULL OR ${correctionInScopeSql('r','r.workspace_id','$2::text[]')})`,
+      values: [command.requestId,ids],
     });
   } catch {
     return { status: 'unavailable' };
@@ -240,9 +247,12 @@ export async function reviewTimeCorrection(
   const statements: SqlStatement[] = [
     ...workspaceReadGuard(workspace),
     { text: 'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE', values: [employeeIds] },
-    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
+    ...operationalScopeStatements(proof,workspace,footprint,authority),
+    // Re-check the request's reach after the locks, in the decision's own transaction.
+    ...(ids===null?[]:[{ text: `SELECT (CASE WHEN EXISTS(SELECT 1 FROM time_correction_requests r WHERE r.id=$1::uuid AND r.workspace_id=$2
+      AND ${correctionInScopeSql('r','$2','$3::text[]')}) THEN '1' ELSE 'operational_authorization' END)::integer`, values: [command.requestId,workspace.id,ids] }]),
     call,
-    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
+    ...operationalScopeStatements(proof,workspace,footprint,authority),
   ];
   return transactResult(statements, command.operationId, executor);
 }

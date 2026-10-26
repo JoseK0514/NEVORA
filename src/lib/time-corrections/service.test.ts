@@ -21,7 +21,7 @@ function executor(result: Record<string, unknown>) {
   const db: SqlExecutor = {
     async query<T>(statement: SqlStatement) {
       if (statement.text.includes('FROM workspaces WHERE singleton=true')) return [workspace] as T[];
-      if (statement.text.includes('FROM time_correction_requests WHERE id=')) {
+      if (statement.text.includes('FROM time_correction_requests r WHERE r.id=')) {
         return [{ employeeId: 'worker', workspaceId: workspace.id }] as T[];
       }
       return [] as T[];
