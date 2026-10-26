@@ -69,10 +69,14 @@ it('verifies the combined auth, policy, employee and passkey UI in owned browser
         }
         checks.push(engine+': employee '+path+' at 320/390/768/1440');
       }
-      await page.getByRole('button',{name:'Refresh details',exact:true}).waitFor();
-      const profileGeometry=await page.locator('.employee-profile-details').evaluate((element:HTMLElement)=>({
+      // Quiet Profile (v5 E16): the current work details are rows under Settings. Their help line appears only once the
+      // private details have loaded, and the rows then carry real values rather than the placeholder dash.
+      const workDetails=page.locator('section[data-private-view="profile"]');
+      await workDetails.getByText('Something wrong here? Ask your manager to update it.',{exact:true}).waitFor();
+      expect(await workDetails.locator('.q-rv').allTextContents()).not.toContain('–');
+      const profileGeometry=await workDetails.locator('.q-list').evaluate((element:HTMLElement)=>({
         details:element.getBoundingClientRect().width,
-        settings:document.querySelector('.profile-settings-list')!.getBoundingClientRect().width,
+        settings:document.querySelector('section[aria-labelledby="profile-settings-title"] .q-list')!.getBoundingClientRect().width,
       }));
       expect(profileGeometry.details).toBeGreaterThanOrEqual(profileGeometry.settings-32);
       expect(await page.locator('.pk-body').evaluate((element:HTMLElement)=>element.getBoundingClientRect().height)).toBeLessThan(200);
@@ -90,7 +94,7 @@ it('verifies the combined auth, policy, employee and passkey UI in owned browser
         await confirmation.waitFor();
         expect(await confirmation.getByRole('button',{name:'Keep',exact:true}).evaluate((element:HTMLElement)=>element===document.activeElement)).toBe(true);
         await confirmation.getByRole('button',{name:'Remove',exact:true}).click();
-        await page.locator('.pk-list').waitFor({state:'detached'});
+        await page.locator('.pk-list .pk-item').waitFor({state:'detached'});
         await page.getByRole('button',{name:'Add a passkey',exact:true}).click();
         await page.locator('.pk-list .pk-item').waitFor();
         await context.clearCookies();
