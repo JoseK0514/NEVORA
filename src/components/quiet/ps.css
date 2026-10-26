@@ -13,3 +13,6 @@
 :is(#q-root, html) .q-pset .q-ps-dl dd { margin: 2px 0 0; font-size: 15px; line-height: 20px; color: var(--q-ink); overflow-wrap: anywhere; }
 :is(#q-root, html) .q-pset .q-ps-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px !important; line-height: 18px !important; }
 :is(#q-root, html) .q-pset .q-rule__body .wb-check input[type="radio"] { flex: none; width: 24px; height: 24px; margin: 0; accent-color: var(--q-teal-fill); }
+/* quiet.css resets margin on .q-rule__body.wb-form, which put field rows flush with the screen edge; keep the 20px row inset. */
+:is(#q-root, html) .q-pset .q-rule__body.wb-form { margin-left: 20px; }
+:is(#q-root, html) .q-pset .q-ps-audit > summary.q-row { padding-left: 0; }
