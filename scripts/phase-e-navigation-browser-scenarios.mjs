@@ -217,7 +217,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await page.evaluate(()=>{delete document.visibilityState;document.dispatchEvent(new Event('visibilitychange'));});
    const currentResponse=await currentRead,currentView=await currentResponse.json();assert.equal(currentResponse.status(),200);assert.deepEqual(currentView.items,[]);await ready('notifications');await page.getByText('No notifications yet.',{exact:true}).waitFor();assert.equal(await page.locator('[data-inbox-row]').count(),0);
    visibilityEvidence.reentry={status:currentResponse.status(),currentItems:currentView.items.length,rows:0};assert.deepEqual(await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]),afterOpen);
-   await q("UPDATE time_off_requests SET status='APPROVED' WHERE id=$1",[requestId]);await refreshNotifications();await ready('notifications');assert.equal(await page.locator('[data-inbox-row]').count(),1);
+   await q("UPDATE time_off_requests SET status='APPROVED' WHERE id=$1",[requestId]);await refreshNotifications();await ready('notifications');await page.locator('[data-inbox-row]').first().waitFor();assert.equal(await page.locator('[data-inbox-row]').count(),1);
   }finally{
    release();if(used)await done;await page.unroute('**/api/notifications',heldHandler);
    visibilityEvidence.failure=heldFailure;visibilityEvidence.observations=await page.evaluate(()=>{const evidence=window.__navigationVisibility;evidence.stop();delete window.__navigationVisibility;return evidence.observations;});
