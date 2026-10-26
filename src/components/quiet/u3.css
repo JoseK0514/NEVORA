@@ -49,6 +49,8 @@
 :is(#q-root, html) .q-done-row .q-row { color: var(--q-grey); }
 :is(#q-root, html) .q-done-row .q-row__ic { color: var(--q-teal); }
 :is(#q-root, html) .q-update-e .q-body { font-size: 17px; line-height: 24px; white-space: pre-wrap; }
+/* A long unbroken word in an update (a link, a code) wraps inside the page instead of widening it. */
+:is(#q-root, html) article[data-update-revision] .q-body, :is(#q-root, html) article[data-update-revision] .q-hd h1 { overflow-wrap: anywhere; }
 :is(#q-root, html) .q-update-e .q-hd h1 { font-size: 28px; line-height: 34px; }
 
 /* Message today's team (T-18): counters trail their label; the review step's read-only message. */
