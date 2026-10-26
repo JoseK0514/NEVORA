@@ -40,8 +40,11 @@
 :is(#q-root, html) .q-fix__count { font-size: 13px; line-height: 18px; color: var(--q-grey); }
 :is(#q-root, html) .q-fix .q-list .q-row--picker .q-rv--ph { color: var(--q-teal); }
 :is(#q-root, html) .q-fix fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
-:is(#q-root, html) .q-fix legend.q-grp { width: 100%; }
-:is(#q-root, html) .q-corrections-e { margin-top: 8px; }
+/* A legend keeps the browser's 2px inline padding unless told otherwise; the label then sits 2pt right of the rows. */
+:is(#q-root, html) .q-fix legend.q-grp { display: block; float: left; width: calc(100% - 40px); padding: 0; }
+:is(#q-root, html) .q-fix legend.q-grp + * { clear: both; }
+/* The section keeps its older class for its readers; the older corporate phone rule must not inset it 20pt or paint it. */
+:is(#q-root, html) .q-corrections-e { margin-top: 8px; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
 :is(#q-root, html) .q-corrections-e > .q-btn { margin-top: 12px; }
 :is(#q-root, html) .q-rv--wait { color: var(--q-teal); }
 
