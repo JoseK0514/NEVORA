@@ -1,4 +1,5 @@
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
+import {failed} from '@/lib/observability/log.server';
 import {readOperationalClockMonitor} from '@/lib/company-access/operational-read.server';
 import type {ClockMonitor} from '@/lib/time-clock';
 export const runtime='nodejs';
@@ -16,5 +17,5 @@ export async function GET(request:Request):Promise<Response>{
    ?{state:'ready',observedAt:result.observedAt,validForMs:result.validForMs,timeZone:result.data.timeZone,employees:result.data.employees}
    :{state:'unavailable',reason:result.reason==='source_changed'?'access_denied':result.reason==='source_limit'?'read_failed':result.reason};
   return json(monitor,monitor.state==='ready'?200:monitor.reason==='access_denied'?403:503);
- }catch{return json({state:'unavailable',reason:'read_failed'},503);}
+ }catch(error){return failed('/api/manager/clock-monitor',error,json({state:'unavailable',reason:'read_failed'},503));}
 }

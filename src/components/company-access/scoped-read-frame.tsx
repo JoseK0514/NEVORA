@@ -32,14 +32,46 @@ function retireTab(){tab.retiredAt=performance.now();tab.cutoff=null;tab.fence=n
 /** The proactive refresh re-renders only this page (a same-address replace), so the router cache of other pages, and
  * the tabs' prefetches, survive; router.refresh() emptied it every ~10 s and every tab re-rendered in the background. */
 function refreshPage(router:{replace:(href:string,options?:{scroll?:boolean})=>void;refresh:()=>void},version?:{current:string}){
- const before=version?.current;
- router.replace(window.location.pathname+window.location.search+window.location.hash,{scroll:false});
+ const before=version?.current,location=typeof window==='undefined'?undefined:window.location;
+ // Without a location (a non-browser host) there is no same-address replace: refresh as before.
+ if(!location){router.refresh();return;}
+ router.replace(location.pathname+location.search+location.hash,{scroll:false});
  // A page that came from a prefetch can be answered from the router cache (kept for minutes) with no new render. If no
  // newer page arrived, refresh for real.
  if(version)setTimeout(()=>{if(version.current===before)router.refresh();},1500);
 }
 /** Test seam: a fresh tab. */
 export function resetScopedReadTab(){tab.retiredAt=-Infinity;tab.cutoff=null;tab.fence=null;}
+
+/** Inspection F3/F4: the oldest page the frame shows on the strength of a fresh authority check alone. A check with
+ * the page's exact authority digest proves the same access as when the page was rendered (the digest binds session,
+ * role, scope revision and lifecycle), so up to this age the page is shown (or kept) without a second render, and
+ * the next proactive step is another short check instead of a re-render. Past it, the frame re-renders as before, so
+ * no page's data is more than about a minute old. */
+export const MAX_PAGE_AGE_MS=60000;
+/** A page's age against an authority observation, on the request's monotonic clock: conservative, it counts the
+ * whole round trip and any time between the page's and the check's server observations. */
+function pageAge(view:CurrentAuthority,page:ScopedObservation){
+ return Math.max(0,performance.now()-view.requestStartedAt-(Date.parse(page.observedAt)-Date.parse(view.observedAt)));
+}
+function checkRemaining(view:CurrentAuthority){return Math.min(15000,view.validForMs)-(performance.now()-view.requestStartedAt);}
+/** True when a current check with this page's digest may stand in for a second render of the page. */
+export function adoptable(view:CurrentAuthority|null|undefined,page:ScopedObservation|null|undefined):view is CurrentAuthority{
+ if(!view||!page||view.authority!==page.authority||!(page.validForMs>0&&page.validForMs<=15000))return false;
+ const observed=Date.parse(page.observedAt);
+ return Number.isFinite(observed)&&pageAge(view,page)<=MAX_PAGE_AGE_MS&&checkRemaining(view)>1000;
+}
+/** One short authority check outside the recovery controller (the proactive re-confirmation). Null on any failure,
+ * so the caller falls back to re-rendering the page. */
+async function reconfirm(signal:AbortSignal):Promise<CurrentAuthority|null>{
+ try{
+  const requestStartedAt=performance.now();
+  const response=await fetch('/api/company-access/operational-authority',{cache:'no-store',credentials:'same-origin',redirect:'error',headers:{'x-nevora-company-access':'1'},signal});
+  if(!response.ok)return null;
+  const result=readOperationalNavigation(await response.json());
+  return result.state==='ready'?{...result,requestStartedAt}:null;
+ }catch{return null;}
+}
 
 /** Operational rows own a finite lifetime. After retirement, a separately fenced
  * authority request establishes a SERVER-clock cutoff. A page must be authorized
@@ -80,7 +112,9 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
     const key=JSON.stringify([current.authority,current.observedAt,current.requestStartedAt]);
     // A refresh waits behind an unfinished Server Action. A same-page replace
     // fetches fresh dynamic data while discarding that action's stale router result.
-    if(lastRefresh!==key){lastRefresh=key;if(explicitRefresh.current){explicitRefresh.current=false;router.refresh();}else if(anchor.current)refreshPage(router,versionRef);else router.refresh();}
+    // F4: a page whose digest this check matches is adopted by the frame below without a second render. F3: other
+    // pages re-render with a same-address replace (its fallback refresh only when no newer page arrives).
+    if(lastRefresh!==key){lastRefresh=key;if(explicitRefresh.current){explicitRefresh.current=false;router.refresh();}else if(!adoptable(current,observationRef.current))refreshPage(router,versionRef);}
    }
   },async signal=>{
    requestStartedAt=performance.now();
@@ -126,6 +160,28 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
 
  useEffect(()=>{
   let active=true,early:ReturnType<typeof setTimeout>|undefined,expiry:ReturnType<typeof setTimeout>|undefined;
+  const checking=new AbortController();
+  // The previous proactive step: re-render this page (a same-address replace; refresh only if nothing newer came).
+  const rerender=()=>{if(proactiveVersion.current!==version){proactiveVersion.current=version;if(navigation?.pending())deferredRefresh.current=true;else refreshPage(router,versionRef);}};
+  /** Show the page for `left` ms. At 65% the frame re-confirms the authority with one short check (F3) while the
+   * page is young enough, extending the window by that check's own budget, and also asks for a fresh render that
+   * replaces the page when the router has none cached. Otherwise, or if the check fails or the digest changed, it
+   * re-renders as before. At the end of the window the page is hidden and re-checked, exactly as before. */
+  const schedule=(left:number,page:ScopedObservation,view:CurrentAuthority|null)=>{
+   if(early)clearTimeout(early);if(expiry)clearTimeout(expiry);
+   early=setTimeout(()=>{
+    if(!active)return;
+    if(!view||navigation?.pending()||pageAge(view,page)>MAX_PAGE_AGE_MS-15000){rerender();return;}
+    void reconfirm(checking.signal).then(next=>{
+     if(!active||required.current)return;
+     if(!next||next.authority!==page.authority||!online()||!adoptable(next,page)){rerender();return;}
+     noteFence(next);anchor.current=next;
+     if(window.location)router.replace(window.location.pathname+window.location.search+window.location.hash,{scroll:false});
+     schedule(checkRemaining(next),page,next);
+    });
+   },left*.65);
+   expiry=setTimeout(()=>controls.current?.recover(false),left);
+  };
   queueMicrotask(()=>{
    if(!active)return;
    if(!online()){controls.current?.pause();return;}
@@ -140,6 +196,17 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    const valid=!!observation&&Number.isFinite(observed)&&duration>0&&duration<=15000&&remaining>0&&observed>retiredThrough.current&&observed>=latest.current;
    const afterBarrier=!required.current||(!!recovery.view&&observation?.authority===recovery.view.authority&&observed>Date.parse(recovery.view.observedAt));
    if(!valid||!afterBarrier){
+    // F4: a page that predates the fence (a prefetch left in the cache) but carries the exact digest the fresh check
+    // just returned is adopted for that check's budget, instead of waiting for a second render of the same page. The
+    // same holds while no retirement has happened since the check the frame last completed or re-confirmed (F3).
+    const check=required.current?recovery.view:anchor.current;
+    if(observation&&observed>=latest.current&&adoptable(check,observation)){
+     latest.current=observed;
+     if(required.current)controls.current?.complete(check);
+     setBody(previous=>previous.authority===observation.authority&&previous.phase==='ready'&&previous.content===children?previous:{authority:observation.authority,phase:'ready',content:children});
+     schedule(checkRemaining(check),observation,check);
+     return;
+    }
     // This page is too old or predates the fence: re-check it. That says nothing about the tab, so its fence stays.
     if(!required.current)controls.current?.recover(false);
     else setBody({authority:null,phase:'expired',content:null});
@@ -148,10 +215,9 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    latest.current=observed;
    if(required.current&&recovery.view)controls.current?.complete(recovery.view);
    setBody({authority:observation!.authority,phase:'ready',content:children});
-   early=setTimeout(()=>{if(proactiveVersion.current!==version){proactiveVersion.current=version;if(navigation?.pending())deferredRefresh.current=true;else refreshPage(router,versionRef);}},remaining*.65);
-   expiry=setTimeout(()=>controls.current?.recover(false),remaining);
+   schedule(remaining,observation!,current&&current.authority===observation!.authority?current:null);
   });
-  return()=>{active=false;if(early)clearTimeout(early);if(expiry)clearTimeout(expiry);};
+  return()=>{active=false;checking.abort();if(early)clearTimeout(early);if(expiry)clearTimeout(expiry);};
  },[version,observed,duration,observation,children,recovery,router,navigation]);
 
  // Effects run before any microtask, so the mount check (queued in the controller effect) reads this page's observation.

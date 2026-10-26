@@ -9,6 +9,8 @@ import {getWorkspace,workspaceReadGuard} from '@/lib/data/workspaces';
 import {WorkspaceInactiveError} from '@/lib/workspace/errors';
 import {assertManagementProof,managementSessionStatements,isManagementAuthorizationError} from '@/lib/data/management-session';
 import {parseScopeSelection} from './scope-selection';
+import {managementReadLimits,retryTransientRead} from '@/lib/data/read-snapshot';
+import {logBoundaryError} from '@/lib/observability/log.server';
 import type {ScopeSelection,ScopeCommand,ScopeReceipt,ScopeResult,OperationalFootprint,OperationalAuthorityView,OperationalRead,OwnerOperationalScopeData,OwnerScopeContext,OwnerScopeHistoryEntry} from './model';
 
 const uuid=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(v);
@@ -79,10 +81,16 @@ export function operationalScopeStatements(proof:SessionMutationProof,workspace:
  return [...managementSessionStatements(proof,proof.employee.id),{text:`SELECT(CASE WHEN EXISTS(SELECT 1 ${joins} WHERE ${current} AND (${permitted}) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR ${authoritySql}=$5)) THEN '1' ELSE 'operational_authorization' END)::integer`,
   values:[workspace.id,proof.employee.id,proof.sessionTokenHash,ids,expectedAuthority??null]}];
 }
-function locks(proof:SessionMutationProof,workspace:Workspace,ids:readonly string[],owner=false):SqlStatement[] {
+/** Lock order is always workspace, then the sorted employees, then the session. `write` (scope assignment and its
+ * receipt recovery) excludes every other holder. `read` (authority and Owner scope reads, inspection B2) takes
+ * FOR SHARE in the same order: it still waits for any in-flight writer of those rows (a workspace update, a scope
+ * assignment, a role or lifecycle change, a Clocker punch, all of which hold FOR NO KEY UPDATE or FOR UPDATE), so a
+ * read never reports authority from before a revocation that committed while it waited; readers stop excluding
+ * each other. A read still grants nothing: writers re-verify the digest inside their own transaction. */
+function locks(proof:SessionMutationProof,workspace:Workspace,ids:readonly string[],owner=false,mode:'read'|'write'='write'):SqlStatement[] {
  assertManagementProof(proof,proof?.employee?.id);
- return [{text:'SELECT id FROM workspaces WHERE singleton ORDER BY id FOR NO KEY UPDATE',values:[]},...workspaceReadGuard(workspace).slice(1),
-  {text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE',values:[[...new Set([proof.employee.id,...ids])].sort()]},
+ return [...(mode==='read'?managementReadLimits:[]),{text:`SELECT id FROM workspaces WHERE singleton ORDER BY id FOR ${mode==='read'?'SHARE':'NO KEY UPDATE'}`,values:[]},...workspaceReadGuard(workspace).slice(1),
+  {text:`SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR ${mode==='read'?'SHARE':'UPDATE'}`,values:[[...new Set([proof.employee.id,...ids])].sort()]},
   ...managementSessionStatements(proof,proof.employee.id,owner?['OWNER']:['OWNER','MANAGER','LEAD','EMPLOYEE']),
   {text:`SELECT(CASE WHEN EXISTS(SELECT 1 FROM workspaces w WHERE w.id=$1 AND w.active AND ${adopted}) THEN '1' ELSE 'operational_authorization' END)::integer`,values:[workspace.id]}];
 }
@@ -95,6 +103,12 @@ function currentRow(workspaceId:string,employeeId:string,sessionHash:string):Sql
  COALESCE((SELECT jsonb_agg(jsonb_build_object('id',l.id,'name',l.name,'shortName',l.short_name) ORDER BY l.id) FROM locations l WHERE l.workspace_id=w.id AND l.active
    AND(e.role='OWNER' OR(g.action='ASSIGN' AND g.role_generation=v.generation AND(g.mode='COMPANY' OR l.id=ANY(g.location_ids))))),'[]'::jsonb) AS locations
  ${joins} WHERE ${current}`,values:[workspaceId,employeeId,sessionHash]};
+}
+/** The current authority digest, observation time and budget for this session, as one statement. read() appends it
+ * to its final guard batch, so the "fresh" observation comes from the same transaction as the final guard. */
+export function currentAuthorityStatement(workspace:Workspace,proof:SessionMutationProof):SqlStatement {
+ assertManagementProof(proof,proof?.employee?.id);
+ return currentRow(workspace.id,proof.employee.id,proof.sessionTokenHash);
 }
 /** A scope revision applies only to the same role lifecycle generation. A
  * restored/promoted Manager cannot inherit an assignment from an older lifecycle;
@@ -122,8 +136,9 @@ export async function readOperationalAuthority(proof:SessionMutationProof,execut
 async function readAuthority(proof:SessionMutationProof,executor:SqlExecutor):Promise<OperationalAuthorityView> {
  try{assertManagementProof(proof,proof?.employee?.id);}catch{return {state:'unavailable',reason:'access_denied'};}
  try {
-  const workspace=await getWorkspace(executor),start=locks(proof,workspace,[]);
-  const result=await executor.transaction([...start,currentRow(workspace.id,proof.employee.id,proof.sessionTokenHash),...managementSessionStatements(proof,proof.employee.id,['OWNER','MANAGER','LEAD','EMPLOYEE'])]);
+  const workspace=await getWorkspace(executor),start=locks(proof,workspace,[],false,'read');
+  // Locks plus SELECTs only, so a lock or statement timeout is retried once instead of reaching the screen (B11).
+  const result=await retryTransientRead(()=>executor.transaction([...start,currentRow(workspace.id,proof.employee.id,proof.sessionTokenHash),...managementSessionStatements(proof,proof.employee.id,['OWNER','MANAGER','LEAD','EMPLOYEE'])]));
   const row=result[start.length]?.[0] as Row|undefined;
   if(!row||row.validForMs<=0)return {state:'unavailable',reason:'access_denied'};
   const grant=effective(row);
@@ -133,16 +148,27 @@ async function readAuthority(proof:SessionMutationProof,executor:SqlExecutor):Pr
    grant.state==='LIFECYCLE_CHANGED'?'LIFECYCLE_CHANGED':grant.state==='REVOKED'?'REVOKED':'UNASSIGNED';
   return {state:'ready',employeeId:row.employeeId,role:row.role,source,scope,scopeRevision:row.scopeRevision,authority:row.authority,
    locations:scope?row.locations:[],observedAt:new Date(row.observedAt).toISOString(),validForMs:row.validForMs};
- }catch(error){return {state:'unavailable',reason:error instanceof WorkspaceInactiveError||isOperationalAuthorizationError(error)||isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
+ }catch(error){
+  if(error instanceof WorkspaceInactiveError||isOperationalAuthorizationError(error)||isManagementAuthorizationError(error))return {state:'unavailable',reason:'access_denied'};
+  logBoundaryError('reader:operational-authority',error);
+  return {state:'unavailable',reason:'read_failed'};
+ }
 }
 
 /** Owner-only target lifecycle and scope history, read under current actor
  * guards. History is capped at 100 entries with an explicit truncation flag;
  * expected versions from this view are concurrency inputs, not access grants. */
 export async function readOwnerOperationalScope(proof:SessionMutationProof,employeeId:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<OwnerOperationalScopeData>> {
- if(!safeId(employeeId))return {state:'unavailable',reason:'access_denied'};
+ const result=await readOwnerOperationalScopeStatus(proof,employeeId,executor);
+ return result.state==='not_found'?{state:'unavailable',reason:'access_denied'}:result;
+}
+/** The same read for the HTTP status route (inspection B16): a current Owner asking about an employee that does not
+ * exist gets not_found (404), kept apart from a refusal (403) and an outage (503). In-app callers keep the
+ * OperationalRead contract above, where a missing target stays access_denied. */
+export async function readOwnerOperationalScopeStatus(proof:SessionMutationProof,employeeId:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<OwnerOperationalScopeData>|{state:'not_found'}> {
+ if(!safeId(employeeId))return {state:'not_found'};
  try {
-  const workspace=await getWorkspace(executor),start=locks(proof,workspace,[employeeId],true);
+  const workspace=await getWorkspace(executor),start=locks(proof,workspace,[employeeId],true,'read');
   const rows=await executor.transaction([...start,currentRow(workspace.id,proof.employee.id,proof.sessionTokenHash),
    {text:`SELECT e.id AS "employeeId",e.updated_at::text AS "employeeUpdatedAt",e.role,e.active,v.generation::text AS "roleGeneration",COALESCE(g.revision,0) AS "scopeRevision",
      g.role_generation::text AS "grantGeneration",g.action,g.mode,COALESCE(g.location_ids,'{}') AS "locationIds",${validSelectionSql} AS "selectionValid"
@@ -152,7 +178,8 @@ export async function readOwnerOperationalScope(proof:SessionMutationProof,emplo
    {text:'SELECT revision,role_generation::text AS "roleGeneration",action,mode,location_ids AS "locationIds",source,created_at::text AS "createdAt" FROM operational_scope_revisions WHERE workspace_id=$1 AND employee_id=$2 ORDER BY revision DESC LIMIT 101',values:[workspace.id,employeeId]},
    ...managementSessionStatements(proof,proof.employee.id,['OWNER'])]);
   const actor=rows[start.length]?.[0] as Row|undefined,target=rows[start.length+1]?.[0] as Row|undefined;
-  if(!actor||!target||actor.validForMs<=0)return {state:'unavailable',reason:'access_denied'};
+  if(!actor||actor.validForMs<=0)return {state:'unavailable',reason:'access_denied'};
+  if(!target)return {state:'not_found'};
   const grant=effective(target);
   const current:OwnerScopeContext={employeeId:target.employeeId,employeeUpdatedAt:target.employeeUpdatedAt,role:target.role,active:target.active,roleGeneration:target.roleGeneration,
    scopeRevision:target.scopeRevision,scopeState:grant.state,scope:grant.scope};

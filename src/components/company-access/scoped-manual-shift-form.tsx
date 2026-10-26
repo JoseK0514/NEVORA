@@ -9,7 +9,7 @@ import {NavIcon} from '@/components/nav-icon';
 import styles from './company-access.module.css';
 
 type Prefill={date?:string;employeeId?:string;positionId?:string;startTime?:string;endTime?:string;lead?:boolean};
-type Props={data:OperationalShiftEditorData;action:(data:FormData)=>Promise<ConfigurationResult>;deleteAction?:(data:FormData)=>Promise<unknown>;locationName?:string;prefill?:Prefill;feedback?:ReactNode};
+type Props={data:OperationalShiftEditorData;action:(data:FormData)=>Promise<ConfigurationResult>;deleteAction?:(data:FormData)=>Promise<unknown>;locationName?:string;prefill?:Prefill;feedback?:ReactNode;/** B19: one id per opened create form, so a retried save is recognised as the same shift. */operationId?:string};
 /** Uses the minimal scoped DTO directly. Existing server actions reauthorize and
  * validate the complete assignment; a read hint or sourceVersion is not authority.
  */
@@ -17,7 +17,7 @@ export function ScopedManualShiftForm(props:Props){
  const {data,prefill}=props;
  return <ScopedManualShiftEditor key={JSON.stringify([data.shift?.id??null,data.weekStart,data.locationId,data.shift?null:prefill??null])} {...props}/>;
 }
-function ScopedManualShiftEditor({data,action,deleteAction,locationName,prefill={},feedback}:Props){
+function ScopedManualShiftEditor({data,action,deleteAction,locationName,prefill={},feedback,operationId}:Props){
  const shift=data.shift;
  const initialPerson=shift?.employeeId??(data.employeeOptions.some(p=>p.id===prefill.employeeId)?prefill.employeeId:'')??'';
  const initialPosition=shift?.positionId??(data.employeeOptions.find(p=>p.id===initialPerson)?.positionIds.includes(prefill.positionId??'')&&data.positionOptions.some(p=>p.id===prefill.positionId)?prefill.positionId:'')??'';
@@ -53,7 +53,7 @@ function ScopedManualShiftEditor({data,action,deleteAction,locationName,prefill=
  return <div className={styles.scopedPage}><header><h1>{shift?'Edit draft shift':'Create shift'}</h1><p>{locationName??'Your selected location'} · {formatWeekRange(data.weekStart)}</p></header>
   {feedback}<ConfigurationForm action={fields=>perform(fields)} className={styles.scopedForm}>
    <fieldset disabled={uncertain||working} className={styles.stack}>
-    <input type="hidden" name="weekStart" value={data.weekStart}/><input type="hidden" name="locationId" value={data.locationId}/>{shift&&<input type="hidden" name="shiftId" value={shift.id}/>}
+    <input type="hidden" name="weekStart" value={data.weekStart}/><input type="hidden" name="locationId" value={data.locationId}/>{shift&&<input type="hidden" name="shiftId" value={shift.id}/>}{!shift&&operationId&&<input type="hidden" name="shiftOperationId" value={operationId}/>}
     <section className={'panel '+styles.stack}><h2>Assignment</h2>{!data.employeeOptions.length&&<p role="status">No eligible employees are available at this location. Ask your Owner to review employee assignments.</p>}
      <SelectField className={styles.search} name="employeeId" label="Employee" value={person} required onChange={event=>{const next=event.target.value;setPerson(next);setPosition(current=>data.employeeOptions.find(p=>p.id===next)?.positionIds.includes(current)?current:'');setLead(false);}} options={[{value:'',label:'Select employee',disabled:true},...(retainedPerson?[{value:person,label:(shift?.employeeName??'Current employee')+' (unavailable)',disabled:true}]:[]),...data.employeeOptions.map(p=>({value:p.id,label:p.name}))]}/>
      {employee&&<p className="muted">Selected employee: {employee.name} ({employee.id})</p>}

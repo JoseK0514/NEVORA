@@ -16,7 +16,8 @@ import { SettingsFrame } from "./wave-c-kit";
 export default async function SettingsPage() {
   await requireRoles(["OWNER"]);
   const proof = await requireSessionMutationProof();
-  const payroll = payrollFeatureEnabled() ? await readPayrollCapabilities(proof) : undefined;
+  // Shared with the layout's read in this render; a failed read leaves the Pay group out instead of failing Settings.
+  const payroll = payrollFeatureEnabled() ? await readPayrollCapabilities(proof).catch(() => undefined) : undefined;
   // Quiet (v4): the Pay row names the pay schedule ("Weekly"), from the effective pay calendar.
   const pay = payroll?.canConfigure ? await currentPayPeriod().catch(() => null) : null;
   const frequency = pay?.frequency ? ({ WEEKLY: "Weekly", BIWEEKLY: "Every two weeks", SEMIMONTHLY: "Twice a month", MONTHLY: "Monthly" } as const)[pay.frequency] : undefined;
@@ -30,7 +31,7 @@ export default async function SettingsPage() {
     listClockerDevices({ employeeId: proof.employee.id, sessionTokenHash: proof.sessionTokenHash }).then(rows => rows.filter(row => row.state === 'ACTIVE').length).catch(() => null),
   ]);
   const row = (href: string, title: string, value?: number | string | null) => pathEnabled(href, presentation.modules)
-    ? <QuietRow key={href} href={href} title={title} value={value === null || value === undefined ? undefined : String(value)} tone="l" /> : null;
+    ? <QuietRow key={href} prefetch href={href} title={title} value={value === null || value === undefined ? undefined : String(value)} tone="l" /> : null;
   return (
     <SettingsFrame back={{ href: "/app/more", label: "More" }} title="Settings">
       <QuietGroup label="Company" id="settings-company"><ul className="q-list">

@@ -1,4 +1,5 @@
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
+import {failed} from '@/lib/observability/log.server';
 import {readReports} from '@/lib/reports/service';
 import {parseReportPeriod} from '@/lib/reports/period';
 import {correctionBoundary,correctionJson,readCorrectionJson} from '@/lib/time-corrections/http.server';
@@ -15,5 +16,5 @@ export async function POST(request:Request):Promise<Response>{
   try{period=parseReportPeriod(await readCorrectionJson(request));}catch{return correctionJson({state:'invalid'},400);}
   const result=await readReports(await requireSessionMutationProof(),period);
   return correctionJson(result.state==='ready'?{state:'ready',source:result.source,validForMs:result.validForMs}:result,result.state==='ready'?200:result.reason==='access_denied'?403:503);
- }catch{return correctionJson({state:'unavailable'},503);}
+ }catch(error){return failed('/api/reports',error,correctionJson({state:'unavailable'},503));}
 }

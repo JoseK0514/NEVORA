@@ -43,6 +43,26 @@ export async function readAvailabilityInputs(
   );
 }
 
+/** Inspection B8: the same four availability sources for many employees in four queries; each employee's
+ * inputs are mapped from exactly the rows its single read returns. */
+export async function readAvailabilityInputsMany(
+  employeeIds: readonly string[],
+  firstWeek: string,
+  lastWeek = firstWeek,
+  executor?: SqlExecutor,
+) {
+  const ids = [...new Set(employeeIds)];
+  const sql = executor ? {query: (text: string, values: unknown[]) => executor.query({text,values})} : getDb();
+  const [normalRaw, weeklyRaw, submissionsRaw, exceptionsRaw] = ids.length ? await Promise.all([
+    sql.query(`SELECT employee_id, day_of_week, start_time, end_time FROM availability_windows WHERE employee_id = ANY($1::text[]) ORDER BY employee_id, day_of_week, start_time`, [ids]),
+    sql.query(`SELECT employee_id, week_start, day_of_week, start_time, end_time FROM weekly_availability_windows WHERE employee_id = ANY($1::text[]) AND week_start BETWEEN $2 AND $3 ORDER BY employee_id, week_start, day_of_week, start_time`, [ids, firstWeek, lastWeek]),
+    sql.query(`SELECT employee_id, week_start, uses_normal_availability, updated_at::text AS submission_version FROM weekly_availability_submissions WHERE employee_id = ANY($1::text[]) AND week_start BETWEEN $2 AND $3`, [ids, firstWeek, lastWeek]),
+    sql.query(`SELECT employee_id, date, kind, start_time, end_time FROM availability_exceptions WHERE employee_id = ANY($1::text[]) AND date >= $2 AND date < $3 ORDER BY employee_id, date, start_time`, [ids, firstWeek, addDays(lastWeek, 7)]),
+  ]) : [[], [], [], []];
+  const of = (raw: unknown, id: string) => (queryRows(raw) as Record<string, unknown>[]).filter(row => String(row.employee_id) === id);
+  return new Map(ids.map(id => [id, mapAvailabilityInputs(of(normalRaw, id), of(weeklyRaw, id), of(submissionsRaw, id), of(exceptionsRaw, id), firstWeek, lastWeek)]));
+}
+
 /**
  * Preserve submission presence independently of windows: zero windows may mean a
  * confirmed unavailable week, while seeded windows without a submission are still

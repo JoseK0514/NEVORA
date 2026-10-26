@@ -23,7 +23,13 @@ vi.mock("@/components/page-header", () => import("./page-header"));
 vi.mock("@/components/status-pill", () => import("./status-pill"));
 vi.mock("@/lib/data/schedule-health", () => ({ listEmployeeHourTargets: vi.fn(async () => []) }));
 vi.mock("@/lib/data/hour-fairness", () => ({ listHourFairness: vi.fn(async () => []) }));
-vi.mock("@/lib/data/schedules", () => ({ getShiftValidationContext: vi.fn() }));
+vi.mock("@/lib/data/schedules", () => {
+  const getShiftValidationContext = vi.fn();
+  // B8: Coverage reads every employee's context in one batch; each entry is what the single read returns.
+  const getShiftValidationContexts = async ({ employeeIds, ...input }: Record<string, unknown> & { employeeIds: string[] }) =>
+    new Map(await Promise.all(employeeIds.map(async employeeId => [employeeId, await getShiftValidationContext({ employeeId, ...input })] as const)));
+  return { getShiftValidationContext, getShiftValidationContexts };
+});
 vi.mock("@/lib/scheduling/coverage-ranking", () => import("../lib/scheduling/coverage-ranking"));
 vi.mock("@/lib/scheduling/validate-shift", () => import("../lib/scheduling/validate-shift"));
 vi.mock("@/lib/data/requests", () => ({ listPendingTimeOffRequests: vi.fn(async () => []), listTeamTimeOffRequests: vi.fn(async () => []) }));

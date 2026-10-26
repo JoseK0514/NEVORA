@@ -12,7 +12,7 @@ import { commitPublishedWeekChange, neonNotificationExecutor, type GuardedWeekSt
 import type { SqlExecutor } from "../notifications/types";
 import { addDays, weekStartFor } from "../date-utils";
 import { minutesInWorkweek, shiftPeriod } from "../scheduling/periods";
-import { readAvailabilityInputs } from "./availability-inputs";
+import { mapAvailabilityInputs, readAvailabilityInputs, readAvailabilityInputsMany } from "./availability-inputs";
 import type { ScheduleStatus, UserRole, Position } from "@/lib/domain";
 
 import type { SessionMutationProof } from '../shift-changes/types';
@@ -209,7 +209,13 @@ export async function getShiftValidationContext({
     | undefined;
   const facts = queryRows(factsRaw)[0] as Record<string,unknown> | undefined;
   if (!employee || !facts) return null;
-  const existingShifts = queryRows(shiftsRaw).map((row) => {
+  return buildShiftValidationContext(employee, facts, queryRows(shiftsRaw), queryRows(leaveRaw), inputs, firstWeek);
+}
+
+/** Map one employee's rule rows into the validation context (shared by the single and the batched read). */
+function buildShiftValidationContext(employee: Record<string, unknown>, facts: Record<string, unknown>, shiftRows: unknown[], leaveRows: unknown[],
+  inputs: ReturnType<typeof mapAvailabilityInputs>, firstWeek: string) {
+  const existingShifts = shiftRows.map((row) => {
     const item = row as Record<string, unknown>;
     return {
       id: String(item.id),
@@ -245,7 +251,7 @@ export async function getShiftValidationContext({
     availability: inputs.normal,
     weeklyAvailability: inputs.weeks,
     availabilityExceptions: inputs.exceptions,
-    approvedTimeOff: queryRows(leaveRaw).map((row) => {
+    approvedTimeOff: leaveRows.map((row) => {
       const item = row as Record<string, unknown>;
       return {
         startDate: dateValue(item.start_date),
@@ -260,6 +266,69 @@ export async function getShiftValidationContext({
       0,
     ),
   };
+}
+
+/**
+ * Inspection B8: the same preview rules for many employees at one location and time with one query per source
+ * (employee_id = ANY), instead of nine queries per employee (Coverage sent about 270 in parallel for 30 people).
+ * Each employee's context is built by buildShiftValidationContext from exactly the rows its single read returns; an
+ * employee who does not exist (or a location that does not) has no entry, as the single read returned null.
+ */
+export async function getShiftValidationContexts({
+  employeeIds,
+  locationId,
+  positionId,
+  date,
+  endDate,
+}: {
+  employeeIds: readonly string[];
+  locationId: string;
+  positionId?: string;
+  date: string;
+  weekStart: string;
+  endDate?: string;
+}, executor?: SqlExecutor): Promise<Map<string, ReturnType<typeof buildShiftValidationContext>>> {
+  const ids = [...new Set(employeeIds)];
+  const contexts = new Map<string, ReturnType<typeof buildShiftValidationContext>>();
+  if (!ids.length) return contexts;
+  const sql = executor ? {query: (text: string, values: unknown[]) => executor.query({text,values})} : getDb();
+  const firstWeek = weekStartFor(date),
+    lastWeek = weekStartFor(endDate ?? addDays(date, 1));
+  const [employeesRaw, shiftsRaw, leaveRaw, inputs, factsRaw] = await Promise.all([
+    sql.query(
+      `SELECT e.id AS employee_id, e.active, e.role,
+      ARRAY(SELECT ep.position_id FROM employee_positions ep JOIN positions p ON p.id=ep.position_id WHERE ep.employee_id=e.id AND p.active=true) AS position_ids, ss.target_weekly_hours, COALESCE(ss.maximum_weekly_hours, 40) AS maximum_weekly_hours, ss.operational_rule_profile,
+      COALESCE(array_agg(elig.location_id) FILTER (WHERE elig.location_id IS NOT NULL), ARRAY[]::text[]) AS eligible_location_ids
+      FROM employees e LEFT JOIN employee_location_eligibility elig ON elig.employee_id = e.id
+      LEFT JOIN employee_scheduling_settings ss ON ss.employee_id = e.id WHERE e.id = ANY($1::text[])
+      GROUP BY e.id, e.active, e.role, ss.target_weekly_hours, ss.maximum_weekly_hours, ss.operational_rule_profile`,
+      [ids],
+    ),
+    sql.query(
+      `SELECT sh.id, sh.employee_id, s.location_id, sh.date, sh.start_time, sh.end_time, sh.is_designated_lead, sh.position_id, sh.assignment_origin, sh.generated_claims
+      FROM shifts sh JOIN schedules s ON s.id = sh.schedule_id
+      WHERE sh.employee_id = ANY($1::text[]) AND s.status <> 'ARCHIVED'
+      AND NOT EXISTS (SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()})`,
+      [ids],
+    ),
+    sql.query(
+      `SELECT employee_id, start_date, end_date, start_time, end_time, status FROM time_off_requests
+      WHERE employee_id = ANY($1::text[]) AND status = 'APPROVED' AND start_date <= $3 AND end_date >= $2`,
+      [ids, date, endDate ?? addDays(date, 1)],
+    ),
+    readAvailabilityInputsMany(ids, firstWeek, lastWeek, executor),
+    sql.query(`SELECT l.id,l.workspace_id,l.active,w.active AS workspace_active,w.time_zone,
+      p.id AS position_id,p.workspace_id AS position_workspace_id,p.name AS position_name,p.active AS position_active,p.created_at::text,p.updated_at::text
+      FROM locations l JOIN workspaces w ON w.id=l.workspace_id LEFT JOIN positions p ON p.id=$2 AND p.workspace_id=w.id WHERE l.id=$1`, [locationId,positionId ?? null]),
+  ]);
+  const facts = queryRows(factsRaw)[0] as Record<string,unknown> | undefined;
+  if (!facts) return contexts;
+  const of = (raw: unknown, id: string) => (queryRows(raw) as Record<string, unknown>[]).filter(row => String(row.employee_id) === id);
+  for (const employee of queryRows(employeesRaw) as Record<string, unknown>[]) {
+    const id = String(employee.employee_id);
+    contexts.set(id, buildShiftValidationContext(employee, facts, of(shiftsRaw, id), of(leaveRaw, id), inputs.get(id)!, firstWeek));
+  }
+  return contexts;
 }
 
 export type ShiftValidationContext = NonNullable<Awaited<ReturnType<typeof getShiftValidationContext>>>;
@@ -317,10 +386,12 @@ export async function insertShift(input: {
 export async function insertShiftAtLocation(input:{
  locationId:string;weekStart:string;employeeId:string;date:string;startTime:string;endTime:string;
  notes?:string;positionId?:string|null;isDesignatedLead?:boolean;actorEmployeeId:string;proof:SessionMutationProof;
+ /** B19: the form's operation id, used as the new shift's id so a retried save cannot create a second shift. */
+ shiftId?:string;
 },executor:SqlExecutor=neonNotificationExecutor()) {
  assertManagementProof(input.proof,input.actorEmployeeId);
  await assertOperationalAccess(input.proof,{kind:'LOCATIONS',locationIds:[input.locationId]},executor);
- const id=randomUUID(),parentId=randomUUID();
+ const id=input.shiftId&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(input.shiftId)?input.shiftId:randomUUID(),parentId=randomUUID();
  const result=await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.actorEmployeeId,proof:input.proof,sourceType:'MANAGER_MUTATION',sourceId:id,build:state=>{
   const existing=state.schedules.find(s=>s.locationId===input.locationId&&s.weekStart===input.weekStart);
   const scheduleId=existing?.id??parentId;

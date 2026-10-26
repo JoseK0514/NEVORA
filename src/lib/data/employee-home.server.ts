@@ -5,7 +5,7 @@ import type {SessionMutationProof} from '../shift-changes/types';
 import type {AttentionItem,EmployeeHomeRead,HomeSource,SourceObservation} from '../employee-home/types';
 import {isValidIsoDate} from '../date-utils';
 import {homeDestination,projectEmployeeHome} from '../employee-home/project';
-import {assertEmployeeViewProof,employeeReadLimits,employeeViewGuards,readEmployeeWorkspace} from './employee-profile.server';
+import {assertEmployeeViewProof,employeeReadLimits,employeeSessionCheck,employeeSnapshotGuards,employeeSnapshotLimits,employeeViewGuards,readEmployeeWorkspace} from './employee-profile.server';
 import {employeeAllowedLocationsSql} from './employee-schedule';
 import {managementSessionStatements,isManagementAuthorizationError} from './management-session';
 import {neonNotificationExecutor} from './notification-transactions';
@@ -17,6 +17,8 @@ import {getExchange} from './exchanges';
 import {readShiftChangeAvailability} from './shift-changes';
 import {listEmployeeCommunications} from '../communications/service.server';
 import {readActivePresentation} from '../workspace-presentation/service';
+import {isReadSnapshot} from './read-snapshot';
+import {logBoundaryError} from '../observability/log.server';
 import {communicationRecipientAllowedSql} from '../communications/sql';
 
 const hash=(value:unknown)=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
@@ -80,15 +82,20 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
  try{assertEmployeeViewProof(proof);}catch{return denied;}
  try{
   const signal=AbortSignal.timeout(8000),workspace=await readEmployeeWorkspace(executor,signal);
-  const guards=()=>[...employeeReadLimits,...employeeViewGuards(proof,workspace)];
-  const session=()=>managementSessionStatements(proof,proof.employee.id,[proof.employee.role]);
+  // Inspection B3/B4: Home's own reads are READ ONLY snapshots with lock-free guards, so Home never blocks a sign-in,
+  // a shift edit or a publish, and never waits behind one. Each batch still checks the session, role and eligible
+  // locations in the same snapshot as its data. Nested readers keep their own transactions (protectedExecutor
+  // .transaction below adds only the time bounds and the trailing session check).
+  const guards=()=>[...employeeSnapshotLimits,...employeeSnapshotGuards(proof,workspace)];
+  const session=()=>[employeeSessionCheck(proof)];
+  const lockedSession=()=>managementSessionStatements(proof,proof.employee.id,[proof.employee.role]);
   const indexes=new Map<HomeSource,{statement:SqlStatement;rows:unknown[]}>();
   const receipts=new Map<string,{statement:SqlStatement;rows:unknown[]}>();
   let assignmentIndex:{statement:SqlStatement;rows:unknown[]}|undefined;
   const assignmentFingerprint=(rows:unknown[])=>hash(rows.map(row=>{const {observedAt:_at,...facts}=row as Record<string,unknown>;void _at;return facts;}));
   const protectedExecutor:SqlExecutor={
    query:async<T>(statement:SqlStatement)=>{const prefix=guards();const result=await executor.transaction([...prefix,statement,...session()],signal);return result[prefix.length] as T[];},
-   transaction:async(statements)=>{const prefix=employeeReadLimits;const result=await executor.transaction([...prefix,...statements,...session()],signal);const rows=result.slice(prefix.length,prefix.length+statements.length);
+   transaction:async(statements)=>{const prefix=employeeReadLimits;const result=await executor.transaction([...prefix,...statements,...(isReadSnapshot(statements)?session():lockedSession())],signal);const rows=result.slice(prefix.length,prefix.length+statements.length);
     const at=statements.findIndex(s=>s.text.includes('WITH clock AS MATERIALIZED')&&s.text.includes('"coverageComplete"'));
     if(at>=0)assignmentIndex={statement:statements[at],rows:rows[at]};return rows;},
   };
@@ -193,18 +200,16 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
     }
    }
   }catch{communications=failed().observation;communicationItems=[];}
-  // One final SQL batch locks source ranges before re-reading their canonical
-  // observations. This includes empty indexes and receipt/grant membership;
-  // comparing two separately buffered API responses cannot prove all-clear.
+  // One final SQL batch re-reads every source's canonical observation in ONE snapshot (REPEATABLE READ READ ONLY,
+  // inspection B4; it used to take SHARE locks on up to 22 tables for the same purpose). This includes empty
+  // indexes and receipt/grant membership; comparing two separately buffered API responses cannot prove all-clear,
+  // but re-reads from one instant can. A writer committing during the batch is not waited for: the result is the
+  // same as if the batch had finished a moment earlier, inside the existing 45 s validity window.
   const checks=[...indexes.entries()].map(([source,value])=>({source,...value}));
   const receiptChecks=[...receipts.entries()].map(([kind,value])=>({kind,...value}));
-  const tables=new Set(['communications','communication_revisions','communication_recipients','communication_receipts','employee_attention_receipts','shifts','schedules','shift_callouts','schedule_publication_revisions','schedule_publication_revision_shifts','schedule_acknowledgements','locations','employees','employee_location_eligibility','employee_sessions','workspaces','positions']);
-  if(indexes.has('timeOff'))tables.add('time_off_requests');
-  if(indexes.has('exchanges')){tables.add('shift_exchanges');tables.add('shift_change_events');}
-  if(indexes.has('ownTime')){tables.add('time_correction_requests');tables.add('time_correction_events');}
   let after:Authority;
   try{
-   const prefix=[...guards(),{text:`/* home_final_sources */ LOCK TABLE ${[...tables].sort().join(',')} IN SHARE MODE`,values:[]}];
+   const prefix=guards();
    const statements=[...checks.map(c=>c.statement),...receiptChecks.map(c=>c.statement),communicationIndex,...(assignmentIndex?[assignmentIndex.statement]:[]),authorityStatement];
    const result=await executor.transaction([...prefix,...statements,...session()],signal),rows=result.slice(prefix.length,prefix.length+statements.length);
    for(let i=0;i<checks.length;i++)if(hash(rows[i])!==hash(checks[i].rows)){
@@ -224,6 +229,12 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
    if(expiry)communications={...communications,validUntil:expiry};
   }catch(error){if(isManagementAuthorizationError(error))throw error;after=await authority();communications=observation('unavailable','read_failed',null);communicationItems=[];}
   if(JSON.stringify(before.locations)!==JSON.stringify(after.locations))return denied;
+  // Release fence: the reader's own authority rows only (company, employee, locations, eligibility, session), with the
+  // locked guards, so a role, session, location or eligibility change already in flight is waited for and honoured
+  // before Home is returned. It locks no source table, so sign-ins, shift edits and publishing are not blocked.
+  const fenceGuards=[...employeeReadLimits,...employeeViewGuards(proof,workspace)];
+  const fenced=(await executor.transaction([...fenceGuards,authorityStatement,...lockedSession()],signal))[fenceGuards.length]?.[0] as Authority|undefined;
+  if(!fenced||JSON.stringify(fenced.locations)!==JSON.stringify(before.locations))return denied;
   const validForMs=Math.min(45000,Date.parse(after.expiresAt)-Date.parse(after.observedAt),45000-(Date.parse(after.observedAt)-Date.parse(before.observedAt)));
   if(validForMs<=0)return unavailable;
   // Company modules (B2): a module that is off has nothing to show on Home.
@@ -234,5 +245,5 @@ export async function readEmployeeHome(proof:SessionMutationProof,executor:SqlEx
   if(!modules.updates){communications=observation('complete',null);communicationItems=[];}
   const sources={schedule:assignments.publicationState==='unavailable'?observation('unavailable','read_failed',null):{...observation(assignments.publicationState,assignments.publicationState==='partial'?'unpublished':null,hash(assignments)),observedAt:assignments.observedAt},acknowledgements:acknowledgements.observation,exchanges:exchanges.observation,timeOff:timeOff.observation,ownTime:ownTime.observation,communications};
   return projectEmployeeHome({observedAt:after.observedAt,authority:homeAuthority(proof),timeZone:workspace.timeZone,validForMs,sources,publicationState:assignments.publicationState,...(assignments.publicationState==='partial'?{unpublishedLocations:assignments.unpublishedLocations??[]}:{}),nextShift:assignments.nextShift,currentShift:assignments.currentShift,attention:[...acknowledgements.items,...exchanges.items,...timeOff.items,...ownTime.items,...communicationItems]});
- }catch(error){return isManagementAuthorizationError(error)?denied:unavailable;}
+ }catch(error){if(isManagementAuthorizationError(error))return denied;logBoundaryError('reader:employee-home',error);return unavailable;}
 }

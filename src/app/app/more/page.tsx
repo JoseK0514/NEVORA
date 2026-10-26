@@ -38,19 +38,19 @@ async function EmployeeMore({ firstName, lastName, role }: { firstName: string; 
     <div className="q-top-gap" aria-hidden="true" />
     <QuietHeader title="More" />
     <QuietList style={{ marginTop: 16 }}>
-      <QuietRow href="/app/profile" avatar={initialsOf(`${firstName} ${lastName}`)} title={`${firstName} ${lastName}`} detail={`${role === "LEAD" ? "Lead" : "Employee"} · Profile`} label={`Profile, ${firstName} ${lastName}`} />
+      <QuietRow prefetch href="/app/profile" avatar={initialsOf(`${firstName} ${lastName}`)} title={`${firstName} ${lastName}`} detail={`${role === "LEAD" ? "Lead" : "Employee"} · Profile`} label={`Profile, ${firstName} ${lastName}`} />
     </QuietList>
     <QuietList label="Your work" style={{ marginTop: 24 }}>
-      {has.has("/app/updates") ? <QuietRow href="/app/updates" icon={ic(MegaphoneIcon)} title="Updates" /> : null}
-      {has.has("/app/notifications") ? <QuietRow href="/app/notifications" icon={ic(BellIcon)} title="Notifications" value={<NotificationCount authority={employeeViewAuthority(proof, "notifications")} />} /> : null}
-      {has.has("/app/availability") ? <QuietRow href="/app/availability" icon={ic(ClockIcon)} title="Availability" /> : null}
+      {has.has("/app/updates") ? <QuietRow prefetch href="/app/updates" icon={ic(MegaphoneIcon)} title="Updates" /> : null}
+      {has.has("/app/notifications") ? <QuietRow prefetch href="/app/notifications" icon={ic(BellIcon)} title="Notifications" value={<NotificationCount authority={employeeViewAuthority(proof, "notifications")} />} /> : null}
+      {has.has("/app/availability") ? <QuietRow prefetch href="/app/availability" icon={ic(ClockIcon)} title="Availability" /> : null}
     </QuietList>
     <div className="q-profile-cal q-more-cal"><ProfileCalendarDisclosure>
       <CalendarSubscriptionPanel key={calendarAuthority(proof)} authority={calendarAuthority(proof)} />
     </ProfileCalendarDisclosure></div>
     <QuietList label="Help" style={{ marginTop: 24 }}>
-      <QuietRow href="/support" icon={ic(InfoIcon)} title="Support" />
-      <QuietRow href="/privacy" icon={ic(ShieldCheckIcon)} title="Privacy and terms" />
+      <QuietRow prefetch href="/support" icon={ic(InfoIcon)} title="Support" />
+      <QuietRow prefetch href="/privacy" icon={ic(ShieldCheckIcon)} title="Privacy and terms" />
     </QuietList>
   </QuietPage>;
 }
@@ -62,7 +62,8 @@ export default async function MorePage() {
   const proof = await requireSessionMutationProof();
   const [operational, payroll, brand] = await Promise.all([
     readOperationalAuthority(proof),
-    payrollFeatureEnabled() ? readPayrollCapabilities(proof) : Promise.resolve(undefined),
+    // The layout already read these in this render (shared per proof); a failed read hides the payroll rows (B1).
+    payrollFeatureEnabled() ? readPayrollCapabilities(proof).catch(() => undefined) : Promise.resolve(undefined),
     currentBrand(),
   ]);
   const navigation = navigationForRole(session.role, payroll, { operational, modules: brand.modules, words: wordPreset(brand.words).en, ownerAdvisorEnabled: process.env.NEVORA_OWNER_ADVISOR_ENABLED === "true" });
@@ -74,13 +75,13 @@ export default async function MorePage() {
     <div className="q-bar" aria-hidden="true" />
     <QuietHeader title="More" />
     {work.length ? <QuietList label="Work" style={{ marginTop: 16 }}>
-      {work.flatMap(entry => [<QuietRow key={entry.href} href={entry.href} title={entry.label} />,
+      {work.flatMap(entry => [<QuietRow key={entry.href} prefetch href={entry.href} title={entry.label} />,
         // T-26: with the advisor switched on, Owners reach it here, under Insights (no bare button on Today).
-        entry.href === "/app/reports" && advisor ? <QuietRow key="/app/ai-manager" href="/app/ai-manager" icon={<SparkleIcon className="q-ic" aria-hidden="true" />} title="Ask NEVORA" /> : null])}
+        entry.href === "/app/reports" && advisor ? <QuietRow key="/app/ai-manager" prefetch href="/app/ai-manager" icon={<SparkleIcon className="q-ic" aria-hidden="true" />} title="Ask NEVORA" /> : null])}
     </QuietList> : null}
     <QuietList label="Account" style={{ marginTop: 32 }}>
-      {account.map(entry => <QuietRow key={entry.href} href={entry.href} title={entry.label} />)}
-      <QuietRow href="/support" title="Support" />
+      {account.map(entry => <QuietRow key={entry.href} prefetch href={entry.href} title={entry.label} />)}
+      <QuietRow prefetch href="/support" title="Support" />
     </QuietList>
   </QuietPage>;
 }

@@ -1,4 +1,5 @@
 import { getSession, requireSessionMutationProof } from '@/lib/auth/session';
+import {failed} from '@/lib/observability/log.server';
 import { getAttendanceReview } from '@/lib/data/attendance-review';
 
 export const runtime = 'nodejs';
@@ -43,7 +44,5 @@ export async function GET(request: Request): Promise<Response> {
       result,
       result.reason === 'access_denied' ? 403 : 503,
     );
-  } catch {
-    return json({ state: 'unavailable', reason: 'read_failed' }, 503);
-  }
+  } catch(error){return failed('/api/manager/attendance',error,json({ state: 'unavailable', reason: 'read_failed' },503));}
 }

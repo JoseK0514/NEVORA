@@ -7,6 +7,7 @@ import {
 } from "../time-corrections/http.server";
 import { PayrollError, uuid } from "./model";
 import { enabled } from "./store";
+import { failed } from "../observability/log.server";
 import type { SessionMutationProof } from "../shift-changes/types";
 export const json = correctionJson;
 export const headers = correctionResponseHeaders;
@@ -87,7 +88,7 @@ export function failure(error: unknown) {
     conflict = /CONFLICT|immutable|duplicate key/.test(value) ||
       (error instanceof Error && error.message === "OVERLAPPING_NATIVE_PAYROLL"),
     invalid = /invalid_body|JSON/.test(value);
-  return json(
+  const response = json(
     {
       error: denied
         ? "ACCESS_DENIED"
@@ -104,4 +105,6 @@ export function failure(error: unknown) {
     },
     denied ? 403 : conflict ? 409 : invalid ? 400 : 503,
   );
+  // B10: an unexpected payroll failure is logged with its code and carries a reference header.
+  return response.status === 503 ? failed("/api/payroll", error, response) : response;
 }

@@ -6,10 +6,10 @@ import type {PublishedShiftSnapshot} from '../assistance/publication-diff';
 import {buildAcknowledgementState,type EmployeeAcknowledgementState} from '../assistance/acknowledgement-state';
 import {ownPublicationChanges} from '../notifications/device-state';
 import {isValidWeekStart} from '../date-utils';
-import {assertEmployeeViewProof,employeeReadLimits,readEmployeeWorkspace} from './employee-profile.server';
+import {assertEmployeeViewProof,employeeReadLimits,employeeSessionCheck,employeeSnapshotGuards,employeeSnapshotLimits,readEmployeeWorkspace} from './employee-profile.server';
 import {attentionGuards,attentionIntent,type AttentionIntent} from './employee-attention-receipts.server';
-import {employeeAllowedLocationsSql} from './employee-schedule';
 import {managementSessionStatements} from './management-session';
+import {employeeAllowedLocationsSql} from './employee-schedule';
 import {neonNotificationExecutor} from './notification-transactions';
 
 export type EmployeeWeeklyReview=Omit<EmployeeScheduleRead,'shifts'>&{shifts:(EmployeeScheduleRead['shifts'][number]&{positionName?:string|null})[];displayedRevisionId:string|null;acknowledgement:EmployeeAcknowledgementState;intent:AttentionIntent|null;readIntent:AttentionIntent|null;read:boolean;publicationChanges:ReturnType<typeof ownPublicationChanges>};
@@ -25,7 +25,11 @@ export async function readEmployeeWeeklyReview(proof:SessionMutationProof,weekSt
  try{
   assertEmployeeViewProof(proof);if(!isValidWeekStart(weekStart))return unavailable;
   const signal=AbortSignal.timeout(8000),workspace=await readEmployeeWorkspace(executor,signal),ref={kind:'SCHEDULE' as const,id:weekStart,version:''};
-  const guards=[...employeeReadLimits,...attentionGuards(proof,workspace,ref)];
+  // Inspection B3: the first observation is a READ ONLY snapshot with lock-free guards (session, role, company
+  // version, eligible locations). The second observation is the release check: it keeps attentionGuards' locks, so
+  // an in-flight change is waited for, and it still discards a read whose source changed in between.
+  const guards=[...employeeSnapshotLimits,...employeeSnapshotGuards(proof,workspace)];
+  const lockedGuards=[...employeeReadLimits,...attentionGuards(proof,workspace,ref)];
   const source={text:`WITH allowed AS MATERIALIZED(${employeeAllowedLocationsSql()}),
    latest AS (SELECT id FROM schedule_publication_revisions WHERE week_start=$3::date ORDER BY revision_number DESC LIMIT 1),
    ack AS (SELECT publication_revision_id AS id FROM schedule_acknowledgements WHERE week_start=$3::date AND employee_id=$2),
@@ -43,10 +47,10 @@ export async function readEmployeeWeeklyReview(proof:SessionMutationProof,weekSt
     COALESCE((SELECT jsonb_agg(l.id ORDER BY l.id) FROM allowed l WHERE NOT EXISTS(SELECT 1 FROM schedules s WHERE s.location_id=l.id AND s.week_start=$3::date AND s.status='PUBLISHED')),'[]'::jsonb) AS unpublished,
     COALESCE((SELECT jsonb_agg(to_jsonb(before)) FROM before),'[]'::jsonb) AS before,
     COALESCE((SELECT jsonb_agg(to_jsonb(after)) FROM after),'[]'::jsonb) AS after`,values:[workspace.id,proof.employee.id,weekStart]};
-  const results=await executor.transaction([...guards,source,...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal),row=results[guards.length]?.[0] as Observation|undefined;
+  const results=await executor.transaction([...guards,source,employeeSessionCheck(proof)],signal),row=results[guards.length]?.[0] as Observation|undefined;
   if(!row||!Array.isArray(row.shifts)||row.shifts.length>500||!Array.isArray(row.locations)||row.shifts.some(s=>s.employeeId!==proof.employee.id||!row.locations.some(l=>l.id===s.locationId)))return unavailable;
-  const final=await executor.transaction([...guards,source,...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
-  if(JSON.stringify(final[guards.length]?.[0])!==JSON.stringify(row))return unavailable;
+  const final=await executor.transaction([...lockedGuards,source,...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
+  if(JSON.stringify(final[lockedGuards.length]?.[0])!==JSON.stringify(row))return unavailable;
   const acknowledgement=buildAcknowledgementState({employeeId:proof.employee.id,latestRevisionId:row.relevant?row.revisionId??undefined:undefined,
    acknowledgementRevisionId:row.acknowledgedRevisionId??undefined,acknowledgedRevisionShifts:row.before,latestRevisionShifts:row.after});
   return {read:row.read,readIntent:row.revisionId&&row.relevant&&acknowledgement.acknowledged?attentionIntent(proof,workspace.id,'MARK_READ',{...ref,version:row.revisionId}):null,state:row.complete?'published':'unpublished',shifts:row.shifts,locations:row.locations,

@@ -1,7 +1,7 @@
 import { getSession, requireSessionMutationProof } from "@/lib/auth/session";
 import { boundary, failure, headers, json } from "@/lib/payroll/http";
 import { document } from "@/lib/payroll/access";
-import { moduleEnabled } from "@/lib/workspace-presentation/current.server";
+import { moduleState } from "@/lib/workspace-presentation/current.server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export async function GET(
@@ -21,8 +21,12 @@ export async function GET(
         { error: "AUTHENTICATION_REQUIRED", message: "Sign in again." },
         401,
       );
-    if (["EMPLOYEE", "LEAD"].includes(session.role) && !(await moduleEnabled("payStatements")))
-      return json({ error: "MODULE_OFF", message: "Pay statements are turned off." }, 404);
+    if (["EMPLOYEE", "LEAD"].includes(session.role)) {
+      // B12: an unreadable setting is "try again", never "turned off".
+      const gate = await moduleState("payStatements");
+      if (gate === "unknown") return json({ error: "SETTINGS_UNAVAILABLE", message: "Pay statements could not be checked. Try again." }, 503);
+      if (gate === "off") return json({ error: "MODULE_OFF", message: "Pay statements are turned off." }, 404);
+    }
     const d = await document(
       await requireSessionMutationProof(),
       (await context.params).id,

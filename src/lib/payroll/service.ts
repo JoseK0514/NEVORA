@@ -8,6 +8,8 @@ import { payrollHistorySql } from "./history";
 import { missingPayrollPeriods } from "./backlog";
 import { payrollNoticeDelivery } from "./notices";
 import { randomUUID } from "node:crypto";
+import { cache } from "react";
+import { assertManagementProof } from "../data/management-session";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
 import type { SessionMutationProof } from "../shift-changes/types";
 import { neonNotificationExecutor } from "../data/notification-transactions";
@@ -63,18 +65,28 @@ async function workspace(ex: SqlExecutor) {
         throw new PayrollError("WORKSPACE_UNAVAILABLE", 503);
     return r.id;
 }
+/** Navigation projection only: what payroll entries to show. One lock-free statement evaluates the session, the
+ * SELF authority predicate and the Owner/Manager scope expressions together, so every answer comes from one snapshot.
+ * It takes no locks (inspection B1: the old guarded() envelope serialized every render behind sign-ins and punches).
+ * It grants nothing: every payroll API and document still runs guarded() with its locks and second authority check. */
 async function capabilities(proof: SessionMutationProof, ex: SqlExecutor): Promise<PayrollCapabilities> {
-    const [r] = await guarded<{
+    enabled();
+    assertManagementProof(proof, proof.employee.id);
+    const manager = (permission: "review" | "approve") => proof.employee.role === "MANAGER" ? compatibleManagerScopeSql("$1", ws, permission) : "false";
+    const [r] = await ex.query<{
         owner: boolean;
         review: boolean;
         approve: boolean;
-    }>(proof, "SELF", q(`SELECT e.role='OWNER' AS owner,${proof.employee.role === 'MANAGER' ? compatibleManagerScopeSql('$1', ws, 'review') : 'false'} AS review,${proof.employee.role === 'MANAGER' ? compatibleManagerScopeSql('$1', ws, 'approve') : 'false'} AS approve FROM employees e WHERE e.id=$1`, proof.employee.id), ex);
+        native: boolean;
+    }>(q(`SELECT e.role='OWNER' AS owner,${manager("review")} AS review,${manager("approve")} AS approve,to_regclass('native_payroll_ledger') IS NOT NULL AS native FROM employees e JOIN locations l ON l.id=e.primary_location_id JOIN workspaces w ON w.id=l.workspace_id AND w.singleton AND w.active JOIN employee_sessions s ON s.employee_id=e.id AND s.token_hash=$2 AND s.expires_at>clock_timestamp() WHERE e.id=$1 AND e.active AND e.role IN('OWNER','MANAGER','LEAD','EMPLOYEE')`, proof.employee.id, proof.sessionTokenHash));
+    if (!r)
+        throw new PayrollError("PAYROLL_AUTHORIZATION", 403);
     return {
         enabled: true,
-        canConfigure: r.owner,
-        canReview: r.owner || r.review,
-        canApprove: r.owner || r.approve,
-        internalCalculatorAvailable: await (await import("./native/source.server")).nativeSchemaAvailable(ex),
+        canConfigure: r.owner === true,
+        canReview: r.owner === true || r.review === true,
+        canApprove: r.owner === true || r.approve === true,
+        internalCalculatorAvailable: r.native === true,
         bankCompatibility: "UNVERIFIED",
         noticeDelivery: payrollNoticeDelivery(),
     };
@@ -584,7 +596,10 @@ export async function command(proof: SessionMutationProof, input: unknown, ex: S
 export function payrollFeatureEnabled(env: NodeJS.ProcessEnv = process.env) {
     return env.NEVORA_PAYROLL_ENABLED === "true";
 }
-export async function readPayrollCapabilities(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<PayrollCapabilities> {
+/** The layout, More, Settings and the payroll pages ask for the same proof in one server render; they share one read
+ * (React cache keyed by the per-render proof object). An explicit executor (a transaction, a test) always reads fresh. */
+const readDefaultCapabilities = cache((proof: SessionMutationProof) => capabilities(proof, neonNotificationExecutor()));
+export async function readPayrollCapabilities(proof: SessionMutationProof, executor?: SqlExecutor): Promise<PayrollCapabilities> {
     if (!payrollFeatureEnabled())
         return {
             enabled: false,
@@ -594,5 +609,5 @@ export async function readPayrollCapabilities(proof: SessionMutationProof, execu
             internalCalculatorAvailable: false,
             bankCompatibility: "UNVERIFIED",
         };
-    return capabilities(proof, executor);
+    return executor ? capabilities(proof, executor) : readDefaultCapabilities(proof);
 }

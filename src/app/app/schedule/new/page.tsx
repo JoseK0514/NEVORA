@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import accessStyles from '@/components/company-access/company-access.module.css';
 import {readOperationalShiftEditor} from '@/lib/company-access/operational-read.server';
 import {ScopedManualShiftForm} from '@/components/company-access/scoped-manual-shift-form';
@@ -129,7 +130,7 @@ export default async function NewShiftPage({
     if(source.authority!==access.authority)return <OperationalUnavailable title="Shift creation unavailable" reason="source_changed" scoped/>;
     const observation={authority:source.authority,observedAt:access.observedAt,validForMs:Math.min(access.validForMs,source.validForMs)};
     if(source.data.saveAvailability!=='available')return <ScopedShiftReadOnly data={source.data} observation={observation}/>;
-    return <ScopedReadFrame observation={observation}><ScopedManualShiftForm data={source.data} action={createShiftAction} locationName={access.locations.find(l=>l.id===source.data.locationId)?.name} prefill={{date,employeeId:params.employeeId,positionId:params.positionId,startTime:params.start,endTime:params.end,lead:params.lead==='1'}}/></ScopedReadFrame>;
+    return <ScopedReadFrame observation={observation}><ScopedManualShiftForm data={source.data} action={createShiftAction} operationId={randomUUID()} locationName={access.locations.find(l=>l.id===source.data.locationId)?.name} prefill={{date,employeeId:params.employeeId,positionId:params.positionId,startTime:params.start,endTime:params.end,lead:params.lead==='1'}}/></ScopedReadFrame>;
   }
   const source=await withOperationalCompany(proof,()=>Promise.all([
     listEmployees(),
@@ -145,7 +146,7 @@ export default async function NewShiftPage({
   return (<ScopedReadFrame observation={source}>
     <div className="q-page" data-nv-page="" data-q-sheet="">
       <h1 className="q-sr">{`Add shift, ${keepWhole(formatWeekRange(weekStart))}`}</h1>
-      <CreateShiftForm action={createShiftAction} employees={employees} locations={locations} positions={positions} weekStart={weekStart} weekEnd={weekEnd} date={date} employeeId={params.employeeId} positionId={params.positionId} locationId={locationId} startTime={params.start} endTime={params.end} isDesignatedLead={params.lead === "1"} cancelHref={cancelHref} />
+      <CreateShiftForm action={createShiftAction} operationId={randomUUID()} employees={employees} locations={locations} positions={positions} weekStart={weekStart} weekEnd={weekEnd} date={date} employeeId={params.employeeId} positionId={params.positionId} locationId={locationId} startTime={params.start} endTime={params.end} isDesignatedLead={params.lead === "1"} cancelHref={cancelHref} />
     </div>
   </ScopedReadFrame>);
 }

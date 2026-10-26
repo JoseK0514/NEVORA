@@ -1,7 +1,8 @@
 import 'server-only';
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {correctionBoundary,correctionJson,readCorrectionJson} from '@/lib/time-corrections/http.server';
-import {readOperationalAuthority,readOwnerOperationalScope,assignOperationalScope} from './operational-scope.server';
+import {readOperationalAuthority,readOwnerOperationalScopeStatus,assignOperationalScope} from './operational-scope.server';
+import {failed} from '@/lib/observability/log.server';
 import type {ScopeCommand} from './model';
 /** Route protocol for current self authority and Owner scope controls. Actor
  * headers bind write intent to the cookie-derived session; the service still
@@ -19,11 +20,14 @@ export async function scopeHttp(request:Request,action:'authority'|'status'|'com
    const result=await readOperationalAuthority(proof);return correctionJson(result,result.state==='ready'?200:503);
   }
   if(action==='status'){
-   const result=await readOwnerOperationalScope(proof,employeeId);return correctionJson(result,result.state==='ready'?200:503);
+   // B16: a missing employee is 404 and a refusal 403; only an outage stays 503.
+   const result=await readOwnerOperationalScopeStatus(proof,employeeId);
+   if(result.state==='not_found')return correctionJson({state:'unavailable',reason:'not_found'},404);
+   return correctionJson(result,result.state==='ready'?200:result.reason==='access_denied'?403:503);
   }
   let value:unknown;
   try {value=await readCorrectionJson(request);}catch{return correctionJson({state:'invalid',fieldErrors:[{field:'scope',message:'Invalid scope command.'}]},400);}
   const result=await assignOperationalScope(proof,employeeId,value as ScopeCommand);
   return correctionJson(result,result.state==='saved'?200:result.state==='conflict'?409:result.state==='invalid'?400:503);
- }catch{return correctionJson({state:'unavailable',reason:'read_failed'},503);}
+ }catch(error){return failed('/api/company-access',error,correctionJson({state:'unavailable',reason:'read_failed'},503));}
 }

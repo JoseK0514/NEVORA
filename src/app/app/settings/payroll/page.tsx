@@ -6,6 +6,7 @@ import { listEmployees, listLocations } from '@/lib/data/employees';
 import { listBreakTypes } from '@/lib/clocker/break-types.server';
 import type { NativeConfigurationSources } from '@/components/payroll/native-payroll-config';
 import { getWorkspace } from '@/lib/data/workspaces';
+import { neonNotificationExecutor } from '@/lib/data/sql-executor';
 import { payrollRecoveryScope } from '@/components/payroll/recovery-scope';
 import '../../payroll-export/payroll-page.css';
 import '../../payroll/payroll-workflow.css';
@@ -27,6 +28,8 @@ export default async function PayrollSettingsPage() {
       nativeSources = {employees:employees.map(e=>({id:e.id,name:`${e.firstName} ${e.lastName}`,role:e.role,active:e.active})),locations:locations.map(l=>({id:l.id,name:l.name,active:l.active})),breakTypes:breakTypes.map(b=>({id:b.id,name:b.name,active:b.active}))};
     } catch { nativeSources = null; }
   }
-  if (nativeSources && !(await readPayrollCapabilities(proof)).canConfigure) redirect('/app');
+  // Post-read fence before the employee, location and break lists leave the server: a fresh, lock-free read (an
+  // explicit executor bypasses the per-render cache), so access removed during this render still withholds them.
+  if (nativeSources && !(await readPayrollCapabilities(proof, neonNotificationExecutor())).canConfigure) redirect('/app');
   return <PayrollSettings nativeSources={nativeSources} key={recoveryScope} recoveryScope={recoveryScope} timeZone={workspace.timeZone} />;
 }

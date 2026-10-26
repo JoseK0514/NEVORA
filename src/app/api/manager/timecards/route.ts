@@ -1,4 +1,5 @@
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
+import {failed} from '@/lib/observability/log.server';
 import {mutateTimecard,parseTimecardCommand} from '@/lib/timecards/service';
 import {correctionBoundary,correctionJson,readCorrectionJson} from '@/lib/time-corrections/http.server';
 export const runtime='nodejs';
@@ -15,5 +16,5 @@ export async function POST(request:Request):Promise<Response>{
     const result=await mutateTimecard(await requireSessionMutationProof(),command);
     return correctionJson(result,['approved','finalized','reopened'].includes(result.status)?200:
       result.status==='blocked'||result.status==='conflict'?409:503);
-  }catch{return correctionJson({status:'unavailable'},503);}
+  }catch(error){return failed('/api/manager/timecards',error,correctionJson({status:'unavailable'},503));}
 }

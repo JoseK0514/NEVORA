@@ -80,9 +80,12 @@ export type QuietRowProps = {
   icon?: ReactNode;
   /** v5 One look: "tint" draws the avatar as a teal-tinted circle (a row that needs you); "danger" makes the title red. */
   variant?: "tint" | "danger";
+  /** Inspection F8/F9: true loads a short fixed list's destinations in full ahead of the tap (no skeleton flash);
+   * false stops a long list's rows each prefetching a page. Omitted keeps Next's default. */
+  prefetch?: boolean;
 };
 
-export function QuietRow({ title, detail, value, tone, avatar, href, control, chevron, label, one, id, bare, icon, variant }: QuietRowProps) {
+export function QuietRow({ title, detail, value, tone, avatar, href, control, chevron, label, one, id, bare, icon, variant, prefetch }: QuietRowProps) {
   const leading = avatar === undefined || avatar === null ? null
     : avatar === "open" ? <span className="q-av q-av--open" aria-hidden="true"><PlusIcon className="q-ic" aria-hidden="true" /></span>
     : typeof avatar === "string" ? <span className={variant === "tint" ? "q-av q-av--tint" : "q-av"} aria-hidden="true">{avatar}</span>
@@ -98,7 +101,7 @@ export function QuietRow({ title, detail, value, tone, avatar, href, control, ch
     {control}
     {showChev ? <CaretRightIcon className="q-chev" aria-hidden="true" /> : null}
   </>;
-  const row = href ? <Link className={className} href={href} aria-label={label}>{body}</Link> : <div className={className} aria-label={label}>{body}</div>;
+  const row = href ? <Link className={className} href={href} aria-label={label} prefetch={prefetch}>{body}</Link> : <div className={className} aria-label={label}>{body}</div>;
   return bare ? row : <li id={id}>{row}</li>;
 }
 

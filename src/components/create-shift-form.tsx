@@ -84,6 +84,8 @@ function NoteBar({ onCancel }: { onCancel: () => void }) {
 
 type Common = {
   action: (data: FormData) => Promise<ConfigurationResult>;
+  /** B19: one id per opened form, so a retried save is recognised as the same shift (New only). */
+  operationId?: string;
   employees: Employee[]; positions: Position[];
   weekStart: string; weekEnd: string; date: string;
   employeeId?: string; positionId?: string; startTime?: string; endTime?: string; isDesignatedLead?: boolean; notes?: string;
@@ -154,6 +156,7 @@ function ShiftForm(props: Common & { mode: "new"; locations: Location[]; locatio
     {props.notice}
     <ConfigurationForm action={action} className="q-shift-form" id={formId}>
       {mode === "new" ? <input type="hidden" name="weekStart" value={formWeek} /> : <input type="hidden" name="shiftId" value={props.shiftId} />}
+      {mode === "new" && props.operationId ? <input type="hidden" name="shiftOperationId" value={props.operationId} /> : null}
       {missingCatalog ? <p className="q-error q-first" role="alert">{!props.locations.length ? "Add a location first. A shift needs one." : "Add an employee first. A shift needs someone to work it."}</p> : null}
       <div className="q-grp q-grp--m"><h2>Who and where</h2></div>
       <ul className="q-list">

@@ -9,7 +9,7 @@ const absent = new Set<string>();
 /** Review fix (38/50): navigations re-ran the read on every pathname change; a count under 20s old is reused. */
 let cached: { at: number; value: number | null } | null = null;
 
-export function useInboxCount(enabled: boolean, pathname: string | null): number | null {
+export function useInboxCount(enabled: boolean, _pathname?: string | null): number | null {
   // Review fix (38/50): a count under 20s old seeds the state, so navigations reuse it instead of refetching.
   const [count, setCount] = useState<number | null>(() => (cached && Date.now() - cached.at < 20_000 ? cached.value : null));
   useEffect(() => {
@@ -37,8 +37,12 @@ export function useInboxCount(enabled: boolean, pathname: string | null): number
     const visibility = () => { if (document.visibilityState === "hidden") { controller?.abort(); setCount(null); } else void read(); };
     if (!(cached && Date.now() - cached.at < 20_000)) void read();
     const timer = window.setInterval(() => void read(), 60_000);
+    // Inspection F10: read on a 60 s interval and when the page becomes visible or focused again, not on every page
+    // change (each read runs Today and the action center on the server).
+    const focus = () => { if (!(cached && Date.now() - cached.at < 20_000)) void read(); };
     document.addEventListener("visibilitychange", visibility);
-    return () => { active = false; controller?.abort(); window.clearInterval(timer); document.removeEventListener("visibilitychange", visibility); };
-  }, [enabled, pathname]);
+    window.addEventListener("focus", focus);
+    return () => { active = false; controller?.abort(); window.clearInterval(timer); document.removeEventListener("visibilitychange", visibility); window.removeEventListener("focus", focus); };
+  }, [enabled]);
   return enabled ? count : null;
 }

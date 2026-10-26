@@ -34,8 +34,13 @@ shift_rows AS (
 entry_rows AS (
  SELECT t.id,t.employee_id AS "employeeId",t.location_id AS "locationId",t.clock_in_at::text AS "clockInAt",t.clock_out_at::text AS "clockOutAt",
   EXISTS(SELECT 1 FROM break_entries b WHERE b.time_entry_id=t.id AND b.break_end_at IS NULL) AS "onBreak"
- FROM time_entries t JOIN locations l ON l.id=t.location_id CROSS JOIN observed o
- WHERE l.workspace_id=$1 AND t.location_id IN (SELECT id FROM scope) AND t.clock_in_at<=o.at AND (t.clock_out_at IS NULL OR EXISTS(SELECT 1 FROM shift_rows s
+ FROM time_entries t JOIN locations l ON l.id=t.location_id CROSS JOIN observed o CROSS JOIN day d
+ WHERE l.workspace_id=$1 AND t.location_id IN (SELECT id FROM scope) AND t.clock_in_at<=o.at
+  -- Inspection B6: a closed entry can only match a shift of yesterday or today, and the EXISTS below already needs
+  -- clock_out_at > that shift's start - ${EARLY_CLOCK_IN_MINUTES} min, which is after the start of the day before
+  -- yesterday. This bound is implied (same rows) and lets time_entries_clock_out_idx skip older history.
+  AND (t.clock_out_at IS NULL OR t.clock_out_at>((d.today-2)::timestamp AT TIME ZONE $3))
+  AND (t.clock_out_at IS NULL OR EXISTS(SELECT 1 FROM shift_rows s
   WHERE s."employeeId"=t.employee_id AND s."locationId"=t.location_id AND t.clock_in_at<s.end_at AND t.clock_out_at>s.start_at-interval '${EARLY_CLOCK_IN_MINUTES} minutes'))
 )
 SELECT jsonb_build_object('observedAt',o.at,'expiresAt',(SELECT expires_at FROM employee_sessions WHERE token_hash=$2),'timeZone',$3::text,'today',d.today::text,

@@ -62,7 +62,11 @@ export default async function RequestsPage({
   const zone = await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
   const sentOn = (at: string) => { try { return new Intl.DateTimeFormat("en-US", { timeZone: zone, month: "short", day: "numeric" }).format(new Date(at)); } catch { return ""; } };
 
-  const notice = params.error ? <p className="q-help q-help--alert" role="alert">Your request wasn’t sent. Check that the end date is on or after the start date. A partial day needs one date and an end time after the start time.</p> : null;
+  // B12/B20: "unavailable" is a lost connection or an unreadable setting, not a form mistake; the sheet keeps the same
+  // request id, so sending again is the same request.
+  const notice = params.error === "unavailable" ? <p className="q-help q-help--alert" role="alert">Your request couldn’t be confirmed. Check your connection and send it again; it won’t be sent twice.</p>
+    : params.error ? <p className="q-help q-help--alert" role="alert">Your request wasn’t sent. Check that the end date is on or after the start date. A partial day needs one date and an end time after the start time.</p> : null;
+  const retryRequestId = params.error === "unavailable" && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(params.requestId ?? "") ? params.requestId! : null;
   const status = params.submitted ? "Your request was sent for manager review." : params.reviewed ? "The request was reviewed." : null;
 
   type Request = (typeof mine)[number];
@@ -104,6 +108,6 @@ export default async function RequestsPage({
       </SheetRow>))}</ul>
       : <p className="q-empty q-empty--lead">{view === "decided" ? "No decided requests yet." : mine.length ? "Nothing waiting." : "No time-off requests yet."}</p>}
     <Link className="q-btn" href="/app/requests?tab=new" scroll={false} data-timeoff-new="">Request time off</Link>
-    <TimeOffSheet open={sheetOpen} closeHref={view === "decided" ? "/app/requests?filter=decided" : "/app/requests"} requestId={randomUUID()} draftOwner={session.id} notice={notice} />
+    <TimeOffSheet open={sheetOpen} closeHref={view === "decided" ? "/app/requests?filter=decided" : "/app/requests"} requestId={retryRequestId ?? randomUUID()} draftOwner={session.id} notice={notice} />
   </QuietPage>;
 }

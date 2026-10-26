@@ -97,7 +97,12 @@ it('actual legacy export/period APIs deny restricted reads, writes, CSV and stor
   const calls=[()=>profilesGET(new Request('http://127.0.0.1/api/payroll-export/profiles',{headers:{'x-nevora-payroll-export':'1'}})),()=>profilesPOST(request('/api/payroll-export/profiles','x-nevora-payroll-export',f.profileInput)),()=>exportPOST(request('/api/payroll-export','x-nevora-payroll-export',f.exportInput)),()=>periodPOST(request('/api/period-close','x-nevora-period-close',{action:'READ',command:period})),()=>artifactGET(new Request('http://127.0.0.1/api/period-close/artifact?id='+f.manifest.id+'&format=csv')),()=>periodPOST(request('/api/period-close','x-nevora-period-close',{action:'POPULATION',command:f.populationInput})),()=>periodPOST(request('/api/period-close','x-nevora-period-close',{action:'MANIFEST',command:f.manifestInput})),()=>periodPOST(request('/api/period-close','x-nevora-period-close',{action:'HANDOFF',command:f.handoffInput}))];
   for(const call of calls)expect((await call()).status).toBe(200);
   await choose(f,'LOCATIONS');const before=await snapshot(f);
-  for(const [index,call] of calls.entries()){const response=await call();expect(response.status).toBe(index===4?403:503);expect(await response.text()).not.toMatch(/Private B|period-private-b|28800000000000|OWNED-B-001/);}
+  // Inspection B13/B15 (Oct 25): a refused READ (export profiles, period close READ, CSV artifact) and a write refused
+  // by its admission check answer 403 access_denied; a write refused inside its transaction keeps 503 "outcome
+  // unconfirmed" (a post-commit fence can refuse too). Nothing leaks and nothing is written.
+  const statuses:number[]=[];
+  for(const call of calls){const response=await call();statuses.push(response.status);expect(await response.text()).not.toMatch(/Private B|period-private-b|28800000000000|OWNED-B-001/);}
+  expect(statuses).toEqual([403,503,503,403,403,503,503,503]);
   expect(await snapshot(f)).toEqual(before);
  }finally{await close(f);}
 });

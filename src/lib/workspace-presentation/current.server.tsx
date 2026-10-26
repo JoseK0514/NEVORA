@@ -32,13 +32,23 @@ export const currentBrand = currentPresentation;
 /** Whether a module is on for this company. Pages render a calm "turned off"
  * page and APIs refuse when it is not. */
 export async function moduleEnabled(id: ModuleId): Promise<boolean> {
+  return (await moduleState(id)) === "on";
+}
+/** Inspection B12: the gate in three states. "unknown" means the saved settings exist but could not be read just now
+ * (a database blip): it still fails closed for access (moduleEnabled is false), but actions and APIs answer "try
+ * again" instead of silently dropping a request or saying the module is turned off. */
+export async function moduleState(id: ModuleId): Promise<"on" | "off" | "unknown"> {
   const current = await currentPresentation();
-  return !current.fallback && current.modules[id];
+  if (current.fallback) return "unknown";
+  return current.modules[id] ? "on" : "off";
 }
 
 /** For pages: the "turned off" page when a module is off, otherwise null. */
 export async function moduleGate(id: ModuleId) {
-  if (await moduleEnabled(id)) return null;
+  const state = await moduleState(id);
+  if (state === "on") return null;
+  // B12: settings that could not be read are not "turned off"; the page's error screen offers Try again instead.
+  if (state === "unknown") throw new Error("workspace_settings_unavailable");
   const [session, workspace] = await Promise.all([getSession(), getWorkspace().catch(() => null)]);
   return <ModuleOff module={id} workspaceName={workspace?.name ?? "Your company"} owner={session?.role === "OWNER"} />;
 }

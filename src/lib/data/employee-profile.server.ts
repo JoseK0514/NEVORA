@@ -6,6 +6,7 @@ import {parseEmployeeView,type EmployeeViewSnapshot} from '../employee-view';
 import {neonNotificationExecutor} from './notification-transactions';
 import {assertManagementProof,isManagementAuthorizationError,managementSessionStatements} from './management-session';
 import {getWorkspace,workspaceReadSql,workspaceReadGuard} from './workspaces';
+import {READ_SNAPSHOT} from './read-snapshot';
 
 export const employeeReadLimits:SqlStatement[]=[{text:"SET LOCAL lock_timeout='1500ms'",values:[]},{text:"SET LOCAL statement_timeout='2500ms'",values:[]}];
 /** Only the canonical workspace read is accepted here; even bootstrap is
@@ -30,10 +31,28 @@ export function employeeViewGuards(proof:SessionMutationProof,workspace:Workspac
   {text:'SELECT id FROM locations WHERE workspace_id=$1 ORDER BY id FOR SHARE',values:[workspace.id]},
   {text:'LOCK TABLE employee_location_eligibility IN SHARE MODE',values:[]},
   ...managementSessionStatements(proof,proof.employee.id,[proof.employee.role]),
-  ...(requireLocation ? [{text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations l ON l.active AND l.workspace_id=$2
-    WHERE e.id=$1 AND (l.id=e.primary_location_id OR EXISTS(SELECT 1 FROM employee_location_eligibility el WHERE el.employee_id=e.id AND el.location_id=l.id)))
-    THEN '1' ELSE 'management_authorization' END)::integer AS employee_context_guard`,values:[proof.employee.id,workspace.id]}] : []),
+  ...(requireLocation ? [employeeContextGuard(proof,workspace)] : []),
  ];
+}
+function employeeContextGuard(proof:SessionMutationProof,workspace:Workspace):SqlStatement{
+ return {text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations l ON l.active AND l.workspace_id=$2
+    WHERE e.id=$1 AND (l.id=e.primary_location_id OR EXISTS(SELECT 1 FROM employee_location_eligibility el WHERE el.employee_id=e.id AND el.location_id=l.id)))
+    THEN '1' ELSE 'management_authorization' END)::integer AS employee_context_guard`,values:[proof.employee.id,workspace.id]};
+}
+/** Read-only batches open with this: one REPEATABLE READ READ ONLY snapshot, then the same 1.5 s / 2.5 s bounds. */
+export const employeeSnapshotLimits:SqlStatement[]=[READ_SNAPSHOT,...employeeReadLimits];
+/** The employeeViewGuards checks without their locks, for batches that start with employeeSnapshotLimits (B3/B4).
+ * The company version, the exact session, role and expiry, and the eligible-location context are checked in the
+ * same snapshot as the data the batch reads, so authority and data still describe one instant. Use it for source
+ * observations only: the read's final release check keeps the locked employeeViewGuards, so an authority change
+ * (role, session, location, eligibility) already in flight when the read ends is still waited for and honoured
+ * before anything is returned. Writes keep their own locked guards. */
+export function employeeSnapshotGuards(proof:SessionMutationProof,workspace:Workspace,requireLocation=true):SqlStatement[]{
+ return [workspaceReadGuard(workspace)[1],employeeSessionCheck(proof),...(requireLocation?[employeeContextGuard(proof,workspace)]:[])];
+}
+/** managementSessionStatements' check without its FOR SHARE session lock. */
+export function employeeSessionCheck(proof:SessionMutationProof):SqlStatement{
+ return managementSessionStatements(proof,proof.employee.id,[proof.employee.role])[1];
 }
 export async function readEmployeeProfile(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<EmployeeViewSnapshot>{
  try{assertEmployeeViewProof(proof);}catch{return {state:'unavailable',reason:'access_denied'};}

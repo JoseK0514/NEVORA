@@ -47,6 +47,9 @@ export const metadata: Metadata = {
   icons: { apple: [{ url: "/icons/fuel-apple-180.png", sizes: "180x180", type: "image/png" }] },
 };
 
+/** Observe a started read's rejection without consuming it; awaiting the promise later still throws. */
+function settle<T>(read: Promise<T>): Promise<T> { read.catch(() => undefined); return read; }
+
 /** The browser chrome follows the company header colour (B1). */
 export async function generateViewport(): Promise<Viewport> {
   return { themeColor: (await currentBrand()).tokens?.masthead ?? DEFAULT_TOKENS.masthead };
@@ -62,13 +65,20 @@ export async function generateViewport(): Promise<Viewport> {
 export default async function PlatformLayout({ children, sheet }: { children: ReactNode; sheet: ReactNode }) {
   // Wave C ST-11: fetch Inter with the page, so the first visit doesn't paint in a fallback font and then rewrap.
   preload("/fonts/typeface/inter/variable.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
-  const session = await requireSession();
-  const workspace = await getWorkspace();
-  const proof = await requireSessionMutationProof();
-  const [operationalAuthority,payrollCapabilities]=await Promise.all([readOperationalAuthority(proof),payrollFeatureEnabled()?readPayrollCapabilities(proof):Promise.resolve(undefined)]);
+  // Inspection F12: the session, company, proof, cookies and brand reads are independent, so they start together
+  // (the proof re-reads the session itself). They are awaited in the old order, so a missing session still redirects
+  // to sign-in before any other failure is reported; `settle` only stops a later rejection from going unobserved.
+  const sessionRead = settle(requireSession()), workspaceRead = settle(getWorkspace()), proofRead = settle(requireSessionMutationProof());
+  const cookieRead = settle(cookies()), brandRead = currentBrand();
+  const session = await sessionRead;
+  const workspace = await workspaceRead;
+  const proof = await proofRead;
+  // Payroll capabilities only decide which payroll entries the navigation shows (every payroll API re-checks with
+  // its own locks), so a failed read hides those entries instead of replacing the whole app with an error (B1, B11).
+  const [operationalAuthority,payrollCapabilities]=await Promise.all([readOperationalAuthority(proof),payrollFeatureEnabled()?readPayrollCapabilities(proof).catch(()=>undefined):Promise.resolve(undefined)]);
   const preferenceCookie = "nevora_sidebar_" + createHash("sha256").update(workspace.id + ":" + session.id).digest("hex").slice(0,16);
-  const initialCollapsed = (await cookies()).get(preferenceCookie)?.value === "collapsed";
-  const brand = await currentBrand();
+  const initialCollapsed = (await cookieRead).get(preferenceCookie)?.value === "collapsed";
+  const brand = await brandRead;
   return (
     <AppShell
       key={session.id}
