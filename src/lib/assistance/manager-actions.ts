@@ -1,11 +1,9 @@
 import { coverageRepairUrl, reportedCoverageState } from '../scheduling/coverage-repair';
-import { formatDisplayDate, formatTime } from '../date-utils';
+import { formatDisplayDate, formatTimeRange } from '../date-utils';
 
-/** "Mon, Oct 12 · 8:00 AM–4:00 PM" for people; ids and links keep ISO values. */
+/** "Mon, Oct 12 · 8:00 AM – 4:00 PM" (or "All day") for people, the one time-range form; ids and links keep ISO values. */
 function gapWhen(gap: { date: string; startTime: string; endTime: string }) {
-  const start = gap.startTime.slice(0, 5), end = gap.endTime.slice(0, 5);
-  const when = start === "00:00" && end === "24:00" ? "all day" : `${formatTime(start)}–${end === "24:00" ? "midnight" : formatTime(end)}`;
-  return `${formatDisplayDate(gap.date)} · ${when}`;
+  return `${formatDisplayDate(gap.date)} · ${formatTimeRange(gap.startTime.slice(0, 5), gap.endTime.slice(0, 5))}`;
 }
 
 export type ManagerActionPriority =
