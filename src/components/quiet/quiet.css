@@ -21,6 +21,7 @@
 :is(#q-root, html) .q-ic--s { width: 14px; height: 14px; }
 :is(#q-root, html) .q-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 
+/* Text never uses --q-soft (#8A8A87, 3.5:1 on white): readable grey text is --q-grey (5.3:1). */
 /* Top bars. The status bar area is the safe-area inset, so a browser tab starts at the bar. */
 :is(#q-root, html) .q-bar, :is(#q-root, html) .q-nav { height: 44px; padding: var(--q-safe-top, env(safe-area-inset-top, 0px)) 20px 0; box-sizing: content-box; }
 :is(#q-root, html) .q-bar { display: flex; align-items: center; gap: 20px; }
@@ -100,7 +101,7 @@ a.q-row:active, button.q-row:active { background: var(--q-press); }
 :is(#q-root, html) .q-in { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; height: 50px; min-height: 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-ink); font: inherit; letter-spacing: inherit; }
 input.q-in, select.q-in, textarea.q-in { outline: none; }
 :is(#q-root, html) .q-in::placeholder { color: var(--q-grey); }
-:is(#q-root, html) .q-in--ph { color: var(--q-soft); }
+:is(#q-root, html) .q-in--ph { color: var(--q-grey); }
 :is(#q-root, html) .q-in:focus, :is(#q-root, html) .q-in:focus-within { box-shadow: inset 0 0 0 2px var(--q-ink); }
 :is(#q-root, html) .q-in:focus-visible { outline: none; }
 textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; align-items: flex-start; }
@@ -171,7 +172,7 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-in__wrap { position: relative; display: block; }
 :is(#q-root, html) .q-in__caret { position: absolute; right: 16px; top: 18px; width: 14px; height: 14px; color: var(--q-soft); pointer-events: none; }
 :is(#q-root, html) .q-in__wrap--unit .q-in { padding-right: 56px; }
-:is(#q-root, html) .q-in__unit { position: absolute; right: 16px; top: 14px; font-size: 17px; line-height: 22px; color: var(--q-soft); pointer-events: none; }
+:is(#q-root, html) .q-in__unit { position: absolute; right: 16px; top: 14px; font-size: 17px; line-height: 22px; color: var(--q-grey); pointer-events: none; }
 :is(#q-root, html) .q-note { display: block; margin: 16px 20px 0; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
 :is(#q-root, html) .q-note__title { display: block; font-weight: 600; color: var(--q-ink); }
 :is(#q-root, html) .q-note[data-tone="urgent"] .q-note__title, :is(#q-root, html) .q-note[data-tone="urgent"] { color: var(--q-red); }
@@ -261,7 +262,7 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-compose .wb-label-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
 :is(#q-root, html) .q-compose .wb-field > label, :is(#q-root, html) .q-compose .wb-label-row label { display: block; margin-bottom: 8px; font-size: 15px; line-height: 20px; color: var(--q-grey); letter-spacing: -.1px; }
 :is(#q-root, html) .q-compose .wb-label-row label { margin: 0; }
-:is(#q-root, html) .q-compose .wb-counter { font-size: 13px; line-height: 20px; color: var(--q-soft); }
+:is(#q-root, html) .q-compose .wb-counter { font-size: 13px; line-height: 20px; color: var(--q-grey); }
 :is(#q-root, html) .q-compose .wb-control { display: block; width: 100%; height: 50px; min-height: 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-fill); color: var(--q-ink); font: inherit; font-size: 17px; line-height: 22px; appearance: none; -webkit-appearance: none; outline: none; }
 :is(#q-root, html) .q-compose textarea.wb-control { height: 120px; padding-top: 14px; resize: none; }
 :is(#q-root, html) .q-compose .wb-control:focus { box-shadow: inset 0 0 0 2px var(--q-ink); }
@@ -549,7 +550,7 @@ html:has(.q-auth), body:has(.q-auth) { background: var(--q-bg) !important; }
 /* Payroll (v4): the summary on phones; wider screens go straight to the review. */
 @media (min-width: 761px) { :is(#q-root, html) .q-payroll-phone, :is(#q-root, html) .q-payroll-back { display: none; } }
 @media (max-width: 760px) { :is(#q-root, html) .q-payroll-review[data-home] { display: none; } }
-:is(#q-root, html) .q-doc__links { margin: 32px 20px 24px; font-size: 13px; line-height: 18px; color: var(--q-soft); text-align: center; }
+:is(#q-root, html) .q-doc__links { margin: 32px 20px 24px; font-size: 13px; line-height: 18px; color: var(--q-grey); text-align: center; }
 :is(#q-root, html) .q-doc__links a { color: var(--q-grey); text-decoration: none; }
 :is(#q-root, html) .q-doc__links [aria-current] { color: var(--q-ink); }
 :is(#q-root, html) .q-hours__updated { margin: -4px 20px 12px 72px; }
