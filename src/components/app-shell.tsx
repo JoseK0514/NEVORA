@@ -124,7 +124,9 @@ function AppShellView({
   const deeper = !!activeItem && !activeTool && pathname !== activeItem.href;
   // A page whose own entry left the sidebar (Time off under Inbox, Time exports under Timecards) still ends the trail with its own name,
   // and so do Home's views (IS-P4-09), which share Home's address.
-  const view = useSearchParams()?.get("view");
+  const searchParams = useSearchParams();
+  const view = searchParams?.get("view");
+  const exchangeTab = searchParams?.get("tab");
   const homeView = !employee && pathname === "/app" && view && view in HOME_VIEWS ? { href: `/app?view=${view}`, label: HOME_VIEWS[view as keyof typeof HOME_VIEWS] } : undefined;
   // WR4-07: a section tab with no navigation entry of its own (Payroll settings) also ends the trail with its name.
   const currentTab = sectionTabs?.items.find(item => item.href === pathname);
@@ -260,7 +262,7 @@ function AppShellView({
       id={employee ? "employee-mobile" : undefined}
       data-employee-mobile={employee ? "true" : undefined}
       data-employee-mobile-active={employeeMobile ? "true" : undefined}
-      data-employee-mobile-page={employee ? pathname === "/app" ? "home" : pathname === "/app/schedule" ? "schedule" : pathname === "/app/requests/hub" || pathname === "/app/exchange" ? "requests" : "other" : undefined}
+      data-employee-mobile-page={employee ? pathname === "/app" ? "home" : pathname === "/app/schedule" ? "schedule" : pathname === "/app/requests/hub" || pathname === "/app/exchange" && !['foryou','requests','my','history'].includes(exchangeTab??'') ? "requests" : "other" : undefined}
       data-nv-clean={employee ? undefined : ""}
       // Quiet (v4, Jose approved Oct 23, docs/product/specs/owner-v4-quiet): the Owner and Manager pages and their tab bar.
       data-nv-quiet=""
