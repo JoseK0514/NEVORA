@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { Client } from 'pg';
+import { Client, Pool } from 'pg';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 
 /** Keep this a literal equal to db/migrations/order.ts BASE_MIGRATIONS: the
@@ -43,7 +43,9 @@ export const CURRENT_MIGRATIONS = [
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every
- * batch owns a connection: concurrent tests exercise actual PostgreSQL locks. */
+ * batch exclusively leases a connection: concurrent tests exercise actual
+ * PostgreSQL locks. Reset successful sessions before reuse; failed or aborted
+ * sessions are destroyed so a late cancellation cannot reach another batch. */
 async function createOwnedDatabase(prefix: 'fuel_phase3_test_' | 'nevora_foundation_test_' | 'nevora_generation_test_' | 'nevora_exchange_test_', migrations: number): Promise<{
   executor: SqlExecutor; connectionString: string; dispose(): Promise<void>;
 }> {
@@ -85,10 +87,12 @@ async function createOwnedDatabase(prefix: 'fuel_phase3_test_' | 'nevora_foundat
     } finally { await admin.end(); }
     throw error;
   }
+  const pool = new Pool({ connectionString: target.href, connectionTimeoutMillis: 3000, statement_timeout: 5000, max: 20 });
   let disposed = false;
   const dispose = async () => {
     if (disposed) return;
     await assertOwned();
+    await pool.end();
     await admin.query(`DROP DATABASE "${name}" WITH (FORCE)`);
     if ((await admin.query('SELECT 1 FROM pg_database WHERE datname=$1', [name])).rowCount) {
       throw new Error('Disposable database remains after teardown.');
@@ -99,9 +103,9 @@ async function createOwnedDatabase(prefix: 'fuel_phase3_test_' | 'nevora_foundat
   const run = async (statements: readonly SqlStatement[], transaction: boolean, signal?: AbortSignal) => {
     signal?.throwIfAborted();
     if (disposed) throw new Error('Disposable database was disposed.');
-    const client = new Client({ connectionString: target.href, connectionTimeoutMillis: 3000, statement_timeout: 5000 });
-    await client.connect();
+    const client = await pool.connect();
     let pid: number | undefined;
+    let failed = false;
     const abort = () => { if (pid !== undefined) void admin.query('SELECT pg_cancel_backend($1)', [pid]).catch(() => {}); };
     try {
       [{ pid }] = (await client.query('SELECT pg_backend_pid() AS pid')).rows;
@@ -118,9 +122,16 @@ async function createOwnedDatabase(prefix: 'fuel_phase3_test_' | 'nevora_foundat
       if (transaction) await client.query('COMMIT');
       return results;
     } catch (error) {
+      failed = true;
       if (transaction) await client.query('ROLLBACK').catch(() => {});
       throw error;
-    } finally { signal?.removeEventListener('abort', abort); await client.end(); }
+    } finally {
+      signal?.removeEventListener('abort', abort);
+      try {
+        if (!failed && !signal?.aborted) await client.query('DISCARD ALL');
+      } catch (error) { failed = true; throw error; }
+      finally { client.release(failed || signal?.aborted); }
+    }
   };
   const executor: SqlExecutor = {
     query: async <T>(statement: SqlStatement, signal?: AbortSignal) => (await run([statement], false, signal))[0] as T[],

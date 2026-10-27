@@ -10,8 +10,8 @@ const state = vi.hoisted(() => ({
   failConnect: false,
 }));
 
-vi.mock('pg', () => ({
-  Client: class {
+vi.mock('pg', () => {
+  class Client {
     record: (typeof state.clients)[number];
     constructor(options: { connectionString: string }) {
       this.record = { database: new URL(options.connectionString).pathname, statements: [], ended: false };
@@ -41,8 +41,27 @@ vi.mock('pg', () => ({
       }
       return { rows: [] };
     }
-  },
-}));
+  }
+  return { Client, Pool: class {
+    idle: Client[] = [];
+    clients: Client[] = [];
+    constructor(private options: { connectionString: string }) {}
+    async connect() {
+      let client = this.idle.pop();
+      if (!client) {
+        client = new Client(this.options);
+        try { await client.connect(); } catch (error) { await client.end(); throw error; }
+        this.clients.push(client);
+      }
+      const leased = client;
+      return Object.assign(leased, { release: (destroy = false) => {
+        state.events.push(`release:${destroy ? 'destroy' : 'reset'}`);
+        if (destroy) void leased.end(); else this.idle.push(leased);
+      } });
+    }
+    async end() { await Promise.all(this.clients.filter(client => !client.record.ended).map(client => client.end())); }
+  } };
+});
 
 import { CURRENT_MIGRATIONS, createDisposableFoundationDatabase } from './local-postgres';
 
@@ -73,10 +92,49 @@ it('runs exact migration files sequentially on one closed bootstrap connection, 
       db.executor.query({ text: 'SELECT 22', values: [] }),
     ]);
     expect(state.clients.slice(2).map(client => client.statements)).toEqual([
-      ['SELECT pg_backend_pid() AS pid', 'SELECT 11'],
-      ['SELECT pg_backend_pid() AS pid', 'SELECT 22'],
+      ['SELECT pg_backend_pid() AS pid', 'SELECT 11', 'DISCARD ALL'],
+      ['SELECT pg_backend_pid() AS pid', 'SELECT 22', 'DISCARD ALL'],
     ]);
-    expect(state.clients.slice(2).every(client => client.ended)).toBe(true);
+    expect(state.clients.slice(2).every(client => !client.ended)).toBe(true);
+  } finally { await db.dispose(); }
+  expect(state.clients.every(client => client.ended)).toBe(true);
+});
+
+it('reuses a reset runtime connection across serial batches and closes it before owned teardown', async () => {
+  const db = await createDisposableFoundationDatabase({ mode: 'empty' });
+  try {
+    await db.executor.query({ text: 'SELECT 11', values: [] });
+    await db.executor.query({ text: 'SELECT 22', values: [] });
+    expect(state.clients).toHaveLength(2);
+    expect(state.clients[1].statements).toEqual(['SELECT pg_backend_pid() AS pid', 'SELECT 11', 'DISCARD ALL', 'SELECT pg_backend_pid() AS pid', 'SELECT 22', 'DISCARD ALL']);
+    expect(state.events).toEqual(['release:reset', 'release:reset']);
+  } finally { await db.dispose(); }
+  expect(state.events).toEqual(['release:reset', 'release:reset', 'end:/nevora_foundation_test_bootstrap', 'drop', 'end:/postgres']);
+});
+
+it('destroys a failed transaction connection after rollback and gives the next batch a fresh backend', async () => {
+  const db = await createDisposableFoundationDatabase({ mode: 'empty' });
+  try {
+    state.failSql = 'SELECT broken';
+    await expect(db.executor.transaction([{ text: state.failSql, values: [] }])).rejects.toThrow('fixture-migration-failed');
+    expect(state.clients[1].statements).toEqual(['SELECT pg_backend_pid() AS pid', 'BEGIN', 'SELECT broken', 'ROLLBACK']);
+    expect(state.clients[1].ended).toBe(true);
+    expect(state.events).toContain('release:destroy');
+    state.failSql = '';
+    await db.executor.query({ text: 'SELECT 22', values: [] });
+    expect(state.clients).toHaveLength(3);
+  } finally { await db.dispose(); }
+});
+
+it('fails a batch whose session reset fails and retires that connection before reuse', async () => {
+  const db = await createDisposableFoundationDatabase({ mode: 'empty' });
+  try {
+    state.failSql = 'DISCARD ALL';
+    await expect(db.executor.query({ text: 'SELECT 11', values: [] })).rejects.toThrow('fixture-migration-failed');
+    expect(state.clients[1].ended).toBe(true);
+    state.failSql = '';
+    await db.executor.query({ text: 'SELECT 22', values: [] });
+    expect(state.clients).toHaveLength(3);
   } finally { await db.dispose(); }
 });
 

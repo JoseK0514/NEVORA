@@ -24,6 +24,31 @@ beforeEach(async()=>{
  await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) VALUES('home-leave',$1,'2030-11-01','2030-11-01','APPROVED','PRIVATE OWN REASON'),('foreign-leave',$2,'2030-11-02','2030-11-02','APPROVED','OTHER PRIVATE REASON')",fixture.actors.slice(0,2));
 });
 afterEach(async()=>{await db?.dispose();});
+it('owned SQL transport resets reused sessions and keeps concurrent transaction backends independent',async()=>{
+ const [initial]=await q('SELECT pg_backend_pid() AS pid') as {pid:number}[];
+ await q("SET nevora.fixture_probe='private fixture state'");
+ await q('CREATE TEMP TABLE fixture_transport_probe(n integer)');
+ const [clean]=await q("SELECT pg_backend_pid() AS pid,NULLIF(current_setting('nevora.fixture_probe',true),'') AS setting,to_regclass('pg_temp.fixture_transport_probe')::text AS temporary,current_setting('statement_timeout') AS timeout") as {pid:number;setting:string|null;temporary:string|null;timeout:string}[];
+ expect(clean).toEqual({pid:initial.pid,setting:null,temporary:null,timeout:'5s'});
+ const batches=await Promise.all([1,2].map(()=>db.executor.transaction([{text:'SELECT pg_backend_pid() AS pid',values:[]},{text:'SELECT pg_sleep(0.05)',values:[]}])));
+ expect(new Set(batches.map(rows=>(rows[0][0] as {pid:number}).pid)).size).toBe(2);
+});
+it('owned SQL cancellation retires its backend before another batch can reuse it',async()=>{
+ const controller=new AbortController();
+ const pending=db.executor.transaction([{text:'SELECT pg_sleep(3)',values:[]}],controller.signal).then(()=>null,error=>error);
+ try{
+  let sleepingPid:number|undefined;const deadline=performance.now()+2000;
+  while(performance.now()<deadline){
+   const rows=await q("SELECT pid FROM pg_stat_activity WHERE datname=current_database() AND state='active' AND query=$1",['SELECT pg_sleep(3)']) as {pid:number}[];
+   if(rows.length){sleepingPid=rows[0].pid;break;}
+   await new Promise(resolve=>setTimeout(resolve,10));
+  }
+  expect(sleepingPid).toBeDefined();controller.abort(Error('Owned fixture cancellation control'));
+  expect(await pending).toBeInstanceOf(Error);
+  const [next]=await q('SELECT pg_backend_pid() AS pid,17 AS value') as {pid:number;value:number}[];
+  expect(next.value).toBe(17);expect(next.pid).not.toBe(sleepingPid);
+ }finally{controller.abort();await pending;}
+});
 it('fictional browser-cell Owners retain independent real sign-in budgets without disabling rate limits',async()=>{
  const first=await seedOwnedScenarioOwner(db.executor,'HSQL1'),second=await seedOwnedScenarioOwner(db.executor,'HSQL2');
  expect(first).not.toBe(second);
