@@ -73,7 +73,7 @@ it('CR-2 bounds held notification opens and fences stale results across private 
     }else{
      if(mode==='pause'){await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await page.locator('.em-messages[data-messages-state="paused"]').waitFor();await page.evaluate(()=>window.dispatchEvent(new Event('focus')));}
      else await panel().getByRole('button',{name:'Refresh',exact:true}).click();
-     await ready('notifications');expect(await panel().getByText('Opening current details…',{exact:true}).count()).toBe(0);
+     await ready('notifications');await panel().getByText('Your information only',{exact:true}).waitFor();expect(await panel().getByText('Opening current details…',{exact:true}).count()).toBe(0);
      await panel().locator('.em-message-list a').nth(1).click();await ready('detail');const target=page.url();
      release();await done;expect(page.url()).toBe(target);await shot(mode+'-new-open');
      await panel().getByRole('link',{name:'Notifications',exact:true}).click();await ready('notifications');
@@ -85,7 +85,7 @@ it('CR-2 bounds held notification opens and fences stale results across private 
 });
 
 it('UI-COM-001 associates actual invalid fields and restores deliberate review after corrections',async()=>{
- for(const engine of engines)await withPage(engine,'form-and-original',async(page,ready,shot,fault)=>{
+ for(const engine of engines)await withPage(engine,'form-and-original',async(page,ready,shot)=>{
   const panel=()=>page.locator('.em-messages:visible');await page.goto(app.url+'/app/updates');await ready('updates');
   await panel().getByRole('link',{name:'Write an update',exact:true}).click();await ready('compose');
   await page.getByLabel('Today’s team location',{exact:true}).selectOption('loc-1');await page.getByLabel('Title',{exact:true}).fill('Valid original '+engine);await page.getByLabel('Message',{exact:true}).fill('Fictional body.');
@@ -123,5 +123,22 @@ it('CR-3/CR-1 preserve optional read facts and recover a refused original lookup
   }finally{await saveWorkspacePresentation(owner,{operationId:randomUUID(),expectedRevision:revision+1,section:'modules',disabled:[]},app.database.executor);}
   await panel().getByRole('button',{name:'Refresh',exact:true}).click();await ready('compose');await panel().locator('button:enabled').filter({hasText:/^Check submission status$/}).waitFor();await panel().getByRole('button',{name:'Check submission status',exact:true}).click();await panel().getByRole('heading',{name:'Update published',exact:true}).waitFor();expect(sent).toBe(1);
   expect((await q<{n:number}>('SELECT count(*)::integer AS n FROM communication_operations WHERE operation_id=$1 AND actor_employee_id=$2',[operationId,actors[engines.indexOf(engine)]]))[0].n).toBe(1);await shot('original-recovered');fault(false);checks.push({engine,name:'CR-1 real module-refused lookup retains exact committed original for deliberate recovery without another publication'});
+ });
+});
+
+
+it('UI-COM-R1 immediately fences an actual committed late publication reply while Updates is off',async()=>{
+ for(const engine of engines)await withPage(engine,'late-committed-module-fence',async(page,ready,shot,fault)=>{
+  const panel=()=>page.locator('.em-messages:visible');await page.goto(app.url+'/app/updates');await ready('updates');await panel().getByRole('link',{name:'Write an update',exact:true}).click();await ready('compose');
+  await page.getByLabel('Today’s team location',{exact:true}).selectOption('loc-1');await page.getByLabel('Title',{exact:true}).fill('Late original '+engine);await page.getByLabel('Message',{exact:true}).fill('Fictional committed original.');await panel().getByRole('button',{name:'Review audience',exact:true}).click();await panel().getByRole('button',{name:'Send update',exact:true}).waitFor();
+  let release:()=>void=()=>{},handled:()=>void=()=>{},committed:()=>void=()=>{},operationId='';const gate=new Promise<void>(resolve=>{release=resolve;}),done=new Promise<void>(resolve=>{handled=resolve;}),saved=new Promise<void>(resolve=>{committed=resolve;});
+  await page.route('**/api/employee/communications',async(route:any)=>{operationId=route.request().postDataJSON().operationId;try{const response=await route.fetch();expect(response.status()).toBe(200);expect((await response.json()).status).toBe('committed');committed();await gate;await route.fulfill({response});}finally{handled();}});
+  const revision=(await q<{revision:number}>('SELECT revision FROM nevora_workspace_presentation_revisions ORDER BY revision DESC LIMIT 1'))[0]?.revision??0;let disabled=false;fault(true);
+  try{
+   await panel().getByRole('button',{name:'Send update',exact:true}).click();await panel().getByText('Checking your submission…',{exact:true}).waitFor();await saved;
+   await saveWorkspacePresentation(owner,{operationId:randomUUID(),expectedRevision:revision,section:'modules',disabled:['updates']},app.database.executor);disabled=true;await panel().getByRole('button',{name:'Refresh',exact:true}).click();await panel().getByText('Updates are turned off for your workspace.',{exact:false}).waitFor();await panel().getByText('The result hasn’t been confirmed.',{exact:false}).waitFor();
+   release();await done;await panel().getByText('The result hasn’t been confirmed.',{exact:false}).waitFor();expect(await panel().getByRole('heading',{name:'Update published',exact:true}).count()).toBe(0);expect(await page.getByLabel('Title',{exact:true}).count()).toBe(0);expect(await panel().getByRole('button',{name:'Check submission status',exact:true}).isDisabled()).toBe(true);await shot('after-release');await writeFile(evidence+'/'+engine+'-late-committed-after-release.html',await panel().innerHTML());
+  }finally{release();await done;await page.unroute('**/api/employee/communications');if(disabled)await saveWorkspacePresentation(owner,{operationId:randomUUID(),expectedRevision:revision+1,section:'modules',disabled:[]},app.database.executor);}
+  await panel().getByRole('button',{name:'Refresh',exact:true}).click();await ready('compose');await panel().locator('button:enabled').filter({hasText:/^Check submission status$/}).waitFor();await panel().getByRole('button',{name:'Check submission status',exact:true}).click();await panel().getByRole('heading',{name:'Update published',exact:true}).waitFor();expect((await q<{n:number}>('SELECT count(*)::integer AS n FROM communication_operations WHERE operation_id=$1 AND actor_employee_id=$2',[operationId,actors[engines.indexOf(engine)]]))[0].n).toBe(1);fault(false);checks.push({engine,name:'UI-COM-R1 late actual committed reply stays fenced; deliberate restored original lookup succeeds'});
  });
 });

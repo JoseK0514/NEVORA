@@ -36,6 +36,8 @@ export function createCommunicationRecovery(request:(path:string,body:unknown,si
     if(!matchesReceipt(result,command,operationId)){publish({notice:'unknown',canRetry:false});return;}
     command=null;operationId=null;publish({notice:'committed',canRetry:false});onCommit(result);
    }else if(result.status==='conflict'||result.status==='blocked'||'state'in result&&result.state==='unauthorized'){
+    // A refused lookup cannot prove that the original submission did not commit.
+    if(lookup){authorized=false;fence();publish({pending:false,notice:'unknown',canRetry:false});onBlocked();return;}
     command=null;operationId=null;if(result.status!=='conflict')onBlocked();publish({notice:result.status==='conflict'?'conflict':'httpStatus'in result&&result.httpStatus===401?'signed-out':'blocked',canRetry:false});
    }else publish({notice:operationId?'unknown':'unavailable',canRetry:lookup&&result.status==='unavailable'&&result.reason==='operation_not_found'});
   }catch{if(sequence===generation&&authorized)publish({notice:operationId?'unknown':'unavailable',canRetry:false});}

@@ -15,6 +15,12 @@ function scope(v:unknown):CommunicationScope|null{
  if(v.kind==='SHIFT'&&keys(v,['kind','locationId','sourceShiftId','assignmentEpisodeId','termsFingerprint'])&&id(v.sourceShiftId)&&id(v.assignmentEpisodeId)&&id(v.termsFingerprint))return {kind:v.kind,locationId:v.locationId,sourceShiftId:v.sourceShiftId,assignmentEpisodeId:v.assignmentEpisodeId,termsFingerprint:v.termsFingerprint};
  return null;
 }
+// Shared by canonical draft validation and field-specific client feedback.
+export function validCommunicationText(value:unknown,field:'title'|'body'):value is string{
+ if(typeof value!=='string')return false;
+ const normalized=value.replace(/\r\n?/g,'\n'),text=normalized.trim(),length=[...text].length;
+ return !unsafe.test(normalized)&&(field!=='title'||!text.includes('\n'))&&length>=1&&length<=(field==='title'?120:2000);
+}
 /** Normalize CRLF/outer whitespace while rejecting hidden controls, unexpected fields
  * and incompatible type/scope pairs. Text limits count Unicode code points; transport
  * capacity counts UTF-8 bytes. Authorization and future-expiry checks are separate. */
@@ -25,7 +31,7 @@ export function validateCommunicationDraft(input:unknown):Validation{
   if(typeof input.title!=='string'||typeof input.body!=='string')return {ok:false,reason:'text'};
   const title=input.title.replace(/\r\n?/g,'\n').trim(),body=input.body.replace(/\r\n?/g,'\n').trim();
   // Check controls before trimming as well, so a leading tab/control cannot disappear.
-  if(unsafe.test(input.title.replace(/\r\n?/g,'\n'))||unsafe.test(input.body.replace(/\r\n?/g,'\n'))||title.includes('\n')||[...title].length<1||[...title].length>120||[...body].length<1||[...body].length>2000)return {ok:false,reason:'text'};
+  if(!validCommunicationText(input.title,'title')||!validCommunicationText(input.body,'body'))return {ok:false,reason:'text'};
   const selected=scope(input.scope);if(!selected)return {ok:false,reason:'scope'};
   if((input.type==='TODAYS_TEAM'&&selected.kind!=='TODAYS_TEAM')||(input.type==='LOCATION_ANNOUNCEMENT'&&selected.kind!=='LOCATION')||(input.type==='SHIFT_NOTE'&&selected.kind!=='SHIFT')||(input.type==='TODAYS_TEAM'&&input.acknowledgement==='REQUIRED'))return {ok:false,reason:'scope'};
   if(input.expiresAt!==null&&(typeof input.expiresAt!=='string'||!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/.test(input.expiresAt)||!Number.isFinite(Date.parse(input.expiresAt))||!isValidIsoDate(input.expiresAt.slice(0,10))))return {ok:false,reason:'shape'};

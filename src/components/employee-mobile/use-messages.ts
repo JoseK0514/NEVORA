@@ -13,8 +13,9 @@ export function useMessages(authority:string,view:MessageView,selection:string){
   return()=>{mounted=false;live.current=null;controller.stop();control.current=null;pause?.();document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,suspend);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
  },[authority,view,selection,core,pause]);
  const refresh=useCallback(()=>control.current?.refresh(),[]);
+ const invalidate=useCallback(()=>{live.current=null;pause?.();const controller=control.current;controller?.pause();if(document.visibilityState!=='hidden'&&navigator.onLine)controller?.start();},[pause]);
  // The provider holds an admission function, never a private read snapshot.
- useEffect(()=>register?.(()=>allowed()&&live.current?.updates==='on',refresh),[allowed,refresh,register]);
+ useEffect(()=>register?.(()=>allowed()&&live.current?.updates==='on',refresh,invalidate),[allowed,refresh,invalidate,register]);
  const read=!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.authority===authority&&state.snapshot.view===view&&state.snapshot.selection===selection?state.snapshot:null;
  return {state,read,refresh,allowed,current:()=>live.current};
 }

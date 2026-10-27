@@ -164,7 +164,7 @@ async function readNotificationObservation(proof:SessionMutationProof,environmen
     const check=await state.check(intent,proof.employee.id,now,'open');
     if(check.reason==='workspace_unavailable'||check.reason==='payroll_source_unavailable')throw Error('Notification source unavailable');
     if(!check.deliverable||check.effectiveVersion!==intent.effectiveVersion||Date.parse(check.expiresAt)<=now.getTime()||!safeReturnTo(check.destination))continue;
-    const module=moduleForPath(check.destination!);if(module&&!(await currentModules())[module])continue;
+    const destinationModule=moduleForPath(check.destination!);if(destinationModule&&!(await currentModules())[destinationModule])continue;
     const href=safeNotificationOpenPath(intent.id);if(!href){partial=true;continue;}
     expires=Math.min(expires,Date.parse(check.expiresAt));
     if(intent.source.kind==='PAYROLL_STATEMENT'){

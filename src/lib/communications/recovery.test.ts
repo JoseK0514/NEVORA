@@ -51,3 +51,18 @@ it('bounds a hung transport and keeps the exact original command recoverable ins
  const control=create(async(path,body)=>{seen.push({path,body});if(calls++===0)return new Promise(()=>{});return {status:'committed',operationId:command.operationId,id:'result',version:'version'};},()=>{},onCommit);
  try{control.authorize(true);void control.send(command);await vi.advanceTimersByTimeAsync(10000);expect(control.snapshot()).toMatchObject({pending:false,hasUnknown:true,notice:'unknown',canRetry:false});expect(onCommit).not.toHaveBeenCalled();await control.lookup();expect(seen).toEqual([{path:'',body:command},{path:'/operations/'+command.operationId,body:undefined}]);expect(onCommit).toHaveBeenCalledTimes(1);expect(vi.getTimerCount()).toBe(0);}finally{control.stop();vi.useRealTimers();}
 });
+
+const reviewOriginal={kind:'PUBLISH',operationId:'11111111-1111-4111-8111-111111111111',authority:'a'.repeat(64),draft:{title:'Fictional original'},audienceFingerprint:'b'.repeat(64)};
+it.each([{state:'unauthorized',httpStatus:403},{state:'unauthorized',httpStatus:401},{status:'blocked'},{status:'conflict'}])('CR-1 retains unknown reviewOriginal after inconclusive lookup refusal %j',async refusal=>{
+ const requests:{path:string;body:unknown}[]=[],onCommit=vi.fn(),blocked=vi.fn();let response:unknown={status:'outcome_unknown',operationId:reviewOriginal.operationId};
+ const control=(await subject())(async(path,body)=>{requests.push({path,body});return response;},()=>{},onCommit,blocked);
+ try{
+  control.authorize(true);await control.send(reviewOriginal);response=refusal;await control.lookup();
+  expect(control.snapshot()).toMatchObject({pending:false,hasUnknown:true,canRetry:false,notice:'unknown'});
+  await control.send({...reviewOriginal,operationId:'22222222-2222-4222-8222-222222222222'});expect(requests).toHaveLength(2);
+  control.authorize(false);await control.lookup();await control.retry();expect(requests).toHaveLength(2);
+  response={status:'committed',id:'reviewOriginal-result',version:'reviewOriginal-version',operationId:reviewOriginal.operationId};control.authorize(true);await control.lookup();
+  expect(requests).toEqual([{path:'',body:reviewOriginal},{path:'/operations/'+reviewOriginal.operationId,body:undefined},{path:'/operations/'+reviewOriginal.operationId,body:undefined}]);
+  expect(onCommit).toHaveBeenCalledExactlyOnceWith(response);expect(control.snapshot().hasUnknown).toBe(false);
+ }finally{control.stop();}
+});

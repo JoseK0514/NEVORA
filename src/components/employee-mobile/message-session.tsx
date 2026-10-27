@@ -13,19 +13,19 @@ import {useEmployeeMobile} from './use-mobile';
 export type MessageMemory={search:string;filter:MessageFilter;cursors:string[]};
 export type MessageDraft={title:string;body:string;locationId:string;businessDate:string;expiresAt:string};
 export type MessageOrigin={source:'/app/notifications'|'/app/updates';id:string;target:string};
-type Session={authority:string;core:string;lists:Record<'notifications'|'updates',MessageMemory>;setList:(kind:'notifications'|'updates',patch:Partial<MessageMemory>)=>void;draft:MessageDraft|null;setDraft:(value:MessageDraft|null)=>void;state:CommunicationRecoveryState;operationHref:string|null;commit:Extract<CommandResult,{status:'committed'}>|null;send:(command:unknown,href:string)=>void;lookup:()=>void;retry:()=>void;clear:()=>void;register:(read:()=>boolean,refresh:()=>void)=>()=>void;pause:()=>void;allowed:()=>boolean;origin:MessageOrigin|null;setOrigin:(value:MessageOrigin|null)=>void};
+type Session={authority:string;core:string;lists:Record<'notifications'|'updates',MessageMemory>;setList:(kind:'notifications'|'updates',patch:Partial<MessageMemory>)=>void;draft:MessageDraft|null;setDraft:(value:MessageDraft|null)=>void;state:CommunicationRecoveryState;operationHref:string|null;commit:Extract<CommandResult,{status:'committed'}>|null;send:(command:unknown,href:string)=>void;lookup:()=>void;retry:()=>void;clear:()=>void;register:(read:()=>boolean,refresh:()=>void,invalidate:()=>void)=>()=>void;pause:()=>void;allowed:()=>boolean;origin:MessageOrigin|null;setOrigin:(value:MessageOrigin|null)=>void};
 const Context=createContext<Session|null>(null),initial=():MessageMemory=>({search:'',filter:'all',cursors:[]});
 export const useMessageSession=()=>useContext(Context);
 export function EmployeeMessageProvider({authority,core,children}:{authority:string;core:string;children:ReactNode}){
  const router=useRouter(),[lists,setLists]=useState({notifications:initial(),updates:initial()}),[draft,setDraft]=useState<MessageDraft|null>(null),[origin,setOrigin]=useState<MessageOrigin|null>(null),[state,setState]=useState<CommunicationRecoveryState>({pending:false,notice:null,hasUnknown:false,canRetry:false}),[operationHref,setOperationHref]=useState<string|null>(null),[commit,setCommit]=useState<Extract<CommandResult,{status:'committed'}>|null>(null);
- const admission=useRef<{read:()=>boolean;refresh:()=>void}|null>(null),recovery=useRef<ReturnType<typeof createCommunicationRecovery>|null>(null);
+ const admission=useRef<{read:()=>boolean;refresh:()=>void;invalidate:()=>void}|null>(null),recovery=useRef<ReturnType<typeof createCommunicationRecovery>|null>(null);
  const allowed=()=>!!admission.current?.read()&&document.visibilityState!=='hidden'&&document.hasFocus()&&navigator.onLine;
  useEffect(()=>{
-  const control=createCommunicationRecovery((path,body,signal)=>communicationRequest('employee',core,path,body,signal),setState,result=>{setCommit(result);admission.current?.refresh();router.refresh();},()=>{admission.current?.refresh();router.refresh();});recovery.current=control;
+  const control=createCommunicationRecovery((path,body,signal)=>communicationRequest('employee',core,path,body,signal),setState,result=>{setCommit(result);admission.current?.refresh();router.refresh();},()=>{admission.current?.invalidate();router.refresh();});recovery.current=control;
   const pause=()=>control.authorize(false);for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);const visible=()=>{if(document.visibilityState==='hidden')pause();};document.addEventListener('visibilitychange',visible);
   return()=>{control.stop();if(recovery.current===control)recovery.current=null;for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);document.removeEventListener('visibilitychange',visible);};
  },[core,router]);
- const register=useCallback((read:()=>boolean,refresh:()=>void)=>{const entry={read,refresh};admission.current=entry;return()=>{if(admission.current===entry){admission.current=null;recovery.current?.authorize(false);}};},[]);
+ const register=useCallback((read:()=>boolean,refresh:()=>void,invalidate:()=>void)=>{const entry={read,refresh,invalidate};admission.current=entry;return()=>{if(admission.current===entry){admission.current=null;recovery.current?.authorize(false);}};},[]);
  const pause=useCallback(()=>recovery.current?.authorize(false),[]);
  const prepare=()=>{const current=allowed();recovery.current?.authorize(current);return current;};
  const value:Session={authority,core,lists,setList:(kind,patch)=>setLists(previous=>({...previous,[kind]:{...previous[kind],...patch}})),draft,setDraft,state,operationHref,commit,origin,setOrigin,
