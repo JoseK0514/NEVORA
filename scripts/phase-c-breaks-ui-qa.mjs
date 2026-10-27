@@ -66,7 +66,7 @@ try{
    if(width===390){const file=join(evidence,engine+'-break-editor-390.png');await p.screenshot({path:file,fullPage:false});report.screenshots.push(file);}
    await p.keyboard.press('Escape');await p.getByRole('dialog').waitFor({state:'hidden'});await p.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='Add break type');
   }
-  const manager=await context(browser);await login(manager,'C5-MANAGER');const denied=await manager.newPage();await denied.goto(app.url+'/app/settings/breaks');await denied.waitForURL(url=>url.pathname!=='/app/settings/breaks');assert.equal(await denied.getByRole('heading',{name:'Break types',exact:true}).count(),0);assert.notEqual(new URL(denied.url()).pathname,'/app/settings/breaks');checked(engine+': Manager cannot enter Owner catalog');await manager.close();
+  const manager=await context(browser);await login(manager,'C5-MANAGER');const denied=await manager.newPage();await denied.goto(app.url+'/app/settings/breaks');await denied.getByText('Only Owners can open Settings.',{exact:true}).waitFor();assert.equal(await denied.getByRole('heading',{name:'Break types',exact:true}).count(),0);assert.equal(await denied.getByLabel('Add break type',{exact:true}).count(),0);checked(engine+': Manager cannot enter Owner catalog');await manager.close();
   assert.deepEqual(errors,[]);assert.deepEqual(consoleErrors,[]);checked(engine+': no framework, hydration or console errors');
   await owner.close();await browser.close();
  }
