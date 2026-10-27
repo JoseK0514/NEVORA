@@ -1,0 +1,75 @@
+{
+  "scope": "PR35 inventory and CI-only reconciliation; final hosted exact-head checks remain authoritative",
+  "basePrHead": "bf54d146d1003716ccf1a856258467134031e514",
+  "localPhaseDCandidate": "6810969066e8d32ab63ed0f2854edcf74f3b6d1f",
+  "localPhaseD": {
+    "passed": true,
+    "checks": 207,
+    "errors": [],
+    "sourceClean": true,
+    "runtimeClosed": true
+  },
+  "localOwnerAdvisorCandidate": "6d31122653413d7f521629a91342260885a70bf4",
+  "localOwnerAdvisor": {
+    "passed": true,
+    "checks": 28,
+    "errors": []
+  },
+  "inventory": {
+    "passed": true,
+    "sources": 60,
+    "activeHeads": 6,
+    "ceiling": 6,
+    "implementationUnchanged": true,
+    "archivedTips": [
+      {
+        "branch": "Claude-UI-Fix",
+        "sha": "8e9073974b52053e557382ec5199dbce9d5aa32c",
+        "mergedPr": 31,
+        "archiveRef": "refs/tags/archive/branches/2026-10-26/Claude-UI-Fix"
+      },
+      {
+        "branch": "claude/quiet-check-skeleton",
+        "sha": "16a9169ce1fc0d6eee9f3e1319d3db825ab1236f",
+        "mergedPr": 32,
+        "archiveRef": "refs/tags/archive/branches/2026-10-26/claude/quiet-check-skeleton"
+      },
+      {
+        "branch": "codex/owner-ai-release-testing-20261023",
+        "sha": "2ea580d623c76dd7d717492d209552461b5b4a28",
+        "mergedPr": 29,
+        "archiveRef": "refs/tags/archive/branches/2026-10-26/codex/owner-ai-release-testing-20261023"
+      }
+    ]
+  },
+  "guardTests": {
+    "inventory": 11,
+    "navigationDeadlineObserver": 50
+  },
+  "frozenRuntimeFilesUnchanged": 33,
+  "productionApplicationFilesChanged": false,
+  "authenticationPermissionsChanged": false,
+  "initialCi": {
+    "run": 40434162558,
+    "head": "bf54d146d1003716ccf1a856258467134031e514",
+    "mergeCandidate": "60590390fd7dce8972c955df9a14b391928e9aba",
+    "result": "failed steps retained; remaining obsolete run cancelled; never accepted as passing"
+  },
+  "externalEvidenceSha256": {
+    "pr35-retirement-plan.json": "9dd8405a2ad1b6c44e807d3f39128dbc2c137edc30bd7c8f179aeb9908ab1cd7",
+    "pr35-archive-verification.json": "6bb57a0df0eabd76f146703ec1f97d23b7bf4603f07d2ef596d2dad4e83f9872",
+    "pr35-retirement-result.json": "9d83aa6a4dde25df0a98d5c90decd5984720f5229fc1573061b567f0e06b13c6",
+    "pr35-inventory-after.log": "79822af17b29257a8e086b2f493dc4577fa2a43ff40ee4db1ed62045bdfe3223",
+    "pr35-inventory-regressions.log": "90d81d368f8a1cf8c43d3c0008411e9404724f2220bf389a6ff4f89c5e98dc37",
+    "pr35-owner-advisor-fixed.log": "5afa7a816231077354850368ebf6a74fb09bc255fb24841e7a0f5555c2e3d1f2",
+    "pr35-navigation-guards.log": "253be9cd61a31853f56744967e551672cdd1c76205d16e00c21d50e72f5653b7",
+    "pr35-phase-d-reproduce.log": "082025504e72f4f744441cd40d707f9eb43aaac92c6b3a93f7d1c78b069aa2af",
+    "pr35-phase-d-fixed.log": "59cdb6278fbe4c7640d5d1399980c81118bd5e0770522ddae5a6d1496fd313cd",
+    "pr35-attendance-initial.log": "eb3c6c6b4b40a6ab8e0e9ffbb6f84ef43684ef2726ac806568a7659c1ec693f1"
+  },
+  "limits": [
+    "No merge or deployment.",
+    "Local browser is not physical-device/production/independent certification.",
+    "Final exact-head hosted CI and fresh live inventory are required; live PR checks are authoritative."
+  ]
+}

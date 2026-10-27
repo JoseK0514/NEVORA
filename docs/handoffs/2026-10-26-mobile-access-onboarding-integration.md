@@ -43,6 +43,8 @@ Reproduce from a clean committed checkout with Node24.19/npm11.17: `npm ci`; `np
 
 ## Governance gate
 
+Follow-up: Jose authorized source/CI reconciliation for PR35. The live inventory now passes at60 sources/6 heads; three already-merged tips are preserved in exact recovery tags. See the [merge-readiness handoff](2026-10-26-pr35-merge-readiness.md). This supersedes the inventory blocker below; matching hosted CI remains required.
+
 At the fetched base `46e202786863279302026ee03a0e225c359fa55c`, `npm run check:development-sources` was already red: Claude-UI-Fix advanced; claude/home-clock-row, claude/quiet-check-skeleton and claude/quiet-everywhere unclassified;8 remote branches exceed the recorded ceiling6. This feature does not merge/delete other work, raise the ceiling or alter that inventory. Repository assembly owner must reconcile it before a merge-ready claim. Feature-branch publication may add another remote branch; it does not waive the gate.
 
 
