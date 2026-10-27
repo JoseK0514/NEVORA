@@ -25,8 +25,12 @@ export function createCommunicationRecovery(request:(path:string,body:unknown,si
    command=structuredClone(body);operationId=String(body.operationId);
   }
   const sequence=++generation,controller=new AbortController();abort=controller;publish({pending:true,notice:null,canRetry:false});
+  const onAbort=()=>rejectDeadline(Error('Communication request interrupted'));
+  let rejectDeadline:(error:Error)=>void=()=>{};
+  const deadline=new Promise<never>((_resolve,reject)=>{rejectDeadline=reject;controller.signal.addEventListener('abort',onAbort,{once:true});});
+  const timer=setTimeout(()=>controller.abort(),10000);
   try{
-   const result=await request(lookup?'/operations/'+operationId:'',lookup?undefined:command,controller.signal) as CommandResult;
+   const result=await Promise.race([request(lookup?'/operations/'+operationId:'',lookup?undefined:command,controller.signal),deadline]) as CommandResult;
    if(sequence!==generation||!authorized)return;
    if(result.status==='committed'){
     if(!matchesReceipt(result,command,operationId)){publish({notice:'unknown',canRetry:false});return;}
@@ -35,7 +39,7 @@ export function createCommunicationRecovery(request:(path:string,body:unknown,si
     command=null;operationId=null;if(result.status!=='conflict')onBlocked();publish({notice:result.status==='conflict'?'conflict':'httpStatus'in result&&result.httpStatus===401?'signed-out':'blocked',canRetry:false});
    }else publish({notice:operationId?'unknown':'unavailable',canRetry:lookup&&result.status==='unavailable'&&result.reason==='operation_not_found'});
   }catch{if(sequence===generation&&authorized)publish({notice:operationId?'unknown':'unavailable',canRetry:false});}
-  finally{if(sequence===generation){abort=null;publish({pending:false});}}
+  finally{clearTimeout(timer);controller.signal.removeEventListener('abort',onAbort);if(sequence===generation){abort=null;publish({pending:false});}}
  }
  return {
   snapshot:()=>({...state}),

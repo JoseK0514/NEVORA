@@ -46,3 +46,8 @@ it('keeps the original intent unknown when a receipt belongs to a different oper
   if(kind==='ACKNOWLEDGE'){response={status:'committed',id:'wrong-update',version:'own-version',operationId:command.operationId};await recovery.lookup();expect(onCommit).not.toHaveBeenCalled();expect(recovery.snapshot().hasUnknown).toBe(true);}
  }
 });
+it('bounds a hung transport and keeps the exact original command recoverable instead of remaining pending forever',async()=>{
+ const create=await subject();vi.useFakeTimers();const onCommit=vi.fn(),seen:unknown[]=[];let calls=0;
+ const control=create(async(path,body)=>{seen.push({path,body});if(calls++===0)return new Promise(()=>{});return {status:'committed',operationId:command.operationId,id:'result',version:'version'};},()=>{},onCommit);
+ try{control.authorize(true);void control.send(command);await vi.advanceTimersByTimeAsync(10000);expect(control.snapshot()).toMatchObject({pending:false,hasUnknown:true,notice:'unknown',canRetry:false});expect(onCommit).not.toHaveBeenCalled();await control.lookup();expect(seen).toEqual([{path:'',body:command},{path:'/operations/'+command.operationId,body:undefined}]);expect(onCommit).toHaveBeenCalledTimes(1);expect(vi.getTimerCount()).toBe(0);}finally{control.stop();vi.useRealTimers();}
+});
