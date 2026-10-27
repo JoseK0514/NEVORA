@@ -11,14 +11,15 @@ The approved scope remains the three-phase plan at `outputs/employee-mobile/rema
 - Second Phase 2 batch: incoming swap responses and own-request details/history, including permitted cancellation/withdrawal and retained exact links, application candidate `333c476250b6727f72b8746404b25ab53a3b88ed`. Root and independent full44 tests pass; code/UI findings were independently verified. See `../employee-mobile-responses/HANDOFF.md` and authored reports for acceptance limits. This does not complete creation/submission ports.
 - Third Phase2 batch: swap/cover creation and own Unable-to-work submission, candidate `351e33a1a7ecb04dfb6de01a9674953ea7eff903`. Independent214unit/48integration tests and code/UI/QA acceptance cover current permissions, original reviewed fields, mounted draft/unknown-operation recovery, native task focus and desktop preservation. See `../employee-mobile-creation/HANDOFF.md` and authored reports. The remaining groups below are still Phase2 work.
 
+- Fourth Phase2 batch: own full/partial time off, history/detail and pending withdrawal plus usual/weekly availability, deadlines, split hours, stale/mounted draft and original-operation recovery; candidate `9034533e0e8a55e5e168affcccbb90b850ddeee8`. Independent250unit/58combined tests passed; code approved and UI findings independently closed. See `../employee-mobile-planning/HANDOFF.md` and authored reports. This is bounded local acceptance; the groups below remain Phase2.
+
 ## Remaining Phase 2 implementation
 
-1. Full/partial-day time off, waiting/decided history and pending withdrawal; usual/weekly availability, deadlines, drafts and recovery. This is the next bounded implementation group.
-2. Own Hours, timecards, punches/breaks/effective time, corrections/missing-time proposals and decision history.
-3. Complete source-backed notifications/destinations and updates, permitted acknowledgement and authorized team posting/withdrawal.
-4. Own profile, language/appearance preferences, support/legal, contextual return and actual sign-out/device cleanup.
-5. Capability-dependent calendar, passkeys, current-device alerts and own deletion-request lifecycles.
-6. Own published Pay statements, current payroll/module gates and protected PDF view/download.
+1. Own Hours, timecards, punches/breaks/effective time, corrections/missing-time proposals and decision history.
+2. Complete source-backed notifications/destinations and updates, permitted acknowledgement and authorized team posting/withdrawal.
+3. Own profile, language/appearance preferences, support/legal, contextual return and actual sign-out/device cleanup.
+4. Capability-dependent calendar, passkeys, current-device alerts and own deletion-request lifecycles.
+5. Own published Pay statements, current payroll/module gates and protected PDF view/download.
 
 Each batch must preserve current role/workspace/session/module authority, source/revision binding, immutable operation recovery, unrelated available capabilities, consistent mobile components and desktop/management separation. Maintain explicit loading/empty/partial/error/refusal/pending/success recovery states.
 
