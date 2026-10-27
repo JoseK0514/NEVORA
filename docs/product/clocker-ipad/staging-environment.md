@@ -16,16 +16,24 @@ Jose authorized an isolated HTTPS staging environment on October27. This is a co
 
 1. Reconcile source inventory against fetched origin without changing its six-branch ceiling. PASSED62 classified sources/six active branches.
 2. Install the empty database with the existing atomic company installer. PASSED.
-3. Add fictional employees, restrict the app database role, and configure staging-only encrypted environment variables. No SMTP, push delivery, analytics/replay or background payroll/notification workers.
-4. Freeze a reviewed Git candidate and publish an immutable staging source tag, preserving all existing branches. Deploy that exact candidate to the separate protected project, with a canonical HTTPS origin.
-5. Verify hosted sign-in, Owner-only administration, tablet enrollment, PIN/punch/receipt recovery, manifest and private/error behavior. Distinguish real hosted results from loopback WebKit checks.
+3. Added two fictional employees, a SQL-created restricted app role (`clocker_staging_web`, no memberships/admin/BYPASSRLS), and staging-only encrypted environment variables. No SMTP, push delivery, analytics/replay or background payroll/notification workers.
+4. Initial candidate174c9bef published under immutable `staging/clocker/2026-10-27-174c9bef`. Explicit Vercel target `staging` uses preview-only configuration. Canonical protected HTTPS origin: https://nevora-clocker-staging-qa.vercel.app .
+5. Initial14 actual hosted checks passed across Chromium/WebKit: Owner sign-in, PIN setting, enrollment, geometry/launch metadata, ClockIn/ClockOut receipts, and employee Owner-only denial. Final expanded recovery/photo checks follow the platform binding deployment.
 6. Complete actual iPad Safari and Home Screen acceptance. Model/iPadOS and IP01–IP28 remain NOT RUN until real hardware is available.
 
 ## Photo activation gate
 
-Photo settings and private review are implemented. Capture remains unavailable until a real Company-scoped platform cleanup worker, factual backup/restore disclosures and the runtime binding are verified. Do not substitute a human Owner session, a fictional provider or a successful saved preference for this evidence.
+Photo preferences remain Off by default and are Owner-controlled. Migration0041 now provides platform-only, Company-scoped cleanup with its own restricted `clocker_staging_cleanup` SQL login. That role can execute cleanup but cannot read private photo tables. The web role can read lifecycle status but cannot write it or execute cleanup. Real SQL role tests verify these boundaries. No human Owner session is used by the worker.
 
-The new project's Neon point-in-time history window is0. This disables history-based restore; it is not a promise that provider recovery copies are immediately purged. No real employee photographs are authorized for staging. `pg_cron` appears in available extensions, but Neon documents that it does not run while compute is suspended; its presence alone does not establish a cleanup service.
+A bundled Neon Function (`clockerphotocleanup`, deployment1) is deployed on the isolated branch, with a branch-scoped schedule trigger `trigger-bcb71ecd-ca37-4ad6-877d-dc37a219bffb`. Actual scheduled runs completed at13:11:01 and13:12:01UTC on October27. The initial minute cadence was changed to hourly; readback confirms enabled and next run14:00UTC. Ordinary POST and forged `X-Neon-Trigger-Invocation-Id` POST both returned403. Neon documents that ingress strips client-set X-Neon headers: https://neon.com/docs/compute/functions/triggers/schedule . The worker never accepts Company identity or SQL from HTTP input.
+
+Cleanup locks one configured Company, handles bounded batches, records append-only idempotent outcomes, and preserves canonical punch/time/receipt history. Capture requires a successful cleanup within75minutes and an operator attestation that has not expired. Quota exhaustion, scheduler failure, missing metadata or expired attestation closes new capture. Current staging attestation expires November3,2026 at13:09:11UTC; it must be reverified rather than silently renewed. Production capture has no binding and remains unavailable.
+
+The new project's Neon point-in-time history window was read back as0. This disables history-based restore; it is not a promise that provider recovery copies are immediately purged. No snapshots or real employee photographs were created. Any approved restore requires capture paused and cleanup/current custody reverified before collection resumes. `pg_cron` was deliberately not used because it does not run while Neon compute is suspended.
+
+Verification so far:572 current Clocker SQL tests/42files, targeted platform3tests,328 focused unit tests/25files, typecheck and targeted lint passed. One fresh continuation review found no blocking defects; its two minor type/test findings were addressed and the four platform unit tests passed again. The review excludes final deployment and physical acceptance. Report: reviews/2026-10-27-staging-code-review.md .
+
+Staging Owner sign-in: employee ID `CLOCKEROWNER`. The unique random password is stored as encrypted `NEVORA_STAGING_OWNER_PASSWORD` in this Vercel project's preview environment; never paste its value into Git or chat. The application database and PIN keys are staging-only and private. An unused API-created `clocker_staging_app` role is not connected to the application or worker; Neon-created roles inherit administrative membership, so a restricted SQL role was used instead. No destructive role/project deletion was performed.
 
 ## Rollback
 

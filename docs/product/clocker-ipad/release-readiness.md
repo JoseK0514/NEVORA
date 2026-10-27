@@ -1,6 +1,6 @@
 # Clocker candidate handoff
 
-Implementation branch: `codex/clocker-ipad-integration-20261027`, isolated from `origin/development` at `dfdcefa0edc9d02bad5edf79b2b5a9587b194eb2`. No push, PR, development assembly, main merge, hosted migration or deployment has been performed. The existing local prototype remains separate from the application candidate.
+Implementation branch: `codex/clocker-ipad-integration-20261027`, isolated from `origin/development` at `dfdcefa0edc9d02bad5edf79b2b5a9587b194eb2`. An isolated HTTPS staging deployment is now authorized and provisioned. Immutable staging source tags preserve the candidate; the implementation branch itself is not pushed. No PR, development assembly, main merge or production-system deployment has been performed. See staging-environment.md for current custody and evidence. The local prototype remains separate from the integrated application.
 
 Jose’s clarified support target covers iPad mini, standard iPad, iPad Air and iPad Pro, with both Safari and Home Screen web-app mode required. A tested minimum iPadOS version is still pending. Dedicated location-specific launch metadata is implemented; native installation and lifecycle acceptance remain open.
 
@@ -19,8 +19,8 @@ The original fresh review found2 Important privacy defects. The combined fix pas
 | Gate | Actual state | Required next evidence |
 |---|---|---|
 | Physical iPad | All IP01–IP28 NOT RUN | Named model/iPadOS, actual accessories/text settings, approved isolated HTTPS endpoint and [acceptance sheet](ipad-acceptance.md). Both Safari and Home Screen required across the iPad compatibility matrix. The Mac loopback address is not an iPad environment. |
-| Photo operations/runtime | Capture unavailable; preferences/private review available locally | A real platform-owned, Company-scoped cleanup mechanism and factual backup/restore behavior; verified lifecycle disclosures; hosted private-role/migration and native decoder checks; then a reviewed current-proof runtime binding. `getClockerPhotoRuntime()` currently returns null. Saving On does not implement or activate this binding. |
-| Development source hygiene |7 active remote branches; hard limit6 | Repository owner resolves branch hygiene. New theme-default32ce3b5 is classified held; no branch is merged/archived/deleted and the guard is unchanged. Inventory check currently fails only this ceiling. |
+| Photo operations/runtime | Staging-only platform binding implemented and code-reviewed; hourly scheduled cleanup observed; final hosted photo checks pending | Migration0041 adds restricted platform cleanup and freshness/attestation gates. Production runtime remains unavailable. No real employee photos. See staging-environment.md for exact hosted evidence; saving On alone never overrides operational gates. |
+| Development source hygiene |PASS62 classified sources/six active remote branches; hard limit6 | Existing exact PR35 archive verified; advanced theme branch remains held. Staging tags preserve source without another active branch. No branch was archived/deleted by this task. |
 
 No real employee photos, hosted credentials, subscriptions, notifications or analytics/replay were used. Retention1–30 days is a technical configuration range, not a legal determination. Inherited nodemailer advisory IDs are recorded in implementation evidence and remain with the mail workstream.
 

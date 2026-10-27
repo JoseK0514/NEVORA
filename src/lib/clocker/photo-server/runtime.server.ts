@@ -13,6 +13,7 @@ import {ClockerPhotoService,type PhotoManagementProof,type PhotoLifecycleProvide
 import {SqlClockerPhotoRepository} from './sql-repository';
 import {createCurrentClockerPhotoAuthority} from './authority.server';
 import {ClockerPhotoError} from './contracts';
+import {createPlatformPhotoLifecycle,readPhotoPlatformBinding} from './platform-lifecycle';
 export interface ClockerPhotoRuntime{
  service:ClockerPhotoService;transport:PhotoTransportDeps;settingsTransport:PhotoSettingsTransportDeps;
  portalProof(session:SessionMutationProof):Promise<PhotoManagementProof>;
@@ -27,6 +28,11 @@ export function createCurrentClockerPhotoRuntime(executor:SqlExecutor,lifecycle?
  return {service,portalProof,transport:{enabled:true,security,service,authenticate:async(_request,location)=>{if(!key){try{readPinKey();}catch{return null;}}return (await resolveCurrentClockerIdentity(location,{executor,cookies:await cookies(),security:clockerSecurity(),key:secret}))?.proof??null;},readNotice:(proof,policy)=>service.punchNotice(proof,policy)},settingsTransport:{enabled:true,security,service,authenticate:async()=>{try{return await portalProof(await requireSessionMutationProof());}catch{return null;}}}};
 }
 /** Owner preferences and private review use real current-company SQL even while capture is unavailable. */
-export function getClockerPhotoSettingsRuntime():ClockerPhotoRuntime{return createCurrentClockerPhotoRuntime(neonNotificationExecutor());}
-/** No verified deployment cleanup/backup provider is bound in this candidate. Never activate collection from a saved preference alone. */
-export function getClockerPhotoRuntime():ClockerPhotoRuntime|null{return null;}
+export function getClockerPhotoSettingsRuntime():ClockerPhotoRuntime{
+ const executor=neonNotificationExecutor(),binding=readPhotoPlatformBinding(process.env);
+ return createCurrentClockerPhotoRuntime(executor,binding?createPlatformPhotoLifecycle(executor,binding):undefined);
+}
+/** Only the isolated staging binding is implemented. Production stays closed. */
+export function getClockerPhotoRuntime():ClockerPhotoRuntime|null{
+ return readPhotoPlatformBinding(process.env)?getClockerPhotoSettingsRuntime():null;
+}
