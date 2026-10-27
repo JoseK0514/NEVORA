@@ -1,6 +1,6 @@
 # Clocker physical iPad acceptance
 
-Date prepared: October27,2026. Target: **iPads only**, shared by employees and administered only by the Owner. Status: **NOT RUN**. Automated WebKit results are not substituted for physical iPad results.
+Date prepared: October27,2026. Scope clarified by Jose: **all iPad families, Safari and Home Screen required**. Target: **iPads only**, shared by employees and administered only by the Owner. Status: **NOT RUN**. Automated WebKit results are not substituted for physical iPad results.
 
 ## Record before the session
 
@@ -10,7 +10,7 @@ Date prepared: October27,2026. Target: **iPads only**, shared by employees and a
 | iPad model and hardware keyboard/accessories | Not supplied |
 | iPadOS and Safari version | Not supplied |
 | Viewport/orientation/text-size setting | Record each run |
-| Mode | Safari tab required; Home Screen mode if intended for operation |
+| Mode | Safari tab and Home Screen web app both required |
 | Test URL and environment owner | Not supplied; isolated environment accessible from the iPad |
 | Application branch/commit and migration state | Local candidate: codex/clocker-ipad-integration-20261027; exact review commit and migrations0038–0040 in implementation evidence. Not deployed. |
 | Company/location/device/sample employees | Fictional isolated fixtures only |
@@ -37,7 +37,7 @@ Each row starts NOT RUN. Record PASS only from observed behavior; otherwise FAIL
 | IP08 | Different employee enters after prior expiry / pending action | No previous identity/mode leakage; their own permitted actions work; original reference unchanged | NOT RUN |
 | IP09 | Switch tabs, lock/unlock, sleep/wake, background/restore, back/forward cache | No visible verified identity on return; no late response restores it; pending evidence retained where storage persists | NOT RUN |
 | IP10 | Lose response after commit; repeated status check and exact retry | One time entry/break only; original UUID; unknown remains unknown until authoritative evidence | NOT RUN |
-| IP11 | Close/reopen Safari tab; reopen intended Home Screen mode | Journal survives supported same-origin lifecycle; no offline send. If OS cleared storage, explicit support/Owner recovery, no invented receipt | NOT RUN |
+| IP11 | Close/reopen Safari tab; quit/reopen the Home Screen web app | Journal survives supported same-origin lifecycle; no offline send. If OS cleared storage, explicit support/Owner recovery, no invented receipt | NOT RUN |
 | IP12 | Two tabs/rapid double tap / app backgrounded during request | At most one accepted command; no overwritten pending record or identity transfer | NOT RUN |
 | IP13 | PIN reset or tablet replacement while original unresolved | Old access invalidated; canonical receipt checked; explicit review returns current state without replay; old reference available to Owner | NOT RUN |
 | IP14 | Ask Owner to review from employee terminal; Owner opens separate device | Confirmed request appears only in Owner portal; copied reference exact; dismiss changes presentation only; no employee admin access | NOT RUN |
@@ -60,8 +60,31 @@ Each row starts NOT RUN. Record PASS only from observed behavior; otherwise FAIL
 
 Capture one bounded normal/exception/enlarged batch, plus logs/record counts for actual failures. Avoid recording PIN digits, setup secrets, cookies, real employee data or replay telemetry. The test record identifies exact model/version/mode/commit. Independent QA/UI reviews the final integrated artifact and findings before release; no “zero error” or native certification is inferred from prototype tests.
 
-Required acceptance: every applicable row observed; failures resolved and rerun, blockers explicitly recorded. If only one iPad model is available, report that limit rather than claiming all iPads. Home Screen rows are conditional on actual intended use; Safari remains required. Production remains disabled until separately authorized.
+Required acceptance: every applicable row observed; failures resolved and rerun, blockers explicitly recorded. If only one iPad model is available, report that limit rather than claiming all iPads. Run every applicable row separately in Safari and Home Screen mode; both are required. Production remains disabled until separately authorized.
 
 ## Automated boundary
 
 Owned Chromium/WebKit runs, current PostgreSQL and synthetic camera/image fixtures are documented in [implementation evidence](implementation-evidence.md). Every physical row above remains NOT RUN. A physical model/version and an approved isolated HTTPS endpoint have not been supplied; this Mac’s loopback app is not an iPad acceptance environment. Saved Owner photo preferences do not remove that gate or bind a cleanup/backup provider.
+
+
+## Compatibility target clarified by Jose
+
+The product targets iPad mini, standard iPad, iPad Air and iPad Pro across sizes. Both Safari and the Home Screen web app are required release paths. A specific customer's current model does not define the support target. A minimum supported iPadOS version is pending an API/browser audit and physical evidence; no promise covering every historical iPad or obsolete browser is made.
+
+| Representative class | Automated layout targets (CSS pixels) | Safari physical | Home Screen physical |
+|---|---|---|---|
+| Compact / mini |744×1133 and landscape | NOT RUN | NOT RUN |
+| Standard / older aspect ratio |768×1024 and landscape | NOT RUN | NOT RUN |
+| Medium / Air |820×1180 and landscape | NOT RUN | NOT RUN |
+| Large / Pro |1024×1366 and landscape | NOT RUN | NOT RUN |
+
+OS coverage must include the current supported release, previous supported release, and oldest proposed supported release. Record exact model/OS/build for each actual run. Passing current desktop WebKit does not establish an older iPadOS floor. Existing200% text, VoiceOver, keyboard, rotation, safe-area, PIN/privacy, recovery and photo scenarios apply in both launch modes.
+
+### Mode-specific acceptance
+
+- Add the actual location's Clocker page to Home Screen and open it as a web app. Its launch target stays `/clocker/<location>` with its own stable install identity, approved icon and unrestricted orientation; it must not open the employee portal.
+- Verify registration in each actual browser/app context. Never assume enrollment cookies, PIN identity, journal data or permissions transfer between Safari and a Home Screen installation. Reconnect through Owner controls when that context needs enrollment; never copy credentials manually.
+- Quit/reopen, switch modes, sleep/wake and rotate. Each context must clear verified employee identity, retain only its own valid recovery evidence, and reconcile a lost time response without another punch.
+- Exercise camera permission, capture cancellation and policy changes independently in both modes once the real capture provider is verified. Automation/metadata checks do not close these physical rows.
+
+Platform basis: [Apple Home Screen web app guide](https://support.apple.com/en-mide/guide/ipad/ipad8f1f7a29/ipados) and [WebKit Home Screen behavior](https://webkit.org/blog/17333/webkit-features-in-safari-26-0/#every-site-can-be-a-web-app-on-ios-and-ipados). Home Screen support does not require introducing an offline time writer or service worker.

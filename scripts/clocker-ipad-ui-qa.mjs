@@ -54,11 +54,28 @@ async function photoExitFixture(page,engine,verify,idle){
  await page.unroute('**/api/clocker/2/punch');await page.unroute('**/api/clocker/2/photos');
 }
 
+async function homeScreenLaunchContracts(){
+ for(const engine of (process.env.IPAD_QA_ENGINES?.split(',')??['chromium','webkit'])){
+  const browser=await playwright[engine].launch();try{
+   const c=await context(browser),page=await c.newPage(),errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(new URL(r.url()).pathname));
+   await goto(page,'/clocker/2');await page.getByRole('heading',{name:'Set up this tablet',exact:true}).waitFor();
+   assert.equal(await page.locator('link[rel="manifest"]').getAttribute('href'),'/clocker/2/manifest.webmanifest');
+   assert.equal(await page.locator('meta[name="apple-mobile-web-app-capable"]').getAttribute('content'),'yes');assert.equal(await page.locator('link[rel="apple-touch-icon"]').getAttribute('href'),'/icons/fuel-apple-180.png');
+   const response=await page.request.get(app.url+'/clocker/2/manifest.webmanifest');assert.equal(response.status(),200);assert.match(response.headers()['cache-control'],/no-store/);const manifest=await response.json();assert.equal(manifest.start_url,'/clocker/2');assert.equal(manifest.id,'/clocker/2');assert.equal(manifest.scope,'/clocker/');assert.equal(manifest.display,'standalone');assert.equal(manifest.orientation,'any');
+   for(const icon of manifest.icons){const r=await page.request.get(app.url+icon.src);assert.equal(r.status(),200);assert.match(r.headers()['content-type'],/image\/png/);}checks.push(engine+' location-specific standalone metadata and real approved icons');
+   assert.equal((await page.request.get(app.url+'/clocker/no-such-fixture/manifest.webmanifest')).status(),404);checks.push(engine+' unavailable locations cannot publish a launch manifest');
+   for(const [width,height] of [[744,1133],[1133,744],[768,1024],[820,1180],[1024,1366],[1366,1024]]){await page.setViewportSize({width,height});await geometry(page,engine+' Clocker launch '+width+'x'+height);}await shot(page,engine+'-compact-launch');
+   await page.evaluate(()=>localStorage.setItem('clocker-mode-qa','safari-fixture'));const isolated=await context(browser,{width:744,height:1133}),launched=await isolated.newPage();await goto(launched,manifest.start_url);await launched.getByRole('heading',{name:'Set up this tablet',exact:true}).waitFor();assert.equal(await launched.evaluate(()=>localStorage.getItem('clocker-mode-qa')),null);assert.equal(await launched.locator('[data-clocker-state]').count(),0);checks.push(engine+' isolated launch requires its own valid registration and exposes no identity');
+   assert(!requests.some(p=>p==='/fuel-portal-sw.js'||p==='/fuel-portal.webmanifest'||p==='/api/notifications'));assert.deepEqual(errors,[]);checks.push(engine+' Clocker launch stays separate from portal installation and notifications');await isolated.close();await c.close();
+  }finally{await browser.close();}
+ }
+}
+
 try{
  app=await createOwnedNextApp(evidence,{clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true,clockerUiV2:true});await seedOwnedApp(app.database.executor);
  await q("INSERT INTO clocker_break_types(id,workspace_id,name,category,target_minutes,created_by,updated_by) SELECT 'ipad-rest',l.workspace_id,'Fixture rest','REST',15,e.id,e.id FROM employees e JOIN locations l ON l.id=e.primary_location_id WHERE e.role='OWNER' ORDER BY e.id LIMIT 1");
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('IPAD-A','Avery','QA','555','EMPLOYEE','loc-1');INSERT INTO employee_location_eligibility VALUES('IPAD-A','loc-1')");
- for(const engine of (process.env.IPAD_QA_ENGINES?.split(',')??['chromium','webkit'])){
+ if(process.env.IPAD_QA_INSTALL_ONLY==='true')await homeScreenLaunchContracts();else for(const engine of (process.env.IPAD_QA_ENGINES?.split(',')??['chromium','webkit'])){
   const browser=await playwright[engine].launch();try{
    const owner=await context(browser,{width:1440,height:1000}),ownerPage=await login(owner);await photoPreferences(ownerPage,engine);await savePin(ownerPage,'IPAD-A','2468');let lostPin=false;await ownerPage.route('**/app/employees/IPAD-A/clocker-pin',async route=>{if(!lostPin&&route.request().method()==='POST'){lostPin=true;const response=await route.fetch();assert.equal(response.status(),200);await route.abort('failed');}else await route.continue();});await ownerPage.getByLabel('New PIN',{exact:true}).fill('2468');await ownerPage.getByLabel('Confirm PIN',{exact:true}).fill('2468');await ownerPage.getByRole('button',{name:'Save',exact:true}).click();await ownerPage.getByRole('button',{name:'Check save status',exact:true}).waitFor();assert(await ownerPage.getByRole('button',{name:'Save',exact:true}).isDisabled());assert.equal(await ownerPage.getByLabel('New PIN',{exact:true}).inputValue(),'');const pinWrites=Number((await q("SELECT count(*)::int AS n FROM clocker_pin_events WHERE employee_id='IPAD-A'"))[0].n);await ownerPage.getByRole('button',{name:'Check save status',exact:true}).click();await ownerPage.getByRole('status').filter({hasText:'PIN saved'}).waitFor();assert.equal(Number((await q("SELECT count(*)::int AS n FROM clocker_pin_events WHERE employee_id='IPAD-A'"))[0].n),pinWrites);await ownerPage.unroute('**/app/employees/IPAD-A/clocker-pin');await goto(ownerPage,'/app/settings/clocker/pins');await ownerPage.getByLabel('Find an employee',{exact:true}).fill('Avery');assert.match(await ownerPage.locator('main').innerText(),/PIN set/);checks.push(engine+' Owner inventory and lost PIN-save response use exact operation evidence');const tablet=await context(browser);let page=await tablet.newPage();page.setDefaultTimeout(20000);const errors=[];page.on('pageerror',error=>errors.push(error.message));
    await enroll(ownerPage,page,engine+' iPad');assert.equal(await page.locator('[data-clocker-v2=true]').count(),1);
@@ -79,5 +96,5 @@ try{
    assert.equal(Number((await q('SELECT count(*)::int AS n FROM clocker_punch_photos'))[0].n),0,'unverified lifecycle cannot collect photos');assert.deepEqual(errors,[]);checks.push(engine+' real enrollment, language and PIN outcomes');await tablet.close();await owner.close();
   }finally{await browser.close();}
  }
- await writeFile(join(evidence,'clocker-ipad-results.json'),JSON.stringify({checks,limits:['Owned local Next/PostgreSQL only. Physical iPad acceptance pending.','Photo-exit cases explicitly mock readiness/notice/photo status; actual UI and canonical time writes are exercised, but no lifecycle provider, camera or image collection is activated.']},null,2));console.log('PASS: '+checks.length+' Clocker iPad presentation checks.');
+ await writeFile(join(evidence,'clocker-ipad-results.json'),JSON.stringify({checks,limits:['Owned local Next/PostgreSQL only. Physical iPad Safari and Home Screen acceptance pending. Launch-contract checks do not emulate native Home Screen installation or OS lifecycle.','Photo-exit cases explicitly mock readiness/notice/photo status; actual UI and canonical time writes are exercised, but no lifecycle provider, camera or image collection is activated.']},null,2));console.log('PASS: '+checks.length+' Clocker iPad presentation checks.');
 }finally{if(app)await app.close();}

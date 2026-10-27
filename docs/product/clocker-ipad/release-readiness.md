@@ -16,7 +16,7 @@ The original fresh review found2 Important privacy defects. The combined fix pas
 
 | Gate | Actual state | Required next evidence |
 |---|---|---|
-| Physical iPad | All IP01–IP28 NOT RUN | Named model/iPadOS, actual accessories/text settings, approved isolated HTTPS endpoint and [acceptance sheet](ipad-acceptance.md). Safari required; Home Screen only if intended. The Mac loopback address is not an iPad environment. |
+| Physical iPad | All IP01–IP28 NOT RUN | Named model/iPadOS, actual accessories/text settings, approved isolated HTTPS endpoint and [acceptance sheet](ipad-acceptance.md). Both Safari and Home Screen required across the iPad compatibility matrix. The Mac loopback address is not an iPad environment. |
 | Photo operations/runtime | Capture unavailable; preferences/private review available locally | A real platform-owned, Company-scoped cleanup mechanism and factual backup/restore behavior; verified lifecycle disclosures; hosted private-role/migration and native decoder checks; then a reviewed current-proof runtime binding. `getClockerPhotoRuntime()` currently returns null. Saving On does not implement or activate this binding. |
 | Development source hygiene |7 active remote branches; hard limit6 | Repository owner resolves branch hygiene. New theme-default32ce3b5 is classified held; no branch is merged/archived/deleted and the guard is unchanged. Inventory check currently fails only this ceiling. |
 

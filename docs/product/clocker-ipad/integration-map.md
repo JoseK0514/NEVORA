@@ -16,7 +16,7 @@ The next deliverable authorized in this conversation was the integration map and
 
 Port the presentation into the existing Next/React Clocker boundaries and retain its server engine. Keep the standalone prototype as the visual/state reference. Implement the production gaps as small explicit contracts before claiming feature parity.
 
-A visual-only paste would lose real cookie, revision and recovery semantics. A new punch backend would duplicate an existing guarded ledger and increase risk. A native iPad rewrite adds a platform and distribution project not requested here. The recommended browser-based integration reuses the existing web architecture and prioritizes Safari on physical iPads; a Home Screen installation is tested separately if used. This is the proposed execution approach, not a new global Nevora design decision.
+A visual-only paste would lose real cookie, revision and recovery semantics. A new punch backend would duplicate an existing guarded ledger and increase risk. A native iPad rewrite adds a platform and distribution project not requested here. The recommended browser-based integration reuses the existing web architecture and requires both Safari and Home Screen web-app acceptance across iPad families. This is the proposed execution approach, not a new global Nevora design decision.
 
 ```mermaid
 flowchart LR

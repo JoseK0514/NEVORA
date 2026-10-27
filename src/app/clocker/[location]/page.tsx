@@ -1,3 +1,5 @@
+import type {Metadata} from 'next';
+import {clockerLaunchMetadata} from '@/lib/clocker/installation';
 import { readPinKey } from '@/lib/clocker/pin-crypto.server';
 import { notFound } from "next/navigation";
 import { ClockerSetup } from "@/components/clocker-setup";
@@ -9,6 +11,10 @@ import { clockerBrandStyle } from "@/lib/workspace-presentation/derive";
 // Resolve configured location identity on every request; never read customer
 // configuration during static production generation.
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({params}:{params:Promise<{location:string}>}):Promise<Metadata>{
+ const {location}=await params;return clockerLaunchMetadata(location);
+}
 
 export default async function ClockerPage({
   params,
