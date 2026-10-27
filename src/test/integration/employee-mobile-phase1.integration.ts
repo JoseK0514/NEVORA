@@ -15,7 +15,7 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
  if(!evidence)throw Error('Select explicit external NEVORA_EMPLOYEE_MOBILE_EVIDENCE');
  await mkdir(evidence,{recursive:true});
  const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
- const app=await createOwnedNextApp(evidence),checks:{engine:string;name:string}[]=[],errors:string[]=[],captures:string[]=[];
+ const app=await createOwnedNextApp(evidence),checks:{engine:string;name:string}[]=[],errors:string[]=[],captures:string[]=[],consoleMessages:{engine:string;type:string;text:string;expectedTransportFailure:boolean}[]=[];
  const q=(text:string,values:unknown[]=[])=>app.database.executor.query({text,values});
  let browser:{close():Promise<void>}|undefined,failureScreenshot:(()=>Promise<void>)|undefined;
  try{
@@ -33,7 +33,7 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
    const activeBrowser=await runtime[engine].launch({headless:true});browser=activeBrowser;
    const context=await activeBrowser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});
    await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){errors.push('Unexpected external origin '+url.origin);await route.abort();}else await route.continue();});
-   const page=await context.newPage();failureScreenshot=async()=>{await page.screenshot({path:evidence+'/failure.png',fullPage:true});await writeFile(evidence+'/failure-layout.json',JSON.stringify(await page.evaluate(()=>({path:location.pathname,roots:[...document.querySelectorAll('[data-employee-mobile]')].map(el=>({id:el.id,active:el.getAttribute('data-employee-mobile-active'),page:el.getAttribute('data-employee-mobile-page')})),elements:[...document.querySelectorAll('.mobile-header,.mobile-header .brand,.q-home,.q-sched-e,.mobile-nav')].map(el=>{const style=getComputedStyle(el),rect=el.getBoundingClientRect();return{class:el.className,display:style.display,visibility:style.visibility,x:rect.x,y:rect.y,width:rect.width,height:rect.height};})})),null,2));};page.setDefaultTimeout(15000);page.on('pageerror',(e:Error)=>errors.push(engine+': '+e.message));
+   let expectedTransportFailure=false;const page=await context.newPage();page.on('console',(message:{type():string;text():string})=>{if(['error','warning'].includes(message.type())){const entry={engine,type:message.type(),text:message.text(),expectedTransportFailure};consoleMessages.push(entry);const expected=expectedTransportFailure&&/Failed to load resource|Failed to fetch|NetworkError|Load failed|net::ERR_FAILED/.test(entry.text)&&!/hydration|didn.t match|server.rendered|Invalid/.test(entry.text);if(!expected&&entry.type==='error')errors.push(engine+': console '+entry.text);}});failureScreenshot=async()=>{await page.screenshot({path:evidence+'/failure.png',fullPage:true});await writeFile(evidence+'/failure-layout.json',JSON.stringify(await page.evaluate(()=>({path:location.pathname,roots:[...document.querySelectorAll('[data-employee-mobile]')].map(el=>({id:el.id,active:el.getAttribute('data-employee-mobile-active'),page:el.getAttribute('data-employee-mobile-page')})),elements:[...document.querySelectorAll('.mobile-header,.mobile-header .brand,.q-home,.q-sched-e,.mobile-nav')].map(el=>{const style=getComputedStyle(el),rect=el.getBoundingClientRect();return{class:el.className,display:style.display,visibility:style.visibility,x:rect.x,y:rect.y,width:rect.width,height:rect.height};})})),null,2));};page.setDefaultTimeout(15000);page.on('pageerror',(e:Error)=>errors.push(engine+': '+e.message));
    let authority='';page.on('request',(r:{url():string;headers():Record<string,string>})=>{if(new URL(r.url()).pathname==='/api/employee/home')authority=r.headers()['x-nevora-home']??authority;});
    const record=(name:string)=>{checks.push({engine,name});console.log(engine+': '+name);};
    const load=async(path:string)=>{await page.goto(app.url+path);await page.locator('main h1:visible').waitFor();if(new URL(page.url()).pathname==='/login')return;if((page.viewportSize()?.width??0)<=767)await page.locator('[data-employee-mobile-active="true"]').waitFor();await page.waitForFunction(()=>[...document.querySelectorAll('.q-home,.q-sched-e')].filter(el=>el.getClientRects().length&&getComputedStyle(el).visibility!=='hidden').length===1);};
@@ -61,7 +61,7 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
     await page.evaluate((choice:string)=>{localStorage.setItem('nv-theme',choice);(window as Window&{__nvApplyTheme?:()=>void}).__nvApplyTheme?.();},theme);expect(await page.locator('html').getAttribute('data-theme')).toBe(theme);await page.setViewportSize({width,height:844});
     for(const path of ['/app','/app/schedule?week='+f.week]){
      await load(path);if(path==='/app')await ready();expect(await page.locator('.mobile-header .brand').isVisible()).toBe(true);expect(await page.locator('.mobile-header .e5-new').isVisible()).toBe(false);expect(await page.locator('[data-employee-mobile]').evaluate((el:HTMLElement)=>getComputedStyle(el).getPropertyValue('--em-canvas').trim())).toBe(theme==='dark'?'#0c1817':'#f4f7f6');expect(await page.locator('.q-home:visible,.q-sched-e:visible').evaluate((el:HTMLElement)=>getComputedStyle(el).backgroundColor)).toBe(theme==='dark'?'rgb(12, 24, 23)':'rgb(244, 247, 246)');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
-     const bad=await page.locator('.mobile-nav a,.em-week-picker summary,.q-weeknav > a,.q-wk a,.q-glance a,.q-seg a').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.getClientRects().length&&(el.getBoundingClientRect().width<43.5||el.getBoundingClientRect().height<43.5)).map(el=>({text:el.textContent,width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height})));expect(bad).toEqual([]);const contrastTargets=path==='/app'?'.q-next:visible .q-next__top > :last-child,.q-next:visible .q-next__meta,.q-next:visible .em-next-action':'.q-sched-e:visible .q-wk a.is-on b,.q-sched-e:visible .q-seg a[aria-current]';for(const el of await page.locator(contrastTargets).all())expect((await el.evaluate(measureRenderedContrast)).ratio).toBeGreaterThanOrEqual(4.5);
+     const bad=await page.locator('.mobile-nav a,.em-week-picker summary,.q-weeknav > a,.q-wk a,.q-glance a,.q-seg a').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.getClientRects().length&&(el.getBoundingClientRect().width<43.5||el.getBoundingClientRect().height<43.5)).map(el=>({text:el.textContent,width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height})));expect(bad).toEqual([]);const contrastTargets=path==='/app'?'.q-next:visible .q-next__top > :last-child,.q-next:visible .q-next__meta,.q-next:visible .em-next-action,.q-home__clock .employee-time-footer small':'.q-sched-e:visible .q-wk a.is-on b,.q-sched-e:visible .q-seg a[aria-current]';for(const el of await page.locator(contrastTargets).all())expect((await el.evaluate(measureRenderedContrast)).ratio).toBeGreaterThanOrEqual(4.5);
     }
    }
    record('Light/Dark320/390/430 layouts retain accessible navigation and week-control targets');await shot('schedule-430-dark');
@@ -80,11 +80,11 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
     await page.reload();await page.locator('[data-home-state="loading"]:visible').waitFor();
     expect(await page.locator('.q-home:visible').innerText()).not.toContain('Main Office');await shot('home-loading');
     releaseHome();await ready();await context.unroute('**/api/employee/home');record('Loading withholds own shift facts until actual Home read completes');
-    await context.route('**/api/employee/home',async(route:{abort(reason?:string):Promise<void>})=>route.abort('failed'));
+    expectedTransportFailure=true;await context.route('**/api/employee/home',async(route:{abort(reason?:string):Promise<void>})=>route.abort('failed'));
     await page.reload();await page.locator('[data-home-state="unavailable"]:visible').waitFor();
     expect(await page.locator('.q-home:visible').innerText()).not.toContain('Main Office');await shot('home-network-error');
     await context.unroute('**/api/employee/home');await page.getByRole('button',{name:'Try again to load Home',exact:true}).click();await ready();
-    expect(await page.locator('.q-next:visible').innerText()).toContain('Main Office');record('Failed Home transport shows honest unavailable state and explicit retry recovers actual data');
+    expect(await page.locator('.q-next:visible').innerText()).toContain('Main Office');expectedTransportFailure=false;record('Failed Home transport shows honest unavailable state and explicit retry recovers actual data');
     await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status) SELECT 'em-mobile-cap-'||n,$1,'2030-12-01','2030-12-01','PENDING' FROM generate_series(1,101)n",[actor]);
     await page.reload();await page.locator('[data-home-state="partial"]:visible').waitFor();
     expect(await page.locator('.q-home:visible').innerText()).toContain('Partially shown');expect(await page.locator('.q-next:visible').innerText()).toContain('Main Office');await shot('home-partial-source-cap');
@@ -97,7 +97,7 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
     record('Owner-saved module-off policy hides employee options and refuses a direct module route without management controls');
 
     await q('DELETE FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,f.week]);await load('/app/schedule?week='+f.week);
-    const operation=await page.locator('.q-weekconf:visible input[name="operationId"]').inputValue();let lostResponse=false;
+    const operation=await page.locator('.q-weekconf:visible input[name="operationId"]').inputValue();let lostResponse=false;expectedTransportFailure=true;
     await context.route('**/app/schedule?**',async(route:{request():{method():string};fetch():Promise<{status():number}>;abort(reason?:string):Promise<void>;continue():Promise<void>})=>{
      if(!lostResponse&&route.request().method()==='POST'){lostResponse=true;const response=await route.fetch();expect(response.status()).toBe(200);await route.abort('failed');}else await route.continue();
     });
@@ -105,7 +105,7 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
     expect((await q('SELECT employee_id FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,f.week])).length).toBe(1);
     expect(await page.locator('.q-weekconf:visible input[name="operationId"]').inputValue()).toBe(operation);await shot('schedule-unknown-confirmation');
     await context.unroute('**/app/schedule?**');await page.getByRole('button',{name:'Retry confirmation',exact:true}).click();await page.getByRole('heading',{name:'You’re up to date',exact:true}).waitFor();
-    expect((await q('SELECT employee_id FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,f.week])).length).toBe(1);record('Lost committed response preserves original operation and retry recovers one canonical receipt');
+    expect((await q('SELECT employee_id FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,f.week])).length).toBe(1);expectedTransportFailure=false;record('Lost committed response preserves original operation and retry recovers one canonical receipt');
 
     await q("UPDATE shifts SET end_time='21:00' WHERE id='em-own-split'");await publishScheduleWithRevision({locationId:'loc-1',weekStart:f.week,managerId:'QAOWNER'},app.database.executor);
     await load('/app/schedule?week='+f.week+'&day='+f.sourceDate);await page.getByRole('button',{name:'Confirm schedule',exact:true}).waitFor();
@@ -114,9 +114,12 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
     await load('/app/schedule?week='+f.week);await page.getByRole('button',{name:'Confirm schedule',exact:true}).waitFor();
     expect(await page.locator('.q-sched-e:visible').innerText()).toContain('No assignments remain this week');await shot('schedule-empty-removal');
     await page.getByRole('button',{name:'Confirm schedule',exact:true}).click();await page.getByRole('heading',{name:'You’re up to date',exact:true}).waitFor();record('Republished changed and removed own assignments invalidate the old confirmation and preserve exact empty-week review');
+    await q("DELETE FROM shifts WHERE id='em-own-today'");await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'QAOWNER'},app.database.executor);
+    await load('/app');await ready();await page.getByRole('link',{name:'View schedule, no upcoming shift',exact:true}).waitFor();await page.locator('.employee-time-badge[data-state="OFF_CLOCK"]').waitFor();await shot('home-no-upcoming-shift');record('Real no-upcoming-shift Home retains actual recorded-clock access');
+    await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id) VALUES('em-own-today','em-now-0',$1,$2,'00:00','24:00','qa-pos')",[actor,today]);await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'QAOWNER'},app.database.executor);
     await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id,is_designated_lead) VALUES($1,'qa-EMP1-schedule-0',$2,$3,'08:00','16:00','qa-pos',true),('em-own-split','qa-EMP1-schedule-0',$2,$3,'17:00','20:00','qa-pos',false)",[f.sourceId,actor,f.sourceDate]);await publishScheduleWithRevision({locationId:'loc-1',weekStart:f.week,managerId:'QAOWNER'},app.database.executor);
 
-    await page.setViewportSize({width:320,height:844});await page.goto(app.url+'/app/profile#employee-calendar-title');await page.locator('.profile-calendar-disclosure[open]').waitFor();
+    await page.setViewportSize({width:320,height:844});await page.goto(app.url+'/app/profile#employee-calendar-title');await page.locator('.profile-calendar-disclosure[open]').waitFor();await page.locator('.employee-calendar-state:visible').waitFor();
     for(const scale of [125,150,200]){
      await page.evaluate((n:number)=>{document.documentElement.style.fontSize=n+'%';window.dispatchEvent(new Event('resize'));},scale);
      await page.waitForFunction((n:number)=>document.documentElement.getAttribute('data-text-step')===String(n),scale);
@@ -138,7 +141,7 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
       await load('/app/schedule?week='+f.week+'&day='+f.targetDate);expect(await page.locator('.q-sched-e:visible').innerText()).toContain('West Office');expect(await page.locator('.q-sched-e:visible').innerText()).not.toContain('Main Office');expect(await page.getByRole('link',{name:'Add shift',exact:true}).count()).toBe(0);
      }else{
       await page.locator('[data-nv-clean]').waitFor();expect(await page.locator('[data-employee-mobile]').count()).toBe(0);expect(await page.locator('.app-shell').evaluate((el:HTMLElement)=>getComputedStyle(el).getPropertyValue('--em-canvas').trim())).toBe('');
-      expect(await page.locator('.mobile-nav a').allTextContents()).toContain('Inbox');
+      if(role==='MANAGER'){const response=await page.request.get(app.url+'/api/company-access/operational-authority',{headers:{'x-nevora-company-access':'1'}});expect(response.status()).toBe(200);const grant=await response.json();expect(grant.state).toBe('ready');expect(grant.scope?.mode).toBe('COMPANY');}await page.locator('.mobile-nav').getByRole('link',{name:'Inbox',exact:true}).waitFor();expect(await page.locator('.mobile-nav a').allTextContents()).toContain('Inbox');
      }
      await shot(role.toLowerCase()+'-scope');record(role+' real session retains role-owned navigation and presentation');
     }
@@ -147,5 +150,5 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
   }
   expect(errors).toEqual([]);
  }catch(error){await failureScreenshot?.().catch(()=>{});throw error;}
- finally{await browser?.close();await app.close();await writeFile(evidence+'/results.json',JSON.stringify({checks,errors,captures,ownedApp:app.root},null,2));}
+ finally{await browser?.close();await app.close();await writeFile(evidence+'/results.json',JSON.stringify({checks,errors,captures,consoleMessages,ownedApp:app.root},null,2));}
 });
