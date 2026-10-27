@@ -2,8 +2,8 @@
   "schema": 1,
   "repository": "JoseK0514/NEVORA",
   "target": "development",
-  "assemblyBranch": "codex/mobile-access-onboarding-20261026",
-  "observedAt": "2026-10-26",
+  "assemblyBranch": "codex/clocker-ipad-integration-20261027",
+  "observedAt": "2026-10-27",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -410,15 +410,21 @@
     },
     {
       "branch": "claude/home-clock-row",
-      "sha": "97f4548aa7561d4a843b7616cc055180676d514a",
+      "sha": "341680bbbc3620a7f357309464961dfa845c1b64",
       "disposition": "held",
-      "reason": "Active PR33; preserve its remote and work. Separate Home clock row and its scenario drivers; changes the existing Home presentation. Excluded from the frozen mobile Access PR35; requires separate review and matching acceptance before any integration. Recording this head is source classification, not approval or findings closure."
+      "reason": "Fetched and compared on October 27. Preserve this active head and its separate review. Held outside the approved Clocker iPad integration; no source content is merged by this inventory reconciliation."
     },
     {
       "branch": "claude/quiet-everywhere",
-      "sha": "1b4060f862fdc4b0718c2a0508645bcdc9755d18",
+      "sha": "5b82c3cb4836ba61415cef1d6f3cd918c019a385",
       "disposition": "held",
-      "reason": "Active PR34; preserve its remote and work. Separate cross-application UI, payroll/schema, read-path and scoped-permission changes;411 changed paths compared with development. Excluded from the frozen mobile Access PR35; requires separate review and matching acceptance before any integration. Recording this head is source classification, not approval or findings closure."
+      "reason": "Fetched and compared on October 27. Preserve this active head and its separate review. Held outside the approved Clocker iPad integration; no source content is merged by this inventory reconciliation."
+    },
+    {
+      "branch": "codex/mobile-access-onboarding-20261026",
+      "sha": "574a90c9d6add697fb23298e24c1e1c981c365c8",
+      "disposition": "included",
+      "reason": "Merged PR35 is included in the freshly fetched development base dfdcefa. Retain the existing branch and worktree; this Clocker task does not modify them."
     }
   ],
   "maximumActiveBranches": 6
