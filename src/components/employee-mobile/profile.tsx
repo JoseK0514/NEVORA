@@ -4,6 +4,7 @@ import {useEffect,useState,type ReactNode} from 'react';
 import Link from 'next/link';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
+import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {EmployeeAccountPanel} from '../employee-account-panel';
 import {PortalSignout} from '../portal-signout';
 import {ProfileSettingRows} from '../employee-profile-rows';
@@ -18,8 +19,8 @@ import './profile.css';
 export function EmployeeProfilePreferences({lang}:{lang:AuthLang}){
  const theme=useThemeChoice();
  return <div className="em-profile-preferences">
-  <div className="em-profile-field"><label htmlFor="em-profile-language">Sign-in language</label><select id="em-profile-language" value={lang} aria-describedby="em-profile-language-hint" onChange={event=>{const next=event.currentTarget.value;if((next==='en'||next==='es')&&next!==lang)switchTo(next);}}><option value="en">English</option><option value="es">Español</option></select><p id="em-profile-language-hint">Used on the sign-in pages. Changing it reloads this page.</p></div>
-  <div className="em-profile-field"><label htmlFor="em-profile-theme">Appearance</label><select id="em-profile-theme" value={theme} aria-describedby="em-profile-theme-hint" onChange={event=>{const next=event.currentTarget.value;if(next==='system'||next==='light'||next==='dark')setThemeChoice(next);}}><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select><p id="em-profile-theme-hint">For this device. System follows its appearance setting.</p></div>
+  <div className="em-profile-field"><label htmlFor="em-profile-language">Sign-in language</label><span className="em-profile-select"><select id="em-profile-language" value={lang} aria-describedby="em-profile-language-hint" onChange={event=>{const next=event.currentTarget.value;if((next==='en'||next==='es')&&next!==lang)switchTo(next);}}><option value="en">English</option><option value="es">Español</option></select><CaretDownIcon size={20} aria-hidden="true"/></span><p id="em-profile-language-hint">Used on the sign-in pages. Changing it reloads this page.</p></div>
+  <div className="em-profile-field"><label htmlFor="em-profile-theme">Appearance</label><span className="em-profile-select"><select id="em-profile-theme" value={theme} aria-describedby="em-profile-theme-hint" onChange={event=>{const next=event.currentTarget.value;if(next==='system'||next==='light'||next==='dark')setThemeChoice(next);}}><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select><CaretDownIcon size={20} aria-hidden="true"/></span><p id="em-profile-theme-hint">For this device. System follows its appearance setting.</p></div>
  </div>;
 }
 
