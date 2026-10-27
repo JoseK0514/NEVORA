@@ -77,3 +77,12 @@ from application evidence. Physical iPad acceptance remains required.
 - Owned iPad application: 26 Chromium/WebKit checks passed, including lost PIN-save response and actual inventory; follow-up Chromium confirmation: 13 passed with the disabled Save/freshness change.
 - Current break browser suite: 46 checks passed across Chromium/WebKit, including archived editing, stale tab, lost response, exact Owner-only notice and seven catalog/editor widths. The geometry failure exposed undersized filters, now44px touch targets scoped to Clocker.
 - Removed unnecessary full-document reloads from responsive-rotation tests. A separate existing WebKit diagnostic reproduced native navigation-fetch output with zero window exceptions; the final real break run had no framework, hydration or console errors and needed no diagnostic exemptions.
+
+## T7 — Explicit cross-device Owner review
+
+- Additive0039 persists an employee-requested handoff only after an explicit action. Current tablet/PIN scope supplies requester, device, location and company; JSON cannot choose them.
+- Exact request IDs are idempotent, changed payloads reject, and assistance without a readable clock UUID stays distinct from a time punch.
+- Owner queue uses original Company/session fences, at most15-second observations and stable full-microsecond cursor ordering. Requester identity remains separate from canonical ledger evidence. The Owner alias delegates to the same protected handler as the older manager-named route.
+- Collapsed tablet help provides same-ID retry, copied/manual references and dismiss without deleting history. No notifications or remote punch controls were added.
+- SQL/transport: 14 passed, including response loss, invalid scope, foreign-person command, sub-millisecond pagination and late Owner loss. Body/parser/receipt/copy/migration unit: 15 passed; TypeScript passed.
+- Owned application: 28 Chromium/WebKit checks passed, including actual cross-context request/receipt review and no duplicate or changed time.
