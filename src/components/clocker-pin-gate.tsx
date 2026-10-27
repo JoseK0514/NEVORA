@@ -1,5 +1,6 @@
 'use client';
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
+import {verifiedDeadline,type ClockContinuation} from './clocker-privacy';
 import styles from './clocker-pin.module.css';
 import { ClockerPunchPanel } from './clocker-punch-panel';
 import { ClockerIcon } from './clocker-icon';
@@ -27,7 +28,10 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
  const input=useRef<HTMLInputElement>(null),busy=useRef(false),epoch=useRef(0);
  const [count,setCount]=useState(0),[pending,setPending]=useState(true);
  const spanish=useClockerSpanish();
- const [identity,setIdentity]=useState<Verified|null>(null);
+ const [identity,setIdentity]=useState<(Verified&{deadline:number})|null>(null);
+ const draft=useRef<ClockContinuation|null>(null);
+ const [held,setHeld]=useState<ClockContinuation|null>(null),[remaining,setRemaining]=useState(30000),[editedAt,setEditedAt]=useState(0);
+ const receiveDraft=useCallback((value:ClockContinuation|null)=>{draft.current=value;},[]);
  const [error,setError]=useState<string|null>(null),[blocked,setBlocked]=useState(false);
  const motion=useClockerMotion(identity?'verified':'pin');
  const clearQueue=useRef<Promise<unknown>|null>(null);
@@ -36,13 +40,15 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
   const operation=(clearQueue.current??Promise.resolve()).catch(()=>undefined).then(()=>requestPin(locationKey,{action:'clear'}));
   clearQueue.current=operation;return operation;
  },[locationKey]);
- const reset=useCallback(async()=>{
+ const reset=useCallback(async(keepDraft=false)=>{
+  if(!keepDraft)setHeld(null);draft.current=null;
   const generation=advanceEpoch();busy.current=true;setPending(true);setIdentity(null);setCount(0);setError(null);
   if(input.current)input.current.value='';
   try{await clearServer();if(generation===epoch.current)setBlocked(false);}
   catch{if(generation===epoch.current){setBlocked(true);setError('We could not clear tablet verification. Check the connection before continuing.');}}
   finally{if(generation===epoch.current){busy.current=false;setPending(false);}}
  },[clearServer,advanceEpoch]);
+ const finish=useCallback(()=>void reset(),[reset]);
  useEffect(()=>{
   const generation=advanceEpoch();busy.current=true;
   void clearServer().then(()=>{if(generation===epoch.current)setBlocked(false);})
@@ -59,19 +65,26 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
  },[reset,clearServer,advanceEpoch]);
  useEffect(()=>{
   if(!identity)return;
-  const timeout=window.setTimeout(()=>void reset(),30000);
-  return()=>clearTimeout(timeout);
+  const check=()=>{const left=Math.max(0,identity.deadline-Date.now());setRemaining(left);if(left===0)void reset();};
+  check();const timer=window.setInterval(check,250),hard=window.setTimeout(check,Math.max(0,identity.deadline-Date.now()));
+  return()=>{clearInterval(timer);clearTimeout(hard);};
  },[identity,reset]);
+ useEffect(()=>{
+  if(!count||pending||identity)return;
+  const clear=()=>{if(input.current)input.current.value='';setCount(0);};
+  const timer=window.setTimeout(clear,Math.max(0,editedAt+20000-Date.now()));return()=>clearTimeout(timer);
+ },[count,editedAt,pending,identity]);
+ async function continueSecurely(){const target=draft.current;setHeld(target);await reset(true);}
  useEffect(()=>{if(!pending&&!identity&&!blocked)input.current?.focus({preventScroll:true});},[pending,identity,blocked]);
  function key(value:string){
   if(busy.current||blocked||!input.current)return;
   const current=input.current.value;
   input.current.value=value==='clear'?'':value==='delete'?current.slice(0,-1):current.length<4?current+value:current;
-  setCount(input.current.value.length);
+  setCount(input.current.value.length);setEditedAt(Date.now());
  }
  async function submit(event:FormEvent<HTMLFormElement>){
   event.preventDefault();if(busy.current||blocked)return;
-  const pin=input.current?.value??'';
+  const pin=Date.now()-editedAt<20000?input.current?.value??'':'';
   if(input.current)input.current.value='';setCount(0);
   if(pin.length!==4||!/^[0-9]{4}$/.test(pin)){setError('Enter exactly four PIN digits.');return;}
   const generation=advanceEpoch();busy.current=true;setPending(true);setIdentity(null);setError(null);
@@ -81,13 +94,13 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
    if(generation!==epoch.current){await clearServer();return;}
    if(confirmed.state!=='verified')throw new Error('Verification changed. Please enter your PIN again.');
    if(document.hidden){void reset();return;}
-   setIdentity(confirmed);
+   setIdentity({...confirmed,deadline:verifiedDeadline(Date.now(),confirmed.expiresAt)});setRemaining(30000);
   }catch(reason){if(generation===epoch.current){setError(reason instanceof Error?reason.message:'Verification could not be confirmed. Please try again.');setBlocked(!(reason instanceof PinRequestError)||reason.recover);}}
   finally{if(generation===epoch.current){busy.current=false;setPending(false);}}
  }
  const problem=error?<div className={styles.problem}><p role="alert" className={styles.error}>{t(error)}</p>{blocked?<button type="button" className="button secondary" onClick={()=>void reset()}>{t("Check Connection")}</button>:null}</div>:null;
  return <div ref={motion} className={styles.terminal} aria-busy={pending} data-clocker-pin={identity?'verified':'entry'}>
-  {identity&&punchEnabled?<ClockerPunchPanel locationKey={locationKey} timeZone={timeZone} onDone={reset}/>:identity?<>
+  {identity&&punchEnabled?<ClockerPunchPanel locationKey={locationKey} timeZone={timeZone} onDone={finish} resume={held} onContinuationChange={receiveDraft}/>:identity?<>
    <span className={styles.seal}><ClockerIcon name="check" size={52} weight={presentation.v2?'regular':'bold'}/></span>
    <h1>{t('Hi, {name}.',{name:identity.firstName})}</h1><p className={styles.lead}>{t("Your PIN is verified for this tablet.")}</p>
    <div className={styles.previewNotice}><strong>{t("Time punches are not enabled yet.")}</strong><span>{t("No worked time has been recorded.")}</span></div>
@@ -101,7 +114,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
     <fieldset disabled={pending||blocked}>
      <label className={styles.pinLabel} htmlFor="clocker-pin">{t("Employee PIN")}</label>
      <div data-clocker-pin-entry className={styles.pinEntry}>
-      <input id="clocker-pin" ref={input} name="pin" type="password" inputMode="none" autoComplete="off" maxLength={4} minLength={4} required pattern="[0-9]{4}" onChange={e=>setCount(e.currentTarget.value.length)} aria-describedby="clocker-pin-help" aria-invalid={error&&!blocked?true:undefined}/>
+      <input id="clocker-pin" ref={input} name="pin" type="password" inputMode="none" autoComplete="off" maxLength={4} minLength={4} required pattern="[0-9]{4}" onChange={e=>{setCount(e.currentTarget.value.length);setEditedAt(Date.now());}} aria-describedby="clocker-pin-help" aria-invalid={error&&!blocked?true:undefined}/>
       <div className={styles.pinSlots} aria-hidden="true">{[0,1,2,3].map(index=><span key={index} data-filled={index<count}/>)}</div>
      </div>
      <div data-clocker-keypad className={styles.keypad} aria-label={t("PIN keypad")}>
@@ -112,6 +125,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
    </form>
    <div className={styles.meta}><p id="clocker-pin-help">{t("Your PIN is separate from your portal password.")}</p><ClockerLanguageToggle/></div>
   </>}
+  {identity&&remaining<=10000&&remaining>0?<aside className={styles.privacyWarning} aria-label={t('Privacy reminder')}><p role="status">{t('This screen clears in {seconds} seconds.',{seconds:Math.ceil(remaining/1000)})}</p><button type="button" className="button secondary" onClick={()=>void continueSecurely()}>{t('Continue securely')}</button></aside>:null}
   {pending?<p role="status" className={styles.note}>{t("Checking tablet verification…")}</p>:null}
   {identity?problem:null}
  </div>;

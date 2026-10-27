@@ -1,5 +1,8 @@
 export type ClockerLocale='en'|'es';
 export const CLOCKER_COPY:Record<string,string>={
+ "Privacy reminder":"Aviso de privacidad",
+ "This screen clears in {seconds} seconds.":"Esta pantalla se borra en {seconds} segundos.",
+ "Continue securely":"Continuar de forma segura",
  "Clocked in": "En turno",
  "PIN keypad": "Teclado del PIN",
  "Setup required": "Requiere configuración",

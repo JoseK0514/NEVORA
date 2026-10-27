@@ -7,6 +7,7 @@ import {openClockerJournal} from '../lib/clocker/recovery-journal.browser';
 import type {ClockerJournal,JournalReference} from '../lib/clocker/recovery-journal';
 import type { PunchAction, PunchReceipt } from '../lib/clocker/punch-types';
 import type { BreakSelection } from '../lib/clocker/break-types';
+import {continuationFor,resumeContinuation,type ClockContinuation} from './clocker-privacy';
 import styles from './clocker-punch.module.css';
 import { ClockerIcon, type ClockerIconName } from './clocker-icon';
 import { useClockerMotion } from './clocker-motion';
@@ -36,7 +37,7 @@ function elapsed(value:string,now:number):string {
  const h=Math.floor(minutes/60),m=minutes%60;return h?`${h}h ${m}m`:`${m}m`;
 }
 const breakIcon=(category:string):ClockerIconName=>category==='REST'?'rest':category==='MEAL'?'meal':'break';
-export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:string;timeZone:string;onDone:()=>void}) {
+export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinuationChange}:{locationKey:string;timeZone:string;onDone:()=>void;resume?:ClockContinuation|null;onContinuationChange?:(draft:ClockContinuation|null)=>void}) {
  const t=useClockerCopy(),presentation=useClockerPresentation();
  const [view,setView]=useState<ClockView|null>(null),[pending,setPending]=useState<PendingPunch|null>(null);
  const [mode,setMode]=useState<Mode>('loading'),[message,setMessage]=useState<string|null>(null);
@@ -67,11 +68,12 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:str
     if(!current)return;
     try{const store=await recoveryJournal();saved=await store.read(locationKey,fresh.subject);const refs=await store.references(locationKey);if(!current)return;setReferences(refs);}
     catch{setMode('storage');setMessage('Your recovery record cannot be verified. Keep it saved and ask an Owner to review it.');return;}
-    setView(fresh);setPending(saved);setMode(saved?'recovery':'ready');
+    setView(fresh);setPending(saved);setMode(saved?'recovery':resumeContinuation(resume,fresh));
    }catch(error){if(current){setPending(saved);failed(error,Boolean(saved));}}
   };
   void load();return()=>{current=false;alive.current=false;void journal.current?.then(store=>store.close(),()=>{});};
  },[locationKey]);
+ useEffect(()=>{onContinuationChange?.(view&&!pending?continuationFor(view,mode):null);return()=>onContinuationChange?.(null);},[view,mode,pending,onContinuationChange]);
  useEffect(()=>{heading.current?.focus({preventScroll:true});},[mode]);
  useEffect(()=>{
   if(mode!=='success')return;
