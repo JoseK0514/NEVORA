@@ -425,6 +425,12 @@
       "sha": "574a90c9d6add697fb23298e24c1e1c981c365c8",
       "disposition": "included",
       "reason": "Merged PR35 is included in the freshly fetched development base dfdcefa. Retain the existing branch and worktree; this Clocker task does not modify them."
+    },
+    {
+      "branch": "codex/light-default-20261027",
+      "sha": "32ce3b5c69234cd0d1bb5bb8f0f8f1eda8ee7ffd",
+      "disposition": "held",
+      "reason": "Fetched and inspected on October27: appearance-default change in theme switch/model/tests and its handoff. Preserve this separate active branch outside Clocker; no source merged. Active remote count is now7 against the unchanged approved ceiling6, so the branch-hygiene gate remains blocked rather than silently raised."
     }
   ],
   "maximumActiveBranches": 6
