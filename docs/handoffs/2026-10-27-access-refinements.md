@@ -47,3 +47,17 @@ Not run here: WebKit, Firefox, `test:mobile-access:owned` (needs all three engin
 Apply `0042_company_invitation_lifetime.sql` (after 0032) before deploying this code. Without it, every invitation fails the old 15-minute check. Older code keeps working on a database that has 0042. See `DEPLOY-RUNBOOK.md` step 4. Production, migrations on any shared database and deployment remain subject to Jose's separate authorization.
 
 Before announcing the sole-Owner path, Support ops still needs a monitored mailbox, an identity-verification runbook and the reply-time target staffed.
+
+## Follow-up: mobile Access form card (closer to Gusto)
+
+Jose compared the four mobile Access forms with Gusto Mobile's sign-in and approved moving closer to it. Mockup and build comparison: https://claude.ai/artifact/QK93PaFrKPPP5m7TtbetSQ. Decision record: "Mobile Access form card — approved 2026-10-27" in `DESIGN.MD`.
+
+- **Scope:** phones only (under 768px) with mobile Access on; Sign in, Forgot password, New password and Set up your account. Welcome, Help, Support, desktop and tablet are untouched.
+- **Markup:** `AccessCard` and `AccessOutside` (`chrome.tsx`) wrap the existing elements; they render nothing extra when mobile Access is off, so legacy markup is unchanged. On Sign in, "Forgot password?" renders inside the card for phones and on the link line for desktop, with the other copy hidden at each width.
+- **Verified:**
+  - Pixel comparison with the approved mocks: 15 of 15 identical (four forms in English and Spanish at 390px and at 320px, plus empty, focused, filled and error field states).
+  - Desktop (1440px), tablet (768px), and phone Welcome and Help pages: identical before and after.
+  - States the mocks didn't cover render correctly: sign-in error and "account activated" notices sit inside the card, as do the recovery receipt, invitation form and reset-link states.
+  - No overflow in 104 checks (13 routes, EN/ES, 320/390px, 100%/200% text). Keyboard order follows the screen. Headings measure 14.5–18.5:1 with a Dark preference.
+  - Typecheck, lint, and 70 unit tests in the affected suites pass.
+- **Known limits:** at 200% text on a 320px phone, the longest labels end in "…" (the full label stays available to screen readers), and long single words still break mid-word in titles and buttons, as they did before the card. Chromium only; WebKit, Firefox, real devices and screen readers are untested.

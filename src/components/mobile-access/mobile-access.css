@@ -135,3 +135,41 @@
  :where(#mobile-access-page).q-auth .ma-copy p{color:var(--q-body)}
  :where(#mobile-access-page).q-auth .ma-footer-help{display:inline-block;margin-bottom:4px;font-size:15px;color:var(--q-grey)}
 }
+
+/* Access form card, closer to Gusto's sign-in (Jose approved October 27, 2026; mockup:
+ * https://claude.ai/artifact/QK93PaFrKPPP5m7TtbetSQ). Phones only; desktop keeps Quiet. Inside the card: the
+ * title, fields, field help, the form's buttons and errors. Below it (.ma-outside): "can't do this" help and links. */
+@media(max-width:767px){
+ :is(#q-root, html):has(#mobile-access-page .ma-card), :is(#q-root, html) body:has(#mobile-access-page .ma-card),
+ :is(#q-root, html)[data-theme][data-theme-choice]:has(#mobile-access-page .ma-card), :is(#q-root, html)[data-theme][data-theme-choice] body:has(#mobile-access-page .ma-card){background:#F7F6F3!important}
+ #mobile-access-page.q-page.q-auth:has(.ma-card), html[data-theme] #mobile-access-page.q-page.q-auth:has(.ma-card){background:#F7F6F3!important}
+ #mobile-access-page.q-auth:has(.ma-card) .ma-header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+ #mobile-access-page.q-auth:has(.ma-card) .ma-brand{grid-column:2}
+ #mobile-access-page.q-auth:has(.ma-card) .ma-brand .brand-wordmark{width:104px}
+ #mobile-access-page.q-auth:has(.ma-card) .ma-language{grid-column:3;justify-self:end}
+ #mobile-access-page.q-auth .ma-card{margin:12px 0 0;padding:24px 20px 20px;background:#fff;border:1px solid rgba(23,38,34,.06);border-radius:16px;box-shadow:0 1px 2px rgba(16,24,22,.05),0 10px 30px rgba(16,24,22,.08)}
+ #mobile-access-page.q-auth .ma-card .q-hd{margin:0 0 20px;text-align:center}
+ #mobile-access-page.q-auth .ma-card .q-hd h1{font-size:1.5rem!important;line-height:1.25!important;letter-spacing:-.025em!important;max-width:none!important}
+ #mobile-access-page.q-auth .ma-card .q-hd p{margin:6px auto 0;max-width:30ch;font-size:.9375rem!important;line-height:1.45}
+ #mobile-access-page.q-auth .ma-card .q-fl{position:relative}
+ #mobile-access-page.q-auth .ma-card .q-fl > label{position:absolute;top:.5625rem;left:15px;right:15px;z-index:1;margin:0;overflow:hidden;font-size:.75rem;line-height:1rem;font-weight:560;letter-spacing:0;white-space:nowrap;text-overflow:ellipsis;color:var(--ma-muted);pointer-events:none}
+ #mobile-access-page.q-auth .ma-card .q-fl:focus-within > label{color:var(--ma-teal)}
+ #mobile-access-page.q-auth .ma-card .q-fl:has(.q-in[aria-invalid="true"]) > label{color:#b53327}
+ #mobile-access-page.q-auth .ma-card .q-in{height:3.5rem!important;padding:1.5rem 14px .5rem!important}
+ #mobile-access-page.q-auth .ma-card .q-in::placeholder{color:transparent}
+ #mobile-access-page.q-auth .ma-card .q-in:focus::placeholder{color:#8a958f}
+ #mobile-access-page.q-auth .ma-card .q-auth__fields{gap:16px}
+ #mobile-access-page.q-auth .ma-card .q-auth__form .q-btn{margin-top:20px}
+ #mobile-access-page.q-auth .ma-card .ma-actions{margin-top:12px}
+ #mobile-access-page.q-auth .ma-card .q-hd + .ma-actions{margin-top:0}
+ #mobile-access-page.q-auth .ma-card .q-auth__alert{margin:16px 0 0}
+ #mobile-access-page.q-auth .ma-card .q-hd + .q-auth__alert{margin:0 0 16px}
+ #mobile-access-page.q-auth .ma-card .ma-forgot{display:inline-flex;align-items:center;min-height:44px;margin:2px 0 -8px;padding:0;color:var(--ma-teal);font-size:.875rem;line-height:1.4;font-weight:620;letter-spacing:0;text-decoration:none}
+ #mobile-access-page.q-auth .q-auth__links a.ma-desktop{display:none!important}
+ #mobile-access-page.q-auth .ma-outside{display:flex;flex-direction:column;align-items:center;gap:8px;margin:28px 0 8px;text-align:center}
+ #mobile-access-page.q-auth .ma-outside > *{margin:0!important}
+ #mobile-access-page.q-auth .ma-outside .ma-details summary{justify-content:center}
+ #mobile-access-page.q-auth .ma-outside .ma-details p{text-align:left;margin:4px 0 12px}
+ #mobile-access-page.q-auth .ma-outside .q-auth__links{flex-direction:column;align-items:center;gap:8px}
+ #mobile-access-page.q-auth .ma-outside .q-btn--quiet{width:auto;margin:0}
+}
