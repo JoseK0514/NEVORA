@@ -66,3 +66,14 @@ from application evidence. Physical iPad acceptance remains required.
 - New browser expectation first failed on the old on-break cancellation. Then 24 owned Chromium/WebKit checks passed: all four writes, duplicate click, cancel, original-command retry, tab-close receipt recovery and explicit obsolete review without a new write.
 - Unit receipt/command/copy suite: 51 passed. Current SQL punch/transport: 69 passed. Inherited punch/transport: 59 passed.
 - Two additional SQL characterizations passed: combined PIN reset/device replacement rejects old authority, and recovery reads wait behind a real in-flight punch lock before reading its immutable receipt. TypeScript passed.
+
+## T6 — Owner administration and exact PIN saves
+
+- Owner navigation connects tablets, actual employee PIN metadata, breaks and recovery. Employee profiles now show Set/Not set/Unavailable from a protected read.
+- Additive0038 adds a nullable unique operation UUID to append-only PIN events; historical events stay unchanged.
+- PIN save clears secrets first, keeps only its exact reference on uncertain response and checks immutable event evidence. A newer PIN is explicitly reported as superseding the old save. Save stays disabled during blocked/incomplete input; metadata uses the current Company frame.
+- SQL Owner/PIN/Company policy suite: 65 passed, including lost response, duplicate-operation rollback, superseded versions, late Owner loss and audit-preserving migration.
+- Focused form/page/device/recovery/migration unit suite: 48 passed. TypeScript passed.
+- Owned iPad application: 26 Chromium/WebKit checks passed, including lost PIN-save response and actual inventory; follow-up Chromium confirmation: 13 passed with the disabled Save/freshness change.
+- Current break browser suite: 46 checks passed across Chromium/WebKit, including archived editing, stale tab, lost response, exact Owner-only notice and seven catalog/editor widths. The geometry failure exposed undersized filters, now44px touch targets scoped to Clocker.
+- Removed unnecessary full-document reloads from responsive-rotation tests. A separate existing WebKit diagnostic reproduced native navigation-fetch output with zero window exceptions; the final real break run had no framework, hydration or console errors and needed no diagnostic exemptions.
