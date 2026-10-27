@@ -59,7 +59,7 @@ export async function verifyReportRecoveryNavigation(page,app,engine,report,mana
 async function verifyExplicitRecovery(page,origin,engine,report){
  const source='/app/payroll-export?start=2026-09-21&end=2026-09-27';
  const row={engine,case:'explicit-source-recovery',status:'pending'};report.scopedNavigation.push(row);
- const mark=phase=>markReportNavigationStage(page,engine,row.case,phase);
+ const mark=phase=>{row.phase=phase;markReportNavigationStage(page,engine,row.case,phase);};
  let release,held,terminal,intercepted,stop=()=>{};
  const gate=new Promise(ready=>{release=ready;});
  const incoming=new Promise(ready=>{intercepted=ready;});
@@ -83,11 +83,13 @@ async function verifyExplicitRecovery(page,origin,engine,report){
  try{
   await runBeforeRecoveryDeadline(async()=>{
    mark('hold-destination');
-   await Promise.all([incoming,page.locator('#desktop-primary-navigation a[href="/app/reports"]').click()]);
+   // This route is deliberately held. Do not let Playwright's implicit navigation wait
+   // block the recovery action; the held request and its terminal event are awaited explicitly.
+   await Promise.all([incoming,page.locator('#desktop-primary-navigation a[href="/app/reports"]').click({noWaitAfter:true})]);
    assert(held,'An actual destination RSC must be held');
    mark('explicit-source-refresh');
    await page.evaluate(()=>window.dispatchEvent(new Event('storage')));
-   await page.locator('main').getByRole('button',{name:'Refresh current view',exact:true}).click();
+   await page.locator('main').getByRole('button',{name:'Refresh current view',exact:true}).click({noWaitAfter:true});
    await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
    mark('release-discarded-destination');
    release();row.destinationTerminal=await terminal;
