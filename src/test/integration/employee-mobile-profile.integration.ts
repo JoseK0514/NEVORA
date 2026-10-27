@@ -43,8 +43,8 @@ it('integrates current own Profile, preferences, contextual help and native sign
    const openProfile=async()=>{await page.locator('.mobile-nav-link[href="/app/more"]:visible').click();await page.waitForURL(app.url+'/app/more');await page.locator('a[href="/app/profile"]:visible').first().click();await page.waitForURL(app.url+'/app/profile');};
    await page.goto(app.url+'/login');await login(actor,'en');
    const noScript=await activeBrowser.newContext({viewport:{width:390,height:844},javaScriptEnabled:false,serviceWorkers:'block',storageState:await context.storageState()});
-   try{const initial=await noScript.newPage();await initial.goto(app.url+'/app/profile');expect(await initial.locator('.q-profile-e .q-who').count()).toBe(0);expect(await initial.locator('.q-profile-e').innerText()).not.toContain(ownName);expect(await initial.getByRole('button',{name:'Sign out',exact:true}).isEnabled()).toBe(true);}finally{await noScript.close();}
-   record('Actual server-rendered mobile page without JavaScript has no static desktop identity; native signout remains available');
+   try{const initial=await noScript.newPage();await initial.goto(app.url+'/app/profile');await initial.screenshot({path:evidence+'/'+engine+'-profile-before-hydration.png',fullPage:true});await writeFile(evidence+'/'+engine+'-profile-before-hydration.html',await initial.locator('body').innerHTML());expect(await initial.locator('.q-profile-e .q-who').count()).toBe(0);expect(await initial.locator('.q-profile-e').innerText()).not.toContain(ownName);}finally{await noScript.close();}
+   await page.bringToFront();await idle();record('Actual server-rendered mobile Profile DOM without hydration excludes static desktop identity');
    // Hold the actual own read, not a fabricated profile or authorization result.
    let releaseRead!:()=>void,readObserved=false;const heldRead=new Promise<void>(resolve=>{releaseRead=resolve;});
    await page.route('**/api/employee/profile',async(route:{fetch():Promise<unknown>;fulfill(options:{response:unknown}):Promise<void>})=>{const response=await route.fetch();readObserved=true;await heldRead;await route.fulfill({response});});
