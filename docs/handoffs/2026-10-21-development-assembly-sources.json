@@ -2,8 +2,8 @@
   "schema": 1,
   "repository": "JoseK0514/NEVORA",
   "target": "development",
-  "assemblyBranch": "codex/mobile-access-onboarding-20261026",
-  "observedAt": "2026-10-26",
+  "assemblyBranch": "codex/light-default-20261027",
+  "observedAt": "2026-10-27",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -363,9 +363,9 @@
     },
     {
       "branch": "development",
-      "sha": "46e202786863279302026ee03a0e225c359fa55c",
+      "sha": "dfdcefa0edc9d02bad5edf79b2b5a9587b194eb2",
       "disposition": "target",
-      "reason": "Freshly fetched combined development46e2027, including merged PR29/31/32. PR35 adds frozen mobile Access only and bounded source/CI reconciliation. Main/production and separately active PR27/33/34 remain unchanged."
+      "reason": "Freshly fetched combined development dfdcefa0 includes merged PR35. PR36 changes the default appearance to Light and records bounded source custody. Main/production and separately active PR27/33/34 are excluded from this merge."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -410,15 +410,22 @@
     },
     {
       "branch": "claude/home-clock-row",
-      "sha": "97f4548aa7561d4a843b7616cc055180676d514a",
+      "sha": "341680bbbc3620a7f357309464961dfa845c1b64",
       "disposition": "held",
-      "reason": "Active PR33; preserve its remote and work. Separate Home clock row and its scenario drivers; changes the existing Home presentation. Excluded from the frozen mobile Access PR35; requires separate review and matching acceptance before any integration. Recording this head is source classification, not approval or findings closure."
+      "reason": "Active PR33 remains held; preserve its remote and work. Head advanced from 97f4548a by merging development/PR35 at 341680bb; the existing separate Home clock-row feature and scenario drivers remain excluded from PR36. Source classification only, not feature approval or independent findings closure."
     },
     {
       "branch": "claude/quiet-everywhere",
-      "sha": "1b4060f862fdc4b0718c2a0508645bcdc9755d18",
+      "sha": "5b82c3cb4836ba61415cef1d6f3cd918c019a385",
       "disposition": "held",
-      "reason": "Active PR34; preserve its remote and work. Separate cross-application UI, payroll/schema, read-path and scoped-permission changes;411 changed paths compared with development. Excluded from the frozen mobile Access PR35; requires separate review and matching acceptance before any integration. Recording this head is source classification, not approval or findings closure."
+      "reason": "Active PR34 remains held; preserve its remote and work. Head merged development/PR35 at 668c6f97 and adds 5b82c3cb, keeping Refresh current view rendered during access checks. Its cross-application UI, payroll/schema, read-path and scoped-permission work stays excluded from PR36 and requires separate review/acceptance. Source classification only, not approval or findings closure."
+    },
+    {
+      "branch": "codex/mobile-access-onboarding-20261026",
+      "sha": "574a90c9d6add697fb23298e24c1e1c981c365c8",
+      "disposition": "included",
+      "archiveRef": "refs/tags/archive/branches/2026-10-27/codex/mobile-access-onboarding-20261026",
+      "reason": "PR35 is merged in development dfdcefa0 and is an ancestor of PR36. Preserve its exact head in this verified remote archive tag; remove only the already-merged remote branch to retain the six-active-branch ceiling. Local branches/worktrees remain untouched."
     }
   ],
   "maximumActiveBranches": 6
