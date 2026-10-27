@@ -4,14 +4,15 @@ Jose confirmed sequencing on 2026-10-27: finish everything assigned to Phase 2 b
 
 The approved scope remains the three-phase plan at `outputs/employee-mobile/remaining-work-three-phases.md` in the design workspace. Keep its small implementation batches and independent acceptance gates; do not move unfinished Phase 2 implementation into Phase 3.
 
-## Verified foundation and current completed batch
+## Verified foundation and completed batches
 
 - Phase 1: shared Employee/Lead mobile teal system, Home, Schedule/revision review and bounded Calendar heading fix. See `../employee-mobile-phase1/HANDOFF.md`.
 - First Phase 2 batch: Requests hub and eligible open coverage/pickup, accepted locally at application candidate `7abcd315ae0f978b74d4a06c2cc1525cc67f362b`. See `../employee-mobile-requests/HANDOFF.md` and its independent UI/QA reports. Existing links to deeper request pages are not evidence that those mobile ports are complete.
+- Second Phase 2 batch: incoming swap responses and own-request details/history, including permitted cancellation/withdrawal and retained exact links, application candidate `333c476250b6727f72b8746404b25ab53a3b88ed`. Root and independent full44 tests pass; code/UI findings were independently verified. See `../employee-mobile-responses/HANDOFF.md` and authored reports for acceptance limits. This does not complete creation/submission ports.
 
 ## Remaining Phase 2 implementation
 
-1. Swap creation/incoming responses, cover offers/Unable to work, own activity/history and permitted cancellation/withdrawal. Next bounded batch: swap/cover responses and own-request details.
+1. New swap creation, cover-offer creation and Unable-to-work submission with original reviewed terms, validation, drafts/recovery and current permissions. Incoming responses and own detail/history/cancellation/withdrawal are implemented by the accepted second batch above; existing creation destinations remain reachable but are not counted as completed mobile ports. This is the next bounded batch.
 2. Full/partial-day time off, waiting/decided history and pending withdrawal; usual/weekly availability, deadlines, drafts and recovery.
 3. Own Hours, timecards, punches/breaks/effective time, corrections/missing-time proposals and decision history.
 4. Complete source-backed notifications/destinations and updates, permitted acknowledgement and authorized team posting/withdrawal.

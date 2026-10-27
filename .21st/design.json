@@ -235,11 +235,31 @@
       "direction": "Continue the Jose-approved Phase 1 clean teal system; native disclosure, clear pickup consequences and current server eligibility",
       "componentProvenance": {
         "retrieval": "Free metadata search only; no paid code retrieval, generation or new dependency",
-        "searchResults": [25171, 2554, 29211],
+        "searchResults": [
+          25171,
+          2554,
+          29211
+        ],
         "selection": "Existing private controller, Employee guards, shift-change planner/operation owner, Phosphor and semantic tokens fit better than catalog alternatives"
       },
       "implementation": "src/components/employee-mobile/requests.tsx and requests.css with protected minimal own-data transport",
       "handoff": "docs/execution/employee-mobile-requests/HANDOFF.md"
+    },
+    {
+      "date": "2026-10-27",
+      "scope": "Employee/Lead mobile incoming swap responses and own request detail/history; preserve desktop and management",
+      "direction": "Continue approved teal components and native full-page review. Compare the two consent-bound shifts, explain automatic or manager-review outcomes, show current permitted responses and progressively disclose safe history. Match withdrawal consequences to swap versus pickup; keep navigation opaque in Light/Dark.",
+      "componentProvenance": {
+        "retrieval": "Free metadata only; no paid retrieval, generation, new library or dependency",
+        "searchResults": [
+          12387,
+          24840,
+          37491
+        ],
+        "selection": "Existing Employee guards/private snapshot, incumbent command/history/operation owners, Phosphor and semantic primitives fit the actual task"
+      },
+      "implementation": "src/components/employee-mobile/exchange.tsx, exchange-view.tsx and exchange.css over minimal guarded own-data transport",
+      "handoff": "docs/execution/employee-mobile-responses/HANDOFF.md"
     }
   ],
   "evidence": [

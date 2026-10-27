@@ -28,3 +28,10 @@ The Calendar fragment targets the disclosure itself, with a separate accessible 
 Approved prototype: `outputs/employee-mobile/index.html` in the design task workspace, SHA256 `06c548a89f01e46c687c1d7e0a961da01c74952d6b7bfff34a1f7459e2396469`. Screens are a composition reference; actual service states and policy remain authoritative. Existing Gusto/Homebase/Mobbin research is retained in the prototype and incumbent design records. This phase does not claim a new competitor audit or exact clone.
 
 21st free metadata search informed compact native week controls (Date Picker7499, React Day Picker470, Compact Date Picker29180). Existing project/native primitives fit this task; no retrieved code, paid retrieval, package or hosted generation was added. CLI review availability and actual checks are recorded in the execution handoff. Independent review reports own their acceptance findings; this design record is not certification.
+
+
+## Phase 2 response/detail continuation
+
+Incoming swaps and own shift requests continue this scoped mobile system. One full-page detail presents status, the original reviewed shift(s), explicit response consequences, current permitted controls and native history disclosure. Unavailable immutable report terms remain unknown; never replace them with a changed live assignment. Swap withdrawal explains that both employees keep their current assignments; pickup withdrawal explains one unchanged assignment. The shared mobile navigation stays opaque in both themes so underlying task copy cannot bleed through.
+
+No new design library or business engine. See `docs/execution/employee-mobile-responses/HANDOFF.md` for exact tested candidate, independent findings/closure, supply provenance and remaining gates. This continuation does not certify the remaining Phase 2 workflows.
