@@ -1,0 +1,89 @@
+import {it,expect} from 'vitest';
+import {createRequire} from 'node:module';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import {randomUUID} from 'node:crypto';
+import {createOwnedNextApp} from './owned-next-app';
+import {seedOwnedApp,seedOwnedScenario,TEST_PASSWORD} from './owned-app-fixture';
+import {fixtureProof} from './shift-change-api';
+import {publishScheduleWithRevision} from './management-api';
+import {previewCommunicationAudience,executeCommunicationCommand,readCommunication} from '../../lib/communications/service.server';
+import {businessDate} from '../../lib/business-time';
+import {weekStartFor} from '../../lib/date-utils';
+import {measureRenderedContrast} from '../../../scripts/browser-contrast.mjs';
+
+it('integrates employee mobile messages with current audience, explicit receipts and original submission recovery',async()=>{
+ const evidence=process.env.NEVORA_EMPLOYEE_MESSAGES_EVIDENCE;
+ if(!evidence)throw Error('Choose external NEVORA_EMPLOYEE_MESSAGES_EVIDENCE');
+ await mkdir(evidence,{recursive:true});
+ const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
+ const app=await createOwnedNextApp(evidence);
+ const checks:{engine:string;name:string}[]=[],captures:string[]=[],contrasts:unknown[]=[],messages:{engine:string;stage:string;type:string;text:string;expected:boolean}[]=[],failedRequests:unknown[]=[];
+ const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
+ let browser:{close():Promise<void>}|undefined,failure:(()=>Promise<void>)|undefined;
+ try{
+  await seedOwnedApp(app.database.executor);
+  const owner=await fixtureProof(app.database.executor,'QAOWNER');
+  const today=businessDate(new Date(),'America/Puerto_Rico'),week=weekStartFor(today);
+  await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('message-today','loc-1',$1,'DRAFT','QAOWNER')",[week]);
+  for(const [index,engine] of ['chromium','webkit','firefox'].entries()){
+   const fixture=await seedOwnedScenario(app.database.executor,'MESSAGEUI'+index,index),actor=fixture.actors[0];
+   await q('UPDATE employees SET role=$1,first_name=$2,last_name=$3 WHERE id=$4',[index===1?'LEAD':'EMPLOYEE','Alex','Rivera',actor]);
+   await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id,is_designated_lead) VALUES($1,'message-today',$2,$3,'08:00','16:00','qa-pos',true),($4,'message-today',$5,$3,'08:00','16:00','qa-pos',true)",['message-own-'+index,actor,today,'message-peer-'+index,fixture.actors[1]]);
+   await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'QAOWNER'},app.database.executor);
+   const ids:string[]=[];
+   for(let i=0;i<27;i++){
+    const draft={type:'LOCATION_ANNOUNCEMENT' as const,scope:{kind:'LOCATION' as const,locationId:'loc-1'},title:'Opening update '+index+' · '+i,body:'Check the published schedule.\nSpeak with your manager about any changes.',acknowledgement:i===26?'REQUIRED' as const:'OPTIONAL' as const,expiresAt:null};
+    const audience=await previewCommunicationAudience(owner,draft,app.database.executor);if(audience.state!=='ready')throw Error('Owned audience unavailable');
+    const result=await executeCommunicationCommand(owner,{kind:'PUBLISH',operationId:randomUUID(),authority:audience.authority,draft,audienceFingerprint:audience.fingerprint},app.database.executor);if(result.status!=='committed')throw Error('Owned publication unavailable');ids.push(result.id);
+   }
+   browser=await runtime[engine].launch({headless:true});const activeBrowser=browser as unknown as {newContext:(options:unknown)=>Promise<ReturnType<typeof runtime.chromium.newContext>>;close():Promise<void>};
+   const context=await activeBrowser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'}),page=await context.newPage();
+   page.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(30000);
+   let stage='login',expected=false;
+   const record=(name:string)=>checks.push({engine,name});
+   page.on('console',(message:{type():string;text():string})=>{if(['error','warning'].includes(message.type()))messages.push({engine,stage,type:message.type(),text:message.text(),expected});});
+   page.on('pageerror',(error:Error)=>messages.push({engine,stage,type:'pageerror',text:error.stack??error.message,expected:false}));
+   page.on('requestfailed',(request:{url():string;failure():{errorText:string}|null})=>failedRequests.push({engine,stage,url:request.url(),error:request.failure()?.errorText??null,expected}));
+   await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==new URL(app.url).origin){await route.abort();throw Error('External request blocked: '+url.origin);}await route.continue();});
+   failure=async()=>{await page.screenshot({path:evidence+'/'+engine+'-failure.png',fullPage:true,caret:'initial'});await writeFile(evidence+'/'+engine+'-failure.html',await page.locator('body').innerHTML());};
+   const panel=()=>page.locator('.em-messages:visible');
+   const ready=async(view:string)=>{await page.locator('.em-messages:visible[data-messages-state="ready"][data-messages-view="'+view+'"]').waitFor();await panel().locator('.em-request-footer button:not(:disabled)').waitFor();};
+   const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:true,caret:'initial',style:'nextjs-portal {visibility:hidden;}'});captures.push(file);};
+   const matrix=async(name:string,actionName:string)=>{
+    for(const theme of ['light','dark'])for(const width of [320,390,430]){
+     await page.setViewportSize({width,height:844});await page.evaluate((theme:string)=>document.documentElement.dataset.theme=theme,theme);
+     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+     const action=panel().getByRole('button',{name:actionName,exact:true});expect(await action.evaluate((el:HTMLElement)=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(actionName==='Refresh'?44:48);
+     const contrast=await action.evaluate(measureRenderedContrast);expect(contrast.ratio).toBeGreaterThanOrEqual(4.5);contrasts.push({engine,theme,width,name,ratio:contrast.ratio});await shot(name+'-'+theme+'-'+width);
+    }
+    await page.setViewportSize({width:320,height:844});await page.evaluate(()=>document.documentElement.style.fontSize='200%');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+    expect(await panel().locator('h1').evaluate((el:HTMLElement)=>{const c=document.createElement('canvas').getContext('2d')!,s=getComputedStyle(el);c.font=s.font;return Math.max(...el.innerText.split(/\s+/).map(w=>c.measureText(w).width))<=el.clientWidth+1;})).toBe(true);
+    await panel().getByRole('button',{name:'Refresh',exact:true}).scrollIntoViewIfNeeded();expect(await panel().getByRole('button',{name:'Refresh',exact:true}).evaluate((el:HTMLElement)=>el.getBoundingClientRect().bottom<=document.querySelector('.mobile-nav')!.getBoundingClientRect().top+1)).toBe(true);await shot(name+'-text-200');
+    await page.evaluate(()=>{document.documentElement.style.fontSize='100%';document.documentElement.dataset.theme='light';});await page.setViewportSize({width:390,height:844});record(name+' Light/Dark320390430 and200%text/contrast/targets/nav clearance');
+   };
+   await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await page.locator('[data-home-state="ready"]:visible,[data-home-state="partial"]:visible').waitFor();await page.locator('.employee-time-badge:visible').waitFor();record('Actual sign-in and current Home status settled');
+   stage='notifications';await page.goto(app.url+'/app/notifications');await ready('notifications');await matrix('notifications','Older page');
+   await page.getByLabel('Show',{exact:true}).selectOption('action');await page.getByLabel('Search this page',{exact:true}).fill('Team');
+   const first=panel().locator('.em-message-list a').first(),originId=await first.getAttribute('id');await first.click();await ready('detail');expect(await panel().getByRole('button',{name:'Acknowledge update',exact:true}).count()).toBe(1);expect(await panel().getByRole('button',{name:'Mark as read',exact:true}).count()).toBe(0);
+   const opened=await readCommunication(await fixtureProof(app.database.executor,actor),ids[26],app.database.executor);expect(opened.state==='ready'&&opened.ownAcknowledgedAt).toBeNull();
+   await panel().getByRole('link',{name:'Notifications',exact:true}).click();await ready('notifications');expect(await page.getByLabel('Search this page',{exact:true}).inputValue()).toBe('Team');expect(await page.getByLabel('Show',{exact:true}).inputValue()).toBe('action');await page.waitForFunction((id:string)=>document.activeElement?.id===id,originId);record('Notification open preserves search/filter/origin focus and never acknowledges automatically');
+   await page.getByLabel('Search this page',{exact:true}).fill('');await page.getByLabel('Show',{exact:true}).selectOption('all');await panel().getByRole('button',{name:'Older page',exact:true}).click();await ready('notifications');await panel().getByRole('button',{name:'Newest items',exact:true}).click();await ready('notifications');record('Bounded older/newest notification navigation');
+   await panel().locator('.em-message-list a').first().click();await ready('detail');await matrix('detail','Acknowledge update');await panel().getByRole('button',{name:'Acknowledge update',exact:true}).click();await panel().getByText(/^Acknowledged /).waitFor();record('Explicit own acknowledgement recorded');
+   stage='updates';await panel().getByRole('link',{name:'Notifications',exact:true}).click();await ready('notifications');await page.goto(app.url+'/app/updates');await ready('updates');await matrix('updates','Older page');
+   await panel().getByRole('link',{name:'Write an update',exact:true}).click();await ready('compose');await page.getByLabel('Today’s team location',{exact:true}).selectOption('loc-1');await page.getByLabel('Title',{exact:true}).fill('Today team '+engine);await page.getByLabel('Message',{exact:true}).fill('Check in with the opening team.');await matrix('compose','Review audience');
+   await panel().getByRole('button',{name:'Review audience',exact:true}).click();await panel().getByRole('button',{name:'Send update',exact:true}).waitFor();await matrix('audience','Send update');
+   let operationId:string|undefined,lost=false;
+   await page.route('**/api/employee/communications',async(route:{request():{postDataJSON():{operationId:string;kind:string}};fetch():Promise<unknown>;abort():Promise<void>;continue():Promise<void>})=>{const body=route.request().postDataJSON();if(body.kind==='PUBLISH'&&!lost){lost=true;operationId=body.operationId;await route.fetch();await route.abort();}else await route.continue();});
+   expected=true;await panel().getByRole('button',{name:'Send update',exact:true}).click();await panel().getByRole('button',{name:'Check submission status',exact:true}).waitFor();expected=false;
+   await panel().getByRole('link',{name:'Updates',exact:true}).click();await ready('updates');await panel().getByRole('link',{name:'Return to my submission',exact:true}).click();await ready('compose');expect(await page.getByLabel('Message',{exact:true}).inputValue()).toBe('Check in with the opening team.');await panel().getByRole('button',{name:'Check submission status',exact:true}).click();await panel().getByRole('heading',{name:'Update published',exact:true}).waitFor();expect(operationId).toBeTruthy();
+   await page.unroute('**/api/employee/communications');await panel().getByRole('link',{name:'View published update',exact:true}).click();await ready('detail');await panel().getByRole('button',{name:'Withdraw update',exact:true}).click();await panel().getByRole('button',{name:'Confirm withdrawal',exact:true}).click();await panel().getByText('This update is no longer available to you.',{exact:false}).waitFor();record('Actual commit/lost response survives route changes; original lookup, own publication and deliberate withdrawal');
+   stage='pause';await page.goto(app.url+'/app/updates/compose');await ready('compose');await page.getByLabel('Title',{exact:true}).fill('Private draft '+engine);await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await page.locator('.em-messages[data-messages-state="paused"]').waitFor();expect(await page.getByLabel('Title',{exact:true}).count()).toBe(0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('compose');expect(await page.getByLabel('Title',{exact:true}).inputValue()).toBe('Private draft '+engine);record('Pause removes private DOM and fresh read restores mounted draft');
+   stage='read-error';await page.route('**/api/employee/messages/compose/new',async(route:{fulfill(input:unknown):Promise<void>})=>route.fulfill({status:503,body:'{}',contentType:'application/json'}));expected=true;await panel().getByRole('button',{name:'Refresh',exact:true}).click();await page.locator('.em-messages[data-messages-state="unavailable"]').waitFor();expect(await page.getByLabel('Title',{exact:true}).count()).toBe(0);await page.unroute('**/api/employee/messages/compose/new');await panel().getByRole('button',{name:'Try again',exact:true}).click();await ready('compose');expected=false;record('Failed read stays unavailable and refresh recovers');
+   stage='desktop';await page.setViewportSize({width:1440,height:1000});await page.goto(app.url+'/app/updates');expect(await page.locator('.em-messages:visible').count()).toBe(0);record('Desktop remains on incumbent Updates');
+   await context.close();await activeBrowser.close();browser=undefined;failure=undefined;
+  }
+  expect(messages.filter(row=>row.type==='pageerror'||row.type==='error'&&(!row.expected||!/Failed to (fetch|load resource)|Load failed|NetworkError|status of (401|403|503)/.test(row.text)))).toEqual([]);
+ }catch(error){await failure?.().catch(()=>{});throw error;}
+ finally{await browser?.close();await app.close();await writeFile(evidence+'/results.json',JSON.stringify({checks,captures,contrasts,messages,failedRequests},null,2));}
+});

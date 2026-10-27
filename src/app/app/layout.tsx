@@ -28,6 +28,8 @@ import "@/components/employee-mobile/exchange.css";
 import "@/components/employee-mobile/creation.css";
 import "@/components/employee-mobile/planning.css";
 import "@/components/employee-mobile/hours.css";
+import "@/components/employee-mobile/messages.css";
+import {communicationAuthority} from "@/lib/communications/service.server";
 import {cookies} from "next/headers";
 import {createHash} from "node:crypto";
 import {employeeViewAuthority} from "@/lib/employee-view-authority.server";
@@ -82,6 +84,8 @@ export default async function PlatformLayout({ children, sheet }: { children: Re
       initialCollapsed={initialCollapsed}
       preferenceCookie={preferenceCookie}
       notificationAuthority={employeeViewAuthority(proof,"notifications")}
+      messagesAuthority={["EMPLOYEE","LEAD"].includes(session.role)?employeeViewAuthority(proof,"communications"):undefined}
+      communicationAuthority={["EMPLOYEE","LEAD"].includes(session.role)?communicationAuthority(proof):undefined}
       notificationsEnabled={readNotificationConfig(process.env).featureEnabled}
       payrollCapabilities={payrollCapabilities}
       brand={{ style: brand.style, logoUrl: brand.logoUrl }}

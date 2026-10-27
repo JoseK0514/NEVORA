@@ -20,7 +20,7 @@ export async function readEmployeeMessageDestination(proof:SessionMutationProof,
   const {workspace,guarded}=await employeeMessageReadContext(proof,executor);
   const response=await createNotificationOpenHandler({session:async()=>proof.employee,state:sqlNotificationStateRepository(guarded,workspace),environment,clock:()=>new Date()})(new Request('https://nevora.invalid'+safeNotificationOpenPath(id)));
   const href=response.headers.get('location');if(response.status!==303||!safeMessageDestination(href))return {state:'unavailable',reason:'read_failed'};
-  const module=moduleForPath(href);if(module&&!(await readActivePresentation(workspace.id,guarded,{strict:true})).modules[module])return {state:'unavailable',reason:'read_failed'};
+  const destinationModule=moduleForPath(href);if(destinationModule&&!(await readActivePresentation(workspace.id,guarded,{strict:true})).modules[destinationModule])return {state:'unavailable',reason:'read_failed'};
   await guarded.query({text:'SELECT 1',values:[]});return {state:'ready',href};
  }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
 }

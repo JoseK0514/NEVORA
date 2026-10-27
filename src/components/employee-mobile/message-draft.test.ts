@@ -1,0 +1,5 @@
+import {expect,it} from 'vitest';
+import {todayMessageDraft} from './message-session';
+const source={businessDate:'2026-10-27',timeZone:'America/Puerto_Rico'},draft={title:' Opening ',body:'First line\r\nSecond line',locationId:'loc-1',businessDate:source.businessDate,expiresAt:'2026-10-27T17:00'};
+it('binds an employee draft to the reviewed business day and optional acknowledgement',()=>{expect(todayMessageDraft(draft,source)).toMatchObject({type:'TODAYS_TEAM',scope:{kind:'TODAYS_TEAM',locationId:'loc-1',businessDate:source.businessDate},title:'Opening',body:'First line\nSecond line',acknowledgement:'OPTIONAL',expiresAt:'2026-10-27T21:00:00.000Z'});expect(todayMessageDraft({...draft,businessDate:'2026-10-26'},source)).toBeNull();});
+it('rejects an invalid expiry and plain-text control input rather than guessing a zone or sending it',()=>{expect(todayMessageDraft({...draft,expiresAt:'not-a-date'},source)).toBeNull();expect(todayMessageDraft({...draft,title:'Bad\u0000title'},source)).toBeNull();expect(todayMessageDraft({...draft,expiresAt:'2026-11-01T01:30'},{...source,timeZone:'America/New_York'})).toBeNull();});

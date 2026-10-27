@@ -4,6 +4,7 @@ import {useEmployeeNavigationLayout} from './employee-mobile/navigation-layout';
 import {useEmployeeMobile} from './employee-mobile/use-mobile';
 import {NavigationLink as Link} from './navigation-link';
 import {useLinkStatus} from 'next/link';
+import {EmployeeMessageProvider,EmployeeMessageReturn} from './employee-mobile/message-session';
 import {AppNavigationProvider,useIdentityReload} from './app-navigation';
 import { NotificationBell } from "./notification-bell";
 import { useInboxCount } from "./use-inbox-count";
@@ -41,6 +42,8 @@ type AppShellProps = {
   initialCollapsed?: boolean;
   preferenceCookie?: string;
   notificationAuthority?: string;
+  messagesAuthority?: string;
+  communicationAuthority?: string;
   notificationsEnabled?: boolean;
   payrollCapabilities?: PayrollCapabilities;
   operationalAuthority?: OperationalAuthorityView;
@@ -67,7 +70,7 @@ function TabPending() {
  * mutation still enforces current server/database authorization.
  */
 export function AppShell(props:AppShellProps){
- return <AppNavigationProvider key={JSON.stringify([props.user.id,props.user.role])}><AppShellView {...props}/></AppNavigationProvider>;
+ return <AppNavigationProvider key={JSON.stringify([props.user.id,props.user.role])}>{props.messagesAuthority&&props.communicationAuthority&&['EMPLOYEE','LEAD'].includes(props.user.role)?<EmployeeMessageProvider key={props.messagesAuthority} authority={props.messagesAuthority} core={props.communicationAuthority}><AppShellView {...props}/></EmployeeMessageProvider>:<AppShellView {...props}/>}</AppNavigationProvider>;
 }
 
 function AppShellView({
@@ -366,7 +369,7 @@ function AppShellView({
           </div>
         </header>
 
-        <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{user.role==='MANAGER'&&operational.view?.state==='unavailable'&&!operational.refreshing&&<section className="portal-route-state" role="status"><h2>Management menu unavailable</h2><p>Your current management access could not be checked. Reconnect and refresh before opening another management page.</p><button className="button secondary" type="button" disabled={operational.paused} onClick={operational.retry}>Refresh management access</button></section>}{children}</PresentationProvider></main>
+        <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{user.role==='MANAGER'&&operational.view?.state==='unavailable'&&!operational.refreshing&&<section className="portal-route-state" role="status"><h2>Management menu unavailable</h2><p>Your current management access could not be checked. Reconnect and refresh before opening another management page.</p><button className="button secondary" type="button" disabled={operational.paused} onClick={operational.retry}>Refresh management access</button></section>}<EmployeeMessageReturn/>{children}</PresentationProvider></main>
 
         <nav className="mobile-nav" aria-label="Mobile navigation" style={!employee?{gridTemplateColumns:`repeat(${Math.min(navigation.length,5)},minmax(0,1fr))`}:undefined}>
           {/* v5 One look (approved Oct 24): one Quiet tab bar for every role; More is a page. */}
