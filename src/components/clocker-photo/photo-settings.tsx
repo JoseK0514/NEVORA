@@ -38,20 +38,18 @@ export function ClockerPhotoSettings({initialPolicy,saveAction,readAction}:{init
     finally{busy.current=false;setPending(false);}
   }
   return <form onSubmit={save} className={styles.form} aria-busy={pending}>
-    <div className={styles.notice}>These company preferences apply to registered Clocker tablets. Photos are snapshots associated with clock actions; this feature does not record continuous video or recognize faces.</div>
     <fieldset disabled={pending}>
       <legend>Company punch photos</legend>
-      <label className={styles.row}><input type="checkbox" checked={draft.enabled} onChange={e=>setDraft({...draft,enabled:e.target.checked})}/><div><strong>Enable punch photos</strong><span>Choose your company’s preference. Photo capture begins when the feature is available on your tablets.</span></div></label>
-      <div><h2>Which punches need a photo?</h2><p className={styles.description}>All four punch events are selected initially. Choose what works for your company.</p></div>
+      <label className={styles.row}><input type="checkbox" checked={draft.enabled} onChange={e=>setDraft({...draft,enabled:e.target.checked})}/><div><strong>Enable punch photos</strong><span>Save a photo with the actions you select when capture is available.</span></div></label>
+      <div><h2>Which punches need a photo?</h2><p className={styles.description}>Choose the actions that need a photo.</p></div>
       <div className={styles.eventGrid}>{PHOTO_ACTIONS.map(action=><label key={action} className={styles.row}>
         <input type="checkbox" checked={draft.events.includes(action)} onChange={e=>setDraft({...draft,events:e.target.checked?[...draft.events,action]:draft.events.filter(value=>value!==action)})}/>
         <div><strong>{labels[action]}</strong></div></label>)}</div>
       <div className={styles.field}><label htmlFor="photo-retention-days">Keep photos for (days)</label><input id="photo-retention-days" aria-describedby="photo-retention-help" type="number" min={1} max={30} step={1} inputMode="numeric" value={draft.retentionDays} onChange={e=>setDraft({...draft,retentionDays:e.target.value})}/>
-        <span id="photo-retention-help" className={styles.description}>Choose 1–30 days. New company settings start at 30 days. Expired photos are unavailable for normal review. Shortening retention also shortens existing photo lifetimes. Increasing it does not extend existing photos. Platform cleanup and backup details must be verified before collection.</span></div>
-      <div className={styles.notice}><strong>Valid clock actions stay recorded</strong><p>A missing, declined or unavailable photo creates a separate photo exception. Employees can choose Continue without photo before opening the camera. Only an authorized Owner can review photos.</p>
-        <p>Your company’s photo notice and assistance information must be available on Clocker before photos can be collected.</p></div>
+        <span id="photo-retention-help" className={styles.description}>Choose 1–30 days. A shorter period also applies to existing photos. Increasing it applies only to new photos.</span></div>
+      <details className={styles.photoNotice}><summary>When a photo is missing</summary><div className={styles.notice}><p>A valid clock action stays recorded if a photo is declined or unavailable. Employees can continue without a photo and ask for assistance. Photo exceptions are kept separately.</p><p>Only an authorized Owner can review photos. Clocker takes one snapshot for the selected action; it does not record continuously or recognize faces.</p></div></details>
       <div className={styles.footer}><button type="submit" disabled={mustReload} className={styles.primary}>{pending?'Saving…':'Save company settings'}</button>
-        <button type="button" className={styles.secondary} onClick={()=>void reload()}>Reload saved settings</button><p>Current saved version: {policy.version}<br/>Only an authorized Owner can change these settings.</p></div>
+        <button type="button" className={styles.secondary} onClick={()=>void reload()}>Reload saved settings</button></div>
     </fieldset>
     {feedback?<p role={feedback.error?'alert':'status'} className={styles.notice}>{feedback.text}</p>:null}
   </form>;

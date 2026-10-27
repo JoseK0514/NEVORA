@@ -37,13 +37,11 @@ export function ClockerPhotoNoticeSettings({initialSettings,saveAction,readActio
    <div className={styles.field}><label htmlFor="photo-assistance-instructions">Assistance instructions</label><textarea id="photo-assistance-instructions" required maxLength={1000} rows={4} value={draft.assistanceInstructions} aria-describedby="photo-instructions-help" onChange={event=>setDraft({...draft,assistanceInstructions:event.target.value})}/>
     <span id="photo-instructions-help" className={styles.description}>Explain how to request help or an accessible alternative. Instructions appear as one paragraph on Clocker.</span></div>
    <div className={styles.footer}><button className={styles.primary} type="submit" disabled={mustReload}>{pending?'Saving…':'Save assistance settings'}</button><button className={styles.secondary} type="button" onClick={()=>void reload()}>Reload assistance settings</button>
-    <p>Saved assistance version: {settings.profile.version}<br/>Only an authorized Owner can change these settings.</p></div>
+    </div>
   </fieldset>
   {feedback?<p className={styles.notice} role={feedback.error?'alert':'status'}>{feedback.text}</p>:null}
   <section aria-labelledby="company-photo-notice-preview"><h2 id="company-photo-notice-preview">Current company notice</h2>
-   {settings.readiness==='lifecycle_unverified'?<p className={styles.notice} role="status">Your assistance settings are saved. Photo cleanup and backup details are still being verified, so photo collection remains unavailable.</p>:null}
-   <ClockerPhotoNotice policy={settings.policy} notice={settings.notice}/>
-   <p className={styles.description}>Cleanup and backup details come from verified service settings. Saving assistance information does not publish a notice or activate photo collection.</p>
+   {settings.notice?<ClockerPhotoNotice policy={settings.policy} notice={settings.notice}/>:<p className={styles.description}>Photo cleanup and backup details are still being verified; photo collection remains unavailable. Saving assistance does not publish a notice or activate photo collection.</p>}
   </section>
  </form>;
 }

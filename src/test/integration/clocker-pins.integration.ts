@@ -38,9 +38,10 @@ it('sets a separate unique PIN, stores hashes only and never changes portal cred
  expect(await readEmployeeClockerPin(owner,'c2-a',db.executor)).toEqual(result);
  expect(await readEmployeeClockerPin(owner,'c2-b',db.executor)).toEqual({employeeId:'c2-b',configured:false,version:0});
 });
-it('allows a Manager to set an Employee PIN but denies Owner targets',async()=>{
- await expect(set('c2-a','0123',0,manager)).resolves.toMatchObject({version:1});
+it('denies Manager PIN writes for both Employee and Owner targets',async()=>{
+ await expect(set('c2-a','0123',0,manager)).rejects.toMatchObject({code:'FORBIDDEN'});
  await expect(set('c2-owner','4567',0,manager)).rejects.toMatchObject({code:'FORBIDDEN'});
+ expect(await q('SELECT * FROM employee_clocker_pins')).toEqual([]);expect(await q('SELECT * FROM clocker_pin_events')).toEqual([]);
 });
 it.each(['inactive-target','inactive-actor','expired-session','forged-session','employee-role'])('denies %s before any PIN write',async kind=>{
  let proof=owner;

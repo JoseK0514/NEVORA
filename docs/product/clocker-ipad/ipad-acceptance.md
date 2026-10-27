@@ -12,7 +12,7 @@ Date prepared: October27,2026. Target: **iPads only**, shared by employees and a
 | Viewport/orientation/text-size setting | Record each run |
 | Mode | Safari tab required; Home Screen mode if intended for operation |
 | Test URL and environment owner | Not supplied; isolated environment accessible from the iPad |
-| Application branch/commit and migration state | Integration not implemented |
+| Application branch/commit and migration state | Local candidate: codex/clocker-ipad-integration-20261027; exact review commit and migrations0038–0040 in implementation evidence. Not deployed. |
 | Company/location/device/sample employees | Fictional isolated fixtures only |
 | Server timezone / expected local time | Record actual configured workspace timezone |
 | Runtime/network/DB evidence location | Record before testing; redact credentials and PINs |
@@ -61,3 +61,7 @@ Each row starts NOT RUN. Record PASS only from observed behavior; otherwise FAIL
 Capture one bounded normal/exception/enlarged batch, plus logs/record counts for actual failures. Avoid recording PIN digits, setup secrets, cookies, real employee data or replay telemetry. The test record identifies exact model/version/mode/commit. Independent QA/UI reviews the final integrated artifact and findings before release; no “zero error” or native certification is inferred from prototype tests.
 
 Required acceptance: every applicable row observed; failures resolved and rerun, blockers explicitly recorded. If only one iPad model is available, report that limit rather than claiming all iPads. Home Screen rows are conditional on actual intended use; Safari remains required. Production remains disabled until separately authorized.
+
+## Automated boundary
+
+Owned Chromium/WebKit runs, current PostgreSQL and synthetic camera/image fixtures are documented in [implementation evidence](implementation-evidence.md). Every physical row above remains NOT RUN. A physical model/version and an approved isolated HTTPS endpoint have not been supplied; this Mac’s loopback app is not an iPad acceptance environment. Saved Owner photo preferences do not remove that gate or bind a cleanup/backup provider.

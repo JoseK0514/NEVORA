@@ -46,4 +46,8 @@ Activation requires a real current-proof runtime, adopted private schema/storage
 
 ## Acceptance and handoff
 
-Integration task T8 in [integration-plan.md](integration-plan.md) owns the policy, camera/receipt and private review integration; T9 verifies it. [iPad acceptance](ipad-acceptance.md) adds IP23–IP28 for Owner customization, camera permissions, policy changes, partial failure, privacy and retention. No real employee photos, camera permissions, hosted storage, new subscription, database migration or production configuration were used for this requirement update.
+Integration task T8 in [the implementation plan](../../superpowers/plans/2026-10-27-clocker-ipad-integration.md) owns the policy, camera/receipt and private review integration; T9 verifies it. [iPad acceptance](ipad-acceptance.md) adds IP23–IP28 for Owner customization, camera permissions, policy changes, partial failure, privacy and retention. No real employee photos, camera permissions, hosted storage, new subscription, database migration or production configuration were used for this requirement update.
+
+## Implementation candidate — October27
+
+The scoped application branch now includes current Company authority, Owner preferences/assistance, private review, additive0040 and the guarded capture candidate. See [implementation evidence](implementation-evidence.md). Actual collection remains unavailable: no deployment lifecycle provider or physical-iPad acceptance is verified. The reference observations above describe the source at discovery, not production activation.

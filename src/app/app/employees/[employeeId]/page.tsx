@@ -86,7 +86,7 @@ export default async function EmployeeProfilePage({
         <QuietRow title="Role" value={roleLabel} tone="l" />
       </ul></QuietGroup>
       {canManageCore && employee.active ? <QuietGroup label="Access" id="member-access"><ul className="q-list">
-        {actor.role==='OWNER' ? <QuietRow href={`${base}/clocker-pin`} title="Clocker PIN" value={pin?(pin.configured?"Set":"Not set"):"Unavailable"} tone="l" /> : null}
+        {actor.role==='OWNER'&&employee.role!=='OWNER' ? <QuietRow href={`${base}/clocker-pin`} title="Clocker PIN" value={pin?(pin.configured?"Set":"Not set"):"Unavailable"} tone="l" /> : null}
         {recoverable ? <QuietRow href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} title="Account" value={invitation?.state === "ready" && invitation.eligibility !== "ALREADY_ACTIVATED" ? (invitation.invitation?.state === "ISSUED" ? "Invited" : "Not activated") : "Active"} tone="l" /> : null}
       </ul></QuietGroup> : null}
     </QuietPage>
@@ -111,7 +111,7 @@ export default async function EmployeeProfilePage({
             {actor.role==='OWNER'&&employee.role!=='OWNER'&&(ownerScope?<ManagerOperationalScopePanel actorId={actor.id} current={ownerScope} locations={locations}/>:<p role="status">Management access could not be confirmed. Refresh this employee before changing access.</p>)}
             {canManageCore && employee.active ? <Card title="Access">
               <Rows label="Access">
-                {actor.role==='OWNER' ? <Row href={`/app/employees/${encodeURIComponent(employee.id)}/clocker-pin`} title="Clocker PIN" meta="For the shared tablet. Separate from portal sign-in."
+                {actor.role==='OWNER'&&employee.role!=='OWNER' ? <Row href={`/app/employees/${encodeURIComponent(employee.id)}/clocker-pin`} title="Clocker PIN" meta="For the shared tablet. Separate from portal sign-in."
                   leading={<Tile><KeyIcon size={20} weight="bold" /></Tile>} /> : null}
                 {/* Managers can help Employees and Leads; only an Owner can reset a Manager (matches the server rule). */}
                 {employee.id !== actor.id && (actor.role === "OWNER" || employee.role === "EMPLOYEE" || employee.role === "LEAD") ? <Row href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} title="Account recovery" meta="Help them back in after you check who they are."

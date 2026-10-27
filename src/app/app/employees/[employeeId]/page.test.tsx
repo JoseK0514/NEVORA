@@ -100,7 +100,8 @@ it("allows an Owner to manage another Owner", async () => {
   expect(html).toContain('data-testid="employee-core-form"');
 });
 
-it('links authorized employee management to a separate Clocker PIN screen',async()=>{
+it('links only an Owner managing a non-Owner employee to the separate Clocker PIN screen',async()=>{
+ expect(renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}))).not.toContain('/clocker-pin');m.actorRole='OWNER';
  const html=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}));
  expect(html).toContain('href="/app/employees/worker/clocker-pin"');
  m.employeeRole='OWNER';

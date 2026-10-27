@@ -76,11 +76,11 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
  },[count,editedAt,pending,identity]);
  async function continueSecurely(){const target=draft.current;setHeld(target);await reset(true);}
  useEffect(()=>{if(!pending&&!identity&&!blocked)input.current?.focus({preventScroll:true});},[pending,identity,blocked]);
- function key(value:string){
+ function key(value:string,editedAt:number){
   if(busy.current||blocked||!input.current)return;
   const current=input.current.value;
   input.current.value=value==='clear'?'':value==='delete'?current.slice(0,-1):current.length<4?current+value:current;
-  setCount(input.current.value.length);setEditedAt(Date.now());
+  setCount(input.current.value.length);setEditedAt(editedAt);
  }
  async function submit(event:FormEvent<HTMLFormElement>){
   event.preventDefault();if(busy.current||blocked)return;
@@ -118,7 +118,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
       <div className={styles.pinSlots} aria-hidden="true">{[0,1,2,3].map(index=><span key={index} data-filled={index<count}/>)}</div>
      </div>
      <div data-clocker-keypad className={styles.keypad} aria-label={t("PIN keypad")}>
-      {['1','2','3','4','5','6','7','8','9','clear','0','delete'].map(value=><button key={value} type="button" data-key={value==='clear'||value==='delete'?'tool':'digit'} onClick={()=>key(value)} aria-label={value==='clear'?t('Clear PIN'):value==='delete'?t('Delete digit'):t('Number {number}',{number:value})}>{value==='clear'?t('Clear'):value==='delete'?<ClockerIcon name="delete" size={30}/>:value}</button>)}
+      {['1','2','3','4','5','6','7','8','9','clear','0','delete'].map(value=><button key={value} type="button" data-key={value==='clear'||value==='delete'?'tool':'digit'} onClick={()=>key(value,Date.now())} aria-label={value==='clear'?t('Clear PIN'):value==='delete'?t('Delete digit'):t('Number {number}',{number:value})}>{value==='clear'?t('Clear'):value==='delete'?<ClockerIcon name="delete" size={30}/>:value}</button>)}
      </div>
      <button className={`button primary ${styles.continue}`} type="submit" aria-label={t("Continue")} disabled={count!==4}><span className="clocker-label"><span>{t("Continue")}</span>{spanish?<Es phrase="Continue" inButton/>:null}</span><ClockerIcon name="arrow" size={20}/></button>
     </fieldset>
