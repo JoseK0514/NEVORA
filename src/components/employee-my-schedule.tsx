@@ -168,6 +168,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
     href={`${dayHref(chosen)}&shift=${encodeURIComponent(shift.id)}`} closeHref={dayHref(chosen)} initiallyOpen={props.selectedShift === shift.id} />;
 
   return <QuietPage className="q-sched-e">
+    <div className="em-schedule-top"><QuietHeader title="Schedule" sub={summary} />
     <QuietBar start={<span className="q-weeknav">
       <Link className="q-bar__icon" href={`/app/schedule?week=${addDays(weekStart, -7)}${keep}`} aria-label="Previous week"><CaretLeftIcon className="q-ic" aria-hidden="true" /></Link>
       <EmployeeMobileWeekPicker weekStart={weekStart} keep={view === 'open' ? '&view=open' : keep}/>
@@ -176,7 +177,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
     </span>}>
       <QuietBarIcon href="/app/profile#employee-calendar-title" label="Add shifts to your calendar"><CalendarCheckIcon className="q-ic" aria-hidden="true" /></QuietBarIcon>
     </QuietBar>
-    <QuietHeader title="Schedule" sub={summary} />
+    </div>
     {modules.marketplace ? <QuietSegments label="Schedule views" items={[
       { href: `/app/schedule?week=${weekStart}`, label: 'My shifts', current: view === 'mine' },
       { href: `/app/schedule?week=${weekStart}&view=open`, label: openCount ? `Open shifts · ${openCount}` : 'Open shifts', current: view === 'open' },
