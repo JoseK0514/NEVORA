@@ -1,0 +1,4 @@
+docs/handoffs/employee-mobile-cloud-2026-10-27/instructions/skills/superpowers/systematic-debugging/condition-based-waiting-example.ts(5,36): error TS2307: Cannot find module '~/threads/thread-manager' or its corresponding type declarations.
+docs/handoffs/employee-mobile-cloud-2026-10-27/instructions/skills/superpowers/systematic-debugging/condition-based-waiting-example.ts(6,47): error TS2307: Cannot find module '~/threads/types' or its corresponding type declarations.
+docs/handoffs/employee-mobile-cloud-2026-10-27/instructions/skills/superpowers/systematic-debugging/condition-based-waiting-example.ts(31,34): error TS7006: Parameter 'e' implicitly has an 'any' type.
+docs/handoffs/employee-mobile-cloud-2026-10-27/instructions/skills/superpowers/systematic-debugging/condition-based-waiting-example.ts(72,45): error TS7006: Parameter 'e' implicitly has an 'any' type.

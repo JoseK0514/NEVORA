@@ -2,6 +2,8 @@
 
 Jose approved this GitHub feature-branch delivery because he is using his phone. The source and full written context are in this branch. **No ZIP, Mac clipboard or local Downloads access is required.**
 
+Repository: **JoseK0514/NEVORA**. The old Fuel-Scheduler- URL redirects to the same private repository (verified repository ID1391468291).
+
 ## Select this branch
 
 ```text

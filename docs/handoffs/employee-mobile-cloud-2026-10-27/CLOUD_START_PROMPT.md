@@ -1,4 +1,4 @@
-Continue Jose’s NEVORA Employee mobile work on branch `codex/employee-mobile-cloud-handoff-20261027`. First read `docs/handoffs/employee-mobile-cloud-2026-10-27/README.md` and its full `HANDOFF.md`. The branch already contains the saved source; no ZIP or Mac access is required. Treat this as continuation of the same approved work.
+Continue Jose’s NEVORA Employee mobile work in repository `JoseK0514/NEVORA` on branch `codex/employee-mobile-cloud-handoff-20261027`. First read `docs/handoffs/employee-mobile-cloud-2026-10-27/README.md` and its full `HANDOFF.md`. The branch already contains the saved source; no ZIP or Mac access is required. Treat this as continuation of the same approved work.
 
 Preserve the approved teal design, component consistency, Employee/Lead own permissions and desktop/management behavior. Do not restart design exploration. The newest pending-module-fence regression is RED at application/test candidate6110790f: reproduce it, make the smallest recovery lifecycle fix, preserve the original operation/UUID and draft, and verify in Chromium/WebKit/Firefox. Do not weaken its assertion or bypass module/source/session/activation checks.
 

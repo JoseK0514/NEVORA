@@ -26,7 +26,7 @@ Jose prefers action and continuity. Do not repeatedly ask for already-given desi
 
 ## Direct GitHub checkout — no ZIP or Mac access required
 
-- Repository: `https://github.com/JoseK0514/Fuel-Scheduler-.git` (private, verified before upload).
+- Repository: `https://github.com/JoseK0514/NEVORA.git` (private, verified before upload).
 - **Select branch:** `codex/employee-mobile-cloud-handoff-20261027`.
 - Original local implementation branch: `codex/employee-mobile-communications-20261027`.
 - Pinned source/checkpoint parent: `8672d76ecd4000fd61a515d6559a0ace1321d503`. The delivery adds documentation/evidence only above that parent; application inputs remain identical.

@@ -1,0 +1,3 @@
+# Documentation delivery verification
+
+The first direct GitHub delivery copied a generic Superpowers `.ts` example, which the repository-wide TypeScript include then compiled and rejected for unrelated `~/threads/*` imports. The unchanged `tsc --noEmit --incremental false` check reproduced the failure. The reference is now byte-identical `.ts.txt` with its copied link updated. No application, TypeScript configuration or assertion was changed. All2004 pinned application-input hashes remain unchanged. The existing Employee pending-module-fence regression remains separately RED and is still Cloud’s first implementation task.

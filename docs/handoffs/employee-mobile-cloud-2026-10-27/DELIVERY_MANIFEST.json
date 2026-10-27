@@ -11,5 +11,9 @@
   "mergePerformed": false,
   "manualDeploymentRequested": false,
   "allTextEvidenceIncluded": true,
-  "repetitiveImageSelection": "evidence/CAPTURE_SELECTION.json"
+  "repetitiveImageSelection": "evidence/CAPTURE_SELECTION.json",
+  "repository": "JoseK0514/NEVORA",
+  "verifiedRepositoryId": 1391468291,
+  "private": true,
+  "originalRepositoryUrlRedirectsToSameRepository": true
 }
