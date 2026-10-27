@@ -1,4 +1,5 @@
 'use client';
+import {useMobilePresentation} from '@/components/mobile-access/use-mobile-presentation';
 
 import Link from 'next/link';
 import {MobileRecoveryReset} from './mobile-access/recovery-views';
@@ -26,7 +27,8 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
  useEffect(() => {if (message) feedback.current?.focus();}, [message, done]);
 
  // Quiet (v4, approved Oct 23): New password, the code and the two passwords, Reset password, then Need a recovery code?
- if(mobileAccess)return <MobileRecoveryReset {...{hydrated,busy,done,message,onSubmit,proofRef,lang,linkProof,onDifferentCode}}/>;
+ const mobile=useMobilePresentation(mobileAccess,'reset-proof reset-password reset-confirm-password');
+ if(mobile)return <MobileRecoveryReset {...{hydrated,busy,done,message,onSubmit,proofRef,lang,linkProof,onDifferentCode}}/>;
  return <>
   <div className="q-hd"><h1>{done ? t.resetDoneTitle : t.quiet.resetTitle}</h1></div>
   {done ? <>

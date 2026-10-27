@@ -18,5 +18,5 @@ export function AccessJourneyProvider({children}:{children:ReactNode}) {
 }
 export function AccessEmployeeIdInput(props:InputHTMLAttributes<HTMLInputElement>) {
  const journey=useAccessJourney();
- return <input {...props} defaultValue={journey.draftId} onInput={event=>{const value=event.currentTarget.value;if(journey.draftId.trim().toUpperCase()!==value.trim().toUpperCase()){const email=document.getElementById('recovery-email');if(email instanceof HTMLInputElement)email.value='';}journey.setDraftId(value);props.onInput?.(event);}}/>;
+ return <input {...props} defaultValue={props.defaultValue??journey.draftId} onInput={event=>{const value=event.currentTarget.value;if(journey.draftId.trim().toUpperCase()!==value.trim().toUpperCase()){const email=document.getElementById('recovery-email');if(email instanceof HTMLInputElement)email.value='';}journey.setDraftId(value);props.onInput?.(event);}}/>;
 }

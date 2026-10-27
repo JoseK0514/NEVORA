@@ -10,7 +10,7 @@ import {MOBILE_ACCESS_COPY} from './copy';
 import {AccessEmployeeIdInput} from './journey';
 import {AccessPasswordPair} from './password-pair';
 
-export function MobileRecoveryRequest({hydrated,busy,done,message,onSubmit,lang}:{hydrated:boolean;busy:boolean;done:boolean;message:string;onSubmit:FormEventHandler<HTMLFormElement>;lang:AuthLang}) {
+export function MobileRecoveryRequest({hydrated,busy,done,message,onSubmit,lang,onReview,draft}:{onReview?:()=>void;draft?:{employeeId:string;email:string};hydrated:boolean;busy:boolean;done:boolean;message:string;onSubmit:FormEventHandler<HTMLFormElement>;lang:AuthLang}) {
  const t=MOBILE_ACCESS_COPY[lang],feedback=useRef<HTMLDivElement>(null);
  useEffect(()=>{if(done||message)feedback.current?.focus();},[done,message]);
  return <>
@@ -19,14 +19,14 @@ export function MobileRecoveryRequest({hydrated,busy,done,message,onSubmit,lang}
   {done?<div className="ma-receipt" ref={feedback} role="status" tabIndex={-1}><p>{t.receivedSub}</p><p>{t.expires}</p></div>:<>
    <noscript><p className="q-help">{lang==='es'?'Activa JavaScript para solicitar la recuperación.':'Enable JavaScript to request recovery.'}</p></noscript>
    <form className="q-auth__form" onSubmit={onSubmit} aria-busy={busy}><fieldset className="q-auth__fields" disabled={!hydrated||busy}>
-    <div className="q-fl"><label htmlFor="recovery-employee-id">{t.employeeId}</label><AccessEmployeeIdInput id="recovery-employee-id" className="q-in" name="employeeId" required maxLength={200} autoComplete="username" autoCapitalize="none" spellCheck={false} placeholder={t.idPlaceholder}/>
+    <div className="q-fl"><label htmlFor="recovery-employee-id">{t.employeeId}</label><AccessEmployeeIdInput id="recovery-employee-id" defaultValue={draft?.employeeId} className="q-in" name="employeeId" required maxLength={200} autoComplete="username" autoCapitalize="none" spellCheck={false} placeholder={t.idPlaceholder}/>
      <details id="recovery-id-help" className="ma-details"><summary><CaretRightIcon size={16} aria-hidden="true"/>{t.idHelp}</summary><p>{t.idHelpBody}</p></details></div>
-    <div className="q-fl"><label htmlFor="recovery-email">{t.recoveryEmail}</label><input id="recovery-email" className="q-in" name="email" type="email" required maxLength={254} autoComplete="email" autoCapitalize="none" spellCheck={false} placeholder={t.emailPlaceholder} aria-describedby={message?'recovery-error':undefined}/></div>
+    <div className="q-fl"><label htmlFor="recovery-email">{t.recoveryEmail}</label><input id="recovery-email" defaultValue={draft?.email} className="q-in" name="email" type="email" required maxLength={254} autoComplete="email" autoCapitalize="none" spellCheck={false} placeholder={t.emailPlaceholder} aria-describedby={message?'recovery-error':undefined}/></div>
    </fieldset><RecoverySubmit hydrated={hydrated} busy={busy} idle={t.requestRecovery} pendingText={t.requesting} className="q-btn"/></form>
    {message?<div id="recovery-error" className="q-auth__alert" ref={feedback} role="alert" tabIndex={-1}>{message.startsWith('Recovery is unavailable')?t.recoveryUnavailable:authMessage(lang,message)}</div>:null}
   </>}
   <div className="ma-actions"><Link className="q-btn q-btn--sec" href="/reset-access">{t.haveCode}</Link>{done?<Link className="ma-text" href="/login">{t.backSignIn}</Link>:null}</div>
-  {done?<details className="ma-details"><summary><CaretRightIcon size={16} aria-hidden="true"/>{t.noEmail}</summary><p>{t.noEmailBody}</p><Link className="ma-text" href="/forgot-access">{t.reviewDetails}</Link></details>:null}
+  {done?<details className="ma-details"><summary><CaretRightIcon size={16} aria-hidden="true"/>{t.noEmail}</summary><p>{t.noEmailBody}</p><button type="button" className="ma-text" onClick={onReview}>{t.reviewDetails}</button></details>:null}
   <details className="ma-details"><summary><CaretRightIcon size={16} aria-hidden="true"/>{t.cantEmail}</summary><p>{t.cantEmailBody}</p><Link className="ma-text" href="/access-help/owner">{t.ownerEntry}</Link></details>
  </>;
 }

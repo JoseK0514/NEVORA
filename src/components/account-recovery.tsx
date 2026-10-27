@@ -11,6 +11,7 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,lang='en'
  lang?:AuthLang;mobileAccess?:boolean}){
  const hydrated=useSyncExternalStore(subscribe,()=>true,()=>false);
  const [message,setMessage]=useState(''),[busy,setBusy]=useState(false),[done,setDone]=useState(false),[issued,setIssued]=useState<Issued|null>(null);
+ const [requestDraft,setRequestDraft]=useState({employeeId:'',email:''});
  const [linkProof,setLinkProof]=useState(false);
  const proofInput=useRef<HTMLInputElement>(null);
  const incomingProof=useRef<string|null>(null);
@@ -30,6 +31,7 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,lang='en'
   const form=new FormData(event.currentTarget),password=String(form.get('password')??'');
   if(kind==='reset'&&password!==String(form.get('confirmPassword')??'')){setMessage('Passwords do not match.');return;}
   const body=kind==='reset'?{proof:String(form.get('proof')??'').trim(),password}:kind==='request'?{employeeId:String(form.get('employeeId')??'').trim(),email:String(form.get('email')??'').trim()}:{employeeId:String(form.get('employeeId')??'').trim(),attestation:String(form.get('attestation')??'').trim()};
+  if(kind==='request'&&mobileAccess)setRequestDraft({employeeId:String(form.get('employeeId')??'').trim(),email:String(form.get('email')??'').trim()});
   const current=++generation.current,controller=new AbortController();active.current=controller;sending.current=true;setBusy(true);setMessage('');setIssued(null);
   const timeout=setTimeout(()=>controller.abort(),12000);
   try{
@@ -42,7 +44,7 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,lang='en'
   }catch{if(current===generation.current)setMessage(kind==='reset'?'The reset outcome could not be confirmed. Try signing in with your new password before requesting another code.':kind==='assisted'?'The code could not be issued. Check your connection and try again.':'Recovery is unavailable. Try again or contact your manager for assisted recovery.');}
   finally{clearTimeout(timeout);if(current===generation.current){setBusy(false);sending.current=false;active.current=null;}}
  }
- if(kind==='request')return <RecoveryRequest mobileAccess={mobileAccess} lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}/>;
+ if(kind==='request')return <RecoveryRequest onReview={()=>{setDone(false);setMessage('');}} draft={requestDraft} mobileAccess={mobileAccess} lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}/>;
  if(kind==='assisted')return <AssistedRecovery hydrated={hydrated} busy={busy} message={message} issued={issued} employeeId={employeeId} from={from} timeZone={timeZone} onSubmit={submit} onStartAgain={()=>{setIssued(null);setMessage('');}}/>;
  return <RecoveryReset mobileAccess={mobileAccess} linkProof={linkProof} onDifferentCode={()=>{setLinkProof(false);if(proofInput.current){proofInput.current.value='';proofInput.current.focus();}}} lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}
   proofRef={input=>{proofInput.current=input;if(input&&incomingProof.current){input.value=incomingProof.current;incomingProof.current=null;}}}/>;

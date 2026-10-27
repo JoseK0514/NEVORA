@@ -42,6 +42,7 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
       expect((await page.goto(origin+path))?.status()).toBe(200);await page.locator('#mobile-access-page').waitFor();
       expect(await page.locator('#mobile-access-page').getAttribute('lang')).toBe(lang);
       expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),engine+path+width+lang).toBe(true);
+      if(engine==='chromium'&&width===390)await page.screenshot({path:evidence+'/'+lang+path.replaceAll('/','-')+'.png',fullPage:true});
       await page.addStyleTag({content:'html{font-size:200%}'});
       expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),engine+path+width+lang+' enlarged').toBe(true);
      }
@@ -49,10 +50,12 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    }
    checks.push(engine+': mobile EN/ES,320/390/430,normal/200% layouts');
    await page.setViewportSize({width:390,height:844});await context.addCookies([{name:'nv-lang',value:'en',url:origin}]);
+   await page.goto(origin+'/login');await page.keyboard.press('Tab');await page.keyboard.press('Enter');expect(await page.locator('#access-content').evaluate((e:HTMLElement)=>e===document.activeElement)).toBe(true);
+   for(const selector of ['.q-auth__form .q-btn','#login-employee-id','#login-password','.ma-language'])expect(await page.locator(selector).evaluate((e:HTMLElement)=>e.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
    await page.goto(origin+'/forgot-access');await page.locator('#recovery-employee-id').fill('MA-'+engine);await page.locator('#recovery-email').fill(engine+'@example.invalid');
    await page.locator('.ma-language').click();await expect.poll(()=>page.locator('#mobile-access-page').getAttribute('lang')).toBe('es');
    expect(await page.locator('#recovery-employee-id').inputValue()).toBe('MA-'+engine);expect(await page.locator('#recovery-email').inputValue()).toBe(engine+'@example.invalid');
-   await page.locator('.ma-footer-help').click();await page.locator('main a[href*="/access-help/support"]').click();await page.locator('.ma-back').click();await page.locator('.ma-back').click();expect(new URL(page.url()).pathname).toBe('/forgot-access');
+   await page.locator('.ma-footer-help').click();await page.locator('main a[href*="/access-help/support"]').click();await page.locator('.ma-back').click();await expect.poll(()=>page.locator('.ma-back').getAttribute('href')).toBe('/forgot-access');await page.locator('.ma-back').click();await page.waitForURL('**/forgot-access');expect(new URL(page.url()).pathname).toBe('/forgot-access');
    await page.goto(origin+'/access-help/support');await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw Error('fixture denial');}}}));await page.locator('.ma-draft button').click();await expect.poll(()=>page.locator('#access-message').evaluate((e:HTMLTextAreaElement)=>e.selectionEnd-e.selectionStart)).toBe((await page.locator('#access-message').inputValue()).length);
    const mail=new URL(await page.locator('.ma-draft a').getAttribute('href'));expect(mail.protocol).toBe('mailto:');expect(mail.pathname).toBe('support@thevelani.com');expect([...mail.searchParams.keys()]).toEqual(['subject','body']);
    checks.push(engine+': locale drafts, contextual Back, manual-copy fallback and fixed mail recipient');
@@ -67,11 +70,35 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    const employee=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});await employee.addCookies([{name:'nv-lang',value:'es',url:origin}]);const join=await employee.newPage();join.setDefaultTimeout(20000);join.on('pageerror',(e:Error)=>errors.push(engine+': '+clean(e.message)));
    await join.goto(origin+'/activate#proof='+proof);await join.locator('#activation-password').waitFor();await expect.poll(()=>new URL(join.url()).hash).toBe('');
    expect(await join.locator('main').innerText()).not.toMatch(/Invitation verified|invitación verificada/i);
-   await join.locator('#activation-password').fill(TEST_PASSWORD);await join.locator('#activation-confirm-password').fill(TEST_PASSWORD);await join.locator('button[type="submit"]').click();await join.locator('#activation-employee-id').waitFor();expect(await join.locator('#activation-employee-id').inputValue()).toBe('MA-'+engine);
+   await join.locator('#activation-password').fill(TEST_PASSWORD);await join.locator('#activation-confirm-password').fill(TEST_PASSWORD);
+   await join.locator('.ma-language').click();await expect.poll(()=>join.locator('#mobile-access-page').getAttribute('lang')).toBe('en');expect(await join.locator('#activation-password').inputValue()).toBe(TEST_PASSWORD);
+   await join.setViewportSize({width:1440,height:900});await expect.poll(()=>join.locator('.q-auth__rules').count()).toBe(1);expect(await join.locator('h1').innerText()).toBe('Activate account');expect(await join.locator('#activation-password').inputValue()).toBe(TEST_PASSWORD);expect(await join.locator('form').count()).toBe(1);
+   await join.setViewportSize({width:390,height:844});await expect.poll(()=>join.locator('.ma-passwords').count()).toBe(1);expect(await join.locator('#activation-confirm-password').inputValue()).toBe(TEST_PASSWORD);
+   await join.locator('.ma-language').click();await expect.poll(()=>join.locator('#mobile-access-page').getAttribute('lang')).toBe('es');
+   await join.locator('button[type="submit"]').click();await join.locator('#activation-employee-id').waitFor();expect(await join.locator('#activation-employee-id').inputValue()).toBe('MA-'+engine);
    await join.locator('a[href*="activated=1"]').click();expect(await join.locator('#login-employee-id').inputValue()).toBe('MA-'+engine);await join.locator('#login-password').fill(TEST_PASSWORD);await join.locator('button[type="submit"]').click();await join.waitForURL('**/app',{timeout:45000});await join.locator('.ma-onboarding summary').waitFor();await join.locator('.ma-onboarding summary').click();expect(await join.locator('.ma-guide-list a[href="/app/schedule"]').count()).toBe(1);await join.screenshot({path:evidence+'/'+engine+'-first-home.png',fullPage:true});
    expect((await employee.request.post(origin+'/api/company-access/invitations/MA-'+engine,{headers:{Origin:origin,'x-nevora-company-access':'1','x-nevora-actor':'MA-'+engine},data:{action:'ISSUE'}})).status()).toBe(403);
    const badReset=await employee.request.post(origin+'/api/auth/reset-access',{headers:{Origin:origin,'x-nevora-recovery':'1'},data:{proof:'K7M4PQ8R2T',password:TEST_PASSWORD}});expect(badReset.status()).toBe(400);
    checks.push(engine+': real Owner-issued local email → activation → confirmed ID → ordinary sign-in → real Employee Home; employee issuance denied; short proof rejected');
+   await join.goto(origin+'/forgot-access');await join.locator('#recovery-id-help').waitFor();await join.locator('#recovery-employee-id').fill('MA-'+engine);await join.locator('#recovery-email').fill(engine+'@example.invalid');await join.locator('button[type="submit"]').click();await join.locator('.ma-receipt').waitFor();
+   await join.locator('details').filter({has:join.locator('button')}).locator('summary').click();await join.getByRole('button',{name:'Revisar tus datos',exact:true}).click();await join.locator('#recovery-email').waitFor();expect(await join.locator('#recovery-email').inputValue()).toBe(engine+'@example.invalid');
+   await join.locator('#recovery-employee-id').fill('CORRECTED-ID');expect(await join.locator('#recovery-email').inputValue()).toBe('');
+   await join.locator('#recovery-email').fill('corrected@example.invalid');await join.locator('button[type="submit"]').click();await join.locator('.ma-receipt').waitFor();
+   const resetMail=smtp.messages.find((m:{recipient:string;body:string})=>m.recipient.includes(engine+'@example.invalid')&&m.body.includes('/reset-access'));if(!resetMail)throw Error('Owned recovery mail missing');
+   const resetProof=/#proof=([A-Za-z0-9_-]{43})/.exec(resetMail.body.replace(/=\r?\n/g,'').replace(/=3D/g,'='))?.[1];if(!resetProof)throw Error('Owned recovery proof missing');secrets.push(resetProof);
+   await join.goto(origin+'/reset-access#proof='+resetProof);await join.locator('.ma-passwords').waitFor();await expect.poll(()=>join.locator('#reset-proof').inputValue().then((value:string)=>value.length)).toBe(43);expect(new URL(join.url()).hash).toBe('');
+   const nextPassword=' Fictional-reset-'+engine+'! ';secrets.push(nextPassword);await join.locator('#reset-password').fill(nextPassword);await join.locator('#reset-confirm-password').fill(nextPassword);
+   await join.setViewportSize({width:1440,height:900});await expect.poll(()=>join.locator('.ma-passwords').count()).toBe(0);expect((await join.locator('#reset-proof').inputValue()).length).toBe(43);expect(await join.locator('#reset-password').inputValue()).toBe(nextPassword);
+   await join.setViewportSize({width:390,height:844});await expect.poll(()=>join.locator('.ma-passwords').count()).toBe(1);await join.locator('.ma-language').click();await expect.poll(()=>join.locator('#mobile-access-page').getAttribute('lang')).toBe('en');expect((await join.locator('#reset-proof').inputValue()).length).toBe(43);
+   await join.locator('button[type="submit"]').click();await expect.poll(()=>join.locator('h1').innerText()).toBe('Password updated.');
+   const protectedRead=await employee.request.get(origin+'/app',{maxRedirects:0});expect([303,307,308]).toContain(protectedRead.status());expect(protectedRead.headers().location).toMatch(/^\/login/);
+   expect((await employee.request.post(origin+'/api/auth/reset-access',{headers:{Origin:origin,'x-nevora-recovery':'1'},data:{proof:resetProof,password:nextPassword}})).status()).toBe(400);
+   await join.locator('a[href="/login"]').filter({hasText:'Sign in with new password'}).click();await join.locator('#login-employee-id').fill('MA-'+engine);await join.locator('#login-password').fill(nextPassword);await join.locator('button[type="submit"]').click();await join.waitForURL('**/app',{timeout:45000});
+   checks.push(engine+': real recovery mail, editable receipt, identity correction, full-proof locale/resize custody, atomic reset/session revocation/single use and new-password sign-in');
+   await join.goto(origin+'/app/profile');await join.locator('.profile-signout-row').click();await join.waitForURL('**/login');expect(await join.locator('#login-employee-id').inputValue()).toBe('');
+   await join.locator('#login-employee-id').fill('MA-MANAGER');await join.locator('#login-password').fill(TEST_PASSWORD);await join.locator('button[type="submit"]').click();await join.waitForURL('**/app',{timeout:45000});expect(await join.locator('.ma-onboarding').count()).toBe(0);
+   await join.goto(origin+'/login');await join.locator('#login-employee-id').fill('MA-'+engine);await join.locator('#login-password').fill(nextPassword);await join.locator('button[type="submit"]').click();await join.waitForURL('**/app',{timeout:45000});await join.locator('.ma-onboarding').waitFor();expect(await join.locator('.ma-onboarding-intro').count()).toBe(0);
+   checks.push(engine+': real logout clears ID; different-role sign-in has no Employee guide; prior activation intro does not return after account switch');
    await employee.close();
    await login('MA-MANAGER');expect((await context.request.post(origin+'/api/company-access/invitations/MA-'+engine,{headers:{Origin:origin,'x-nevora-company-access':'1','x-nevora-actor':'MA-MANAGER'},data:{action:'ISSUE'}})).status()).toBe(403);
    checks.push(engine+': Manager cannot issue invitations');

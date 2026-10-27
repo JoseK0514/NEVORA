@@ -1,4 +1,5 @@
 'use client';
+import {useMobilePresentation} from '@/components/mobile-access/use-mobile-presentation';
 
 import Link from 'next/link';
 import type {AuthLang} from '@/lib/auth-copy';
@@ -77,7 +78,8 @@ function CopyId({value}:{value:string}) {
  * and "No invitation? Ask your Owner." With one: the two passwords and Activate account. Activated: the Employee ID to keep.
  * The flow above is unchanged. */
 export function ActivationInvitationView({phase,mismatch=false,employeeId,loginHref,workspaceName=null,onSubmit,formRef,successRef,lang='en',mobileAccess=false}:{phase:ActivationPhase;lang?:AuthLang;mobileAccess?:boolean;mismatch?:boolean;employeeId?:string|null;loginHref:string;workspaceName?:string|null;onSubmit:(event:FormEvent<HTMLFormElement>)=>void;formRef?:RefObject<HTMLFormElement|null>;successRef?:RefObject<HTMLDivElement|null>}) {
- if(mobileAccess)return <MobileActivationView {...{phase,mismatch,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang}}/>;
+ const mobile=useMobilePresentation(mobileAccess,'activation-password activation-confirm-password');
+ if(mobile)return <MobileActivationView {...{phase,mismatch,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang}}/>;
  const canSubmit=['ready','pending','unavailable'].includes(phase);const error=mismatch||phase==='unavailable';
  const signInHref=loginHref.replace('?activated=1&','?').replace('?activated=1','');
  const workspace=workspaceName??'Workspace unavailable';
