@@ -21,7 +21,7 @@ export function EmployeeMessageProvider({authority,core,children}:{authority:str
  const admission=useRef<{read:()=>boolean;refresh:()=>void}|null>(null),recovery=useRef<ReturnType<typeof createCommunicationRecovery>|null>(null);
  const allowed=()=>!!admission.current?.read()&&document.visibilityState!=='hidden'&&document.hasFocus()&&navigator.onLine;
  useEffect(()=>{
-  const control=createCommunicationRecovery((path,body,signal)=>communicationRequest('employee',core,path,body,signal),setState,result=>{setCommit(result);admission.current?.refresh();router.refresh();});recovery.current=control;
+  const control=createCommunicationRecovery((path,body,signal)=>communicationRequest('employee',core,path,body,signal),setState,result=>{setCommit(result);admission.current?.refresh();router.refresh();},()=>{admission.current?.refresh();router.refresh();});recovery.current=control;
   const pause=()=>control.authorize(false);for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);const visible=()=>{if(document.visibilityState==='hidden')pause();};document.addEventListener('visibilitychange',visible);
   return()=>{control.stop();if(recovery.current===control)recovery.current=null;for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);document.removeEventListener('visibilitychange',visible);};
  },[core,router]);
