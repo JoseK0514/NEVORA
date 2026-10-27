@@ -17,7 +17,7 @@ const checked=name=>{report.checks.push(name);console.log('[C5 browser] PASS '+n
 async function context(browser){const c=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block'});await c.route('**/*',r=>new URL(r.request().url()).origin===app.url?r.continue():r.abort());return c;}
 async function goto(page,path){const response=await page.goto(app.url+path,{waitUntil:'networkidle'});assert.equal(response.status(),200,'Working route '+path);}
 async function login(c,id='QAOWNER'){const p=await c.newPage();await goto(p,'/login');await p.getByLabel('Employee ID',{exact:true}).fill(id);await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign in',exact:true}).click()]);await p.close();}
-async function create(page,name){await page.getByRole('button',{name:'Add break type',exact:true}).click();const d=page.getByRole('dialog');await d.getByLabel('Break name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Classification',exact:true}).selectOption('REST');await d.getByLabel(/^Reference time/).fill('15');await d.getByRole('button',{name:'Create break type',exact:true}).click();await d.waitFor({state:'hidden'});}
+async function create(page,name){await page.getByLabel('Add break type',{exact:true}).click();const d=page.getByRole('dialog');await d.getByLabel('Break name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Classification',exact:true}).selectOption('REST');await d.getByLabel(/^Reference time/).fill('15');await d.getByRole('button',{name:'Create break type',exact:true}).click();await d.waitFor({state:'hidden'});}
 const row=(page,name)=>page.getByRole('button',{name:`Edit ${name}`,exact:true});
 async function action(page,name,operation){await row(page,name).click();const dialog=page.getByRole('dialog');if(operation!=='Edit')await dialog.getByRole('button',{name:operation+' break type',exact:true}).click();return dialog;}
 async function geometry(page,label){const r=await page.evaluate(()=>{const visible=e=>{const b=e.getBoundingClientRect();return b.width>0&&b.height>0&&getComputedStyle(e).visibility!=='hidden';};const controls=[...document.querySelectorAll('button,a.button,input:not([type=hidden]),select')].filter(visible);return {overflow:document.documentElement.scrollWidth>innerWidth+2,small:controls.filter(e=>e.getBoundingClientRect().height<43.5).map(e=>e.outerHTML.slice(0,90)),clipped:controls.filter(e=>{const b=e.getBoundingClientRect();return b.left< -2||b.right>innerWidth+2;}).map(e=>e.outerHTML.slice(0,90))};});assert.equal(r.overflow,false,label+' overflow');assert.deepEqual(r.small,[],label+' touch targets');assert.deepEqual(r.clipped,[],label+' clipping');checked(label);}
@@ -44,7 +44,7 @@ try{
   const longName=engine+' '+('LongBreakName'.repeat(5));await create(p,longName);
   // Commit the Owner save and deliberately lose only its response. No blind duplicate creation.
   const uncertainName=engine+' Recovered break';
-  await p.getByRole('button',{name:'Add break type',exact:true}).click();d=p.getByRole('dialog');
+  await p.getByLabel('Add break type',{exact:true}).click();d=p.getByRole('dialog');
   await d.getByLabel('Break name',{exact:true}).fill(uncertainName);await d.getByRole('combobox',{name:'Classification',exact:true}).selectOption('MEAL');
   let dropped=false;
   await p.route('**/app/settings/breaks',async route=>{
@@ -61,7 +61,7 @@ try{
   for(const width of [320,375,390,430,768,1024,1440]){
    await p.setViewportSize({width,height:width<500?844:1000});await goto(p,'/app/settings/breaks');await geometry(p,engine+': catalog '+width);
    if([390,1440].includes(width)){const file=join(evidence,engine+'-breaks-'+width+'.png');await p.screenshot({path:file,fullPage:true});report.screenshots.push(file);}
-   await p.getByRole('button',{name:'Add break type',exact:true}).click();await geometry(p,engine+': editor '+width);
+   await p.getByLabel('Add break type',{exact:true}).click();await geometry(p,engine+': editor '+width);
    if(width===390){const file=join(evidence,engine+'-break-editor-390.png');await p.screenshot({path:file,fullPage:false});report.screenshots.push(file);}
    await p.keyboard.press('Escape');await p.getByRole('dialog').waitFor({state:'hidden'});await p.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='Add break type');
   }
