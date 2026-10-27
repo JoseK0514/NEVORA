@@ -14,6 +14,7 @@ import {createCalendarToken,calendarDigest,validCalendarToken} from './token.ser
 import {businessDate,shiftBoundaryInstants} from '../business-time';
 import {addDays} from '../date-utils';
 import {serializeCalendar} from './ical';
+import {parseCalendarStatus} from './contract';
 /** Bind management commands to the current portal session; feed tokens have an independent lifecycle. */
 export const calendarAuthority=(proof:SessionMutationProof)=>createHash('sha256').update(JSON.stringify(['nevora:calendar:v1',proof.employee.id,proof.sessionTokenHash])).digest('hex');
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -29,9 +30,14 @@ const latestSql=(employee:string,workspace:string):SqlStatement=>({text:`SELECT 
 export async function getEmployeeCalendarSubscription(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<CalendarSubscriptionStatus>{
  try{ownProof(proof);}catch{return {state:'unauthorized',reason:'access_denied'};}
  try{
-  const workspace=await getWorkspace(executor),guards=calendarManagementGuards(proof,workspace),rows=await executor.transaction([...guards,latestSql(proof.employee.id,workspace.id),...managementSessionStatements(proof,proof.employee.id,['EMPLOYEE','LEAD'])]);
+  const workspace=await getWorkspace(executor),guards=calendarManagementGuards(proof,workspace),rows=await executor.transaction([...guards,latestSql(proof.employee.id,workspace.id),
+   {text:`WITH allowed AS (${employeeAllowedLocationsSql()}) SELECT clock_timestamp()::text AS observed_at,
+    LEAST(45000,FLOOR(EXTRACT(EPOCH FROM (s.expires_at-clock_timestamp()))*1000))::integer AS valid_for_ms,
+    EXISTS(SELECT 1 FROM allowed) AS can_issue FROM employee_sessions s WHERE s.employee_id=$2 AND s.token_hash=$3`,values:[workspace.id,proof.employee.id,proof.sessionTokenHash]},
+   ...managementSessionStatements(proof,proof.employee.id,['EMPLOYEE','LEAD'])],AbortSignal.timeout(8000));
   const row=rows[guards.length]?.[0] as SubscriptionRow|undefined;
-  return {state:row?row.revoked_at?'revoked':'active':'none',id:row?.id??null,generation:row?.generation??null,issuedAt:row?.issued_at??null,allowedLocationIds:row?.allowed_location_ids??[],authority:calendarAuthority(proof)};
+  const lease=rows[guards.length+1]?.[0] as {observed_at:string;valid_for_ms:number;can_issue:boolean}|undefined;
+  return parseCalendarStatus({state:row?row.revoked_at?'revoked':'active':'none',id:row?.id??null,generation:row?.generation??null,issuedAt:row?.issued_at??null,allowedLocationIds:row?.allowed_location_ids??[],authority:calendarAuthority(proof),observedAt:lease?.observed_at,validForMs:lease?.valid_for_ms,canIssue:lease?.can_issue},calendarAuthority(proof));
  }catch(error){return {state:denied(error)?'unauthorized':'unavailable',reason:'read_failed'};}
 }
 /** Recover a committed receipt without recovering the plaintext feed credential, which is never stored here. */

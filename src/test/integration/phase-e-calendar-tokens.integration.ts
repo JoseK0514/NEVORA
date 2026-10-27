@@ -139,3 +139,16 @@ it('fresh issue after revocation and immutable operation replay preserve their l
  expect(await q('SELECT count(*)::integer AS n FROM calendar_subscriptions WHERE revoked_at IS NULL')).toEqual([{n:1}]);
  expect(await q('SELECT count(*)::integer AS n FROM calendar_operations')).toEqual([{n:3}]);
 });
+
+it('mobile Calendar lease uses actual session expiry and current eligibility without changing bearer policy',async()=>{
+ await seed();
+ await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '2 seconds' WHERE token_hash=$1",[proof.sessionTokenHash]);
+ const initial=await status(proof,db.executor);expect(initial.state).toBe('none');if(!('validForMs'in initial))throw Error('Missing finite Calendar lease');
+ expect(initial.canIssue).toBe(true);expect(initial.validForMs).toBeGreaterThan(0);expect(initial.validForMs).toBeLessThanOrEqual(2000);expect(Number.isFinite(Date.parse(initial.observedAt))).toBe(true);
+ await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '1 day' WHERE token_hash=$1",[proof.sessionTokenHash]);
+ await q("UPDATE locations SET active=false WHERE id IN('loc-1','loc-2')");
+ expect(await status(proof,db.executor)).toMatchObject({state:'none',canIssue:false});
+ expect(await manage(proof,command(),db.executor)).toEqual({status:'blocked',reason:'no_locations'});
+ await q("UPDATE locations SET active=true WHERE id='loc-1'");expect(await status(proof,db.executor)).toMatchObject({state:'none',canIssue:true});
+ await q("UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE token_hash=$1",[proof.sessionTokenHash]);expect(await status(proof,db.executor)).toMatchObject({state:'unauthorized'});
+});

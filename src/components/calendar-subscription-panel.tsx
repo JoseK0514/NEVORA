@@ -1,7 +1,7 @@
 'use client';
 import {ArrowsClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
-import {useCallback,useEffect,useRef,useState} from 'react';
-import type {CalendarCommand,CalendarManagementResult,CalendarSubscriptionStatus} from '@/lib/calendar/types';
+import {useEffect,useRef,useState} from 'react';
+import type {CalendarSubscriptionStatus} from '@/lib/calendar/types';
 import Link from 'next/link';
 import {revealFeedback} from '@/lib/reveal-feedback';
 import {AppleLogoIcon} from '@phosphor-icons/react/dist/ssr/AppleLogo';
@@ -11,6 +11,7 @@ import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {LockKeyIcon} from '@phosphor-icons/react/dist/ssr/LockKey';
 import {NavIcon} from './nav-icon';
 import './calendar-subscription-panel.css';
+import {createCalendarClient,type CalendarClientState} from '@/lib/calendar/client';
 import {PendingLabel} from './employee-submit-button';
 type ViewProps={status:CalendarSubscriptionStatus|null;url:string|null;paused:boolean;busy:boolean;notice:string;onCommand:(kind:'ISSUE'|'ROTATE'|'REVOKE')=>void;onCopy:()=>void;onRetry:()=>void};
 /** Signature (phase 4): an example week, drawn the way a calendar app shows subscribed shifts. Decorative and
@@ -62,47 +63,20 @@ export function CalendarSubscriptionView({status,url,paused,busy,notice,onComman
  </section>;
 }
 export function CalendarSubscriptionPanel({authority}:{authority:string}){
- const [status,setStatus]=useState<CalendarSubscriptionStatus|null>(null),[url,setUrl]=useState<string|null>(null),[paused,setPaused]=useState(false),[busy,setBusy]=useState(false),[notice,setNotice]=useState('');
- const generation=useRef(0),work=useRef(0),busyNow=useRef(false),request=useRef<AbortController|null>(null),pending=useRef<CalendarCommand|null>(null),visible=useRef(true);
- const refresh=useCallback(async()=>{
-  request.current?.abort();const controller=new AbortController(),at=++generation.current;request.current=controller;
-  try{const response=await fetch('/api/employee/calendar-subscriptions',{headers:{'X-Nevora-Calendar':'1','X-Nevora-Calendar-Authority':authority,Accept:'application/json'},credentials:'same-origin',cache:'no-store',redirect:'error',signal:controller.signal});const result=await response.json() as CalendarSubscriptionStatus;
-   if(at!==generation.current||!visible.current)return;
-   if(!response.ok||!('authority' in result)||result.authority!==authority){setUrl(null);setStatus({state:response.status===401||response.status===403?'unauthorized':'unavailable',reason:'read_failed'});return;}
-   setStatus(result);
-  }catch{if(at===generation.current&&visible.current){setUrl(null);setStatus({state:'unavailable',reason:'read_failed'});}}
- },[authority]);
+ const [state,setState]=useState<CalendarClientState>({status:null,url:null,paused:true,busy:false,notice:'',pendingKind:null});
+ const owner=useRef<ReturnType<typeof createCalendarClient>|null>(null);
  useEffect(()=>{
-  let expiry:ReturnType<typeof setInterval>;
-  const pause=()=>{visible.current=false;generation.current++;work.current++;busyNow.current=false;request.current?.abort();setUrl(null);setStatus(null);setBusy(false);setNotice('');setPaused(true);};
-  const resume=()=>{if(document.visibilityState!=='visible'||!navigator.onLine){pause();return;}visible.current=true;setPaused(false);if(pending.current)setNotice('The result is unknown. Retry the same operation to check it.');void refresh();};
+  const client=createCalendarClient(authority,setState);owner.current=client;
+  const pause=()=>client.pause();
+  const resume=()=>{if(document.visibilityState!=='visible'||!navigator.onLine)client.pause();else client.start();};
   const visibility=()=>document.visibilityState==='hidden'?pause():resume();
+  const end=()=>client.end();
+  const storage=(event:StorageEvent)=>{if(event.key===null||event.key==='fuel-portal-account-fence'||event.key==='fuel-portal-owner-generation')end();};
   for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);
   for(const event of ['focus','pageshow','online'])window.addEventListener(event,resume);
-  const replacement=()=>{pending.current=null;pause();resume();};window.addEventListener('storage',replacement);document.addEventListener('visibilitychange',visibility);
-  resume();expiry=setInterval(()=>{if(visible.current&&!busyNow.current){setUrl(null);void refresh();}},45000);
-  return()=>{pause();clearInterval(expiry);pending.current=null;for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online'])window.removeEventListener(event,resume);window.removeEventListener('storage',replacement);document.removeEventListener('visibilitychange',visibility);};
- // Authority is server-bound; replacing it destroys all transient private state.
- },[authority,refresh]);
- async function submit(kind:'ISSUE'|'ROTATE'|'REVOKE',retry=false){
-  if(!visible.current||busyNow.current||pending.current&&!retry||status?.state==='unauthorized')return;
-  const original=retry?pending.current:null;
-  if(!original&&(!status||!('generation' in status)))return;
-  const command:CalendarCommand=original??{kind,operationId:crypto.randomUUID(),authority,expectedGeneration:status&&'generation'in status?status.generation:''};pending.current=command;
-  const at=++generation.current,operation=++work.current,controller=new AbortController();request.current?.abort();request.current=controller;busyNow.current=true;setBusy(true);setUrl(null);setNotice('');
-  try{const response=await fetch('/api/employee/calendar-subscriptions',{method:'POST',headers:{'X-Nevora-Calendar':'1','X-Nevora-Calendar-Authority':authority,Accept:'application/json','Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',redirect:'error',signal:controller.signal,body:JSON.stringify(command)});
-   if(at!==generation.current||!visible.current)return;
-   if(response.status===401||response.status===403){pending.current=null;setUrl(null);setStatus({state:'unauthorized',reason:'access_denied'});setNotice(response.status===401?'Your session ended. Sign in again to manage the link.':'Your access changed. Sign in again to check your access.');return;}
-   const result=await response.json() as CalendarManagementResult;
-   if(at!==generation.current||!visible.current)return;
-   if(result.status==='created'){pending.current=null;setUrl(result.url);setStatus({state:'active',id:result.id,generation:result.generation,issuedAt:new Date().toISOString(),allowedLocationIds:[],authority});setNotice('Link created.');}
-   else if(result.status==='active_url_unavailable'){pending.current=null;setNotice('The link is active. Its URL cannot be retrieved; replace the link to create a new one.');await refresh();}
-   else if(result.status==='revoked'){pending.current=null;setNotice('Link revoked.');await refresh();}
-   else if(result.status==='outcome_unknown'||result.status==='unavailable'){setNotice('The result is unknown. Retry the same operation to check it.');}
-   else{pending.current=null;setNotice(result.status==='conflict'?'The link changed. Check the current status and try again.':'Your session may have ended. Sign in again, then create the link.');setUrl(null);await refresh();}
-  }catch{if(at===generation.current&&visible.current)setNotice('The result is unknown. Retry the same operation to check it.');}
-  finally{if(operation===work.current&&visible.current){busyNow.current=false;setBusy(false);}}
- }
- async function copy(){if(!url||!visible.current)return;const at=generation.current;try{await navigator.clipboard.writeText(url);if(at===generation.current&&visible.current)setNotice('Link copied.');}catch{if(at===generation.current&&visible.current)setNotice('Copy was unavailable. Use Select link, then copy it manually.');}}
- return <CalendarSubscriptionView status={status} url={url} paused={paused} busy={busy} notice={notice} onCommand={kind=>void submit(kind)} onCopy={()=>void copy()} onRetry={()=>pending.current?void submit(pending.current.kind,true):void refresh()}/>;
+  window.addEventListener('nevora:signout',end);window.addEventListener('storage',storage);document.addEventListener('visibilitychange',visibility);
+  resume();
+  return()=>{client.stop();owner.current=null;for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online'])window.removeEventListener(event,resume);window.removeEventListener('nevora:signout',end);window.removeEventListener('storage',storage);document.removeEventListener('visibilitychange',visibility);};
+ },[authority]);
+ return <CalendarSubscriptionView {...state} onCommand={kind=>owner.current?.command(kind)} onCopy={()=>void owner.current?.copy()} onRetry={()=>owner.current?.retry()}/>;
 }

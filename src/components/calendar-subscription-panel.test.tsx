@@ -1,7 +1,7 @@
 import {renderToStaticMarkup} from 'react-dom/server';
 import {expect,it} from 'vitest';
 import {CalendarSubscriptionView} from './calendar-subscription-panel';
-const state={state:'active' as const,id:'id',generation:'generation',issuedAt:'2026-10-08',allowedLocationIds:['loc-1'],authority:'authority'};
+const state={state:'active' as const,id:'id',generation:'generation',issuedAt:'2026-10-08',allowedLocationIds:['loc-1'],authority:'authority',observedAt:'2026-10-08',validForMs:45000,canIssue:true};
 const base={status:state,url:'intentional-transient-url',paused:false,busy:false,notice:'',onCommand:()=>{},onCopy:()=>{},onRetry:()=>{}};
 it('private link is absent while hidden even if a prior ready URL is provided',()=>{const html=renderToStaticMarkup(<CalendarSubscriptionView {...base} paused/>);expect(html).not.toContain(base.url);expect(html).toContain('Calendar settings paused');});
 it.each(['unauthorized','unavailable'] as const)('never renders a private URL or copy actions with %s status',state=>{

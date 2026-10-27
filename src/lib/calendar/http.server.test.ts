@@ -21,7 +21,7 @@ it('management rejects cross-origin, missing marker, excessive body and stale au
 });
 it('current Employee proof controls own status and issuance without a durable URL',async()=>{
  vi.mocked(requireSessionMutationProof).mockResolvedValue(ownProof);vi.mocked(calendarAuthority).mockReturnValue('fixture-authority');vi.mocked(validCalendarCommand).mockReturnValue(true);
- vi.mocked(getEmployeeCalendarSubscription).mockResolvedValue({state:'none',id:null,generation:null,issuedAt:null,allowedLocationIds:[],authority:'fixture-authority'});expect((await employeeCalendarHandler(manageRequest('GET'))).status).toBe(200);
+ vi.mocked(getEmployeeCalendarSubscription).mockResolvedValue({state:'none',id:null,generation:null,issuedAt:null,allowedLocationIds:[],authority:'fixture-authority',observedAt:'2026-10-27',validForMs:45000,canIssue:true});expect((await employeeCalendarHandler(manageRequest('GET'))).status).toBe(200);
  vi.mocked(manageEmployeeCalendarSubscription).mockResolvedValue({status:'created',operationId:'o',id:'id',generation:'g',url:'/api/calendar/fictional-sentinel/schedule.ics'});const response=await employeeCalendarHandler(manageRequest());expect(response.status).toBe(200);expect((await response.json()).url).toBe('https://fixture.invalid/api/calendar/fictional-sentinel/schedule.ics');expect(response.headers.get('Cache-Control')).toBe('no-store, private');
  vi.mocked(requireSessionMutationProof).mockResolvedValue({...ownProof,employee:{...ownProof.employee,role:'MANAGER'}});expect((await employeeCalendarHandler(manageRequest())).status).toBe(403);
 });

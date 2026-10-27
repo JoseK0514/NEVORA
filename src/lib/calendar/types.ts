@@ -7,5 +7,5 @@ export type CalendarManagementResult=
 export type CalendarEvent={uid:string;sequence:number;stamp:string;lastModified:string;status:'CONFIRMED'|'CANCELLED';startAt:string;endAt:string;summary:string;location:string|null};
 export type CalendarFeedRead={state:'ready';observedAt:string;events:CalendarEvent[]}|{state:'unauthorized'|'unavailable';reason:string};
 export type CalendarSubscriptionStatus=
- | {state:'active'|'revoked'|'none';id:string|null;generation:string|null;issuedAt:string|null;allowedLocationIds:string[];authority:string}
+ | {state:'active'|'revoked'|'none';id:string|null;generation:string|null;issuedAt:string|null;allowedLocationIds:string[];authority:string;observedAt:string;validForMs:number;canIssue:boolean}
  | {state:'unauthorized'|'unavailable';reason:string};
