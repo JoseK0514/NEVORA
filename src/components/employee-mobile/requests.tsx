@@ -23,6 +23,9 @@ const status=(value:string)=>({OPEN:'Offered for cover',EMPLOYEE_PENDING:'Awaiti
 function Entry({href,title,detail,icon}:{href:string;title:string;detail?:string;icon:ReactNode}){
  return <li><Link className="em-request-entry" href={href}><span className="em-request-icon" aria-hidden="true">{icon}</span><span><strong>{title}</strong>{detail?<small>{detail}</small>:null}</span><CaretRightIcon aria-hidden="true"/></Link></li>;
 }
+export function IncomingRequestSection({count,onRetry}:{count:number|null;onRetry:()=>void}){
+ return count?<section aria-labelledby="em-answer-heading"><h2 id="em-answer-heading">Needs your answer</h2><ul className="em-request-list"><Entry href="/app/exchange?tab=foryou" title={count===1?'A teammate requested a swap':`${count} swaps need your answer`} detail="Review the shifts before responding" icon={<ArrowsLeftRightIcon/>}/></ul></section>:null;
+}
 export function Pickup({operation,onRefresh,canSubmit=false,isCurrent=()=>false,canRecover=()=>false}:{operation:PickupOperation;onRefresh:()=>void;canSubmit?:boolean;isCurrent?:(operation:PickupOperation)=>boolean;canRecover?:()=>boolean}){
  useSyncExternalStore(operation.subscribe,operation.snapshot,operation.snapshot);
  const current=operation.state,result=current.result,resolved=result&&['completed','pending','closed'].includes(result.status);
@@ -97,7 +100,7 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
   <div className="em-request-body">
    {!snapshot?<section className="em-request-notice" aria-label="Requests status"><p role="status">{state.paused?'Requests paused. Return online to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current requests…':'We couldn’t load your requests. Try again.'}</p>{denied?<Link className="em-request-secondary" href="/login">Sign in</Link>:<button className="em-request-secondary" type="button" disabled={state.paused||state.refreshing} onClick={refresh}>{state.refreshing?'Checking…':'Try again'}</button>}</section>:<>
     {mode==='hub'?<>
-     {snapshot.incoming?<section aria-labelledby="em-answer-heading"><h2 id="em-answer-heading">Needs your answer</h2><ul className="em-request-list"><Entry href="/app/exchange?tab=foryou" title={snapshot.incoming===1?'A teammate requested a swap':`${snapshot.incoming} swaps need your answer`} detail="Review the shifts before responding" icon={<ArrowsLeftRightIcon/>}/></ul></section>:null}
+     {snapshot.modules.marketplace?<IncomingRequestSection count={snapshot.incoming} onRetry={refresh}/>:null}
      <section aria-labelledby="em-options-heading"><h2 id="em-options-heading">Your options</h2><ul className="em-request-list">
       {snapshot.modules.marketplace?<><Entry href="/app/exchange?tab=available" title="Open shifts" detail={snapshot.open===null||unconfirmed.length?'Some eligibility checks are unavailable':eligible.length?`${eligible.length} ${eligible.length===1?'shift matches':'shifts match'} your current eligibility`:'No eligible open shifts right now'} icon={<CalendarBlankIcon/>}/><Entry href="/app/schedule" title="Swap or cover a shift" detail="Start with a shift on your schedule" icon={<ArrowsLeftRightIcon/>}/></>:null}
       {snapshot.modules.timeOff?<Entry href="/app/requests?tab=new" title="Request time off" detail="Ask for a day or part of a day away" icon={<CalendarMinusIcon/>}/>:null}

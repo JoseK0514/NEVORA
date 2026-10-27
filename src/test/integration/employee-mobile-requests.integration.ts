@@ -103,6 +103,7 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
     const button=page.getByRole('button',{name:'Pick up shift',exact:true});
     const measurement=await button.evaluate(measureRenderedContrast);contrast.push({engine,theme,width,ratio:measurement.ratio});expect(measurement.ratio).toBeGreaterThanOrEqual(4.5);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+    expect(await page.locator('.page-frame').evaluate((el:HTMLElement)=>getComputedStyle(el).backgroundColor===getComputedStyle(el.querySelector('.em-requests')!).backgroundColor)).toBe(true);
     const small=await page.locator('.em-requests:visible a,.em-requests:visible button,.em-requests:visible summary').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.getClientRects().length&&(el.getBoundingClientRect().height<43.5)).map(el=>el.textContent));
     expect(small).toEqual([]);
     await button.focus();await shot('open-'+theme+'-'+width);
