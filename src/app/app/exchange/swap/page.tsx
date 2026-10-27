@@ -1,3 +1,5 @@
+import {ResponsiveEmployeeCreation} from '@/components/employee-mobile/creation';
+import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
 import {randomUUID} from 'node:crypto';
 import { moduleGate } from "@/lib/workspace-presentation/current.server";
 import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
@@ -59,5 +61,5 @@ export default async function SwapPage({
   // With no shift to swap into, the fallback is the real coverage offer, checked the same way as on Shift requests.
   // Candidates that changed mid-read withhold every form; candidates the rules refuse still allow the coverage check.
   const coverage=reviewedTargets.length||changedMidRead?null:await readShiftChangeAvailability(proof,{kind:'OFFER_COVERAGE',operationId:randomUUID(),...sourceFields}).catch(()=>({allowed:false,notice:'Current policy is unavailable.'}));
-  return <SwapPageContent source={reviewedSource} sourceFields={sourceFields} targets={reviewedTargets} coverage={coverage} mode={cover ? 'cover' : 'swap'} />;
+  return <ResponsiveEmployeeCreation authority={employeeViewAuthority(proof,'creation')} mode={cover?'cover':'swap'} sourceId={source.id}><SwapPageContent source={reviewedSource} sourceFields={sourceFields} targets={reviewedTargets} coverage={coverage} mode={cover ? 'cover' : 'swap'} /></ResponsiveEmployeeCreation>;
 }

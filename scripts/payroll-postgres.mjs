@@ -77,7 +77,7 @@ try {
   );
   const config =
     process.argv[2] ?? "vitest.configurable-payroll-integration.config.mts";
-  const prefix = ["vitest.passkeys-network.config.mts", "vitest.all-ui-browser.config.mts", "vitest.owner-advisor-browser.config.mts", "vitest.employee-mobile-phase1.config.mts", "vitest.employee-mobile-requests.config.mts", "vitest.employee-mobile-responses.config.mts"].includes(config)
+  const prefix = ["vitest.passkeys-network.config.mts", "vitest.all-ui-browser.config.mts", "vitest.owner-advisor-browser.config.mts", "vitest.employee-mobile-phase1.config.mts", "vitest.employee-mobile-requests.config.mts", "vitest.employee-mobile-responses.config.mts", "vitest.employee-mobile-creation.config.mts"].includes(config)
     ? "nevora_exchange_test_" : "nevora_foundation_test_";
   const env = {
     ...process.env,

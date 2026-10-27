@@ -206,8 +206,8 @@ function mapExchange(row: unknown): ExchangeRecord {
   return record;
 }
 
-export async function getPublishedShift(shiftId: string): Promise<ExchangeShift | null> {
-  const sql = getDb();
+export async function getPublishedShift(shiftId: string, executor?: SqlExecutor): Promise<ExchangeShift | null> {
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
   const rows = queryRows(
     await sql.query(
     `SELECT
@@ -299,8 +299,9 @@ export async function listEmployeePublishedShifts(
 export async function listSwapTargets(
   sourceShift: ExchangeShift,
   requesterEmployeeId: string,
+  executor?: SqlExecutor,
 ): Promise<ExchangeShift[]> {
-  const sql = getDb();
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
   const rows = queryRows(
     await sql.query(
     `SELECT

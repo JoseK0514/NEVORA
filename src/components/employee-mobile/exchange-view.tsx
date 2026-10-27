@@ -17,7 +17,7 @@ export const requestStatus=(row:RequestSummary)=>row.status==='RECORDED'?'Record
 const day=(date:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'short',month:'short',day:'numeric'}).format(new Date(date+'T12:00:00Z'));
 const stamp=(at:string,timeZone:string)=>new Intl.DateTimeFormat('en-US',{timeZone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(at));
 const actionLabels:Record<EmployeeResponseKind,string>={ACCEPT:'Accept swap',DECLINE:'Decline swap',CANCEL:'Cancel request',WITHDRAW:'Withdraw response',CANCEL_CALLOUT:'Cancel report'};
-function Slot({slot,title}:{slot:RequestSlot|null;title:string}){
+export function RequestShiftSlot({slot,title}:{slot:RequestSlot|null;title:string}){
  return <section className="em-response-slot"><h2>{title}</h2>{slot?<><p className="em-response-date">{day(slot.date)}</p><p className="em-response-time">{formatTime(slot.startTime)} – {formatTime(slot.endTime)}</p><p>{slot.location}{slot.position?` · ${slot.position}`:''}</p>{slot.lead?<p>Designated shift lead</p>:null}{slot.endTime<=slot.startTime?<p>Ends {day(addDays(slot.date,1))} at {formatTime(slot.endTime)}.</p>:null}</>:<p>Recorded shift details are unavailable.</p>}</section>;
 }
 function HistoryTime({slot,title}:{slot:HistorySlot|null;title:string}){
@@ -47,7 +47,7 @@ function Detail({detail,timeZone,operation,onRespond,onRetry,onRefresh}:{detail:
   <section className="em-response-status" aria-label="Current request status"><strong>{requestStatus(row)}</strong>{row.counterparty?<span>{row.viewer==='requester'?'With':'From'} {row.counterparty}</span>:null}<small>Submitted {stamp(row.createdAt,timeZone)}</small></section>
   {detail.notice?<p className="em-request-notice" role="status">{detail.notice}</p>:null}
   <div className="em-response-comparison">
-   {incoming?<><Slot title="Your current shift" slot={detail.requested}/><Slot title="You would work" slot={detail.offered}/></>:<><Slot title={row.kind==='swap'?'Offered shift':row.kind==='callout'?'Reported shift':'Offered coverage'} slot={detail.offered}/>{row.kind==='swap'?<Slot title="Requested shift" slot={detail.requested}/>:null}</>}
+   {incoming?<><RequestShiftSlot title="Your current shift" slot={detail.requested}/><RequestShiftSlot title="You would work" slot={detail.offered}/></>:<><RequestShiftSlot title={row.kind==='swap'?'Offered shift':row.kind==='callout'?'Reported shift':'Offered coverage'} slot={detail.offered}/>{row.kind==='swap'?<RequestShiftSlot title="Requested shift" slot={detail.requested}/>:null}</>}
   </div>
   {detail.reason?<section><h2>Your reported reason</h2><p className="em-request-notice">{detail.reason}</p></section>:null}
   <ResponseControls detail={detail} operation={operation} onRespond={onRespond} onRetry={onRetry} onRefresh={onRefresh}/>

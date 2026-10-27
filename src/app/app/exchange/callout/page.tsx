@@ -1,3 +1,5 @@
+import {ResponsiveEmployeeCreation} from '@/components/employee-mobile/creation';
+import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
 import { getWorkspace } from "@/lib/data/workspaces";
 import { moduleGate } from "@/lib/workspace-presentation/current.server";
 import { shiftBoundaryInstants } from "@/lib/business-time";
@@ -42,5 +44,5 @@ export default async function CalloutPage({
   if(ended)redirect("/app/exchange?tab=my&error=INVALID_SHIFT");
 
   const fields=reviewed&&matchesDisplayedShift(shift,reviewed.source)?{kind:"SUBMIT_CALLOUT",sourceShiftId:shift.id,sourceEpisodeId:reviewed.source.assignmentEpisodeId,sourceTermsFingerprint:reviewed.sourceTermsFingerprint}:null;
-  return <CalloutView shift={shift} fields={fields} error={params.error} />;
+  return <ResponsiveEmployeeCreation authority={employeeViewAuthority(proof,'creation')} mode="callout" sourceId={shift.id}><CalloutView shift={shift} fields={fields} error={params.error} /></ResponsiveEmployeeCreation>;
 }
