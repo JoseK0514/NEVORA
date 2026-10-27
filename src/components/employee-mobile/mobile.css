@@ -41,8 +41,9 @@
     border:0; box-shadow:none; backdrop-filter:none;
   }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) .mobile-header .brand.compact {
-    display:inline-flex; grid-column:1; grid-row:1; width:88px; min-height:20px; height:auto; padding:0; color:var(--em-ink);
+    display:inline-flex; grid-column:1; grid-row:1; width:88px; min-height:44px; height:auto; padding:0; color:var(--em-ink);
   }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) .mobile-header .login-brand-lockup { width:88px; color:var(--em-ink); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) .mobile-header .brand-wordmark { width:88px; height:auto; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) .mobile-header .login-brand-module { display:none; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) .mobile-header .portal-workspace-name {
@@ -91,7 +92,7 @@
   }
   html[data-theme="dark"] body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-next-action { color:var(--em-canvas); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) .em-next-action svg { flex:none; }
-  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) .q-home__clock { margin-top:var(--em-gap); padding:0; background:transparent; border:0; }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) .q-home__clock { margin:var(--em-gap) 0 0; padding:0; background:transparent; border:0; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) .em-section-title { margin:0 0 12px; color:var(--em-ink); font-size:1.1875rem; line-height:1.3; font-weight:680; letter-spacing:-.02em; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) .q-home__clock .employee-clock-compact { padding:16px; background:var(--em-wash); color:var(--em-ink); border:1px solid var(--em-line); border-radius:var(--em-card); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) .q-home__clock :is(h2,p,strong,a,button) { font-family:inherit; letter-spacing:normal; }
@@ -144,6 +145,11 @@
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] #employee-calendar-title { hyphens:manual; overflow-wrap:normal; }
   html:is([data-text-step="150"],[data-text-step="200"]) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .mobile-nav { grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-flow:row; }
   html[data-text-step="125"] body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .mobile-nav { grid-template-columns:repeat(3,minmax(0,1fr)); grid-auto-flow:row; }
-  @media (max-width:359px) { html body #employee-mobile.app-shell[data-employee-mobile="true"] { --em-inset:20px; } }
+  html body #employee-mobile.app-shell[data-employee-mobile="true"] .q-glance :is(small,b) { font-size:.875rem; line-height:1.3; }
+  @media (max-width:359px) {
+    html body #employee-mobile.app-shell[data-employee-mobile="true"] { --em-inset:20px; }
+    html body #employee-mobile.app-shell[data-employee-mobile="true"] :is(.q-wk,.q-glance) { margin-inline:6px; padding-inline:0; column-gap:0; }
+    html body #employee-mobile.app-shell[data-employee-mobile="true"] :is(.q-wk,.q-glance) a { min-width:44px; }
+  }
   @media (prefers-reduced-motion:reduce) { html body #employee-mobile.app-shell[data-employee-mobile="true"] :is(a,button) { transition:none; } }
 }

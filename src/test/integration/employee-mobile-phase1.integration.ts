@@ -2,8 +2,9 @@ import {it,expect} from 'vitest';
 import {createRequire} from 'node:module';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
+import {randomUUID} from 'node:crypto';
 import {createOwnedNextApp} from './owned-next-app';
-import {seedOwnedApp,seedOwnedScenario,TEST_PASSWORD} from './owned-app-fixture';
+import {seedOwnedApp,seedOwnedScenario,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from './owned-app-fixture';
 import {publishScheduleWithRevision} from './management-api';
 import {businessDate} from '../../lib/business-time';
 import {weekStartFor,addDays} from '../../lib/date-utils';
@@ -34,19 +35,19 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
    const page=await context.newPage();failureScreenshot=async()=>{await page.screenshot({path:evidence+'/failure.png',fullPage:true});await writeFile(evidence+'/failure-layout.json',JSON.stringify(await page.evaluate(()=>({path:location.pathname,roots:[...document.querySelectorAll('[data-employee-mobile]')].map(el=>({id:el.id,active:el.getAttribute('data-employee-mobile-active'),page:el.getAttribute('data-employee-mobile-page')})),elements:[...document.querySelectorAll('.mobile-header,.mobile-header .brand,.q-home,.q-sched-e,.mobile-nav')].map(el=>{const style=getComputedStyle(el),rect=el.getBoundingClientRect();return{class:el.className,display:style.display,visibility:style.visibility,x:rect.x,y:rect.y,width:rect.width,height:rect.height};})})),null,2));};page.setDefaultTimeout(15000);page.on('pageerror',(e:Error)=>errors.push(engine+': '+e.message));
    let authority='';page.on('request',(r:{url():string;headers():Record<string,string>})=>{if(new URL(r.url()).pathname==='/api/employee/home')authority=r.headers()['x-nevora-home']??authority;});
    const record=(name:string)=>{checks.push({engine,name});console.log(engine+': '+name);};
-   const load=async(path:string)=>{await page.goto(app.url+path);await page.locator('main h1:visible').waitFor();if((page.viewportSize()?.width??0)<=767)await page.locator('[data-employee-mobile-active="true"]').waitFor();await page.waitForFunction(()=>[...document.querySelectorAll('.q-home,.q-sched-e')].filter(el=>el.getClientRects().length&&getComputedStyle(el).visibility!=='hidden').length===1);};
-   const ready=async()=>{await page.locator('[data-home-state="ready"],[data-home-state="partial"]').waitFor();};
+   const load=async(path:string)=>{await page.goto(app.url+path);await page.locator('main h1:visible').waitFor();if(new URL(page.url()).pathname==='/login')return;if((page.viewportSize()?.width??0)<=767)await page.locator('[data-employee-mobile-active="true"]').waitFor();await page.waitForFunction(()=>[...document.querySelectorAll('.q-home,.q-sched-e')].filter(el=>el.getClientRects().length&&getComputedStyle(el).visibility!=='hidden').length===1);};
+   const ready=async()=>{await page.locator('[data-home-state="ready"]:visible,[data-home-state="partial"]:visible').waitFor();};
    const shot=async(name:string)=>{const file=`${evidence}/${engine}-${name}.png`;await page.screenshot({path:file,fullPage:true});captures.push(file);};
    await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await ready();
    await page.getByRole('heading',{name:'Today',exact:true}).waitFor();expect(await page.locator('[data-employee-mobile="true"]').count()).toBe(1);
    expect(await page.locator('.mobile-nav a').allTextContents()).toEqual(['Home','Schedule','Requests','Hours','More']);
    expect(await page.getByRole('link',{name:'Add shift',exact:true}).count()).toBe(0);record('Real password/session Home uses Employee-only five-destination navigation');
    await page.locator('.q-home__clock .employee-time-badge[data-state="OFF_CLOCK"]').waitFor();record('Recorded time is read independently; planned active shift does not fabricate clock-in');await shot('home-390-light');
-   await page.locator('.q-next').click();await page.getByRole('dialog').waitFor();expect(page.url()).toContain('shift=em-own-today');expect(await page.getByRole('dialog').innerText()).toContain('Main Office');await page.getByRole('dialog').getByRole('button',{name:'Done',exact:true}).click();await page.getByRole('dialog').waitFor({state:'hidden'});record('Home opens the exact currently authorized own shift and its details');
-   await load('/app/schedule?week='+f.week);await page.getByRole('heading',{name:'Schedule',exact:true}).waitFor();await q('DELETE FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,f.week]);await page.reload();await page.locator('.em-week-picker summary').waitFor();expect(await page.locator('.q-sched-e').innerText()).not.toContain('Blair');
+   await page.locator('.q-next:visible').click();await page.getByRole('dialog').waitFor();expect(page.url()).toContain('shift=em-own-today');expect(await page.getByRole('dialog').innerText()).toContain('Main Office');await page.getByRole('dialog').getByRole('button',{name:'Done',exact:true}).click();await page.getByRole('dialog').waitFor({state:'hidden'});record('Home opens the exact currently authorized own shift and its details');
+   await load('/app/schedule?week='+f.week);await page.getByRole('heading',{name:'Schedule',exact:true}).waitFor();await q('DELETE FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,f.week]);await page.reload();await page.locator('.em-week-picker:visible summary').waitFor();expect(await page.locator('.q-sched-e:visible').innerText()).not.toContain('Blair');
    await page.getByRole('link',{name:'Next week',exact:true}).click();await page.waitForURL((url:URL)=>url.searchParams.get('week')===addDays(f.week,7));expect(page.url()).toContain(addDays(f.week,7));await page.getByRole('link',{name:'Previous week',exact:true}).click();await page.waitForURL((url:URL)=>url.searchParams.get('week')===f.week);expect(page.url()).toContain(f.week);record('Own published weeks and navigation retain exact server-source context');
-   await page.locator('.em-week-picker summary').click();expect(await page.getByRole('link',{name:'Calendar sync',exact:true}).getAttribute('href')).toBe('/app/profile#employee-calendar-title');await page.getByLabel('Choose any day in the week').fill(f.sourceDate);await page.getByRole('button',{name:'View week',exact:true}).click();await page.waitForURL((url:URL)=>url.searchParams.get('day')===f.sourceDate);expect(page.url()).toContain('week='+f.week);record('Native date selection resolves its actual Monday week without manager filters');
-   await page.locator('.q-wk').getByRole('link',{name:new RegExp('selected day')}).waitFor();expect(await page.locator('#my-day').count()).toBe(1);
+   await page.locator('.em-week-picker:visible summary').click();expect(await page.getByRole('link',{name:'Calendar sync',exact:true}).getAttribute('href')).toBe('/app/profile#employee-calendar-title');await page.getByLabel('Choose any day in the week').fill(f.sourceDate);await page.getByRole('button',{name:'View week',exact:true}).click();await page.waitForURL((url:URL)=>url.searchParams.get('day')===f.sourceDate);expect(page.url()).toContain('week='+f.week);record('Native date selection resolves its actual Monday week without manager filters');
+   await page.locator('.q-wk:visible').getByRole('link',{name:new RegExp('selected day')}).waitFor();expect(await page.locator('#my-day').count()).toBe(1);
    await shot('schedule-390-light');
    const confirm=page.getByRole('button',{name:'Confirm schedule',exact:true});
    const beforeConfirm=await q('SELECT employee_id FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,f.week]);
@@ -59,18 +60,88 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
     await page.evaluate((choice:string)=>{localStorage.setItem('nv-theme',choice);(window as Window&{__nvApplyTheme?:()=>void}).__nvApplyTheme?.();},theme);expect(await page.locator('html').getAttribute('data-theme')).toBe(theme);await page.setViewportSize({width,height:844});
     for(const path of ['/app','/app/schedule?week='+f.week]){
      await load(path);if(path==='/app')await ready();expect(await page.locator('.mobile-header .brand').isVisible()).toBe(true);expect(await page.locator('.mobile-header .e5-new').isVisible()).toBe(false);expect(await page.locator('[data-employee-mobile]').evaluate((el:HTMLElement)=>getComputedStyle(el).getPropertyValue('--em-canvas').trim())).toBe(theme==='dark'?'#0c1817':'#f4f7f6');expect(await page.locator('.q-home:visible,.q-sched-e:visible').evaluate((el:HTMLElement)=>getComputedStyle(el).backgroundColor)).toBe(theme==='dark'?'rgb(12, 24, 23)':'rgb(244, 247, 246)');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
-     const bad=await page.locator('.mobile-nav a,.em-week-picker summary,.q-weeknav > a').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.getClientRects().length&&(el.getBoundingClientRect().width<43.5||el.getBoundingClientRect().height<43.5)).map(el=>el.textContent));expect(bad).toEqual([]);
+     const bad=await page.locator('.mobile-nav a,.em-week-picker summary,.q-weeknav > a,.q-wk a,.q-glance a').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.getClientRects().length&&(el.getBoundingClientRect().width<43.5||el.getBoundingClientRect().height<43.5)).map(el=>el.textContent));expect(bad).toEqual([]);
     }
    }
    record('Light/Dark320/390/430 layouts retain accessible navigation and week-control targets');await shot('schedule-430-dark');
    await page.setViewportSize({width:320,height:844});await page.evaluate(()=>{document.documentElement.style.fontSize='200%';window.dispatchEvent(new Event('resize'));});
    await page.waitForFunction(()=>document.documentElement.getAttribute('data-text-step')==='200');await page.waitForFunction(()=>{const links=[...document.querySelectorAll('.mobile-nav a')];return links[2].getBoundingClientRect().top>links[0].getBoundingClientRect().top;});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);await shot('schedule-320-dark-text200');
-   const overlaps=await page.locator('.mobile-nav a span').evaluateAll((els:HTMLElement[])=>els.flatMap((el,index)=>{const a=el.getBoundingClientRect();return els.slice(index+1).filter(other=>{const b=other.getBoundingClientRect();return a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;}).map(other=>el.textContent+' / '+other.textContent);}));expect(overlaps).toEqual([]);await page.locator('.em-week-picker summary').focus();await page.keyboard.press('Enter');await page.getByLabel('Choose any day in the week').focus();await page.keyboard.press('Escape');expect(await page.locator('.em-week-picker summary').evaluate((e:HTMLElement)=>e===document.activeElement)).toBe(true);record('Enlarged text and native week-picker keyboard Escape preserve focus');
+   const overlaps=await page.locator('.mobile-nav a span').evaluateAll((els:HTMLElement[])=>els.flatMap((el,index)=>{const a=el.getBoundingClientRect();return els.slice(index+1).filter(other=>{const b=other.getBoundingClientRect();return a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;}).map(other=>el.textContent+' / '+other.textContent);}));expect(overlaps).toEqual([]);await page.locator('.em-week-picker:visible summary').focus();await page.keyboard.press('Enter');await page.getByLabel('Choose any day in the week').focus();await page.keyboard.press('Escape');expect(await page.locator('.em-week-picker:visible summary').evaluate((e:HTMLElement)=>e===document.activeElement)).toBe(true);record('Enlarged text and native week-picker keyboard Escape preserve focus');
    await page.evaluate(()=>document.documentElement.style.fontSize='100%');await page.setViewportSize({width:1440,height:1000});await load('/app');await ready();expect(await page.getByRole('heading',{name:/Good (morning|afternoon|evening), Alex/}).count()).toBe(1);expect(await page.locator('.mobile-nav').isVisible()).toBe(false);expect(await page.locator('.em-next-action').isVisible()).toBe(false);await shot('home-desktop-unchanged');record('Desktop keeps original Home greeting, presentation and hidden mobile additions');
-   await page.setViewportSize({width:390,height:844});await load('/app');await ready();expect(await page.locator('.q-next').innerText()).toContain('Main Office');await page.locator('.employee-time-badge[data-state="OFF_CLOCK"]').waitFor();await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await page.locator('[data-home-state="paused"]').waitFor();expect(await page.locator('.q-home').innerText()).not.toContain('Main Office');expect(await page.locator('.employee-time-badge[data-state="OFF_CLOCK"]').count()).toBe(0);record('Background/offline release clears private Home facts');
-   await page.evaluate(()=>window.dispatchEvent(new Event('online')));await ready();expect(await page.locator('.q-next').innerText()).toContain('Main Office');await page.locator('.employee-time-badge[data-state="OFF_CLOCK"]').waitFor();
+   await page.setViewportSize({width:390,height:844});await load('/app');await ready();expect(await page.locator('.q-next:visible').innerText()).toContain('Main Office');await page.locator('.employee-time-badge[data-state="OFF_CLOCK"]').waitFor();await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await page.locator('[data-home-state="paused"]').waitFor();expect(await page.locator('.q-home').innerText()).not.toContain('Main Office');expect(await page.locator('.employee-time-badge[data-state="OFF_CLOCK"]').count()).toBe(0);record('Background/offline release clears private Home facts');
+   await page.evaluate(()=>window.dispatchEvent(new Event('online')));await ready();expect(await page.locator('.q-next:visible').innerText()).toContain('Main Office');await page.locator('.employee-time-badge[data-state="OFF_CLOCK"]').waitFor();
+
+   if(engine==='chromium'){
+    // Transport interruptions exercise the actual controller; no source rows are fabricated.
+    let releaseHome!:()=>void;
+    const homeGate=new Promise<void>(resolve=>{releaseHome=resolve;});
+    await context.route('**/api/employee/home',async(route:{continue():Promise<void>})=>{await homeGate;await route.continue();});
+    await page.reload();await page.locator('[data-home-state="loading"]:visible').waitFor();
+    expect(await page.locator('.q-home:visible').innerText()).not.toContain('Main Office');await shot('home-loading');
+    releaseHome();await ready();await context.unroute('**/api/employee/home');record('Loading withholds own shift facts until actual Home read completes');
+    await context.route('**/api/employee/home',async(route:{abort(reason?:string):Promise<void>})=>route.abort('failed'));
+    await page.reload();await page.locator('[data-home-state="unavailable"]:visible').waitFor();
+    expect(await page.locator('.q-home:visible').innerText()).not.toContain('Main Office');await shot('home-network-error');
+    await context.unroute('**/api/employee/home');await page.getByRole('button',{name:'Try again to load Home',exact:true}).click();await ready();
+    expect(await page.locator('.q-next:visible').innerText()).toContain('Main Office');record('Failed Home transport shows honest unavailable state and explicit retry recovers actual data');
+    await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status) SELECT 'em-mobile-cap-'||n,$1,'2030-12-01','2030-12-01','PENDING' FROM generate_series(1,101)n",[actor]);
+    await page.reload();await page.locator('[data-home-state="partial"]:visible').waitFor();
+    expect(await page.locator('.q-home:visible').innerText()).toContain('Partially shown');expect(await page.locator('.q-next:visible').innerText()).toContain('Main Office');await shot('home-partial-source-cap');
+    await q("DELETE FROM time_off_requests WHERE id LIKE 'em-mobile-cap-%'");record('Real source-cap partial state discloses limits while retaining independently authorized shift');
+
+    await q("SELECT nevora_set_workspace_presentation($1,'workspace-fuel','QAOWNER',0,$2,repeat('a',64))",[randomUUID(),JSON.stringify({version:1,brand:{},modules:{disabled:['marketplace','timeOff','updates']}})]);
+    await load('/app/schedule?week='+f.week);expect(await page.getByRole('link',{name:/Open shifts/}).count()).toBe(0);
+    await page.goto(app.url+'/app/exchange?tab=available');await page.locator('[data-module-off="marketplace"]').waitFor();expect(await page.getByRole('link',{name:'Turn it on in Settings',exact:true}).count()).toBe(0);
+    await shot('module-off');await q("SELECT nevora_set_workspace_presentation($1,'workspace-fuel','QAOWNER',1,$2,repeat('b',64))",[randomUUID(),JSON.stringify({version:1,brand:{},modules:{disabled:[]}})]);
+    record('Owner-saved module-off policy hides employee options and refuses a direct module route without management controls');
+
+    await q('DELETE FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,f.week]);await load('/app/schedule?week='+f.week);
+    const operation=await page.locator('.q-weekconf input[name="operationId"]').inputValue();let lostResponse=false;
+    await context.route('**/app/schedule?**',async(route:{request():{method():string};fetch():Promise<{status():number}>;abort(reason?:string):Promise<void>;continue():Promise<void>})=>{
+     if(!lostResponse&&route.request().method()==='POST'){lostResponse=true;const response=await route.fetch();expect(response.status()).toBe(200);await route.abort('failed');}else await route.continue();
+    });
+    await page.getByRole('button',{name:'Confirm schedule',exact:true}).click();await page.getByText('Confirmation outcome unknown. Retry to check the original confirmation.',{exact:true}).waitFor();
+    expect((await q('SELECT employee_id FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,f.week])).length).toBe(1);
+    expect(await page.locator('.q-weekconf input[name="operationId"]').inputValue()).toBe(operation);await shot('schedule-unknown-confirmation');
+    await context.unroute('**/app/schedule?**');await page.getByRole('button',{name:'Retry confirmation',exact:true}).click();await page.getByText('You’re up to date',{exact:true}).waitFor();
+    expect((await q('SELECT employee_id FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,f.week])).length).toBe(1);record('Lost committed response preserves original operation and retry recovers one canonical receipt');
+
+    await q("UPDATE shifts SET end_time='21:00' WHERE id='em-own-split'");await publishScheduleWithRevision({locationId:'loc-1',weekStart:f.week,managerId:'QAOWNER'},app.database.executor);
+    await load('/app/schedule?week='+f.week+'&day='+f.sourceDate);await page.getByRole('button',{name:'Confirm schedule',exact:true}).waitFor();
+    expect(await page.locator('.q-sched-e:visible').innerText()).not.toContain('You’re up to date');await shot('schedule-republished');
+    await q('DELETE FROM shifts WHERE id=$1 OR id=$2',[f.sourceId,'em-own-split']);await publishScheduleWithRevision({locationId:'loc-1',weekStart:f.week,managerId:'QAOWNER'},app.database.executor);
+    await load('/app/schedule?week='+f.week);await page.getByRole('button',{name:'Confirm schedule',exact:true}).waitFor();
+    expect(await page.locator('.q-sched-e:visible').innerText()).toContain('No assignments remain this week');await shot('schedule-empty-removal');
+    await page.getByRole('button',{name:'Confirm schedule',exact:true}).click();await page.getByText('You’re up to date',{exact:true}).waitFor();record('Republished changed and removed own assignments invalidate the old confirmation and preserve exact empty-week review');
+    await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id,is_designated_lead) VALUES($1,'qa-EMP1-schedule-0',$2,$3,'08:00','16:00','qa-pos',true),('em-own-split','qa-EMP1-schedule-0',$2,$3,'17:00','20:00','qa-pos',false)",[f.sourceId,actor,f.sourceDate]);await publishScheduleWithRevision({locationId:'loc-1',weekStart:f.week,managerId:'QAOWNER'},app.database.executor);
+
+    await page.setViewportSize({width:320,height:844});await page.goto(app.url+'/app/profile#employee-calendar-title');await page.locator('.profile-calendar-disclosure[open]').waitFor();
+    for(const scale of [125,150,200]){
+     await page.evaluate((n:number)=>{document.documentElement.style.fontSize=n+'%';window.dispatchEvent(new Event('resize'));},scale);
+     await page.waitForFunction((n:number)=>document.documentElement.getAttribute('data-text-step')===String(n),scale);
+     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+     const collisions=await page.locator('.mobile-nav a span').evaluateAll((els:HTMLElement[])=>els.flatMap((el,index)=>{const a=el.getBoundingClientRect();return els.slice(index+1).filter(other=>{const b=other.getBoundingClientRect();return a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;}).map(other=>el.textContent+' / '+other.textContent);}));expect(collisions).toEqual([]);
+    }
+    await shot('calendar-320-text200');await page.evaluate(()=>{document.documentElement.style.fontSize='100%';window.dispatchEvent(new Event('resize'));});record('Calendar direct entry and125/150/200 percent text retain readable disclosure and navigation');
+    await load('/app');await ready();expect(await page.locator('.q-next:visible').innerText()).toContain('Main Office');
+   }
    await q('DELETE FROM employee_sessions WHERE employee_id=$1',[actor]);await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await page.locator('[data-home-state="unauthorized"],[data-home-state="unavailable"]').waitFor();expect(await page.locator('.q-home').innerText()).not.toContain('Main Office');expect(await page.locator('.employee-time-badge[data-state="OFF_CLOCK"]').count()).toBe(0);
    await load('/app/schedule?week='+f.week);expect(new URL(page.url()).pathname).toBe('/login');record('Revoked sessions clear own Home and refuse a direct protected Schedule route');
+
+   if(engine==='chromium'){
+    await q("UPDATE employees SET role='MANAGER' WHERE id=$1",[f.actors[2]]);await assignOwnedManagerCompanyAccess(app.database.executor,f.actors[2]);
+    for(const [id,role]of [[f.actors[1],'LEAD'],['QAOWNER','OWNER'],[f.actors[2],'MANAGER']]){
+     await context.clearCookies();await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
+     if(role==='LEAD'){
+      await ready();await page.locator('[data-employee-mobile-active="true"]').waitFor();expect(await page.locator('.mobile-nav a').allTextContents()).toEqual(['Home','Schedule','Requests','Hours','More']);
+      await load('/app/schedule?week='+f.week+'&day='+f.targetDate);expect(await page.locator('.q-sched-e:visible').innerText()).toContain('West Office');expect(await page.locator('.q-sched-e:visible').innerText()).not.toContain('Main Office');expect(await page.getByRole('link',{name:'Add shift',exact:true}).count()).toBe(0);
+     }else{
+      await page.locator('[data-nv-clean]').waitFor();expect(await page.locator('[data-employee-mobile]').count()).toBe(0);expect(await page.locator('.app-shell').evaluate((el:HTMLElement)=>getComputedStyle(el).getPropertyValue('--em-canvas').trim())).toBe('');
+      expect(await page.locator('.mobile-nav a').allTextContents()).toContain('Inbox');
+     }
+     await shot(role.toLowerCase()+'-scope');record(role+' real session retains role-owned navigation and presentation');
+    }
+   }
    await context.close();await activeBrowser.close();browser=undefined;
   }
   expect(errors).toEqual([]);
