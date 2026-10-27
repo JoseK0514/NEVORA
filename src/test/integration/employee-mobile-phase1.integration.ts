@@ -48,8 +48,10 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
    await page.locator('.em-week-picker summary').click();await page.getByLabel('Choose any day in the week').fill(f.sourceDate);await page.getByRole('button',{name:'View week',exact:true}).click();await page.waitForURL((url:URL)=>url.searchParams.get('day')===f.sourceDate);expect(page.url()).toContain('week='+f.week);record('Native date selection resolves its actual Monday week without manager filters');
    await page.locator('.q-wk').getByRole('link',{name:new RegExp('selected day')}).waitFor();expect(await page.locator('#my-day').count()).toBe(1);
    await shot('schedule-390-light');
-   const confirm=page.getByRole('button',{name:'Confirm',exact:true});
-   if(await confirm.count()){await confirm.click();await page.getByText('You’re up to date',{exact:true}).waitFor();}
+   const confirm=page.getByRole('button',{name:'Confirm schedule',exact:true});
+   const beforeConfirm=await q('SELECT employee_id FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,f.week]);
+   if(!beforeConfirm.length){await confirm.waitFor();await confirm.click();}
+   await page.getByText('You’re up to date',{exact:true}).waitFor();
    const persisted=await q('SELECT employee_id,week_start::text FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,f.week]);expect(persisted.length).toBe(1);record('Schedule confirmation persists canonically for the exact own week; refresh renders its receipt');
    await load('/app');await ready();const response=await page.request.get(app.url+'/api/employee/home?employeeId='+f.actors[1],{headers:{'X-Nevora-Home':authority}});expect(response.status()).toBe(200);const home=await response.json();expect(home.snapshot.currentShift.shiftId).toBe('em-own-today');expect(JSON.stringify(home)).not.toContain(f.actors[1]);
    const denied=await page.request.get(app.url+'/api/employee/home',{headers:{'X-Nevora-Home':'invalid'}});expect([401,403]).toContain(denied.status());record('Server reads stay bound to current actor; foreign query and invalid proof cannot select another employee');
