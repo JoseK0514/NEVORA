@@ -6,7 +6,7 @@ import ts from 'typescript';
 import { requireMigrationCoverage } from './guards.mts';
 
 const heldContract = ['0026_tenant_ownership_expand.sql', '0027_tenant_ownership_validate.sql'];
-const finalContract = ['0031_native_payroll.sql', '0032_company_access_invitations.sql'];
+const finalContract = ['0031_native_payroll.sql', '0032_company_access_invitations.sql', '0042_company_invitation_lifetime.sql'];
 const installerPath = 'scripts/company-setup.ts';
 const adapterPath = 'src/test/integration/local-postgres.ts';
 const manifestPath = 'db/migrations/order.ts';

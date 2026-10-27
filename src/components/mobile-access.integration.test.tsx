@@ -71,7 +71,7 @@ it('offers receipt review as an in-place action instead of navigating to the sam
 });
 
 it('does not allow a private Owner inquiry to submit natively before hydration',()=>{
- const html=renderToStaticMarkup(<AccessHelpView topic="owner-contact" lang="en" from="login" supportEmail="support@example.invalid"/>);
+ const html=renderToStaticMarkup(<AccessHelpView topic="owner-contact" lang="en" from="login" supportEmail="support@example.invalid" ownerEmail="support@example.invalid"/>);
  expect(html).toMatch(/<fieldset[^>]*disabled=""/);
  expect(html).toMatch(/<button[^>]*type="submit"[^>]*disabled=""/);
 });

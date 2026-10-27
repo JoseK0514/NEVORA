@@ -8,13 +8,23 @@ const page=(topic:string[]=[],from?:string)=>AccessHelpPage({params:Promise.reso
 it('does not expose new public help routes before mobile rollout',async()=>{
  vi.stubEnv('NEVORA_MOBILE_ACCESS_ENABLED','false');await expect(page()).rejects.toThrow('NOT_FOUND');
 });
-it.each(['support','owner-contact'])('holds %s behind the separate support-readiness gate',async topic=>{
+it('holds general Support behind the separate support-readiness gate',async()=>{
  vi.stubEnv('NEVORA_MOBILE_ACCESS_ENABLED','true');vi.stubEnv('NEVORA_MOBILE_ACCESS_SUPPORT_ENABLED','false');
- await expect(page([topic])).rejects.toThrow('NOT_FOUND');
+ await expect(page(['support'])).rejects.toThrow('NOT_FOUND');
 });
-it('keeps assistance available without publishing an unapproved contact route',async()=>{
+it('always offers a sole Owner a path to NEVORA support (approved October 27)',async()=>{
  vi.stubEnv('NEVORA_MOBILE_ACCESS_ENABLED','true');vi.stubEnv('NEVORA_MOBILE_ACCESS_SUPPORT_ENABLED','false');
- const html=renderToStaticMarkup(await page());expect(html.match(/class="ma-choice"/g)).toHaveLength(4);expect(html).toContain('href="/forgot-access"');
+ const owner=renderToStaticMarkup(await page(['owner']));expect(owner.match(/class="ma-choice"/g)).toHaveLength(3);expect(owner).toContain('/access-help/owner-contact?from=login');
+ expect(renderToStaticMarkup(await page(['owner-contact']))).toContain('href="/privacy"');
+});
+it('keeps assistance available without publishing the general Support route',async()=>{
+ vi.stubEnv('NEVORA_MOBILE_ACCESS_ENABLED','true');vi.stubEnv('NEVORA_MOBILE_ACCESS_SUPPORT_ENABLED','false');
+ const html=renderToStaticMarkup(await page());expect(html.match(/class="ma-choice"/g)).toHaveLength(5);expect(html).toContain('href="/forgot-access"');
+ expect(html).toContain('/access-help/left?from=login');expect(html).not.toContain('/access-help/support');
+});
+it('explains what happens to an account after leaving a job',async()=>{
+ vi.stubEnv('NEVORA_MOBILE_ACCESS_ENABLED','true');vi.stubEnv('NEVORA_MOBILE_ACCESS_SUPPORT_ENABLED','false');
+ const html=renderToStaticMarkup(await page(['left']));expect(html).toContain('No longer work here?');expect(html).toContain('href="/account-deletion"');
 });
 it('constrains the Help return destination to a known public route',async()=>{
  vi.stubEnv('NEVORA_MOBILE_ACCESS_ENABLED','true');vi.stubEnv('NEVORA_MOBILE_ACCESS_SUPPORT_ENABLED','false');

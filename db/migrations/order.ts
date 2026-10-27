@@ -54,6 +54,7 @@ export const BASE_MIGRATIONS = [
 export const FINAL_MIGRATIONS = [
   '0031_native_payroll.sql',
   '0032_company_access_invitations.sql',
+  '0042_company_invitation_lifetime.sql',
 ] as const;
 
 /** Held Phase F tenant preparation. Never applied to any deployed chain;

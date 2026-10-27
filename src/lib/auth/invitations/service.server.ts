@@ -182,7 +182,7 @@ export async function issueOrRevokeInvitation(proof: SessionMutationProof, emplo
     {text:"UPDATE company_invitations SET retired_at=clock_timestamp(),retired_reason='REISSUED' WHERE workspace_id=$1 AND employee_id=$2 AND consumed_at IS NULL AND retired_at IS NULL",values:[workspace.id,employeeId]},
     {text:`WITH now AS MATERIALIZED(SELECT clock_timestamp() AS value)
      INSERT INTO company_invitations(workspace_id,id,employee_id,revision,target_version,email_fingerprint,issuer_employee_id,issuer_generation,proof_digest,issued_at,expires_at)
-     SELECT $1,$2,$3,company_access_next_revision($4),$5,$6,$7,v.generation,$8,now.value,now.value+interval '15 minutes'
+     SELECT $1,$2,$3,company_access_next_revision($4),$5,$6,$7,v.generation,$8,now.value,now.value+interval '168 hours'
       FROM operational_subject_versions v CROSS JOIN now WHERE v.workspace_id=$1 AND v.employee_id=$7`,
      values:[workspace.id,invitationId,employeeId,command.expectedInvitationRevision,command.expectedEmployeeVersion,invitationEmailFingerprint(target.email!),proof.employee.id,invitationProofDigest(bearer!)]},
     {text:"INSERT INTO company_invitation_delivery_events(workspace_id,id,invitation_id,state) VALUES($1,$2,$3,'PREPARED')",values:[workspace.id,randomUUID(),invitationId]},

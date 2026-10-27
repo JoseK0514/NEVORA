@@ -99,3 +99,39 @@
  #mobile-access-page.q-auth .ma-skip:focus{top:8px;transform:none}
  #access-content:focus{outline:none}
 }
+
+/* Access v1 refinements (Jose approved October 27, 2026; mockups in docs/handoffs/2026-10-27-access-refinements.md). */
+#mobile-access-page.q-auth .q-btn.q-btn--sec:hover{background:var(--ma-wash,#eaf4f1)!important;border-color:var(--ma-teal,#0b6e69)!important}
+#mobile-access-page.q-auth .ma-text + .ma-text{margin-left:24px}
+#mobile-access-page.q-auth .q-in[aria-invalid="true"]{border-color:#b53327!important;box-shadow:inset 0 0 0 1px #b53327}
+#mobile-access-page.q-auth .q-auth__alert h2{font-size:15px!important;line-height:20px!important;font-weight:620!important;margin:0 0 4px!important;color:#b53327;letter-spacing:0}
+#mobile-access-page.q-auth .q-auth__alert p{margin:0;color:var(--ma-ink,#172622)}
+#mobile-access-page.q-auth .q-auth__links{gap:4px 16px;margin-top:16px}
+#mobile-access-page.q-auth .q-auth__links a{height:auto!important;text-align:left}
+#mobile-access-page.q-auth .ma-copy{font-size:15px;line-height:1.55}
+#mobile-access-page.q-auth .ma-copy h2{color:var(--ma-ink,#172622)!important;font-size:17px!important;line-height:1.35!important;font-weight:650!important;margin:24px 0 8px!important;letter-spacing:-.01em!important}
+#mobile-access-page.q-auth .q-help{margin:8px 0 0!important}
+#mobile-access-page.q-auth .ma-summary{margin:0 0 24px;padding:16px 20px;border-radius:16px;background:#f4f7f6}
+#mobile-access-page.q-auth :is(.ma-note,.q-help,.ma-copy,.q-auth__links a,.ma-text,.ma-details summary,.q-legal,.ma-footer-help){letter-spacing:0}
+#mobile-access-page.q-auth .q-legal a{color:inherit}
+#mobile-access-page.q-auth .ma-draft textarea{field-sizing:content}
+#mobile-access-page.q-auth .ma-inline-link{display:inline;min-height:0;padding:0}
+
+/* Desktop keeps Quiet; these centre the column and give Help content its spacing and teal links. */
+@media(min-width:768px){
+ :where(#mobile-access-page).q-page.q-auth{max-width:none!important}
+ :where(#mobile-access-page).q-auth .ma-details summary{display:flex;align-items:center;gap:8px;list-style:none;min-height:44px;color:var(--q-teal);font-weight:600;cursor:pointer}
+ :where(#mobile-access-page).q-auth .ma-details summary::-webkit-details-marker{display:none}
+ :where(#mobile-access-page).q-auth :is(.ma-text,.ma-more a){color:var(--q-teal)!important;font-weight:600}
+ :where(#mobile-access-page).q-auth :is(.ma-note,.ma-choices,.ma-more,.ma-summary,.ma-details,.ma-copy){margin-inline:20px}
+ :where(#mobile-access-page).q-auth .ma-welcome-art{margin-inline:20px;width:calc(100% - 40px)}
+ :where(#mobile-access-page).q-auth .ma-more h2{font-size:17px;line-height:22px;margin:0 0 4px}
+ :where(#mobile-access-page).q-auth .ma-more{margin-top:40px}
+ :where(#mobile-access-page).q-auth .ma-welcome-art{margin-block:24px 8px}
+ :where(#mobile-access-page).q-auth .q-hd p{margin-top:8px}
+ :where(#mobile-access-page).q-auth .ma-actions{display:flex;flex-direction:column;gap:12px;margin-top:24px}
+ :where(#mobile-access-page).q-auth .ma-actions>.q-btn{margin:0}
+ :where(#mobile-access-page).q-auth .ma-note{color:var(--q-grey);font-size:15px;line-height:20px;margin-top:16px}
+ :where(#mobile-access-page).q-auth .ma-copy p{color:var(--q-body)}
+ :where(#mobile-access-page).q-auth .ma-footer-help{display:inline-block;margin-bottom:4px;font-size:15px;color:var(--q-grey)}
+}
