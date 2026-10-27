@@ -1,5 +1,6 @@
 'use client';
 
+import ownerStyles from './clocker-owner.module.css';
 import {ClockerOwnerNav} from './clocker-owner-nav';
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react';
 import { ArchiveIcon } from '@phosphor-icons/react/dist/ssr/Archive';
@@ -126,7 +127,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
     : selection?.operation === 'ARCHIVE' ? 'Archive break type' : 'Reactivate break type';
 
   // Quiet (v4, approved Oct 23): Active and Archived, one row per break (name, kind, reference time). A row opens its editor.
-  return <SettingsFrame title="Break types"
+  return <SettingsFrame className={ownerStyles.owner} title="Break types"
     bandAside={<button ref={addButton} type="button" className="q-nav__r q-nav__r--ink" aria-label="Add break type" onClick={event => open({ operation: 'CREATE' }, event)}><PlusIcon className="q-ic" aria-hidden="true" /></button>}>
     <ClockerOwnerNav current="breaks"/>
     {types.length ? <div className="q-seg" role="group" aria-label="Filter break types">

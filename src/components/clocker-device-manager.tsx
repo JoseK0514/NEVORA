@@ -1,5 +1,6 @@
 "use client";
 
+import ownerStyles from './clocker-owner.module.css';
 import {ClockerOwnerNav} from './clocker-owner-nav';
 import Link from 'next/link';
 import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type MouseEvent } from 'react';
@@ -135,7 +136,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
   const submitLabel = selection?.operation === 'REGISTER' ? 'Create setup code' : selection?.operation === 'RENAME' ? 'Save name' : selection?.operation === 'REVOKE' ? 'Revoke access' : 'Create new code';
 
   // Quiet (v4, approved Oct 23): "+" adds a device; Active, Needs setup and Removed; one row per tablet. A row opens its sheet.
-  return <SettingsFrame title="Clocker devices"
+  return <SettingsFrame className={ownerStyles.owner} title="Clocker devices"
     bandAside={<button className="q-nav__r q-nav__r--ink" type="button" aria-label="Add device" disabled={!hydrated || !activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}><Plus className="q-ic" aria-hidden="true" /></button>}>
     <ClockerOwnerNav current="devices"/>
     {!activeLocations.length ? <Notice tone="info" title="No active location"
