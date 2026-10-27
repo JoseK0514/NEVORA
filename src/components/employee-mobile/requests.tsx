@@ -23,21 +23,21 @@ const status=(value:string)=>({OPEN:'Offered for cover',EMPLOYEE_PENDING:'Awaiti
 function Entry({href,title,detail,icon}:{href:string;title:string;detail?:string;icon:ReactNode}){
  return <li><Link className="em-request-entry" href={href}><span className="em-request-icon" aria-hidden="true">{icon}</span><span><strong>{title}</strong>{detail?<small>{detail}</small>:null}</span><CaretRightIcon aria-hidden="true"/></Link></li>;
 }
-function Pickup({operation,onRefresh}:{operation:PickupOperation;onRefresh:()=>void}){
+export function Pickup({operation,onRefresh,canSubmit=false,isCurrent=()=>false,canRecover=()=>false}:{operation:PickupOperation;onRefresh:()=>void;canSubmit?:boolean;isCurrent?:(operation:PickupOperation)=>boolean;canRecover?:()=>boolean}){
  useSyncExternalStore(operation.subscribe,operation.snapshot,operation.snapshot);
  const current=operation.state,result=current.result,resolved=result&&['completed','pending','closed'].includes(result.status);
  useEffect(()=>{if(resolved)onRefresh();},[resolved,onRefresh]);
- const run=()=>{if(navigator.onLine)void operation.submit(shiftChangeAction);};
+ const run=()=>{if(canSubmit&&navigator.onLine)void operation.submit(shiftChangeAction,()=>isCurrent(operation));};
  return <div className="em-pickup" aria-busy={current.pending}>
-  {!result||!resolved&&!current.uncertain?<button className="em-request-primary" type="button" disabled={current.pending} onClick={run}>{current.pending?'Submitting…':'Pick up shift'}</button>:null}
+  {canSubmit&&(!result||!resolved&&!current.uncertain)?<button className="em-request-primary" type="button" disabled={current.pending} onClick={run}>{current.pending?'Submitting…':'Pick up shift'}</button>:null}
   {current.pending&&current.uncertain?<p role="status">Checking the original request…</p>:null}
   {result?<p role={resolved?'status':'alert'}>{result.status==='completed'?'Shift pickup completed. Check your current schedule.':result.status==='pending'?'Pickup requested. Your assignment is awaiting review.':shiftChangeFeedback(result)}</p>:null}
-  {current.uncertain?<button className="em-request-secondary" type="button" disabled={current.pending} onClick={()=>{if(navigator.onLine)void operation.retry(reconcileShiftChangeAction,shiftChangeAction);}}>Check pickup status</button>:null}
+  {current.uncertain?<button className="em-request-secondary" type="button" disabled={current.pending} onClick={()=>{if(navigator.onLine)void operation.retry(reconcileShiftChangeAction,shiftChangeAction,canRecover);}}>Check pickup status</button>:null}
   {result&&!current.uncertain&&!resolved?<button className="em-request-secondary" type="button" onClick={onRefresh}>Refresh shift options</button>:null}
   {resolved?<Link className="em-request-text" href={result.status==='completed'?'/app/schedule':'/app/exchange?tab=requests'}>{result.status==='completed'?'View my schedule':'View my requests'}</Link>:null}
  </div>;
 }
-function ShiftCard({shift,operation,onRefresh,selected}:{shift:OpenEmployeeShift;operation:PickupOperation;onRefresh:()=>void;selected:boolean}){
+function ShiftCard({shift,operation,onRefresh,selected,isCurrent,canRecover}:{shift:OpenEmployeeShift;operation:PickupOperation;onRefresh:()=>void;selected:boolean;isCurrent:(operation:PickupOperation)=>boolean;canRecover:()=>boolean}){
  const [open,setOpen]=useState(selected);
  const overnight=shift.endTime<=shift.startTime;
  return <details className="em-open-shift" open={open} onToggle={event=>setOpen(event.currentTarget.open)}>
@@ -45,21 +45,25 @@ function ShiftCard({shift,operation,onRefresh,selected}:{shift:OpenEmployeeShift
   <div className="em-open-detail">
    {overnight?<p>Ends {day(addDays(shift.date,1))} at {formatTime(shift.endTime)}.</p>:null}
    <p>{shift.outcome==='completed'?'Picking up this shift assigns it to you immediately if it is still available and you still meet the rules.':'Your manager must approve this pickup before the shift is assigned to you.'}</p>
-   <Pickup operation={operation} onRefresh={onRefresh}/>
+   <Pickup operation={operation} onRefresh={onRefresh} canSubmit={operation.revision===shift.revision} isCurrent={isCurrent} canRecover={canRecover}/>
   </div>
  </details>;
 }
 export function ResponsiveEmployeeRequests({authority,mode,selected,children}:{authority:string;mode:Mode;selected?:string;children:ReactNode}){
  const mobile=useEmployeeMobile();
- return <><div className="em-requests-legacy">{mobile?null:children}</div><div className="em-requests-mobile">{mobile?<EmployeeMobileRequests key={authority} authority={authority} mode={mode} selected={selected}/>:<p className="em-request-loading" role="status">Loading requests…</p>}</div></>;
+ return mobile?<div className="em-requests-mobile"><EmployeeMobileRequests key={authority} authority={authority} mode={mode} selected={selected}/></div>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">Loading requests…</p></div></>;
 }
 function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode:Mode;selected?:string}){
  const [state,setState]=useState<PrivatePanelState<EmployeeRequestsSnapshot>>({snapshot:null,refreshing:true,paused:false});
  const control=useRef<ReturnType<typeof createPrivateSnapshotController<EmployeeRequestsSnapshot>>|null>(null);
+ const lifetime=useRef<Map<string,number>|null>(null);
+ const isCurrent=useCallback((operation:PickupOperation)=>lifetime.current?.get(operation.requestId)===operation.revision,[]);
+ const canRecover=useCallback(()=>lifetime.current!==null,[]);
  const [operations,setOperations]=useState(()=>new Map<string,PickupOperation>()),pathname=usePathname();
  const refresh=useCallback(()=>control.current?.refresh(),[]);
  useEffect(()=>{
   const controller=createPrivateSnapshotController<EmployeeRequestsSnapshot>(next=>{
+   lifetime.current=!next.paused&&next.snapshot?.state==='ready'&&next.snapshot.authority===authority&&next.snapshot.modules.marketplace?new Map((next.snapshot.open??[]).filter(row=>row.check==='eligible').map(row=>[row.id,row.revision])):null;
    if(next.snapshot?.state==='ready') {
     const shifts=next.snapshot.open??[];
     setOperations(previous=>{
@@ -83,7 +87,7 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
   for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);
   for(const event of ['focus','pageshow','online','storage'])window.addEventListener(event,sync);
   void Promise.resolve().then(()=>{if(mounted)sync();});
-  return()=>{mounted=false;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
+  return()=>{mounted=false;lifetime.current=null;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
  },[authority,pathname]);
  const snapshot=!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.authority===authority?state.snapshot:null;
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
@@ -104,10 +108,10 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
       <div className="em-request-links">{snapshot.modules.timeOff?<Link href="/app/requests?tab=my">All time-off requests</Link>:null}{snapshot.modules.marketplace?<Link href="/app/exchange?tab=requests">All shift requests</Link>:null}</div>
      </section>
     </>:snapshot.modules.marketplace?<>
-     {[...operations.values()].filter(item=>(item.state.pending||item.state.result)&&!eligible.some(shift=>shift.id===item.requestId)).map(item=><section className="em-request-notice" aria-label="Your pickup result" key={item.requestId}><Pickup operation={item} onRefresh={refresh}/></section>)}
+     {[...operations.values()].filter(item=>(item.state.pending||item.state.result)&&!eligible.some(shift=>shift.id===item.requestId)).map(item=><section className="em-request-notice" aria-label="Your pickup result" key={item.requestId}><Pickup operation={item} onRefresh={refresh} canRecover={canRecover}/></section>)}
      {snapshot.open===null?<p className="em-request-notice" role="status">Open shifts couldn’t be checked. Refresh to try again.</p>:<>
       <section aria-labelledby="em-eligible-heading"><div className="em-request-section-title"><h2 id="em-eligible-heading">Eligible for you</h2><span>{eligible.length} {eligible.length===1?'shift':'shifts'}</span></div>
-       {eligible.length?<div className="em-open-list">{eligible.map(shift=>operations.has(shift.id)?<ShiftCard key={shift.id} shift={shift} selected={selected===shift.id} operation={operations.get(shift.id)!} onRefresh={refresh}/>:null)}</div>:<p className="em-request-notice">{unconfirmed.length?'Some shifts still need an eligibility check. Refresh to try again.':'No eligible open shifts right now. Check back when more coverage is offered.'}</p>}
+       {eligible.length?<div className="em-open-list">{eligible.map(shift=>operations.has(shift.id)?<ShiftCard key={shift.id} shift={shift} selected={selected===shift.id} operation={operations.get(shift.id)!} onRefresh={refresh} isCurrent={isCurrent} canRecover={canRecover}/>:null)}</div>:<p className="em-request-notice">{unconfirmed.length?'Some shifts still need an eligibility check. Refresh to try again.':'No eligible open shifts right now. Check back when more coverage is offered.'}</p>}
       </section>
       {unconfirmed.length?<section aria-labelledby="em-unconfirmed-heading"><h2 id="em-unconfirmed-heading">Eligibility unavailable</h2><ul className="em-request-list">{unconfirmed.map(row=><li className="em-refusal" key={row.id}><strong>{day(row.date)} · {formatTime(row.startTime)}</strong><span>{row.location}</span><p>{row.notice}</p></li>)}</ul></section>:null}
       {refused.length?<details className="em-refused"><summary>Why other shifts aren’t available <CaretDownIcon aria-hidden="true"/></summary><ul className="em-request-list">{refused.map(row=><li className="em-refusal" key={row.id}><strong>{day(row.date)} · {formatTime(row.startTime)}</strong><span>{row.location}</span><p>{row.notice}</p></li>)}</ul></details>:null}

@@ -63,6 +63,7 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
    const activeBrowser=await runtime[engine].launch({headless:true});browser=activeBrowser;
    const context=await activeBrowser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});
    const page=await context.newPage();
+   page.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(30000);
    let expectedFailure=false,stage='login',binding='';
    page.on('request',(request:{url():string;headers():Record<string,string>})=>{if(new URL(request.url()).pathname==='/api/employee/requests')binding=request.headers()['x-nevora-employee-view']??'';});
    page.on('console',(message:{type():string;text():string})=>{if(['error','warning'].includes(message.type()))messages.push({engine,type:message.type(),text:message.text(),expected:expectedFailure,stage,url:page.url()});});
@@ -172,9 +173,12 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
    await shot('desktop-preserved');record('Desktop retains existing RequestHub and does not mount the new mobile view');
    await page.setViewportSize({width:390,height:844});await load('/app/requests/hub');
    expectedFailure=true;stage='authority-loss';await q('UPDATE employees SET active=false WHERE id=$1',[actor]);
-   const refusal=page.waitForResponse((response:{url():string;status():number})=>new URL(response.url()).pathname==='/api/employee/requests'&&[401,403].includes(response.status()));
+   let refusal:unknown=null;
+   await page.route('**/api/employee/requests',async(route:{fetch(options:{timeout:number}):Promise<{status():number;json():Promise<unknown>}>;fulfill(options:{response:unknown}):Promise<void>})=>{
+    const response=await route.fetch({timeout:10000});expect([401,403]).toContain(response.status());refusal=await response.json();await route.fulfill({response});
+   });
    await page.getByRole('button',{name:'Refresh',exact:true}).click();await page.locator('.em-requests:visible[data-requests-state="denied"]').waitFor();
-   expect(await (await refusal).json()).toEqual({state:'unavailable',reason:'access_denied'});
+   expect(refusal).toEqual({state:'unavailable',reason:'access_denied'});
    expect(await page.locator('.em-requests:visible').innerText()).not.toContain('Time off ·');
    await shot('access-denied');record('Current authority loss clears request facts and refuses further actions');
    await context.close();await browser!.close();browser=undefined;failed=undefined;
