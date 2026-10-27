@@ -50,7 +50,7 @@ export function EmployeeProfilePage({authority,lang,notificationsEnabled,policie
   </section>;
  return <QuietPage className={`q-profile-e${mobile?' em-requests em-profile':''}`}>
   {mobile?<header className="em-request-heading">{!ending?<Link className="em-request-back" href="/app/more"><CaretLeftIcon size={18} aria-hidden="true"/>More</Link>:null}<h1>Profile</h1><p>Settings and your work details</p></header>:ending?<QuietNav/>:hydrated?legacyHeader:<><QuietNav back={{href:'/app/more',label:'More'}}/><QuietHeader title="Profile" sub="Settings and your work details"/></>}
-  <noscript><p className="q-help">Enable JavaScript to view your current profile and calendar settings. You can still sign out below.</p></noscript>
+  <noscript><p className="q-help">Enable JavaScript to view your profile and account settings.</p></noscript>
   {ending?<p className="em-profile-notice" role="status">Signing out…</p>:null}
   {!ending?(mobile?[workDetails,settings,calendarPanel]:[settings,calendarPanel,workDetails]):null}
   {!ending?<div className="q-profile-security">{passkeys}</div>:null}

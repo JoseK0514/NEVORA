@@ -52,8 +52,9 @@ it('integrates current own Profile, preferences, contextual help and native sign
    expect(await page.locator('.q-profile-e').innerText()).not.toContain(ownName);expect(await page.getByRole('button',{name:'Sign out',exact:true}).isEnabled()).toBe(true);await shot('profile-loading');
    await expect.poll(()=>readObserved,{timeout:10000}).toBe(true);releaseRead();await ready();await idle();await page.unroute('**/api/employee/profile');
    expect(await page.locator('.em-profile-private').innerText()).toContain(ownName);expect(binding).toMatch(/^[a-f0-9]{64}$/);
-   await page.locator('.em-profile .em-request-back').focus();await page.keyboard.press('Tab');expect(await page.getByRole('button',{name:'Refresh details',exact:true}).evaluate((el:HTMLElement)=>document.activeElement===el)).toBe(true);await page.keyboard.press('Tab');expect(await page.getByLabel('Sign-in language',{exact:true}).evaluate((el:HTMLElement)=>document.activeElement===el)).toBe(true);
-   record('Native mobile Tab order follows the visible More, work-details Refresh, preferences sequence');
+   const forwardKey=engine==='webkit'&&process.platform==='darwin'?'Alt+Tab':'Tab';
+   await page.locator('.em-profile .em-request-back').focus();await page.keyboard.press(forwardKey);expect(await page.getByRole('button',{name:'Refresh details',exact:true}).evaluate((el:HTMLElement)=>document.activeElement===el)).toBe(true);await page.keyboard.press(forwardKey);expect(await page.getByLabel('Sign-in language',{exact:true}).evaluate((el:HTMLElement)=>document.activeElement===el)).toBe(true);
+   record('Native '+forwardKey+' order follows the visible More, work-details Refresh, preferences sequence');
    const foreign=await page.request.get(app.url+'/api/employee/profile?employeeId='+f.actors[1],{headers:{'X-Nevora-Employee-View':binding}});
    expect(foreign.status()).toBe(400);expect(await foreign.json()).toEqual({state:'unavailable',reason:'access_denied'});
    record('Actual held/current own profile; no static identity while loading; strict no-selector HTTP boundary');await shot('profile-ready');
