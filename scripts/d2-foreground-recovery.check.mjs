@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {finishD2ForegroundRecovery} from './d2-foreground-recovery.mjs';
+import {finishD2ForegroundRecovery,waitForD2RscQuiescence} from './d2-foreground-recovery.mjs';
 
 const rsc={status:()=>200,finished:()=>{throw Error('Router stream completion is not the protected correction read');}};
 const response=(overrides={})=>({status:()=>200,finished:async()=>null,json:async()=>({state:'ready',requests:[{id:'pending-entry'},{id:'pending-break'}]}),...overrides});
@@ -38,4 +38,26 @@ test('payload extraction shares the original deadline and late ready data cannot
  await assert.rejects(result,/recovery deadline/);
  release({state:'ready',requests:ids.map(id=>({id}))});
  await assert.rejects(result,/recovery deadline/);
+});
+
+test('a momentarily drained RSC set cannot permit reload before a queued follow-up recovery finishes',async()=>{
+ let pending=0,version=1,completed=false,first=true,startedAgain;
+ const followUp=new Promise(resolve=>{startedAgain=resolve;});
+ const started=performance.now();
+ const recovery=waitForD2RscQuiescence(()=>{const current={pending,version};if(first){first=false;queueMicrotask(()=>{pending=1;version++;startedAgain();});}return current;},started+2000,{quietMs:30,pollMs:2}).then(value=>{completed=true;return value;});
+ await followUp;await new Promise(resolve=>setImmediate(resolve));assert.equal(completed,false,'A later RSC must hold the reload boundary');
+ pending=0;const finishedAt=performance.now(),result=await recovery;
+ assert.equal(result.version,2);assert(performance.now()-finishedAt>=29,'Quiet interval starts after the follow-up finishes');
+});
+
+test('a new request that starts and finishes between polls still restarts the RSC quiet interval',async()=>{
+ let version=1,startedAgain,first=true;
+ const started=performance.now();
+ const recovery=waitForD2RscQuiescence(()=>{const current={pending:0,version};if(first){first=false;queueMicrotask(()=>{version++;startedAgain=performance.now();});}return current;},started+2000,{quietMs:40,pollMs:10});
+ const result=await recovery;assert.equal(result.version,2);assert(performance.now()-startedAgain>=39);
+});
+
+test('RSC quiescence shares the existing deadline and cannot turn an unfinished recovery into success',async()=>{
+ await assert.rejects(waitForD2RscQuiescence(()=>({pending:1,version:1}),performance.now()+25,{quietMs:5,pollMs:2}),/recovery deadline/);
+ await assert.rejects(waitForD2RscQuiescence(()=>({pending:0,version:1}),performance.now()+15,{quietMs:40,pollMs:2}),/recovery deadline/);
 });
