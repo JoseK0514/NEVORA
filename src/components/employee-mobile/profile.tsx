@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect,useState,type ReactNode} from 'react';
+import {useEffect,useState,useSyncExternalStore,type ReactNode} from 'react';
 import Link from 'next/link';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
@@ -24,21 +24,21 @@ export function EmployeeProfilePreferences({lang}:{lang:AuthLang}){
  </div>;
 }
 
+const subscribeHydration=()=>()=>{};
+
 type Props={authority:string;lang:AuthLang;notificationsEnabled:boolean;policies:boolean;legacyHeader:ReactNode;calendar:ReactNode;passkeys:ReactNode};
 /** Stable common service slots: changing viewport never replaces their owners. */
 export function EmployeeProfilePage({authority,lang,notificationsEnabled,policies,legacyHeader,calendar,passkeys}:Props){
- const mobile=useEmployeeMobile(),[ending,setEnding]=useState(false);
+ const mobile=useEmployeeMobile(),hydrated=useSyncExternalStore(subscribeHydration,()=>true,()=>false),[ending,setEnding]=useState(false);
  useEffect(()=>{const end=()=>setEnding(true);window.addEventListener('nevora:signout',end);return()=>window.removeEventListener('nevora:signout',end);},[]);
  useEffect(()=>{
   if(!mobile||!/^#profile-(privacy|terms|support|account-deletion)$/.test(location.hash))return;
   const frame=requestAnimationFrame(()=>{const row=document.getElementById(location.hash.slice(1));row?.querySelector<HTMLAnchorElement>('a')?.focus();});
   return()=>cancelAnimationFrame(frame);
  },[mobile]);
- return <QuietPage className={`q-profile-e${mobile?' em-requests em-profile':''}`}>
-  {mobile?<header className="em-request-heading">{!ending?<Link className="em-request-back" href="/app/more"><CaretLeftIcon size={18} aria-hidden="true"/>More</Link>:null}<h1>Profile</h1><p>Settings and your work details</p></header>:ending?<QuietNav/>:legacyHeader}
-  <noscript><p className="q-help">Enable JavaScript to view your current profile and calendar settings. You can still sign out below.</p></noscript>
-  {ending?<p className="em-profile-notice" role="status">Signing out…</p>:null}
-  {!ending?<section aria-labelledby="profile-settings-title" className="em-profile-settings">
+ const workDetails=<EmployeeAccountPanel key={authority} kind="profile" authority={authority} quiet employeeMobile={mobile}/>;
+ const calendarPanel=<div key="calendar" className="q-profile-cal em-profile-calendar">{calendar}</div>;
+ const settings=<section key="settings" aria-labelledby="profile-settings-title" className="em-profile-settings">
    <div className="q-grp"><h2 id="profile-settings-title">Settings</h2></div>
    {mobile?<EmployeeProfilePreferences lang={lang}/>:null}
    <ul className="q-list">
@@ -47,9 +47,12 @@ export function EmployeeProfilePage({authority,lang,notificationsEnabled,policie
     {notificationsEnabled?<li><button type="button" className="q-row q-row--one q-row--btn" popoverTarget="portal-device-settings"><span className="q-rt"><b>Alerts on this device</b></span><CaretRightIcon className="q-chev" aria-hidden="true"/></button></li>:null}
    </ul>
    {notificationsEnabled?null:<p className="q-help">Alerts on this device aren’t turned on for your workplace yet.</p>}
-  </section>:null}
-  {!ending?<div className="q-profile-cal em-profile-calendar">{calendar}</div>:null}
-  {!ending?<EmployeeAccountPanel key={authority} kind="profile" authority={authority} quiet employeeMobile={mobile}/>:null}
+  </section>;
+ return <QuietPage className={`q-profile-e${mobile?' em-requests em-profile':''}`}>
+  {mobile?<header className="em-request-heading">{!ending?<Link className="em-request-back" href="/app/more"><CaretLeftIcon size={18} aria-hidden="true"/>More</Link>:null}<h1>Profile</h1><p>Settings and your work details</p></header>:ending?<QuietNav/>:hydrated?legacyHeader:<><QuietNav back={{href:'/app/more',label:'More'}}/><QuietHeader title="Profile" sub="Settings and your work details"/></>}
+  <noscript><p className="q-help">Enable JavaScript to view your current profile and calendar settings. You can still sign out below.</p></noscript>
+  {ending?<p className="em-profile-notice" role="status">Signing out…</p>:null}
+  {!ending?(mobile?[workDetails,settings,calendarPanel]:[settings,calendarPanel,workDetails]):null}
   {!ending?<div className="q-profile-security">{passkeys}</div>:null}
   {!ending?<section aria-labelledby="profile-account-title" className="em-profile-account">
    <div className="q-grp"><h2 id="profile-account-title">Your account</h2></div>
