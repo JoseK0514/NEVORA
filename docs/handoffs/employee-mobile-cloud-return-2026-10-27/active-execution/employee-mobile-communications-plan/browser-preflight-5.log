@@ -1,0 +1,45 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1[39m
+
+ [31m❯[39m src/test/integration/employee-mobile-communications.integration.ts [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 56473[2mms[22m[39m
+[31m   [31m×[31m integrates employee mobile messages with current audience, explicit receipts and original submission recovery[39m[33m 56473[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/employee-mobile-communications.integration.ts[2m > [22mintegrates employee mobile messages with current audience, explicit receipts and original submission recovery
+[31m[1mTimeoutError[22m: locator.click: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator('.em-messages:visible').getByRole('button', { name: 'Check submission status', exact: true })
+[39m
+[36m [2m❯[22m src/test/integration/employee-mobile-communications.integration.ts:[2m82:519[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Errors [49m[22m[31m⎯⎯⎯⎯⎯⎯[39m
+[31m[1m
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.[22m[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: route.abort: Route is already handled![39m
+[36m [2m❯[22m src/test/integration/employee-mobile-communications.integration.ts:[2m81:340[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22m[39m
+[31m[1mSerialized Error:[22m[39m [90m{ log: [] }[39m
+[31mThis error originated in "[1msrc/test/integration/employee-mobile-communications.integration.ts[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+[31mThe last test to run before this error was "[1mintegrates employee mobile messages with current audience, explicit receipts and original submission recovery[22m". This means either:
+- the error was thrown while Vitest was running this test, or
+- the error was thrown after the test completed, and this was the most recent test at that point.[39m
+[31m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m     Errors [22m [1m[31m1 error[39m[22m
+[2m   Start at [22m 13:26:53
+[2m   Duration [22m 56.68s[2m (tests 100%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

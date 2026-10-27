@@ -1,0 +1,19 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1[39m
+
+ [32m✓[39m src/test/integration/employee-mobile-communications-sql.integration.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 10310[2mms[22m[39m
+   [33m[2m✓[22m[39m pages the complete own notification candidates without leaking a peer or weakening the legacy bounded list[33m 940[2mms[22m[39m
+   [33m[2m✓[22m[39m refuses invalid page selectors and changed role or session before publishing own notices[33m 309[2mms[22m[39m
+   [33m[2m✓[22m[39m retains the existing finite notification-read budget for a full page of distinct team updates[33m 3046[2mms[22m[39m
+   [33m[2m✓[22m[39m pages current updates with exact own read status and no coworker receipt roster[33m 4067[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks Updates module permission inside the actual employee command transaction[33m 528[2mms[22m[39m
+   [33m[2m✓[22m[39m hides disabled-module notifications while retaining unrelated own notices[33m 516[2mms[22m[39m
+   [33m[2m✓[22m[39m binds finite mobile views to current own identity and keeps a disabled Updates capability separate[33m 903[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m7 passed[39m[22m[90m (7)[39m
+[2m   Start at [22m 13:06:43
+[2m   Duration [22m 10.49s[2m (tests 99%, transform 1%, import 1%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

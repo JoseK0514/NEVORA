@@ -1,0 +1,38 @@
+▲ Next.js 16.4.2 (Turbopack)
+- Local:         http://127.0.0.1:40233
+- Network:       http://127.0.0.1:40233
+✓ Ready in 365ms
+✓ Running next.config.ts took 34ms
+- Experiments (use with caution):
+  ⨯ turbopackFileSystemCacheForBuild
+
+ GET /login 200 in 573ms (next.js: 212ms, application-code: 361ms)
+ GET /login 200 in 69ms (next.js: 2ms, application-code: 67ms)
+ GET /app 200 in 500ms (next.js: 62ms, application-code: 439ms)
+ POST /login 200 in 2.7s (next.js: 1.3ms, application-code: 2.6s)
+  └─ ƒ login({}) in 88ms login/actions.ts
+ GET /api/notifications 200 in 329ms (next.js: 78ms, application-code: 251ms)
+ GET /api/employee/home 200 in 381ms (next.js: 41ms, application-code: 340ms)
+ GET /api/employee/my-time 200 in 56ms (next.js: 32ms, application-code: 24ms)
+ GET /app/more 200 in 83ms (next.js: 11ms, application-code: 72ms)
+ GET /api/notifications 200 in 101ms (next.js: 1.6ms, application-code: 99ms)
+ GET /app/profile 200 in 65ms (next.js: 15ms, application-code: 50ms)
+ GET /api/employee/calendar-subscriptions 200 in 154ms (next.js: 39ms, application-code: 114ms)
+ GET /api/employee/profile 200 in 100ms (next.js: 35ms, application-code: 64ms)
+ GET /api/employee/profile?employeeId=QA-PROF0-B 400 in 4ms (next.js: 1.0ms, application-code: 3ms)
+ GET /api/employee/calendar-subscriptions 200 in 49ms (next.js: 1.1ms, application-code: 48ms)
+ GET /api/employee/profile 200 in 52ms (next.js: 1.0ms, application-code: 51ms)
+ GET /api/notifications 200 in 132ms (next.js: 0.8ms, application-code: 132ms)
+ GET /api/employee/profile 200 in 26ms (next.js: 0.9ms, application-code: 25ms)
+ GET /app/profile 200 in 819ms (next.js: 1.1ms, application-code: 818ms)
+ GET /api/employee/profile 200 in 82ms (next.js: 1.1ms, application-code: 81ms)
+ GET /api/employee/calendar-subscriptions 200 in 86ms (next.js: 1.2ms, application-code: 85ms)
+ GET /api/notifications 200 in 193ms (next.js: 1.0ms, application-code: 192ms)
+ GET /app/profile/support 200 in 617ms (next.js: 525ms, application-code: 92ms)
+ GET /app/profile/privacy 200 in 113ms (next.js: 26ms, application-code: 87ms)
+ GET /app/profile/terms 200 in 106ms (next.js: 31ms, application-code: 75ms)
+ GET /app/profile 200 in 53ms (next.js: 1.7ms, application-code: 51ms)
+ GET /api/employee/calendar-subscriptions 200 in 38ms (next.js: 1.1ms, application-code: 37ms)
+ GET /api/employee/profile 200 in 47ms (next.js: 0.8ms, application-code: 46ms)
+ GET /api/employee/profile 401 in 8ms (next.js: 1.1ms, application-code: 7ms)
+[?25h

@@ -1,0 +1,30 @@
+{
+  "candidate": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+  "reviewedProductCandidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+  "changedTrackedPaths": [
+    "src/test/integration/employee-mobile-communications-review.integration.ts",
+    "src/test/integration/employee-mobile-planning.integration.ts",
+    "src/test/integration/employee-mobile-requests.integration.ts",
+    "vitest.employee-mobile-communications.config.mts"
+  ],
+  "onlyExpectedTestAndTestConfigChanges": true,
+  "originalReportSha256": "fd02a147838bf7746b62bd9591d63c8ecca857a4010aca2cb7a4f5d008bdb33c",
+  "closureReportSha256": "5b7fd5e34c0dfae81a4a0daf952da24bd0a165ee26b130d19c9a1e31ddb9105e",
+  "headAtFinalInspection": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+  "workingTreePaths": [
+    " M docs/execution/employee-mobile-phase2/STATUS.md",
+    "?? docs/execution/employee-mobile-communications/"
+  ],
+  "mirrorChecks": [
+    {
+      "name": "messages",
+      "checkpoint": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+      "sixRelevantCurrentFilesMatch": true
+    },
+    {
+      "name": "review",
+      "checkpoint": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+      "sixRelevantCurrentFilesMatch": true
+    }
+  ]
+}

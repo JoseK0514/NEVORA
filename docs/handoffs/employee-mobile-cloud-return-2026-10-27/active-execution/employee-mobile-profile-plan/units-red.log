@@ -1,0 +1,61 @@
+
+ RUN  v5.0.5 /workspace/NEVORA
+
+ ❯ src/components/employee-account-panel-lifetime.test.tsx (8 tests | 2 failed) 85ms
+   × signout intent immediately fences own profile and focus/storage cannot reopen that mounted session 7ms
+   × a held own-profile response cannot restore private facts after native signout intent 1ms
+ ❯ src/components/employee-mobile/profile.test.tsx (3 tests | 1 failed) 22ms
+   × mobile work identity comes from the ready own projection and is read only with a deliberate refresh 15ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/employee-account-panel-lifetime.test.tsx > signout intent immediately fences own profile and focus/storage cannot reopen that mounted session
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/components/employee-account-panel-lifetime.test.tsx:61:24
+     59|  expect(last().snapshot).toMatchObject({state:'ready',kind:'profile'});
+     60|  window.dispatchEvent(new Event('nevora:signout'));
+     61|  expect(last().paused).toBe(true);expect(last().snapshot).toBeNull();
+       |                        ^
+     62|  for(const event of ['focus','pageshow','online','storage'])window.dis…
+     63|  await vi.advanceTimersByTimeAsync(120000);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/components/employee-account-panel-lifetime.test.tsx > a held own-profile response cannot restore private facts after native signout intent
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/components/employee-account-panel-lifetime.test.tsx:73:24
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/components/employee-mobile/profile.test.tsx > mobile work identity comes from the ready own projection and is read only with a deliberate refresh
+AssertionError: expected '<section aria-labelledby="profile-wor…' to contain 'Own private name'
+
+Expected: "Own private name"
+Received: "<section aria-labelledby="profile-work-title" data-private-view="profile"><div class="q-grp"><h2 id="profile-work-title">Work details</h2></div><ul class="q-list"><li><div class="q-row q-row--one"><span class="q-rt"><b>Locations</b></span><span class="q-rv q-rv--l">Main Office · West Office</span></div></li><li><div class="q-row q-row--one"><span class="q-rt"><b>Time zone</b></span><span class="q-rv q-rv--l">Puerto Rico</span></div></li></ul><p class="q-help">Something wrong here? Ask your manager to update it.</p></section>"
+
+ ❯ src/components/employee-mobile/profile.test.tsx:11:15
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 8 passed (11)
+   Start at  20:18:20
+   Duration  873ms (transform 42%, import 39%, tests 17%, worker 2%)
+

@@ -1,0 +1,51 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/test/integration/employee-mobile-communications-fixtures" without a file extension (vitest.employee-mobile-communications.config.mts:3:39). Add the file extension
+  - ESM syntax in a file loaded as CommonJS (src/test/integration/employee-mobile-communications-fixtures.ts:4:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/workspace/NEVORA[39m
+
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+ [31m❯[39m [30m[43m employee [49m[39m src/test/integration/employee-mobile-communications-review.integration.ts [2m([22m[2m4 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 149688[2mms[22m[39m
+   [33m[2m✓[22m[39m CR-2 bounds held notification opens and fences stale results across private refresh and pause[33m 71678[2mms[22m[39m
+   [33m[2m✓[22m[39m UI-COM-001 associates actual invalid fields and restores deliberate review after corrections[33m 23150[2mms[22m[39m
+[31m   [31m×[31m CR-3/CR-1 preserve optional read facts and recover a refused original lookup[39m[33m 13583[2mms[22m[39m
+   [33m[2m✓[22m[39m UI-COM-R1 immediately fences an actual committed late publication reply while Updates is off[33m 26006[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m [30m[43m employee [49m[39m src/test/integration/employee-mobile-communications-review.integration.ts[2m > [22mCR-3/CR-1 preserve optional read facts and recover a refused original lookup
+[31m[1merror[22m: canceling statement due to statement timeout[39m
+[90m [2m❯[22m node_modules/pg/lib/client.js:[2m694:17[22m[39m
+[36m [2m❯[22m run src/test/integration/local-postgres.ts:[2m114:24[22m[39m
+    [90m112|[39m       for (const statement of statements) {
+    [90m113|[39m         signal?.throwIfAborted();
+    [90m114|[39m         const result = await client.query(statement.text, [...statemen…
+    [90m   |[39m                        [31m^[39m
+    [90m115|[39m         results.push(result.rows);
+    [90m116|[39m       }
+[90m [2m❯[22m ownerTransaction src/lib/workspace-presentation/service.ts:[2m75:18[22m[39m
+[90m [2m❯[22m saveWorkspacePresentation src/lib/workspace-presentation/service.ts:[2m103:17[22m[39m
+[90m [2m❯[22m src/test/integration/employee-mobile-communications-review.integration.ts:[2m126:4[22m[39m
+[90m [2m❯[22m withPage src/test/integration/employee-mobile-communications-review.integration.ts:[2m55:3[22m[39m
+[90m [2m❯[22m src/test/integration/employee-mobile-communications-review.integration.ts:[2m109:30[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (4)[39m
+[2m   Start at [22m 18:59:04
+[2m   Duration [22m 150.17s[2m (tests 100%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

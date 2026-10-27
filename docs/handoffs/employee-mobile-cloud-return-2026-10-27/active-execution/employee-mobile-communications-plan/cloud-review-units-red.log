@@ -1,0 +1,110 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/workspace/scratch/nevora-regressions[39m
+
+ [31m❯[39m review-regressions.test.tsx [2m([22m[2m7 tests[22m[2m | [22m[31m5 failed[39m[2m)[22m[32m 54[2mms[22m[39m
+[31m   [31m×[31m CR-1 retains unknown original after inconclusive lookup refusal {"state":"unauthorized","httpStatus":403}[39m[32m 11[2mms[22m[39m
+[31m   [31m×[31m CR-1 retains unknown original after inconclusive lookup refusal {"state":"unauthorized","httpStatus":401}[39m[32m 2[2mms[22m[39m
+[31m   [31m×[31m CR-1 retains unknown original after inconclusive lookup refusal {"status":"blocked"}[39m[32m 2[2mms[22m[39m
+[31m   [31m×[31m CR-1 retains unknown original after inconclusive lookup refusal {"status":"conflict"}[39m[32m 1[2mms[22m[39m
+   [32m✓[39m CR-3 preserves separate allowed reading actions for NONE[32m 30[2mms[22m[39m
+[31m   [31m×[31m CR-3 preserves separate allowed reading actions for OPTIONAL[39m[32m 7[2mms[22m[39m
+   [32m✓[39m CR-3 preserves separate allowed reading actions for REQUIRED[32m 1[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 5 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m review-regressions.test.tsx[2m > [22mCR-1 retains unknown original after inconclusive lookup refusal {"state":"unauthorized","httpStatus":403}
+[41m[1m FAIL [22m[49m review-regressions.test.tsx[2m > [22mCR-1 retains unknown original after inconclusive lookup refusal {"status":"blocked"}
+[31m[1mAssertionError[22m: expected { pending: false, …(3) } to match object { pending: false, …(3) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "canRetry": false,[22m
+[32m-   "hasUnknown": true,[39m
+[32m-   "notice": "unknown",[39m
+[31m+   "hasUnknown": false,[39m
+[31m+   "notice": "blocked",[39m
+[2m    "pending": false,[22m
+[2m  }[22m
+
+[36m [2m❯[22m review-regressions.test.tsx:[2m12:30[22m[39m
+    [90m 10|[39m  try{
+    [90m 11|[39m   control.authorize(true);await control.send(original);response=refusa…
+    [90m 12|[39m   expect(control.snapshot()).toMatchObject({pending:false,hasUnknown:t…
+    [90m   |[39m                              [31m^[39m
+    [90m 13|[39m   await control.send({...original,operationId:'22222222-2222-4222-8222…
+    [90m 14|[39m   control.authorize(false);await control.lookup();await control.retry(…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m review-regressions.test.tsx[2m > [22mCR-1 retains unknown original after inconclusive lookup refusal {"state":"unauthorized","httpStatus":401}
+[31m[1mAssertionError[22m: expected { pending: false, …(3) } to match object { pending: false, …(3) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "canRetry": false,[22m
+[32m-   "hasUnknown": true,[39m
+[32m-   "notice": "unknown",[39m
+[31m+   "hasUnknown": false,[39m
+[31m+   "notice": "signed-out",[39m
+[2m    "pending": false,[22m
+[2m  }[22m
+
+[36m [2m❯[22m review-regressions.test.tsx:[2m12:30[22m[39m
+    [90m 10|[39m  try{
+    [90m 11|[39m   control.authorize(true);await control.send(original);response=refusa…
+    [90m 12|[39m   expect(control.snapshot()).toMatchObject({pending:false,hasUnknown:t…
+    [90m   |[39m                              [31m^[39m
+    [90m 13|[39m   await control.send({...original,operationId:'22222222-2222-4222-8222…
+    [90m 14|[39m   control.authorize(false);await control.lookup();await control.retry(…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m review-regressions.test.tsx[2m > [22mCR-1 retains unknown original after inconclusive lookup refusal {"status":"conflict"}
+[31m[1mAssertionError[22m: expected { pending: false, …(3) } to match object { pending: false, …(3) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "canRetry": false,[22m
+[32m-   "hasUnknown": true,[39m
+[32m-   "notice": "unknown",[39m
+[31m+   "hasUnknown": false,[39m
+[31m+   "notice": "conflict",[39m
+[2m    "pending": false,[22m
+[2m  }[22m
+
+[36m [2m❯[22m review-regressions.test.tsx:[2m12:30[22m[39m
+    [90m 10|[39m  try{
+    [90m 11|[39m   control.authorize(true);await control.send(original);response=refusa…
+    [90m 12|[39m   expect(control.snapshot()).toMatchObject({pending:false,hasUnknown:t…
+    [90m   |[39m                              [31m^[39m
+    [90m 13|[39m   await control.send({...original,operationId:'22222222-2222-4222-8222…
+    [90m 14|[39m   control.authorize(false);await control.lookup();await control.retry(…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m review-regressions.test.tsx[2m > [22mCR-3 preserves separate allowed reading actions for OPTIONAL
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m review-regressions.test.tsx:[2m22:40[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (7)[39m
+[2m   Start at [22m 18:34:49
+[2m   Duration [22m 409ms[2m (transform 44%, import 32%, tests 22%, worker 2%)[22m
+

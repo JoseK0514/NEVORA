@@ -1,0 +1,35 @@
+{
+  "gate": "profile",
+  "candidate": "be21663949eee3f5a60f5ffcb7994edc3389d3d5",
+  "base": "e7f1c76804aae3bfe8897388824194d53607bd8a",
+  "branch": "codex/employee-mobile-cloud-handoff-20261027",
+  "cwd": "/workspace/NEVORA",
+  "argv": [
+    "node",
+    "scripts/payroll-postgres.mjs",
+    "vitest.employee-mobile-profile.config.mts",
+    "src/test/integration/employee-mobile-profile.integration.ts"
+  ],
+  "env": {
+    "HOME": "/home/agent",
+    "PATH": "/home/agent/.local/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/override:/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin:/opt/codex/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/agent/.local/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/fallback",
+    "TMPDIR": "/tmp",
+    "LD_LIBRARY_PATH": "/workspace/scratch/nevora-runtime/browser-libs/usr/lib/x86_64-linux-gnu",
+    "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS": "1",
+    "NEVORA_TEST_PG_BIN": "/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin",
+    "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE": "/opt/codex/cua_node/lib/node_modules/playwright/package.json",
+    "NEVORA_EMPLOYEE_PROFILE_EVIDENCE": "/workspace/nevora-evidence/profile-preflight-1/profile/profile",
+    "NEVORA_EMPLOYEE_MESSAGES_EVIDENCE": "/workspace/nevora-evidence/profile-preflight-1/profile/messages",
+    "NEVORA_EMPLOYEE_MESSAGES_REVIEW_EVIDENCE": "/workspace/nevora-evidence/profile-preflight-1/profile/review",
+    "NEVORA_EMPLOYEE_HOURS_EVIDENCE": "/workspace/nevora-evidence/profile-preflight-1/profile/hours",
+    "NEVORA_EMPLOYEE_PLANNING_EVIDENCE": "/workspace/nevora-evidence/profile-preflight-1/profile/planning",
+    "NEVORA_EMPLOYEE_CREATION_EVIDENCE": "/workspace/nevora-evidence/profile-preflight-1/profile/creation",
+    "NEVORA_EMPLOYEE_RESPONSES_EVIDENCE": "/workspace/nevora-evidence/profile-preflight-1/profile/responses",
+    "NEVORA_EMPLOYEE_MOBILE_EVIDENCE": "/workspace/nevora-evidence/profile-preflight-1/profile/mobile"
+  },
+  "startedAt": "2026-10-27T20:52:02.020753+00:00",
+  "initialProcesses": [],
+  "initialClusters": [],
+  "sourceInputCount": 2257,
+  "gitIndexHash": "ca51944590cb7f5ddaa4d3aa0bea67995e1cb553cf8c841aa92e4b3062676ff7"
+}

@@ -1,0 +1,39 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/test/integration/employee-mobile-communications-fixtures" without a file extension (vitest.employee-mobile-communications.config.mts:3:39). Add the file extension
+  - ESM syntax in a file loaded as CommonJS (src/test/integration/employee-mobile-communications-fixtures.ts:4:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/workspace/NEVORA[39m
+
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+ [31m❯[39m [30m[43m employee [49m[39m src/test/integration/employee-mobile-profile.integration.ts [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 39460[2mms[22m[39m
+[31m   [31m×[31m integrates current own Profile, preferences, contextual help and native signout in three engines[39m[33m 39459[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m [30m[43m employee [49m[39m src/test/integration/employee-mobile-profile.integration.ts[2m > [22mintegrates current own Profile, preferences, contextual help and native signout in three engines
+[31m[1mAssertionError[22m: expected 1 to be +0 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 1[39m
+
+[36m [2m❯[22m idle src/test/integration/employee-mobile-profile.integration.ts:[2m33:65[22m[39m
+
+[90m [2m❯[22m src/test/integration/employee-mobile-profile.integration.ts:[2m100:299[22m[39m
+
+[31m[1mCaused by: Error[22m: Matcher did not succeed in time.[39m
+[36m [2m❯[22m src/test/integration/employee-mobile-profile.integration.ts:[2m100:293[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 20:58:09
+[2m   Duration [22m 39.85s[2m (tests 99%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

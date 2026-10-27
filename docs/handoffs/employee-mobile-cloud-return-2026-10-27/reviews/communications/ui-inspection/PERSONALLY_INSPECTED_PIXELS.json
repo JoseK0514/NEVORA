@@ -1,0 +1,619 @@
+{
+  "candidate": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+  "greenCaptureCount": 67,
+  "historicalRedCaptureCount": 1,
+  "entries": [
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-notifications-light-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "edd5c6c5939750157e4d8276c6d6afeae7aecb135c1fd0ecbcc89a78ee2f9ebf",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-notifications-light-390-viewport.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "fd910a1b0044f3473ce3af472cf555c4140a73faa8eb2ca4059af6af85b0436c",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-notifications-light-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "01ec801e68197398cac4013a91baa979af909d2f8109d19cd303fb19384dd05e",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-notifications-dark-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "47ae0b0acaf5dfde0b6a9419e8c0c31f9941c70f3b99c7eacbc5dc2ef0626ec9",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-notifications-dark-390-viewport.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "fc09f6ba2460d6178731a637febe8a77a17b8449c615ba6a615197b4baaf12d2",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-notifications-dark-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "c350e668a2d23fb7af7f74bd634a477250199e0a5cb5c527a9bd771adb8b7f45",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-updates-light-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "81f583f998d86c4d9591f0e76acbd039a9f663053271f447dd592272ffd69a76",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-updates-light-390-viewport.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "3ac16518cfb41e8de93a8a3708e42e684115642c35a644e5cdba0a6eea9396ce",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-updates-light-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "03535e24e19488eb17b07a03f44d43ca160b05df0b2586c3954182b3e09a2994",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-updates-dark-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "607498245910404cdf83180064c706174e8c88903b75a146781f2d7054a1c12a",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-updates-dark-390-viewport.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "e3bce41ccef2ca4718688169ef27251133d4dfd806cf9c5b4d3e6ce0bf06a1a1",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-updates-dark-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "67eef4fef2d7615a0c14d108554ac6923aeaec4f2bfbbaf75759d391d92fd892",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-detail-light-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "b2aae109178fad76de06eb8c2814ad47ac7bdb0a64307bcd9b98ff18594d0b4f",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-detail-light-390-viewport.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "1e90c66fd06c4f373f9e67e7705e0f97cb054d718d6e532c8ee8edcd28747190",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-detail-light-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "cddfca7909ca000264758b001195a31910669bc103028b6eb9bc87d86bd29f59",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-detail-dark-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "8a07f7a9e1b11a09f36616acfd1dd8abe42aec06d46a401f614265a01fbef0ef",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-detail-dark-390-viewport.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "08925e3e2f77224dfe7946c389bb3739b469b6c199e82c9e0e1dbe42dc30dc15",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-detail-dark-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "bf9836cc03658ca48df84374d51651de478fb75b14b30124058cfa81156f3df1",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-compose-light-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "2d7910563793fa7c8b8eaf55ce9462fda339a2b1a6757be96002f4c22b0f386e",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-compose-light-390-viewport.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "2edf111767961cadf724cb4efc69983f94b49d68e21c7e3280b184592c245ef5",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-compose-light-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "aae825d3b033e8785f6d29350d9fc8ff125c63fda827e21c493c0f57e22a90d5",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-compose-dark-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "2d9ac99f271a5f5608dbe8944c6dbb5088f3828181de1c044f18a5f7c6ccfa72",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-compose-dark-390-viewport.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "2bc27ec142c59f6d52d09d8b1f9a1de47fa701443c8222d74e35223ef80fa6ac",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-compose-dark-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "31359d90ef599a84720915ba2e6d74cdb41c29417df3324686eb0a4aff5f0b0a",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-audience-light-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "be1e4877bee2396ca9193d620c49d38900780f0820ff0b4af92d9f6fce73a664",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-audience-light-390-viewport.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "ec6defb49ffa58a4fae3b7500ceb6c980b5fecbd44cb5960854951c4b6a8bb40",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-audience-light-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "d5117cdd66bb31f1ff67da77d519e8d725279ffc60cb9554985ddb2ce3b61d85",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-audience-dark-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "62242d0abea921aeb4b5de0fb689acb41592d12ab9d88ccc96cc4e3059b80f40",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-audience-dark-390-viewport.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "2eb9bdb6266de00f5e042aff138b718aca7114fd8055e87e5f870f7de01d7321",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-audience-dark-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "5211f9cd7ae79f0cf3c9b896fa9285a03e2a1f43490f03204b12ff8a7dea377f",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/webkit-notifications-light-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "1d6508488d8d4e0aba939103e1a7f6e16bbf1643a3a7d5d562c8119df613093d",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/webkit-notifications-dark-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "6e24df562e4b127e27f13fb700b83c7e8b6dca2dbd6e750df7bde175c11d4c47",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/webkit-notifications-text-200-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "740faa0122e040a095cd67164d40d99d554bb428a3510e3632f268b1a1f52b03",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/webkit-updates-light-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "faf197f50cc6a8f434a129523694ffab6caa99f00bc34fc2eefdcaa8d1daeeea",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/webkit-updates-dark-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "a353c6f068769a581ceb74a597cc90fb509f7808332f12af8038e34dacec615e",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/webkit-updates-text-200-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "8b460dc9b7a0a7a2994aa9529d39dec05154121d1e53a50ef88cefb8b4da76e0",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/webkit-detail-light-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "1ed10f4cbb38be354ab25269fe7159c9aae43301a6db3bdbcbba964b7b553d7a",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/webkit-detail-dark-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "dbc27a1b9dde5e76b4a959d5d227fc246748647ad604e417f16f21fb7d8f99bc",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/webkit-detail-text-200-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "14abb99f0b73cae82873ff4c4646c77d32f25532cc84edee5d93cf662291a53c",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/webkit-compose-light-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "40df3e582a578ace0abe451e9db8cb40939febd72dce5ec633bc3841cd454520",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/webkit-compose-dark-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "23d71726a1c3023b3a485ace1e03f3ce323f3b94e4bf019d8cde7b32a2f14cf4",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/webkit-compose-text-200-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "c6e76e52b31ef7751859b7fa303dfbab1053df63ef1850a03ed217b7b070aea8",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/webkit-audience-light-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "14d3ae13f759f8cded09c7ba71fac4aeb12d7f625451471ba32c6b36bb3de64f",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/webkit-audience-dark-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "717de6f91247b385bd8ffa1235e35f2f8b079c78f335fc375f34abaec69525d8",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/webkit-audience-text-200-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "e922af1f6b632eeb5002159a86e534c4c20bc6e9ef671e76f2d10592d012bf2d",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/firefox-notifications-light-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "0f572f26272bbe2ba8c143404216c2bc28d1c4ae9350761434c8367cb2a4336e",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/firefox-notifications-dark-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "e63214936cfb7bb4d1b370d5c325f7ec959df048fc888b48c6e4df5e01a7dedb",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/firefox-notifications-text-200-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "dc94602d736bdf8d4408eee1fd99bc22cd9fbe37399d56ac740e6ae46dfc22d1",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/firefox-updates-light-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "c4a56a0001546ed7fa54ddddeaaf994b940c4687a95acab26f3e223adee5fb58",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/firefox-updates-dark-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "53cc97761f33842fec6b2f899568f2e88574bd30d4bfebb7fd46e6a195fa90f5",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/firefox-updates-text-200-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "aacc958cac9fa675365800bf7e3769db37e39c7dc1089136c3041f8d85eba0b7",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/firefox-detail-light-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "fb14b3b20df59f2a4aeb8e2372a9ce8227e25de5c1e54513b6ca3e1f6fb5968e",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/firefox-detail-dark-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "a4cb12c91a1854c91ef053939837909051af7396e437d53686fcf506831cc521",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/firefox-detail-text-200-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "23c2fb90415895e7783290beb18f06c2aca74fe4784d23a9fa2ae61b82d980ec",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/firefox-compose-light-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "0da1e1bb631a77b934e1c85bd9d9681ccbc4b24196bf4c4f88ef4f79466761d1",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/firefox-compose-dark-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "702dbd2ac5b82fd75d4a02476e44b8e961cec18c6c478f8134c4d22b0ffc63da",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/firefox-compose-text-200-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "63cadebac3b4ea8e2b8cf07a55fb8869df869470300eecd2519aba9483141100",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/firefox-audience-light-320-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "135344d110b044bdfef19aa5197651cbd78b6f4d19b3be6b54878768e97cc6e0",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/firefox-audience-dark-430-viewport.png",
+      "dimensions": [
+        430,
+        844
+      ],
+      "sha256": "a9dc35f6a16d1bd5114fbecc9669be07d079c3bc0659c1b161344cc72336ca64",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/firefox-audience-text-200-viewport.png",
+      "dimensions": [
+        320,
+        844
+      ],
+      "sha256": "1eed5512f20f1b856f8d1b1cdd0f8369627b3766ceb64534ebac631a70285198",
+      "inspection": "Complete viewport via labelled original-size inspection sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-notifications-text-200.png",
+      "dimensions": [
+        320,
+        8774
+      ],
+      "sha256": "21dcd39d9769d293821c6dd4ac0e6085768c06dbe6b4b71f331ac5ebf33d51d2",
+      "inspection": "Complete full-page PNG via contiguous unscaled 1100px-high strips"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-updates-text-200.png",
+      "dimensions": [
+        320,
+        9533
+      ],
+      "sha256": "59bfb1e1f8fc60e62533704e8179dde4239786dbf8cd52b05ae2619566554b0a",
+      "inspection": "Complete full-page PNG via contiguous unscaled 1100px-high strips"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-detail-text-200.png",
+      "dimensions": [
+        320,
+        2077
+      ],
+      "sha256": "4d0a7641e6381812dd086d2a0c1d5578c4537bcd0231c3932d426039635032b2",
+      "inspection": "Complete full-page PNG via contiguous unscaled 1100px-high strips"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-compose-text-200.png",
+      "dimensions": [
+        320,
+        2498
+      ],
+      "sha256": "2b84b506a9c670fd6b38d2c0a4e810532dc40cce939910da97ef8c1f91412e25",
+      "inspection": "Complete full-page PNG via contiguous unscaled 1100px-high strips"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-audience-text-200.png",
+      "dimensions": [
+        320,
+        3312
+      ],
+      "sha256": "b859f9bfc43c2a5d88ed702fb8c40235840b33ae586022e4626ad30cef33e99d",
+      "inspection": "Complete full-page PNG via contiguous unscaled 1100px-high strips"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-compose-light-390.png",
+      "dimensions": [
+        390,
+        1202
+      ],
+      "sha256": "0b968754c23057aa73ed34e2505ebf7b3a6a56f8f00d7f42332b1c64e5b00a44",
+      "inspection": "Complete full-page PNG via contiguous unscaled 850px-high strips; fixed-nav overlay is capture-position dependent"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-green/chromium-audience-light-390.png",
+      "dimensions": [
+        390,
+        1501
+      ],
+      "sha256": "370dba60f3faa474b3e70b3d16c2c66a56562468c283453a9af871b2e78a225f",
+      "inspection": "Complete full-page PNG via contiguous unscaled 850px-high strips; fixed-nav overlay is capture-position dependent"
+    },
+    {
+      "path": "/workspace/nevora-evidence/cloud-red/chromium-failure.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "126603eca98f02c3317e622fa270ba0760832b444f0144a50eb37ef9db985ce2",
+      "inspection": "Complete original failure viewport; historical RED source, after response release"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1
+
+
+ Test Files  76 passed (76)
+      Tests  600 passed (600)
+   Start at  13:40:35
+   Duration  14.80s (import 69%, tests 25%, transform 4%, worker 1%)
+
+     Import  442 modules were evaluated 1346 times · 7.35s total, 69% of tracked time
+             ~4.93s faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation
+

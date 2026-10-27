@@ -1,0 +1,35 @@
+{
+  "gate": "profile",
+  "candidate": "229275429626f2266acea162f60948f1e2581658",
+  "base": "e7f1c76804aae3bfe8897388824194d53607bd8a",
+  "branch": "codex/employee-mobile-cloud-handoff-20261027",
+  "cwd": "/workspace/NEVORA",
+  "argv": [
+    "node",
+    "scripts/payroll-postgres.mjs",
+    "vitest.employee-mobile-profile.config.mts",
+    "src/test/integration/employee-mobile-profile.integration.ts"
+  ],
+  "env": {
+    "HOME": "/home/agent",
+    "PATH": "/home/agent/.local/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/override:/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin:/opt/codex/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/agent/.local/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/fallback",
+    "TMPDIR": "/tmp",
+    "LD_LIBRARY_PATH": "/workspace/scratch/nevora-runtime/browser-libs/usr/lib/x86_64-linux-gnu",
+    "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS": "1",
+    "NEVORA_TEST_PG_BIN": "/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin",
+    "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE": "/opt/codex/cua_node/lib/node_modules/playwright/package.json",
+    "NEVORA_EMPLOYEE_PROFILE_EVIDENCE": "/workspace/nevora-evidence/profile-red/profile/profile",
+    "NEVORA_EMPLOYEE_MESSAGES_EVIDENCE": "/workspace/nevora-evidence/profile-red/profile/messages",
+    "NEVORA_EMPLOYEE_MESSAGES_REVIEW_EVIDENCE": "/workspace/nevora-evidence/profile-red/profile/review",
+    "NEVORA_EMPLOYEE_HOURS_EVIDENCE": "/workspace/nevora-evidence/profile-red/profile/hours",
+    "NEVORA_EMPLOYEE_PLANNING_EVIDENCE": "/workspace/nevora-evidence/profile-red/profile/planning",
+    "NEVORA_EMPLOYEE_CREATION_EVIDENCE": "/workspace/nevora-evidence/profile-red/profile/creation",
+    "NEVORA_EMPLOYEE_RESPONSES_EVIDENCE": "/workspace/nevora-evidence/profile-red/profile/responses",
+    "NEVORA_EMPLOYEE_MOBILE_EVIDENCE": "/workspace/nevora-evidence/profile-red/profile/mobile"
+  },
+  "startedAt": "2026-10-27T20:26:30.038227+00:00",
+  "initialProcesses": [],
+  "initialClusters": [],
+  "sourceInputCount": 2252,
+  "gitIndexHash": "635b2846bf300cf1a74c01355bd15ccc75bdf9c026202c4e7384126b577ac20c"
+}

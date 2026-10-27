@@ -1,0 +1,15 @@
+f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9 fix(employee-mobile): fence pending updates on module loss
+79ad39a4309db96d7c3c4df9124b71d101bd4706 test(employee-mobile): reproduce independent communications findings
+8ec15116c1ee37b8b46304d1cbcca439c7778dc7 fix(employee-mobile): preserve communication recovery and accessible actions
+4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41 test(employee-mobile): exercise guarded lookup race and enlarged errors
+e05546badebd421c4873dfc8846e6810b956b05e test(employee-mobile): hold lookup before workspace lock acquisition
+e9b9ff7dae7687a1d3099b04b792b293f1e5299a test(employee-mobile): target operation admission after workspace context
+1ada3f1c748e120e50e5ad7012e3eea3d1c8b901 test(employee-mobile): serialize fixture projects and use settled desktop links
+8435c3d81734b1fc4bb8ac574368b331a9e99b9d test(employee-mobile): navigate requests through settled task links
+e7f1c76804aae3bfe8897388824194d53607bd8a docs(employee-mobile): accept communications and preserve cloud evidence
+c1a098393208f96f62b6cab79438a7682a9e668a docs(employee-mobile): plan profile help and session continuation
+229275429626f2266acea162f60948f1e2581658 test(employee-mobile): establish profile privacy and own read contracts
+be21663949eee3f5a60f5ffcb7994edc3389d3d5 feat(employee-mobile): connect own profile preferences and contextual help
+1bd317f0b1f90eb1b36bdd493c64f9699cf7cb29 test(employee-mobile): measure visible profile controls in native disclosures
+b643a2f8cd0f5f9c68737b84a078397c009ec9ae fix(employee-mobile): name contextual policy pages in browser titles
+bf2051f74e70682dd71a3fb0fc695a6a284293ad test(employee-mobile): record unsettled profile request ownership

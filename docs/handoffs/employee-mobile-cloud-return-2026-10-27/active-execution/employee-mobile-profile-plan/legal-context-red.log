@@ -1,0 +1,30 @@
+
+ RUN  v5.0.5 /workspace/NEVORA
+
+ ❯ src/components/legal/employee-context.test.tsx (1 test | 1 failed) 16ms
+   × contextual Employee policy links use fixed protected destinations without changing public defaults 15ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/legal/employee-context.test.tsx > contextual Employee policy links use fixed protected destinations without changing public defaults
+AssertionError: expected '<p><a href="/privacy">Privacy Policy<…' to contain 'href="/app/profile/privacy"'
+
+Expected: "href="/app/profile/privacy""
+Received: "<p><a href="/privacy">Privacy Policy</a><a href="/terms">Terms of Use</a><a href="/support">Support</a><a href="/account-deletion">Account deletion</a><a href="/forgot-access">Forgot access</a><a href="mailto:support@example.invalid">Email</a></p>"
+
+ ❯ src/components/legal/employee-context.test.tsx:9:84
+      7| it('contextual Employee policy links use fixed protected destinations …
+      8|  const mobile=renderToStaticMarkup(<BlockView block={block} context="e…
+      9|  for(const path of ['privacy','terms','support','account-deletion'])ex…
+       |                                                                                    ^
+     10|  expect(mobile).toContain('href="/forgot-access"');expect(mobile).toCo…
+     11|  const publicPage=renderToStaticMarkup(<BlockView block={block}/>);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  20:29:25
+   Duration  328ms (transform 54%, import 36%, tests 8%, worker 2%)
+
