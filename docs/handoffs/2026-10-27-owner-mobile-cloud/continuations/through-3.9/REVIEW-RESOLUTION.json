@@ -1,0 +1,40 @@
+{
+  "original_review": "outputs/owner-clocker/independent-review/review.md",
+  "original_review_sha256": "a3a3b8e1c3d12d9ca6b29ffcca2de04a145ead1dec2ea3b42815f0ac4d4d5aed",
+  "original_verdict": "WITH FIXES: 0 Critical / 2 Important / 0 Minor",
+  "reviewed_source_sha256": "824432b53a6e5cccbd48f9b61e4ca9a6a4e2cbedefd3c470c54f28f8955aaea4",
+  "final_source_sha256": "ab1974cb3c6d4be0dff9809a4ff2a208e2fec2ee78afa5cde861cf6611588918",
+  "source_changed_after_review": true,
+  "second_independent_review": false,
+  "final_gate": "Author-verified local mockup PASS after one combined repair; not independent approval of final bytes",
+  "findings": [
+    {
+      "id": "I-01",
+      "severity": "Important",
+      "disposition": "Repaired. One current-setup predicate now protects both immediate delayed handoff and known-code metadata renewal: current authority, device identity/location/version, PENDING state, exact unexpired enrollment and active location. Changed source yields current facts and a truthful code-hidden result, with no replay/retrieval. Five browser regressions (REGISTER revoked/new-version/inactive; ROTATE revoked/inactive) observed RED then GREEN in all3engines."
+    },
+    {
+      "id": "I-02",
+      "severity": "Important",
+      "disposition": "Repaired. Receipt ledger retains immutable deviceId; fresh read joins its current name through shared read-only device provider. Current-source failure is unavailable, not cached receipt/false empty; revoked-device history remains readable. Normal UI rename\u2192receipt and failed-join browser regressions plus3focused model checks observed RED then GREEN."
+    }
+  ],
+  "independent_behavioral_checks": {
+    "passed": 142,
+    "failed": 4,
+    "meaning": "Four RED assertions demonstrate the two original findings; preserved, not relabeled."
+  },
+  "unresolved_material_findings": [],
+  "new_deferred_minors": [],
+  "set_aside_rulings": [
+    "Real enrollment/cookie/session/origin/SQL/server behavior remains unauthorized separate integration.",
+    "Real employee/customer/pay data and services/messages remain unauthorized.",
+    "Physical iPhone/Android/software keyboards and real VoiceOver/TalkBack remain separate certification.",
+    "Mockup reload reset is disclosed; within-session findings were repaired.",
+    "Employee/Manager kiosk workflows remain outside Owner scope.",
+    "Git publication/merge/deployment/app changes are separate; latest user now authorizes a local handoff commit only.",
+    "Accepted global visual system is preserved; only new scoped focus scrolling repaired.",
+    "Bounded browser evidence is not exhaustive parity, all-workflow or device certification."
+  ],
+  "historical_minors": "Prior3.5 live-resize LOW and3.7 cosmetic vocabulary/readability notes remain historical; no new independent Minor findings."
+}

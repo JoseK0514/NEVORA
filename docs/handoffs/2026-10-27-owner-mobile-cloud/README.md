@@ -1,3 +1,5 @@
+> **Latest Cloud checkpoint: through3.9.** Sections1–3 are locally complete;59working/37remaining-or-partial/4Owner exclusions. Next4.1 export mapping profiles. Read [the cumulative continuation](continuations/through-3.9/README.md) and [paste-ready prompt](continuations/through-3.9/CONTINUATION-PROMPT.md). Restore it with `python3 docs/handoffs/2026-10-27-owner-mobile-cloud/continuations/through-3.9/prepare_latest.py`. This checkpoint is committed locally by the Cloud task; remote publication is separate. The original through3.5 publication below and its immutable payload/evidence remain preserved.
+
 # Nevora mobile Owner — continue in Codex Cloud
 
 This is Jose's complete continuity handoff, published on a dedicated feature branch so it can be accessed from a phone. It is the accepted standalone mobile Owner mockup through **3.5 Features and words**. Next is **3.6 Company/location operational policies and history/conflicts**. Preserve the existing design and standards; no new foundation interview or redesign is needed.

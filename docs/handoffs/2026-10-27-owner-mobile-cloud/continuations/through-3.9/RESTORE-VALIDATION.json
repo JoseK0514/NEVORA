@@ -1,0 +1,36 @@
+{
+  "package_directory": "/workspace/nevora-through39-restore-check",
+  "original_base_validated": true,
+  "continuation_files_verified": 1721,
+  "artifact_sha256": "ab1974cb3c6d4be0dff9809a4ff2a208e2fec2ee78afa5cde861cf6611588918",
+  "canonical_rebuild_matches": true,
+  "next_read": [
+    "/workspace/nevora-through39-restore-check/AGENTS.md",
+    "/workspace/nevora-through39-restore-check/START-HERE.md"
+  ],
+  "next_batch": "4.1 P-07 export mapping profiles",
+  "scope": "Standalone MOBILE OWNER only; no real app/services/data/messages/activation/merge/deployment.",
+  "recorded_utc": "2026-10-27T20:41:01.772120+00:00",
+  "guards": [
+    {
+      "destination": "/workspace/nevora-through39-restore-check",
+      "exit": 1,
+      "message": "Existing destination preserved; choose a new directory.\n"
+    },
+    {
+      "destination": "/workspace/NEVORA/.must-not-extract-owner-checkpoint",
+      "exit": 1,
+      "message": "Destination must be outside the application checkout.\n"
+    }
+  ],
+  "original_published_files_unchanged": [
+    "docs/handoffs/2026-10-27-owner-mobile-cloud/payload-manifest.json",
+    "docs/handoffs/2026-10-27-owner-mobile-cloud/PUBLISH-RECORD.json",
+    "docs/handoffs/2026-10-27-owner-mobile-cloud/payload.tar.xz.part-01",
+    "docs/handoffs/2026-10-27-owner-mobile-cloud/payload.tar.xz.part-02",
+    "docs/handoffs/2026-10-27-owner-mobile-cloud/payload.tar.xz.part-03",
+    "docs/handoffs/2026-10-27-owner-mobile-cloud/prepare_cloud.py"
+  ],
+  "archive_sha256": "5edfa13fed96839ab7415d03e772d7bc84017fd6056506e66540e93d2a78df2f",
+  "validation_scope": "Full immutable original extraction+validator, every1721declared continuation files, outside-checkout overlay, canonical rebuild identity, and destination-preservation guards. No application scripts/services."
+}

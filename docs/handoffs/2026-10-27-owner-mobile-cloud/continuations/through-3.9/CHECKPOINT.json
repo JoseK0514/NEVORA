@@ -1,0 +1,41 @@
+{
+  "archive_sha256": "5edfa13fed96839ab7415d03e772d7bc84017fd6056506e66540e93d2a78df2f",
+  "archive_bytes": 19063632,
+  "archive_root": "nevora-owner-mobile-through-3.9",
+  "artifact_sha256": "ab1974cb3c6d4be0dff9809a4ff2a208e2fec2ee78afa5cde861cf6611588918",
+  "manifest": "outputs/owner-clocker/source-evidence-manifest.json",
+  "archive_file": "checkpoint.tar.xz",
+  "recorded_on": "2026-10-27",
+  "repository": "JoseK0514/NEVORA",
+  "branch": "codex/owner-mobile-cloud-handoff-20261027",
+  "checkpoint": "Standalone MOBILE OWNER through3.9; Sections1\u20133 locally complete",
+  "counts": {
+    "working": 59,
+    "remaining_or_partial": 37,
+    "owner_exclusions": 4
+  },
+  "next_batch": "4.1 P-07 export mapping profiles",
+  "remaining_phase_headings": 7,
+  "conditional_phase_headings": 1,
+  "original_base_manifest": "../../payload-manifest.json",
+  "reference_commit": "46e202786863279302026ee03a0e225c359fa55c",
+  "original_review": "WITH FIXES on824432b5;0Critical/2Important/0Minor",
+  "final_review_disposition": "One combined author repair, RED\u2192GREEN and full final-source verification. Original review preserved, no second independent review/PASS on final bytes.",
+  "full_evidence": "Inside archive outputs/owner-clocker; original3.6/3.7evidence also included",
+  "local_commit_authorization": "User: Give me handoff prompt of what you have done and commit any work done",
+  "remote_publication": "Not performed; local commit does not make the checkpoint available in a remote-only checkout",
+  "application_scope": "No appsource/config/CI/database/services/data/messages/realdeviceactivation/merge/deployment changes",
+  "governance": {
+    "recommendation": "GO for requested standalone handoff/local commit",
+    "controls": [
+      "Original payload and PUBLISH-RECORD preserved",
+      "Continuation archived outside app compilation",
+      "Every declared file/archive identity and reproducible build validated",
+      "Existing branch; no new branch/deletion/merge/deploy"
+    ],
+    "material_risks": "No new production acceptance; mockup does not certify real server/device/AT behavior",
+    "exceptions_requiring_Jose": [],
+    "release_impact": "NO IMPACT on app/deployment; existing CONDITION to reconcile seven-branch inventory before future assembly remains",
+    "next_gate": "4.1 bounded mockup workflow; integration/release remain separate"
+  }
+}

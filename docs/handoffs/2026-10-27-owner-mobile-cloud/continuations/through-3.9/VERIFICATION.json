@@ -1,0 +1,35 @@
+{
+  "final_source_sha256": "ab1974cb3c6d4be0dff9809a4ff2a208e2fec2ee78afa5cde861cf6611588918",
+  "browser_journeys": 389,
+  "focused_browser_by_engine": {
+    "setup": 29,
+    "devices": 21,
+    "receipts": 27,
+    "connected_seams": 5,
+    "review_repairs": 7
+  },
+  "engines": [
+    "Chromium",
+    "Firefox",
+    "WebKit"
+  ],
+  "neighbor_chromium": {
+    "Locations": 49,
+    "Setup": 16,
+    "Triage": 29,
+    "Policies": 28
+  },
+  "store_and_view_models": 45,
+  "controller_cases": 9,
+  "source_checks": 10,
+  "renderer_checks": 45,
+  "device_layout_checks": 90,
+  "root_captures": 47,
+  "sampled_text_pairs": 600,
+  "minimum_sampled_contrast": 5.028921154815613,
+  "all_required_commands": 32,
+  "final_command_records": "outputs/owner-clocker/final/commands.json",
+  "original_independent_review": "outputs/owner-clocker/independent-review/review.md",
+  "resolution": "outputs/owner-clocker/review-resolution.json",
+  "limits": "Standalone fictional in-memory Owner mockup. No actual app/server/services/data/messages/tablet activation/deployment. Physical device and real AT certification separate."
+}
