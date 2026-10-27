@@ -80,3 +80,9 @@ it('checks the monotonic lease before copying when native expiry callbacks are d
  await mount();props().onCommand('ISSUE');await vi.advanceTimersByTimeAsync(0);expect(props().url).toContain('/api/calendar/');now.mockReturnValue(101);props().onCopy();await vi.advanceTimersByTimeAsync(0);
  expect(copy).not.toHaveBeenCalled();expect(props().url).toBeNull();expect(props().status).toMatchObject({state:'unavailable'});now.mockRestore();
 });
+it('keeps the original request deadline when later clock reads advance before admission',async()=>{
+ const now=vi.spyOn(performance,'now').mockReturnValue(101).mockReturnValueOnce(0).mockReturnValueOnce(0);let posts=0;
+ vi.stubGlobal('fetch',vi.fn(async(_url:string,init:RequestInit)=>{if(init.method==='POST'){posts++;throw Error('unexpected expired write');}return Response.json(ready(100));}));
+ await mount();props().onCommand('ISSUE');await vi.advanceTimersByTimeAsync(0);
+ expect(posts).toBe(0);expect(props().status).toMatchObject({state:'unavailable'});expect(props().url).toBeNull();now.mockRestore();
+});

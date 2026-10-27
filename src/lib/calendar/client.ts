@@ -36,8 +36,8 @@ export function createCalendarClient(authority:string,changed:(state:CalendarCli
   cancel();const at=sequence,started=performance.now();publish({status:null,url:null});
   try{
    const result=await request() as Ready;if(!current(at))return;
-   const remaining=result.validForMs-Math.max(0,performance.now()-started),observed=Date.parse(result.observedAt);
-   if(remaining<=0||observed<lastObserved)throw Error('Expired calendar read');lastObserved=observed;validUntil=performance.now()+remaining;
+   const deadline=started+result.validForMs,remaining=deadline-performance.now(),observed=Date.parse(result.observedAt);
+   if(remaining<=0||observed<lastObserved)throw Error('Expired calendar read');lastObserved=observed;validUntil=deadline;
    const url=reveal&&result.state==='active'&&result.id===reveal.id&&result.generation===reveal.generation?reveal.url:null;
    publish({status:result,url,...(reveal?{notice:url?'Link created. Copy it now to use it in your calendar app.':'The link changed before it could be shown. Review its current status.'}:{})});
    expiry=setTimeout(()=>{if(current(at))expire();},remaining);
