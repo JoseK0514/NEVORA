@@ -13,5 +13,10 @@ export function readThemeChoice(): ThemeChoice {
 export function writeThemeChoice(choice: ThemeChoice) {
   try { if (choice === 'system') window.localStorage.removeItem(THEME_KEY); else window.localStorage.setItem(THEME_KEY, choice); } catch { /* storage blocked: applies for this page only */ }
   const apply = (window as Window & { __nvApplyTheme?: () => void }).__nvApplyTheme;
-  if (apply) apply(); else document.documentElement.setAttribute('data-theme', choice === 'dark' ? 'dark' : 'light');
+  if (apply) {
+    apply();
+    // Native media changes can coalesce around selecting System. Reconcile once
+    // before paint; the existing owner reads the latest choice, not this click.
+    window.requestAnimationFrame(() => apply());
+  } else document.documentElement.setAttribute('data-theme', choice === 'dark' ? 'dark' : 'light');
 }
