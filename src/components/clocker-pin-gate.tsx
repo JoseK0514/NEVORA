@@ -5,6 +5,7 @@ import { ClockerPunchPanel } from './clocker-punch-panel';
 import { ClockerIcon } from './clocker-icon';
 import { useClockerMotion } from './clocker-motion';
 import { ClockerLanguageToggle, Es, useClockerSpanish } from './clocker-language';
+import {useClockerCopy,useClockerPresentation} from './clocker-language';
 type Verified={state:'verified';firstName:string;expiresAt:string};
 type Reply=Verified|{state:'idle'};
 class PinRequestError extends Error { constructor(message:string,readonly recover:boolean){super(message);} }
@@ -22,6 +23,7 @@ async function requestPin(locationKey:string,body:object):Promise<Reply>{
  throw new PinRequestError('PIN verification could not be confirmed.',true);
 }
 export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{locationKey:string;timeZone?:string;punchEnabled?:boolean}){
+ const t=useClockerCopy(),presentation=useClockerPresentation();
  const input=useRef<HTMLInputElement>(null),busy=useRef(false),epoch=useRef(0);
  const [count,setCount]=useState(0),[pending,setPending]=useState(true);
  const spanish=useClockerSpanish();
@@ -83,34 +85,34 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
   }catch(reason){if(generation===epoch.current){setError(reason instanceof Error?reason.message:'Verification could not be confirmed. Please try again.');setBlocked(!(reason instanceof PinRequestError)||reason.recover);}}
   finally{if(generation===epoch.current){busy.current=false;setPending(false);}}
  }
- const problem=error?<div className={styles.problem}><p role="alert" className={styles.error}>{error}</p>{blocked?<button type="button" className="button secondary" onClick={()=>void reset()}>Check Connection</button>:null}</div>:null;
+ const problem=error?<div className={styles.problem}><p role="alert" className={styles.error}>{t(error)}</p>{blocked?<button type="button" className="button secondary" onClick={()=>void reset()}>{t("Check Connection")}</button>:null}</div>:null;
  return <div ref={motion} className={styles.terminal} aria-busy={pending} data-clocker-pin={identity?'verified':'entry'}>
   {identity&&punchEnabled?<ClockerPunchPanel locationKey={locationKey} timeZone={timeZone} onDone={reset}/>:identity?<>
-   <span className={styles.seal}><ClockerIcon name="check" size={52} weight="bold"/></span>
-   <h1>Hi, {identity.firstName}.</h1><p className={styles.lead}>Your PIN is verified for this tablet.</p>
-   <div className={styles.previewNotice}><strong>Time punches are not enabled yet.</strong><span>No worked time has been recorded.</span></div>
-   <button className="button primary" type="button" onClick={()=>void reset()}>Done</button>
-   <p className={styles.note}>This screen clears automatically after 30 seconds.</p>
+   <span className={styles.seal}><ClockerIcon name="check" size={52} weight={presentation.v2?'regular':'bold'}/></span>
+   <h1>{t('Hi, {name}.',{name:identity.firstName})}</h1><p className={styles.lead}>{t("Your PIN is verified for this tablet.")}</p>
+   <div className={styles.previewNotice}><strong>{t("Time punches are not enabled yet.")}</strong><span>{t("No worked time has been recorded.")}</span></div>
+   <button className="button primary" type="button" onClick={()=>void reset()}>{t("Done")}</button>
+   <p className={styles.note}>{t("This screen clears automatically after 30 seconds.")}</p>
   </>:<>
-   <p className={styles.eyebrow}>Employee PIN</p>
-   <h1>Enter your PIN</h1>{spanish?<p className={styles.titleEs}><Es phrase="Enter your PIN"/></p>:null}
+   <p data-clocker-eyebrow className={styles.eyebrow}>{t("Employee PIN")}</p>
+   <h1>{t("Enter your PIN")}</h1>{spanish?<p className={styles.titleEs}><Es phrase="Enter your PIN"/></p>:null}
    {problem}
    <form onSubmit={submit}>
     <fieldset disabled={pending||blocked}>
-     <label className={styles.pinLabel} htmlFor="clocker-pin">Employee PIN</label>
-     <div className={styles.pinEntry}>
+     <label className={styles.pinLabel} htmlFor="clocker-pin">{t("Employee PIN")}</label>
+     <div data-clocker-pin-entry className={styles.pinEntry}>
       <input id="clocker-pin" ref={input} name="pin" type="password" inputMode="none" autoComplete="off" maxLength={4} minLength={4} required pattern="[0-9]{4}" onChange={e=>setCount(e.currentTarget.value.length)} aria-describedby="clocker-pin-help" aria-invalid={error&&!blocked?true:undefined}/>
       <div className={styles.pinSlots} aria-hidden="true">{[0,1,2,3].map(index=><span key={index} data-filled={index<count}/>)}</div>
      </div>
-     <div className={styles.keypad} aria-label="PIN keypad">
-      {['1','2','3','4','5','6','7','8','9','clear','0','delete'].map(value=><button key={value} type="button" data-key={value==='clear'||value==='delete'?'tool':'digit'} onClick={()=>key(value)} aria-label={value==='clear'?'Clear PIN':value==='delete'?'Delete digit':`Number ${value}`}>{value==='clear'?'Clear':value==='delete'?<ClockerIcon name="delete" size={30}/>:value}</button>)}
+     <div data-clocker-keypad className={styles.keypad} aria-label={t("PIN keypad")}>
+      {['1','2','3','4','5','6','7','8','9','clear','0','delete'].map(value=><button key={value} type="button" data-key={value==='clear'||value==='delete'?'tool':'digit'} onClick={()=>key(value)} aria-label={value==='clear'?t('Clear PIN'):value==='delete'?t('Delete digit'):t('Number {number}',{number:value})}>{value==='clear'?t('Clear'):value==='delete'?<ClockerIcon name="delete" size={30}/>:value}</button>)}
      </div>
-     <button className={`button primary ${styles.continue}`} type="submit" aria-label="Continue" disabled={count!==4}><span className="clocker-label"><span>Continue</span>{spanish?<Es phrase="Continue" inButton/>:null}</span><ClockerIcon name="arrow" size={20}/></button>
+     <button className={`button primary ${styles.continue}`} type="submit" aria-label={t("Continue")} disabled={count!==4}><span className="clocker-label"><span>{t("Continue")}</span>{spanish?<Es phrase="Continue" inButton/>:null}</span><ClockerIcon name="arrow" size={20}/></button>
     </fieldset>
    </form>
-   <div className={styles.meta}><p id="clocker-pin-help">Your PIN is separate from your portal password.</p><ClockerLanguageToggle/></div>
+   <div className={styles.meta}><p id="clocker-pin-help">{t("Your PIN is separate from your portal password.")}</p><ClockerLanguageToggle/></div>
   </>}
-  {pending?<p role="status" className={styles.note}>Checking tablet verification…</p>:null}
+  {pending?<p role="status" className={styles.note}>{t("Checking tablet verification…")}</p>:null}
   {identity?problem:null}
  </div>;
 }

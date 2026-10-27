@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import {ClockerPresentation,ClockerLanguageToggle,useClockerCopy,useClockerPresentation} from './clocker-language';
+import type {ClockerLocale} from './clocker-copy';
 import styles from './clocker-setup.module.css';
 import { ClockerPinGate } from './clocker-pin-gate';
 import { ClockerShell } from './clocker-shell';
@@ -24,7 +26,8 @@ async function send(locationKey: string, body: object, signal?: AbortSignal): Pr
   throw new SetupFailure('Tablet setup could not be confirmed. Choose Check Setup before trying again.', true);
 }
 
-export function ClockerSetup({ locationKey, locationLabel, timeZone, pinEnabled = false, punchEnabled = false, brand }: { locationKey: string; locationLabel: string; timeZone: string; pinEnabled?: boolean; punchEnabled?: boolean; brand?: { style?: Record<string, string>; logoUrl?: string | null } }) {
+function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = false, punchEnabled = false, brand }: { locationKey: string; locationLabel: string; timeZone: string; pinEnabled?: boolean; punchEnabled?: boolean; brand?: { style?: Record<string, string>; logoUrl?: string | null } }) {
+  const t=useClockerCopy(),{v2}=useClockerPresentation();
   const [state, setState] = useState<SetupState>({ state: 'unregistered' });
   const [pending, setPending] = useState(true);
   const [feedback, setFeedback] = useState<{ message: string; uncertain: boolean } | null>(null);
@@ -78,31 +81,36 @@ export function ClockerSetup({ locationKey, locationLabel, timeZone, pinEnabled 
     status={feedback?.uncertain ? 'unconfirmed' : pending ? 'checking' : state.state === 'connected' ? 'connected' : 'setup'}>
     <div ref={motion} className={styles.kioskBody} aria-busy={pending}>
       {feedback?.uncertain ? <>
-        <div className={styles.kioskIcon} data-tone="amber"><ClockerIcon name="refresh" size={44} weight="duotone"/></div>
-        <h1>Check tablet setup</h1>
+        <div data-clocker-setup-icon className={styles.kioskIcon} data-tone="amber"><ClockerIcon name="refresh" size={44} weight={v2?'regular':'duotone'}/></div>
+        <h1>{t("Check tablet setup")}</h1>
       </> : state.state === 'connected' && pinEnabled ? <ClockerPinGate locationKey={locationKey} timeZone={timeZone} punchEnabled={punchEnabled} /> : state.state === 'connected' ? <>
-        <div className={styles.connectedMark}><ClockerIcon name="check" size={48} weight="bold"/></div>
-        <h1>Tablet connected</h1>
-        <p className={styles.kioskLead}>{state.deviceName} is registered for this location.</p>
-        <div className={styles.tabletNotice}><strong>Timekeeping is not available yet.</strong>Employee PINs and real time punches are being connected. Do not use this tablet to record worked time yet.</div>
-        <p className={styles.footnote}>Owner access has been signed out on this tablet.</p>
-        <button className="button secondary" type="button" disabled={pending} onClick={check}>Check Connection</button>
+        <div className={styles.connectedMark}><ClockerIcon name="check" size={48} weight={v2?'regular':'bold'}/></div>
+        <h1>{t("Tablet connected")}</h1>
+        <p className={styles.kioskLead}>{state.deviceName}{' '}{t("is registered for this location.")}</p>
+        <div className={styles.tabletNotice}><strong>{t("Timekeeping is not available yet.")}</strong>{t("Employee PINs and real time punches are being connected. Do not use this tablet to record worked time yet.")}</div>
+        <p className={styles.footnote}>{t("Owner access has been signed out on this tablet.")}</p>
+        <button className="button secondary" type="button" disabled={pending} onClick={check}>{t("Check Connection")}</button>
       </> : <>
-        <div className={styles.kioskIcon}><ClockerIcon name="lock" size={44} weight="duotone"/></div>
-        <p className={styles.kioskEyebrow}>One-time setup</p>
-        <h1>Set up this tablet</h1>
-        <p className={styles.kioskLead}>Ask your Owner to add this device in Settings &rarr; Clocker devices. Then paste the one-use setup code.</p>
+        <div data-clocker-setup-icon className={styles.kioskIcon}><ClockerIcon name="lock" size={44} weight={v2?'regular':'duotone'}/></div>
+        <p data-clocker-eyebrow className={styles.kioskEyebrow}>{t("One-time setup")}</p>
+        <h1>{t("Set up this tablet")}</h1>
+        <p className={styles.kioskLead}>{t("Ask your Owner to add this device in Settings &rarr; Clocker devices. Then paste the one-use setup code.")}</p>
         <form onSubmit={connect} className={styles.tabletForm}>
           <fieldset disabled={pending || Boolean(feedback?.uncertain)}>
-            <label className={styles.field}>Setup code<textarea ref={input} name="enrollmentToken" rows={3} required maxLength={72} autoComplete="off" autoCapitalize="none" spellCheck={false} aria-describedby="clocker-setup-help" /></label>
-            <p id="clocker-setup-help" className={styles.hint}>This is the tablet setup code, not an employee PIN. Cookies must be allowed.</p>
-            <button className="button primary" type="submit">{pending ? 'Checking setup...' : 'Connect tablet'}{!pending ? <ClockerIcon name="arrow" size={20}/> : null}</button>
+            <label data-clocker-setup-field className={styles.field}>{t("Setup code")}<textarea ref={input} name="enrollmentToken" rows={3} required maxLength={72} autoComplete="off" autoCapitalize="none" spellCheck={false} aria-describedby="clocker-setup-help" /></label>
+            <p id="clocker-setup-help" className={styles.hint}>{t("This is the tablet setup code, not an employee PIN. Cookies must be allowed.")}</p>
+            <button className="button primary" type="submit">{t(pending ? 'Checking setup...' : 'Connect tablet')}{!pending ? <ClockerIcon name="arrow" size={20}/> : null}</button>
           </fieldset>
         </form>
       </>}
-      {pending ? <p role="status" className={styles.kioskStatus}>Checking this tablet...</p> : null}
-      {feedback ? <div className={styles.kioskProblem}><p role="alert" className={styles.error}>{feedback.message}</p>
-        <button className="button secondary" type="button" disabled={pending} onClick={check}>Check Setup</button></div> : null}
+      {v2&&!(state.state==='connected'&&pinEnabled) ? <ClockerLanguageToggle/> : null}
+      {pending ? <p role="status" className={styles.kioskStatus}>{t("Checking this tablet...")}</p> : null}
+      {feedback ? <div className={styles.kioskProblem}><p role="alert" className={styles.error}>{t(feedback.message)}</p>
+        <button className="button secondary" type="button" disabled={pending} onClick={check}>{t("Check Setup")}</button></div> : null}
     </div>
   </ClockerShell>;
+}
+
+export function ClockerSetup(props:Parameters<typeof ClockerSetupBody>[0]&{uiV2?:boolean;initialLocale?:ClockerLocale}){
+ return <ClockerPresentation v2={props.uiV2} initialLocale={props.initialLocale}><ClockerSetupBody {...props}/></ClockerPresentation>;
 }
