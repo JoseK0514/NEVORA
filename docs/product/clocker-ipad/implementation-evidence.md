@@ -56,3 +56,13 @@ from application evidence. Physical iPad acceptance remains required.
 - New partial-PIN browser test failed before the fix. Helper/copy tests: 8 passed. Existing actual PIN transport: 13 passed. TypeScript passed.
 - Owned Chromium/WebKit: 16 checks passed, including unfinished PIN expiry, warning/hard clear and delayed verify response after Escape that cannot restore private content.
 - Native sleep/lock/background acceptance remains on the physical-iPad checklist.
+
+## T5 — Real actions and explicit recovery
+
+- Uses existing state/allowed actions, configured breaks, strict receipts and PostgreSQL timestamps; no prototype outcomes enter the app.
+- On-break clock-out has an accurate cancellation label. Success shows the exact reference and one eight-second clearing message.
+- Unknown actions retain their original UUID/verification. Obsolete-context retirement now requires explicit review after guarded state and receipt reads, retaining reference-only history.
+- Compact collapsed Owner help provides reference copy/manual-copy fallback without administration navigation.
+- New browser expectation first failed on the old on-break cancellation. Then 24 owned Chromium/WebKit checks passed: all four writes, duplicate click, cancel, original-command retry, tab-close receipt recovery and explicit obsolete review without a new write.
+- Unit receipt/command/copy suite: 51 passed. Current SQL punch/transport: 69 passed. Inherited punch/transport: 59 passed.
+- Two additional SQL characterizations passed: combined PIN reset/device replacement rejects old authority, and recovery reads wait behind a real in-flight punch lock before reading its immutable receipt. TypeScript passed.

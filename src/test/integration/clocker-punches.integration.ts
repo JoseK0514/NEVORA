@@ -271,3 +271,24 @@ it('does not report healthy Off Clock when a historical break extends beyond its
  await f.q("UPDATE break_entries SET break_end_at=(SELECT clock_out_at+interval '1 hour' FROM time_entries WHERE id=time_entry_id)");
  await expect(service.read(proof)).rejects.toMatchObject({code:'INTEGRITY'});
 });
+
+it('combined PIN reset and tablet replacement reject the old action and receipt proof without time changes',async()=>{
+ const c=await command('CLOCK_IN');
+ await f.q("UPDATE employee_clocker_pins SET version=version+1 WHERE employee_id='c34-a';UPDATE clocker_devices SET credential_version=credential_version+1");
+ await expect(service.execute(proof,c)).rejects.toMatchObject({code:'AUTH_REQUIRED'});
+ await expect(service.receipt(proof,c.commandId)).rejects.toMatchObject({code:'AUTH_REQUIRED'});
+ expect(await counts()).toEqual([{entries:0,breaks:0,commands:0}]);expect(c.commandId).toMatch(/^[a-f0-9-]{36}$/);
+});
+it('recovery state waits behind an in-flight original punch before its immutable receipt can be reviewed',async()=>{
+ await execute('CLOCK_IN');const c=await command('CLOCK_OUT');
+ const blocker=new Client({connectionString:f.db.connectionString}),writer=await workerExecutor(),reader=await workerExecutor();await blocker.connect();
+ let write:Promise<unknown>|undefined,read:Promise<unknown>|undefined;
+ try{
+  await blocker.query('BEGIN');await blocker.query('SELECT id FROM time_entries WHERE id=$1 FOR UPDATE',[c.expected.timeEntryId]);
+  const saved=new ClockerPunchService(f.key,writer.executor).execute(proof,c);write=saved;await observedBlocked(writer.pid);
+  const latest=new ClockerPunchService(f.key,reader.executor).read(proof);read=latest;await observedBlocked(reader.pid);
+  await blocker.query('COMMIT');const receipt=await saved,current=await latest;
+  expect(current.snapshot).toEqual(receipt.snapshot);expect(await service.receipt(proof,c.commandId)).toEqual(receipt);
+  expect(await counts()).toEqual([{entries:1,breaks:0,commands:2}]);
+ }finally{await blocker.query('ROLLBACK');await Promise.allSettled([write,read]);await blocker.end();await writer.client.end();await reader.client.end();}
+});
