@@ -15,7 +15,7 @@ export const metadata = { title: "Team" };
 export default async function EmployeesPage({ searchParams }: {
   searchParams?: Promise<DirectorySearchParams>;
 } = {}) {
-  await requireRoles(MANAGER_ROLES);
+  const actor=await requireRoles(MANAGER_ROLES);
   const params=await(searchParams??Promise.resolve({}));
   const source=await readOperationalDirectory(await requireSessionMutationProof());
   if(source.state==='unavailable')return <OperationalUnavailable title="Employees unavailable" reason={source.reason}/>;
@@ -24,6 +24,6 @@ export default async function EmployeesPage({ searchParams }: {
   const filters = readDirectoryFilters(params, locations);
   // Quiet (v4): each person's detail line names their positions; a failed read falls back to the role.
   const positions = await listPositions({ includeInactive: true }).catch(() => []);
-  return <ScopedReadFrame observation={source}><EmployeeDirectory positions={positions} words={wordPreset((await currentPresentation()).words).en} employees={employees} locations={locations} filters={filters}
+  return <ScopedReadFrame observation={source}><EmployeeDirectory clockerRecovery={actor.role==='OWNER'} positions={positions} words={wordPreset((await currentPresentation()).words).en} employees={employees} locations={locations} filters={filters}
     visibleEmployees={filterDirectoryEmployees(employees, filters)} /></ScopedReadFrame>;
 }

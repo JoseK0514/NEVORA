@@ -8,11 +8,12 @@ import { hasDirectoryFilters, type DirectoryFilters } from "@/lib/employee-direc
 import { QuietBar, QuietBarIcon, QuietGroup, QuietHeader, QuietPage, QuietRow } from "./quiet/quiet";
 import { EmployeeDirectoryFilters } from "./employee-directory-filters";
 
-export function EmployeeDirectory({ employees, visibleEmployees, locations, filters, positions = [], recovery = true, words = DEFAULT_WORDS.en }: {
+export function EmployeeDirectory({ employees, visibleEmployees, locations, filters, positions = [], recovery = true, clockerRecovery = false, words = DEFAULT_WORDS.en }: {
   /** Position names for each person's detail line. */
   positions?: readonly Pick<Position, "id" | "name">[];
   /** Quiet (v4): the recovery tools, for roles that have them. */
   recovery?: boolean;
+  clockerRecovery?: boolean;
   /** Company vocabulary (B2). */
   words?: WordSlots;
   employees: readonly Employee[]; visibleEmployees: readonly Employee[];
@@ -62,7 +63,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
       {/* Quiet (v4): the two recovery tools sit at the end of Team, where their pages lead back to. */}
       {recovery ? <ul className="q-list" aria-label="Help someone get back in" style={{ marginTop: 40 }}>
         <QuietRow href="/app/account-recovery" title="Account recovery" />
-        <QuietRow href="/app/clocker-recovery" title="Clocker recovery" />
+        {clockerRecovery ? <QuietRow href="/app/clocker-recovery" title="Clocker recovery" /> : null}
       </ul> : null}
     </QuietPage>
   );

@@ -93,7 +93,7 @@ const TEAM_TOOLS: NavigationItem[] = [
 ];
 export function teamToolsForRole(role: UserRole, context: NavContext = {}): NavigationItem[] {
   const current = context.operational;
-  return role === "OWNER" || role === "MANAGER" && current?.state === "ready" && current.role === "MANAGER" && current.scope?.mode === "COMPANY" ? TEAM_TOOLS : [];
+  return role === "OWNER" || role === "MANAGER" && current?.state === "ready" && current.role === "MANAGER" && current.scope?.mode === "COMPANY" ? TEAM_TOOLS.filter(item=>role==='OWNER'||item.href!=='/app/clocker-recovery') : [];
 }
 
 /** Presentation groups consume only already-authorized navigation entries. Team tools, when given, sit before Workspace. */

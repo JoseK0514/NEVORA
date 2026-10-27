@@ -6,7 +6,7 @@ import {ClockerRecoveryReview} from '@/components/clocker-recovery-review';
 import {getWorkspace} from '@/lib/data/workspaces';
 
 export default async function ClockerRecoveryPage({searchParams}: {searchParams?: Promise<{from?: string}>} = {}) {
-  const actor = await requireRoles(['OWNER', 'MANAGER']);
+  const actor = await requireRoles(['OWNER']);
   const access=await withOperationalCompany(await requireSessionMutationProof(),async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title="Clocker recovery unavailable" reason={access.reason}/>;
   const workspace = await getWorkspace();
   // Settings is Owner-only, so only an Owner's Back returns there.

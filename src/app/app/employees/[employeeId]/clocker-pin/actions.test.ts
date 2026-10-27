@@ -8,7 +8,7 @@ vi.mock('@/lib/clocker/pins.server',()=>({setEmployeeClockerPin:m.save,ClockerPi
 import { saveClockerPinAction } from './actions';
 const form=(overrides:Record<string,string|undefined>={})=>{const data=new FormData();for(const [k,v] of Object.entries({employeeId:'worker',pin:'0123',confirmPin:'0123',expectedVersion:'0',...overrides})){if(v!==undefined)data.set(k,v);}return data;};
 beforeEach(()=>{
- vi.clearAllMocks();m.proof.mockResolvedValue({employee:{id:'actor',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)});
+ vi.clearAllMocks();m.proof.mockResolvedValue({employee:{id:'actor',role:'OWNER'},sessionTokenHash:'a'.repeat(64)});
  m.headers.mockResolvedValue(new Headers({host:'localhost:3000',origin:'http://localhost:3000'}));
  m.key.mockReturnValue(Buffer.alloc(32,1));m.save.mockResolvedValue({employeeId:'worker',configured:true,version:1});
 });
@@ -17,7 +17,7 @@ it('uses the authenticated actor, preserves a leading-zero PIN, and returns meta
  expect(m.save).toHaveBeenCalledWith({employeeId:'actor',sessionTokenHash:'a'.repeat(64)},{employeeId:'worker',pin:'0123',expectedVersion:0},Buffer.alloc(32,1));
  expect(JSON.stringify(result)).not.toContain('0123');
 });
-it.each(['EMPLOYEE','LEAD'])('rejects %s management',async role=>{
+it.each(['MANAGER','EMPLOYEE','LEAD'])('rejects %s management',async role=>{
  m.proof.mockResolvedValue({employee:{id:'actor',role},sessionTokenHash:'a'.repeat(64)});
  expect(await saveClockerPinAction(form())).toMatchObject({ok:false});expect(m.save).not.toHaveBeenCalled();
 });

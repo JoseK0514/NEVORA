@@ -16,3 +16,14 @@ Approved prototype: `d7204373a53e332332600ab0ffe01052801e550f2e3ad543d4fe26402d7
 All PostgreSQL checks used a newly owned loopback cluster; no application credentials.
 No push, merge or deployment authorized or performed. Prototype evidence is separate
 from application evidence. Physical iPad acceptance remains required.
+
+## T1 — Owner-only administration
+
+- PIN pages/actions/service admission and late SQL guards now require OWNER.
+- Recovery page/API/receipt service require OWNER with current session and Company guards.
+- Clocker links are hidden for Managers; account recovery, attendance and calendar permissions remain.
+- Removed the hardcoded “Set” PIN status from the profile (now “Manage” until actual metadata is read).
+- New tests first failed on Manager PIN access and forged Owner receipt access; then passed.
+- Focused presentation/page/action checks: 41 passed. TypeScript passed.
+- Owned Owner policy + PIN/recovery/calendar/Manager visibility SQL: 59 passed.
+- Awaited revocation, DB-clock expiry and post-commit suppression coverage retained on the Owner path.

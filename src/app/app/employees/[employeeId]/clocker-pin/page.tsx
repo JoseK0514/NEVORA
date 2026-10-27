@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ClockerPinForm } from '@/components/clocker-pin-form';
 import { QuietNav } from '@/components/quiet/quiet';
-import { MANAGER_ROLES, requireRoles } from '@/lib/auth/permissions';
+import { requireRoles } from '@/lib/auth/permissions';
 import { requireSessionMutationProof } from '@/lib/auth/session';
 import { getEmployeeManagementProfile } from '@/lib/data/employees';
 import { readEmployeeClockerPin, type EmployeePinView } from '@/lib/clocker/pins.server';
@@ -15,7 +15,7 @@ export const dynamic='force-dynamic';
 
 /** Phase 3.5 Wave A: Clocker PIN on the kit. Back names the person; a closed state says why and where to go. */
 export default async function EmployeeClockerPinPage({params}:{params:Promise<{employeeId:string}>}){
- const actor=await requireRoles(MANAGER_ROLES);
+ const actor=await requireRoles(['OWNER']);
  const {employeeId}=await params;
  const proof=await requireSessionMutationProof();
  const source=await withOperationalCompany(proof,async()=>{

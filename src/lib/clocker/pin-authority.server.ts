@@ -49,9 +49,9 @@ export function pinActorGuards(proof: ClockerOwnerProof, employeeId: string, wor
 export function pinActorAssertion(proof:ClockerOwnerProof,employeeId:string,workspaceId:string,active:boolean):SqlStatement {
  return assertPin(`EXISTS(SELECT 1 FROM employees actor JOIN employee_sessions s ON s.employee_id=actor.id
    JOIN employees target ON target.id=$3 JOIN locations l ON l.id=target.primary_location_id
-   WHERE actor.id=$1 AND actor.active AND actor.role IN ('OWNER','MANAGER')
+   WHERE actor.id=$1 AND actor.active AND actor.role='OWNER'
    AND s.token_hash=$2 AND s.expires_at>clock_timestamp() AND l.workspace_id=$4
-   AND (actor.role='OWNER' OR target.role<>'OWNER') ${active?'AND target.active':''})`,
+   ${active?'AND target.active':''})`,
    [proof.employeeId,proof.sessionTokenHash,employeeId,workspaceId],'FORBIDDEN');
 }
 
@@ -62,7 +62,7 @@ export async function pinManagementAccess(actor:ClockerOwnerProof,executor:SqlEx
  if(!actor||typeof actor.employeeId!=='string'||!/^[a-f0-9]{64}$/.test(actor.sessionTokenHash??''))throw new ClockerPinError('FORBIDDEN');
  try{
   const [employee]=await executor.query<SessionMutationProof['employee']>(statement(`SELECT e.id,e.first_name AS "firstName",e.last_name AS "lastName",e.role,e.primary_location_id AS "primaryLocationId"
-   FROM employees e JOIN employee_sessions s ON s.employee_id=e.id WHERE e.id=$1 AND e.active AND e.role IN('OWNER','MANAGER') AND s.token_hash=$2 AND s.expires_at>clock_timestamp()`,[actor.employeeId,actor.sessionTokenHash]));
+   FROM employees e JOIN employee_sessions s ON s.employee_id=e.id WHERE e.id=$1 AND e.active AND e.role='OWNER' AND s.token_hash=$2 AND s.expires_at>clock_timestamp()`,[actor.employeeId,actor.sessionTokenHash]));
   if(!employee)throw new ClockerPinError('FORBIDDEN');
   const proof:SessionMutationProof={employee,sessionTokenHash:actor.sessionTokenHash};
   return {...await assertOperationalAccess(proof,{kind:'COMPANY'},executor),proof};

@@ -46,7 +46,7 @@ export function HomeRecentActivity({ weekStart, label, detail, dateTime }: { wee
   </section>;
 }
 
-export function MobileHomeTools({ weekStart }: { weekStart: string }) {
+export function MobileHomeTools({ weekStart, owner = false }: { weekStart: string; owner?: boolean }) {
   const week = encodeURIComponent(weekStart);
   const actions = [
     { href: `/app?week=${week}&view=attendance`, label: "Review attendance", Icon: ClockIcon },
@@ -58,7 +58,7 @@ export function MobileHomeTools({ weekStart }: { weekStart: string }) {
   ];
   return <nav className="mobile-home-tools" aria-labelledby="mobile-home-tools-title">
     <h2 id="mobile-home-tools-title">Shortcuts</h2>
-    {actions.map(({ href, label, Icon }) => <Link key={href} href={href}>
+    {actions.filter(item=>owner||item.href!=="/app/clocker-recovery").map(({ href, label, Icon }) => <Link key={href} href={href}>
       <Icon size={24} weight="regular" aria-hidden="true"/><span>{label}</span><CaretRightIcon size={18} aria-hidden="true"/>
     </Link>)}
   </nav>;
