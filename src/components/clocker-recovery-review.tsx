@@ -1,5 +1,6 @@
 'use client';
 
+import {ClockerOwnerNav} from './clocker-owner-nav';
 import {useEffect, useId, useRef, useState, useSyncExternalStore} from 'react';
 import Link from 'next/link';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
@@ -111,7 +112,8 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
 
   const errorId = `${inputId}-error`;
   // Quiet (v4, approved Oct 23): the reference, Check, the receipt when there is one, and one row to Timecards.
-  const content = <SettingsFrame back={back} settingsCrumb={false} title="Clocker recovery" summary="Look up a saved clock-in receipt.">
+  const content = <SettingsFrame back={back} settingsCrumb={false} title="Clocker recovery" summary="Look up a saved clock action.">
+    <ClockerOwnerNav current="recovery"/>
     <form noValidate className="wc-form" aria-label="Check a saved action" data-guard={hydrated ? undefined : ''}
       onInvalidCapture={event => { event.preventDefault(); setInvalid((event.target as HTMLInputElement).validity.valueMissing ? 'Enter the saved reference.' : 'Use the full reference: 32 letters and numbers in five groups, with dashes.'); (event.target as HTMLInputElement).focus(); }}
       onSubmit={event => {

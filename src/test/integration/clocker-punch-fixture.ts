@@ -30,7 +30,7 @@ export async function createPunchFixture(options:{breaks?:boolean;companyAccess?
    // 0032 needs the genuine append-only ledger primitive from copy receipts;
    // these sidecar tables neither install later time/payroll SQL nor alter facts.
    const files=options.migrationStage&&options.migrationStage!=='current'
-    ?['0024_schedule_copy_receipts.sql','0032_company_access_invitations.sql']
+    ?['0024_schedule_copy_receipts.sql','0032_company_access_invitations.sql','0038_clocker_pin_operation_reference.sql']
     :['0031_native_payroll.sql','0032_company_access_invitations.sql'];
    for(const file of files)await q(await readFile('db/migrations/'+file,'utf8'));
    await setEmployeeClockerPin(owner,{employeeId:'c34-a',pin:'0123',expectedVersion:0},key,db.executor);

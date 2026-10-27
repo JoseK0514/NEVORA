@@ -11,7 +11,7 @@ vi.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => 
 vi.mock('@/lib/data/employees', () => ({ getEmployeeManagementProfile: m.profile }));
 vi.mock('@/lib/clocker/pin-crypto.server', () => ({ readPinKey: () => { if (m.unavailable) throw Error('private infrastructure error'); return Buffer.alloc(32); } }));
 vi.mock('@/lib/clocker/pins.server', () => ({ readEmployeeClockerPin: m.read }));
-vi.mock('./actions', () => ({ saveClockerPinAction: vi.fn() }));
+vi.mock('./actions', () => ({ saveClockerPinAction: vi.fn(),checkClockerPinSaveAction:vi.fn() }));
 import EmployeeClockerPinPage from './page';
 
 beforeEach(() => {

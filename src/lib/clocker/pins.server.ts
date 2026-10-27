@@ -27,9 +27,10 @@ export async function readEmployeeClockerPin(proof:ClockerOwnerProof,employeeId:
 /** Replace a PIN under current management Company access and expectedVersion.
  * Workspace-keyed lookup enforces PIN uniqueness; the salted verification hash,
  * audit event and revocation of existing employee PIN identities commit together. */
-export async function setEmployeeClockerPin(proof:ClockerOwnerProof,input:{employeeId:string;pin:string;expectedVersion:number},key:Buffer,executor:SqlExecutor=neonNotificationExecutor()):Promise<EmployeePinView>{
+export async function setEmployeeClockerPin(proof:ClockerOwnerProof,input:{employeeId:string;pin:string;expectedVersion:number;operationId?:string},key:Buffer,executor:SqlExecutor=neonNotificationExecutor()):Promise<EmployeePinView>{
  try{validatePin(input?.pin);}catch{throw new ClockerPinError('INVALID');}
  if(!Number.isSafeInteger(input.expectedVersion)||input.expectedVersion<0)throw new ClockerPinError('INVALID');
+ const operationId=input.operationId??randomUUID();if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(operationId))throw new ClockerPinError('INVALID');
  // Reject unprivileged callers before spending work on the slow hash.
  const current=await readEmployeeClockerPin(proof,input.employeeId,executor);
  if(current.version!==input.expectedVersion)throw new ClockerPinError('STALE');
@@ -47,7 +48,7 @@ export async function setEmployeeClockerPin(proof:ClockerOwnerProof,input:{emplo
     lookup_hash=EXCLUDED.lookup_hash,pin_hash=EXCLUDED.pin_hash,updated_by=EXCLUDED.updated_by,
     updated_at=clock_timestamp(),version=employee_clocker_pins.version+1`,[input.employeeId,workspace.id,fingerprint,hash,proof.employeeId]),
   s('DELETE FROM clocker_pin_sessions WHERE employee_id=$1',[input.employeeId]),
-  s('INSERT INTO clocker_pin_events(id,employee_id,actor_employee_id,pin_version) SELECT $1,employee_id,$2,version FROM employee_clocker_pins WHERE employee_id=$3',[randomUUID(),proof.employeeId,input.employeeId]),
+  s('INSERT INTO clocker_pin_events(id,employee_id,actor_employee_id,pin_version,operation_id) SELECT $1,employee_id,$2,version,$4::uuid FROM employee_clocker_pins WHERE employee_id=$3',[randomUUID(),proof.employeeId,input.employeeId,operationId]),
   // Roll back the PIN, audit event and identity invalidation if authority expired during a write lock wait.
   pinActorAssertion(proof,input.employeeId,workspace.id,true),
   ...authority(),

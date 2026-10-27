@@ -10,7 +10,7 @@ import { requireSessionMutationProof } from '@/lib/auth/session';
 import { getEmployeeManagementProfile } from '@/lib/data/employees';
 import { readEmployeeClockerPin, type EmployeePinView } from '@/lib/clocker/pins.server';
 import { readPinKey } from '@/lib/clocker/pin-crypto.server';
-import { saveClockerPinAction } from './actions';
+import { saveClockerPinAction,checkClockerPinSaveAction } from './actions';
 export const dynamic='force-dynamic';
 
 /** Phase 3.5 Wave A: Clocker PIN on the kit. Back names the person; a closed state says why and where to go. */
@@ -44,7 +44,7 @@ export default async function EmployeeClockerPinPage({params}:{params:Promise<{e
   <div>
    {!allowed?closed('Owner access required','Only an Owner can manage another Owner’s Clocker PIN.',employeeHref,'Back to employee')
     :!employee.active?closed('Employee is inactive','Inactive people can’t use a PIN. Make them active again before setting one.',employeeHref,'View employee')
-    :pin?<ClockerPinForm employeeId={employeeId} initialVersion={pin.version} action={saveClockerPinAction}/>
+    :pin?<ClockerPinForm employeeId={employeeId} initialVersion={pin.version} action={saveClockerPinAction} checkStatus={checkClockerPinSaveAction}/>
     :closed('PIN setup is unavailable','PIN security isn’t set up or can’t be reached here. No PIN was changed.',`${employeeHref}/clocker-pin`,'Try again')}
   </div>
  </div></ScopedReadFrame>;
