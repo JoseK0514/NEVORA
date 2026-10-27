@@ -1,9 +1,11 @@
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {Children,isValidElement,type ReactNode} from 'react';
 
 const fixture=vi.hoisted(()=>({
  states:[] as unknown[],effects:[] as (()=>void|(()=>void))[],
  start:vi.fn(),pause:vi.fn(),stop:vi.fn(),
- router:{refresh:vi.fn(),replace:vi.fn()},
+ router:{refresh:vi.fn(),replace:vi.fn()},reload:vi.fn(),
+ navigation:{pending:vi.fn(()=>false),discard:vi.fn(),subscribe:vi.fn(()=>()=>{})},
 }));
 vi.mock('react',async original=>({
  ...await original<Record<string,unknown>>(),
@@ -17,7 +19,7 @@ vi.mock('react',async original=>({
  useEffect:(effect:()=>void|(()=>void))=>{fixture.effects.push(effect);},
 }));
 vi.mock('next/navigation',()=>({useRouter:()=>fixture.router}));
-vi.mock('../app-navigation',()=>({useAppNavigation:()=>null}));
+vi.mock('../app-navigation',()=>({useAppNavigation:()=>fixture.navigation}));
 vi.mock('@/lib/private-snapshot-client',()=>({
  createPrivateSnapshotController:()=>({start:fixture.start,pause:fixture.pause,stop:fixture.stop}),
 }));
@@ -26,12 +28,19 @@ import {ScopedReadFrame} from './scoped-read-frame';
 
 const receipt={authority:'fictional-current-authority',phase:'ready',content:'Current receipt'};
 let dispose:void|(()=>void);
+let view:ReturnType<typeof ScopedReadFrame>;
+function activateRecovery(){
+ if(!isValidElement<{children:ReactNode}>(view))throw Error('Recovery view unavailable');
+ const button=Children.toArray(view.props.children).find(child=>isValidElement(child)&&child.type==='button');
+ if(!isValidElement<{onClick?:()=>void}>(button)||typeof button.props.onClick!=='function')throw Error('Recovery action unavailable');
+ button.props.onClick();
+}
 beforeEach(async()=>{
- fixture.states=[];fixture.effects=[];vi.clearAllMocks();
- vi.stubGlobal('window',new EventTarget());
+ fixture.states=[];fixture.effects=[];vi.clearAllMocks();fixture.navigation.pending.mockReturnValue(false);
+ vi.stubGlobal('window',Object.assign(new EventTarget(),{location:{reload:fixture.reload}}));
  vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible',hasFocus:()=>true}));
  vi.stubGlobal('navigator',{onLine:true});
- ScopedReadFrame({children:'Current receipt'});
+ view=ScopedReadFrame({children:'Current receipt'});
  dispose=fixture.effects[0]();
  await Promise.resolve();
  fixture.states[0]=receipt;
@@ -74,4 +83,33 @@ it('clears hidden content and rechecks after visibility is restored',()=>{
  document.dispatchEvent(new Event('visibilitychange'));
  expect(fixture.states[0]).toEqual({authority:null,phase:'expired',content:null});
  expect(fixture.start).toHaveBeenCalledTimes(1);
+});
+
+
+it('explicit recovery escapes a stalled destination after discarding it and retiring private content',()=>{
+ fixture.navigation.pending.mockReturnValue(true);
+ activateRecovery();
+ expect(fixture.navigation.discard).toHaveBeenCalledTimes(1);
+ expect(fixture.states[0]).toEqual({authority:null,phase:'expired',content:null});
+ expect(fixture.states[1]).toEqual({required:true,view:null});
+ expect(fixture.start).toHaveBeenCalledTimes(1);
+ expect(fixture.reload).toHaveBeenCalledTimes(1);
+ expect(fixture.navigation.discard.mock.invocationCallOrder[0]).toBeLessThan(fixture.reload.mock.invocationCallOrder[0]);
+});
+
+it('keeps ordinary explicit recovery inside the existing authority check when no destination is pending',()=>{
+ activateRecovery();
+ expect(fixture.navigation.discard).toHaveBeenCalledTimes(1);
+ expect(fixture.start).toHaveBeenCalledTimes(1);
+ expect(fixture.reload).not.toHaveBeenCalled();
+ expect(fixture.states[0]).toEqual({authority:null,phase:'expired',content:null});
+});
+
+it('does not navigate away offline even when a destination was pending',()=>{
+ fixture.navigation.pending.mockReturnValue(true);Object.assign(navigator,{onLine:false});
+ activateRecovery();
+ expect(fixture.navigation.discard).toHaveBeenCalledTimes(1);
+ expect(fixture.reload).not.toHaveBeenCalled();
+ expect(fixture.start).not.toHaveBeenCalled();
+ expect(fixture.states[0]).toEqual({authority:null,phase:'expired',content:null});
 });

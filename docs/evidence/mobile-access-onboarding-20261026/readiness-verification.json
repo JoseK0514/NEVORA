@@ -1,5 +1,5 @@
 {
-  "scope": "PR35 inventory and CI-only reconciliation; final hosted exact-head checks remain authoritative",
+  "scope": "PR35 source inventory, stalled-view recovery and CI reconciliation; final hosted exact-head checks remain authoritative",
   "basePrHead": "bf54d146d1003716ccf1a856258467134031e514",
   "localPhaseDCandidate": "6810969066e8d32ab63ed0f2854edcf74f3b6d1f",
   "localPhaseD": {
@@ -7,7 +7,8 @@
     "checks": 207,
     "errors": [],
     "sourceClean": true,
-    "runtimeClosed": true
+    "runtimeClosed": true,
+    "historicalBeforeHostedQueueFailure": true
   },
   "localOwnerAdvisorCandidate": "6d31122653413d7f521629a91342260885a70bf4",
   "localOwnerAdvisor": {
@@ -47,7 +48,7 @@
     "navigationDeadlineObserver": 50
   },
   "frozenRuntimeFilesUnchanged": 33,
-  "productionApplicationFilesChanged": false,
+  "productionApplicationFilesChanged": true,
   "authenticationPermissionsChanged": false,
   "initialCi": {
     "run": 40434162558,
@@ -71,5 +72,16 @@
     "No merge or deployment.",
     "Local browser is not physical-device/production/independent certification.",
     "Final exact-head hosted CI and fresh live inventory are required; live PR checks are authoritative."
-  ]
+  ],
+  "additionalSourceCorrection": "Explicit online pending-destination recovery retires private content, discards intent and reloads the same protected document to escape the stalled Next queue. Server authentication/permission decisions and all33 frozen Access integration files are unchanged.",
+  "acceptance": "The68109690 local207-check pass predates the additional Linux-observed application recovery correction. It is preserved as historical evidence, not final acceptance. Latest source requires new complete browser/build/full-suite/hosted verification.",
+  "applicationFilesChanged": [
+    "src/components/company-access/scoped-read-frame.tsx"
+  ],
+  "stalledRecoveryRegression": {
+    "red": "pr35-stalled-refresh-red.log:10passed/1failed; pending explicit recovery never called reload",
+    "green": "pr35-stalled-refresh-green.log:69passed across frame/fence/navigation suites",
+    "typecheck": "PASS",
+    "scopedLint": "PASS"
+  }
 }

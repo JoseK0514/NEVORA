@@ -156,7 +156,13 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
 
  // Effects run before any microtask, so the mount check (queued in the controller effect) reads this page's observation.
  useEffect(()=>{observationRef.current=observation;versionRef.current=version;},[observation,version]);
- const refreshCurrent=()=>{explicitRefresh.current=true;navigation?.discard();controls.current?.recover();};
+ const refreshCurrent=()=>{
+  const interrupted=navigation?.pending()===true;
+  explicitRefresh.current=true;navigation?.discard();controls.current?.recover();
+  // A router refresh can queue behind the destination the user just discarded.
+  // A fresh document escapes that queue at this same URL; server access checks still own its release.
+  if(interrupted&&online())window.location.reload();
+ };
  const ready=!recovery.required&&!!observation&&body.phase==='ready'&&body.authority===observation.authority;
  // Every tab tap runs a fresh check (about a second on the hosted preview). It draws the page's own quiet shape; only a
  // check still unresolved after STUCK_MS (or begun while a page change waits) shows its words and Refresh current view.

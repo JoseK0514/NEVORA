@@ -90,6 +90,7 @@ async function verifyExplicitRecovery(page,origin,engine,report){
    mark('explicit-source-refresh');
    await page.evaluate(()=>window.dispatchEvent(new Event('storage')));
    await page.locator('main').getByRole('button',{name:'Refresh current view',exact:true}).click({noWaitAfter:true});
+   mark('source-refresh-clicked');
    await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
    mark('release-discarded-destination');
    release();row.destinationTerminal=await terminal;
