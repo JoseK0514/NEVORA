@@ -1,8 +1,10 @@
 import {expect,it} from 'vitest';
-import {verifiedDeadline,continuationFor,resumeContinuation} from './clocker-privacy';
+import {privateScreenWindow,privateScreenRemaining,verifiedDeadline,continuationFor,resumeContinuation} from './clocker-privacy';
 import type {ClockView} from '../lib/clocker/punch-client';
 const now=Date.parse('2026-10-27T12:00:00Z');
 const view:ClockView={state:'ready',subject:'a'.repeat(64),verificationId:'b'.repeat(64),firstName:'QA',expiresAt:'2026-10-27T12:01:00Z',locationId:'loc-1',atOtherLocation:false,breakTypes:[{id:'rest',version:1,name:'Rest',category:'REST',targetMinutes:15,active:true}],allowedActions:['START_BREAK','CLOCK_OUT'],snapshot:{revision:1,entry:{id:'time-1',version:1,locationId:'loc-1',clockInAt:'2026-10-27T11:00:00Z',status:'CLOCKED_IN'},break:null}};
 it('bounds the private screen by both 30 seconds and actual server expiry',()=>{expect(verifiedDeadline(now,'2026-10-27T12:01:00Z')).toBe(now+30000);expect(verifiedDeadline(now,'2026-10-27T12:00:04Z')).toBe(now+4000);expect(verifiedDeadline(now,'2026-10-27T11:59:00Z')).toBe(now);expect(()=>verifiedDeadline(now,'invalid')).toThrow();});
 it.each(['confirm-out','select-break'] as const)('resumes only the same subject and unchanged unsent %s task',mode=>{const draft=continuationFor(view,mode);expect(draft).not.toBeNull();expect(resumeContinuation(draft,{...view,verificationId:'c'.repeat(64)})).toBe(mode);expect(resumeContinuation(draft,{...view,subject:'d'.repeat(64)})).toBe('ready');expect(resumeContinuation(draft,{...view,snapshot:{...view.snapshot,revision:2}})).toBe('ready');expect(JSON.stringify(draft)).not.toMatch(/firstName|verificationId|PIN/);});
 it('does not resume a removed break type or an unavailable action',()=>{const draft=continuationFor(view,'select-break');expect(resumeContinuation(draft,{...view,breakTypes:[],allowedActions:['CLOCK_OUT']})).toBe('ready');expect(continuationFor(view,'sending')).toBeNull();});
+
+it('a backwards wall clock cannot extend the private screen and expired replies expose no identity window',()=>{const window=privateScreenWindow(now,'2026-10-27T12:01:00Z',1000);expect(window).not.toBeNull();expect(privateScreenRemaining(window!,now-120000,31000)).toBe(0);expect(privateScreenRemaining(window!,now+4000,5000)).toBe(26000);expect(privateScreenWindow(now,'2026-10-27T11:59:59Z',1000)).toBeNull();});

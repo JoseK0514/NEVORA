@@ -30,6 +30,8 @@ export type PhotoSessionContext = {
   proofExpiresAt: string;
   /** Original shared PIN screen deadline; it must not restart for a photo task. */
   screenExpiresAt: string;
+  /** Original PIN-screen monotonic deadline in this same document. */
+  screenMonotonicExpiresAt?: number;
   /** False unless the environment's applicable photo-collection authority is met. */
   captureAuthorized: boolean;
 };
@@ -99,6 +101,7 @@ export class PunchPhotoSession {
   private readonly policy: PhotoPolicy;
   private readonly env: PhotoEnvironment;
   private readonly deadline: number;
+  private readonly monotonicDeadline: number;
   private readonly listeners = new Set<() => void>();
   private deadlineTimer: ReturnType<typeof setTimeout> | null = null;
   private operation: AbortController | null = null;
@@ -119,7 +122,10 @@ export class PunchPhotoSession {
     this.policy = readPhotoPolicy(context.policy);
     Object.freeze(this.policy.events); Object.freeze(this.policy);
     this.env = environment ?? { camera: new PunchCamera(), createObjectURL: image => URL.createObjectURL(image), revokeObjectURL: url => URL.revokeObjectURL(url) };
-    this.deadline = Math.min(Date.now() + 25000, Date.parse(context.proofExpiresAt), Date.parse(context.screenExpiresAt));
+    const wallNow=Date.now(),monotonicNow=performance.now();
+    if(context.screenMonotonicExpiresAt!==undefined&&!Number.isFinite(context.screenMonotonicExpiresAt))throw Error('Tablet timing could not be verified.');
+    const budget=Math.max(0,Math.min(25000,Date.parse(context.proofExpiresAt)-wallNow,Date.parse(context.screenExpiresAt)-wallNow,(context.screenMonotonicExpiresAt??Infinity)-monotonicNow));
+    this.deadline=wallNow+budget;this.monotonicDeadline=monotonicNow+budget;
     const requiresPhoto = this.policy.enabled && this.policy.events.includes(command.action);
     const parsedNotice = parsePhotoNotice(context.notice, this.policy);
     const notice = parsedNotice ? Object.freeze(parsedNotice) : null;
@@ -132,16 +138,17 @@ export class PunchPhotoSession {
   subscribe = (listener: () => void): (() => void) => {
     this.listeners.add(listener);
     if (this.deadlineTimer === null && !this.disposed && !['expired','cancelled','complete'].includes(this.view.phase)) {
-      this.deadlineTimer = setTimeout(() => this.expire(), Math.max(0, this.deadline - Date.now()));
+      this.deadlineTimer = setTimeout(() => this.expire(), Math.max(0, this.remaining()));
     }
     return () => { this.listeners.delete(listener); };
   };
   private change(patch: Partial<PhotoSessionView>): void {
     this.view = { ...this.view, ...patch }; this.listeners.forEach(listener => listener());
   }
+  private remaining():number{return Math.max(0,Math.min(this.deadline-Date.now(),this.monotonicDeadline-performance.now()));}
   private active(allowAlternative = false): boolean {
     if (this.disposed || ['expired','cancelled','complete'].includes(this.view.phase) || this.view.phase === 'setup_required' && !allowAlternative) return false;
-    if (Date.now() >= this.deadline) { this.expire(); return false; } return true;
+    if (this.remaining() <= 0) { this.expire(); return false; } return true;
   }
   private clearImage(): void {
     if (this.view.previewUrl) this.env.revokeObjectURL(this.view.previewUrl);
@@ -159,14 +166,14 @@ export class PunchPhotoSession {
     let timer!: ReturnType<typeof setTimeout>;
     const stopped = new Promise<never>((_, reject) => {
       controller.signal.addEventListener('abort', () => reject(Error('The current operation needs checking.')), { once: true });
-      timer = setTimeout(() => controller.abort(), Math.max(1, Math.min(8000, this.deadline - Date.now())));
+      timer = setTimeout(() => controller.abort(), Math.max(1, Math.min(8000, this.remaining())));
     });
     try { return await Promise.race([work(controller.signal), stopped]); }
     finally { clearTimeout(timer); if (this.operation === controller) this.operation = null; }
   }
   async checkContext(): Promise<boolean> {
     if (!this.active()) return false;
-    try { await this.bindings.verifyContext?.(AbortSignal.timeout(Math.max(1,Math.min(5000,this.deadline-Date.now())))); return this.active(); }
+    try { await this.bindings.verifyContext?.(AbortSignal.timeout(Math.max(1,Math.min(5000,this.remaining())))); return this.active(); }
     catch { this.cancel(); return false; }
   }
   async open(video: HTMLVideoElement): Promise<void> {
@@ -174,7 +181,7 @@ export class PunchPhotoSession {
     this.clearImage(); const generation = this.generation; this.change({ phase: 'camera_starting', cameraError: null });
     try {
       if (!await this.checkContext() || generation !== this.generation) return;
-      await this.bounded(signal => this.env.camera.open(video, signal, Math.min(8000, this.deadline - Date.now())));
+      await this.bounded(signal => this.env.camera.open(video, signal, Math.min(8000, this.remaining())));
       if (generation === this.generation && await this.checkContext()) this.change({ phase: 'camera_live' });
       else this.env.camera.close();
     } catch (error) {

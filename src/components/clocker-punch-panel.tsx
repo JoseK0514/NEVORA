@@ -42,7 +42,7 @@ function elapsed(value:string,now:number):string {
  const h=Math.floor(minutes/60),m=minutes%60;return h?`${h}h ${m}m`:`${m}m`;
 }
 const breakIcon=(category:string):ClockerIconName=>category==='REST'?'rest':category==='MEAL'?'meal':'break';
-export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinuationChange,screenExpiresAt}:{screenExpiresAt?:number;locationKey:string;timeZone:string;onDone:()=>void;resume?:ClockContinuation|null;onContinuationChange?:(draft:ClockContinuation|null)=>void}) {
+export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinuationChange,screenExpiresAt,screenMonotonicExpiresAt}:{screenMonotonicExpiresAt?:number;screenExpiresAt?:number;locationKey:string;timeZone:string;onDone:()=>void;resume?:ClockContinuation|null;onContinuationChange?:(draft:ClockContinuation|null)=>void}) {
  const t=useClockerCopy(),presentation=useClockerPresentation();
  const [view,setView]=useState<ClockView|null>(null),[pending,setPending]=useState<PendingPunch|null>(null);
  const [mode,setMode]=useState<Mode>('loading'),[message,setMessage]=useState<string|null>(null);
@@ -102,7 +102,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
     const config=readPhotoConfiguration(await transport.policy(AbortSignal.timeout(6000)));
     if(!alive.current)return;
     if(config.policy.enabled&&config.policy.events.includes(saved.command.action)){
-     const context:PhotoSessionContext={intent:saved,policy:config.policy,notice:config.notice,proofExpiresAt:current.expiresAt,screenExpiresAt:new Date(screenExpiresAt??0).toISOString(),captureAuthorized:config.notice!==null};
+     const context:PhotoSessionContext={screenMonotonicExpiresAt,intent:saved,policy:config.policy,notice:config.notice,proofExpiresAt:current.expiresAt,screenExpiresAt:new Date(screenExpiresAt??0).toISOString(),captureAuthorized:config.notice!==null};
      const boundTransport=createClockerPhotoTransport(locationKey,fetch,config.notice?{policyVersion:config.notice.policyVersion,profileVersion:config.notice.profileVersion}:null);
      const bindings:PhotoBindings={
       preserveIntent:async intent=>{await(await recoveryJournal()).saveExact(locationKey,intent);if(alive.current)setPending(intent);},
