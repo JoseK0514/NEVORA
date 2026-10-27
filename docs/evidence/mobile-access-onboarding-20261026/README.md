@@ -1,6 +1,6 @@
 # Mobile Access integration evidence
 
-Runtime candidate: `c61376f476b184d3374816c3d87fb0a51603bbc5`, based on `development`46e2027. Later handoff/evidence changes do not alter executable inputs.
+Runtime candidate: `c61376f476b184d3374816c3d87fb0a51603bbc5`, based on `development`46e2027. The subsequent [source/CI reconciliation](../../handoffs/2026-10-26-pr35-merge-readiness.md) fixes stalled client navigation and the browser drivers. Its [verification record](readiness-verification.json) supersedes the original candidate for PR35 readiness; all 33 frozen mobile runtime hashes remain unchanged.
 
 [Verification summary](verification.json) records actual counts, limits and SHA256 hashes of the full external logs and changed runtime inputs. [Browser results](browser-results.json) records the completed three-engine run. Full owned runtime/source/build receipts and logs remain in the task-owned `work/integration-evidence` directory outside the repository. They are developer verification, not independent certification or production results.
 

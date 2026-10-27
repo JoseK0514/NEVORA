@@ -29,7 +29,7 @@ Before broad rollout: selected-environment acceptance; independent integrated UI
 
 ## Review and verification
 
-Candidate `c61376f476b184d3374816c3d87fb0a51603bbc5`; later handoff/evidence commits change no executable source. Default-suite inputs stayed identical during the run (only separately selected browser integration tests changed).
+Original mobile integration candidate `c61376f476b184d3374816c3d87fb0a51603bbc5`. The checks below are its historical integration evidence. Later source/CI reconciliation corrects stalled client navigation and browser drivers; see the [current readiness handoff](2026-10-26-pr35-merge-readiness.md). All 33 frozen mobile runtime hashes remain unchanged.
 
 - Full default suite:580 files passed,27 skipped;9,636 tests passed,801 skipped,55 todo;470.83s. Existing skipped SQL/environment suites remain skipped; the dedicated mobile browser test uses an owned real database.
 - Source-bound owned browser: PASS82.64s; Chromium/WebKit/Firefox,320/390/430px, EN/ES, normal/200% text,1440px desktop, one form and proof/password preservation, actual request/review/correction/reset, mismatch/invalid focus, revoked sessions and consumed proofs, logout/account switching and Employee/Manager invitation403s. Zero retained page errors. No real mail sent.
@@ -45,7 +45,7 @@ Reproduce from a clean committed checkout with Node24.19/npm11.17: `npm ci`; `np
 
 Follow-up: Jose authorized source/CI reconciliation for PR35. The live inventory now passes at60 sources/6 heads; three already-merged tips are preserved in exact recovery tags. See the [merge-readiness handoff](2026-10-26-pr35-merge-readiness.md). This supersedes the inventory blocker below; matching hosted CI remains required.
 
-At the fetched base `46e202786863279302026ee03a0e225c359fa55c`, `npm run check:development-sources` was already red: Claude-UI-Fix advanced; claude/home-clock-row, claude/quiet-check-skeleton and claude/quiet-everywhere unclassified;8 remote branches exceed the recorded ceiling6. This feature does not merge/delete other work, raise the ceiling or alter that inventory. Repository assembly owner must reconcile it before a merge-ready claim. Feature-branch publication may add another remote branch; it does not waive the gate.
+Historical blocker, now resolved by the linked follow-up: at the original fetched base `46e202786863279302026ee03a0e225c359fa55c`, `npm run check:development-sources` was red: Claude-UI-Fix advanced; claude/home-clock-row, claude/quiet-check-skeleton and claude/quiet-everywhere unclassified;8 remote branches exceed the recorded ceiling6. This feature does not merge/delete other work, raise the ceiling or alter that inventory. The follow-up preserves exact recovery tags and the six-head ceiling; the live gate now passes. Final matching hosted CI remains required before a merge-ready claim.
 
 
 ## Delivery decisions
@@ -56,4 +56,4 @@ At the fetched base `46e202786863279302026ee03a0e225c359fa55c`, `npm run check:d
 - One whole-branch review is retained with author regression-based remediation. Independent UI/QA acceptance of the integrated app remains a separate gate where required.
 - Use the existing recoverable activation-unavailable retry contract; terminal failure phases do not display confirmed IDs. Do not invent a new auth state to satisfy a presentation test.
 - The existing owned runtime requires committed inputs; checkpoint commits allow exact-source verification. Native managed worktree creation could not apply to this projectless task, so Git created a task-owned isolated worktree without touching active work.
-- Program/release: the user already authorized a tested PR to development. Draft PR preserves the unresolved assembly gate; no merge/deploy/rollout or unrelated branch cleanup is implied.
+- Program/release: the user already authorized a tested PR to development. PR readiness follows the current source/CI reconciliation; no merge/deploy/rollout is implied.
