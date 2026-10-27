@@ -143,11 +143,13 @@ it('integrates Employee swap/cover responses and own detail with current permiss
     const stale=await command(peer,{kind:'PROPOSE_SWAP',...await source(secretShift),targetShiftId:declineTarget.sourceShiftId,targetEpisodeId:declineTarget.sourceEpisodeId,targetTermsFingerprint:declineTarget.sourceTermsFingerprint} as CommandInput);
     expect(stale.status).toBe('pending');if(stale.status!=='pending')throw Error('Stale precondition');
     await q("UPDATE shifts SET start_time='17:00' WHERE id=$1",[secretShift]);await publishScheduleWithRevision({locationId:'loc-2',weekStart:f.week,managerId:'QAOWNER'},app.database.executor);
-    await load('foryou',stale.requestId);await page.locator('.em-response-status:visible strong').filter({hasText:'Expired'}).waitFor();
+    await load('foryou',stale.requestId);await page.locator('.em-response-status:visible strong').filter({hasText:'Needs your answer'}).waitFor();
+    expect(await page.locator('.em-exchange:visible').innerText()).toContain('The reviewed shift changed or the request needs review.');
     expect(await page.getByRole('button',{name:'Accept swap',exact:true}).count()).toBe(0);
+    expect(await page.getByRole('button',{name:'Decline swap',exact:true}).isEnabled()).toBe(true);
     expect((await page.locator('.em-response-comparison:visible').innerText()).replace(/\s+/g,' ')).toContain('4:00 PM');
     expect((await command(actor,{kind:'ACCEPT',requestId:stale.requestId,expectedRevision:1} as CommandInput)).status).toBe('blocked');
-    await shot('reviewed-terms-changed');record('A changed publication withholds responses and retains reviewed terms; the server also rejects stale acceptance');
+    await shot('reviewed-terms-changed');record('A changed publication withholds acceptance, preserves permitted decline and retains reviewed terms; the server also rejects stale acceptance');
    }
    if(index===0){
     // Older historical fixture rows exercise the incumbent recent window; their statuses are setup data, not tested cancellation receipts.
