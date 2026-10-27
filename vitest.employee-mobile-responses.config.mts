@@ -1,0 +1,3 @@
+import {defineConfig} from 'vitest/config';
+import {fileURLToPath} from 'node:url';
+export default defineConfig({resolve:{alias:{'@':fileURLToPath(new URL('./src',import.meta.url)),'server-only':fileURLToPath(new URL('./node_modules/next/dist/compiled/server-only/empty.js',import.meta.url))}},test:{include:['src/test/integration/employee-mobile-responses.integration.ts','src/test/integration/employee-mobile-requests.integration.ts','src/test/integration/shift-change-hardening.integration.ts','src/test/integration/shift-change-views.integration.ts'],fileParallelism:false,testTimeout:600000,hookTimeout:30000,passWithNoTests:false}});

@@ -6,8 +6,8 @@ import {createEmployeeViewGet} from './employee-view-route.server';
 import {createPortalNotificationViewGet,createManagementNotificationReadPost} from './employee-view-route.server';
 import {employeeViewAuthority} from './employee-view-authority.server';
 import type {SessionMutationProof} from './shift-changes/types';
-const binding=(kind:'profile'|'notifications'|'requests')=>employeeViewAuthority({employee:m.session,sessionTokenHash:m.token} as SessionMutationProof,kind);
-const request=(kind:'profile'|'notifications'|'requests',headers:Record<string,string>={},search='')=>new Request('http://localhost/api/employee/'+kind+search,{headers:{'X-Nevora-Employee-View':m.session?binding(kind):'',...headers}});
+const binding=(kind:'profile'|'notifications'|'requests'|'exchange')=>employeeViewAuthority({employee:m.session,sessionTokenHash:m.token} as SessionMutationProof,kind);
+const request=(kind:'profile'|'notifications'|'requests'|'exchange',headers:Record<string,string>={},search='')=>new Request('http://localhost/api/employee/'+kind+search,{headers:{'X-Nevora-Employee-View':m.session?binding(kind):'',...headers}});
 beforeEach(()=>{m.session={id:'self',role:'EMPLOYEE'};m.token='a'.repeat(64);m.read.mockReset().mockResolvedValue({state:'ready',kind:'profile'});});
 it.each(['OWNER','MANAGER','LEAD','EMPLOYEE'])('permits only the actual %s recipient in the global notification view',async role=>{
  const factory=createPortalNotificationViewGet;
@@ -19,7 +19,7 @@ it.each(['OWNER','MANAGER','LEAD','EMPLOYEE'])('permits only the actual %s recip
  expect((await GET(request('notifications',{'X-Nevora-Employee-View':binding('profile')}))).status).toBe(403);
  expect(m.read).toHaveBeenCalledTimes(1);
 });
-it.each(['profile','notifications','requests'] as const)('authenticates actual %s destination, exact binding and no arbitrary employee selector',async kind=>{
+it.each(['profile','notifications','requests','exchange'] as const)('authenticates actual %s destination, exact binding and no arbitrary employee selector',async kind=>{
  const GET=createEmployeeViewGet(kind,m.read);
  m.session=null;expect((await GET(request(kind))).status).toBe(401);
  m.session={id:'manager',role:'MANAGER'};expect((await GET(request(kind))).status).toBe(403);

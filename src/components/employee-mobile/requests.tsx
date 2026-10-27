@@ -109,7 +109,7 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
      </ul></section>
      <section aria-labelledby="em-recent-heading"><h2 id="em-recent-heading">Recent requests</h2>
       {snapshot.recent===null?<p className="em-request-notice" role="status">Your request history couldn’t be checked. Open the request type below to try again.</p>:snapshot.recent.length?<ul className="em-request-list">{snapshot.recent.map(row=><Entry key={row.kind+row.id} href={href(row)} title={`${row.kind==='timeOff'?'Time off':row.kind==='callout'?'Unable to work':'Shift request'} · ${day(row.date)}`} detail={status(row.status)} icon={row.kind==='timeOff'?<CalendarMinusIcon/>:<ArrowsLeftRightIcon/>}/>)}</ul>:<p className="em-request-notice">No requests yet. Start with one of the options above.</p>}
-      <div className="em-request-links">{snapshot.modules.timeOff?<Link href="/app/requests?tab=my">All time-off requests</Link>:null}{snapshot.modules.marketplace?<Link href="/app/exchange?tab=requests">All shift requests</Link>:null}</div>
+      <div className="em-request-links">{snapshot.modules.timeOff?<Link href="/app/requests?tab=my">All time-off requests</Link>:null}{snapshot.modules.marketplace?<Link href="/app/exchange?tab=requests">My shift requests</Link>:null}</div>
      </section>
     </>:snapshot.modules.marketplace?<>
      {[...operations.values()].filter(item=>(item.state.pending||item.state.result)&&!eligible.some(shift=>shift.id===item.requestId)).map(item=><section className="em-request-notice" aria-label="Your pickup result" key={item.requestId}><Pickup operation={item} onRefresh={refresh} canRecover={canRecover}/></section>)}

@@ -1,0 +1,28 @@
+import React from 'react';
+import {expect,it,vi} from 'vitest';
+import {renderToStaticMarkup} from 'react-dom/server';
+vi.mock('@/app/app/exchange/actions',()=>({shiftChangeAction:vi.fn(),reconcileShiftChangeAction:vi.fn()}));
+import {EmployeeExchangeView} from './exchange-view';
+import {ResponsiveEmployeeExchange} from './exchange';
+import {EmployeeRequestOperation} from './request-operation';
+import type {EmployeeExchangeSnapshot,EmployeeRequestDetail} from '@/lib/employee-exchange';
+const authority='a'.repeat(64);
+const detail:EmployeeRequestDetail={summary:{id:'own-request',kind:'swap',viewer:'recipient',status:'EMPLOYEE_PENDING',date:'2026-11-03',createdAt:'2026-10-27T12:00:00Z',counterparty:'Blair C.',revision:1,releaseApplies:null},offered:{date:'2026-11-03',startTime:'22:00',endTime:'06:00',location:'West',position:'Support',lead:false},requested:{date:'2026-11-04',startTime:'09:00',endTime:'17:00',location:'Main',position:'Support',lead:false},history:null,checks:[{kind:'ACCEPT',allowed:false,notice:'The reviewed shift changed.',outcome:null},{kind:'DECLINE',allowed:true,notice:null,outcome:null}],notice:null,reason:null};
+const snapshot=(patch:Partial<Extract<EmployeeExchangeSnapshot,{state:'ready'}>>={}):EmployeeExchangeSnapshot=>({state:'ready',kind:'exchange',authority,observedAt:'2026-10-27T12:00:00Z',validForMs:45000,timeZone:'America/Puerto_Rico',enabled:true,selection:'own-request',incoming:null,activity:null,detail,...patch});
+const render=(read:EmployeeExchangeSnapshot,selection:string|null='own-request')=>renderToStaticMarkup(<EmployeeExchangeView state={{snapshot:read,refreshing:false,paused:false}} authority={authority} mode="incoming" selection={selection} operation={new EmployeeRequestOperation('own-request',1)} onRefresh={()=>{}} onRespond={()=>{}} onRetry={()=>{}}/>);
+it('compares reviewed shifts, names overnight ending and withholds unavailable accept while preserving permitted decline',()=>{
+ const html=render(snapshot());
+ expect(html).toContain('Your current shift');expect(html).toContain('You would work');expect(html).toContain('Ends Wed, Nov 4');
+ expect(html).not.toContain('>Accept swap<');expect(html).toContain('>Decline swap<');expect(html).toContain('Request history couldn’t be checked');
+});
+it('missing, denied, replaced and module-off reads cannot render private response facts/actions',()=>{
+ for(const read of [snapshot({detail:null}),snapshot({authority:'b'.repeat(64)}),snapshot({enabled:false,detail:null}),{state:'unavailable',reason:'access_denied'} as const]){
+  const html=render(read);expect(html).not.toContain('Blair');expect(html).not.toContain('West');expect(html).not.toContain('>Decline swap<');
+ }
+});
+it('keeps unknown incoming/activity distinct from verified empty and preserves the desktop direct-child tree',()=>{
+ expect(render(snapshot({selection:null,detail:null,incoming:null,activity:[]}),null)).toContain('couldn’t be checked');
+ expect(render(snapshot({selection:null,detail:null,incoming:[],activity:[]}),null)).toContain('No swaps need your answer');
+ const html=renderToStaticMarkup(<ResponsiveEmployeeExchange authority={authority} mode="mine"><div className="q-page q-shiftreq">Existing desktop</div></ResponsiveEmployeeExchange>);
+ expect(html.startsWith('<div class="q-page q-shiftreq">')).toBe(true);
+});

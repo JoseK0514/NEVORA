@@ -24,6 +24,7 @@ import "./employee-style.css";
 import "./quiet-shell.css";
 import "@/components/employee-mobile/mobile.css";
 import "@/components/employee-mobile/requests.css";
+import "@/components/employee-mobile/exchange.css";
 import {cookies} from "next/headers";
 import {createHash} from "node:crypto";
 import {employeeViewAuthority} from "@/lib/employee-view-authority.server";

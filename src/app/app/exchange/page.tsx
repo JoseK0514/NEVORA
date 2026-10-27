@@ -1,5 +1,6 @@
 import { keepWhole } from "@/lib/keep-whole";
 import {ResponsiveEmployeeRequests} from "@/components/employee-mobile/requests";
+import {ResponsiveEmployeeExchange} from "@/components/employee-mobile/exchange";
 import {employeeViewAuthority} from "@/lib/employee-view-authority.server";
 import {randomUUID} from 'node:crypto';
 import { moduleGate } from "@/lib/workspace-presentation/current.server";
@@ -277,7 +278,7 @@ export default async function ExchangePage({
         </>}
       </QuietPage>
     );
-    return view==='available'?<ResponsiveEmployeeRequests mode="open" selected={params.requestId} authority={employeeViewAuthority(proof!,'requests')}>{existing}</ResponsiveEmployeeRequests>:existing;
+    return view==='available'?<ResponsiveEmployeeRequests mode="open" selected={params.requestId} authority={employeeViewAuthority(proof!,'requests')}>{existing}</ResponsiveEmployeeRequests>:<ResponsiveEmployeeExchange mode={view==='foryou'?'incoming':'mine'} selection={params.requestId??null} authority={employeeViewAuthority(proof!,'exchange')}>{existing}</ResponsiveEmployeeExchange>;
   }
 
   return null;
