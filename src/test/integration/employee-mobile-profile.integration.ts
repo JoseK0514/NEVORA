@@ -67,7 +67,7 @@ it('integrates current own Profile, preferences, contextual help and native sign
     expect(await page.evaluate(()=>localStorage.getItem('nv-theme'))).toBe(theme);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
     for(const [subject,locator] of [['signout',page.getByRole('button',{name:'Sign out',exact:true})],['profile-supporting-copy',page.locator('.em-profile-note')],['preference-label',page.locator('label[for="em-profile-language"]')]] as const){const measured=await locator.evaluate(measureRenderedContrast);contrasts.push({engine,theme,width,subject,ratio:measured.ratio});expect(measured.ratio).toBeGreaterThanOrEqual(4.5);}
-    const small=await page.locator('.em-profile :is(a,button,select,summary)').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.getClientRects().length&&el.getBoundingClientRect().height<43.5).map(el=>el.textContent));expect(small).toEqual([]);
+    const small=await page.locator('.em-profile :is(a,button,select,summary)').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.checkVisibility({visibilityProperty:true,opacityProperty:true})&&el.getBoundingClientRect().height<43.5).map(el=>el.textContent));expect(small).toEqual([]);
     expect(await page.locator('#profile-settings-title').evaluate((el:HTMLElement)=>getComputedStyle(el).fontSize)).toBe('19px');
     await page.getByLabel('Appearance',{exact:true}).focus();await shot('profile-'+theme+'-'+width);await viewport('profile-'+theme+'-'+width);
    }
