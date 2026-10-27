@@ -78,6 +78,7 @@ async function verifyExplicitRecovery(page,origin,engine,report){
   return gate.then(()=>route.continue()).catch(error=>{if(!/already handled/i.test(String(error?.message)))throw error;});
  };
  mark('source-entry');await page.goto(origin+source);await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
+ const sourceDocument=await page.evaluate(()=>performance.timeOrigin);
  await page.route('**/app/reports?*',handler);
  const deadline=performance.now()+15000;
  try{
@@ -91,14 +92,18 @@ async function verifyExplicitRecovery(page,origin,engine,report){
    await page.evaluate(()=>window.dispatchEvent(new Event('storage')));
    await page.locator('main').getByRole('button',{name:'Refresh current view',exact:true}).click({noWaitAfter:true});
    mark('source-refresh-clicked');
+   await page.waitForFunction(previous=>performance.timeOrigin!==previous,sourceDocument);
    await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
+   row.originatingDocumentRetired=true;
    mark('release-discarded-destination');
-   release();row.destinationTerminal=await terminal;
+   // Once the originating document is gone, a late RSC cannot own this new router.
+   // WebKit need not emit a request terminal event for a routed request disposed with that document.
+   void terminal.then(outcome=>{row.destinationTerminal=outcome;});release();
    await page.evaluate(()=>new Promise(ready=>requestAnimationFrame(()=>requestAnimationFrame(ready))));
    assert.equal(new URL(page.url()).pathname+new URL(page.url()).search,source,'A discarded destination must not replace explicit fresh source recovery');
    assert(await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).isVisible());
    mark('complete');
-   row.status='passed';
+   assert.equal(row.originatingDocumentRetired,true);row.status='passed';
   },deadline);
  }catch(error){row.status='failed';throw error;}
  finally{release();stop();await page.unroute('**/app/reports?*',handler);}
