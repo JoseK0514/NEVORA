@@ -46,3 +46,13 @@ from application evidence. Physical iPad acceptance remains required.
 - Real owned Next/PostgreSQL enrollment and PIN flows: 12 Chromium/WebKit checks passed at 768x1024, 1024x768, 1366x1024 and 200% text, with Spanish denial/success and no console errors.
 - Two bounded visual rounds: corrected inherited action radius/shadow in the second; geometry assertions passed. Captures: `outputs/clocker/app-ipad-evidence` in the parent task workspace.
 - 21st search used project context; existing primitives fit better than the returned time-picker/timesheet components. Review found seven informational palette-literal notices; these values define the approved scoped palette, not a new portal theme. No hosted AI generation used.
+
+## T4 — Privacy and secure continuation
+
+- Partial PIN entry clears after 20 idle seconds, retaining focus.
+- Private views expire at the earlier of 30 seconds and the server identity deadline; last 10 seconds show a secure continuation action.
+- Continuation clears identity first, awaits the existing serialized server clear, then requires a fresh PIN. Only an unchanged same-subject unsent task can resume; no PIN, name, command or old verification is carried.
+- Existing epoch fences, Escape, background/pagehide and persisted-pageshow clearing remain.
+- New partial-PIN browser test failed before the fix. Helper/copy tests: 8 passed. Existing actual PIN transport: 13 passed. TypeScript passed.
+- Owned Chromium/WebKit: 16 checks passed, including unfinished PIN expiry, warning/hard clear and delayed verify response after Escape that cannot restore private content.
+- Native sleep/lock/background acceptance remains on the physical-iPad checklist.
