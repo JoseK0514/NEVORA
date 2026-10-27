@@ -22,3 +22,8 @@ Preserve login server action, API payloads, role/session authorization, source43
 External evidence: ../integration-evidence (task-owned, outside repository). Runtime owns only throwaway loopback PostgreSQL and synthetic accounts; mail disabled unless owned local SMTP fixture. npm build/start are next build/start (no migration hooks); actual application SQL/setup commands are not run against existing environments.
 
 Expected required checks: npm test -- --maxWorkers=1; npm run typecheck; npm run lint; npm run build; scoped mobile-access owned browser suite; npm audit --audit-level=high. Inspect each result; report any failure rather than relaxing assertions/gates. Current source inventory is already red: Claude-UI-Fix advanced, three unclassified Claude branches and8 remote branches exceeding6 ceiling. No branch deletion/automatic assembly is in scope.
+
+
+## Execution record
+
+Runtime candidate `c61376f476b184d3374816c3d87fb0a51603bbc5`: Tasks1–5 implemented and verified locally. Full suite9,636 passed/801 skipped; owned three-engine mobile browser passed; type/lint/build passed. One fresh branch review and bounded regression-based author remediation are recorded in the [handoff](../handoffs/2026-10-26-mobile-access-onboarding-integration.md) and [evidence](../evidence/mobile-access-onboarding-20261026/README.md). Task6 publication targets a draft PR to development because the pre-existing source-assembly inventory gate remains unresolved. No rollout, merge, production/native-device verification or independent integrated certification is implied.
