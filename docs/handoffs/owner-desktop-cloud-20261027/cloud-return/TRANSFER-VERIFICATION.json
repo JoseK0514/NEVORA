@@ -1,0 +1,30 @@
+{
+  "checked_at_puerto_rico": "2026-10-27T17:12:18.435693-04:00",
+  "transfer_integrity": "PASS",
+  "delta_zip_sha256": "de95b145ba8b343a2d00a16b477d22531ec34c54cc0d39d351b3ad2f4b9762ad",
+  "delta_zip_size": 97228310,
+  "bundle_manifest_sha256": "049591d1e412017fdb65c692876edbc32cf0bcad3ef6c1438b0078bf66c30b8a",
+  "path_manifest_sha256": "7dd2dee62ffe236735a06c6035dadec6a2b44cbd539afe44b053a80dec55d421",
+  "full_fresh_G10_plus_delta_restore": {
+    "result": "PASS",
+    "restored_to": "/workspace/nevora-g11-local-transfer-restore-check",
+    "complete_files_checked": 12643,
+    "runtime_sha256": "0a9ceef3365888aac4be34f7ceede8cc3c6fb7272d4e77d450cad7f8bf720c05",
+    "application_checkout_modified": false,
+    "next_read": "/workspace/nevora-g11-local-transfer-restore-check/CODEX-CLOUD-G11-CONTINUATION.md",
+    "browser_matrix_rerun": false
+  },
+  "restored_build": {
+    "result": "PASS",
+    "exit_code": 0,
+    "runtime_sha256": "0a9ceef3365888aac4be34f7ceede8cc3c6fb7272d4e77d450cad7f8bf720c05",
+    "inputs_checked": 132,
+    "browser_matrix_rerun": false
+  },
+  "original_independent_review_files_unchanged": 281,
+  "ownership_files_unchanged": 310,
+  "feature_G11_complete": false,
+  "feature_work": "stopped; local Owner desktop owns continuation",
+  "no_main_development_merge_or_deployment": true,
+  "scope_note": "Archive, path, byte, source/build and original-evidence integrity only; no new full G11 browser/model certification."
+}

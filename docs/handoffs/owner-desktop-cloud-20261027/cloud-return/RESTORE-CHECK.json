@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "restored_to": "/workspace/nevora-g11-local-transfer-restore-check",
+  "complete_files_checked": 12643,
+  "runtime_sha256": "0a9ceef3365888aac4be34f7ceede8cc3c6fb7272d4e77d450cad7f8bf720c05",
+  "application_checkout_modified": false,
+  "next_read": "/workspace/nevora-g11-local-transfer-restore-check/CODEX-CLOUD-G11-CONTINUATION.md",
+  "browser_matrix_rerun": false
+}

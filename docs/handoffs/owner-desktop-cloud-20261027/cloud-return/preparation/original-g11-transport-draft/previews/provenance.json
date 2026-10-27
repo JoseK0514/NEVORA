@@ -1,0 +1,46 @@
+{
+  "html_sha256": "0a9ceef3365888aac4be34f7ceede8cc3c6fb7272d4e77d450cad7f8bf720c05",
+  "confirmation": "complete",
+  "origin": "Raw local Chromium static-prototype browser; no Mac in-app/device certification",
+  "captures": {
+    "payroll-statements-run-live.png": {
+      "sha256": "77b3161143d9e4f1d96959fa1bfade5cc38f6677d7359fa41e9359a8cd7a5b68",
+      "viewport": {
+        "width": 589,
+        "height": 853
+      },
+      "fullPage": true,
+      "pixelsEdited": false
+    },
+    "payroll-statements-jobs-live.png": {
+      "sha256": "e6ed45417ef05061b2d9f1a9c9a7ec6213fc84543e35714a6818482fecfe5922",
+      "viewport": {
+        "width": 589,
+        "height": 853
+      },
+      "fullPage": true,
+      "pixelsEdited": false
+    },
+    "payroll-statements-mypay-empty-live.png": {
+      "sha256": "3d8c89b5bffd5a117e05fb5a92c4662cecc609b61d55c296fc8c44a5b12ee532",
+      "viewport": {
+        "width": 589,
+        "height": 853
+      },
+      "fullPage": true,
+      "pixelsEdited": false
+    },
+    "payroll-statements-mypay-published-live.png": {
+      "sha256": "5ed993d80aea4f260a28dd07c7c8e72887e328ed67855e700608b10c28b77757",
+      "viewport": {
+        "width": 589,
+        "height": 853
+      },
+      "fullPage": true,
+      "pixelsEdited": false
+    }
+  },
+  "errors": [],
+  "warnings": [],
+  "externalRequests": []
+}

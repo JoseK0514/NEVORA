@@ -1,0 +1,229 @@
+{
+  "state": "TRANSFERRED_INCOMPLETE",
+  "at_puerto_rico": "2026-10-27T17:06:29.126992-04:00",
+  "receiver_thread": "01a17932-07ee-72d0-8ea7-d16a118d8dcb",
+  "runtime_sha256": "0a9ceef3365888aac4be34f7ceede8cc3c6fb7272d4e77d450cad7f8bf720c05",
+  "original_G10_runtime_sha256": "f6e3f5b3b332a61f12a2607c9a9728d7086a77747472f5217badc786ad543a3f",
+  "source_contract_commit": "46e202786863279302026ee03a0e225c359fa55c",
+  "transport_base_commit": "b16302978be01bb0e288bfc3e785c7e13a9a2c11",
+  "G11_scope": [
+    "P-17",
+    "P-18",
+    "F-04"
+  ],
+  "G11_complete": false,
+  "G12_started": false,
+  "models": {
+    "passed": 461,
+    "runners": 13,
+    "failed": 0,
+    "syntax_checked": 114,
+    "html_sha256": "0a9ceef3365888aac4be34f7ceede8cc3c6fb7272d4e77d450cad7f8bf720c05"
+  },
+  "original_review": {
+    "verdict": "FIX",
+    "runtime_sha256": "1bc181a1c478bda4652f1f2ece62b5504ad26362e5a4f2fc5685dcadeb9205a1"
+  },
+  "running_checks": [],
+  "stopped_process_record": "work/owner-desktop/evidence/g11/transfer-stop.json",
+  "current_browser_attempts": {
+    "chromium": {
+      "completed_checkpoint_suites": 21,
+      "suites": [
+        {
+          "suite": "g11-browser-check",
+          "code": 0,
+          "passed": 31,
+          "failed": 0,
+          "terminal_summary": true
+        },
+        {
+          "suite": "g10-browser-check",
+          "code": 1,
+          "passed": 46,
+          "failed": 2,
+          "terminal_summary": true
+        },
+        {
+          "suite": "g09-browser-check",
+          "code": 1,
+          "passed": 48,
+          "failed": 1,
+          "terminal_summary": true
+        },
+        {
+          "suite": "g08-browser-check",
+          "code": 1,
+          "passed": 98,
+          "failed": 5,
+          "terminal_summary": true
+        },
+        {
+          "suite": "g07-browser-check",
+          "code": 1,
+          "passed": 89,
+          "failed": 1,
+          "terminal_summary": true
+        },
+        {
+          "suite": "g06-browser-check",
+          "code": 0,
+          "passed": 40,
+          "failed": 0,
+          "terminal_summary": true
+        },
+        {
+          "suite": "g05-browser-check",
+          "code": 0,
+          "passed": 48,
+          "failed": 0,
+          "terminal_summary": true
+        },
+        {
+          "suite": "g04-browser-check",
+          "code": 1,
+          "passed": null,
+          "failed": null,
+          "terminal_summary": false
+        },
+        {
+          "suite": "warning-surfaces-check",
+          "code": 0,
+          "passed": 35,
+          "failed": 0,
+          "terminal_summary": true
+        },
+        {
+          "suite": "g03-browser-check",
+          "code": 0,
+          "passed": 50,
+          "failed": 0,
+          "terminal_summary": true
+        },
+        {
+          "suite": "g02-browser-check",
+          "code": 0,
+          "passed": 42,
+          "failed": 0,
+          "terminal_summary": true
+        },
+        {
+          "suite": "check",
+          "code": 0,
+          "passed": 34,
+          "failed": 0,
+          "terminal_summary": true
+        },
+        {
+          "suite": "team-browser-check",
+          "code": 0,
+          "passed": 37,
+          "failed": 0,
+          "terminal_summary": true
+        },
+        {
+          "suite": "foundation-check",
+          "code": 0,
+          "passed": 103,
+          "failed": 0,
+          "terminal_summary": true
+        },
+        {
+          "suite": "warnings-check",
+          "code": 0,
+          "passed": 51,
+          "failed": 0,
+          "terminal_summary": true
+        },
+        {
+          "suite": "feedback-check",
+          "code": 0,
+          "passed": 30,
+          "failed": 0,
+          "terminal_summary": true
+        },
+        {
+          "suite": "dialog-focus-check",
+          "code": 0,
+          "passed": 4,
+          "failed": 0,
+          "terminal_summary": true
+        },
+        {
+          "suite": "request-notice-check",
+          "code": 0,
+          "passed": 11,
+          "failed": 0,
+          "terminal_summary": true
+        },
+        {
+          "suite": "published-warning-check",
+          "code": 0,
+          "passed": 11,
+          "failed": 0,
+          "terminal_summary": true
+        },
+        {
+          "suite": "date-picker-check",
+          "code": 0,
+          "passed": 15,
+          "failed": 0,
+          "terminal_summary": true
+        },
+        {
+          "suite": "select-coverage-check",
+          "code": 0,
+          "passed": null,
+          "failed": 0,
+          "terminal_summary": true
+        }
+      ],
+      "full_matrix_failed_suites": 5
+    },
+    "webkit": {
+      "completed_checkpoint_suites": 3,
+      "suites": [
+        {
+          "suite": "g11-browser-check",
+          "code": 1,
+          "passed": 29,
+          "failed": 2,
+          "terminal_summary": true
+        },
+        {
+          "suite": "g10-browser-check",
+          "code": 1,
+          "passed": 43,
+          "failed": 5,
+          "terminal_summary": true
+        },
+        {
+          "suite": "g09-browser-check",
+          "code": 0,
+          "passed": 49,
+          "failed": 0,
+          "terminal_summary": true
+        }
+      ],
+      "interrupted_suite": "G08 partial at last-started case43/103; no terminal report"
+    },
+    "firefox": {
+      "completed_checkpoint_suites": 1,
+      "suites": [
+        {
+          "suite": "g11-browser-check",
+          "code": 1,
+          "passed": 30,
+          "failed": 1,
+          "terminal_summary": true
+        }
+      ],
+      "uncheckpointed_G10_native_report": {
+        "passed": 45,
+        "failed": 3,
+        "note": "Browser finished normally while wrapper held; native report/log state preserved, not a completed matrix."
+      }
+    }
+  },
+  "feature_work_after_transfer": "stopped; receiver owns continuation"
+}

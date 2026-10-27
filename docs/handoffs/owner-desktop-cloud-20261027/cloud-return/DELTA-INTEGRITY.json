@@ -1,0 +1,14 @@
+{
+  "delta_integrity": "PASS",
+  "zip_crc": "PASS",
+  "changed_files_checked": 1736,
+  "complete_file_manifest": 12643,
+  "added": 1299,
+  "modified": 437,
+  "deleted": 0,
+  "credential_signature_hits": 0,
+  "archive_size": 97228310,
+  "archive_sha256": "de95b145ba8b343a2d00a16b477d22531ec34c54cc0d39d351b3ad2f4b9762ad",
+  "manifest_sha256": "049591d1e412017fdb65c692876edbc32cf0bcad3ef6c1438b0078bf66c30b8a",
+  "feature_G11_complete": false
+}
