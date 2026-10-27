@@ -36,3 +36,13 @@ from application evidence. Physical iPad acceptance remains required.
 - Resolution retains reference-only history. A failing cross-tab legacy resurrection test exposed a missing tombstone check; the fix now prevents that resurrection.
 - 25 parser/journal unit tests passed; 24 Chromium/WebKit checks passed, including tab closure, competing saves, changed-record resolution, corrupt migration, quota and blocked database opening.
 - TypeScript passed. No physical iPad durability claim is made.
+
+## T3 — Approved presentation and locale
+
+- Separate `NEVORA_CLOCKER_UI_V2=true` switch controls presentation only; default remains false and punch enablement stays independent.
+- Scoped pale rail, system typography, regular Phosphor icons, 12px controls and 64px keypad/action geometry use the approved Clocker roles. Official wordmark, real location/timezone and explicit company branding remain.
+- Complete English/Spanish setup, PIN, action, recovery and accessible labels replace the secondary glossary in V2. Locale survives in memory when storage is blocked.
+- 12 render/copy/route tests and TypeScript passed.
+- Real owned Next/PostgreSQL enrollment and PIN flows: 12 Chromium/WebKit checks passed at 768x1024, 1024x768, 1366x1024 and 200% text, with Spanish denial/success and no console errors.
+- Two bounded visual rounds: corrected inherited action radius/shadow in the second; geometry assertions passed. Captures: `outputs/clocker/app-ipad-evidence` in the parent task workspace.
+- 21st search used project context; existing primitives fit better than the returned time-picker/timesheet components. Review found seven informational palette-literal notices; these values define the approved scoped palette, not a new portal theme. No hosted AI generation used.
