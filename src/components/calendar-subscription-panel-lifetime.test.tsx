@@ -10,7 +10,7 @@ const render=()=>{host.s=0;host.r=0;return CalendarSubscriptionPanel({authority}
 const props=()=>render().props;
 async function mount(){render();cleanups=host.effects.splice(0).map(effect=>effect()).filter((fn):fn is ()=>void=>typeof fn==='function');await vi.advanceTimersByTimeAsync(0);}
 beforeEach(()=>{vi.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});host.state=[];host.refs=[];host.effects=[];vi.stubGlobal('window',new EventTarget());vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));vi.stubGlobal('navigator',{onLine:true,clipboard:{writeText:vi.fn(async()=>{})}});vi.stubGlobal('location',{origin:'https://nevora.test'});});
-afterEach(()=>{cleanups.forEach(fn=>fn());cleanups=[];vi.unstubAllGlobals();vi.useRealTimers();});
+afterEach(()=>{cleanups.forEach(fn=>fn());cleanups=[];vi.restoreAllMocks();vi.unstubAllGlobals();vi.useRealTimers();});
 
 it('bounds a held read and offers recovery instead of checking forever',async()=>{
  vi.stubGlobal('fetch',vi.fn(()=>new Promise(()=>{})));await mount();await vi.advanceTimersByTimeAsync(10001);
@@ -66,4 +66,17 @@ it('only reveals a created URL after its own matching active generation and rele
 });
 it('refuses a new issue when current canonical location eligibility is absent',async()=>{
  vi.stubGlobal('fetch',vi.fn(async()=>Response.json({...ready(),canIssue:false})));await mount();props().onCommand('ISSUE');await vi.advanceTimersByTimeAsync(0);expect(fetch).toHaveBeenCalledOnce();
+});
+it.each(['new command','original retry'])('checks the monotonic lease before %s when native expiry callbacks are delayed',async action=>{
+ const now=vi.spyOn(performance,'now').mockReturnValue(0);let posts=0;
+ vi.stubGlobal('fetch',vi.fn(async(_url:string,init:RequestInit)=>{if(init.method==='POST'){posts++;throw Error('lost reply');}return Response.json(ready(100));}));await mount();
+ if(action==='original retry'){props().onCommand('ISSUE');await vi.advanceTimersByTimeAsync(0);expect(posts).toBe(1);}
+ now.mockReturnValue(101);if(action==='new command')props().onCommand('ISSUE');else props().onRetry();await vi.advanceTimersByTimeAsync(0);
+ expect(posts).toBe(action==='original retry'?1:0);expect(props().status).toMatchObject({state:'unavailable'});expect(props().url).toBeNull();now.mockRestore();
+});
+it('checks the monotonic lease before copying when native expiry callbacks are delayed',async()=>{
+ const now=vi.spyOn(performance,'now').mockReturnValue(0);let active=false;const copy=vi.fn(async()=>{});vi.stubGlobal('navigator',{onLine:true,clipboard:{writeText:copy}});
+ vi.stubGlobal('fetch',vi.fn(async(_url:string,init:RequestInit)=>{if(init.method==='POST'){active=true;const command=JSON.parse(String(init.body));return Response.json({status:'created',operationId:command.operationId,id,generation,url:`https://nevora.test/api/calendar/${'A'.repeat(43)}/schedule.ics`});}return Response.json(active?{...ready(100),state:'active',id,generation,issuedAt:new Date().toISOString(),allowedLocationIds:['loc-1']}:ready());}));
+ await mount();props().onCommand('ISSUE');await vi.advanceTimersByTimeAsync(0);expect(props().url).toContain('/api/calendar/');now.mockReturnValue(101);props().onCopy();await vi.advanceTimersByTimeAsync(0);
+ expect(copy).not.toHaveBeenCalled();expect(props().url).toBeNull();expect(props().status).toMatchObject({state:'unavailable'});now.mockRestore();
 });

@@ -11,9 +11,9 @@ export function createCalendarClient(authority:string,changed:(state:CalendarCli
  let state:CalendarClientState={status:null,url:null,paused:true,busy:false,notice:'',pendingKind:null};
  let stopped=false,ended=false,sequence=0,pending:CalendarCommand|null=null,active:AbortController|undefined;
  let poll:ReturnType<typeof setTimeout>|undefined,expiry:ReturnType<typeof setTimeout>|undefined;
- let lastObserved=0;
+ let lastObserved=0,validUntil=0;
  const publish=(patch:Partial<CalendarClientState>)=>{state={...state,...patch,pendingKind:pending?.kind??null};if(!stopped)changed(state);};
- const cancel=()=>{sequence++;active?.abort();active=undefined;clearTimeout(poll);clearTimeout(expiry);};
+ const cancel=()=>{validUntil=0;sequence++;active?.abort();active=undefined;clearTimeout(poll);clearTimeout(expiry);};
  const current=(at:number)=>!stopped&&!ended&&!state.paused&&at===sequence;
  const headers={'X-Nevora-Calendar':'1','X-Nevora-Calendar-Authority':authority,Accept:'application/json'};
  async function request(command?:CalendarCommand){
@@ -29,21 +29,24 @@ export function createCalendarClient(authority:string,changed:(state:CalendarCli
   })()]);}finally{clearTimeout(timeout);if(active===controller)active=undefined;}
  }
  const schedule=()=>{if(!stopped&&!ended&&!state.paused&&state.status?.state!=='unauthorized')poll=setTimeout(()=>void refresh(),30000);};
+ function expire(){cancel();publish({status:failure,url:null});schedule();}
+ function hasCurrentLease(){if(performance.now()<validUntil)return true;expire();return false;}
  async function refresh(reveal?:Extract<CalendarManagementResult,{status:'created'}>){
   if(stopped||ended||state.paused||state.busy&&!reveal)return;
   cancel();const at=sequence,started=performance.now();publish({status:null,url:null});
   try{
    const result=await request() as Ready;if(!current(at))return;
    const remaining=result.validForMs-Math.max(0,performance.now()-started),observed=Date.parse(result.observedAt);
-   if(remaining<=0||observed<lastObserved)throw Error('Expired calendar read');lastObserved=observed;
+   if(remaining<=0||observed<lastObserved)throw Error('Expired calendar read');lastObserved=observed;validUntil=performance.now()+remaining;
    const url=reveal&&result.state==='active'&&result.id===reveal.id&&result.generation===reveal.generation?reveal.url:null;
    publish({status:result,url,...(reveal?{notice:url?'Link created. Copy it now to use it in your calendar app.':'The link changed before it could be shown. Review its current status.'}:{})});
-   expiry=setTimeout(()=>{if(!current(at))return;cancel();publish({status:failure,url:null});schedule();},remaining);
+   expiry=setTimeout(()=>{if(current(at))expire();},remaining);
    schedule();
   }catch(error){if(!current(at))return;publish({status:error instanceof AccessDenied?{state:'unauthorized',reason:'access_denied'}:failure,url:null});schedule();}
  }
  async function submit(kind:CalendarCommand['kind'],retry=false){
   if(stopped||ended||state.paused||state.busy||!state.status||!('authority'in state.status)||pending&&!retry)return;
+  if(!hasCurrentLease())return;
   const status=state.status;
   if(!retry&&(kind==='REVOKE'?status.state!=='active':!status.canIssue||kind==='ISSUE'&&status.state==='active'||kind==='ROTATE'&&status.state!=='active'))return;
   const command=retry?pending:{kind,operationId:crypto.randomUUID(),authority,expectedGeneration:status.generation};if(!command)return;
@@ -65,7 +68,7 @@ export function createCalendarClient(authority:string,changed:(state:CalendarCli
   refresh:()=>void refresh(),
   command:(kind:CalendarCommand['kind'])=>void submit(kind),
   retry:()=>{if(pending&&state.status&&'authority'in state.status)void submit(pending.kind,true);else void refresh();},
-  async copy(){const url=state.url,at=sequence;if(!url||state.paused||ended)return;try{await navigator.clipboard.writeText(url);if(current(at)&&state.url===url)publish({notice:'Link copied.'});}catch{if(current(at)&&state.url===url)publish({notice:'Copy was unavailable. Use Select link, then copy it manually.'});}},
+  async copy(){const url=state.url,at=sequence;if(!url||state.paused||ended||!hasCurrentLease())return;try{await navigator.clipboard.writeText(url);if(current(at)&&state.url===url&&hasCurrentLease())publish({notice:'Link copied.'});}catch{if(current(at)&&state.url===url&&hasCurrentLease())publish({notice:'Copy was unavailable. Use Select link, then copy it manually.'});}},
   pause(){if(stopped)return;cancel();publish({status:null,url:null,paused:true,busy:false,notice:''});},
   end(){ended=true;pending=null;cancel();publish({status:null,url:null,paused:true,busy:false,notice:''});},
   stop(){stopped=true;pending=null;cancel();state={...state,status:null,url:null,paused:true,busy:false};},
