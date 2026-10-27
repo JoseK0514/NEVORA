@@ -4,8 +4,8 @@ import {Children,isValidElement,type ReactNode} from 'react';
 const fixture=vi.hoisted(()=>({
  states:[] as unknown[],effects:[] as (()=>void|(()=>void))[],
  start:vi.fn(),pause:vi.fn(),stop:vi.fn(),
- router:{refresh:vi.fn(),replace:vi.fn()},reload:vi.fn(),
- navigation:{pending:vi.fn(()=>false),discard:vi.fn(),subscribe:vi.fn(()=>()=>{})},
+ router:{refresh:vi.fn(),replace:vi.fn()},reload:vi.fn(),changed:null as null|((state:unknown)=>void),
+ navigation:{pending:vi.fn(()=>false),current:vi.fn(()=>null as null|{source:string}),discard:vi.fn(),subscribe:vi.fn(()=>()=>{})},
 }));
 vi.mock('react',async original=>({
  ...await original<Record<string,unknown>>(),
@@ -21,10 +21,10 @@ vi.mock('react',async original=>({
 vi.mock('next/navigation',()=>({useRouter:()=>fixture.router}));
 vi.mock('../app-navigation',()=>({useAppNavigation:()=>fixture.navigation}));
 vi.mock('@/lib/private-snapshot-client',()=>({
- createPrivateSnapshotController:()=>({start:fixture.start,pause:fixture.pause,stop:fixture.stop}),
+ createPrivateSnapshotController:(changed:(state:unknown)=>void)=>{fixture.changed=changed;return {start:fixture.start,pause:fixture.pause,stop:fixture.stop};},
 }));
 
-import {ScopedReadFrame} from './scoped-read-frame';
+import {ScopedReadFrame,resetScopedReadTab} from './scoped-read-frame';
 
 const receipt={authority:'fictional-current-authority',phase:'ready',content:'Current receipt'};
 let dispose:void|(()=>void);
@@ -36,8 +36,9 @@ function activateRecovery(){
  button.props.onClick();
 }
 beforeEach(async()=>{
- fixture.states=[];fixture.effects=[];vi.clearAllMocks();fixture.navigation.pending.mockReturnValue(false);
- vi.stubGlobal('window',Object.assign(new EventTarget(),{location:{reload:fixture.reload}}));
+ fixture.states=[];fixture.effects=[];vi.clearAllMocks();fixture.navigation.pending.mockReturnValue(false);fixture.navigation.current.mockReturnValue(null);resetScopedReadTab();
+ fixture.navigation.discard.mockImplementation(()=>{fixture.navigation.pending.mockReturnValue(false);fixture.navigation.current.mockReturnValue(null);});
+ vi.stubGlobal('window',Object.assign(new EventTarget(),{location:{pathname:'/app/payroll-export',search:'?start=2026-09-21&end=2026-09-27',hash:'',reload:fixture.reload}}));
  vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible',hasFocus:()=>true}));
  vi.stubGlobal('navigator',{onLine:true});
  view=ScopedReadFrame({children:'Current receipt'});
@@ -47,7 +48,7 @@ beforeEach(async()=>{
  fixture.states[1]={required:false,view:null};
  vi.clearAllMocks();
 });
-afterEach(()=>{dispose?.();dispose=undefined;vi.unstubAllGlobals();});
+afterEach(()=>{dispose?.();dispose=undefined;vi.clearAllTimers();vi.useRealTimers();vi.unstubAllGlobals();});
 
 it('retains the current receipt and authority on duplicate active window focus',()=>{
  window.dispatchEvent(new Event('focus'));
@@ -86,21 +87,31 @@ it('clears hidden content and rechecks after visibility is restored',()=>{
 });
 
 
-it('explicit recovery escapes a stalled destination after discarding it and retiring private content',()=>{
- fixture.navigation.pending.mockReturnValue(true);
+it('explicit recovery preempts a stalled destination with the captured source only after a fresh authority read',()=>{
+ vi.useFakeTimers();
+ const source='/app/payroll-export?start=2026-09-21&end=2026-09-27';
+ fixture.navigation.pending.mockReturnValue(true);fixture.navigation.current.mockReturnValue({source});
+ // The browser's address can already point at the destination; the accepted source remains the recovery target.
+ Object.assign(window.location,{pathname:'/app/reports',search:''});
  activateRecovery();
  expect(fixture.navigation.discard).toHaveBeenCalledTimes(1);
  expect(fixture.states[0]).toEqual({authority:null,phase:'expired',content:null});
  expect(fixture.states[1]).toEqual({required:true,view:null});
  expect(fixture.start).toHaveBeenCalledTimes(1);
- expect(fixture.reload).toHaveBeenCalledTimes(1);
- expect(fixture.navigation.discard.mock.invocationCallOrder[0]).toBeLessThan(fixture.reload.mock.invocationCallOrder[0]);
+ expect(fixture.router.replace).not.toHaveBeenCalled();expect(fixture.router.refresh).not.toHaveBeenCalled();
+ fixture.changed!({snapshot:{state:'ready',authority:'fictional-current-authority',observedAt:'2026-10-26T12:00:00Z',requestStartedAt:performance.now()+1},refreshing:false,paused:false});
+ expect(fixture.router.replace).toHaveBeenCalledWith(source,{scroll:false});
+ expect(fixture.reload).not.toHaveBeenCalled();
+ expect(fixture.router.refresh).not.toHaveBeenCalled();
+ vi.advanceTimersByTime(1500);
+ expect(fixture.router.refresh).toHaveBeenCalledTimes(1);
 });
 
 it('keeps ordinary explicit recovery inside the existing authority check when no destination is pending',()=>{
  activateRecovery();
- expect(fixture.navigation.discard).toHaveBeenCalledTimes(1);
- expect(fixture.start).toHaveBeenCalledTimes(1);
+ expect(fixture.navigation.discard).toHaveBeenCalledTimes(1);expect(fixture.start).toHaveBeenCalledTimes(1);
+ fixture.changed!({snapshot:{state:'ready',authority:'fictional-current-authority',observedAt:'2026-10-26T12:00:00Z',requestStartedAt:performance.now()+1},refreshing:false,paused:false});
+ expect(fixture.router.refresh).toHaveBeenCalledTimes(1);expect(fixture.router.replace).not.toHaveBeenCalled();
  expect(fixture.reload).not.toHaveBeenCalled();
  expect(fixture.states[0]).toEqual({authority:null,phase:'expired',content:null});
 });
