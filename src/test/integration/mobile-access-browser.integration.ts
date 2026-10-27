@@ -20,7 +20,7 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
  const clean=(text:string)=>secrets.reduce((s,token)=>s.replaceAll(token,'[REDACTED]'),text);
  const q=(text:string,values:unknown[]=[])=>app.database.executor.query({text,values});
  const origin=app.url;
- let complete=false;
+ let complete=false,step='startup';
  try{
   await q("INSERT INTO employees(id,first_name,last_name,email,phone,role,primary_location_id) VALUES('MA-MANAGER','Fixture','Manager','manager@example.invalid','2025550100','MANAGER','loc-1')");
   for(const engine of ['chromium','webkit','firefox'])await q('INSERT INTO employees(id,first_name,last_name,email,phone,role,primary_location_id) VALUES($1,$2,$3,$4,$5,$6,$7)',[`MA-${engine}`,'Fixture','Employee',`${engine}@example.invalid`,'2025550101','EMPLOYEE','loc-1']);
@@ -42,7 +42,7 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
       expect((await page.goto(origin+path))?.status()).toBe(200);await page.locator('#mobile-access-page').waitFor();
       expect(await page.locator('#mobile-access-page').getAttribute('lang')).toBe(lang);
       expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),engine+path+width+lang).toBe(true);
-      if(engine==='chromium'&&width===390)await page.screenshot({path:evidence+'/'+lang+path.replaceAll('/','-')+'.png',fullPage:true});
+      if(engine==='chromium'&&width===390){await page.addStyleTag({content:'nextjs-portal{display:none}'});await page.screenshot({path:evidence+'/'+lang+path.replaceAll('/','-')+'.png',fullPage:true});}
       await page.addStyleTag({content:'html{font-size:200%}'});
       expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),engine+path+width+lang+' enlarged').toBe(true);
      }
@@ -50,7 +50,9 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    }
    checks.push(engine+': mobile EN/ES,320/390/430,normal/200% layouts');
    await page.setViewportSize({width:390,height:844});await context.addCookies([{name:'nv-lang',value:'en',url:origin}]);
-   await page.goto(origin+'/login');await page.keyboard.press('Tab');await page.keyboard.press('Enter');expect(await page.locator('#access-content').evaluate((e:HTMLElement)=>e===document.activeElement)).toBe(true);
+   step=engine+': keyboard and control geometry';await page.goto(origin+'/login');await page.keyboard.press('Tab');await page.keyboard.press('Enter');expect(await page.locator('#access-content').evaluate((e:HTMLElement)=>e===document.activeElement)).toBe(true);
+   const field=await page.locator('#login-employee-id').boundingBox(),button=await page.locator('.q-auth__form .q-btn').boundingBox();if(!field||!button)throw Error('Control geometry unavailable');expect(Math.abs(field.width-button.width),'Sign-in action matches field width').toBeLessThanOrEqual(1);
+   const eye=await page.locator('.q-in__eye').boundingBox(),password=await page.locator('#login-password').boundingBox();if(!eye||!password)throw Error('Password geometry unavailable');expect(Math.abs((eye.y+eye.height/2)-(password.y+password.height/2)),'Password visibility control is vertically centered with reduced motion').toBeLessThanOrEqual(1);
    for(const selector of ['.q-auth__form .q-btn','#login-employee-id','#login-password','.ma-language'])expect(await page.locator(selector).evaluate((e:HTMLElement)=>e.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
    await page.goto(origin+'/forgot-access');await page.locator('#recovery-employee-id').fill('MA-'+engine);await page.locator('#recovery-email').fill(engine+'@example.invalid');
    await page.locator('.ma-language').click();await expect.poll(()=>page.locator('#mobile-access-page').getAttribute('lang')).toBe('es');
@@ -105,7 +107,7 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    await context.close();
   }
   expect(errors).toEqual([]);complete=true;
- }catch(error){throw new Error(clean(error instanceof Error?error.message:String(error)));}finally{
+ }catch(error){throw new Error(step+': '+clean(error instanceof Error?error.message:String(error)));}finally{
   for(const browser of browsers)await browser.close();let closed=false;try{await app.close();closed=true;}finally{await smtp.close();
   await writeFile(evidence+'/mobile-access-results.json',JSON.stringify({complete:complete&&closed,scope:'Real Next/server actions, invocation-owned PostgreSQL and loopback SMTP only; no real email/native clipboard/production service used.',checks,errors},null,2));}
  }
