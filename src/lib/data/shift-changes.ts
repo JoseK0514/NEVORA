@@ -249,7 +249,8 @@ export async function readShiftChangeAvailability(proof:SessionMutationProof,com
     if(current?.mode==='MANAGER_REVIEW')reasons.push('Current workflow policy requires manager review.');
     else if(snapshot.request?.recordedApprovalMode==='MANAGER_REVIEW')reasons.push('This request was submitted under manager review.');
    }
-   return {allowed:true,notice:reasons.length?reasons.join(' '):null,outcome:result.status as 'completed'|'pending'|'closed'};
+   return {allowed:true,notice:reasons.length?reasons.join(' '):null,
+    ...(command.kind==='ACCEPT'&&['EMPLOYEE','LEAD'].includes(snapshot.actor.employee.role)?{outcome:result.status as 'completed'|'pending'|'closed'}:{})};
   }
   const scope=snapshot.policy?.[snapshot.request?.kind==='SWAP'||command.kind==='PROPOSE_SWAP'?'swap':'coverage'];
   const unknown=!scope?.mode||scope.submissionAdvanceMinutes===null||scope.completionAdvanceMinutes===null||result.status==='blocked'&&result.issues.some(i=>['RULE_UNVERIFIABLE','POLICY_UNKNOWN'].includes(i.code));

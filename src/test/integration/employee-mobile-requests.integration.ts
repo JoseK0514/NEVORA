@@ -16,7 +16,7 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
  if(!evidence)throw Error('Select explicit external evidence directory');
  await mkdir(evidence,{recursive:true});
  const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
- const app=await createOwnedNextApp(evidence),checks:{engine:string;name:string}[]=[],captures:string[]=[],contrast:{engine:string;theme:string;width:number;ratio:number}[]=[],messages:{engine:string;type:string;text:string;expected:boolean}[]=[];
+ const app=await createOwnedNextApp(evidence),checks:{engine:string;name:string}[]=[],captures:string[]=[],contrast:{engine:string;theme:string;width:number;ratio:number}[]=[],messages:{engine:string;type:string;text:string;expected:boolean;stage:string;url:string}[]=[];
  const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
  let browser:{close():Promise<void>}|undefined,failed:(()=>Promise<void>)|undefined;
  try{
@@ -63,9 +63,10 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
    const activeBrowser=await runtime[engine].launch({headless:true});browser=activeBrowser;
    const context=await activeBrowser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});
    const page=await context.newPage();
-   let expectedFailure=false;
-   page.on('console',(message:{type():string;text():string})=>{if(['error','warning'].includes(message.type()))messages.push({engine,type:message.type(),text:message.text(),expected:expectedFailure});});
-   page.on('pageerror',(error:Error)=>messages.push({engine,type:'pageerror',text:error.message,expected:false}));
+   let expectedFailure=false,stage='login',binding='';
+   page.on('request',(request:{url():string;headers():Record<string,string>})=>{if(new URL(request.url()).pathname==='/api/employee/requests')binding=request.headers()['x-nevora-employee-view']??'';});
+   page.on('console',(message:{type():string;text():string})=>{if(['error','warning'].includes(message.type()))messages.push({engine,type:message.type(),text:message.text(),expected:expectedFailure,stage,url:page.url()});});
+   page.on('pageerror',(error:Error)=>messages.push({engine,type:'pageerror',text:error.message,expected:false,stage,url:page.url()}));
    failed=async()=>{await page.screenshot({path:evidence+'/'+engine+'-failure.png',fullPage:true});await writeFile(evidence+'/'+engine+'-failure.html',await page.locator('body').innerHTML());};
    await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==new URL(app.url).origin){await route.abort();return;}await route.continue();});
    const ready=()=>page.locator('.em-requests:visible[data-requests-state="ready"]').waitFor();
@@ -75,10 +76,16 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
    await page.getByLabel('Employee ID',{exact:true}).fill(actor);
    await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
    await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
+   await page.locator('[data-home-state="ready"]:visible,[data-home-state="partial"]:visible').waitFor();
+   await page.locator('.employee-time-badge:visible').waitFor();
+   stage='requests';
    await load('/app/requests/hub');
    expect(await page.getByRole('heading',{name:'Requests',exact:true}).count()).toBe(1);
    expect(await page.getByRole('link',{name:/Request time off/}).count()).toBe(1);
    expect(await page.locator('.em-requests:visible').innerText()).not.toContain('PRIVATE REASON');
+   expect(binding).toMatch(/^[a-f0-9]{64}$/);
+   const foreign=await page.request.get(app.url+'/api/employee/requests?employeeId='+f.actors[1],{headers:{'X-Nevora-Employee-View':binding}});
+   expect(foreign.status()).toBe(400);expect(await foreign.json()).toEqual({state:'unavailable',reason:'access_denied'});
    await shot('requests-hub');
    await page.getByRole('link',{name:/Open shifts 1 shift matches/}).click();await page.waitForURL(app.url+'/app/exchange?tab=available');await ready();
    await page.getByRole('heading',{name:'Open shifts',exact:true}).waitFor();
@@ -117,7 +124,7 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
     await page.getByRole('button',{name:'Refresh',exact:true}).click();
     await page.getByText('Picking up this shift assigns it to you immediately if it is still available and you still meet the rules.',{exact:true}).waitFor();
     record('Current company review mode changes the explicit pickup consequence without changing the command planner');
-    expectedFailure=true;
+    stage='interrupted-read';expectedFailure=true;
     await page.route('**/api/employee/requests',async(route:{abort():Promise<void>})=>route.abort());
     await page.getByRole('button',{name:'Refresh',exact:true}).click();
     await page.locator('.em-requests:visible[data-requests-state="unavailable"]').waitFor();
@@ -141,25 +148,33 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
    await page.route('**/app/exchange*',async(route:{request():{method():string;headers():Record<string,string>};fetch():Promise<unknown>;abort():Promise<void>;continue():Promise<void>})=>{
     if(!dropped&&route.request().method()==='POST'&&route.request().headers()['next-action']){dropped=true;await route.fetch();await route.abort();return;}await route.continue();
    });
-   expectedFailure=true;await page.getByRole('button',{name:'Pick up shift',exact:true}).click();
+   const manualPickup=engine==='firefox';
+   if(manualPickup){
+    await q("UPDATE workspaces SET shift_change_policy=jsonb_set(shift_change_policy,'{coverage,mode}','\"MANAGER_REVIEW\"')");
+    await page.getByRole('button',{name:'Refresh',exact:true}).click();
+    await page.getByText('Your manager must approve this pickup before the shift is assigned to you.',{exact:true}).waitFor();
+   }
+   stage='lost-pickup-response';expectedFailure=true;await page.getByRole('button',{name:'Pick up shift',exact:true}).click();
    await page.getByRole('button',{name:'Check pickup status',exact:true}).waitFor();expect(dropped).toBe(true);
    await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await page.locator('.em-requests:visible[data-requests-state="paused"]').waitFor();
    await page.evaluate(()=>window.dispatchEvent(new Event('online')));await ready();
    await page.getByRole('button',{name:'Check pickup status',exact:true}).click();
-   await page.getByText('Shift pickup completed. Check your current schedule.',{exact:true}).waitFor();
+   await page.getByText(manualPickup?'Pickup requested. Your assignment is awaiting review.':'Shift pickup completed. Check your current schedule.',{exact:true}).waitFor();
    await page.waitForFunction(()=>document.querySelectorAll('.em-open-shift').length===0);
-   const assigned=await q('SELECT employee_id FROM shifts WHERE id=$1',[f.targetId]);expect(assigned[0].employee_id).toBe(actor);
+   const assigned=await q('SELECT employee_id FROM shifts WHERE id=$1',[f.targetId]);expect(assigned[0].employee_id).toBe(manualPickup?f.actors[1]:actor);
    const receipts=await q("SELECT count(*)::integer AS count FROM shift_change_operations WHERE actor_employee_id=$1",[actor]);
    expect(receipts[0].count).toBe(1);
-   await shot('pickup-reconciled');record('Lost committed response survives private release, reconciles original operation, one receipt and canonical assignment');
-   expectedFailure=false;
+   await shot('pickup-reconciled');record(manualPickup?'Manual-review pickup survives lost response, reconciles one receipt and does not fabricate assignment':'Automatic pickup survives lost response, reconciles one receipt and canonical assignment');
+   expectedFailure=false;stage='desktop-isolation';
    await page.unroute('**/app/exchange*');
    await page.setViewportSize({width:1440,height:1000});await page.goto(app.url+'/app/requests/hub');
    await page.locator('.q-reqhub:visible').waitFor();expect(await page.locator('.em-requests:visible').count()).toBe(0);
    await shot('desktop-preserved');record('Desktop retains existing RequestHub and does not mount the new mobile view');
    await page.setViewportSize({width:390,height:844});await load('/app/requests/hub');
-   expectedFailure=true;await q('UPDATE employees SET active=false WHERE id=$1',[actor]);
+   expectedFailure=true;stage='authority-loss';await q('UPDATE employees SET active=false WHERE id=$1',[actor]);
+   const refusal=page.waitForResponse((response:{url():string;status():number})=>new URL(response.url()).pathname==='/api/employee/requests'&&[401,403].includes(response.status()));
    await page.getByRole('button',{name:'Refresh',exact:true}).click();await page.locator('.em-requests:visible[data-requests-state="denied"]').waitFor();
+   expect(await (await refusal).json()).toEqual({state:'unavailable',reason:'access_denied'});
    expect(await page.locator('.em-requests:visible').innerText()).not.toContain('Time off ·');
    await shot('access-denied');record('Current authority loss clears request facts and refuses further actions');
    await context.close();await browser!.close();browser=undefined;failed=undefined;
