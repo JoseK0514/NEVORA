@@ -79,5 +79,5 @@ try{
    assert.equal(Number((await q('SELECT count(*)::int AS n FROM clocker_punch_photos'))[0].n),0,'unverified lifecycle cannot collect photos');assert.deepEqual(errors,[]);checks.push(engine+' real enrollment, language and PIN outcomes');await tablet.close();await owner.close();
   }finally{await browser.close();}
  }
- await writeFile(join(evidence,'clocker-ipad-results.json'),JSON.stringify({checks,limits:['Owned local Next/PostgreSQL only. Physical iPad acceptance pending.']},null,2));console.log('PASS: '+checks.length+' Clocker iPad presentation checks.');
+ await writeFile(join(evidence,'clocker-ipad-results.json'),JSON.stringify({checks,limits:['Owned local Next/PostgreSQL only. Physical iPad acceptance pending.','Photo-exit cases explicitly mock readiness/notice/photo status; actual UI and canonical time writes are exercised, but no lifecycle provider, camera or image collection is activated.']},null,2));console.log('PASS: '+checks.length+' Clocker iPad presentation checks.');
 }finally{if(app)await app.close();}

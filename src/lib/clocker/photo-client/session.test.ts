@@ -192,3 +192,7 @@ it('discards a camera opened under a changed policy or PIN context',async()=>{
  const session=new PunchPhotoSession(f.context,{...f.bindings,verifyContext},f.environment);const work=session.open({} as HTMLVideoElement);await Promise.resolve();await Promise.resolve();verifyContext.mockRejectedValue(Error('Owner turned photos off'));release();await work;
  expect(session.getSnapshot()).toMatchObject({phase:'cancelled',previewUrl:null});expect(f.camera.close).toHaveBeenCalled();expect(f.commitExactPunch).not.toHaveBeenCalled();session.dispose();
 });
+it('inherits the original PIN monotonic deadline even if wall time moves backwards',async()=>{
+ const mono=vi.spyOn(performance,'now').mockReturnValue(1000);let wall:ReturnType<typeof vi.spyOn>|undefined;
+ try{const f=setup({}, {screenMonotonicExpiresAt:2000});const prior=Date.now();wall=vi.spyOn(Date,'now').mockReturnValue(prior-120000);mono.mockReturnValue(2001);await f.session.open({} as HTMLVideoElement);expect(f.session.getSnapshot().phase).toBe('expired');expect(f.camera.open).not.toHaveBeenCalled();}finally{wall?.mockRestore();mono.mockRestore();}
+});

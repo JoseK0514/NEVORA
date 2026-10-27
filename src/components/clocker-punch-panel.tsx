@@ -8,12 +8,11 @@ import type {ClockerJournal,JournalReference} from '../lib/clocker/recovery-jour
 import type { PunchAction, PunchReceipt } from '../lib/clocker/punch-types';
 import type { BreakSelection } from '../lib/clocker/break-types';
 import {ClockerRecoveryHandoff} from './clocker-recovery';
-import {continuationFor,resumeContinuation,type ClockContinuation} from './clocker-privacy';
+import {CLOCKER_RECEIPT_CLEAR_MS,continuationFor,resumeContinuation,type ClockContinuation} from './clocker-privacy';
 import styles from './clocker-punch.module.css';
 import {ClockerPunchPhotoFlow} from './clocker-photo/punch-photo-flow';
 import {createClockerPhotoTransport} from '../lib/clocker/photo-client/transport';
 import {readPhotoConfiguration,type PhotoSessionContext,type PhotoBindings} from '../lib/clocker/photo-client/session';
-import {photoResultMessage} from '../lib/clocker/photo-client/result-copy';
 import { ClockerIcon, type ClockerIconName } from './clocker-icon';
 import { useClockerMotion } from './clocker-motion';
 import { Es, useClockerSpanish, type ClockerPhrase } from './clocker-language';
@@ -84,7 +83,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
  useEffect(()=>{heading.current?.focus({preventScroll:true});},[mode]);
  useEffect(()=>{
   if(mode!=='success')return;
-  const timer=window.setTimeout(onDone,8000);return()=>clearTimeout(timer);
+  const timer=window.setTimeout(onDone,CLOCKER_RECEIPT_CLEAR_MS);return()=>clearTimeout(timer);
  },[mode,onDone]);
  async function confirmed(value:unknown,saved:PendingPunch){
   const result=parseReceiptReply(value,saved.command);
@@ -157,7 +156,15 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
   catch{if(alive.current){setMode('storage');setMessage('Your recovery record cannot be verified. Keep it saved and ask an Owner to review it.');}}
   finally{busy.current=false;}
  }
- if(photo&&mode==='photo')return <ClockerPunchPhotoFlow context={photo.context} bindings={photo.bindings} timeZone={timeZone} onExit={result=>{setPhoto(null);if(result.receipt){void confirmed({state:'committed',receipt:result.receipt},photo.context.intent).then(()=>{if(alive.current)setMessage(photoResultMessage(result));});}else if(result.submissionStarted){onDone();}else{setMode('ready');}}}/>;
+ if(photo&&mode==='photo')return <ClockerPunchPhotoFlow context={photo.context} bindings={photo.bindings} timeZone={timeZone} onExit={result=>{
+  if(result.receipt){
+   try{parseReceiptReply({state:'committed',receipt:result.receipt},photo.context.intent.command);}catch{onDone();return;}
+   // This independent connection may finish after the private panel unmounts.
+   // A failed cleanup leaves the exact pending intent for canonical recovery.
+   void openClockerJournal().then(async store=>{try{await store.resolveExact(locationKey,photo.context.intent,'recorded');}finally{store.close();}}).catch(()=>undefined);
+  }
+  onDone();
+ }}/>;
  const entry=view?.snapshot.entry,pause=view?.snapshot.break,allowed=view?punchActions(view):[];
  // One deep card for the likeliest next step: End Break on a break, otherwise Clock Out once clocked in.
  const lead=(['END_BREAK','CLOCK_OUT','CLOCK_IN'] as PunchAction[]).find(action=>allowed.includes(action));

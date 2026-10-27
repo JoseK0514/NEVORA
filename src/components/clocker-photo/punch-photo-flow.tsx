@@ -4,6 +4,7 @@ import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {PunchPhotoSession,type PhotoBindings,type PhotoSessionContext,type PhotoSessionView,type PhotoPhase} from '@/lib/clocker/photo-client/session';
 import {photoResultMessage,offlinePhotoMessage} from '@/lib/clocker/photo-client/result-copy';
 import {useClockerCopy,useClockerPresentation} from '../clocker-language';
+import {CLOCKER_RECEIPT_CLEAR_MS} from '../clocker-privacy';
 import {ClockerPhotoNotice} from './photo-notice';
 import styles from './photo.module.css';
 const actionNames={CLOCK_IN:'Clock In',CLOCK_OUT:'Clock Out',START_BREAK:'Start Break',END_BREAK:'End Break'};
@@ -32,7 +33,7 @@ function ActivePhotoFlow({session,timeZone,onExit}:{session:PunchPhotoSession;ti
  useEffect(()=>{heading.current?.focus({preventScroll:true});},[state.phase]);
  useEffect(()=>{if(!['camera_live','photo_review'].includes(state.phase))return;const timer=setInterval(()=>void session.checkContext(),1500);return()=>clearInterval(timer);},[session,state.phase]);
  useEffect(()=>{if(state.phase==='ready'&&!state.requiresPhoto)void session.submit();},[session,state.phase,state.requiresPhoto]);
- useEffect(()=>{if(state.phase!=='complete')return;const timer=setTimeout(()=>{session.cancel();exitRef.current(session.getSnapshot());},5000);return()=>clearTimeout(timer);},[session,state.phase]);
+ useEffect(()=>{if(state.phase!=='complete')return;const timer=setTimeout(()=>{session.cancel();exitRef.current(session.getSnapshot());},CLOCKER_RECEIPT_CLEAR_MS);return()=>clearTimeout(timer);},[session,state.phase]);
  const error=state.cameraError==='CAMERA_DENIED'?'Camera access was declined. You can allow it in Safari settings or continue without a photo.':state.cameraError==='CAMERA_TIMEOUT'?'Camera permission was not completed in time. Try again while your PIN session is active.':state.cameraError==='CAPTURE_FAILED'?'A photo could not be captured. Check the camera and try again.':'The camera is unavailable. Continue without a photo or ask your Owner for help.';
  return <section className={styles.flow} aria-busy={busy} aria-labelledby="clocker-photo-title">
   <h1 id="clocker-photo-title" ref={heading} tabIndex={-1}>{t(titles[state.phase],{action:t(actionNames[state.action])})}</h1>

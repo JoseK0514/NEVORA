@@ -1,4 +1,5 @@
 import type {ClockView} from '../lib/clocker/punch-client';
+export const CLOCKER_RECEIPT_CLEAR_MS=8000;
 export type UnsentMode='confirm-out'|'select-break';
 export type ClockContinuation={subject:string;mode:UnsentMode;binding:string};
 export function verifiedDeadline(confirmedAt:number,expiresAt:string):number{
