@@ -4,20 +4,23 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { createServer } from 'node:net';
 import { randomBytes } from 'node:crypto';
+import {beginClockerShard,finishClockerShard,parseClockerArguments} from './clocker-sql-shards.mjs';
 
 // This runner never connects to an existing application or test server.
 if (process.env.DATABASE_URL) throw new Error('Unset DATABASE_URL before running owned Clocker tests.');
-const ipadUi=process.argv[2]==='--ipad-ui';
-const punchUi = process.argv[2] === '--punch-ui';
-const pinUi = process.argv[2] === '--pins-ui';
-const punchHttp = process.argv[2] === '--punches-http';
-const companySetup = process.argv[2] === '--company-setup';
-const breaksUi = process.argv[2] === '--breaks-ui';
-const ui = process.argv[2] === '--ui' || pinUi || punchHttp || breaksUi || punchUi || companySetup || ipadUi;
+const {selection,shard}=parseClockerArguments(process.argv.slice(2));
+const ipadUi = selection === '--ipad-ui';
+const punchUi = selection === '--punch-ui';
+const pinUi = selection === '--pins-ui';
+const punchHttp = selection === '--punches-http';
+const companySetup = selection === '--company-setup';
+const breaksUi = selection === '--breaks-ui';
+const ui = selection === '--ui' || pinUi || punchHttp || breaksUi || punchUi || companySetup || ipadUi;
 const bin = process.env.NEVORA_TEST_PG_BIN;
 if (!bin || !existsSync(join(bin, 'initdb')) || !existsSync(join(bin, 'pg_ctl'))) {
   throw new Error('NEVORA_TEST_PG_BIN must identify an existing local PostgreSQL bin directory.');
 }
+const shardContext=shard?beginClockerShard(shard):undefined;
 const port = await new Promise((resolvePort, reject) => {
   const socket = createServer();
   socket.once('error', reject);
@@ -49,8 +52,9 @@ try {
     FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN: 'yes',
   };
   delete env.DATABASE_URL;
-  const config = process.argv[2] ?? 'vitest.clocker-integration.config.mts';
+  const config = selection ?? 'vitest.clocker-integration.config.mts';
   const args = ui ? ['--import','./scripts/qa-server-context.mjs','--import','tsx',ipadUi ? 'scripts/clocker-ipad-ui-qa.mjs' : companySetup ? 'scripts/company-setup-qa.mjs' : punchUi ? 'scripts/phase-c-punch-ui-qa.mjs' : breaksUi ? 'scripts/phase-c-breaks-ui-qa.mjs' : punchHttp ? 'scripts/phase-c-punch-http-qa.mjs' : pinUi ? 'scripts/phase-c-pins-ui-qa.mjs' : 'scripts/phase-c-devices-ui-qa.mjs'] : ['node_modules/vitest/vitest.mjs', 'run', '--config', config];
+  if(shardContext)args.push(...shardContext.files,'--reporter=default','--reporter=json','--outputFile',shardContext.reportPath);
   const result = spawnSync(process.execPath, args, { env, stdio: 'inherit' });
   exitCode = result.status ?? 1;
 } finally {
@@ -61,5 +65,6 @@ try {
   }
   // mkdtemp-created directory belongs exclusively to this invocation.
   rmSync(owned, { recursive: true, force: true });
+  if(shardContext)finishClockerShard(shardContext,exitCode,started);
 }
 process.exitCode = exitCode;

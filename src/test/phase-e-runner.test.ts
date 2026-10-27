@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -338,8 +338,8 @@ it.each([
   ['refs/pull/12/merge', 'codex/phase-e-example', 'development'],
   ['refs/pull/13/merge', 'codex/phase-f-inventory', 'main'],
 ])('requires every SQL/browser regression for triggered %s head=%s base=%s', (ref, head, base) => {
-  for (const name of ['validate', 'clocker-postgres', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui', 'phase-e-ui-suite']) {
-    expect(workflow.jobs[name].if, name+' must not skip branches').toBe(name === 'phase-e-ui' ? '${{ always() }}' : undefined);
+  for (const name of ['validate', 'clocker-postgres', 'clocker-postgres-suite', 'release-postgres', 'phase-d-attendance-ui', 'phase-e-postgres', 'phase-e-ui', 'phase-e-ui-suite']) {
+    expect(workflow.jobs[name].if, name+' must not skip branches').toBe(['phase-e-ui','clocker-postgres'].includes(name) ? '${{ always() }}' : undefined);
     expect(jobMatches(name, ref, head, base), name).toBe(true);
   }
 });
@@ -372,6 +372,12 @@ it.each(['omitted-suite', 'budget', 'skip-aggregate', 'missing-verifier', 'dupli
   const root = directory();
   put(root, '.github/workflows/ci.yml', require('js-yaml').dump(changed));
   put(root, 'vercel.json', readFileSync('vercel.json', 'utf8'));
+  // Keep the unrelated Clocker contract baseline complete while mutating E.
+  put(root, 'vitest.clocker-integration.config.mts', readFileSync('vitest.clocker-integration.config.mts', 'utf8'));
+  put(root, 'scripts/clocker-sql-shards.json', readFileSync('scripts/clocker-sql-shards.json', 'utf8'));
+  const clockerDirectory=join(process.cwd(),'src/test/integration');
+  const clockerFiles=readdirSync(clockerDirectory).filter(name=>/^clocker-.*\.integration\.ts$/.test(name));
+  for(const name of [...clockerFiles,'phase-c-release-migrations.integration.ts'])put(root,'src/test/integration/'+name,readFileSync(join(clockerDirectory,name),'utf8'));
   const result = spawnSync(process.execPath, ['--test', '--test-reporter=tap', resolve('scripts/release-ci-contract.check.mjs')], { cwd: root, env: environment(), encoding: 'utf8', timeout: 15_000 });
   expect(result.status, mutation).not.toBe(0);
   const rejectedControls = [...result.stdout.matchAll(/^not ok \d+ - (.+)$/gm)].map(match => match[1]);

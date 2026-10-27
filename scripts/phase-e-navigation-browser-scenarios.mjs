@@ -3,7 +3,7 @@ import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {Client} from 'pg';
 import {seedOwnedScenario,seedOwnedScenarioOwner,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
-import {interceptedInboxResponse,withActorRole} from './phase-e-navigation-request.mjs';
+import {interceptedInboxResponse,refreshInboxAndWaitForRows,withActorRole} from './phase-e-navigation-request.mjs';
 import {waitForSheetEntrance,waitForReviewedTimeOff,restoreSheetMotion} from './browser-render-readiness.mjs';
 
 export async function runScenario({app,context,page,engine,width,evidenceDirectory,axeFile,runtimeErrors:cellRuntimeErrors}){
@@ -214,7 +214,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await page.evaluate(()=>{delete document.visibilityState;document.dispatchEvent(new Event('visibilitychange'));});
    const currentResponse=await currentRead,currentView=await currentResponse.json();assert.equal(currentResponse.status(),200);assert.deepEqual(currentView.items,[]);await ready('notifications');await page.getByText('No notifications yet.',{exact:true}).waitFor();assert.equal(await page.locator('[data-inbox-row]').count(),0);
    visibilityEvidence.reentry={status:currentResponse.status(),currentItems:currentView.items.length,rows:0};assert.deepEqual(await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]),before);
-   await q("UPDATE time_off_requests SET status='APPROVED' WHERE id=$1",[requestId]);await refreshNotifications();await ready('notifications');assert.equal(await page.locator('[data-inbox-row]').count(),1);
+   await q("UPDATE time_off_requests SET status='APPROVED' WHERE id=$1",[requestId]);const restoredView=await refreshInboxAndWaitForRows(page,refreshNotifications,[noticeId]);await ready('notifications');assert.equal(await page.locator('[data-inbox-row]').count(),1);visibilityEvidence.restored={currentItems:restoredView.items.length,rows:1};
   }finally{
    release();if(used)await done;await page.unroute('**/api/notifications',heldHandler);
    visibilityEvidence.failure=heldFailure;visibilityEvidence.observations=await page.evaluate(()=>{const evidence=window.__navigationVisibility;evidence.stop();delete window.__navigationVisibility;return evidence.observations;});
@@ -230,7 +230,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await page.getByRole('heading',{name:'Couldn’t load notifications',exact:true}).waitFor();assert.equal(await page.locator('[data-inbox-row]').count(),0);assert.equal(await page.getByRole('heading',{name:'Your session ended',exact:true}).count(),0);assert(await page.getByRole('button',{name:'Try again',exact:true}).isEnabled());await screenshot('source-expired-retry');
    const refreshed=nextInbox();await page.getByRole('button',{name:'Try again',exact:true}).click();const currentResponse=await refreshed,currentView=await currentResponse.json();assert.equal(currentResponse.status(),200);assert.equal(currentView.state,'ready');assert.deepEqual(currentView.items,[]);await page.getByText('No notifications yet.',{exact:true}).waitFor();assert.equal(await page.getByRole('heading',{name:'Your session ended',exact:true}).count(),0);
    expiryRecovery.push({sessionLongLived:session[0].long_lived,sourceLifetimeMs:shortView.validForMs,expiredRowsCleared:true,retryEnabled:true,falseSignIn:false,revalidationStatus:currentResponse.status(),currentItems:currentView.items.length});
-   await q("UPDATE notifications SET expires_at=clock_timestamp()+interval '1 day' WHERE id=$1",[noticeId]);await refreshNotifications();await ready('notifications');
+   await q("UPDATE notifications SET expires_at=clock_timestamp()+interval '1 day' WHERE id=$1",[noticeId]);await refreshInboxAndWaitForRows(page,refreshNotifications,[noticeId]);await ready('notifications');
    const inboxBinding=headers['/api/notifications'],profileBinding=headers['/api/employee/profile'];
    assert(inboxBinding&&profileBinding&&inboxBinding!==profileBinding);
    for(const role of ['MANAGER','OWNER'])await withActorRole(q,actor,role,actualRole,async()=>{
@@ -256,7 +256,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await page.getByRole('button',{name:'Try again',exact:true}).click();await ready('notifications');
    await q("INSERT INTO notifications(id,employee_id,type,title,body) VALUES($1,$2,'LEGACY','PRIVATE','PRIVATE')",['legacy-'+label,actor]);await refreshNotifications();await page.getByText('Some notifications couldn’t be checked.',{exact:true}).waitFor();assert.equal(await page.locator('[data-inbox-row] > a').count(),1);
    await q('DELETE FROM notifications WHERE id=$1',['legacy-'+label]);await q("UPDATE time_off_requests SET status='DENIED' WHERE id=$1",[requestId]);await refreshNotifications();await page.getByText('No notifications yet.',{exact:true}).waitFor();
-   await q("UPDATE time_off_requests SET status='APPROVED' WHERE id=$1",[requestId]);await refreshNotifications();await ready('notifications');
+   await q("UPDATE time_off_requests SET status='APPROVED' WHERE id=$1",[requestId]);await refreshInboxAndWaitForRows(page,refreshNotifications,[noticeId]);await ready('notifications');
    checks.push('Actual PostgreSQL lock timeout renders unavailable+Retry; legacy source renders partial; authorized source exclusion renders empty; recovery reauthorizes');
   }
   stage='api';await nav('/app/profile');await ready('profile');

@@ -1,7 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import { readThemeChoice, writeThemeChoice, THEME_KEY, type ThemeChoice } from '@/lib/theme';
+import { readThemeChoice, writeThemeChoice, THEME_KEY, DEFAULT_THEME, type ThemeChoice } from '@/lib/theme';
 
 const listeners = new Set<() => void>();
 function subscribe(listener: () => void) {
@@ -13,7 +13,7 @@ function subscribe(listener: () => void) {
 
 /** The device's theme choice, live (v5 Profile's Appearance row). */
 export function useThemeChoice() {
-  return useSyncExternalStore(subscribe, readThemeChoice, () => 'system' as ThemeChoice);
+  return useSyncExternalStore(subscribe, readThemeChoice, () => DEFAULT_THEME);
 }
 export function setThemeChoice(choice: ThemeChoice) {
   writeThemeChoice(choice);
@@ -22,7 +22,7 @@ export function setThemeChoice(choice: ThemeChoice) {
 
 /** System / Light / Dark for this device, styled like the Language switch beside it. The pressed option is the choice. */
 export function ThemeSwitch({ label = 'Appearance' }: { label?: string }) {
-  const choice = useSyncExternalStore(subscribe, readThemeChoice, () => 'system' as ThemeChoice);
+  const choice = useSyncExternalStore(subscribe, readThemeChoice, () => DEFAULT_THEME);
   return (
     <div className="ap-lang" role="group" aria-label={label}>
       {([['system', 'System'], ['light', 'Light'], ['dark', 'Dark']] as const).map(([value, name]) => (

@@ -429,9 +429,9 @@
     },
     {
       "branch": "codex/light-default-20261027",
-      "sha": "9ad27b8abbef699f2061e53958e84912bbf6951f",
-      "disposition": "held",
-      "reason": "Fetched and inspected during Clocker collaboration delivery: advancement from8cca397 merges the existing seven-branch governance policy and updates PR36 readiness only. The separately active light-default application work remains held; no Clocker source or unrelated application work is overlaid."
+      "sha": "2f6103b10b86848bac59d0a7481e4cbd70265020",
+      "disposition": "included",
+      "reason": "Jose requested submission to the collaboration branch for Claude inspection before further CI or integration. Includes the Light-default change and its CI/test-infrastructure follow-ups. Review delivery only; PR36 remains unmerged and no combined-source acceptance is claimed."
     }
   ],
   "maximumActiveBranches": 7

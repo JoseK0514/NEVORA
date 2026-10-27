@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "shards": {
+    "1/4": [
+      "src/test/integration/clocker-break-upgrade.integration.ts",
+      "src/test/integration/clocker-employee-schedule.integration.ts",
+      "src/test/integration/clocker-monitor.integration.ts",
+      "src/test/integration/clocker-phase-b-reconciliation.integration.ts",
+      "src/test/integration/clocker-phase-d-migrations.integration.ts",
+      "src/test/integration/clocker-pin-transport.integration.ts",
+      "src/test/integration/clocker-punch-transport.integration.ts",
+      "src/test/integration/clocker-punches.integration.ts",
+      "src/test/integration/clocker-reports.integration.ts"
+    ],
+    "2/4": [
+      "src/test/integration/clocker-action-center.integration.ts",
+      "src/test/integration/clocker-break-snapshots.integration.ts",
+      "src/test/integration/clocker-employee-time.integration.ts",
+      "src/test/integration/clocker-payroll-export.integration.ts",
+      "src/test/integration/clocker-phase-d-remediation.integration.ts",
+      "src/test/integration/clocker-schedule-context-upgrade.integration.ts",
+      "src/test/integration/clocker-schedule-context.integration.ts",
+      "src/test/integration/clocker-time-corrections.integration.ts",
+      "src/test/integration/phase-c-release-migrations.integration.ts"
+    ],
+    "3/4": [
+      "src/test/integration/clocker-attendance-review.integration.ts",
+      "src/test/integration/clocker-break-types.integration.ts",
+      "src/test/integration/clocker-devices.integration.ts",
+      "src/test/integration/clocker-inherited-schema.integration.ts",
+      "src/test/integration/clocker-inherited-transport.integration.ts",
+      "src/test/integration/clocker-manager-scope.integration.ts",
+      "src/test/integration/clocker-missing-time-supersession.integration.ts",
+      "src/test/integration/clocker-punch-schema.integration.ts",
+      "src/test/integration/clocker-schedule-boundaries.integration.ts"
+    ],
+    "4/4": [
+      "src/test/integration/clocker-account-recovery.integration.ts",
+      "src/test/integration/clocker-enrollment.integration.ts",
+      "src/test/integration/clocker-inherited-punches.integration.ts",
+      "src/test/integration/clocker-pin-crypto.integration.ts",
+      "src/test/integration/clocker-pins.integration.ts",
+      "src/test/integration/clocker-recovery-review.integration.ts",
+      "src/test/integration/clocker-schema.integration.ts",
+      "src/test/integration/clocker-timecards.integration.ts"
+    ]
+  }
+}

@@ -67,10 +67,17 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  clocker-postgres:
-    name: clocker-postgres
+  clocker-postgres-suite:
+    name: Clocker SQL (${{ matrix.shard }}/4)
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        shard: [1, 2, 3, 4]
+    env:
+      CLOCKER_SQL_EXPECTED_SHA: ${{ github.sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -102,7 +109,55 @@ jobs:
           NEVORA_MIRROR_EVIDENCE_DIR="$RUNNER_TEMP/mirror-mutated" node --import tsx scripts/release-mirror-custody-qa.mjs mutated
           NEVORA_MIRROR_EVIDENCE_DIR="$RUNNER_TEMP/mirror-extra" node --import tsx scripts/release-mirror-custody-qa.mjs extra
       - name: Persisted Clocker PostgreSQL tests
-        run: npm run test:clocker:owned
+        env:
+          CLOCKER_SQL_EVIDENCE_DIR: ${{ runner.temp }}/clocker-sql-evidence
+        run: npm run test:clocker:owned -- --shard=${{ matrix.shard }}/4
+      - name: Upload current-source Clocker SQL shard evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: clocker-sql-${{ github.sha }}-${{ matrix.shard }}-of-4
+          path: ${{ runner.temp }}/clocker-sql-evidence/*.json
+          if-no-files-found: error
+          retention-days: 14
+
+  clocker-postgres:
+    name: clocker-postgres
+    if: ${{ always() }}
+    needs: [clocker-postgres-suite]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+      - name: Download current-run Clocker SQL shard evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: clocker-sql-*
+          path: ${{ runner.temp }}/clocker-sql-artifacts
+          merge-multiple: false
+      - name: Verify all Clocker SQL groups and complete source coverage
+        env:
+          CLOCKER_SQL_EXPECTED_SHA: ${{ github.sha }}
+          CLOCKER_SQL_EVIDENCE_DIR: ${{ runner.temp }}/clocker-sql-aggregate
+          CLOCKER_SQL_ARTIFACTS_DIR: ${{ runner.temp }}/clocker-sql-artifacts
+          CLOCKER_SQL_CI_NEEDS_JSON: ${{ toJSON(needs) }}
+        run: node scripts/clocker-sql-shards.mjs aggregate
+      - name: Upload Clocker SQL aggregate evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: clocker-sql-aggregate-${{ github.sha }}
+          path: ${{ runner.temp }}/clocker-sql-aggregate/*.json
+          if-no-files-found: error
+          retention-days: 14
 
   phase-d-attendance-ui:
     name: phase-d-attendance-ui
