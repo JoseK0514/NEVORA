@@ -1,0 +1,135 @@
+{
+  "base": "46e202786863279302026ee03a0e225c359fa55c",
+  "runtimeCandidate": "c61376f476b184d3374816c3d87fb0a51603bbc5",
+  "defaultSuiteStartedAt": "236f3dd8",
+  "defaultSuiteInputContinuity": "Only the separately discovered mobile-access-browser.integration.ts changed after default-suite start; production/default-test inputs stayed identical. Later commits add handoff/evidence only.",
+  "unit": {
+    "passedFiles": 580,
+    "skippedFiles": 27,
+    "passedTests": 9636,
+    "skippedTests": 801,
+    "todos": 55,
+    "seconds": 470.83
+  },
+  "browser": {
+    "passed": true,
+    "seconds": 82.64,
+    "engines": [
+      "chromium",
+      "webkit",
+      "firefox"
+    ],
+    "widths": [
+      320,
+      390,
+      430
+    ],
+    "desktopWidth": 1440,
+    "languages": [
+      "en",
+      "es"
+    ],
+    "textSizes": [
+      "100%",
+      "200%"
+    ],
+    "unhandledPageErrors": 0,
+    "sourceFilesInCustody": 1920,
+    "transport": "explicitly substituted invocation-owned loopback PostgreSQL; local SMTP capture; fictional accounts only"
+  },
+  "build": {
+    "checkpoint": "c61376f476b184d3374816c3d87fb0a51603bbc5",
+    "tree": "f970ccf7fdea46234f67b3c734138a43e0d18e8f",
+    "sourceClean": true,
+    "sourceUnchanged": true,
+    "node": "v24.19.0",
+    "npm": "11.17.0",
+    "lockSha256": "c717e23504f03c555121f4630030b210ab0e4e4f4a9fe5f66069b132fecadb31",
+    "exitCode": 0
+  },
+  "typecheck": "PASS",
+  "lint": "full source PASS at236f3dd8; latest browser-only changes scoped eslint PASS; subsequent docs only",
+  "uiReview": {
+    "files": 22,
+    "errors": 0,
+    "warnings": 0,
+    "suggestions": "Literal scoped approved palette and pre-existing decorative colors; no deterministic error/warning. No pixel-fidelity or independent certification implied."
+  },
+  "dependencyAudit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 1,
+    "high": 0,
+    "critical": 0,
+    "total": 1
+  },
+  "review": "Whole-branch review at eb41a381 requested changes; substantive findings remediated by author with regression evidence. No repeat independent sign-off. See review-remediation.md.",
+  "developmentSourceInventory": "FAIL before feature: advanced/unclassified branches;8 >6 remote ceiling. No waiver or source assembly performed.",
+  "externalLogSha256": {
+    "final-tests.log": "a774f00784b5dddac605d8bfabe1580966d063e2ff0e59c20269d6a227c2a2e8",
+    "review-fixes-unit.log": "35181e8816cc495300c1fbf34425406a801432e02a8a0298a678d1f361989c23",
+    "final-typecheck.log": "a12318be798fbfe982f3307107c280a32f686008ee2f55b5636d8d8ae7a769ec",
+    "final-lint.log": "45dd42c28bc5a51b907c86db4ed50cb3e1379f11c10454748a96d2528f6bb7c7",
+    "final-browser-lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "final-build.log": "7fe7c0d0639cbf50a5836e59e6d0ed0d227e0364438389144f8c479879428c73",
+    "final-build-source.json": "037acc88252556163494ecc6cc1b3418b8ee2716080b7715f58cab4f84f1587e",
+    "browser-settled.log": "5c1b93d444a8a1bf1d2aba68211f6db6b98b0c40a2ccd94c5c53ea74f09d8781",
+    "final-21st-review.json": "6045b1aebc8710c04e1d8f2b7500eec394f7a7d17b73cd1f798ae097afea1c43",
+    "final-audit.json": "de8cae31419bfa924f51f293f8f1af3100b6758e5ac03e99f1a8f522e63e7672",
+    "final-advisor-guards.log": "91a8331538ffdd358f9363766ec4b24a075510008ec485ba9f57bb9147e4c41e",
+    "final-custody-regressions.log": "b72d8cb962aad2d534070c3f8afb396e61f5db19fed769de598b49958df5008a",
+    "final-inspection-evidence.log": "656d8b25480918c25ba844fa4a2d9e61d1532b91ce576da9b6cb356c7ca99619",
+    "final-notification-config.log": "8e97d1b443579a5646beec94b358333e18c27bf09b8bd05bd6eb7d6385c8ad5d",
+    "final-foundation-config.log": "6fcd331228fb62e7e6d3e286c86cee7a95ce8b6ccd7214e8db73f34b6aef5e9d",
+    "final-release-regressions.log": "e8f2c6417d0e2689aaa23e4ab08198cd534b8e9c3e24d41b6c7f01778f18a324",
+    "final-development-sources.log": "eeb9ab933f721db955a7e17e65ce384236b1ab08c94841c8b99494ddeb138e66",
+    "branch-review.md": "6dc9041f8b548504083bd8d28a15d373e82b1a836a8da122e8e907e470c59e30"
+  },
+  "runtimeFileSha256": {
+    "public/assets/illustrations/mobile-access-welcome.png": "f074f2285e949eba039b68347c3e64697d586e86f150bf749ed2395fbe4799d3",
+    "public/assets/manifest.json": "da0c3c98fdd17265ca951f5566157463d6ec6b5bd1a2e6619710be32f224fe37",
+    "src/app/access-help/[[...topic]]/page.tsx": "8c6610837974c093cfb9e88cf8b00532c1ff5cbace61294351fccbb5a616c66b",
+    "src/app/activate/activation-invitation.tsx": "9dda14faef61739dcde986d481bca31cf435ec7a8b7f460b8ec1a7b450354216",
+    "src/app/activate/page.tsx": "83a6192e03d8b91f8051e3dba569a39b50d322e37ef35c1f2fc550983a751021",
+    "src/app/app/page.tsx": "4b46bc874451a66209353593a38fdc792cc3566fd7ec9bce1414c6d0dc720100",
+    "src/app/forgot-access/page.tsx": "3a52c2dd92f0cf45e86d032077a26d5509ae50c3c728b0a154e2012f1e6859dc",
+    "src/app/layout.tsx": "b73edceb384cc3802b44a6c7482bce2bcd4785f948e75a3ab98cc22b2c0d772f",
+    "src/app/login/page.tsx": "6b7108b7b75924a8f55ab210676e2378f313f3ba7f8d7715c2d9276efad80aac",
+    "src/app/reset-access/page.tsx": "fb5172c233e814a665a4e9eecd4e730f6da8eca4bbc4272242ffaca1ca9008df",
+    "src/app/welcome/page.tsx": "f47552cd1671dc75f1d3ffff0e4ec981f5e806ff88a3bcf0c96db4c4c77da171",
+    "src/components/account-recovery.tsx": "a466562410d48afdc3417a934e04096ffb0efe4dd9d9c4d682fa97bc904dd6e5",
+    "src/components/auth-premium/auth-shell.tsx": "c89cbb52ceb81964964f4e6b68dbec4b9fad05d53c1c8a08f21ec56a5d1f2562",
+    "src/components/auth-premium/greeting.tsx": "6f252c8c3252dc466acfe3677c20726686c6b8da0dffdacac1411d3d95eded8a",
+    "src/components/employee-dashboard.tsx": "cf21416cb27f7adb1441adbeeed5e554d48b6338e86f5cf5de8e2c93c0b3c7f2",
+    "src/components/employee-home-actions.tsx": "ec1ccd847eb932b1874f27c05e101722a6bf433afbe2a4d790797efb56ca0b64",
+    "src/components/employee-home-quiet.tsx": "0bcfeeed8620576b8fe43fea1b9a49752d0a1ff09fb551590d868858d39bbd9c",
+    "src/components/mobile-access/activation-view.tsx": "fd12156009d5836fb7c98463537b6c47a2422d407b667087722c67feacf899da",
+    "src/components/mobile-access/chrome.tsx": "739f9286666c8b0bab45c430fec6f0cf1c1114a8112df53fe28188eba45d5608",
+    "src/components/mobile-access/config.server.ts": "22e36c9af42bc89bd70b14fb149c1b5be966c8ff426d57cc7ec02c262c33b66b",
+    "src/components/mobile-access/copy.ts": "e38be469799b305de9053f8fca5433342ccbc9545dc179562c8d04110beefcab",
+    "src/components/mobile-access/help-view.tsx": "4c5714732b2a0b0cc7001ab113b97502f23194c30f0ac97803e852eaa83e8a12",
+    "src/components/mobile-access/journey.tsx": "c9dd2e6147000964c815137cc37a70141c6eef12fbaa0e1d9a5c3b6b7218337d",
+    "src/components/mobile-access/language-switch.tsx": "4c7af5ed3e7007502d637279793838740ff4bc7da10fe036a1d37274343f81de",
+    "src/components/mobile-access/metadata.server.ts": "3457a2eb05dec975ba64f9fed9c08f0c53668ad869b805a21ccc431287319f61",
+    "src/components/mobile-access/mobile-access.css": "46a93084630c5f711795d162663069565ef8b949bcd70b544d4be5ce3cae6b16",
+    "src/components/mobile-access/onboarding-guide.css": "2b932e89de34b3eb2dfe331907437b50c3ff498787f36299ffc8cd33976a9559",
+    "src/components/mobile-access/onboarding-guide.tsx": "0b2ea1dec301e6fbae6e08209d9cd1353c9e99ded32672f515272f2214d50efe",
+    "src/components/mobile-access/password-pair.tsx": "c9ca664d28998de4be5c67bf32f370202024bb38e95556fa214a21beed25e2d8",
+    "src/components/mobile-access/recovery-views.tsx": "489f68da2e196cf165d6a8106270a9c90b968a10d6a0a6dbb18c33d040c8bb18",
+    "src/components/mobile-access/use-mobile-presentation.ts": "e7e1d0987f9cffaca7fbe3f16e47dede396fcaf1bae017655877c33a4ee24437",
+    "src/components/recovery-request.tsx": "1a3151aa14c67e1a2ec63c413a844a81a69ef2a556bf04c1c704e756047882a7",
+    "src/components/recovery-reset.tsx": "b81d31859c7a03bc28ec2c59831e1b0413dbc716bf4662d76527866e05e6f9c0"
+  },
+  "captureSha256": {
+    "welcome-en.png": "55a09d7515d0341dbe512337320ef342681b6be37b6ade958eb64d92a00e5ddf",
+    "signin-en.png": "ab2808b4a7e702ae7993882695eb5aadd13899e4a2a3b9181bf97477db075f90",
+    "help-es.png": "95f75f75fbe3ce1872e7ba8b936a2a61bdf9ff84836a6d2d6fd542f240218e77"
+  },
+  "limits": [
+    "Local test/build evidence; no production or physical-device verification.",
+    "Rollout and Support flags remain off; approved mailbox/runbook/legal/mail deliverability remain launch gates.",
+    "Real invitation/recovery email transport and plain-text content preserved.",
+    "Native clipboard/mail delivery not executed; clipboard denial uses a test stub.",
+    "No source-inventory gate bypass, merge or deployment."
+  ]
+}

@@ -210,6 +210,14 @@
       },
       "implementation": "src/app/employee-mobile-corporate.css and native class helpers; one live business/control tree per route",
       "handoff": "docs/execution/2026-10-13-employee-time-mobile-refinement.md"
+    },
+    {
+      "date": "2026-10-26",
+      "scope": "Opt-in frozen Access v1 public access/onboarding on mobile <=767px; existing role dashboards and desktop retain current presentation",
+      "direction": "Integrate Jose-approved frozen warm-white, deep-teal mobile Access design. Scoped --ma tokens, system UI typography, official NEVORA wordmark, Phosphor icons, 52px fields, 48px primary actions, 44px utility targets, 24px/20px content insets. Retain real auth controllers, full43-character proof protocol, roles and data. Default-off rollout and separate default-off Support gate.",
+      "frozenAccessSha256": "6212ecbe602c799bb75228045b70942993be57badd842666249df8ca2d2480a3",
+      "newDependencies": false,
+      "handoff": "docs/handoffs/2026-10-26-mobile-access-onboarding-integration.md"
     }
   ],
   "evidence": [

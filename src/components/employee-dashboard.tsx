@@ -1,3 +1,4 @@
+import type {ReactNode} from 'react';
 import {EmployeeHomeActions} from "./employee-home-actions";
 import type {HomeWeek} from "./employee-home-quiet";
 
@@ -37,6 +38,6 @@ export function formatEmployeeMetric(
   }).format(value);
 }
 
-export function EmployeeDashboard({authority,timeAuthority,displayName,timeZone,workspaceName,week,teamMessage}:{authority:string;timeAuthority:string;displayName?:string;timeZone?:string;workspaceName?:string;week?:HomeWeek|null;teamMessage?:boolean}){
- return <div className="employee-dashboard employee-home"><EmployeeHomeActions authority={authority} timeAuthority={timeAuthority} displayName={displayName} timeZone={timeZone} workspaceName={workspaceName} week={week} teamMessage={teamMessage}/></div>;
+export function EmployeeDashboard({authority,timeAuthority,displayName,timeZone,workspaceName,week,teamMessage,intro}:{intro?:ReactNode;authority:string;timeAuthority:string;displayName?:string;timeZone?:string;workspaceName?:string;week?:HomeWeek|null;teamMessage?:boolean}){
+ return <div className="employee-dashboard employee-home"><EmployeeHomeActions authority={authority} timeAuthority={timeAuthority} displayName={displayName} timeZone={timeZone} workspaceName={workspaceName} week={week} teamMessage={teamMessage} intro={intro}/></div>;
 }

@@ -39,7 +39,8 @@
     "test:payroll:owned": "node scripts/payroll-postgres.mjs",
     "test:passkeys:owned": "node scripts/payroll-postgres.mjs vitest.passkeys-integration.config.mts",
     "test:passkeys:network": "node scripts/payroll-postgres.mjs vitest.passkeys-network.config.mts",
-    "test:ui:combined": "node scripts/payroll-postgres.mjs vitest.all-ui-browser.config.mts"
+    "test:ui:combined": "node scripts/payroll-postgres.mjs vitest.all-ui-browser.config.mts",
+    "test:mobile-access:owned": "node scripts/payroll-postgres.mjs vitest.mobile-access-browser.config.mts"
   },
   "dependencies": {
     "@gsap/react": "2.1.2",
