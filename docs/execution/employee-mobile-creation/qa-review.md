@@ -2,9 +2,12 @@
 
 **QA recommendation: GO for the bounded local QA acceptance gate.** No open QA blocker for this batch. This is not a production, hosted, physical-device or assistive-technology certification.
 
-Candidate: `351e33a1a7ecb04dfb6de01a9674953ea7eff903`  
-Branch: `codex/employee-mobile-creation-20261027`  
-Base: `f3a72860`  
+Candidate: `351e33a1a7ecb04dfb6de01a9674953ea7eff903`
+
+Branch: `codex/employee-mobile-creation-20261027`
+
+Base: `f3a72860`
+
 Scope: Employee/Lead mobile swap creation, own cover offers and Unable-to-work submission; regression of existing response, own-detail and eligible-pickup flows. QA changed only this report and its external evidence files. Findings and closure remain independently owned.
 
 ## Independently executed evidence
