@@ -260,6 +260,22 @@
       },
       "implementation": "src/components/employee-mobile/exchange.tsx, exchange-view.tsx and exchange.css over minimal guarded own-data transport",
       "handoff": "docs/execution/employee-mobile-responses/HANDOFF.md"
+    },
+    {
+      "date": "2026-10-27",
+      "scope": "Employee/Lead mobile swap and cover creation plus own Unable-to-work submission",
+      "direction": "Continue approved teal Operate surfaces, shared reviewed-shift summary, native fieldsets/radios/note and explicit 48px submission. Retain existing native intercepted task and direct-page navigation, with origin shift focus return. Keep mounted drafts private during pause; require deliberate review for changed shift terms.",
+      "componentProvenance": {
+        "retrieval": "Free metadata only; no paid retrieval/generation/new package",
+        "searchResults": [
+          757,
+          34672,
+          17925
+        ],
+        "selection": "Existing semantic tokens, RequestShiftSlot, native HTML controls/dialog, current read/planner and immutable operation owner fit the product"
+      },
+      "implementation": "src/components/employee-mobile/creation.tsx, creation-view.tsx and creation.css with current guarded own-data read",
+      "handoff": "docs/execution/employee-mobile-creation/HANDOFF.md"
     }
   ],
   "evidence": [

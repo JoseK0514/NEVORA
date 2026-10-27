@@ -1,0 +1,105 @@
+{
+  "verifiedAt": "2026-10-27T13:44:51.845022+00:00",
+  "finalApplicationTestCandidate": "351e33a1a7ecb04dfb6de01a9674953ea7eff903",
+  "state": "bounded local acceptance; no assembly or production authorization",
+  "records": [
+    {
+      "owner": "rootAffected",
+      "candidate": "2db6f316a30ca308aad79b71bc46fa59e7329fbd",
+      "sourceManifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-creation/accepted/creation/owned-next-6f0fLb/source-manifest.json",
+      "sourceManifestSha256": "4e7eabb499baa46bfa77d79fbd54793679edb57b333fdeee899fd17ea144d91d",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-creation/accepted/creation/owned-next-6f0fLb/ownership.json",
+      "sourceInputs": 1943,
+      "currentSourceDifferences": [
+        "src/components/employee-mobile/creation-view.test.tsx"
+      ],
+      "differenceDisposition": "Reviewed test-only cleanup; all product/browser/config bytes unchanged",
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedArtifactsReleased": [
+        "app/node_modules",
+        "app/.next"
+      ],
+      "results": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-creation/accepted/creation/results.json",
+      "resultsSha256": "b5985c7464b74fde2cc978755e1bc8de5f402794357ab01eb0cea18c29de2854",
+      "namedChecks": 40,
+      "captures": 192,
+      "contrastSamples": 54,
+      "minimumContrast": 6.089452668960573
+    },
+    {
+      "owner": "independentCreation",
+      "candidate": "351e33a1a7ecb04dfb6de01a9674953ea7eff903",
+      "sourceManifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-creation/independent-qa/replay/creation/owned-next-9IGG8f/source-manifest.json",
+      "sourceManifestSha256": "46cb2b81b6d2fa03981f105f375cf1f9ea57fb68abfc3f857bcbcf55921dc336",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-creation/independent-qa/replay/creation/owned-next-9IGG8f/ownership.json",
+      "sourceInputs": 1943,
+      "currentSourceDifferences": [],
+      "differenceDisposition": "Exact final candidate/current source match",
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedArtifactsReleased": [
+        "app/node_modules",
+        "app/.next"
+      ],
+      "results": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-creation/independent-qa/replay/creation/results.json",
+      "resultsSha256": "94bc481b47e478234d39aec9b9e5120ec3ad292d39553676a0c82cb17d7bcd21",
+      "namedChecks": 40,
+      "captures": 192,
+      "contrastSamples": 54,
+      "minimumContrast": 6.089452668960573
+    },
+    {
+      "owner": "independentResponses",
+      "candidate": "351e33a1a7ecb04dfb6de01a9674953ea7eff903",
+      "sourceManifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-creation/independent-qa/replay/responses/owned-next-rp2QeM/source-manifest.json",
+      "sourceManifestSha256": "46cb2b81b6d2fa03981f105f375cf1f9ea57fb68abfc3f857bcbcf55921dc336",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-creation/independent-qa/replay/responses/owned-next-rp2QeM/ownership.json",
+      "sourceInputs": 1943,
+      "currentSourceDifferences": [],
+      "differenceDisposition": "Exact final candidate/current source match",
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedArtifactsReleased": [
+        "app/node_modules",
+        "app/.next"
+      ],
+      "results": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-creation/independent-qa/replay/responses/results.json",
+      "resultsSha256": "d0f41b730ef63ca9d384c0a3c3860f15336d1d67de1c21ce926bec83f1a5dee5",
+      "namedChecks": 34,
+      "captures": 90,
+      "contrastSamples": 36,
+      "minimumContrast": 6.089452668960573
+    },
+    {
+      "owner": "independentPickup",
+      "candidate": "351e33a1a7ecb04dfb6de01a9674953ea7eff903",
+      "sourceManifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-creation/independent-qa/replay/pickup/owned-next-6VcYng/source-manifest.json",
+      "sourceManifestSha256": "46cb2b81b6d2fa03981f105f375cf1f9ea57fb68abfc3f857bcbcf55921dc336",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-creation/independent-qa/replay/pickup/owned-next-6VcYng/ownership.json",
+      "sourceInputs": 1943,
+      "currentSourceDifferences": [],
+      "differenceDisposition": "Exact final candidate/current source match",
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedArtifactsReleased": [
+        "app/node_modules",
+        "app/.next"
+      ],
+      "results": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-creation/independent-qa/replay/pickup/results.json",
+      "resultsSha256": "c5e86a4c776a6f082918846b0147464db9d635416bf85df223df507eff8c8aa6",
+      "namedChecks": 28,
+      "captures": 36,
+      "contrastSamples": 18,
+      "minimumContrast": 6.089452668960573
+    }
+  ],
+  "additionalInvocationInputs": {
+    "vitest.employee-mobile-creation.config.mts": "e03d527d8e7dbf1cbf57e3deeb90f6046d01ea0d1f381ea92214cbef91656644",
+    "scripts/payroll-postgres.mjs": "47dc4ec17828d0f67f404203c50868ace9a638f310a43b0e27b17eb7d29f731e"
+  }
+}

@@ -35,3 +35,10 @@ Approved prototype: `outputs/employee-mobile/index.html` in the design task work
 Incoming swaps and own shift requests continue this scoped mobile system. One full-page detail presents status, the original reviewed shift(s), explicit response consequences, current permitted controls and native history disclosure. Unavailable immutable report terms remain unknown; never replace them with a changed live assignment. Swap withdrawal explains that both employees keep their current assignments; pickup withdrawal explains one unchanged assignment. The shared mobile navigation stays opaque in both themes so underlying task copy cannot bleed through.
 
 No new design library or business engine. See `docs/execution/employee-mobile-responses/HANDOFF.md` for exact tested candidate, independent findings/closure, supply provenance and remaining gates. This continuation does not certify the remaining Phase 2 workflows.
+
+
+## Phase 2 creation/report continuation
+
+Swap/cover creation and Unable-to-work submission reuse the reviewed-shift summary, semantic teal controls and native fieldset/radio/textarea vocabulary. The employee starts with an own published shift; swaps offer positively checked same-week targets, and coverage/reporting explain that the assignment remains until completion or release. The existing intercepted native task uses a scoped full-height mobile presentation; direct links use the same form. Closing returns focus to the originating shift row. Native browser-chrome navigation remains available, while blur releases private facts and pointer return refreshes current authority.
+
+A source-term change requires deliberate review; a changed selected target requires a new choice. Retained reason/note/selection stays only in mounted memory through refresh/pause. Submission/recovery uses one original operation and exact own detail links. No persistent private cache, new visual world or management capability. See `docs/execution/employee-mobile-creation/HANDOFF.md` for exact implementation/evidence and the independent authored review conditions.
