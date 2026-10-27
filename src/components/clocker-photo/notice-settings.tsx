@@ -32,10 +32,10 @@ export function ClockerPhotoNoticeSettings({initialSettings,saveAction,readActio
  return <form className={styles.form} onSubmit={save} aria-busy={pending}>
   <fieldset disabled={pending}><legend>Photo notice &amp; assistance</legend>
    <p className={styles.description}>{settings.companyName?<>Company: <strong>{settings.companyName}</strong>. The company name follows your company profile.</>:'Your company name could not be confirmed. Photo collection remains unavailable.'}</p>
-   <label className={styles.field}>Assistance contact<input required maxLength={200} value={draft.assistanceContact} autoComplete="off" aria-describedby="photo-contact-help" onChange={event=>setDraft({...draft,assistanceContact:event.target.value})}/>
-    <span id="photo-contact-help" className={styles.description}>Use a real person, team or contact method employees can reach for questions and assisted clock actions.</span></label>
-   <label className={styles.field}>Assistance instructions<textarea required maxLength={1000} rows={4} value={draft.assistanceInstructions} aria-describedby="photo-instructions-help" onChange={event=>setDraft({...draft,assistanceInstructions:event.target.value})}/>
-    <span id="photo-instructions-help" className={styles.description}>Explain how to request help or an accessible alternative. Instructions appear as one paragraph on Clocker.</span></label>
+   <div className={styles.field}><label htmlFor="photo-assistance-contact">Assistance contact</label><input id="photo-assistance-contact" required maxLength={200} value={draft.assistanceContact} autoComplete="off" aria-describedby="photo-contact-help" onChange={event=>setDraft({...draft,assistanceContact:event.target.value})}/>
+    <span id="photo-contact-help" className={styles.description}>Use a real person, team or contact method employees can reach for questions and assisted clock actions.</span></div>
+   <div className={styles.field}><label htmlFor="photo-assistance-instructions">Assistance instructions</label><textarea id="photo-assistance-instructions" required maxLength={1000} rows={4} value={draft.assistanceInstructions} aria-describedby="photo-instructions-help" onChange={event=>setDraft({...draft,assistanceInstructions:event.target.value})}/>
+    <span id="photo-instructions-help" className={styles.description}>Explain how to request help or an accessible alternative. Instructions appear as one paragraph on Clocker.</span></div>
    <div className={styles.footer}><button className={styles.primary} type="submit" disabled={mustReload}>{pending?'Saving…':'Save assistance settings'}</button><button className={styles.secondary} type="button" onClick={()=>void reload()}>Reload assistance settings</button>
     <p>Saved assistance version: {settings.profile.version}<br/>Only an authorized Owner can change these settings.</p></div>
   </fieldset>
