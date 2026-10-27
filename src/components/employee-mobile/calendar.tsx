@@ -14,8 +14,10 @@ import './calendar.css';
 type Props=Omit<CalendarClientState,'pendingKind'>&{pendingKind?:CalendarCommand['kind']|null;onCommand:(kind:CalendarCommand['kind'])=>void;onCopy:()=>void;onRetry:()=>void};
 export function EmployeeMobileCalendarView({status,url,paused,busy,notice,pendingKind,onCommand,onCopy,onRetry}:Props){
  const [confirmation,setConfirmation]=useState<{kind:'ROTATE'|'REVOKE';generation:string|null}|null>(null);
+ const priorNotice=useRef('');
+ const recoveryReady=Boolean(pendingKind&&!paused&&!busy&&status&&'authority'in status);
  const feedback=useRef<HTMLDivElement>(null),confirm=useRef<HTMLDivElement>(null),trigger=useRef<HTMLButtonElement|null>(null),link=useRef<HTMLTextAreaElement>(null);
- useEffect(()=>{if(notice&&feedback.current)revealFeedback(feedback.current);},[notice]);
+ useEffect(()=>{const changed=notice!==priorNotice.current;priorNotice.current=notice;if(notice&&(changed||recoveryReady)&&feedback.current)revealFeedback(feedback.current);},[notice,recoveryReady]);
  const available=!paused&&status&&'authority'in status,active=available&&status.state==='active',unknown=!!pendingKind;
  const currentUrl=active?url:null,confirmationCurrent=active&&!busy&&!unknown&&confirmation&&confirmation.generation===status.generation;
  function ask(kind:'ROTATE'|'REVOKE',button:HTMLButtonElement){if(!active||busy||unknown)return;trigger.current=button;setConfirmation({kind,generation:status.generation});requestAnimationFrame(()=>{if(confirm.current)revealFeedback(confirm.current);});}
