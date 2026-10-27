@@ -60,7 +60,7 @@ try{
   await p.unroute('**/app/settings/breaks');await d.getByRole('button',{name:'Reload',exact:true}).click();await row(p,uncertainName).waitFor();
   assert.equal((await q('SELECT count(*)::int AS n FROM clocker_break_types WHERE name=$1',[uncertainName]))[0].n,1);checked(engine+': lost save response requires reload and does not create a duplicate');
   for(const width of [320,375,390,430,768,1024,1440]){
-   await p.setViewportSize({width,height:width<500?844:1000});await goto(p,'/app/settings/breaks');await geometry(p,engine+': catalog '+width);
+   await p.setViewportSize({width,height:width<500?844:1000});await geometry(p,engine+': catalog '+width);
    if([390,1440].includes(width)){const file=join(evidence,engine+'-breaks-'+width+'.png');await p.screenshot({path:file,fullPage:true});report.screenshots.push(file);}
    await p.getByLabel('Add break type',{exact:true}).click();await geometry(p,engine+': editor '+width);
    if(width===390){const file=join(evidence,engine+'-break-editor-390.png');await p.screenshot({path:file,fullPage:false});report.screenshots.push(file);}
