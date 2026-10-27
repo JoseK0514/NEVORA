@@ -347,8 +347,9 @@ export async function listSwapTargets(
 export async function listOpenCoverage(
   employeeId: string,
   fromDate: string,
+  executor?: SqlExecutor,
 ): Promise<ExchangeRecord[]> {
-  const sql = getDb();
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
   const rows = queryRows(
     await sql.query(
     `${EXCHANGE_SELECT}
@@ -367,8 +368,8 @@ export async function listOpenCoverage(
   return rows.map(mapExchange).filter(row=>row.status==='OPEN');
 }
 
-export async function listIncomingSwaps(employeeId: string): Promise<ExchangeRecord[]> {
-  const sql = getDb();
+export async function listIncomingSwaps(employeeId: string, executor?: SqlExecutor): Promise<ExchangeRecord[]> {
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
   const rows = queryRows(
     await sql.query(
     `${EXCHANGE_SELECT}
@@ -385,8 +386,9 @@ export async function listIncomingSwaps(employeeId: string): Promise<ExchangeRec
 
 export async function listEmployeeExchangeActivity(
   employeeId: string,
+  executor?: SqlExecutor,
 ): Promise<ExchangeRecord[]> {
-  const sql = getDb();
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
   const rows = queryRows(
     await sql.query(
     `${EXCHANGE_SELECT}

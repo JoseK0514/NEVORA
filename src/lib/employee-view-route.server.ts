@@ -10,14 +10,14 @@ const json=(value:object,status=200)=>Response.json(value,{status,headers:{'Cach
  * no-store responses. The supplied reader must still enforce database authority;
  * the header only prevents a mounted panel from accepting another view lifetime.
  */
-export function createEmployeeViewGet(kind:EmployeeView,read:(proof:SessionMutationProof)=>Promise<EmployeeViewSnapshot>){
+export function createEmployeeViewGet<T extends {state:'ready'}|{state:'unavailable';reason:string}>(kind:EmployeeView,read:(proof:SessionMutationProof)=>Promise<T>){
  return createViewGet(kind,read,['EMPLOYEE','LEAD']);
 }
 /** Only notifications extend to management; employee profile readers stay scoped. */
 export function createPortalNotificationViewGet(read:(proof:SessionMutationProof)=>Promise<EmployeeViewSnapshot>){
  return createViewGet('notifications',read,['EMPLOYEE','LEAD','MANAGER','OWNER']);
 }
-function createViewGet(kind:EmployeeView,read:(proof:SessionMutationProof)=>Promise<EmployeeViewSnapshot>,roles:readonly string[]){
+function createViewGet<T extends {state:'ready'}|{state:'unavailable';reason:string}>(kind:EmployeeView,read:(proof:SessionMutationProof)=>Promise<T>,roles:readonly string[]){
  return async(request:Request):Promise<Response>=>{
   if(new URL(request.url).search)return json({state:'unavailable',reason:'access_denied'},400);
   if(request.headers.get('sec-fetch-site')==='cross-site')return json({state:'unavailable',reason:'access_denied'},403);

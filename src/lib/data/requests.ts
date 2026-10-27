@@ -60,8 +60,8 @@ export async function getTimeOffRequest(id: string, executor: SqlExecutor = neon
   return row ? mapRequest(row) : null;
 }
 
-export async function listEmployeeTimeOffRequests(employeeId: string) {
-  const sql = getDb();
+export async function listEmployeeTimeOffRequests(employeeId: string, executor?: SqlExecutor) {
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
   const rows = queryRows(
     await sql.query(
     `SELECT

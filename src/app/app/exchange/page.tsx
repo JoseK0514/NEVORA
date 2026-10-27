@@ -1,4 +1,6 @@
 import { keepWhole } from "@/lib/keep-whole";
+import {ResponsiveEmployeeRequests} from "@/components/employee-mobile/requests";
+import {employeeViewAuthority} from "@/lib/employee-view-authority.server";
 import {randomUUID} from 'node:crypto';
 import { moduleGate } from "@/lib/workspace-presentation/current.server";
 import {ShiftChangeForm} from '@/components/shift-change-form';
@@ -181,7 +183,7 @@ export default async function ExchangePage({
     const exchangeWord = (status: string) => status === "OPEN" ? "Offered" : status === "EMPLOYEE_PENDING" ? "Awaiting employee" : status === "MANAGER_PENDING" ? "Manual review" : status === "APPROVED" ? "Completed" : statusLabel(status);
     const calloutWord = (callout: (typeof visibleCallouts)[number]) => callout.status === "PENDING" ? "Reported" : callout.status === "APPROVED" ? (callout.releaseApplies ? "Released — check coverage" : "Previously approved — review current assignment") : statusLabel(callout.status);
     const yours = visibleActivity.length + visibleCallouts.length;
-    return (
+    const existing = (
       <QuietPage className="q-shiftreq employee-shift-requests-view">
         <QuietNav back={{ href: "/app/requests/hub", label: "Requests" }} />
         <QuietHeader title="Shift requests" />
@@ -205,7 +207,7 @@ export default async function ExchangePage({
               </ul>
               {!acceptViews.get(exchange.id)?.allowed ? <p className="q-help shift-change-unavailable">{acceptViews.get(exchange.id)?.notice}</p> : null}
               {acceptViews.get(exchange.id)?.allowed ? <div className="q-sheet-acts"><ShiftChangeForm fields={{ kind: "ACCEPT", ...requestFields(exchange.id, exchange.requestRevision)! }} className="shift-change-form q-scform"><button className="q-btn" type="submit">Claim<span className="nv-sr"> shift</span></button></ShiftChangeForm></div> : null}
-              <p className="q-help">Claiming sends a request to your manager. The shift is yours once it’s approved.</p>
+              <p className="q-help">{acceptViews.get(exchange.id)?.outcome==='completed'?'Claiming assigns this shift to you immediately if it is still available and you still meet the rules.':'A pickup follows your company’s current approval rules. Check the confirmed result and your schedule after submitting.'}</p>
             </SheetRow>))}</ul>
             : <div className="q-emptyblock"><p className="q-emptyblock__title">{blocked.length ? "No open shifts fit your schedule" : "No open shifts right now"}</p><p className="q-help">{blocked.length ? "The shifts below can’t be picked up yet." : "When a teammate offers a shift you can work, it shows up here."}</p></div>}
           {blocked.length ? <section aria-labelledby="sr-blocked">
@@ -275,6 +277,7 @@ export default async function ExchangePage({
         </>}
       </QuietPage>
     );
+    return view==='available'?<ResponsiveEmployeeRequests mode="open" selected={params.requestId} authority={employeeViewAuthority(proof!,'requests')}>{existing}</ResponsiveEmployeeRequests>:existing;
   }
 
   return null;

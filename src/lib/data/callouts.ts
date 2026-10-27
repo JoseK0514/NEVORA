@@ -107,8 +107,9 @@ export async function listPendingCallouts(): Promise<CalloutRecord[]> {
 
 export async function listEmployeeCallouts(
   employeeId: string,
+  executor?: SqlExecutor,
 ): Promise<CalloutRecord[]> {
-  const sql = getDb();
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
   const rows = queryRows(
     await sql.query(
       `${CALLOUT_SELECT}

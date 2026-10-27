@@ -256,5 +256,12 @@
       "source": "package.json"
     }
   ],
+  "employeeRequestsMobile20261027": {
+    "authority": "Jose-approved Employee mobile teal Phase 1",
+    "scope": "Employee/Lead mobile Requests hub and eligible open coverage; desktop/management preserved",
+    "reuse": "Existing private snapshot, Employee guards, shift-change planner and immutable operation owner; native details and Phase 1 semantic tokens",
+    "catalog": "Free metadata search: Time Off Request Calendar 25171, Coach Scheduling Card 2554, Appointment Booking Split 29211. Existing controls better fit this task; no paid retrieval or package.",
+    "plan": "docs/execution/employee-mobile-requests/plan.md"
+  },
   "generatedAt": "2026-10-13T18:05:53.669Z"
 }

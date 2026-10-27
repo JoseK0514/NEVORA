@@ -235,7 +235,7 @@ import { isShiftChangeCommand } from '../shift-changes/command-parser';
 /** Read-only UI availability uses the same command plan as final guarded writes.
  * Return a finite safe projection, never the private snapshot or SQL statements. */
 /** reasons and refusal are additive: older callers read allowed and notice only. */
-export type ShiftChangeAvailability={allowed:boolean;notice:string|null;reasons?:EligibilityReason[];refusal?:'rules'|'review'|'stale'|'other'};
+export type ShiftChangeAvailability={allowed:boolean;notice:string|null;outcome?:'completed'|'pending'|'closed';reasons?:EligibilityReason[];refusal?:'rules'|'review'|'stale'|'other'};
 export async function readShiftChangeAvailability(proof:SessionMutationProof,command:ShiftChangeCommand,executor:SqlExecutor=neonNotificationExecutor()):Promise<ShiftChangeAvailability> {
  try {
   const snapshot=await readShiftChangeSnapshot(proof,command,executor);
@@ -249,7 +249,7 @@ export async function readShiftChangeAvailability(proof:SessionMutationProof,com
     if(current?.mode==='MANAGER_REVIEW')reasons.push('Current workflow policy requires manager review.');
     else if(snapshot.request?.recordedApprovalMode==='MANAGER_REVIEW')reasons.push('This request was submitted under manager review.');
    }
-   return {allowed:true,notice:reasons.length?reasons.join(' '):null};
+   return {allowed:true,notice:reasons.length?reasons.join(' '):null,outcome:result.status as 'completed'|'pending'|'closed'};
   }
   const scope=snapshot.policy?.[snapshot.request?.kind==='SWAP'||command.kind==='PROPOSE_SWAP'?'swap':'coverage'];
   const unknown=!scope?.mode||scope.submissionAdvanceMinutes===null||scope.completionAdvanceMinutes===null||result.status==='blocked'&&result.issues.some(i=>['RULE_UNVERIFIABLE','POLICY_UNKNOWN'].includes(i.code));
