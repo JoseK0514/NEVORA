@@ -1,0 +1,30 @@
+{
+  "reviewed_source_sha256": "65f2a5d5cbb596f90a2d08adb2fca30c869e1142e8325e9d25f23326e70d1c64",
+  "final_source_sha256": "65f2a5d5cbb596f90a2d08adb2fca30c869e1142e8325e9d25f23326e70d1c64",
+  "original_review_verdict": "PASS",
+  "recommendation": "APPROVE",
+  "codeQualityStatus": "WATCH",
+  "unresolved_material_findings": [],
+  "independent_review": "outputs/owner-features/independent-review/review.md",
+  "review_preserved_unchanged": true,
+  "post_review_implementation_changes": false,
+  "independent_checks": {
+    "model": 19,
+    "chromium": 35,
+    "failed": 0
+  },
+  "deferred_minors": [
+    {
+      "id": "L1",
+      "severity": "LOW",
+      "finding": "Sticky-header clearance is stale after live viewport/text resizing until another render.",
+      "disposition": "Deferred: stale measurement demonstrated; no obscured control or failed save demonstrated. Measure/observe header size if a supported live-resize failure is reproduced.",
+      "evidence": "outputs/owner-features/independent-review/live-resize.json"
+    }
+  ],
+  "limits": [
+    "Local in-memory mobile Owner mockup only",
+    "No real application integration, device/assistive-tech certification or deployment"
+  ],
+  "next_batch": "3.6 Company/location operational policies and history/conflicts"
+}

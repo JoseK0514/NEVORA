@@ -1,0 +1,34 @@
+{
+  "recorded_on": "2026-10-27",
+  "status": "PASS",
+  "scope": "Publication archive/extraction checks; no application runtime or new UI certification",
+  "artifact_sha256": "65f2a5d5cbb596f90a2d08adb2fca30c869e1142e8325e9d25f23326e70d1c64",
+  "archive_sha256": "0c976dc4157914b7f790db7f5005c454d2cbde66f3a30fdbfff12034eeb335f3",
+  "original_manifest_files_verified": 9436,
+  "pinned_reference_files_verified": 2170,
+  "canonical_build_matches": true,
+  "javascript_files_parsed": 42,
+  "extracted_files": 9440,
+  "guards": [
+    {
+      "name": "Existing extraction destination preserved",
+      "passed": true,
+      "exit_code": 1
+    },
+    {
+      "name": "Application checkout extraction rejected",
+      "passed": true,
+      "exit_code": 1
+    },
+    {
+      "name": "Tampered archive part rejected before extraction",
+      "passed": true,
+      "exit_code": 1
+    }
+  ],
+  "archive_parts_checked": 3,
+  "application_source_configuration_or_ci_changes": false,
+  "actual_cloud_execution": "Not run; this validates the portable extraction locally",
+  "prior_ui_and_review_evidence": "Preserved unchanged inside payload; see LATEST-REVIEW.md and INDEPENDENT-REVIEW.md",
+  "publication_formatting": "Initial diff check flagged historical whitespace in a redundant loose generated HTML copy. The convenience copy was removed; exact approved HTML remains unchanged inside the validated payload. Trimmed only the reading-copy markdown final blank line. No test or Git whitespace control weakened."
+}

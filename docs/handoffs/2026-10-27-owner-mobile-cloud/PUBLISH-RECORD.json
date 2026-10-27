@@ -1,0 +1,27 @@
+{
+  "recorded_on": "2026-10-27",
+  "scope": "Transfer the complete existing local mobile Owner mockup and full handoff to a new private GitHub feature branch; no merge",
+  "repository": "JoseK0514/NEVORA",
+  "former_repository_url": "https://github.com/JoseK0514/Fuel-Scheduler-",
+  "branch": "codex/owner-mobile-cloud-handoff-20261027",
+  "base_branch": "development",
+  "base_commit": "84c3fc357b006220ef6bbf29580e7327228c9659",
+  "authorization": "User quoted the proposed GitHub feature-branch upload and instructed: Do this because I’m on my phone.",
+  "remote_heads_before": 7,
+  "remote_heads_expected_after": 8,
+  "existing_seven_branch_policy": "Unchanged; the explicit new handoff-branch request authorizes this transfer, not a global ceiling increase or future assembly exception.",
+  "review_trigger": "Before any application integration/assembly; reconcile the handoff branch with the source inventory and branch ceiling under applicable authority. Do not delete unrelated branches or alter controls automatically.",
+  "release_impact": "CONDITION for later assembly; no application/configuration/CI/database/deployment source changes in this transfer",
+  "controls": [
+    "Private repository preserved",
+    "Fresh development base",
+    "Isolated worktree",
+    "Archive/manifest identity validation",
+    "No app scripts or operational services",
+    "No branch deletion/force push/main/development mutation",
+    "No PR or deployment requested"
+  ],
+  "owner": "Jose; current executor prepares and verifies transfer only",
+  "latest_mockup_batch": "3.5 complete; one LOW finding deferred; next3.6",
+  "cloud_connection_and_execution": "Not established by pushing; verify user-authorized repository connection in Cloud"
+}

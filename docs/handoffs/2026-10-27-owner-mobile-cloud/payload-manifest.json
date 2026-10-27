@@ -1,0 +1,29 @@
+{
+  "repository": "JoseK0514/NEVORA",
+  "branch": "codex/owner-mobile-cloud-handoff-20261027",
+  "base_development_commit": "84c3fc357b006220ef6bbf29580e7327228c9659",
+  "archive_sha256": "0c976dc4157914b7f790db7f5005c454d2cbde66f3a30fdbfff12034eeb335f3",
+  "archive_bytes": 110756756,
+  "parts": [
+    {
+      "file": "payload.tar.xz.part-01",
+      "bytes": 41943040,
+      "sha256": "6b7b57f567760afd368e3b53e581fe9f0349952a8b29cb58c84769b925f8032e"
+    },
+    {
+      "file": "payload.tar.xz.part-02",
+      "bytes": 41943040,
+      "sha256": "2777b11be358db6d328319c4d607f71801dafe0af8d52f5c5891168d64819e63"
+    },
+    {
+      "file": "payload.tar.xz.part-03",
+      "bytes": 26870676,
+      "sha256": "a4fe0a96aa7065edf9a115558bf156aac7ae5c7f166478fa55396f0a3b7062b2"
+    }
+  ],
+  "artifact_sha256": "65f2a5d5cbb596f90a2d08adb2fca30c869e1142e8325e9d25f23326e70d1c64",
+  "packaged_files": 9436,
+  "pinned_application_reference_commit": "46e202786863279302026ee03a0e225c359fa55c",
+  "scope": "Complete standalone mobile Owner mockup source, handoff and evidence; not application integration",
+  "extraction_root": "nevora-owner-mobile-cloud-handoff"
+}

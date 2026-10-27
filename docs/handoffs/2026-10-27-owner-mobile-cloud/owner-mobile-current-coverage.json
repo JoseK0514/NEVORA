@@ -1,0 +1,2868 @@
+{
+  "reviewed_on": "2026-10-27",
+  "timezone": "America/Puerto_Rico",
+  "scope": "Owner MOBILE mockup design coverage and remaining work; not production parity",
+  "mockup_sha256": "65f2a5d5cbb596f90a2d08adb2fca30c869e1142e8325e9d25f23326e70d1c64",
+  "inventory_source_head": "46e202786863279302026ee03a0e225c359fa55c",
+  "counts": {
+    "working_mockup_slices": 53,
+    "remaining_or_partial_groups": 43,
+    "excluded_for_owner": 4
+  },
+  "counts_are_not_screen_or_effort_percentages": true,
+  "source_inventory": "outputs/owner-mobile-checklist.json",
+  "rows": [
+    {
+      "id": "N-01",
+      "domain": "Navigation and discovery",
+      "owner_job": "Move between the five owner areas",
+      "source_routes": [
+        "/app",
+        "/app/schedule",
+        "/app/inbox",
+        "/app/employees",
+        "/app/more"
+      ],
+      "source_refs": [
+        {
+          "file": "src/lib/navigation.ts",
+          "line": 190,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/lib/navigation.ts#L190",
+          "excerpt": "export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities, context: NavContext = {}): MobileTab[] {"
+        },
+        {
+          "file": "src/lib/navigation.ts",
+          "line": 137,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/lib/navigation.ts#L137",
+          "excerpt": "  return navigationForRole(role, payroll, context)"
+        },
+        {
+          "file": "src/lib/workspace-presentation/modules.ts",
+          "line": 5,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/lib/workspace-presentation/modules.ts#L5",
+          "excerpt": "export const MODULE_IDS = [\"timeOff\", \"marketplace\", \"updates\", \"payStatements\", \"breaks\"] as const;"
+        }
+      ],
+      "mockup_coverage": "sample",
+      "mockup_entry": "Five bottom tabs",
+      "remaining_acceptance": "Use the same authorized destinations on desktop/mobile; preserve selected period, location, scroll, filters and meaningful Back/focus.",
+      "source_conditions": "Current Owner session, company scope, enabled modules and payroll capabilities; tab membership grants no access.",
+      "proposed_design_wave": 1,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Five roots/navigation are built. Finish module/capability-aware visibility, direct-route and cross-workflow continuity in the integrated app.",
+      "evidence_report": null
+    },
+    {
+      "id": "N-02",
+      "domain": "Navigation and discovery",
+      "owner_job": "Find tools, people and places",
+      "source_routes": [
+        "/app/more"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/command-finder.tsx",
+          "line": 35,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/command-finder.tsx#L35",
+          "excerpt": " * the same dialog fills the screen and opens from the header or More. */"
+        },
+        {
+          "file": "src/app/app/more/page.tsx",
+          "line": 22,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/more/page.tsx#L22",
+          "excerpt": "const WORK = [\"/app/timecards\", \"/app/payroll\", \"/app/reports\", \"/app/updates\", \"/app/my-pay\"];"
+        }
+      ],
+      "mockup_coverage": "sample",
+      "mockup_entry": "More search / Find a tool",
+      "remaining_acceptance": "Reconcile authorized pages, common actions, people and places, including remotely loaded results; handle loading/offline/unavailable without false no-match; remove Owner My time; make contextual tools findable.",
+      "source_conditions": "Only tools authorized by navigationForRole and current scope; current More page has a narrower hardcoded list.",
+      "proposed_design_wave": 1,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Tool search exists. People/place discovery and complete authorized source results remain.",
+      "evidence_report": null
+    },
+    {
+      "id": "H-01",
+      "domain": "Home and setup",
+      "owner_job": "Understand today’s staffing and exceptions",
+      "source_routes": [
+        "/app"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/premium-home.tsx",
+          "line": 146,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/premium-home.tsx#L146",
+          "excerpt": "    <QuietBar org={workspaceName}><QuietBarIcon href=\"/app/notifications\" label=\"Notifications\"><BellIcon className=\"q-ic\" aria-hidden=\"true\" /></QuietBarIcon></QuietBar>"
+        }
+      ],
+      "mockup_coverage": "sample",
+      "mockup_entry": "Home",
+      "remaining_acceptance": "Bind every count and item to the same current source; cover no shifts, all clear, multiple and ended missing clock-ins, partial and unavailable observations.",
+      "source_conditions": "Owner operational company observation; stale/unavailable data must not imply all clear.",
+      "proposed_design_wave": 1,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Published Schedule staffing, open recorded-punch count and complete local exception projection; current scoped counts, incomplete/loading/offline/expired/access/empty states, no invented next arrival. Production unified Today matching remains an integration requirement.",
+      "evidence_report": "outputs/owner-triage/review.md"
+    },
+    {
+      "id": "H-02",
+      "domain": "Home and setup",
+      "owner_job": "Open the correct action from Home",
+      "source_routes": [
+        "/app"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/premium-home.tsx",
+          "line": 146,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/premium-home.tsx#L146",
+          "excerpt": "    <QuietBar org={workspaceName}><QuietBarIcon href=\"/app/notifications\" label=\"Notifications\"><BellIcon className=\"q-ic\" aria-hidden=\"true\" /></QuietBarIcon></QuietBar>"
+        }
+      ],
+      "mockup_coverage": "sample",
+      "mockup_entry": "Home coverage / requests / schedule",
+      "remaining_acceptance": "Carry exact request, shift, location, date and origin into attendance, coverage repair and review, then return to that origin.",
+      "source_conditions": "Current source target and authorization; module-dependent requests.",
+      "proposed_design_wave": 1,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Home groups current actions into exact Inbox filters and supported full reviews. Stable request/shift/person/week/date/location and direct/nested origin return after reload or item resolution are checked.",
+      "evidence_report": "outputs/owner-triage/review.md"
+    },
+    {
+      "id": "H-03",
+      "domain": "Home and setup",
+      "owner_job": "Finish initial company setup",
+      "source_routes": [
+        "/app",
+        "/app/schedule/settings",
+        "/app/settings/locations"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/owner-setup-card.tsx",
+          "line": 92,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/owner-setup-card.tsx#L92",
+          "excerpt": "export function OwnerSetupQuiet({steps, locationCount}: {steps: SetupSteps | null; locationCount: number}) {"
+        }
+      ],
+      "mockup_coverage": "sample",
+      "mockup_entry": "Incomplete setup example",
+      "remaining_acceptance": "Use the real two checks: coverage/staffing/lead periods and employee hour targets; distinguish zero locations and completion; deep-link to the exact fixing section.",
+      "source_conditions": "Owner; show only current confirmed setup gaps, hide when complete.",
+      "proposed_design_wave": 1,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "An incomplete-setup example exists. Complete the actual coverage/lead configuration and weekly-hour-target checklist, including no-location and completion states.",
+      "evidence_report": null
+    },
+    {
+      "id": "H-04",
+      "domain": "Home and setup",
+      "owner_job": "Inspect team overview by week",
+      "source_routes": [
+        "/app?view=team"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/manager-dashboard.tsx",
+          "line": 130,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/manager-dashboard.tsx#L130",
+          "excerpt": "function TeamTab(props: Props) {"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "Team → Tools → Team overview",
+      "remaining_acceptance": "Show active team, submitted availability, missing/outside targets, scheduled hours and target links with week controls; preserve observed scope.",
+      "source_conditions": "Owner/company operational authority; no invented metrics.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Weekly Team overview now includes all active roles, eligible-submission denominator, current targets/missing/outside filters, company-wide planned hours including drafts, exact employee/availability/settings/Schedule handoffs and protected states. Local fictional mobile Owner only; actual integration and full parity acceptance remain.",
+      "evidence_report": "outputs/owner-weekly-team/review.md",
+      "verified_mockup_sha256": "bf5825e3bbdb168e62589fe19fef3671ae782dbe9f7252df43c398df1942491c"
+    },
+    {
+      "id": "H-05",
+      "domain": "Home and setup",
+      "owner_job": "Inspect recent schedule activity",
+      "source_routes": [
+        "/app?view=activity"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/manager-dashboard.tsx",
+          "line": 159,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/manager-dashboard.tsx#L159",
+          "excerpt": "function ActivityTab(props: Props) {"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Schedule → Tools → Schedule activity",
+      "remaining_acceptance": "Show publication revision/time and existing dated action rows with week navigation and review links; empty state. Do not invent a general audit-history product.",
+      "source_conditions": "Management/company scope; existing activity-history-panel is unused.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/schedule-coverage-progress.md"
+    },
+    {
+      "id": "I-01",
+      "domain": "Inbox",
+      "owner_job": "Triage Act now, Requests and Plan ahead",
+      "source_routes": [
+        "/app/inbox"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/manager-inbox.tsx",
+          "line": 275,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/manager-inbox.tsx#L275",
+          "excerpt": "export function InboxSurface({ snapshot, today = null, connection, onRefresh: refresh, timeZone, initialFilter = \"all\" }: {"
+        }
+      ],
+      "mockup_coverage": "sample",
+      "mockup_entry": "Inbox All / Today / Requests",
+      "remaining_acceptance": "Reconcile the source filters now/requests/planning with the proposed All/Today/Requests labels; retain planning/setup items, deep-linked item, exact counts and return context.",
+      "source_conditions": "Only ready observations produce counts or empty-state claims.",
+      "proposed_design_wave": 1,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "All/Act now/Requests/Plan ahead combine existing fictional domain reads with one count model; future/past/planning/open offers remain visible without urgent inflation. Repeated items group and partial totals stay unavailable.",
+      "evidence_report": "outputs/owner-triage/review.md"
+    },
+    {
+      "id": "I-02",
+      "domain": "Inbox",
+      "owner_job": "Review a late or missing clock-in",
+      "source_routes": [
+        "/app/inbox",
+        "/app?view=attendance"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/manager-inbox.tsx",
+          "line": 275,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/manager-inbox.tsx#L275",
+          "excerpt": "export function InboxSurface({ snapshot, today = null, connection, onRefresh: refresh, timeZone, initialFilter = \"all\" }: {"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "Home / Inbox missing-clock-in sample; Team → Tools → Attendance",
+      "remaining_acceptance": "Distinguish running and ended missing clock-in; open employee and timecard; show Call/Text only with a phone; carry selected employee/date.",
+      "source_conditions": "Current attendance observation; no inference of actual worked time.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Running versus ended missing-clock-in review, stable employee/timecard/date handoffs, phone-gated preview contact and exact Home/Inbox return are implemented. The sample-only entry/count is retained; full Inbox/Home source-wide triage remains in I-01/H-01/section 2.6. Local fictional mobile Owner only.",
+      "evidence_report": "outputs/owner-attendance/review.md",
+      "verified_mockup_sha256": "af3cce9a4df7083aef140a0531480f56e8eb6bf384aa586c6faaf7ab9e8bfcc2"
+    },
+    {
+      "id": "I-03",
+      "domain": "Inbox",
+      "owner_job": "Continue to the appropriate full review",
+      "source_routes": [
+        "/app/inbox",
+        "/app/requests",
+        "/app/exchange",
+        "/app/timecards"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/manager-inbox.tsx",
+          "line": 275,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/manager-inbox.tsx#L275",
+          "excerpt": "export function InboxSurface({ snapshot, today = null, connection, onRefresh: refresh, timeZone, initialFilter = \"all\" }: {"
+        }
+      ],
+      "mockup_coverage": "sample",
+      "mockup_entry": "Sample request detail / affected day",
+      "remaining_acceptance": "Different request types must reach their correct authoritative review, expose all decision facts and preserve originating filter/item after decision.",
+      "source_conditions": "Per-request current eligibility, revision, module and reviewer authority.",
+      "proposed_design_wave": 1,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Exact Attendance/Schedule/time-off/shift-request/correction/timecard/Availability/weekly-Team destinations and meaningful Back/focus survive decisions and supported nested reloads. Actual integration/full parity remain separate.",
+      "evidence_report": "outputs/owner-triage/review.md"
+    },
+    {
+      "id": "S-01",
+      "domain": "Schedule and coverage",
+      "owner_job": "Browse the schedule across days, weeks and locations",
+      "source_routes": [
+        "/app/schedule"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/schedule/page.tsx",
+          "line": 316,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/schedule/page.tsx#L316",
+          "excerpt": "      <QuietBar start={<ActionMenu id=\"schedule-location-menu\" label=\"Location\" ariaLabel={`Location: ${selectedLocation === \"all\" ? \"All locations\" : locations.find(location => location.id === selectedLocation)?.shortName ?? \"\"}`} align=\"start\""
+        }
+      ],
+      "mockup_coverage": "sample",
+      "mockup_entry": "Schedule sample Monday",
+      "remaining_acceptance": "Support previous/current/next week and selected day, all/single location, published/draft/not-planned states, empty team/shifts and consistent context.",
+      "source_conditions": "Management operational authority and actual week/location.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/schedule-coverage-progress.md"
+    },
+    {
+      "id": "S-02",
+      "domain": "Schedule and coverage",
+      "owner_job": "Inspect shifts, approved absence and unscheduled people",
+      "source_routes": [
+        "/app/schedule"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/manager-weekly-roster.tsx",
+          "line": 120,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/manager-weekly-roster.tsx#L120",
+          "excerpt": "  const shiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <QuietRow key={shift.id} href={editHref(shift)} label={shiftLabel(shift, employee.name)} chevron={false}"
+        }
+      ],
+      "mockup_coverage": "sample",
+      "mockup_entry": "Sample roster and person sheet",
+      "remaining_acceptance": "Show actual shift detail, reveal additional shifts, approved time off, unscheduled people, and the correct edit/find-cover actions.",
+      "source_conditions": "Source availability and enabled modules; Team roster is not the complete schedule.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/schedule-coverage-progress.md"
+    },
+    {
+      "id": "S-03",
+      "domain": "Schedule and coverage",
+      "owner_job": "Add a shift",
+      "source_routes": [
+        "/app/schedule/new"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/schedule/new/page.tsx",
+          "line": 37,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/schedule/new/page.tsx#L37",
+          "excerpt": "export default async function NewShiftPage({"
+        }
+      ],
+      "mockup_coverage": "sample",
+      "mockup_entry": "Schedule → Add shift sample form",
+      "remaining_acceptance": "Add notes, explicit qualified position, designated lead and validation for location eligibility, availability, time off, overlap and hour targets; save/cancel and contextual result.",
+      "source_conditions": "Current scope/targets; sample Preview shift creates nothing and performs no eligibility check.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/schedule-coverage-progress.md"
+    },
+    {
+      "id": "S-04",
+      "domain": "Schedule and coverage",
+      "owner_job": "Edit an existing shift",
+      "source_routes": [
+        "/app/schedule/edit"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/schedule/edit/page.tsx",
+          "line": 40,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/schedule/edit/page.tsx#L40",
+          "excerpt": "export default async function EditShiftPage({"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Find a tool → Edit shift",
+      "remaining_acceptance": "Show the exact existing shift, current-week date bounds, complete assignment fields, publication implications, validation and save/cancel result.",
+      "source_conditions": "Current target/revision, operational authority and editor scope.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/schedule-coverage-progress.md"
+    },
+    {
+      "id": "S-05",
+      "domain": "Schedule and coverage",
+      "owner_job": "Delete an existing shift",
+      "source_routes": [
+        "/app/schedule/edit"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/schedule/edit/page.tsx",
+          "line": 40,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/schedule/edit/page.tsx#L40",
+          "excerpt": "export default async function EditShiftPage({"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Provide explicit shift identity and consequences, deliberate delete/cancel, pending/failed/stale/success states and return context; preserve auto-fill exclusion semantics.",
+      "source_conditions": "Existing shift and current management authority; no new deletion policy.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/schedule-coverage-progress.md"
+    },
+    {
+      "id": "S-06",
+      "domain": "Schedule and coverage",
+      "owner_job": "Find a valid replacement for a coverage gap",
+      "source_routes": [
+        "/app/schedule/coverage"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/schedule/coverage/page.tsx",
+          "line": 37,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/schedule/coverage/page.tsx#L37",
+          "excerpt": "export default async function CoverageSuggestionsPage({"
+        },
+        {
+          "file": "src/components/coverage-assistant.tsx",
+          "line": 105,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/coverage-assistant.tsx#L105",
+          "excerpt": "          {props.requirements?.length && (props.status === \"READY\" || props.status === \"CHOOSE\") ? <Card title=\"What it needs\" id=\"coverage-needs\">"
+        },
+        {
+          "file": "src/app/app/schedule/coverage/page.tsx",
+          "line": 104,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/schedule/coverage/page.tsx#L104",
+          "excerpt": "  const startTime = params.start ?? \"\";"
+        }
+      ],
+      "mockup_coverage": "sample",
+      "mockup_entry": "Home / Inbox coverage sheet",
+      "remaining_acceptance": "Represent exact gap and choose staffing/lead/position need before READY candidates; show ranking explanation (planned hours, not recorded time/pay), no candidates, STALE refresh and RESOLVED → no replacement needed → Back to schedule. Sample assignment is not evidence of a valid repair.",
+      "source_conditions": "Current operational scope; validated ordinary suggestions or trusted repair-review context according to entry path. Ordinary suggestions open a prefilled new-shift form; only repair mode uses signed candidate review.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/schedule-coverage-progress.md"
+    },
+    {
+      "id": "S-07",
+      "domain": "Schedule and coverage",
+      "owner_job": "Review and save a coverage repair",
+      "source_routes": [
+        "/app/schedule/new"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/schedule/new/page.tsx",
+          "line": 37,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/schedule/new/page.tsx#L37",
+          "excerpt": "export default async function NewShiftPage({"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Review the exact replacement terms, required publication/notification consent, save once and return to the precise repair context; refresh stale or repeated review.",
+      "source_conditions": "Trusted repair locator/current eligibility and atomic source writer; infrastructure failure cannot imply success.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/schedule-coverage-progress.md"
+    },
+    {
+      "id": "S-08",
+      "domain": "Schedule and coverage",
+      "owner_job": "Build a draft or fill gaps only",
+      "source_routes": [
+        "/app/schedule"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/schedule-generation-controls.tsx",
+          "line": 35,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/schedule-generation-controls.tsx#L35",
+          "excerpt": "export function ScheduleGenerationControls({weekStart,selectedLocation,review}:{weekStart:string;selectedLocation:string;review:ScheduleGenerationReview}) {"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Schedule → Tools → Build & publish",
+      "remaining_acceptance": "Separate Build week and Fill gaps only; show selected/all-location scope, setup blocks, coverage results and partial warnings before publication.",
+      "source_conditions": "Draft/current scope; published, unavailable and missing setup states.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/schedule-coverage-progress.md"
+    },
+    {
+      "id": "S-09",
+      "domain": "Schedule and coverage",
+      "owner_job": "Restore a deliberately excluded auto-fill slot",
+      "source_routes": [
+        "/app/schedule"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/schedule-generation-controls.tsx",
+          "line": 35,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/schedule-generation-controls.tsx#L35",
+          "excerpt": "export function ScheduleGenerationControls({weekStart,selectedLocation,review}:{weekStart:string;selectedLocation:string;review:ScheduleGenerationReview}) {"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Show excluded slots and Allow auto-fill; explain that removing exclusion does not itself create a shift.",
+      "source_conditions": "Current draft and source scope.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/schedule-coverage-progress.md"
+    },
+    {
+      "id": "S-10",
+      "domain": "Schedule and coverage",
+      "owner_job": "Publish a location’s schedule",
+      "source_routes": [
+        "/app/schedule"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/schedule-publication-controls.tsx",
+          "line": 13,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/schedule-publication-controls.tsx#L13",
+          "excerpt": "  return <section className=\"schedule-publication-controls\" aria-label=\"Publish weekly schedule\">"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Build & publish destination",
+      "remaining_acceptance": "Review coverage, staffing, lead, position/window and hour warnings; explicit warning override where source permits; publish separate from generation, then open update compose or Home.",
+      "source_conditions": "Current publication authority and revision; required warning consent remains deliberate.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/schedule-coverage-progress.md"
+    },
+    {
+      "id": "S-11",
+      "domain": "Schedule and coverage",
+      "owner_job": "Save and archive schedule templates",
+      "source_routes": [
+        "/app/schedule/templates"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/schedule/templates/page.tsx",
+          "line": 67,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/schedule/templates/page.tsx#L67",
+          "excerpt": "      <QuietGroup label=\"Save this week\" id=\"st-save\">"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Schedule → Tools → Templates",
+      "remaining_acceptance": "Name/save the selected week, browse library, archive with Keep/cancel confirmation and preserve existing shifts.",
+      "source_conditions": "Management authority and current template/source; empty/unavailable/pending/error.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/schedule-coverage-progress.md"
+    },
+    {
+      "id": "S-12",
+      "domain": "Schedule and coverage",
+      "owner_job": "Apply a template or recover a copy operation",
+      "source_routes": [
+        "/app/schedule/templates",
+        "/app/schedule/copy-receipt"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/schedule-copy-form.tsx",
+          "line": 115,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/schedule-copy-form.tsx#L115",
+          "excerpt": "      <button"
+        },
+        {
+          "file": "src/app/app/schedule/copy-receipt/page.tsx",
+          "line": 47,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/schedule/copy-receipt/page.tsx#L47",
+          "excerpt": "export default async function CopyReceiptPage({"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Templates / Copied schedule previews",
+      "remaining_acceptance": "Apply to the deliberate target week; review copied/skipped rows and reasons, partial/zero results, warnings and operation reference; check/retry the original uncertain operation.",
+      "source_conditions": "Current source and durable operation identity; a previous-week handler alone does not establish a visible button.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/schedule-coverage-progress.md"
+    },
+    {
+      "id": "S-13",
+      "domain": "Schedule and coverage",
+      "owner_job": "Set availability deadline and weekly hour targets",
+      "source_routes": [
+        "/app/schedule/settings"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/schedule/settings/page.tsx",
+          "line": 109,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/schedule/settings/page.tsx#L109",
+          "excerpt": "      <div className=\"q-list q-rule-list\" style={{ marginTop: 16 }}>"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Scheduling rules",
+      "remaining_acceptance": "Set zoned deadline and employee hour targets; distinguish unset/zero; preserve entries on failure and deep-link setup/person; empty team/location recovery.",
+      "source_conditions": "Management scope; workspace timezone, current revision and valid inputs.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/schedule-coverage-progress.md"
+    },
+    {
+      "id": "S-14",
+      "domain": "Schedule and coverage",
+      "owner_job": "Set staffing, lead, coverage periods and position quantities",
+      "source_routes": [
+        "/app/schedule/settings"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/schedule/settings/page.tsx",
+          "line": 109,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/schedule/settings/page.tsx#L109",
+          "excerpt": "      <div className=\"q-list q-rule-list\" style={{ marginTop: 16 }}>"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Scheduling rules",
+      "remaining_acceptance": "Per-location minimum staff, explicit lead requirement, add/remove coverage periods and required positions; deliberate remove, unset/zero, pending/error/success states.",
+      "source_conditions": "Current operational authority and active targets; preserve source validation.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/schedule-coverage-progress.md"
+    },
+    {
+      "id": "S-15",
+      "domain": "Schedule and coverage",
+      "owner_job": "Set shift-swap and coverage approval/cutoff policy",
+      "source_routes": [
+        "/app/schedule/settings"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/shift-change-policy-fields.tsx",
+          "line": 20,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/shift-change-policy-fields.tsx#L20",
+          "excerpt": "      </p>"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Independently set approval mode, submission advance and completion advance for swap/cover; distinguish unset/zero and explain already-open request deadlines.",
+      "source_conditions": "Owner editable; manager read-only; completion ordering and policy unavailable/reload.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/schedule-coverage-progress.md"
+    },
+    {
+      "id": "R-01",
+      "domain": "Requests and availability",
+      "owner_job": "Review team availability submissions",
+      "source_routes": [
+        "/app/availability"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/manager-availability.tsx",
+          "line": 18,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/manager-availability.tsx#L18",
+          "excerpt": "export async function ManagerAvailability({ week, currentWeek, employeeId, timeZone }: {"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "Inbox → Tools → Availability",
+      "remaining_acceptance": "Not sent/Sent, submitted windows/timestamps, intentional unavailable versus no submission, multiple windows/day, deadline state, employee deep link and invalid-week recovery.",
+      "source_conditions": "Owner reads manager team surface; employee submission/editor is outside Owner scope.",
+      "proposed_design_wave": 2,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Full weekly Availability review now has Not sent/Sent, seven dated days and multiple windows, deliberate unavailable versus missing/draft, timestamps/deadline states, search/scope and stable profile/week return. Local resolved fictional windows; no employee submission or real reminder command. Actual integration remains.",
+      "evidence_report": "outputs/owner-weekly-team/review.md",
+      "verified_mockup_sha256": "bf5825e3bbdb168e62589fe19fef3671ae782dbe9f7252df43c398df1942491c"
+    },
+    {
+      "id": "R-02",
+      "domain": "Requests and availability",
+      "owner_job": "Approve or decline time off",
+      "source_routes": [
+        "/app/requests"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/manager-time-off.tsx",
+          "line": 64,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/manager-time-off.tsx#L64",
+          "excerpt": "  const week = weekStartFor(request.startDate);"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "Inbox Tools / More → Time off; Home/Inbox represented request",
+      "remaining_acceptance": "Show full/partial dates and note, affected week and current pending state; approve/decline against current source and return to exact origin.",
+      "source_conditions": "timeOff module and reviewer authority; concurrent/failed decision cannot appear successful.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Company-wide Waiting detail, full/partial-day dates and note, read-backed scheduled overlap, deliberate pending-only Approve/Decline, known/changed/unconfirmed results and fresh-status recovery now work. Exact employee/Schedule/origin/reload context is preserved. Local fictional mobile Owner only; actual integration and full parity remain.",
+      "evidence_report": "outputs/owner-timeoff/review.md",
+      "verified_mockup_sha256": "df3c3ed2a27890ed807c4554b08d1bbc6a60efc87f88f26494fc1b9997660d42"
+    },
+    {
+      "id": "R-03",
+      "domain": "Requests and availability",
+      "owner_job": "Inspect decided time-off history and stale links",
+      "source_routes": [
+        "/app/requests"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/manager-time-off.tsx",
+          "line": 64,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/manager-time-off.tsx#L64",
+          "excerpt": "  const week = weekStartFor(request.startDate);"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "Inbox Tools / More → Time off; Home/Inbox represented request",
+      "remaining_acceptance": "Pending/Approved/Declined histories, reviewer/time receipt and already-decided deep-link recovery; preserve Home/Inbox filter/item.",
+      "source_conditions": "Enabled module and current review authority; no fabricated Undo if source has no such reversal.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Approved/Declined lists and read-only decision detail show reviewer/time or explicit missing history fields. Unknown/changed/withdrawn links recover through current reads without stale decisions, fake receipts or Undo. Local fictional mobile Owner only; actual integration remains.",
+      "evidence_report": "outputs/owner-timeoff/review.md",
+      "verified_mockup_sha256": "df3c3ed2a27890ed807c4554b08d1bbc6a60efc87f88f26494fc1b9997660d42"
+    },
+    {
+      "id": "R-04",
+      "domain": "Requests and availability",
+      "owner_job": "Review swaps and coverage pickups",
+      "source_routes": [
+        "/app/exchange"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/manager-shift-requests.tsx",
+          "line": 123,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/manager-shift-requests.tsx#L123",
+          "excerpt": "export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: {"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "Inbox Tools / More → Shift swaps; represented Home/Inbox swap → full Shift requests",
+      "remaining_acceptance": "Expose both complete shifts, people, dates/locations and current eligibility; approve/decline with revision, conflict and uncertain-outcome handling.",
+      "source_conditions": "marketplace module and current reviewer; source eligibility includes location, inactivity, time off, overlap and availability.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Waiting/Done swaps and accepted pickups, stable people/full original terms, both-shift/one-shift assignment simulation, current evaluation response fixture, explicit revision-bound approve/decline, truthful history/receipt/changed/blocked/unconfirmed outcomes and same-operation recovery. Exact profile/Schedule/origin/filter/search/focus/reload return. Bounded fictional mobile Owner only; full actual server eligibility/rule evaluation, integration and parity remain.",
+      "evidence_report": "outputs/owner-exchanges/review.md",
+      "verified_mockup_sha256": "7de54c2bae8258320e12beb02357e058d997fd8d250850460238aa5cac85db80"
+    },
+    {
+      "id": "R-05",
+      "domain": "Requests and availability",
+      "owner_job": "Review an unable-to-work callout",
+      "source_routes": [
+        "/app/exchange"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/manager-shift-requests.tsx",
+          "line": 123,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/manager-shift-requests.tsx#L123",
+          "excerpt": "export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: {"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "Inbox Tools / More → Shift requests → Waiting / Open cover / Done",
+      "remaining_acceptance": "Show reason/note/shift; approval releases the applicable assignment and leaves coverage required; stale approval cannot release a changed shift.",
+      "source_conditions": "marketplace and management authority; assignment episode/revision current.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Unified Waiting callout review with exact assignment, read-only reason/note, approve/decline, original material/episode release and one linked coverage request. True historical applicability, no trade-cutoff gate on absence review, known/unknown/current-read recovery and exact related/profile/Schedule/direct-origin return. Bounded fictional mobile Owner; actual application integration remains.",
+      "evidence_report": "outputs/owner-callouts/review.md",
+      "verified_mockup_sha256": "bc7a9a2e15c84657e036b724b7077db0ced9b76084ca5bb4c4f9e584d864db70"
+    },
+    {
+      "id": "R-06",
+      "domain": "Requests and availability",
+      "owner_job": "Close an open coverage request and inspect lifecycle",
+      "source_routes": [
+        "/app/exchange"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/manager-shift-requests.tsx",
+          "line": 123,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/manager-shift-requests.tsx#L123",
+          "excerpt": "export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: {"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "Inbox Tools / More → Shift requests → Waiting / Open cover / Done",
+      "remaining_acceptance": "Waiting/Open cover/Done, close coverage while original assignee remains, lifecycle history and reconciliation/retry of the original decision.",
+      "source_conditions": "Current request/eligibility and actor authority; unknown outcome is not a new decision.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Open cover queue and close detail distinguish voluntary assignment retention from callout-linked absence that remains uncovered. Revision/pickup race, source-missing unavailability, changed-but-existing source closure, prior receipt replay, expiration, owner-closed history and exact return work in local simulation. Full production lifecycle/maintenance/integration remain.",
+      "evidence_report": "outputs/owner-callouts/review.md",
+      "verified_mockup_sha256": "bc7a9a2e15c84657e036b724b7077db0ced9b76084ca5bb4c4f9e584d864db70"
+    },
+    {
+      "id": "T-01",
+      "domain": "Team and employee access",
+      "owner_job": "Find all employees, including off-shift and inactive",
+      "source_routes": [
+        "/app/employees"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/employee-directory.tsx",
+          "line": 24,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/employee-directory.tsx#L24",
+          "excerpt": "  // Quiet (v4, approved Oct 23): search, then people grouped by location. Name and position only; who's working lives on Today."
+        }
+      ],
+      "mockup_coverage": "sample",
+      "mockup_entry": "Team search, on-shift sample only",
+      "remaining_acceptance": "Build actual directory with status/location/role filters, primary-location groups and distinct no-team/no-match/unavailable states; search must include off-shift people.",
+      "source_conditions": "Owner/current operational company scope; active-only roster is insufficient.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/owner-team-audit.md"
+    },
+    {
+      "id": "T-02",
+      "domain": "Team and employee access",
+      "owner_job": "Add an employee",
+      "source_routes": [
+        "/app/employees/new"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/company-access/new-employee-form.tsx",
+          "line": 19,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/company-access/new-employee-form.tsx#L19",
+          "excerpt": "            <input type=\"hidden\" name=\"active\" value=\"true\"/>"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Team → Add employee",
+      "remaining_acceptance": "Names, phone, unique ID, role, primary location, optional email, scheduling qualifications and Manager scope; no-active-location setup link and validation.",
+      "source_conditions": "Only Owner can add Owner; Manager creation requires explicit management scope.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/owner-team-audit.md"
+    },
+    {
+      "id": "T-03",
+      "domain": "Team and employee access",
+      "owner_job": "Read an employee profile and contact them",
+      "source_routes": [
+        "/app/employees/[employeeId]"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/employees/[employeeId]/page.tsx",
+          "line": 75,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/employees/[employeeId]/page.tsx#L75",
+          "excerpt": "      <div className=\"q-qa\">"
+        }
+      ],
+      "mockup_coverage": "sample",
+      "mockup_entry": "Team → Sample person",
+      "remaining_acceptance": "Identity/contact/role, conditional Call/Text, shifts link, edit and access/activation status; disabled/missing contact and ineligible access states.",
+      "source_conditions": "Current target and core-management authority; recovery excludes self.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/owner-team-audit.md"
+    },
+    {
+      "id": "T-04",
+      "domain": "Team and employee access",
+      "owner_job": "Edit employee details, role and employment status",
+      "source_routes": [
+        "/app/employees/[employeeId]"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/employee-core-profile-form.tsx",
+          "line": 56,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/employee-core-profile-form.tsx#L56",
+          "excerpt": "          <Field label=\"First name\"><input name=\"firstName\" defaultValue={employee.firstName} autoComplete=\"off\" required maxLength={160} /></Field>"
+        },
+        {
+          "file": "src/app/app/employees/actions.ts",
+          "line": 50,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/employees/actions.ts#L50",
+          "excerpt": "export async function saveEmployeeSchedulingProfileAction(formData: FormData) {"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Details editor for contact/role/location/status; clear deactivation session consequences and fresh sign-in on reactivation; current-version save and retained failures.",
+      "source_conditions": "Current profile/core authority and permitted role transitions; status is not employment-start/end facts.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/owner-team-audit.md"
+    },
+    {
+      "id": "T-05",
+      "domain": "Team and employee access",
+      "owner_job": "Edit scheduling qualifications and eligible locations",
+      "source_routes": [
+        "/app/employees/[employeeId]"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/employees/[employeeId]/page.tsx",
+          "line": 144,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/employees/[employeeId]/page.tsx#L144",
+          "excerpt": "    </div>"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Separate Scheduling save for positions/locations; Owner-only operational rules; missing weekly hours links to rules; unavailable read stays unavailable.",
+      "source_conditions": "Current operational authority; scheduling and core profile are separate commands.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/owner-team-audit.md"
+    },
+    {
+      "id": "T-06",
+      "domain": "Team and employee access",
+      "owner_job": "Issue, reissue or revoke an invitation",
+      "source_routes": [
+        "/app/employees/[employeeId]"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/company-access/employee-invitation-panel.tsx",
+          "line": 69,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/company-access/employee-invitation-panel.tsx#L69",
+          "excerpt": " return <section className={'panel '+styles.stack} aria-labelledby={'invitation-'+employeeId} aria-busy={pending}>"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Show invitation lifecycle/activation status, deliberate send/reissue/revoke and exact result, conflict/unknown/pending states.",
+      "source_conditions": "Owner/current eligible target; design only, never send a real invitation during mockup tests.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/owner-team-audit.md"
+    },
+    {
+      "id": "T-07",
+      "domain": "Team and employee access",
+      "owner_job": "Grant or revoke Manager operational scope",
+      "source_routes": [
+        "/app/employees/[employeeId]"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/company-access/manager-operational-scope-panel.tsx",
+          "line": 40,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/company-access/manager-operational-scope-panel.tsx#L40",
+          "excerpt": " return <section className={'panel '+styles.stack} aria-labelledby={'scope-'+baseline.employeeId} aria-busy={pending}>"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Choose company or explicit locations, review and save/revoke access with current revision and result; explain scope without conflating payroll access.",
+      "source_conditions": "Owner/non-Owner target; operational access is separate from financial grants.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/owner-team-audit.md"
+    },
+    {
+      "id": "T-08",
+      "domain": "Team and employee access",
+      "owner_job": "Set a person’s shared-tablet Clocker PIN",
+      "source_routes": [
+        "/app/employees/[employeeId]/clocker-pin"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/employees/[employeeId]/clocker-pin/page.tsx",
+          "line": 17,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/employees/[employeeId]/clocker-pin/page.tsx#L17",
+          "excerpt": "export default async function EmployeeClockerPinPage({params}:{params:Promise<{employeeId:string}>}){"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Person → Clocker PIN",
+      "remaining_acceptance": "Preserve person/location and provide dedicated PIN form, validation and save states; denied/inactive/read-unavailable; no disclosure of stored PIN.",
+      "source_conditions": "Eligible active target/current operational authority; Owner may manage Owner PIN, Manager may not.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/owner-team-audit.md"
+    },
+    {
+      "id": "A-01",
+      "domain": "Attendance and recovery",
+      "owner_job": "Review attendance exceptions",
+      "source_routes": [
+        "/app?view=attendance"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/manager-attendance-review.tsx",
+          "line": 97,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/manager-attendance-review.tsx#L97",
+          "excerpt": "export function AttendanceReviewSurface({"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "Team → Tools → Attendance",
+      "remaining_acceptance": "Verified exception summary and person/timecard actions; refresh, sign-in, paused/offline, error and healthy empty; clear people on access loss.",
+      "source_conditions": "Current company observation; do not infer worked time from a scheduled shift.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Attendance list and exact observation detail now cover separate missing-clock-in and recorded-time sources, historical expected/recorded evidence, location/type filters, limitations, protected read states and exact employee/timecard/correction handoffs. Local fictional mobile Owner only; actual app integration and full parity acceptance remain.",
+      "evidence_report": "outputs/owner-attendance/review.md",
+      "verified_mockup_sha256": "af3cce9a4df7083aef140a0531480f56e8eb6bf384aa586c6faaf7ab9e8bfcc2"
+    },
+    {
+      "id": "A-02",
+      "domain": "Attendance and recovery",
+      "owner_job": "Review and decide time corrections",
+      "source_routes": [
+        "/app?view=attendance"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/manager-time-corrections.tsx",
+          "line": 72,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/manager-time-corrections.tsx#L72",
+          "excerpt": "        <h2 id=\"manager-corrections-title\">Correction requests</h2>"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Show employee/reason/original/proposed entries, approve/decline, self-review exclusion and exact same-decision recovery; original punches remain auditable.",
+      "source_conditions": "Current correction revision and authorized non-self reviewer.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/owner-corrections-review.md"
+    },
+    {
+      "id": "A-03",
+      "domain": "Attendance and recovery",
+      "owner_job": "Help another person recover their account",
+      "source_routes": [
+        "/app/account-recovery"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/assisted-recovery.tsx",
+          "line": 73,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/assisted-recovery.tsx#L73",
+          "excerpt": "      <li><label className=\"q-row q-row--one q-select-row\">"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Team → Tools → Account recovery",
+      "remaining_acceptance": "Employee context, identity-check method or attestation, confirmation, issue recovery code, expiry/error/session-ended, and sensitive code clearing on hide/offline/blur.",
+      "source_conditions": "Owner can recover other eligible active roles; self excluded; separate stricter Manager limits.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/owner-account-recovery-review.md"
+    },
+    {
+      "id": "A-04",
+      "domain": "Attendance and recovery",
+      "owner_job": "Check a saved Clocker action receipt",
+      "source_routes": [
+        "/app/clocker-recovery"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/clocker-recovery-review.tsx",
+          "line": 114,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/clocker-recovery-review.tsx#L114",
+          "excerpt": "  const content = <SettingsFrame back={back} settingsCrumb={false} title=\"Clocker recovery\" summary=\"Look up a saved clock-in receipt.\">"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Team → Tools → Clocker recovery",
+      "remaining_acceptance": "Saved UUID → Check → recorded action/person/time/device/location or Not recorded yet; explain finish on same tablet and link wrong/missing time to Timecards.",
+      "source_conditions": "Management scope/current read; this is a read-only receipt lookup, not reset or punch editing.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "C-01",
+      "domain": "Company settings",
+      "owner_job": "Navigate company settings by task",
+      "source_routes": [
+        "/app/settings"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/settings/page.tsx",
+          "line": 17,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/settings/page.tsx#L17",
+          "excerpt": "  await requireRoles([\"OWNER\"]);"
+        },
+        {
+          "file": "src/app/app/settings/layout.tsx",
+          "line": 7,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/settings/layout.tsx#L7",
+          "excerpt": "export default async function SettingsLayout({ children }: { children: ReactNode }) {"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "More → Company settings",
+      "remaining_acceptance": "Keep Company / Scheduling / Pay grouping; every child, authorized visibility, direct-route denial and nested Back must work.",
+      "source_conditions": "Owner-only settings layout; payroll/breaks retain additional gates.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Full-page Company/Scheduling/conditional Pay hub; source-owned location count, visibility/direct-route gates, explicit future child previews and stable nested/More search/location/focus returns. Detailed children remain later batches.",
+      "evidence_report": "outputs/owner-company/review.md",
+      "verified_mockup_sha256": "56826d5667d09bf2d42032e481438772e373a7bac802d40c554bde7facfc1a09",
+      "revalidated_mockup_sha256": "bd5ae763be6493f3f5d08d101fad53e585f8188a36c93ec49ce98eb35ded2b97",
+      "revalidation_report": "outputs/owner-locations/review.md"
+    },
+    {
+      "id": "C-02",
+      "domain": "Company settings",
+      "owner_job": "Update company name and timezone",
+      "source_routes": [
+        "/app/settings/workspace"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/settings/workspace/page.tsx",
+          "line": 20,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/settings/workspace/page.tsx#L20",
+          "excerpt": "    <SettingsFrame title=\"Company profile\" save={{ form: \"company-profile-form\" }}>"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "Company settings → Company profile",
+      "remaining_acceptance": "Edit name; explain timezone lock after operational records; Monday week start stays factual; current-version save, stale/error and success.",
+      "source_conditions": "Owner; timezone lock enforced by source, not a cosmetic disabled field.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Name/time-zone/Monday detail/edit/save; protected operational zone omitted, separate editable-zone fixture, current-read UX guard, validation, unknown matching without attribution, acknowledged-save/read-outage distinction, dirty/notification/paused departure and source/privacy cleanup. Source has no expected-version/receipt API; no production OCC claim.",
+      "evidence_report": "outputs/owner-company/review.md",
+      "verified_mockup_sha256": "56826d5667d09bf2d42032e481438772e373a7bac802d40c554bde7facfc1a09",
+      "revalidated_mockup_sha256": "bd5ae763be6493f3f5d08d101fad53e585f8188a36c93ec49ce98eb35ded2b97",
+      "revalidation_report": "outputs/owner-locations/review.md"
+    },
+    {
+      "id": "C-03",
+      "domain": "Company settings",
+      "owner_job": "Search and manage the location directory",
+      "source_routes": [
+        "/app/settings/locations"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/settings/locations/page.tsx",
+          "line": 31,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/settings/locations/page.tsx#L31",
+          "excerpt": "export default async function LocationsPage({ searchParams }: { searchParams?: Promise<Search> } = {}) {"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "Company settings → Locations",
+      "remaining_acceptance": "List/search/status filters, active/inactive/setup-needed, no-location/no-match, detail and add; distinguish view scope selector from location editing.",
+      "source_conditions": "Owner and current location source.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Current directory/search/readiness/status/healthy-empty and partial/denied states, stable row/detail/filter/More/Settings return and eligible-Team nested-person reload. Active Settings count is distinct from full directory.",
+      "evidence_report": "outputs/owner-locations/review.md",
+      "verified_mockup_sha256": "bd5ae763be6493f3f5d08d101fad53e585f8188a36c93ec49ce98eb35ded2b97"
+    },
+    {
+      "id": "C-04",
+      "domain": "Company settings",
+      "owner_job": "Add a location",
+      "source_routes": [
+        "/app/settings/locations/new"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/settings/actions.ts",
+          "line": 46,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/settings/actions.ts#L46",
+          "excerpt": "export async function createLocationAction("
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "Locations → Add location",
+      "remaining_acceptance": "Complete actual location inputs and validation, deliberate save, result and setup next steps.",
+      "source_conditions": "Owner/current command; no real location created during design testing.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Source-owned name/short-name/optional immutable key, validation/pending/success/unknown create recovery and explicit retry review. New records have no invented setup defaults and connect to current staffing/eligibility.",
+      "evidence_report": "outputs/owner-locations/review.md",
+      "verified_mockup_sha256": "bd5ae763be6493f3f5d08d101fad53e585f8188a36c93ec49ce98eb35ded2b97"
+    },
+    {
+      "id": "C-05",
+      "domain": "Company settings",
+      "owner_job": "Edit or deactivate a location",
+      "source_routes": [
+        "/app/settings/locations/[locationId]"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/settings/actions.ts",
+          "line": 46,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/settings/actions.ts#L46",
+          "excerpt": "export async function createLocationAction("
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Existing location form, status/consequences, current-version update, pending/conflict/success; preserve immutable Clocker key.",
+      "source_conditions": "Owner; update cannot replace a location Clocker key.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Name edits and deliberate deactivate/reactivate use exact timestamp CAS; key/identity and manual/generated history are retained. Current choices and new assignments honor inactive status; source/access/context-loss and conflict recovery are checked.",
+      "evidence_report": "outputs/owner-locations/review.md",
+      "verified_mockup_sha256": "bd5ae763be6493f3f5d08d101fad53e585f8188a36c93ec49ce98eb35ded2b97"
+    },
+    {
+      "id": "C-06",
+      "domain": "Company settings",
+      "owner_job": "Change branding and logo",
+      "source_routes": [
+        "/app/settings/branding"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/brand-editor.tsx",
+          "line": 68,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/brand-editor.tsx#L68",
+          "excerpt": "    const command: Command = retry.current ?? { operationId: crypto.randomUUID(), expectedRevision: revision, section: \"brand\", seed: effectiveSeed === DEFAULT_SEED ? null : effectiveSeed, logoAssetId: logo };"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "Company settings → Branding",
+      "remaining_acceptance": "Preset/custom hex/reset teal, valid PNG/WebP upload/remove, preview/Save and recent revision; retain original operation for retry.",
+      "source_conditions": "Owner/current branding revision; preserve official brand until an authorized change.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Focused color presets/custom hex/reset with accessible draft preview; PNG/WebP choose/replace/remove and staged preparation separate from brand save; source-shaped shared-revision merge/replay/unknown recovery, read-only history, permanent wordmark plus company logo and saved accent adapters. Verified only in local mobile Owner mockup.",
+      "evidence_report": "outputs/owner-branding/review.md",
+      "verified_mockup_sha256": "db40503c66ed08fc2bbaf25902e3f932e7d4ee10e2a0cfe911fd4f79ea3cc06f"
+    },
+    {
+      "id": "C-07",
+      "domain": "Company settings",
+      "owner_job": "Set terminology and enabled modules",
+      "source_routes": [
+        "/app/settings/features"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/features-editor.tsx",
+          "line": 72,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/features-editor.tsx#L72",
+          "excerpt": "  // Quiet (v4, approved Oct 23): no Save button. A choice or a switch saves a moment after it changes, and says so if it can't."
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "Company settings → Features and words",
+      "remaining_acceptance": "Vocabulary preset and module toggles for time off/swaps/updates/statements/breaks; explain impacts, autosave and blockers before disable; failure restores truthful state.",
+      "source_conditions": "Owner; open requests can block disable; statements require payroll; disabling retains historical data.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Five fixed vocabulary presets and five source-defined feature choices; focused 400ms autosave editors, shared revision/section merge and original-command retry, current company-wide disable blockers, capability-aware navigation and truthful unavailable states. Deliberate label slots preserve record IDs, access roles and historical data. Verified only in local mobile Owner mockup.",
+      "evidence_report": "outputs/owner-features/review.md",
+      "verified_mockup_sha256": "65f2a5d5cbb596f90a2d08adb2fca30c869e1142e8325e9d25f23326e70d1c64"
+    },
+    {
+      "id": "C-08",
+      "domain": "Company settings",
+      "owner_job": "Configure company/location operational policies",
+      "source_routes": [
+        "/app/settings/company-policies"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/company-policy-editor.tsx",
+          "line": 30,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/company-policy-editor.tsx#L30",
+          "excerpt": "/** Build the complete reviewed snapshot without mutating its validated base."
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Company settings → Company policies",
+      "remaining_acceptance": "Company/location scope; late/early/missing in/out/overtime-risk/long-entry rules; configure/off/inherit, thresholds/effective dates and readonly inactive scope.",
+      "source_conditions": "Owner/current revision; private labor values preserved, not edited in this policy UI.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "C-09",
+      "domain": "Company settings",
+      "owner_job": "Review policy history, conflicts and replacement",
+      "source_routes": [
+        "/app/settings/company-policies"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/company-policy-editor.tsx",
+          "line": 30,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/company-policy-editor.tsx#L30",
+          "excerpt": "/** Build the complete reviewed snapshot without mutating its validated base."
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "History, refresh, compare/discard conflicts, retained-save retry and full replacement review for corrupt revision; preserve draft until deliberate discard.",
+      "source_conditions": "Owner/current source; historical/inactive scope read-only.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "C-10",
+      "domain": "Company settings",
+      "owner_job": "Add, rename, retire or reactivate positions",
+      "source_routes": [
+        "/app/settings/positions"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/settings/positions/position-catalog.tsx",
+          "line": 105,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/settings/positions/position-catalog.tsx#L105",
+          "excerpt": "    <SettingsFrame title=\"Positions\""
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "Company settings → Positions",
+      "remaining_acceptance": "Active/retired lists, create/rename/retire/reactivate and qualification counts; explain that positionless shifts remain allowed.",
+      "source_conditions": "Owner; preserve existing qualifications/history.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Active/retired search and details, add/rename/retire/reactivate with timestamp CAS; current active-member counts; Team/Schedule/Inbox labels and inactive qualification choices agree. Retained work/history and optional-position shifts remain intact; invalid active quotas block rebuild before deletion.",
+      "evidence_report": "outputs/owner-catalogs/review.md",
+      "verified_mockup_sha256": "b92afc445f07b133c90d80f2f393fc42a886b12b683cdcc083fb7c61050f3ccc"
+    },
+    {
+      "id": "C-11",
+      "domain": "Company settings",
+      "owner_job": "Configure break types",
+      "source_routes": [
+        "/app/settings/breaks"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/clocker-break-types.tsx",
+          "line": 128,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/clocker-break-types.tsx#L128",
+          "excerpt": "  return <SettingsFrame title=\"Break types\""
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "Company settings → Break types",
+      "remaining_acceptance": "Active/archived, create/edit name/classification/reference minutes, deliberate archive/reactivate; existing break history remains unchanged.",
+      "source_conditions": "Owner plus breaks module; changes affect future breaks.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Active/archived search, add/edit name/category/reference minutes and deliberate archive/reactivate with integer-version CAS; NFC and duplicate validation, neutral unconfirmed-result recovery and captured/recorded break invariance. No paid/legal defaults or automatic ending.",
+      "evidence_report": "outputs/owner-catalogs/review.md",
+      "verified_mockup_sha256": "b92afc445f07b133c90d80f2f393fc42a886b12b683cdcc083fb7c61050f3ccc"
+    },
+    {
+      "id": "C-12",
+      "domain": "Company settings",
+      "owner_job": "Set up a shared-tablet Clocker device",
+      "source_routes": [
+        "/app/settings/clocker"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/clocker-device-manager.tsx",
+          "line": 137,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/clocker-device-manager.tsx#L137",
+          "excerpt": "  return <SettingsFrame title=\"Clocker devices\""
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Company settings → Clocker devices",
+      "remaining_acceptance": "Add named device at active location; show/copy/hide setup code, no active location path, pending/error/stale-write; protect transient code.",
+      "source_conditions": "Owner/current active location; no real device activated in mockup.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "C-13",
+      "domain": "Company settings",
+      "owner_job": "Rename, reconnect, replace or revoke Clocker device",
+      "source_routes": [
+        "/app/settings/clocker"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/clocker-device-manager.tsx",
+          "line": 137,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/clocker-device-manager.tsx#L137",
+          "excerpt": "  return <SettingsFrame title=\"Clocker devices\""
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Device filters, rename, replacement/reconnect/new code, revoke confirmation and exact outcome; keep device identity visible.",
+      "source_conditions": "Owner/current device revision; no blind retry with new setup identity.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-01",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Review timecards by period and person",
+      "source_routes": [
+        "/app/timecards"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/timecards.tsx",
+          "line": 333,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/timecards.tsx#L333",
+          "excerpt": "    const tools=<div className=\"cm-tc-tools\" role=\"group\" aria-label=\"Period and export\">"
+        }
+      ],
+      "mockup_coverage": "hub",
+      "mockup_entry": "More → Timecards",
+      "remaining_acceptance": "Period controls, This/Last week, reasons and no-time employees, exact daily punches/breaks/totals and historical snapshots; ready/paused/sign-in/retry states.",
+      "source_conditions": "Management/company authority; default week and Inbox count must agree.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "The bounded fictional workflow has been built. Integration and full source/device parity remain separate; do not present this as production-complete.",
+      "evidence_report": "outputs/owner-timecards-review.md"
+    },
+    {
+      "id": "P-02",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Approve an individual timecard",
+      "source_routes": [
+        "/app/timecards"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/timecards.tsx",
+          "line": 375,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/timecards.tsx#L375",
+          "excerpt": "            {pending?.employeeId===openItem.card.employeeId?<button type=\"button\" className=\"cm-tc-btn\" data-kind=\"primary\" disabled={busy} onClick={()=>void act(openItem,pending.action)}>Retry pending action</button>:"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "More → Timecards → employee / Review selected timecards",
+      "remaining_acceptance": "Review exact period/person/revision, resolve blocking issues, approve with confirmed receipt; distinguish pending/conflict/unknown result.",
+      "source_conditions": "No self approval; period ended, valid current source and no blocking issues.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Individual exact-revision approval review, confirmed result, blockers, conflict and original-operation uncertain recovery. Local fictional Owner mobile only; actual app integration and full parity acceptance remain.",
+      "evidence_report": "outputs/timecard-decisions/review.md",
+      "verified_mockup_sha256": "2f258f5a4c8221ffb1b2867e25511a7a49466666b79c710d8d3221223b9e6344"
+    },
+    {
+      "id": "P-03",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Finalize an approved timecard",
+      "source_routes": [
+        "/app/timecards"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/timecards.tsx",
+          "line": 381,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/timecards.tsx#L381",
+          "excerpt": "                <button type=\"button\" className=\"cm-tc-btn\" data-kind=\"secondary\" disabled={locked||own||openItem.state!=='APPROVED'||!!openItem.card.issues.length} onClick={()=>void act(openItem,'FINALIZE')}>Finalize period</button></>}"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "More → Timecards → employee / Review selected timecards",
+      "remaining_acceptance": "Separate Finalize action and result for an approved card; explain finalized record versus payroll approval/export.",
+      "source_conditions": "Non-self reviewer; approved state/current source/no unresolved issues.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Separate approved-revision finalization review/result; immutable captured time, never automatic payroll approval/payment. Local fictional Owner mobile only; actual app integration and full parity acceptance remain.",
+      "evidence_report": "outputs/timecard-decisions/review.md",
+      "verified_mockup_sha256": "2f258f5a4c8221ffb1b2867e25511a7a49466666b79c710d8d3221223b9e6344"
+    },
+    {
+      "id": "P-04",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Reopen a finalized period with a reason",
+      "source_routes": [
+        "/app/timecards"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/timecards.tsx",
+          "line": 376,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/timecards.tsx#L376",
+          "excerpt": "              openItem.state==='FINALIZED'?<><label>Reopen reason<input value={notes[openItem.card.employeeId]??''} maxLength={500} onChange={e=>setNotes({...notes,[openItem.card.employeeId]:e.target.value})}/></label>"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "More → Timecards → employee / Review selected timecards",
+      "remaining_acceptance": "Required reason, exact historical/current context, reopen receipt and history; explain later downstream review needs.",
+      "source_conditions": "Non-self/current authority and FINALIZED record.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Required single-line reopen reason, frozen-revision authority, retained history, current-source review cycle and approved-payroll block. Local fictional Owner mobile only; actual app integration and full parity acceptance remain.",
+      "evidence_report": "outputs/timecard-decisions/review.md",
+      "verified_mockup_sha256": "2f258f5a4c8221ffb1b2867e25511a7a49466666b79c710d8d3221223b9e6344"
+    },
+    {
+      "id": "P-05",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Review and approve/finalize a batch",
+      "source_routes": [
+        "/app/timecards"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/timecards.tsx",
+          "line": 407,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/timecards.tsx#L407",
+          "excerpt": "      const bulk=ready&&showBulk?<section className=\"q-tc-bulk\" aria-label=\"Selected timecard review\">"
+        }
+      ],
+      "mockup_coverage": "interactive_mockup",
+      "mockup_entry": "More → Timecards → employee / Review selected timecards",
+      "remaining_acceptance": "Explicit eligible selection (max 100), exact-set review and fresh confirmation for each action; per-person success/blocked/unknown/not-submitted results and same-command retry.",
+      "source_conditions": "Exclude self/ineligible cards; source changes clear approval confirmation; no bulk success claim after partial result.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "working_mockup_slice",
+      "current_note": "Focused 1–100-person eligibility/selection, exact-set acknowledgement, inspection and separate per-person results; stop after failure/unknown and same-operation recovery only. Local fictional Owner mobile only; actual app integration and full parity acceptance remain.",
+      "evidence_report": "outputs/timecard-decisions/review.md",
+      "verified_mockup_sha256": "2f258f5a4c8221ffb1b2867e25511a7a49466666b79c710d8d3221223b9e6344"
+    },
+    {
+      "id": "P-06",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Generate a finalized-time export",
+      "source_routes": [
+        "/app/payroll-export"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll-export.tsx",
+          "line": 130,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll-export.tsx#L130",
+          "excerpt": " const phone=<div className=\"q-page q-export-phone\" data-nv-page=\"\">"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "More → Time exports",
+      "remaining_acceptance": "Choose period, review finalized population and selection/100-person boundary, generate current export, validate receipt and download mapped CSV/canonical JSON.",
+      "source_conditions": "Only current finalized revisions; export is not paying employees, submitting to a bank or verified provider import.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-07",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Create and select export mapping profiles",
+      "source_routes": [
+        "/app/payroll-export"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll-export-mapping.tsx",
+          "line": 36,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll-export-mapping.tsx#L36",
+          "excerpt": "          <label className={styles.wideField}><span>File layout</span><span className={styles.selectFrame}><select aria-label=\"File layout\" value={draft.format} onChange={e => setDraft({...draft, format: e.target.value as ExportProfile['format'], ...(e.target.value === 'ADP_RUN_GENERIC_V1' ? {columns: adpRunColumns(), dateFormat: 'US', hourDecimals: 2} : {columns: neutralProfile().columns})})}>"
+        },
+        {
+          "file": "src/components/payroll-export.tsx",
+          "line": 149,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll-export.tsx#L149",
+          "excerpt": " return <>{phone}<div className={`${styles.root} q-export-desk`}>"
+        },
+        {
+          "file": "src/components/quiet/quiet.css",
+          "line": 417,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/quiet/quiet.css#L417",
+          "excerpt": "@media (min-width: 761px) { :is(#q-root, html) .q-export-phone { display: none; } }"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Dedicated mobile access to saved profile, file layout/columns/date/hour precision/provider reference and deliberate reviewed Save; preserve revisions and retry identity.",
+      "source_conditions": "Desktop owner capability currently hidden by phone export layout; do not silently drop it or claim provider integration.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-08",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Review full payroll population and employment facts",
+      "source_routes": [
+        "/app/payroll-export"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll-period-close.tsx",
+          "line": 141,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll-period-close.tsx#L141",
+          "excerpt": "      <h2>Complete payroll population and handoff</h2>"
+        },
+        {
+          "file": "src/components/quiet/quiet.css",
+          "line": 417,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/quiet/quiet.css#L417",
+          "excerpt": "@media (min-width: 761px) { :is(#q-root, html) .q-export-phone { display: none; } }"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Review each period member/disposition and entrants/leavers/evidence; save population revision including zero-time/excluded people.",
+      "source_conditions": "Actual employment facts are distinct from account active status; source and period authority.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-09",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Reconcile export batches into a verified manifest",
+      "source_routes": [
+        "/app/payroll-export"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll-period-close.tsx",
+          "line": 279,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll-period-close.tsx#L279",
+          "excerpt": "          <h3>Reconcile export batches</h3>"
+        },
+        {
+          "file": "src/components/quiet/quiet.css",
+          "line": 417,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/quiet/quiet.css#L417",
+          "excerpt": "@media (min-width: 761px) { :is(#q-root, html) .q-export-phone { display: none; } }"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Select original receipts covering included people exactly once, prepare verified manifest, review stale/partial/exclusion states and retain original uncertain command.",
+      "source_conditions": "Current population revision and authoritative export receipts; mobile entry is currently missing.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-10",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Download handoff artifacts and record downstream status",
+      "source_routes": [
+        "/app/payroll-export"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll-period-close.tsx",
+          "line": 362,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll-period-close.tsx#L362",
+          "excerpt": "                href={`/api/period-close/artifact?id=${m.id}&format=manifest`}"
+        },
+        {
+          "file": "src/components/quiet/quiet.css",
+          "line": 417,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/quiet/quiet.css#L417",
+          "excerpt": "@media (min-width: 761px) { :is(#q-root, html) .q-export-phone { display: none; } }"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Manifest/CSV/canonical artifacts and history; record destination/reference and reported submitted/imported status with explicit unverified meaning.",
+      "source_conditions": "No connected provider verifies import or payroll processing; browser completion also remains unverified.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-11",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Browse current and historical payroll runs",
+      "source_routes": [
+        "/app/payroll"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll/payroll-runs.tsx",
+          "line": 37,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll/payroll-runs.tsx#L37",
+          "excerpt": "function PayrollHome({ current, runs, today, canEditSettings, loading, error, onReload, onOpen, onPrepare }: {"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "More → Payroll",
+      "remaining_acceptance": "Current/past periods, run state/revision, settings link, no runs and prerequisites; distinguish native recorded-time and historical provider modes.",
+      "source_conditions": "Payroll enabled and canReview; no live enabled claim inferred from code.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-12",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Prepare payroll draft or missing historical period",
+      "source_routes": [
+        "/app/payroll"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll/backlog-review.tsx",
+          "line": 13,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll/backlog-review.tsx#L13",
+          "excerpt": "export function BacklogReview({ data, operation }: { data: PayrollRunsResponse; operation: ReturnType<typeof usePayrollOperation> }) {"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Prepare period/date/payday separately from approval; missing-period backlog, schedule-transition acknowledgement and saved effective settings; blocked prerequisites.",
+      "source_conditions": "canReview and server gates; preparation does not finalize time or pay employees.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-13",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Recalculate native payroll or import provider amounts",
+      "source_routes": [
+        "/app/payroll"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll/payroll-runs.tsx",
+          "line": 157,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll/payroll-runs.tsx#L157",
+          "excerpt": "    {native && run.status !== 'APPROVED' && <section className=\"pw-section\"><h3>Refresh the calculation</h3><p className=\"pw-small\">After the missing facts or recorded time are corrected, recalculate to create a fresh revision for review. This does not approve or finalize timecards.</p><button className=\"pw-button pw-secondary\" type=\"button\" disabled={locked || !capabilities.canReview} onClick={() => void operation.submit({ action: 'RECALCULATE', runId: run.id, expectedRevision: run.revision })}>Recalculate draft</button></section>}"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Recalculate current native draft; historical provider JSON/file import validates period/payday/source; keep modes separate and show missing facts rather than invented amounts.",
+      "source_conditions": "Current source/revision/canReview; mode-specific actions and prerequisite blocks.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-14",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Review amounts, source evidence and native breakdown",
+      "source_routes": [
+        "/app/payroll"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll/payroll-runs.tsx",
+          "line": 149,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll/payroll-runs.tsx#L149",
+          "excerpt": "    {notes.blocking.length > 0 && <PayrollState title={run.status === 'WAITING_FOR_AMOUNTS' ? 'Provider amounts needed' : 'Resolve these exceptions'} error={run.status !== 'WAITING_FOR_AMOUNTS'}>{notes.blocking.map((exception, index) => <span className=\"pw-exception\" key={index}>{payrollExceptionMessage(exception)}</span>)}</PayrollState>}"
+        },
+        {
+          "file": "src/components/payroll/native-review.tsx",
+          "line": 23,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll/native-review.tsx#L23",
+          "excerpt": "export function NativeReview({ result }: { result: NativePayrollReady }) {"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Gross/deductions/contributions/net, employee search/detail, native hours/wages/tax/YTD evidence or provider source; explain blocking exceptions.",
+      "source_conditions": "canReview and current private scope; source changes require a fresh review.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-15",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Approve an exact payroll revision",
+      "source_routes": [
+        "/app/payroll"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll/payroll-runs.tsx",
+          "line": 164,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll/payroll-runs.tsx#L164",
+          "excerpt": "    {run.status === 'REVIEW_REQUIRED' && <section className=\"pw-section\">"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Explicit review confirmation, exact revision/token and confirmed receipt; block changed source/missing facts and distinguish approval from PDF readiness/publication.",
+      "source_conditions": "canApprove separately from canReview; approval is deliberate and never implied by preparation.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-16",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Create linked payroll corrections",
+      "source_routes": [
+        "/app/payroll"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll/payroll-runs.tsx",
+          "line": 172,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll/payroll-runs.tsx#L172",
+          "excerpt": "    {native && correctionOpen && <section className=\"pw-section\"><h3>Create a linked correction</h3><form className=\"pw-form\" onSubmit={event => { event.preventDefault(); const reason = String(new FormData(event.currentTarget).get('nativeCorrectionReason') ?? '').trim(); if (reason) void operation.submit({ action: 'CORRECT_NATIVE', runId: run.id, expectedRevision: run.revision, reason }); }}><fieldset disabled={locked || !capabilities.canReview}><label>Correction reason<textarea name=\"nativeCorrectionReason\" required maxLength={300} rows={3} /></label><button className=\"pw-button\" type=\"submit\">Create correction draft</button></fieldset></form></section>}"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Reason and original-run context; native correction recalculates a separate draft, historical provider correction imports trusted amounts; new review/approval and original history retained.",
+      "source_conditions": "Mode-specific current authority/revision; never rewrite earlier approved history.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-17",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Publish and view private employee statements",
+      "source_routes": [
+        "/app/payroll"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll/portal-statements.tsx",
+          "line": 8,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll/portal-statements.tsx#L8",
+          "excerpt": "export function PortalStatements({ runs }: { runs: PayrollRun[] }) {"
+        },
+        {
+          "file": "src/components/payroll/payroll-ui.tsx",
+          "line": 36,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll/payroll-ui.tsx#L36",
+          "excerpt": "export function DocumentLink({ document }: { document: PayrollDocument }) {"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Native automatic verified publication versus historical-provider explicit publish; generation pending/failed states, protected View/Download and corrected-original history.",
+      "source_conditions": "canReview private scope, canApprove where explicit publish applies; no document-ready claim from approval alone.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-18",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Prepare payment instructions and retry failed jobs",
+      "source_routes": [
+        "/app/payroll"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll/payroll-runs.tsx",
+          "line": 113,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll/payroll-runs.tsx#L113",
+          "excerpt": "          {job.status === 'FAILED' && data?.capabilities.canApprove && <button className=\"pw-button pw-secondary\" type=\"button\" disabled={locked} onClick={() => void operation.submit({ action: 'RETRY_JOB', jobId: job.id })}>Retry {job.kind === 'REMINDER' ? 'notice queue' : jobLabels[job.kind].toLowerCase()}</button>}"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Show job kind/status/attempt/error and authorized retry; historical-provider payment instructions clearly unverified, native flow exposes no payment export.",
+      "source_conditions": "canApprove; NEVORA does not process payments or establish bank compatibility.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-19",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Set payroll company preferences and effective schedule",
+      "source_routes": [
+        "/app/settings/payroll"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll/payroll-settings.tsx",
+          "line": 104,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll/payroll-settings.tsx#L104",
+          "excerpt": "function CompanyPreferences({ preferences, revision, data, operation }: { preferences: PayrollPreferences; revision: number; data: PayrollSettingsResponse; operation: ReturnType<typeof usePayrollOperation> }) {"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Company settings → Payroll settings",
+      "remaining_acceptance": "Company/language/USD, frequency/anchor/payday, mode-appropriate rules/provider/bank preferences, automation and effective date/reason with revision history/impact.",
+      "source_conditions": "Payroll enabled and canConfigure; native vs provider controls differ; approval remains separate.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-20",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Set employee exceptions and financial access",
+      "source_routes": [
+        "/app/settings/payroll"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll/payroll-settings.tsx",
+          "line": 202,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll/payroll-settings.tsx#L202",
+          "excerpt": "function EmployeeException({ data, preferences, operation }: { data: PayrollSettingsResponse; preferences: PayrollPreferences; operation: ReturnType<typeof usePayrollOperation> }) {"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Employee statement-language/rule exceptions and inheritance/effective date; provider-mode review/approval grants with reason, separate from operational management scope.",
+      "source_conditions": "Owner canConfigure; native mode uses scoped Manager payroll access instead of provider grants.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-21",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Document employee native payroll facts",
+      "source_routes": [
+        "/app/settings/payroll"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll/native-profile-editor.tsx",
+          "line": 11,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll/native-profile-editor.tsx#L11",
+          "excerpt": "export function NativeProfileForm({draft,sources,operation,change}:EditorProps){"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Select employee; actual effective wages, location/break rules, workweek evidence, withholding/employer facts and authorized deductions; retained drafts/conflict review/explicit replacement.",
+      "source_conditions": "canConfigure plus native capability/source availability; missing facts remain missing; this checklist gives no tax/legal advice.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-22",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Record opening balances and native Manager payroll scope",
+      "source_routes": [
+        "/app/settings/payroll"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll/native-payroll-config.tsx",
+          "line": 43,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll/native-payroll-config.tsx#L43",
+          "excerpt": "    </PayrollPanel>"
+        },
+        {
+          "file": "src/components/payroll/native-opening-scope.tsx",
+          "line": 1,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll/native-opening-scope.tsx#L1",
+          "excerpt": "'use client';"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Choose documented tax year, separate attested zero/missing balances, preserve other drafts, block frozen/unchecked opening history; grant native review/approval for specific locations.",
+      "source_conditions": "Owner/current source; approval history can freeze opening data; eligible active Manager target for scope.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-23",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Inspect workforce insights by period",
+      "source_routes": [
+        "/app/reports"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/reports.tsx",
+          "line": 258,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/reports.tsx#L258",
+          "excerpt": " const offDays=timeOffDays(report);"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "More → Insights",
+      "remaining_acceptance": "This week/last week/30 days/custom, recorded vs scheduled time, people with no time, attendance/changes/approvals, definitions/reliability and exact timecard links; disclose incomplete plan/unknown overtime.",
+      "source_conditions": "Management operational authority; all desktop report sections remain accessible on mobile through detail/disclosures.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "P-24",
+      "domain": "Timecards, payroll and insights",
+      "owner_job": "Export or print an insights report",
+      "source_routes": [
+        "/app/reports"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/reports.tsx",
+          "line": 368,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/reports.tsx#L368",
+          "excerpt": "    <button type=\"button\" className=\"cm-insights__button cm-insights__export\" popoverTarget=\"report-export-menu\" aria-busy={exporting||undefined}><ExportIcon size={16} aria-hidden=\"true\"/><span className=\"cm-insights__export-text\">Export</span></button>"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "CSV and Print/Save PDF with current period and verified snapshot; export pending/error/offline/expired handling and readable mobile download handoff.",
+      "source_conditions": "Current report/private scope; no file-ready claim from an unconfirmed request.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "U-01",
+      "domain": "Updates and notifications",
+      "owner_job": "Browse company updates and reply requirements",
+      "source_routes": [
+        "/app/updates"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/employee-updates.tsx",
+          "line": 77,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/employee-updates.tsx#L77",
+          "excerpt": "   <QuietNav back={{href: '/app/more', label: 'More'}} right={<Link className=\"q-nav__r q-nav__r--ink\" href=\"/app/updates/compose\" aria-label=\"Create update\"><PlusIcon className=\"q-ic\" aria-hidden=\"true\" /></Link>} />"
+        }
+      ],
+      "mockup_coverage": "hub",
+      "mockup_entry": "More → Updates",
+      "remaining_acceptance": "Manager All/Needs reply, current complete/partial list, read counts, detail and compose; empty and unavailable remain distinct.",
+      "source_conditions": "updates module and current management communication/company authority.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "U-02",
+      "domain": "Updates and notifications",
+      "owner_job": "Write and publish an update after audience review",
+      "source_routes": [
+        "/app/updates/compose"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/communication-compose.tsx",
+          "line": 61,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/communication-compose.tsx#L61",
+          "excerpt": " async function review(){if(staleEdit)return;const value=draft();if(!value)return;retain(values,reviewedRevisionId);const sequence=++previewGeneration.current;setError(null);setErrorField(null);setPreviewing(true);try{const result=await communicationRequest(mode,authority,'/preview',value) as {state:string;count:number;fingerprint:string};if(sequence!==previewGeneration.current)return;if(result.state==='ready'){action.setNotice(null);setError(null);setPreview({count:result.count,fingerprint:result.fingerprint});}else setError('Audience couldn’t be checked. You may not have access to this location.');}catch{if(sequence===previewGeneration.current)setError('Audience couldn’t be checked. Try ag"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Updates → New update",
+      "remaining_acceptance": "Content/type, location/today’s team/published-shift audience, expiry and acknowledgement requirement; audience preview/fingerprint then deliberate Publish; retained draft and status lookup.",
+      "source_conditions": "Current eligible audience and communication authority; design tests send no real messages.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "U-03",
+      "domain": "Updates and notifications",
+      "owner_job": "Read, edit or withdraw an existing update",
+      "source_routes": [
+        "/app/updates/[id]",
+        "/app/updates/compose"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/communication-detail.tsx",
+          "line": 86,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/communication-detail.tsx#L86",
+          "excerpt": " const withdraw=ready.canWithdraw?(confirmWithdraw?<div className=\"wb-confirm\" role=\"group\" aria-labelledby=\"withdraw-confirm-text\"><p className=\"wb-text\" id=\"withdraw-confirm-text\">{audience?`Withdraw this update for ${audience} ${audience===1?'person':'people'}? They won’t see it anymore.`:'Withdraw this update? People won’t see it anymore.'}</p><div className=\"wb-actions\"><button ref={confirmRef} type=\"button\" className=\"nv-btn\" data-kind=\"danger\" disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('WITHDRAW');}}>{pending?'Withdrawing…':'Withdraw update'}</button><button type=\"button\" className=\"nv-btn\" data-ki"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Full text, recipient acknowledgement/read status, author/version-allowed edit/revise and withdrawal confirmation; current-version refresh, unknown-result lookup and no accidental duplicate publish.",
+      "source_conditions": "canWithdraw/canEdit as returned by current read; acknowledged version does not remove permitted management actions.",
+      "proposed_design_wave": 3,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "U-04",
+      "domain": "Updates and notifications",
+      "owner_job": "Review notification history and mark read",
+      "source_routes": [
+        "/app/notifications"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/employee-account-panel.tsx",
+          "line": 68,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/employee-account-panel.tsx#L68",
+          "excerpt": " return <EmployeeAccountView kind={kind} state={state} onRetry={()=>control.current?.refresh()} notificationsEnabled={notificationsEnabled} signature={signature} quiet={quiet} onMarkRead={markReadAllowed?async id=>{"
+        }
+      ],
+      "mockup_coverage": "sample",
+      "mockup_entry": "Home bell sample list",
+      "remaining_acceptance": "Open each real notification/target with exact context; management mark-read, unread count coherence, refresh/retry/session-ended and protected data clearing.",
+      "source_conditions": "Session/current notification read authority; management markReadAllowed, feature-dependent delivery remains separate.",
+      "proposed_design_wave": 1,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "AI-01",
+      "domain": "AI manager",
+      "owner_job": "Read the owner priority briefing and follow sources",
+      "source_routes": [
+        "/app/ai-manager"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/owner-advisor/attention.tsx",
+          "line": 26,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/owner-advisor/attention.tsx#L26",
+          "excerpt": "      <button type=\"button\" className=\"nv-btn\" data-kind=\"secondary\" disabled={disabled} onClick={refresh}>Check again</button></div>"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "More → AI manager",
+      "remaining_acceptance": "Show evidence/observed time, partial/unavailable assessment and source links; all-clear only for actually assessed sources.",
+      "source_conditions": "Owner, advisor enabled, ready company scope; no authenticated/connected feature claim from source presence.",
+      "proposed_design_wave": 6,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "AI-02",
+      "domain": "AI manager",
+      "owner_job": "Track, defer, dismiss and restore briefing issues",
+      "source_routes": [
+        "/app/ai-manager"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/owner-advisor/attention.tsx",
+          "line": 35,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/owner-advisor/attention.tsx#L35",
+          "excerpt": "            <button type=\"button\" className=\"nv-btn\" data-kind=\"secondary\" disabled={disabled || item.disposition === \"tracking\"} onClick={() => review(item.id, \"tracking\")}>{item.disposition === \"tracking\" ? \"Tracking\" : \"Track this issue\"}</button>"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Track/Later one hour/Not relevant today/Restore and follow-through; distinguish resolved/not-current/unverified/evidence-changed; dismissal does not fix the business issue.",
+      "source_conditions": "Current owner briefing revision and exact issue identity.",
+      "proposed_design_wave": 6,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "AI-03",
+      "domain": "AI manager",
+      "owner_job": "Ask a question, cancel and inspect evidence",
+      "source_routes": [
+        "/app/ai-manager"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/owner-advisor/advisor.tsx",
+          "line": 154,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/owner-advisor/advisor.tsx#L154",
+          "excerpt": "                  <article className=\"oa-answer\" aria-label=\"Latest answer\">"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Starter questions, question limit, busy/cancel, conversation/answer/source review, unavailable AI connection and safe retry; no operational changes implied.",
+      "source_conditions": "Owner/current company scope and available AI connection for asking; no AI request run in this inventory.",
+      "proposed_design_wave": 6,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "AI-04",
+      "domain": "AI manager",
+      "owner_job": "Save owner priorities with conflict review",
+      "source_routes": [
+        "/app/ai-manager"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/owner-advisor/advisor.tsx",
+          "line": 232,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/owner-advisor/advisor.tsx#L232",
+          "excerpt": "                >"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Edit priorities, dirty/save/pending state and current saved-priority conflict review before replacement.",
+      "source_conditions": "Current owner profile version; preserve unsaved text.",
+      "proposed_design_wave": 6,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "AI-05",
+      "domain": "AI manager",
+      "owner_job": "Prepare coverage options and attendance/payroll review",
+      "source_routes": [
+        "/app/ai-manager"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/owner-advisor/workflows.tsx",
+          "line": 7,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/owner-advisor/workflows.tsx#L7",
+          "excerpt": "export function WorkflowControls({ date, disabled, inspect }: { date: string; disabled: boolean; inspect: (tool: Inspection) => void }) {"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Coverage date/candidates → exact replacement review; period/language → attendance and payroll exceptions; incomplete sources and unverified financial readiness stay explicit.",
+      "source_conditions": "Advisor enabled/company scope; deterministic inspections can work without an AI connection; no business save until separate reviewed action.",
+      "proposed_design_wave": 6,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "F-01",
+      "domain": "Your account",
+      "owner_job": "Read and edit the owner’s own profile",
+      "source_routes": [
+        "/app/profile",
+        "/app/employees/[employeeId]"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/manager-profile/manager-profile-live.tsx",
+          "line": 199,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/manager-profile/manager-profile-live.tsx#L199",
+          "excerpt": "              {read.kind === 'failed' ? <button type=\"button\" className=\"q-btn q-btn--sec\" aria-busy={retrying || undefined} onClick={() => onRetry('alerts')}><Labels busy={retrying} idle=\"Try again\" working=\"Trying again…\" /></button> : null}</li>}"
+        }
+      ],
+      "mockup_coverage": "hub",
+      "mockup_entry": "More → Profile & security",
+      "remaining_acceptance": "Use Owner management profile identity/contact/company/timezone; edit/missing-email Add opens own authorized employee editor; loading/error/pause.",
+      "source_conditions": "Owner management branch, not Employee calendar/work-details/appearance UI.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "F-02",
+      "domain": "Your account",
+      "owner_job": "Set owner notification topics and device alerts",
+      "source_routes": [
+        "/app/profile"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/manager-profile/manager-profile-live.tsx",
+          "line": 199,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/manager-profile/manager-profile-live.tsx#L199",
+          "excerpt": "              {read.kind === 'failed' ? <button type=\"button\" className=\"q-btn q-btn--sec\" aria-busy={retrying || undefined} onClick={() => onRetry('alerts')}><Labels busy={retrying} idle=\"Try again\" working=\"Trying again…\" /></button> : null}</li>}"
+        },
+        {
+          "file": "src/app/api/management/profile/route.ts",
+          "line": 1,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/api/management/profile/route.ts#L1",
+          "excerpt": "import {getSession,requireSessionMutationProof} from '@/lib/auth/session';"
+        },
+        {
+          "file": "src/app/api/management/profile/alerts/route.ts",
+          "line": 1,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/api/management/profile/alerts/route.ts#L1",
+          "excerpt": "import {getSession,requireSessionMutationProof} from '@/lib/auth/session';"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Per-topic time-off/shift/unable-to-work/clock-review/payroll-ready preferences; save/pending/offline/failure; current device-alert readiness and notification history link.",
+      "source_conditions": "Payroll-ready topic requires payroll; device alerts require notification feature/browser readiness/consent.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "F-03",
+      "domain": "Your account",
+      "owner_job": "Add or remove a passkey",
+      "source_routes": [
+        "/app/profile"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/passkeys/passkey-section.tsx",
+          "line": 20,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/passkeys/passkey-section.tsx#L20",
+          "excerpt": "  const [load, setLoad] = useState<Load>({ state: \"loading\" });"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Current passkey list, supported-device setup, explicit remove/Keep confirmation, empty/loading/retry/error and session recovery.",
+      "source_conditions": "Passkey flag plus device support and authenticated identity; no credentials exposed in mockup.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "F-04",
+      "domain": "Your account",
+      "owner_job": "Read personal pay statements",
+      "source_routes": [
+        "/app/my-pay"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/payroll/my-pay.tsx",
+          "line": 79,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/payroll/my-pay.tsx#L79",
+          "excerpt": "export function QuietMyPay({ nextPay = null }: { nextPay?: NextPay }) {"
+        }
+      ],
+      "mockup_coverage": "hub",
+      "mockup_entry": "More → My pay",
+      "remaining_acceptance": "Owner QuietMyPay current/next payday from real calendar, own published statement history, PDF download and empty/failed/private-access states; no Owner My time link.",
+      "source_conditions": "Payroll enabled + payStatements module + own authenticated statement access.",
+      "proposed_design_wave": 5,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "F-05",
+      "domain": "Your account",
+      "owner_job": "Read support, privacy and terms",
+      "source_routes": [
+        "/support",
+        "/privacy",
+        "/terms",
+        "/account-deletion"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/legal/account-privacy-links.tsx",
+          "line": 10,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/legal/account-privacy-links.tsx#L10",
+          "excerpt": "  { href: \"/privacy\", title: \"Privacy Policy\", meta: \"How NEVORA handles your information\", Icon: ShieldCheckIcon },"
+        },
+        {
+          "file": "src/app/support/page.tsx",
+          "line": 19,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/support/page.tsx#L19",
+          "excerpt": "  const question = (title: string, detail: string | null, blocks: NonNullable<typeof contact>[\"blocks\"]) => <li>"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Help & support / Privacy & terms",
+      "remaining_acceptance": "Real support answers/email/legal content and account-deletion information, accessible readable pages and return; support contact is user initiated.",
+      "source_conditions": "policiesVisible() controls legal/support availability; public support does not require generic session.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "F-06",
+      "domain": "Your account",
+      "owner_job": "Request deletion of the personal account",
+      "source_routes": [
+        "/app/account/delete"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/account-deletion-form.tsx",
+          "line": 86,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/account-deletion-form.tsx#L86",
+          "excerpt": "      <QuietGroup id=\"deletion-confirm\" label=\"Confirm it’s you\">"
+        }
+      ],
+      "mockup_coverage": "preview",
+      "mockup_entry": "Profile → Account deletion",
+      "remaining_acceptance": "Identity/current password/show-hide and explicit confirmation, duplicate/request receipt and Done sign-out; explain Owner workspace remains open and company closure is separate support request.",
+      "source_conditions": "Authenticated session and visible policies; no destructive operation during prototype testing.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "F-07",
+      "domain": "Your account",
+      "owner_job": "Sign out and recover an ended session",
+      "source_routes": [
+        "/app/profile",
+        "/login",
+        "/forgot-access",
+        "/reset-access",
+        "/activate"
+      ],
+      "source_refs": [
+        {
+          "file": "src/components/app-shell.tsx",
+          "line": 1,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/components/app-shell.tsx#L1",
+          "excerpt": "\"use client\";"
+        }
+      ],
+      "mockup_coverage": "absent",
+      "mockup_entry": "None",
+      "remaining_acceptance": "Visible deliberate sign-out, private-state cleanup, pending/failed sign-out and sign-in/forgot/reset/activate handoffs; safe return to actual owner scope.",
+      "source_conditions": "Current session; shared authentication surface is a dependency, not a new Owner-only redesign.",
+      "proposed_design_wave": 4,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "remaining_or_partial",
+      "current_note": "Preview or full workflow still requires Owner mobile design and verification.",
+      "evidence_report": null
+    },
+    {
+      "id": "X-01",
+      "domain": "Role boundaries and exclusions",
+      "owner_job": "Exclude employee My time from Owner navigation",
+      "source_routes": [
+        "/app/my-time"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/my-time/page.tsx",
+          "line": 14,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/my-time/page.tsx#L14",
+          "excerpt": "  }"
+        }
+      ],
+      "mockup_coverage": "excluded",
+      "mockup_entry": "Currently shown under My pay: incorrect",
+      "remaining_acceptance": "Remove the prototype-only Owner My time destination in the next design pass; use actual authorized personal pay/timecard paths without inventing replacement capability.",
+      "source_conditions": "OWNER/MANAGER redirected to /app in source.",
+      "proposed_design_wave": 0,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "excluded_for_owner",
+      "current_note": "Role exclusion, not an outstanding Owner feature.",
+      "evidence_report": null
+    },
+    {
+      "id": "X-02",
+      "domain": "Role boundaries and exclusions",
+      "owner_job": "Exclude employee Requests hub",
+      "source_routes": [
+        "/app/requests/hub"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/requests/hub/page.tsx",
+          "line": 8,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/requests/hub/page.tsx#L8",
+          "excerpt": "export default async function RequestsHubPage() {"
+        }
+      ],
+      "mockup_coverage": "excluded",
+      "mockup_entry": "Not in owner mockup",
+      "remaining_acceptance": "Keep Owner request review under Inbox/Time off/Shift requests; do not import employee request-creation/withdrawal flows.",
+      "source_conditions": "Only EMPLOYEE/LEAD; other roles redirected to /app.",
+      "proposed_design_wave": 0,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "excluded_for_owner",
+      "current_note": "Role exclusion, not an outstanding Owner feature.",
+      "evidence_report": null
+    },
+    {
+      "id": "X-03",
+      "domain": "Role boundaries and exclusions",
+      "owner_job": "Exclude employee swap/cover/callout submission",
+      "source_routes": [
+        "/app/exchange/swap",
+        "/app/exchange/callout"
+      ],
+      "source_refs": [
+        {
+          "file": "src/lib/auth/permissions.ts",
+          "line": 17,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/lib/auth/permissions.ts#L17",
+          "excerpt": "export async function requireSelfService(destination = \"/app\") {"
+        }
+      ],
+      "mockup_coverage": "excluded",
+      "mockup_entry": "Generic sample must remain owner review",
+      "remaining_acceptance": "Preserve owner review/lifecycle rather than adding employee proposal/accept/claim/submit controls; route interception is no separate Owner feature.",
+      "source_conditions": "requireSelfService allows employee roles and redirects management to request review.",
+      "proposed_design_wave": 0,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "excluded_for_owner",
+      "current_note": "Role exclusion, not an outstanding Owner feature.",
+      "evidence_report": null
+    },
+    {
+      "id": "X-04",
+      "domain": "Role boundaries and exclusions",
+      "owner_job": "Exclude employee-only account/profile affordances",
+      "source_routes": [
+        "/app/profile"
+      ],
+      "source_refs": [
+        {
+          "file": "src/app/app/profile/page.tsx",
+          "line": 23,
+          "url": "https://github.com/JoseK0514/Fuel-Scheduler-/blob/46e202786863279302026ee03a0e225c359fa55c/src/app/app/profile/page.tsx#L23",
+          "excerpt": " const notificationsEnabled=readNotificationConfig(process.env).featureEnabled;"
+        }
+      ],
+      "mockup_coverage": "excluded",
+      "mockup_entry": "Not in owner mockup",
+      "remaining_acceptance": "Do not add employee calendar subscription, employee work-details or appearance/language rows as existing Owner features.",
+      "source_conditions": "Owner/Manager renders management Profile; Employee/Lead renders separate surface.",
+      "proposed_design_wave": 0,
+      "parity_verified": false,
+      "application_runtime_validation": "Not run in this inventory",
+      "current_design_status": "excluded_for_owner",
+      "current_note": "Role exclusion, not an outstanding Owner feature.",
+      "evidence_report": null
+    }
+  ],
+  "cross_cutting_acceptance": [
+    {
+      "id": "Q-01",
+      "title": "Loading, healthy empty, partial and failed reads",
+      "applies_to": "Every list and detail",
+      "required": "Only a successful complete current read may say none/all clear. Show useful recovery for timeout and partial source; no private sample/old data as current.",
+      "verified": false
+    },
+    {
+      "id": "Q-02",
+      "title": "Offline, reconnecting, hidden/paused and stale data",
+      "applies_to": "Every protected source",
+      "required": "Explain connection/age and suspend decisions; re-read on return. Clear protected content as existing controls require; no phantom success.",
+      "verified": false
+    },
+    {
+      "id": "Q-03",
+      "title": "Session ended, role/scope revoked, disabled module",
+      "applies_to": "Every tool plus direct route",
+      "required": "Remove unauthorized navigation and private content; direct routes/actions enforce current gates, explain unavailable capability and offer legitimate sign-in/recovery.",
+      "verified": false
+    },
+    {
+      "id": "Q-04",
+      "title": "Draft, published, historical and superseded sources",
+      "applies_to": "Schedule, timecards, payroll, updates, policies",
+      "required": "Label current revision/context; history is never editable as the current record. Source change invalidates exact-revision review where required.",
+      "verified": false
+    },
+    {
+      "id": "Q-05",
+      "title": "Validation, missing data and eligibility",
+      "applies_to": "Every form/decision",
+      "required": "Name the field/reason and how to fix it; distinguish missing/unset from a confirmed zero. Keep entered values and correct focus; server validates all rules.",
+      "verified": false
+    },
+    {
+      "id": "Q-06",
+      "title": "Pending, confirmed success and partial batch result",
+      "applies_to": "Every mutation",
+      "required": "Disable duplicate submission, show actual action identity and truthful receipt, exact target/date/scope and next step; each batch outcome stays visible.",
+      "verified": false
+    },
+    {
+      "id": "Q-07",
+      "title": "Unknown result, retry and status lookup",
+      "applies_to": "Requests, copies, corrections, exports, payroll, invitations/device changes",
+      "required": "Preserve the original operation identity and reconcile; do not start another operation or infer failure from timeout. Avoid showing sample Undo when source has no authorized reversal.",
+      "verified": false
+    },
+    {
+      "id": "Q-08",
+      "title": "Back, deep link and interrupted work",
+      "applies_to": "All root/detail/form transitions",
+      "required": "Carry exact date/week/location/person/filter/item and safe origin; preserve search/scroll and unsaved entries; return focus near meaningful content; handle vanished/already-decided targets.",
+      "verified": false
+    },
+    {
+      "id": "Q-09",
+      "title": "Small phones, text enlargement and mobile input",
+      "applies_to": "320/390/430px plus physical phones",
+      "required": "Complete labels/values, reachable controls above safe area/keyboard, consistent touch targets; native time/date/select/file pickers, long names and translated content.",
+      "verified": false
+    },
+    {
+      "id": "Q-10",
+      "title": "Keyboard, screen reader, reduced motion and meaning",
+      "applies_to": "All screens/components",
+      "required": "Visible focus and correct names/order, trapped modal/restored focus, announced errors/receipts, status beyond color and reduced motion; actual assistive-tech testing pending.",
+      "verified": false
+    },
+    {
+      "id": "Q-11",
+      "title": "Sensitive and consequential actions",
+      "applies_to": "Financial/access/recovery/notifications/deletion",
+      "required": "Clear person/scope and actual consequence before confirmation; privacy and transient-code cleanup; permissions remain explicit; no real messages/money/data mutations in tests without authorization.",
+      "verified": false
+    },
+    {
+      "id": "Q-12",
+      "title": "Integration, device and permission verification",
+      "applies_to": "Each workflow before declaring parity",
+      "required": "Use isolated test fixtures and approved references; verify real server guards, conflicts and network states, mobile browsers/devices and downloads. Prior mockup test passes do not certify these workflows.",
+      "verified": false
+    }
+  ],
+  "latest_presentation_refinement": {
+    "scope": "Terminology and enabled modules (3.5)",
+    "report": "outputs/owner-features/review.md",
+    "source_sha256": "65f2a5d5cbb596f90a2d08adb2fca30c869e1142e8325e9d25f23326e70d1c64"
+  }
+}
