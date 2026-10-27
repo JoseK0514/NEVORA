@@ -2,7 +2,7 @@ import 'server-only';
 import {createHash} from 'node:crypto';
 import type {SessionMutationProof} from './shift-changes/types';
 
-export type EmployeeView = 'profile' | 'notifications' | 'requests' | 'exchange' | 'creation' | 'planning';
+export type EmployeeView = 'profile' | 'notifications' | 'requests' | 'exchange' | 'creation' | 'planning' | 'hours';
 /** Public lifetime binding, never authentication. Each GET still requires the
  * actual HttpOnly session and protected SQL guards. No raw hash is serialized. */
 export function employeeViewAuthority(proof:SessionMutationProof,view:EmployeeView):string {

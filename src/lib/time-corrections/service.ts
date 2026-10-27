@@ -134,6 +134,7 @@ export async function submitTimeCorrection(
   proof: SessionMutationProof,
   input: CorrectionRequestCommand,
   executor: SqlExecutor = neonNotificationExecutor(),
+  admission: readonly SqlStatement[] = [],
 ): Promise<CorrectionMutationResult> {
   try {
     assertManagementProof(proof, proof?.employee?.id);
@@ -177,6 +178,7 @@ export async function submitTimeCorrection(
   const statements: SqlStatement[] = [
     ...workspaceReadGuard(workspace),
     { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR UPDATE', values: [actor] },
+    ...admission,
     ...managementSessionStatements(proof, actor, roles),
     call,
     ...managementSessionStatements(proof, actor, roles),

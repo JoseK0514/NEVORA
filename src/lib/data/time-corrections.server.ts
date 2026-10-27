@@ -122,7 +122,7 @@ const publicRequestJson = (alias: string) => `jsonb_build_object(
   'context',${contextJson(`${alias}.kind`)}
 )`;
 
-const employeeSql = `WITH observed AS MATERIALIZED (
+const employeeSqlFor = (exact=false,target=false) => `WITH observed AS MATERIALIZED (
   SELECT clock_timestamp() AS at
 ), own_requests AS MATERIALIZED (
   SELECT r.*,loc.name,loc.short_name,
@@ -136,7 +136,7 @@ const employeeSql = `WITH observed AS MATERIALIZED (
     ORDER BY e.revision DESC
     LIMIT 1
   ) latest ON true
-  WHERE r.employee_id=$1 AND r.workspace_id=$2
+  WHERE r.employee_id=$1 AND r.workspace_id=$2${exact?" AND r.id=$4::uuid":""}
   ORDER BY r.created_at DESC,r.id DESC
   LIMIT 50
 ), request_rows AS MATERIALIZED (
@@ -158,7 +158,7 @@ const employeeSql = `WITH observed AS MATERIALIZED (
       OR t.id IN(SELECT old.id FROM time_entries old JOIN locations ol ON ol.id=old.location_id
         WHERE old.employee_id=$1 AND ol.workspace_id=$2 AND old.clock_out_at<=
           ((SELECT at FROM observed) AT TIME ZONE $3)::date::timestamp AT TIME ZONE $3
-        ORDER BY old.clock_in_at DESC,old.id DESC LIMIT 20))
+        ORDER BY old.clock_in_at DESC,old.id DESC LIMIT 20)${target?` OR t.id=$${exact?5:4}`:""})
 ), targets AS MATERIALIZED (
   SELECT 'ENTRY_BOUNDARY'::text AS kind,t.id AS time_entry_id,NULL::text AS break_entry_id,
     t.clock_in_at AS recorded_start_at,t.clock_out_at AS recorded_end_at
@@ -318,6 +318,8 @@ function schemaMissing(error: unknown) {
 export async function readEmployeeTimeCorrections(
   proof: SessionMutationProof,
   executor: SqlExecutor = neonNotificationExecutor(),
+  requestId?: string,
+  targetEntryId?: string,
 ): Promise<EmployeeTimeCorrections> {
   try { assertManagementProof(proof,proof?.employee?.id); }
   catch { return {state:'unavailable',reason:'access_denied'}; }
@@ -333,7 +335,7 @@ export async function readEmployeeTimeCorrections(
     ];
     const result=await executor.transaction([
       ...guards,
-      {text:employeeSql,values:[proof.employee.id,workspace.id,workspace.timeZone]},
+      {text:employeeSqlFor(Boolean(requestId),Boolean(targetEntryId)),values:[proof.employee.id,workspace.id,workspace.timeZone,...(requestId?[requestId]:[]),...(targetEntryId?[targetEntryId]:[])]},
       ...managementSessionStatements(proof,proof.employee.id,selfRoles),
     ]);
     const row=result[guards.length]?.[0] as {totalRequests?:number;locationCount?:number;targetCount?:number;snapshot?:unknown}|undefined;

@@ -5,8 +5,8 @@ export function correctionStamp(at:string,zone:string){
   return new Intl.DateTimeFormat('en-US',{timeZone:zone,year:'numeric',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(at));
 }
 
-export function CorrectionComparison({recordedStartAt,recordedEndAt,context,zone,proposedStartAt,proposedEndAt,recordedLabel='Recorded'}:{
-  recordedLabel?:string;recordedStartAt:string|null;recordedEndAt:string|null;context:CorrectionContext;zone:string;proposedStartAt?:string;proposedEndAt?:string;
+export function CorrectionComparison({recordedStartAt,recordedEndAt,context,zone,proposedStartAt,proposedEndAt,proposedLabel,recordedLabel='Recorded'}:{
+  proposedLabel?:string;recordedLabel?:string;recordedStartAt:string|null;recordedEndAt:string|null;context:CorrectionContext;zone:string;proposedStartAt?:string;proposedEndAt?:string;
 }){
   const interval=(start:string,end:string)=><><time dateTime={start}>{correctionStamp(start,zone)}</time> → <time dateTime={end}>{correctionStamp(end,zone)}</time></>;
   return <>
@@ -15,7 +15,7 @@ export function CorrectionComparison({recordedStartAt,recordedEndAt,context,zone
       <div><small>Current effective</small><strong>{context.state==='confirmed'?interval(context.startAt,context.endAt):context.state==='none'?'No approved missing-time adjustment':'Effective time unconfirmed'}</strong>
         {context.state==='confirmed'?<small>{context.sourceKind==='ADJUSTMENT'?(recordedLabel==='Approved missing time'||!recordedStartAt?'Approved missing time · no device punch':'Approved adjustment · original punch unchanged'):'Recorded time · no approved adjustment'}</small>:null}
       </div>
-      {proposedStartAt&&proposedEndAt?<div><small>Proposed · {context.state==='none'?'awaiting approval':'pending review'}</small><strong>{interval(proposedStartAt,proposedEndAt)}</strong></div>:null}
+      {proposedStartAt&&proposedEndAt?<div><small>{proposedLabel??('Proposed · '+(context.state==='none'?'awaiting approval':'pending review'))}</small><strong>{interval(proposedStartAt,proposedEndAt)}</strong></div>:null}
     </div>
     <p className="correction-context-zone">Times in {timeZoneLabel(zone)}</p>
   </>;

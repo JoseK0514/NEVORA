@@ -1,3 +1,4 @@
+import {ResponsiveEmployeeTimecards} from '@/components/employee-mobile/hours';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -29,5 +30,5 @@ export default async function TimecardsPage({searchParams}:{searchParams:Promise
     </div></ScopedReadFrame>;
   }
   // Signature (phase 1): the employee page is the Timecards component's own band and sheet.
-  return <Timecards key={session.id} initialPeriod={period} manager={false} actorId={session.id} employeeCorporate={session.role==='EMPLOYEE'||session.role==='LEAD'} signature/>;
+  return <ResponsiveEmployeeTimecards period={period}><Timecards key={session.id} initialPeriod={period} manager={false} actorId={session.id} employeeCorporate={session.role==='EMPLOYEE'||session.role==='LEAD'} signature/></ResponsiveEmployeeTimecards>;
 }
