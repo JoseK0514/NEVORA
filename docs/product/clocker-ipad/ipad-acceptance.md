@@ -11,10 +11,10 @@ Date prepared: October27,2026. Scope clarified by Jose: **all iPad families, Saf
 | iPadOS and Safari version | Not supplied |
 | Viewport/orientation/text-size setting | Record each run |
 | Mode | Safari tab and Home Screen web app both required |
-| Test URL and environment owner | Not supplied; isolated environment accessible from the iPad |
-| Application branch/commit and migration state | Local candidate: codex/clocker-ipad-integration-20261027; exact review commit and migrations0038–0040 in implementation evidence. Not deployed. |
-| Company/location/device/sample employees | Fictional isolated fixtures only |
-| Server timezone / expected local time | Record actual configured workspace timezone |
+| Test URL and environment owner | https://nevora-clocker-staging-qa.vercel.app/clocker/clocker-staging ; isolated staging in Jose’s existing Vercel/Neon accounts. Requires Vercel authentication and a new Owner-issued iPad setup code. |
+| Application branch/commit and migration state | Staging candidate469aa56e on codex/clocker-ipad-integration-20261027; Vercel dpl_8dVeorn7WS4cQAqTd6qFeDH78qUe; approved schema through0041. See staging-environment.md. |
+| Company/location/device/sample employees | Nevora Clocker · Fictional Staging / Clocker Test Studio; CLOCKEROWNER, CLOCKEREMP1, CLOCKEREMP2. Automated browser stations retired; add a named physical iPad. |
+| Server timezone / expected local time | America/Puerto_Rico; compare actual server time during each run. |
 | Runtime/network/DB evidence location | Record before testing; redact credentials and PINs |
 
 The Mac's `127.0.0.1` URL does not identify the Mac when opened on a separate iPad. Provision an approved isolated test endpoint with its exact expected Origin/HTTPS/cookie settings; no public tunnel, production credentials, customer time entries or permission weakening is assumed. Collect device/version availability from actual hardware; no unsupported minimum iPadOS version is declared here.

@@ -30,7 +30,9 @@ async function photoCheck(portal,page,tablet,verify){
   await page.getByRole('status').filter({hasText:'Your time and punch photo are recorded.'}).waitFor();await page.getByRole('button',{name:'Return to PIN',exact:true}).click();await idle(page);
   checks.push('chromium synthetic camera frame uploaded through actual HTTPS/Sharp decoder and original time action');
   await go(portal,'/app/settings/clocker/photos/review');await portal.getByRole('button',{name:/^Review Alex Rivera/}).first().click();await portal.getByRole('button',{name:'View private photo',exact:true}).click();await portal.locator('img[src^="blob:"]').waitFor();
-  await portal.getByRole('button',{name:'Remove photo',exact:true}).click();await portal.getByRole('button',{name:'Confirm photo removal',exact:true}).click();await portal.getByRole('status').filter({hasText:/removed/}).waitFor();checks.push('chromium actual hosted Owner-only private photo read/removal');
+  if(process.env.CLOCKER_STAGE_RETAIN_SYNTHETIC_PHOTO!=='true'){
+   await portal.getByRole('button',{name:'Remove photo',exact:true}).click();await portal.getByRole('button',{name:'Confirm photo removal',exact:true}).click();await portal.getByRole('status').filter({hasText:'Punch photo removal confirmed.'}).waitFor();checks.push('chromium actual hosted Owner-only private photo read/removal');
+  }else checks.push('chromium synthetic image retained only for platform-expiry acceptance');
  }finally{
   await go(portal,'/app/settings/clocker/photos');await portal.getByRole('checkbox',{name:/^Enable punch photos/}).uncheck();
   for(const name of ['Clock in','Start break','End break','Clock out'])await portal.getByRole('checkbox',{name,exact:true}).check();
@@ -55,7 +57,11 @@ for(const engine of (process.env.CLOCKER_STAGE_ENGINES??'chromium,webkit').split
   const geometry=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,small:[...document.querySelectorAll('main button,main input')].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&r.height<44;}).length}));assert.equal(geometry.overflow,false);assert.equal(geometry.small,0);checks.push(engine+' tablet geometry and location-specific launch metadata');
   await page.screenshot({path:join(evidence,engine+'-pin.png'),fullPage:true});
   const verify=async()=>{await page.locator('input[name=pin]').fill('4826');await page.getByRole('button',{name:'Continue',exact:true}).click();await page.getByRole('heading',{name:'Hi, Alex.',exact:true}).waitFor();};
-  await verify();await page.getByRole('button',{name:'Clock In',exact:true}).click();await page.getByRole('heading',{name:'Clock In Recorded',exact:true}).waitFor();await page.getByRole('button',{name:'Done',exact:true}).click();await idle(page);checks.push(engine+' canonical Clock In and private-screen exit');
+  await verify();
+  if(process.env.CLOCKER_STAGE_RECOVER_OPEN==='true'&&await page.getByRole('button',{name:'Clock Out',exact:true}).count()){
+   await page.getByRole('button',{name:'Clock Out',exact:true}).click();await page.getByRole('button',{name:'Confirm Clock Out',exact:true}).click();await page.getByRole('heading',{name:'Clock Out Recorded',exact:true}).waitFor();await page.getByRole('button',{name:'Done',exact:true}).click();await idle(page);await verify();checks.push(engine+' prior aborted fictional session closed through its canonical Clock Out receipt');
+  }
+  await page.getByRole('button',{name:'Clock In',exact:true}).click();await page.getByRole('heading',{name:'Clock In Recorded',exact:true}).waitFor();await page.getByRole('button',{name:'Done',exact:true}).click();await idle(page);checks.push(engine+' canonical Clock In and private-screen exit');
   await verify();await page.getByRole('button',{name:'Clock Out',exact:true}).click();await page.getByRole('button',{name:'Confirm Clock Out',exact:true}).click();await page.getByRole('heading',{name:'Clock Out Recorded',exact:true}).waitFor();await page.getByRole('button',{name:'Done',exact:true}).click();await idle(page);checks.push(engine+' canonical Clock Out confirmation and receipt');
   let lost=false;await page.route('**/api/clocker/'+location+'/punch',async route=>{
    const headers={...route.request().headers(),'x-vercel-protection-bypass':process.env.CLOCKER_STAGE_BYPASS};
