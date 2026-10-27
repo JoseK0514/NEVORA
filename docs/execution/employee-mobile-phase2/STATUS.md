@@ -17,11 +17,14 @@ The approved scope remains the three-phase plan at `outputs/employee-mobile/rema
 
 - Sixth Phase2 batch, Notifications/Updates: accepted locally with conditions at application/test candidate `8435c3d81734b1fc4bb8ac574368b331a9e99b9d`. The deliberate pending-module regression was reproduced RED and fixed, then fresh review's material recovery/action/accessibility issues were corrected and author-closed. Independent final20-file SQL/browser gate176/176 and77-file unit gate609/609 passed; full nonincremental TypeScript,43-file lint and8mirror source/runtime custody passed. Code/UI/QA authors retain three nonblocking conditions: partial-empty wording, enlarged acknowledgement word breaks and a short dark-page canvas seam. Original NO-GO reports, all failed runs and the inconclusive first compiler attempt remain preserved; the exact compiler recovery passed separately. See `../employee-mobile-communications/HANDOFF.md`, its authored reports, evidence history and gallery. Phase3 remains closed; the groups below are still Phase2 implementation.
 
+- Seventh Phase2 batch, Profile/preferences/help/legal/native sign-out: accepted locally at `2e4104ce89f1abbb2d3bafd5b87341eba9753c47`. Own finite facts, prehydration privacy, logical DOM/focus order, native truthful preferences, canonical contextual help/legal, stable responsive service owners, actual session/cookie cleanup and honest unresolved-proof retention are verified. Independent 682-unit/183 SQL-browser checks, full nonincremental TypeScript, 17-file lint and eight source-mirror/runtime custody checks passed. Material code/UI findings and independently reproduced System appearance race were author-closed after meaningful RED/GREEN and actual-writer/native proof. Original4bf NO-GO182/183 remains preserved. See [Profile handoff](../employee-mobile-profile/HANDOFF.md) and authored reports. This is bounded local acceptance, not full capability-port, physical-device/AT, hosted or release certification.
+
 ## Remaining Phase 2 implementation
 
-1. **In progress:** own profile, language/appearance preferences, support/legal, contextual return and actual sign-out/device cleanup. See `../employee-mobile-profile/plan.md`; the first own-read/signout/privacy regressions and6realSQL cases passed after observed RED. Mobile presentation/browser verification remains in progress; no acceptance is claimed.
-2. Capability-dependent calendar, passkeys, current-device alerts and own deletion-request lifecycles.
-3. Own published Pay statements, current payroll/module gates and protected PDF view/download.
+1. Capability-dependent calendar, passkeys, current-device alerts and own deletion-request lifecycles. Calendar is next; current [Calendar discovery](../employee-mobile-profile/NEXT_CALENDAR_DISCOVERY.md) is not an implementation or acceptance.
+2. Own published Pay statements, current payroll/module gates and protected PDF view/download.
+
+Carry-forward polish: the earlier Communications partial-empty wording, enlarged acknowledgement wrapping and short dark-page canvas conditions remain open with their original authors. This Profile acceptance does not close them or certify final whole-app polish.
 
 Each batch must preserve current role/workspace/session/module authority, source/revision binding, immutable operation recovery, unrelated available capabilities, consistent mobile components and desktop/management separation. Maintain explicit loading/empty/partial/error/refusal/pending/success recovery states.
 
@@ -37,4 +40,4 @@ Phase 3 then performs combined-system acceptance, actual device/background/assis
 
 Current implementation owner: root. Evidence/finding owners: the executing batch and its independent reviewers. No new product code was changed by this sequencing record.
 
-Cloud continuation from phone: Jose approved a feature-branch upload with full source/context. Start at `docs/handoffs/employee-mobile-cloud-2026-10-27/README.md` on `codex/employee-mobile-cloud-handoff-20261027`. This delivery does not complete the current batch or beginPhase3.
+Continuation ownership returned from Cloud to the original local chat at Jose’s request. The current source/handoff is `codex/employee-mobile-local-resume-20261027`, accepted application candidate `2e4104ce`; start at [Profile handoff](../employee-mobile-profile/HANDOFF.md). Original outbound/Cloud-return records remain historical. Phase2 is active and Phase3 has not started.

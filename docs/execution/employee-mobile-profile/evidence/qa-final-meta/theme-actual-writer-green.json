@@ -1,0 +1,1409 @@
+{
+  "mode": "green",
+  "actualWriterSha256": "4f51f722096f7d8ea27f0cbf2b8ba54bb3b50c43c0a6139077ce2ed838bdfa9d",
+  "sourceSha256": "76c6050eebef61bc051a9ecd16618e1e96594bd432c6213f2d56e150a58a9b23",
+  "platform": "darwin",
+  "cases": [
+    {
+      "index": 0,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 203,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 203,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 204,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 270,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 270,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 271,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 334,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 334,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 335,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 401,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 401,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 402,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 468,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 468,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 468,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 534,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 534,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 534,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 600,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 600,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 601,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 668,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 668,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 669,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 735,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 735,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 735,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 800,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 800,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 801,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 867,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 867,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 868,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 931,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 931,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 931,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 1000,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 1000,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 1000,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 1067,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 1067,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 1068,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 1133,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 1133,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 1133,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 1203,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 1203,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 1203,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 1267,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 1267,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 1268,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 1334,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 1334,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 1334,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 1400,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 1400,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 1400,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 1468,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 1468,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 1469,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 1534,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 1534,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 1535,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 1601,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 1601,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 1601,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 1667,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 1667,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 1668,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 23,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 1734,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 1734,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 1735,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 1803,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 1803,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 1803,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 25,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 1868,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 1868,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 1868,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 1934,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 1934,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 1935,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 27,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 2001,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 2001,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 2001,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 28,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 2065,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 2065,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 2065,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 29,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 2136,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 2136,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 2137,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 30,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 2201,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 2201,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 2202,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 31,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 2268,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 2268,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 2268,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 32,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 2334,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 2334,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 2334,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 33,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 2401,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 2401,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 2402,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 34,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 2468,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 2468,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 2468,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 35,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 2535,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 2535,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 2535,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 36,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 2600,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 2600,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 2600,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 37,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 2667,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 2667,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 2668,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 38,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 2733,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 2733,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 2734,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 39,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 2801,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 2801,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 2801,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 40,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 2867,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 2867,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 2868,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 41,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 2937,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 2937,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 2938,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 42,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 3004,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 3004,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 3005,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 43,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 3065,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 3065,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 3066,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 44,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 3134,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 3134,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 3134,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 45,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 3201,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 3201,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 3201,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 46,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 3268,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 3268,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 3269,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 47,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 3334,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 3334,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 3334,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 48,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 3401,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 3401,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 3402,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    },
+    {
+      "index": 49,
+      "theme": "light",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 3468,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 3468,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 3469,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    }
+  ],
+  "limits": "Isolated local HTML/native Firefox, trace-only matchMedia wrapper retains original native object; no application/DB/auth/network. This probe is diagnostic, not final acceptance."
+}

@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-27T21:40:21.016324+00:00",
+  "cwd": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+  "argv": [
+    "node",
+    "scripts/payroll-postgres.mjs",
+    "vitest.employee-mobile-profile.config.mts",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile=/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/suite-results.json"
+  ],
+  "environment": {
+    "HOME": "/Users/josek0514",
+    "PATH": "/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/josek0514/.codex/tmp/arg0-macos/codex-arg0xbyCxr:/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/josek0514/.npm-global/bin:/Users/josek0514/.local/bin:/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "TMPDIR": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/",
+    "NEVORA_EMPLOYEE_MOBILE_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/requests",
+    "NEVORA_EMPLOYEE_RESPONSES_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/responses",
+    "NEVORA_EMPLOYEE_CREATION_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/creation",
+    "NEVORA_EMPLOYEE_PLANNING_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/planning",
+    "NEVORA_EMPLOYEE_HOURS_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/hours",
+    "NEVORA_EMPLOYEE_MESSAGES_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/messages",
+    "NEVORA_EMPLOYEE_MESSAGES_REVIEW_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/messages-review",
+    "NEVORA_EMPLOYEE_PROFILE_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile",
+    "PHASE_E_EVIDENCE_DIR": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/canonical-e",
+    "NEVORA_TEST_PG_BIN": "/Users/josek0514/.codex/visualizations/2026/10/02/01a0f8c7-f196-7d22-8896-8d3c96547bd9/fuel-phase-3-pwa-notifications/local-postgres-runtime/package/native/bin",
+    "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE": "/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/package.json"
+  },
+  "candidate": "4bf7257950f898b97b93293470f0677bdb70b6bf",
+  "sourceCount": 2257,
+  "recorderSha256": "2cc97af210c1c73abfd417a89723984559c556b5d8f470be69c06ddd22ea2910",
+  "observerSha256": "3872dc656d7025a8906775aab5646a96a3885d6c32ccafa2f91ab865e80a1a21"
+}

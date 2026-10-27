@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-27T21:59:50.889991+00:00",
+  "note": "Prior independently failed acceptance retained unchanged; any new disposition is a separate report.",
+  "artifacts": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/employee-mobile-profile-manual-qa.md",
+      "sha256": "add4131eb299c52289899ae07db5c300a88bd86b593ac4c6c650f3e2178595ef",
+      "bytes": 22651
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/employee-mobile-profile-manual-qa.json",
+      "sha256": "a79908dfafbed8b85e856ab4674fa4a43511ddfadbc50eb384c52afbd5ccc1c4",
+      "bytes": 37355
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/QA-PROFILE-001.json",
+      "sha256": "efeb66139b2d01e520d225fe4f2cfc08448c965dd22601993be50afcbbd8e327",
+      "bytes": 3138
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/suite-results.json",
+      "sha256": "f671175853b13d70f6c8b21eadf2c0b807fa2305d916acee390c36ca2ba81c12",
+      "bytes": 65687
+    }
+  ]
+}

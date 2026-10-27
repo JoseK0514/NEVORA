@@ -1,0 +1,572 @@
+[
+  {
+    "path": "root-evidence/local-preflight-1/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-1/results.json",
+    "bytes": 7731,
+    "sha256": "427e54a5d3df9b8c11dbd5eaab5df1b3837d14e3832549357ca04cf06cfe47cc"
+  },
+  {
+    "path": "root-evidence/local-preflight-1/chromium-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-1/chromium-pending-requests.json",
+    "bytes": 139,
+    "sha256": "22b6579c0cbc3fa5a8c3d71fbd172b75a25986f4b6b89b0ce1679a338767364f"
+  },
+  {
+    "path": "root-evidence/local-preflight-1/owned-next-WuPa22/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-1/owned-next-WuPa22/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "003ba62a84d2cb153fc4f79af2646b1589b3e7b3081ce6accb7284cb1704c843"
+  },
+  {
+    "path": "root-evidence/local-preflight-1/owned-next-WuPa22/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-1/owned-next-WuPa22/next.log",
+    "bytes": 2794,
+    "sha256": "3813b48b8aed98b84bdd5e2b198632f9afaf777c488f1b448a62c240a1b635a8"
+  },
+  {
+    "path": "root-evidence/local-preflight-1/owned-next-WuPa22/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-1/owned-next-WuPa22/ownership.json",
+    "bytes": 955,
+    "sha256": "599fd04c691acedcf0ede81f73b55d744b85f29b9d6aa4b15e9492184fbec9da"
+  },
+  {
+    "path": "root-evidence/local-preflight-1/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-preflight-1.log",
+    "bytes": 2428,
+    "sha256": "11a4eebedc39d8a0877032afe7d451d2fc38ec42dea7ba7ebfca616a58830446"
+  },
+  {
+    "path": "root-evidence/local-preflight-2/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-2/results.json",
+    "bytes": 8103,
+    "sha256": "d382706f4c70e28539ca3cf12ccee825eab456ecbc185d97fb2dd4e395d4fccb"
+  },
+  {
+    "path": "root-evidence/local-preflight-2/webkit-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-2/webkit-pending-requests.json",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  {
+    "path": "root-evidence/local-preflight-2/owned-next-Io5e5i/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-2/owned-next-Io5e5i/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "c7adaaef3bcb95283a3b9df8f84582ba8b5fbc51ddbaf315f32bc6358b62e280"
+  },
+  {
+    "path": "root-evidence/local-preflight-2/owned-next-Io5e5i/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-2/owned-next-Io5e5i/next.log",
+    "bytes": 5337,
+    "sha256": "333b052fac9bd65ecb68c208ded5ef514e535fa0582469b8b7a0297d51efae19"
+  },
+  {
+    "path": "root-evidence/local-preflight-2/owned-next-Io5e5i/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-2/owned-next-Io5e5i/ownership.json",
+    "bytes": 955,
+    "sha256": "2b2b3adeb3e5fd52e9c824d87fe89d23e6015569e88d3769bbef0fca4fbe5e05"
+  },
+  {
+    "path": "root-evidence/local-preflight-2/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-preflight-2.log",
+    "bytes": 2246,
+    "sha256": "ce081ca58ba45b4dee5242e33dd814b7437abd62cdbb5c687fe143d256bcb94b"
+  },
+  {
+    "path": "root-evidence/local-preflight-3/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-3/results.json",
+    "bytes": 14228,
+    "sha256": "3ce584190c3b245e1e4240709789f90c385c761920f046b244beb142f0d934b4"
+  },
+  {
+    "path": "root-evidence/local-preflight-3/webkit-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-3/webkit-pending-requests.json",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  {
+    "path": "root-evidence/local-preflight-3/owned-next-vWPwhU/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-3/owned-next-vWPwhU/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "b18d299b1896eacb139328dd6c3a37263cd6c180378c3faec81ef863f0131827"
+  },
+  {
+    "path": "root-evidence/local-preflight-3/owned-next-vWPwhU/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-3/owned-next-vWPwhU/next.log",
+    "bytes": 7467,
+    "sha256": "3d79ebc78aab60667a54ee7fdfd4bb9fa6ea9fb1bc294de1bf085c113cf2739f"
+  },
+  {
+    "path": "root-evidence/local-preflight-3/owned-next-vWPwhU/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-3/owned-next-vWPwhU/ownership.json",
+    "bytes": 955,
+    "sha256": "f863d2509d0323ee11d7512dfac066f72f76c7e32c9bdd9145dccba6fae0c86a"
+  },
+  {
+    "path": "root-evidence/local-preflight-3/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-preflight-3.log",
+    "bytes": 2152,
+    "sha256": "39b59e058f05275025366b1e615337adeb7d803c34c11b7470b53b059a244dc4"
+  },
+  {
+    "path": "root-evidence/local-preflight-4/webkit-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-4/webkit-logout-completed-cookie-shape.json",
+    "bytes": 480,
+    "sha256": "e91840488be4184c337db602799e413fc0369622e3456d88d29cbe3b8d2c14bc"
+  },
+  {
+    "path": "root-evidence/local-preflight-4/chromium-logout-response-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-4/chromium-logout-response-shape.json",
+    "bytes": 601,
+    "sha256": "6a0412e5a94d9f0b842216eb26f878f6a8b7ad3dc481599954bb84223cdfc360"
+  },
+  {
+    "path": "root-evidence/local-preflight-4/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-4/results.json",
+    "bytes": 15910,
+    "sha256": "625215571c38ff795450090bc7f8c429a633253cf719ec27b25cf36ae79412f5"
+  },
+  {
+    "path": "root-evidence/local-preflight-4/webkit-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-4/webkit-pending-requests.json",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  {
+    "path": "root-evidence/local-preflight-4/webkit-logout-response-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-4/webkit-logout-response-shape.json",
+    "bytes": 704,
+    "sha256": "f17f58a54cefc7943aeeb8ecbb1766ba31b3fcd3e03af5348c625ec8a495f8a0"
+  },
+  {
+    "path": "root-evidence/local-preflight-4/chromium-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-4/chromium-logout-completed-cookie-shape.json",
+    "bytes": 379,
+    "sha256": "a414c9c5fadacb9245cb0559d03cd35b2463583dbf211ff7ceb018d38ceb1f86"
+  },
+  {
+    "path": "root-evidence/local-preflight-4/owned-next-kwrThW/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-4/owned-next-kwrThW/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "760fee29b1f73b67e73cd1fe7e790a503c623236a25453e2dd6a926fa162f262"
+  },
+  {
+    "path": "root-evidence/local-preflight-4/owned-next-kwrThW/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-4/owned-next-kwrThW/next.log",
+    "bytes": 7550,
+    "sha256": "328f649369e80f00c53ec261bf6e36aee7f1f64c771fd96f92027e09526051ee"
+  },
+  {
+    "path": "root-evidence/local-preflight-4/owned-next-kwrThW/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-4/owned-next-kwrThW/ownership.json",
+    "bytes": 955,
+    "sha256": "de4ccb72982ba19ec1a04794e188bb8bc6d564c74057051a82f962f1703d0130"
+  },
+  {
+    "path": "root-evidence/local-preflight-4/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-preflight-4.log",
+    "bytes": 2151,
+    "sha256": "173e1a71e3311cfa214ce188b61ec8d37d58b6ff19a42db3e2971dfdd1ee0b78"
+  },
+  {
+    "path": "root-evidence/local-preflight-5/webkit-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-5/webkit-logout-completed-cookie-shape.json",
+    "bytes": 366,
+    "sha256": "6aec2f5a27a44889211c1eb91a4c9f63f307c1c35f499f81a27c6fafe3e882cd"
+  },
+  {
+    "path": "root-evidence/local-preflight-5/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-5/results.json",
+    "bytes": 20957,
+    "sha256": "74ea597d333a1397514cde5cdc3dd6bb78b102696100830abc9c249acf581583"
+  },
+  {
+    "path": "root-evidence/local-preflight-5/firefox-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-5/firefox-pending-requests.json",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  {
+    "path": "root-evidence/local-preflight-5/chromium-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-5/chromium-logout-completed-cookie-shape.json",
+    "bytes": 380,
+    "sha256": "9fac7e04edd5df2bc55fee80f0cdf462e005fe5a7d0e5ef94d0424cffb33bd23"
+  },
+  {
+    "path": "root-evidence/local-preflight-5/owned-next-dFCI4b/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-5/owned-next-dFCI4b/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "582c4898619e8fcb576f6860be99c858f3d498102c768b1c2533f0a749388e63"
+  },
+  {
+    "path": "root-evidence/local-preflight-5/owned-next-dFCI4b/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-5/owned-next-dFCI4b/next.log",
+    "bytes": 8782,
+    "sha256": "7e4ee04dd97438019163acb41cf14ba307aa3f2c9132c982edf6313fb6f7c133"
+  },
+  {
+    "path": "root-evidence/local-preflight-5/owned-next-dFCI4b/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-5/owned-next-dFCI4b/ownership.json",
+    "bytes": 955,
+    "sha256": "18f4fc42aefbe5d1c09aab1f4d33a4d6bc764fe7ef34f987e22f2f5ed4ec3f40"
+  },
+  {
+    "path": "root-evidence/local-preflight-5/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-preflight-5.log",
+    "bytes": 2302,
+    "sha256": "029a37c4731a9911e22dbd2e83f14fa3bdf5ab4ec2b7b79047e71a9735c2fe68"
+  },
+  {
+    "path": "root-evidence/local-preflight-6/webkit-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/webkit-logout-completed-cookie-shape.json",
+    "bytes": 366,
+    "sha256": "257851cf95ca48a8d144ba69b629c56109505a02a8fb29c900334e465cc25b1d"
+  },
+  {
+    "path": "root-evidence/local-preflight-6/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/results.json",
+    "bytes": 20522,
+    "sha256": "2101b4b7e479ced881be97594b6d4111c18feb83e957c60f6e647038a28c9583"
+  },
+  {
+    "path": "root-evidence/local-preflight-6/firefox-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/firefox-logout-completed-cookie-shape.json",
+    "bytes": 374,
+    "sha256": "fbd3b8fb85e5bc193d6a6f4089ced8d2cc86823f077bfd7dfd1abc002a5887a5"
+  },
+  {
+    "path": "root-evidence/local-preflight-6/chromium-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/chromium-logout-completed-cookie-shape.json",
+    "bytes": 380,
+    "sha256": "b6fe0a88f2a54ed4095ab5dcb8e5ffc07d44e277f6dadb05689b57108bded6e7"
+  },
+  {
+    "path": "root-evidence/local-preflight-6/owned-next-cjy11X/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/owned-next-cjy11X/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "6d5213cbe44937d5906e99327d7895eefad2fcd79ba06bee9216026935bc9581"
+  },
+  {
+    "path": "root-evidence/local-preflight-6/owned-next-cjy11X/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/owned-next-cjy11X/next.log",
+    "bytes": 10815,
+    "sha256": "eefabf642fa1cf1affb28e93493c017a9a2c1d310fb7883d6087ffa4d94957df"
+  },
+  {
+    "path": "root-evidence/local-preflight-6/owned-next-cjy11X/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/owned-next-cjy11X/ownership.json",
+    "bytes": 955,
+    "sha256": "b6ca98a16c53e72a0578719492074a09022821b636ebb81e20745d314a062af7"
+  },
+  {
+    "path": "root-evidence/local-preflight-6/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-preflight-6.log",
+    "bytes": 1430,
+    "sha256": "d910f93e6947f612e862766f1c89c71dedcb3e4f129709d8ffeea168d3bf42e1"
+  },
+  {
+    "path": "root-evidence/local-preflight-7/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-7/results.json",
+    "bytes": 1798,
+    "sha256": "c1490ac76e8bca094c521aa2f2409d87374bd7e6fbc8065d4ddd477bb6eaec2b"
+  },
+  {
+    "path": "root-evidence/local-preflight-7/chromium-theme-diagnostic.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-7/chromium-theme-diagnostic.json",
+    "bytes": 106,
+    "sha256": "89410a5b7f4c91bfa5967862bb3218f45d5614231aa79d6595495fb17c9e82ec"
+  },
+  {
+    "path": "root-evidence/local-preflight-7/chromium-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-7/chromium-pending-requests.json",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  {
+    "path": "root-evidence/local-preflight-7/owned-next-ILfymu/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-7/owned-next-ILfymu/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "be52a6f5be24b9e72d5f79decc077c6b0434eed1a71876ccf565eab8baa6f19b"
+  },
+  {
+    "path": "root-evidence/local-preflight-7/owned-next-ILfymu/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-7/owned-next-ILfymu/next.log",
+    "bytes": 1304,
+    "sha256": "98c1e53c778bff71d97e02185867e224c368017307dfae03cac301b9b4933659"
+  },
+  {
+    "path": "root-evidence/local-preflight-7/owned-next-ILfymu/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-7/owned-next-ILfymu/ownership.json",
+    "bytes": 956,
+    "sha256": "9b0d67429e67a55588ce6bd35c3dd3a1c05333a741d09235e73139edb7750d26"
+  },
+  {
+    "path": "root-evidence/local-preflight-7/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-preflight-7.log",
+    "bytes": 2148,
+    "sha256": "ce3ad08d1906f7e4cadc1d2b2d384be2fd12d26df9ad839fbb07d56fbcf4893c"
+  },
+  {
+    "path": "root-evidence/local-preflight-8/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-8/results.json",
+    "bytes": 9594,
+    "sha256": "986e6535cbb27dd19f7c28c981bec0948931be3d12297772e7b60785477cbe54"
+  },
+  {
+    "path": "root-evidence/local-preflight-8/webkit-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-8/webkit-pending-requests.json",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  {
+    "path": "root-evidence/local-preflight-8/webkit-theme-diagnostic.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-8/webkit-theme-diagnostic.json",
+    "bytes": 106,
+    "sha256": "89410a5b7f4c91bfa5967862bb3218f45d5614231aa79d6595495fb17c9e82ec"
+  },
+  {
+    "path": "root-evidence/local-preflight-8/chromium-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-8/chromium-logout-completed-cookie-shape.json",
+    "bytes": 380,
+    "sha256": "e3e7041a4f7db5a6cf9704ea7a7bbbd8650c3cadc122108fc3c0f53cee654dc0"
+  },
+  {
+    "path": "root-evidence/local-preflight-8/owned-next-QSMQN3/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-8/owned-next-QSMQN3/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "21366b89240249e9fc6d6f0e7e40fd2fdb03ea57933ae9695bbbe77df713d8ae"
+  },
+  {
+    "path": "root-evidence/local-preflight-8/owned-next-QSMQN3/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-8/owned-next-QSMQN3/next.log",
+    "bytes": 5471,
+    "sha256": "8787af6af0a79452eca113fd792fa96e05dc74e1596648414241c9fc00a19433"
+  },
+  {
+    "path": "root-evidence/local-preflight-8/owned-next-QSMQN3/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-8/owned-next-QSMQN3/ownership.json",
+    "bytes": 956,
+    "sha256": "e5272377b4796837364cd7dcf343cae0007734ce65b9870b1a3c6ed4c158a695"
+  },
+  {
+    "path": "root-evidence/local-preflight-8/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-preflight-8.log",
+    "bytes": 2150,
+    "sha256": "d9235b70ca3a83e0812130039e41a2b42ecb127986bae417bb443d76faacaa02"
+  },
+  {
+    "path": "root-evidence/local-preflight-9/webkit-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-9/webkit-logout-completed-cookie-shape.json",
+    "bytes": 366,
+    "sha256": "e586164a3d25ab1ccd33044928180e29c9a5c285f028e9e8b5a8bb52c59bf70e"
+  },
+  {
+    "path": "root-evidence/local-preflight-9/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-9/results.json",
+    "bytes": 24240,
+    "sha256": "0fa7fbe971f53a16186b68b25f6be8cbe77032a1351a95a9c1b8bc561b940684"
+  },
+  {
+    "path": "root-evidence/local-preflight-9/firefox-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-9/firefox-logout-completed-cookie-shape.json",
+    "bytes": 373,
+    "sha256": "1d7895ce584973a7cc1edfbd030361c5c6a4b41c7e8f90ac2929fcae5e5bc9c8"
+  },
+  {
+    "path": "root-evidence/local-preflight-9/chromium-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-9/chromium-logout-completed-cookie-shape.json",
+    "bytes": 379,
+    "sha256": "4a1180b00df7ae4a82ba1836df98dd5f227bfd5a3461aa94fd73d93a085b02fb"
+  },
+  {
+    "path": "root-evidence/local-preflight-9/owned-next-tpZkAB/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-9/owned-next-tpZkAB/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "19ac8b013e214a5c99382f3fad1451fc34dcc3a4a1f021d78cfb243658c03c34"
+  },
+  {
+    "path": "root-evidence/local-preflight-9/owned-next-tpZkAB/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-9/owned-next-tpZkAB/next.log",
+    "bytes": 12094,
+    "sha256": "3f8fad73a5656cfb1c13055890f915a70daa53f10127e35ddb9b12276726eb3a"
+  },
+  {
+    "path": "root-evidence/local-preflight-9/owned-next-tpZkAB/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-9/owned-next-tpZkAB/ownership.json",
+    "bytes": 956,
+    "sha256": "2e0f940679456b0d84e519d764559663aca07cd2c0692757765c739085c348ad"
+  },
+  {
+    "path": "root-evidence/local-preflight-9/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-preflight-9.log",
+    "bytes": 1430,
+    "sha256": "90ad9a5f0c633269b24463b84c95567b651304dbe8f7dc46483facb444297e89"
+  },
+  {
+    "path": "root-evidence/local-canvas-red/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-red/results.json",
+    "bytes": 7379,
+    "sha256": "479d374bd1c84a1a486a2dbe8d1ee50041078bea21b040fda282bbd3a9758c30"
+  },
+  {
+    "path": "root-evidence/local-canvas-red/chromium-theme-diagnostic.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-red/chromium-theme-diagnostic.json",
+    "bytes": 105,
+    "sha256": "90c5ddc7731af7b88a3470d1db936aa76b591ea8e2c8be84215e2251526af9c9"
+  },
+  {
+    "path": "root-evidence/local-canvas-red/chromium-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-red/chromium-pending-requests.json",
+    "bytes": 150,
+    "sha256": "1184a3b1a72d6bd5ab5e20a4ba3098af6cf08d0bc6058c7e677104167f7f455e"
+  },
+  {
+    "path": "root-evidence/local-canvas-red/owned-next-W064cN/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-red/owned-next-W064cN/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "1bcd954c65ed2824263550f6e99d3514c277a51ae480dfd39faff10d17939ed3"
+  },
+  {
+    "path": "root-evidence/local-canvas-red/owned-next-W064cN/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-red/owned-next-W064cN/next.log",
+    "bytes": 4174,
+    "sha256": "50fddafd844c96aeb9afe011a9665c36bcccc0c103856ae0e83b926c047cdbd5"
+  },
+  {
+    "path": "root-evidence/local-canvas-red/owned-next-W064cN/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-red/owned-next-W064cN/ownership.json",
+    "bytes": 955,
+    "sha256": "cb04c785dff00c4d7469e1afe8150056fdc34ab09e802ed6f8ff5f7bc38c91a7"
+  },
+  {
+    "path": "root-evidence/local-canvas-red/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-canvas-red.log",
+    "bytes": 2151,
+    "sha256": "89ca9ce008551e6554ce6de97015604d8469d93e3b1ac7cdb1a63153a1dfced6"
+  },
+  {
+    "path": "root-evidence/local-canvas-green/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green/results.json",
+    "bytes": 17326,
+    "sha256": "8b983fe0493c9d729131df2e6f5b60778dd8654b197419e900cebaf6bc2f0cf2"
+  },
+  {
+    "path": "root-evidence/local-canvas-green/webkit-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green/webkit-pending-requests.json",
+    "bytes": 150,
+    "sha256": "d3263b3c4c6d287488cc078292ec4651c89fa5fdcddc673256a71b173aa91eb5"
+  },
+  {
+    "path": "root-evidence/local-canvas-green/webkit-theme-diagnostic.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green/webkit-theme-diagnostic.json",
+    "bytes": 105,
+    "sha256": "90c5ddc7731af7b88a3470d1db936aa76b591ea8e2c8be84215e2251526af9c9"
+  },
+  {
+    "path": "root-evidence/local-canvas-green/chromium-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green/chromium-logout-completed-cookie-shape.json",
+    "bytes": 380,
+    "sha256": "f67c096f1684698a55242de55ee6c108e4d4e47db89fe79a5a5adab143035e6d"
+  },
+  {
+    "path": "root-evidence/local-canvas-green/owned-next-TPgWXq/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green/owned-next-TPgWXq/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "865d90922af4b1fdef1db29ecd16e9bf8d2e81d5fd85a4d76a7f127ba9920c38"
+  },
+  {
+    "path": "root-evidence/local-canvas-green/owned-next-TPgWXq/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green/owned-next-TPgWXq/next.log",
+    "bytes": 8178,
+    "sha256": "ee8f6e5a27f3ec2b9b29341ca5c95148ef3edc651c2aed97b7fcd702db2d077e"
+  },
+  {
+    "path": "root-evidence/local-canvas-green/owned-next-TPgWXq/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green/owned-next-TPgWXq/ownership.json",
+    "bytes": 957,
+    "sha256": "177a61e207ef6a3eaec768df1fa48e4fbe467ee4f4e8375e1cf7d2953842bc61"
+  },
+  {
+    "path": "root-evidence/local-canvas-green/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-canvas-green.log",
+    "bytes": 2152,
+    "sha256": "6074eb15f9249b4ef2c06872b7b7547be5482f550fa8301a255a331fdf0ea82e"
+  },
+  {
+    "path": "root-evidence/local-canvas-green-2/webkit-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/webkit-logout-completed-cookie-shape.json",
+    "bytes": 366,
+    "sha256": "7805f7e106fad8621a3af33a8893d5e8edbf9a1b08be7b0d7a0a9d6d6c1bec7f"
+  },
+  {
+    "path": "root-evidence/local-canvas-green-2/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/results.json",
+    "bytes": 24252,
+    "sha256": "773b9e82c26e4e556d32ab274beea30044a7458fe67bd868e06d65cec2021ddd"
+  },
+  {
+    "path": "root-evidence/local-canvas-green-2/firefox-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/firefox-logout-completed-cookie-shape.json",
+    "bytes": 374,
+    "sha256": "1118990ff9bd54349e45757257c3abfcc500f2c1d7c42388e418c9cdca5cda7d"
+  },
+  {
+    "path": "root-evidence/local-canvas-green-2/chromium-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/chromium-logout-completed-cookie-shape.json",
+    "bytes": 380,
+    "sha256": "afac12d3de4bccb8b6bfb0e1a59bd8b05091415f547225f74979075c99ce93eb"
+  },
+  {
+    "path": "root-evidence/local-canvas-green-2/owned-next-iZ2o3q/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/owned-next-iZ2o3q/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+  },
+  {
+    "path": "root-evidence/local-canvas-green-2/owned-next-iZ2o3q/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/owned-next-iZ2o3q/next.log",
+    "bytes": 12199,
+    "sha256": "58202dda7f6c355b1185c62b211635f042b1144f7bd10dd50412e317093685de"
+  },
+  {
+    "path": "root-evidence/local-canvas-green-2/owned-next-iZ2o3q/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/owned-next-iZ2o3q/ownership.json",
+    "bytes": 959,
+    "sha256": "fce5479ae5b9625d1bb3e00deac0b6e6b29e332ed575c211b648b4ef9c600bba"
+  },
+  {
+    "path": "root-evidence/local-canvas-green-2/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-canvas-green-2.log",
+    "bytes": 1430,
+    "sha256": "f9a96f0f337d60a2cf4b0177e4e1e9f8107ad30e2460aad25b2f44214bda7f2b"
+  },
+  {
+    "path": "root-evidence/units-and-typescript/local-terminal-response-red.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-terminal-response-red.log",
+    "bytes": 3549,
+    "sha256": "801a28e943db155625d750299b95b4d812e8ef04aad067a8d7b69262844f1f07"
+  },
+  {
+    "path": "root-evidence/units-and-typescript/local-review-order-ssr-red.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-review-order-ssr-red.log",
+    "bytes": 8961,
+    "sha256": "8b521c933b94957d18bb3e4f266d013c3a62b0efeb5652570198fc0731290974"
+  },
+  {
+    "path": "root-evidence/units-and-typescript/local-review-ts.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-review-ts.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "root-evidence/units-and-typescript/local-review-order-ssr-green.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-review-order-ssr-green.log",
+    "bytes": 1288,
+    "sha256": "c4746c19d78a10259fd4e350454a61da1a7bccf1f908b4ae4b6ba2b0525315dd"
+  },
+  {
+    "path": "root-evidence/units-and-typescript/local-terminal-response-green.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-terminal-response-green.log",
+    "bytes": 1973,
+    "sha256": "9add931979a2353e1c88866501ce38d21132d542566af2959f08cc0a7386da23"
+  }
+]

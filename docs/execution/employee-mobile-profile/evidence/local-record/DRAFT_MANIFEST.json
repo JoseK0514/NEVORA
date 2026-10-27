@@ -1,0 +1,62 @@
+[
+  {
+    "path": "code/INITIAL.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/code/employee-mobile-profile-code-review.md",
+    "bytes": 7415,
+    "sha256": "d5ccf8f5544ee58b43620af9deceb19b82afdffe868b1c0e0fbf38e3b49d6c71"
+  },
+  {
+    "path": "code/CLOSURE.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/code/employee-mobile-profile-code-review-closure.md",
+    "bytes": 5131,
+    "sha256": "d66244690e6e2976a36062c383a33dcab4dc0007e79ab94b835ee4d6b61d8c7a"
+  },
+  {
+    "path": "code/FINAL_DELTA.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/code/employee-mobile-profile-code-review-final-delta.md",
+    "bytes": 2387,
+    "sha256": "0fd829e727aee1675c3717d7284bd02ea2a91d7f26d3a3661ad807b160a2241c"
+  },
+  {
+    "path": "ui/INITIAL.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/ui/.omo/evidence/employee-profile-clone-fidelity.md",
+    "bytes": 8695,
+    "sha256": "2e7f18b0ee1ee653003f08c2be8d75b1574a78c7296bbec3f48ade320e656216"
+  },
+  {
+    "path": "ui/REMEDIATION.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/ui/.omo/evidence/employee-profile-remediation-clone-fidelity.md",
+    "bytes": 7388,
+    "sha256": "267adbf951097543e66f7ce4567c07d0c9d382fad793b0cf09b3f98bdca54152"
+  },
+  {
+    "path": "ui/FINAL_CLOSURE.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/ui/.omo/evidence/employee-profile-final-closure-clone-fidelity.md",
+    "bytes": 4857,
+    "sha256": "ed8531d57e269ab957cad7248939e3224b801fffcc96939872b3c46b1c6fc0db"
+  },
+  {
+    "path": "ui/PIXELS_INITIAL.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/ui/PERSONALLY_INSPECTED_PIXELS.json",
+    "bytes": 4720,
+    "sha256": "f492289099490a0214cefc5faf182d42eade52908ff6dd1584c24779760acbcc"
+  },
+  {
+    "path": "ui/PIXELS_REMEDIATION.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/ui/PERSONALLY_INSPECTED_PIXELS_REMEDIATION.json",
+    "bytes": 5441,
+    "sha256": "e9007b1f2bf230a3caf8d2d77dfb878a9898ae735023c577f7b7670df28a6997"
+  },
+  {
+    "path": "ui/PIXELS_FINAL.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/ui/PERSONALLY_INSPECTED_PIXELS_CANVAS_CLOSURE.json",
+    "bytes": 3200,
+    "sha256": "06dde112e84ae8682b55bab6252bb207ee37183bfdbdd47ac6cb358a5ff4c7ed"
+  },
+  {
+    "path": "probes/native-keyboard.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/native-keyboard.json",
+    "bytes": 567,
+    "sha256": "c797d2825fdbd5f4e1b71b15def757c7568c87aee7d6c7ba79e845a0d0d15613"
+  }
+]

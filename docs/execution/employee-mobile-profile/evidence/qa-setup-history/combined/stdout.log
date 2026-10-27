@@ -1,0 +1,85 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/test/integration/employee-mobile-communications-fixtures" without a file extension (vitest.employee-mobile-communications.config.mts:3:39). Add the file extension
+  - ESM syntax in a file loaded as CommonJS (src/test/integration/employee-mobile-communications-fixtures.ts:4:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume[39m
+
+ [31m❯[39m [30m[42m canonical-communications [49m[39m src/test/integration/phase-e-communications-schema.integration.ts [2m([22m[2m11 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 3104[2mms[22m[39m
+   [33m[2m✓[22m[39m schema_cross_workspace_revision_grant_denied[33m 380[2mms[22m[39m
+   [33m[2m✓[22m[39m published content grants receipts operations and lifecycle are immutable with no cascade[33m 359[2mms[22m[39m
+   [32m✓[39m draft privacy and new revisions preserve old acknowledgement without carrying it forward[32m 272[2mms[22m[39m
+   [32m✓[39m operation actor session payload and receipt identity cannot be substituted[32m 238[2mms[22m[39m
+   [32m✓[39m revision content hash normalized text role and scope constraints reject forged persistence[32m 262[2mms[22m[39m
+   [32m✓[39m complete chain retains communication and payroll sources and rejects unknown kinds[32m 195[2mms[22m[39m
+   [32m✓[39m fresh chain installs empty communication foundation without operational seeds[32m 200[2mms[22m[39m
+   [32m✓[39m E21-QA-D001 current management withdraws after historical author deactivation while retaining evidence[32m 279[2mms[22m[39m
+   [32m✓[39m E21-QA-D001 current management advances a revision after historical author deactivation without carrying receipts forward[32m 275[2mms[22m[39m
+   [32m✓[39m E21-QA-D001 creation eligibility immutable root identity and current actor guards stay enforced[32m 287[2mms[22m[39m
+[31m   [31m×[31m 0022 to 0023 to 0024 and presentation rollback preserve actual canonical JSON and migration bytes[39m[33m 357[2mms[22m[39m
+ [32m✓[39m [30m[42m canonical-communications [49m[39m src/test/integration/company-access-communications.integration.ts [2m([22m[2m40 tests[22m[2m)[22m[33m 18092[2mms[22m[39m
+   [33m[2m✓[22m[39m selected-location Manager cannot use global communication preview[33m 471[2mms[22m[39m
+   [33m[2m✓[22m[39m selected-location Manager cannot use global communication read[33m 420[2mms[22m[39m
+   [33m[2m✓[22m[39m selected-location Manager cannot use global communication list[33m 382[2mms[22m[39m
+   [33m[2m✓[22m[39m selected-location Manager cannot use global communication context[33m 378[2mms[22m[39m
+   [33m[2m✓[22m[39m selected-location Manager cannot use global communication operation[33m 386[2mms[22m[39m
+   [33m[2m✓[22m[39m selected-location Manager cannot use global communication replay[33m 400[2mms[22m[39m
+   [33m[2m✓[22m[39m selected-location Manager cannot use global communication publish[33m 391[2mms[22m[39m
+   [33m[2m✓[22m[39m current REVOKE Manager cannot recover private communications, roster, or original operation receipt[33m 412[2mms[22m[39m
+   [33m[2m✓[22m[39m current role-cycle Manager cannot recover private communications, roster, or original operation receipt[33m 393[2mms[22m[39m
+   [33m[2m✓[22m[39m current unassigned Manager cannot recover private communications, roster, or original operation receipt[33m 389[2mms[22m[39m
+   [33m[2m✓[22m[39m Owner keeps complete B communication management and a current lifetime of at most fifteen seconds[33m 482[2mms[22m[39m
+   [33m[2m✓[22m[39m Company Manager keeps complete B communication management and a current lifetime of at most fifteen seconds[33m 545[2mms[22m[39m
+   [33m[2m✓[22m[39m preview suppresses its private projection after awaited Company loss[33m 355[2mms[22m[39m
+   [33m[2m✓[22m[39m read suppresses its private projection after awaited Company loss[33m 372[2mms[22m[39m
+   [33m[2m✓[22m[39m list suppresses its private projection after awaited Company loss[33m 388[2mms[22m[39m
+   [33m[2m✓[22m[39m context suppresses its private projection after awaited Company loss[33m 348[2mms[22m[39m
+   [33m[2m✓[22m[39m operation suppresses its private projection after awaited Company loss[33m 360[2mms[22m[39m
+   [33m[2m✓[22m[39m PUBLISH rechecks Company inside the actual business transaction and rolls back publication, grants, intents and receipts[33m 393[2mms[22m[39m
+   [33m[2m✓[22m[39m REVISE rechecks Company inside the actual business transaction and rolls back publication, grants, intents and receipts[33m 430[2mms[22m[39m
+   [33m[2m✓[22m[39m WITHDRAW rechecks Company inside the actual business transaction and rolls back publication, grants, intents and receipts[33m 421[2mms[22m[39m
+   [33m[2m✓[22m[39m the final DB-clock check rolls back actual communication writes after session expiry[33m 1584[2mms[22m[39m
+   [33m[2m✓[22m[39m post-commit Company loss suppresses a new communication receipt without rewriting its committed history[33m 377[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager preview API denies current selected-location access with no private body or new effects[33m 406[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager read API denies current selected-location access with no private body or new effects[33m 387[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager list API denies current selected-location access with no private body or new effects[33m 408[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager context API denies current selected-location access with no private body or new effects[33m 384[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager operation API denies current selected-location access with no private body or new effects[33m 394[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager command API denies current selected-location access with no private body or new effects[33m 380[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager preview API retains current Company behavior[33m 339[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager read API retains current Company behavior[33m 356[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager list API retains current Company behavior[33m 382[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager context API retains current Company behavior[33m 338[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager operation API retains current Company behavior[33m 369[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager command API retains current Company behavior[33m 319[2mms[22m[39m
+   [33m[2m✓[22m[39m EMPLOYEE own receipt, read/ack and scheduled-team publication remain identity-based after Manager revocation[33m 515[2mms[22m[39m
+   [33m[2m✓[22m[39m LEAD own receipt, read/ack and scheduled-team publication remain identity-based after Manager revocation[33m 470[2mms[22m[39m
+   [33m[2m✓[22m[39m read consumes the remaining post-observation session lifetime before returning its private body[33m 711[2mms[22m[39m
+   [33m[2m✓[22m[39m list consumes the remaining post-observation session lifetime before returning its private body[33m 790[2mms[22m[39m
+   [33m[2m✓[22m[39m context consumes the remaining post-observation session lifetime before returning its private body[33m 706[2mms[22m[39m
+   [33m[2m✓[22m[39m the initial post-observation session lifetime cannot grow after a later session extension[33m 357[2mms[22m[39m
+ [32m✓[39m [30m[42m canonical-communications [49m[39m src/test/integration/phase-e-communications.integration.ts [2m([22m[2m17 tests[22m[2m)[22m[33m 7352[2mms[22m[39m
+   [33m[2m✓[22m[39m location immutable grants do not backfill transfers; deactivation denies reads[33m 468[2mms[22m[39m
+   [33m[2m✓[22m[39m concurrent_publish_same_command_once and changed replay conflict[33m 421[2mms[22m[39m
+   [33m[2m✓[22m[39m audience fingerprint rejects a phantom eligibility change after preview[33m 309[2mms[22m[39m
+   [33m[2m✓[22m[39m withdraw cancels current intents and deliveries; author deactivation preserves management control[33m 467[2mms[22m[39m
+   [33m[2m✓[22m[39m outbox fault rolls back all publication and grants[33m 360[2mms[22m[39m
+   [33m[2m✓[22m[39m expiry after communication root wait cannot publish a revision or disclose content[33m 606[2mms[22m[39m
+   [33m[2m✓[22m[39m source changed between protected observations is rejected after locks[33m 309[2mms[22m[39m
+   [33m[2m✓[22m[39m yesterday overnight is today team; approved exact callout denies sender and recipient[33m 341[2mms[22m[39m
+   [33m[2m✓[22m[39m shift episode change denies old note and current location loss denies announcement[33m 565[2mms[22m[39m
+   [33m[2m✓[22m[39m expiry during final operation wait rejects publication without source rows[33m 1087[2mms[22m[39m
+   [33m[2m✓[22m[39m list final eligibility change discards an earlier private body[33m 401[2mms[22m[39m
+   [33m[2m✓[22m[39m list final withdrawal change discards an earlier private body[33m 421[2mms[22m[39m
+   [33m[2m✓[22m[39m another eligible team assignment does not replace an immutable existing read grant[33m 325[2mms[22m[39m
+   [33m[2m✓[22m[39m publication after empty list discovery cannot report complete all-clear[33m 323[2mms[22m[39m
+   [33m[2m✓[22m[39m protected management status names recipients; employee receives only own status and short lifetime[33m 412[2mms[22m[39m
+ [32m✓[39m [30m[42m canonical-communications [49m[39m src/test/integration/communications-gap-remediation.integration.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 3630[2mms[22m[39m
+   [33m[2m✓[22m[39m management-only canonical context distinguishes same-time assignees and captured positions[33m 435[2mms[22m[39m
+   [33m[2m✓[22m[39m original ambiguous publication replay resolves one publication and one outbox per recipient[33m 517[2mms[22m[39m
+   [33m[2m✓[22m[39m inbox shows own current acknowledgement and keeps old receipts from confirming a new version[33m 661[2mms[22m[39m
+   [33m[2m✓[22m[39m optional communication becomes read only through explicit source receipt, never list/open[33m 489[2mms[22m[39m
+   [33m[2m✓[22m[39m final session denial after discovery exposes no notification status or source content[33m 396[2mms[22m[39m
+   [33m[2m✓[22m[39m canceled-to-empty week has current confirmation, discoverable Home link and exact current inbox action state[33m 724[2mms[22m[39m
+   [33m[2m✓[22m[39m same-status time-off detail edit cannot reuse an earlier own read receipt[33m 406[2mms[22m[39m

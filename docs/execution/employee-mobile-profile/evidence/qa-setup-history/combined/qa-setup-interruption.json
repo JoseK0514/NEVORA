@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-27T21:34:17.313231+00:00",
+  "action": "SIGINT exact owned Vitest child; runner remains to execute its PostgreSQL finally cleanup",
+  "pid": 13194,
+  "verifiedParent": 13172,
+  "reason": "PHASE_E_EVIDENCE_DIR directory prerequisite was omitted by QA recorder; canonical history evidence write fails. Invalid attempt preserved; no Next ownership file exists yet.",
+  "applicationSourceChanged": false
+}

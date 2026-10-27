@@ -1,0 +1,38 @@
+[
+  {
+    "path": "gallery/chromium-profile-light-390-viewport.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/chromium-profile-light-390-viewport.png",
+    "bytes": 53220,
+    "sha256": "263938f02976ee3f6ebc70aa7e2c9a798ff9c58507275d3ffcddc86d6c663c0c"
+  },
+  {
+    "path": "gallery/chromium-support-light-text200-viewport.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/chromium-support-light-text200-viewport.png",
+    "bytes": 45248,
+    "sha256": "f61bf25a6cfe24c43ed7e857464e5d5ab1803c6867db594cdfd88bdcef2426be"
+  },
+  {
+    "path": "gallery/firefox-privacy-text200-viewport.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/firefox-privacy-text200-viewport.png",
+    "bytes": 54641,
+    "sha256": "ee138f89584cb68e0798107b63c4612c596119fb31cd84b50c5e12d5dbb12b5c"
+  },
+  {
+    "path": "gallery/firefox-profile-text200-viewport.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/firefox-profile-text200-viewport.png",
+    "bytes": 41941,
+    "sha256": "3dc9cdfef19b04498a9b010b47233b6e437cbe8f24c4f83d756cfec5fe2cd9a0"
+  },
+  {
+    "path": "gallery/webkit-profile-dark-320-viewport.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/webkit-profile-dark-320-viewport.png",
+    "bytes": 56148,
+    "sha256": "81eacde30e0ee29ce86013c2dc92d7ecba45d2601dff25c9a5806fd25dfaaffd"
+  },
+  {
+    "path": "gallery/webkit-profile-signout-held-native-submission.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/webkit-profile-signout-held-native-submission.png",
+    "bytes": 27347,
+    "sha256": "b2cb60c252efdf46499f2f7a5858615f7a0480fbb3af5fcaf7c189ce5b1fc69d"
+  }
+]

@@ -1,0 +1,285 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Actual server-rendered mobile Profile DOM without hydration excludes static desktop identity"
+    },
+    {
+      "engine": "chromium",
+      "name": "Native mobile Tab order follows the visible More, work-details Refresh, preferences sequence"
+    },
+    {
+      "engine": "chromium",
+      "name": "Actual held/current own profile; no static identity while loading; strict no-selector HTTP boundary"
+    },
+    {
+      "engine": "chromium",
+      "name": "Pause removes own identity/work facts; unrelated preferences/signout remain; resume reads current own facts"
+    },
+    {
+      "engine": "chromium",
+      "name": "Read failure is not empty or stale identity; native recovery preserves unrelated help and preferences"
+    },
+    {
+      "engine": "chromium",
+      "name": "Real device theme owner light/dark320/390/430, native controls, sampled contrast, targets, token type and no overflow"
+    },
+    {
+      "engine": "chromium",
+      "name": "200% text retains enlarged headings/facts and navigation clearance; native Tab reaches the next labelled preference"
+    },
+    {
+      "engine": "chromium",
+      "name": "System follows this device media setting; explicit choice is device storage, not an employee/workspace preference"
+    },
+    {
+      "engine": "chromium",
+      "name": "Deliberate sign-in language cookie/reload keeps current profile and device theme; application language remains truthfully scoped"
+    },
+    {
+      "engine": "chromium",
+      "name": "Actual canonical Support/privacy/terms, native disclosures, fixed contextual links and exact Profile return focus; no email sent"
+    },
+    {
+      "engine": "chromium",
+      "name": "Original desktop profile retained; responsive switches do not remount the common Calendar service owner"
+    },
+    {
+      "engine": "chromium",
+      "name": "Actual session revocation clears identity; native signout removes cookie and shows actual Spanish sign-in copy"
+    },
+    {
+      "engine": "chromium",
+      "name": "A genuine different account gets only its own current identity; browser/device preferences retain their intended scope"
+    },
+    {
+      "engine": "chromium",
+      "name": "Native signout immediately clears private DOM/services and fences device ownership; real session deleted, cookie removed, opaque unresolved device cleanup retained without a false all-complete claim"
+    },
+    {
+      "engine": "webkit",
+      "name": "Actual server-rendered mobile Profile DOM without hydration excludes static desktop identity"
+    }
+  ],
+  "captures": [
+    "chromium-profile-loading.png",
+    "chromium-profile-ready.png",
+    "chromium-profile-paused.png",
+    "chromium-profile-read-unavailable.png",
+    "chromium-profile-light-320.png",
+    "chromium-profile-light-320-viewport.png",
+    "chromium-profile-light-390.png",
+    "chromium-profile-light-390-viewport.png",
+    "chromium-profile-light-430.png",
+    "chromium-profile-light-430-viewport.png",
+    "chromium-profile-dark-320.png",
+    "chromium-profile-dark-320-viewport.png",
+    "chromium-profile-dark-390.png",
+    "chromium-profile-dark-390-viewport.png",
+    "chromium-profile-dark-430.png",
+    "chromium-profile-dark-430-viewport.png",
+    "chromium-profile-text200.png",
+    "chromium-profile-text200-viewport.png",
+    "chromium-profile-language-device-persistence.png",
+    "chromium-support-text200.png",
+    "chromium-support-text200-viewport.png",
+    "chromium-support-context.png",
+    "chromium-privacy-context.png",
+    "chromium-privacy-text200.png",
+    "chromium-privacy-text200-viewport.png",
+    "chromium-terms-context.png",
+    "chromium-terms-text200.png",
+    "chromium-terms-text200-viewport.png",
+    "chromium-support-light.png",
+    "chromium-support-light-text200.png",
+    "chromium-support-light-text200-viewport.png",
+    "chromium-profile-desktop-preserved.png",
+    "chromium-profile-current-denial.png",
+    "chromium-profile-new-account-isolation.png",
+    "chromium-profile-signout-held-native-submission.png",
+    "chromium-profile-signout-unresolved-device-proof.png",
+    "webkit-profile-loading.png",
+    "webkit-failure.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "signout",
+      "ratio": 6.056099084376946
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "profile-supporting-copy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "preference-label",
+      "ratio": 14.573642055423809
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "signout",
+      "ratio": 6.056099084376946
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "profile-supporting-copy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "preference-label",
+      "ratio": 14.573642055423809
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "signout",
+      "ratio": 6.056099084376946
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "profile-supporting-copy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "preference-label",
+      "ratio": 14.573642055423809
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "signout",
+      "ratio": 7.99886165737772
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "profile-supporting-copy",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "preference-label",
+      "ratio": 16.21097167553136
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "signout",
+      "ratio": 7.99886165737772
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "profile-supporting-copy",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "preference-label",
+      "ratio": 16.21097167553136
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "signout",
+      "ratio": 7.99886165737772
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "profile-supporting-copy",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "preference-label",
+      "ratio": 16.21097167553136
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true,
+      "stage": "profile-read-failure",
+      "url": "http://127.0.0.1:52726/app/profile"
+    },
+    {
+      "engine": "chromium",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true,
+      "stage": "current-session-denial",
+      "url": "http://127.0.0.1:52726/app/profile#profile-support"
+    },
+    {
+      "engine": "webkit",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:52726/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false,
+      "stage": "held-profile-read",
+      "url": "http://127.0.0.1:52726/app/profile"
+    },
+    {
+      "engine": "webkit",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:52726/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false,
+      "stage": "held-profile-read",
+      "url": "http://127.0.0.1:52726/app/profile"
+    },
+    {
+      "engine": "webkit",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:52726/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false,
+      "stage": "held-profile-read",
+      "url": "http://127.0.0.1:52726/app/profile"
+    },
+    {
+      "engine": "webkit",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:52726/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false,
+      "stage": "held-profile-read",
+      "url": "http://127.0.0.1:52726/app/profile"
+    }
+  ],
+  "limits": [
+    "Controlled loopback browsers, fictional accounts and no real notifications. Native OS/provider enrollment and verified installation-detach coverage belong to the next capability batch; this run checks no-installation signout and actual unresolved-proof retention. Physical devices/AT/hosted/release remain separate."
+  ]
+}

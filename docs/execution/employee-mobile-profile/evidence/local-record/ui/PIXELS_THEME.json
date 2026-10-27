@@ -1,0 +1,27 @@
+{
+  "reviewer": "/root/profile_local_ui_review",
+  "candidate": "2e4104ce89f1abbb2d3bafd5b87341eba9753c47",
+  "method": "Five current PNGs personally displayed via view_image. No browser/test runtime operated. Full-page fixed navigation capture placement is an artifact, not independently a UI overlap defect.",
+  "images": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/chromium-profile-system-light.png",
+      "sha256": "4f2d7a21f257d71686c728d4cfaa992aa549e44d3253a2cf73da5ccb2d7204d9"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/webkit-profile-system-light.png",
+      "sha256": "3781e1e778906e518841aaec1760b0f24a5c0b73e3cf90a7e97068a090ea5166"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/firefox-profile-system-light.png",
+      "sha256": "5567a0ed33c02f66848216efb16306e2d285a677c98c9fa4a364efb48b64330b"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/firefox-profile-text200-viewport.png",
+      "sha256": "3dc9cdfef19b04498a9b010b47233b6e437cbe8f24c4f83d756cfec5fe2cd9a0"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/webkit-profile-signout-held-native-submission.png",
+      "sha256": "b2cb60c252efdf46499f2f7a5858615f7a0480fbb3af5fcaf7c189ce5b1fc69d"
+    }
+  ]
+}

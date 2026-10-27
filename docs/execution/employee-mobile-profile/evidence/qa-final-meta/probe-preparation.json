@@ -1,0 +1,108 @@
+{
+  "at": "2026-10-27T21:55:30.116324+00:00",
+  "candidate": "2e4104ce89f1abbb2d3bafd5b87341eba9753c47",
+  "rootProbeSha256": "d94c8fef93c383856d38148bcde0561d731e746e066a3c7170845fe9e92bb4ab",
+  "independentProbeSha256": "493ce386f88e29ecdde6475075232f835f31950f077d3ca6e6c179f67f973655",
+  "change": "Only output path differs from root actual-writer diagnostic, to preserve original root artifacts. No execution yet; waiting for runtime release.",
+  "reviewedExistingEvidence": [
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-actual-writer-red.json",
+      "sha256": "1a1278e21f30d784fa57d96a57b5d80a8f406ef299a6c14d9ff0bd5917d5d2ed",
+      "cases": 1,
+      "last": {
+        "index": 0,
+        "theme": "dark",
+        "choice": "system",
+        "stored": null,
+        "retained": false,
+        "fresh": false,
+        "events": [
+          {
+            "kind": "choose-before",
+            "choice": "system",
+            "at": 208,
+            "retained": true
+          },
+          {
+            "kind": "choose-after",
+            "at": 208,
+            "theme": "dark"
+          },
+          {
+            "kind": "light-before-frame",
+            "at": 209,
+            "retained": true,
+            "fresh": false,
+            "theme": "dark"
+          }
+        ]
+      }
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-actual-writer-green.json",
+      "sha256": "966f15ea266ec4e23b61cf341113a674afe33f40dc162e1f67821b96dda7cff1",
+      "cases": 50,
+      "last": {
+        "index": 49,
+        "theme": "light",
+        "choice": "system",
+        "stored": null,
+        "retained": false,
+        "fresh": false,
+        "events": [
+          {
+            "kind": "choose-before",
+            "choice": "system",
+            "at": 3724,
+            "retained": true
+          },
+          {
+            "kind": "choose-after",
+            "at": 3724,
+            "theme": "dark"
+          },
+          {
+            "kind": "light-before-frame",
+            "at": 3725,
+            "retained": true,
+            "fresh": false,
+            "theme": "dark"
+          }
+        ]
+      }
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-race-native-select-red.json",
+      "sha256": "408430a195a6bcdbecff779d143fc28349f4668a2a738ddddfd764ed1bd07326",
+      "cases": 1,
+      "last": {
+        "index": 0,
+        "theme": "dark",
+        "choice": "system",
+        "stored": null,
+        "retained": false,
+        "fresh": false,
+        "events": [
+          {
+            "kind": "choose-before",
+            "choice": "system",
+            "at": 181,
+            "retained": true
+          },
+          {
+            "kind": "choose-after",
+            "at": 181,
+            "theme": "dark"
+          },
+          {
+            "kind": "light-before-frame",
+            "at": 182,
+            "retained": true,
+            "fresh": false,
+            "theme": "dark"
+          }
+        ]
+      }
+    }
+  ]
+}

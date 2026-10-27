@@ -1,0 +1,116 @@
+[
+  {
+    "path": "code/THEME_INVESTIGATION.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/code/employee-mobile-profile-theme-investigation.md",
+    "bytes": 2846,
+    "sha256": "0e758d19c0e46e251dbbf162a4297198885f83f3be007fbd9ca081126a2a47c4"
+  },
+  {
+    "path": "code/THEME_PROBE_ASSESSMENT.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/code/employee-mobile-profile-theme-probe-assessment.md",
+    "bytes": 1828,
+    "sha256": "76f817e8f0c52c30d3eea0b6e469ce6f93f57ecf5083aad0f4ff542088695dea"
+  },
+  {
+    "path": "code/THEME_FIX_REVIEW.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/code/employee-mobile-profile-theme-fix-review.md",
+    "bytes": 3153,
+    "sha256": "54ce016140401e9b7f34e021a4ecbef1c2e37ab0ef39578297d078fb8d31707a"
+  },
+  {
+    "path": "ui/THEME_DELTA.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/ui/.omo/evidence/employee-profile-theme-delta-clone-fidelity.md",
+    "bytes": 3424,
+    "sha256": "bb81f700af9193051b48a907189a3cef5d7005ee6e12adb3acdcd62d8de52d4c"
+  },
+  {
+    "path": "ui/PIXELS_THEME.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/ui/PERSONALLY_INSPECTED_PIXELS_THEME_DELTA.json",
+    "bytes": 1677,
+    "sha256": "a3e95b644d59cde2c8cef8a8958de67a277beafc457dbcec079eecf310efa642"
+  },
+  {
+    "path": "qa/HISTORICAL_4BF_NO_GO.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/employee-mobile-profile-manual-qa.md",
+    "bytes": 22651,
+    "sha256": "add4131eb299c52289899ae07db5c300a88bd86b593ac4c6c650f3e2178595ef"
+  },
+  {
+    "path": "qa/HISTORICAL_4BF_NO_GO.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/employee-mobile-profile-manual-qa.json",
+    "bytes": 37355,
+    "sha256": "a79908dfafbed8b85e856ab4674fa4a43511ddfadbc50eb384c52afbd5ccc1c4"
+  },
+  {
+    "path": "qa/QA_PROFILE_001_OPEN.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/QA-PROFILE-001.md",
+    "bytes": 1483,
+    "sha256": "999e1b62bacf126844672d5a3e0665dd53afd1518b913124b49972d20fe8a5dd"
+  },
+  {
+    "path": "qa/QA_PROFILE_001_OPEN.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/QA-PROFILE-001.json",
+    "bytes": 3138,
+    "sha256": "efeb66139b2d01e520d225fe4f2cfc08448c965dd22601993be50afcbbd8e327"
+  },
+  {
+    "path": "probes/theme-race.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-race.json",
+    "bytes": 894,
+    "sha256": "408430a195a6bcdbecff779d143fc28349f4668a2a738ddddfd764ed1bd07326"
+  },
+  {
+    "path": "probes/theme-actual-writer.mjs",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-actual-writer.mjs",
+    "bytes": 4474,
+    "sha256": "d94c8fef93c383856d38148bcde0561d731e746e066a3c7170845fe9e92bb4ab"
+  },
+  {
+    "path": "probes/theme-race-native-select-red.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-race-native-select-red.json",
+    "bytes": 894,
+    "sha256": "408430a195a6bcdbecff779d143fc28349f4668a2a738ddddfd764ed1bd07326"
+  },
+  {
+    "path": "probes/theme-race-native-select-red.mjs",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-race-native-select-red.mjs",
+    "bytes": 3880,
+    "sha256": "b0ba9f988551d7d6923ae1d791f46c9323974ea71876d39981ccd821994c4b4d"
+  },
+  {
+    "path": "probes/theme-actual-writer-red.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-actual-writer-red.json",
+    "bytes": 1003,
+    "sha256": "1a1278e21f30d784fa57d96a57b5d80a8f406ef299a6c14d9ff0bd5917d5d2ed"
+  },
+  {
+    "path": "probes/theme-actual-writer-green.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-actual-writer-green.json",
+    "bytes": 29894,
+    "sha256": "966f15ea266ec4e23b61cf341113a674afe33f40dc162e1f67821b96dda7cff1"
+  },
+  {
+    "path": "probes/theme-race.mjs",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-race.mjs",
+    "bytes": 3858,
+    "sha256": "4e435ecc7cc17dd85d12ca7c1dcd316b07c5641f3e828b5ff87fe61e867c56dd"
+  },
+  {
+    "path": "gallery/firefox-profile-system-light.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/firefox-profile-system-light.png",
+    "bytes": 99578,
+    "sha256": "5567a0ed33c02f66848216efb16306e2d285a677c98c9fa4a364efb48b64330b"
+  },
+  {
+    "path": "gallery/webkit-profile-system-light.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/webkit-profile-system-light.png",
+    "bytes": 106212,
+    "sha256": "3781e1e778906e518841aaec1760b0f24a5c0b73e3cf90a7e97068a090ea5166"
+  },
+  {
+    "path": "gallery/chromium-profile-system-light.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/chromium-profile-system-light.png",
+    "bytes": 85398,
+    "sha256": "4f2d7a21f257d71686c728d4cfaa992aa549e44d3253a2cf73da5ccb2d7204d9"
+  }
+]

@@ -1,0 +1,37 @@
+{
+  "mode": "red",
+  "actualWriterSha256": "f974489948b8a058880ba048ab7c0e2d76975033d52871b083355576cea12ac4",
+  "sourceSha256": "552fdffd83995589507b11236d6e6e4ec15f38f0d9ece2dfeeef6e7a2c350810",
+  "platform": "darwin",
+  "cases": [
+    {
+      "index": 0,
+      "theme": "dark",
+      "choice": "system",
+      "stored": null,
+      "retained": false,
+      "fresh": false,
+      "events": [
+        {
+          "kind": "choose-before",
+          "choice": "system",
+          "at": 208,
+          "retained": true
+        },
+        {
+          "kind": "choose-after",
+          "at": 208,
+          "theme": "dark"
+        },
+        {
+          "kind": "light-before-frame",
+          "at": 209,
+          "retained": true,
+          "fresh": false,
+          "theme": "dark"
+        }
+      ]
+    }
+  ],
+  "limits": "Isolated local HTML/native Firefox, trace-only matchMedia wrapper retains original native object; no application/DB/auth/network. This probe is diagnostic, not final acceptance."
+}

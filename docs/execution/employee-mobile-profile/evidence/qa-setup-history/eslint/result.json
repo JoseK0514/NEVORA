@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-27T21:33:19.469639+00:00",
+  "exitCode": 0,
+  "elapsedSeconds": 2.051,
+  "sourceUnchanged": true,
+  "after": {
+    "head": "f52f314ed33f0aafae11afc4cb5fcb1103e5ddff",
+    "branch": "codex/employee-mobile-local-resume-20261027",
+    "trackedStatus": "",
+    "indexDiff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "gitUnchanged": true,
+  "ownedNext": [],
+  "clusters": []
+}

@@ -1,0 +1,49 @@
+{
+  "id": "QA-PROFILE-001",
+  "classification": "ISSUE",
+  "severity": "MEDIUM",
+  "status": "OPEN",
+  "candidate": "4bf7257950f898b97b93293470f0677bdb70b6bf",
+  "at": "2026-10-27T21:47:28.326802+00:00",
+  "surface": "Real headless Firefox on macOS, owned Next development mirror and isolated PostgreSQL",
+  "criterion": "Profile plan Task3: actual system/light/dark appearance follows current device setting",
+  "expected": "With Appearance=System and matchMedia(prefers-color-scheme: dark).matches=false, rendered root data-theme becomes light.",
+  "actual": {
+    "theme": "dark",
+    "choice": "system",
+    "stored": null,
+    "dark": false,
+    "visibility": "visible"
+  },
+  "reproduction": "Run the exact selector-free combined argv/environment in 4bf72579/combined/invocation.json. In Profile after the light/dark width matrix and 200% keyboard case, emulate dark, select System, then emulate light; the root theme stays dark through the existing assertion window.",
+  "independentEvidence": "Reproduced during the first valid full combined attempt; no retry or app/test mutation. Root previously observed a similar failure in preflight5. Chromium and WebKit passed their System checkpoints in this attempt.",
+  "cause": "Not established. This evidence proves the observed Firefox system-following mismatch; an application defect versus browser-emulation defect needs an isolated, evidence-backed determination. Do not assert a global theme fix or dismiss as flaky.",
+  "acceptance": "Blocks clean Profile acceptance until remediation or proven environment limitation receives independent re-verification.",
+  "artifacts": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/firefox-theme-diagnostic.json",
+      "bytes": 105,
+      "sha256": "3a825d8b99b8d18f2cd99caf02bc688836f6228a008414ff1ba936f3c746ee14"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/firefox-failure.png",
+      "bytes": 100294,
+      "sha256": "c49d001ef0556ec24f343980bd5343af5a16f8a9d60daa421f23627760038600"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/firefox-failure.html",
+      "bytes": 53405,
+      "sha256": "02b9435b25001dd33694c4c4d558b29627aba39ed2296e158b874b0fe2a18881"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/firefox-pending-requests.json",
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/results.json",
+      "bytes": 22202,
+      "sha256": "0bbe931527c732be4dd878dd9913e7d8cb04f954fb6e176ed4f9f4a5e1844ced"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "reviewer": "/root/profile_local_ui_review",
+  "candidate": "8f1b53d4406e819f6738dbbf29b9559cfaa254a6",
+  "method": "Personally inspected original PNG files through view_image; no runtime/browser interactions independently executed. Full-page capture overlays from fixed navigation are not treated as document-layout defects. Some tall images were resized by display; the text-overlap finding is also visible in the unscaled320x844 viewport image.",
+  "inspected": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/chromium-profile-light-390.png",
+      "sha256": "0be45872f43e39306d8c6451baf0fd2ceaafdeaa8f3111409f85b6bfa5e329e6"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/webkit-profile-dark-320.png",
+      "sha256": "9d3bfd8acf3d672037bb1f21b5213890925d60fb435eebd6f89c19850cf10c9c"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/firefox-profile-text200.png",
+      "sha256": "b32aaf73b548c9aa34dfbbaf9220841d8755fdf1cec2392c6720c341ed5815ad"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/chromium-support-context.png",
+      "sha256": "9a035978ec36a3466d4ddf11b1a5114b2d9a87c023d6e4f4eaa9ccd60326fd77"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/chromium-profile-text200-viewport.png",
+      "sha256": "8e688160b9e7a11f63c94b59342daceedaf1dae7184754cf55ba13a3666bd10c"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/webkit-profile-text200.png",
+      "sha256": "95b2bf35e71b7266d6acbf4dfdfa0b4e96beeec50e2ea0ac78537e1b1d597990"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/firefox-profile-desktop-preserved.png",
+      "sha256": "ed22aeb6cc324ccab78095e827515158145d6e2b124da409027e7a268f5c79d6"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/webkit-terms-context.png",
+      "sha256": "5d97e32e795735a2c00e88fe847485a0870e1b223df9ce71e120ffaa42b47462"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/chromium-profile-loading.png",
+      "sha256": "8528e39d8a2574cb6c1fcd28936e12e40e08c6fc9a03931303df326a3818ffee"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/webkit-profile-paused.png",
+      "sha256": "baa15ddc039c6469d16e62dfcb0d5fe82562b7093b850b4391a0ebf23d924f30"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/firefox-profile-read-unavailable.png",
+      "sha256": "206c9fb12106a8d0a83a27a3cf719c3d0a252557b276e9ef4e8eac1ae4327dbb"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/chromium-profile-current-denial.png",
+      "sha256": "d4c9efe067ecd4df8daf2fdc5b3300b4cdba9e4c6d6bcc311b0e058117ec4968"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/webkit-profile-signout-held-native-submission.png",
+      "sha256": "27aaa7713356b47e7589c67c22ecc7bf79c1347b2e15835cd69f98156f64d6e5"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/firefox-profile-new-account-isolation.png",
+      "sha256": "57be4d181bcff5913cb242c877edbd65095117150c6b1621412d6de8e367d5fa"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/firefox-profile-light-430-viewport.png",
+      "sha256": "91cfcf097c90f08926d6967f70ea532c2b2ee1bb57a55b049e84b62ae006f296"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-preflight-6/chromium-privacy-context.png",
+      "sha256": "b4d135f8dda054cef7f758f247971dfd68d045fd39b8977edb2ca2c4c5157a4c"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "reviewer": "/root/profile_local_ui_review",
+  "candidate": "4bf7257950f898b97b93293470f0677bdb70b6bf",
+  "method": "Personally displayed with view_image. Three native-resolution held signout captures; native viewport enlarged-label/legal captures. Chromium full enlarged Profile downscaled by renderer; fullpage fixed navigation capture position is not treated as a new overlay defect. No runtime or live keyboard operated by reviewer.",
+  "images": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/chromium-profile-signout-held-native-submission.png",
+      "sha256": "0e3afc85de111aed3e9ce5e0d7e9863e46b53b63698e70c56fa64e40f49f2d5d"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/webkit-profile-signout-held-native-submission.png",
+      "sha256": "b2cb60c252efdf46499f2f7a5858615f7a0480fbb3af5fcaf7c189ce5b1fc69d"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/firefox-profile-signout-held-native-submission.png",
+      "sha256": "4d8af6c8d922b6d26b2044f60f34d86a789ac31437506eb1bd41e645f43db608"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/webkit-profile-text200-viewport.png",
+      "sha256": "51a728bb71ce8ff615b37ea031b597cc123f3371c91a38623bd938ad959374c5"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/chromium-profile-text200.png",
+      "sha256": "609d16fa2448f3e3dfb7e63c79334023c1259c5d33ee4efe5ec606dde456f098"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/firefox-profile-light-390.png",
+      "sha256": "18b36a6eb939e9fd3059aed6bdd2667234158df64e5b98e625f63b95e3046497"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/webkit-support-light.png",
+      "sha256": "9eff114747267777ff768d5618755f750feac8cdd173944aac69b4c96076b161"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/chromium-privacy-text200-viewport.png",
+      "sha256": "e5424c4467795c7b01b1c3a4e4e3ac93034fe9b93b3eb24ff338c4776da79a56"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/firefox-terms-text200-viewport.png",
+      "sha256": "76731f824793a84c40993b3f6bee57a84b636e4804fb5a0855f13fac9de60697"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-canvas-green-2/webkit-support-light-text200-viewport.png",
+      "sha256": "6c5d2ddfb8921259dd1c3a7b6888a52177846ff7258650d366d356873f546ae2"
+    }
+  ]
+}

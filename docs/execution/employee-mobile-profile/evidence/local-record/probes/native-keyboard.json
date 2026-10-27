@@ -1,0 +1,26 @@
+{
+  "platform": "darwin",
+  "node": "v24.19.0",
+  "source": "Standalone native HTML; no app/database/navigation/auth or forced tabindex.",
+  "reference": "https://support.apple.com/en-gb/guide/safari/cpsh003/mac",
+  "cases": [
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "key": "Tab",
+      "focused": "lang"
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "key": "Alt+Tab",
+      "focused": "refresh"
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "key": "Tab",
+      "focused": "refresh"
+    }
+  ]
+}

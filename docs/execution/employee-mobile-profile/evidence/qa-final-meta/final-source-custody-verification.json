@@ -1,0 +1,132 @@
+{
+  "at": "2026-10-27T22:07:41.420641+00:00",
+  "head": "2e4104ce89f1abbb2d3bafd5b87341eba9753c47",
+  "trackedStatus": "",
+  "manifests": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/messages/owned-next-4Oda31/source-manifest.json",
+      "checkpoint": "2e4104ce89f1abbb2d3bafd5b87341eba9753c47",
+      "entryCount": 2016,
+      "mismatches": []
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/responses/owned-next-hkiZFq/source-manifest.json",
+      "checkpoint": "2e4104ce89f1abbb2d3bafd5b87341eba9753c47",
+      "entryCount": 2016,
+      "mismatches": []
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/planning/owned-next-fadKyF/source-manifest.json",
+      "checkpoint": "2e4104ce89f1abbb2d3bafd5b87341eba9753c47",
+      "entryCount": 2016,
+      "mismatches": []
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/requests/owned-next-jb04Re/source-manifest.json",
+      "checkpoint": "2e4104ce89f1abbb2d3bafd5b87341eba9753c47",
+      "entryCount": 2016,
+      "mismatches": []
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/messages-review/owned-next-lvNcFb/source-manifest.json",
+      "checkpoint": "2e4104ce89f1abbb2d3bafd5b87341eba9753c47",
+      "entryCount": 2016,
+      "mismatches": []
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/creation/owned-next-chGb2T/source-manifest.json",
+      "checkpoint": "2e4104ce89f1abbb2d3bafd5b87341eba9753c47",
+      "entryCount": 2016,
+      "mismatches": []
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/profile/owned-next-Mxoc05/source-manifest.json",
+      "checkpoint": "2e4104ce89f1abbb2d3bafd5b87341eba9753c47",
+      "entryCount": 2016,
+      "mismatches": []
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/hours/owned-next-7gTHAE/source-manifest.json",
+      "checkpoint": "2e4104ce89f1abbb2d3bafd5b87341eba9753c47",
+      "entryCount": 2016,
+      "mismatches": []
+    }
+  ],
+  "directPostRunClosure": [
+    {
+      "pid": 47852,
+      "port": 65323,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "pid": 54964,
+      "port": 53462,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "pid": 53467,
+      "port": 52357,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "pid": 56523,
+      "port": 54704,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "pid": 51105,
+      "port": 50874,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "pid": 52639,
+      "port": 51650,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "pid": 55921,
+      "port": 54291,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "pid": 54214,
+      "port": 52876,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "pid": 43512,
+      "port": 61272,
+      "pidAlive": false,
+      "portOpen": false
+    }
+  ],
+  "observerErrors": [],
+  "sourceUnchanged": true,
+  "gitUnchanged": true,
+  "retainedPriorFailureEvidence": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/employee-mobile-profile-manual-qa.md",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/employee-mobile-profile-manual-qa.json",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/QA-PROFILE-001.json",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/suite-results.json",
+      "unchanged": true
+    }
+  ]
+}

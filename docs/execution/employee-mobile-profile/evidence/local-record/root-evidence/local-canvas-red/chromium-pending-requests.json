@@ -1,0 +1,8 @@
+[
+  {
+    "path": "/app/profile",
+    "method": "POST",
+    "stage": "signout-intent-and-pending-device-cleanup",
+    "startedAt": 1793136936948
+  }
+]

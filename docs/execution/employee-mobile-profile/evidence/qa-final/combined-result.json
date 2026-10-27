@@ -1,0 +1,138 @@
+{
+  "at": "2026-10-27T22:07:32.642943+00:00",
+  "exitCode": 0,
+  "elapsedSeconds": 599.211,
+  "sourceUnchanged": true,
+  "after": {
+    "head": "2e4104ce89f1abbb2d3bafd5b87341eba9753c47",
+    "branch": "codex/employee-mobile-local-resume-20261027",
+    "trackedStatus": "",
+    "indexDiff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "gitUnchanged": true,
+  "ownedNext": [
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/messages/owned-next-4Oda31/ownership.json",
+      "ownerId": "fb44ab78-3438-4242-bde6-81630da15cbc",
+      "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+      "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/messages/owned-next-4Oda31",
+      "pid": 47852,
+      "port": 65323,
+      "closed": true,
+      "closedAt": "2026-10-27T22:00:01.295Z",
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "pidStillAlive": false,
+      "portStillOpen": false
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/responses/owned-next-hkiZFq/ownership.json",
+      "ownerId": "5c883ff6-3b69-4ae9-8faf-4da832f525b1",
+      "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+      "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/responses/owned-next-hkiZFq",
+      "pid": 54964,
+      "port": 53462,
+      "closed": true,
+      "closedAt": "2026-10-27T22:05:25.580Z",
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "pidStillAlive": false,
+      "portStillOpen": false
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/planning/owned-next-fadKyF/ownership.json",
+      "ownerId": "7e74a4c2-3faa-485e-8b55-10da070e7cf7",
+      "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+      "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/planning/owned-next-fadKyF",
+      "pid": 53467,
+      "port": 52357,
+      "closed": true,
+      "closedAt": "2026-10-27T22:03:46.630Z",
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "pidStillAlive": false,
+      "portStillOpen": false
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/requests/owned-next-jb04Re/ownership.json",
+      "ownerId": "ea3afa20-a508-4005-a323-b73a6fb9d9b4",
+      "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+      "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/requests/owned-next-jb04Re",
+      "pid": 56523,
+      "port": 54704,
+      "closed": true,
+      "closedAt": "2026-10-27T22:06:45.259Z",
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "pidStillAlive": false,
+      "portStillOpen": false
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/messages-review/owned-next-lvNcFb/ownership.json",
+      "ownerId": "ce30daaf-b6ae-4605-8dda-8e8a80d75da8",
+      "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+      "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/messages-review/owned-next-lvNcFb",
+      "pid": 51105,
+      "port": 50874,
+      "closed": true,
+      "closedAt": "2026-10-27T22:01:50.791Z",
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "pidStillAlive": false,
+      "portStillOpen": false
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/creation/owned-next-chGb2T/ownership.json",
+      "ownerId": "23c7db3b-1bac-4896-a8f0-1371bd587b55",
+      "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+      "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/creation/owned-next-chGb2T",
+      "pid": 52639,
+      "port": 51650,
+      "closed": true,
+      "closedAt": "2026-10-27T22:02:46.869Z",
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "pidStillAlive": false,
+      "portStillOpen": false
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/profile/owned-next-Mxoc05/ownership.json",
+      "ownerId": "8a900187-846c-41b3-b1a5-1b55c234a89d",
+      "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+      "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/profile/owned-next-Mxoc05",
+      "pid": 55921,
+      "port": 54291,
+      "closed": true,
+      "closedAt": "2026-10-27T22:06:08.896Z",
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "pidStillAlive": false,
+      "portStillOpen": false
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/hours/owned-next-7gTHAE/ownership.json",
+      "ownerId": "91d707d1-ff7a-408b-b65b-551dade6265c",
+      "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+      "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/hours/owned-next-7gTHAE",
+      "pid": 54214,
+      "port": 52876,
+      "closed": true,
+      "closedAt": "2026-10-27T22:04:38.420Z",
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "pidStillAlive": false,
+      "portStillOpen": false
+    }
+  ],
+  "clusters": [
+    {
+      "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-juwl3m",
+      "pid": 43512,
+      "port": 61272,
+      "ownerHash": "2ceda88da648ad62f89f2932d090269be47be9470e12df9005d9bf83e6b7a0d4",
+      "directoryExists": false,
+      "pidStillAlive": false,
+      "portStillOpen": false
+    }
+  ]
+}
