@@ -26,3 +26,8 @@ it('keeps unknown incoming/activity distinct from verified empty and preserves t
  const html=renderToStaticMarkup(<ResponsiveEmployeeExchange authority={authority} mode="mine"><div className="q-page q-shiftreq">Existing desktop</div></ResponsiveEmployeeExchange>);
  expect(html.startsWith('<div class="q-page q-shiftreq">')).toBe(true);
 });
+it('describes swap and pickup withdrawal consequences using their actual request kind',()=>{
+ const pending={...detail,summary:{...detail.summary,status:'MANAGER_PENDING'},checks:[{kind:'WITHDRAW' as const,allowed:true,notice:null,outcome:'completed' as const}]};
+ const swap=render(snapshot({detail:pending}));expect(swap).toContain('Withdrawing closes this swap request. Both employees keep their currently assigned shifts.');expect(swap).not.toContain('pickup request');
+ const pickup=render(snapshot({detail:{...pending,summary:{...pending.summary,kind:'coverage'},requested:null}}));expect(pickup).toContain('Withdrawing closes this pickup request. The shift stays with its currently assigned employee.');
+});

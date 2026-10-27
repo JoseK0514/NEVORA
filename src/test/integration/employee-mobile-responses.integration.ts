@@ -20,6 +20,7 @@ it('integrates Employee swap/cover responses and own detail with current permiss
  await mkdir(evidence,{recursive:true});
  const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
  const app=await createOwnedNextApp(evidence),checks:{engine:string;name:string}[]=[],captures:string[]=[],contrasts:{engine:string;theme:string;width:number;control:string;ratio:number}[]=[],messages:{engine:string;stage:string;type:string;text:string;expected:boolean}[]=[];
+ const failedRequests:{engine:string;stage:string;url:string;error:string|null;expected:boolean}[]=[];
  const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
  const command=async(actor:string,input:CommandInput)=>executeShiftChange(await fixtureProof(app.database.executor,actor),{...input,operationId:randomUUID()} as ShiftChangeCommand,app.database.executor);
  const source=(id:string)=>reviewedFixtureSource(app.database.executor,id);
@@ -73,10 +74,12 @@ it('integrates Employee swap/cover responses and own detail with current permiss
    let expected=false,stage='login',binding='';
    page.on('request',(request:{url():string;headers():Record<string,string>})=>{if(new URL(request.url()).pathname.startsWith('/api/employee/exchange'))binding=request.headers()['x-nevora-employee-view']??binding;});
    page.on('console',(message:{type():string;text():string})=>{if(['error','warning'].includes(message.type()))messages.push({engine,stage,type:message.type(),text:message.text(),expected});});
-   page.on('pageerror',(error:Error)=>messages.push({engine,stage,type:'pageerror',text:error.message,expected:false}));
+   page.on('pageerror',(error:Error)=>messages.push({engine,stage,type:'pageerror',text:error.stack??error.message,expected:false}));
+   page.on('requestfailed',(request:{url():string;failure():{errorText:string}|null})=>failedRequests.push({engine,stage,url:request.url(),error:request.failure()?.errorText??null,expected}));
    failure=async()=>{await page.screenshot({path:evidence+'/'+engine+'-failure.png',fullPage:true,caret:'initial'});await writeFile(evidence+'/'+engine+'-failure.html',await page.locator('body').innerHTML());};
    await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==new URL(app.url).origin){await route.abort();return;}await route.continue();});
    const ready=()=>page.locator('.em-exchange:visible[data-exchange-state="ready"]').waitFor();
+   const settled=async()=>{await page.locator('.em-response-actions:visible[aria-busy="false"]').waitFor();await page.getByRole('button',{name:'Check response status',exact:true}).waitFor({state:'hidden'});await page.locator('.em-exchange:visible .em-request-footer button:not(:disabled)').waitFor();expect(await page.locator('.em-exchange:visible').innerText()).not.toMatch(/Outcome uncertain|Checking the original response|Refreshing…/);};
    const url=(tab:string,id?:string)=>app.url+'/app/exchange?tab='+tab+(id?'&requestId='+encodeURIComponent(id):'');
    const load=async(tab:string,id?:string)=>{await page.goto(url(tab,id));await ready();};
    // Keep capture tooling from mutating input styles while streamed desktop children hydrate.
@@ -94,6 +97,7 @@ it('integrates Employee swap/cover responses and own detail with current permiss
     await page.setViewportSize({width,height:844});await page.evaluate((theme:string)=>document.documentElement.setAttribute('data-theme',theme),theme);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
     expect(await page.locator('.page-frame').evaluate((el:HTMLElement)=>getComputedStyle(el).backgroundColor===getComputedStyle(el.querySelector('.em-exchange')!).backgroundColor)).toBe(true);
+    expect(await page.locator('.mobile-nav').evaluate((el:HTMLElement)=>getComputedStyle(el).backgroundColor===getComputedStyle(document.querySelector('.em-response-comparison')!).backgroundColor)).toBe(true);
     for(const name of ['Accept swap','Decline swap']){
      const button=page.getByRole('button',{name,exact:true});await button.waitFor();
      expect(await button.evaluate((el:HTMLElement)=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(48);
@@ -123,16 +127,23 @@ it('integrates Employee swap/cover responses and own detail with current permiss
    const assignments=await q<{id:string;employee_id:string}>('SELECT id,employee_id FROM shifts WHERE id IN($1,$2) ORDER BY id',[f.sourceId,f.targetId]);
    expect(assignments.find(row=>row.id===f.targetId)?.employee_id).toBe(manual?requester:actor);expect(assignments.find(row=>row.id===f.sourceId)?.employee_id).toBe(manual?actor:requester);
    expect((await q<{count:number}>('SELECT count(*)::integer AS count FROM shift_change_operations WHERE actor_employee_id=$1 AND request_id=$2',[actor,requestId]))[0].count).toBe(1);
-   await shot('accepted-canonical');record(manual?'Manual acceptance reconciles original response and preserves assignments pending review':'Automatic acceptance reconciles original response and exchanges exact published assignments');
+   await settled();await shot('accepted-canonical');record(manual?'Manual acceptance reconciles original response and preserves assignments pending review':'Automatic acceptance reconciles original response and exchanges exact published assignments');
    expected=false;await page.unroute('**/app/exchange*');
-   stage='own-details';await load('requests',ownCover.requestId);await page.getByRole('button',{name:'Cancel request',exact:true}).click();await page.locator('.em-response-status:visible strong').filter({hasText:'Cancelled'}).waitFor();expect((await q('SELECT status FROM shift_exchanges WHERE id=$1',[ownCover.requestId]))[0].status).toBe('CANCELLED');await shot('own-cover-cancelled');
+   if(manual){
+    stage='manual-swap-withdrawal';expect(await page.locator('.em-response-actions:visible').innerText()).toContain('Withdrawing closes this swap request. Both employees keep their currently assigned shifts.');
+    await page.getByRole('button',{name:'Withdraw response',exact:true}).click();await page.locator('.em-response-status:visible strong').filter({hasText:'Cancelled'}).waitFor();await settled();
+    expect((await q('SELECT status FROM shift_exchanges WHERE id=$1',[requestId]))[0].status).toBe('CANCELLED');expect((await q('SELECT employee_id FROM shifts WHERE id=$1',[f.sourceId]))[0].employee_id).toBe(actor);expect((await q('SELECT employee_id FROM shifts WHERE id=$1',[f.targetId]))[0].employee_id).toBe(requester);
+    await shot('manual-swap-withdrawn');record('Withdrawing a pending manual swap closes that swap, explains both assignments and settles on canonical Cancelled without moving either employee');
+   }
+   stage='own-cover';await load('requests',ownCover.requestId);await page.getByRole('button',{name:'Cancel request',exact:true}).click();await page.locator('.em-response-status:visible strong').filter({hasText:'Cancelled'}).waitFor();expect((await q('SELECT status FROM shift_exchanges WHERE id=$1',[ownCover.requestId]))[0].status).toBe('CANCELLED');await settled();await shot('own-cover-cancelled');
    await page.getByRole('link',{name:'My shift requests',exact:true}).first().click();await page.waitForURL(url('requests')+'#exchange-request-'+ownCover.requestId);await ready();await page.waitForFunction((id:string)=>document.activeElement?.id==='exchange-request-'+id,ownCover.requestId);
-   await load('requests',ownReport.requestId);expect(await page.locator('.em-exchange:visible').innerText()).toContain('MY_OWN_NOTE');await page.getByRole('button',{name:'Cancel report',exact:true}).click();await page.locator('.em-response-status:visible strong').filter({hasText:'Cancelled'}).waitFor();expect((await q('SELECT status FROM shift_callouts WHERE id=$1',[ownReport.requestId]))[0].status).toBe('CANCELLED');
+   stage='own-report';await load('requests',ownReport.requestId);expect(await page.locator('.em-exchange:visible').innerText()).toContain('MY_OWN_NOTE');await page.getByRole('button',{name:'Cancel report',exact:true}).click();await page.locator('.em-response-status:visible strong').filter({hasText:'Cancelled'}).waitFor();expect((await q('SELECT status FROM shift_callouts WHERE id=$1',[ownReport.requestId]))[0].status).toBe('CANCELLED');
    record('Own cover and own pending report cancellation use canonical decisions; list return focuses exact own row and no peer reason appears');
    await q("UPDATE workspaces SET shift_change_policy=jsonb_set(shift_change_policy,'{coverage,mode}','\"MANAGER_REVIEW\"')");
    expect((await command(actor,{kind:'ACCEPT',requestId:peerCover.requestId,expectedRevision:1} as CommandInput)).status).toBe('pending');
-   await load('requests',peerCover.requestId);await page.getByRole('button',{name:'Withdraw response',exact:true}).click();
+   stage='own-pickup';await load('requests',peerCover.requestId);expect(await page.locator('.em-response-actions:visible').innerText()).toContain('Withdrawing closes this pickup request.');await page.getByRole('button',{name:'Withdraw response',exact:true}).click();
    await page.getByText('Your response was withdrawn. Check your current schedule.',{exact:true}).waitFor();
+   await page.locator('.em-response-status:visible strong').filter({hasText:'Cancelled'}).waitFor();await settled();
    const withdrawn=(await q('SELECT status,target_employee_id FROM shift_exchanges WHERE id=$1',[peerCover.requestId]))[0];expect(withdrawn.status).toBe('CANCELLED');expect(withdrawn.target_employee_id).toBe(actor);expect((await q('SELECT employee_id FROM shifts WHERE id=$1',[pickupShift]))[0].employee_id).toBe(peer);await shot('pickup-withdrawn');record('Withdrawing own pending pickup closes that request, retains own history membership and preserves the original assignment');
    await command(peer,{kind:'CANCEL_CALLOUT',requestId:peerReport.requestId,expectedRevision:1} as CommandInput);
    const declineSource=await source(secretShift),declineTarget=await source(reportShift);
@@ -170,5 +181,5 @@ it('integrates Employee swap/cover responses and own detail with current permiss
   }
   const unmatched=messages.filter(row=>row.type==='pageerror'||row.type==='error'&&(!row.expected||!/Failed to (fetch|load resource)|Load failed|NetworkError|status of (401|403|503)/.test(row.text)));expect(unmatched).toEqual([]);
  }catch(error){await failure?.().catch(()=>{});throw error;}
- finally{await browser?.close();await app.close();await writeFile(evidence+'/results.json',JSON.stringify({checks,captures,contrasts,messages},null,2));}
+ finally{await browser?.close();await app.close();await writeFile(evidence+'/results.json',JSON.stringify({checks,captures,contrasts,messages,failedRequests},null,2));}
 });

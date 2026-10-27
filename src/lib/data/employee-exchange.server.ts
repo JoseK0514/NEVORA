@@ -7,7 +7,7 @@ import {employeeRequestId,exchangeSummary,calloutSummary,exchangeSlot,employeeHi
 import {assertEmployeeViewProof,employeeReadLimits,employeeViewGuards,readEmployeeWorkspace} from './employee-profile.server';
 import {neonNotificationExecutor} from './notification-transactions';
 import {isManagementAuthorizationError} from './management-session';
-import {sqlNotificationStateRepository} from './notification-state';
+import {sqlNotificationStateRepository,notificationReadSql} from './notification-state';
 import {readActivePresentation} from '../workspace-presentation/service';
 import {getExchange,listIncomingSwaps,listEmployeeExchangeActivity,type ExchangeRecord} from './exchanges';
 import {getCallout,listEmployeeCallouts,type CalloutRecord} from './callouts';
@@ -20,13 +20,19 @@ export async function readEmployeeExchange(proof:SessionMutationProof,executor:S
  try{assertEmployeeViewProof(proof);if(selection!==null&&!employeeRequestId(selection))throw Error('selection');}catch{return {state:'unavailable',reason:'access_denied'};}
  try{
   const signal=AbortSignal.timeout(8000),workspace=await readEmployeeWorkspace(executor,signal),guards=[...employeeReadLimits,...employeeViewGuards(proof,workspace)];
+  let locationScope:string[]|null=null;
+  // Bind the captured permission scope through every later transaction, including final lease admission.
+  const scopeGuards=():SqlStatement[]=>locationScope===null?[]:[{text:`SELECT (CASE WHEN EXISTS(
+   SELECT 1 FROM (${notificationReadSql.recipient()}) current_access WHERE allowed_location_ids=$2::text[])
+   THEN '1' ELSE 'management_authorization' END)::integer AS employee_location_scope_guard`,values:[proof.employee.id,locationScope]}];
   const guarded:SqlExecutor={
-   async query<T>(statement:SqlStatement){const rows=await executor.transaction([...guards,statement,...employeeViewGuards(proof,workspace)],signal);return rows[guards.length] as T[];},
-   async transaction(statements:SqlStatement[]){const rows=await executor.transaction([...guards,...statements,...employeeViewGuards(proof,workspace)],signal);return rows.slice(guards.length,guards.length+statements.length);},
+   async query<T>(statement:SqlStatement){const admission=[...guards,...scopeGuards()];const rows=await executor.transaction([...admission,statement,...employeeViewGuards(proof,workspace),...scopeGuards()],signal);return rows[admission.length] as T[];},
+   async transaction(statements:SqlStatement[]){const admission=[...guards,...scopeGuards()];const rows=await executor.transaction([...admission,...statements,...employeeViewGuards(proof,workspace),...scopeGuards()],signal);return rows.slice(admission.length,admission.length+statements.length);},
   };
   const presentation=await readActivePresentation(workspace.id,guarded,{strict:true}),enabled=presentation.modules.marketplace,own=proof.employee.id;
   const access=await sqlNotificationStateRepository(guarded,workspace).recipientAccess(own);
   if(!access?.active||access.employeeId!==own||access.role!==proof.employee.role)return {state:'unavailable',reason:'access_denied'};
+  locationScope=[...access.allowedLocationIds];
   const allowed=new Set(access.allowedLocationIds);
   const permitted=(row:ExchangeRecord)=>!!exchangeSummary(row,own)&&allowed.has(row.sourceShift.locationId)&&(!row.targetShift||allowed.has(row.targetShift.locationId));
   const permittedCallout=(row:CalloutRecord)=>row.employeeId===own&&allowed.has(row.locationId);
@@ -66,7 +72,7 @@ export async function readEmployeeExchange(proof:SessionMutationProof,executor:S
     // Callout joins can describe a later assignment. Prefer the immutable recorded terms when available.
     const originalReport=raw?.[0] as {source_terms?:{locationId?:string;location_id?:string}}|undefined;
     const originalLocation=originalReport?.source_terms?.locationId??originalReport?.source_terms?.location_id;
-    const recordedReport=ownReport&&history?.[0]?.offered?{...calloutSlot!,...history[0].offered,location:originalLocation===ownReport.locationId?ownReport.locationName:'Original location'}:calloutSlot;
+    const recordedReport=ownReport&&history?.[0]?.offered?{...calloutSlot!,...history[0].offered,location:originalLocation===ownReport.locationId?ownReport.locationName:'Original location'}:null;
     detail={summary,offered:ownExchange?exchangeSlot(ownExchange.sourceShift):recordedReport,requested:ownExchange?.targetShift?exchangeSlot(ownExchange.targetShift):null,history,checks,
      notice:ownExchange?.actionable===false&&active.includes(ownExchange.status)?'The reviewed shift changed or the request needs review. Check the current status before changing your plans.':ownReport?.status==='APPROVED'&&!ownReport.releaseApplies?'This approval relates to an earlier assignment. Check your current schedule.':null,
      reason:ownReport?[reasonLabels[ownReport.reasonCode]??'Recorded reason',ownReport.reasonNote].filter(Boolean).join(' · '):null};
