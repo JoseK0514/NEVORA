@@ -1,3 +1,4 @@
+import {Temporal} from '@js-temporal/polyfill';
 import type {CorrectionContext,EmployeeTimeCorrections} from './time-corrections/read-model';
 import {hoursInstant,hoursLocalValue,parseHoursCorrection,type HoursCorrectionPayload} from './employee-hours';
 export type HoursDraft={basis:string;startDate:string;startTime:string;endDate:string;endTime:string;reason:string;locationId:string};
@@ -18,6 +19,7 @@ export function buildHoursProposal(draft:HoursDraft,info:HoursEdit,operationId:s
  const invalid=(field:keyof HoursDraft,message:string)=>({payload:null,error:{field,message}});
  if(info.kind==='MISSING_ENTRY'&&!draft.locationId)return invalid('locationId','Choose the location where you worked.');
  for(const field of ['startDate','startTime','endDate','endTime'] as const)if(!draft[field])return invalid(field,'Choose a '+(field.endsWith('Date')?'date.':'time.'));
+ for(const field of ['startDate','endDate'] as const){try{Temporal.PlainDate.from(draft[field],{overflow:'reject'});}catch{return invalid(field,'Choose a valid date.');}}
  let proposedStartAt:string,proposedEndAt:string;
  const start=draft.startDate+'T'+draft.startTime,end=draft.endDate+'T'+draft.endTime;
  try{proposedStartAt=info.context.state==='confirmed'&&hoursLocalValue(info.context.startAt,zone)===start?info.context.startAt:hoursInstant(start,zone);}catch{return invalid('startTime','Choose a valid, unambiguous start date and time.');}
