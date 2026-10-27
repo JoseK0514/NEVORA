@@ -23,5 +23,8 @@
   ],
   "owner": "Jose; current executor prepares and verifies transfer only",
   "latest_mockup_batch": "3.5 complete; one LOW finding deferred; next3.6",
-  "cloud_connection_and_execution": "Not established by pushing; verify user-authorized repository connection in Cloud"
+  "cloud_connection_and_execution": "Not established by pushing; verify user-authorized repository connection in Cloud",
+  "remote_heads_observed_after": 9,
+  "remote_observation_utc": "2026-10-27T18:20:08.103260+00:00",
+  "concurrent_activity_note": "Seven heads were observed before this task; this task created exactly one handoff branch. Nine heads were observed at remote verification, so another head appeared concurrently. No unrelated branch was changed or deleted."
 }

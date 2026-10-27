@@ -30,5 +30,14 @@
   "application_source_configuration_or_ci_changes": false,
   "actual_cloud_execution": "Not run; this validates the portable extraction locally",
   "prior_ui_and_review_evidence": "Preserved unchanged inside payload; see LATEST-REVIEW.md and INDEPENDENT-REVIEW.md",
-  "publication_formatting": "Initial diff check flagged historical whitespace in a redundant loose generated HTML copy. The convenience copy was removed; exact approved HTML remains unchanged inside the validated payload. Trimmed only the reading-copy markdown final blank line. No test or Git whitespace control weakened."
+  "publication_formatting": "Initial diff check flagged historical whitespace in a redundant loose generated HTML copy. The convenience copy was removed; exact approved HTML remains unchanged inside the validated payload. Trimmed only the reading-copy markdown final blank line. No test or Git whitespace control weakened.",
+  "remote_handoff_files_verified": 23,
+  "remote_blob_identities_match": true,
+  "first_verified_published_commit": "18093971af41814b01d6b2f2cba74fd98efe91cc",
+  "remote_head_observation": {
+    "count": 9,
+    "utc": "2026-10-27T18:20:08.103260+00:00",
+    "task_created_refs": 1,
+    "concurrent_activity_not_modified": true
+  }
 }
