@@ -63,6 +63,8 @@ it('integrates Employee swap/cover responses and own detail with current permiss
     expect(JSON.stringify(projection)).not.toMatch(/employeeId|participants|source_terms|operational_rule_profile|PEER_SECRET/);
    }
    const foreign=await readEmployeeExchange(proof,app.database.executor,peerReport.requestId);expect(foreign.state).toBe('ready');if(foreign.state==='ready')expect(foreign.detail).toBeNull();
+   const lead=await readEmployeeExchange(await fixtureProof(app.database.executor,requester),app.database.executor,requestId);
+   expect(lead.state).toBe('ready');if(lead.state==='ready'){expect(lead.detail?.summary.viewer).toBe('requester');expect(lead.detail?.checks.find(check=>check.kind==='CANCEL')?.allowed).toBe(true);expect(lead.detail?.checks.some(check=>check.kind==='ACCEPT')).toBe(false);}
    await q("UPDATE employees SET role='MANAGER' WHERE id=$1",[actor]);expect(await readEmployeeExchange(proof,app.database.executor,requestId)).toEqual({state:'unavailable',reason:'access_denied'});
    await q("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[actor]);record('Real SQL: target-only swap detail, safe original terms, peer absence refusal and exact current-role guard');
    const activeBrowser=await runtime[engine].launch({headless:true});browser=activeBrowser;
@@ -105,8 +107,8 @@ it('integrates Employee swap/cover responses and own detail with current permiss
    await shot('detail-text-200');
    await page.evaluate(()=>{document.documentElement.style.fontSize='100%';delete document.documentElement.dataset.textStep;document.documentElement.setAttribute('data-theme','light');});await page.setViewportSize({width:390,height:844});
    await page.getByRole('link',{name:'Swaps for you',exact:true}).first().focus();
-   let focused=false;for(let i=0;i<20;i++){await page.keyboard.press('Tab');focused=await page.getByRole('button',{name:'Accept swap',exact:true}).evaluate((el:HTMLElement)=>el===document.activeElement&&el.matches(':focus-visible')&&parseFloat(getComputedStyle(el).outlineWidth)>=3);if(focused)break;}expect(focused).toBe(true);
-   await shot('real-tab-focus');record('Light/dark320390430,36 response-control contrasts,200%text, measured nav clearance and actual Tab focus');
+   let focused=false;for(let i=0;i<20;i++){await page.keyboard.press(engine==='webkit'?'Alt+Tab':'Tab');focused=await page.getByRole('button',{name:'Accept swap',exact:true}).evaluate((el:HTMLElement)=>el===document.activeElement&&el.matches(':focus-visible')&&parseFloat(getComputedStyle(el).outlineWidth)>=3);if(focused)break;}expect(focused).toBe(true);
+   await shot('real-tab-focus');record('Light/dark320390430, response-control contrast,200%text, measured nav clearance and native keyboard focus (WebKit Option-Tab)');
    await page.getByRole('link',{name:'Swaps for you',exact:true}).first().click();await page.waitForURL(url('foryou')+'#exchange-request-'+requestId);await ready();
    await page.waitForFunction((id:string)=>document.activeElement?.id==='exchange-request-'+id,requestId);
    record('Back returns focus to the exact incoming request row');
@@ -137,6 +139,16 @@ it('integrates Employee swap/cover responses and own detail with current permiss
    expect(decline.status).toBe('pending');if(decline.status!=='pending')throw Error('Decline precondition');
    await load('foryou',decline.requestId);await page.getByRole('button',{name:'Decline swap',exact:true}).click();await page.locator('.em-response-status:visible strong').filter({hasText:'Declined'}).waitFor();expect((await q('SELECT status FROM shift_exchanges WHERE id=$1',[decline.requestId]))[0].status).toBe('DENIED');
    expect((await q('SELECT employee_id FROM shifts WHERE id=$1',[secretShift]))[0].employee_id).toBe(peer);record('Declining an addressed swap preserves original assignments and records the own decision');
+   if(index===0){
+    const stale=await command(peer,{kind:'PROPOSE_SWAP',...await source(secretShift),targetShiftId:declineTarget.sourceShiftId,targetEpisodeId:declineTarget.sourceEpisodeId,targetTermsFingerprint:declineTarget.sourceTermsFingerprint} as CommandInput);
+    expect(stale.status).toBe('pending');if(stale.status!=='pending')throw Error('Stale precondition');
+    await q("UPDATE shifts SET start_time='17:00' WHERE id=$1",[secretShift]);await publishScheduleWithRevision({locationId:'loc-2',weekStart:f.week,managerId:'QAOWNER'},app.database.executor);
+    await load('foryou',stale.requestId);await page.locator('.em-response-status:visible strong').filter({hasText:'Expired'}).waitFor();
+    expect(await page.getByRole('button',{name:'Accept swap',exact:true}).count()).toBe(0);
+    expect((await page.locator('.em-response-comparison:visible').innerText()).replace(/\s+/g,' ')).toContain('4:00 PM');
+    expect((await command(actor,{kind:'ACCEPT',requestId:stale.requestId,expectedRevision:1} as CommandInput)).status).toBe('blocked');
+    await shot('reviewed-terms-changed');record('A changed publication withholds responses and retains reviewed terms; the server also rejects stale acceptance');
+   }
    if(index===0){
     // Older historical fixture rows exercise the incumbent recent window; their statuses are setup data, not tested cancellation receipts.
     await q("INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,status,legacy_manual,source_terms,created_at) SELECT 'rsp-older-window-'||n,'COVERAGE',$1,$2,'CANCELLED',false,source_terms,clock_timestamp()+n*interval '1 second' FROM shift_exchanges CROSS JOIN generate_series(1,21)n WHERE id=$3",[coverShift,actor,ownCover.requestId]);
