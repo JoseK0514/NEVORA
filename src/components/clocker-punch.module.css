@@ -62,7 +62,7 @@
 .saved { margin: 14px 0 0; color: var(--ck-ink2); font-size: 1.1875rem; line-height: 1.45; overflow-wrap: anywhere; }
 .saved time { font-weight: 500; color: var(--color-brand-primary); }
 .countdown { display: block; width: 160px; height: 4px; margin: 26px auto 6px; border-radius: 2px; background: var(--ck-track); overflow: hidden; }
-.countdown > i { display: block; height: 100%; background: var(--nevora-blue); transform-origin: left; animation: clockerClear 5s linear forwards; }
+.countdown > i { display: block; height: 100%; background: var(--nevora-blue); transform-origin: left; animation: clockerClear 8s linear forwards; }
 @keyframes clockerClear { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 .working { display: block; width: 28px; height: 28px; margin: 22px auto 0; border-radius: 50%; border: 3px solid var(--ck-track); border-top-color: var(--nevora-blue); animation: clockerSpin .9s linear infinite; }
 @keyframes clockerSpin { to { transform: rotate(360deg); } }
@@ -93,3 +93,5 @@
   .summary dd { font-size: 1.625rem; }
 }
 @media (prefers-reduced-motion: reduce) { .panel * { transition: none !important; animation: none !important; } .panel button:active { transform: none; } .countdown { display: none; } .working { border-top-color: var(--ck-track); } }
+
+.handoff{width:100%;margin-top:16px;}.handoff>button{width:100%;font-size:.875rem;}.handoff ul{list-style:none;padding:0;margin:16px 0;display:grid;gap:16px;}.handoff li{display:grid;gap:8px;padding-bottom:16px;border-bottom:1px solid var(--ck-rule);}.handoff code,.reference code{font-size:.875rem;overflow-wrap:anywhere;user-select:all;}.reference{width:100%;margin-top:24px;}.reference summary{display:flex;align-items:center;justify-content:center;min-height:44px;color:var(--clocker-accent);cursor:pointer;}.reference code{display:block;padding:12px;background:var(--ck-page);border-radius:8px;}
