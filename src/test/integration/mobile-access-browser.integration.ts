@@ -69,11 +69,16 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    await page.locator('.ma-language').click();await expect.poll(()=>page.locator('#mobile-access-page').getAttribute('lang')).toBe('es');
    expect(await page.locator('#recovery-employee-id').inputValue()).toBe('MA-'+engine);expect(await page.locator('#recovery-email').inputValue()).toBe(engine+'@example.invalid');
    await page.locator('.ma-footer-help').click();await page.locator('main a[href*="/access-help/support"]').click();await page.locator('.ma-back').click();await expect.poll(()=>page.locator('.ma-back').getAttribute('href')).toBe('/forgot-access');await page.locator('.ma-back').click();await page.waitForURL('**/forgot-access');expect(new URL(page.url()).pathname).toBe('/forgot-access');await page.locator('#recovery-employee-id').waitFor();await page.waitForLoadState('networkidle');
-   await page.goto(origin+'/access-help/support');await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw Error('fixture denial');}}}));await page.locator('.ma-draft button').click();await expect.poll(()=>page.locator('#access-message').evaluate((e:HTMLTextAreaElement)=>e.selectionEnd-e.selectionStart)).toBe((await page.locator('#access-message').inputValue()).length);
+   // Follow the real Help links after contextual Back; a new document navigation can race a pending SPA commit.
+   await page.locator('.ma-footer-help').click();await page.locator('main a[href*="/access-help/support"]').click();await page.locator('#access-message').waitFor({state:'attached'});await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw Error('fixture denial');}}}));await page.locator('.ma-draft button').click();await expect.poll(()=>page.locator('#access-message').evaluate((e:HTMLTextAreaElement)=>e.selectionEnd-e.selectionStart)).toBe((await page.locator('#access-message').inputValue()).length);
    const mail=new URL(await page.locator('.ma-draft a').getAttribute('href'));expect(mail.protocol).toBe('mailto:');expect(mail.pathname).toBe('support@thevelani.com');expect([...mail.searchParams.keys()]).toEqual(['subject','body']);
    checks.push(engine+': locale drafts, contextual Back, manual-copy fallback and fixed mail recipient');
    await context.addCookies([{name:'nv-lang',value:'en',url:origin}]);
-   async function login(id:string,password=TEST_PASSWORD){await page.waitForLoadState('networkidle');await page.goto(origin+'/login');await page.locator('#login-employee-id').fill(id);await page.locator('#login-password').fill(password);await page.locator('button[type="submit"]').click();await page.waitForURL('**/app',{timeout:45000});await page.waitForLoadState('networkidle');}
+   async function login(id:string,password=TEST_PASSWORD){
+    step=engine+': sign-in for '+id;await page.goto(origin+'/login');await page.locator('#login-employee-id').fill(id);await page.locator('#login-password').fill(password);await page.locator('button[type="submit"]').click();await page.waitForURL('**/app',{timeout:45000});
+    // These two fixtures are Owner/Manager: require their authorized Home, not silence from background polling.
+    step=engine+': authorized management Home for '+id;await page.locator('.manager-dashboard-v3').waitFor();
+   }
    step=engine+': invitation and activation';await login('QAOWNER');
    const headers={'Origin':origin,'x-nevora-company-access':'1','x-nevora-actor':'QAOWNER'};
    const status=await context.request.get(origin+'/api/company-access/invitations/MA-'+engine,{headers});expect(status.status()).toBe(200);const current=await status.json();expect(current.state).toBe('ready');
