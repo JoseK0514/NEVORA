@@ -7,11 +7,12 @@ import { useKeepHeight } from './wave-a/keep-height';
 
 /** Phase 3.5 Wave A: Clocker PIN in the shared form pattern. The PIN never enters React state, the fields clear
  * before the request leaves, one request at a time, and the button says "Saving…" while it is out. */
-export function ClockerPinForm({ employeeId, initialVersion, action,checkStatus }: {
+export function ClockerPinForm({ employeeId, initialVersion, action,checkStatus,onDisabledChange }: {
   employeeId: string;
   initialVersion: number;
   action: (data: FormData) => Promise<PinActionResult>;
   checkStatus?:(data:FormData)=>Promise<PinSaveStatus>;
+  onDisabledChange?:(disabled:boolean)=>void;
 }) {
   const [version, setVersion] = useState(initialVersion);
   const [pending, setPending] = useState(false);
@@ -25,6 +26,7 @@ export function ClockerPinForm({ employeeId, initialVersion, action,checkStatus 
   const configured = version > 0;
   const [lengths, setLengths] = useState<[number, number]>([0, 0]);
 
+  useEffect(()=>{onDisabledChange?.(pending||blocked||lengths.some(n=>n!==4));},[pending,blocked,lengths,onDisabledChange]);
   useEffect(() => {
     if (result) feedback.current?.focus();
   }, [result]);

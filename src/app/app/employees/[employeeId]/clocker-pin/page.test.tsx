@@ -72,3 +72,4 @@ it('withholds company PIN and profile reads when current scope denies the page',
 
 // This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
 vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+it('keeps Save unavailable until complete PIN input is present',async()=>{const html=await render();expect(html).toMatch(/<button[^>]*form="clocker-pin-form"[^>]*disabled=""/);});
