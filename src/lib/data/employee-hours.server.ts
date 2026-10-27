@@ -31,11 +31,18 @@ export async function readEmployeeHours(proof:SessionMutationProof,executor:SqlE
    const [startDate,endDate]=selection.split('_'),cards=await readTimecards(proof,{startDate,endDate},guarded);
    if(cards.state==='unavailable'&&cards.reason==='access_denied')return {state:'unavailable',reason:'access_denied'};if(cards.state==='ready')deadline=Date.parse(cards.observedAt)+cards.validForMs;data=cards;
   }else{
+   // A manager decision can cross these independently guarded canonical reads.
+   // Retry once within this same timeout, role/workspace proof and elapsed lease budget.
+   // Repeated changes still fail closed; no mixed source is ever published.
+   for(let attempt=0;attempt<2;attempt++){
    const [{basis}]=await guarded.query<{basis:string}>(hoursCorrectionBasis(proof.employee.id,workspace.id));
    const snapshot=await readEmployeeTimeCorrections(proof,guarded,selection==='list'||selection.startsWith('target:')?undefined:selection,selection.startsWith('target:')?selection.slice(7):undefined);
    if(snapshot.state==='unavailable'&&snapshot.reason==='access_denied')return {state:'unavailable',reason:'access_denied'};
    const ids=snapshot.state==='ready'?snapshot.requests.map(r=>r.id):[],decisions=ids.length?await guarded.query<HoursDecision>({text:`SELECT r.id::text AS "requestId",e.event_kind AS status,e.occurred_at::text AS at,trim(a.first_name||' '||a.last_name) AS by,e.decision_note AS note FROM time_correction_requests r JOIN LATERAL(SELECT * FROM time_correction_events WHERE request_id=r.id ORDER BY revision DESC LIMIT 1)e ON true JOIN employees a ON a.id=e.actor_employee_id WHERE r.employee_id=$1 AND r.workspace_id=$2 AND r.id=ANY($3::uuid[]) AND e.event_kind IN('APPROVED','REJECTED')`,values:[proof.employee.id,workspace.id,ids]}):[];
-   const [{basis:latest}]=await guarded.query<{basis:string}>(hoursCorrectionBasis(proof.employee.id,workspace.id));if(latest!==basis)throw Error('Correction source changed');data={basis,snapshot,decisions};
+   const [{basis:latest}]=await guarded.query<{basis:string}>(hoursCorrectionBasis(proof.employee.id,workspace.id));
+   if(latest!==basis){if(attempt===0)continue;throw Error('Correction source changed');}
+   data={basis,snapshot,decisions};break;
+   }
   }
   const [lease]=await guarded.query<{observedAt:string;validForMs:number}>({text:`SELECT clock_timestamp()::text AS "observedAt",LEAST(45000,FLOOR(EXTRACT(EPOCH FROM(expires_at-clock_timestamp()))*1000))::integer AS "validForMs" FROM employee_sessions WHERE employee_id=$1 AND token_hash=$2`,values:[proof.employee.id,proof.sessionTokenHash]});
   const validForMs=Math.floor(Math.min(lease.validForMs,deadline-Date.parse(lease.observedAt),45000-(performance.now()-started)));

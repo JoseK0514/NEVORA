@@ -64,3 +64,35 @@ it('opens a retained exact own request outside the latest50 without leaking it t
   expect(corr(await readEmployeeHours(peer,db.executor,'corrections',first)).snapshot.requests).toHaveLength(0);
  }finally{await db.dispose();}
 });
+it('retries one correction source read when a manager decision crosses its basis check',async()=>{
+ const {db,proof,f}=await setup();try{
+  const payload=command(f,corr(await readEmployeeHours(proof,db.executor,'corrections','list')).basis);
+  expect((await submitEmployeeHoursCorrection(proof,payload,db.executor)).status).toBe('recorded');
+  const owner=await fixtureProof(db.executor,'QAOWNER');let decided=false,basisReads=0;
+  const racing:SqlExecutor={query:db.executor.query,async transaction(statements,signal){
+   const rows=await db.executor.transaction(statements,signal);
+   if(statements.some(s=>s.text.endsWith(' AS basis'))){basisReads++;if(!decided){decided=true;expect((await reviewTimeCorrection(owner,{operationId:randomUUID(),requestId:payload.command.operationId,expectedRevision:1,decision:'APPROVE',note:'Decision during read'},db.executor)).status).toBe('approved');}}
+   return rows;
+  }};
+  const current=await readEmployeeHours(proof,racing,'corrections','list');expect(current.state).toBe('ready');const read=corr(current);
+  expect(decided).toBe(true);expect(basisReads).toBe(4);expect(read.snapshot.requests[0].status).toBe('APPROVED');expect(read.decisions[0].note).toBe('Decision during read');
+ }finally{await db.dispose();}
+});
+it('bounds changing-source retries and still refuses current authority loss',async()=>{
+ const {db,q,proof,f}=await setup();try{
+  let basisReads=0;
+  const changing:SqlExecutor={query:db.executor.query,async transaction(statements,signal){
+   const rows=await db.executor.transaction(statements,signal);
+   if(statements.some(s=>s.text.endsWith(' AS basis'))){basisReads++;if(basisReads%2===1)await q('UPDATE time_entries SET version=version+1 WHERE id=$1',[f.entryId]);}
+   return rows;
+  }};
+  expect(await readEmployeeHours(proof,changing,'corrections','list')).toEqual({state:'unavailable',reason:'read_failed'});expect(basisReads).toBe(4);
+  let revoked=false;
+  const revoking:SqlExecutor={query:db.executor.query,async transaction(statements,signal){
+   const rows=await db.executor.transaction(statements,signal);
+   if(!revoked&&statements.some(s=>s.text.endsWith(' AS basis'))){revoked=true;await q('DELETE FROM employee_sessions WHERE token_hash=$1',[proof.sessionTokenHash]);}
+   return rows;
+  }};
+  expect(await readEmployeeHours(proof,revoking,'corrections','list')).toEqual({state:'unavailable',reason:'access_denied'});
+ }finally{await db.dispose();}
+});
