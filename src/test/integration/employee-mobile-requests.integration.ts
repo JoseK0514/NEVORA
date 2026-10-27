@@ -55,6 +55,10 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
    await q("UPDATE employees SET role='OWNER' WHERE id=$1",[actor]);
    expect(await readEmployeeRequests(proof,app.database.executor)).toEqual({state:'unavailable',reason:'access_denied'});
    await q("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[actor]);
+   await q("UPDATE employees SET role='LEAD' WHERE id=$1",[actor]);
+   expect((await readEmployeeRequests(await fixtureProof(app.database.executor,actor),app.database.executor)).state).toBe('ready');
+   expect(await readEmployeeRequests(proof,app.database.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+   await q("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[actor]);
    record('Real SQL: own minimal projection, positive vs refused eligibility, actual role guard and no private reasons');
    const activeBrowser=await runtime[engine].launch({headless:true});browser=activeBrowser;
    const context=await activeBrowser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});
@@ -66,7 +70,7 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
    await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==new URL(app.url).origin){await route.abort();return;}await route.continue();});
    const ready=()=>page.locator('.em-requests:visible[data-requests-state="ready"]').waitFor();
    const load=async(path:string)=>{await page.goto(app.url+path);await ready();};
-   const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:true});captures.push(file);};
+   const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:true,style:'nextjs-portal {visibility:hidden;}'});captures.push(file);};
    await page.goto(app.url+'/login');
    await page.getByLabel('Employee ID',{exact:true}).fill(actor);
    await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
@@ -104,6 +108,26 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
    await shot('open-text-200');record('Enlarged root text reflows with measured navigation clearance');
    await page.evaluate(()=>{document.documentElement.style.fontSize='100%';delete document.documentElement.dataset.textStep;});
    await page.setViewportSize({width:390,height:844});await page.evaluate(()=>document.documentElement.setAttribute('data-theme','light'));
+   if(index===0){
+    await q("UPDATE workspaces SET shift_change_policy=jsonb_set(shift_change_policy,'{coverage,mode}','\"MANAGER_REVIEW\"')");
+    await page.getByRole('button',{name:'Refresh',exact:true}).click();
+    await page.getByText('Your manager must approve this pickup before the shift is assigned to you.',{exact:true}).waitFor();
+    await shot('manual-review-terms');
+    await q("UPDATE workspaces SET shift_change_policy=jsonb_set(shift_change_policy,'{coverage,mode}','\"AUTOMATIC_WHEN_VALID\"')");
+    await page.getByRole('button',{name:'Refresh',exact:true}).click();
+    await page.getByText('Picking up this shift assigns it to you immediately if it is still available and you still meet the rules.',{exact:true}).waitFor();
+    record('Current company review mode changes the explicit pickup consequence without changing the command planner');
+    expectedFailure=true;
+    await page.route('**/api/employee/requests',async(route:{abort():Promise<void>})=>route.abort());
+    await page.getByRole('button',{name:'Refresh',exact:true}).click();
+    await page.locator('.em-requests:visible[data-requests-state="unavailable"]').waitFor();
+    expect(await page.locator('.em-open-shift:visible').count()).toBe(0);
+    expect(await page.getByText('No eligible open shifts right now.',{exact:false}).count()).toBe(0);
+    await shot('read-unavailable');
+    await page.unroute('**/api/employee/requests');expectedFailure=false;
+    await page.getByRole('button',{name:'Try again',exact:true}).click();await ready();
+    record('Interrupted read clears facts and offers recovery, never a false empty or eligible result');
+   }
    await page.evaluate(()=>window.dispatchEvent(new Event('offline')));
    await page.locator('.em-requests:visible[data-requests-state="paused"]').waitFor();
    expect(await page.locator('.em-requests:visible').innerText()).not.toContain('West Office');
@@ -139,6 +163,9 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
    expect(await page.locator('.em-requests:visible').innerText()).not.toContain('Time off ·');
    await shot('access-denied');record('Current authority loss clears request facts and refuses further actions');
    await context.close();await browser!.close();browser=undefined;failed=undefined;
+   // Retire this engine's remaining fictional offer through the real owner command before the next independent scenario.
+   const remaining=await q<{id:string;revision:number}>('SELECT id,request_revision AS revision FROM shift_exchanges WHERE source_shift_id=$1 AND status=\'OPEN\'',[blockedId]);
+   for(const row of remaining)expect((await executeShiftChange(await fixtureProof(app.database.executor,f.actors[2]),{kind:'CANCEL',requestId:row.id,expectedRevision:row.revision,operationId:randomUUID()},app.database.executor)).status).toBe('closed');
   }
   const unexpected=messages.filter(row=>row.type==='pageerror'||row.type==='error'&&(!row.expected||!/Failed to (fetch|load resource)|Load failed|NetworkError|status of (401|403|503)/.test(row.text)));
   expect(unexpected).toEqual([]);
