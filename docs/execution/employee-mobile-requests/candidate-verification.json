@@ -1,0 +1,34 @@
+{
+  "applicationCandidate": "7abcd315ae0f978b74d4a06c2cc1525cc67f362b",
+  "records": [
+    {
+      "owner": "root",
+      "candidate": "7abcd315ae0f978b74d4a06c2cc1525cc67f362b",
+      "sourceManifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-requests/final/owned-next-kjB3cR/source-manifest.json",
+      "sourceManifestSha256": "c56d0dc987621cb40ac78719ca1bbb08bdc4f583bc0068bd297870b52376e6a3",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-requests/final/owned-next-kjB3cR/ownership.json",
+      "sourceInputs": 1916,
+      "currentSourceMismatches": [],
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "results": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-requests/final/results.json",
+      "resultsSha256": "1f48e565314258cb3fd5b525e86857571cddadfbac7c94e019f9c5fe9575e58a"
+    },
+    {
+      "owner": "independentQa",
+      "candidate": "7abcd315ae0f978b74d4a06c2cc1525cc67f362b",
+      "sourceManifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-requests/independent-qa/final-7abcd315/owned-next-JezQQ2/source-manifest.json",
+      "sourceManifestSha256": "c56d0dc987621cb40ac78719ca1bbb08bdc4f583bc0068bd297870b52376e6a3",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-requests/independent-qa/final-7abcd315/owned-next-JezQQ2/ownership.json",
+      "sourceInputs": 1916,
+      "currentSourceMismatches": [],
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "results": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-requests/independent-qa/final-7abcd315/results.json",
+      "resultsSha256": "00d21842c5db5b4e22a327e0f42d1e4cc4f95dc3736a12e0e8e9aa517522e2f5"
+    }
+  ],
+  "state": "bounded-local-acceptance; not assembly or production authorization"
+}

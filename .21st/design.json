@@ -228,6 +228,18 @@
       },
       "implementation": "src/components/employee-mobile/mobile.css, use-mobile.ts, navigation-layout.ts and week-picker.tsx over existing AppShell/Home/Schedule",
       "handoff": "docs/execution/employee-mobile-phase1/plan.md"
+    },
+    {
+      "date": "2026-10-27",
+      "scope": "Employee/Lead mobile Requests hub and eligible open coverage; existing desktop/management rendering retained",
+      "direction": "Continue the Jose-approved Phase 1 clean teal system; native disclosure, clear pickup consequences and current server eligibility",
+      "componentProvenance": {
+        "retrieval": "Free metadata search only; no paid code retrieval, generation or new dependency",
+        "searchResults": [25171, 2554, 29211],
+        "selection": "Existing private controller, Employee guards, shift-change planner/operation owner, Phosphor and semantic tokens fit better than catalog alternatives"
+      },
+      "implementation": "src/components/employee-mobile/requests.tsx and requests.css with protected minimal own-data transport",
+      "handoff": "docs/execution/employee-mobile-requests/HANDOFF.md"
     }
   ],
   "evidence": [
@@ -256,12 +268,5 @@
       "source": "package.json"
     }
   ],
-  "employeeRequestsMobile20261027": {
-    "authority": "Jose-approved Employee mobile teal Phase 1",
-    "scope": "Employee/Lead mobile Requests hub and eligible open coverage; desktop/management preserved",
-    "reuse": "Existing private snapshot, Employee guards, shift-change planner and immutable operation owner; native details and Phase 1 semantic tokens",
-    "catalog": "Free metadata search: Time Off Request Calendar 25171, Coach Scheduling Card 2554, Appointment Booking Split 29211. Existing controls better fit this task; no paid retrieval or package.",
-    "plan": "docs/execution/employee-mobile-requests/plan.md"
-  },
   "generatedAt": "2026-10-13T18:05:53.669Z"
 }
