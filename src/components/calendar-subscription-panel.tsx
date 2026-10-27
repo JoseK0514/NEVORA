@@ -28,7 +28,7 @@ export function CalendarSubscriptionView({status,url,paused,busy,notice,onComman
  const active=status?.state==='active',available=status&&'generation' in status;
  const currentUrl=active&&!paused?url:null;
  return <section className="employee-view-surface employee-calendar" aria-labelledby="employee-calendar-title" data-calendar-setting>
-  <header className="profile-section-heading"><span className="profile-icon-tile"><NavIcon name="calendar" size={24}/></span><div><h2 id="employee-calendar-title">Calendar subscription</h2><p>Your shifts, alongside your plans.</p></div></header>
+  <header className="profile-section-heading"><span className="profile-icon-tile"><NavIcon name="calendar" size={24}/></span><div><h2 id="employee-calendar-title" aria-label="Calendar subscription">Calendar sub­scrip­tion</h2><p>Your shifts, alongside your plans.</p></div></header>
   {paused?<p role="status">Calendar settings paused. Return to this window to check the link.</p>:<>
    <p>View your published shifts in Apple Calendar, Google Calendar, or Outlook.</p>
    <CalendarExample/>

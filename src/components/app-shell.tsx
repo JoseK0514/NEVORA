@@ -1,5 +1,6 @@
 "use client";
 
+import {useEmployeeNavigationLayout} from './employee-mobile/navigation-layout';
 import {NavigationLink as Link} from './navigation-link';
 import {useLinkStatus} from 'next/link';
 import {AppNavigationProvider,useIdentityReload} from './app-navigation';
@@ -90,6 +91,7 @@ function AppShellView({
     if (/^[a-z0-9_]+$/i.test(preferenceCookie)) document.cookie = `${preferenceCookie}=${next ? "collapsed" : "expanded"}; Path=/app; Max-Age=31536000; SameSite=Lax`;
   }
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
+  useEmployeeNavigationLayout(employee);
   // Refresh the retained layout's server identity without interrupting the destination document's streamed content.
   const identityReload=useIdentityReload(()=>router.refresh());
   const accessChanged=useCallback((reason:'identity'|'scope')=>{if(reason==='identity')identityReload.request();else {window.dispatchEvent(new Event('nevora:notifications-changed'));router.refresh();}},[router,identityReload]);
@@ -253,6 +255,8 @@ function AppShellView({
   return (
     <div className={employee ? "app-shell employee-shell nevora-portal" : "app-shell nevora-portal"} data-sidebar-collapsed={collapsed}
       // Clean Manager and Owner app (v3): premium-clean-manager.css applies only under this attribute, so Employee and Lead pages never change.
+      data-employee-mobile={employee ? "true" : undefined}
+      data-employee-mobile-page={employee ? pathname === "/app" ? "home" : pathname === "/app/schedule" ? "schedule" : "other" : undefined}
       data-nv-clean={employee ? undefined : ""}
       // Quiet (v4, Jose approved Oct 23, docs/product/specs/owner-v4-quiet): the Owner and Manager pages and their tab bar.
       data-nv-quiet=""
@@ -379,7 +383,7 @@ function AppShellView({
                     aria-label={needsYou !== null ? `${item.label}, ${needsYou} need${needsYou === 1 ? "s" : ""} you` : undefined}
                   >
                     {/* Quiet (v4): outline glyphs, filled only for the current tab; the count is spoken, not drawn. */}
-                    <NavIcon name={item.icon === "employees" ? "team" : item.icon} size={24} weight={active ? "fill" : "regular"} />
+                    <NavIcon name={item.icon === "employees" ? "team" : item.icon} size={24} weight={!employee && active ? "fill" : "regular"} />
                     <span>{item.label}</span>
                     <TabPending />
                   </Link>
@@ -388,7 +392,7 @@ function AppShellView({
               {/* Quiet (v4): More is a page, as in the approved mockups. */}
               <Link href="/app/more" prefetch className={activeTab === "more" || pathname === "/app/more" ? "mobile-nav-link manager-more-trigger active" : "mobile-nav-link manager-more-trigger"}
                 aria-current={pathname === "/app/more" ? "page" : undefined}>
-                <NavIcon name="moreCircle" size={24} weight={activeTab === "more" || pathname === "/app/more" ? "fill" : "regular"} /><span>More</span>
+                <NavIcon name="moreCircle" size={24} weight={!employee && (activeTab === "more" || pathname === "/app/more") ? "fill" : "regular"} /><span>More</span>
                 <TabPending />
               </Link>
             </>

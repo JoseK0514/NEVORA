@@ -22,6 +22,7 @@ import "./clean-manager/notifications.css";
 import "./employee-style.css";
 // Quiet (v4, Jose approved Oct 23): the Owner and Manager phone shell. Loaded last.
 import "./quiet-shell.css";
+import "@/components/employee-mobile/mobile.css";
 import {cookies} from "next/headers";
 import {createHash} from "node:crypto";
 import {employeeViewAuthority} from "@/lib/employee-view-authority.server";

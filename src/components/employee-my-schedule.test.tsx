@@ -4,6 +4,7 @@ import { expect, it, vi } from 'vitest';
 import { EmployeeMySchedule, type EmployeeMyScheduleProps } from './employee-my-schedule';
 
 vi.mock('next/link',()=>({default:({children,...props}:React.ComponentProps<'a'>)=>createElement('a',props,children)}));
+vi.mock('next/navigation',()=>({useRouter:()=>({push:vi.fn()})}));
 const shift={id:'self-shift',scheduleId:'schedule',employeeId:'self',employeeName:'Fictional Employee',locationId:'north',date:'2026-10-12',startTime:'08:00',endTime:'16:00',isDesignatedLead:false,isCalloutApproved:false,scheduleStatus:'PUBLISHED' as const};
 const base:EmployeeMyScheduleProps={weekStart:'2026-10-12',today:'2026-10-12',observedAt:'2026-10-12T11:00:00Z',timeZone:'America/Puerto_Rico',state:'published',shifts:[shift],locations:[{id:'north',shortName:'North Office'}],acknowledged:false};
 const html=(props:Partial<EmployeeMyScheduleProps>={})=>renderToStaticMarkup(createElement(EmployeeMySchedule,{...base,...props}));

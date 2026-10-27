@@ -224,3 +224,14 @@ it('IS-P4-09 and IS-P4-14: Home\'s views end the trail with their own name, and 
  const {html} = render('MANAGER', '/app');
  expect(html.indexOf('class="portal-skip-link" href="#main-content"')).toBeLessThan(html.indexOf('<aside'));
 });
+
+it.each(['EMPLOYEE','LEAD'] as const)('scopes the teal mobile foundation to %s with current navigation ownership',role=>{
+ const {html,mobile}=render(role,'/app');
+ expect(html).toContain('data-employee-mobile="true"');
+ expect(html).toContain('data-employee-mobile-page="home"');
+ expect(mobile).toContain('aria-current="page"');
+ expect(html).not.toContain('href="/app/schedule/new"');
+});
+it.each(['OWNER','MANAGER'] as const)('does not opt %s into the Employee mobile foundation',role=>{
+ expect(render(role,'/app').html).not.toContain('data-employee-mobile="true"');
+});

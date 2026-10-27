@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import {EmployeeMobileWeekPicker} from './employee-mobile/week-picker';
 import { keepWhole } from '@/lib/keep-whole';
 import { ALL_MODULES_ON, type EnabledModules } from '@/lib/workspace-presentation/modules';
 import type { ReactNode } from 'react';
@@ -169,6 +170,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
   return <QuietPage className="q-sched-e">
     <QuietBar start={<span className="q-weeknav">
       <Link className="q-bar__icon" href={`/app/schedule?week=${addDays(weekStart, -7)}${keep}`} aria-label="Previous week"><CaretLeftIcon className="q-ic" aria-hidden="true" /></Link>
+      <EmployeeMobileWeekPicker weekStart={weekStart} keep={view === 'open' ? '&view=open' : keep}/>
       <Link className="q-bar__icon" href={`/app/schedule?week=${addDays(weekStart, 7)}${keep}`} aria-label="Next week"><CaretRightIcon className="q-ic" aria-hidden="true" /></Link>
       {weekStart !== currentWeek ? <Link className="q-weeknav__today" href={`/app/schedule?week=${currentWeek}&day=${today}`}>Today</Link> : null}
     </span>}>

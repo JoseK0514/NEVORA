@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import {useEmployeeMobile} from './employee-mobile/use-mobile';
+import {ArrowRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import {useState, type ReactNode} from 'react';
 import {BellIcon} from '@phosphor-icons/react/dist/ssr/Bell';
 import {MapPinIcon} from '@phosphor-icons/react/dist/ssr/MapPin';
@@ -157,7 +159,7 @@ function SourceRows({snapshot}: {snapshot: HomeSnapshot}) {
   });
 }
 
-function NextCard({snapshot}: {snapshot: HomeSnapshot}) {
+function NextCard({snapshot, mobile = false}: {snapshot: HomeSnapshot; mobile?: boolean}) {
   const zone = snapshot.timeZone;
   if (snapshot.publicationState === 'unavailable') return <div className="q-next" role="status">
     <div className="q-next__top"><span>Next shift</span><span/></div>
@@ -171,12 +173,13 @@ function NextCard({snapshot}: {snapshot: HomeSnapshot}) {
     <span className="q-next__day">New shifts show here once they’re published.</span>
   </Link>;
   const where = [shift.locationLabel, shift.positionLabel, shift.designatedLead ? 'Shift lead' : null].filter(Boolean).join(' · ');
-  return <Link className="q-next" href={`/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}`}
+  return <Link className="q-next" href={`/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}${mobile ? `&shift=${encodeURIComponent(shift.shiftId)}` : ''}`}
     aria-label={keepWhole(`View schedule, ${now ? 'scheduled now, ' : ''}${longDay(shift, zone)}, ${clock(shift.startAt, zone)} to ${clock(shift.endAt, zone)}, ${where}`)}>
     <div className="q-next__top"><span>{now ? 'Scheduled now' : 'Next shift'}</span><span>{now ? `Until ${clock(now.endAt, zone)}` : dayWord(shift, snapshot)}</span></div>
     <b className="q-next__time"><time dateTime={shift.startAt}>{clock(shift.startAt, zone)}</time><span aria-hidden="true"> – </span><span className="nv-sr"> to </span><time dateTime={shift.endAt}>{clock(shift.endAt, zone)}</time></b>
     <span className="q-next__day">{longDay(shift, zone)}</span>
     <div className="q-next__meta"><MapPinIcon className="q-ic" aria-hidden="true"/><span>{where}</span></div>
+    <span className="em-mobile-only em-next-action">{now ? "View today’s shift" : "View shift details"}<ArrowRightIcon size={20} aria-hidden="true"/></span>
   </Link>;
 }
 
@@ -197,6 +200,7 @@ function Glance({week}: {week: HomeWeek}) {
 
 export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTimeSlot, displayName, timeZone, workspaceName, week, teamMessage = false}: EmployeeHomeQuietViewProps) {
   const [showAll, setShowAll] = useState(false);
+  const mobile = useEmployeeMobile();
   // Offline and "window in the background" both pause Home; the card says which.
   const online = typeof navigator === 'undefined' || navigator.onLine !== false;
   const paused = status === 'paused';
@@ -226,13 +230,13 @@ export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTim
   return <QuietPage>
     <div className="q-home" data-home-state={viewState} aria-busy={refreshing || loading}>
       <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon className="q-ic" aria-hidden="true"/></QuietBarIcon></QuietBar>
-      <div className="q-hello"><small>{date}</small><h1>{name && snapshot ? `${greeting(snapshot.observedAt, snapshot.timeZone)}, ${name}` : 'Home'}</h1></div>
+      <div className="q-hello"><small>{date}</small><h1>{mobile ? 'Today' : name && snapshot ? `${greeting(snapshot.observedAt, snapshot.timeZone)}, ${name}` : 'Home'}</h1></div>
       {snapshot ? <section aria-labelledby="employee-reviewed-next-heading">
         <h2 id="employee-reviewed-next-heading" className="nv-sr">Your shift</h2>
-        <NextCard snapshot={snapshot}/>
+        <NextCard snapshot={snapshot} mobile={mobile}/>
         {snapshot.publicationState === 'partial' ? <p className="q-next__note" role="status">{unpublishedNote(snapshot.unpublishedLocations ?? [])}</p> : null}
         {/* While a shift is under way, the clock status sits under the card. */}
-        {underWay ? <aside className="q-home__clock" aria-label="Own recorded time">{ownTimeSlot}</aside> : null}
+        {underWay || mobile ? <aside className="q-home__clock" aria-label="Own recorded time"><h2 className="em-mobile-only em-section-title">Your time today</h2>{ownTimeSlot}</aside> : null}
       </section> : <div className="q-next q-next--wait" role="status">
         <div className="q-next__top"><span>{summary}</span><span/></div>
         <b className="q-next__time" aria-hidden="true">&nbsp;</b>
