@@ -90,11 +90,23 @@ export function QuietSheet({open, onClose, label, labelledBy, children}: {open: 
 /** A route opened as a sheet over the page it came from (an intercepted route): closing goes back. A parallel slot keeps
  * its last content when a soft navigation lands on a page it has no route for, so the sheet shows only while the address
  * is still one of its own (`match`). */
-export function RouteSheet({label, match, children}: {label: string; /** A pattern string (props from a server layout must serialize). */ match: string; children: ReactNode}) {
+export function RouteSheet({label, match, children,restoreShiftFocus=false}: {label: string; /** A pattern string (props from a server layout must serialize). */ match: string; children: ReactNode;restoreShiftFocus?:boolean}) {
   const router = useRouter();
   const pathname = usePathname();
   if (!new RegExp(match).test(pathname)) return null;
-  return <QuietSheet open label={label} onClose={() => router.back()}>{children}</QuietSheet>;
+  return <QuietSheet open label={label} onClose={() => {
+    const url=new URL(window.location.href),source=url.searchParams.get('sourceShiftId')??url.searchParams.get('shiftId');
+    const restore=restoreShiftFocus&&document.getElementById('employee-mobile')?.dataset.employeeMobile==='true';
+    router.back();
+    // The prior action link was inside a shift dialog that closed on navigation.
+    // Restore its visible schedule row instead of that now-hidden dialog link.
+    if(restore&&source)window.requestAnimationFrame(()=>{
+      const row=Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href]')).find(link=>{
+        const target=new URL(link.href);return target.origin===url.origin&&target.pathname==='/app/schedule'&&target.searchParams.get('shift')===source&&link.getClientRects().length>0;
+      });
+      row?.focus({preventScroll:true});
+    });
+  }}>{children}</QuietSheet>;
 }
 
 /** The sheet's left action: closes the sheet, or on a full page goes to `href`. */
