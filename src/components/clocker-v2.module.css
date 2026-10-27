@@ -56,3 +56,8 @@
 .page [data-clocker-setup-field]{gap:8px;padding:0;border-radius:0;background:transparent;box-shadow:none;text-transform:none;letter-spacing:0;font-size:.875rem;font-weight:600;color:var(--ck-ink);}
 .page [data-clocker-setup-field] textarea{padding:12px 16px;border:1px solid var(--ck-edge);border-radius:12px;background:var(--ck-card);font-size:1rem;}
 .page [data-clocker-pin-entry]{height:64px;background:var(--ck-page);border-radius:12px;box-shadow:none;}.page [data-clocker-pin-entry]:focus-within{outline:3px solid #087fca;outline-offset:3px;}
+.page.page [data-clocker-action]:global(.primary),.page.page [data-clocker-action]:global(.secondary){min-height:64px;border-radius:12px;padding:16px;gap:12px;box-shadow:none;}
+.page.page [data-clocker-action] :global(.clocker-label)>span:first-child{font-size:1rem;line-height:1.4;font-weight:620;letter-spacing:0;}
+.page.page [data-clocker-action]>span:first-child{width:24px;height:24px;border-radius:0;background:transparent;color:inherit;}
+.page.page [data-clocker-state=ready] h1{color:var(--ck-ink);}
+.page.page [data-clocker-pin-entry]{width:100%;max-width:100%;}
