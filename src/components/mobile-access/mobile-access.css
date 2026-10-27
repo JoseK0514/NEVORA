@@ -38,6 +38,7 @@
  #mobile-access-page.q-auth :is(input,textarea,button,a,summary):focus-visible{outline:3px solid var(--ma-focus);outline-offset:3px}
  #mobile-access-page.q-auth :is(input,textarea):focus{outline:3px solid var(--ma-focus);outline-offset:2px;border-color:var(--ma-teal);box-shadow:none}
  #mobile-access-page.q-auth .q-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:auto;min-height:48px;margin:24px 0 0;padding:12px 18px;border:1px solid transparent;border-radius:12px;background:var(--ma-teal);color:#fff;font:inherit;font-weight:620;font-size:1rem;line-height:1.4;text-align:center;white-space:normal;letter-spacing:-.01em;text-decoration:none;overflow-wrap:anywhere}
+ #mobile-access-page.q-auth :is(.q-auth__form,.q-passkey) .q-btn{width:100%;margin-left:0;margin-right:0}
  #mobile-access-page.q-auth .q-btn:hover{background:var(--ma-press)}
  #mobile-access-page.q-auth .q-btn:active:not(:disabled){transform:translateY(1px)}
  #mobile-access-page.q-auth .q-btn:disabled,#mobile-access-page.q-auth .q-btn[aria-disabled=true]{opacity:.65;cursor:wait}
@@ -91,7 +92,7 @@
  #mobile-access-page.q-auth .ma-link-proof{display:none}
 }
 @media(max-width:359px){#mobile-access-page.q-auth{--ma-inset:20px}}
-@media(prefers-reduced-motion:reduce){#mobile-access-page.q-auth :is(button,a,summary){transition:none;transform:none}}
+@media(prefers-reduced-motion:reduce){#mobile-access-page.q-auth :is(button,a,summary){transition:none}#mobile-access-page.q-auth .q-btn:active:not(:disabled){transform:none}}
 
 @media(max-width:767px){
  #mobile-access-page.q-auth .ma-skip{position:fixed;z-index:100;top:0;left:16px;max-width:calc(100% - 32px);min-height:44px;padding:12px;background:#fff;color:#0b6e69;transform:translateY(-110%)}
