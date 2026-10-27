@@ -429,9 +429,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "84c3fc357b006220ef6bbf29580e7327228c9659",
-      "disposition": "included",
-      "reason": "Current development policy commit, merged into the PR36 branch after its twelve CI checks passed. Preserves the upstream seven-branch policy and collaboration branch classification; no application, authentication, permission or deployment change."
+      "sha": "0ac95b51f5bec307733ab78594b851229ca4a5d5",
+      "disposition": "held",
+      "reason": "The upstream policy commit84c3fc35 is already incorporated through current development. This branch subsequently integrated separate Clocker work at975db138 and refreshed its custody at0ac95b51. Its156 changed paths include application, migrations, photos and permission-related behavior; all work beyond84c3fc35 is held and excluded from PR36. Exact head classification only, not application review, acceptance or findings closure."
     }
   ],
   "maximumActiveBranches": 7
