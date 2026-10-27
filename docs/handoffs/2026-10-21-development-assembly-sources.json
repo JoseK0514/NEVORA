@@ -429,9 +429,9 @@
     },
     {
       "branch": "codex/light-default-20261027",
-      "sha": "8cca397cfeac3cc84f3ecb39d4f5166e162fe4ca",
+      "sha": "9ad27b8abbef699f2061e53958e84912bbf6951f",
       "disposition": "held",
-      "reason": "Separately active light-default work, preserved without modification or integration. Exact current head recorded for source custody only; this branch-policy change does not approve its application changes. Preserved outside the Clocker collaboration integration."
+      "reason": "Fetched and inspected during Clocker collaboration delivery: advancement from8cca397 merges the existing seven-branch governance policy and updates PR36 readiness only. The separately active light-default application work remains held; no Clocker source or unrelated application work is overlaid."
     }
   ],
   "maximumActiveBranches": 7
