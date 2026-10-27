@@ -18,3 +18,8 @@ it('releases private draft and shift UI on pause, denial, changed binding or mod
 it('requires a deliberate source review after new terms without discarding the unsent note',()=>{
  const html=render(read,false,{...draft,sourceKey:'old-reviewed-terms'});expect(html).toContain('Review updated shift');expect(html).toContain('Unsaved private note');expect(html).toMatch(/disabled[^>]*>Send report/);
 });
+it('keeps failed swap discovery distinct from empty and preserves the separately checked cover destination',()=>{
+ const snapshot={...read,mode:'swap' as const,targets:null,partial:true,check:{allowed:false,notice:'Some checks unavailable'},coverage:{allowed:true,notice:null}};
+ const html=renderToStaticMarkup(<CreationView state={{snapshot,paused:false,refreshing:false}} authority={read.authority} mode="swap" sourceId="own" draft={draft} operation={new EmployeeCreationOperation()} onDraft={()=>{}} onReview={()=>{}} onRefresh={()=>{}} onSubmit={()=>{}} onRetry={()=>{}}/>);
+ expect(html).toContain('Shift options couldn’t be checked');expect(html).not.toContain('No eligible shifts');expect(html).toContain('Offer this shift for cover instead');
+});
