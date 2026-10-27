@@ -1,3 +1,7 @@
+import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
+import {MobileOnboardingGuide} from "@/components/mobile-access/onboarding-guide";
+import {readAuthLang} from "@/lib/auth-lang.server";
+import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise";
 import {correctionAuthority} from '@/lib/time-corrections/authority.server';
 import Link from 'next/link';
 import {QuietSystemState} from '@/components/quiet-system-state';
@@ -88,7 +92,7 @@ export default async function DashboardPage({
     const week:HomeWeek|null=review.state==='unavailable'?null:{weekStart:currentWeek,today:currentDate,dates:Array.from({length:7},(_,day)=>addDays(currentWeek,day)),shifts:review.shifts.map(({date,startTime,endTime})=>({date,startTime,endTime})),missed};
     // A Lead's Home adds Today's team: message everyone on today's team (the existing Updates compose), when Updates is on.
     const teamMessage=session.role==='LEAD'&&(await currentPresentation()).modules.updates;
-    return <EmployeeDashboard authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage}/>;
+    return <EmployeeDashboard intro={mobileAccessEnabled()?<MobileOnboardingGuide employeeId={session.id} lang={await readAuthLang()} timeOffEnabled={(await currentPresentation()).modules.timeOff}/>:null} authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage}/>;
   }
 
   const proof=await requireSessionMutationProof();

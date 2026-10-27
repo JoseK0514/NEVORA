@@ -1,3 +1,6 @@
+import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
+import {MobileAccessHeader} from "@/components/mobile-access/chrome";
+import "@/components/mobile-access/mobile-access.css";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
@@ -119,15 +122,17 @@ export function WorkspaceEyebrow({ name }: { name: string }) {
 
 /** Quiet (v4, approved Oct 23): the sign-in pages on one white page. Sign in has the wordmark and the other language
  * at the top; the other pages have a Sign in back link. The short legal line sits at the bottom. */
-export function QuietAuthShell({ lang, t, back, children }: { lang: AuthLang; t: AuthCopy; back?: string; children: ReactNode }) {
+export function QuietAuthShell({ lang, t, back, backLabel, helpFrom="login", children }: { lang: AuthLang; t: AuthCopy; back?: string; backLabel?:string;helpFrom?:"login"|"recover"|"reset"|"activate"; children: ReactNode }) {
+  const mobile=mobileAccessEnabled();
   return (
-    <main className="q-page q-auth" data-nv-page="" lang={lang === "es" ? "es" : undefined}>
+    <main id={mobile ? "mobile-access-page" : undefined} className="q-page q-auth" data-nv-page="" data-mobile-access={mobile ? "true" : undefined} lang={lang}>
       <div className="q-auth__col">
-        {back ? <QuietNav back={{ href: back, label: t.signInPill }} />
-          : <header className="q-auth__top"><span className="q-auth__wordmark"><BrandWordmark /></span><LangSwitch lang={lang} label={t.langLabel} quiet /></header>}
-        {children}
+        {mobile ? <MobileAccessHeader lang={lang} back={back} backLabel={backLabel}/> : null}
+        <div className={mobile ? "ma-desktop" : undefined}>{back ? <QuietNav back={{ href: back, label: t.signInPill }} />
+          : <header className="q-auth__top"><span className="q-auth__wordmark"><BrandWordmark /></span><LangSwitch lang={lang} label={t.langLabel} quiet /></header>}</div>
+        {mobile ? <div id="access-content" tabIndex={-1}>{children}</div> : children}
       </div>
-      <footer className="q-auth__foot"><QuietLegal lang={lang} /></footer>
+      <footer className="q-auth__foot">{mobile ? <Link className="ma-footer-help" href={`/access-help?from=${helpFrom}`}>{lang === "es" ? "¿Necesitas ayuda?" : "Need help?"}</Link> : null}<QuietLegal lang={lang} /></footer>
     </main>
   );
 }

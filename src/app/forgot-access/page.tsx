@@ -1,3 +1,5 @@
+import {mobileAccessMetadata} from "@/components/mobile-access/metadata.server";
+import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
 import {AccountRecovery} from '@/components/account-recovery';
 import {getPublicWorkspaceName} from '@/lib/data/workspaces';
 import {AUTH_COPY} from '@/lib/auth-copy';
@@ -11,5 +13,7 @@ export const dynamic='force-dynamic';
 export default async function ForgotAccessPage(){
  const [,lang]=await Promise.all([getPublicWorkspaceName(),readAuthLang()]);
  const t=AUTH_COPY[lang];
- return <QuietAuthShell lang={lang} t={t} back="/login"><AccountRecovery kind="request" lang={lang}/></QuietAuthShell>;
+ return <QuietAuthShell helpFrom="recover" lang={lang} t={t} back="/login"><AccountRecovery mobileAccess={mobileAccessEnabled()} kind="request" lang={lang}/></QuietAuthShell>;
 }
+
+export const generateMetadata=()=>mobileAccessMetadata("recover");

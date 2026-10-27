@@ -1,3 +1,5 @@
+import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
+import {AccessJourneyProvider} from "@/components/mobile-access/journey";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { NUVORA_BRAND } from "../lib/brand";
@@ -42,7 +44,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         {/* Keyboard: Tab stays inside an open modal dialog instead of leaving for the browser (which pauses private pages). */}
         <script dangerouslySetInnerHTML={{ __html: MODAL_TAB_SCRIPT }} />
       </head>
-      <body>{children}</body>
+      <body>{mobileAccessEnabled() ? <AccessJourneyProvider>{children}</AccessJourneyProvider> : children}</body>
     </html>
   );
 }

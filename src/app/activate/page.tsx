@@ -1,3 +1,5 @@
+import {mobileAccessMetadata} from "@/components/mobile-access/metadata.server";
+import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
 import { getPublicWorkspaceName } from "@/lib/data/workspaces";
 import { safeReturnTo } from "@/lib/notifications/destinations";
 import { AUTH_COPY } from "@/lib/auth-copy";
@@ -17,7 +19,9 @@ export default async function ActivatePage({ searchParams }: {
   const returnTo = typeof params.returnTo === "string" ? safeReturnTo(params.returnTo) : null;
   const returnQuery = returnTo ? `returnTo=${encodeURIComponent(returnTo)}` : "";
 
-  return <QuietAuthShell lang={lang} t={AUTH_COPY[lang]} back={`/login${returnQuery ? `?${returnQuery}` : ""}`}>
-    <ActivationInvitation workspaceName={workspaceName} loginHref={`/login?activated=1${returnQuery ? `&${returnQuery}` : ""}`} />
+  return <QuietAuthShell helpFrom="activate" lang={lang} t={AUTH_COPY[lang]} back={`/login${returnQuery ? `?${returnQuery}` : ""}`}>
+    <ActivationInvitation mobileAccess={mobileAccessEnabled()} lang={lang} workspaceName={workspaceName} loginHref={`/login?activated=1${returnQuery ? `&${returnQuery}` : ""}`} />
   </QuietAuthShell>;
 }
+
+export const generateMetadata=()=>mobileAccessMetadata("activate");
