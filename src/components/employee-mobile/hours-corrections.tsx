@@ -1,4 +1,5 @@
 'use client';
+import {timeZoneLabel} from '@/lib/time-zone-label';
 import Link from 'next/link';
 import {useEffect,useId,useRef,useState,useSyncExternalStore} from 'react';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
@@ -11,7 +12,7 @@ import {HoursUnavailable,hoursStamp} from './hours-records';
 const label={ENTRY_BOUNDARY:'Clock in / clock out',BREAK_BOUNDARY:'Recorded break',MISSING_ENTRY:'Missing time'};
 const status={PENDING:'Waiting for review',APPROVED:'Approved',REJECTED:'Declined'};
 export function HoursCorrectionHistory({snapshot,decisions,requestId,filter,onRefresh}:{snapshot:EmployeeTimeCorrections;decisions:HoursDecision[];requestId:string|null;filter:string;onRefresh:()=>void}){
- if(snapshot.state!=='ready')return <HoursUnavailable message={snapshot.reason==='source_limit'?'Your correction history exceeds this view’s source limit. Contact your manager for help.':'Your correction history couldn’t be checked. Recorded punches remain available under Hours.'} onRefresh={onRefresh}/>;
+ if(snapshot.state!=='ready')return <HoursUnavailable message={snapshot.reason==='source_limit'?'This history can’t be loaded in full. Contact your manager for help.':'Your correction history couldn’t be checked. Recorded punches remain available under Hours.'} onRefresh={onRefresh}/>;
  const item=requestId?snapshot.requests.find(r=>r.id===requestId):null;
  if(requestId)return item?<CorrectionDetail item={item} decision={decisions.find(d=>d.requestId===item.id)} zone={snapshot.timeZone}/>:<p className="em-request-notice" role="status">This correction isn’t available to your current account.</p>;
  const rows=snapshot.requests.filter(r=>filter==='decided'?r.status!=='PENDING':r.status==='PENDING');
@@ -37,6 +38,7 @@ export function HoursCorrectionForm({snapshot,basis,edit,draft,onDraft,operation
  const pending=operation.pending,uncertain=operation.uncertain,recorded=isActive&&operation.result?.status==='recorded',locked=pending||uncertain||recorded||otherPending,stale=!!readyDraft&&readyDraft.basis!==basis;
  useEffect(()=>{if(recorded)receipt.current?.focus();},[recorded]);
  if(recorded&&operation.result?.status==='recorded')return <section className="em-hours-success" aria-label="Submission result"><h2 ref={receipt} tabIndex={-1}>Correction recorded</h2><p>Your proposal was recorded. Open it to check the current review status.</p><Link className="em-request-primary" href={'/app/my-time?view=corrections&requestId='+operation.result.requestId}>View my correction</Link><button className="em-request-secondary" type="button" onClick={onReset}>Start another proposal</button></section>;
+ if(isActive&&(pending||uncertain))return <section className="em-request-notice" aria-label="Submission status"><h2>{pending?'Checking your proposal':'Check your original submission'}</h2><p>{pending?'Your original proposal is being checked.':'The result couldn’t be confirmed. Check the original submission before starting another proposal, even if this time is no longer available for a new correction.'}</p>{uncertain?<button type="button" className="em-request-secondary" onClick={onRetry}>Check submission status</button>:<p role="status">Sending your original proposal…</p>}</section>;
  if(!info||!readyDraft)return <HoursUnavailable message="This correction source isn’t currently available. Return to your records or refresh to check again." onRefresh={onRefresh}/>;
  const change=(patch:Partial<HoursDraft>)=>{setError(null);onDraft({...readyDraft,...patch});};
  const attr=(field:keyof HoursDraft)=>({'aria-invalid':error?.field===field||undefined,'aria-describedby':error?.field===field?errorId:undefined});
@@ -54,7 +56,7 @@ export function HoursCorrectionForm({snapshot,basis,edit,draft,onDraft,operation
    </fieldset>
    {error?<p className="em-hours-error" id={errorId} role="alert">{error.message}</p>:null}
    {pending?<p className="em-request-notice" role="status">Sending your original proposal…</p>:isActive&&uncertain?<section className="em-request-notice" aria-label="Submission status"><p>The result couldn’t be confirmed. Check your original submission before starting a new proposal.</p><button type="button" className="em-request-secondary" onClick={onRetry}>Check submission status</button></section>:feedback&&feedback.status!=='recorded'?<p className="em-request-notice" role="status">{feedback.status==='blocked'?({stale_source:'The time records changed. Refresh and review the current source.',overlap:'The proposed time overlaps another recorded entry.',live_state:'Finish the live entry on your Clocker before requesting a correction.',finalized_period:'This period is finalized. Ask your manager about reopening it.',invalid_interval:'These times don’t fit the current recorded entry.',self_review:'Your current account cannot review this request.'}[feedback.reason]):feedback.status==='conflict'?'The record changed or already has a pending correction. Refresh and review the current status.':feedback.status==='denied'?'Your access changed. Sign in again to continue.':'Check the proposed dates, times and reason.'}</p>:null}
-   <p className="em-hours-help">Your manager reviews this proposal. Original punches stay unchanged, and approved adjustments appear in your timecard. Times in {snapshot.timeZone}.</p>
+   <p className="em-hours-help">Your manager reviews this proposal. Original punches stay unchanged, and approved adjustments appear in your timecard. Times in {timeZoneLabel(snapshot.timeZone)}.</p>
    <button className="em-request-primary" type="submit" disabled={locked||stale||info.kind!=='MISSING_ENTRY'&&info.context.state!=='confirmed'||info.kind==='MISSING_ENTRY'&&!snapshot.locations.length}>{pending?'Sending…':'Send correction request'}</button>
   </form>
  </>;

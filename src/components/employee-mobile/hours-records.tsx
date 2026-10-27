@@ -1,4 +1,5 @@
 'use client';
+import {timeZoneLabel} from '@/lib/time-zone-label';
 import Link from 'next/link';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
@@ -15,7 +16,7 @@ export function HoursRecordsView({data,entryId,onRefresh}:{data:EmployeeTime;ent
   <section><h2>Recorded punches</h2><dl className="em-hours-facts"><div><dt>Clock in</dt><dd>{hoursStamp(entry.clockInAt,data.timeZone)}</dd></div>{entry.breaks.map(b=><div key={b.id}><dt>{b.name??'Recorded break'}</dt><dd>{hoursStamp(b.startAt,data.timeZone)} – {b.endAt?hoursStamp(b.endAt,data.timeZone):'In progress'}<small>{formatRecordedDuration(b.elapsedSeconds)} recorded break</small></dd></div>)}<div><dt>Clock out</dt><dd>{entry.clockOutAt?hoursStamp(entry.clockOutAt,data.timeZone):'Not recorded yet'}</dd></div></dl></section>
   <p className="em-hours-help">These are the original Clocker records. Approved adjustments appear in your timecard.</p>
   {entry.clockOutAt?<Link className="em-request-primary" href={'/app/my-time?view=corrections&edit='+encodeURIComponent('entry:'+entry.id)}>Request a correction</Link>:<p className="em-request-notice" role="status">Finish this entry on your location’s Clocker before requesting a correction.</p>}
-  <Link className="em-request-secondary" href="/app/my-time?view=cards">View my timecard</Link><p className="em-hours-help">Times in {data.timeZone}.</p>
+  <Link className="em-request-secondary" href="/app/my-time?view=cards">View my timecard</Link><p className="em-hours-help">Times in {timeZoneLabel(data.timeZone)}.</p>
  </>:<HoursUnavailable message="This entry isn’t in your current recorded-time view. Review your timecard for older dates." onRefresh={onRefresh}/>;
  const current=data.current,clock=current?.state==='ON_BREAK'?'On break':current?'Clocked in':'Off clock';
  return <>
@@ -23,6 +24,6 @@ export function HoursRecordsView({data,entryId,onRefresh}:{data:EmployeeTime;ent
   <section><h2>Today’s recorded time</h2><dl className="em-hours-facts"><div><dt>Elapsed time</dt><dd>{formatRecordedDuration(data.today.recordedSeconds)}</dd></div><div><dt>Breaks</dt><dd>{formatRecordedDuration(data.today.breakSeconds)}</dd></div></dl><p className="em-hours-help">Elapsed time includes breaks. These are recorded intervals, not payroll totals.</p></section>
   <section><h2>Today’s entries</h2>{data.today.entries.length?<ul className="em-request-list">{data.today.entries.map(r=><RecordRow key={r.id} entry={r} zone={data.timeZone}/>)}</ul>:<p className="em-request-notice">No recorded punches today. Use your location’s Clocker when you start work.</p>}</section>
   <section><h2>Earlier entries</h2>{data.recent.entries.length?<><ul className="em-request-list">{data.recent.entries.map(r=><RecordRow key={r.id} entry={r} zone={data.timeZone}/>)}</ul>{data.recent.entries.length<data.recent.total?<p className="em-hours-help">Showing {data.recent.entries.length} of {data.recent.total} earlier entries, most recent first. Choose a timecard period to review older hours.</p>:null}</>:<p className="em-request-notice">No earlier entries recorded.</p>}</section>
-  <Link className="em-request-secondary" href="/app/my-time?view=cards">View my timecards</Link><p className="em-hours-help">Checked {hoursStamp(data.observedAt,data.timeZone)} · {data.timeZone}</p>
+  <Link className="em-request-secondary" href="/app/my-time?view=cards">View my timecards</Link><p className="em-hours-help">Checked {hoursStamp(data.observedAt,data.timeZone)} · {timeZoneLabel(data.timeZone)}</p>
  </>;
 }

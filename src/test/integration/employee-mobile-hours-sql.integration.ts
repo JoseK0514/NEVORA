@@ -20,3 +20,32 @@ it('refuses a stale reviewed source while preserving original-event retry after 
 it('submits own missing time and preserves current location eligibility',async()=>{const {db,q,proof,peer,f}=await setup();try{const source=corr(await readEmployeeHours(proof,db.executor,'corrections','list')),payload={basis:source.basis,command:{operationId:randomUUID(),kind:'MISSING_ENTRY',locationId:'loc-1',proposedStartAt:new Date(Date.parse(f.startAt)-2*86400000).toISOString(),proposedEndAt:new Date(Date.parse(f.startAt)-2*86400000+3600000).toISOString(),reason:'Forgot my punch'}};expect((await submitEmployeeHoursCorrection(proof,payload,db.executor)).status).toBe('recorded');const peerSource=corr(await readEmployeeHours(peer,db.executor,'corrections','list'));expect((await submitEmployeeHoursCorrection(peer,{...payload,basis:peerSource.basis,command:{...payload.command,operationId:randomUUID()}},db.executor)).status).not.toBe('recorded');await q("DELETE FROM employee_location_eligibility WHERE employee_id='HOURS-A'");expect(corr(await readEmployeeHours(proof,db.executor,'corrections','list')).snapshot.state==='ready').toBe(true);}finally{await db.dispose();}});
 it('keeps own timecards separate from manager approval and reads the canonical effective source',async()=>{const {db,proof,f}=await setup();try{const startDate=new Date(Date.parse(f.startAt)).toISOString().slice(0,10),endDate=new Date(Date.parse(f.endAt)).toISOString().slice(0,10),period=parsePeriod(startDate,endDate),read=await readEmployeeHours(proof,db.executor,'cards',startDate+'_'+endDate);expect(read.state).toBe('ready');if(read.state==='ready'&&read.view==='cards'&&read.data.state==='ready'){expect(read.data.cards).toHaveLength(1);const item=read.data.cards[0];expect(item.card.employeeId).toBe(proof.employee.id);expect(item.card.entries[0].id).toBe(f.entryId);expect(await mutateTimecard(proof,{operationId:randomUUID(),employeeId:proof.employee.id,...period,expectedRevision:item.revision,expectedSourceHash:item.sourceHash,action:'APPROVE'},db.executor)).toEqual({status:'unavailable'});}}finally{await db.dispose();}});
 it('detects a role change during write admission instead of returning a usable correction control',async()=>{const {db,q,proof,f}=await setup();try{const payload=command(f,corr(await readEmployeeHours(proof,db.executor,'corrections','list')).basis);let changed=false;const racing:SqlExecutor={query:db.executor.query,async transaction(statements:readonly SqlStatement[],signal?:AbortSignal){if(!changed&&statements.some(s=>s.text.includes('nevora_submit_time_correction('))){changed=true;await q("UPDATE employees SET role='MANAGER' WHERE id='HOURS-A'");}return db.executor.transaction(statements,signal);}};expect(await submitEmployeeHoursCorrection(proof,payload,racing)).toEqual({status:'denied'});}finally{await db.dispose();}});
+it('serializes two reviewed proposals under the employee lock without creating duplicate pending requests',async()=>{
+ const {db,q,proof,f}=await setup();try{
+  const basis=corr(await readEmployeeHours(proof,db.executor,'corrections','list')).basis;
+  const results=await Promise.all([submitEmployeeHoursCorrection(proof,command(f,basis),db.executor),submitEmployeeHoursCorrection(proof,command(f,basis),db.executor)]);
+  expect(results.filter(r=>r.status==='recorded')).toHaveLength(1);expect(results.some(r=>r.status==='blocked'&&r.reason==='stale_source'||r.status==='conflict')).toBe(true);
+  expect((await q<{n:number}>('SELECT count(*)::integer AS n FROM time_correction_requests WHERE employee_id=$1',[proof.employee.id]))[0].n).toBe(1);
+ }finally{await db.dispose();}
+});
+it('keeps finalized periods read only through the mobile correction adapter',async()=>{
+ const {db,proof,f}=await setup();try{
+  const date=f.startAt.slice(0,10),period=parsePeriod(date,date),owner=await fixtureProof(db.executor,'QAOWNER');
+  for(const action of ['APPROVE','FINALIZE'] as const){
+   const read=await readEmployeeHours(proof,db.executor,'cards',date+'_'+date);if(read.state!=='ready'||read.view!=='cards'||read.data.state!=='ready')throw Error('Own card unavailable');const card=read.data.cards[0];
+   expect((await mutateTimecard(owner,{operationId:randomUUID(),employeeId:proof.employee.id,...period,expectedRevision:card.revision,expectedSourceHash:card.sourceHash,action},db.executor)).status).toBe(action==='APPROVE'?'approved':'finalized');
+  }
+  const basis=corr(await readEmployeeHours(proof,db.executor,'corrections','list')).basis;
+  expect(await submitEmployeeHoursCorrection(proof,command(f,basis),db.executor)).toEqual({status:'blocked',reason:'finalized_period'});
+ }finally{await db.dispose();}
+});
+it('reads an exact own old target beyond the recent window without exposing it to a peer',async()=>{
+ const {db,q,proof,peer,f}=await setup();try{
+  await q("UPDATE time_entries SET clock_in_at=clock_in_at-interval '100 days',clock_out_at=clock_out_at-interval '100 days' WHERE id=$1",[f.entryId]);
+  await q("UPDATE break_entries SET break_start_at=break_start_at-interval '100 days',break_end_at=break_end_at-interval '100 days' WHERE id=$1",[f.breakId]);
+  for(let n=0;n<21;n++)await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status) VALUES($1,$2,'loc-1',$3,clock_timestamp()-($4::integer||' days')::interval-interval '2 hours',clock_timestamp()-($4::integer||' days')::interval,'CLOCKED_OUT')",['recent-'+n,proof.employee.id,f.deviceId,n+1]);
+  expect(corr(await readEmployeeHours(proof,db.executor,'corrections','list')).snapshot.targets.some(t=>t.timeEntryId===f.entryId)).toBe(false);
+  expect(corr(await readEmployeeHours(proof,db.executor,'corrections','target:'+f.entryId)).snapshot.targets.some(t=>t.timeEntryId===f.entryId)).toBe(true);
+  expect(corr(await readEmployeeHours(peer,db.executor,'corrections','target:'+f.entryId)).snapshot.targets.some(t=>t.timeEntryId===f.entryId)).toBe(false);
+ }finally{await db.dispose();}
+});

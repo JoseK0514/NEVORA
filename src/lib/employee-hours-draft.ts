@@ -25,7 +25,7 @@ export function buildHoursProposal(draft:HoursDraft,info:HoursEdit,operationId:s
  try{proposedStartAt=info.context.state==='confirmed'&&hoursLocalValue(info.context.startAt,zone)===start?info.context.startAt:hoursInstant(start,zone);}catch{return invalid('startTime','Choose a valid, unambiguous start date and time.');}
  try{proposedEndAt=info.context.state==='confirmed'&&hoursLocalValue(info.context.endAt,zone)===end?info.context.endAt:hoursInstant(end,zone);}catch{return invalid('endTime','Choose a valid, unambiguous end date and time.');}
  if(Date.parse(proposedEndAt)<=Date.parse(proposedStartAt))return invalid('endTime','The end must be after the start. Check the end date for overnight work.');
- const reason=draft.reason.trim();if(!reason||reason.length>500||/[\u0000-\u001f\u007f]/.test(reason))return invalid('reason','Enter a brief reason, up to 500 characters, without control characters.');
+ const reason=draft.reason.trim();if(!reason||reason.length>500||/[\u0000-\u001f\u007f]/.test(reason))return invalid('reason','Enter a brief reason on one line, up to 500 characters.');
  const common={operationId,proposedStartAt,proposedEndAt,reason},command=info.kind==='ENTRY_BOUNDARY'?{...common,kind:'ENTRY_BOUNDARY',timeEntryId:info.entryId}:info.kind==='BREAK_BOUNDARY'?{...common,kind:'BREAK_BOUNDARY',timeEntryId:info.entryId,breakEntryId:info.breakId}:{...common,kind:'MISSING_ENTRY',locationId:draft.locationId,...(info.adjustmentId?{targetAdjustmentId:info.adjustmentId,expectedBaseRevision:info.revision}:{})};
  const payload=parseHoursCorrection({basis:draft.basis,command});return payload?{payload,error:null}:invalid('reason','Review your proposed times and reason before sending.');
 }

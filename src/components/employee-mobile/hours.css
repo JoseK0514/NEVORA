@@ -3,7 +3,7 @@
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours :is(p,dl,dd) { margin:0; }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours :is(.em-request-notice,.em-hours-success,.em-hours-form,.em-hours-fields,.em-hours-disclosure-body) { display:flex; flex-direction:column; gap:var(--em-space-4); min-width:0; }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours .em-request-notice h2 { margin:0; }
- html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours .em-request-heading h1 { font-size:min(var(--em-size-page),calc(12.5vw + .25rem)); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours .em-request-heading h1 { font-size:min(var(--em-size-title),calc(12.5vw + .25rem)); }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours-tabs { display:flex; flex-wrap:wrap; gap:var(--em-space-1); padding:var(--em-space-1); border:1px solid var(--em-secondary); border-radius:var(--em-control); background:var(--em-surface); }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours-tabs a { flex:1 1 6rem; min-width:0; display:flex; align-items:center; justify-content:center; min-height:var(--em-target); padding:var(--em-space-3) var(--em-space-2); border-radius:var(--em-small); color:var(--em-teal); text-decoration:none; text-align:center; font-size:var(--em-size-support); line-height:var(--em-line-label); font-weight:var(--em-weight-action); }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours-tabs a[aria-current] { background:var(--em-wash); color:var(--em-press); }
@@ -12,9 +12,9 @@
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours-today h2 { font-size:var(--em-size-shift); line-height:var(--em-line-shift); margin:0; }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours-today p { color:var(--em-muted); font-size:var(--em-size-support); }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours-facts { border-top:1px solid var(--em-line); }
- html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours-facts>div { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--em-space-4); padding:var(--em-space-4) 0; border-bottom:1px solid var(--em-line); }
- html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours-facts dt { color:var(--em-muted); min-width:0; flex:1; }
- html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours-facts dd { color:var(--em-ink); font-weight:var(--em-weight-label); text-align:end; max-width:65%; overflow-wrap:anywhere; }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours-facts>div { display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:var(--em-space-4); padding:var(--em-space-4) 0; border-bottom:1px solid var(--em-line); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours-facts dt { color:var(--em-muted); min-width:0; flex:1 1 8rem; }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours-facts dd { color:var(--em-ink); font-weight:var(--em-weight-label); text-align:end; flex:1 1 8rem; max-width:100%; overflow-wrap:anywhere; }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours-facts dd small { display:block; margin-top:var(--em-space-2); font-weight:400; color:var(--em-muted); font-size:var(--em-size-support); }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] :is(.em-hours-help,.em-hours label small,.em-hours-success p,.em-hours-disclosure summary small,.em-hours-history-list time) { color:var(--em-muted); font-size:var(--em-size-support); font-weight:400; line-height:var(--em-line-body); }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours-own-note { white-space:pre-wrap; overflow-wrap:anywhere; }
