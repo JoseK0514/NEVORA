@@ -13,13 +13,14 @@ The approved scope remains the three-phase plan at `outputs/employee-mobile/rema
 
 - Fourth Phase2 batch: own full/partial time off, history/detail and pending withdrawal plus usual/weekly availability, deadlines, split hours, stale/mounted draft and original-operation recovery; candidate `9034533e0e8a55e5e168affcccbb90b850ddeee8`. Independent250unit/58combined tests passed; code approved and UI findings independently closed. See `../employee-mobile-planning/HANDOFF.md` and authored reports. This is bounded local acceptance; the groups below remain Phase2.
 
+- Fifth Phase2 batch: own Hours/raw punches and breaks, canonical period timecards, entry/break/missing-time and approved-missing replacements, own decisions/history, exact retained links and original-operation recovery; accepted application/test candidate `e17a8e7479988a1b7159b714f8a2af9c146f2cd3`. Independent422unit/71SQL-browser tests pass; code finding and UI/QA material findings closed. See `../employee-mobile-hours/HANDOFF.md` and authored reports. This is bounded local acceptance; Phase2 remains active.
+
 ## Remaining Phase 2 implementation
 
-1. Own Hours, timecards, punches/breaks/effective time, corrections/missing-time proposals and decision history.
-2. Complete source-backed notifications/destinations and updates, permitted acknowledgement and authorized team posting/withdrawal.
-3. Own profile, language/appearance preferences, support/legal, contextual return and actual sign-out/device cleanup.
-4. Capability-dependent calendar, passkeys, current-device alerts and own deletion-request lifecycles.
-5. Own published Pay statements, current payroll/module gates and protected PDF view/download.
+1. Complete source-backed notifications/destinations and updates, permitted acknowledgement and authorized team posting/withdrawal.
+2. Own profile, language/appearance preferences, support/legal, contextual return and actual sign-out/device cleanup.
+3. Capability-dependent calendar, passkeys, current-device alerts and own deletion-request lifecycles.
+4. Own published Pay statements, current payroll/module gates and protected PDF view/download.
 
 Each batch must preserve current role/workspace/session/module authority, source/revision binding, immutable operation recovery, unrelated available capabilities, consistent mobile components and desktop/management separation. Maintain explicit loading/empty/partial/error/refusal/pending/success recovery states.
 

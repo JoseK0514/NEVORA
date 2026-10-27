@@ -292,6 +292,23 @@
       },
       "implementation": "src/components/employee-mobile/planning.tsx, timeoff.tsx, availability.tsx, planning.css and minimal protected planning transport",
       "handoff": "docs/execution/employee-mobile-planning/HANDOFF.md"
+    },
+    {
+      "date": "2026-10-27",
+      "scope": "Employee/Lead mobile own Hours, timecards and correction requests",
+      "direction": "Approved teal Operate tokens, original wordmark and regular Phosphor. Separate original Clocker punches, effective adjustments and proposals. Native explicitly labelled fields, 48px actions, clear mounted original-operation recovery. Preserve desktop and management authority.",
+      "componentProvenance": {
+        "retrieval": "Free metadata only; no paid retrieval/generation/new package",
+        "searchResults": [
+          25171,
+          8703,
+          29211,
+          40157
+        ],
+        "selection": "Existing native controls, semantic mobile tokens and canonical time owners fit the workflow."
+      },
+      "implementation": "src/components/employee-mobile/hours*.tsx, hours.css and guarded own Hours adapters",
+      "handoff": "docs/execution/employee-mobile-hours/HANDOFF.md"
     }
   ],
   "evidence": [
