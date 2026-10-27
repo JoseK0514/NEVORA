@@ -1,0 +1,157 @@
+{
+  "tested_candidate": "74979bbb6e2694eb54a57191f0a8f1267f56d7b8",
+  "base": "46e202786863279302026ee03a0e225c359fa55c",
+  "application_file_count": 1905,
+  "source_manifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-phase1/evidence/owned-next-E4GBhs/source-manifest.json",
+  "source_manifest_sha256": "e333edd06766dd81c21daeaa0b4bc9f5548da7a7c7539e78e72be57fbe70176b",
+  "all_source_bytes_match": true,
+  "root_browser_named_checks": 55,
+  "root_browser_errors": [],
+  "contrast_measurements": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "control": "recorded-time Refresh",
+      "ratio": 5.4251030120255885
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "control": "recorded-time Refresh",
+      "ratio": 5.4251030120255885
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "control": "recorded-time Refresh",
+      "ratio": 5.4251030120255885
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "control": "recorded-time Refresh",
+      "ratio": 9.562007412495191
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "control": "recorded-time Refresh",
+      "ratio": 9.562007412495191
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "control": "recorded-time Refresh",
+      "ratio": 9.562007412495191
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "control": "Home retry",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "control": "Home retry",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "control": "recorded-time Refresh",
+      "ratio": 5.4251030120255885
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "control": "recorded-time Refresh",
+      "ratio": 5.4251030120255885
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "control": "recorded-time Refresh",
+      "ratio": 5.4251030120255885
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "control": "recorded-time Refresh",
+      "ratio": 9.562007412495191
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "control": "recorded-time Refresh",
+      "ratio": 9.562007412495191
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "control": "recorded-time Refresh",
+      "ratio": 9.562007412495191
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "control": "recorded-time Refresh",
+      "ratio": 5.4251030120255885
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "control": "recorded-time Refresh",
+      "ratio": 5.4251030120255885
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "control": "recorded-time Refresh",
+      "ratio": 5.4251030120255885
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "control": "recorded-time Refresh",
+      "ratio": 9.562007412495191
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "control": "recorded-time Refresh",
+      "ratio": 9.562007412495191
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "control": "recorded-time Refresh",
+      "ratio": 9.562007412495191
+    }
+  ],
+  "independent_qa_report": "qa-review.md",
+  "independent_ui_report": "ui-review.md",
+  "independent_code_report": "code-review.md",
+  "deployment_state": "local branch only; no push/merge/deployment",
+  "conditions": "HANDOFF.md"
+}

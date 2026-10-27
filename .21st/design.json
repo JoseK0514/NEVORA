@@ -210,6 +210,24 @@
       },
       "implementation": "src/app/employee-mobile-corporate.css and native class helpers; one live business/control tree per route",
       "handoff": "docs/execution/2026-10-13-employee-time-mobile-refinement.md"
+    },
+    {
+      "date": "2026-10-27",
+      "scope": "Employee/Lead mobile Phase 1: shared navigation and Home/Schedule, bounded Calendar heading/deep-link fix; desktop and other roles retain incumbent system",
+      "direction": "Jose selected the new Owner concept clean teal style. Reuse actual controllers, canonical permissions and real React primitives; scoped semantic palette/type/spacing tokens, original wordmark and regular Phosphor. See docs/product/specs/employee-mobile-teal/README.md.",
+      "references": [
+        "Approved local prototype SHA25606c548a89f01e46c687c1d7e0a961da01c74952d6b7bfff34a1f7459e2396469"
+      ],
+      "componentProvenance": {
+        "retrieval": "Free21st metadata search only; no code retrieval/generation/new dependencies",
+        "searchResults": [
+          7499,
+          470,
+          29180
+        ]
+      },
+      "implementation": "src/components/employee-mobile/mobile.css, use-mobile.ts, navigation-layout.ts and week-picker.tsx over existing AppShell/Home/Schedule",
+      "handoff": "docs/execution/employee-mobile-phase1/plan.md"
     }
   ],
   "evidence": [
