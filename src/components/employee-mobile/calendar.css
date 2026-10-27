@@ -41,6 +41,7 @@
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar li + li { margin-top:var(--em-space-3); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-provider-list details p { margin-top:var(--em-space-3); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar a:not(.em-calendar-button) { color:var(--em-teal); text-decoration:underline; text-underline-offset:3px; }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-note a { display:inline-flex; align-items:center; min-height:var(--em-target); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-provider-list a { display:inline-flex; align-items:center; min-height:var(--em-target); margin-top:var(--em-space-2); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-manage { border-top:1px solid var(--em-line); padding-top:var(--em-space-1); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-manage > div { margin-top:var(--em-space-4); }
