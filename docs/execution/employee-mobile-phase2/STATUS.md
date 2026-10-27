@@ -15,6 +15,8 @@ The approved scope remains the three-phase plan at `outputs/employee-mobile/rema
 
 - Fifth Phase2 batch: own Hours/raw punches and breaks, canonical period timecards, entry/break/missing-time and approved-missing replacements, own decisions/history, exact retained links and original-operation recovery; accepted application/test candidate `e17a8e7479988a1b7159b714f8a2af9c146f2cd3`. Independent422unit/71SQL-browser tests pass; code finding and UI/QA material findings closed. See `../employee-mobile-hours/HANDOFF.md` and authored reports. This is bounded local acceptance; Phase2 remains active.
 
+- Sixth Phase2 batch, Notifications/Updates: **in progress at Cloud transfer**, application/test candidate `6110790f48cd6563de05c8cb7e1fcc496dfda135`. Earlier three-engine preflight and600unit tests pass, but a newly added pending-module-revocation regression is RED. Final whole-change code and independent UI/QA review have not occurred. See `../../handoffs/2026-10-27-employee-mobile-cloud-checkpoint.md`. Do not count this batch as accepted or start Phase3.
+
 ## Remaining Phase 2 implementation
 
 1. Complete source-backed notifications/destinations and updates, permitted acknowledgement and authorized team posting/withdrawal.
