@@ -16,7 +16,8 @@ it('limits an uncertain write to original recovery rather than replacement or re
  const html=renderToStaticMarkup(<CalendarSubscriptionView {...base} notice="The result is unknown." pendingKind="ROTATE"/>);expect(html).toContain('Retry original request');expect(html).not.toContain('>Revoke link<');expect(html).not.toContain('>Replace link<');
 });
 it('does not render private URL/provider or management actions after pause or denial',()=>{
+ expect(renderToStaticMarkup(<CalendarSubscriptionView {...base}/>)).toContain('aria-labelledby="calendar-provider-title"');
  for(const props of [{paused:true},{status:{state:'unauthorized' as const,reason:'access_denied'}}]){
-  const html=renderToStaticMarkup(<CalendarSubscriptionView {...base} {...props} url="PRIVATE-ONCE"/>);expect(html).not.toContain('PRIVATE-ONCE');expect(html).not.toContain('Subscribe in your');expect(html).not.toContain('>Revoke link<');
+  const html=renderToStaticMarkup(<CalendarSubscriptionView {...base} {...props} url="PRIVATE-ONCE"/>);expect(html).not.toContain('PRIVATE-ONCE');expect(html).not.toContain('aria-labelledby="calendar-provider-title"');expect(html).not.toContain('https://support.apple.com/');expect(html).not.toContain('https://support.google.com/');expect(html).not.toContain('https://support.microsoft.com/');expect(html).not.toContain('>Revoke link<');
  }
 });
