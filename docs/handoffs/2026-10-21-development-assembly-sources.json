@@ -363,9 +363,9 @@
     },
     {
       "branch": "development",
-      "sha": "dfdcefa0edc9d02bad5edf79b2b5a9587b194eb2",
+      "sha": "84c3fc357b006220ef6bbf29580e7327228c9659",
       "disposition": "target",
-      "reason": "Freshly fetched combined development dfdcefa0 includes merged PR35. PR36 changes the default appearance to Light and records bounded source custody. Main/production and separately active PR27/33/34 are excluded from this merge."
+      "reason": "Fresh development after merged PR35 and the separate October 27 seven-branch policy publication. PR36 keeps the frozen mobile screens, authentication, permissions and production unchanged. Held PR27/33/34 remain excluded."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -426,7 +426,13 @@
       "disposition": "included",
       "archiveRef": "refs/tags/archive/branches/2026-10-27/codex/mobile-access-onboarding-20261026",
       "reason": "PR35 is merged in development dfdcefa0 and is an ancestor of PR36. Preserve its exact head in this verified remote archive tag; remove only the already-merged remote branch to retain the six-active-branch ceiling. Local branches/worktrees remain untouched."
+    },
+    {
+      "branch": "claude-codex-collab-nevora",
+      "sha": "84c3fc357b006220ef6bbf29580e7327228c9659",
+      "disposition": "included",
+      "reason": "Current development policy commit, merged into the PR36 branch after its twelve CI checks passed. Preserves the upstream seven-branch policy and collaboration branch classification; no application, authentication, permission or deployment change."
     }
   ],
-  "maximumActiveBranches": 6
+  "maximumActiveBranches": 7
 }

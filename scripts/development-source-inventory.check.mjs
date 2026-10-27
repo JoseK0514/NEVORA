@@ -31,6 +31,16 @@ test('does not hide new work pushed to the assembly branch after integration', (
     'Remote assembly has changes absent from this checkout',
   ]);
 });
+test('recognizes the approved Claude/Codex collaboration branch without bypassing ancestry', () => {
+  const i=inventory();i.assemblyBranch='claude-codex-collab-nevora';
+  const actual=heads();actual.set(i.assemblyBranch,next);
+  assert.deepEqual(compareSources(i,actual,()=>true),[]);
+  assert.deepEqual(compareSources(i,actual,value=>value===sha),[
+    'Remote assembly has changes absent from this checkout',
+  ]);
+  i.assemblyBranch='claude/other';
+  assert.throws(()=>validateInventory(i));
+});
 test('rejects invalid hashes, duplicate sources and relaxed main disposition', () => {
   for (const mutate of [i=>i.sources[0].sha='short',i=>i.sources.push(i.sources[0]),i=>i.sources[0].disposition='reference']) {
     const i=inventory(); mutate(i); assert.throws(()=>validateInventory(i));
@@ -75,7 +85,13 @@ test('enforces the approved remote branch ceiling without hiding extra heads',()
   assert.deepEqual(compareSources(i,actual,()=>true),[]);
   actual.set('seventh',next);
   assert.deepEqual(compareSources(i,actual,()=>true),['Unclassified branch: seventh','Remote branch ceiling exceeded: 7 > 6']);
-  for(const value of [0,7,1.5,'6']){i.maximumActiveBranches=value;assert.throws(()=>validateInventory(i));}
+  i.maximumActiveBranches=7;
+  assert.deepEqual(compareSources(i,actual,()=>true),['Unclassified branch: seventh']);
+  i.sources.push({branch:'seventh',sha:next,disposition:'held',reason:'approved seventh branch'});
+  assert.deepEqual(compareSources(i,actual,()=>true),[]);
+  actual.set('eighth',next);
+  assert.deepEqual(compareSources(i,actual,()=>true),['Unclassified branch: eighth','Remote branch ceiling exceeded: 8 > 7']);
+  for(const value of [0,8,1.5,'7']){i.maximumActiveBranches=value;assert.throws(()=>validateInventory(i));}
 });
 test('parses exact lightweight archive tags without accepting malformed or duplicate refs',()=>{
   const ref='refs/tags/archive/branches/2026-10-22/feature';
