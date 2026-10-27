@@ -51,3 +51,24 @@ it('does not apply notification source invalidation to the separate own-profile 
  window.dispatchEvent(new Event('nevora:notifications-changed'));await vi.advanceTimersByTimeAsync(0);
  expect(request).toHaveBeenCalledTimes(1);
 });
+
+it('signout intent immediately fences own profile and focus/storage cannot reopen that mounted session',async()=>{
+ const own={state:'ready',kind:'profile',observedAt:new Date().toISOString(),validForMs:45000,profile:{name:'PRIVATE PROFILE PERSON',role:'Employee',workspace:'Fictional workplace',timeZone:'America/Puerto_Rico',locations:['Main Office']}};
+ const request=vi.fn(async()=>Response.json(own));vi.stubGlobal('fetch',request);
+ EmployeeAccountPanel({kind:'profile',authority:'profile-view'});cleanup=host.effect!();await vi.advanceTimersByTimeAsync(0);
+ expect(last().snapshot).toMatchObject({state:'ready',kind:'profile'});
+ window.dispatchEvent(new Event('nevora:signout'));
+ expect(last().paused).toBe(true);expect(last().snapshot).toBeNull();
+ for(const event of ['focus','pageshow','online','storage'])window.dispatchEvent(new Event(event));
+ await vi.advanceTimersByTimeAsync(120000);
+ expect(last().snapshot).toBeNull();expect(request).toHaveBeenCalledTimes(1);
+});
+it('a held own-profile response cannot restore private facts after native signout intent',async()=>{
+ let resolve!:(response:Response)=>void;
+ vi.stubGlobal('fetch',vi.fn(()=>new Promise<Response>(done=>{resolve=done;})));
+ EmployeeAccountPanel({kind:'profile',authority:'profile-view'});cleanup=host.effect!();await vi.advanceTimersByTimeAsync(0);
+ window.dispatchEvent(new Event('nevora:signout'));
+ resolve(Response.json({state:'ready',kind:'profile',observedAt:new Date().toISOString(),validForMs:45000,profile:{name:'LATE PRIVATE PERSON',role:'Employee',workspace:'Fictional workplace',timeZone:'America/Puerto_Rico',locations:['Main Office']}}));
+ await vi.advanceTimersByTimeAsync(0);
+ expect(last().paused).toBe(true);expect(last().snapshot).toBeNull();
+});

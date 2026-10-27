@@ -32,4 +32,7 @@ const groups=[
 ];
 // Project-specific namespaces preserve every factory's existing admission fence.
 // Timeouts, serial execution and all selected suites remain unchanged.
-export default defineConfig({test:{fileParallelism:false,passWithNoTests:false,projects:groups.map(group=>({extends:false,resolve:resolution,test:{name:group.name,include:group.include,fileParallelism:false,maxWorkers:1,testTimeout:600000,hookTimeout:30000,env:process.env.FUEL_TEST_DATABASE_URL?{FUEL_TEST_DATABASE_URL:communicationFixtureUrl(process.env.FUEL_TEST_DATABASE_URL,group.prefix)}:{}}}))}});
+export function employeeMobileProjects(additionalEmployeeFiles:readonly string[]=[]){
+ return groups.map(group=>({extends:false as const,resolve:resolution,test:{name:group.name,include:group.name==='employee'?[...group.include,...additionalEmployeeFiles]:group.include,fileParallelism:false,maxWorkers:1,testTimeout:600000,hookTimeout:30000,env:process.env.FUEL_TEST_DATABASE_URL?{FUEL_TEST_DATABASE_URL:communicationFixtureUrl(process.env.FUEL_TEST_DATABASE_URL,group.prefix)}:{}}}));
+}
+export default defineConfig({test:{fileParallelism:false,passWithNoTests:false,projects:employeeMobileProjects()}});
