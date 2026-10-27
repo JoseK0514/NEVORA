@@ -23,14 +23,25 @@ export function validPlanningHours(v:unknown):v is PlanningHours[]{
  const sorted=[...v].sort((a,b)=>a.dayOfWeek-b.dayOfWeek||a.startTime.localeCompare(b.startTime));
  return sorted.every((w,i)=>!i||w.dayOfWeek!==sorted[i-1].dayOfWeek||w.startTime>=sorted[i-1].endTime);
 }
+/** The UI can identify and associate the exact field before sending a validated command. */
+export function planningHoursIssue(windows:PlanningHours[]):{dayOfWeek:number;index:number;field:'startTime'|'endTime';reason:'range'|'overlap'}|null{
+ const counts=new Map<number,number>(),indexed=windows.map(w=>{const index=counts.get(w.dayOfWeek)??0;counts.set(w.dayOfWeek,index+1);return {...w,index};});
+ for(const w of indexed){if(!clock(w.startTime))return {dayOfWeek:w.dayOfWeek,index:w.index,field:'startTime',reason:'range'};if(!(clock(w.endTime)||w.endTime==='24:00')||w.startTime>=w.endTime)return {dayOfWeek:w.dayOfWeek,index:w.index,field:'endTime',reason:'range'};}
+ const sorted=[...indexed].sort((a,b)=>a.dayOfWeek-b.dayOfWeek||a.startTime.localeCompare(b.startTime));
+ for(let i=1;i<sorted.length;i++){const w=sorted[i],previous=sorted[i-1];if(w.dayOfWeek===previous.dayOfWeek&&w.startTime<previous.endTime)return {dayOfWeek:w.dayOfWeek,index:w.index,field:'startTime',reason:'overlap'};}
+ return null;
+}
+
 export function sameHours(a:PlanningHours[],b:PlanningHours[]){
  const key=(rows:PlanningHours[])=>{const merged:PlanningHours[]=[];for(const row of [...rows].sort((x,y)=>x.dayOfWeek-y.dayOfWeek||x.startTime.localeCompare(y.startTime))){const last=merged.at(-1);if(last&&last.dayOfWeek===row.dayOfWeek&&row.startTime<=last.endTime)last.endTime=last.endTime>row.endTime?last.endTime:row.endTime;else merged.push({...row});}return merged.map(w=>[w.dayOfWeek,w.startTime,w.endTime].join('|')).join(';');};
  return key(a)===key(b);
 }
+export function planningChangedDays(base:PlanningHours[],windows:PlanningHours[],confirmEmpty=false){return confirmEmpty&&!windows.length?[0,1,2,3,4,5,6]:[0,1,2,3,4,5,6].filter(day=>!sameHours(base.filter(w=>w.dayOfWeek===day),windows.filter(w=>w.dayOfWeek===day)));}
+
 export function mergePlanningDraft(latest:PlanningHours[],draft:PlanningHours[],changedDays:number[]){const changed=new Set(changedDays);return [...latest.filter(w=>!changed.has(w.dayOfWeek)),...draft.filter(w=>changed.has(w.dayOfWeek))].sort((a,b)=>a.dayOfWeek-b.dayOfWeek||a.startTime.localeCompare(b.startTime));}
 export function parsePlanningCommand(v:unknown):PlanningCommand|null{
  if(!object(v))return null;
- if(v.kind==='request'&&keys(v,['kind','requestId','startDate','endDate','startTime','endTime','note'])&&uuid(v.requestId)&&typeof v.startDate==='string'&&isValidIsoDate(v.startDate)&&typeof v.endDate==='string'&&isValidIsoDate(v.endDate)&&v.startDate<=v.endDate&&typeof v.note==='string'&&v.note.length<=250&&v.note===v.note.trim()&&((v.startTime===null&&v.endTime===null)||(clock(v.startTime)&&clock(v.endTime)&&v.startTime<v.endTime&&v.startDate===v.endDate)))return v as PlanningCommand;
+ if(v.kind==='request'&&keys(v,['kind','requestId','startDate','endDate','startTime','endTime','note'])&&uuid(v.requestId)&&typeof v.startDate==='string'&&isValidIsoDate(v.startDate)&&typeof v.endDate==='string'&&isValidIsoDate(v.endDate)&&v.startDate<=v.endDate&&typeof v.note==='string'&&v.note.length<=250&&v.note===v.note.trim()&&((v.startTime===null&&v.endTime===null)||(clock(v.startTime)&&(clock(v.endTime)||v.endTime==='24:00')&&v.startTime<v.endTime&&v.startDate===v.endDate)))return v as PlanningCommand;
  if(v.kind==='withdraw'&&keys(v,['kind','requestId','confirmed'])&&uuid(v.requestId)&&v.confirmed===true)return v as PlanningCommand;
  if(v.kind==='availability'&&keys(v,['kind','selection','basis','windows','changedDays','confirmEmpty'])&&(v.selection==='normal'||planningWeek(v.selection))&&hash(v.basis)&&validPlanningHours(v.windows)&&Array.isArray(v.changedDays)&&v.changedDays.length<=7&&new Set(v.changedDays).size===v.changedDays.length&&v.changedDays.every(d=>Number.isInteger(d)&&d>=0&&d<=6)&&typeof v.confirmEmpty==='boolean'&&(v.windows.length>0||v.confirmEmpty))return v as PlanningCommand;
  return null;
@@ -44,7 +55,7 @@ export function parseEmployeePlanning(v:unknown):EmployeePlanningSnapshot{
  const d=v.data;
  if(v.view==='timeoff'){
   if(!(v.selection==='list'||v.selection==='new'||planningId(v.selection))||!keys(d,['requests'])||!Array.isArray(d.requests)||d.requests.length>10000||!v.enabled&&d.requests.length||v.selection==='new'&&d.requests.length)return failed();
-  for(const row of d.requests){if(!object(row)||!keys(row,['id','startDate','endDate','startTime','endTime','note','status','createdAt','reviewedAt','reviewer'])||!planningId(row.id)||typeof row.startDate!=='string'||!isValidIsoDate(row.startDate)||typeof row.endDate!=='string'||!isValidIsoDate(row.endDate)||row.startDate>row.endDate||!(row.startTime===null&&row.endTime===null||clock(row.startTime)&&clock(row.endTime)&&row.startTime<row.endTime&&row.startDate===row.endDate)||!(row.note===null||str(row.note,10000))||!['PENDING','APPROVED','DENIED','CANCELLED'].includes(String(row.status))||!instant(row.createdAt)||!(row.reviewedAt===null||instant(row.reviewedAt))||!(row.reviewer===null||str(row.reviewer,300))||v.selection!=='list'&&row.id!==v.selection)return failed();}
+  for(const row of d.requests){if(!object(row)||!keys(row,['id','startDate','endDate','startTime','endTime','note','status','createdAt','reviewedAt','reviewer'])||!planningId(row.id)||typeof row.startDate!=='string'||!isValidIsoDate(row.startDate)||typeof row.endDate!=='string'||!isValidIsoDate(row.endDate)||row.startDate>row.endDate||!(row.startTime===null&&row.endTime===null||clock(row.startTime)&&(clock(row.endTime)||row.endTime==='24:00')&&row.startTime<row.endTime&&row.startDate===row.endDate)||!(row.note===null||str(row.note,10000))||!['PENDING','APPROVED','DENIED','CANCELLED'].includes(String(row.status))||!instant(row.createdAt)||!(row.reviewedAt===null||instant(row.reviewedAt))||!(row.reviewer===null||str(row.reviewer,300))||v.selection!=='list'&&row.id!==v.selection)return failed();}
   if(v.selection!=='list'&&d.requests.length>1)return failed();
  }else if(v.view==='availability'){
   if(!(v.selection==='normal'||planningWeek(v.selection))||!v.enabled||!keys(d,['basis','windows','deadline','submitted','locked','nextWeek'])||!hash(d.basis)||!validPlanningHours(d.windows)||!(d.deadline===null||instant(d.deadline))||typeof d.submitted!=='boolean'||typeof d.locked!=='boolean'||!planningWeek(d.nextWeek)||v.selection==='normal'&&(d.deadline!==null||d.submitted||d.locked))return failed();

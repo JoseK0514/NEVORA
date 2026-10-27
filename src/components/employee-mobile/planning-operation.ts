@@ -15,7 +15,7 @@ export class PlanningOperation{
  private async run(send:Send,allowed:()=>boolean){
   if(!this.command||!allowed())return;
   this.pending=true;this.notify();
-  try{this.result=parsePlanningResult(await send(this.command));}catch{this.result={state:'unknown',requestId:null};}
+  try{const result=parsePlanningResult(await send(this.command)),expected=this.command.kind==='availability'?null:this.command.requestId;this.result=result.requestId===expected?result:{state:'unknown',requestId:expected};}catch{this.result={state:'unknown',requestId:null};}
   finally{this.pending=false;this.notify();}
  }
  async submit(input:PlanningCommand,send:Send,allowed:()=>boolean){

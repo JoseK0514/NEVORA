@@ -1,5 +1,12 @@
 @media (max-width:767px), (max-width:900px) and (max-height:430px) and (orientation:landscape) and (pointer:coarse) {
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .page-frame:has(> .em-requests-mobile) > :is(.q-timeoff,.q-avail) { display:none; }
+
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-request-tabs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--em-space-2); padding:var(--em-space-1); background:var(--em-surface); border:1px solid var(--em-secondary); border-radius:var(--em-control); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-request-tabs a { display:flex; align-items:center; justify-content:center; min-height:var(--em-target); padding:var(--em-space-3) var(--em-space-2); border-radius:var(--em-small); color:var(--em-teal); font-size:var(--em-size-support); line-height:var(--em-line-label); font-weight:var(--em-weight-action); text-decoration:none; text-align:center; }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-request-tabs a[aria-current] { background:var(--em-wash); color:var(--em-press); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-planning .em-request-notice { display:flex; flex-direction:column; gap:var(--em-space-3); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-planning .em-request-notice h2 { margin:0; }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-planning-dates .em-planning-date { grid-column:1/-1; }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-planning :is(.em-planning-form,.em-planning-fields,.em-planning-success) { display:flex; flex-direction:column; gap:var(--em-space-5); margin:0; padding:0; min-width:0; border:0; }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-planning :is(p,dl,dd) { margin:0; }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-planning fieldset { min-width:0; }

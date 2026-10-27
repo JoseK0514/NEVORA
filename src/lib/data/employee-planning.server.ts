@@ -38,7 +38,7 @@ export async function readEmployeePlanning(proof:SessionMutationProof,executor:S
    const [{basis}]=await guarded.query<{basis:string}>(planningBasis(proof.employee.id,selection));
    const currentWeek=weekStartFor(businessDate(new Date(),workspace.timeZone)),week=selection==='normal'?currentWeek:selection;
    const inputs=await readAvailabilityInputs(proof.employee.id,week,week,guarded);
-   const windows=selection==='normal'?inputs.normal:resolveAvailabilityWeek({weekStart:week,...inputs});
+   const windows=selection==='normal'?resolveAvailabilityWeek({weekStart:week,normal:inputs.normal,weeks:[],exceptions:[]}):resolveAvailabilityWeek({weekStart:week,...inputs});
    const [settings]=selection==='normal'?[]:await guarded.query<{deadline:string|null;locked:boolean}>({text:'SELECT availability_deadline::text AS deadline,availability_deadline < clock_timestamp() AS locked FROM schedule_week_settings WHERE week_start=$1',values:[week]});
    const [next]=await guarded.query<{week:string}>({text:'SELECT week_start::text AS week FROM schedule_week_settings WHERE week_start >= $1 AND availability_deadline IS NOT NULL ORDER BY week_start LIMIT 1',values:[currentWeek]});
    const [{basis:latest}]=await guarded.query<{basis:string}>(planningBasis(proof.employee.id,selection));if(latest!==basis)throw Error('Availability changed');

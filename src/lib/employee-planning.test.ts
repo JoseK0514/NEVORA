@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {parsePlanningCommand,parseEmployeePlanning,sameHours,mergePlanningDraft,type PlanningHours} from './employee-planning';
+import {parsePlanningCommand,parseEmployeePlanning,sameHours,mergePlanningDraft,planningChangedDays,planningHoursIssue,type PlanningHours} from './employee-planning';
 const id='c3849d11-f86e-4f08-8b90-84a8e2053290';
 const request={kind:'request',requestId:id,startDate:'2026-11-02',endDate:'2026-11-02',startTime:null,endTime:null,note:''};
 const hours:PlanningHours[]=[{dayOfWeek:1,startTime:'09:00',endTime:'12:00'},{dayOfWeek:1,startTime:'13:00',endTime:'17:00'}];
@@ -13,3 +13,8 @@ describe('employee planning contracts',()=>{
  it('rejects widened, invalid or cross-bound planning snapshots',()=>{const read={state:'ready',kind:'planning',view:'availability',selection:'2026-11-02',authority:'a'.repeat(64),observedAt:'2026-10-27T15:00:00Z',validForMs:45000,timeZone:'America/Puerto_Rico',enabled:true,data:{basis:'a'.repeat(32),windows:hours,deadline:null,submitted:false,locked:false,nextWeek:'2026-11-02'}};expect(parseEmployeePlanning(read)).toEqual(read);for(const patch of [{employeeId:'other'},{validForMs:45001},{selection:'2026-11-03'},{timeZone:'unknown/zone'},{data:{...read.data,windows:[{...hours[0],employeeId:'other'}]}}])expect(parseEmployeePlanning({...read,...patch}).state).toBe('unavailable');});
 });
 it('recognizes equivalent contiguous hours after the existing weekly resolver merges intervals',()=>{expect(sameHours([{dayOfWeek:1,startTime:'09:00',endTime:'12:00'},{dayOfWeek:1,startTime:'12:00',endTime:'17:00'}],[{dayOfWeek:1,startTime:'09:00',endTime:'17:00'}])).toBe(true);});
+
+it('identifies the actual later-day overlapping interval without moving focus to a valid earlier day',()=>{expect(planningHoursIssue([{dayOfWeek:1,startTime:'09:00',endTime:'17:00'},{dayOfWeek:5,startTime:'09:00',endTime:'17:00'},{dayOfWeek:5,startTime:'10:00',endTime:'12:00'}])).toEqual({dayOfWeek:5,index:1,field:'startTime',reason:'overlap'});expect(planningHoursIssue([{dayOfWeek:5,startTime:'16:00',endTime:'12:00'}])).toEqual({dayOfWeek:5,index:0,field:'endTime',reason:'range'});});
+it('accepts the existing calendar-day end boundary for partial-day requests',()=>{expect(parsePlanningCommand({...request,startTime:'18:00',endTime:'24:00'})).not.toBeNull();});
+
+it('preserves explicitly confirmed whole-week unavailability when rebasing onto new saved hours',()=>{const edited=planningChangedDays([],[],true);expect(mergePlanningDraft([{dayOfWeek:2,startTime:'09:00',endTime:'17:00'}],[],edited)).toEqual([]);});

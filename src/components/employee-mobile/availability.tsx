@@ -1,36 +1,38 @@
 'use client';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useId,useRef,useState} from 'react';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {PlanningFrame} from './planning-frame';
 import {usePlanning} from './use-planning';
 import {PlanningOperations} from './planning-operation';
 import {PlanningFeedback,usePlanningOperation} from './planning-feedback';
-import {mergePlanningDraft,parsePlanningCommand,sameHours,type PlanningHours,type PlanningCommand,type AvailabilityPlanning} from '@/lib/employee-planning';
+import {mergePlanningDraft,planningChangedDays,planningHoursIssue,parsePlanningCommand,type PlanningHours,type PlanningCommand,type AvailabilityPlanning} from '@/lib/employee-planning';
 import {saveEmployeePlanningAction,checkEmployeePlanningAction} from '@/app/app/employee-planning/actions';
-import {formatTime,formatWeekRange,isValidIsoDate,weekStartFor} from '@/lib/date-utils';
+import {formatTimeRange,formatWeekRange,isValidIsoDate,weekStartFor} from '@/lib/date-utils';
 type Day={dayOfWeek:number;available:boolean;periods:{startTime:string;endTime:string}[]};
 type Draft={basis:string;base:PlanningHours[];days:Day[];confirmEmpty:boolean};
 const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const daysFrom=(windows:PlanningHours[]):Day[]=>[1,2,3,4,5,6,0].map(dayOfWeek=>{const periods=windows.filter(w=>w.dayOfWeek===dayOfWeek).map(w=>({startTime:w.startTime,endTime:w.endTime}));return {dayOfWeek,available:periods.length>0,periods:periods.length?periods:[{startTime:'09:00',endTime:'17:00'}]};});
 const hoursFrom=(days:Day[]):PlanningHours[]=>days.flatMap(day=>day.available?day.periods.map(p=>({dayOfWeek:day.dayOfWeek,...p})):[]);
 const draftFrom=(read:AvailabilityPlanning):Draft=>({basis:read.data.basis,base:read.data.windows,days:daysFrom(read.data.windows),confirmEmpty:false});
-const changedDays=(draft:Draft)=>[0,1,2,3,4,5,6].filter(day=>!sameHours(draft.base.filter(w=>w.dayOfWeek===day),hoursFrom(draft.days).filter(w=>w.dayOfWeek===day)));
-const daySummary=(day:Day)=>day.available?day.periods.map(p=>formatTime(p.startTime)+'–'+formatTime(p.endTime)).join(', '):'Unavailable';
+const changedDays=(draft:Draft)=>planningChangedDays(draft.base,hoursFrom(draft.days),draft.confirmEmpty);
+const daySummary=(day:Day)=>day.available?day.periods.map(p=>formatTimeRange(p.startTime,p.endTime)).join(', '):'Unavailable';
 export function EmployeeAvailability({authority,selection}:{authority:string;selection:string}){
  const panel=usePlanning(authority,'availability',selection),read=panel.read?.view==='availability'?panel.read:null,router=useRouter();
- const [drafts,setDrafts]=useState<Record<string,Draft>>({}),[ops]=useState(()=>new PlanningOperations()),[errorState,setErrorState]=useState<{selection:string;message:string}|null>(null),form=useRef<HTMLFormElement>(null),receipt=useRef<HTMLHeadingElement>(null),[expiredRead,setExpiredRead]=useState<string|null>(null);
+ const [drafts,setDrafts]=useState<Record<string,Draft>>({}),[ops]=useState(()=>new PlanningOperations()),[errorState,setErrorState]=useState<{selection:string;message:string}|null>(null),errorId=useId(),form=useRef<HTMLFormElement>(null),receipt=useRef<HTMLHeadingElement>(null),[expiredRead,setExpiredRead]=useState<string|null>(null);
  const currentOperation=ops.for(selection);
  const {pending,uncertain,complete}=usePlanningOperation(currentOperation);
  const existing=drafts[selection],draft=read&&(!existing||!changedDays(existing).length&&!existing.confirmEmpty&&existing.basis!==read.data.basis)?draftFrom(read):existing,isNormal=selection==='normal';
  const error=errorState?.selection===selection?errorState.message:null,setError=(message:string|null)=>setErrorState(message?{selection,message}:null);
  const refresh=panel.refresh;
  useEffect(()=>{if(!read?.data.deadline)return;const remaining=Date.parse(read.data.deadline)-Date.parse(read.observedAt);const timer=setTimeout(()=>{if(remaining>2147483647)refresh();else setExpiredRead(read.observedAt);},Math.max(0,Math.min(remaining,2147483647)));return()=>clearTimeout(timer);},[read,refresh]);
+ const issue=draft?planningHoursIssue(hoursFrom(draft.days)):null;
+ const fieldError=(day:number,index:number,field:string)=>{const invalid=!!error&&issue?.dayOfWeek===day&&issue.index===index&&issue.field===field;return {'aria-invalid':invalid||undefined,'aria-describedby':invalid?errorId:undefined};};
  const hasRead=read!==null;
  useEffect(()=>{if(complete&&hasRead)receipt.current?.focus();},[complete,hasRead]);
  const locked=!!read?.data.locked||!!read&&expiredRead===read.observedAt,stale=!!draft&&!!read&&draft.basis!==read.data.basis,blocked=pending||uncertain||complete||locked;
- const change=(update:(draft:Draft)=>Draft)=>{setError(null);setDrafts(previous=>{const d=draft;return d?{...previous,[selection]:update(d)}:previous;});};
+ const change=(update:(draft:Draft)=>Draft)=>{setError(null);setDrafts(previous=>{const stored=previous[selection],d=stored&&stored.basis===draft?.basis?stored:draft;return d?{...previous,[selection]:update(d)}:previous;});};
  const send=async(command:PlanningCommand)=>{const result=await saveEmployeePlanningAction(command);panel.accept(result);return result;};
  const check=async(command:PlanningCommand)=>{const result=await checkEmployeePlanningAction(command);panel.accept(result);return result;};
  const other=ops.other(selection);
@@ -47,15 +49,15 @@ export function EmployeeAvailability({authority,selection}:{authority:string;sel
    <form ref={form} className="em-planning-form" noValidate aria-busy={pending} onSubmit={event=>{
     event.preventDefault();if(blocked||stale||!canAct())return;
     const command=parsePlanningCommand({kind:'availability',selection,basis:draft.basis,windows:hoursFrom(draft.days),changedDays:changedDays(draft),confirmEmpty:draft.confirmEmpty});
-    if(!command){setError(!hoursFrom(draft.days).length&&!draft.confirmEmpty?'Confirm that you are unavailable for the entire week.':'Every available time needs an end after its start. Times on the same day must not overlap.');const target=form.current?.querySelector<HTMLInputElement>(!hoursFrom(draft.days).length?'input[name="confirmEmpty"]':'input[type="time"]');target?.closest('details')?.setAttribute('open','');target?.focus();return;}
+    if(!command){setError(!hoursFrom(draft.days).length&&!draft.confirmEmpty?'Confirm that you are unavailable for the entire week.':issue?dayNames[issue.dayOfWeek]+(issue.reason==='overlap'?' has overlapping times. Adjust or remove one time.':' needs a valid end time after its start.'):'Review your available times before submitting.');const target=form.current?.querySelector<HTMLInputElement>(!hoursFrom(draft.days).length?'input[name="confirmEmpty"]':issue?'input[data-day="'+issue.dayOfWeek+'"][data-period="'+issue.index+'"][data-field="'+issue.field+'"]':'input[type="time"]');target?.closest('details')?.setAttribute('open','');target?.focus();return;}
     setError(null);void currentOperation.submit(command,send,canAct);
    }}>
     <section aria-label="Available days"><h2>{isNormal?'Your usual week':'Hours for this week'}</h2><div className="em-planning-days">{draft.days.map(day=><details key={day.dayOfWeek} className="em-planning-day"><summary><span><strong>{dayNames[day.dayOfWeek]}</strong><small>{daySummary(day)}</small></span><CaretDownIcon size={20} aria-hidden="true"/></summary><fieldset className="em-planning-day-fields" disabled={blocked}><legend className="nv-sr">{dayNames[day.dayOfWeek]} availability</legend><label className="em-planning-check"><input type="checkbox" checked={day.available} onChange={e=>change(d=>({...d,confirmEmpty:false,days:d.days.map(row=>row.dayOfWeek===day.dayOfWeek?{...row,available:e.target.checked}:row)}))}/>Available on {dayNames[day.dayOfWeek]}</label>{day.available?<>
-     {day.periods.map((period,index)=><div className="em-planning-period" key={index}><div className="em-planning-dates"><label>Start time<input type="time" required aria-label={dayNames[day.dayOfWeek]+' start time '+(index+1)} value={period.startTime} onChange={e=>change(d=>({...d,days:d.days.map(row=>row.dayOfWeek===day.dayOfWeek?{...row,periods:row.periods.map((p,i)=>i===index?{...p,startTime:e.target.value}:p)}:row)}))}/></label><label>End time<input type="time" required aria-label={dayNames[day.dayOfWeek]+' end time '+(index+1)} value={period.endTime==='24:00'?'00:00':period.endTime} onChange={e=>change(d=>({...d,days:d.days.map(row=>row.dayOfWeek===day.dayOfWeek?{...row,periods:row.periods.map((p,i)=>i===index?{...p,endTime:e.target.value==='00:00'?'24:00':e.target.value}:p)}:row)}))}/></label></div>{day.periods.length>1?<button className="em-request-text" type="button" aria-label={'Remove '+dayNames[day.dayOfWeek]+' time '+(index+1)} onClick={()=>change(d=>({...d,days:d.days.map(row=>row.dayOfWeek===day.dayOfWeek?{...row,periods:row.periods.filter((_,i)=>i!==index)}:row)}))}>Remove this time</button>:null}</div>)}
+     {day.periods.map((period,index)=><div className="em-planning-period" key={index}><div className="em-planning-dates"><label>Start time<input type="time" required data-day={day.dayOfWeek} data-period={index} data-field="startTime" {...fieldError(day.dayOfWeek,index,'startTime')} aria-label={dayNames[day.dayOfWeek]+' start time '+(index+1)} value={period.startTime} onChange={e=>change(d=>({...d,days:d.days.map(row=>row.dayOfWeek===day.dayOfWeek?{...row,periods:row.periods.map((p,i)=>i===index?{...p,startTime:e.target.value}:p)}:row)}))}/></label><label>End time<input type="time" required data-day={day.dayOfWeek} data-period={index} data-field="endTime" {...fieldError(day.dayOfWeek,index,'endTime')} aria-label={dayNames[day.dayOfWeek]+' end time '+(index+1)} value={period.endTime==='24:00'?'00:00':period.endTime} onChange={e=>change(d=>({...d,days:d.days.map(row=>row.dayOfWeek===day.dayOfWeek?{...row,periods:row.periods.map((p,i)=>i===index?{...p,endTime:e.target.value==='00:00'?'24:00':e.target.value}:p)}:row)}))}/></label></div>{day.periods.length>1?<button className="em-request-text" type="button" aria-label={'Remove '+dayNames[day.dayOfWeek]+' time '+(index+1)} onClick={()=>change(d=>({...d,days:d.days.map(row=>row.dayOfWeek===day.dayOfWeek?{...row,periods:row.periods.filter((_,i)=>i!==index)}:row)}))}>Remove this time</button>:null}</div>)}
      <button className="em-request-text" type="button" disabled={day.periods.length>=24} onClick={()=>change(d=>({...d,days:d.days.map(row=>row.dayOfWeek===day.dayOfWeek?{...row,periods:[...row.periods,{startTime:'09:00',endTime:'17:00'}]}:row)}))}>Add another time</button><p className="em-planning-help">An end time of 12:00 AM means midnight at the end of this day.</p>
     </>:<p className="em-planning-help">Your manager will see you as unavailable on this day.</p>}</fieldset></details>)}</div></section>
-    {!hoursFrom(draft.days).length?<label className="em-planning-check"><input type="checkbox" name="confirmEmpty" checked={draft.confirmEmpty} disabled={blocked} onChange={e=>change(d=>({...d,confirmEmpty:e.target.checked}))}/>I am unavailable for the entire {isNormal?'usual week':'week'}.</label>:null}
-    {error?<p className="em-creation-error" role="alert">{error}</p>:null}<PlanningFeedback operation={currentOperation} onRetry={()=>{void currentOperation.retry(check,send,()=>panel.allowed());}}/>
+    {!hoursFrom(draft.days).length?<label className="em-planning-check"><input type="checkbox" name="confirmEmpty" aria-invalid={!!error&&!hoursFrom(draft.days).length||undefined} aria-describedby={error&&!hoursFrom(draft.days).length?errorId:undefined} checked={draft.confirmEmpty} disabled={blocked} onChange={e=>change(d=>({...d,confirmEmpty:e.target.checked}))}/>I am unavailable for the entire {isNormal?'usual week':'week'}.</label>:null}
+    {error?<p id={errorId} className="em-creation-error" role="alert">{error}</p>:null}<PlanningFeedback operation={currentOperation} onRetry={()=>{void currentOperation.retry(check,send,()=>panel.allowed());}}/>
     {!locked?<><p className="em-planning-help">{isNormal?'Save the hours you can usually work. Scheduled shifts and submitted exceptions stay separate.':'This submits availability for this week. Your usual week stays the same.'}</p><button className="em-request-primary" type="submit" disabled={blocked||stale}>{pending?'Saving…':isNormal?'Save usual hours':'Submit this week'}</button>{changedDays(draft).length?<button className="em-request-secondary" type="button" disabled={pending||uncertain} onClick={()=>change(()=>draftFrom(read))}>Discard unsent edits</button>:null}</>:<p className="em-planning-help">This week is closed. Contact your manager if your availability changed.</p>}
    </form>
   </>:<p role="status">Preparing your available hours…</p>}

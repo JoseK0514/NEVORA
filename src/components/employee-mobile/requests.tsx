@@ -18,7 +18,7 @@ import {formatTime,addDays} from '@/lib/date-utils';
 
 type Mode='hub'|'open';
 const day=(date:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'short',month:'short',day:'numeric'}).format(new Date(date+'T12:00:00Z'));
-const href=(row:OwnRequest)=>row.kind==='timeOff'?`/app/requests?tab=my#request-${encodeURIComponent(row.id)}`:`/app/exchange?tab=requests&requestId=${encodeURIComponent(row.id)}`;
+const href=(row:OwnRequest)=>row.kind==='timeOff'?`/app/requests?requestId=${encodeURIComponent(row.id)}`:`/app/exchange?tab=requests&requestId=${encodeURIComponent(row.id)}`;
 const status=(value:string)=>({OPEN:'Offered for cover',EMPLOYEE_PENDING:'Awaiting a teammate',MANAGER_PENDING:'Awaiting manager review',APPROVED:'Approved',PENDING:'Awaiting approval',DENIED:'Declined',CANCELLED:'Cancelled',EXPIRED:'Expired'}[value]??'Open request to check status');
 function Entry({href,title,detail,icon}:{href:string;title:string;detail?:string;icon:ReactNode}){
  return <li><Link className="em-request-entry" href={href}><span className="em-request-icon" aria-hidden="true">{icon}</span><span><strong>{title}</strong>{detail?<small>{detail}</small>:null}</span><CaretRightIcon aria-hidden="true"/></Link></li>;

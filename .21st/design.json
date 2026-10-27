@@ -276,6 +276,22 @@
       },
       "implementation": "src/components/employee-mobile/creation.tsx, creation-view.tsx and creation.css with current guarded own-data read",
       "handoff": "docs/execution/employee-mobile-creation/HANDOFF.md"
+    },
+    {
+      "date": "2026-10-27",
+      "scope": "Employee/Lead mobile own time off and usual/weekly availability",
+      "direction": "Continue approved teal Operate system: visible segmented links, native full/partial date/time forms, expandable day periods, clear own status/timeline, 48px primary actions and 44px navigation targets. Retain mounted drafts and immutable recovery; require deliberate stale-day rebase and explicit whole-week unavailability. Preserve desktop and current own-only permissions.",
+      "componentProvenance": {
+        "retrieval": "Free metadata only; no paid retrieval/generation/new package",
+        "searchResults": [
+          474,
+          25171,
+          24924
+        ],
+        "selection": "Existing semantic tokens, request/availability owners and native labelled controls fit the task"
+      },
+      "implementation": "src/components/employee-mobile/planning.tsx, timeoff.tsx, availability.tsx, planning.css and minimal protected planning transport",
+      "handoff": "docs/execution/employee-mobile-planning/HANDOFF.md"
     }
   ],
   "evidence": [
