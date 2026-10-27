@@ -429,9 +429,9 @@
     },
     {
       "branch": "codex/light-default-20261027",
-      "sha": "84ee2447141bc9f5ee041dc4fa4e76826540f7de",
+      "sha": "8cca397cfeac3cc84f3ecb39d4f5166e162fe4ca",
       "disposition": "held",
-      "reason": "Fetched and inspected on October27. Advancement from 32ce3b5 changes only source-inventory and PR36 readiness documentation. Appearance work remains held outside Clocker. Six active remote branches meet the unchanged ceiling6; no branch was retired by this task."
+      "reason": "Fetched and inspected on October27. Advancement from84ee244 changes recovery/navigation browser QA drivers, their tests and PR36 readiness documentation; no Clocker implementation is included. Theme and QA work remain held outside this bounded integration. Six active branches retain the unchanged ceiling6; no branch retired by this task."
     }
   ],
   "maximumActiveBranches": 6
