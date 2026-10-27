@@ -374,6 +374,7 @@ it.each(['omitted-suite', 'budget', 'skip-aggregate', 'missing-verifier', 'dupli
   put(root, 'vercel.json', readFileSync('vercel.json', 'utf8'));
   // Keep the unrelated Clocker contract baseline complete while mutating E.
   put(root, 'vitest.clocker-integration.config.mts', readFileSync('vitest.clocker-integration.config.mts', 'utf8'));
+  put(root, 'scripts/clocker-sql-shards.json', readFileSync('scripts/clocker-sql-shards.json', 'utf8'));
   const clockerDirectory=join(process.cwd(),'src/test/integration');
   const clockerFiles=readdirSync(clockerDirectory).filter(name=>/^clocker-.*\.integration\.ts$/.test(name));
   for(const name of [...clockerFiles,'phase-c-release-migrations.integration.ts'])put(root,'src/test/integration/'+name,readFileSync(join(clockerDirectory,name),'utf8'));

@@ -53,7 +53,7 @@ try {
   delete env.DATABASE_URL;
   const config = selection ?? 'vitest.clocker-integration.config.mts';
   const args = ui ? ['--import','./scripts/qa-server-context.mjs','--import','tsx',companySetup ? 'scripts/company-setup-qa.mjs' : punchUi ? 'scripts/phase-c-punch-ui-qa.mjs' : breaksUi ? 'scripts/phase-c-breaks-ui-qa.mjs' : punchHttp ? 'scripts/phase-c-punch-http-qa.mjs' : pinUi ? 'scripts/phase-c-pins-ui-qa.mjs' : 'scripts/phase-c-devices-ui-qa.mjs'] : ['node_modules/vitest/vitest.mjs', 'run', '--config', config];
-  if(shardContext)args.push('--shard='+shard,'--reporter=default','--reporter=json','--outputFile',shardContext.reportPath);
+  if(shardContext)args.push(...shardContext.files,'--reporter=default','--reporter=json','--outputFile',shardContext.reportPath);
   const result = spawnSync(process.execPath, args, { env, stdio: 'inherit' });
   exitCode = result.status ?? 1;
 } finally {

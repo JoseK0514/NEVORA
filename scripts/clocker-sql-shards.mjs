@@ -5,7 +5,7 @@ import {isAbsolute,join,relative,resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {assertSourceUnchanged,captureSource,externalEvidence} from './phase-e-owned.mjs';
 
-const SHARDS=['1/2','2/2'];
+const SHARDS=['1/4','2/4','3/4','4/4'];
 const digest=value=>createHash('sha256').update(value).digest('hex');
 export const clockerSourceHash=custody=>digest(JSON.stringify(Object.entries(custody.hashes).sort(([a],[b])=>a<b?-1:a>b?1:0)));
 
@@ -13,7 +13,7 @@ export function parseClockerArguments(args){
  const shardArgs=args.filter(arg=>arg.startsWith('--shard'));
  assert(shardArgs.length<=1,'Only one Clocker SQL shard may be selected');
  const shard=shardArgs[0]?.slice('--shard='.length);
- if(shardArgs.length)assert(shardArgs[0]==='--shard='+shard&&SHARDS.includes(shard),'Clocker SQL requires shard 1/2 or 2/2');
+ if(shardArgs.length)assert(shardArgs[0]==='--shard='+shard&&SHARDS.includes(shard),'Select one of the four balanced Clocker SQL groups');
  const selections=args.filter(arg=>!arg.startsWith('--shard'));
  assert(selections.length<=1,'Unexpected Clocker runner arguments');
  assert(!shard||!selections.length,'Sharding requires the complete original Clocker SQL configuration');
@@ -26,6 +26,23 @@ export function expectedClockerFiles(source){
  const release='src/test/integration/phase-c-release-migrations.integration.ts';
  assert(existsSync(join(source,release)),'Missing Clocker release migration fixture');
  return [...files,release].sort();
+}
+
+export function verifyClockerAllocation(allocation,expectedFiles){
+ assert(allocation?.schema===1&&allocation.shards,'Invalid Clocker SQL allocation');
+ assert.deepEqual(Object.keys(allocation.shards).sort(),SHARDS,'Every balanced Clocker SQL group is required');
+ const allowed=new Set(expectedFiles),seen=new Set(),groups={};
+ for(const shard of SHARDS){
+  const files=allocation.shards[shard];
+  assert(Array.isArray(files)&&files.length>0,'Empty Clocker SQL allocation group');
+  for(const file of files){assert(typeof file==='string'&&allowed.has(file)&&!seen.has(file),'Duplicate or foreign Clocker SQL allocation');seen.add(file);}
+  groups[shard]=[...files].sort();
+ }
+ assert.deepEqual([...seen].sort(),[...expectedFiles].sort(),'Clocker SQL allocation omits source files');
+ return groups;
+}
+function loadAllocation(source){
+ return readJson(join(source,'scripts/clocker-sql-shards.json'));
 }
 
 export function validateClockerReport(report,source,expectedFiles){
@@ -49,13 +66,14 @@ export function validateClockerReport(report,source,expectedFiles){
 }
 
 export function verifyClockerNeeds(needs){
- assert(needs&&Object.keys(needs).length===1&&needs['clocker-postgres-suite']?.result==='success','Both Clocker SQL shard jobs must succeed');
+ assert(needs&&Object.keys(needs).length===1&&needs['clocker-postgres-suite']?.result==='success','All Clocker SQL group jobs must succeed');
 }
 
-export function verifyClockerShardSet(leaves,{custody,source,expectedFiles,needs}){
+export function verifyClockerShardSet(leaves,{custody,source,expectedFiles,needs,allocation}){
  verifyClockerNeeds(needs);
- assert(Array.isArray(leaves)&&leaves.length===2,'Both Clocker SQL shard receipts are required');
+ assert(Array.isArray(leaves)&&leaves.length===SHARDS.length,'All four Clocker SQL shard receipts are required');
  assert(expectedFiles.length>0&&new Set(expectedFiles).size===expectedFiles.length,'Invalid Clocker SQL source inventory');
+ const groups=verifyClockerAllocation(allocation,expectedFiles);
  const seen=new Set(),covered=new Set();
  let tests=0;
  for(const {receipt,report,manifest} of leaves){
@@ -66,6 +84,7 @@ export function verifyClockerShardSet(leaves,{custody,source,expectedFiles,needs
   assert(manifest?.sourceClean===true&&manifest.checkpoint===custody.checkpoint&&manifest.tree===custody.tree&&clockerSourceHash(manifest)===clockerSourceHash(custody),'Clocker shard source manifest changed or is missing');
   assert(receipt.reportHash===digest(JSON.stringify(report)),'Clocker shard report changed');
   const actual=validateClockerReport(report,source,expectedFiles);
+  assert.deepEqual(actual.files,groups[receipt.shard],'Clocker SQL execution does not match its balanced allocation');
   assert.deepEqual(receipt.files,actual.files,'Clocker shard file receipt changed');
   assert.equal(receipt.tests,actual.tests,'Clocker shard case receipt changed');
   for(const file of actual.files){assert(!covered.has(file),'Clocker shards overlap');covered.add(file);}
@@ -81,7 +100,8 @@ export function beginClockerShard(shard){
  const source=resolve(process.cwd()),custody=captureSource(source,process.env.CLOCKER_SQL_EXPECTED_SHA);
  const evidence=externalEvidence(source,process.env.CLOCKER_SQL_EVIDENCE_DIR);
  writeFileSync(join(evidence,'source-manifest.json'),JSON.stringify(custody,null,2));
- return {source,custody,evidence,shard,reportPath:join(evidence,'vitest-report.json')};
+ const files=verifyClockerAllocation(loadAllocation(source),expectedClockerFiles(source))[shard];
+ return {source,custody,evidence,shard,files,reportPath:join(evidence,'vitest-report.json')};
 }
 
 export function finishClockerShard(context,exitCode,ownedClusterClosed){
@@ -92,6 +112,7 @@ export function finishClockerShard(context,exitCode,ownedClusterClosed){
   assertSourceUnchanged(source,custody);
   report=JSON.parse(readFileSync(context.reportPath,'utf8'));
   actual=validateClockerReport(report,source,expectedClockerFiles(source));
+  assert.deepEqual(actual.files,context.files,'Clocker SQL command omitted or added allocated files');
  }catch(value){error=value.message;}
  const receipt={schema:1,shard,checkpoint:custody.checkpoint,tree:custody.tree,sourceHash:clockerSourceHash(custody),sourceClean:custody.sourceClean,ownedClusterClosed,exitCode,status:error?'failed':'passed',files:actual?.files??[],tests:actual?.tests??0,reportHash:report?digest(JSON.stringify(report)):null,error:error??null};
  writeFileSync(join(evidence,'clocker-shard-receipt.json'),JSON.stringify(receipt,null,2));
@@ -107,15 +128,15 @@ function aggregate(){
  const source=resolve(process.cwd()),custody=captureSource(source,process.env.CLOCKER_SQL_EXPECTED_SHA);
  const root=resolve(process.env.CLOCKER_SQL_ARTIFACTS_DIR??'');
  assert(process.env.CLOCKER_SQL_ARTIFACTS_DIR&&root!==source,'Select downloaded Clocker SQL artifacts');
- const names=SHARDS.map((_,index)=>'clocker-sql-'+custody.checkpoint+'-'+(index+1)+'-of-2');
+ const names=SHARDS.map((_,index)=>'clocker-sql-'+custody.checkpoint+'-'+(index+1)+'-of-4');
  const entries=readdirSync(root,{withFileTypes:true});
  assert(entries.every(entry=>entry.isDirectory()&&!entry.isSymbolicLink()),'Unexpected Clocker artifact entry');
  assert.deepEqual(entries.map(entry=>entry.name).sort(),names.sort(),'Missing or foreign Clocker shard artifacts');
  const leaves=names.map(name=>({receipt:readJson(join(root,name,'clocker-shard-receipt.json')),report:readJson(join(root,name,'vitest-report.json')),manifest:readJson(join(root,name,'source-manifest.json'))}));
- const actual=verifyClockerShardSet(leaves,{custody,source,expectedFiles:expectedClockerFiles(source),needs:JSON.parse(process.env.CLOCKER_SQL_CI_NEEDS_JSON??'null')});
+ const actual=verifyClockerShardSet(leaves,{custody,source,expectedFiles:expectedClockerFiles(source),allocation:loadAllocation(source),needs:JSON.parse(process.env.CLOCKER_SQL_CI_NEEDS_JSON??'null')});
  const evidence=externalEvidence(source,process.env.CLOCKER_SQL_EVIDENCE_DIR);
  writeFileSync(join(evidence,'clocker-sql-aggregate.json'),JSON.stringify({schema:1,checkpoint:custody.checkpoint,tree:custody.tree,sourceHash:clockerSourceHash(custody),status:'passed',shards:SHARDS,...actual},null,2));
- console.log('PASS: both Clocker SQL shards, '+actual.files.length+' source files and '+actual.tests+' executed cases verified.');
+ console.log('PASS: all four Clocker SQL groups, '+actual.files.length+' source files and '+actual.tests+' executed cases verified.');
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
  try{assert(process.argv.length===3&&process.argv[2]==='aggregate','Expected Clocker aggregate command');aggregate();}

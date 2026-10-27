@@ -68,14 +68,14 @@ jobs:
           retention-days: 14
 
   clocker-postgres-suite:
-    name: Clocker SQL (${{ matrix.shard }}/2)
+    name: Clocker SQL (${{ matrix.shard }}/4)
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
       fail-fast: false
       max-parallel: 2
       matrix:
-        shard: [1, 2]
+        shard: [1, 2, 3, 4]
     env:
       CLOCKER_SQL_EXPECTED_SHA: ${{ github.sha }}
       CLOCKER_SQL_EVIDENCE_DIR: ${{ runner.temp }}/clocker-sql-evidence
@@ -110,12 +110,12 @@ jobs:
           NEVORA_MIRROR_EVIDENCE_DIR="$RUNNER_TEMP/mirror-mutated" node --import tsx scripts/release-mirror-custody-qa.mjs mutated
           NEVORA_MIRROR_EVIDENCE_DIR="$RUNNER_TEMP/mirror-extra" node --import tsx scripts/release-mirror-custody-qa.mjs extra
       - name: Persisted Clocker PostgreSQL tests
-        run: npm run test:clocker:owned -- --shard=${{ matrix.shard }}/2
+        run: npm run test:clocker:owned -- --shard=${{ matrix.shard }}/4
       - name: Upload current-source Clocker SQL shard evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: clocker-sql-${{ github.sha }}-${{ matrix.shard }}-of-2
+          name: clocker-sql-${{ github.sha }}-${{ matrix.shard }}-of-4
           path: ${{ runner.temp }}/clocker-sql-evidence/*.json
           if-no-files-found: error
           retention-days: 14
@@ -142,7 +142,7 @@ jobs:
           pattern: clocker-sql-*
           path: ${{ runner.temp }}/clocker-sql-artifacts
           merge-multiple: false
-      - name: Verify both Clocker SQL shards and complete source coverage
+      - name: Verify all Clocker SQL groups and complete source coverage
         env:
           CLOCKER_SQL_EXPECTED_SHA: ${{ github.sha }}
           CLOCKER_SQL_EVIDENCE_DIR: ${{ runner.temp }}/clocker-sql-aggregate

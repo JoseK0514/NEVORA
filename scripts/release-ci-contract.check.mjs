@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import {createHash} from 'node:crypto';
-import {clockerSourceHash,expectedClockerFiles,parseClockerArguments,validateClockerReport,verifyClockerNeeds,verifyClockerShardSet} from './clocker-sql-shards.mjs';
+import {clockerSourceHash,expectedClockerFiles,parseClockerArguments,validateClockerReport,verifyClockerAllocation,verifyClockerNeeds,verifyClockerShardSet} from './clocker-sql-shards.mjs';
 import {verifyRequiredJobs, ownedExecutionTimeout} from './phase-e-owned.mjs';
 const require=createRequire(import.meta.url);
 const workflow=require('js-yaml').load(readFileSync('.github/workflows/ci.yml','utf8'));
@@ -12,22 +12,36 @@ const mandatory=['validate','clocker-postgres','release-postgres','phase-d-atten
 test('Clocker SQL sharding preserves original selectors and rejects partial/custom shard configurations',()=>{
  assert.deepEqual(parseClockerArguments([]),{selection:undefined,shard:undefined});
  for(const selection of ['--punch-ui','--pins-ui','--company-setup','vitest.clocker-integration.config.mts'])assert.deepEqual(parseClockerArguments([selection]),{selection,shard:undefined});
- for(const shard of ['1/2','2/2'])assert.deepEqual(parseClockerArguments(['--shard='+shard]),{selection:undefined,shard});
- for(const args of [['--shard=0/2'],['--shard=3/2'],['--shard=1/3'],['--shard','1/2'],['--shard=1/2','--shard=2/2'],['--punch-ui','--shard=1/2'],['other.config.mts','--shard=1/2']])assert.throws(()=>parseClockerArguments(args));
+ for(const shard of ['1/4','2/4','3/4','4/4'])assert.deepEqual(parseClockerArguments(['--shard='+shard]),{selection:undefined,shard});
+ for(const args of [['--shard=0/4'],['--shard=5/4'],['--shard=1/3'],['--shard','1/4'],['--shard=1/4','--shard=2/4'],['--punch-ui','--shard=1/4'],['other.config.mts','--shard=1/4']])assert.throws(()=>parseClockerArguments(args));
 });
 const fixtureSource='/fictional-owned-source';
-const fixtureFiles=['src/test/integration/clocker-a.integration.ts','src/test/integration/clocker-b.integration.ts','src/test/integration/phase-c-release-migrations.integration.ts'];
+const fixtureFiles=['src/test/integration/clocker-a.integration.ts','src/test/integration/clocker-b.integration.ts','src/test/integration/clocker-c.integration.ts','src/test/integration/clocker-d.integration.ts','src/test/integration/phase-c-release-migrations.integration.ts'];
 const fixtureCustody={checkpoint:'a'.repeat(40),tree:'b'.repeat(40),hashes:{'source.ts':'c'.repeat(64)}};
 function shardLeaf(shard,files){
  const report={success:true,numTotalTests:files.length,numPassedTests:files.length,numFailedTests:0,numPendingTests:0,numTodoTests:0,testResults:files.map(file=>({name:fixtureSource+'/'+file,status:'passed',assertionResults:[{status:'passed',fullName:'executed '+file}]}))};
  const receipt={schema:1,shard,checkpoint:fixtureCustody.checkpoint,tree:fixtureCustody.tree,sourceHash:clockerSourceHash(fixtureCustody),sourceClean:true,ownedClusterClosed:true,exitCode:0,status:'passed',files:[...files].sort(),tests:files.length,reportHash:createHash('sha256').update(JSON.stringify(report)).digest('hex')};
  return {receipt,report,manifest:{sourceClean:true,...JSON.parse(JSON.stringify(fixtureCustody))}};
 }
-const shardOptions=()=>({source:fixtureSource,custody:fixtureCustody,expectedFiles:fixtureFiles,needs:{'clocker-postgres-suite':{result:'success'}}});
-const shardLeaves=()=>[shardLeaf('1/2',[fixtureFiles[0],fixtureFiles[2]]),shardLeaf('2/2',[fixtureFiles[1]])];
-test('both Clocker SQL shards must cover every original source file exactly once',()=>{
- assert.deepEqual(verifyClockerShardSet(shardLeaves(),shardOptions()),{files:[...fixtureFiles].sort(),tests:3});
- for(const leaves of [shardLeaves().slice(0,1),[shardLeaf('1/2',[fixtureFiles[0]]),shardLeaf('2/2',[fixtureFiles[1]])],[shardLeaf('1/2',fixtureFiles),shardLeaf('2/2',[fixtureFiles[1]])],[shardLeaves()[0],shardLeaves()[0]]])assert.throws(()=>verifyClockerShardSet(leaves,shardOptions()));
+const fixtureAllocation={schema:1,shards:{'1/4':[fixtureFiles[0],fixtureFiles[4]],'2/4':[fixtureFiles[1]],'3/4':[fixtureFiles[2]],'4/4':[fixtureFiles[3]]}};
+const shardOptions=()=>({source:fixtureSource,custody:fixtureCustody,expectedFiles:fixtureFiles,allocation:fixtureAllocation,needs:{'clocker-postgres-suite':{result:'success'}}});
+const shardLeaves=()=>Object.entries(fixtureAllocation.shards).map(([shard,files])=>shardLeaf(shard,files));
+test('balanced allocation rejects missing, duplicate, foreign and empty source groups',()=>{
+ for(const mutate of [
+  value=>delete value.shards['4/4'],value=>value.shards['5/4']=[],
+  value=>value.shards['1/4']=[],value=>value.shards['1/4'].pop(),
+  value=>value.shards['2/4'].push(fixtureFiles[0]),value=>value.shards['2/4'].push('src/test/integration/foreign.integration.ts'),
+ ]){
+  const value=JSON.parse(JSON.stringify(fixtureAllocation));mutate(value);
+  assert.throws(()=>verifyClockerAllocation(value,fixtureFiles));
+ }
+ const swapped=shardLeaves();
+ [swapped[1].receipt.shard,swapped[2].receipt.shard]=[swapped[2].receipt.shard,swapped[1].receipt.shard];
+ assert.throws(()=>verifyClockerShardSet(swapped,shardOptions()));
+});
+test('all Clocker SQL groups must cover every original source file exactly once',()=>{
+ assert.deepEqual(verifyClockerShardSet(shardLeaves(),shardOptions()),{files:[...fixtureFiles].sort(),tests:5});
+ for(const leaves of [shardLeaves().slice(0,1),[shardLeaf('1/4',[fixtureFiles[0]]),shardLeaf('2/4',[fixtureFiles[1]])],[shardLeaf('1/4',fixtureFiles),shardLeaf('2/4',[fixtureFiles[1]])],[shardLeaves()[0],shardLeaves()[0]]])assert.throws(()=>verifyClockerShardSet(leaves,shardOptions()));
 });
 test('Clocker aggregate rejects incomplete, stale, tampered or unclosed shard evidence',()=>{
  for(const mutate of [
@@ -52,17 +66,17 @@ test('Clocker reports cannot treat empty, skipped, unknown or duplicate files as
   const {report}=shardLeaves()[0];mutate(report);assert.throws(()=>validateClockerReport(report,fixtureSource,fixtureFiles));
  }
 });
-test('Clocker SQL retains the full original file selectors and bounded two-shard release gate',()=>{
+test('Clocker SQL retains the full original file selectors and bounded four-group release gate',()=>{
  const expr=value=>'$'+'{{ '+value+' }}';
  const leaf=workflow.jobs['clocker-postgres-suite'],gate=workflow.jobs['clocker-postgres'];
  assert(leaf,'Clocker SQL shard leaves missing');
  assert.equal(leaf['timeout-minutes'],30);assert.equal(leaf.if,undefined);
- assert.deepEqual(leaf.strategy,{'fail-fast':false,'max-parallel':2,matrix:{shard:[1,2]}});
+ assert.deepEqual(leaf.strategy,{'fail-fast':false,'max-parallel':2,matrix:{shard:[1,2,3,4]}});
  assert.deepEqual(leaf.env,{CLOCKER_SQL_EXPECTED_SHA:expr('github.sha'),CLOCKER_SQL_EVIDENCE_DIR:expr('runner.temp')+'/clocker-sql-evidence'});
- const execute=leaf.steps.find(step=>step.run==='npm run test:clocker:owned -- --shard='+expr('matrix.shard')+'/2');
+ const execute=leaf.steps.find(step=>step.run==='npm run test:clocker:owned -- --shard='+expr('matrix.shard')+'/4');
  assert(execute);assert.equal(execute.if,undefined);
  const upload=leaf.steps.find(step=>step.uses?.startsWith('actions/upload-artifact@'));
- assert.equal(upload.if,'always()');assert.equal(upload.with.name,'clocker-sql-'+expr('github.sha')+'-'+expr('matrix.shard')+'-of-2');
+ assert.equal(upload.if,'always()');assert.equal(upload.with.name,'clocker-sql-'+expr('github.sha')+'-'+expr('matrix.shard')+'-of-4');
  assert.equal(upload.with['if-no-files-found'],'error');assert.equal(upload.with['retention-days'],14);
  assert.deepEqual(gate.needs,['clocker-postgres-suite']);assert.equal(gate.if,expr('always()'));
  const download=gate.steps.find(step=>step.uses?.startsWith('actions/download-artifact@'));
@@ -72,7 +86,8 @@ test('Clocker SQL retains the full original file selectors and bounded two-shard
  for(const job of [leaf,gate]){assert.equal(job['continue-on-error'],undefined);for(const step of job.steps)assert.equal(step['continue-on-error'],undefined);}
  const config=readFileSync('vitest.clocker-integration.config.mts','utf8');
  assert(config.includes("include: ['src/test/integration/clocker-*.integration.ts', 'src/test/integration/phase-c-release-migrations.integration.ts']"));
- assert(expectedClockerFiles(process.cwd()).length>=35);
+ const expected=expectedClockerFiles(process.cwd());assert(expected.length>=35);
+ assert.doesNotThrow(()=>verifyClockerAllocation(JSON.parse(readFileSync('scripts/clocker-sql-shards.json','utf8')),expected));
 });
 test('mandatory release SQL job always runs the isolated Owner advisor integration suite',()=>{
  const step=workflow.jobs['release-postgres'].steps.find(s=>s.run==='node scripts/payroll-postgres.mjs vitest.owner-advisor-integration.config.mts');
