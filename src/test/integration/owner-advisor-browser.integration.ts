@@ -258,11 +258,16 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
                 await page.screenshot({ path: resolve(evidence, engine + '-period-' + width + '.png'), fullPage: true });
               }
               checks.push(engine + ': real Spanish recorded-period review without provider; 320/390/1440px no overflow');
+              // The briefing scenario mutates loc-1. Keep that owned fixture current at every business-local hour,
+              // independently of the earlier 08:00–12:00 proposal fixture and the ordering of loc-2 issues.
+              await app.database.executor.query({ text: "UPDATE location_coverage_windows SET start_time='00:00',end_time='24:00' WHERE location_id='loc-1'", values: [] });
               await page.reload();
               await page.getByText('Your AI manager isn’t connected yet.', { exact: true }).waitFor();
               const attention = page.getByRole("region", { name: "Needs your attention", exact: true });
               await attention.getByRole("heading", { name: "Needs your attention", exact: true }).waitFor();
-              const firstIssue = attention.locator("ol > li").first();
+              const firstIssue = attention.locator("ol > li").filter({ hasText: "Main Office" });
+              expect(await firstIssue.count()).toBe(1);
+              expect(await firstIssue.getByRole("heading", { name: "Review today's planning gaps", exact: true }).count()).toBe(1);
               await firstIssue.getByRole("button", { name: "Track this issue", exact: true }).click();
               await page.getByText("Briefing choice saved. Current records were checked again.", { exact: true }).waitFor();
               await firstIssue.getByRole("button", { name: "Later · 1 hour", exact: true }).click();
@@ -306,10 +311,10 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
                     () => document.documentElement.scrollWidth <= innerWidth,
                   ),
                 ).toBe(true);
-                const defer = attention.locator("ol > li").first().getByRole("button", { name: "Later · 1 hour", exact: true });
+                const defer = firstIssue.getByRole("button", { name: "Later · 1 hour", exact: true });
                 await defer.focus();
                 await page.keyboard.press(engine === "webkit" && process.platform === "darwin" ? "Alt+Tab" : "Tab");
-                expect(await attention.locator("ol > li").first().getByRole("button", { name: "Not relevant today", exact: true }).evaluate((el: HTMLElement) => el === document.activeElement)).toBe(true);
+                expect(await firstIssue.getByRole("button", { name: "Not relevant today", exact: true }).evaluate((el: HTMLElement) => el === document.activeElement)).toBe(true);
                 await page.getByLabel("Your question", { exact: true }).focus();
                 expect(
                   await page

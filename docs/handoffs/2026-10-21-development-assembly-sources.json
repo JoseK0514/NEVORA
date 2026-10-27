@@ -2,14 +2,15 @@
   "schema": 1,
   "repository": "JoseK0514/NEVORA",
   "target": "development",
-  "assemblyBranch": "codex/premium-backend",
-  "observedAt": "2026-10-24",
+  "assemblyBranch": "codex/mobile-access-onboarding-20261026",
+  "observedAt": "2026-10-26",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
-      "sha": "3103829366dbf27b21c0860a7ef13fc458648563",
+      "sha": "8e9073974b52053e557382ec5199dbce9d5aa32c",
       "disposition": "included",
-      "reason": "Quiet v4 and Claude's bounded functional repairs are included unchanged from 31038293, based directly on development 8d4a3792. Review and full matching cloud acceptance remain required before integration. Preserve Claude's branch and visual style."
+      "reason": "PR31 is merged and this exact tip is an ancestor of development46e2027. Recoverable remote-head retirement for PR35 source reconciliation: retain the exact archive tag, local branches/worktrees and every open PR branch. No application source is overlaid or independent acceptance inferred.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-26/Claude-UI-Fix"
     },
     {
       "branch": "claude/role-nav-webkit",
@@ -294,7 +295,8 @@
       "branch": "codex/owner-ai-release-testing-20261023",
       "sha": "2ea580d623c76dd7d717492d209552461b5b4a28",
       "disposition": "included",
-      "reason": "PR29's reviewed CI supervision, dependency and diagnostic changes are included without overlapping Claude UI paths. Its existing failed workflow is retained as failed evidence; new assembled-source acceptance is mandatory. The assembly reuses the inactive Codex premium-backend remote by fast-forward, retaining its original 2d425b4b ancestry and historical evidence without overlaying 2042 historical docs onto current development."
+      "reason": "PR29 is merged and this exact tip is an ancestor of development46e2027. Recoverable remote-head retirement for PR35 source reconciliation: retain the exact archive tag, local branches/worktrees and every open PR branch. No application source is overlaid or independent acceptance inferred.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-26/codex/owner-ai-release-testing-20261023"
     },
     {
       "branch": "codex/ready-desktop",
@@ -361,9 +363,9 @@
     },
     {
       "branch": "development",
-      "sha": "8d4a3792aceb9cd56e7e33ce318f4d5e9a74f9bb",
+      "sha": "46e202786863279302026ee03a0e225c359fa55c",
       "disposition": "target",
-      "reason": "Freshly fetched combined development after PR25; preserved as the base for Claude Quiet v4 and the reviewed CI repairs. No development merge is claimed before matching cloud acceptance."
+      "reason": "Freshly fetched combined development46e2027, including merged PR29/31/32. PR35 adds frozen mobile Access only and bounded source/CI reconciliation. Main/production and separately active PR27/33/34 remain unchanged."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -398,6 +400,25 @@
       "disposition": "superseded",
       "reason": "Earlier UI/login prototype replaced by later authenticated application and auth implementations.",
       "archiveRef": "refs/tags/archive/branches/2026-10-23/v0/resolve-login-runtime-errors-01fd3e6c"
+    },
+    {
+      "branch": "claude/quiet-check-skeleton",
+      "sha": "16a9169ce1fc0d6eee9f3e1319d3db825ab1236f",
+      "disposition": "included",
+      "archiveRef": "refs/tags/archive/branches/2026-10-26/claude/quiet-check-skeleton",
+      "reason": "PR32 is merged and this exact tip is an ancestor of development46e2027. Recoverable remote-head retirement for PR35 source reconciliation: retain the exact archive tag, local branches/worktrees and every open PR branch. No application source is overlaid or independent acceptance inferred."
+    },
+    {
+      "branch": "claude/home-clock-row",
+      "sha": "97f4548aa7561d4a843b7616cc055180676d514a",
+      "disposition": "held",
+      "reason": "Active PR33; preserve its remote and work. Separate Home clock row and its scenario drivers; changes the existing Home presentation. Excluded from the frozen mobile Access PR35; requires separate review and matching acceptance before any integration. Recording this head is source classification, not approval or findings closure."
+    },
+    {
+      "branch": "claude/quiet-everywhere",
+      "sha": "1b4060f862fdc4b0718c2a0508645bcdc9755d18",
+      "disposition": "held",
+      "reason": "Active PR34; preserve its remote and work. Separate cross-application UI, payroll/schema, read-path and scoped-permission changes;411 changed paths compared with development. Excluded from the frozen mobile Access PR35; requires separate review and matching acceptance before any integration. Recording this head is source classification, not approval or findings closure."
     }
   ],
   "maximumActiveBranches": 6

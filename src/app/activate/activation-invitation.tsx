@@ -1,6 +1,9 @@
 'use client';
+import {useMobilePresentation} from '@/components/mobile-access/use-mobile-presentation';
 
 import Link from 'next/link';
+import type {AuthLang} from '@/lib/auth-copy';
+import {MobileActivationView} from '@/components/mobile-access/activation-view';
 import {useLayoutEffect,useRef,useState,type FormEvent,type RefObject} from 'react';
 import type {ActivationResult} from '@/lib/auth/invitations/model';
 import {ActivationPasswords} from './activation-passwords';
@@ -8,7 +11,7 @@ import {ActivationSubmit} from './activation-submit';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {CopySimpleIcon} from '@phosphor-icons/react/dist/ssr/CopySimple';
 
-type Phase='checking'|'missing'|'ready'|'pending'|'invalid'|'unavailable'|'outcome_unknown'|'activated';
+export type ActivationPhase='checking'|'missing'|'ready'|'pending'|'invalid'|'unavailable'|'outcome_unknown'|'activated';
 /** Scrub first. Never retain a query string, encoded/ambiguous proof or history state. */
 export function takeActivationFragment(location:Pick<Location,'hash'|'pathname'>,history:Pick<History,'replaceState'>):string|null {
  const fragment=location.hash.slice(1);
@@ -23,8 +26,8 @@ export function readActivationResult(value:unknown):ActivationResult {
  if(keys==='state'&&(o.state==='invalid'||o.state==='unavailable'||o.state==='outcome_unknown'))return {state:o.state};
  throw new Error('Activation response unavailable.');
 }
-export function ActivationInvitation({loginHref,workspaceName=null}:{loginHref:string;workspaceName?:string|null}) {
- const [phase,setPhase]=useState<Phase>('checking');const [mismatch,setMismatch]=useState(false),[formVersion,setFormVersion]=useState(0),[employeeId,setEmployeeId]=useState<string|null>(null);
+export function ActivationInvitation({loginHref,workspaceName=null,lang='en',mobileAccess=false}:{loginHref:string;workspaceName?:string|null;lang?:AuthLang;mobileAccess?:boolean}) {
+ const [phase,setPhase]=useState<ActivationPhase>('checking');const [mismatch,setMismatch]=useState(false),[formVersion,setFormVersion]=useState(0),[employeeId,setEmployeeId]=useState<string|null>(null);
  const success=useRef<HTMLDivElement|null>(null);
  const proof=useRef<string|null>(null),captured=useRef(false),mounted=useRef(false),request=useRef<AbortController|null>(null),busy=useRef(false),generation=useRef(0),formRef=useRef<HTMLFormElement|null>(null);
  useLayoutEffect(()=>{
@@ -62,7 +65,7 @@ export function ActivationInvitation({loginHref,workspaceName=null}:{loginHref:s
   }catch{if(isCurrent()){proof.current=null;form.reset();setPhase('outcome_unknown');}}
   finally{clearTimeout(timeout);if(isCurrent()){busy.current=false;request.current=null;}}
  }
- return <ActivationInvitationView key={formVersion} phase={phase} mismatch={mismatch} employeeId={employeeId} loginHref={loginHref} workspaceName={workspaceName} onSubmit={submit} formRef={formRef} successRef={success}/>;
+ return <ActivationInvitationView lang={lang} mobileAccess={mobileAccess} key={formVersion} phase={phase} mismatch={mismatch} employeeId={employeeId} loginHref={loginHref} workspaceName={workspaceName} onSubmit={submit} formRef={formRef} successRef={success}/>;
 }
 /** Copies the confirmed sign-in ID; says so for two seconds. Selecting the field stays available as before. */
 function CopyId({value}:{value:string}) {
@@ -74,7 +77,9 @@ function CopyId({value}:{value:string}) {
 /* Quiet (v4, approved Oct 23): Activate account with one line under the title. With no usable invitation: Back to sign in
  * and "No invitation? Ask your Owner." With one: the two passwords and Activate account. Activated: the Employee ID to keep.
  * The flow above is unchanged. */
-export function ActivationInvitationView({phase,mismatch=false,employeeId,loginHref,workspaceName=null,onSubmit,formRef,successRef}:{phase:Phase;mismatch?:boolean;employeeId?:string|null;loginHref:string;workspaceName?:string|null;onSubmit:(event:FormEvent<HTMLFormElement>)=>void;formRef?:RefObject<HTMLFormElement|null>;successRef?:RefObject<HTMLDivElement|null>}) {
+export function ActivationInvitationView({phase,mismatch=false,employeeId,loginHref,workspaceName=null,onSubmit,formRef,successRef,lang='en',mobileAccess=false}:{phase:ActivationPhase;lang?:AuthLang;mobileAccess?:boolean;mismatch?:boolean;employeeId?:string|null;loginHref:string;workspaceName?:string|null;onSubmit:(event:FormEvent<HTMLFormElement>)=>void;formRef?:RefObject<HTMLFormElement|null>;successRef?:RefObject<HTMLDivElement|null>}) {
+ const mobile=useMobilePresentation(mobileAccess,'activation-password activation-confirm-password');
+ if(mobile)return <MobileActivationView {...{phase,mismatch,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang}}/>;
  const canSubmit=['ready','pending','unavailable'].includes(phase);const error=mismatch||phase==='unavailable';
  const signInHref=loginHref.replace('?activated=1&','?').replace('?activated=1','');
  const workspace=workspaceName??'Workspace unavailable';

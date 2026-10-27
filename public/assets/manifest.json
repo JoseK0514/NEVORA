@@ -156,6 +156,24 @@
       "prompt": "Edit this NEVORA workforce password-reset illustration into a quiet premium still life. REMOVE the entire blue doorway, door panels, arch, sunrise fan, floating specks and background. Retain only the physical key from the foreground, re-rendered as a single sculptural key in matte deep cobalt blue with subtle bevels and realistic material, positioned diagonally from lower left to upper right. Do not add any symbols, letters, text, logos, badges, interfaces, circles or surrounding decoration. Center the single key with generous empty space around it in a 1536x1024 landscape composition. Soft natural studio lighting, very restrained contact shadow immediately under the key, physically believable proportions. This belongs to a minimal workforce authentication interface, coordinated with ivory stationery and cobalt access objects. Transparent alpha background; the key must remain crisp and legible over a very pale gray surface. No animation, no portal, no gradients in the background.",
       "sha256": "27ebff2ac968f87519af2f12abe4c85fba660c7c7c8a0a8df9d08565cdcc1bcb",
       "bytes": 1485492
+    },
+    {
+      "id": "mobile-access-welcome-v1",
+      "path": "/assets/illustrations/mobile-access-welcome.png",
+      "usage": "Decorative mobile welcome artwork from Jose-approved frozen mobile Access v1, October26,2026; shown only in the opt-in Access scope.",
+      "sha256": "f074f2285e949eba039b68347c3e64697d586e86f150bf749ed2395fbe4799d3",
+      "bytes": 1448284,
+      "provenance": {
+        "origin": "Original built-in image_gen illustration, then one edit; transparent1536x1024 PNG. Decorative only.",
+        "originalPrompt": "Use case: illustration-story. Asset type: a decorative welcome illustration for NEVORA, a mobile workforce scheduling app for small businesses. Create a warm, exceptionally refined editorial illustration of two adult coworkers greeting each other at the start of a workday in a small neighborhood workplace: one arriving through an open doorway, one beside a simple service counter. Natural, understated gestures and credible anatomy; people with different skin tones. Contemporary commissioned brand illustration, restrained geometric cut-paper forms, precise silhouettes, very subtle matte paper texture, confident quiet composition. Landscape 3:2 composition with the scene grouped centrally and generous clear space around its edges, suitable for displaying only 210px tall on a phone. Color language: deep teal #0b6e69 and dark navy-green #172622, pale sage #eaf4f1, white; incidental warm peach and brown skin tones. Keep a truly transparent background outside the scene so it rests cleanly on white. Friendly and mature, not childish or whimsical. No text, letters, logos, numbers, app interface, calendar, graphs, badges, confirmation marks, generic floating objects, gradients, glowing effects, or oversized heads. Show only the illustration; no phone frame or page mockup.",
+        "editPrompt": "Edit this welcome illustration for NEVORA. Keep the same two adult coworkers greeting each other, doorway on the left, counter on the right, and deep teal/pale sage/navy palette. Change the rendering to a clean, high-end flat editorial brand illustration with crisp cut-paper silhouettes and restrained interior line detail. Remove ALL atmospheric background, black vignette, orange light, glow, blur, gradients, grain, shading and cast shadows. Every region outside the actual people, doorway, counter and a single small plant must be fully transparent. Use flat solid fills; warm skin tones provide the warmth. Simplify shelving and incidental cafe objects so the scene reads immediately at 200px tall. Credible anatomy, mature proportions, calm natural greeting. No text, no logos, no icons, no interface. Deliver only the illustration on a truly transparent background.",
+        "sha256": "f074f2285e949eba039b68347c3e64697d586e86f150bf749ed2395fbe4799d3",
+        "alt": "",
+        "intrinsicSize": [
+          1536,
+          1024
+        ]
+      }
     }
   ]
 }
