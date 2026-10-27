@@ -1,8 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { canRetirePendingPunch, forgetSubjectPendingPunch, makePunchCommand, parseClockView, parseReceiptReply,
- postPunch, punchActions, PunchRequestError, readSubjectPendingPunch, saveSubjectPendingPunch, pendingPunchReferences, type ClockView, type PendingPunch } from '../lib/clocker/punch-client';
+import { canRetirePendingPunch, makePunchCommand, parseClockView, parseReceiptReply,
+ postPunch, punchActions, PunchRequestError, type ClockView, type PendingPunch } from '../lib/clocker/punch-client';
+import {openClockerJournal} from '../lib/clocker/recovery-journal.browser';
+import type {ClockerJournal,JournalReference} from '../lib/clocker/recovery-journal';
 import type { PunchAction, PunchReceipt } from '../lib/clocker/punch-types';
 import type { BreakSelection } from '../lib/clocker/break-types';
 import styles from './clocker-punch.module.css';
@@ -39,7 +41,9 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:str
  const motion=useClockerMotion(mode);
  const spanish=useClockerSpanish();
  const [receipt,setReceipt]=useState<PunchReceipt|null>(null);
- const [references,setReferences]=useState<ReturnType<typeof pendingPunchReferences>>([]),[showReferences,setShowReferences]=useState(false);
+ const [references,setReferences]=useState<JournalReference[]>([]),[showReferences,setShowReferences]=useState(false);
+ const journal=useRef<Promise<ClockerJournal>|null>(null);
+ function recoveryJournal(){return journal.current??(journal.current=openClockerJournal());}
  const busy=useRef(false),alive=useRef(false),heading=useRef<HTMLHeadingElement>(null);
  const [now,setNow]=useState(()=>Date.now());
  useEffect(()=>{if(mode!=='ready'&&mode!=='confirm-out')return;const tick=()=>setNow(Date.now());const first=window.setTimeout(tick,0),timer=window.setInterval(tick,15000);return()=>{clearTimeout(first);clearInterval(timer);};},[mode]);
@@ -59,35 +63,36 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:str
    try{
     const fresh=parseClockView(await postPunch(locationKey,{operation:'state'}));
     if(!current)return;
-    try{saved=readSubjectPendingPunch(window.sessionStorage,locationKey,fresh.subject);setReferences(pendingPunchReferences(window.sessionStorage,locationKey));}
-    catch{setMode('storage');setMessage('Your recovery record cannot be verified. Keep it saved and ask a manager to review it.');return;}
+    try{const store=await recoveryJournal();saved=await store.read(locationKey,fresh.subject);const refs=await store.references(locationKey);if(!current)return;setReferences(refs);}
+    catch{setMode('storage');setMessage('Your recovery record cannot be verified. Keep it saved and ask an Owner to review it.');return;}
     setView(fresh);setPending(saved);setMode(saved?'recovery':'ready');
    }catch(error){if(current){setPending(saved);failed(error,Boolean(saved));}}
   };
-  void load();return()=>{current=false;alive.current=false;};
+  void load();return()=>{current=false;alive.current=false;void journal.current?.then(store=>store.close(),()=>{});};
  },[locationKey]);
  useEffect(()=>{heading.current?.focus({preventScroll:true});},[mode]);
  useEffect(()=>{
   if(mode!=='success')return;
   const timer=window.setTimeout(onDone,5000);return()=>clearTimeout(timer);
  },[mode,onDone]);
- function confirmed(value:unknown,saved:PendingPunch){
+ async function confirmed(value:unknown,saved:PendingPunch){
   const result=parseReceiptReply(value,saved.command);
   let storageWarning:string|null=null;
-  try{forgetSubjectPendingPunch(window.sessionStorage,locationKey,saved);setPending(null);setReferences(pendingPunchReferences(window.sessionStorage,locationKey));}
+  try{const store=await recoveryJournal();await store.resolveExact(locationKey,saved,'recorded');if(!alive.current)return;setPending(null);setReferences(await store.references(locationKey));}
   catch{storageWarning='The action was recorded, but this browser could not clear its recovery data. Check it again after allowing browser storage.';}
-  setReceipt(result);setMessage(storageWarning);setMode('success');
+  if(alive.current){setReceipt(result);setMessage(storageWarning);setMode('success');}
  }
  async function send(saved:PendingPunch,current:ClockView){
   if(busy.current||saved.subject!==current.subject)return;
   busy.current=true;setMode('sending');setMessage(null);
   try{
-   // Durable per-tab intent is saved and read back BEFORE the HTTP request.
-   try{saveSubjectPendingPunch(window.sessionStorage,locationKey,saved);}
+   // A committed IndexedDB transaction preserves the exact intent before sending.
+   try{await (await recoveryJournal()).saveExact(locationKey,saved);}
    catch{setMode('storage');setMessage('Recovery storage is unavailable. No new request was sent. Allow browser storage before continuing.');return;}
+   if(!alive.current)return;
    setPending(saved);
    const result=await postPunch(locationKey,{operation:'execute',command:saved.command});
-   if(alive.current)confirmed(result,saved);
+   if(alive.current)await confirmed(result,saved);
   }catch(error){if(alive.current)failed(error,true);}
   finally{busy.current=false;}
  }
@@ -110,10 +115,10 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:str
    // rules out any later valid commit of this exact old command.
    const result=await postPunch(locationKey,{operation:'receipt',commandId:pending.command.commandId,verificationId:fresh.verificationId});
    if(!alive.current)return;
-   if(result&&typeof result==='object'&&'state' in result&&result.state==='committed'){confirmed(result,pending);return;}
+   if(result&&typeof result==='object'&&'state' in result&&result.state==='committed'){await confirmed(result,pending);return;}
    if(!result||typeof result!=='object'||!('state' in result)||result.state!=='unknown')throw Error('Unconfirmed response');
    if(canRetirePendingPunch(pending.command,fresh)){
-    forgetSubjectPendingPunch(window.sessionStorage,locationKey,pending);setPending(null);setReferences(pendingPunchReferences(window.sessionStorage,locationKey));setMode('ready');
+    const store=await recoveryJournal();await store.resolveExact(locationKey,pending,'reviewed-context');if(!alive.current)return;setPending(null);setReferences(await store.references(locationKey));setMode('ready');
     setMessage('Your clock state or verification changed. No confirmation was found for the previous action, and nothing was replayed. Review the current state before choosing a new action.');
    }else{setMode('retry');setMessage('No saved confirmation was found yet. Retry the same action only; it keeps the original request ID.');}
   }catch(error){if(alive.current)failed(error,Boolean(pending));}
@@ -173,8 +178,8 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone}:{locationKey:str
   {mode==='success'&&receipt?<><p role="status" className={styles.saved}>Saved at <time dateTime={receipt.performedAt}>{clockTime(receipt.performedAt,timeZone)}</time>. This screen will clear shortly.</p><span className={styles.countdown} aria-hidden="true"><i/></span></>:null}
   {mode==='other-person'?<p className={styles.notice}>A previous employee’s action needs verification on this tablet. Ask that employee to enter their PIN again. No new action was sent.</p>:null}
   {references.length>0&&!waiting?<aside className={styles.notice}>
-   <p>Saved actions remain on this tablet. Each employee can check their own action after entering their PIN. A manager can review a reference at Clocker Recovery in the portal.</p>
-   <button type="button" className="button secondary" onClick={()=>setShowReferences(v=>!v)}>{showReferences?'Hide saved references':'Show saved references for a manager'}</button>
+   <p>Saved actions remain on this tablet. Each employee can check their own action after entering their PIN. An Owner can review a reference at Clocker Recovery in the portal.</p>
+   <button type="button" className="button secondary" onClick={()=>setShowReferences(v=>!v)}>{showReferences?'Hide saved references':'Show saved references for an Owner'}</button>
    {showReferences?<ul>{references.map((r,i)=><li key={r.commandId??i}>{r.commandId?<code style={{overflowWrap:'anywhere'}}>{r.commandId}</code>:'Unreadable recovery record — keep it saved for assistance'}</li>)}</ul>:null}
   </aside>:null}
   {waiting?<p role="status" className={styles.detail}>{mode==='sending'?'Keep this screen open while the action is checked.':'Reading the latest saved information.'}</p>:null}

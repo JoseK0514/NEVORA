@@ -27,3 +27,12 @@ from application evidence. Physical iPad acceptance remains required.
 - Focused presentation/page/action checks: 41 passed. TypeScript passed.
 - Owned Owner policy + PIN/recovery/calendar/Manager visibility SQL: 59 passed.
 - Awaited revocation, DB-clock expiry and post-commit suppression coverage retained on the Owner path.
+
+## T2 — Durable exact-action recovery
+
+- IndexedDB keeps one atomic pending slot per location and opaque employee/device subject.
+- Exact payloads commit and read back before a punch request; conflicting same-subject writes fail.
+- Valid v1/v2 session records migrate after readback; corrupt/conflicting bytes remain for assistance.
+- Resolution retains reference-only history. A failing cross-tab legacy resurrection test exposed a missing tombstone check; the fix now prevents that resurrection.
+- 25 parser/journal unit tests passed; 24 Chromium/WebKit checks passed, including tab closure, competing saves, changed-record resolution, corrupt migration, quota and blocked database opening.
+- TypeScript passed. No physical iPad durability claim is made.
