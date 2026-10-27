@@ -5,3 +5,4 @@
 /* Match Quiet's intentional specificity while limiting tablet targets to Clocker. */
 :global(:is(#q-root,html)) .owner :global(.q-seg){height:auto;min-height:48px;}
 :global(:is(#q-root,html)) .owner :global(.q-seg)>button{min-height:44px;}
+.requests{margin:32px 0;padding:24px 0;border-top:1px solid #e3e9e6;border-bottom:1px solid #e3e9e6;}.requestHeading{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}.requestHeading h2{margin:0;font-size:1.1875rem;font-weight:650;}.requests ul{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:24px;}.requests li{min-width:0;padding-bottom:24px;border-bottom:1px solid #e3e9e6;}.requests p{margin:8px 0;}.requests code{overflow-wrap:anywhere;font-size:.8125rem;}.requests button{min-height:44px;}

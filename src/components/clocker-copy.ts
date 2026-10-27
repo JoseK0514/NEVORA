@@ -1,5 +1,13 @@
 export type ClockerLocale='en'|'es';
 export const CLOCKER_COPY:Record<string,string>={
+ "Waiting for request confirmation.":"Esperando la confirmación de la solicitud.",
+ "Requesting review…":"Solicitando revisión…",
+ "Review requested":"Revisión solicitada",
+ "Retry original review request":"Reintentar la solicitud original",
+ "Ask Owner to review":"Pedir revisión al dueño",
+ "Review request reference":"Referencia de la solicitud de revisión",
+ "Your Owner can find this in Clocker recovery.":"El dueño puede encontrarla en Recuperación de Clocker.",
+ "Request confirmation is unavailable. Keep this reference; retry uses the same request.":"No pudimos confirmar la solicitud. Conserva esta referencia; al reintentar se usa la misma solicitud.",
  "Stay on break":"Seguir en descanso",
  "Cancel clock-out":"Cancelar salida",
  "Review your current status":"Revisa tu estado actual",

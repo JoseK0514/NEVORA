@@ -191,7 +191,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
   </>:null}
   {mode==='success'&&receipt?<><details className={styles.reference}><summary>{t('Action reference')}</summary><code>{receipt.commandId}</code></details><p role="status" className={styles.saved}>{t("Saved at")}{' '}<time dateTime={receipt.performedAt}>{clockTime(receipt.performedAt,timeZone,locale)}</time>{t(". This screen clears in eight seconds.")}</p><span className={styles.countdown} aria-hidden="true"><i/></span></>:null}
   {mode==='other-person'?<p data-clocker-notice className={styles.notice}>{t("A previous employee’s action needs verification on this tablet. Ask that employee to enter their PIN again. No new action was sent.")}</p>:null}
-  {references.length>0&&!waiting&&mode!=='success'?<ClockerRecoveryHandoff references={references}/>:null}
+  {references.length>0&&!waiting&&mode!=='success'?<ClockerRecoveryHandoff key={pending?.command.commandId??'tablet-assistance'} references={references} locationKey={locationKey} commandId={pending?.command.commandId??null}/>:null}
   {waiting?<p role="status" className={styles.detail}>{t(mode==='sending'?'Keep this screen open while the action is checked.':'Reading the latest saved information.')}</p>:null}
   {waiting?<span className={styles.working} aria-hidden="true"/>:null}
   {message&&mode!=='other-person'?<p role={mode==='ready'||mode==='success'?'status':'alert'} data-clocker-notice className={styles.notice}>{t(message)}</p>:null}
