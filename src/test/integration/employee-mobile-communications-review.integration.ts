@@ -1,7 +1,7 @@
 import {afterAll,beforeAll,expect,it} from 'vitest';
 import {createRequire} from 'node:module';
-import {mkdir,writeFile} from 'node:fs/promises';
-import {resolve} from 'node:path';
+import {access,mkdir,writeFile} from 'node:fs/promises';
+import {join,resolve} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {createOwnedNextApp} from './owned-next-app';
 import {seedOwnedApp,seedOwnedScenario,TEST_PASSWORD} from './owned-app-fixture';
@@ -44,6 +44,7 @@ afterAll(async()=>{try{await app?.close();}finally{if(evidence)await writeFile(e
 async function withPage(engine:typeof engines[number],scenario:string,run:(page:any,ready:(view:string)=>Promise<void>,shot:(name:string)=>Promise<void>,fault:(value:boolean)=>void)=>Promise<void>){
  const browser=await runtime[engine].launch({headless:true}),context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'}),page=await context.newPage();
  page.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(30000);let expected=false;
+ const inFlight=new Set<unknown>();page.on('request',(request:any)=>{const path=new URL(request.url()).pathname;if(path.startsWith('/api/')||path.startsWith('/app'))inFlight.add(request);});for(const event of ['requestfinished','requestfailed'])page.on(event,(request:unknown)=>inFlight.delete(request));
  page.on('pageerror',(error:Error)=>messages.push({engine,scenario,type:'pageerror',text:error.stack??error.message,expected:false}));
  page.on('console',(message:{type():string;text():string})=>{if(['error','warning'].includes(message.type()))messages.push({engine,scenario,type:message.type(),text:message.text(),expected});});
  await context.route('**/*',async(route:any)=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==new URL(app.url).origin){await route.abort();throw Error('External request blocked: '+url.origin);}await route.continue();});
@@ -52,6 +53,7 @@ async function withPage(engine:typeof engines[number],scenario:string,run:(page:
  try{
   await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actors[engines.indexOf(engine)]);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await page.locator('[data-home-state="ready"]:visible,[data-home-state="partial"]:visible').waitFor();await page.locator('.employee-time-badge:visible').waitFor();
   await run(page,ready,shot,value=>{expected=value;});
+  await page.locator('.em-messages:visible .em-request-footer button:not(:disabled)').waitFor();await expect.poll(()=>inFlight.size,{timeout:15000}).toBe(0);
   expect(messages.filter(row=>row.engine===engine&&row.scenario===scenario&&(row.type==='pageerror'||row.type==='error'&&!(row.expected&&/Failed to (fetch|load resource)|Load failed|NetworkError|status of (401|403)/.test(row.text))))).toEqual([]);
  }catch(error){await shot('failure').catch(()=>{});throw error;}finally{await context.close();await browser.close();}
 }
@@ -96,7 +98,7 @@ it('UI-COM-001 associates actual invalid fields and restores deliberate review a
    expect(await field.evaluate((el:HTMLElement)=>(el.getAttribute('aria-describedby')??'').split(/\s+/).some(id=>{const error=document.getElementById(id);return error?.getAttribute('role')==='alert'&&!!error.textContent?.trim();}))).toBe(true);
    expect(await panel().getByRole('button',{name:'Send update',exact:true}).count()).toBe(0);await shot('invalid-'+name);
   };
-  await invalid('Title','x'.repeat(121),'title-long');await invalid('Title','   ','title-empty');await page.getByLabel('Title',{exact:true}).fill('Valid original '+engine);
+  await invalid('Title','x'.repeat(121),'title-long');await page.setViewportSize({width:320,height:844});await page.evaluate(()=>{document.documentElement.style.fontSize='200%';document.documentElement.dataset.textStep='200';});await invalid('Title','x'.repeat(121),'title-320-text200');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);await page.evaluate(()=>{document.documentElement.style.fontSize='100%';delete document.documentElement.dataset.textStep;});await page.setViewportSize({width:390,height:844});await invalid('Title','   ','title-empty');await page.getByLabel('Title',{exact:true}).fill('Valid original '+engine);
   await invalid('Message','x'.repeat(2001),'body-long');await invalid('Message','Invalid\u202ebody','body-control');await page.getByLabel('Message',{exact:true}).fill('Fictional body.');
   await invalid('Expiry · optional','2000-01-01T12:00','expiry');await page.getByLabel('Expiry · optional',{exact:true}).fill('');
   await panel().getByRole('button',{name:'Review audience',exact:true}).click();await panel().getByRole('button',{name:'Send update',exact:true}).waitFor();checks.push({engine,name:'UI-COM-001 real custom field errors have associations/focus and corrected input reviews successfully'});
@@ -117,10 +119,13 @@ it('CR-3/CR-1 preserve optional read facts and recover a refused original lookup
   await page.route('**/api/employee/communications',async(route:any)=>{const body=route.request().postDataJSON();sent++;operationId=body.operationId;if(!lost){lost=true;await route.fetch();await route.abort();}else await route.continue();});
   fault(true);await panel().getByRole('button',{name:'Send update',exact:true}).click();await panel().locator('button:enabled').filter({hasText:/^Check submission status$/}).waitFor();await page.unroute('**/api/employee/communications');
   const revision=(await q<{revision:number}>('SELECT revision FROM nevora_workspace_presentation_revisions ORDER BY revision DESC LIMIT 1'))[0]?.revision??0;
+  const gateId='lookup-module-'+engine;let disabled=false;await writeFile(join(app.barriers,'armed.json'),JSON.stringify({id:gateId,stage:'before',contains:'FROM communication_operations WHERE workspace_id=$1'}));
   try{
-   await saveWorkspacePresentation(owner,{operationId:randomUUID(),expectedRevision:revision,section:'modules',disabled:['updates']},app.database.executor);
-   await panel().getByRole('button',{name:'Check submission status',exact:true}).click();await panel().getByText('Updates are turned off for your workspace.',{exact:false}).waitFor();await panel().getByText('The result hasn’t been confirmed.',{exact:false}).waitFor();expect(await panel().getByRole('button',{name:'Check submission status',exact:true}).isDisabled()).toBe(true);await shot('refused-original-lookup');
-  }finally{await saveWorkspacePresentation(owner,{operationId:randomUUID(),expectedRevision:revision+1,section:'modules',disabled:[]},app.database.executor);}
+   const response=page.waitForResponse((result:any)=>new URL(result.url()).pathname==='/api/employee/communications/operations/'+operationId);
+   await panel().getByRole('button',{name:'Check submission status',exact:true}).click();await expect.poll(async()=>{try{await access(join(app.barriers,gateId+'.reached'));return true;}catch{return false;}},{timeout:5000,interval:10}).toBe(true);
+   await saveWorkspacePresentation(owner,{operationId:randomUUID(),expectedRevision:revision,section:'modules',disabled:['updates']},app.database.executor);disabled=true;await writeFile(join(app.barriers,gateId+'.release'),'release');expect((await response).status()).toBe(403);
+   await panel().getByText('Updates are turned off for your workspace.',{exact:false}).waitFor();await panel().getByText('The result hasn’t been confirmed.',{exact:false}).waitFor();expect(await panel().getByRole('button',{name:'Check submission status',exact:true}).isDisabled()).toBe(true);await shot('refused-original-lookup');
+  }finally{await writeFile(join(app.barriers,gateId+'.release'),'release');if(disabled)await saveWorkspacePresentation(owner,{operationId:randomUUID(),expectedRevision:revision+1,section:'modules',disabled:[]},app.database.executor);}
   await panel().getByRole('button',{name:'Refresh',exact:true}).click();await ready('compose');await panel().locator('button:enabled').filter({hasText:/^Check submission status$/}).waitFor();await panel().getByRole('button',{name:'Check submission status',exact:true}).click();await panel().getByRole('heading',{name:'Update published',exact:true}).waitFor();expect(sent).toBe(1);
   expect((await q<{n:number}>('SELECT count(*)::integer AS n FROM communication_operations WHERE operation_id=$1 AND actor_employee_id=$2',[operationId,actors[engines.indexOf(engine)]]))[0].n).toBe(1);await shot('original-recovered');fault(false);checks.push({engine,name:'CR-1 real module-refused lookup retains exact committed original for deliberate recovery without another publication'});
  });
