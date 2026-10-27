@@ -2,6 +2,8 @@
 
 Implementation branch: `codex/clocker-ipad-integration-20261027`, isolated from `origin/development` at `dfdcefa0edc9d02bad5edf79b2b5a9587b194eb2`. No push, PR, development assembly, main merge, hosted migration or deployment has been performed. The existing local prototype remains separate from the application candidate.
 
+Jose’s clarified support target covers iPad mini, standard iPad, iPad Air and iPad Pro, with both Safari and Home Screen web-app mode required. A tested minimum iPadOS version is still pending. Dedicated location-specific launch metadata is implemented; native installation and lifecycle acceptance remain open.
+
 The approved Clocker foundation is preserved: pale station rail, system type, teal actions, regular Phosphor icons, consistent12px controls and tablet touch targets. Administration is Company Owner-only. Canonical time/receipt rules, current Company proofs and exact-command recovery remain authoritative.
 
 ## Software verification

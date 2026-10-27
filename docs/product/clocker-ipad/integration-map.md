@@ -98,7 +98,7 @@ Historical reference `codex/clocker-photo-monitoring-20261010` / `ecd06408dbc36c
 - 48px minimum actions;64px keypad keys;12px control /16px card radius;4/8/12/16/20/24/32px spacing. Readable200% text and content-first compact station when panes stack.
 - Hard verified window is no later than the minimum of server identity expiry and30 seconds after confirmed verification. Warning during final10 seconds; partial PIN clears after20 idle seconds. Success displays for up to8 seconds, bounded by actual authority/privacy clearing.
 - Same-subject continuation requires server clearing followed by fresh PIN/state. Never extend a cookie, hold PIN digits, carry identity through backgrounding, or transfer an unsent confirmation to another actor.
-- iPad Safari is the physical acceptance target. Browser WebKit is an automation approximation, not an iPad certification. Model/iPadOS versions and installed Home Screen usage are collected on the acceptance sheet; none is invented.
+- iPad Safari and Home Screen web-app mode are both physical acceptance targets across the iPad family matrix. Browser WebKit is an automation approximation, not an iPad certification. Exact model/iPadOS evidence and the supported minimum remain pending on the acceptance sheet.
 - Registered is enrollment state, not current connectivity. No offline clock writes, optimistic success, hidden Owner switch, employee roster before PIN or automatic time correction.
 
 ## Current gates and evidence
