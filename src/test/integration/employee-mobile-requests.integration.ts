@@ -185,10 +185,12 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
    await shot('pickup-reconciled');record(manualPickup?'Manual-review pickup survives lost response, reconciles one receipt and does not fabricate assignment':'Automatic pickup survives lost response, reconciles one receipt and canonical assignment');
    expectedFailure=false;stage='desktop-isolation';
    await page.unroute('**/app/exchange*');
-   await page.setViewportSize({width:1440,height:1000});await page.goto(app.url+'/app/requests/hub');
+   await page.setViewportSize({width:1440,height:1000});
+   await page.locator('.q-shiftreq:visible .q-nav__l[href="/app/requests/hub"]').click();
+   await page.waitForURL(app.url+'/app/requests/hub');
    await page.locator('.q-reqhub:visible').waitFor();expect(await page.locator('.em-requests:visible').count()).toBe(0);
    await shot('desktop-preserved');record('Desktop retains existing RequestHub and does not mount the new mobile view');
-   await page.setViewportSize({width:390,height:844});await load('/app/requests/hub');
+   await page.setViewportSize({width:390,height:844});await ready();
    expectedFailure=true;stage='authority-loss';await q('UPDATE employees SET active=false WHERE id=$1',[actor]);
    let refusal:unknown=null;
    await page.route('**/api/employee/requests',async(route:{fetch(options:{timeout:number}):Promise<{status():number;json():Promise<unknown>}>;fulfill(options:{response:unknown}):Promise<void>})=>{
