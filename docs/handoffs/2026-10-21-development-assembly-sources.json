@@ -2,7 +2,7 @@
   "schema": 1,
   "repository": "JoseK0514/NEVORA",
   "target": "development",
-  "assemblyBranch": "codex/clocker-ipad-integration-20261027",
+  "assemblyBranch": "claude-codex-collab-nevora",
   "observedAt": "2026-10-27",
   "sources": [
     {
@@ -51,14 +51,14 @@
       "branch": "claude/bold-joliot-ec227c",
       "sha": "3c281cdb09bc2912e6ab007714e482ec02649dc9",
       "disposition": "held",
-      "reason": "Older Phase C browser drivers and a Clocker component label change; excluded from this bounded UI integration pending comparison with current drivers.",
+      "reason": "Older Phase C browser drivers and a Clocker component label change; excluded from this bounded UI integration pending comparison with current drivers. Preserved outside the Clocker collaboration integration.",
       "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/bold-joliot-ec227c"
     },
     {
       "branch": "claude/business-foundations",
       "sha": "cb35605b33e6151125518ecfa45de3735d708105",
       "disposition": "held",
-      "reason": "Optional bilingual public landing and business notes are retained separately while the R1 release checks are completed.",
+      "reason": "Optional bilingual public landing and business notes are retained separately while the R1 release checks are completed. Preserved outside the Clocker collaboration integration.",
       "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/business-foundations"
     },
     {
@@ -219,7 +219,7 @@
       "branch": "codex/ci-spend-controls-20261023",
       "sha": "e49edcd8607be18a40fd2c7ae3fc48542d801597",
       "disposition": "held",
-      "reason": "Active draft CI spending PR27 appeared during finalization. Preserve its remote and local work; exclude its workflow changes from this approved integration and reconcile any advancement before cleanup."
+      "reason": "Active draft CI spending PR27 appeared during finalization. Preserve its remote and local work; exclude its workflow changes from this approved integration and reconcile any advancement before cleanup. Preserved outside the Clocker collaboration integration."
     },
     {
       "branch": "codex/clean-ui-development-20261020",
@@ -239,7 +239,7 @@
       "branch": "codex/f10-original-owner-bootstrap-20261011",
       "sha": "838c77325272696c5f9cc29fab14d664708d2e3c",
       "disposition": "held",
-      "reason": "Separate original-owner tenant bootstrap; not activated by this single-company release.",
+      "reason": "Separate original-owner tenant bootstrap; not activated by this single-company release. Preserved outside the Clocker collaboration integration.",
       "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/f10-original-owner-bootstrap-20261011"
     },
     {
@@ -363,9 +363,9 @@
     },
     {
       "branch": "development",
-      "sha": "46e202786863279302026ee03a0e225c359fa55c",
+      "sha": "84c3fc357b006220ef6bbf29580e7327228c9659",
       "disposition": "target",
-      "reason": "Freshly fetched combined development46e2027, including merged PR29/31/32. PR35 adds frozen mobile Access only and bounded source/CI reconciliation. Main/production and separately active PR27/33/34 remain unchanged."
+      "reason": "Current development governance commit is preserved in this collaboration integration. Clocker source, staging evidence and archived PR35 lineage are retained; separately held application work remains excluded. No main or production promotion."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -412,13 +412,13 @@
       "branch": "claude/home-clock-row",
       "sha": "341680bbbc3620a7f357309464961dfa845c1b64",
       "disposition": "held",
-      "reason": "Fetched and compared on October 27. Preserve this active head and its separate review. Held outside the approved Clocker iPad integration; no source content is merged by this inventory reconciliation."
+      "reason": "Active PR33; preserve its remote and work. Separate Home clock row and its scenario drivers; changes the existing Home presentation. Excluded from the frozen mobile Access PR35; requires separate review and matching acceptance before any integration. Recording this head is source classification, not approval or findings closure. October 27: record the current remote head for custody only; all changes remain held and excluded from this branch-policy update. No review, merge acceptance or findings closure is inferred. Preserved outside the Clocker collaboration integration."
     },
     {
       "branch": "claude/quiet-everywhere",
       "sha": "5b82c3cb4836ba61415cef1d6f3cd918c019a385",
       "disposition": "held",
-      "reason": "Fetched and compared on October 27. Preserve this active head and its separate review. Held outside the approved Clocker iPad integration; no source content is merged by this inventory reconciliation."
+      "reason": "Active PR34; preserve its remote and work. Separate cross-application UI, payroll/schema, read-path and scoped-permission changes;411 changed paths compared with development. Excluded from the frozen mobile Access PR35; requires separate review and matching acceptance before any integration. Recording this head is source classification, not approval or findings closure. October 27: record the current remote head for custody only; all changes remain held and excluded from this branch-policy update. No review, merge acceptance or findings closure is inferred. Preserved outside the Clocker collaboration integration."
     },
     {
       "branch": "codex/mobile-access-onboarding-20261026",
@@ -431,8 +431,8 @@
       "branch": "codex/light-default-20261027",
       "sha": "8cca397cfeac3cc84f3ecb39d4f5166e162fe4ca",
       "disposition": "held",
-      "reason": "Fetched and inspected on October27. Advancement from84ee244 changes recovery/navigation browser QA drivers, their tests and PR36 readiness documentation; no Clocker implementation is included. Theme and QA work remain held outside this bounded integration. Six active branches retain the unchanged ceiling6; no branch retired by this task."
+      "reason": "Separately active light-default work, preserved without modification or integration. Exact current head recorded for source custody only; this branch-policy change does not approve its application changes. Preserved outside the Clocker collaboration integration."
     }
   ],
-  "maximumActiveBranches": 6
+  "maximumActiveBranches": 7
 }

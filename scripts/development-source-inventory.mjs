@@ -7,10 +7,11 @@ const fullSha = /^[a-f0-9]{40}$/;
 
 export function validateInventory(inventory) {
   if (inventory?.schema !== 1 || inventory.target !== 'development' ||
-      typeof inventory.assemblyBranch !== 'string' || !inventory.assemblyBranch.startsWith('codex/') ||
+      typeof inventory.assemblyBranch !== 'string' ||
+      (!inventory.assemblyBranch.startsWith('codex/') && inventory.assemblyBranch !== 'claude-codex-collab-nevora') ||
       !Array.isArray(inventory.sources)) throw Error('Invalid development source inventory');
   if (inventory.maximumActiveBranches !== undefined &&
-      (!Number.isInteger(inventory.maximumActiveBranches) || inventory.maximumActiveBranches < 1 || inventory.maximumActiveBranches > 6)) {
+      (!Number.isInteger(inventory.maximumActiveBranches) || inventory.maximumActiveBranches < 1 || inventory.maximumActiveBranches > 7)) {
     throw Error('Invalid remote branch ceiling');
   }
   const branches = new Set();

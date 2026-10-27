@@ -59,3 +59,7 @@ Product position: Owner customization and the approved tablet foundation are ret
 ## Post-freeze source state
 
 After staging469aa56e was frozen and verified, shared `origin/development` advanced fromdfdcefa0 to84c3fc35 (`Allow seven active branches and the Claude Codex collaboration line`). Inspection shows only five governance/source-inventory files changed; no application or Clocker implementation changed. This Clocker branch retains its recorded six-branch policy and does not silently adopt another workstream's governance change. Reconcile that source/policy delta before a development integration or later deployment. It does not alter the already identified staging application/worker artifacts. The implementation branch is retained locally; no shared development/main branch was changed by this task.
+
+## Collaboration branch delivery
+
+Jose subsequently requested all Clocker code be pushed to `claude-codex-collab-nevora` with no CI. The destination's84c3fc35 governance commit is preserved alongside the complete Clocker history. The inventory now selects that collaboration branch and retains its seven-branch policy, exact archives and separately held work. Only the inventory conflicted; resolution preserves both custody records and the current branch policy. This delivery does not change the identified staging deployment or waive physical acceptance/runtime-log access. The integration commit carries `[skip ci]`; no workflow dispatch or development/main push is requested.
