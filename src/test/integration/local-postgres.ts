@@ -93,6 +93,13 @@ async function createOwnedDatabase(prefix: 'fuel_phase3_test_' | 'nevora_foundat
     if (disposed) return;
     await assertOwned();
     await pool.end();
+    // Pool drainage can precede the server processing each TCP Terminate.
+    // Prove those backends are gone before DROP ... FORCE can race shutdown.
+    const closedBy = performance.now() + 3000;
+    while ((await admin.query('SELECT pid FROM pg_stat_activity WHERE datname=$1', [name])).rows.length) {
+      if (performance.now() >= closedBy) throw Error('Owned fixture backend closure timed out; refusing forced teardown.');
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
     await admin.query(`DROP DATABASE "${name}" WITH (FORCE)`);
     if ((await admin.query('SELECT 1 FROM pg_database WHERE datname=$1', [name])).rowCount) {
       throw new Error('Disposable database remains after teardown.');

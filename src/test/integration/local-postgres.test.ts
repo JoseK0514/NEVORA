@@ -8,6 +8,8 @@ const state = vi.hoisted(() => ({
   marker: '',
   failSql: '',
   failConnect: false,
+  deferRuntimeEnd: false,
+  pendingEnds: [] as (() => void)[],
 }));
 
 vi.mock('pg', () => {
@@ -21,8 +23,10 @@ vi.mock('pg', () => {
       if (state.failConnect && this.record.database !== '/postgres') throw Error('fixture-connect-failed');
     }
     async end() {
-      this.record.ended = true;
-      state.events.push(`end:${this.record.database}`);
+      const finish = () => { this.record.ended = true; state.events.push(`end:${this.record.database}`); };
+      if (state.deferRuntimeEnd && this.record.database !== '/postgres') {
+        await new Promise<void>(resolve => state.pendingEnds.push(() => { finish(); resolve(); }));
+      } else finish();
     }
     async query(text: string) {
       this.record.statements.push(text);
@@ -35,6 +39,7 @@ vi.mock('pg', () => {
       if (text.startsWith('SELECT oid FROM pg_database')) return { rows: [{ oid: 123 }] };
       if (text.startsWith('COMMENT ON DATABASE')) state.marker = text.split(" IS '")[1].slice(0, -1);
       if (text.startsWith('SELECT shobj_description')) return { rows: [{ marker: state.marker }] };
+      if (text.includes('FROM pg_stat_activity')) return { rows: state.clients.filter(client => client.database !== '/postgres' && !client.ended).map((_, index) => ({ pid: index + 1 })) };
       if (text.startsWith('DROP DATABASE')) {
         state.events.push('drop');
         state.exists = false;
@@ -59,7 +64,7 @@ vi.mock('pg', () => {
         if (destroy) void leased.end(); else this.idle.push(leased);
       } });
     }
-    async end() { await Promise.all(this.clients.filter(client => !client.record.ended).map(client => client.end())); }
+    async end() { this.clients.filter(client => !client.record.ended).forEach(client => { void client.end(); }); }
   } };
 });
 
@@ -72,6 +77,8 @@ beforeEach(() => {
   state.marker = '';
   state.failSql = '';
   state.failConnect = false;
+  state.deferRuntimeEnd = false;
+  state.pendingEnds.length = 0;
   vi.stubEnv('DATABASE_URL', '');
   vi.stubEnv('FUEL_TEST_DATABASE_URL', 'postgresql://fixture@127.0.0.1:54321/nevora_foundation_test_bootstrap');
   vi.stubEnv('FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN', 'yes');
@@ -136,6 +143,22 @@ it('fails a batch whose session reset fails and retires that connection before r
     await db.executor.query({ text: 'SELECT 22', values: [] });
     expect(state.clients).toHaveLength(3);
   } finally { await db.dispose(); }
+});
+
+it('waits for actual backend closure after pool drain before forcing owned database teardown', async () => {
+  const db = await createDisposableFoundationDatabase({ mode: 'empty' });
+  await db.executor.query({ text: 'SELECT 11', values: [] });
+  state.deferRuntimeEnd = true;
+  const disposal = db.dispose();
+  try {
+    await vi.waitFor(() => expect(state.pendingEnds).toHaveLength(1));
+    expect(state.exists).toBe(true);
+    expect(state.events).not.toContain('drop');
+  } finally {
+    state.pendingEnds.splice(0).forEach(finish => finish());
+    await disposal;
+  }
+  expect(state.events.indexOf('end:/nevora_foundation_test_bootstrap')).toBeLessThan(state.events.indexOf('drop'));
 });
 
 it('closes a failed bootstrap connection before dropping its owned database and never executes later migrations', async () => {
