@@ -34,6 +34,17 @@ it.each([401,403])('still clears and denies when current revalidation actually r
  await vi.advanceTimersByTimeAsync(120000);expect(request).toHaveBeenCalledTimes(2);
 });
 
+it.each([401,403])('releases an unread HTTP %s response without waiting for its body before denying Profile',async status=>{
+ const cancel=vi.fn();
+ const body=new ReadableStream({start(controller){controller.enqueue(new TextEncoder().encode('{'));},cancel});
+ vi.stubGlobal('fetch',vi.fn(async()=>new Response(body,{status})));
+ EmployeeAccountPanel({kind:'profile',authority:'profile-view'});cleanup=host.effect!();await vi.advanceTimersByTimeAsync(0);
+ expect(last().snapshot).toEqual({state:'unavailable',reason:'access_denied'});
+ expect(cancel).toHaveBeenCalledTimes(1);
+ await vi.advanceTimersByTimeAsync(120000);
+ expect(fetch).toHaveBeenCalledTimes(1);
+});
+
 it('invalidates old notification rows before rechecking a changed operational source',async()=>{
  let resolve!: (response:Response)=>void;
  const request=vi.fn().mockResolvedValueOnce(Response.json(ready())).mockImplementation(()=>new Promise<Response>(done=>{resolve=done;}));vi.stubGlobal('fetch',request);

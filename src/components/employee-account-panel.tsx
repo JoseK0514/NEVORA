@@ -52,7 +52,12 @@ export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,
   // Clear it and permit current revalidation; only a server refusal denies.
   const controller=createPrivateSnapshotController<EmployeeViewSnapshot>(setState,async signal=>{
    const response=await fetch(endpoint ?? `/api/employee/${kind}`,{cache:'no-store',credentials:'same-origin',redirect:'error',signal,headers:{Accept:'application/json','X-Nevora-Employee-View':authority}});
-   if(response.status===401||response.status===403)return {state:'unavailable',reason:'access_denied'};
+   if(response.status===401||response.status===403){
+    // Denial needs no response body. Release the fetch before its controller
+    // completes; a failed cancellation must never turn denial into a retry.
+    void response.body?.cancel().catch(()=>undefined);
+    return {state:'unavailable',reason:'access_denied'};
+   }
    if(!response.ok)throw Error('View unavailable');return response.json();
   },value=>parseEmployeeView(value,kind),reason=>({state:'unavailable',reason}),()=> 'read_failed');
   control.current=controller;let mounted=true,ending=false;
