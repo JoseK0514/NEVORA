@@ -1,0 +1,104 @@
+[
+  {
+    "name": "no-ai-slop",
+    "path": "instructions/skills/no-ai-slop",
+    "original": "/Users/josek0514/.codex/skills/no-ai-slop",
+    "copied": true
+  },
+  {
+    "name": "impeccable",
+    "path": "instructions/skills/impeccable",
+    "original": "/Users/josek0514/.codex/skills/impeccable",
+    "copied": true
+  },
+  {
+    "name": "gpt-taste",
+    "path": "instructions/skills/gpt-taste",
+    "original": "/Users/josek0514/.agents/skills/gpt-taste",
+    "copied": true
+  },
+  {
+    "name": "tastemaker",
+    "path": "instructions/skills/tastemaker",
+    "original": "/Users/josek0514/.codex/skills/tastemaker",
+    "copied": true
+  },
+  {
+    "name": "ui-ux-pro-max",
+    "path": "instructions/skills/ui-ux-pro-max",
+    "original": "/Users/josek0514/.codex/skills/ui-ux-pro-max",
+    "copied": true
+  },
+  {
+    "name": "apple-design",
+    "path": "instructions/skills/apple-design",
+    "original": "/Users/josek0514/.agents/skills/apple-design",
+    "copied": true
+  },
+  {
+    "name": "premium-ui-layout",
+    "path": "instructions/skills/premium-ui-layout",
+    "original": "/Users/josek0514/.codex/skills/premium-ui-layout",
+    "copied": true
+  },
+  {
+    "name": "react-ui-patterns",
+    "path": "instructions/skills/react-ui-patterns",
+    "original": "/Users/josek0514/.codex/skills/react-ui-patterns",
+    "copied": true
+  },
+  {
+    "name": "mobbin-design",
+    "path": "instructions/skills/mobbin-design",
+    "original": "/Users/josek0514/.codex/skills/mobbin-design",
+    "copied": true
+  },
+  {
+    "name": "21st-ui-build",
+    "path": "instructions/skills/21st-ui-build",
+    "original": "/Users/josek0514/.codex/plugins/cache/21st/21st/0.5.0/skills/21st-ui-build",
+    "copied": true
+  },
+  {
+    "name": "21st-design-sync",
+    "path": "instructions/skills/21st-design-sync",
+    "original": "/Users/josek0514/.codex/plugins/cache/21st/21st/0.5.0/skills/21st-design-sync",
+    "copied": true
+  },
+  {
+    "name": "omo-init-deep",
+    "path": "instructions/skills/omo-init-deep",
+    "original": "/Users/josek0514/.codex/plugins/cache/sisyphuslabs/omo/5.1.30/skills/init-deep",
+    "copied": true
+  },
+  {
+    "name": "omo-remove-ai-slops",
+    "path": "instructions/skills/omo-remove-ai-slops",
+    "original": "/Users/josek0514/.codex/plugins/cache/sisyphuslabs/omo/5.1.30/skills/remove-ai-slops",
+    "copied": true
+  },
+  {
+    "name": "handoff",
+    "path": "instructions/skills/handoff",
+    "original": "/Users/josek0514/.codex/plugins/cache/openai-curated-remote/mattpocock-skills/1.2.3/skills/handoff",
+    "copied": true
+  },
+  {
+    "name": "superpowers-workflow-reference",
+    "path": "instructions/skills/superpowers",
+    "original": "/Users/josek0514/.codex/plugins/cache/openai-curated-remote/superpowers/7.0.1/skills",
+    "copied": true
+  },
+  {
+    "name": "21st-complete-workflow",
+    "path": "instructions/skills/21st-complete-workflow",
+    "original": "/Users/josek0514/.codex/plugins/cache/21st/21st/0.5.0/skills",
+    "copied": true
+  },
+  {
+    "name": "pages-organize-space-historical-optional",
+    "path": "instructions/skills/pages-organize-space-historical-optional",
+    "original": "/Users/josek0514/.codex/plugins/cache/openai-curated-remote/pages/0.1.26/skills/organize-space",
+    "copied": true
+  }
+]

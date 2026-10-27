@@ -1,0 +1,232 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1
+
+ ❯ src/lib/data/employee-notification-list.cfr003-carry-forward.test.ts (14 tests | 6 failed) 10ms
+   × keeps 15 current own Time Off items within the fixed read budget 4ms
+   × keeps 16 current own Time Off items within the fixed read budget 1ms
+   × keeps 25 current own Time Off items within the fixed read budget 1ms
+   × missing attention facts remain partial rather than an all-clear list 0ms
+   × removed current sources remain absent in final replay 0ms
+   × foreign source ownership cannot enter a visible batch 0ms
+ ❯ src/lib/data/employee-notification-list.payroll.test.ts (16 tests | 9 failed) 12ms
+   × EMPLOYEE sees only metadata for their own authorized published statement 4ms
+   × LEAD sees only metadata for their own authorized published statement 0ms
+   × EMPLOYEE uses observed read metadata without confusing it with payment or acknowledgement 1ms
+   × LEAD uses observed read metadata without confusing it with payment or acknowledgement 0ms
+   × final source-lost cannot reuse positive discovery authority 0ms
+   × final version-changed cannot reuse positive discovery authority 0ms
+   × final foreign cannot reuse positive discovery authority 0ms
+   × does not expose payroll preparation as a management capability to Employees 0ms
+   × retains 25 statement notices within the unchanged 64-read budget 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/data/employee-notification-list.cfr003-carry-forward.test.ts > keeps 15 current own Time Off items within the fixed read budget
+ FAIL  src/lib/data/employee-notification-list.cfr003-carry-forward.test.ts > keeps 16 current own Time Off items within the fixed read budget
+ FAIL  src/lib/data/employee-notification-list.cfr003-carry-forward.test.ts > keeps 25 current own Time Off items within the fixed read budget
+AssertionError: expected { result: { …(2) }, …(2) } to match object { finalized: true, result: { …(2) } }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "finalized": true,
++   "finalized": false,
+    "result": {
+-     "coverage": "complete",
+-     "state": "ready",
++     "state": "unavailable",
+    },
+  }
+
+ ❯ src/lib/data/employee-notification-list.cfr003-carry-forward.test.ts:72:148
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯
+
+ FAIL  src/lib/data/employee-notification-list.cfr003-carry-forward.test.ts > missing attention facts remain partial rather than an all-clear list
+AssertionError: expected { state: 'unavailable', …(1) } to match object { state: 'ready', …(2) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "coverage": "partial",
+-   "items": [],
+-   "state": "ready",
++   "state": "unavailable",
+  }
+
+ ❯ src/lib/data/employee-notification-list.cfr003-carry-forward.test.ts:75:127
+     73|
+     74| it('uses final authority and refuses session loss after successful dis…
+     75| it('missing attention facts remain partial rather than an all-clear li…
+       |                                                                                                                               ^
+     76| it('removed current sources remain absent in final replay',async()=>{e…
+     77| it('changed attention versions cannot reuse old receipt observations',…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯
+
+ FAIL  src/lib/data/employee-notification-list.cfr003-carry-forward.test.ts > removed current sources remain absent in final replay
+AssertionError: expected { state: 'unavailable', …(1) } to match object { state: 'ready', …(2) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "coverage": "complete",
+-   "items": [],
+-   "state": "ready",
++   "state": "unavailable",
+  }
+
+ ❯ src/lib/data/employee-notification-list.cfr003-carry-forward.test.ts:76:112
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯
+
+ FAIL  src/lib/data/employee-notification-list.cfr003-carry-forward.test.ts > foreign source ownership cannot enter a visible batch
+AssertionError: expected { state: 'unavailable', …(1) } to match object { state: 'ready', items: [] }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "items": [],
+-   "state": "ready",
++   "state": "unavailable",
+  }
+
+ ❯ src/lib/data/employee-notification-list.cfr003-carry-forward.test.ts:78:130
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯
+
+ FAIL  src/lib/data/employee-notification-list.payroll.test.ts > EMPLOYEE sees only metadata for their own authorized published statement
+ FAIL  src/lib/data/employee-notification-list.payroll.test.ts > LEAD sees only metadata for their own authorized published statement
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/lib/data/employee-notification-list.payroll.test.ts:65:57
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯
+
+ FAIL  src/lib/data/employee-notification-list.payroll.test.ts > EMPLOYEE uses observed read metadata without confusing it with payment or acknowledgement
+ FAIL  src/lib/data/employee-notification-list.payroll.test.ts > LEAD uses observed read metadata without confusing it with payment or acknowledgement
+AssertionError: expected { state: 'unavailable', …(1) } to match object { state: 'ready', items: [ { …(2) } ] }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "items": [
+-     {
+-       "actionState": "available",
+-       "reviewState": "read",
+-     },
+-   ],
+-   "state": "ready",
++   "state": "unavailable",
+  }
+
+ ❯ src/lib/data/employee-notification-list.payroll.test.ts:71:88
+     69| });
+     70| it.each(['EMPLOYEE','LEAD'] as const)('%s uses observed read metadata …
+     71|  const result=await read(role,'normal',1,new Date().toISOString());exp…
+       |                                                                                        ^
+     72| });
+     73| it.each(['source-lost','version-changed','foreign'] as const)('final %…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯
+
+ FAIL  src/lib/data/employee-notification-list.payroll.test.ts > final source-lost cannot reuse positive discovery authority
+ FAIL  src/lib/data/employee-notification-list.payroll.test.ts > final version-changed cannot reuse positive discovery authority
+ FAIL  src/lib/data/employee-notification-list.payroll.test.ts > final foreign cannot reuse positive discovery authority
+AssertionError: expected { state: 'unavailable', …(1) } to match object { state: 'ready', items: [] }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "items": [],
+-   "state": "ready",
++   "state": "unavailable",
+  }
+
+ ❯ src/lib/data/employee-notification-list.payroll.test.ts:74:63
+     72| });
+     73| it.each(['source-lost','version-changed','foreign'] as const)('final %…
+     74|  const result=await read('EMPLOYEE',mode);expect(result.view).toMatchO…
+       |                                                               ^
+     75| });
+     76| it.each(['authority-lost','new-candidate','missing-read','source-faile…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/15]⎯
+
+ FAIL  src/lib/data/employee-notification-list.payroll.test.ts > does not expose payroll preparation as a management capability to Employees
+AssertionError: expected { state: 'unavailable', …(1) } to match object { state: 'ready', items: [] }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "items": [],
+-   "state": "ready",
++   "state": "unavailable",
+  }
+
+ ❯ src/lib/data/employee-notification-list.payroll.test.ts:80:96
+     78| });
+     79| it('does not expose payroll preparation as a management capability to …
+     80|  const result=await read('EMPLOYEE','normal',1,null,'PAYROLL_PREPARATI…
+       |                                                                                                ^
+     81| });
+     82| it('retains 25 statement notices within the unchanged 64-read budget',…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/15]⎯
+
+ FAIL  src/lib/data/employee-notification-list.payroll.test.ts > retains 25 statement notices within the unchanged 64-read budget
+AssertionError: expected { state: 'unavailable', …(1) } to match object { Object (state, coverage) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "coverage": "complete",
+-   "state": "ready",
++   "state": "unavailable",
+  }
+
+ ❯ src/lib/data/employee-notification-list.payroll.test.ts:83:66
+     81| });
+     82| it('retains 25 statement notices within the unchanged 64-read budget',…
+     83|  const result=await read('LEAD','normal',25);expect(result.view).toMat…
+       |                                                                  ^
+     84|  if(result.view.state==='ready'&&result.view.kind==='notifications')ex…
+     85|  expect(result.observations).toBeLessThanOrEqual(64);expect(result.rea…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/15]⎯
+
+
+ Test Files  2 failed | 6 passed (8)
+      Tests  15 failed | 36 passed (51)
+   Start at  13:10:33
+   Duration  805ms (import 44%, tests 29%, transform 24%, worker 3%)
+
+    Isolate  8 workers spawned · ~45ms startup each (spawn + environment, per file)
+             at least ~318ms faster with isolate: false — reuses workers across files instead of one per file
+

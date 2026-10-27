@@ -1,0 +1,75 @@
+{
+  "source_sha256": "30055aa74aaf445b6f8ed793db86206eb3651d868c81fae84722314b2059673d",
+  "baseline_sha256": "d28b942b0b8e32c164e1e5464a3c62b9eda0d64f7fa5152c1b27bdd52b3f77d7",
+  "scope": "Employee mobile local prototype: own Time off capability, read/proof separation, current-context actions and root-memory draft recovery",
+  "resolved": [
+    "EM-A03",
+    "EM-R01"
+  ],
+  "resolution_limits": {
+    "EM-R01": "Absent local module contract is now modeled and tested. Live server authorization remains unverified."
+  },
+  "carried_resolved": [
+    "EM-A01",
+    "EM-A02"
+  ],
+  "carried_closure": "calendar-focus-closure.json",
+  "partially_addressed": [
+    "EM-A05"
+  ],
+  "partial_limits": {
+    "EM-A05": "Time off requires its own explicit current read check; Schedule partial-data/revision behavior remains open."
+  },
+  "remaining_full_audit_items": [
+    "EM-A04",
+    "EM-A05",
+    "EM-A06",
+    "EM-A07",
+    "EM-A08",
+    "EM-A09"
+  ],
+  "full_readiness": "Not certified; remaining audit findings, complete parity and live integration remain open.",
+  "changed_source": [
+    "src/App.tsx",
+    "src/Home.tsx",
+    "src/Notifications.tsx",
+    "src/RequestDetail.tsx",
+    "src/Requests.tsx",
+    "src/TimeOffRequest.tsx",
+    "src/model.ts",
+    "src/notification-model.ts",
+    "src/session-model.ts"
+  ],
+  "added_source": [
+    "src/TimeOffAccess.tsx",
+    "src/TimeOffContext.tsx",
+    "src/time-off-model.ts"
+  ],
+  "removed_source": [],
+  "ui": {
+    "report": "timeoff-access-ui-review.md",
+    "sha256": "eed1fe738a40125ea810bb9fa6c51ac410269a5056b03e3a4563d22f9c5ba3db",
+    "disposition": "ship at local Time off visual scope; substitute specialist reviewer disclosed"
+  },
+  "qa": {
+    "report": "timeoff-access-qa.md",
+    "sha256": "4c3419ebb2b5d973a7c130a87f671691c3bcd24250229550fd659b1183834f4b",
+    "disposition": "PASS at local Time off scope",
+    "fresh_scenarios": 96,
+    "passed": 96
+  },
+  "design_record": {
+    "report": "timeoff-access-design-record.md",
+    "sha256": "f3557cc0c646e9af293bd67b8602cfa5dc0e052f642fb612e6b5207c662b96e3"
+  },
+  "executor_grouped_checks_per_engine": 469,
+  "new_timeoff_groups_per_engine": 30,
+  "pure_timeoff_groups": 26,
+  "engines": [
+    "chromium",
+    "webkit",
+    "firefox"
+  ],
+  "visual_system_preserved": true,
+  "production_changes": false
+}

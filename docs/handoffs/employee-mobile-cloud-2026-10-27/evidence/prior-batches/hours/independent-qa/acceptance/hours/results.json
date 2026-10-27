@@ -1,0 +1,1042 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Actual sign-in settles Home and current time status"
+    },
+    {
+      "engine": "chromium",
+      "name": "Loading state contains no fabricated time facts"
+    },
+    {
+      "engine": "chromium",
+      "name": "hours passes Light/Dark320390430, target/contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Live entries show original facts and Clocker guidance without correction/clock controls"
+    },
+    {
+      "engine": "chromium",
+      "name": "Entry detail presents raw punches/breaks and returns keyboard focus to its origin"
+    },
+    {
+      "engine": "chromium",
+      "name": "correction passes Light/Dark320390430, target/contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Native form keyboard navigation either remains in task or browser blur releases private facts"
+    },
+    {
+      "engine": "chromium",
+      "name": "Mounted draft survives offline; changed source requires deliberate review before submission"
+    },
+    {
+      "engine": "chromium",
+      "name": "Lost response retries one original event; exact own approved detail and decided origin focus are current"
+    },
+    {
+      "engine": "chromium",
+      "name": "timecard passes Light/Dark320390430, target/contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Own effective/raw timecard, bounded date validation and read-only review authority preserve raw punches"
+    },
+    {
+      "engine": "chromium",
+      "name": "Break correction uses its own target with an actual protected server action"
+    },
+    {
+      "engine": "chromium",
+      "name": "Missing time and approved-missing replacement preserve explicit eligible location and original proposal context"
+    },
+    {
+      "engine": "chromium",
+      "name": "A failed recorded-time read never fabricates empty/zero hours and can recover"
+    },
+    {
+      "engine": "chromium",
+      "name": "Desktop Hours and timecards retain their original surfaces"
+    },
+    {
+      "engine": "chromium",
+      "name": "A confirmed own empty read is distinct from a failed read"
+    },
+    {
+      "engine": "chromium",
+      "name": "Current authority loss clears private hours and correction inputs"
+    },
+    {
+      "engine": "webkit",
+      "name": "Actual sign-in settles Home and current time status"
+    },
+    {
+      "engine": "webkit",
+      "name": "Loading state contains no fabricated time facts"
+    },
+    {
+      "engine": "webkit",
+      "name": "hours passes Light/Dark320390430, target/contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Live entries show original facts and Clocker guidance without correction/clock controls"
+    },
+    {
+      "engine": "webkit",
+      "name": "Entry detail presents raw punches/breaks and returns keyboard focus to its origin"
+    },
+    {
+      "engine": "webkit",
+      "name": "correction passes Light/Dark320390430, target/contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Native form keyboard navigation either remains in task or browser blur releases private facts"
+    },
+    {
+      "engine": "webkit",
+      "name": "Mounted draft survives offline; changed source requires deliberate review before submission"
+    },
+    {
+      "engine": "webkit",
+      "name": "Lost response retries one original event; exact own approved detail and decided origin focus are current"
+    },
+    {
+      "engine": "webkit",
+      "name": "timecard passes Light/Dark320390430, target/contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Own effective/raw timecard, bounded date validation and read-only review authority preserve raw punches"
+    },
+    {
+      "engine": "webkit",
+      "name": "Break correction uses its own target with an actual protected server action"
+    },
+    {
+      "engine": "webkit",
+      "name": "Missing time and approved-missing replacement preserve explicit eligible location and original proposal context"
+    },
+    {
+      "engine": "webkit",
+      "name": "A failed recorded-time read never fabricates empty/zero hours and can recover"
+    },
+    {
+      "engine": "webkit",
+      "name": "Desktop Hours and timecards retain their original surfaces"
+    },
+    {
+      "engine": "webkit",
+      "name": "A confirmed own empty read is distinct from a failed read"
+    },
+    {
+      "engine": "webkit",
+      "name": "Current authority loss clears private hours and correction inputs"
+    },
+    {
+      "engine": "firefox",
+      "name": "Actual sign-in settles Home and current time status"
+    },
+    {
+      "engine": "firefox",
+      "name": "Loading state contains no fabricated time facts"
+    },
+    {
+      "engine": "firefox",
+      "name": "hours passes Light/Dark320390430, target/contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Live entries show original facts and Clocker guidance without correction/clock controls"
+    },
+    {
+      "engine": "firefox",
+      "name": "Entry detail presents raw punches/breaks and returns keyboard focus to its origin"
+    },
+    {
+      "engine": "firefox",
+      "name": "correction passes Light/Dark320390430, target/contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Native form keyboard navigation either remains in task or browser blur releases private facts"
+    },
+    {
+      "engine": "firefox",
+      "name": "Mounted draft survives offline; changed source requires deliberate review before submission"
+    },
+    {
+      "engine": "firefox",
+      "name": "Lost response retries one original event; exact own approved detail and decided origin focus are current"
+    },
+    {
+      "engine": "firefox",
+      "name": "timecard passes Light/Dark320390430, target/contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Own effective/raw timecard, bounded date validation and read-only review authority preserve raw punches"
+    },
+    {
+      "engine": "firefox",
+      "name": "Break correction uses its own target with an actual protected server action"
+    },
+    {
+      "engine": "firefox",
+      "name": "Missing time and approved-missing replacement preserve explicit eligible location and original proposal context"
+    },
+    {
+      "engine": "firefox",
+      "name": "A failed recorded-time read never fabricates empty/zero hours and can recover"
+    },
+    {
+      "engine": "firefox",
+      "name": "Desktop Hours and timecards retain their original surfaces"
+    },
+    {
+      "engine": "firefox",
+      "name": "A confirmed own empty read is distinct from a failed read"
+    },
+    {
+      "engine": "firefox",
+      "name": "Current authority loss clears private hours and correction inputs"
+    }
+  ],
+  "captures": [
+    "chromium-records-loading.png",
+    "chromium-corrections-empty.png",
+    "chromium-hours-light-320.png",
+    "chromium-hours-light-390.png",
+    "chromium-hours-light-430.png",
+    "chromium-hours-dark-320.png",
+    "chromium-hours-dark-390.png",
+    "chromium-hours-dark-430.png",
+    "chromium-hours-text-200.png",
+    "chromium-entry-detail.png",
+    "chromium-correction-light-320.png",
+    "chromium-correction-light-390.png",
+    "chromium-correction-light-430.png",
+    "chromium-correction-dark-320.png",
+    "chromium-correction-dark-390.png",
+    "chromium-correction-dark-430.png",
+    "chromium-correction-text-200.png",
+    "chromium-unknown-result.png",
+    "chromium-approved-detail.png",
+    "chromium-timecard-light-320.png",
+    "chromium-timecard-light-390.png",
+    "chromium-timecard-light-430.png",
+    "chromium-timecard-dark-320.png",
+    "chromium-timecard-dark-390.png",
+    "chromium-timecard-dark-430.png",
+    "chromium-timecard-text-200.png",
+    "chromium-missing-time-form.png",
+    "chromium-missing-replacement-form.png",
+    "chromium-ineligible-original-recovery.png",
+    "chromium-superseded-original-recovery.png",
+    "chromium-read-unavailable.png",
+    "chromium-desktop-hours.png",
+    "chromium-desktop-timecards.png",
+    "chromium-records-empty.png",
+    "chromium-access-denied.png",
+    "webkit-records-loading.png",
+    "webkit-corrections-empty.png",
+    "webkit-hours-light-320.png",
+    "webkit-hours-light-390.png",
+    "webkit-hours-light-430.png",
+    "webkit-hours-dark-320.png",
+    "webkit-hours-dark-390.png",
+    "webkit-hours-dark-430.png",
+    "webkit-hours-text-200.png",
+    "webkit-entry-detail.png",
+    "webkit-correction-light-320.png",
+    "webkit-correction-light-390.png",
+    "webkit-correction-light-430.png",
+    "webkit-correction-dark-320.png",
+    "webkit-correction-dark-390.png",
+    "webkit-correction-dark-430.png",
+    "webkit-correction-text-200.png",
+    "webkit-unknown-result.png",
+    "webkit-approved-detail.png",
+    "webkit-timecard-light-320.png",
+    "webkit-timecard-light-390.png",
+    "webkit-timecard-light-430.png",
+    "webkit-timecard-dark-320.png",
+    "webkit-timecard-dark-390.png",
+    "webkit-timecard-dark-430.png",
+    "webkit-timecard-text-200.png",
+    "webkit-missing-time-form.png",
+    "webkit-missing-replacement-form.png",
+    "webkit-ineligible-original-recovery.png",
+    "webkit-superseded-original-recovery.png",
+    "webkit-read-unavailable.png",
+    "webkit-desktop-hours.png",
+    "webkit-desktop-timecards.png",
+    "webkit-records-empty.png",
+    "webkit-access-denied.png",
+    "firefox-records-loading.png",
+    "firefox-corrections-empty.png",
+    "firefox-hours-light-320.png",
+    "firefox-hours-light-390.png",
+    "firefox-hours-light-430.png",
+    "firefox-hours-dark-320.png",
+    "firefox-hours-dark-390.png",
+    "firefox-hours-dark-430.png",
+    "firefox-hours-text-200.png",
+    "firefox-entry-detail.png",
+    "firefox-correction-light-320.png",
+    "firefox-correction-light-390.png",
+    "firefox-correction-light-430.png",
+    "firefox-correction-dark-320.png",
+    "firefox-correction-dark-390.png",
+    "firefox-correction-dark-430.png",
+    "firefox-correction-text-200.png",
+    "firefox-unknown-result.png",
+    "firefox-approved-detail.png",
+    "firefox-timecard-light-320.png",
+    "firefox-timecard-light-390.png",
+    "firefox-timecard-light-430.png",
+    "firefox-timecard-dark-320.png",
+    "firefox-timecard-dark-390.png",
+    "firefox-timecard-dark-430.png",
+    "firefox-timecard-text-200.png",
+    "firefox-missing-time-form.png",
+    "firefox-missing-replacement-form.png",
+    "firefox-ineligible-original-recovery.png",
+    "firefox-superseded-original-recovery.png",
+    "firefox-read-unavailable.png",
+    "firefox-desktop-hours.png",
+    "firefox-desktop-timecards.png",
+    "firefox-records-empty.png",
+    "firefox-access-denied.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "hours",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "hours",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "hours",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "hours",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "hours",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "hours",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "correction",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "correction",
+      "ratio": 8.901173739947613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "correction",
+      "ratio": 8.901173739947613
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "correction",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "correction",
+      "ratio": 13.845409706459769
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "correction",
+      "ratio": 13.845409706459769
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "timecard",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "timecard",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "timecard",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "timecard",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "timecard",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "timecard",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "name": "hours",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "name": "hours",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "name": "hours",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "name": "hours",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "name": "hours",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "name": "hours",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "name": "correction",
+      "ratio": 8.901173739947613
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "name": "correction",
+      "ratio": 8.901173739947613
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "name": "correction",
+      "ratio": 8.901173739947613
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "name": "correction",
+      "ratio": 13.845409706459769
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "name": "correction",
+      "ratio": 13.845409706459769
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "name": "correction",
+      "ratio": 13.845409706459769
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "name": "timecard",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "name": "timecard",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "name": "timecard",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "name": "timecard",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "name": "timecard",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "name": "timecard",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "name": "hours",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "name": "hours",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "name": "hours",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "name": "hours",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "name": "hours",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "name": "hours",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "name": "correction",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "name": "correction",
+      "ratio": 8.901173739947613
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "name": "correction",
+      "ratio": 8.901173739947613
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "name": "correction",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "name": "correction",
+      "ratio": 13.845409706459769
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "name": "correction",
+      "ratio": 13.845409706459769
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "name": "timecard",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "name": "timecard",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "name": "timecard",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "name": "timecard",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "name": "timecard",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "name": "timecard",
+      "ratio": 10.771713285410929
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "stage": "lost-response",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "missing-time",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "failure-empty",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "denied",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "lost-response",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:64939/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "lost-response",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:64939/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "lost-response",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:64939/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "failure-empty",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "denied",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    }
+  ],
+  "failedRequests": [
+    {
+      "engine": "chromium",
+      "stage": "records",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&_rsc=vxwE8ty_Yz8SpCeQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "records",
+      "url": "http://127.0.0.1:64939/app/my-time?_rsc=rNQsizmChsLy1K_B",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "records",
+      "url": "http://127.0.0.1:64939/app/my-time?entry=live-hours-0&_rsc=vxwE8ty_Yz8SpCeQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "records",
+      "url": "http://127.0.0.1:64939/app/my-time?_rsc=rNQsizmChsLy1K_B",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "records",
+      "url": "http://127.0.0.1:64939/app/my-time?entry=hours-UI0&_rsc=vxwE8ty_Yz8SpCeQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "records",
+      "url": "http://127.0.0.1:64939/app/my-time?_rsc=rNQsizmChsLy1K_B",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "records",
+      "url": "http://127.0.0.1:64939/app/my-time?entry=hours-UI0&_rsc=rNQsizmChsLy1K_B",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "records",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&edit=entry%3Ahours-UI0&_rsc=vxwE8ty_Yz8SpCeQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "lost-response",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&edit=entry%3Ahours-UI0",
+      "error": "net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "lost-response",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&edit=entry%3Ahours-UI0",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "lost-response",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&requestId=ca908603-89f8-44d8-bcc5-de349c348c17&_rsc=vxwE8ty_Yz8SpCeQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "lost-response",
+      "url": "http://127.0.0.1:64939/api/employee/hours/corrections/target%3Ahours-UI0",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "lost-response",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&filter=decided&_rsc=vxwE8ty_Yz8SpCeQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "timecards",
+      "url": "http://127.0.0.1:64939/app/my-time?view=cards&_rsc=vxwE8ty_Yz8SpCeQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "break",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&edit=entry%3Ahours-UI0&from=cards&start=2026-10-24&end=2026-10-24&_rsc=vxwE8ty_Yz8SpCeQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "break",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&edit=break%3Ahours-UI0%3Ahours-UI0-break&from=cards&start=2026-10-24&end=2026-10-24&_rsc=vxwE8ty_Yz8SpCeQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "break",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&edit=break%3Ahours-UI0%3Ahours-UI0-break&from=cards&start=2026-10-24&end=2026-10-24",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "missing-time",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&requestId=de41c0ff-9672-4ab2-beaf-1bff0a4189ab&_rsc=vxwE8ty_Yz8SpCeQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "missing-time",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&_rsc=vxwE8ty_Yz8SpCeQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "missing-time",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&edit=new&_rsc=vxwE8ty_Yz8SpCeQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "missing-time",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&requestId=42f7dc78-d7fc-46c2-abb0-1f0073d18b07&_rsc=vxwE8ty_Yz8SpCeQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "missing-time",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&requestId=42f7dc78-d7fc-46c2-abb0-1f0073d18b07&edit=missing%3A42f7dc78-d7fc-46c2-abb0-1f0073d18b07&_rsc=vxwE8ty_Yz8SpCeQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "missing-time",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&requestId=42f7dc78-d7fc-46c2-abb0-1f0073d18b07&edit=missing%3A42f7dc78-d7fc-46c2-abb0-1f0073d18b07",
+      "error": "net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "missing-time",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&requestId=42f7dc78-d7fc-46c2-abb0-1f0073d18b07&edit=missing%3A42f7dc78-d7fc-46c2-abb0-1f0073d18b07",
+      "error": "net::ERR_ABORTED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "failure-empty",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&requestId=033c43ea-7085-47f9-8ac8-ce43397c17ff&_rsc=vxwE8ty_Yz8SpCeQ",
+      "error": "net::ERR_ABORTED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "failure-empty",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&filter=decided&_rsc=vxwE8ty_Yz8SpCeQ",
+      "error": "net::ERR_ABORTED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "failure-empty",
+      "url": "http://127.0.0.1:64939/app/my-time?_rsc=rNQsizmChsLy1K_B",
+      "error": "net::ERR_ABORTED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "failure-empty",
+      "url": "http://127.0.0.1:64939/api/employee/hours/records/overview",
+      "error": "net::ERR_ABORTED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "desktop",
+      "url": "http://127.0.0.1:64939/api/employee/time-corrections",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "lost-response",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&edit=entry%3Ahours-UI1",
+      "error": "Blocked by Web Inspector",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "missing-time",
+      "url": "http://127.0.0.1:64939/api/employee/hours/corrections/list",
+      "error": "cancelled",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "missing-time",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&requestId=c82e7b90-2fe8-47ec-bb44-05dd9580f949&edit=missing%3Ac82e7b90-2fe8-47ec-bb44-05dd9580f949",
+      "error": "Blocked by Web Inspector",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "desktop",
+      "url": "http://127.0.0.1:64939/api/employee/my-time",
+      "error": "cancelled",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "desktop",
+      "url": "http://127.0.0.1:64939/api/employee/time-corrections",
+      "error": "cancelled",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "true-empty",
+      "url": "http://127.0.0.1:64939/api/employee/my-time",
+      "error": "cancelled",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "lost-response",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&edit=entry%3Ahours-UI2",
+      "error": "NS_ERROR_FAILURE",
+      "expected": true
+    },
+    {
+      "engine": "firefox",
+      "stage": "missing-time",
+      "url": "http://127.0.0.1:64939/app/my-time?view=corrections&requestId=7fcff93f-d87c-4e51-b9bf-0b5533d5dea6&edit=missing%3A7fcff93f-d87c-4e51-b9bf-0b5533d5dea6",
+      "error": "NS_ERROR_FAILURE",
+      "expected": true
+    },
+    {
+      "engine": "firefox",
+      "stage": "desktop",
+      "url": "http://127.0.0.1:64939/api/employee/my-time",
+      "error": "NS_BINDING_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "desktop",
+      "url": "http://127.0.0.1:64939/api/employee/time-corrections",
+      "error": "NS_BINDING_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "desktop",
+      "url": "http://127.0.0.1:64939/icons/fuel-apple-180.png",
+      "error": "NS_BINDING_ABORTED",
+      "expected": false
+    }
+  ]
+}

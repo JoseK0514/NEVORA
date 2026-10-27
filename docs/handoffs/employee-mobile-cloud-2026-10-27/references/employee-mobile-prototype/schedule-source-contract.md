@@ -1,0 +1,15 @@
+# Employee Schedule source contract
+
+Fourteen source files are frozen in `work/employee-mobile/references/schedule-source/manifest.json` at read-only development `46e202786863279302026ee03a0e225c359fa55c`. The authoritative checkout is `/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler`; the concurrent `work/nevora-app` copy is not this task’s authority.
+
+The source derives today from workplace time, supports valid past/future week starts, and reads current own captured publication rows under Employee/Lead proof and eligible locations. A changed, failed or unauthorized coherent observation withholds private rows and review intents. A partly published workplace may still contain trustworthy own published rows. A published empty week with no historical own assignment does not invent a review; removal of all historical own assignments can still require one.
+
+Effective acknowledgement is bound to the relevant publication. A newer revision can preserve review when own material facts are equivalent. Source change vocabulary includes assignment/date/time/location/position ID/lead/callout changes; notes or display-name changes alone do not require another acknowledgement. Approved callout remains a visible published assignment; it is not removal and suppresses shift-request actions.
+
+The canonical confirmation command contains week, expected revision, operation UUID and authority, with current server proof. Original operation/payload identity must survive unknown/unavailable results. Source checks durable results before replay; conflicts require a current-week read/new review. A committed command response alone does not establish visible success: the refreshed canonical weekly read must show effective confirmation. This prototype simulates those states locally; it does not supply a production lookup endpoint, HMAC authority or durable transaction.
+
+The prototype retains an unresolved original operation in own root memory across in-app navigation as conservative recovery. Explicit checking precedes a deliberate identical replay; sign-out clears private data and fences stale callbacks. Read/proof/context changes update retained sheets. A compatibility `reviewed` field is derived only from the current week; arbitrary selected weeks do not use it as authority.
+
+Planned minutes and overnight boundaries are computed from captured times, separate from recorded time/pay. Coverage and own exchange activity are independently available; their failure must not hide a valid own schedule or fabricate zero offers. Existing contextual request forms are reused only for a currently eligible own assignment; approved callout/ended assignments have no change action. The shared nine-shift fixture, Exchange policy and communication assignments remain unchanged.
+
+All examples are fictional, including permission proof, publication, acknowledgements, request outcomes and business time. Live own reads, protected writes, concurrency, durable recovery and physical-device behavior remain integration work.

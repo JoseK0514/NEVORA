@@ -1,0 +1,455 @@
+{
+  "source_sha256": "06c548a89f01e46c687c1d7e0a961da01c74952d6b7bfff34a1f7459e2396469",
+  "scope": "Final Employee mobile local prototype polish and combined review",
+  "checks_per_engine": {
+    "chromium": 613,
+    "webkit": 613,
+    "firefox": 613
+  },
+  "suites": {
+    "chromium": {
+      "legacy": {
+        "file": "work/employee-mobile/evidence/chromium/results.json",
+        "sha256": "305b68e10977901011e95e7f44f09ca73dfe96ff6deb288513fe1ac15dbc247e",
+        "checks": 38
+      },
+      "home_time": {
+        "file": "work/employee-mobile/evidence/home-time-next/chromium.json",
+        "sha256": "2b1f34d59b57887df2d32acc8df84252d5435655cceb9708878a59c21996ffb7",
+        "checks": 14
+      },
+      "today_card": {
+        "file": "work/employee-mobile/evidence/today-card/chromium.json",
+        "sha256": "c50c3922645f67e0116ee1b95a6ebb60466aee431e095a84d8a0e8133c8dc9e8",
+        "checks": 9
+      },
+      "account_card": {
+        "file": "work/employee-mobile/evidence/account-card/chromium.json",
+        "sha256": "b4ab88f0a4b9f3d062b19e00370fd41a2184a8df800ed0d6f027c215a0eb6358",
+        "checks": 10
+      },
+      "requests": {
+        "file": "work/employee-mobile/evidence/requests-next/chromium.json",
+        "sha256": "c3af95322e5f2892bcdd35333365acadc92a50aebc8df0d46bb4ba3ec7683050",
+        "checks": 17
+      },
+      "availability": {
+        "file": "work/employee-mobile/evidence/availability-next/chromium.json",
+        "sha256": "90381fd89d677b93cbaf2b76cf243a3647c7970dcf5dee3a092450b28435ff10",
+        "checks": 15
+      },
+      "select_polish": {
+        "file": "work/employee-mobile/evidence/select-polish/chromium.json",
+        "sha256": "9908c1d0c08eb46abf3962105e308302a964892863683392305574a4880cc33d",
+        "checks": 11
+      },
+      "timecards": {
+        "file": "work/employee-mobile/evidence/../../../.omo/evidence/employee-timecards/chromium.json",
+        "sha256": "433f14ca55a577426477e92709f196947c391831e3a85364ad8e751f09f9f910",
+        "checks": 18
+      },
+      "corrections": {
+        "file": "work/employee-mobile/evidence/../../../.omo/evidence/employee-corrections/chromium.json",
+        "sha256": "cda84ec2be3ffd8d16de12dba1308a38285bc8e8588506abc9711df1b9c35f75",
+        "checks": 9
+      },
+      "hours_accessibility": {
+        "file": "work/employee-mobile/evidence/hours-pass/accessibility-chromium.json",
+        "sha256": "3e8628c9a511639995297278e85385a47685e051fd04dee6403fe95c2a34b284",
+        "checks": 8
+      },
+      "notifications_updates": {
+        "file": "work/employee-mobile/evidence/notifications-pass/chromium/results.json",
+        "sha256": "a7e7a10970ce182f1b7691c9efbdf9c53681adecef896655882d5f8d7f1c10bb",
+        "checks": 32
+      },
+      "profile_preferences": {
+        "file": "work/employee-mobile/evidence/profile-pass/chromium/results.json",
+        "sha256": "0817686e0d007f831767f4947c448570e219d34e07741318f179616143fa40fd",
+        "checks": 26
+      },
+      "support_legal_signout": {
+        "file": "work/employee-mobile/evidence/account-tools-pass/chromium/results.json",
+        "sha256": "1fba4a0e9442be8a3c014fcf506c1abf6177f01ec0c90eeb14c072c0420e5e55",
+        "checks": 30
+      },
+      "calendar_subscription": {
+        "file": "work/employee-mobile/evidence/calendar-pass/chromium/results.json",
+        "sha256": "49f8120f38a0fb60fc1c32012f02efa25cecfd4e278b827507fdef8b66bb156a",
+        "checks": 32
+      },
+      "notification_row_polish": {
+        "file": "work/employee-mobile/evidence/notification-polish/chromium/results.json",
+        "sha256": "8973b8cfe8abea6e594686d9202f8fa0a1e23fc6f62266831bc41c301683abdb",
+        "checks": 10
+      },
+      "device_alerts": {
+        "file": "work/employee-mobile/evidence/device-alerts-pass/qa/chromium/results.json",
+        "sha256": "6eed6da4edb266e381f3cfcd4ec705b50463b98f10d9fce02ef715b41f2bc05a",
+        "checks": 32
+      },
+      "passkeys": {
+        "file": "work/employee-mobile/evidence/passkeys-pass/chromium/results.json",
+        "sha256": "4e6c0bbb34ee38e294c3ae15bd4e2236e49c971083967e27cafc07cd2fc6cf59",
+        "checks": 31
+      },
+      "account_deletion": {
+        "file": "work/employee-mobile/evidence/deletion-pass/chromium/results.json",
+        "sha256": "0124baffec6358b9159acbfa6fb83a9859e31ee9def03c1dc94f0fd93faed397",
+        "checks": 33
+      },
+      "pay_statements": {
+        "file": "work/employee-mobile/evidence/pay-pass/chromium/results.json",
+        "sha256": "c63c42df76381d6d12d4cb55f81d06aa133e298b711e9501356b935d0601241d",
+        "checks": 36
+      },
+      "calendar_reflow_focus": {
+        "file": "work/employee-mobile/evidence/calendar-focus-pass/green/chromium/results.json",
+        "sha256": "6c98e2cb8ebd0f60f8cf06707009b05f26a8109cdeef4071ca6f625c9f53a76d",
+        "checks": 20
+      },
+      "device_warning_polish": {
+        "file": "work/employee-mobile/evidence/device-warning-polish/chromium/results.json",
+        "sha256": "cb5c2e8677ef8eab88911ba23ead24b058e0a31609d23972d96583b4c0c7e95b",
+        "checks": 8
+      },
+      "timeoff_access": {
+        "file": "work/employee-mobile/evidence/timeoff-access-pass/chromium/results.json",
+        "sha256": "d4e995cff24221a97572dcf76e9b56c23e35bebe73efa10b73cc7696f9af92a8",
+        "checks": 30
+      },
+      "schedule_completion": {
+        "file": "work/employee-mobile/evidence/schedule-pass/chromium/results.json",
+        "sha256": "90b97fa8e22172bcaf8c22388445d598576261fbe994d1e883fcf2a704b9139a",
+        "checks": 39
+      },
+      "timecard_history": {
+        "file": "work/employee-mobile/evidence/timecard-history-pass/chromium/results.json",
+        "sha256": "980ec37bfb15aa035b02a4545f171a0a64e0c48b07d45541a8a5b62c7dcf5749",
+        "checks": 41
+      },
+      "notification_completion": {
+        "file": "work/employee-mobile/evidence/notification-completion-pass/chromium/results.json",
+        "sha256": "d0252d8c7691f6720f96e2fe6e5c3c982f02aa5677ee7cd8e4d4e7cfe72c05d8",
+        "checks": 60
+      },
+      "final_polish": {
+        "file": "work/employee-mobile/evidence/final-mobile-review/green/chromium/results.json",
+        "sha256": "0b8d855ef641f60101a88d083ed109cef206b9757d4063eabf1f3c7de98dfbfd",
+        "checks": 4
+      }
+    },
+    "webkit": {
+      "legacy": {
+        "file": "work/employee-mobile/evidence/webkit/results.json",
+        "sha256": "08b3924e23c330b8264c38b81c89e926b604a66913e148af3384d8b4137ff388",
+        "checks": 38
+      },
+      "home_time": {
+        "file": "work/employee-mobile/evidence/home-time-next/webkit.json",
+        "sha256": "fd93bdbcc58bb6997d021f61c7762bf7abbf709a315ab28477738f6d17883856",
+        "checks": 14
+      },
+      "today_card": {
+        "file": "work/employee-mobile/evidence/today-card/webkit.json",
+        "sha256": "167ddc8a0d8ed01936a43794b6a03ff351c591eb287a8321fad281fadb557292",
+        "checks": 9
+      },
+      "account_card": {
+        "file": "work/employee-mobile/evidence/account-card/webkit.json",
+        "sha256": "981da921fe938e95224cddf436ea04660982e52295899c4f1cf08c180451732e",
+        "checks": 10
+      },
+      "requests": {
+        "file": "work/employee-mobile/evidence/requests-next/webkit.json",
+        "sha256": "bea59f078bc15e4cdd32e855c2c2b429a05db68ea35abe66e2b7a5f85acec4d8",
+        "checks": 17
+      },
+      "availability": {
+        "file": "work/employee-mobile/evidence/availability-next/webkit.json",
+        "sha256": "1f81b375595c931e9b3e7db3921a784f43007aa36523e79085210310ce01e546",
+        "checks": 15
+      },
+      "select_polish": {
+        "file": "work/employee-mobile/evidence/select-polish/webkit.json",
+        "sha256": "01abe215853491c157e7116659e70efee909619d3242ddefc65f0f3011d0b527",
+        "checks": 11
+      },
+      "timecards": {
+        "file": "work/employee-mobile/evidence/../../../.omo/evidence/employee-timecards/webkit.json",
+        "sha256": "9048949127a8074f38f73b274e1d3fd01c75f88e4df46c77a2d68ab92fe48b8e",
+        "checks": 18
+      },
+      "corrections": {
+        "file": "work/employee-mobile/evidence/../../../.omo/evidence/employee-corrections/webkit.json",
+        "sha256": "f70142176600c104d8b7a3ce4a6f9006c17ba14951f2babbad3fd73ea872d490",
+        "checks": 9
+      },
+      "hours_accessibility": {
+        "file": "work/employee-mobile/evidence/hours-pass/accessibility-webkit.json",
+        "sha256": "8b17047cfc0ce366011d980cca89b019899f6f862601c105bedb0ba40bf6af83",
+        "checks": 8
+      },
+      "notifications_updates": {
+        "file": "work/employee-mobile/evidence/notifications-pass/webkit/results.json",
+        "sha256": "084797fd3dfe2a7e2f8b80215802737ce25b5c6681d7984e8905bed8189192d2",
+        "checks": 32
+      },
+      "profile_preferences": {
+        "file": "work/employee-mobile/evidence/profile-pass/webkit/results.json",
+        "sha256": "cd5de42ba04eddfa74af1c5e08a675c411406d7134c7a08341a6b59d590d0c34",
+        "checks": 26
+      },
+      "support_legal_signout": {
+        "file": "work/employee-mobile/evidence/account-tools-pass/webkit/results.json",
+        "sha256": "e1d0cc96a4f0e3accd2d29fded4ac486180436dca698fc343d7217f8ec88d754",
+        "checks": 30
+      },
+      "calendar_subscription": {
+        "file": "work/employee-mobile/evidence/calendar-pass/webkit/results.json",
+        "sha256": "482f061783b5acfc4d18c2a18a38c18159ae07b572480b5db2feb69ccb3ba816",
+        "checks": 32
+      },
+      "notification_row_polish": {
+        "file": "work/employee-mobile/evidence/notification-polish/webkit/results.json",
+        "sha256": "d50c79bc40d9638c21027691fee94918957ab0a82904cfb79214789d11d0dab3",
+        "checks": 10
+      },
+      "device_alerts": {
+        "file": "work/employee-mobile/evidence/device-alerts-pass/qa/webkit/results.json",
+        "sha256": "6365e08db6371a143c40dee7e371c855f993526739d722bd48c8f584139ba350",
+        "checks": 32
+      },
+      "passkeys": {
+        "file": "work/employee-mobile/evidence/passkeys-pass/webkit/results.json",
+        "sha256": "c2e1d5dd1f7619da801e4c18bd0d1a3bfdba91797d068fed576d02d22e34e524",
+        "checks": 31
+      },
+      "account_deletion": {
+        "file": "work/employee-mobile/evidence/deletion-pass/webkit/results.json",
+        "sha256": "bd49a05ff7b869b886c0d889cf376c2b6f11bafe62f23f7b83c7756ffa524058",
+        "checks": 33
+      },
+      "pay_statements": {
+        "file": "work/employee-mobile/evidence/pay-pass/webkit/results.json",
+        "sha256": "57088f13f8835df9dfdff1d933e79da799d19e5ceb26636aa04a5aad35f6a79d",
+        "checks": 36
+      },
+      "calendar_reflow_focus": {
+        "file": "work/employee-mobile/evidence/calendar-focus-pass/green/webkit/results.json",
+        "sha256": "262a0d71543f35be53083eb39708ed170c78c40a2bf7797ef11f52a38310e34a",
+        "checks": 20
+      },
+      "device_warning_polish": {
+        "file": "work/employee-mobile/evidence/device-warning-polish/webkit/results.json",
+        "sha256": "abcf51e94000ef7b43b48a5d156d3c5a669f38be34be8e1d2ed7d8e1c3650ae3",
+        "checks": 8
+      },
+      "timeoff_access": {
+        "file": "work/employee-mobile/evidence/timeoff-access-pass/webkit/results.json",
+        "sha256": "ba9ff92271024ed1feeb1a34cee585f6143920507905170a7c251f60effa5bc9",
+        "checks": 30
+      },
+      "schedule_completion": {
+        "file": "work/employee-mobile/evidence/schedule-pass/webkit/results.json",
+        "sha256": "2a6017f082aeebd4fcbcf3e125fc2e7f4adf084912d274ef7cb6fb26cd53a6a0",
+        "checks": 39
+      },
+      "timecard_history": {
+        "file": "work/employee-mobile/evidence/timecard-history-pass/webkit/results.json",
+        "sha256": "bc20513ced398d463d61c830c1489c0409ff4c245d1c88baa8d9355948d32a65",
+        "checks": 41
+      },
+      "notification_completion": {
+        "file": "work/employee-mobile/evidence/notification-completion-pass/webkit/results.json",
+        "sha256": "c0e1d51848f1697256664a5b2876112821cf3e42697aaf9c2c54a39f3769e819",
+        "checks": 60
+      },
+      "final_polish": {
+        "file": "work/employee-mobile/evidence/final-mobile-review/green/webkit/results.json",
+        "sha256": "0bdf3b70db6d246cc78c0cff4921a5335c128f853da0c4dbf6cd5affab19c246",
+        "checks": 4
+      }
+    },
+    "firefox": {
+      "legacy": {
+        "file": "work/employee-mobile/evidence/firefox/results.json",
+        "sha256": "a946158f14fb6069c2fdc69e43a88ef7bdb8416c642ca06f6e91b08d3584bb47",
+        "checks": 38
+      },
+      "home_time": {
+        "file": "work/employee-mobile/evidence/home-time-next/firefox.json",
+        "sha256": "ceb5af14dd4eb45994ce8dc1ec96cfff7c45bfad8419e213cc09fab2150bf42e",
+        "checks": 14
+      },
+      "today_card": {
+        "file": "work/employee-mobile/evidence/today-card/firefox.json",
+        "sha256": "8d23392cd17b88dfec5369425fe9baa0750ef49c4d98f11bab649fc6ff3d0205",
+        "checks": 9
+      },
+      "account_card": {
+        "file": "work/employee-mobile/evidence/account-card/firefox.json",
+        "sha256": "cc621f47ba4f0d9b5e31eb955f34bc2f9ea16c14f2257f94b45f627b478abdb2",
+        "checks": 10
+      },
+      "requests": {
+        "file": "work/employee-mobile/evidence/requests-next/firefox.json",
+        "sha256": "123656220f3cbb7de3e3f8995da03a2650820435cc791c00f4064db205bf412b",
+        "checks": 17
+      },
+      "availability": {
+        "file": "work/employee-mobile/evidence/availability-next/firefox.json",
+        "sha256": "fb5336f303157bc4630167859bc94e3d3711a7abe7f00ececa8a8219e235fa73",
+        "checks": 15
+      },
+      "select_polish": {
+        "file": "work/employee-mobile/evidence/select-polish/firefox.json",
+        "sha256": "76edb87c1a79661eb71344338c17f00418a60bab42ac1991f2790d9095c6d02b",
+        "checks": 11
+      },
+      "timecards": {
+        "file": "work/employee-mobile/evidence/../../../.omo/evidence/employee-timecards/firefox.json",
+        "sha256": "6401a6226891b24d4f1f239de44be1fac34606de6edfd87c582defd40f251e08",
+        "checks": 18
+      },
+      "corrections": {
+        "file": "work/employee-mobile/evidence/../../../.omo/evidence/employee-corrections/firefox.json",
+        "sha256": "481fa1b284dca59681f3d8a243b9e5c2d863733ce7c5268fc471df2048614b25",
+        "checks": 9
+      },
+      "hours_accessibility": {
+        "file": "work/employee-mobile/evidence/hours-pass/accessibility-firefox.json",
+        "sha256": "87a16db7bca993b8e7f3d8573f3631e927d58293dc6e5a086aea14de8e96121c",
+        "checks": 8
+      },
+      "notifications_updates": {
+        "file": "work/employee-mobile/evidence/notifications-pass/firefox/results.json",
+        "sha256": "6707bb4ecacf092868fc7897b15865a74fd9a99ccf28c7eadecfacdc655e1e7e",
+        "checks": 32
+      },
+      "profile_preferences": {
+        "file": "work/employee-mobile/evidence/profile-pass/firefox/results.json",
+        "sha256": "f9a8866bb28f75df623151e176accb8241792e95c54ad2a00e174c8b95b3b0d4",
+        "checks": 26
+      },
+      "support_legal_signout": {
+        "file": "work/employee-mobile/evidence/account-tools-pass/firefox/results.json",
+        "sha256": "7ed4bf5066ecb72f3b64d21a65af919f6f7a554e71a39b5f473c9783eafa9b49",
+        "checks": 30
+      },
+      "calendar_subscription": {
+        "file": "work/employee-mobile/evidence/calendar-pass/firefox/results.json",
+        "sha256": "ce47c8437378eeac9639433d2558385e0c1bdcd105ba511d4097273b741a2788",
+        "checks": 32
+      },
+      "notification_row_polish": {
+        "file": "work/employee-mobile/evidence/notification-polish/firefox/results.json",
+        "sha256": "dbc5d443dd0863864ab6f7819f75b1ab8073c3aa4ab088a9a557648bdb289381",
+        "checks": 10
+      },
+      "device_alerts": {
+        "file": "work/employee-mobile/evidence/device-alerts-pass/qa/firefox/results.json",
+        "sha256": "f28803af84bd1ee265a2a0f115e61919e91a10db221f966e2b5b7232701a6069",
+        "checks": 32
+      },
+      "passkeys": {
+        "file": "work/employee-mobile/evidence/passkeys-pass/firefox/results.json",
+        "sha256": "2b75db6e97d12f244883cd8aba4294a9210129e55465f3e46c4273c5f5628d36",
+        "checks": 31
+      },
+      "account_deletion": {
+        "file": "work/employee-mobile/evidence/deletion-pass/firefox/results.json",
+        "sha256": "f22a8fef7bdd3cc8e71189762b3f0491087d3b0d68597980f011064267220e51",
+        "checks": 33
+      },
+      "pay_statements": {
+        "file": "work/employee-mobile/evidence/pay-pass/firefox/results.json",
+        "sha256": "6e0408467f275a3f20c4505648da35a6a9acac2b783ae808cd746ea0bb6c43b8",
+        "checks": 36
+      },
+      "calendar_reflow_focus": {
+        "file": "work/employee-mobile/evidence/calendar-focus-pass/green/firefox/results.json",
+        "sha256": "2488eca1dfa28ac5b6b0a936e939fb16e2a3960ed97c7672ed87ecc122f52979",
+        "checks": 20
+      },
+      "device_warning_polish": {
+        "file": "work/employee-mobile/evidence/device-warning-polish/firefox/results.json",
+        "sha256": "cb46596629a1ba5afb63eef5dc33682958ef3dd6fca1886bb3757a8dc7bf8738",
+        "checks": 8
+      },
+      "timeoff_access": {
+        "file": "work/employee-mobile/evidence/timeoff-access-pass/firefox/results.json",
+        "sha256": "1c3a9178c352641fad1ab51ff435bf1492815ade11a9f45f78978d9d4e8bfeee",
+        "checks": 30
+      },
+      "schedule_completion": {
+        "file": "work/employee-mobile/evidence/schedule-pass/firefox/results.json",
+        "sha256": "f4b374d9a525c53cb33d1a20e8af493a1659649c96ff3b9c95c6471302149b24",
+        "checks": 39
+      },
+      "timecard_history": {
+        "file": "work/employee-mobile/evidence/timecard-history-pass/firefox/results.json",
+        "sha256": "90fe953ea866a15e935f28d0aedf4141aff5c1c741388f84bfb483a19ed606f1",
+        "checks": 41
+      },
+      "notification_completion": {
+        "file": "work/employee-mobile/evidence/notification-completion-pass/firefox/results.json",
+        "sha256": "70d73898741d70f8790a06438af12fdfca9b54299bc4cd207bd6aab1898cb617",
+        "checks": 60
+      },
+      "final_polish": {
+        "file": "work/employee-mobile/evidence/final-mobile-review/green/firefox/results.json",
+        "sha256": "004d6744dfc8375a6e1a848ff41bbf6fb484614cf6b09871a3f8cbbb42b85c65",
+        "checks": 4
+      }
+    }
+  },
+  "layout_matrix": {
+    "chromium": {
+      "states": 120,
+      "file": "work/employee-mobile/evidence/final-mobile-review/matrix/chromium/matrix.json",
+      "sha256": "d0f9cd0c2e428047386c444a21bcf2abc71562743ecd0083a70cbce13bb89034",
+      "internal_width_advisory_states": 10
+    },
+    "webkit": {
+      "states": 60,
+      "file": "work/employee-mobile/evidence/final-mobile-review/matrix/webkit/matrix.json",
+      "sha256": "181befc2019629ecb5b50904761446a8e525705c22f1b4d774a6652da5a35784",
+      "internal_width_advisory_states": 5
+    },
+    "firefox": {
+      "states": 60,
+      "file": "work/employee-mobile/evidence/final-mobile-review/matrix/firefox/matrix.json",
+      "sha256": "b1191574182bde2fc7f231b1c37546c20837d0a9f392da98565b12c82471654f",
+      "internal_width_advisory_states": 5
+    }
+  },
+  "independent_qa_scenarios": {
+    "chromium": 20,
+    "webkit": 20,
+    "firefox": 20
+  },
+  "independent_baseline_reproductions": 6,
+  "independent_qa_artifacts_verified": 138,
+  "mapped_workflows": 34,
+  "reviewed_original_images": 38,
+  "new_public_captures": 4,
+  "historical_public_images_preserved": 128,
+  "reports": {
+    "final-mobile-review-ui.md": {
+      "sha256": "ec77c375cf57e06a1315b1ad9955a5d410a0c81745b020a8348cf6b947d3f1a5"
+    },
+    "final-mobile-review-qa.md": {
+      "sha256": "01977ab84959cdb3cb8f40442c8c1f3cf4841947a2f38fdd05240ea580be8bf6"
+    },
+    "final-mobile-review-design-record.md": {
+      "sha256": "369f247a88fed44eb52b73adeb46b91d37325e6aa16f4f7146ab6b47794408d0"
+    }
+  },
+  "application_commit": "46e202786863279302026ee03a0e225c359fa55c",
+  "served_matches": true,
+  "production_changes": false,
+  "git_branch": null,
+  "commit": null,
+  "deployed": false
+}

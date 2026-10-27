@@ -1,0 +1,17 @@
+# Notification completion — design record
+
+Recorded October 26, 2026. A fresh worker substitutes for the unavailable named Impeccable documenter, applying its installed documentation guidance. The UI reviewer is separate. Context was already loaded this session and was not rerun.
+
+This is an ordinary Operate extension of the approved Employee teal system. Read Employee AGENTS/PRODUCT/DESIGN, package configuration, both saved metadata records, surface/source contracts, baseline, nine changed/six new modules, captures and inspection log. Baseline HTML: `f38470e0657f18c7221db1a2877b537558857e57838863841028ffc83eb3973a`. Current [index.html](index.html): `6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56`, independently hashed here.
+
+All CSS remains byte-identical to baseline. The 23 Light/20 Dark roles, system typography, regular Phosphor symbols, spacing/radii, shared 48px primary/44px compact controls and notification row layout remain authoritative. Heading, Section, Field, ViewSwitcher, Row, Status, Button and native sheets remain live primitives. Existing DESIGN frontmatter omissions and preferred-primitives metadata missing ViewSwitcher remain unrepaired.
+
+Before, Schedule notices forced the current week, inbox filters/search were component-local and More appeared active. Now Home owns Notifications, including entry through More; Schedule opens the exact source week. Source week and notice time are distinct. Source destinations return to remembered filters/search and the exact invoker, with heading fallback when removed. Default five-row activity remains; explicit fixtures demonstrate eight supported types.
+
+Pay requires an explicit notice plus current own published/Approved-run/reminder/version/module/proof gates and opens the own list without automatic document action. Available documents never synthesize alerts. SELF_TEST requires its own TEST intent/current subscription generation, shows neutral “Receipt not confirmed,” has unknown read state excluded from Unread, and opens Home. Opening never records generic read, review, acknowledgement or delivery.
+
+Strict click resolution precedes a separate root-memory opened-source grant. Original intents stay immutable; accepted scoped own updates advance only the target baseline. Availability/Exchange opt into canCommit and canonical readback, preventing false saved receipts. Existing nested TimeOffProvider retains its mutation policy. Pause hides/fences an own draft in memory; identity loss clears it. Recovery reveals its focused heading.
+
+Saved evidence records 67 source/19 grant checks, 60 browser groups per engine and passing prior regressions. Independent QA records 249 browser checks and 498 verified artifact hashes. Parent inspection used two bounded rounds/16 originals. This documenter compared baseline/default, Pay, test and Dark 320px/200% captures as meaningful states, without claiming matching-frame parity. No browser scenarios were rerun here. The separate [fresh UI review](notification-completion-ui-review.md) recommends APPROVE with no blockers; the inherited narrow enlarged Notifications heading wrap is its sole LOW, nonblocking finding.
+
+EM-A04/08 closure is local only; EM-A09/live integration remain open. Fictional memory only; no API, native operations or storage beyond the existing demo-ended boolean. Workspace has no Git branch/commit/deployment. No user action is required for these records.

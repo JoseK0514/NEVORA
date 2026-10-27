@@ -1,0 +1,662 @@
+{
+  "home.png": {
+    "origin": "Local Chromium capture of the Employee mobile React prototype. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "b56f037ce095149460d6f6e3a7ddcadd4e7db14c9075c24e41f3e19b6751245e"
+  },
+  "schedule.png": {
+    "origin": "Local Chromium capture of the Employee mobile React prototype. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "e3588e0f51b16fe66ef0ee3d92348711a0377212e38e4fa48c78bcdabdd2777f"
+  },
+  "requests.png": {
+    "origin": "Local Chromium capture of the Employee mobile React prototype. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "9ef88aa5d235aaa76c3c95e7e21f9fd0e616d7ac2ccf16329cbb5a26759f9173"
+  },
+  "hours.png": {
+    "origin": "Local Chromium capture of the Employee mobile React prototype. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "f6249cd7cbb3bf234875158ef81d322f60d3becdf7215accf6610d51aeb28032"
+  },
+  "more.png": {
+    "origin": "Local Chromium capture of the Employee mobile React prototype. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "5311c7c6890f3d930fc89c9deadd83323aa5247bd2f0a25c5ac04210ac5c6376"
+  },
+  "time-off-review.png": {
+    "origin": "Local Chromium capture of the Employee mobile prototype form review. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "c1f35849362435b6b26a760b2493eb96c63c1ec63156d3ffcd9fee735dbfaecb"
+  },
+  "correction-review.png": {
+    "origin": "Local Chromium capture of the Employee mobile prototype form review. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "12f9921cc8a01a0c69e6bf9f00d37023d8e1f7059f5af472cb8b9e14c5eedbda"
+  },
+  "notification-complete.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "af38696b0d9bdc1227a98c9d8b12fa6c3b9a0b04da19375d3e2ea3b16f04fa95"
+  },
+  "notification-pay-notice.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "3b656b8353b0c62614ab8ecd117a7a10b881bd681ce0d2ac839975cd9e046dae"
+  },
+  "notification-test-notice.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "645d9bf5140fae7be80abb1360446c5e4990e4aa96e0966834d7782a97273760"
+  },
+  "notification-source-week.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "d7592a733a0fb6327957a2263821c803674f6081c8b4bdd5b8fe5d57841f7de2"
+  },
+  "notification-pay-source.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "ecc4750d981e3dd1ed4faa3f90502f15b006f13854992dc302622d74144cd583"
+  },
+  "notification-source-refused.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "295abed2063bc30e12d29b19e0f549cc04ceabd5727703cc71f3e5eade24c93c"
+  },
+  "notification-response-receipt.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "7aad6c4fee0a0d0b27819c4eb8e404f29047cbc3cf449423700824901ebebc8b"
+  },
+  "notification-complete-dark.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "5fda513f11c06a2b935cfe373098afa4c564b7a7884e0009b1f89172e6a413b4"
+  },
+  "timecard-period.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "71e02bb764a288447245cec55d585f16e4652f5ab1af7c1e334301bf732d05b8"
+  },
+  "timecard-history.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "c6fdcf31819a0c6d4003564e1baeb5071dc8448eadd7b5ca8ea5c15e94063db0"
+  },
+  "timecard-finalized.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "a944f4041eb623626afafeab9a30c6d0bf99a953d9af94a0779c35326d9fb4e4"
+  },
+  "timecard-needs-review.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "9119d5c31631469c18449e22739cf46525bd46bb97c99f7c955218f8201f5a2b"
+  },
+  "timecard-refusal.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "ca52bb00d4f1f10e4afc1b567d84ded75ad4c57d4fa392ea88053dea1804a5a0"
+  },
+  "timecard-history-text200.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "2a210a437c2481b5e092a164f3f817a86b4e7fe85b35a01ba9468f6993c6d279"
+  },
+  "timecard-correction-review-text200.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "eebec49dfd913c65c6f72fe9638f4c8a79e1049202dab3892d59696a471fcc0c"
+  },
+  "timecard-correction-receipt-text200.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "2986ada22bf7b18cd16a6e19f2de7da9b00a7d5acc8d627f65111ecf8fe5b62b"
+  },
+  "schedule-week-picker.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "22ceaf1e598ea5727c2fa74a36fc316fd5510cc6e65219ffe80f2cc859a24af8"
+  },
+  "schedule-earlier-week.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "698b54f88beb1d8b71620efc3030c531ed3276f99b1d411dbf0d834a63f16bab"
+  },
+  "schedule-overnight.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "4acb3ae41b296f91c3af4e124a1fe20970ebcb04f9ff13c9c30c9c499c1bfc32"
+  },
+  "schedule-changes.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "ed399e6b172baa207481d1f6cd3f7bf586396a345e8ad73ee31acc34d13e56cc"
+  },
+  "schedule-removed.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "11924dd4d4c93ea3425098a5526f290a61d4ee33a8e45954e78eb85db8561b45"
+  },
+  "schedule-recovery.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "1f7630f296d6ecc728f42d08518a5d87b4c0671a8f1800b189a4db48110eb040"
+  },
+  "schedule-receipt-text200.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "83fbbb0d9e013eb714d8e973264a2b610d56fd712c22379f68c754f9f0b8b655"
+  },
+  "timeoff-draft.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "45472c4183a3c3898bb6bf879d2214edd1e7fe7875b40031e57f4a179a961c7d"
+  },
+  "timeoff-partial-draft.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "d37c5ed421eb7eca04276662a936aa17bb13b91ce52141c911134b6021640b40"
+  },
+  "timeoff-discard.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "9a71cf86107a8b3cbb1966204f482410a9e8814f041d94ef2c7b93ffbffd8fae"
+  },
+  "timeoff-unavailable.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "54e3ea0785bb8f3eeb2a01a2a2c2ccecb7db69050280f2b6303a76d1c5dff5ac"
+  },
+  "timeoff-send-failed.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "5c896b4c0a703a05f593b18f96b18c72bc37e011d589461906c77c7420407afa"
+  },
+  "timeoff-review-text200.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "be734cd353ace9f4efe12cc84eee7afe7152b1cbe9619ff851e8ec070624f0bc"
+  },
+  "calendar-reflow.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "fe8b15f2bcf8707945228b1eea3433c5fa68bf1adb6b4882b634256d7bd5fdcc"
+  },
+  "calendar-reflow-dark.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "9a31c18776bfb5bed810fde3700e023938359d18a6a0edbb3f3847a1ca4d1cef"
+  },
+  "pay.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "ef0f2d1407deba627f4fa4b76b88b07c6bcc214942f4b69143c617a19e042daa"
+  },
+  "pay-statements.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "1399811a6c5d13df7b2ab47785a4a544105f94811474cf20a8c4be826d218a95"
+  },
+  "pay-document.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "96ab489e65e1d318f197816e4cc985e1406e1ba6bde21b28e7f8227fbce4089f"
+  },
+  "pay-download.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "08ed1317583291888ede827a4356e5c8b1258c608959e97b60b0642b35deb2e0"
+  },
+  "pay-document-unavailable.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "c84420c7c767ccd978b609b07f4343a97191b6d099add760c8abc977ed0f7869"
+  },
+  "pay-empty.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "94f25a0cd09c189148c3664a2c703e8108a06e5902db3a405a15f21eb4e1e6e4"
+  },
+  "pay-paused.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "7ad251e51642564e20c0587a9c60292c552355847818914037f2b3425a3a07e9"
+  },
+  "pay-dark.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "4d2f109fe36b3ad93bc90d2835eecb11649c80cdd564bb6c9a5bd4b504f6933c"
+  },
+  "pay-text200.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "43ad2db090ea58691c99d69ba2c6041f29f3bc8f9dfb721deb7b4827724d37cc"
+  },
+  "pay-document-text200.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "1715b7884ae0b44a2f18c5bc749046c49788467765407dae775b6943126bac01"
+  },
+  "time-off-partial-review.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "9afdd228bc3f5b8ee73d0196ac1e23c3e47318051b1141259a21b57841c1e912"
+  },
+  "swap-review.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "8a0eca9d8cb035ae31de3d947a4cc3dd30b08448f06f8062396c8ecc3f7961e3"
+  },
+  "availability.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "cc7838dbbcf2c57ed222ab146b6b246ef8d8117c53ab24794f0f71d151989f69"
+  },
+  "weekly-availability-review.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "d233cd568a77d086a8aa0ea938733ae9b9149351f0eb7dab4a33a22772d4e613"
+  },
+  "availability-week.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "f7875a7f805da21473f66f1ee1585efd4637437f24396de8aeaa994ac2a2ba31"
+  },
+  "availability-week-field.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "54115af5e40c7e535e7a4cba43e430400b4089ede67c1556d31f9b83bae9a1e9"
+  },
+  "timecards.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "668b24e116d96622fd0ce004a237ad4bb7b5ec35a205fa61d9bda636a95a5505"
+  },
+  "corrections.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "77a29c211f73cdf4012d90c55a976e30fbd2ac30256fa9c861c8661fe1df1e20"
+  },
+  "missing-time-review.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "c71763abda593bb6990a3302f2342ef498fb068e84a83fadff91193e65c87b1e"
+  },
+  "effective-entry.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "0bff73a93382fc792348282ee63c8b2ed53393e08b46c6bf091dbeea462af787"
+  },
+  "break-correction-review.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "bbe9b350cc60bef0177c68da3c8b35a4ae454786d1179f093599f453b8b932c9"
+  },
+  "notifications.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "854cb0280d2378b495e9a6aa1747d0a6d1021ef9f9b340c8780796045b493499"
+  },
+  "updates.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "637d65a8d10ad53a2807b19afc06332cbb9ae4cef37efb238dbcd9f836eacf39"
+  },
+  "update-detail.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "b960d243983feb7949b3ebea6da8366e0ec0f5ab768578c3faab65b71d598efa"
+  },
+  "team-compose.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "39332c48bfb86e7a971f74492f8ef8b4c3792ad4b3c804de03579cfd8452eb17"
+  },
+  "team-message-review.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "07fb1d7d1eb9de6dc71daa3bb10c853bf6aa50c5c918d960484e1061d97b2874"
+  },
+  "update-recovery.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "4742bc57114234f0a624f323f95283a44c7b111fe8dd19f838dcc7cc0c4a02f4"
+  },
+  "profile.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "dde70d7e66222d31e82efa4bb656f2358b88347f753f059ca43b441000ba8dbd"
+  },
+  "profile-work-details.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "455486ae2b13bc9885c01c371ff0d5c14c5650e582444955eaec8b330f2256f1"
+  },
+  "appearance-light.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "a486847bbabc8bcc861b9ed6d880b64ebfb631e4f341842754138afe012f3c43"
+  },
+  "appearance-dark.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "3823dd892ba36c81681d5a8c09ee8efe14e8dd2351f4458970861b31368d2e1c"
+  },
+  "profile-dark.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "40cca0a8f87269a885f3b43f15b598f3fd4899075fee71722b6987ff81d72aea"
+  },
+  "profile-language.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "9881b639c013c0f39820ca1f9aec9fccf6d0bc4ec3a79863f54bfefe088f72a4"
+  },
+  "profile-recovery.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "3d348c075c442ef77429db167e6bdeab671ef54304fd6d2778800d5971596881"
+  },
+  "account-help-legal.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "0acd8d0f60ef7d94011a37335b2253b36c4abef37ca714bb8d53ddf2071f794a"
+  },
+  "support.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "40a36a228738b9220d257264ce0c1544895ba901d5bdbe2647deeea4ab217c82"
+  },
+  "support-work-guidance.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "176f9991b95b95669eb2e4c0494181c62b43275041c91e4663221f50e2549228"
+  },
+  "privacy.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "7797827672a186e435b394d2943e9fd823722f22d49e1b4c19ec02bdc769bf4c"
+  },
+  "privacy-reading.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "17fa4e75b6bd7be166fca803f9dec0a8e44b6200f54ae98cf017f0886fefb11a"
+  },
+  "terms-dark.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "4182d2c8f7f5c60af05f2d2897e8add637d2f559fae61301b0ad29bebfa39104"
+  },
+  "deletion-information.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "ad124c7ac930b450a8e19bd58ea9300158e1e1d5850f84efa09747775fed849d"
+  },
+  "signout-confirmation.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "f28e74e70f9a796d94e675f505a4f4f04290b3f0568069e6f889f3d988f4c582"
+  },
+  "signed-out.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "54c135c05afc06c84497340114c90b8ab3c0dcc34d2948b4c322fe05ac0882aa"
+  },
+  "signout-pending.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "3e8d29f542df3363485dc8821e6ce75aeed01e159aa776e7a2c89a1eec462197"
+  },
+  "calendar.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "fcce611bef66ca8c2a6f9f6f601ac7098b7b124027bd2dda08900507e51669b6"
+  },
+  "calendar-link.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "521cb682cb7431eb72f01cab11d0392477a0f2f77c33ee3d850938a4bb0dcc0d"
+  },
+  "calendar-apple.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "c000d2d0635e971d57861f81c06e9325368b418ea3e69670d89b66d989178bc6"
+  },
+  "calendar-active-dark.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "89206502b04cd26fb047d1675966bea9ae9670291e57da5ad7284dfc6bcda5de"
+  },
+  "calendar-replace.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "98908f4d36f913796325f7160602916e146dea6b40517a9ecaa24b889e90bbc0"
+  },
+  "calendar-revoke.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "d3b6c690fc3123a05b9ba9b3fdc5a51123c6f193df1c49b9abdde915da03564c"
+  },
+  "calendar-revoked.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "afcae6c23e5ed6afa5f874794efbba1905d02876ba4c8aec162ee5875a583df0"
+  },
+  "calendar-recovery.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "fd1cc0c50d282bde9778f313ece9b9813c9d6af6464aac56b590906ebabd749d"
+  },
+  "profile-calendar.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "6f18294bba26e423df124b44bb0c922e895b7b46a8a313ea7c89dfba6b2536ad"
+  },
+  "notifications-refined.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "b70261ecca102e01931574fd4ec0a796bab2c2d9b72ab6fe8eb818ebb25e2dfe"
+  },
+  "notification-actions.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "854cb0280d2378b495e9a6aa1747d0a6d1021ef9f9b340c8780796045b493499"
+  },
+  "notifications-dark.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "b3af8dd9261f4fac6c510583d479841825b0abdc02941bf8b19a9932eb29382c"
+  },
+  "notifications-text200.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "38b8d205f8dd1d34dede16f36d188afad29288e326b5fc401f91e4558210ec25"
+  },
+  "deletion-review.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "fc1ed9f2bfda5a2698d56475b73bbf6d44aaf192c7a6b705f294793818581fc3"
+  },
+  "deletion-review-actions.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "888362148a468a232056b97def37c591eed5f2c0592df759052821e55a8e93ed"
+  },
+  "deletion-confirm.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "c477020d462e11aa4763ab8172e48a42f781591cf9b63a50efc19e8aaf900a03"
+  },
+  "deletion-retention.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "293c3ad8312b4c6d51e257db434b12c3a1d3740185f8c89bf54a9b0e05ed8db7"
+  },
+  "deletion-password-error.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "6f4696112df93299acab2b6572519b907fe4018b4d5aa22b4d1419b01ac355b0"
+  },
+  "deletion-received.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "0bb8a2e99093cfaf4a7c7b1a59b18f2dcf14bda95667f224fd7d4e8f29d96552"
+  },
+  "deletion-duplicate.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "7f52864d40545fc9f0dffc43b573cb17471a0151aa3b94b8b03acb987458fa3f"
+  },
+  "deletion-unknown.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "6544d2c62cdb24c8ca34fa2f7d2ca9e9018668ad58805b1b74713b2f6646367e"
+  },
+  "deletion-dark.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "0d6443beeefa7bb269c2e2b477f9bf7d5df0c1d5d46522ffea5beedfcf58a380"
+  },
+  "deletion-text200.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "e39286e8f11363a947dde7192bd72e64c21bc8a30ab860d5669d2b777e12b032"
+  },
+  "passkeys.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "fb91009db65f17a8bc54f5764456817f6f034dbc2241b44d027f4ec90e705b20"
+  },
+  "passkeys-saved.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "2ae0919eacc00018aa00b19125f4e7f1e25b8f76fe567389546080089c1d294c"
+  },
+  "passkeys-dark.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "56dd3ef68b0b0bf8a34186e88dcb96c4c10b13fcb8cdab61e451f52cb09712ba"
+  },
+  "passkeys-setup.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "4ef506a661c50617d98c93d230127ccbeadaea9ad89107398a60d33813733c49"
+  },
+  "passkeys-remove.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "cb577f332054ab804a8f91120d82840832fa1c86d8c22e447b5777f3265eeb39"
+  },
+  "passkeys-unknown.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "bd320dac53dd78b1926c0080b28be5477b9ca2594daa12a01b57e6dca589ec0b"
+  },
+  "passkeys-unsupported.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "8211e0af06c6527b5ee71363ac3170b9b81bcdab28980b5577c76152d646bbbd"
+  },
+  "passkeys-text200.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "5f129a4c4a8c379043c023bccc847d27acc69ca9f87a785cf86d866b0370da7f"
+  },
+  "device-alerts.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "10643a9e166f17a1edb1d500700bdaaaa0e55f95ade1500a119e094cc301b5a4"
+  },
+  "device-permission.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "f20c217f1e6b5650245e748ea4c01a000e9cece09d37fd46f35e10e4d1d10051"
+  },
+  "device-enabled.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "df01562a66154118804eddef8bde6cad125ad45da8ea595f75dd6d2a3f02a99c"
+  },
+  "device-blocked.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "65b62d2556dfdb6680c474f4e92b7c8357fb9ebb6ce8692c8b59f1fc71e25c46"
+  },
+  "device-install.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "bc10e6f35d51ac06d63941fba6b55d6663ec9b69c5a5f793676f203571c3b237"
+  },
+  "device-turnoff.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "a64b4c9a715ed66fcf2f333f4622576a53972c58f8957de68b7c3499556202cb"
+  },
+  "device-off-dark.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "a488ef3b6070e680df875b66ddf0b6bd6f16a539833e3b4488d7e07166b40bb9"
+  },
+  "device-cleanup.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "9d7b137f66cfe49cc1a9d8b744cd21abd926e8a75f3818e4392af4b13ba133b3"
+  },
+  "device-unconfirmed.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "6505132adc8d76f07090ea74f29d698f5348dfe2aa8d8abede5f6effa49bbf1b"
+  },
+  "device-text200.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "48a916a8bc746860b631351d0ec0a2989ae0e557e7d053032eb087e4f243147e"
+  },
+  "device-warning-light.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "74f42a4c4f5394a68156b393f9ea19acc300393b8289060d8aa5342ffcf9d212"
+  },
+  "device-warning-dark.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "ea2850d449a0a5df32fcdb90ef273c37ccd66c84ab0a3fbe687637b5727fb61f"
+  },
+  "device-warning-blocked.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "af80a23f77b2091cf0fb76d007d0a364cd97b6b957c9fb3ef638129f129156df"
+  },
+  "device-warning-text200.png": {
+    "origin": "Local Chromium capture of the current Employee prototype workflow. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "4f1bc8d9dffe3a00be8848815a24d5e79d3b7bd1412ae225f43fc169e79845fc"
+  },
+  "overview.png": {
+    "origin": "Local browser composition of current Employee prototype screenshots. Fictional data; no image generation.",
+    "source_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+    "image_sha256": "3a2971a9b39f4a79c4c4a8a35270edffa9eea1306c5af353e4f817d1f3df8e3e"
+  },
+  "final-notifications-320-200.png": {
+    "origin": "Actual local Chromium screenshot of the Employee mobile prototype, fictional data, no image generation. work/employee-mobile/evidence/final-mobile-review/green/chromium/notifications-light-320-200.png",
+    "source_sha256": "06c548a89f01e46c687c1d7e0a961da01c74952d6b7bfff34a1f7459e2396469",
+    "image_sha256": "9b9565289385deaa1188e83b1f1efb4f13bcb38062074cda257069dc08cbd258"
+  },
+  "final-notifications-dark-320-200.png": {
+    "origin": "Actual local Chromium screenshot of the Employee mobile prototype, fictional data, no image generation. work/employee-mobile/evidence/final-mobile-review/green/chromium/notifications-dark-320-200.png",
+    "source_sha256": "06c548a89f01e46c687c1d7e0a961da01c74952d6b7bfff34a1f7459e2396469",
+    "image_sha256": "f12967ff03a2d5bcd168e7a0f1239e3a40b82c5da60bc0c1c287d41c57c63edf"
+  },
+  "final-deletion-fallback.png": {
+    "origin": "Actual local Chromium screenshot of the Employee mobile prototype, fictional data, no image generation. work/employee-mobile/evidence/final-mobile-review/matrix/chromium/deletion-result-light-390-text100.png",
+    "source_sha256": "06c548a89f01e46c687c1d7e0a961da01c74952d6b7bfff34a1f7459e2396469",
+    "image_sha256": "fb04a184016572682e85fa40de140f430a508e23e7f94fe2fdaa39462777b181"
+  },
+  "final-home.png": {
+    "origin": "Actual local Chromium screenshot of the Employee mobile prototype, fictional data, no image generation. work/employee-mobile/evidence/final-mobile-review/matrix/chromium/home-light-390-text100.png",
+    "source_sha256": "06c548a89f01e46c687c1d7e0a961da01c74952d6b7bfff34a1f7459e2396469",
+    "image_sha256": "86ca1819787a4730a211a3ca3519f4d339a627f28b901b862f15c2ab96b8005d"
+  }
+}

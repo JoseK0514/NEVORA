@@ -1,0 +1,32 @@
+{
+  "stage": "typecheck",
+  "cwd": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1",
+  "argv": [
+    "node",
+    "node_modules/typescript/bin/tsc",
+    "--noEmit",
+    "--incremental",
+    "false"
+  ],
+  "environment": {
+    "PATH": "/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/josek0514/.codex/tmp/arg0-macos/codex-arg0xbyCxr:/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/josek0514/.npm-global/bin:/Users/josek0514/.local/bin:/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "HOME": "/Users/josek0514",
+    "TMPDIR": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/",
+    "NEVORA_TEST_PG_BIN": "/Users/josek0514/.codex/visualizations/2026/10/02/01a0f8c7-f196-7d22-8896-8d3c96547bd9/fuel-phase-3-pwa-notifications/local-postgres-runtime/package/native/bin",
+    "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE": "/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/package.json",
+    "NEVORA_EMPLOYEE_HOURS_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-hours/independent-qa/acceptance/hours",
+    "NEVORA_EMPLOYEE_PLANNING_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-hours/independent-qa/acceptance/planning",
+    "NEVORA_EMPLOYEE_CREATION_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-hours/independent-qa/acceptance/creation",
+    "NEVORA_EMPLOYEE_RESPONSES_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-hours/independent-qa/acceptance/responses",
+    "NEVORA_EMPLOYEE_MOBILE_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-hours/independent-qa/acceptance/pickup"
+  },
+  "head": "e17a8e7479988a1b7159b714f8a2af9c146f2cd3",
+  "started": "2026-10-27T16:20:46.183775+00:00",
+  "envCustody": "subprocess receives this exact minimal environment, no inherited credentials",
+  "statusBefore": " M .21st/design.json\n?? docs/execution/employee-mobile-hours/COVERAGE.md\n?? docs/execution/employee-mobile-hours/FINAL_CODE_REVIEW.md\n?? docs/execution/employee-mobile-hours/HANDOFF.md\n?? docs/execution/employee-mobile-hours/INDEPENDENT_QA_REVIEW.md\n?? docs/execution/employee-mobile-hours/INDEPENDENT_UI_REVIEW.md\n?? docs/execution/employee-mobile-hours/PRIOR_L1_CLOSURE.md\n",
+  "exit": 0,
+  "headAfter": "e17a8e7479988a1b7159b714f8a2af9c146f2cd3",
+  "finished": "2026-10-27T16:21:05.102233+00:00",
+  "statusAfter": " M .21st/design.json\n?? docs/execution/employee-mobile-hours/COVERAGE.md\n?? docs/execution/employee-mobile-hours/FINAL_CODE_REVIEW.md\n?? docs/execution/employee-mobile-hours/HANDOFF.md\n?? docs/execution/employee-mobile-hours/INDEPENDENT_QA_REVIEW.md\n?? docs/execution/employee-mobile-hours/INDEPENDENT_UI_REVIEW.md\n?? docs/execution/employee-mobile-hours/PRIOR_L1_CLOSURE.md\n",
+  "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

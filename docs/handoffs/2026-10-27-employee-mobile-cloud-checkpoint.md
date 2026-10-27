@@ -1,5 +1,7 @@
 # Employee mobile: Cloud checkpoint, 2026-10-27
 
+> Subsequent phone delivery: Jose authorized uploading the source and full handoff on `codex/employee-mobile-cloud-handoff-20261027`. Start at [the direct GitHub handoff](employee-mobile-cloud-2026-10-27/README.md). The local-only statements below describe the earlier archive checkpoint, not this later authorized upload. The application/test candidate and known RED issue remain unchanged.
+
 Jose requested a detailed handoff to Codex Cloud. Implementation stops at application/test candidate `6110790f48cd6563de05c8cb7e1fcc496dfda135` on local branch `codex/employee-mobile-communications-20261027`. This checkpoint is not an acceptance or release record. No new cloud task, remote push, PR, merge or deployment was performed.
 
 Continue the accepted Employee/Lead teal system and the current Notifications/Updates batch. Read `docs/product/specs/employee-mobile-teal/README.md`, `docs/execution/employee-mobile-communications-plan.md`, `docs/execution/employee-mobile-phase2/STATUS.md` and the prior batch handoffs. Phase2 remains active; Phase3 has not started.

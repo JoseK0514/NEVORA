@@ -1,0 +1,44 @@
+{
+  "source_sha256": "d28b942b0b8e32c164e1e5464a3c62b9eda0d64f7fa5152c1b27bdd52b3f77d7",
+  "baseline_sha256": "68aad106fa42dd4bcdf7dafb2e521561e15868e4cf607d810906244c7f9ff0ab",
+  "scope": "Employee mobile local prototype: Calendar title/status reflow and shared native-sheet invoker return only",
+  "resolved": [
+    "EM-A01",
+    "EM-A02"
+  ],
+  "remaining_full_audit_items": [
+    "EM-A03",
+    "EM-A04",
+    "EM-A05",
+    "EM-A06",
+    "EM-A07",
+    "EM-A08",
+    "EM-A09",
+    "EM-R01"
+  ],
+  "full_readiness": "Not certified; unrelated audit findings and live integration remain open",
+  "changed_source": [
+    "src/App.tsx",
+    "src/Calendar.css"
+  ],
+  "ui": {
+    "report": "calendar-focus-ui-review.md",
+    "sha256": "958c41ccfc349c3192ac25e90536eeba43fb0eaa50d8c41491c7c060976516b4",
+    "disposition": "ship / APPROVE at two-fix scope"
+  },
+  "qa": {
+    "report": "calendar-focus-qa.md",
+    "sha256": "4f4fc38ce42f3ae081faaa734c7c745e0935ceee7240be7f4902862335986a2d",
+    "disposition": "GO for EM-A01/02; VERIFIED resolved",
+    "fresh_scenarios": 120,
+    "passed": 120
+  },
+  "executor_grouped_checks_per_engine": 439,
+  "engines": [
+    "chromium",
+    "webkit",
+    "firefox"
+  ],
+  "design_and_permission_models_preserved": true,
+  "production_changes": false
+}

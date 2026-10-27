@@ -1,0 +1,7 @@
+# Employee Time off permissions and draft recovery
+
+Extend only the local Employee prototype using approved shared components. Respect the workplace Time off feature, own identity/workspace/session, independent read freshness and current mutation proof. Hide disabled Time off actions/history/attention/notices; keep Requests and Availability available. Protect direct/retained detail and cancellation too.
+
+Preserve full/partial-day fields, note and request identity in own root memory across sheet dismissal and in-app navigation. Clear on explicit confirmed discard, successful sample submission, sign-out or lost owner scope. Failures retain the unsent draft; no browser storage, real request or automatic retry. A current context must update already-open sheet content rather than trust captured React-node props. Recheck current authority/record status before every action and show receipts only after a matching committed local result.
+
+Reproduce missing off-state and lost draft first; add pure state and cross-browser workflow checks. Verify current-state refusal at review/send/cancel, failed read/proof, successful/failed send, duplicate/stale actions, draft/discard/sign-out, owner isolation, Availability independence, keyboard/focus and100/200% Light/Dark responsive scenes. Rerun prior439groups and independent QA/UI closure/documentation. Preserve source app46e2027 read only, existing Calendar/focus fixes, tokens and other roles. Remaining Schedule/history/notification-type audit work is outside this slice.

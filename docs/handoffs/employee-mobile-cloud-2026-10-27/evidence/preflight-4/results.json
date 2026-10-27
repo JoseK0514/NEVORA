@@ -1,0 +1,1113 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Actual sign-in and current Home status settled"
+    },
+    {
+      "engine": "chromium",
+      "name": "notifications Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Notification open preserves search/filter/origin focus and never acknowledges automatically"
+    },
+    {
+      "engine": "chromium",
+      "name": "Bounded older/newest notification navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "detail Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Explicit own acknowledgement recorded"
+    },
+    {
+      "engine": "chromium",
+      "name": "updates Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "compose Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "audience Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Actual commit/lost response survives route changes; original lookup, own publication and deliberate withdrawal"
+    },
+    {
+      "engine": "chromium",
+      "name": "Pause removes private DOM and fresh read restores mounted draft"
+    },
+    {
+      "engine": "chromium",
+      "name": "Failed read stays unavailable and refresh recovers"
+    },
+    {
+      "engine": "chromium",
+      "name": "Desktop remains on incumbent Updates"
+    },
+    {
+      "engine": "webkit",
+      "name": "Actual sign-in and current Home status settled"
+    },
+    {
+      "engine": "webkit",
+      "name": "notifications Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Notification open preserves search/filter/origin focus and never acknowledges automatically"
+    },
+    {
+      "engine": "webkit",
+      "name": "Bounded older/newest notification navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "detail Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Explicit own acknowledgement recorded"
+    },
+    {
+      "engine": "webkit",
+      "name": "updates Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "compose Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "audience Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Actual commit/lost response survives route changes; original lookup, own publication and deliberate withdrawal"
+    },
+    {
+      "engine": "webkit",
+      "name": "Pause removes private DOM and fresh read restores mounted draft"
+    },
+    {
+      "engine": "webkit",
+      "name": "Failed read stays unavailable and refresh recovers"
+    },
+    {
+      "engine": "webkit",
+      "name": "Desktop remains on incumbent Updates"
+    },
+    {
+      "engine": "firefox",
+      "name": "Actual sign-in and current Home status settled"
+    },
+    {
+      "engine": "firefox",
+      "name": "notifications Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Notification open preserves search/filter/origin focus and never acknowledges automatically"
+    },
+    {
+      "engine": "firefox",
+      "name": "Bounded older/newest notification navigation"
+    },
+    {
+      "engine": "firefox",
+      "name": "detail Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Explicit own acknowledgement recorded"
+    },
+    {
+      "engine": "firefox",
+      "name": "updates Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "compose Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "audience Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Actual commit/lost response survives route changes; original lookup, own publication and deliberate withdrawal"
+    },
+    {
+      "engine": "firefox",
+      "name": "Pause removes private DOM and fresh read restores mounted draft"
+    },
+    {
+      "engine": "firefox",
+      "name": "Failed read stays unavailable and refresh recovers"
+    },
+    {
+      "engine": "firefox",
+      "name": "Desktop remains on incumbent Updates"
+    }
+  ],
+  "captures": [
+    "chromium-notifications-light-320.png",
+    "chromium-notifications-light-390.png",
+    "chromium-notifications-light-430.png",
+    "chromium-notifications-dark-320.png",
+    "chromium-notifications-dark-390.png",
+    "chromium-notifications-dark-430.png",
+    "chromium-notifications-text-200.png",
+    "chromium-detail-light-320.png",
+    "chromium-detail-light-390.png",
+    "chromium-detail-light-430.png",
+    "chromium-detail-dark-320.png",
+    "chromium-detail-dark-390.png",
+    "chromium-detail-dark-430.png",
+    "chromium-detail-text-200.png",
+    "chromium-updates-light-320.png",
+    "chromium-updates-light-390.png",
+    "chromium-updates-light-430.png",
+    "chromium-updates-dark-320.png",
+    "chromium-updates-dark-390.png",
+    "chromium-updates-dark-430.png",
+    "chromium-updates-text-200.png",
+    "chromium-compose-light-320.png",
+    "chromium-compose-light-390.png",
+    "chromium-compose-light-430.png",
+    "chromium-compose-dark-320.png",
+    "chromium-compose-dark-390.png",
+    "chromium-compose-dark-430.png",
+    "chromium-compose-text-200.png",
+    "chromium-audience-light-320.png",
+    "chromium-audience-light-390.png",
+    "chromium-audience-light-430.png",
+    "chromium-audience-dark-320.png",
+    "chromium-audience-dark-390.png",
+    "chromium-audience-dark-430.png",
+    "chromium-audience-text-200.png",
+    "webkit-notifications-light-320.png",
+    "webkit-notifications-light-390.png",
+    "webkit-notifications-light-430.png",
+    "webkit-notifications-dark-320.png",
+    "webkit-notifications-dark-390.png",
+    "webkit-notifications-dark-430.png",
+    "webkit-notifications-text-200.png",
+    "webkit-detail-light-320.png",
+    "webkit-detail-light-390.png",
+    "webkit-detail-light-430.png",
+    "webkit-detail-dark-320.png",
+    "webkit-detail-dark-390.png",
+    "webkit-detail-dark-430.png",
+    "webkit-detail-text-200.png",
+    "webkit-updates-light-320.png",
+    "webkit-updates-light-390.png",
+    "webkit-updates-light-430.png",
+    "webkit-updates-dark-320.png",
+    "webkit-updates-dark-390.png",
+    "webkit-updates-dark-430.png",
+    "webkit-updates-text-200.png",
+    "webkit-compose-light-320.png",
+    "webkit-compose-light-390.png",
+    "webkit-compose-light-430.png",
+    "webkit-compose-dark-320.png",
+    "webkit-compose-dark-390.png",
+    "webkit-compose-dark-430.png",
+    "webkit-compose-text-200.png",
+    "webkit-audience-light-320.png",
+    "webkit-audience-light-390.png",
+    "webkit-audience-light-430.png",
+    "webkit-audience-dark-320.png",
+    "webkit-audience-dark-390.png",
+    "webkit-audience-dark-430.png",
+    "webkit-audience-text-200.png",
+    "firefox-notifications-light-320.png",
+    "firefox-notifications-light-390.png",
+    "firefox-notifications-light-430.png",
+    "firefox-notifications-dark-320.png",
+    "firefox-notifications-dark-390.png",
+    "firefox-notifications-dark-430.png",
+    "firefox-notifications-text-200.png",
+    "firefox-detail-light-320.png",
+    "firefox-detail-light-390.png",
+    "firefox-detail-light-430.png",
+    "firefox-detail-dark-320.png",
+    "firefox-detail-dark-390.png",
+    "firefox-detail-dark-430.png",
+    "firefox-detail-text-200.png",
+    "firefox-updates-light-320.png",
+    "firefox-updates-light-390.png",
+    "firefox-updates-light-430.png",
+    "firefox-updates-dark-320.png",
+    "firefox-updates-dark-390.png",
+    "firefox-updates-dark-430.png",
+    "firefox-updates-text-200.png",
+    "firefox-compose-light-320.png",
+    "firefox-compose-light-390.png",
+    "firefox-compose-light-430.png",
+    "firefox-compose-dark-320.png",
+    "firefox-compose-dark-390.png",
+    "firefox-compose-dark-430.png",
+    "firefox-compose-text-200.png",
+    "firefox-audience-light-320.png",
+    "firefox-audience-light-390.png",
+    "firefox-audience-light-430.png",
+    "firefox-audience-dark-320.png",
+    "firefox-audience-dark-390.png",
+    "firefox-audience-dark-430.png",
+    "firefox-audience-text-200.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "stage": "read-error",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "notifications",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:64370/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "notifications",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:64370/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "notifications",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:64370/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "updates",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:64370/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "updates",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:64370/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "updates",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:64370/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "read-error",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "expected": true
+    }
+  ],
+  "failedRequests": [
+    {
+      "engine": "chromium",
+      "stage": "login",
+      "url": "http://127.0.0.1:64370/login",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "notifications",
+      "url": "http://127.0.0.1:64370/app/updates/a5806e53-ef16-4a3b-9946-78c276be80f5?_rsc=h4-7ZZkZ7ItqDcNZ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "notifications",
+      "url": "http://127.0.0.1:64370/app/notifications?_rsc=wAl8FjXqZWDBHwe7",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "notifications",
+      "url": "http://127.0.0.1:64370/app/updates/a5806e53-ef16-4a3b-9946-78c276be80f5?_rsc=GV58G580eZHlOrZW",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "notifications",
+      "url": "http://127.0.0.1:64370/app/updates/a5806e53-ef16-4a3b-9946-78c276be80f5?_rsc=vjygejVN0aeszwzQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:64370/app/notifications?_rsc=joL5bPF27nh2LSs7",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:64370/app/updates/compose?_rsc=j9NLyFjvuZBsB3sQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:64370/api/employee/communications",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:64370/app/updates?_rsc=isy3P97hmoWi4R5Z",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:64370/app/updates/compose?_rsc=G_2ZVhXQTN25kW5I",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:64370/app/updates/compose?_rsc=OEjwLtKvXE5JJuhi",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:64370/app/updates/39783052-c8d4-4425-b989-f1d4d96dd431?_rsc=isy3P97hmoWi4R5Z",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "pause",
+      "url": "http://127.0.0.1:64370/api/notifications",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "read-error",
+      "url": "http://127.0.0.1:64370/api/employee/messages/compose/new",
+      "error": "net::ERR_ABORTED",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "updates",
+      "url": "http://127.0.0.1:64370/api/employee/communications",
+      "error": "cancelled",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "updates",
+      "url": "http://127.0.0.1:64370/api/employee/messages/compose/new",
+      "error": "cancelled",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "pause",
+      "url": "http://127.0.0.1:64370/api/notifications",
+      "error": "cancelled",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "desktop",
+      "url": "http://127.0.0.1:64370/api/employee/communications/context",
+      "error": "cancelled",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "updates",
+      "url": "http://127.0.0.1:64370/api/employee/communications",
+      "error": "NS_ERROR_FAILURE",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "updates",
+      "url": "http://127.0.0.1:64370/api/employee/messages/compose/new",
+      "error": "NS_BINDING_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "pause",
+      "url": "http://127.0.0.1:64370/api/notifications",
+      "error": "NS_BINDING_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "desktop",
+      "url": "http://127.0.0.1:64370/api/employee/communications/context",
+      "error": "NS_BINDING_ABORTED",
+      "expected": false
+    }
+  ]
+}
