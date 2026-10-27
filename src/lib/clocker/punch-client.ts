@@ -1,7 +1,7 @@
 import { parsePunchCommand } from './punch-command';
 import type { PunchAction, PunchCommand, PunchReceipt, PunchSnapshot, PunchView } from './punch-types';
 import type { BreakSelection, BreakTypeSnapshot } from './break-types';
-export type ClockView=PunchView&{state:'ready';subject:string;firstName:string;expiresAt:string;locationId:string};
+export type ClockView=PunchView&{state:'ready';subject:string;firstName:string;expiresAt:string;locationId:string;photoCaptureAvailable?:boolean};
 export type PendingPunch={subject:string;command:PunchCommand};
 type Storage=Pick<globalThis.Storage,'getItem'|'setItem'|'removeItem'>;
 type RecoveryStorage=Storage&Pick<globalThis.Storage,'key'|'length'>;
@@ -138,9 +138,9 @@ export class PunchRequestError extends Error{
 }
 /** Submit with a bounded HTTP wait. Timeout/fetch failure leaves commit status
  * unknown; retain the original command and recover its receipt before any replay. */
-export async function postPunch(location:string,body:object):Promise<unknown>{
+export async function postPunch(location:string,body:object,signal?:AbortSignal):Promise<unknown>{
  const response=await fetch(`/api/clocker/${encodeURIComponent(location)}/punch`,{method:'POST',credentials:'same-origin',cache:'no-store',
-  headers:{'Content-Type':'application/json','X-Nevora-Clocker':'1'},body:JSON.stringify(body),signal:AbortSignal.timeout(12000)});
+  headers:{'Content-Type':'application/json','X-Nevora-Clocker':'1'},body:JSON.stringify(body),signal:signal?AbortSignal.any([signal,AbortSignal.timeout(12000)]):AbortSignal.timeout(12000)});
  const data:unknown=await response.json();
  if(!response.ok)throw new PunchRequestError(object(data)&&typeof data.code==='string'?data.code:'UNAVAILABLE',object(data)&&typeof data.error==='string'?data.error:'The clock result could not be confirmed.',response.status);
  return data;

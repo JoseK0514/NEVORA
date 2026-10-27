@@ -100,7 +100,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
  }
  const problem=error?<div className={styles.problem}><p role="alert" className={styles.error}>{t(error)}</p>{blocked?<button type="button" className="button secondary" onClick={()=>void reset()}>{t("Check Connection")}</button>:null}</div>:null;
  return <div ref={motion} className={styles.terminal} aria-busy={pending} data-clocker-pin={identity?'verified':'entry'}>
-  {identity&&punchEnabled?<ClockerPunchPanel locationKey={locationKey} timeZone={timeZone} onDone={finish} resume={held} onContinuationChange={receiveDraft}/>:identity?<>
+  {identity&&punchEnabled?<ClockerPunchPanel screenExpiresAt={identity.deadline} locationKey={locationKey} timeZone={timeZone} onDone={finish} resume={held} onContinuationChange={receiveDraft}/>:identity?<>
    <span className={styles.seal}><ClockerIcon name="check" size={52} weight={presentation.v2?'regular':'bold'}/></span>
    <h1>{t('Hi, {name}.',{name:identity.firstName})}</h1><p className={styles.lead}>{t("Your PIN is verified for this tablet.")}</p>
    <div className={styles.previewNotice}><strong>{t("Time punches are not enabled yet.")}</strong><span>{t("No worked time has been recorded.")}</span></div>

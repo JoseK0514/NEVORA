@@ -277,6 +277,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { m
       ...ownedPayrollEnvironment(options),
       ...advisorEnvironment,
       NEVORA_CLOCKER_PUNCH_ENABLED: options.clockerPunchEnabled === true ? 'true' : 'false',
+      NEVORA_CLOCKER_ORIGIN: url,
       NEVORA_CLOCKER_UI_V2: options.clockerUiV2===true?'true':'false',
       ...ownedMailEnvironment(url,options),
       NEXT_TELEMETRY_DISABLED: '1', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',

@@ -10,6 +10,10 @@ import type { BreakSelection } from '../lib/clocker/break-types';
 import {ClockerRecoveryHandoff} from './clocker-recovery';
 import {continuationFor,resumeContinuation,type ClockContinuation} from './clocker-privacy';
 import styles from './clocker-punch.module.css';
+import {ClockerPunchPhotoFlow} from './clocker-photo/punch-photo-flow';
+import {createClockerPhotoTransport} from '../lib/clocker/photo-client/transport';
+import {readPhotoConfiguration,type PhotoSessionContext,type PhotoBindings} from '../lib/clocker/photo-client/session';
+import {photoResultMessage} from '../lib/clocker/photo-client/result-copy';
 import { ClockerIcon, type ClockerIconName } from './clocker-icon';
 import { useClockerMotion } from './clocker-motion';
 import { Es, useClockerSpanish, type ClockerPhrase } from './clocker-language';
@@ -18,7 +22,7 @@ const labels:Record<PunchAction,string>={CLOCK_IN:'Clock In',START_BREAK:'Start 
 const receipts:Record<PunchAction,string>={CLOCK_IN:'Clock In Recorded',START_BREAK:'Break Start Recorded',END_BREAK:'Break End Recorded',CLOCK_OUT:'Clock Out Recorded'};
 const actionIcons:Record<PunchAction,ClockerIconName>={CLOCK_IN:'clock-in',START_BREAK:'break',END_BREAK:'resume',CLOCK_OUT:'clock-out'};
 const ESP:Record<string,true>={'Clock In Recorded':true,'Break Start Recorded':true,'Break End Recorded':true,'Clock Out Recorded':true,'Choose a Break':true,'Clock Out?':true};
-type Mode='review-current'|'select-break'|'loading'|'ready'|'confirm-out'|'sending'|'recovery'|'retry'|'other-person'|'auth'|'unavailable'|'storage'|'success';
+type Mode='photo'|'review-current'|'select-break'|'loading'|'ready'|'confirm-out'|'sending'|'recovery'|'retry'|'other-person'|'auth'|'unavailable'|'storage'|'success';
 function clockTime(value:string,timeZone:string,locale='en-US'):string {
  const parts=new Intl.DateTimeFormat(locale,{timeZone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).formatToParts(new Date(value));
  const part=(name:Intl.DateTimeFormatPartTypes)=>parts.find(p=>p.type===name)?.value??'';
@@ -38,12 +42,13 @@ function elapsed(value:string,now:number):string {
  const h=Math.floor(minutes/60),m=minutes%60;return h?`${h}h ${m}m`:`${m}m`;
 }
 const breakIcon=(category:string):ClockerIconName=>category==='REST'?'rest':category==='MEAL'?'meal':'break';
-export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinuationChange}:{locationKey:string;timeZone:string;onDone:()=>void;resume?:ClockContinuation|null;onContinuationChange?:(draft:ClockContinuation|null)=>void}) {
+export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinuationChange,screenExpiresAt}:{screenExpiresAt?:number;locationKey:string;timeZone:string;onDone:()=>void;resume?:ClockContinuation|null;onContinuationChange?:(draft:ClockContinuation|null)=>void}) {
  const t=useClockerCopy(),presentation=useClockerPresentation();
  const [view,setView]=useState<ClockView|null>(null),[pending,setPending]=useState<PendingPunch|null>(null);
  const [mode,setMode]=useState<Mode>('loading'),[message,setMessage]=useState<string|null>(null);
  const motion=useClockerMotion(mode);
  const spanish=useClockerSpanish(),locale=presentation.v2&&presentation.locale==='es'?'es-PR':'en-US';
+ const [photo,setPhoto]=useState<{context:PhotoSessionContext;bindings:PhotoBindings}|null>(null);
  const [receipt,setReceipt]=useState<PunchReceipt|null>(null);
  const [references,setReferences]=useState<JournalReference[]>([]);
  const reviewProof=useRef<{commandId:string;subject:string;verificationId:string}|null>(null);
@@ -74,7 +79,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
    }catch(error){if(current){setPending(saved);failed(error,Boolean(saved));}}
   };
   void load();return()=>{current=false;alive.current=false;void journal.current?.then(store=>store.close(),()=>{});};
- },[locationKey]);
+ },[locationKey,resume]);
  useEffect(()=>{onContinuationChange?.(view&&!pending?continuationFor(view,mode):null);return()=>onContinuationChange?.(null);},[view,mode,pending,onContinuationChange]);
  useEffect(()=>{heading.current?.focus({preventScroll:true});},[mode]);
  useEffect(()=>{
@@ -92,6 +97,21 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
   if(busy.current||saved.subject!==current.subject)return;
   busy.current=true;setMode('sending');setMessage(null);
   try{
+   if(current.photoCaptureAvailable&&!pending){
+    const transport=createClockerPhotoTransport(locationKey);
+    const config=readPhotoConfiguration(await transport.policy(AbortSignal.timeout(6000)));
+    if(!alive.current)return;
+    if(config.policy.enabled&&config.policy.events.includes(saved.command.action)){
+     const context:PhotoSessionContext={intent:saved,policy:config.policy,notice:config.notice,proofExpiresAt:current.expiresAt,screenExpiresAt:new Date(screenExpiresAt??0).toISOString(),captureAuthorized:config.notice!==null};
+     const boundTransport=createClockerPhotoTransport(locationKey,fetch,config.notice?{policyVersion:config.notice.policyVersion,profileVersion:config.notice.profileVersion}:null);
+     const bindings:PhotoBindings={
+      preserveIntent:async intent=>{await(await recoveryJournal()).saveExact(locationKey,intent);if(alive.current)setPending(intent);},
+      verifyContext:async signal=>{const fresh=parseClockView(await postPunch(locationKey,{operation:'state'},signal));if(fresh.subject!==saved.subject||fresh.verificationId!==saved.command.verificationId||canRetirePendingPunch(saved.command,fresh))throw Error('Verification changed');const next=readPhotoConfiguration(await transport.policy(signal));if(JSON.stringify(next)!==JSON.stringify(config))throw Error('Photo policy changed');},
+      commitExactPunch:(command,signal)=>postPunch(locationKey,{operation:'execute',command},signal),
+      readExactPunch:async(command,signal)=>{const fresh=parseClockView(await postPunch(locationKey,{operation:'state'},signal));if(fresh.subject!==saved.subject||fresh.verificationId!==command.verificationId)throw Error('Verification changed');const result=await postPunch(locationKey,{operation:'receipt',commandId:command.commandId,verificationId:fresh.verificationId},signal);if(result&&typeof result==='object'&&'state' in result&&result.state==='committed')return result;return {state:canRetirePendingPunch(command,fresh)?'obsolete':'retry_allowed'};},transport:boundTransport,
+     };setPhoto({context,bindings});setMode('photo');return;
+    }
+   }
    // A committed IndexedDB transaction preserves the exact intent before sending.
    try{await (await recoveryJournal()).saveExact(locationKey,saved);}
    catch{setMode('storage');setMessage('Recovery storage is unavailable. No new request was sent. Allow browser storage before continuing.');return;}
@@ -137,6 +157,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
   catch{if(alive.current){setMode('storage');setMessage('Your recovery record cannot be verified. Keep it saved and ask an Owner to review it.');}}
   finally{busy.current=false;}
  }
+ if(photo&&mode==='photo')return <ClockerPunchPhotoFlow context={photo.context} bindings={photo.bindings} timeZone={timeZone} onExit={result=>{setPhoto(null);if(result.receipt){void confirmed({state:'committed',receipt:result.receipt},photo.context.intent).then(()=>{if(alive.current)setMessage(photoResultMessage(result));});}else if(result.submissionStarted){onDone();}else{setMode('ready');}}}/>;
  const entry=view?.snapshot.entry,pause=view?.snapshot.break,allowed=view?punchActions(view):[];
  // One deep card for the likeliest next step: End Break on a break, otherwise Clock Out once clocked in.
  const lead=(['END_BREAK','CLOCK_OUT','CLOCK_IN'] as PunchAction[]).find(action=>allowed.includes(action));
