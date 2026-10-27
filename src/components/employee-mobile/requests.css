@@ -2,7 +2,7 @@
 @media (max-width:767px), (max-width:900px) and (max-height:430px) and (orientation:landscape) and (pointer:coarse) {
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .page-frame:has(> .em-requests-mobile) > :is(.q-reqhub,.q-shiftreq) { display:none; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-requests-mobile { display:block; }
-  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .page-frame:has(.em-requests-mobile) { padding:0 0 var(--em-space-8) !important; margin:0; max-width:none; }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .page-frame:has(.em-requests-mobile) { padding:0 0 var(--em-space-8) !important; margin:0; max-width:none; background:var(--em-canvas); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-requests {
     margin:0; padding:0; max-width:none; width:auto; color:var(--em-ink); background:var(--em-canvas); font:400 var(--em-size-body)/var(--em-line-body) var(--em-font); letter-spacing:normal; overflow-wrap:anywhere;
   }

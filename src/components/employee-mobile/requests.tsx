@@ -24,6 +24,7 @@ function Entry({href,title,detail,icon}:{href:string;title:string;detail?:string
  return <li><Link className="em-request-entry" href={href}><span className="em-request-icon" aria-hidden="true">{icon}</span><span><strong>{title}</strong>{detail?<small>{detail}</small>:null}</span><CaretRightIcon aria-hidden="true"/></Link></li>;
 }
 export function IncomingRequestSection({count,onRetry}:{count:number|null;onRetry:()=>void}){
+ if(count===null)return <section aria-labelledby="em-answer-heading"><h2 id="em-answer-heading">Swaps for you</h2><div className="em-request-notice"><p role="status">Swaps for you couldn’t be checked.</p><Link className="em-request-text" href="/app/exchange?tab=foryou">Open swaps for you</Link><button className="em-request-secondary" type="button" onClick={onRetry}>Try again</button></div></section>;
  return count?<section aria-labelledby="em-answer-heading"><h2 id="em-answer-heading">Needs your answer</h2><ul className="em-request-list"><Entry href="/app/exchange?tab=foryou" title={count===1?'A teammate requested a swap':`${count} swaps need your answer`} detail="Review the shifts before responding" icon={<ArrowsLeftRightIcon/>}/></ul></section>:null;
 }
 export function Pickup({operation,onRefresh,canSubmit=false,isCurrent=()=>false,canRecover=()=>false}:{operation:PickupOperation;onRefresh:()=>void;canSubmit?:boolean;isCurrent?:(operation:PickupOperation)=>boolean;canRecover?:()=>boolean}){

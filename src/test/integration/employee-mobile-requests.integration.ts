@@ -88,6 +88,22 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
    const foreign=await page.request.get(app.url+'/api/employee/requests?employeeId='+f.actors[1],{headers:{'X-Nevora-Employee-View':binding}});
    expect(foreign.status()).toBe(400);expect(await foreign.json()).toEqual({state:'unavailable',reason:'access_denied'});
    await shot('requests-hub');
+   if(index===0){
+    // Presentation-only partial-read fixture derived from the actual own response. No peer rows or authorization facts are fabricated.
+    stage='controlled-incoming-unavailable';
+    await page.route('**/api/employee/requests',async(route:{fetch(options:{timeout:number}):Promise<{json():Promise<Record<string,unknown>>}>;fulfill(options:{response:unknown;json:unknown}):Promise<void>})=>{
+     const response=await route.fetch({timeout:10000});const body=await response.json();await route.fulfill({response,json:{...body,incoming:null}});
+    });
+    await page.getByRole('button',{name:'Refresh',exact:true}).click();
+    await page.getByText('Swaps for you couldn’t be checked.',{exact:true}).waitFor();
+    expect(await page.getByRole('link',{name:'Open swaps for you',exact:true}).getAttribute('href')).toBe('/app/exchange?tab=foryou');
+    await shot('incoming-unavailable');
+    await page.unroute('**/api/employee/requests');
+    await page.getByRole('button',{name:'Try again',exact:true}).click();
+    await page.getByText('Swaps for you couldn’t be checked.',{exact:true}).waitFor({state:'hidden'});
+    record('Controlled incoming-null presentation has a recovery action and destination; retry restores actual checked zero');
+    stage='requests';
+   }
    await page.getByRole('link',{name:/Open shifts 1 shift matches/}).click();await page.waitForURL(app.url+'/app/exchange?tab=available');await ready();
    await page.getByRole('heading',{name:'Open shifts',exact:true}).waitFor();
    await page.locator('.mobile-header .brand:visible').waitFor();
