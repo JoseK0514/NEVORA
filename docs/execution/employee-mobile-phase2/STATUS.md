@@ -19,7 +19,7 @@ The approved scope remains the three-phase plan at `outputs/employee-mobile/rema
 
 ## Remaining Phase 2 implementation
 
-1. Own profile, language/appearance preferences, support/legal, contextual return and actual sign-out/device cleanup.
+1. **In progress:** own profile, language/appearance preferences, support/legal, contextual return and actual sign-out/device cleanup. See `../employee-mobile-profile/plan.md`; the first own-read/signout/privacy regressions and6realSQL cases passed after observed RED. Mobile presentation/browser verification remains in progress; no acceptance is claimed.
 2. Capability-dependent calendar, passkeys, current-device alerts and own deletion-request lifecycles.
 3. Own published Pay statements, current payroll/module gates and protected PDF view/download.
 

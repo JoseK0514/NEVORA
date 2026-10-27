@@ -8,20 +8,21 @@ import { POLICY_DOCUMENTS, POLICY_FACTS, POLICY_OPERATOR, SUPPORT_EMAIL, policie
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { QuietHeader, QuietNav } from "@/components/quiet/quiet";
 
-function Run({ run }: { run: Inline }) {
+function Run({ run, context }: { run: Inline; context?: 'employee' }) {
   if (typeof run === "string") return <>{run}</>;
   if ("fact" in run) {
     const value = POLICY_FACTS[run.fact];
     return value ? <>{value}</> : <mark className="legal-unresolved">[CONFIRM_{run.fact}]</mark>;
   }
   if ("strong" in run) return <strong>{run.strong}</strong>;
-  return run.href.startsWith("mailto:") ? <a href={run.href}>{run.text}</a> : <Link href={run.href}>{run.text}</Link>;
+  const href = context === 'employee' && POLICY_DOCUMENTS.some(doc => `/${doc.slug}` === run.href) ? `/app/profile${run.href}` : run.href;
+  return href.startsWith("mailto:") ? <a href={href}>{run.text}</a> : <Link href={href}>{run.text}</Link>;
 }
 
-const Runs = ({ runs }: { runs: Inline[] }) => <>{runs.map((run, index) => <Run key={index} run={run} />)}</>;
+const Runs = ({ runs, context }: { runs: Inline[]; context?: 'employee' }) => <>{runs.map((run, index) => <Run key={index} run={run} context={context} />)}</>;
 
-export function BlockView({ block }: { block: Block }) {
-  return "p" in block ? <p><Runs runs={block.p} /></p> : <ul>{block.list.map((item, index) => <li key={index}><Runs runs={item} /></li>)}</ul>;
+export function BlockView({ block, context }: { block: Block; context?: 'employee' }) {
+  return "p" in block ? <p><Runs runs={block.p} context={context} /></p> : <ul>{block.list.map((item, index) => <li key={index}><Runs runs={item} context={context} /></li>)}</ul>;
 }
 
 /** A public policy page: NEVORA brand, the document, links to the other three, and the VELANI footer.
