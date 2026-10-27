@@ -1,0 +1,161 @@
+{
+  "purpose": "Read-only source-defined G11\u2013G16 context, not a live Git checkout or integration proof",
+  "files": [
+    {
+      "application_path": "src/app/api/management/profile/alerts/route.ts",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/app/api/management/profile/alerts/route.ts",
+      "sha256": "50660589373ed46f49d02d635a0452970d8803d00d90563bf56fae5cc8e86691",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/app/api/management/profile/route.ts",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/app/api/management/profile/route.ts",
+      "sha256": "fa76d31d6268cb3b438dacdcaca8b256ae91ccb6b118e5b815037c311101221c",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/app/app/more/page.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/app/app/more/page.tsx",
+      "sha256": "fab559155b30ac1e803d4c80ad69c32e08974a5cfdbee1a5a1d3e81114566e60",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/app/support/page.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/app/support/page.tsx",
+      "sha256": "60b5a0dce71a19abf581b69d59cb295c7fb249c4ca620628932979503f065a01",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/account-deletion-form.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/account-deletion-form.tsx",
+      "sha256": "5f20a332159e7a282ab06a43e10816ad46fe5104a4590261d269395cadb2f036",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/app-shell.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/app-shell.tsx",
+      "sha256": "4ff5b655d13e1d0802d3582d0faa685382dc8d6c4ab597fcaab006531d173386",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/command-finder.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/command-finder.tsx",
+      "sha256": "a82d6f9479fef25c5d51abea43d404044edf9e38b3fd86ce1c7765c49e2c32e0",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/communication-compose.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/communication-compose.tsx",
+      "sha256": "e65cc7fbd3f47d7af4bd15c19eea8d01cbde82a0fa3d46fe5c140aab94b9b217",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/communication-detail.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/communication-detail.tsx",
+      "sha256": "f82b854a8eb4e9b99a0d8269fb6d91356ed247a5879416831dc4ea9fc070bb2c",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/employee-account-panel.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/employee-account-panel.tsx",
+      "sha256": "7d91c316adc10f845d7516e5e44b93be9b7565173fe5fd9dac52ad9e10749126",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/employee-updates.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/employee-updates.tsx",
+      "sha256": "415e1bd96b2051559ad8e0303d82b2309d701fabbb4f8493e7d74221f182467b",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/legal/account-privacy-links.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/legal/account-privacy-links.tsx",
+      "sha256": "38b69b9e78c33dea2686628b37a8d236384b20808013a5cb1f7c37f4b8645fed",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/manager-dashboard.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/manager-dashboard.tsx",
+      "sha256": "97fa4d68a461f600dc3664eb268199d6ff512dd6855f92024704adfa7d473c3c",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/manager-profile/manager-profile-live.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/manager-profile/manager-profile-live.tsx",
+      "sha256": "f60f540457b4d98503cba1cba091dcd272a0621e6496f38898974dba13ab1580",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/owner-advisor/advisor.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/owner-advisor/advisor.tsx",
+      "sha256": "71db2d54d8c0134a62791b1c3b00f0a7603ac9802a720f9a81e32e56004745f9",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/owner-advisor/attention.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/owner-advisor/attention.tsx",
+      "sha256": "1a3d0d456328cbdb795297befedc0b457f70a761549bc4878d0d08479335ba63",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/owner-advisor/workflows.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/owner-advisor/workflows.tsx",
+      "sha256": "09e7898ef73a0451ceb1f1dc116b633c92377dccce87518be0d16cf33413afc5",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/passkeys/passkey-section.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/passkeys/passkey-section.tsx",
+      "sha256": "1abab3ab99bbdca3629f644aacee1a1dfe98f78192a8d6770e18c8996bd99c86",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/payroll/my-pay.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/payroll/my-pay.tsx",
+      "sha256": "3e7a137d74b8643309927d186effc47b9471b20555b80efe49fc2c5d80c54fde",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/payroll/payroll-runs.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/payroll/payroll-runs.tsx",
+      "sha256": "20ded77e608c92eeb80d31770ce181f90e4b7a28f2d9d0bd09220064f69cca68",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/payroll/payroll-ui.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/payroll/payroll-ui.tsx",
+      "sha256": "8cf32e0c7665cbc34fbe0b6fe0bbc45db43cfae7429df8877c3a5a04f29ecf13",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/payroll/portal-statements.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/payroll/portal-statements.tsx",
+      "sha256": "6d4ff069609548a0d5c73f39d82fd0fb89c4c8e3044e52d723877ab0233df930",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/premium-home.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/premium-home.tsx",
+      "sha256": "45a36257db766a10b98912420c9d13a61adbce80928441e3fe2beafdf59d0810",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/components/reports.tsx",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/components/reports.tsx",
+      "sha256": "ca8eed8c8a312fec1e1b339dbe02b7c5a49c196bbca1a9d5a6785388c98ef8e2",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/lib/navigation.ts",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/lib/navigation.ts",
+      "sha256": "752bd5868388abd81a0376ca1e828492695743a8b1c99f89db1a86a593e5e303",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    },
+    {
+      "application_path": "src/lib/workspace-presentation/modules.ts",
+      "bundle_path": "handoff/codex-cloud-owner-desktop/reference/remaining-application/src/lib/workspace-presentation/modules.ts",
+      "sha256": "f86fe862d28d6914f27a7ee60a979ac8079db6d2828b4a438aac3568da1d2117",
+      "source_commit": "46e202786863279302026ee03a0e225c359fa55c"
+    }
+  ]
+}

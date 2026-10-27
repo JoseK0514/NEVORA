@@ -1,0 +1,154 @@
+{
+  "mode": "dry-run",
+  "runtime_sha256_unchanged": "f6e3f5b3b332a61f12a2607c9a9728d7086a77747472f5217badc786ad543a3f",
+  "target_module": "/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright",
+  "changes": [
+    {
+      "file": "work/owner-desktop/check.cjs",
+      "before_sha256": "e91f34861dd4e58a81676be84d985f7a1247b38c659462c1a23f0944eef1a7c3",
+      "after_sha256": "2494dab419990a670fe98dadeecc2ed88a36495388435ba8469152e9264c155b",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/date-picker-check.cjs",
+      "before_sha256": "9b0c7c1282993a41a51af7a1cf816639a141efa5cabf1734d6816b3186c3fde7",
+      "after_sha256": "66e2bb2e9c19e40179764fe665d1a41f762142eea182e285d53fa175626ee839",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/dialog-focus-check.cjs",
+      "before_sha256": "b17de4ab42be566e3f57fd803d693a36e9ac33850852975523df76e0cfcf9ae5",
+      "after_sha256": "ef0c03d3414a471e74674e2564c1cf2ed233d5b0e3ee859c68bb86a119f0a179",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/feedback-check.cjs",
+      "before_sha256": "3a87ff949eec6961b5f82e50bc816ab83bfedb780c3c00a869bed0505f65849e",
+      "after_sha256": "0e7acec9f54bdfceda4e1ce2965c957c8056da155a85bf87589e97d35a3b0b49",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/foundation-check.cjs",
+      "before_sha256": "6d01f227d94853adc7cf606d240120113fe2c74694e049de8b9e53d8288fcfe1",
+      "after_sha256": "622c49b93406feb7a7d3be0b3edfc3f6a2865ada69c668053531140bfd25e03d",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/g02-browser-check.cjs",
+      "before_sha256": "c189870ff0e367f9b3ef3ea3f5f6a02258cee79ff776eb92b726c9511a84944d",
+      "after_sha256": "cdb88ab66c7ab1f435011ebca3d5e1f7f87f10ca20b2e81bbfd73209c1f60a23",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/g03-browser-check.cjs",
+      "before_sha256": "f37f74d6ca906136771d966183a494a9ad6bb7aaa9781a14f5b9aaf0542e1c2e",
+      "after_sha256": "fcc5630867f36a46cd3e2c36b4f18cf3ef702bf3b928355d8b2b633e43f82947",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/g04-browser-check.cjs",
+      "before_sha256": "ba1f30a7bf12115c614376c10c64264db6af1be719ac6539b26c10c53a167f2c",
+      "after_sha256": "d90887cf18716e681cb28acd1544eec7d1350596ca9023947a3e9a45648b2029",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/g05-browser-check.cjs",
+      "before_sha256": "800113d24a0489040fbd381eff645d10e7a26daa272ad6bbf0fabcd74bab05f0",
+      "after_sha256": "e99b3a0138fa3e09af09478e19c8d2c3d65a4627127ef892392bec26b5da0995",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/g06-browser-check.cjs",
+      "before_sha256": "57517be63b0f0ff155b91bdf6f1c4683913e5d427b2a8ff12912b040fb68a660",
+      "after_sha256": "60f1954c6cb0a7ee74ebacc3fae81dacaa06baca564a5b998156605bae127dc1",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/g07-browser-check.cjs",
+      "before_sha256": "b8cd313c94f534889c65c5d4e8e4e6117efa38aaba4af6a6275122527dd686f8",
+      "after_sha256": "3ce7e78a3dbabec18a82b4bd927cb1c58544e37a9bae1de7ffe3addc09e5fb13",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/g08-browser-check.cjs",
+      "before_sha256": "01ede080b56aee6f46038320dfdfcf1e4195c8d1f0d98e61c7623e79d7a31b6a",
+      "after_sha256": "4e0c62de7f85e4b4d559766bb66b80b8ce90f7fe6dfeb63186aef5aaa0234847",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/g09-browser-check.cjs",
+      "before_sha256": "e9a03ad2927d1dafb8c1ad4cce92505e89c517e63c2c41446cb800e224f7b993",
+      "after_sha256": "83c607ed9ea89d4cec54d7f36f4fb79ef9d0e45c8b35f58349cda83f71601f3a",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/g10-browser-check.cjs",
+      "before_sha256": "530b7ad4d8d9e534c822b2fa566a36ac27b48cd4cdfe83898a4ef56f0fefa5be",
+      "after_sha256": "b0f60a52253b803769cae69a0627e948f2a2865fd2b9a3bfc3a26236fd4e675b",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/g10-capture.cjs",
+      "before_sha256": "5e180e5eafc46a52ad35b61480df60a26f1b0872a3cf59a7303e61e27c9c7c16",
+      "after_sha256": "964be257fc74503b06fd763a237ce142c8ff049f6c07cee1f0d0db91b4687424",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/g10-detail-capture.cjs",
+      "before_sha256": "91f05ce4599e3d25c3c29296e77af1ca9aa78cdcfa44fc492c39c31599cfa49e",
+      "after_sha256": "5e63b5c00e87e71ff73111c795c74e8a21f24d4516209a0d67718ff3376f2842",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/published-warning-check.cjs",
+      "before_sha256": "ab566f0d4dbee5a67a3693e8d16c058b3867066b66fcb801fb6b43746ef036d9",
+      "after_sha256": "c91595a15e14fd3f4638853d7c3863f72c5162c1929d0e7d6d7fb0dfd3cb31c2",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/request-notice-check.cjs",
+      "before_sha256": "af80797cb40fd2f7a3d99bb2a0e8b0fd2216a58ec3e096f80ce420f3dcd65af9",
+      "after_sha256": "79a88a3d61a8cc7e9ffbf45405d45a77195a44d7fc02c31fb7ef276911378f8c",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/select-coverage-check.cjs",
+      "before_sha256": "7777c9ca3bda73229bfcfb7ad2ad4aa827ac1f23b35193c6774823d1e7775814",
+      "after_sha256": "02c064ed50898644832891819294e779063c49de1bde6835fee8c9d4d5a68aa3",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/select-inset-check.cjs",
+      "before_sha256": "3271db313c37687d82992fb5f18c515bbb4749598ffa47a77860349905c3f7be",
+      "after_sha256": "b80e92c6f50bcd845315a61a313f9f610cbab2afed2f855230fdaad3c03e0320",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/team-browser-check.cjs",
+      "before_sha256": "d50ebf9396befbcef20643a67099959c6c0c986c09c30cbf3e3420ccd1f68eb3",
+      "after_sha256": "4220ffee3368913df4774987f8ca17102d9a48e5687a853f31af63f631775f86",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/template-spacing-check.cjs",
+      "before_sha256": "6644a13112d7625b9a07fa38295385cf6a86adc7d224f5aba0a607638c2c237c",
+      "after_sha256": "8eaee53bc97ae244897220ae97e313abb4b4d271069504c67a77e7a461aa55c9",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/warning-surfaces-check.cjs",
+      "before_sha256": "39ae45cfa67d00d2d02f18cf05c1c32e400b723a67ca6f08cab7371bf108e428",
+      "after_sha256": "8c7e35102843ef5706ef8c0651d4dcd1c9cf8e0e6bc980cd724dab42883d5402",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    },
+    {
+      "file": "work/owner-desktop/warnings-check.cjs",
+      "before_sha256": "7a412621bad05cfa59c050363ace3d5cced83936d5e11587d9722165f71b4671",
+      "after_sha256": "ea9ea97fda483546908bec4d9a5d7147e8917b34c4d18bd881a7cb63e2152d08",
+      "change": "Only exact known local Playwright module specifier mapped to an installed Cloud module"
+    }
+  ],
+  "assertions_altered": false,
+  "runtime_js_css_html_altered": false,
+  "browsers_installed_or_tested_by_adapter": false
+}

@@ -1,0 +1,12 @@
+{
+  "scope": "Synthetic isolated local workspace only; no real Cloud execution or production runner modification",
+  "checks": {
+    "dry_run_nonmutation_and_exact_match": true,
+    "apply_preserves_assertions_and_syntax": true,
+    "backup_and_runtime_immutable": true,
+    "installed_module_can_load": true,
+    "second_apply_idempotent": true
+  },
+  "passed": 5,
+  "failed": 0
+}

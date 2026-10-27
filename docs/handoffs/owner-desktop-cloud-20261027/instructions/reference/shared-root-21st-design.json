@@ -1,0 +1,256 @@
+{
+  "version": 1,
+  "project": {
+    "name": "NEVORA Owner Mobile Concept",
+    "productType": "workforce owner mobile prototype",
+    "stack": [
+      "standalone HTML",
+      "CSS custom properties",
+      "vanilla JavaScript"
+    ]
+  },
+  "sources": {
+    "tokens": [],
+    "components": [],
+    "assets": [],
+    "instructions": [
+      "DESIGN.md",
+      "PRODUCT.md"
+    ]
+  },
+  "design": {
+    "colorMode": "unknown",
+    "colors": {},
+    "typography": {},
+    "spacing": {},
+    "radius": {},
+    "shadows": {},
+    "motion": {},
+    "density": "unknown"
+  },
+  "components": {
+    "installed": [],
+    "preferredPrimitives": [],
+    "patterns": [
+      "OriginUI Button,21st id142:variants,icon alignment,focus/disabled states",
+      "Segmented Tabs,21st id26923:selected-state hierarchy and keyboard behavior",
+      "Command Menu,21st id38984:grouped search,empty-state feedback",
+      "Calendar, 21st id25146: reference metadata only for the ordinary Schedule extension; no component code installed",
+      "Calendar, 21st id34576: reference metadata only for the ordinary Schedule extension; no component code installed",
+      "Schedule notice: existing canvas/line/ink/muted roles, 16px padding, 20px Phosphor icon plus 12px gap. Neutral calendar for published-week guidance; amber warning-circle for cautions.",
+      "Owner mobile Team uses full-page profiles/editors, separate core/scheduling saves, reviewed creation, sticky task header/footer and source-based Manager scope. Existing tokens, inset native selects, native radios, Phosphor and neutral status roles are retained."
+    ]
+  },
+  "constraints": {
+    "must": [
+      "Only owner mobile concept",
+      "Fictional data; no live mutations",
+      "Real feature gates remain required in application"
+    ],
+    "avoid": []
+  },
+  "decisions": [
+    {
+      "decision": "Preserve the V1 teal, system type and Phosphor direction Jose liked; refine components and navigation",
+      "source": "user feedback, October 26 2026"
+    },
+    {
+      "decision": "Retain five mobile destinations; add contextual Tools and searchable owner feature index",
+      "status": "proposal for review"
+    },
+    {
+      "decision": "Adapt inspected 21st button/tabs/search patterns to48px primary actions and at least44px touch controls",
+      "status": "implemented in mockup; no React package installed"
+    },
+    {
+      "decision": "Jose approved both senior UI/UX refinements; date/location and continuity defects corrected, shared controls/tokens consolidated, Company settings regrouped, enlarged navigation reflows",
+      "scope": "isolated owner mobile mockup only",
+      "source": "user approval October26,2026"
+    },
+    {
+      "decision": "Ordinary foundation and Schedule extension of the user-approved teal, system type and Phosphor world; preserve existing palette, type and radii. Shared form-border and form-padding-block roles consume existing recorded values.",
+      "scope": "Fictional in-memory Owner Mobile prototype only; no global design approval, permissions, taste score or native certification.",
+      "source": "work/schedule-mobile/brief.md; canonical styles.css, schedule.css, app.js and schedule.js",
+      "implementation": "43 tool entries; corrected directory and Inbox planning; connected Schedule reviews with compact shared controls, persistent Back/Close, measured scroll clearance and synchronous modal focus. Other Owner workflows remain previews.",
+      "referenceDecision": "Calendar references 25146 and 34576 are metadata only; no new component code or package installed."
+    },
+    {
+      "decision": "Local mobile Schedule control refinement: vertically centered date range and44px arrows; font-relative navigation reflow; labeled compact44px Add shift variant; neutral shared count badges. Existing palette, type, icon family and control radii preserved.",
+      "scope": "Four annotated mobile comments; fictional Owner prototype only.",
+      "source": "outputs/mobile-controls-polish.md"
+    },
+    {
+      "decision": "Four-comment Home refinement retains staffing facts and actions, reduces icon/type weight, replaces the amber cancellation tile with a plain teal calendar, uses unit-bearing text totals on Home, and aligns the next-arrival clock/person/time with the roster. Schedule badge treatment is unchanged.",
+      "scope": "Owner mobile fictional prototype only",
+      "source": "outputs/home-polish.md"
+    },
+    {
+      "decision": "Team Add employee shares the labeled compact primary button with Schedule Add shift. Existing compact values were promoted to .btn.compact; the action uses the same18px plus and existing preview binding.",
+      "scope": "Single annotated Owner mobile control; no real employee creation",
+      "source": "outputs/team-action-polish.md"
+    },
+    {
+      "decision": "Inset18px select chevrons16px from the edge with reserved text padding; preserve native menus and restore native arrows in forced colors. Separate the published-change review from Notes using existing spacing, a divider and neutral notice, retaining disclosure and required consent. Team filters use a font-relative10rem minimum and stack when needed to retain the full selected label.",
+      "scope": "Three annotated mobile form controls; no scheduling logic or backend change",
+      "source": "outputs/shift-form-polish.md"
+    },
+    {
+      "decision": "Current per-day coverage rules gain section spacing, full-width Add/Save and subordinate Remove actions without changing data or confirmation. Shared native checkbox inputs gain22px/4px geometry and an existing Phosphor check, with forced-color fallback. Explicit unset/required/not-required lead choice is retained. Coverage-rule headers reflow at narrow enlarged-text widths to preserve whole title words.",
+      "scope": "Four annotated mobile refinements; older form model not restored",
+      "source": "outputs/coverage-rules-polish.md"
+    },
+    {
+      "decision": "Selected-day people disclosure uses a trailing18px Phosphor chevron and native details/summary. Responsive person/status rows wrap names, align statuses, and stack at narrow/enlarged widths. Original people, full status wording, date/location logic and availability action are preserved.",
+      "scope": "Owner mobile prototype component only",
+      "source": "outputs/schedule-people-polish.md"
+    },
+    {
+      "decision": "Schedule guidance and cautions share a neutral bordered notice with dark heading and muted supporting copy. Existing status/recovery and consequence/approval wording remains. Validation alerts retain red emphasis.",
+      "scope": "Owner mobile Schedule notices only; no logic or production change",
+      "source": "outputs/schedule-notice-polish.md"
+    },
+    {
+      "decision": "Home, Inbox and Updates coverage entry points share the existing 22px teal calendar-blank cue. Inbox/Updates retain a transparent 40px alignment box; the amber cancellation tile is removed. Existing scope, count, wording and navigation are unchanged.",
+      "scope": "Owner mobile coverage entry-point icon refinement",
+      "source": "outputs/inbox-coverage-polish.md"
+    },
+    {
+      "decision": "Draft shift-detail status uses tab-track background, muted ink and weight 600 with existing compact badge geometry. Explicit data-status draft/published replaces warning-class reuse; Published remains teal. Status derivation and publication behavior are unchanged.",
+      "scope": "Owner mobile Draft badge refinement",
+      "source": "outputs/draft-status-polish.md"
+    },
+    {
+      "decision": "Connected employee profiles and Add/Edit on mobile Owner. Stable revisioned fictional identities synchronize with scheduler without replacing history; explicit Manager scope, no automatic invitation, complete retained drafts and original-operation unknown recovery.",
+      "scope": "T-01 continuity and T-02\u2013T-05 prototype slice; later access/invitation/PIN and real integration excluded",
+      "source": "outputs/owner-team-review.md"
+    },
+    {
+      "decision": "Continue existing Team visual system for Owner invitations",
+      "rationale": "Owner mobile invitation status, review and results reuse Team components. Separate invitation validity, delivery and activation; masked fixed recipient,15-minute expiry, replacement/revoke consequences, original-operation recovery. Evidence: outputs/owner-invitations-review.md; source SHA256 f5f988d8166320f9d549c28b3f6e99f6d19f774181541e9580bc31e3b1e7f7c0."
+    },
+    {
+      "decision": "Extend established Owner Team patterns for assisted account recovery",
+      "rationale": "Focused verify/review/private-handoff flow, full attestation, shared textarea and native select/checkbox, neutral consequences and scoped enlarged-text focus. Invalid sample only; no installed component or global redesign. Exact evidence: outputs/owner-account-recovery-review.md; HTML579ef0c8905f442627e07c62142036cc9cc211a4ba9aa63425d0d8fa9b2bf225."
+    },
+    {
+      "decision": "Close Owner mobile Team coverage gaps in the established component system",
+      "rationale": "Current Owner directory inclusion, accent search, duplicate-name IDs, measured Team validation focus, exact employee hours target, inactive-reference retention and separate source save protocols. New five-rule Owner review reuses Team task/identity/form/disclosure/review primitives; no new palette or library. Evidence: outputs/owner-team-audit.md; final HTML2198487ad3e70265199123bdfd032386c2c2aa72307bf32a3738da61537c0dee."
+    },
+    {
+      "id": "owner-mobile-timecards-p01",
+      "description": {
+        "scope": "Isolated proposed Owner mobile Timecards P01",
+        "source": "work/owner-mobile/timecards.js",
+        "css": "work/owner-mobile/timecards.css",
+        "artifact": "outputs/nevora-owner-mobile.html",
+        "sha256": "4761f7fb0fe621b341e8f602f54ea9ef92d153a580da4ea1426e9bbe96de20bc",
+        "report": "outputs/owner-timecards-review.md",
+        "authority": "Scoped continuation; not global Nevora design authority",
+        "decisions": [
+          "Existing Team task/identity/definition/disclosure primitives",
+          "Company scope with complete employee cards and entry locations",
+          "Native full-page1\u201331day period selection and source status predicates",
+          "Recorded time includes separately displayed breaks; not payroll",
+          "Whole task title reflows at22rem;44/48px controls retained",
+          "Muted neutral guidance; small amber icons for concrete issues",
+          "Open disclosure/focus/scroll preserved on automatic refresh",
+          "Private visible time clears on background/offline/expiry/failure; fictional simulation only"
+        ]
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "fact": "project.instructions",
+      "source": "DESIGN.md"
+    },
+    {
+      "fact": "project.instructions",
+      "source": "PRODUCT.md"
+    },
+    {
+      "fact": "canonical.styles",
+      "source": "work/owner-mobile/styles.css"
+    },
+    {
+      "fact": "canonical.behavior",
+      "source": "work/owner-mobile/app.js"
+    },
+    {
+      "fact": "historical.v3.verification",
+      "source": "outputs/review-results.md"
+    },
+    {
+      "fact": "canonical.schedule.styles",
+      "source": "work/owner-mobile/schedule.css"
+    },
+    {
+      "fact": "canonical.schedule.behavior",
+      "source": "work/owner-mobile/schedule.js"
+    },
+    {
+      "fact": "schedule.stage.contract",
+      "source": "work/schedule-mobile/brief.md"
+    },
+    {
+      "fact": "final.schedule.verification.record",
+      "source": "outputs/schedule-review-results.md"
+    },
+    {
+      "fact": "frozen.artifact",
+      "source": "outputs/nevora-owner-mobile.html",
+      "sha256": "5c52f30136facbc25872e5ccd50c7815a9468d910133c106b52f6b11fde24bf7"
+    },
+    {
+      "fact": "mobile.controls.refinement.artifact",
+      "source": "outputs/nevora-owner-mobile.html",
+      "sha256": "1e421cacfcf392446619518f23c4e73e6422a82c90ef43469def1365bea5167c"
+    },
+    {
+      "fact": "home.detail.refinement.artifact",
+      "source": "outputs/nevora-owner-mobile.html",
+      "sha256": "68b4fa1e317eede7f5034043773b4917024dab50cf539ca330f1d15f7028fb99"
+    },
+    {
+      "fact": "team.action.refinement.artifact",
+      "source": "outputs/nevora-owner-mobile.html",
+      "sha256": "ae3d81e13289ad10f28cf4aaf7ea84702485b644095d5ca4629c94603d568be5"
+    },
+    {
+      "fact": "shift.form.refinement.artifact",
+      "source": "outputs/nevora-owner-mobile.html",
+      "sha256": "a4b211b88d4aafdfa72d5ab131ddf9f3600a65e6a7b0d253f30ae3bdb4ec4d45"
+    },
+    {
+      "fact": "coverage.rules.refinement.artifact",
+      "source": "outputs/nevora-owner-mobile.html",
+      "sha256": "75552ae84519b2db27e1384bd4078aa1c90133eacd20066f5b8d2eacf4439149"
+    },
+    {
+      "fact": "schedule.people.refinement.artifact",
+      "source": "outputs/nevora-owner-mobile.html",
+      "sha256": "6e572b2e711f682a3eecb0f38ff6abd546be38c261a0395ae34f71b3827a8f2c"
+    },
+    {
+      "fact": "owner.mobile.invitations.artifact",
+      "source": "outputs/nevora-owner-mobile.html",
+      "sha256": "f5f988d8166320f9d549c28b3f6e99f6d19f774181541e9580bc31e3b1e7f7c0"
+    },
+    {
+      "fact": "owner.mobile.manager.access.artifact",
+      "source": "outputs/nevora-owner-mobile.html",
+      "sha256": "ad6fa49fd55dc123cae7122b8fe651ab2325e71c860cd39da36b72b748fa7e79"
+    },
+    {
+      "fact": "owner.mobile.clocker.pin.artifact",
+      "source": "outputs/nevora-owner-mobile.html",
+      "sha256": "3bc2e7b29d0eaba60fdbefc028b09d8faef225125cf3a20d6ab6571cc122093c"
+    },
+    {
+      "fact": "owner.mobile.timecards.artifact",
+      "source": "outputs/nevora-owner-mobile.html",
+      "sha256": "4761f7fb0fe621b341e8f602f54ea9ef92d153a580da4ea1426e9bbe96de20bc"
+    }
+  ],
+  "generatedAt": "2026-10-26T22:17:51.786022+00:00"
+}

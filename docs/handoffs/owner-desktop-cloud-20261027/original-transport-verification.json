@@ -1,0 +1,40 @@
+{
+  "full_files": 11344,
+  "core_files": 7770,
+  "unique_file_contents": 5155,
+  "core_zip_integrity": true,
+  "full_archive_integrity": true,
+  "full_restored_hashes": true,
+  "core_restored_hashes": true,
+  "isolated_source_build": true,
+  "local_artifact_audit": "PASS before transport",
+  "no_cloud_upload": true,
+  "restored_full_artifact_audit": {
+    "html_sha256": "f6e3f5b3b332a61f12a2607c9a9728d7086a77747472f5217badc786ad543a3f",
+    "browser": 2601,
+    "models": 424,
+    "syntax": 109,
+    "build_inputs": 126,
+    "published_files": 4032,
+    "rulings": 10,
+    "material_open": 0,
+    "application_clean": true,
+    "G11": "planned; unstarted",
+    "audit": "PASS"
+  },
+  "runtime_sha256": "f6e3f5b3b332a61f12a2607c9a9728d7086a77747472f5217badc786ad543a3f",
+  "manifest_sha256": "651d2b03944940ad16cfb8857e107a0045fe8ed6211b227a9bfaf90a966d3f47",
+  "archives": [
+    {
+      "file": "nevora-owner-desktop-full.zip",
+      "size": 419220882,
+      "sha256": "5b003e12fbf52ce4b1ab2b546476d8867c4b23b0c72b8e9ce8dcb430e0bc2d0f"
+    },
+    {
+      "file": "nevora-owner-desktop-core.zip",
+      "size": 34798932,
+      "sha256": "ecfb33b9eda5ddd489658c143769d5397b6745ab863dcbd5ad09ef51e14cd7e3"
+    }
+  ],
+  "verified_at_utc": "2026-10-27T18:05:31.860681+00:00"
+}

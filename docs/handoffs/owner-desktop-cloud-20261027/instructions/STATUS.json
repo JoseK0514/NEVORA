@@ -1,0 +1,129 @@
+{
+  "schema": "nevora.owner-desktop.cloud-handoff-status.v1",
+  "frozen_at_utc": "2026-10-27T18:01:11.963278+00:00",
+  "runtime_sha256": "f6e3f5b3b332a61f12a2607c9a9728d7086a77747472f5217badc786ad543a3f",
+  "active_request": "Detailed portable handoff to Codex Cloud; no new feature group started during handoff",
+  "completed_groups": [
+    "G01",
+    "G02",
+    "G03",
+    "G04",
+    "G05",
+    "G06",
+    "G07",
+    "G08",
+    "G09",
+    "G10"
+  ],
+  "G10": {
+    "state": "local_prototype_finalized_and_audited",
+    "workflow_ids": [
+      "P-11",
+      "P-12",
+      "P-13",
+      "P-14",
+      "P-15",
+      "P-16"
+    ],
+    "browser_executions": 2601,
+    "browser_suites": 60,
+    "engines": [
+      "chromium",
+      "webkit",
+      "firefox"
+    ],
+    "focused_cases_per_engine": 48,
+    "responsive_renders_per_engine": 28,
+    "model_cases": 424,
+    "syntax_checks": 109,
+    "build_inputs": 126,
+    "native_raw_captures": 8,
+    "artifact_audit": "PASS",
+    "open_material_findings": 0,
+    "new_deferred_minors": 0,
+    "independent_post_fix_certified": false,
+    "report": "outputs/owner-desktop/group-10-payroll-runs-review.md"
+  },
+  "published_coverage": {
+    "owner_workflows": 96,
+    "interactive": 72,
+    "partial": 3,
+    "pending_detailed_design": 21,
+    "role_exclusions_additional": 4
+  },
+  "next_group": {
+    "id": "G11",
+    "name": "Statements and payment-job visibility",
+    "state": "planned_unstarted",
+    "workflow_ids": [
+      "P-17",
+      "P-18",
+      "F-04"
+    ],
+    "authorization": "Resume when Jose authorizes the next bounded group; the latest request is the handoff"
+  },
+  "remaining_groups": [
+    "G11",
+    "G12",
+    "G13",
+    "G14",
+    "G15",
+    "G16"
+  ],
+  "cross_cutting": "Q-01 through Q-12 remain global acceptance requirements; not globally certified",
+  "deferred_minor": "Inherited G08 singular/plural count copy: 1 people / 1 original batches. Values and behavior correct.",
+  "actual_application": {
+    "reference_commit": "46e202786863279302026ee03a0e225c359fa55c",
+    "read_only_clean_detached_at_audit": true,
+    "integrated": false,
+    "deployed": false
+  },
+  "mobile": {
+    "separate_owner": true,
+    "read_only": true,
+    "latest_observed_batch": "3.5 Features and words complete locally",
+    "next_observed_batch": "3.6 Company/location operating policies",
+    "approval_transferred": false,
+    "inventory_counts_are_separate": true
+  },
+  "workspace": {
+    "git_repository": false,
+    "branch": null,
+    "commit_created": false,
+    "pushed": false,
+    "deployment_performed": false
+  },
+  "transfer": {
+    "prepared_locally": true,
+    "cloud_task_created": false,
+    "uploaded_to_cloud": false,
+    "cloud_environment_verified": false,
+    "file_availability_required": true,
+    "full_archive": "handoff/deliverables/nevora-owner-desktop-full.zip",
+    "optional_core_archive": "handoff/deliverables/nevora-owner-desktop-core.zip",
+    "core_is_complete_evidence": false,
+    "remaining_pinned_application_reference_files": 26
+  },
+  "owned_paths": [
+    "work/owner-desktop",
+    "outputs/owner-desktop",
+    "handoff/codex-cloud-owner-desktop",
+    "CODEX-CLOUD-HANDOFF.md"
+  ],
+  "read_only_paths": [
+    "work/owner-mobile",
+    "work/schedule-mobile",
+    "outputs/nevora-owner-mobile.html",
+    "DESIGN.md",
+    "PRODUCT.md"
+  ],
+  "evidence_cutoff": "handoff/codex-cloud-owner-desktop/verification-cutoff.json",
+  "source_reference_proof": "handoff/codex-cloud-owner-desktop/reference-source-at-handoff.json",
+  "limits": [
+    "Fictional in-memory prototype; no real payroll/tax/payment/provider/bank/employee/customer mutation",
+    "No server authorization/database concurrency/durability certification",
+    "No actual application or mobile feature parity certification",
+    "No physical-device/screen-reader/forced-color/every-OS-picker certification",
+    "No plugins/authentication or paid services installed by this handoff"
+  ]
+}

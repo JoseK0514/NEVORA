@@ -1,0 +1,409 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-26T22:17:51.786022+00:00",
+  "title": "Design System: Nevora \u2014 PROPOSED OWNER MOBILE MOCKUP",
+  "extensions": {
+    "colorMeta": {
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Canvas"
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink"
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted"
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line"
+      },
+      "teal": {
+        "role": "primary",
+        "displayName": "Teal"
+      },
+      "teal-press": {
+        "role": "primary",
+        "displayName": "Teal Press"
+      },
+      "teal-wash": {
+        "role": "primary",
+        "displayName": "Teal Wash"
+      },
+      "amber": {
+        "role": "semantic",
+        "displayName": "Amber"
+      },
+      "amber-wash": {
+        "role": "semantic",
+        "displayName": "Amber Wash"
+      },
+      "focus": {
+        "role": "semantic",
+        "displayName": "Focus"
+      },
+      "red": {
+        "displayName": "Red",
+        "role": "semantic"
+      },
+      "red-wash": {
+        "displayName": "Red Wash",
+        "role": "semantic"
+      },
+      "search-border": {
+        "displayName": "Search Border",
+        "role": "neutral"
+      },
+      "tab-track": {
+        "displayName": "Tab Track",
+        "role": "neutral"
+      },
+      "preview-ink": {
+        "displayName": "Preview Ink",
+        "role": "neutral"
+      },
+      "contrast-ink": {
+        "displayName": "Contrast Ink",
+        "role": "neutral"
+      },
+      "contrast-line": {
+        "displayName": "Contrast Line",
+        "role": "neutral"
+      },
+      "navigation-muted": {
+        "displayName": "Navigation Muted",
+        "role": "neutral"
+      },
+      "selection-surface": {
+        "displayName": "Selection Surface",
+        "role": "neutral"
+      },
+      "selection-ink": {
+        "displayName": "Selection Ink",
+        "role": "neutral"
+      },
+      "scroll-thumb": {
+        "displayName": "Scroll Thumb",
+        "role": "neutral"
+      },
+      "staffing-surface": {
+        "displayName": "Staffing Surface",
+        "role": "neutral"
+      },
+      "staffing-ink": {
+        "displayName": "Staffing Ink",
+        "role": "neutral"
+      },
+      "secondary-border": {
+        "displayName": "Secondary Border",
+        "role": "neutral"
+      },
+      "chevron-ink": {
+        "displayName": "Chevron Ink",
+        "role": "neutral"
+      },
+      "avatar-surface": {
+        "displayName": "Avatar Surface",
+        "role": "neutral"
+      },
+      "avatar-ink": {
+        "displayName": "Avatar Ink",
+        "role": "neutral"
+      },
+      "avatar-blue-surface": {
+        "displayName": "Avatar Blue Surface",
+        "role": "neutral"
+      },
+      "avatar-blue-ink": {
+        "displayName": "Avatar Blue Ink",
+        "role": "neutral"
+      },
+      "avatar-sand-surface": {
+        "displayName": "Avatar Sand Surface",
+        "role": "neutral"
+      },
+      "avatar-sand-ink": {
+        "displayName": "Avatar Sand Ink",
+        "role": "neutral"
+      },
+      "notice-ink": {
+        "displayName": "Notice Ink",
+        "role": "neutral"
+      },
+      "toast-surface": {
+        "displayName": "Toast Surface",
+        "role": "neutral"
+      },
+      "inline-feedback-ink": {
+        "displayName": "Inline Feedback Ink",
+        "role": "neutral"
+      },
+      "toast-undo": {
+        "displayName": "Toast Undo",
+        "role": "neutral"
+      },
+      "review-ink": {
+        "displayName": "Review Ink",
+        "role": "neutral"
+      },
+      "review-border": {
+        "displayName": "Review Border",
+        "role": "neutral"
+      },
+      "form-border": {
+        "displayName": "Form Border",
+        "role": "neutral",
+        "purpose": "Existing form border now consumed by shared --form-border in inputs, selects and Schedule textareas; no palette change."
+      }
+    },
+    "typographyMeta": {
+      "page": {
+        "displayName": "Page",
+        "purpose": "Canonical page role in the Owner Mobile prototype."
+      },
+      "section": {
+        "displayName": "Section",
+        "purpose": "Canonical section role in the Owner Mobile prototype."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Canonical title role in the Owner Mobile prototype."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Canonical body role in the Owner Mobile prototype."
+      },
+      "supporting": {
+        "displayName": "Supporting",
+        "purpose": "Canonical supporting role in the Owner Mobile prototype."
+      },
+      "action": {
+        "displayName": "Action",
+        "purpose": "Canonical action role in the Owner Mobile prototype."
+      },
+      "navigation": {
+        "displayName": "Navigation",
+        "purpose": "Canonical navigation role in the Owner Mobile prototype."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Canonical caption role in the Owner Mobile prototype."
+      },
+      "sheet": {
+        "displayName": "Sheet",
+        "purpose": "Canonical sheet role in the Owner Mobile prototype."
+      },
+      "badge-count": {
+        "displayName": "Badge Count",
+        "purpose": "Nonessential compact counter; the count is repeated in a larger heading and accessible label."
+      }
+    },
+    "shadows": [
+      {
+        "name": "sheet",
+        "value": "0 -12px 40px #16362b12",
+        "purpose": "Detail sheet above the Home context."
+      },
+      {
+        "name": "toast",
+        "value": "0 4px 18px #12352426",
+        "purpose": "Home confirmation feedback."
+      },
+      {
+        "name": "review-frame",
+        "value": "0 16px 64px rgba(24,24,24,.08)",
+        "purpose": "Prototype review canvas only."
+      },
+      {
+        "name": "primary-button",
+        "value": "inset 0 1px 0 #ffffff1a,0 1px 2px #182a220d",
+        "purpose": "Primary action highlight and subtle lift."
+      },
+      {
+        "name": "selected-tab",
+        "value": "0 1px 3px #17262214",
+        "purpose": "Selected Inbox segment."
+      }
+    ],
+    "motion": [
+      {
+        "name": "sheet-in",
+        "value": "sheet-in .22s cubic-bezier(.2,.8,.2,1)",
+        "purpose": "TranslateY 24px to 0; opacity .7 to 1."
+      },
+      {
+        "name": "loading",
+        "value": "loading 1s ease-in-out infinite alternate",
+        "purpose": "Skeleton opacity alternates to .45."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation:none!important;transition:none!important;scroll-behavior:auto!important",
+        "purpose": "Applied to all elements and pseudo-elements in reduced-motion mode."
+      },
+      {
+        "name": "button-state",
+        "value": "background 160ms,transform 160ms",
+        "purpose": "Button hover and 1px pressed translation."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "narrow-phone-max",
+        "value": "359px"
+      },
+      {
+        "name": "review-frame-min",
+        "value": "700px"
+      },
+      {
+        "name": "toolbar-hidden-max",
+        "value": "1000px"
+      }
+    ],
+    "ownerMobileTimecards": {
+      "scope": "Isolated proposed Owner mobile Timecards P01",
+      "source": "work/owner-mobile/timecards.js",
+      "css": "work/owner-mobile/timecards.css",
+      "artifact": "outputs/nevora-owner-mobile.html",
+      "sha256": "4761f7fb0fe621b341e8f602f54ea9ef92d153a580da4ea1426e9bbe96de20bc",
+      "report": "outputs/owner-timecards-review.md",
+      "authority": "Scoped continuation; not global Nevora design authority",
+      "decisions": [
+        "Existing Team task/identity/definition/disclosure primitives",
+        "Company scope with complete employee cards and entry locations",
+        "Native full-page1\u201331day period selection and source status predicates",
+        "Recorded time includes separately displayed breaks; not payroll",
+        "Whole task title reflows at22rem;44/48px controls retained",
+        "Muted neutral guidance; small amber icons for concrete issues",
+        "Open disclosure/focus/scroll preserved on automatic refresh",
+        "Private visible time clears on background/offline/expiry/failure; fictional simulation only"
+      ]
+    }
+  },
+  "components": [
+    {
+      "name": "Primary action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Source-derived canonical V3 visual sample; application behavior stays in app.js.",
+      "html": "<button class=\"ds-btn\">Review open shifts</button>",
+      "css": ":host{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-size:1rem;line-height:1.45;color:var(--ink, #172622)}\nbutton,input,select{font:inherit}button{cursor:pointer;border:0;color:inherit}button:disabled{cursor:wait;opacity:.65}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--focus, #087fca);outline-offset:3px}\n.ds-btn{display: inline-flex; align-items: center; justify-content: center; gap: var(--s2, 8px); min-height: var(--control-height, 48px); padding: var(--s3, 12px) 18px; border-radius: var(--r-control, 12px); font-size: var(--text-body, 1rem); font-weight: 620; background: var(--teal, #0b6e69); color: white; line-height: 1.4; transition: background var(--motion-fast, 160ms),transform var(--motion-fast, 160ms); letter-spacing: -.01em; box-shadow: inset 0 1px 0 #ffffff1a,0 1px 2px #182a220d;}\n.ds-btn:hover{background: var(--teal-press, #07534f);}\n.ds-btn:active{transform: translateY(1px);}\n@media(prefers-reduced-motion:reduce){.ds-btn{transition:none}}"
+    },
+    {
+      "name": "Secondary action",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Source-derived canonical V3 visual sample; application behavior stays in app.js.",
+      "html": "<button class=\"ds-btn ds-secondary\">Decline</button>",
+      "css": ":host{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-size:1rem;line-height:1.45;color:var(--ink, #172622)}\nbutton,input,select{font:inherit}button{cursor:pointer;border:0;color:inherit}button:disabled{cursor:wait;opacity:.65}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--focus, #087fca);outline-offset:3px}\n.ds-btn{display: inline-flex; align-items: center; justify-content: center; gap: var(--s2, 8px); min-height: var(--control-height, 48px); padding: var(--s3, 12px) 18px; border-radius: var(--r-control, 12px); font-size: var(--text-body, 1rem); font-weight: 620; background: var(--teal, #0b6e69); color: white; line-height: 1.4; transition: background var(--motion-fast, 160ms),transform var(--motion-fast, 160ms); letter-spacing: -.01em; box-shadow: inset 0 1px 0 #ffffff1a,0 1px 2px #182a220d;}\n.ds-btn.ds-secondary{background: var(--surface, #fff); border: 1px solid #cbd7d1; color: var(--teal, #0b6e69);}\n.ds-btn.ds-secondary:hover{background: var(--teal-wash, #eaf4f1);}\n.ds-btn:active{transform: translateY(1px);}\n.ds-btn.ds-secondary{box-shadow: none;}\n@media(prefers-reduced-motion:reduce){.ds-btn{transition:none}}"
+    },
+    {
+      "name": "Labeled Tools action",
+      "kind": "button",
+      "refersTo": "tools-button",
+      "description": "Shared labeled secondary entry to Schedule, Inbox and Team tools.",
+      "html": "<button class=\"ds-tools-button\"><svg class=\"ds-icon\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M40,88H73a32,32,0,0,0,62,0h81a8,8,0,0,0,0-16H135a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16Zm64-24A16,16,0,1,1,88,80,16,16,0,0,1,104,64ZM216,168H199a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16h97a32,32,0,0,0,62,0h17a8,8,0,0,0,0-16Zm-48,24a16,16,0,1,1,16-16A16,16,0,0,1,168,192Z\"/></svg>Tools</button>",
+      "css": ":host{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-size:1rem;line-height:1.45;color:var(--ink, #172622)}\nbutton,input,select{font:inherit}button{cursor:pointer;border:0;color:inherit}button:disabled{cursor:wait;opacity:.65}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--focus, #087fca);outline-offset:3px}\nsvg.ds-icon{width: 24px; height: 24px; fill: currentColor; flex: none; vertical-align: middle;}\n.ds-tools-button{background: var(--surface, #fff); border: 1px solid var(--search-border, #d5dfd9); min-height: var(--control-compact, 44px); border-radius: var(--r-control, 12px); padding: 9px var(--s3, 12px); font-size: var(--text-sm, .875rem); font-weight: 600; color: var(--teal, #0b6e69); display: inline-flex; align-items: center; gap: 6px; min-width: var(--control-compact, 44px); width: auto; height: auto; flex: none; justify-content: center; line-height: 1.4;}\n.ds-tools-button .ds-icon{width: 18px; height: 18px;}\n.ds-tools-button:hover{background: var(--teal-wash, #eaf4f1);}"
+    },
+    {
+      "name": "Priority card",
+      "kind": "card",
+      "refersTo": "card-priority",
+      "description": "Source-derived canonical V3 visual sample; application behavior stays in app.js.",
+      "html": "<article class=\"ds-card ds-priority\"><h3>2 shifts need coverage</h3><p>Today \u00b7 Aguada and Rinc\u00f3n</p></article>",
+      "css": ":host{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-size:1rem;line-height:1.45;color:var(--ink, #172622)}\nbutton,input,select{font:inherit}button{cursor:pointer;border:0;color:inherit}button:disabled{cursor:wait;opacity:.65}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--focus, #087fca);outline-offset:3px}\n.ds-card{background: var(--surface, #fff); border-radius: var(--r-card, 16px); overflow: hidden;}\n.ds-priority{padding: 18px; border: 1px solid var(--line, #e3e9e6);}\n.ds-priority p{color: var(--muted, #5f6d68); font-size: var(--text-sm, .875rem); margin-top: var(--s1, 4px);}\nh3{margin:0;font-size:var(--text-title, 1.125rem);line-height:1.35;letter-spacing:-.015em;font-weight:650}.ds-priority p{margin-bottom:0}@media(max-width:359px){.ds-priority{padding:var(--s4, 16px)}}"
+    },
+    {
+      "name": "Coverage tag",
+      "kind": "chip",
+      "refersTo": "coverage-tag",
+      "description": "Source-derived canonical V3 visual sample; application behavior stays in app.js.",
+      "html": "<span class=\"ds-pill\">Unassigned \u00b7 4 hours</span>",
+      "css": ":host{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-size:1rem;line-height:1.45;color:var(--ink, #172622)}\nbutton,input,select{font:inherit}button{cursor:pointer;border:0;color:inherit}button:disabled{cursor:wait;opacity:.65}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--focus, #087fca);outline-offset:3px}\n.ds-pill{background: var(--amber-wash, #fff4e3); color: var(--amber, #845417); font-size: var(--text-caption, .75rem); padding: var(--s1, 4px) var(--s2, 8px); border-radius: var(--r-small, 8px); margin-top: 6px; display: inline-block;}\n"
+    },
+    {
+      "name": "Five destination navigation",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "Canonical V3 navigation, including expanded 3+2 and two-column class variants. The static sample shows the default state; app.js measures label widths and selects the layout.",
+      "html": "<nav class=\"ds-bottom-nav\" aria-label=\"Main navigation\"><button class=\"ds-nav-item\" aria-current=\"page\"><span class=\"ds-nav-icon\"><svg class=\"ds-icon\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z\"/></svg></span><span>Home</span></button><button class=\"ds-nav-item\"><span class=\"ds-nav-icon\"><svg class=\"ds-icon\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z\"/></svg></span><span>Schedule</span></button><button class=\"ds-nav-item\"><span class=\"ds-nav-icon\"><svg class=\"ds-icon\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,16V152h-28.7A15.86,15.86,0,0,0,168,156.69L148.69,176H107.31L88,156.69A15.86,15.86,0,0,0,76.69,152H48V48Zm0,160H48V168H76.69L96,187.31A15.86,15.86,0,0,0,107.31,192h41.38A15.86,15.86,0,0,0,160,187.31L179.31,168H208v40Z\"/></svg></span><span>Inbox</span></button><button class=\"ds-nav-item\"><span class=\"ds-nav-icon\"><svg class=\"ds-icon\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z\"/></svg></span><span>Team</span></button><button class=\"ds-nav-item\"><span class=\"ds-nav-icon\"><svg class=\"ds-icon\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm12-88a12,12,0,1,1-12-12A12,12,0,0,1,140,128Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,184,128Zm-88,0a12,12,0,1,1-12-12A12,12,0,0,1,96,128Z\"/></svg></span><span>More</span></button></nav>",
+      "css": ":host{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-size:1rem;line-height:1.45;color:var(--ink, #172622)}\nbutton,input,select{font:inherit}button{cursor:pointer;border:0;color:inherit}button:disabled{cursor:wait;opacity:.65}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--focus, #087fca);outline-offset:3px}\nsvg.ds-icon{width: 24px; height: 24px; fill: currentColor; flex: none; vertical-align: middle;}\n.ds-bottom-nav{height: auto; padding: var(--s2, 8px) var(--s2, 8px) calc(var(--s3, 12px) + env(safe-area-inset-bottom,0px)); position: absolute; left: 0; right: 0; bottom: 0; z-index: var(--z-nav, 10); display: grid; background: var(--surface, #fff); border-top: 1px solid var(--line, #e3e9e6); min-height: calc(4.875rem + env(safe-area-inset-bottom,0px)); grid-template-columns: repeat(5,minmax(0,1fr)); align-items: stretch;}\n.ds-nav-item{position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 54px; background: none; color: #6a7770; font-size: var(--text-caption, .75rem); font-weight: 550; border-radius: var(--r-control, 12px); padding: 3px 2px; min-width: 0; line-height: 1.45; overflow-wrap: anywhere;}\n.ds-nav-item[aria-current=page]{color: var(--teal, #0b6e69); font-weight: 650;}\n.ds-nav-item:hover{background: none;}\n.ds-nav-icon{height: 30px; min-width: var(--control-compact, 44px); display: grid; place-items: center; border-radius: var(--r-icon, 10px); transition: background var(--motion-fast, 160ms); flex-shrink: 0;}\n.ds-nav-item[aria-current=page] .ds-nav-icon{background: var(--teal-wash, #eaf4f1);}\n.ds-nav-item>span:not(.ds-nav-badge){max-width: 100%; white-space: normal;}\n.ds-bottom-nav{position:relative;box-sizing:border-box}@media(prefers-reduced-motion:reduce){.ds-nav-icon{transition:none}}\n.ds-bottom-nav--expanded { grid-template-columns: repeat(6,minmax(0,1fr)); row-gap: var(--s2, 8px); }\n.ds-bottom-nav--expanded .ds-nav-item { grid-column: span 2; overflow-wrap: normal; }\n.ds-bottom-nav--expanded .ds-nav-item:nth-last-child(-n+2) { grid-column: span 3; }\n.ds-bottom-nav--two-columns { grid-template-columns: repeat(2,minmax(0,1fr)); }\n.ds-bottom-nav--two-columns .ds-nav-item { grid-column: auto; }\n.ds-bottom-nav--two-columns .ds-nav-item:last-child { grid-column: span 2; }"
+    },
+    {
+      "name": "Tool search",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "Source-derived canonical V3 visual sample; application behavior stays in app.js.",
+      "html": "<label class=\"ds-search-field\"><svg class=\"ds-icon\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z\"/></svg><input type=\"search\" aria-label=\"Find a tool or setting\" placeholder=\"Find a tool or setting\"></label>",
+      "css": ":host{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-size:1rem;line-height:1.45;color:var(--ink, #172622)}\nbutton,input,select{font:inherit}button{cursor:pointer;border:0;color:inherit}button:disabled{cursor:wait;opacity:.65}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--focus, #087fca);outline-offset:3px}\nsvg.ds-icon{width: 24px; height: 24px; fill: currentColor; flex: none; vertical-align: middle;}\n.ds-search-field{display: flex; align-items: center; gap: 10px; background: var(--surface, #fff); border: 1px solid var(--search-border, #d5dfd9); border-radius: var(--r-control, 12px); min-height: var(--control-height, 48px); padding: 0 14px;}\n.ds-search-field>.ds-icon{color: var(--muted, #5f6d68); width: 20px; height: 20px;}\n.ds-search-field input{width: 100%; min-width: 0; border: 0; background: none; outline: none; min-height: 46px; font-size: var(--text-body, 1rem); color: var(--ink, #172622); padding: 0;}\n.ds-search-field:focus-within{border-color: var(--teal, #0b6e69); outline: 3px solid var(--focus, #087fca); outline-offset: 2px;}\n.ds-search-field input:focus-visible{outline: none;}\n.ds-search-field input::placeholder{color: var(--muted, #5f6d68);}\n\ninput{accent-color:var(--teal, #0b6e69);caret-color:var(--teal, #0b6e69)}"
+    },
+    {
+      "name": "Inbox segments",
+      "kind": "nav",
+      "refersTo": "segmented-tabs",
+      "description": "Source-derived canonical V3 visual sample; application behavior stays in app.js.",
+      "html": "<div class=\"ds-filter-tabs\" role=\"tablist\" aria-label=\"Inbox filters\"><button role=\"tab\" aria-selected=\"true\">All</button><button role=\"tab\" aria-selected=\"false\" tabindex=\"-1\">Today</button><button role=\"tab\" aria-selected=\"false\" tabindex=\"-1\">Requests</button></div>",
+      "css": ":host{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-size:1rem;line-height:1.45;color:var(--ink, #172622)}\nbutton,input,select{font:inherit}button{cursor:pointer;border:0;color:inherit}button:disabled{cursor:wait;opacity:.65}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--focus, #087fca);outline-offset:3px}\n.ds-filter-tabs{display: flex; padding: var(--s1, 4px); background: var(--tab-track, #e8eeea); border-radius: var(--r-control, 12px); gap: 2px; width: 100%;}\n.ds-filter-tabs button{min-height: var(--control-compact, 44px); min-width: 0; flex: 1; background: none; border-radius: var(--r-icon, 10px); font-size: var(--text-sm, .875rem); color: var(--muted, #5f6d68); font-weight: 550; white-space: normal; overflow-wrap: anywhere; padding: var(--s2, 8px) var(--s1, 4px);}\n.ds-filter-tabs button[aria-selected=true]{background: var(--surface, #fff); color: var(--ink, #172622); font-weight: 650; box-shadow: 0 1px 3px #17262214;}\n.ds-filter-tabs button:hover{color: var(--teal, #0b6e69);}\n"
+    },
+    {
+      "name": "Grouped owner tools",
+      "kind": "custom",
+      "refersTo": "tool-list",
+      "description": "Source-derived canonical V3 visual sample; application behavior stays in app.js.",
+      "html": "<div class=\"ds-tool-list\"><button class=\"ds-tool-row\"><span class=\"ds-tool-icon\"><svg class=\"ds-icon\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Zm-32-80a8,8,0,0,1-8,8H96a8,8,0,0,1,0-16h64A8,8,0,0,1,168,136Zm0,32a8,8,0,0,1-8,8H96a8,8,0,0,1,0-16h64A8,8,0,0,1,168,168Z\"/></svg></span><span class=\"ds-tool-label\"><strong>Timecards</strong><p>Review and approve hours</p></span><svg class=\"ds-icon ds-chevron\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z\"/></svg></button></div>",
+      "css": ":host{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-size:1rem;line-height:1.45;color:var(--ink, #172622)}\nbutton,input,select{font:inherit}button{cursor:pointer;border:0;color:inherit}button:disabled{cursor:wait;opacity:.65}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--focus, #087fca);outline-offset:3px}\nsvg.ds-icon{width: 24px; height: 24px; fill: currentColor; flex: none; vertical-align: middle;}\n.ds-chevron{width: 18px!important; height: 18px!important; margin-left: auto; color: #7a8882; flex: none;}\n.ds-tool-list{background: var(--surface, #fff); border: 1px solid var(--line, #e3e9e6); border-radius: var(--r-card, 16px); padding: 0 var(--row-padding, 16px);}\n.ds-tool-row{display: flex; align-items: center; gap: 13px; width: 100%; text-align: left; min-height: var(--row-height, 72px); padding: 14px 0; background: none;}\n.ds-tool-row+.ds-tool-row{border-top: 1px solid var(--line, #e3e9e6);}\n.ds-tool-icon{width: 36px; height: 36px; display: grid; place-items: center; color: var(--teal, #0b6e69); flex: none; border-radius: var(--r-icon, 10px); background: var(--teal-wash, #eaf4f1);}\n.ds-tool-icon>.ds-icon{width: 21px; height: 21px;}\n.ds-tool-row strong{font-size: var(--text-body, 1rem); font-weight: 620; display: block; letter-spacing: -.015em;}\n.ds-tool-row p{font-size: var(--text-sm, .875rem); color: var(--muted, #5f6d68); margin-top: 2px; line-height: 1.4;}\n.ds-tool-row .ds-chevron{width: 16px!important; height: 16px!important;}\n.ds-tool-row:hover{background: #fbfdfc;}\n.ds-tool-row:active{background: var(--teal-wash, #eaf4f1);}\n.ds-tool-label{flex: 1; min-width: 0;}\n.ds-tool-row p{margin-bottom:0}@media(max-width:359px){.ds-tool-list{padding:0 14px}.ds-tool-row{gap:11px}.ds-tool-icon{width:32px;height:32px}}"
+    },
+    {
+      "name": "Sample form field",
+      "kind": "input",
+      "refersTo": "form-field",
+      "description": "Source-derived canonical V3 visual sample; application behavior stays in app.js.",
+      "html": "<div class=\"ds-form-field\"><label for=\"ds-start\">Start time</label><input id=\"ds-start\" type=\"time\" value=\"14:00\"></div>",
+      "css": ":host{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-size:1rem;line-height:1.45;color:var(--ink, #172622)}\nbutton,input,select{font:inherit}button{cursor:pointer;border:0;color:inherit}button:disabled{cursor:wait;opacity:.65}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--focus, #087fca);outline-offset:3px}\n.ds-form-field{margin-top: 18px;}\n.ds-form-field label{display: block; font-size: var(--text-sm, .875rem); font-weight: 620; margin-bottom: var(--s2, 8px);}\n.ds-form-field input{display: block; width: 100%; min-height: var(--control-height, 48px); border: 1px solid #ccd8d1; background: white; border-radius: var(--r-control, 12px); color: var(--ink, #172622); padding: 10px var(--s3, 12px); font-size: var(--text-body, 1rem); min-width: 0; max-width: 100%;}\n\ninput{accent-color:var(--teal, #0b6e69);caret-color:var(--teal, #0b6e69)}"
+    }
+  ],
+  "narrative": {
+    "overview": "This is a PROPOSED OWNER MOBILE MOCKUP, not approved global Nevora design authority. The foundation and Schedule work is an ordinary extension of Jose\u2019s approved modern, clean, premium Gusto/Homebase direction, retaining the NEVORA wordmark, teal identity, system type and Phosphor icons. No taste score or replacement brand metaphor is established.\n\nCanonical source is `work/owner-mobile/template.html`, `styles.css`, `schedule.css`, `app.js` and `schedule.js`; `build.py` embeds these five files into `outputs/nevora-owner-mobile.html`. The earlier `work/build_mockup.py` and `work/refine_v2.py` are historical. The stage boundary is `work/schedule-mobile/brief.md`; final verification is recorded separately in `outputs/schedule-review-results.md`. The feature catalog records route and capability boundaries; it does not establish authorization. This document does not authorize application changes or replace the production DESIGN.MD.\n\nThe later four-comment mobile control refinement is recorded separately in `outputs/mobile-controls-polish.md`; the earlier Schedule-stage report retains its frozen source hash.\n\nThe subsequent Home detail refinement has separate evidence in `outputs/home-polish.md`. Earlier reports remain frozen to their own artifact hashes.\n\nThe later single Team header action refinement is recorded in `outputs/team-action-polish.md`.\n\nThe later select and published-change refinement is recorded in `outputs/shift-form-polish.md`.\n\nThe coverage-rules and checkbox refinement is recorded in `outputs/coverage-rules-polish.md`.",
+    "keyCharacteristics": [
+      "System typography and consumed spacing roles across five owner destinations.",
+      "Teal actions and selection; amber coverage and red attendance states carry text and icons.",
+      "Grouped tools, adaptive navigation and explicit return context.",
+      "Compact day/week browsing and focused Schedule reviews using the existing control and surface roles.",
+      "Centered date controls, a labeled compact Schedule primary action and neutral section counts reuse the existing shared roles.",
+      "Home uses a restrained staffing summary, a plain teal coverage calendar, unit-bearing text totals and a two-line upcoming-arrival row; Schedule keeps its count badges.",
+      "Team Add employee and Schedule Add shift share one labeled compact primary action, centered with the heading and wrapping at enlarged text.",
+      "Native single selects share an inset Phosphor chevron; the published-change review is separated from Notes with a neutral notice and unchanged required consent.",
+      "Coverage periods have clear section spacing and full-width Add/Save with subordinate Remove; native checkbox inputs share a22px box,4px corners and the existing Phosphor check.",
+      "Selected-day people use aligned wrapping rows and a native disclosure with the shared Phosphor chevron."
+    ],
+    "rules": [
+      "Owner mobile Schedule notices use a neutral canvas/line surface, dark heading, muted supporting text, 16px padding and a 20px Phosphor icon with 12px gap. Published-week status uses a muted calendar; real cautions retain amber warning-circle. Preserve all consequence text and required approvals; keep validation errors red. Scoped evidence: outputs/schedule-notice-polish.md.",
+      "Coverage entry-point icons share the Home teal calendar-blank cue without a colored tile or cancellation mark. Inbox/Updates keep a 40px transparent alignment box around the 22px icon; preserve text columns, counts and destinations. Evidence: outputs/inbox-coverage-polish.md.",
+      "Draft is a neutral lifecycle status: use tab-track/muted roles at weight 600 with 4px/8px badge padding and 8px corners. Published retains teal/teal-wash. Preserve explicit status words and publication behavior. Evidence: outputs/draft-status-polish.md.",
+      "Owner mobile Team profiles/editors preserve the existing visual world: full mobile pages, readable definition rows, separate Details/Scheduling saves, sticky task navigation and deliberate review. Native radios distinguish management scope from location checkboxes. Draft/version retention, stable person identity and explicit consequences are required; creation is not an invitation. Evidence: outputs/owner-team-review.md.",
+      "Owner mobile invitation status, review and results reuse Team components. Separate invitation validity, delivery and activation; masked fixed recipient,15-minute expiry, replacement/revoke consequences, original-operation recovery. Evidence: outputs/owner-invitations-review.md; source SHA256 f5f988d8166320f9d549c28b3f6e99f6d19f774181541e9580bc31e3b1e7f7c0.",
+      "Owner mobile Manager access inherits Team/invitation components: one Manager-only profile entry, explicit scope choices, reviewed assignment/revocation, collapsed history and whole-word enlarged-text headers. Preserve original-command recovery and live clean-status refresh. Evidence: outputs/owner-manager-access-review.md; SHA256 ad6fa49fd55dc123cae7122b8fe651ab2325e71c860cd39da36b72b748fa7e79.",
+      "Owner mobile Clocker PIN inherits existing Team/form roles: status, consequence review before digits, two masked four-digit fields and metadata-only result/recovery. Scope sticky-header clearance to the form; never expose existing PIN or imply UUID replay. Evidence outputs/owner-clocker-pin-review.md; SHA256 3bc2e7b29d0eaba60fdbefc028b09d8faef225125cf3a20d6ab6571cc122093c.",
+      "Owner mobile account recovery continues Team task/identity/form/review primitives: full-width native textarea, full preset attestation disclosure, invalid sample-code handoff, measured label-aware focus and distinct cleared/hidden/expired/unconfirmed states. Scope/evidence: outputs/owner-account-recovery-review.md; no global design change.",
+      "Owner mobile Team audit retains the established design system: contextual duplicate-name IDs, measured validation focus, exact person-hour anchor and native five-rule operational review with explicit applicability and an atomic independent save. Uncertain retained entries never imply rollback. Scope/evidence: outputs/owner-team-audit.md."
+    ],
+    "dos": [
+      "Do treat these values as a proposal scoped to the isolated Owner Mobile mockup.",
+      "Do preserve the NEVORA wordmark, teal identity and semantic attention colors.",
+      "Do use the canonical source roles and retain focus, text resizing and reduced-motion behavior.",
+      "Do distinguish a sample decision or preview from a verified staffing check or real operation."
+    ],
+    "donts": [
+      "Don\u2019t promote the proposal to approved global Nevora authority without review.",
+      "Don\u2019t recreate stale V2 overrides, duplicate control-radius tokens or fixed navigation-height assumptions.",
+      "Don\u2019t claim production verification, formal accessibility certification or a Tastemaker score from this record."
+    ]
+  }
+}

@@ -1,0 +1,417 @@
+{
+  "purpose": "Read-only instruction continuity; no plugins/tools/runtime/authentication installed or certified",
+  "skills": [
+    {
+      "name": "21st-design-sync",
+      "original_path": "/Users/josek0514/.codex/plugins/cache/21st/21st/0.5.0/skills/21st-design-sync",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/21st-design-sync/SKILL.md",
+          "sha256": "65cc94c842e066f69d8914af3dd94923545418b28e1fb23059473bff52bd0fe4"
+        }
+      ]
+    },
+    {
+      "name": "21st-ui-build",
+      "original_path": "/Users/josek0514/.codex/plugins/cache/21st/21st/0.5.0/skills/21st-ui-build",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/21st-ui-build/SKILL.md",
+          "sha256": "151dbc3e97289a4ba945438f6552c0f597a40d8b5b1dc5d917dd9a5b65389641"
+        }
+      ]
+    },
+    {
+      "name": "mobbin-design",
+      "original_path": "/Users/josek0514/.codex/skills/mobbin-design",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/mobbin-design/SKILL.md",
+          "sha256": "245763d2eaeb5a27706456ae575ca8df553d5f953f170f5b549c45db1bafce0b"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/mobbin-design/references/DESIGN.md",
+          "sha256": "e4d02866aa9222ad64e22b22a61a8aeb956a7e29fbbe800321d08aecc026b8f2"
+        }
+      ]
+    },
+    {
+      "name": "no-ai-slop",
+      "original_path": "/Users/josek0514/.codex/skills/no-ai-slop",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/no-ai-slop/SKILL.md",
+          "sha256": "d6fe77f0e8d639abf09596398d796c8d852b71b8374540561ec0a798128bbf21"
+        }
+      ]
+    },
+    {
+      "name": "omo-init-deep",
+      "original_path": "/Users/josek0514/.codex/plugins/cache/sisyphuslabs/omo/5.1.30/skills/init-deep",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/omo-init-deep/SKILL.md",
+          "sha256": "568e00c8ef835c9cb97422a1e68040c9d33119609e36591c5209ccf6bef89abd"
+        }
+      ]
+    },
+    {
+      "name": "omo-remove-ai-slops",
+      "original_path": "/Users/josek0514/.codex/plugins/cache/sisyphuslabs/omo/5.1.30/skills/remove-ai-slops",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/omo-remove-ai-slops/SKILL.md",
+          "sha256": "dd90bd27f690191323dcb291fc5d2ccdf9d58768164a894d21000b5e7682c480"
+        }
+      ]
+    },
+    {
+      "name": "gpt-taste",
+      "original_path": "/Users/josek0514/.agents/skills/gpt-taste",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/gpt-taste/SKILL.md",
+          "sha256": "d2dfb60b01f5b45bdc2d25a3c6a7eed04d6ec59715361182c2f49369a3f87a77"
+        }
+      ]
+    },
+    {
+      "name": "tastemaker",
+      "original_path": "/Users/josek0514/.codex/skills/tastemaker",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/tastemaker/SKILL.md",
+          "sha256": "7461249508a964ba6b832e1df098f6150bba99f945314f3cafc8a9a6765efc97"
+        }
+      ]
+    },
+    {
+      "name": "ui-ux-pro-max",
+      "original_path": "/Users/josek0514/.codex/skills/ui-ux-pro-max",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/ui-ux-pro-max/SKILL.md",
+          "sha256": "80e9c942a81a4474c00408fc29a8dc9592a7f15773b01431db0ab0d9608622c2"
+        }
+      ]
+    },
+    {
+      "name": "react-ui-patterns",
+      "original_path": "/Users/josek0514/.codex/skills/react-ui-patterns",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/react-ui-patterns/SKILL.md",
+          "sha256": "ab7d275cbd9a8c91f5f92596988a0df9ddb1116096386ac9474b106a2fa670d1"
+        }
+      ]
+    },
+    {
+      "name": "impeccable",
+      "original_path": "/Users/josek0514/.codex/skills/impeccable",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/SKILL.md",
+          "sha256": "58c0252bca04521de87007aeb495f7ec99dc4c7341bc890fe82b6d577573af91"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/adapt.md",
+          "sha256": "871a8e4d749b807c693ebabd83defbd6c76e1bd2a0f53a28a460cb1308ba8634"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/adapt.native.md",
+          "sha256": "6acc0bf221a4ddc6e5c6438348920b2ca2393b29c4314dbde2cdc23f2b1a9639"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/android.md",
+          "sha256": "058f81f256134841875fd3183e06b37a023de0c877fd2b9eecd97011640791fe"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/animate.md",
+          "sha256": "d658c48ffbe0031e8e3b318996cad6ceafe29e40aa50d5bb25e4bf1d6839dc7c"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/audit.md",
+          "sha256": "41764be7bf974b95ee469f11c496714b4b3cf2ba594c0b8f838a0742680229a9"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/audit.native.md",
+          "sha256": "960cb922bc934adbf9192e9428ff6bec1f382038166f02a785939c93b7391067"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/bolder.md",
+          "sha256": "f964506c0fae87b3c2c1db7016ddc9be9ef970bbcf5548d684b997b5d5991586"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/clarify.md",
+          "sha256": "173dd66abe65633910dcb04a51f40d6ff2a793f87088f022a02fc4cad24dd133"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/colorize.md",
+          "sha256": "bc5f71f1129d0f2c310d913d07c8dc609a1d25644121bd78c308f42d52a0b9e9"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/component-review.md",
+          "sha256": "10489e5265e49a4ef2737cd0e674c149ed41e1f703efe922e53ea3c91e833427"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/craft-floor.md",
+          "sha256": "e802e4f7bdc89050a9c0f2ca506e1d493a2316e6e810c0336c57aa073717ef3e"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/craft.md",
+          "sha256": "9205e222bc6565b37fb504ceec93233c2d2a456802b69d16e6b1c44723907c4c"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/critique.md",
+          "sha256": "cb8caddbb3919e5bf7f252143b519fb16db28a244642d937b186cb89962d9201"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/degraded/asset-producer.md",
+          "sha256": "877d274f41500c780bad25b2bca7fa95eff1a32a7b95397dd388c72848e86a6c"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/degraded/documenter.md",
+          "sha256": "bcc05ea92faebb5c74037a9d4263a5ce9a56f5ab07c8ab3c59ee704d8cade745"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/degraded/finish-reviewer.md",
+          "sha256": "275dd1b6e63bbd30d2713227c4f79b880a8bc4e01cc48d392068bb86939d3afa"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/degraded/manual-edit-applier.md",
+          "sha256": "5fae7f8a2fc3ddd49ad0a413446dc44daedef5b6b7de5eb935bd2fbfad646d58"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/delight.md",
+          "sha256": "098a891028ce59c212b747d3c70468dd750aff7053a703d1336045ed31e0da7c"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/distill.md",
+          "sha256": "ea8432c90c30ecb0426662a681ead5c0941113079704e1a766cda09e85b15b4f"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/doctor.md",
+          "sha256": "3dbef3fe606de4de0f1b5cab5f19902799e05cf566eb8223e9aa1632eeb04698"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/document.md",
+          "sha256": "3673248740bcdd1122ccc610093ba2fe52f3943a61ce0b7170b74dc49e5b6098"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/extract.md",
+          "sha256": "31b90048c0b540daec46762a10c2b6b6434737a89af005054d8b848d829d003b"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/generate.md",
+          "sha256": "53628d05b7eff0d4f48b95e48fad40266452fe1b42f398bd88dd9328353e0dd8"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/harden.md",
+          "sha256": "16ba7fca1973c5faf53dd2ca523559129c0fe9e5f8d50b645f527afa78186cd2"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/hooks.md",
+          "sha256": "3e3209e6b45497c7aee8234f5be880399ed6d99db442dcf3e024f061cd2027ba"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/init.md",
+          "sha256": "da813ff325f84cefa1d01698caa093c78bca804d7e9746af14db925351266110"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/ios.md",
+          "sha256": "40c87038b5f75147a5952a96237acf312a327bf70c1bcd8e0a5f064625ae9668"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/layout.md",
+          "sha256": "0bc7d7971b3edf2acd0580e847458dc6d84129d90715b452799ace3bed815c7c"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/live-setup.md",
+          "sha256": "2b5b2fbf5f658f34ea1997fb1aeebe01604d05187f75c6a4f1f55a5bc78520a4"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/live.md",
+          "sha256": "68c5636a7858dd0b5137a9229c15e25fdc2ee40a0f8a4e9d809f78e809256262"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/mode-operate.md",
+          "sha256": "7a52dd7a94ee75f6ae89542c86a1b6e1d306812b16e0d9dbf12d4acad44d148b"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/mode-persuade.md",
+          "sha256": "21e78c8a77badb3f83290cd4577ed3b24bd4dd3b57136d7da75733d4f3ee9ac0"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/mode-read.md",
+          "sha256": "a569989e6a3d6453b4c45e9474e162a15cc54e11732ac6baa7990a6e7cccc0b5"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/new-work.md",
+          "sha256": "73f06ccc5ba8d1cd5324ed98f51d24273e5795170dc92332fe2b68c6a10ce50b"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/onboard.md",
+          "sha256": "ef2dde00030580ed2765cbf7be9b2ea4a6f64cb915b804fd6f6abcf38051c7b9"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/operate.md",
+          "sha256": "a9d2203acd45ca33a13d5c68b02b23ed512425ac15f0e8438318ed124b43729d"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/optimize.md",
+          "sha256": "f672ef8251a3ed4051a053d30819664951b17540b2899acd27d20e500c234abc"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/overdrive.md",
+          "sha256": "fce6688138d2ceb1e3d2cde5231f54b1d8dc8748b4c95a7919aa83b6f924cf96"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/polish.md",
+          "sha256": "81666fc7f783b4e3514db6554e713dc0479bd9cdedb06e93d15f8b579aae869a"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/quieter.md",
+          "sha256": "190a4e642ca362d7499f3c3ab123e21f18f75457d11f072b545a183f296e6495"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/region-map.md",
+          "sha256": "778cedc9199b407d3e23fa1041e38d548b00b1101a33517aa2a2eb299f9d0edc"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/routing.md",
+          "sha256": "77ae09542fbc10aa4e8b119d6fd19359908a47c13c30068d6a150bfdb50e3e10"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/shape.md",
+          "sha256": "a55f016c046cb6a27c55bd7f346375aeb506a755c4fbca19a5f92dbd42309c23"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/typeset.md",
+          "sha256": "442749aed338f51c1a3ccfb182c6ade9b74b90590b67984062ac94a5b100e914"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/impeccable/reference/visualize.md",
+          "sha256": "2bcec5b8d22e9f87799529a41b984d27b4379ab1b70e1dd4f63b6d6390275730"
+        }
+      ]
+    },
+    {
+      "name": "apple-design",
+      "original_path": "/Users/josek0514/.agents/skills/apple-design",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/apple-design/SKILL.md",
+          "sha256": "77bb63b7043bb93aca2ff4ab040c249484eef35682bb6ff7163433c31d30adc7"
+        }
+      ]
+    },
+    {
+      "name": "premium-ui-layout",
+      "original_path": "/Users/josek0514/.codex/skills/premium-ui-layout",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/premium-ui-layout/SKILL.md",
+          "sha256": "dc494077a834723063fd327fdbac9e9bb65fd6bba765f76efc0b44f67f7bdd0e"
+        }
+      ]
+    },
+    {
+      "name": "pages-organize-space",
+      "original_path": "/Users/josek0514/.codex/plugins/cache/openai-curated-remote/pages/0.1.26/skills/organize-space",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/pages-organize-space/SKILL.md",
+          "sha256": "fe553fb15809c972ae528d64917489e958f8cbf9432629caa79fd6da6b207da4"
+        }
+      ]
+    },
+    {
+      "name": "superpowers-writing-plans",
+      "original_path": "/Users/josek0514/.codex/plugins/cache/openai-curated-remote/superpowers/7.0.1/skills/writing-plans",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/superpowers-writing-plans/SKILL.md",
+          "sha256": "a6c67c1900064347c2a329990dd3c555657c51c3ec53b259a08aa01a2c26139a"
+        }
+      ]
+    },
+    {
+      "name": "superpowers-executing-plans",
+      "original_path": "/Users/josek0514/.codex/plugins/cache/openai-curated-remote/superpowers/7.0.1/skills/executing-plans",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/superpowers-executing-plans/SKILL.md",
+          "sha256": "e4649e59880ef2643d1da128e3d607e87e3f969410d72095a5bf65811b6036dc"
+        }
+      ]
+    },
+    {
+      "name": "superpowers-test-driven-development",
+      "original_path": "/Users/josek0514/.codex/plugins/cache/openai-curated-remote/superpowers/7.0.1/skills/test-driven-development",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/superpowers-test-driven-development/SKILL.md",
+          "sha256": "64b03fce4aee5a97a93160cea8111f3ba13a17b7c001db4bd5836d67fd10705d"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/superpowers-test-driven-development/writing-good-tests.md",
+          "sha256": "51471c853306ff92ca8bb41dcaea05f31c0e46b03651f8f3c99754b7172f4ae1"
+        }
+      ]
+    },
+    {
+      "name": "superpowers-requesting-code-review",
+      "original_path": "/Users/josek0514/.codex/plugins/cache/openai-curated-remote/superpowers/7.0.1/skills/requesting-code-review",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/superpowers-requesting-code-review/SKILL.md",
+          "sha256": "2180e14a448e9410bec88e6646a2d1f0ce7fdd58de27388c1e052e929679d2bc"
+        },
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/superpowers-requesting-code-review/code-reviewer.md",
+          "sha256": "82e370be6b3447523816286195571e4216ba56ba1ad6ad0e87862294c4c78dcb"
+        }
+      ]
+    },
+    {
+      "name": "superpowers-verification-before-completion",
+      "original_path": "/Users/josek0514/.codex/plugins/cache/openai-curated-remote/superpowers/7.0.1/skills/verification-before-completion",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/superpowers-verification-before-completion/SKILL.md",
+          "sha256": "2befe7fc55bcadaa3d97dd9e8efeb633d2561c0ebe74c5a8b17c4d9e7e4520b3"
+        }
+      ]
+    },
+    {
+      "name": "superpowers-finishing-a-development-branch",
+      "original_path": "/Users/josek0514/.codex/plugins/cache/openai-curated-remote/superpowers/7.0.1/skills/finishing-a-development-branch",
+      "available": true,
+      "files": [
+        {
+          "path": "handoff/codex-cloud-owner-desktop/skills/superpowers-finishing-a-development-branch/SKILL.md",
+          "sha256": "8db5a922b242dd4e1bf824cb91c13b3e8d8e8a86d6ceaf7f0774eb9cce909d65"
+        }
+      ]
+    }
+  ]
+}

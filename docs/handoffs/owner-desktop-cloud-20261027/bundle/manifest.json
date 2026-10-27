@@ -1,0 +1,65 @@
+{
+  "schema": "nevora.owner-desktop.github-transport.v1",
+  "archive_name": "nevora-owner-desktop-full.zip",
+  "archive_size": 419220882,
+  "archive_sha256": "5b003e12fbf52ce4b1ab2b546476d8867c4b23b0c72b8e9ce8dcb430e0bc2d0f",
+  "runtime_sha256": "f6e3f5b3b332a61f12a2607c9a9728d7086a77747472f5217badc786ad543a3f",
+  "parts": [
+    {
+      "file": "nevora-owner-desktop-full.zip.part-000",
+      "size": 41943040,
+      "sha256": "d319e9ee25dc1c297e751a408b295e4dcdaed2dff6b2d26d8735a744fb6f4af8"
+    },
+    {
+      "file": "nevora-owner-desktop-full.zip.part-001",
+      "size": 41943040,
+      "sha256": "411b56deef9bd38ad53ea3543ab480b355d1cd13791b82d156e5456f851e99f3"
+    },
+    {
+      "file": "nevora-owner-desktop-full.zip.part-002",
+      "size": 41943040,
+      "sha256": "aa26ffddd17abf581c23dca80e3e08f4e89b0db175fa22c2a52e2a36577615e8"
+    },
+    {
+      "file": "nevora-owner-desktop-full.zip.part-003",
+      "size": 41943040,
+      "sha256": "3efc29e766d9339d3e53832569fd37b6683d2d8364d6e847d42059c3de52825c"
+    },
+    {
+      "file": "nevora-owner-desktop-full.zip.part-004",
+      "size": 41943040,
+      "sha256": "a266d0015d8f9ce8923340783eb4a64360d628ebe7b06fbe27b615fb2fee9eda"
+    },
+    {
+      "file": "nevora-owner-desktop-full.zip.part-005",
+      "size": 41943040,
+      "sha256": "f202657135e608fcb8ced92e63b96b2f1045444cd42a0ac053c8023656702579"
+    },
+    {
+      "file": "nevora-owner-desktop-full.zip.part-006",
+      "size": 41943040,
+      "sha256": "5cf1126f57b8ac92922b350b08e9729d2682d18483218945e502fab1cab37aa0"
+    },
+    {
+      "file": "nevora-owner-desktop-full.zip.part-007",
+      "size": 41943040,
+      "sha256": "0c7dd165a3972b47b67dc47a57147ee581ac6057c38a6e405b7335bef1d15cb7"
+    },
+    {
+      "file": "nevora-owner-desktop-full.zip.part-008",
+      "size": 41943040,
+      "sha256": "e64efd91732f845a88f13c478c6a8673cee753c42dec2e17ad532c71d86c4190"
+    },
+    {
+      "file": "nevora-owner-desktop-full.zip.part-009",
+      "size": 41733522,
+      "sha256": "1724ec97457bf1e31093a8c6e4cac9ae6ee909018d67cd7ce6dbf3c05a7a7ebe"
+    }
+  ],
+  "prototype_cutoff": "G01-G10 locally complete; G11 planned/unstarted",
+  "repository": "JoseK0514/NEVORA",
+  "branch": "codex/owner-desktop-cloud-handoff-20261027",
+  "git_branch_base": "84c3fc357b006220ef6bbf29580e7327228c9659",
+  "actual_application_reference": "46e202786863279302026ee03a0e225c359fa55c",
+  "note": "The branch base is current development; the prototype source contract remains pinned to its original clean reference. No integration or production release is implied."
+}

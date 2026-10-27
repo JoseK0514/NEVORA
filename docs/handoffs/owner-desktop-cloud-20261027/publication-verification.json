@@ -1,0 +1,45 @@
+{
+  "scope": "Feature-branch transport only; frozen prototype unchanged",
+  "restore": {
+    "restored_to": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/handoff/github-publication/restore-test",
+    "files_checked": 11343,
+    "runtime_sha256": "f6e3f5b3b332a61f12a2607c9a9728d7086a77747472f5217badc786ad543a3f",
+    "result": "PASS",
+    "application_checkout_modified": false,
+    "next_read": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/handoff/github-publication/restore-test/handoff/codex-cloud-owner-desktop/START-HERE.md",
+    "cloud_environment_certified": false
+  },
+  "isolated_prototype_build": "PASS; exact original HTML SHA retained",
+  "restored_artifact_audit": "PASS; all original G10 evidence checked against clean pinned reference",
+  "restore_guard_cases": {
+    "passed": 4,
+    "failed": 0,
+    "cases": [
+      "existing destination refused without mutation",
+      "corrupted part refused before destination creation",
+      "unsafe archive path refused before extraction",
+      "application checkout destination refused"
+    ]
+  },
+  "application_files_changed": false,
+  "cloud_execution_verified": false,
+  "actual_application_suite_rerun": false,
+  "reason_app_suite_not_rerun": "Only documentation, Python transport and opaque verified ZIP parts added; no app code/config/CI change. No database/setup/worker commands run.",
+  "git_display_copy_normalization": {
+    "trailing_whitespace_only": [
+      "instructions/skills/impeccable/SKILL.md",
+      "instructions/skills/impeccable/reference/harden.md",
+      "instructions/skills/impeccable/reference/extract.md",
+      "instructions/skills/impeccable/reference/optimize.md",
+      "instructions/skills/impeccable/reference/degraded/documenter.md",
+      "instructions/skills/impeccable/reference/degraded/manual-edit-applier.md",
+      "instructions/skills/impeccable/reference/degraded/finish-reviewer.md",
+      "instructions/skills/impeccable/reference/degraded/asset-producer.md",
+      "instructions/skills/tastemaker/SKILL.md",
+      "instructions/skills/no-ai-slop/SKILL.md",
+      "instructions/skills/gpt-taste/SKILL.md",
+      "instructions/reference/shared-root-21st-DESIGN.md"
+    ],
+    "frozen_archive_bytes_changed": false
+  }
+}

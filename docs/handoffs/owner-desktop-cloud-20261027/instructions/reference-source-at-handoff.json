@@ -1,0 +1,85 @@
+{
+  "observed_at_utc": "2026-10-27T17:55:22.717182+00:00",
+  "reference_root": "/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler",
+  "head": "46e202786863279302026ee03a0e225c359fa55c",
+  "git_status_short": "",
+  "integration_performed": false,
+  "deployment_performed": false,
+  "files": [
+    {
+      "file": "/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler/src/components/payroll/payroll-runs.tsx",
+      "sha256": "20ded77e608c92eeb80d31770ce181f90e4b7a28f2d9d0bd09220064f69cca68",
+      "verified_now": true
+    },
+    {
+      "file": "/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler/src/components/payroll/native-review.tsx",
+      "sha256": "98d7ba1fdf3da0c27591d7e74ec03fe8f7cd184db291399c2318330d6b9d1d18",
+      "verified_now": true
+    },
+    {
+      "file": "/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler/src/components/payroll/backlog-review.tsx",
+      "sha256": "a0510f342f00859cf31477b62545e3974bff48bc9b48986e11dc8b64a031de6d",
+      "verified_now": true
+    },
+    {
+      "file": "/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler/src/components/payroll/use-payroll.ts",
+      "sha256": "c278e788aa44cd01a54548626f93fbc50ac065b74a9fb32b1e64e50ab8385adb",
+      "verified_now": true
+    },
+    {
+      "file": "/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler/src/components/payroll/api.ts",
+      "sha256": "9216b2bfbfded3f3002ab4f2f0508c90b6277e4433bc614aa61946bc1f3d7daf",
+      "verified_now": true
+    },
+    {
+      "file": "/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler/src/components/payroll/workflow-status.ts",
+      "sha256": "e0b36c00005cb6e03836e196fc5947883a89aa436748e5194b2513bb9bb861aa",
+      "verified_now": true
+    },
+    {
+      "file": "/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler/src/lib/payroll/model.ts",
+      "sha256": "239ee6cf20ea31cec8c911f69325c751d6bf0eb181cc12bc737970cf1a554c0f",
+      "verified_now": true
+    },
+    {
+      "file": "/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler/src/lib/payroll/contracts.ts",
+      "sha256": "0328b7f36aa7c44e569ed9567d623c434c24705bc919e7e3eadb93d6831ddf20",
+      "verified_now": true
+    },
+    {
+      "file": "/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler/src/lib/payroll/service.ts",
+      "sha256": "f07534a97a7f09795420b9aa7f33ae4c0a2a6d988c3d2c7fae4e31c0ecbc4bd9",
+      "verified_now": true
+    },
+    {
+      "file": "/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler/src/lib/payroll/calendar.ts",
+      "sha256": "d89f96075bd2f0e0d50f2f169572d0707a9b21a0548e71176071b8a1d125a8a8",
+      "verified_now": true
+    },
+    {
+      "file": "/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler/src/lib/payroll/backlog.ts",
+      "sha256": "bbdef6e385a78dfb9a819084b2fba910b44f15a2f2864d3f769f63428c2b4339",
+      "verified_now": true
+    },
+    {
+      "file": "/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler/src/lib/payroll/native/source.server.ts",
+      "sha256": "0a6f601b382434462d00d5d3cfc45b42851dfb2116af8a49ad37182a803ef220",
+      "verified_now": true
+    },
+    {
+      "file": "/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler/src/lib/payroll/backlog.test.ts",
+      "sha256": "0b9fd453c24479307b648330afd923a62faf96f06bd90835f114bf08a99cf402",
+      "verified_now": true
+    },
+    {
+      "file": "/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler/src/lib/payroll/open-period.test.ts",
+      "sha256": "d4f87300dc602c3b3d4e5260d5f03519785526be907fa8b79541967e1774ec31",
+      "verified_now": true
+    },
+    {
+      "file": "/Users/josek0514/.codex/worktrees/pr32-dev-preview-20261025/Fuel Scheduler/src/lib/payroll/native/ytd.ts",
+      "sha256": "499af875f5e5d39792a4d7464626163c6ff6090dc75118c57f7038ad5f052385",
+      "verified_now": true
+    }
+  ]
+}
