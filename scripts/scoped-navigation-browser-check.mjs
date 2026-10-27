@@ -58,28 +58,32 @@ export async function verifyReportRecoveryNavigation(page,app,engine,report,mana
 
 async function verifyExplicitRecovery(page,origin,engine,report){
  const source='/app/payroll-export?start=2026-09-21&end=2026-09-27';
- const row={engine,case:'explicit-source-recovery',status:'pending'};report.scopedNavigation.push(row);
+ const row={engine,case:'explicit-source-recovery',status:'pending',heldRequests:[]};report.scopedNavigation.push(row);
  const mark=phase=>{row.phase=phase;markReportNavigationStage(page,engine,row.case,phase);};
  let release,held,terminal,intercepted,stop=()=>{};
  const gate=new Promise(ready=>{release=ready;});
  const incoming=new Promise(ready=>{intercepted=ready;});
  const handler=route=>{
-  const request=route.request();if(held||request.headers().rsc!=='1')return route.continue();
-  held=request;
-  terminal=new Promise(ready=>{
-   const finished=r=>{if(r===request){stop();ready('finished');}};
-   const failed=r=>{if(r===request){stop();ready('failed');}};
-   stop=()=>{page.off('requestfinished',finished);page.off('requestfailed',failed);};
-   page.on('requestfinished',finished);page.on('requestfailed',failed);
-  });
-  intercepted();
+  const request=route.request(),headers=request.headers();if(headers.rsc!=='1')return route.continue();
+  row.heldRequests.push({prefetch:headers['next-router-prefetch']==='1'||headers['next-router-segment-prefetch']!==undefined});
+  if(!held){
+   held=request;
+   terminal=new Promise(ready=>{
+    const finished=r=>{if(r===request){stop();ready('finished');}};
+    const failed=r=>{if(r===request){stop();ready('failed');}};
+    stop=()=>{page.off('requestfinished',finished);page.off('requestfailed',failed);};
+    page.on('requestfinished',finished);page.on('requestfailed',failed);
+   });
+   intercepted();
+  }
   // A discarded destination may already be cancelled by the browser (the explicit refresh supersedes it); Playwright then
   // counts its route as handled. The assertions below still require it to end and never replace the source.
   return gate.then(()=>route.continue()).catch(error=>{if(!/already handled/i.test(String(error?.message)))throw error;});
  };
+ // Install before source entry: a prefetched flight must not escape the deliberate destination stall.
+ await page.route('**/app/reports?*',handler);
  mark('source-entry');await page.goto(origin+source);await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
  const sourceDocument=await page.evaluate(()=>performance.timeOrigin);
- await page.route('**/app/reports?*',handler);
  const deadline=performance.now()+15000;
  try{
   await runBeforeRecoveryDeadline(async()=>{
@@ -88,6 +92,7 @@ async function verifyExplicitRecovery(page,origin,engine,report){
    // block the recovery action; the held request and its terminal event are awaited explicitly.
    await Promise.all([incoming,page.locator('#desktop-primary-navigation a[href="/app/reports"]').click({noWaitAfter:true})]);
    assert(held,'An actual destination RSC must be held');
+   assert.equal(new URL(page.url()).pathname+new URL(page.url()).search,source,'No parallel destination flight may escape the controlled stall');
    mark('explicit-source-refresh');
    await page.evaluate(()=>window.dispatchEvent(new Event('storage')));
    await page.locator('main').getByRole('button',{name:'Refresh current view',exact:true}).click({noWaitAfter:true});
