@@ -23,3 +23,9 @@ it('keeps failed swap discovery distinct from empty and preserves the separately
  const html=renderToStaticMarkup(<CreationView state={{snapshot,paused:false,refreshing:false}} authority={read.authority} mode="swap" sourceId="own" draft={draft} operation={new EmployeeCreationOperation()} onDraft={()=>{}} onReview={()=>{}} onRefresh={()=>{}} onSubmit={()=>{}} onRetry={()=>{}}/>);
  expect(html).toContain('Shift options couldn’t be checked');expect(html).not.toContain('No eligible shifts');expect(html).toContain('Offer this shift for cover instead');
 });
+it('shows one verified-empty explanation and pause wording covers both focus loss and offline',()=>{
+ const snapshot={...read,mode:'swap' as const,targets:[],check:{allowed:false,notice:'No eligible shifts to swap with right now.'}};
+ const html=renderToStaticMarkup(<CreationView state={{snapshot,paused:false,refreshing:false}} authority={read.authority} mode="swap" sourceId="own" draft={draft} operation={new EmployeeCreationOperation()} onDraft={()=>{}} onReview={()=>{}} onRefresh={()=>{}} onSubmit={()=>{}} onRetry={()=>{}}/>);
+ expect(html.match(/No eligible shifts to swap with right now\./g)).toHaveLength(1);
+ expect(render(read,true)).toContain('Reconnect or return to this page to refresh.');
+});
