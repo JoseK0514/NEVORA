@@ -36,3 +36,13 @@ it('distinguishes a signed-out action from changed permission and clears its com
   expect(recovery.snapshot()).toMatchObject({pending:false,notice,hasUnknown:false,canRetry:false});
  }
 });
+it('keeps the original intent unknown when a receipt belongs to a different operation or update',async()=>{
+ const create=await subject();
+ for(const kind of ['PUBLISH','ACKNOWLEDGE'] as const){
+  const onCommit=vi.fn(),original={...command,kind,...(kind==='ACKNOWLEDGE'?{communicationId:'own-update',expectedRevisionId:'own-version'}:{})};
+  let response:CommandResult={status:'committed',id:'wrong-update',version:'wrong-version',operationId:'other-operation'};
+  const recovery=create(async()=>response,()=>{},onCommit);recovery.authorize(true);await recovery.send(original);
+  expect(onCommit).not.toHaveBeenCalled();expect(recovery.snapshot()).toMatchObject({hasUnknown:true,notice:'unknown'});
+  if(kind==='ACKNOWLEDGE'){response={status:'committed',id:'wrong-update',version:'own-version',operationId:command.operationId};await recovery.lookup();expect(onCommit).not.toHaveBeenCalled();expect(recovery.snapshot().hasUnknown).toBe(true);}
+ }
+});

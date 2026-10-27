@@ -1,5 +1,6 @@
 import {beforeEach,expect,it,vi} from 'vitest';
 vi.mock('server-only',()=>({}));
+vi.mock('../data/employee-message-module.server',()=>({employeeUpdatesExecutor:async()=>undefined}));
 const mocks=vi.hoisted(()=>({session:vi.fn(),proof:vi.fn(),list:vi.fn(),read:vi.fn(),preview:vi.fn(),execute:vi.fn(),lookup:vi.fn()}));
 vi.mock('../auth/session',()=>({getSession:mocks.session,requireSessionMutationProof:mocks.proof}));
 vi.mock('./service.server',()=>({communicationAuthority:()=> 'a'.repeat(64),listEmployeeCommunications:mocks.list,readCommunication:mocks.read,previewCommunicationAudience:mocks.preview,executeCommunicationCommand:mocks.execute,findCommunicationOperation:mocks.lookup}));

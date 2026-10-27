@@ -1,6 +1,13 @@
 import type {CommandResult} from './types';
 export type CommunicationNotice='conflict'|'unknown'|'signed-out'|'blocked'|'unavailable'|'committed'|null;
 export type CommunicationRecoveryState={pending:boolean;notice:CommunicationNotice;hasUnknown:boolean;canRetry:boolean};
+
+function matchesReceipt(result:Extract<CommandResult,{status:'committed'}>,command:unknown,operationId:string|null){
+ if(result.operationId!==operationId||typeof result.id!=='string'||!result.id||typeof result.version!=='string'||!result.version||!command||typeof command!=='object')return false;
+ const c=command as Record<string,unknown>,ref=c.ref&&typeof c.ref==='object'?c.ref as Record<string,unknown>:null;
+ const id=c.communicationId??ref?.id,version=c.kind==='ACKNOWLEDGE'||c.kind==='WITHDRAW'?c.expectedRevisionId:c.kind==='MARK_READ'?ref?.version:null;
+ return (id===undefined||result.id===id)&&(version===null||version===undefined||result.version===version);
+}
 /** In-memory, authority-scoped recovery lives above disposable private content.
  * Pausing fences completions but keeps the exact original command. Only a fresh
  * authorized view may look it up or explicitly replay it. */
@@ -22,6 +29,7 @@ export function createCommunicationRecovery(request:(path:string,body:unknown,si
    const result=await request(lookup?'/operations/'+operationId:'',lookup?undefined:command,controller.signal) as CommandResult;
    if(sequence!==generation||!authorized)return;
    if(result.status==='committed'){
+    if(!matchesReceipt(result,command,operationId)){publish({notice:'unknown',canRetry:false});return;}
     command=null;operationId=null;publish({notice:'committed',canRetry:false});onCommit(result);
    }else if(result.status==='conflict'||result.status==='blocked'||'state'in result&&result.state==='unauthorized'){
     command=null;operationId=null;if(result.status!=='conflict')onBlocked();publish({notice:result.status==='conflict'?'conflict':'httpStatus'in result&&result.httpStatus===401?'signed-out':'blocked',canRetry:false});

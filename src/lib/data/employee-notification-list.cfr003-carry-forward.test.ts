@@ -54,7 +54,8 @@ async function read(count:number,mode:'normal'|'denied'|'missing'|'removed'|'cha
   else if(sql.startsWith('SELECT id,read_at::text AS read FROM notifications WHERE employee_id='))rows=candidates;
   else if(sql.includes(' AS rows')){
    let observed:unknown[]=[];
-   if(sql.includes('FROM notifications WHERE id =')){const index=String(values[0]).split('-').at(-1);observed=[{id:values[0],employee_id:'self',type:'TIME_OFF_APPROVED',title:'Time off',body:'Reviewed',event_key:`event-${index}`,environment:'test',source_kind:'TIME_OFF',source_id:`request-${index}`,source_version:'APPROVED',effective_version:'APPROVED',purpose:'EVENT',urgency:'high',due_at:past,expires_at:future}];}
+   if(sql.includes("to_regclass('nevora_workspace_presentation_revisions')"))observed=[{installed:false}];
+   else if(sql.includes('FROM notifications WHERE id =')){const index=String(values[0]).split('-').at(-1);observed=[{id:values[0],employee_id:'self',type:'TIME_OFF_APPROVED',title:'Time off',body:'Reviewed',event_key:`event-${index}`,environment:'test',source_kind:'TIME_OFF',source_id:`request-${index}`,source_version:'APPROVED',effective_version:'APPROVED',purpose:'EVENT',urgency:'high',due_at:past,expires_at:future}];}
    else if(sql.includes('FROM employees e LEFT JOIN employee_location_eligibility'))observed=[{id:'self',role:'EMPLOYEE',active:true,allowed_location_ids:[]}];
    else if(sql.includes('SELECT r.*, e.first_name'))observed=[{id:values[0],employee_id:mode==='foreign'?'other':'self',employee_name:'Employee',status:'APPROVED',start_date:'2030-10-07',end_date:'2030-10-07',created_at:past}];
    else if(sql.includes('AS detail FROM time_off_requests'))observed=(Array.isArray(values[2])?values[2]:[values[2]]).map(id=>({detail:{id,status:'APPROVED',startDate:'2030-10-07',endDate:'2030-10-07',startTime:null,endTime:null,reason:null}}));

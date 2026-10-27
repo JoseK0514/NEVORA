@@ -5,6 +5,7 @@
  * short display lifetimes; a suppressed response does not undo an already committed write.
  */
 import 'server-only';
+import {encodeMessageCursor,parseMessageCursor,type MessageCursor,type MessagePage} from '../employee-message-page';
 import {assertOperationalAccess,operationalScopeStatements,OperationalAuthorizationError,isOperationalAuthorizationError} from '../company-access/operational-scope.server';
 import {createHash,randomUUID} from 'node:crypto';
 import type {SessionMutationProof} from '../shift-changes/types';
@@ -285,27 +286,36 @@ export async function recordCommunicationRead(proof:SessionMutationProof,c:Atten
 function finalItemStatement(proof:SessionMutationProof,w:CommunicationWorkspace,item:Extract<CommunicationRead,{state:'ready'}>):SqlStatement{return {text:`SELECT EXISTS(SELECT 1 FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id
  WHERE c.workspace_id=$1 AND c.id=$3::uuid AND r.id=$4::uuid AND c.state='PUBLISHED' AND (r.expires_at IS NULL OR r.expires_at>clock_timestamp())
  AND ($5 IN('OWNER','MANAGER') OR ${communicationRecipientAllowedSql()})) AS allowed`,values:[w.id,proof.employee.id,item.id,item.revisionId,proof.employee.role]};}
-function communicationIndex(proof:SessionMutationProof,w:CommunicationWorkspace):SqlStatement{return {text:`/* communication_list_index */ SELECT c.id::text,c.head_revision_id::text AS revision,
+function communicationIndex(proof:SessionMutationProof,w:CommunicationWorkspace,paged=false,before:MessageCursor|null=null):SqlStatement{return {text:`/* communication_list_index */ SELECT c.id::text,c.head_revision_id::text AS revision,${paged?`to_char(c.created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS "cursorAt",`:''}
  (SELECT acknowledged_at::text FROM communication_receipts WHERE workspace_id=c.workspace_id AND communication_id=c.id AND revision_id=c.head_revision_id AND employee_id=$2) AS acknowledged,
- (SELECT read_at::text FROM employee_attention_receipts WHERE workspace_id=c.workspace_id AND source_kind='COMMUNICATION' AND source_id=c.id::text AND source_version=c.head_revision_id::text AND employee_id=$2) AS read FROM communications c WHERE c.workspace_id=$1 AND c.state='PUBLISHED' AND
- ($3 IN('OWNER','MANAGER') OR c.author_employee_id=$2 OR EXISTS(SELECT 1 FROM communication_recipients g WHERE g.workspace_id=c.workspace_id AND g.communication_id=c.id AND g.revision_id=c.head_revision_id AND g.employee_id=$2)) ORDER BY c.created_at DESC,c.id LIMIT 101`,values:[w.id,proof.employee.id,proof.employee.role]};}
+ (SELECT read_at::text FROM employee_attention_receipts WHERE workspace_id=c.workspace_id AND source_kind='COMMUNICATION' AND source_id=c.id::text AND source_version=c.head_revision_id::text AND employee_id=$2) AS read FROM communications c ${paged?'JOIN communication_revisions r ON r.id=c.head_revision_id':''} WHERE c.workspace_id=$1 AND c.state='PUBLISHED' AND
+ ($3 IN('OWNER','MANAGER') OR c.author_employee_id=$2 OR EXISTS(SELECT 1 FROM communication_recipients g WHERE g.workspace_id=c.workspace_id AND g.communication_id=c.id AND g.revision_id=c.head_revision_id AND g.employee_id=$2)) ${paged?` AND ($3 IN('OWNER','MANAGER') OR ${communicationRecipientAllowedSql()})`:''}${before?' AND (c.created_at,c.id)<($4::timestamptz,$5::uuid)':''} ORDER BY ${paged?'c.created_at DESC,c.id DESC LIMIT 26':'c.created_at DESC,c.id LIMIT 101'}`,values:[w.id,proof.employee.id,proof.employee.role,...(before?[before.at,before.id]:[])]};}
 /** Read at most 100 current items and revalidate each item/index before returning.
  * partial means the bounded list changed or some source was unavailable, so clients
  * must not interpret it as a complete count of all communication obligations. */
+const communicationPage=(value:CommunicationListRead,nextCursor:string|null=null):MessagePage<CommunicationListRead>=>({value,nextCursor});
 export async function listEmployeeCommunications(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommunicationListRead>{
- try{proofValid(proof);const signal=AbortSignal.timeout(8000),w=await communicationWorkspace(proof,executor,signal),p=guards(proof,w),results=await executor.transaction([...p,communicationIndex(proof,w)],signal);
-  const rows=results[p.length] as {id:string}[],items:CommunicationRead[]=[];let partial=rows.length>100;
-  for(const row of rows.slice(0,100)){const r=await readCommunication(proof,row.id,executor);if(r.state==='ready')items.push(r);else if(r.state==='unavailable')partial=true;}
+ return (await readCommunicationObservation(proof,executor,null,false)).value;
+}
+export function readEmployeeCommunicationPage(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor(),cursor:string|null=null):Promise<MessagePage<CommunicationListRead>>{
+ return readCommunicationObservation(proof,executor,cursor,true);
+}
+async function readCommunicationObservation(proof:SessionMutationProof,executor:SqlExecutor,cursor:string|null,paged:boolean):Promise<MessagePage<CommunicationListRead>>{
+ const before=cursor===null?null:parseMessageCursor(cursor);if(cursor!==null&&(!before||!uuid.test(before.id)))return communicationPage({state:'unavailable',reason:'updates_unavailable'});
+ try{proofValid(proof);const signal=AbortSignal.timeout(8000),w=await communicationWorkspace(proof,executor,signal),p=guards(proof,w),results=await executor.transaction([...p,communicationIndex(proof,w,paged,before)],signal);
+  const rows=results[p.length] as {id:string;cursorAt?:string}[],items:CommunicationRead[]=[];let partial=!paged&&rows.length>100;
+  for(const row of rows.slice(0,paged?25:100)){const r=await readCommunication(proof,row.id,executor);if(r.state==='ready')items.push(r);else if(r.state==='unavailable')partial=true;}
   const ready=items.filter((i):i is Extract<CommunicationRead,{state:'ready'}>=>i.state==='ready');
   const finalPrefix=[...guards(proof,w),{text:'LOCK TABLE communications IN SHARE MODE',values:[]},{text:'SELECT id FROM communications WHERE workspace_id=$1 AND id=ANY($2::uuid[]) ORDER BY id FOR SHARE',values:[w.id,ready.map(i=>i.id).sort()]}];
-  const observationStarted=performance.now(),final=await executor.transaction([...finalPrefix,...ready.map(i=>finalItemStatement(proof,w,i)),communicationIndex(proof,w),lifetimeStatement(proof),...currentAuthority(proof,w)],signal);
+  const observationStarted=performance.now(),final=await executor.transaction([...finalPrefix,...ready.map(i=>finalItemStatement(proof,w,i)),communicationIndex(proof,w,paged,before),lifetimeStatement(proof),...currentAuthority(proof,w)],signal);
   if(JSON.stringify(final[finalPrefix.length+ready.length])!==JSON.stringify(rows))partial=true;
   const current=ready.filter((_,i)=>(final[finalPrefix.length+i]?.[0] as {allowed:boolean}|undefined)?.allowed===true);if(current.length!==ready.length)partial=true;
-  const lifetime=final[finalPrefix.length+ready.length+1]?.[0] as {observedAt:string;validForMs:number}|undefined;if(!lifetime||lifetime.validForMs<=0)return {state:'unauthorized',reason:'updates_unavailable'};
+  const lifetime=final[finalPrefix.length+ready.length+1]?.[0] as {observedAt:string;validForMs:number}|undefined;if(!lifetime||lifetime.validForMs<=0)return communicationPage({state:'unauthorized',reason:'updates_unavailable'});
   await responseFence(proof,w,executor,signal);
   const currentLifetime=limitedLifetime({...lifetime,validForMs:Math.min(lifetime.validForMs,...current.map(i=>i.validForMs-(Date.parse(lifetime.observedAt)-Date.parse(i.observedAt))))},w,observationStarted);
-  return {state:partial?'partial':'complete',...currentLifetime,authority:communicationAuthority(proof),timeZone:w.timeZone,items:current,reason:partial?'source_unavailable':null};
- }catch(error){return {state:authorizationDenied(error)?'unauthorized':'unavailable',reason:'updates_unavailable'};}
+  const nextCursor=paged&&rows.length>25?encodeMessageCursor({at:rows[24].cursorAt!,id:rows[24].id}):null;
+  return communicationPage({state:partial?'partial':'complete',...currentLifetime,authority:communicationAuthority(proof),timeZone:w.timeZone,items:current,reason:partial?'source_unavailable':null},nextCursor);
+ }catch(error){return communicationPage({state:authorizationDenied(error)?'unauthorized':'unavailable',reason:'updates_unavailable'});}
 }
 
 /** Bounded current composition context; employee context has no coworker roster. */

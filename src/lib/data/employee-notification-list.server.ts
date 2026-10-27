@@ -1,4 +1,7 @@
 import 'server-only';
+import {readActivePresentation} from '../workspace-presentation/service';
+import {ALL_MODULES_ON,moduleForPath} from '../workspace-presentation/modules';
+import {encodeMessageCursor,parseMessageCursor,type MessagePage} from '../employee-message-page';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {NotificationIntent,SqlExecutor,SqlStatement,SourceSnapshot} from '../notifications/types';
 import {parseEmployeeView,type EmployeeNotificationItem,type EmployeeViewSnapshot} from '../employee-view';
@@ -18,12 +21,16 @@ import {attentionSourceVersion} from './employee-attention-receipts.server';
 const LIMIT=25,MAX_READS=64,MAX_BYTES=1_000_000,BUDGET_MS=8000;
 const supported=['SCHEDULE','TIME_OFF','EXCHANGE','CALLOUT','AVAILABILITY','SELF_TEST','COMMUNICATION','PAYROLL_STATEMENT'] as const;
 const labels:Record<typeof supported[number],string>={SCHEDULE:'Schedule update',TIME_OFF:'Time off update',EXCHANGE:'Shift request update',CALLOUT:'Unable to work update',AVAILABILITY:'Availability update',SELF_TEST:'Device notification test',COMMUNICATION:'Team update',PAYROLL_STATEMENT:'Pay statement update'};
-const candidateSql=(actor='$1')=>`SELECT id,read_at::text AS read FROM notifications WHERE employee_id=${actor} ORDER BY created_at DESC,id DESC LIMIT 26`;
+const candidateSql=(actor='$1',paged=false,at?:string,id?:string)=>`SELECT id,read_at::text AS read${paged?`,to_char(created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS "cursorAt"`:''} FROM notifications WHERE employee_id=${actor}${at&&id?` AND (created_at,id)<(${at}::timestamptz,${id}::text)`:''} ORDER BY created_at DESC,id DESC LIMIT 26`;
+const pageResult=(value:EmployeeViewSnapshot,nextCursor:string|null=null):MessagePage<EmployeeViewSnapshot>=>({value,nextCursor});
 const ownReceiptSql=(p:string[])=>`SELECT source_kind,source_id,source_version FROM employee_attention_receipts WHERE workspace_id=${p[0]} AND employee_id=${p[1]}
  AND (source_kind,source_id,source_version) IN (SELECT * FROM unnest(${p[2]}::text[],${p[3]}::text[],${p[4]}::text[]))`;
 const ownCommunicationStatusSql=(p:string[])=>`SELECT r.id::text AS version,r.acknowledgement AS requirement,
  EXISTS(SELECT 1 FROM communication_receipts cr WHERE cr.workspace_id=c.workspace_id AND cr.communication_id=c.id AND cr.revision_id=r.id AND cr.employee_id=${p[1]}) AS acknowledged
  FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id WHERE c.workspace_id=${p[0]} AND c.id::text=${p[2]} AND c.state='PUBLISHED'`;
+const ownCommunicationStatusesSql=(p:string[])=>`SELECT c.id::text AS "sourceId",r.id::text AS version,r.acknowledgement AS requirement,
+ EXISTS(SELECT 1 FROM communication_receipts cr WHERE cr.workspace_id=c.workspace_id AND cr.communication_id=c.id AND cr.revision_id=r.id AND cr.employee_id=${p[1]}) AS acknowledged
+ FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id WHERE c.workspace_id=${p[0]} AND c.id=ANY(${p[2]}::uuid[]) AND c.state='PUBLISHED'`;
 // Match the canonical attention detail's explicit null/time projection before
 // its shared hash function. Notification TIME_OFF status versions are different.
 const ownTimeOffDetailSql=(p:string[])=>`SELECT jsonb_build_object('id',id,'status',status,'startDate',start_date::text,'endDate',end_date::text,
@@ -50,8 +57,11 @@ type Template={name:string;args:number;sql:(args:string[])=>string;clockField?:'
 /** Finite canonical SELECT templates only. No SQL rewriting, arbitrary query
  * acceptance, mutation statements, or network/executor fallback during replay. */
 const templates:Template[]=[
+ {name:'presentationInstalled',args:0,sql:()=>"SELECT to_regclass('nevora_workspace_presentation_revisions') IS NOT NULL AS installed"},
+ {name:'presentation',args:1,sql:p=>`SELECT revision,settings FROM nevora_workspace_presentation_revisions WHERE workspace_id=${p[0]} ORDER BY revision DESC LIMIT 1`},
  {name:'ownReceipt',args:5,sql:ownReceiptSql},
  {name:'ownCommunicationStatus',args:3,sql:ownCommunicationStatusSql},
+ {name:'ownCommunicationStatuses',args:3,sql:ownCommunicationStatusesSql},
  {name:'ownTimeOffDetail',args:3,sql:ownTimeOffDetailSql},
  {name:'workspace',args:0,sql:()=>workspaceReadSql()},
  {name:'intent',args:1,sql:p=>notificationReadSql.intent(p[0])},
@@ -101,8 +111,15 @@ function requireRows(value:unknown):Record<string,unknown>[]{if(!Array.isArray(v
  * in one MVCC observation, then canonical policy replays exclusively in memory.
  * An adaptive cache miss/source insertion fails unavailable until a new read. */
 export async function readEmployeeNotificationList(proof:SessionMutationProof,environment:unknown,executor:SqlExecutor=neonNotificationExecutor()):Promise<EmployeeViewSnapshot>{
- try{assertEmployeeViewProof(proof);}catch{return {state:'unavailable',reason:'access_denied'};}
- if(environment!=='test'&&environment!=='production')return {state:'unavailable',reason:'read_failed'};
+ return (await readNotificationObservation(proof,environment,executor,null,false)).value;
+}
+export function readEmployeeNotificationPage(proof:SessionMutationProof,environment:unknown,executor:SqlExecutor=neonNotificationExecutor(),cursor:string|null=null):Promise<MessagePage<EmployeeViewSnapshot>>{
+ return readNotificationObservation(proof,environment,executor,cursor,true);
+}
+async function readNotificationObservation(proof:SessionMutationProof,environment:unknown,executor:SqlExecutor,cursor:string|null,paged:boolean):Promise<MessagePage<EmployeeViewSnapshot>>{
+ try{assertEmployeeViewProof(proof);}catch{return pageResult({state:'unavailable',reason:'access_denied'});}
+ if(environment!=='test'&&environment!=='production')return pageResult({state:'unavailable',reason:'read_failed'});
+ const before=cursor===null?null:parseMessageCursor(cursor);if(cursor!==null&&!before)return pageResult({state:'unavailable',reason:'read_failed'});
  const signal=AbortSignal.timeout(BUDGET_MS),started=performance.now();
  const budget=()=>{signal.throwIfAborted();if(performance.now()-started>=BUDGET_MS)throw Error('Notification read budget');};
  const limits=employeeReadLimits;
@@ -111,7 +128,7 @@ export async function readEmployeeNotificationList(proof:SessionMutationProof,en
   // Inbox history does not require a still-active operational location. Each
   // source's canonical open policy owns location eligibility, including history.
   const guards=employeeViewGuards(proof,workspace,false);
-  const discovery=await executor.transaction([...limits,...guards,{text:candidateSql(),values:[proof.employee.id]}],signal);
+  const discovery=await executor.transaction([...limits,...guards,{text:candidateSql('$1',paged,before?'$2':undefined,before?'$3':undefined),values:[proof.employee.id,...(before?[before.at,before.id]:[])]}],signal);
   const initial=requireRows(discovery[limits.length+guards.length]);
   const manifest=notificationReadManifest(),cache=new Map<string,Promise<Record<string,unknown>[]>>();
   const collecting:SqlExecutor={transaction:async()=>{throw Error('Unexpected notification transaction');},query:async<T>(statement:SqlStatement)=>{
@@ -126,10 +143,17 @@ export async function readEmployeeNotificationList(proof:SessionMutationProof,en
   // Freeze only the discovered visible actor-owned keys. Final replay reuses the
   // same observations; newly required keys/versions fail closed, removed sources
   // remain removed. Neither batch enumerates unrelated requests or receipt history.
-  let detailIds:string[]|undefined,receiptKeys:string[][]|undefined;
+  let detailIds:string[]|undefined,receiptKeys:string[][]|undefined,communicationIds:string[]|undefined;
   async function project(db:SqlExecutor,candidates:Record<string,unknown>[],now:Date){
+   let modules:typeof ALL_MODULES_ON|undefined;
+   async function currentModules(){
+    if(modules)return modules;
+    const [installed]=await db.query<{installed:boolean}>({text:"SELECT to_regclass('nevora_workspace_presentation_revisions') IS NOT NULL AS installed",values:[]});
+    if(typeof installed?.installed!=='boolean')throw Error('Notification modules unavailable');
+    return modules=installed.installed?(await readActivePresentation(workspace.id,db,{strict:true})).modules:ALL_MODULES_ON;
+   }
    const state=sqlNotificationStateRepository(db,workspace),items:EmployeeNotificationItem[]=[];
-   let partial=candidates.length>LIMIT,expires=Infinity;
+   let partial=!paged&&candidates.length>LIMIT,expires=Infinity;
    const visible:{intent:NotificationIntent;source:SourceSnapshot;href:string}[]=[];
    for(const candidate of candidates.slice(0,LIMIT)){
     budget();if(typeof candidate.id!=='string')throw Error('Invalid notification candidate');
@@ -140,6 +164,7 @@ export async function readEmployeeNotificationList(proof:SessionMutationProof,en
     const check=await state.check(intent,proof.employee.id,now,'open');
     if(check.reason==='workspace_unavailable'||check.reason==='payroll_source_unavailable')throw Error('Notification source unavailable');
     if(!check.deliverable||check.effectiveVersion!==intent.effectiveVersion||Date.parse(check.expiresAt)<=now.getTime()||!safeReturnTo(check.destination))continue;
+    const module=moduleForPath(check.destination!);if(module&&!(await currentModules())[module])continue;
     const href=safeNotificationOpenPath(intent.id);if(!href){partial=true;continue;}
     expires=Math.min(expires,Date.parse(check.expiresAt));
     if(intent.source.kind==='PAYROLL_STATEMENT'){
@@ -171,23 +196,27 @@ export async function readEmployeeNotificationList(proof:SessionMutationProof,en
    receiptKeys??=neededKeys;
    if(neededKeys.some(key=>!receiptKeys!.some(original=>original.every((value,i)=>value===key[i]))))throw Error('Unobserved receipt source');
    const receipts=receiptKeys.length?await db.query<{source_kind:string;source_id:string;source_version:string}>({text:ownReceiptSql(['$1','$2','$3','$4','$5']),values:[workspace.id,proof.employee.id,...[0,1,2].map(i=>receiptKeys!.map(key=>key[i]))]}):[];
+   const neededCommunications=[...new Set(projected.filter(v=>v.source.kind==='COMMUNICATION').map(v=>v.source.source.id))].sort();
+   communicationIds??=neededCommunications;
+   if(neededCommunications.some(id=>!communicationIds!.includes(id)))throw Error('Unobserved communication source');
+   const statuses=communicationIds.length?await db.query<CommunicationStatus&{sourceId:string}>({text:ownCommunicationStatusesSql(['$1','$2','$3']),values:[workspace.id,proof.employee.id,communicationIds]}):[];
    for(const {intent,source,href,receiptKind,receiptVersion} of projected){
     const read=receiptKind?receipts.some(row=>row.source_kind===receiptKind&&row.source_id===source.source.id&&row.source_version===receiptVersion):null;
-    const communication=source.kind==='COMMUNICATION'?(await db.query<CommunicationStatus>({text:ownCommunicationStatusSql(['$1','$2','$3']),values:[workspace.id,proof.employee.id,source.source.id]}))[0]??null:null;
+    const communication=source.kind==='COMMUNICATION'?statuses.find(row=>row.sourceId===source.source.id)??null:null;
     const display=projectNotificationDisplayState(source,proof.employee.id,read,communication);if(display.actionState==='unavailable')partial=true;
     items.push({id:intent.id,label:labels[intent.source.kind as typeof supported[number]],at:intent.dueAt,href,...display});
    }
    return {items,coverage:partial?'partial' as const:'complete' as const,expires};
   }
   await project(collecting,initial,new Date());budget();
-  const entries=[...manifest.entries.values()],values:unknown[]=[proof.employee.id,proof.sessionTokenHash,proof.employee.role,workspace.id];
+  const entries=[...manifest.entries.values()],values:unknown[]=[proof.employee.id,proof.sessionTokenHash,proof.employee.role,workspace.id,...(before?[before.at,before.id]:[])];
   const observations=entries.map(entry=>{
    const args=entry.values.map(value=>{values.push(value);return `$${values.length}`;});
    return jsonRows(entry.template.sql(args));
   });
   // facts materializes before at. Both Exchange projectors replay their explicit
   // clock field with this final DB time; source snapshots themselves are intact.
-  const finalSql=`WITH facts AS MATERIALIZED (SELECT ${jsonRows(candidateSql('$1'))} AS candidates,
+  const finalSql=`WITH facts AS MATERIALIZED (SELECT ${jsonRows(candidateSql('$1',paged,before?'$5':undefined,before?'$6':undefined))} AS candidates,
     jsonb_build_array(${observations.join(',')}) AS reads), observed AS MATERIALIZED (SELECT facts.*,clock_timestamp() AS at FROM facts)
    SELECT candidates,reads,to_jsonb(at) AS "observedAt",
     (SELECT LEAST(45000,FLOOR(EXTRACT(EPOCH FROM (s.expires_at-at))*1000)) FROM employee_sessions s JOIN employees e ON e.id=s.employee_id
@@ -208,6 +237,8 @@ export async function readEmployeeNotificationList(proof:SessionMutationProof,en
   }};
   const projected=await project(replay,candidates,new Date(final.observedAt));budget();
   const validForMs=Math.min(Number(final.validForMs),projected.expires-Date.parse(final.observedAt));
-  return parseEmployeeView({state:'ready',kind:'notifications',observedAt:final.observedAt,validForMs,coverage:projected.coverage,items:projected.items},'notifications');
- }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
+  const value=parseEmployeeView({state:'ready',kind:'notifications',observedAt:final.observedAt,validForMs,coverage:projected.coverage,items:projected.items},'notifications');
+  const boundary=candidates[LIMIT-1],nextCursor=paged&&candidates.length>LIMIT?encodeMessageCursor({at:boundary.cursorAt as string,id:boundary.id as string}):null;
+  return pageResult(value,nextCursor);
+ }catch(error){return pageResult({state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'});}
 }
