@@ -74,12 +74,13 @@ it('integrates Employee swap/cover responses and own detail with current permiss
    page.on('request',(request:{url():string;headers():Record<string,string>})=>{if(new URL(request.url()).pathname.startsWith('/api/employee/exchange'))binding=request.headers()['x-nevora-employee-view']??binding;});
    page.on('console',(message:{type():string;text():string})=>{if(['error','warning'].includes(message.type()))messages.push({engine,stage,type:message.type(),text:message.text(),expected});});
    page.on('pageerror',(error:Error)=>messages.push({engine,stage,type:'pageerror',text:error.message,expected:false}));
-   failure=async()=>{await page.screenshot({path:evidence+'/'+engine+'-failure.png',fullPage:true});await writeFile(evidence+'/'+engine+'-failure.html',await page.locator('body').innerHTML());};
+   failure=async()=>{await page.screenshot({path:evidence+'/'+engine+'-failure.png',fullPage:true,caret:'initial'});await writeFile(evidence+'/'+engine+'-failure.html',await page.locator('body').innerHTML());};
    await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==new URL(app.url).origin){await route.abort();return;}await route.continue();});
    const ready=()=>page.locator('.em-exchange:visible[data-exchange-state="ready"]').waitFor();
    const url=(tab:string,id?:string)=>app.url+'/app/exchange?tab='+tab+(id?'&requestId='+encodeURIComponent(id):'');
    const load=async(tab:string,id?:string)=>{await page.goto(url(tab,id));await ready();};
-   const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:true,style:'nextjs-portal {visibility:hidden;}'});captures.push(file);const viewport=engine+'-'+name+'-viewport.png';await page.screenshot({path:evidence+'/'+viewport,fullPage:false,style:'nextjs-portal {visibility:hidden;}'});captures.push(viewport);};
+   // Keep capture tooling from mutating input styles while streamed desktop children hydrate.
+   const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:true,caret:'initial',style:'nextjs-portal {visibility:hidden;}'});captures.push(file);const viewport=engine+'-'+name+'-viewport.png';await page.screenshot({path:evidence+'/'+viewport,fullPage:false,caret:'initial',style:'nextjs-portal {visibility:hidden;}'});captures.push(viewport);};
    await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
    await page.locator('[data-home-state="ready"]:visible,[data-home-state="partial"]:visible').waitFor();await page.locator('.employee-time-badge:visible').waitFor();
    stage='incoming';await load('foryou');expect(await page.getByRole('link',{name:/Swap with Blair C/}).count()).toBe(1);await shot('incoming');
