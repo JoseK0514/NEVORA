@@ -76,8 +76,8 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    await context.addCookies([{name:'nv-lang',value:'en',url:origin}]);
    async function login(id:string,password=TEST_PASSWORD){
     step=engine+': sign-in for '+id;await page.goto(origin+'/login');await page.locator('#login-employee-id').fill(id);await page.locator('#login-password').fill(password);await page.locator('button[type="submit"]').click();await page.waitForURL('**/app',{timeout:45000});
-    // The Owner has company access; this Manager has no assigned management scope. Require each actual authorized view.
-    step=engine+': authorized management Home for '+id;if(id==='QAOWNER')await page.locator('.premium-home').waitFor();else await page.getByRole('heading',{name:'No access yet',exact:true}).waitFor();
+    // Both fixtures predate the owned adoption migration, which grants the existing Manager company scope.
+    step=engine+': authorized management Home for '+id;await page.locator('.premium-home').waitFor();
    }
    step=engine+': invitation and activation';await login('QAOWNER');
    const headers={'Origin':origin,'x-nevora-company-access':'1','x-nevora-actor':'QAOWNER'};
