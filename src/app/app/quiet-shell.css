@@ -3,12 +3,12 @@
  * !important is deliberate here: the v3 layers above use very long selectors for the same properties. */
 @media (max-width: 767px) {
   html body .app-shell[data-nv-quiet], html body .app-shell[data-nv-quiet] .app-main, html body .app-shell[data-nv-quiet] .page-frame { background: #FFFFFF !important; }
-  html body .app-shell[data-nv-quiet] .mobile-header { display: none !important; }
+  html body .app-shell[data-nv-quiet]:not([data-employee-mobile-page="home"]):not([data-employee-mobile-page="schedule"]) .mobile-header { display: none !important; }
   html body .app-shell[data-nv-quiet] .page-frame:has(> .q-page), html body .app-shell[data-nv-quiet] .page-frame:has(.q-skel-page) { padding: 0 0 calc(49px + var(--q-safe-bottom, env(safe-area-inset-bottom, 0px))) !important; margin: 0 !important; }
   html body .app-shell[data-nv-quiet] .page-frame:has(.q-page) > .section-tabs { display: none !important; }
 
   /* Tab bar: white, one hairline, outline glyphs, the current tab filled and teal. */
-  html body .app-shell[data-nv-quiet] .mobile-nav {
+  html body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav {
     position: fixed !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 40;
     display: grid !important; grid-template-columns: none !important; grid-auto-flow: column !important; grid-auto-columns: minmax(0, 1fr) !important; align-items: start !important;
     height: auto !important; min-height: 0 !important; margin: 0 !important;
@@ -16,23 +16,23 @@
     border: 0 !important; border-radius: 0 !important; background: #FFFFFF !important; box-shadow: 0 -1px 0 #EDEDEB !important;
     backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
   }
-  html body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link {
+  html body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-link {
     display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: flex-start !important; gap: 4px !important;
     min-width: 0 !important; height: 41px !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important;
     border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important;
     color: #6B6B6B !important; font: 500 11px/13px -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif !important; letter-spacing: 0 !important; text-decoration: none !important;
   }
-  html body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link::before, html body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link::after { content: none !important; display: none !important; }
-  html body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link svg { flex: none !important; width: 24px !important; height: 24px !important; margin: 0 !important; }
-  html body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link span { display: block !important; margin: 0 !important; color: inherit !important; font: inherit !important; }
-  html body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link.active, html body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link.active span { color: #0B6E69 !important; }
-  html body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-count { display: none !important; }
+  html body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-link::before, html body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-link::after { content: none !important; display: none !important; }
+  html body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-link svg { flex: none !important; width: 24px !important; height: 24px !important; margin: 0 !important; }
+  html body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-link span { display: block !important; margin: 0 !important; color: inherit !important; font: inherit !important; }
+  html body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-link.active, html body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-link.active span { color: #0B6E69 !important; }
+  html body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-count { display: none !important; }
   /* Phase 1: the tapped tab turns teal at once; the tab it leaves goes grey until the page arrives. */
-  html body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-pending { display: none !important; }
-  html body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link:has(> .mobile-nav-pending), html body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link:has(> .mobile-nav-pending) span { color: #0B6E69 !important; }
-  html body .app-shell[data-nv-quiet] .mobile-nav:has(.mobile-nav-pending) .mobile-nav-link.active:not(:has(> .mobile-nav-pending)), html body .app-shell[data-nv-quiet] .mobile-nav:has(.mobile-nav-pending) .mobile-nav-link.active:not(:has(> .mobile-nav-pending)) span { color: #6B6B6B !important; }
+  html body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-pending { display: none !important; }
+  html body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-link:has(> .mobile-nav-pending), html body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-link:has(> .mobile-nav-pending) span { color: #0B6E69 !important; }
+  html body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav:has(.mobile-nav-pending) .mobile-nav-link.active:not(:has(> .mobile-nav-pending)), html body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav:has(.mobile-nav-pending) .mobile-nav-link.active:not(:has(> .mobile-nav-pending)) span { color: #6B6B6B !important; }
   /* A sheet (Cancel · title · Save) covers the tab bar, as in the mockups. */
-  html body .app-shell[data-nv-quiet]:has(.q-page[data-q-sheet]) .mobile-nav { display: none !important; }
+  html body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]):has(.q-page[data-q-sheet]) .mobile-nav { display: none !important; }
   html body .app-shell[data-nv-quiet] .page-frame:has(> .q-page[data-q-sheet]), html body .app-shell[data-nv-quiet] .page-frame:has(> * > .q-page[data-q-sheet]) { padding-bottom: var(--q-safe-bottom, env(safe-area-inset-bottom, 0px)) !important; }
 }
 
@@ -41,9 +41,9 @@
 @media (max-width: 767px) {
   html[data-theme="dark"] body .app-shell[data-nv-quiet], html[data-theme="dark"] body .app-shell[data-nv-quiet] .app-main, html[data-theme="dark"] body .app-shell[data-nv-quiet] .page-frame { background: #000000 !important; }
   html[data-theme="dark"], html[data-theme="dark"] body:has(.app-shell[data-nv-quiet]) { background: #000000; color-scheme: dark; }
-  html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav { background: #0A0A0A !important; box-shadow: 0 -1px 0 #262628 !important; }
-  html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link, html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link span { color: #8E8E93 !important; }
-  html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link.active, html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link.active span,
-  html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link:has(> .mobile-nav-pending), html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav .mobile-nav-link:has(> .mobile-nav-pending) span { color: #5CC8BE !important; }
-  html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav:has(.mobile-nav-pending) .mobile-nav-link.active:not(:has(> .mobile-nav-pending)), html[data-theme="dark"] body .app-shell[data-nv-quiet] .mobile-nav:has(.mobile-nav-pending) .mobile-nav-link.active:not(:has(> .mobile-nav-pending)) span { color: #8E8E93 !important; }
+  html[data-theme="dark"] body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav { background: #0A0A0A !important; box-shadow: 0 -1px 0 #262628 !important; }
+  html[data-theme="dark"] body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-link, html[data-theme="dark"] body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-link span { color: #8E8E93 !important; }
+  html[data-theme="dark"] body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-link.active, html[data-theme="dark"] body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-link.active span,
+  html[data-theme="dark"] body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-link:has(> .mobile-nav-pending), html[data-theme="dark"] body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav .mobile-nav-link:has(> .mobile-nav-pending) span { color: #5CC8BE !important; }
+  html[data-theme="dark"] body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav:has(.mobile-nav-pending) .mobile-nav-link.active:not(:has(> .mobile-nav-pending)), html[data-theme="dark"] body .app-shell[data-nv-quiet]:not([data-employee-mobile="true"]) .mobile-nav:has(.mobile-nav-pending) .mobile-nav-link.active:not(:has(> .mobile-nav-pending)) span { color: #8E8E93 !important; }
 }
