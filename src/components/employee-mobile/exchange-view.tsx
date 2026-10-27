@@ -30,6 +30,7 @@ export function ResponseControls({detail,operation,onRespond,onRetry,onRefresh}:
  useEffect(()=>{if(settled)onRefresh();},[settled,onRefresh]);
  const allowed=detail.checks.filter(check=>check.allowed),accept=allowed.find(check=>check.kind==='ACCEPT');
  return <section className="em-response-actions" aria-label="Your response" aria-busy={pending}>
+  {allowed.some(check=>check.kind==='WITHDRAW')?<p>Withdrawing closes this pickup request. The shift stays with its currently assigned employee.</p>:null}
   {accept?<p>{accept.outcome==='completed'?'Accepting completes this swap immediately if the shifts still meet company rules.':'Accepting sends this swap for manager review. Keep your current shift until the swap is completed.'}</p>:null}
   {detail.checks.filter(check=>!check.allowed).map(check=><p key={check.kind} role="status">{actionLabels[check.kind]} unavailable. {check.notice??'Refresh to check the current request.'}</p>)}
   {!uncertain&&!settled?allowed.map(check=><button key={check.kind} className={check.kind==='ACCEPT'?'em-request-primary':'em-request-secondary'} type="button" disabled={pending||operation===null} onClick={()=>onRespond(check.kind)}>{pending&&operation?.kind===check.kind?'Submitting…':actionLabels[check.kind]}</button>):null}

@@ -77,7 +77,7 @@ it('integrates Employee swap/cover responses and own detail with current permiss
    const ready=()=>page.locator('.em-exchange:visible[data-exchange-state="ready"]').waitFor();
    const url=(tab:string,id?:string)=>app.url+'/app/exchange?tab='+tab+(id?'&requestId='+encodeURIComponent(id):'');
    const load=async(tab:string,id?:string)=>{await page.goto(url(tab,id));await ready();};
-   const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:true,style:'nextjs-portal {visibility:hidden;}'});captures.push(file);};
+   const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:true,style:'nextjs-portal {visibility:hidden;}'});captures.push(file);const viewport=engine+'-'+name+'-viewport.png';await page.screenshot({path:evidence+'/'+viewport,fullPage:false,style:'nextjs-portal {visibility:hidden;}'});captures.push(viewport);};
    await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
    await page.locator('[data-home-state="ready"]:visible,[data-home-state="partial"]:visible').waitFor();await page.locator('.employee-time-badge:visible').waitFor();
    stage='incoming';await load('foryou');expect(await page.getByRole('link',{name:/Swap with Blair C/}).count()).toBe(1);await shot('incoming');
@@ -130,7 +130,7 @@ it('integrates Employee swap/cover responses and own detail with current permiss
    expect((await command(actor,{kind:'ACCEPT',requestId:peerCover.requestId,expectedRevision:1} as CommandInput)).status).toBe('pending');
    await load('requests',peerCover.requestId);await page.getByRole('button',{name:'Withdraw response',exact:true}).click();
    await page.getByText('Your response was withdrawn. Check your current schedule.',{exact:true}).waitFor();
-   const withdrawn=(await q('SELECT status,target_employee_id FROM shift_exchanges WHERE id=$1',[peerCover.requestId]))[0];expect(withdrawn.status).toBe('OPEN');expect(withdrawn.target_employee_id).toBeNull();expect((await q('SELECT employee_id FROM shifts WHERE id=$1',[pickupShift]))[0].employee_id).toBe(peer);await shot('pickup-withdrawn');record('Withdrawing own pending pickup leaves the peer offer open and does not fabricate assignment or cancel the offer');
+   const withdrawn=(await q('SELECT status,target_employee_id FROM shift_exchanges WHERE id=$1',[peerCover.requestId]))[0];expect(withdrawn.status).toBe('CANCELLED');expect(withdrawn.target_employee_id).toBe(actor);expect((await q('SELECT employee_id FROM shifts WHERE id=$1',[pickupShift]))[0].employee_id).toBe(peer);await shot('pickup-withdrawn');record('Withdrawing own pending pickup closes that request, retains own history membership and preserves the original assignment');
    await command(peer,{kind:'CANCEL_CALLOUT',requestId:peerReport.requestId,expectedRevision:1} as CommandInput);
    const declineSource=await source(secretShift),declineTarget=await source(reportShift);
    const decline=await command(peer,{kind:'PROPOSE_SWAP',...declineSource,targetShiftId:declineTarget.sourceShiftId,targetEpisodeId:declineTarget.sourceEpisodeId,targetTermsFingerprint:declineTarget.sourceTermsFingerprint} as CommandInput);
