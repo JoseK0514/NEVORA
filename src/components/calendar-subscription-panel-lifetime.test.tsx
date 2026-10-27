@@ -1,5 +1,6 @@
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
 import {CalendarSubscriptionPanel} from './calendar-subscription-panel';
+vi.mock('./employee-mobile/use-mobile',()=>({useEmployeeMobile:()=>false}));
 const host=vi.hoisted(()=>({state:[] as unknown[],refs:[] as {current:unknown}[],effects:[] as (()=>void|(()=>void))[],s:0,r:0}));
 vi.mock('react',async()=>({...await vi.importActual<typeof import('react')>('react'),useCallback:(fn:unknown)=>fn,useEffect:(fn:()=>void|(()=>void))=>{host.effects.push(fn);},useRef:(initial:unknown)=>host.refs[host.r++]??(host.refs[host.r-1]={current:initial}),useState:(initial:unknown)=>{const n=host.s++;if(!(n in host.state))host.state[n]=typeof initial==='function'?initial():initial;return [host.state[n],(value:unknown)=>{host.state[n]=typeof value==='function'?value(host.state[n]):value;}];}}));
 const authority='a'.repeat(64),id='11111111-1111-4111-8111-111111111111',generation='22222222-2222-4222-8222-222222222222';
