@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import {MobileRecoveryReset} from './mobile-access/recovery-views';
 import {useEffect, useRef, type FormEventHandler, type RefCallback} from 'react';
 import {RecoverySubmit} from './recovery-submit';
 import {PasswordInput} from './auth-premium/password-input';
 import {AUTH_COPY, authMessage, type AuthLang} from '@/lib/auth-copy';
 
-export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef, lang = 'en'}: {
+export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef, lang = 'en', mobileAccess=false,linkProof=false,onDifferentCode}: {
  hydrated: boolean;
  busy: boolean;
  done: boolean;
@@ -14,6 +15,7 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
  onSubmit: FormEventHandler<HTMLFormElement>;
  proofRef: RefCallback<HTMLInputElement>;
  lang?: AuthLang;
+ mobileAccess?:boolean;linkProof?:boolean;onDifferentCode?:()=>void;
 }) {
  const t = AUTH_COPY[lang];
  const feedback = useRef<HTMLDivElement>(null);
@@ -24,6 +26,7 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
  useEffect(() => {if (message) feedback.current?.focus();}, [message, done]);
 
  // Quiet (v4, approved Oct 23): New password, the code and the two passwords, Reset password, then Need a recovery code?
+ if(mobileAccess)return <MobileRecoveryReset {...{hydrated,busy,done,message,onSubmit,proofRef,lang,linkProof,onDifferentCode}}/>;
  return <>
   <div className="q-hd"><h1>{done ? t.resetDoneTitle : t.quiet.resetTitle}</h1></div>
   {done ? <>

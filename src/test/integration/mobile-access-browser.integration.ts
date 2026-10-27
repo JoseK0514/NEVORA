@@ -1,0 +1,85 @@
+import {it,expect} from 'vitest';
+import {createRequire} from 'node:module';
+import {resolve} from 'node:path';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {randomUUID} from 'node:crypto';
+import {createOwnedNextApp} from './owned-next-app';
+import {createOwnedSmtp} from './owned-smtp';
+import {seedOwnedApp,TEST_PASSWORD} from './owned-app-fixture';
+import {hashPassword} from '../../lib/auth/password';
+
+it('integrates frozen mobile Access with real sessions, activation, recovery and protected Owner permissions',async()=>{
+ const evidence=process.env.NEVORA_MOBILE_ACCESS_EVIDENCE;
+ if(!evidence)throw Error('Select external NEVORA_MOBILE_ACCESS_EVIDENCE');
+ await mkdir(evidence,{recursive:true});
+ const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
+ const smtp=await createOwnedSmtp();
+ const app=await createOwnedNextApp(evidence,{mobileAccessEnabled:true,mobileSupportEnabled:true,recoverySmtpPort:smtp.port,invitationSmtpPort:smtp.port,pinDevTypeReferences:true}).catch(async error=>{await smtp.close();throw error;});
+ const checks:string[]=[],errors:string[]=[],browsers:{close():Promise<void>}[]=[];
+ const secrets:string[]=[TEST_PASSWORD];
+ const clean=(text:string)=>secrets.reduce((s,token)=>s.replaceAll(token,'[REDACTED]'),text);
+ const q=(text:string,values:unknown[]=[])=>app.database.executor.query({text,values});
+ const origin=app.url;
+ let complete=false;
+ try{
+  await q("INSERT INTO employees(id,first_name,last_name,email,phone,role,primary_location_id) VALUES('MA-MANAGER','Fixture','Manager','manager@example.invalid','2025550100','MANAGER','loc-1')");
+  for(const engine of ['chromium','webkit','firefox'])await q('INSERT INTO employees(id,first_name,last_name,email,phone,role,primary_location_id) VALUES($1,$2,$3,$4,$5,$6,$7)',[`MA-${engine}`,'Fixture','Employee',`${engine}@example.invalid`,'2025550101','EMPLOYEE','loc-1']);
+  await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',['MA-MANAGER',await hashPassword(TEST_PASSWORD)]);
+  await seedOwnedApp(app.database.executor);
+  for(const engine of ['chromium','webkit','firefox']){
+   const browser=await runtime[engine].launch({headless:true});browsers.push(browser);
+   const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});
+   await context.route('**/*',async(route:{request():{url():string};abort(reason?:string):Promise<void>;continue():Promise<void>})=>{
+    const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==origin)await route.abort('blockedbyclient');else await route.continue();
+   });
+   const page=await context.newPage();page.setDefaultTimeout(15000);page.on('pageerror',(e:Error)=>errors.push(engine+': '+clean(e.message)));
+   await page.goto(origin+'/welcome');await page.locator('#mobile-access-page').waitFor();expect(await page.locator('h1').innerText()).toContain('Brighter work');
+   for(const width of [320,390,430]){
+    await page.setViewportSize({width,height:844});
+    for(const lang of ['en','es']){
+     await context.addCookies([{name:'nv-lang',value:lang,url:origin}]);
+     for(const path of ['/welcome','/login','/forgot-access','/reset-access','/activate','/access-help','/access-help/email','/access-help/invitation','/access-help/support','/access-help/owner-contact']){
+      expect((await page.goto(origin+path))?.status()).toBe(200);await page.locator('#mobile-access-page').waitFor();
+      expect(await page.locator('#mobile-access-page').getAttribute('lang')).toBe(lang);
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),engine+path+width+lang).toBe(true);
+      await page.addStyleTag({content:'html{font-size:200%}'});
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),engine+path+width+lang+' enlarged').toBe(true);
+     }
+    }
+   }
+   checks.push(engine+': mobile EN/ES,320/390/430,normal/200% layouts');
+   await page.setViewportSize({width:390,height:844});await context.addCookies([{name:'nv-lang',value:'en',url:origin}]);
+   await page.goto(origin+'/forgot-access');await page.locator('#recovery-employee-id').fill('MA-'+engine);await page.locator('#recovery-email').fill(engine+'@example.invalid');
+   await page.locator('.ma-language').click();await expect.poll(()=>page.locator('#mobile-access-page').getAttribute('lang')).toBe('es');
+   expect(await page.locator('#recovery-employee-id').inputValue()).toBe('MA-'+engine);expect(await page.locator('#recovery-email').inputValue()).toBe(engine+'@example.invalid');
+   await page.locator('.ma-footer-help').click();await page.locator('main a[href*="/access-help/support"]').click();await page.locator('.ma-back').click();await page.locator('.ma-back').click();expect(new URL(page.url()).pathname).toBe('/forgot-access');
+   await page.goto(origin+'/access-help/support');await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw Error('fixture denial');}}}));await page.locator('.ma-draft button').click();await expect.poll(()=>page.locator('#access-message').evaluate((e:HTMLTextAreaElement)=>e.selectionEnd-e.selectionStart)).toBe((await page.locator('#access-message').inputValue()).length);
+   const mail=new URL(await page.locator('.ma-draft a').getAttribute('href'));expect(mail.protocol).toBe('mailto:');expect(mail.pathname).toBe('support@thevelani.com');expect([...mail.searchParams.keys()]).toEqual(['subject','body']);
+   checks.push(engine+': locale drafts, contextual Back, manual-copy fallback and fixed mail recipient');
+   await context.addCookies([{name:'nv-lang',value:'en',url:origin}]);
+   async function login(id:string,password=TEST_PASSWORD){await page.goto(origin+'/login');await page.locator('#login-employee-id').fill(id);await page.locator('#login-password').fill(password);await page.locator('button[type="submit"]').click();await page.waitForURL('**/app',{timeout:45000});}
+   await login('QAOWNER');
+   const headers={'Origin':origin,'x-nevora-company-access':'1','x-nevora-actor':'QAOWNER'};
+   const status=await context.request.get(origin+'/api/company-access/invitations/MA-'+engine,{headers});expect(status.status()).toBe(200);const current=await status.json();expect(current.state).toBe('ready');
+   const response=await context.request.post(origin+'/api/company-access/invitations/MA-'+engine,{headers,data:{action:'ISSUE',operationId:randomUUID(),expectedEmployeeVersion:current.employeeVersion,expectedInvitationRevision:current.invitationRevision}});expect(response.status()).toBe(200);
+   const captured=smtp.messages.find((m:{recipient:string})=>m.recipient.includes(engine+'@example.invalid'));expect(Boolean(captured)).toBe(true);
+   const body=captured!.body.replace(/=\r?\n/g,'').replace(/=3D/g,'=');const proof=/#proof=([A-Za-z0-9_-]{43})/.exec(body)?.[1];if(!proof)throw Error('Owned invitation proof missing');secrets.push(proof);
+   const employee=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});await employee.addCookies([{name:'nv-lang',value:'es',url:origin}]);const join=await employee.newPage();join.setDefaultTimeout(20000);join.on('pageerror',(e:Error)=>errors.push(engine+': '+clean(e.message)));
+   await join.goto(origin+'/activate#proof='+proof);await join.locator('#activation-password').waitFor();await expect.poll(()=>new URL(join.url()).hash).toBe('');
+   expect(await join.locator('main').innerText()).not.toMatch(/Invitation verified|invitación verificada/i);
+   await join.locator('#activation-password').fill(TEST_PASSWORD);await join.locator('#activation-confirm-password').fill(TEST_PASSWORD);await join.locator('button[type="submit"]').click();await join.locator('#activation-employee-id').waitFor();expect(await join.locator('#activation-employee-id').inputValue()).toBe('MA-'+engine);
+   await join.locator('a[href*="activated=1"]').click();expect(await join.locator('#login-employee-id').inputValue()).toBe('MA-'+engine);await join.locator('#login-password').fill(TEST_PASSWORD);await join.locator('button[type="submit"]').click();await join.waitForURL('**/app',{timeout:45000});await join.locator('.ma-onboarding summary').waitFor();await join.locator('.ma-onboarding summary').click();expect(await join.locator('.ma-guide-list a[href="/app/schedule"]').count()).toBe(1);await join.screenshot({path:evidence+'/'+engine+'-first-home.png',fullPage:true});
+   expect((await employee.request.post(origin+'/api/company-access/invitations/MA-'+engine,{headers:{Origin:origin,'x-nevora-company-access':'1','x-nevora-actor':'MA-'+engine},data:{action:'ISSUE'}})).status()).toBe(403);
+   const badReset=await employee.request.post(origin+'/api/auth/reset-access',{headers:{Origin:origin,'x-nevora-recovery':'1'},data:{proof:'K7M4PQ8R2T',password:TEST_PASSWORD}});expect(badReset.status()).toBe(400);
+   checks.push(engine+': real Owner-issued local email → activation → confirmed ID → ordinary sign-in → real Employee Home; employee issuance denied; short proof rejected');
+   await employee.close();
+   await login('MA-MANAGER');expect((await context.request.post(origin+'/api/company-access/invitations/MA-'+engine,{headers:{Origin:origin,'x-nevora-company-access':'1','x-nevora-actor':'MA-MANAGER'},data:{action:'ISSUE'}})).status()).toBe(403);
+   checks.push(engine+': Manager cannot issue invitations');
+   await context.close();
+  }
+  expect(errors).toEqual([]);complete=true;
+ }catch(error){throw new Error(clean(error instanceof Error?error.message:String(error)));}finally{
+  for(const browser of browsers)await browser.close();let closed=false;try{await app.close();closed=true;}finally{await smtp.close();
+  await writeFile(evidence+'/mobile-access-results.json',JSON.stringify({complete:complete&&closed,scope:'Real Next/server actions, invocation-owned PostgreSQL and loopback SMTP only; no real email/native clipboard/production service used.',checks,errors},null,2));}
+ }
+});

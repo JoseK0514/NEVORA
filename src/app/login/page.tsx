@@ -1,4 +1,9 @@
+import {mobileAccessMetadata} from "@/components/mobile-access/metadata.server";
 import Link from "next/link";
+import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
+import {MOBILE_ACCESS_COPY} from "@/components/mobile-access/copy";
+import {AccessEmployeeIdInput} from "@/components/mobile-access/journey";
+import {CaretRightIcon} from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { getPublicWorkspaceName } from "@/lib/data/workspaces";
 import { safeReturnTo } from "@/lib/notifications/destinations";
 import { login } from "@/app/login/actions";
@@ -20,7 +25,7 @@ export default async function LoginPage({
 }) {
   const params = await searchParams;
   const [workspaceName, lang] = await Promise.all([getPublicWorkspaceName(), readAuthLang()]);
-  const t = AUTH_COPY[lang];
+  const t = AUTH_COPY[lang], mobile=mobileAccessEnabled(), mt=MOBILE_ACCESS_COPY[lang];
   const returnTo = typeof params.returnTo === "string" ? safeReturnTo(params.returnTo) : null;
   const returnQuery = returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : "";
   const errorId = params.error ? "login-error" : undefined;
@@ -29,7 +34,7 @@ export default async function LoginPage({
   // then Forgot access? and Activate account on one line.
   return (
     <QuietAuthShell lang={lang} t={t}>
-      <div className="q-hd q-auth__hd"><Greeting words={t.greeting} className="" /><p>{workspaceName ?? t.workspaceUnavailable}</p></div>
+      <div className="q-hd q-auth__hd"><Greeting words={t.greeting} className="" mobileTitle={mobile ? mt.signInTitle : undefined}/><p>{workspaceName ?? t.workspaceUnavailable}</p></div>
       {params.error ? <p className="q-error q-auth__alert" id="login-error" role="alert">{params.error === "deleting" ? t.loginDeleting : params.error === "busy" ? t.loginBusy : t.loginError}</p> : null}
       {params.activated ? <p className="q-help q-auth__alert" role="status">{t.activated}</p> : null}
       <form action={login} className="q-auth__form" data-invalid={params.error ? "" : undefined}>
@@ -37,7 +42,7 @@ export default async function LoginPage({
         <PasswordSignInMarker />
         <div className="q-fl">
           <label htmlFor="login-employee-id">{t.employeeId}</label>
-          <input id="login-employee-id" className="q-in" name="employeeId" placeholder={t.quiet.idPlaceholder}
+          <AccessEmployeeIdInput id="login-employee-id" className="q-in" name="employeeId" placeholder={t.quiet.idPlaceholder}
             autoComplete="username" autoCapitalize="none" spellCheck={false} aria-describedby={errorId} required />
         </div>
         <div className="q-fl">
@@ -47,11 +52,14 @@ export default async function LoginPage({
         </div>
         <LoginSubmit idle={t.signIn} busy={t.signingIn} className="q-btn" />
       </form>
-      <PasskeySlot t={t} quiet />
+      <PasskeySlot t={mobile ? {...t,passkeyPhone:t.passkeyDesktop,passkeyBusyPhone:t.passkeyBusyDesktop,passkeyNotFoundPhone:t.passkeyNotFoundDesktop,passkeyUnavailablePhone:t.passkeyUnavailableDesktop} : t} quiet />
       <nav className="q-auth__links" aria-label={t.signIn}>
         <Link href="/forgot-access">{t.forgotAccess}</Link>
         <Link href={`/activate${returnQuery}`}>{t.activateAccount}</Link>
       </nav>
+      {mobile ? <details id="login-id-help" className="ma-details ma-only"><summary><CaretRightIcon size={16} aria-hidden="true"/>{mt.idHelp}</summary><p>{mt.idHelpBody}</p></details> : null}
     </QuietAuthShell>
   );
 }
+
+export const generateMetadata=()=>mobileAccessMetadata("signin");
