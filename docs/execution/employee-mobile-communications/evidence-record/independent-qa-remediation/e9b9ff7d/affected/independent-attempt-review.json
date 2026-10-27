@@ -1,0 +1,117 @@
+{
+  "authoredAt": "2026-10-27T19:10:41.776342+00:00",
+  "candidate": "e9b9ff7dae7687a1d3099b04b792b293f1e5299a",
+  "recommendation": "NO-GO; affected preflight must pass before full20 acceptance",
+  "actualGateResult": {
+    "exitCode": 1,
+    "files": 2,
+    "tests": 2,
+    "failed": 2,
+    "durationSeconds": 123.91
+  },
+  "QA-COM-001": {
+    "status": "OPEN",
+    "newOccurrence": {
+      "suite": "planning",
+      "assertion": "src/test/integration/employee-mobile-planning.integration.ts:58:219",
+      "checkpointsCompleted": 63,
+      "errors": [
+        {
+          "engine": "webkit",
+          "stage": "desktop",
+          "type": "pageerror",
+          "text": "Fetch API cannot load http://127.0.0.1:44551/api/notifications due to access control checks.\n    at unknown (http://127.0.0.1:44551/_next/static/chunks/src_1ya_tx7d-uv65._.js:3665:49)\n    at useNotificationsSnapshot.useEffect.controller (http://127.0.0.1:44551/_next/static/chunks/src_1ya_tx7d-uv65._.js:3664:89)",
+          "expected": false
+        }
+      ]
+    }
+  },
+  "QA-COM-002": {
+    "status": "OPEN",
+    "newOccurrence": {
+      "suite": "responses",
+      "setupDurationMs": 294,
+      "error": "Refusing existing database, even if its name has the disposable prefix.",
+      "locations": [
+        "src/test/integration/local-postgres.ts:71:99",
+        "src/test/integration/owned-next-app.ts:175:20",
+        "src/test/integration/employee-mobile-responses.integration.ts:22:12"
+      ],
+      "assessment": "Same owned c1 namespace collided despite root-only fileParallelism:false in inline-project config; guards correctly refused existing DB. Project-level serial behavior requires correction and verification."
+    }
+  },
+  "QA-COM-003": {
+    "status": "OPEN pending final-candidate lint",
+    "staticFinding": "Variable rename is scoped; no own final-candidate lint yet because prior gate failed."
+  },
+  "custody": {
+    "candidate": "e9b9ff7dae7687a1d3099b04b792b293f1e5299a",
+    "expectedApplicationInputs": 2007,
+    "sourceMatchesCommittedCandidate": true,
+    "runtimeCount": 1,
+    "expectedRuntimeCount": 1,
+    "runtimes": [
+      {
+        "suite": "planning",
+        "root": "/workspace/nevora-evidence/independent-qa-remediation/e9b9ff7d/affected/planning/owned-next-V3ahZw",
+        "checkpoint": "e9b9ff7dae7687a1d3099b04b792b293f1e5299a",
+        "sourceCount": 2007,
+        "sourceManifestSha256": "823f6ca146adf80d44d1d98ba7c5113fc64068f7cb9bb475390f08aeefacc687",
+        "ownershipSha256": "5552b4feb5cdbafcaab900fa05bd34f69fe3819a3c6248ad229d8b2a0faad496",
+        "pid": 37372,
+        "pidLive": false,
+        "processGroupLiveMembers": [],
+        "port": 44551,
+        "portOpen": false,
+        "identity": {
+          "name": "nevora_exchange_test_c1_65beaa13f21d",
+          "oid": 16384,
+          "marker": "fuel-phase3-disposable:de396327-69a8-4285-bf46-95c9dbb8b48a"
+        },
+        "approvedSubstitutions": [
+          "src/lib/db.ts",
+          "next-env.d.ts"
+        ],
+        "failures": [],
+        "passed": true
+      }
+    ],
+    "runnerClusterClosure": [
+      {
+        "directory": "/tmp/nevora-payroll-owned-nmvnju",
+        "directoryExists": false,
+        "pid": 37267,
+        "livePid": false,
+        "port": 35411,
+        "portOpen": false
+      }
+    ],
+    "supplementalDatabaseCustody": {
+      "runnerLive": false,
+      "clusters": [
+        {
+          "directory": "/tmp/nevora-payroll-owned-nmvnju",
+          "directoryExists": false,
+          "pid": 37267,
+          "livePid": false,
+          "port": 35411,
+          "portOpen": false,
+          "pidLive": false
+        }
+      ]
+    },
+    "databaseObservationMethod": "Recorder queries actual owned cluster through existing pg package with scrubbed environment; any query failures are retained.",
+    "gateSourceUnchanged": true,
+    "observedSourceChanges": [],
+    "gitIndexUnchanged": true,
+    "branchUnchanged": true,
+    "clusterStopLogged": true,
+    "artifactsCount": 125,
+    "passed": true
+  },
+  "partialSetupArtifact": "Responses allocated only empty owned-next-eI3I1z/app and barriers before database refusal; no owned process, mirror source or ownership manifest started. Preserved.",
+  "full20RunLaunched": false,
+  "laterGatesLaunched": false,
+  "sourceFreezeAndRuntimeReleased": true,
+  "originalReportSha256": "32aa46940fff91d52a672167c8bd96b81e8379d63d0a79def62e8fa8e38f8c9c"
+}

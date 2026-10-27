@@ -1,0 +1,13 @@
+# Communications Cloud continuation —2026-10-27
+
+Accepted locally with conditions at `8435c3d81734b1fc4bb8ac574368b331a9e99b9d`. Read [HANDOFF.md](HANDOFF.md) for the authoritative final state, remaining work and exact independent gates; [EVIDENCE_HISTORY.md](EVIDENCE_HISTORY.md) preserves every unsuccessful attempt.
+
+The direct private GitHub delivery was `e06eeff35960336b2c33f1bd1037823d62a8405a` on `codex/employee-mobile-cloud-handoff-20261027`, containing pinned8672d76e/6110790f. Before edits, all2004application hashes and ancestry matched. All701original delivery files were subsequently audited unchanged. No old bundle/ZIP was reapplied over the delivered branch. The immutable handoff remains `docs/handoffs/employee-mobile-cloud-2026-10-27/`.
+
+The deliberate pending-module RED was reproduced on the delivery: notice count0 instead of1 immediately after Updates disabled with a command pending. A later after-release screenshot already showed unknown, so that pixel was not misrepresented as the earlier assertion state. The one-condition pause fixf7e331a7 passed in all3engines. Fresh code/UI/QA then found further actual issues, corrected in8ec15116; later commits change test/configuration oracles only. Author-owned closures and the final full176/unit609/TS/lint/custody now satisfy the bounded local batch.
+
+A transient workspace outage occurred after8435was committed and before its new Requests test launched. The environment service reported offline/failurenull without a cause. Previousownedruntimeswereclosed; restoredsource/evidence/absenceofleakswereverified before resuming. Later, one compiler tool session disappeared without a result. Its files remain inconclusive; the identical command completed in a fresh directory. Neither interruption was called a compiler/application failure or silently converted to success.
+
+The active `.superpowers/sdd/employee-mobile-communications-plan/` was restored intact, with plan-path adapted to `/workspace/NEVORA/docs/execution/employee-mobile-communications-plan.md`. Task1/2/3 are now complete only for this communications plan. A byte-preserving execution copy and compact raw-evidence archive are retained; the active ledger and external raw source/runtime/capture artifacts are not deleted.
+
+Approved teal design, Employee/Lead own authority, desktop/management branches, activation/recovery/authorization controls and no-real-delivery restrictions remain. Phase2 continues with Profile/help/session, capability-dependent services and Pay; Phase3 has not started. No production configuration, push/PR/merge or deployment occurred.

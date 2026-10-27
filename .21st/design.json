@@ -309,6 +309,24 @@
       },
       "implementation": "src/components/employee-mobile/hours*.tsx, hours.css and guarded own Hours adapters",
       "handoff": "docs/execution/employee-mobile-hours/HANDOFF.md"
+    },
+    {
+      "date": "2026-10-27",
+      "scope": "Employee/Lead mobile Notifications, Updates/detail, own today-team publication and withdrawal; desktop and management preserved",
+      "direction": "Continue the approved scoped teal Operate tokens and native labelled fields. Distinguish own reading from acknowledgement; keep source-safe exact destinations, current audience review and honest immutable original-operation recovery. No visual exploration or replacement business owner.",
+      "componentProvenance": {
+        "retrieval": "Recorded free metadata search only; no paid code retrieval, generation, new dependency or new competitor audit",
+        "searchResults": [
+          27135,
+          36949,
+          31789,
+          28458
+        ],
+        "selection": "Existing shared private reader, canonical communications/destination/recovery owners, native forms and regular Phosphor fit the approved workflow.",
+        "cloudCliReview": "21st CLI unavailable; independent browser/UI evidence is the actual review, not a claimed CLI result."
+      },
+      "implementation": "src/components/employee-mobile/message*.tsx, use-messages.ts, messages.css and protected paged own adapters",
+      "handoff": "docs/execution/employee-mobile-communications/HANDOFF.md"
     }
   ],
   "evidence": [
@@ -335,6 +353,10 @@
     {
       "fact": "project.stack:react",
       "source": "package.json"
+    },
+    {
+      "fact": "employee.mobile.communications:local-verified-candidate8435c3d8",
+      "source": "docs/execution/employee-mobile-communications/EVIDENCE_HISTORY.md"
     }
   ],
   "generatedAt": "2026-10-13T18:05:53.669Z"

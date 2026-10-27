@@ -632,3 +632,10 @@ The visible text of every page, for owner, employee and both payroll roles, was 
   - The exchanges integration suite (14 files, 163 tests) passed on a throwaway database inside the preview's disposable cluster. The database was created and dropped by the tests; no other database was touched.
   - Browser: the 156-check sweep passes, as do U1, U2, U3, U4, U8, B3, B4 and the D1–D6 checks.
   - The B3 flow now runs with as many future shifts as the calendar allows. On Oct 17 only the Oct 18 shift could still be offered.
+
+
+## Employee mobile Notifications and Updates — 2026-10-27
+
+This scoped Phase2 continuation follows Jose's approved teal Employee/Lead system in `docs/product/specs/employee-mobile-teal/README.md`; it does not change management, desktop or global style authority. Notifications use bounded current-source pages, native filter/search and exact source-safe open/return focus. Updates distinguish permitted own Mark as read from Acknowledge. Today-team publication uses native labels, canonical field validation and deliberate current audience review; withdrawal has explicit confirmation. Pending or unknown work retains its original operation; current module loss immediately removes private fields/actions and fences late replies. Existing authorization, activation and recovery owners remain mandatory.
+
+Recorded free21st metadata references27135/36949/31789/28458 informed existing native primitives. No paid code, hosted generation, new dependency, competitor audit or visual exploration was added. The Cloud21st CLI is unavailable; actual browser captures and author-owned independent UI review are evidence. See `docs/execution/employee-mobile-communications/HANDOFF.md` for exact candidate, tests, original failures and the three retained nonblocking code/UI findings. These local results do not authorize production or complete the remaining Phase2 groups.

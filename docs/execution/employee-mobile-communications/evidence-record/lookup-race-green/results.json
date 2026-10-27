@@ -1,0 +1,27 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "CR-3 OPTIONAL mark-read records own reading without acknowledgement"
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "scenario": "optional-and-original",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "scenario": "optional-and-original",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "expected": true
+    }
+  ],
+  "captures": [
+    "chromium-optional-and-original-failure.png"
+  ]
+}

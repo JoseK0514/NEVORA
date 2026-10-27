@@ -1,0 +1,45 @@
+{
+  "gate": "affected",
+  "candidate": "e9b9ff7dae7687a1d3099b04b792b293f1e5299a",
+  "cwd": "/workspace/NEVORA",
+  "argv": [
+    "node",
+    "scripts/payroll-postgres.mjs",
+    "vitest.employee-mobile-communications.config.mts",
+    "src/test/integration/employee-mobile-responses.integration.ts",
+    "src/test/integration/employee-mobile-planning.integration.ts"
+  ],
+  "startedAt": "2026-10-27T19:07:01.347801+00:00",
+  "completedAt": "2026-10-27T19:09:05.259521+00:00",
+  "exitCode": 1,
+  "durationSeconds": 123.91,
+  "sourceUnchanged": true,
+  "observedSourceChanges": [],
+  "gitIndexUnchanged": true,
+  "branchUnchanged": true,
+  "clusterClosure": [
+    {
+      "directory": "/tmp/nevora-payroll-owned-nmvnju",
+      "directoryExists": false,
+      "pid": 37267,
+      "livePid": false,
+      "port": 35411,
+      "portOpen": false
+    }
+  ],
+  "finalProcesses": [],
+  "summaryLines": [
+    " \u276f  employee  src/test/integration/employee-mobile-responses.integration.ts (1 test | 1 failed) 294ms",
+    " \u276f  employee  src/test/integration/employee-mobile-planning.integration.ts (1 test | 1 failed) 121215ms",
+    "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 2 \u23af\u23af\u23af\u23af\u23af\u23af\u23af",
+    " FAIL   employee  src/test/integration/employee-mobile-planning.integration.ts > integrates own mobile time-off and availability with canonical saves, drafts, current permission and deliberate recovery",
+    "AssertionError: expected [ { engine: 'webkit', \u2026(4) } ] to deeply equal []",
+    " FAIL   employee  src/test/integration/employee-mobile-responses.integration.ts > integrates Employee swap/cover responses and own detail with current permissions, recorded terms and original operations",
+    "Error: Refusing existing database, even if its name has the disposable prefix.",
+    " Test Files  2 failed (2)",
+    "      Tests  2 failed (2)",
+    "   Duration  121.69s (tests 99%)",
+    "[Payroll PostgreSQL] Owned cluster stopped."
+  ],
+  "stdoutSha256": "8ff25f9882a69a449e479b02fd410ff857eef23abb351bc827c46946903002b8"
+}

@@ -1,0 +1,27 @@
+{
+  "gate": "typescript",
+  "candidate": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+  "base": "564c71371e16f528a94aa242e42bf906d5890314",
+  "branch": "codex/employee-mobile-cloud-handoff-20261027",
+  "cwd": "/workspace/NEVORA",
+  "argv": [
+    "./node_modules/.bin/tsc",
+    "--noEmit",
+    "--incremental",
+    "false"
+  ],
+  "env": {
+    "HOME": "/home/agent",
+    "PATH": "/home/agent/.local/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/override:/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin:/opt/codex/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/agent/.local/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/fallback",
+    "TMPDIR": "/tmp",
+    "LD_LIBRARY_PATH": "/workspace/scratch/nevora-runtime/browser-libs/usr/lib/x86_64-linux-gnu",
+    "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS": "1",
+    "NEVORA_TEST_PG_BIN": "/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin",
+    "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE": "/opt/codex/cua_node/lib/node_modules/playwright/package.json"
+  },
+  "startedAt": "2026-10-27T19:59:33.546567+00:00",
+  "initialProcesses": [],
+  "initialClusters": [],
+  "sourceInputCount": 2247,
+  "gitIndexHash": "998f8c32f57743016584af450952b7c2c0872463722260b511661c9a4fa3dfae"
+}

@@ -1,0 +1,12 @@
+{
+  "startedAt": "2026-10-27T18:32:49.645Z",
+  "observerPid": 12014,
+  "runnerPid": 9623,
+  "environmentKeys": [
+    "HOME",
+    "PATH",
+    "TMPDIR"
+  ],
+  "query": "SELECT datname AS name,oid::int AS oid,shobj_description(oid,'pg_database') AS marker FROM pg_database ORDER BY datname",
+  "note": "Initial Python observer preserved its psql-not-installed errors. This supplemental independent observer uses the existing pg package without changing the test command or environment."
+}

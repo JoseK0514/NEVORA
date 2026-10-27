@@ -1,0 +1,35 @@
+{
+  "gate": "affected",
+  "candidate": "e9b9ff7dae7687a1d3099b04b792b293f1e5299a",
+  "base": "564c71371e16f528a94aa242e42bf906d5890314",
+  "branch": "codex/employee-mobile-cloud-handoff-20261027",
+  "cwd": "/workspace/NEVORA",
+  "argv": [
+    "node",
+    "scripts/payroll-postgres.mjs",
+    "vitest.employee-mobile-communications.config.mts",
+    "src/test/integration/employee-mobile-responses.integration.ts",
+    "src/test/integration/employee-mobile-planning.integration.ts"
+  ],
+  "env": {
+    "HOME": "/home/agent",
+    "PATH": "/home/agent/.local/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/override:/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin:/opt/codex/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/agent/.local/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/fallback",
+    "TMPDIR": "/tmp",
+    "LD_LIBRARY_PATH": "/workspace/scratch/nevora-runtime/browser-libs/usr/lib/x86_64-linux-gnu",
+    "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS": "1",
+    "NEVORA_TEST_PG_BIN": "/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin",
+    "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE": "/opt/codex/cua_node/lib/node_modules/playwright/package.json",
+    "NEVORA_EMPLOYEE_MESSAGES_EVIDENCE": "/workspace/nevora-evidence/independent-qa-remediation/e9b9ff7d/affected/messages",
+    "NEVORA_EMPLOYEE_MESSAGES_REVIEW_EVIDENCE": "/workspace/nevora-evidence/independent-qa-remediation/e9b9ff7d/affected/review",
+    "NEVORA_EMPLOYEE_HOURS_EVIDENCE": "/workspace/nevora-evidence/independent-qa-remediation/e9b9ff7d/affected/hours",
+    "NEVORA_EMPLOYEE_PLANNING_EVIDENCE": "/workspace/nevora-evidence/independent-qa-remediation/e9b9ff7d/affected/planning",
+    "NEVORA_EMPLOYEE_CREATION_EVIDENCE": "/workspace/nevora-evidence/independent-qa-remediation/e9b9ff7d/affected/creation",
+    "NEVORA_EMPLOYEE_RESPONSES_EVIDENCE": "/workspace/nevora-evidence/independent-qa-remediation/e9b9ff7d/affected/responses",
+    "NEVORA_EMPLOYEE_MOBILE_EVIDENCE": "/workspace/nevora-evidence/independent-qa-remediation/e9b9ff7d/affected/mobile"
+  },
+  "startedAt": "2026-10-27T19:07:01.347801+00:00",
+  "initialProcesses": [],
+  "initialClusters": [],
+  "sourceInputCount": 2200,
+  "gitIndexHash": "c0cd31d754aba726333c8de64404bd380c85b3c93904266f8b015bac9127302f"
+}

@@ -1,0 +1,37 @@
+{
+  "gate": "combined",
+  "candidate": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+  "cwd": "/workspace/NEVORA",
+  "argv": [
+    "node",
+    "scripts/payroll-postgres.mjs",
+    "vitest.employee-mobile-communications.config.mts"
+  ],
+  "startedAt": "2026-10-27T19:42:52.384947+00:00",
+  "completedAt": "2026-10-27T19:58:33.790280+00:00",
+  "exitCode": 0,
+  "durationSeconds": 941.404,
+  "sourceUnchanged": true,
+  "observedSourceChanges": [],
+  "gitIndexUnchanged": true,
+  "branchUnchanged": true,
+  "clusterClosure": [
+    {
+      "directory": "/tmp/nevora-payroll-owned-MPjWw2",
+      "directoryExists": false,
+      "pid": 2025,
+      "livePid": false,
+      "port": 45849,
+      "portOpen": false
+    }
+  ],
+  "finalProcesses": [],
+  "summaryLines": [
+    "   \u2713 H13 failed final transaction rolls back decision metadata with assignments and operation 584ms",
+    " Test Files  20 passed (20)",
+    "      Tests  176 passed (176)",
+    "   Duration  939.45s (tests 100%)",
+    "[Payroll PostgreSQL] Owned cluster stopped."
+  ],
+  "stdoutSha256": "1a6b604cdcb0f6894814aa7d88c682fb16947a8437e5e76d8f1fccb797c340cb"
+}

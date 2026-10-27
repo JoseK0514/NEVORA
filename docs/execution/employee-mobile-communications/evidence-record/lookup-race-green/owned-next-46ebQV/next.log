@@ -1,0 +1,33 @@
+▲ Next.js 16.4.2 (Turbopack)
+- Local:         http://127.0.0.1:39039
+- Network:       http://127.0.0.1:39039
+✓ Ready in 320ms
+✓ Running next.config.ts took 32ms
+- Experiments (use with caution):
+  ⨯ turbopackFileSystemCacheForBuild
+
+ GET /login 200 in 516ms (next.js: 192ms, application-code: 324ms)
+ GET /login 200 in 57ms (next.js: 1.4ms, application-code: 55ms)
+ GET /login 200 in 74ms (next.js: 1.5ms, application-code: 73ms)
+ GET /app 200 in 414ms (next.js: 52ms, application-code: 361ms)
+ POST /login 200 in 2.5s (next.js: 1.0ms, application-code: 2.5s)
+  └─ ƒ login({}) in 67ms login/actions.ts
+ GET /api/notifications 200 in 475ms (next.js: 86ms, application-code: 389ms)
+ GET /api/employee/home 200 in 634ms (next.js: 38ms, application-code: 595ms)
+ GET /api/employee/my-time 200 in 69ms (next.js: 38ms, application-code: 32ms)
+ GET /app/updates 200 in 298ms (next.js: 8ms, application-code: 290ms)
+ GET /api/notifications 200 in 274ms (next.js: 1.4ms, application-code: 272ms)
+ GET /api/employee/messages/updates/first 200 in 1194ms (next.js: 682ms, application-code: 513ms)
+ GET /app/updates/b154c946-458b-4bf8-864d-e7131a74d6b5 200 in 532ms (next.js: 444ms, application-code: 88ms)
+ GET /api/employee/messages/detail/b154c946-458b-4bf8-864d-e7131a74d6b5 200 in 277ms (next.js: 20ms, application-code: 257ms)
+ POST /api/employee/communications 200 in 157ms (next.js: 54ms, application-code: 103ms)
+ GET /app/updates/b154c946-458b-4bf8-864d-e7131a74d6b5 200 in 172ms (next.js: 23ms, application-code: 149ms)
+ GET /api/employee/messages/detail/b154c946-458b-4bf8-864d-e7131a74d6b5 200 in 430ms (next.js: 20ms, application-code: 410ms)
+ GET /app/updates 200 in 40ms (next.js: 1.6ms, application-code: 38ms)
+ GET /api/employee/messages/updates/first 200 in 611ms (next.js: 18ms, application-code: 593ms)
+ GET /app/updates/compose 200 in 69ms (next.js: 12ms, application-code: 57ms)
+ GET /api/employee/messages/compose/new 200 in 173ms (next.js: 20ms, application-code: 153ms)
+ POST /api/employee/communications/preview 200 in 78ms (next.js: 34ms, application-code: 44ms)
+ POST /api/employee/communications 200 in 139ms (next.js: 1.2ms, application-code: 138ms)
+ GET /api/employee/communications/operations/296e2f38-e523-4984-b1ad-3c918b3742f4 503 in 704ms (next.js: 641ms, application-code: 63ms)
+[?25h

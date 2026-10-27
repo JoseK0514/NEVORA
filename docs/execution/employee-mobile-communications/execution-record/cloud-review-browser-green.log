@@ -1,0 +1,45 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/test/integration/employee-mobile-communications-fixtures" without a file extension (vitest.employee-mobile-communications.config.mts:3:39). Add the file extension
+  - ESM syntax in a file loaded as CommonJS (src/test/integration/employee-mobile-communications-fixtures.ts:4:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/workspace/NEVORA[39m
+
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+ [31m❯[39m [30m[43m employee [49m[39m src/test/integration/employee-mobile-communications-review.integration.ts [2m([22m[2m4 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 150818[2mms[22m[39m
+   [33m[2m✓[22m[39m CR-2 bounds held notification opens and fences stale results across private refresh and pause[33m 72395[2mms[22m[39m
+   [33m[2m✓[22m[39m UI-COM-001 associates actual invalid fields and restores deliberate review after corrections[33m 21056[2mms[22m[39m
+[31m   [31m×[31m CR-3/CR-1 preserve optional read facts and recover a refused original lookup[39m[33m 23735[2mms[22m[39m
+   [33m[2m✓[22m[39m UI-COM-R1 immediately fences an actual committed late publication reply while Updates is off[33m 22152[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m [30m[43m employee [49m[39m src/test/integration/employee-mobile-communications-review.integration.ts[2m > [22mCR-3/CR-1 preserve optional read facts and recover a refused original lookup
+[31m[1mTimeoutError[22m: locator.waitFor: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator('.em-messages:visible').getByText('Updates are turned off for your workspace.') to be visible
+[39m
+[36m [2m❯[22m src/test/integration/employee-mobile-communications-review.integration.ts:[2m122:174[22m[39m
+
+[90m [2m❯[22m withPage src/test/integration/employee-mobile-communications-review.integration.ts:[2m54:3[22m[39m
+[90m [2m❯[22m src/test/integration/employee-mobile-communications-review.integration.ts:[2m107:30[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (4)[39m
+[2m   Start at [22m 18:54:45
+[2m   Duration [22m 151.70s[2m (tests 100%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

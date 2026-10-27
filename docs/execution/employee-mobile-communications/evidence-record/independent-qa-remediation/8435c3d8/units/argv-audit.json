@@ -1,0 +1,10 @@
+{
+  "savedFileCount": 76,
+  "actualFileCount": 77,
+  "addedOnly": "src/test/employee-mobile-communications-fixtures.test.ts",
+  "argvMatchesSavedPlusOnlyFixtureFile": true,
+  "cwd": "/workspace/NEVORA",
+  "savedCwd": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1",
+  "unitCountExpected": 609,
+  "unitCountActual": 609
+}

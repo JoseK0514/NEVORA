@@ -1,0 +1,411 @@
+{
+  "reviewStatus": "targeted author recheck complete; semantic P2 and R1 closed, deferred P3s and broader acceptance remain open",
+  "entries": [
+    {
+      "path": "/workspace/nevora-evidence/review-green/chromium-form-and-original-invalid-title-long.png",
+      "dimensions": [
+        390,
+        1379
+      ],
+      "sha256": "d897c5a9188ff9ad1585ede58fe805960129a3d4b95f17f3e34ca83899c5b450",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/chromium-form-and-original-invalid-title-empty.png",
+      "dimensions": [
+        390,
+        1379
+      ],
+      "sha256": "e2c6a8df073b87c2a4a9e9b3e5e2a0d2ae3949b532d9c12a71d91740ab34c213",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/chromium-form-and-original-invalid-body-long.png",
+      "dimensions": [
+        390,
+        1379
+      ],
+      "sha256": "eebb3534a023acf8e97d1b92352b39800e263cdf6ac4920c65833e287fa93079",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/chromium-form-and-original-invalid-body-control.png",
+      "dimensions": [
+        390,
+        1379
+      ],
+      "sha256": "55a2e747b5b7de769720dced04ba6310b42ceb1ce841cb5126970b8b14d549d9",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/chromium-form-and-original-invalid-expiry.png",
+      "dimensions": [
+        390,
+        1359
+      ],
+      "sha256": "6c5901580f438f62500835be123d1d8335dbd3ab6775a7ceb9c43fe4d9302050",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/chromium-late-committed-module-fence-after-release.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "8b4393cf1346762931da93d11b8854dec0e2d77459c61a67006752e37595d063",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled after-release sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/webkit-form-and-original-invalid-title-long.png",
+      "dimensions": [
+        390,
+        1394
+      ],
+      "sha256": "89e6d22dfeff7c0a8a6b9d0ba91c0600421a2a1d6356379204751250a267418d",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/webkit-form-and-original-invalid-title-empty.png",
+      "dimensions": [
+        390,
+        1394
+      ],
+      "sha256": "802b6e1d0e5c149fb9ec9b88fc1de4ed8a5d88d0901642a6a55330288c6a7c8e",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/webkit-form-and-original-invalid-body-long.png",
+      "dimensions": [
+        390,
+        1394
+      ],
+      "sha256": "f89fd0712db196de36b6ebfa4887eaa10456b1792c7fd84ba82cb4579f028184",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/webkit-form-and-original-invalid-body-control.png",
+      "dimensions": [
+        390,
+        1394
+      ],
+      "sha256": "599f9b51f13b70367411e8f3849e2401f9ba0906f2b8b5216737b5db1595f59f",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/webkit-form-and-original-invalid-expiry.png",
+      "dimensions": [
+        390,
+        1374
+      ],
+      "sha256": "6ecfc0c5ecfe42df6e28681a95c8d7e0055d686bcf3bd4da70f787262fc9f134",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/webkit-late-committed-module-fence-after-release.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "019d1e6adb652e06dc739bb18a7d891ddfb835a8e69679dff2052eb000e3d1b0",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled after-release sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/firefox-form-and-original-invalid-title-long.png",
+      "dimensions": [
+        390,
+        1397
+      ],
+      "sha256": "e5daef92f6a31f7efd37a051ad4bf99492bf6e68b30cafa494ac7acb55079d7d",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/firefox-form-and-original-invalid-title-empty.png",
+      "dimensions": [
+        390,
+        1397
+      ],
+      "sha256": "1e8dbf9341c2b3456662b29f96f8e750a81f330fcd1de1faf7e8793bd558b038",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/firefox-form-and-original-invalid-body-long.png",
+      "dimensions": [
+        390,
+        1397
+      ],
+      "sha256": "1067741323d7e3a93b6113418e0542760ce4c92b11101f8637e4750fc7153574",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/firefox-form-and-original-invalid-body-control.png",
+      "dimensions": [
+        390,
+        1397
+      ],
+      "sha256": "5f848f4e113e6ff60e52e67c6797ea185acc48125016c0e7ebe19ab1883d7f30",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/firefox-form-and-original-invalid-expiry.png",
+      "dimensions": [
+        390,
+        1377
+      ],
+      "sha256": "78bccc721e974b8e8fc11b83dbc383730ba781fd4fab4d28f29e4e15ffb6dd77",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green/firefox-late-committed-module-fence-after-release.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "80088f841ff8983d839ac9ca883f0cba5c8c6c522e17f6e9a10d7ab45b0ac489",
+      "candidate": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+      "inspection": "Complete full page via original-size labelled after-release sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-red/chromium-form-and-original-failure.png",
+      "dimensions": [
+        390,
+        1290
+      ],
+      "sha256": "8358c4871cab44cc60b3ae51e607bb89071a9ca411c7e2f04ed1a318fb566485",
+      "candidate": "79ad39a4309db96d7c3c4df9124b71d101bd4706",
+      "inspection": "Complete original RED full page inspected directly"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/chromium-form-and-original-invalid-title-long.png",
+      "dimensions": [
+        390,
+        1379
+      ],
+      "sha256": "d897c5a9188ff9ad1585ede58fe805960129a3d4b95f17f3e34ca83899c5b450",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/chromium-form-and-original-invalid-title-empty.png",
+      "dimensions": [
+        390,
+        1379
+      ],
+      "sha256": "e2c6a8df073b87c2a4a9e9b3e5e2a0d2ae3949b532d9c12a71d91740ab34c213",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/chromium-form-and-original-invalid-body-long.png",
+      "dimensions": [
+        390,
+        1379
+      ],
+      "sha256": "eebb3534a023acf8e97d1b92352b39800e263cdf6ac4920c65833e287fa93079",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/chromium-form-and-original-invalid-body-control.png",
+      "dimensions": [
+        390,
+        1379
+      ],
+      "sha256": "55a2e747b5b7de769720dced04ba6310b42ceb1ce841cb5126970b8b14d549d9",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/chromium-form-and-original-invalid-expiry.png",
+      "dimensions": [
+        390,
+        1359
+      ],
+      "sha256": "6c5901580f438f62500835be123d1d8335dbd3ab6775a7ceb9c43fe4d9302050",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/chromium-form-and-original-invalid-title-320-text200.png",
+      "dimensions": [
+        320,
+        2960
+      ],
+      "sha256": "a83f9e2555db35650ae6779ded450279ff13e6b252d69b3ef2a64f3dfc671124",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full-page PNG via contiguous unscaled 1000px strips; Chromium/Firefox fixed nav obscures most inline-error paragraph in this artifact, WebKit paragraph fully visible"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/chromium-late-committed-module-fence-after-release.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "8b4393cf1346762931da93d11b8854dec0e2d77459c61a67006752e37595d063",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-after-release sheet; matching HTML personally inspected"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/webkit-form-and-original-invalid-title-long.png",
+      "dimensions": [
+        390,
+        1394
+      ],
+      "sha256": "89e6d22dfeff7c0a8a6b9d0ba91c0600421a2a1d6356379204751250a267418d",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/webkit-form-and-original-invalid-title-empty.png",
+      "dimensions": [
+        390,
+        1394
+      ],
+      "sha256": "802b6e1d0e5c149fb9ec9b88fc1de4ed8a5d88d0901642a6a55330288c6a7c8e",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/webkit-form-and-original-invalid-body-long.png",
+      "dimensions": [
+        390,
+        1394
+      ],
+      "sha256": "f89fd0712db196de36b6ebfa4887eaa10456b1792c7fd84ba82cb4579f028184",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/webkit-form-and-original-invalid-body-control.png",
+      "dimensions": [
+        390,
+        1394
+      ],
+      "sha256": "599f9b51f13b70367411e8f3849e2401f9ba0906f2b8b5216737b5db1595f59f",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/webkit-form-and-original-invalid-expiry.png",
+      "dimensions": [
+        390,
+        1374
+      ],
+      "sha256": "6ecfc0c5ecfe42df6e28681a95c8d7e0055d686bcf3bd4da70f787262fc9f134",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/webkit-form-and-original-invalid-title-320-text200.png",
+      "dimensions": [
+        320,
+        2939
+      ],
+      "sha256": "00510f4347f95c3b88cc94b0dd16ff6dc65ab95b0717916707df86f9cca8676c",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full-page PNG via contiguous unscaled 1000px strips; Chromium/Firefox fixed nav obscures most inline-error paragraph in this artifact, WebKit paragraph fully visible"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/webkit-late-committed-module-fence-after-release.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "019d1e6adb652e06dc739bb18a7d891ddfb835a8e69679dff2052eb000e3d1b0",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-after-release sheet; matching HTML personally inspected"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/firefox-form-and-original-invalid-title-long.png",
+      "dimensions": [
+        390,
+        1397
+      ],
+      "sha256": "e5daef92f6a31f7efd37a051ad4bf99492bf6e68b30cafa494ac7acb55079d7d",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/firefox-form-and-original-invalid-title-empty.png",
+      "dimensions": [
+        390,
+        1397
+      ],
+      "sha256": "1e8dbf9341c2b3456662b29f96f8e750a81f330fcd1de1faf7e8793bd558b038",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/firefox-form-and-original-invalid-body-long.png",
+      "dimensions": [
+        390,
+        1397
+      ],
+      "sha256": "1067741323d7e3a93b6113418e0542760ce4c92b11101f8637e4750fc7153574",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/firefox-form-and-original-invalid-body-control.png",
+      "dimensions": [
+        390,
+        1397
+      ],
+      "sha256": "5f848f4e113e6ff60e52e67c6797ea185acc48125016c0e7ebe19ab1883d7f30",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/firefox-form-and-original-invalid-expiry.png",
+      "dimensions": [
+        390,
+        1377
+      ],
+      "sha256": "78bccc721e974b8e8fc11b83dbc383730ba781fd4fab4d28f29e4e15ffb6dd77",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-default-error sheet"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/firefox-form-and-original-invalid-title-320-text200.png",
+      "dimensions": [
+        320,
+        2958
+      ],
+      "sha256": "b447949e4174591c76d818d4b31aafbef19712273db378f53ca73bfddaa29cc6",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full-page PNG via contiguous unscaled 1000px strips; Chromium/Firefox fixed nav obscures most inline-error paragraph in this artifact, WebKit paragraph fully visible"
+    },
+    {
+      "path": "/workspace/nevora-evidence/review-green-2/firefox-late-committed-module-fence-after-release.png",
+      "dimensions": [
+        390,
+        844
+      ],
+      "sha256": "80088f841ff8983d839ac9ca883f0cba5c8c6c522e17f6e9a10d7ab45b0ac489",
+      "candidate": "4f2f5c7fdf24fb805d4be8dbe662344eb56c3d41",
+      "inspection": "Complete full page via original-size final-after-release sheet; matching HTML personally inspected"
+    }
+  ],
+  "personallyInspectedCount": 40,
+  "countsByRun": {
+    "review-red": 1,
+    "review-green": 18,
+    "review-green-2": 21
+  }
+}

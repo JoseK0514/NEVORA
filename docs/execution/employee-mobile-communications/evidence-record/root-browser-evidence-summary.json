@@ -1,0 +1,85 @@
+{
+  "candidate": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+  "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined",
+  "fixtures": [
+    {
+      "fixture": "messages",
+      "checks": 69,
+      "captures": 216,
+      "contrasts": 90,
+      "minimumContrast": 6.089452668960573,
+      "pageerrors": 0,
+      "warnings": 23,
+      "unexpectedErrors": 0
+    },
+    {
+      "fixture": "review",
+      "checks": 21,
+      "captures": 39,
+      "contrasts": 0,
+      "minimumContrast": null,
+      "pageerrors": 0,
+      "warnings": 19,
+      "unexpectedErrors": 0
+    },
+    {
+      "fixture": "creation",
+      "checks": 40,
+      "captures": 192,
+      "contrasts": 54,
+      "minimumContrast": 6.089452668960573,
+      "pageerrors": 0,
+      "warnings": 12,
+      "unexpectedErrors": 0
+    },
+    {
+      "fixture": "planning",
+      "checks": 63,
+      "captures": 114,
+      "contrasts": 72,
+      "minimumContrast": 6.089452668960573,
+      "pageerrors": 0,
+      "warnings": 12,
+      "unexpectedErrors": 0
+    },
+    {
+      "fixture": "hours",
+      "checks": 51,
+      "captures": 105,
+      "contrasts": 54,
+      "minimumContrast": 6.089452668960573,
+      "pageerrors": 0,
+      "warnings": 6,
+      "unexpectedErrors": 0
+    },
+    {
+      "fixture": "responses",
+      "checks": 34,
+      "captures": 90,
+      "contrasts": 36,
+      "minimumContrast": 6.089452668960573,
+      "pageerrors": 0,
+      "warnings": 6,
+      "unexpectedErrors": 0
+    },
+    {
+      "fixture": "mobile",
+      "checks": 28,
+      "captures": 36,
+      "contrasts": 18,
+      "minimumContrast": 6.089452668960573,
+      "pageerrors": 0,
+      "warnings": 3,
+      "unexpectedErrors": 0
+    }
+  ],
+  "totals": {
+    "checks": 306,
+    "captures": 792,
+    "contrasts": 324,
+    "pageerrors": 0,
+    "warnings": 81,
+    "unexpectedErrors": 0
+  },
+  "note": "Checkpoints/captures are evidence counts, not separate test cases or physical-device/AT certification."
+}

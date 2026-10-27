@@ -15,14 +15,13 @@ The approved scope remains the three-phase plan at `outputs/employee-mobile/rema
 
 - Fifth Phase2 batch: own Hours/raw punches and breaks, canonical period timecards, entry/break/missing-time and approved-missing replacements, own decisions/history, exact retained links and original-operation recovery; accepted application/test candidate `e17a8e7479988a1b7159b714f8a2af9c146f2cd3`. Independent422unit/71SQL-browser tests pass; code finding and UI/QA material findings closed. See `../employee-mobile-hours/HANDOFF.md` and authored reports. This is bounded local acceptance; Phase2 remains active.
 
-- Sixth Phase2 batch, Notifications/Updates: **in progress at Cloud transfer**, application/test candidate `6110790f48cd6563de05c8cb7e1fcc496dfda135`. Earlier three-engine preflight and600unit tests pass, but a newly added pending-module-revocation regression is RED. Final whole-change code and independent UI/QA review have not occurred. See `../../handoffs/2026-10-27-employee-mobile-cloud-checkpoint.md`. Do not count this batch as accepted or start Phase3.
+- Sixth Phase2 batch, Notifications/Updates: accepted locally with conditions at application/test candidate `8435c3d81734b1fc4bb8ac574368b331a9e99b9d`. The deliberate pending-module regression was reproduced RED and fixed, then fresh review's material recovery/action/accessibility issues were corrected and author-closed. Independent final20-file SQL/browser gate176/176 and77-file unit gate609/609 passed; full nonincremental TypeScript,43-file lint and8mirror source/runtime custody passed. Code/UI/QA authors retain three nonblocking conditions: partial-empty wording, enlarged acknowledgement word breaks and a short dark-page canvas seam. Original NO-GO reports, all failed runs and the inconclusive first compiler attempt remain preserved; the exact compiler recovery passed separately. See `../employee-mobile-communications/HANDOFF.md`, its authored reports, evidence history and gallery. Phase3 remains closed; the groups below are still Phase2 implementation.
 
 ## Remaining Phase 2 implementation
 
-1. Complete source-backed notifications/destinations and updates, permitted acknowledgement and authorized team posting/withdrawal.
-2. Own profile, language/appearance preferences, support/legal, contextual return and actual sign-out/device cleanup.
-3. Capability-dependent calendar, passkeys, current-device alerts and own deletion-request lifecycles.
-4. Own published Pay statements, current payroll/module gates and protected PDF view/download.
+1. Own profile, language/appearance preferences, support/legal, contextual return and actual sign-out/device cleanup.
+2. Capability-dependent calendar, passkeys, current-device alerts and own deletion-request lifecycles.
+3. Own published Pay statements, current payroll/module gates and protected PDF view/download.
 
 Each batch must preserve current role/workspace/session/module authority, source/revision binding, immutable operation recovery, unrelated available capabilities, consistent mobile components and desktop/management separation. Maintain explicit loading/empty/partial/error/refusal/pending/success recovery states.
 

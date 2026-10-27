@@ -1,0 +1,19 @@
+{
+  "candidate": "1ada3f1c748e120e50e5ad7012e3eea3d1c8b901",
+  "fixtures": [
+    {
+      "suite": "planning",
+      "checkpoints": 63,
+      "captures": 114,
+      "pageErrors": 0,
+      "warnings": 13
+    },
+    {
+      "suite": "responses",
+      "checkpoints": 34,
+      "captures": 90,
+      "pageErrors": 0,
+      "warnings": 6
+    }
+  ]
+}

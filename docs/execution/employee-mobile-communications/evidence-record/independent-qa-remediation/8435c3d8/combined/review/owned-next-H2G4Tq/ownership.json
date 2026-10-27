@@ -1,0 +1,27 @@
+{
+  "ownerId": "3ccb7a21-69e9-4955-8ca2-dd03cfdfcc1f",
+  "source": "/workspace/NEVORA",
+  "root": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/review/owned-next-H2G4Tq",
+  "runtime": "Next development + owned PostgreSQL; substituted DB transport",
+  "started": true,
+  "pid": 9798,
+  "port": 43097,
+  "url": "http://127.0.0.1:43097",
+  "identity": {
+    "name": "nevora_exchange_test_c1_4e4c163a047c",
+    "oid": 273762,
+    "marker": "fuel-phase3-disposable:e086baa7-e9e6-4143-910d-0fafbd4301ee"
+  },
+  "closed": true,
+  "closedAt": "2026-10-27T19:50:11.633Z",
+  "sourceVerified": true,
+  "mirrorVerified": true,
+  "derivedArtifactsReleased": {
+    "directories": [
+      "app/node_modules",
+      "app/.next"
+    ],
+    "availableBytesBefore": 26383532032,
+    "availableBytesAfter": 27411505152
+  }
+}

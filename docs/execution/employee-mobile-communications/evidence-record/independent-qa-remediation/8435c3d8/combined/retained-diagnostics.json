@@ -1,0 +1,1946 @@
+[
+  {
+    "suite": "creation",
+    "messages": [
+      {
+        "engine": "chromium",
+        "stage": "lost-report-response",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "authority-loss",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "intercepted-task",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44661/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "intercepted-task",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44661/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "intercepted-task",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44661/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "swap-review",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44661/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "swap-review",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44661/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "swap-review",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44661/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "cover",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44661/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "cover",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44661/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "cover",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44661/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "report-draft",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44661/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "report-draft",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44661/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "report-draft",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44661/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "authority-loss",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "expected": true
+      }
+    ],
+    "failedRequests": [
+      {
+        "engine": "chromium",
+        "stage": "intercepted-task",
+        "url": "http://127.0.0.1:44661/app/exchange/swap?sourceShiftId=qa-CREATE0-source&_rsc=gFFKmdVk-WOz59Z0",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "intercepted-task",
+        "url": "http://127.0.0.1:44661/app/schedule?week=2026-11-09&shift=qa-CREATE0-source&_rsc=iUixCR_FSB7Kmq7P",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "intercepted-task",
+        "url": "http://127.0.0.1:44661/app/exchange/swap?sourceShiftId=qa-CREATE0-source&_rsc=iUixCR_FSB7Kmq7P",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "intercepted-task",
+        "url": "http://127.0.0.1:44661/app/schedule?week=2026-11-09&shift=qa-CREATE0-source&_rsc=it0guOpKWRrY9WDl",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "intercepted-task",
+        "url": "http://127.0.0.1:44661/app/exchange/swap?sourceShiftId=qa-CREATE0-source&_rsc=gTZmmSMVpqCtc0rj",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "swap-review",
+        "url": "http://127.0.0.1:44661/app/exchange/swap?sourceShiftId=qa-CREATE0-source",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "lost-report-response",
+        "url": "http://127.0.0.1:44661/app/exchange/callout?shiftId=creation-own-report-0",
+        "error": "net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "lost-report-response",
+        "url": "http://127.0.0.1:44661/app/exchange/callout?shiftId=creation-own-report-0",
+        "error": "net::ERR_ABORTED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "lost-report-response",
+        "url": "http://127.0.0.1:44661/app/exchange?tab=requests&requestId=bd45df99-3a5f-4dae-9b86-8fdbc635be43&_rsc=cPAdpI9xsb5_RXpj",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "authority-loss",
+        "url": "http://127.0.0.1:44661/api/employee/creation/callout/creation-own-report-0",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "lost-report-response",
+        "url": "http://127.0.0.1:44661/app/exchange/callout?shiftId=creation-own-report-1",
+        "error": "Blocked by Web Inspector",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "authority-loss",
+        "url": "http://127.0.0.1:44661/api/notifications",
+        "error": "Load request cancelled",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "authority-loss",
+        "url": "http://127.0.0.1:44661/api/employee/creation/callout/creation-own-report-1",
+        "error": "Load request cancelled",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "lost-report-response",
+        "url": "http://127.0.0.1:44661/app/exchange/callout?shiftId=creation-own-report-2",
+        "error": "NS_ERROR_FAILURE",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "stage": "authority-loss",
+        "url": "http://127.0.0.1:44661/api/employee/creation/callout/creation-own-report-2",
+        "error": "NS_BINDING_ABORTED",
+        "expected": false
+      }
+    ]
+  },
+  {
+    "suite": "hours",
+    "messages": [
+      {
+        "engine": "chromium",
+        "stage": "lost-response",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "missing-time",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "failure-empty",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "denied",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "records",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:33687/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "records",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:33687/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "records",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:33687/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "failure-empty",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "denied",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "stage": "break",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:33687/_next/static/chunks/src_components_1-x67_9n8_h4a._.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:33687/app/my-time?view=corrections&edit=break%3Ahours-UI2%3Ahours-UI2-break&from=cards&start=2026-10-24&end=2026-10-24\" line: 0}]",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "break",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:33687/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:33687/app/my-time?view=corrections&edit=break%3Ahours-UI2%3Ahours-UI2-break&from=cards&start=2026-10-24&end=2026-10-24\" line: 0}]",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "break",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:33687/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:33687/app/my-time?view=corrections&edit=break%3Ahours-UI2%3Ahours-UI2-break&from=cards&start=2026-10-24&end=2026-10-24\" line: 0}]",
+        "expected": false
+      }
+    ],
+    "failedRequests": [
+      {
+        "engine": "chromium",
+        "stage": "login",
+        "url": "http://127.0.0.1:33687/login",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "records",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "records",
+        "url": "http://127.0.0.1:33687/app/my-time?_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "records",
+        "url": "http://127.0.0.1:33687/app/my-time?_rsc=rNQsizmChsLy1K_B",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "records",
+        "url": "http://127.0.0.1:33687/app/my-time?entry=live-hours-0&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "records",
+        "url": "http://127.0.0.1:33687/app/my-time?_rsc=rNQsizmChsLy1K_B",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "records",
+        "url": "http://127.0.0.1:33687/app/my-time?entry=hours-UI0&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "records",
+        "url": "http://127.0.0.1:33687/app/my-time?_rsc=rNQsizmChsLy1K_B",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "records",
+        "url": "http://127.0.0.1:33687/app/my-time?entry=hours-UI0&_rsc=rNQsizmChsLy1K_B",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "records",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&edit=entry%3Ahours-UI0&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "lost-response",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&edit=entry%3Ahours-UI0",
+        "error": "net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "lost-response",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&edit=entry%3Ahours-UI0",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "lost-response",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&requestId=26a38dd2-8de7-4aca-bd93-91fa01a7fdc6&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "lost-response",
+        "url": "http://127.0.0.1:33687/api/employee/hours/corrections/target%3Ahours-UI0",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "lost-response",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&filter=decided&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "timecards",
+        "url": "http://127.0.0.1:33687/app/my-time?view=cards&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "timecards",
+        "url": "http://127.0.0.1:33687/app/my-time?view=cards&start=2026-10-24&end=2026-10-24&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "break",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&edit=entry%3Ahours-UI0&from=cards&start=2026-10-24&end=2026-10-24&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "break",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&edit=break%3Ahours-UI0%3Ahours-UI0-break&from=cards&start=2026-10-24&end=2026-10-24&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "missing-time",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&edit=break%3Ahours-UI0%3Ahours-UI0-break&from=cards&start=2026-10-24&end=2026-10-24",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "missing-time",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&requestId=534692ef-cdb1-4241-a9de-c77bb3752bd5&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "missing-time",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "missing-time",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&edit=new&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "missing-time",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&edit=new",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "missing-time",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&requestId=df89493a-06e6-4e79-8a4c-ecdad362d0f1&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "missing-time",
+        "url": "http://127.0.0.1:33687/api/employee/hours/corrections/list",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "missing-time",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&requestId=df89493a-06e6-4e79-8a4c-ecdad362d0f1&edit=missing%3Adf89493a-06e6-4e79-8a4c-ecdad362d0f1&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "missing-time",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&requestId=df89493a-06e6-4e79-8a4c-ecdad362d0f1&edit=missing%3Adf89493a-06e6-4e79-8a4c-ecdad362d0f1",
+        "error": "net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "failure-empty",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&requestId=df89493a-06e6-4e79-8a4c-ecdad362d0f1&edit=missing%3Adf89493a-06e6-4e79-8a4c-ecdad362d0f1",
+        "error": "net::ERR_ABORTED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "failure-empty",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&requestId=bb9668af-fe40-4921-8b53-9df8b1b160b7&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "failure-empty",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&filter=decided&_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "failure-empty",
+        "url": "http://127.0.0.1:33687/app/my-time?_rsc=vxwE8ty_Yz8SpCeQ",
+        "error": "net::ERR_ABORTED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "failure-empty",
+        "url": "http://127.0.0.1:33687/app/my-time?_rsc=rNQsizmChsLy1K_B",
+        "error": "net::ERR_ABORTED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "failure-empty",
+        "url": "http://127.0.0.1:33687/api/employee/hours/records/overview",
+        "error": "net::ERR_ABORTED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "desktop",
+        "url": "http://127.0.0.1:33687/api/employee/my-time",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "desktop",
+        "url": "http://127.0.0.1:33687/api/employee/time-corrections",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "true-empty",
+        "url": "http://127.0.0.1:33687/login",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "lost-response",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&edit=entry%3Ahours-UI1",
+        "error": "Blocked by Web Inspector",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "lost-response",
+        "url": "http://127.0.0.1:33687/api/employee/hours/corrections/target%3Ahours-UI1",
+        "error": "Load request cancelled",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "missing-time",
+        "url": "http://127.0.0.1:33687/api/employee/hours/corrections/list",
+        "error": "Load request cancelled",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "missing-time",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&requestId=959ea876-2704-49fe-8ff3-09a57fe3634e&edit=missing%3A959ea876-2704-49fe-8ff3-09a57fe3634e",
+        "error": "Blocked by Web Inspector",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "desktop",
+        "url": "http://127.0.0.1:33687/api/employee/my-time",
+        "error": "Load request cancelled",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "desktop",
+        "url": "http://127.0.0.1:33687/api/employee/time-corrections",
+        "error": "Load request cancelled",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "lost-response",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&edit=entry%3Ahours-UI2",
+        "error": "NS_ERROR_FAILURE",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "stage": "lost-response",
+        "url": "http://127.0.0.1:33687/api/employee/hours/corrections/target%3Ahours-UI2",
+        "error": "NS_BINDING_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "missing-time",
+        "url": "http://127.0.0.1:33687/api/employee/hours/corrections/list",
+        "error": "NS_BINDING_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "missing-time",
+        "url": "http://127.0.0.1:33687/app/my-time?view=corrections&requestId=acea4a21-6794-4bf5-8e34-74ba5d895731&edit=missing%3Aacea4a21-6794-4bf5-8e34-74ba5d895731",
+        "error": "NS_ERROR_FAILURE",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "stage": "desktop",
+        "url": "http://127.0.0.1:33687/api/employee/my-time",
+        "error": "NS_BINDING_ABORTED",
+        "expected": false
+      }
+    ]
+  },
+  {
+    "suite": "messages",
+    "messages": [
+      {
+        "engine": "chromium",
+        "stage": "updates",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "updates",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "updates",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "audience-change",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 409 (Conflict)",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "publication-recovery",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "publication-recovery",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "not-found-retry",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "not-found-retry",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "read-error",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "pending-module-fence",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "unassigned-author",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "session-denied",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "login",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "login",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "login",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/_next/static/chunks/src_components_quiet_quiet_0thpcrus4i4cz.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "login",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "login",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "notifications",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "notifications",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "notifications",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "updates",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "updates",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "updates",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "audience-change",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 409 (Conflict)",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "not-found-retry",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "read-error",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "pending-module-fence",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "unassigned-author",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "module-off",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "module-off",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "module-off",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:44647/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "session-denied",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "stage": "notifications",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:44647/_next/static/chunks/src_components_1-x67_9n8_h4a._.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:44647/app/updates/c7879005-00db-4eaa-94be-a2bb0f7d7ab0\" line: 0}]",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "notifications",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:44647/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:44647/app/updates/c7879005-00db-4eaa-94be-a2bb0f7d7ab0\" line: 0}]",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "notifications",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:44647/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:44647/app/updates/c7879005-00db-4eaa-94be-a2bb0f7d7ab0\" line: 0}]",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "updates",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:44647/_next/static/chunks/src_components_1-x67_9n8_h4a._.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:44647/app/updates#message-78fb5724-321e-4aac-8f9e-041484ea6015\" line: 0}]",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "updates",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:44647/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:44647/app/updates#message-78fb5724-321e-4aac-8f9e-041484ea6015\" line: 0}]",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "updates",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:44647/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:44647/app/updates#message-78fb5724-321e-4aac-8f9e-041484ea6015\" line: 0}]",
+        "expected": false
+      }
+    ],
+    "failedRequests": [
+      {
+        "engine": "chromium",
+        "stage": "login",
+        "url": "http://127.0.0.1:44647/login",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "notifications",
+        "url": "http://127.0.0.1:44647/app/updates/eab38008-2557-417a-8f45-39b1b28ad704?_rsc=h4-7ZZkZ7ItqDcNZ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "notifications",
+        "url": "http://127.0.0.1:44647/app/notifications?_rsc=SI4tjEJPMKD_f36z",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "notifications",
+        "url": "http://127.0.0.1:44647/app/updates/eab38008-2557-417a-8f45-39b1b28ad704?_rsc=8CL67keYxm3zfXL3",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "notifications",
+        "url": "http://127.0.0.1:44647/app/updates/eab38008-2557-417a-8f45-39b1b28ad704?_rsc=MPogM1cTw4paQFVQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "updates",
+        "url": "http://127.0.0.1:44647/app/updates/416025cd-8ad2-4a22-8691-a74b5482a1a0?_rsc=j9NLyFjvuZBsB3sQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "updates",
+        "url": "http://127.0.0.1:44647/app/updates?_rsc=8rCDIK9D577LYHsJ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "updates",
+        "url": "http://127.0.0.1:44647/app/updates/compose?_rsc=j9NLyFjvuZBsB3sQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "publication-recovery",
+        "url": "http://127.0.0.1:44647/api/employee/communications",
+        "error": "net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "publication-recovery",
+        "url": "http://127.0.0.1:44647/app/updates?_rsc=o5AxBJ1NOrScdMa5",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "publication-recovery",
+        "url": "http://127.0.0.1:44647/app/updates/1f442a41-f1c2-4d71-b182-98f9584774ce?_rsc=80zpzXYRYyi-t19a",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "publication-recovery",
+        "url": "http://127.0.0.1:44647/api/employee/communications",
+        "error": "net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "not-found-retry",
+        "url": "http://127.0.0.1:44647/app/updates/1f442a41-f1c2-4d71-b182-98f9584774ce?_rsc=98ghBxaQxjHv8N9S",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "not-found-retry",
+        "url": "http://127.0.0.1:44647/app/updates?_rsc=aOSBjMR-3hJ4AJMU",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "not-found-retry",
+        "url": "http://127.0.0.1:44647/api/employee/messages/detail/1f442a41-f1c2-4d71-b182-98f9584774ce",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "not-found-retry",
+        "url": "http://127.0.0.1:44647/api/employee/communications",
+        "error": "net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "read-error",
+        "url": "http://127.0.0.1:44647/api/employee/messages/compose/new",
+        "error": "net::ERR_ABORTED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "pending-module-fence",
+        "url": "http://127.0.0.1:44647/api/employee/communications",
+        "error": "net::ERR_ABORTED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "desktop",
+        "url": "http://127.0.0.1:44647/api/employee/communications/context",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "empty-account",
+        "url": "http://127.0.0.1:44647/login",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "empty-account",
+        "url": "http://127.0.0.1:44647/api/employee/my-time",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "empty-account",
+        "url": "http://127.0.0.1:44647/app/updates/compose?_rsc=j9NLyFjvuZBsB3sQ",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "publication-recovery",
+        "url": "http://127.0.0.1:44647/api/employee/communications",
+        "error": "Blocked by Web Inspector",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "publication-recovery",
+        "url": "http://127.0.0.1:44647/api/employee/messages/compose/new",
+        "error": "Load request cancelled",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "publication-recovery",
+        "url": "http://127.0.0.1:44647/api/employee/communications",
+        "error": "Blocked by Web Inspector",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "not-found-retry",
+        "url": "http://127.0.0.1:44647/api/employee/messages/detail/699f5675-0ddb-44fc-ac5f-49f31f2e3b0a",
+        "error": "Load request cancelled",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "not-found-retry",
+        "url": "http://127.0.0.1:44647/api/employee/communications",
+        "error": "Blocked by Web Inspector",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "pending-module-fence",
+        "url": "http://127.0.0.1:44647/api/employee/communications",
+        "error": "Load request cancelled",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "desktop",
+        "url": "http://127.0.0.1:44647/api/employee/communications/context",
+        "error": "Load request cancelled",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "publication-recovery",
+        "url": "http://127.0.0.1:44647/api/employee/communications",
+        "error": "NS_ERROR_FAILURE",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "stage": "publication-recovery",
+        "url": "http://127.0.0.1:44647/api/employee/messages/compose/new",
+        "error": "NS_BINDING_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "publication-recovery",
+        "url": "http://127.0.0.1:44647/api/employee/communications",
+        "error": "NS_ERROR_FAILURE",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "stage": "not-found-retry",
+        "url": "http://127.0.0.1:44647/api/employee/messages/detail/2de14682-e67b-4090-90ac-446ecfbb7687",
+        "error": "NS_BINDING_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "not-found-retry",
+        "url": "http://127.0.0.1:44647/api/employee/communications",
+        "error": "NS_ERROR_FAILURE",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "stage": "pending-module-fence",
+        "url": "http://127.0.0.1:44647/api/employee/communications",
+        "error": "NS_BINDING_ABORTED",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "stage": "desktop",
+        "url": "http://127.0.0.1:44647/api/employee/communications/context",
+        "error": "NS_BINDING_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "empty-account",
+        "url": "http://127.0.0.1:44647/api/employee/my-time",
+        "error": "NS_BINDING_ABORTED",
+        "expected": false
+      }
+    ]
+  },
+  {
+    "suite": "mobile",
+    "messages": [
+      {
+        "engine": "chromium",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED",
+        "expected": true,
+        "stage": "interrupted-read",
+        "url": "http://127.0.0.1:40343/app/exchange?tab=available"
+      },
+      {
+        "engine": "chromium",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED",
+        "expected": true,
+        "stage": "lost-pickup-response",
+        "url": "http://127.0.0.1:40343/app/exchange?tab=available"
+      },
+      {
+        "engine": "chromium",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "expected": true,
+        "stage": "authority-loss",
+        "url": "http://127.0.0.1:40343/app/requests/hub"
+      },
+      {
+        "engine": "webkit",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:40343/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false,
+        "stage": "requests",
+        "url": "http://127.0.0.1:40343/app/exchange?tab=available"
+      },
+      {
+        "engine": "webkit",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:40343/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false,
+        "stage": "requests",
+        "url": "http://127.0.0.1:40343/app/exchange?tab=available"
+      },
+      {
+        "engine": "webkit",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:40343/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false,
+        "stage": "requests",
+        "url": "http://127.0.0.1:40343/app/exchange?tab=available"
+      },
+      {
+        "engine": "webkit",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "expected": true,
+        "stage": "authority-loss",
+        "url": "http://127.0.0.1:40343/app/requests/hub"
+      }
+    ],
+    "failedRequests": []
+  },
+  {
+    "suite": "planning",
+    "messages": [
+      {
+        "engine": "chromium",
+        "stage": "timeoff-lost-response",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "weekly-availability",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "authority-loss",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "timeoff-lost-response",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:42779/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "timeoff-lost-response",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:42779/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "timeoff-lost-response",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:42779/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "partial-request",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:42779/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "partial-request",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:42779/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "partial-request",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:42779/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "usual-availability",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:42779/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "usual-availability",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:42779/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "usual-availability",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:42779/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "authority-loss",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "stage": "desktop",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:42779/_next/static/chunks/src_components_1-x67_9n8_h4a._.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:42779/app/requests/hub\" line: 0}]",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "desktop",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:42779/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:42779/app/requests/hub\" line: 0}]",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "desktop",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:42779/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:42779/app/requests\" line: 0}]",
+        "expected": false
+      }
+    ],
+    "failedRequests": [
+      {
+        "engine": "chromium",
+        "stage": "login",
+        "url": "http://127.0.0.1:42779/login",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "timeoff-empty",
+        "url": "http://127.0.0.1:42779/app/requests?tab=new&_rsc=jap5TdkMJbygaJcm",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "timeoff-lost-response",
+        "url": "http://127.0.0.1:42779/app/requests?tab=new",
+        "error": "net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "timeoff-lost-response",
+        "url": "http://127.0.0.1:42779/app/requests?requestId=ffe10c23-c242-4247-9ba8-67c74e04e0fa&_rsc=jap5TdkMJbygaJcm",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "timeoff-lost-response",
+        "url": "http://127.0.0.1:42779/app/requests?_rsc=jap5TdkMJbygaJcm",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "timeoff-lost-response",
+        "url": "http://127.0.0.1:42779/app/requests?_rsc=-1-nP7vOFGcTiJNM",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "timeoff-lost-response",
+        "url": "http://127.0.0.1:42779/app/requests?tab=new&_rsc=-1-nP7vOFGcTiJNM",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "timeoff-lost-response",
+        "url": "http://127.0.0.1:42779/app/requests?_rsc=-1-nP7vOFGcTiJNM",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "timeoff-lost-response",
+        "url": "http://127.0.0.1:42779/app/requests?requestId=ffe10c23-c242-4247-9ba8-67c74e04e0fa&_rsc=jap5TdkMJbygaJcm",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "timeoff-lost-response",
+        "url": "http://127.0.0.1:42779/api/employee/planning/timeoff/list",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "timeoff-lost-response",
+        "url": "http://127.0.0.1:42779/app/requests?_rsc=jap5TdkMJbygaJcm",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "timeoff-lost-response",
+        "url": "http://127.0.0.1:42779/app/requests?_rsc=-1-nP7vOFGcTiJNM",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "partial-request",
+        "url": "http://127.0.0.1:42779/app/requests?tab=new&_rsc=jap5TdkMJbygaJcm",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "partial-request",
+        "url": "http://127.0.0.1:42779/app/requests?tab=new",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "partial-request",
+        "url": "http://127.0.0.1:42779/app/requests?requestId=91ea55af-76db-46b8-8174-925c94f6ee0e&_rsc=jap5TdkMJbygaJcm",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "partial-request",
+        "url": "http://127.0.0.1:42779/app/requests?filter=decided&_rsc=jap5TdkMJbygaJcm",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "usual-availability",
+        "url": "http://127.0.0.1:42779/app/availability",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "weekly-availability",
+        "url": "http://127.0.0.1:42779/app/availability?week=2026-11-09&_rsc=gizOmTOId_Q2VuEv",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "weekly-availability",
+        "url": "http://127.0.0.1:42779/app/availability?week=2026-11-09",
+        "error": "net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "weekly-availability",
+        "url": "http://127.0.0.1:42779/app/availability?week=2026-11-09",
+        "error": "net::ERR_ABORTED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "weekly-availability",
+        "url": "http://127.0.0.1:42779/app/availability?_rsc=zNUoHeYIeWaBiFTA",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "desktop",
+        "url": "http://127.0.0.1:42779/app/requests/hub?_rsc=gizOmTOId_Q2VuEv",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "desktop",
+        "url": "http://127.0.0.1:42779/app/requests?_rsc=neqgM87Y4D8aaUgO",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "authority-loss",
+        "url": "http://127.0.0.1:42779/app/requests/hub?_rsc=YRSsgQOZhhVhNSbA",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "authority-loss",
+        "url": "http://127.0.0.1:42779/app/availability?_rsc=5rRjFWov5itnENCm",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "timeoff-lost-response",
+        "url": "http://127.0.0.1:42779/app/requests?tab=new",
+        "error": "Blocked by Web Inspector",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "timeoff-lost-response",
+        "url": "http://127.0.0.1:42779/api/employee/planning/timeoff/list",
+        "error": "Load request cancelled",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "weekly-availability",
+        "url": "http://127.0.0.1:42779/api/employee/planning/availability/normal",
+        "error": "Load request cancelled",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "weekly-availability",
+        "url": "http://127.0.0.1:42779/app/availability?week=2026-11-16",
+        "error": "Blocked by Web Inspector",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "stage": "timeoff-empty",
+        "url": "http://127.0.0.1:42779/api/employee/my-time",
+        "error": "NS_BINDING_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "timeoff-lost-response",
+        "url": "http://127.0.0.1:42779/app/requests?tab=new",
+        "error": "NS_ERROR_FAILURE",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "stage": "timeoff-lost-response",
+        "url": "http://127.0.0.1:42779/api/employee/planning/timeoff/list",
+        "error": "NS_BINDING_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "weekly-availability",
+        "url": "http://127.0.0.1:42779/api/employee/planning/availability/normal",
+        "error": "NS_BINDING_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "weekly-availability",
+        "url": "http://127.0.0.1:42779/app/availability?week=2026-11-23",
+        "error": "NS_ERROR_FAILURE",
+        "expected": true
+      }
+    ]
+  },
+  {
+    "suite": "responses",
+    "messages": [
+      {
+        "engine": "chromium",
+        "stage": "lost-response",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "authority-loss",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "incoming",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:46845/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "incoming",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:46845/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "incoming",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:46845/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "own-pickup",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:46845/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "own-pickup",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:46845/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "own-pickup",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:46845/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "authority-loss",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "expected": true
+      }
+    ],
+    "failedRequests": [
+      {
+        "engine": "chromium",
+        "stage": "login",
+        "url": "http://127.0.0.1:46845/login",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "incoming",
+        "url": "http://127.0.0.1:46845/app/exchange?tab=foryou&requestId=912e7098-642e-4dfc-8845-ca814a695083&_rsc=Rp-TYVJZNdohHiJS",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "incoming",
+        "url": "http://127.0.0.1:46845/app/exchange?tab=foryou&_rsc=Rp-TYVJZNdohHiJS",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "incoming",
+        "url": "http://127.0.0.1:46845/app/exchange?tab=foryou&requestId=912e7098-642e-4dfc-8845-ca814a695083&_rsc=PARLiwxy_t7gaEAA",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "lost-response",
+        "url": "http://127.0.0.1:46845/app/exchange?tab=foryou&requestId=912e7098-642e-4dfc-8845-ca814a695083",
+        "error": "net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "lost-response",
+        "url": "http://127.0.0.1:46845/app/exchange?tab=foryou&requestId=912e7098-642e-4dfc-8845-ca814a695083",
+        "error": "net::ERR_ABORTED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "stage": "own-cover",
+        "url": "http://127.0.0.1:46845/app/exchange?tab=requests&requestId=dcb7fe51-3866-4454-9f80-3c409ba92d9b",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "own-cover",
+        "url": "http://127.0.0.1:46845/app/exchange?tab=requests&_rsc=Rp-TYVJZNdohHiJS",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "own-report",
+        "url": "http://127.0.0.1:46845/app/exchange?tab=requests&requestId=96efd82b-73b2-4c21-8397-5d2f2b8e0d8b",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "own-pickup",
+        "url": "http://127.0.0.1:46845/app/exchange?tab=requests&_rsc=Rp-TYVJZNdohHiJS",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "own-pickup",
+        "url": "http://127.0.0.1:46845/app/exchange?tab=requests&requestId=6021e0d1-6b32-40d5-9152-e6e6a91a1dd0",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "own-pickup",
+        "url": "http://127.0.0.1:46845/app/exchange?tab=foryou&requestId=d8f249c0-e8ec-408f-a6b8-8a909f16e227",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "stage": "own-pickup",
+        "url": "http://127.0.0.1:46845/api/employee/exchange",
+        "error": "net::ERR_ABORTED",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "lost-response",
+        "url": "http://127.0.0.1:46845/app/exchange?tab=foryou&requestId=e6b83815-d708-454c-b245-7b8340b11001",
+        "error": "Blocked by Web Inspector",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "stage": "own-pickup",
+        "url": "http://127.0.0.1:46845/api/employee/exchange",
+        "error": "Load request cancelled",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "lost-response",
+        "url": "http://127.0.0.1:46845/app/exchange?tab=foryou&requestId=144003cb-e04a-4208-bfc7-366eb7caa226",
+        "error": "NS_ERROR_FAILURE",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "stage": "own-pickup",
+        "url": "http://127.0.0.1:46845/api/employee/exchange",
+        "error": "NS_BINDING_ABORTED",
+        "expected": false
+      }
+    ]
+  },
+  {
+    "suite": "review",
+    "messages": [
+      {
+        "engine": "chromium",
+        "scenario": "open-recovery",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:43097/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "scenario": "open-recovery",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:43097/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "scenario": "open-recovery",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:43097/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "scenario": "open-recovery",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:43097/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "scenario": "open-recovery",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:43097/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "scenario": "open-recovery",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:43097/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "scenario": "open-recovery",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:43097/fonts/typeface/inter/variable.woff2\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:43097/app/notifications\" line: 0}]",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "scenario": "open-recovery",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:43097/_next/static/chunks/src_components_1-x67_9n8_h4a._.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:43097/app/notifications\" line: 0}]",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "scenario": "open-recovery",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:43097/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:43097/app/notifications\" line: 0}]",
+        "expected": true
+      },
+      {
+        "engine": "firefox",
+        "scenario": "open-recovery",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:43097/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:43097/app/notifications\" line: 0}]",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "scenario": "form-and-original",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:43097/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "scenario": "form-and-original",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:43097/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "scenario": "form-and-original",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:43097/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "chromium",
+        "scenario": "optional-and-original",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED",
+        "expected": true
+      },
+      {
+        "engine": "chromium",
+        "scenario": "optional-and-original",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "scenario": "optional-and-original",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:43097/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "scenario": "optional-and-original",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:43097/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "scenario": "optional-and-original",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:43097/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "scenario": "optional-and-original",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "scenario": "late-committed-module-fence",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:43097/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "scenario": "late-committed-module-fence",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:43097/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": true
+      },
+      {
+        "engine": "webkit",
+        "scenario": "late-committed-module-fence",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:43097/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": true
+      }
+    ],
+    "failedRequests": []
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "readAt": "2026-10-27T19:03:45.164972+00:00",
+  "candidate": "e05546badebd421c4873dfc8846e6810b956b05e",
+  "originalReport": "/workspace/nevora-evidence/reviews/INDEPENDENT_QA_REVIEW.md",
+  "originalReportSha256": "32aa46940fff91d52a672167c8bd96b81e8379d63d0a79def62e8fa8e38f8c9c",
+  "runtimeLaunched": false,
+  "originalFindingsRemainOpen": [
+    "QA-COM-001",
+    "QA-COM-002",
+    "QA-COM-003"
+  ],
+  "staticObservations": {
+    "QA-COM-001": "Only two targeted hard navigations replaced by actual list/back/task navigation; same records and denial checks; strict diagnostics arrays and timeouts unchanged. Requires affected all-three-engine preflight and final full acceptance.",
+    "QA-COM-002": "Twenty files in explicit projects:14 employee incl4-case review;5foundation;1fuel_phase3. Same aliases and timeouts. Original19files retained. Fixed-three-namespace URL helper rejects nonloopback/noport/non-c1/query/hash input. Unchanged factories still create only absent DB then guard OID/marker before disposal. Requires actual92canonical cases and complete new config.",
+    "QA-COM-003": "Only local module identifier renamed to destinationModule; no predicate semantics changed. Requires final changed-source lint."
+  },
+  "sourceFileSha256": {
+    "vitest.employee-mobile-communications.config.mts": "a66d9955c1d2546b48adf4823ded452e03aa87758908979f28aef7c782fa4eff",
+    "src/test/integration/employee-mobile-communications-fixtures.ts": "ace5d07a95798e865efc3731b019bd69a9aa332bb47b6bf3c38f5adde9a8692e",
+    "src/test/employee-mobile-communications-fixtures.test.ts": "e0cf92b9d7cb7ff4c47919d082745ec25d89818f5835d95c4ff2c781adfb1de5",
+    "src/test/integration/employee-mobile-planning.integration.ts": "e1589d53f139f8f5c9bce933a22e6427888bf0fff70726f66cfea9a3ec2e559c",
+    "src/test/integration/employee-mobile-responses.integration.ts": "c2bff912b6a059fcb642d40860be42a9505e21d1842417ff0dd51bc0da79be9c",
+    "src/lib/data/employee-notification-list.server.ts": "85baf1cd1b855d8494906fd9342a8d9d44421596da153cadd9438d59c524548a",
+    "src/test/integration/local-postgres.ts": "99df92479e7a15db74090427f9c3a28b8c09bac725c9c194950e407301912189",
+    "src/test/integration/owned-next-app.ts": "d72eee087b7c9fa701a3d14d8757d7f38299795bcfbb86e61609640b8ad2eb5b",
+    "scripts/payroll-postgres.mjs": "25dfe64828d83159e97d8786e655d19b28ae4cbfeb7dba3835b772487f5b6820"
+  },
+  "runtimeGate": "Root owns active review preflight. No competing runtime until explicit final-candidate release."
+}

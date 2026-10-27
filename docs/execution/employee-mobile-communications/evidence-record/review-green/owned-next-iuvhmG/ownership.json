@@ -1,0 +1,27 @@
+{
+  "ownerId": "45bd2d8e-8d84-4d7c-8912-917baa064ca5",
+  "source": "/workspace/NEVORA",
+  "root": "/workspace/nevora-evidence/review-green/owned-next-iuvhmG",
+  "runtime": "Next development + owned PostgreSQL; substituted DB transport",
+  "started": true,
+  "pid": 30140,
+  "port": 46357,
+  "url": "http://127.0.0.1:46357",
+  "identity": {
+    "name": "nevora_exchange_test_c1_8edfd1c9f4a3",
+    "oid": 16384,
+    "marker": "fuel-phase3-disposable:56865c71-99c5-45e3-90f3-6ed822628698"
+  },
+  "closed": true,
+  "closedAt": "2026-10-27T18:57:16.296Z",
+  "sourceVerified": true,
+  "mirrorVerified": true,
+  "derivedArtifactsReleased": {
+    "directories": [
+      "app/node_modules",
+      "app/.next"
+    ],
+    "availableBytesBefore": 27387895808,
+    "availableBytesAfter": 28340236288
+  }
+}

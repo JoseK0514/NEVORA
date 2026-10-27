@@ -1,0 +1,31 @@
+{
+  "observedAt": "2026-10-27T20:06:27.692765+00:00",
+  "originalInvocation": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/typescript/invocation.json",
+  "originalProcessFile": {
+    "pid": 27951,
+    "startedAt": "2026-10-27T19:59:33.547845+00:00"
+  },
+  "pidExists": true,
+  "resultExists": false,
+  "sourceAfterExists": false,
+  "stdoutBytes": 0,
+  "observationCount": 1,
+  "lastObservation": {
+    "at": "2026-10-27T19:59:33.547980+00:00",
+    "elapsedSeconds": 0.0,
+    "processes": [],
+    "clusters": [],
+    "sourceChanges": []
+  },
+  "sourceInputsStillMatchBefore": true,
+  "sourceChangePaths": [],
+  "currentHead": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+  "currentIndexHash": "998f8c32f57743016584af450952b7c2c0872463722260b511661c9a4fa3dfae",
+  "originalIndexHash": "998f8c32f57743016584af450952b7c2c0872463722260b511661c9a4fa3dfae",
+  "pidState": "27951 (MainThread) Z 1 27932 27932 0 -1 4228364 503899 0 0 0 4058 131 0 0 20 0 1 0 125728 0 0 18446744073709551615 0 0 0 0 0 0 0 16781312 17922 1 0 0 17 4 0 0 0 0 0 0 0 0 0 0 0 0 9\n",
+  "memoryEvents": {
+    "/sys/fs/cgroup/memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+    "/sys/fs/cgroup/memory.events.local": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n"
+  },
+  "outcome": "INTERRUPTED / UNKNOWN exit; no result is inferred from empty stdout. No rerun has started yet."
+}

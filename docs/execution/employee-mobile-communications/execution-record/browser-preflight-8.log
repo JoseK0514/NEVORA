@@ -1,0 +1,13 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1[39m
+
+ [32m✓[39m src/test/integration/employee-mobile-communications.integration.ts [2m([22m[2m1 test[22m[2m)[22m[33m 169156[2mms[22m[39m
+   [33m[2m✓[22m[39m integrates employee mobile messages with current audience, explicit receipts and original submission recovery[33m 169155[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:36:28
+[2m   Duration [22m 169.42s[2m (tests 100%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

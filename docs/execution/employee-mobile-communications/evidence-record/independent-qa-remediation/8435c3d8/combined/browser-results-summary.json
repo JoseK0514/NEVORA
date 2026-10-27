@@ -1,0 +1,139 @@
+{
+  "authoredBy": "/root/communications_qa_acceptance",
+  "at": "2026-10-27T20:07:33.696506+00:00",
+  "candidate": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+  "browserSuites": [
+    {
+      "suite": "creation",
+      "resultPath": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/creation/results.json",
+      "resultSha256": "683a18543595d72ef28f2e8dc15aaa63c434e7932191fc7cd3db6523ac0af5b1",
+      "checks": 40,
+      "checksByEngine": {
+        "chromium": 14,
+        "webkit": 13,
+        "firefox": 13
+      },
+      "captures": 192,
+      "contrasts": 54,
+      "pageerrors": 0,
+      "warnings": 12,
+      "consoleErrorsNotMarkedExpected": 0,
+      "failedRequestsRecorded": 15
+    },
+    {
+      "suite": "hours",
+      "resultPath": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/hours/results.json",
+      "resultSha256": "0b53ff5835e4bbd91a5a70dc8b2711b3e1b1d80e8e2c62906ca48a179be016c2",
+      "checks": 51,
+      "checksByEngine": {
+        "chromium": 17,
+        "webkit": 17,
+        "firefox": 17
+      },
+      "captures": 105,
+      "contrasts": 54,
+      "pageerrors": 0,
+      "warnings": 6,
+      "consoleErrorsNotMarkedExpected": 0,
+      "failedRequestsRecorded": 48
+    },
+    {
+      "suite": "messages",
+      "resultPath": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/results.json",
+      "resultSha256": "e2fc40488bd8ba1e11261a8994fa4b555e954a083d9ad2a06239b545cfaefc7d",
+      "checks": 69,
+      "checksByEngine": {
+        "chromium": 23,
+        "webkit": 23,
+        "firefox": 23
+      },
+      "captures": 216,
+      "contrasts": 90,
+      "pageerrors": 0,
+      "warnings": 23,
+      "consoleErrorsNotMarkedExpected": 0,
+      "failedRequestsRecorded": 37
+    },
+    {
+      "suite": "mobile",
+      "resultPath": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/mobile/results.json",
+      "resultSha256": "f420c28f0019db6d8e37b2733d586170d2c04b013dc842d43d2293cc5b82c6cb",
+      "checks": 28,
+      "checksByEngine": {
+        "chromium": 12,
+        "webkit": 8,
+        "firefox": 8
+      },
+      "captures": 36,
+      "contrasts": 18,
+      "pageerrors": 0,
+      "warnings": 3,
+      "consoleErrorsNotMarkedExpected": 0,
+      "failedRequestsRecorded": 0
+    },
+    {
+      "suite": "planning",
+      "resultPath": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/planning/results.json",
+      "resultSha256": "5f24505e88a3778cec4ba717e8034584dfaeb311a19ad30a9bd8d52c76b43729",
+      "checks": 63,
+      "checksByEngine": {
+        "chromium": 21,
+        "webkit": 21,
+        "firefox": 21
+      },
+      "captures": 114,
+      "contrasts": 72,
+      "pageerrors": 0,
+      "warnings": 12,
+      "consoleErrorsNotMarkedExpected": 0,
+      "failedRequestsRecorded": 34
+    },
+    {
+      "suite": "responses",
+      "resultPath": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/responses/results.json",
+      "resultSha256": "614a853aeeb665e71b98e88991378de036c743710ac29973adaef6c56ee8c822",
+      "checks": 34,
+      "checksByEngine": {
+        "chromium": 13,
+        "webkit": 10,
+        "firefox": 11
+      },
+      "captures": 90,
+      "contrasts": 36,
+      "pageerrors": 0,
+      "warnings": 6,
+      "consoleErrorsNotMarkedExpected": 0,
+      "failedRequestsRecorded": 17
+    },
+    {
+      "suite": "review",
+      "resultPath": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/review/results.json",
+      "resultSha256": "c628d1759793a208504b8e4b130bbcfbbcae6748fa6e86352b3968a76a247c31",
+      "checks": 21,
+      "checksByEngine": {
+        "chromium": 7,
+        "webkit": 7,
+        "firefox": 7
+      },
+      "captures": 39,
+      "contrasts": 0,
+      "pageerrors": 0,
+      "warnings": 19,
+      "consoleErrorsNotMarkedExpected": 0,
+      "failedRequestsRecorded": 0
+    }
+  ],
+  "totals": {
+    "checks": 306,
+    "captures": 792,
+    "contrasts": 324,
+    "pageerrors": 0,
+    "warnings": 81,
+    "consoleErrorsNotMarkedExpected": 0,
+    "failedRequestsRecorded": 151
+  },
+  "warningClassification": {
+    "unused CSS/font preload": 81
+  },
+  "note": "Strict source suite diagnostic assertions passed unchanged. Expected fault-stage console/request failures remain in raw records. No warning was discarded or suppressed. QA personally inspected two specified Requests PNGs; independent UI author owns wider pixel inspection."
+}

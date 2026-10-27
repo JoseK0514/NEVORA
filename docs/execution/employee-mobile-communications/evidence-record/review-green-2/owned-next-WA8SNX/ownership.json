@@ -1,0 +1,27 @@
+{
+  "ownerId": "1c346cfb-06f5-4578-b1e6-cc2f3a7c5e0e",
+  "source": "/workspace/NEVORA",
+  "root": "/workspace/nevora-evidence/review-green-2/owned-next-WA8SNX",
+  "runtime": "Next development + owned PostgreSQL; substituted DB transport",
+  "started": true,
+  "pid": 32762,
+  "port": 33219,
+  "url": "http://127.0.0.1:33219",
+  "identity": {
+    "name": "nevora_exchange_test_c1_d195b4793c47",
+    "oid": 16384,
+    "marker": "fuel-phase3-disposable:b6167b5d-a361-47d7-91f4-3ed99c3ac8a5"
+  },
+  "closed": true,
+  "closedAt": "2026-10-27T19:01:33.041Z",
+  "sourceVerified": true,
+  "mirrorVerified": true,
+  "derivedArtifactsReleased": {
+    "directories": [
+      "app/node_modules",
+      "app/.next"
+    ],
+    "availableBytesBefore": 27268804608,
+    "availableBytesAfter": 28287639552
+  }
+}

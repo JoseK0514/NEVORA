@@ -1,0 +1,27 @@
+{
+  "ownerId": "d99846bc-acc8-4871-ae15-2c0e7a95b018",
+  "source": "/workspace/NEVORA",
+  "root": "/workspace/nevora-evidence/independent-qa/combined/messages/owned-next-khdRkt",
+  "runtime": "Next development + owned PostgreSQL; substituted DB transport",
+  "started": true,
+  "pid": 9751,
+  "port": 39989,
+  "url": "http://127.0.0.1:39989",
+  "identity": {
+    "name": "nevora_exchange_test_c1_edad253c114c",
+    "oid": 16384,
+    "marker": "fuel-phase3-disposable:a6df4139-deba-4ac1-aecb-cb7b1ac6493c"
+  },
+  "closed": true,
+  "closedAt": "2026-10-27T18:34:03.582Z",
+  "sourceVerified": true,
+  "mirrorVerified": true,
+  "derivedArtifactsReleased": {
+    "directories": [
+      "app/node_modules",
+      "app/.next"
+    ],
+    "availableBytesBefore": 27741175808,
+    "availableBytesAfter": 28751273984
+  }
+}

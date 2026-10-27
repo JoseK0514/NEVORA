@@ -1,0 +1,2 @@
+src/lib/data/employee-message-module.server.ts(18,37): error TS7006: Parameter 'statement' implicitly has an 'any' type.
+src/lib/data/employee-message-module.server.ts(18,47): error TS7006: Parameter 'caller' implicitly has an 'any' type.

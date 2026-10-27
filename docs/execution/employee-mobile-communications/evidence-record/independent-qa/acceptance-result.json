@@ -1,0 +1,64 @@
+{
+  "authoredAt": "2026-10-27T18:47:51.126065+00:00",
+  "author": "Independent Senior QA /root/communications_qa_acceptance, reporting directly to Jose",
+  "candidate": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+  "base": "564c71371e16f528a94aa242e42bf906d5890314",
+  "recommendation": "NO-GO",
+  "scope": "Frozen f7 local communications batch baseline only. No production, activation, hosted or Phase3 certification.",
+  "gateResults": {
+    "combined": {
+      "exitCode": 1,
+      "durationSeconds": 760.597,
+      "sourceUnchanged": true,
+      "gitIndexUnchanged": true,
+      "branchUnchanged": true,
+      "resultPath": "/workspace/nevora-evidence/independent-qa/combined/result.json"
+    },
+    "units": {
+      "exitCode": 0,
+      "durationSeconds": 35.272,
+      "sourceUnchanged": true,
+      "gitIndexUnchanged": true,
+      "branchUnchanged": true,
+      "resultPath": "/workspace/nevora-evidence/independent-qa/units/result.json"
+    },
+    "typescript": {
+      "exitCode": 0,
+      "durationSeconds": 40.27,
+      "sourceUnchanged": true,
+      "gitIndexUnchanged": true,
+      "branchUnchanged": true,
+      "resultPath": "/workspace/nevora-evidence/independent-qa/typescript/result.json"
+    },
+    "eslint": {
+      "exitCode": 1,
+      "durationSeconds": 5.162,
+      "sourceUnchanged": true,
+      "gitIndexUnchanged": true,
+      "branchUnchanged": true,
+      "resultPath": "/workspace/nevora-evidence/independent-qa/eslint/result.json"
+    }
+  },
+  "custodyPassed": true,
+  "qaBlockers": [
+    "QA-COM-001",
+    "QA-COM-002",
+    "QA-COM-003"
+  ],
+  "otherMaterialOpen": [
+    "CR-1",
+    "CR-2",
+    "CR-3",
+    "UI-COM-001"
+  ],
+  "nonblockingConditions": [
+    "CR-4",
+    "UI-COM-002",
+    "UI-COM-003"
+  ],
+  "evidenceRisk": [
+    "UI-COM-R1"
+  ],
+  "runtimeReleased": true,
+  "sourceFreezeReleasedAfterAllGates": true
+}

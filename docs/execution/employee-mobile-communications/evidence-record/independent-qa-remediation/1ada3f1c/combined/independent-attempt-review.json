@@ -1,0 +1,47 @@
+{
+  "authoredAt": "2026-10-27T19:34:35.499653+00:00",
+  "candidate": "1ada3f1c748e120e50e5ad7012e3eea3d1c8b901",
+  "recommendation": "NO-GO; no finding closed by this incomplete full gate",
+  "result": "20files,176tests,174passed,2failed;998.043s recorder",
+  "failures": [
+    {
+      "classification": "BLOCKER",
+      "finding": "QA-COM-001 additional occurrence",
+      "suite": "employee-mobile-requests.integration.ts",
+      "stage": "desktop-isolation",
+      "workflowCheckpointsCompleted": 28,
+      "pageerrors": [
+        {
+          "engine": "webkit",
+          "type": "pageerror",
+          "text": "/127.0.0.1:39875/api/notifications due to access control checks.",
+          "expected": false,
+          "stage": "desktop-isolation",
+          "url": "http://127.0.0.1:39875/app/requests/hub"
+        },
+        {
+          "engine": "webkit",
+          "type": "pageerror",
+          "text": "/127.0.0.1:39875/api/employee/requests due to access control checks.",
+          "expected": false,
+          "stage": "desktop-isolation",
+          "url": "http://127.0.0.1:39875/app/requests/hub"
+        }
+      ]
+    },
+    {
+      "classification": "ISSUE",
+      "owner": "QA invocation preparation",
+      "suite": "phase-e-communications-schema.integration.ts",
+      "location": "src/test/integration/phase-e-communications-schema.integration.ts:186:65",
+      "error": "Owned evidence directory required",
+      "cause": "PHASE_E_EVIDENCE_DIR was omitted from the QA-built environment; required directory check occurs after preservation assertions and hashes. No source/config/guard fix is indicated for this error.",
+      "plannedCorrection": "Supply fresh isolated PHASE_E_EVIDENCE_DIR plus7browser evidence variables in complete selector-free full rerun after Requests affected verification; do not relabel this failed full gate."
+    }
+  ],
+  "verifiedPositive": "Canonical91/92cases passed; schema business preservation statements completed before output guard. All4review cases passed currentSHA; affected Responses+Planning passed and passed again in this full gate.",
+  "custodyAuditPassed": true,
+  "runtimeAndFreezeReleased": true,
+  "subsequentFullLaunched": false,
+  "originalQAReportSha256": "32aa46940fff91d52a672167c8bd96b81e8379d63d0a79def62e8fa8e38f8c9c"
+}

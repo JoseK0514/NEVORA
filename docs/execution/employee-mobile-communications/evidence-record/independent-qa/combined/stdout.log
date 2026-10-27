@@ -1,0 +1,763 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/workspace/NEVORA[39m
+
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+ [32m✓[39m src/test/integration/employee-mobile-communications.integration.ts [2m([22m[2m1 test[22m[2m)[22m[33m 227129[2mms[22m[39m
+   [33m[2m✓[22m[39m integrates employee mobile messages with current audience, explicit receipts and original submission recovery[33m 227127[2mms[22m[39m
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+ [31m❯[39m src/test/integration/employee-mobile-responses.integration.ts [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 111527[2mms[22m[39m
+[31m   [31m×[31m integrates Employee swap/cover responses and own detail with current permissions, recorded terms and original operations[39m[33m 111526[2mms[22m[39m
+ [32m✓[39m src/test/integration/shift-change-hardening.integration.ts [2m([22m[2m34 tests[22m[2m)[22m[33m 21804[2mms[22m[39m
+   [33m[2m✓[22m[39m H01/A005 rejects different owning weeks at proposal without request side effects[33m 610[2mms[22m[39m
+   [33m[2m✓[22m[39m H01 rejects existing cross-week ACCEPT without mutations[33m 553[2mms[22m[39m
+   [33m[2m✓[22m[39m H01 rejects existing cross-week MANAGER_APPROVE without mutations[33m 573[2mms[22m[39m
+   [33m[2m✓[22m[39m H02 coherent display rejects timezone change between readers for either side[33m 520[2mms[22m[39m
+   [33m[2m✓[22m[39m H02 coherent display rejects episode change between readers for either side[33m 526[2mms[22m[39m
+   [33m[2m✓[22m[39m H02 coherent display rejects revision change between readers for either side[33m 491[2mms[22m[39m
+   [33m[2m✓[22m[39m H03 callout cannot silently bind to changed displayed time[33m 545[2mms[22m[39m
+   [33m[2m✓[22m[39m H03 callout cannot silently bind to changed displayed episode[33m 612[2mms[22m[39m
+   [33m[2m✓[22m[39m H03 callout cannot silently bind to changed displayed timezone[33m 635[2mms[22m[39m
+   [33m[2m✓[22m[39m H03 callout cannot silently bind to changed displayed lead[33m 571[2mms[22m[39m
+   [33m[2m✓[22m[39m H03 callout cannot silently bind to changed displayed position[33m 624[2mms[22m[39m
+   [33m[2m✓[22m[39m H03 callout cannot silently bind to changed displayed date[33m 759[2mms[22m[39m
+   [33m[2m✓[22m[39m H04 proven stale maintenance atomically cancels intents and releases participation without assignment changes[33m 817[2mms[22m[39m
+   [33m[2m✓[22m[39m H04 stale retirement rolls back with history and participation on transaction failure[33m 578[2mms[22m[39m
+   [33m[2m✓[22m[39m H05 discovery respects current location access while participant history remains[33m 604[2mms[22m[39m
+   [33m[2m✓[22m[39m H07 strict DST 2037-03-08 report is truthful and closure remains available[33m 839[2mms[22m[39m
+   [33m[2m✓[22m[39m H07 strict DST 2037-11-01 report is truthful and closure remains available[33m 832[2mms[22m[39m
+   [33m[2m✓[22m[39m H09 approved callout projection distinguishes historical approval from current release[33m 763[2mms[22m[39m
+   [33m[2m✓[22m[39m H01 valid same-owning-week cross-location overnight swap still completes[33m 613[2mms[22m[39m
+   [33m[2m✓[22m[39m H04 unknown legacy exchanges stay reserved for explicit authorized closure[33m 665[2mms[22m[39m
+   [33m[2m✓[22m[39m H05 discovery hides peers for inactive-location[33m 595[2mms[22m[39m
+   [33m[2m✓[22m[39m H05 discovery hides peers for inactive-viewer[33m 556[2mms[22m[39m
+   [33m[2m✓[22m[39m H05 discovery hides peers for manager-viewer[33m 579[2mms[22m[39m
+   [33m[2m✓[22m[39m H05 discovery hides peers for never-eligible[33m 617[2mms[22m[39m
+   [33m[2m✓[22m[39m H05 authorized cross-location discovery survives without primary-location equality[33m 636[2mms[22m[39m
+   [33m[2m✓[22m[39m H06 sparse history facts are explicitly unknown and current camelCase facts remain truthful[33m 513[2mms[22m[39m
+   [33m[2m✓[22m[39m H11 invalid OTHER details never persist any report or transaction; three characters permit report[33m 721[2mms[22m[39m
+   [33m[2m✓[22m[39m H12 manager gets concrete safe manual-policy reason without peer profile exposure[33m 741[2mms[22m[39m
+   [33m[2m✓[22m[39m H12 manager gets concrete safe recorded-policy reason without peer profile exposure[33m 703[2mms[22m[39m
+   [33m[2m✓[22m[39m H12 manager gets concrete safe overtime reason without peer profile exposure[33m 700[2mms[22m[39m
+   [33m[2m✓[22m[39m H13 AUTOMATIC_WHEN_VALID records final decision version references while preserving creation and UI privacy[33m 692[2mms[22m[39m
+   [33m[2m✓[22m[39m H13 MANAGER_REVIEW records final decision version references while preserving creation and UI privacy[33m 758[2mms[22m[39m
+   [33m[2m✓[22m[39m H13 policy/profile change between plan and transaction retries with actual final versions[33m 668[2mms[22m[39m
+   [33m[2m✓[22m[39m H13 failed final transaction rolls back decision metadata with assignments and operation[33m 591[2mms[22m[39m
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+ [32m✓[39m src/test/integration/employee-mobile-creation.integration.ts [2m([22m[2m1 test[22m[2m)[22m[33m 102352[2mms[22m[39m
+   [33m[2m✓[22m[39m integrates own Employee mobile swap/cover creation and inability reporting through original terms, current permissions and immutable recovery[33m 102351[2mms[22m[39m
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+ [32m✓[39m src/test/integration/employee-mobile-hours.integration.ts [2m([22m[2m1 test[22m[2m)[22m[33m 91257[2mms[22m[39m
+   [33m[2m✓[22m[39m integrates own mobile punches, timecards and correction recovery without punch or manager authority[33m 91255[2mms[22m[39m
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+ [31m❯[39m src/test/integration/employee-mobile-planning.integration.ts [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 100721[2mms[22m[39m
+[31m   [31m×[31m integrates own mobile time-off and availability with canonical saves, drafts, current permission and deliberate recovery[39m[33m 100720[2mms[22m[39m
+ [31m❯[39m src/test/integration/phase-e-communications-schema.integration.ts [2m([22m[2m11 tests[22m[2m | [22m[31m11 failed[39m[2m)[22m[32m 13[2mms[22m[39m
+[31m   [31m×[31m schema_cross_workspace_revision_grant_denied[39m[32m 7[2mms[22m[39m
+[31m   [31m×[31m published content grants receipts operations and lifecycle are immutable with no cascade[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m draft privacy and new revisions preserve old acknowledgement without carrying it forward[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m operation actor session payload and receipt identity cannot be substituted[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m revision content hash normalized text role and scope constraints reject forged persistence[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m complete chain retains communication and payroll sources and rejects unknown kinds[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m fresh chain installs empty communication foundation without operational seeds[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m E21-QA-D001 current management withdraws after historical author deactivation while retaining evidence[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m E21-QA-D001 current management advances a revision after historical author deactivation without carrying receipts forward[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m E21-QA-D001 creation eligibility immutable root identity and current actor guards stay enforced[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m 0022 to 0023 to 0024 and presentation rollback preserve actual canonical JSON and migration bytes[39m[32m 0[2mms[22m[39m
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+ [32m✓[39m src/test/integration/employee-mobile-requests.integration.ts [2m([22m[2m1 test[22m[2m)[22m[33m 54192[2mms[22m[39m
+   [33m[2m✓[22m[39m integrates protected Employee Requests and eligible pickup using actual SQL and three browser engines[33m 54190[2mms[22m[39m
+ [31m❯[39m src/test/integration/company-access-communications.integration.ts [2m([22m[2m40 tests[22m[2m | [22m[31m40 failed[39m[2m)[22m[32m 16[2mms[22m[39m
+[31m   [31m×[31m selected-location Manager cannot use global communication preview[39m[32m 5[2mms[22m[39m
+[31m   [31m×[31m selected-location Manager cannot use global communication read[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m selected-location Manager cannot use global communication list[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m selected-location Manager cannot use global communication context[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m selected-location Manager cannot use global communication operation[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m selected-location Manager cannot use global communication replay[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m selected-location Manager cannot use global communication publish[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m current REVOKE Manager cannot recover private communications, roster, or original operation receipt[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m current role-cycle Manager cannot recover private communications, roster, or original operation receipt[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m current unassigned Manager cannot recover private communications, roster, or original operation receipt[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m Owner keeps complete B communication management and a current lifetime of at most fifteen seconds[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m Company Manager keeps complete B communication management and a current lifetime of at most fifteen seconds[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m preview suppresses its private projection after awaited Company loss[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m read suppresses its private projection after awaited Company loss[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m list suppresses its private projection after awaited Company loss[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m context suppresses its private projection after awaited Company loss[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m operation suppresses its private projection after awaited Company loss[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m PUBLISH rechecks Company inside the actual business transaction and rolls back publication, grants, intents and receipts[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m REVISE rechecks Company inside the actual business transaction and rolls back publication, grants, intents and receipts[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m WITHDRAW rechecks Company inside the actual business transaction and rolls back publication, grants, intents and receipts[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m the final DB-clock check rolls back actual communication writes after session expiry[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m post-commit Company loss suppresses a new communication receipt without rewriting its committed history[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m normal manager preview API denies current selected-location access with no private body or new effects[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m normal manager read API denies current selected-location access with no private body or new effects[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m normal manager list API denies current selected-location access with no private body or new effects[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m normal manager context API denies current selected-location access with no private body or new effects[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m normal manager operation API denies current selected-location access with no private body or new effects[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m normal manager command API denies current selected-location access with no private body or new effects[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m normal manager preview API retains current Company behavior[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m normal manager read API retains current Company behavior[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m normal manager list API retains current Company behavior[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m normal manager context API retains current Company behavior[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m normal manager operation API retains current Company behavior[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m normal manager command API retains current Company behavior[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m EMPLOYEE own receipt, read/ack and scheduled-team publication remain identity-based after Manager revocation[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m LEAD own receipt, read/ack and scheduled-team publication remain identity-based after Manager revocation[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m read consumes the remaining post-observation session lifetime before returning its private body[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m list consumes the remaining post-observation session lifetime before returning its private body[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m context consumes the remaining post-observation session lifetime before returning its private body[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m the initial post-observation session lifetime cannot grow after a later session extension[39m[32m 0[2mms[22m[39m
+ [31m❯[39m src/test/integration/phase-e-communication-notifications.integration.ts [2m([22m[2m11 tests[22m[2m | [22m[31m11 failed[39m[2m)[22m[32m 9[2mms[22m[39m
+[31m   [31m×[31m duplicate intent one event per version recipient; inbox and safe open work without push[39m[32m 5[2mms[22m[39m
+[31m   [31m×[31m quiet hours retain the exact-version intent and Updates content while deferring routine transport[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m revocation before materialize send and open denies recipient[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m revocation before materialize send and open denies location[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m revocation before materialize send and open denies withdraw[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m superseded version cancels after lease and last source check prevents transport[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m provider ambiguous retry may repeat generic payload but never creates acknowledgement[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m outbox fault leaves no partial publication and unmarked database activation is held[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m upgrade retains historical communication notifications through payroll and forward repair[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m management inbox preserves recipient authority, idempotent read status and separate acknowledgement[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m management inbox suppresses a source revoked before its final observation[39m[32m 0[2mms[22m[39m
+ [31m❯[39m src/test/integration/phase-e-communications.integration.ts [2m([22m[2m17 tests[22m[2m | [22m[31m17 failed[39m[2m)[22m[32m 10[2mms[22m[39m
+[31m   [31m×[31m location immutable grants do not backfill transfers; deactivation denies reads[39m[32m 5[2mms[22m[39m
+[31m   [31m×[31m concurrent_publish_same_command_once and changed replay conflict[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m audience fingerprint rejects a phantom eligibility change after preview[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m withdraw cancels current intents and deliveries; author deactivation preserves management control[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m outbox fault rolls back all publication and grants[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m session replaced proof cannot execute a prior tab command[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m expiry after communication root wait cannot publish a revision or disclose content[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m source changed between protected observations is rejected after locks[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m yesterday overnight is today team; approved exact callout denies sender and recipient[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m shift episode change denies old note and current location loss denies announcement[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m arbitrary recipient IDs are rejected on full otherwise valid command[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m expiry during final operation wait rejects publication without source rows[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m list final eligibility change discards an earlier private body[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m list final withdrawal change discards an earlier private body[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m another eligible team assignment does not replace an immutable existing read grant[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m publication after empty list discovery cannot report complete all-clear[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m protected management status names recipients; employee receives only own status and short lifetime[39m[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/integration/employee-mobile-hours-sql.integration.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 9611[2mms[22m[39m
+   [33m[2m✓[22m[39m reads only current Employee/Lead records and refuses changed role/session before publishing[33m 675[2mms[22m[39m
+   [33m[2m✓[22m[39m persists original entry/break proposals once and exposes own exact current decision without editing raw punches[33m 1212[2mms[22m[39m
+   [33m[2m✓[22m[39m refuses a stale reviewed source while preserving original-event retry after the source changes[33m 739[2mms[22m[39m
+   [33m[2m✓[22m[39m submits own missing time and preserves current location eligibility[33m 814[2mms[22m[39m
+   [33m[2m✓[22m[39m keeps own timecards separate from manager approval and reads the canonical effective source[33m 519[2mms[22m[39m
+   [33m[2m✓[22m[39m detects a role change during write admission instead of returning a usable correction control[33m 562[2mms[22m[39m
+   [33m[2m✓[22m[39m serializes two reviewed proposals under the employee lock without creating duplicate pending requests[33m 584[2mms[22m[39m
+   [33m[2m✓[22m[39m keeps finalized periods read only through the mobile correction adapter[33m 747[2mms[22m[39m
+   [33m[2m✓[22m[39m reads an exact own old target beyond the recent window without exposing it to a peer[33m 866[2mms[22m[39m
+   [33m[2m✓[22m[39m opens a retained exact own request outside the latest50 without leaking it to a peer[33m 1469[2mms[22m[39m
+   [33m[2m✓[22m[39m retries one correction source read when a manager decision crosses its basis check[33m 804[2mms[22m[39m
+   [33m[2m✓[22m[39m bounds changing-source retries and still refuses current authority loss[33m 616[2mms[22m[39m
+ [32m✓[39m src/test/integration/employee-mobile-communications-sql.integration.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 18574[2mms[22m[39m
+   [33m[2m✓[22m[39m pages the complete own notification candidates without leaking a peer or weakening the legacy bounded list[33m 1636[2mms[22m[39m
+   [33m[2m✓[22m[39m refuses invalid page selectors and changed role or session before publishing own notices[33m 502[2mms[22m[39m
+   [33m[2m✓[22m[39m retains the existing finite notification-read budget for a full page of distinct team updates[33m 5713[2mms[22m[39m
+   [33m[2m✓[22m[39m pages current updates with exact own read status and no coworker receipt roster[33m 7172[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks Updates module permission inside the actual employee command transaction[33m 781[2mms[22m[39m
+   [33m[2m✓[22m[39m hides disabled-module notifications while retaining unrelated own notices[33m 722[2mms[22m[39m
+   [33m[2m✓[22m[39m binds finite mobile views to current own identity and keeps a disabled Updates capability separate[33m 1296[2mms[22m[39m
+   [33m[2m✓[22m[39m resolves exact notification destinations through current canonical access without recording read or acknowledgement[33m 749[2mms[22m[39m
+ [31m❯[39m src/test/integration/communications-gap-remediation.integration.ts [2m([22m[2m7 tests[22m[2m | [22m[31m7 failed[39m[2m)[22m[32m 7[2mms[22m[39m
+[31m   [31m×[31m management-only canonical context distinguishes same-time assignees and captured positions[39m[32m 4[2mms[22m[39m
+[31m   [31m×[31m original ambiguous publication replay resolves one publication and one outbox per recipient[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m inbox shows own current acknowledgement and keeps old receipts from confirming a new version[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m optional communication becomes read only through explicit source receipt, never list/open[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m final session denial after discovery exposes no notification status or source content[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m canceled-to-empty week has current confirmation, discoverable Home link and exact current inbox action state[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m same-status time-off detail edit cannot reuse an earlier own read receipt[39m[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/integration/employee-mobile-planning-sql.integration.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 6850[2mms[22m[39m
+   [33m[2m✓[22m[39m isolates Employee/Lead own full/partial requests, immutable retry and permitted first withdrawal[33m 1319[2mms[22m[39m
+   [33m[2m✓[22m[39m uses actual role/session/workspace authority without requiring an assigned location[33m 696[2mms[22m[39m
+   [33m[2m✓[22m[39m preserves split usual/weekly hours and intentional empty submission, independently from time-off module[33m 1160[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects a stale availability basis and never overwrites a newer device edit during recovery[33m 851[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks a weekly deadline after admission and preserves unsubmitted state on refusal[33m 655[2mms[22m[39m
+   [33m[2m✓[22m[39m retains legacy weekly conversion, unchanged days and the existing version retry contract[33m 578[2mms[22m[39m
+   [33m[2m✓[22m[39m resolves adjacent or overlapping legacy usual windows with the existing union semantics[33m 498[2mms[22m[39m
+   [33m[2m✓[22m[39m serializes different normal drafts against one basis, allowing only one current replacement[33m 547[2mms[22m[39m
+   [33m[2m✓[22m[39m keeps partial-day midnight records readable under the existing day-end boundary[33m 543[2mms[22m[39m
+ [31m❯[39m src/test/integration/phase-e-communication-ack.integration.ts [2m([22m[2m6 tests[22m[2m | [22m[31m6 failed[39m[2m)[22m[32m 7[2mms[22m[39m
+[31m   [31m×[31m ack revision hash employee exact; duplicates retain original timestamp[39m[32m 4[2mms[22m[39m
+[31m   [31m×[31m ack versus REVISE has one order and old receipt never completes latest[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m ack versus WITHDRAW has one order and old receipt never completes latest[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m explicit optional read never creates acknowledgement and required review cannot be dismissed[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m lost acknowledgement result recovers original operation without repeating receipt[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m replaced session and revoked location cannot acknowledge old displayed content[39m[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/integration/shift-change-views.integration.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 1142[2mms[22m[39m
+ [32m✓[39m src/test/integration/employee-mobile-creation-privacy.integration.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 4168[2mms[22m[39m
+   [33m[2m✓[22m[39m admits own Employee/Lead creation only and releases all facts after exact location scope changes mid-read[33m 2164[2mms[22m[39m
+   [33m[2m✓[22m[39m keeps unavailable swap discovery distinct from empty without disabling a separately verified cover offer[33m 937[2mms[22m[39m
+   [33m[2m✓[22m[39m never publishes mixed original source facts and replacement command fields after a shift changes during discovery[33m 1065[2mms[22m[39m
+ [32m✓[39m src/test/integration/employee-mobile-exchange-privacy.integration.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 4461[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks captured location scope before publishing detail after eligibility is revoked during its read[33m 1169[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks captured location scope before publishing list after eligibility is revoked during its read[33m 1148[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks captured location scope before publishing final-admission after eligibility is revoked during its read[33m 1150[2mms[22m[39m
+   [33m[2m✓[22m[39m does not label live replacement callout time as recorded report terms when history is unavailable[33m 992[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 94 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/communications-gap-remediation.integration.ts[2m > [22mmanagement-only canonical context distinguishes same-time assignees and captured positions
+[41m[1m FAIL [22m[49m src/test/integration/communications-gap-remediation.integration.ts[2m > [22moriginal ambiguous publication replay resolves one publication and one outbox per recipient
+[41m[1m FAIL [22m[49m src/test/integration/communications-gap-remediation.integration.ts[2m > [22minbox shows own current acknowledgement and keeps old receipts from confirming a new version
+[41m[1m FAIL [22m[49m src/test/integration/communications-gap-remediation.integration.ts[2m > [22moptional communication becomes read only through explicit source receipt, never list/open
+[41m[1m FAIL [22m[49m src/test/integration/communications-gap-remediation.integration.ts[2m > [22mfinal session denial after discovery exposes no notification status or source content
+[41m[1m FAIL [22m[49m src/test/integration/communications-gap-remediation.integration.ts[2m > [22mcanceled-to-empty week has current confirmation, discoverable Home link and exact current inbox action state
+[41m[1m FAIL [22m[49m src/test/integration/communications-gap-remediation.integration.ts[2m > [22msame-status time-off detail edit cannot reuse an earlier own read receipt
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m src/test/integration/communications-gap-remediation.integration.ts:[2m26:31[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mselected-location Manager cannot use global communication preview
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mselected-location Manager cannot use global communication read
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mselected-location Manager cannot use global communication list
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mselected-location Manager cannot use global communication context
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mselected-location Manager cannot use global communication operation
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mselected-location Manager cannot use global communication replay
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mselected-location Manager cannot use global communication publish
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m Module.companyAccessFixture src/test/integration/company-access-fixture.ts:[2m5:107[22m[39m
+[90m [2m❯[22m setup src/test/integration/company-access-communications.integration.ts:[2m29:38[22m[39m
+[90m [2m❯[22m src/test/integration/company-access-communications.integration.ts:[2m36:176[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mcurrent REVOKE Manager cannot recover private communications, roster, or original operation receipt
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mcurrent role-cycle Manager cannot recover private communications, roster, or original operation receipt
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mcurrent unassigned Manager cannot recover private communications, roster, or original operation receipt
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m Module.companyAccessFixture src/test/integration/company-access-fixture.ts:[2m5:107[22m[39m
+[90m [2m❯[22m setup src/test/integration/company-access-communications.integration.ts:[2m29:38[22m[39m
+[90m [2m❯[22m src/test/integration/company-access-communications.integration.ts:[2m37:181[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mOwner keeps complete B communication management and a current lifetime of at most fifteen seconds
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mCompany Manager keeps complete B communication management and a current lifetime of at most fifteen seconds
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m Module.companyAccessFixture src/test/integration/company-access-fixture.ts:[2m5:107[22m[39m
+[90m [2m❯[22m setup src/test/integration/company-access-communications.integration.ts:[2m29:38[22m[39m
+[90m [2m❯[22m src/test/integration/company-access-communications.integration.ts:[2m38:171[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mpreview suppresses its private projection after awaited Company loss
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mread suppresses its private projection after awaited Company loss
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mlist suppresses its private projection after awaited Company loss
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mcontext suppresses its private projection after awaited Company loss
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22moperation suppresses its private projection after awaited Company loss
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m Module.companyAccessFixture src/test/integration/company-access-fixture.ts:[2m5:107[22m[39m
+[90m [2m❯[22m setup src/test/integration/company-access-communications.integration.ts:[2m29:38[22m[39m
+[90m [2m❯[22m src/test/integration/company-access-communications.integration.ts:[2m39:160[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mPUBLISH rechecks Company inside the actual business transaction and rolls back publication, grants, intents and receipts
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mREVISE rechecks Company inside the actual business transaction and rolls back publication, grants, intents and receipts
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mWITHDRAW rechecks Company inside the actual business transaction and rolls back publication, grants, intents and receipts
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m Module.companyAccessFixture src/test/integration/company-access-fixture.ts:[2m5:107[22m[39m
+[90m [2m❯[22m setup src/test/integration/company-access-communications.integration.ts:[2m29:38[22m[39m
+[90m [2m❯[22m src/test/integration/company-access-communications.integration.ts:[2m41:196[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mthe final DB-clock check rolls back actual communication writes after session expiry
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m Module.companyAccessFixture src/test/integration/company-access-fixture.ts:[2m5:107[22m[39m
+[90m [2m❯[22m setup src/test/integration/company-access-communications.integration.ts:[2m29:38[22m[39m
+[90m [2m❯[22m src/test/integration/company-access-communications.integration.ts:[2m42:115[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mpost-commit Company loss suppresses a new communication receipt without rewriting its committed history
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m Module.companyAccessFixture src/test/integration/company-access-fixture.ts:[2m5:107[22m[39m
+[90m [2m❯[22m setup src/test/integration/company-access-communications.integration.ts:[2m29:38[22m[39m
+[90m [2m❯[22m src/test/integration/company-access-communications.integration.ts:[2m43:134[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mnormal manager preview API denies current selected-location access with no private body or new effects
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mnormal manager read API denies current selected-location access with no private body or new effects
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mnormal manager list API denies current selected-location access with no private body or new effects
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mnormal manager context API denies current selected-location access with no private body or new effects
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mnormal manager operation API denies current selected-location access with no private body or new effects
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mnormal manager command API denies current selected-location access with no private body or new effects
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m Module.companyAccessFixture src/test/integration/company-access-fixture.ts:[2m5:107[22m[39m
+[90m [2m❯[22m setup src/test/integration/company-access-communications.integration.ts:[2m29:38[22m[39m
+[90m [2m❯[22m src/test/integration/company-access-communications.integration.ts:[2m47:204[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mnormal manager preview API retains current Company behavior
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mnormal manager read API retains current Company behavior
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mnormal manager list API retains current Company behavior
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mnormal manager context API retains current Company behavior
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mnormal manager operation API retains current Company behavior
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mnormal manager command API retains current Company behavior
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m Module.companyAccessFixture src/test/integration/company-access-fixture.ts:[2m5:107[22m[39m
+[90m [2m❯[22m setup src/test/integration/company-access-communications.integration.ts:[2m29:38[22m[39m
+[90m [2m❯[22m src/test/integration/company-access-communications.integration.ts:[2m48:161[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mEMPLOYEE own receipt, read/ack and scheduled-team publication remain identity-based after Manager revocation
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mLEAD own receipt, read/ack and scheduled-team publication remain identity-based after Manager revocation
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m Module.companyAccessFixture src/test/integration/company-access-fixture.ts:[2m5:107[22m[39m
+[90m [2m❯[22m setup src/test/integration/company-access-communications.integration.ts:[2m29:38[22m[39m
+[90m [2m❯[22m src/test/integration/company-access-communications.integration.ts:[2m49:171[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mread consumes the remaining post-observation session lifetime before returning its private body
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mlist consumes the remaining post-observation session lifetime before returning its private body
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mcontext consumes the remaining post-observation session lifetime before returning its private body
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m Module.companyAccessFixture src/test/integration/company-access-fixture.ts:[2m5:107[22m[39m
+[90m [2m❯[22m setup src/test/integration/company-access-communications.integration.ts:[2m29:38[22m[39m
+[90m [2m❯[22m src/test/integration/company-access-communications.integration.ts:[2m55:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/company-access-communications.integration.ts[2m > [22mthe initial post-observation session lifetime cannot grow after a later session extension
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m Module.companyAccessFixture src/test/integration/company-access-fixture.ts:[2m5:107[22m[39m
+[90m [2m❯[22m setup src/test/integration/company-access-communications.integration.ts:[2m29:38[22m[39m
+[90m [2m❯[22m src/test/integration/company-access-communications.integration.ts:[2m74:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/employee-mobile-planning.integration.ts[2m > [22mintegrates own mobile time-off and availability with canonical saves, drafts, current permission and deliberate recovery
+[31m[1mAssertionError[22m: expected [ { engine: 'webkit', …(4) }, …(1) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   {[39m
+[31m+     "engine": "webkit",[39m
+[31m+     "expected": false,[39m
+[31m+     "stage": "authority-loss",[39m
+[31m+     "text": "Fetch API cannot load http://127.0.0.1:35609/api/notifications due to access control checks.[39m
+[31m+     at unknown (http://127.0.0.1:35609/_next/static/chunks/src_11wmvgs2u40ix._.js:3664:49)[39m
+[31m+     at useNotificationsSnapshot.useEffect.controller (http://127.0.0.1:35609/_next/static/chunks/src_11wmvgs2u40ix._.js:3663:89)",[39m
+[31m+     "type": "pageerror",[39m
+[31m+   },[39m
+[31m+   {[39m
+[31m+     "engine": "webkit",[39m
+[31m+     "expected": false,[39m
+[31m+     "stage": "authority-loss",[39m
+[31m+     "text": "Fetch API cannot load http://127.0.0.1:35609/api/employee/planning/timeoff/list due to access control checks.[39m
+[31m+     at unknown (http://127.0.0.1:35609/_next/static/chunks/src_1mogl_5xj6rk3._.js:3392:49)[39m
+[31m+     at usePlanning.useEffect.controller (http://127.0.0.1:35609/_next/static/chunks/src_1mogl_5xj6rk3._.js:3391:76)",[39m
+[31m+     "type": "pageerror",[39m
+[31m+   },[39m
+[31m+ ][39m
+
+[36m [2m❯[22m src/test/integration/employee-mobile-planning.integration.ts:[2m58:219[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/employee-mobile-responses.integration.ts[2m > [22mintegrates Employee swap/cover responses and own detail with current permissions, recorded terms and original operations
+[31m[1mAssertionError[22m: expected [ { engine: 'webkit', …(4) }, …(1) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   {[39m
+[31m+     "engine": "webkit",[39m
+[31m+     "expected": false,[39m
+[31m+     "stage": "own-pickup",[39m
+[31m+     "text": "Fetch API cannot load http://127.0.0.1:40989/api/notifications due to access control checks.[39m
+[31m+     at unknown (http://127.0.0.1:40989/_next/static/chunks/src_023_ky3katnc-._.js:3664:49)[39m
+[31m+     at useNotificationsSnapshot.useEffect.controller (http://127.0.0.1:40989/_next/static/chunks/src_023_ky3katnc-._.js:3663:89)",[39m
+[31m+     "type": "pageerror",[39m
+[31m+   },[39m
+[31m+   {[39m
+[31m+     "engine": "webkit",[39m
+[31m+     "expected": false,[39m
+[31m+     "stage": "own-pickup",[39m
+[31m+     "text": "Fetch API cannot load http://127.0.0.1:40989/api/employee/exchange due to access control checks.[39m
+[31m+     at unknown (http://127.0.0.1:40989/_next/static/chunks/src_0y7qhom-cs_y-._.js:1530:49)[39m
+[31m+     at EmployeeMobileExchange.useEffect.controller (http://127.0.0.1:40989/_next/static/chunks/src_0y7qhom-cs_y-._.js:1529:87)",[39m
+[31m+     "type": "pageerror",[39m
+[31m+   },[39m
+[31m+ ][39m
+
+[36m [2m❯[22m src/test/integration/employee-mobile-responses.integration.ts:[2m182:219[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-ack.integration.ts[2m > [22mack revision hash employee exact; duplicates retain original timestamp
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-ack.integration.ts[2m > [22mack versus REVISE has one order and old receipt never completes latest
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-ack.integration.ts[2m > [22mack versus WITHDRAW has one order and old receipt never completes latest
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-ack.integration.ts[2m > [22mexplicit optional read never creates acknowledgement and required review cannot be dismissed
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-ack.integration.ts[2m > [22mlost acknowledgement result recovers original operation without repeating receipt
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-ack.integration.ts[2m > [22mreplaced session and revoked location cannot acknowledge old displayed content
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m src/test/integration/phase-e-communication-ack.integration.ts:[2m22:11[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-notifications.integration.ts[2m > [22mduplicate intent one event per version recipient; inbox and safe open work without push
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-notifications.integration.ts[2m > [22mquiet hours retain the exact-version intent and Updates content while deferring routine transport
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-notifications.integration.ts[2m > [22mrevocation before materialize send and open denies recipient
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-notifications.integration.ts[2m > [22mrevocation before materialize send and open denies location
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-notifications.integration.ts[2m > [22mrevocation before materialize send and open denies withdraw
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-notifications.integration.ts[2m > [22msuperseded version cancels after lease and last source check prevents transport
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-notifications.integration.ts[2m > [22mprovider ambiguous retry may repeat generic payload but never creates acknowledgement
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-notifications.integration.ts[2m > [22moutbox fault leaves no partial publication and unmarked database activation is held
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-notifications.integration.ts[2m > [22mupgrade retains historical communication notifications through payroll and forward repair
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-notifications.integration.ts[2m > [22mmanagement inbox preserves recipient authority, idempotent read status and separate acknowledgement
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communication-notifications.integration.ts[2m > [22mmanagement inbox suppresses a source revoked before its final observation
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableNotificationDatabase src/test/integration/local-postgres.ts:[2m151:10[22m[39m
+[90m [2m❯[22m src/test/integration/phase-e-communication-notifications.integration.ts:[2m46:31[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications-schema.integration.ts[2m > [22mschema_cross_workspace_revision_grant_denied
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m start src/test/integration/phase-e-communications-schema.integration.ts:[2m16:11[22m[39m
+[90m [2m❯[22m src/test/integration/phase-e-communications-schema.integration.ts:[2m30:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications-schema.integration.ts[2m > [22mpublished content grants receipts operations and lifecycle are immutable with no cascade
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m start src/test/integration/phase-e-communications-schema.integration.ts:[2m16:11[22m[39m
+[90m [2m❯[22m src/test/integration/phase-e-communications-schema.integration.ts:[2m45:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications-schema.integration.ts[2m > [22mdraft privacy and new revisions preserve old acknowledgement without carrying it forward
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m start src/test/integration/phase-e-communications-schema.integration.ts:[2m16:11[22m[39m
+[90m [2m❯[22m src/test/integration/phase-e-communications-schema.integration.ts:[2m59:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications-schema.integration.ts[2m > [22moperation actor session payload and receipt identity cannot be substituted
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m start src/test/integration/phase-e-communications-schema.integration.ts:[2m16:11[22m[39m
+[90m [2m❯[22m src/test/integration/phase-e-communications-schema.integration.ts:[2m72:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications-schema.integration.ts[2m > [22mrevision content hash normalized text role and scope constraints reject forged persistence
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m start src/test/integration/phase-e-communications-schema.integration.ts:[2m16:11[22m[39m
+[90m [2m❯[22m src/test/integration/phase-e-communications-schema.integration.ts:[2m84:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications-schema.integration.ts[2m > [22mcomplete chain retains communication and payroll sources and rejects unknown kinds
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m start src/test/integration/phase-e-communications-schema.integration.ts:[2m16:11[22m[39m
+[90m [2m❯[22m src/test/integration/phase-e-communications-schema.integration.ts:[2m94:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications-schema.integration.ts[2m > [22mfresh chain installs empty communication foundation without operational seeds
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m start src/test/integration/phase-e-communications-schema.integration.ts:[2m16:11[22m[39m
+[90m [2m❯[22m src/test/integration/phase-e-communications-schema.integration.ts:[2m108:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications-schema.integration.ts[2m > [22mE21-QA-D001 current management withdraws after historical author deactivation while retaining evidence
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m start src/test/integration/phase-e-communications-schema.integration.ts:[2m16:11[22m[39m
+[90m [2m❯[22m src/test/integration/phase-e-communications-schema.integration.ts:[2m111:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications-schema.integration.ts[2m > [22mE21-QA-D001 current management advances a revision after historical author deactivation without carrying receipts forward
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m start src/test/integration/phase-e-communications-schema.integration.ts:[2m16:11[22m[39m
+[90m [2m❯[22m src/test/integration/phase-e-communications-schema.integration.ts:[2m127:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications-schema.integration.ts[2m > [22mE21-QA-D001 creation eligibility immutable root identity and current actor guards stay enforced
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m start src/test/integration/phase-e-communications-schema.integration.ts:[2m16:11[22m[39m
+[90m [2m❯[22m src/test/integration/phase-e-communications-schema.integration.ts:[2m148:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications-schema.integration.ts[2m > [22m0022 to 0023 to 0024 and presentation rollback preserve actual canonical JSON and migration bytes
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m start src/test/integration/phase-e-communications-schema.integration.ts:[2m16:11[22m[39m
+[90m [2m❯[22m src/test/integration/phase-e-communications-schema.integration.ts:[2m167:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/94]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22mlocation immutable grants do not backfill transfers; deactivation denies reads
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22mconcurrent_publish_same_command_once and changed replay conflict
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22maudience fingerprint rejects a phantom eligibility change after preview
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22mwithdraw cancels current intents and deliveries; author deactivation preserves management control
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22moutbox fault rolls back all publication and grants
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22msession replaced proof cannot execute a prior tab command
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22mexpiry after communication root wait cannot publish a revision or disclose content
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22msource changed between protected observations is rejected after locks
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22myesterday overnight is today team; approved exact callout denies sender and recipient
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22mshift episode change denies old note and current location loss denies announcement
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22marbitrary recipient IDs are rejected on full otherwise valid command
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22mexpiry during final operation wait rejects publication without source rows
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22mlist final eligibility change discards an earlier private body
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22mlist final withdrawal change discards an earlier private body
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22manother eligible team assignment does not replace an immutable existing read grant
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22mpublication after empty list discovery cannot report complete all-clear
+[41m[1m FAIL [22m[49m src/test/integration/phase-e-communications.integration.ts[2m > [22mprotected management status names recipients; employee receives only own status and short lifetime
+[31m[1mError[22m: Refusing non-disposable/remote SQL target.[39m
+[36m [2m❯[22m createOwnedDatabase src/test/integration/local-postgres.ts:[2m59:11[22m[39m
+    [90m 57|[39m   if (!['postgres:', 'postgresql:'].includes(target.protocol) || !['12…
+    [90m 58|[39m     || !new RegExp(`^${prefix}[a-z0-9_]{1,40}$`).test(name) || target.…
+    [90m 59|[39m     throw new Error('Refusing non-disposable/remote SQL target.');
+    [90m   |[39m           [31m^[39m
+    [90m 60|[39m   }
+    [90m 61|[39m   const adminUrl = new URL(target); adminUrl.pathname = '/postgres';
+[90m [2m❯[22m createDisposableFoundationDatabase src/test/integration/local-postgres.ts:[2m148:10[22m[39m
+[90m [2m❯[22m src/test/integration/phase-e-communications.integration.ts:[2m24:11[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/94]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m8 failed[39m[22m[2m | [22m[1m[32m11 passed[39m[22m[90m (19)[39m
+[2m      Tests [22m [1m[31m94 failed[39m[22m[2m | [22m[1m[32m78 passed[39m[22m[90m (172)[39m
+[2m   Start at [22m 18:30:17
+[2m   Duration [22m 759.47s[2m (tests 100%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.
