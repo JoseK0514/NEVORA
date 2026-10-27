@@ -1,6 +1,7 @@
 import {it,expect} from 'vitest';
 import {createRequire} from 'node:module';
 import {resolve} from 'node:path';
+import {pathToFileURL} from 'node:url';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
 import {createOwnedNextApp} from './owned-next-app';
@@ -15,7 +16,9 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
  const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
  const smtp=await createOwnedSmtp();
  const app=await createOwnedNextApp(evidence,{mobileAccessEnabled:true,mobileSupportEnabled:true,recoverySmtpPort:smtp.port,invitationSmtpPort:smtp.port,pinDevTypeReferences:true}).catch(async error=>{await smtp.close();throw error;});
- const checks:string[]=[],errors:string[]=[],browsers:{close():Promise<void>}[]=[];
+ const checks:string[]=[],errors:string[]=[],windowExceptions:string[]=[],frameworkDiagnostics:unknown[]=[],browsers:{close():Promise<void>}[]=[];
+ const {observeDocumentNavigation,observeWindowExceptions}=await import(pathToFileURL(resolve('scripts/browser-navigation-diagnostic.mjs')).href);
+ const {projectFrameworkNativeDiagnostic}=await import(pathToFileURL(resolve('scripts/role-redirect-diagnostic.mjs')).href);
  const secrets:string[]=[TEST_PASSWORD];
  const clean=(text:string)=>secrets.reduce((s,token)=>s.replaceAll(token,'[REDACTED]'),text);
  const q=(text:string,values:unknown[]=[])=>app.database.executor.query({text,values});
@@ -28,11 +31,19 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
   await seedOwnedApp(app.database.executor);
   for(const engine of ['chromium','webkit','firefox']){
    const browser=await runtime[engine].launch({headless:true});browsers.push(browser);
+   // A real thrown exception with the same native-looking name/message must still reach the independent window channel.
+   const control=await browser.newContext(),samples:string[]=[],controlErrors:Error[]=[];await observeWindowExceptions(control,(_page:unknown,kind:string)=>samples.push(kind));
+   const probe=await control.newPage();probe.on('pageerror',(e:Error)=>controlErrors.push(e));await probe.goto('about:blank');
+   await probe.evaluate((message:string)=>{setTimeout(()=>{const e=new Error(message);e.name='Fetch API cannot load http';throw e;},0);setTimeout(()=>{void Promise.reject(new Error('Owned mobile rejection control'));},0);},'/'+new URL(origin).host+'/__nextjs_original-stack-frames due to access control checks.');
+   await expect.poll(()=>samples.filter(kind=>kind==='error').length).toBe(1);await expect.poll(()=>samples.filter(kind=>kind==='unhandledrejection').length).toBe(1);await expect.poll(()=>controlErrors.length).toBe(2);
+   expect(projectFrameworkNativeDiagnostic(controlErrors.find(e=>e.name==='Fetch API cannot load http'),origin,'MOBILE')).not.toBeNull();await control.close();
+   const watch=(target:{on:(event:string,listener:(error:Error)=>void)=>unknown})=>{const navigation=observeDocumentNavigation(target,()=>origin);target.on('pageerror',(e:Error)=>{const diagnostic=engine==='webkit'&&navigation.pending()?projectFrameworkNativeDiagnostic(e,origin,'MOBILE'):null;if(diagnostic)frameworkDiagnostics.push({engine,step,navigation:navigation.snapshot(),...diagnostic});else errors.push(engine+': '+step+': '+clean(e.name+' '+e.message));});};
    const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});
    await context.route('**/*',async(route:{request():{url():string};abort(reason?:string):Promise<void>;continue():Promise<void>})=>{
     const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==origin)await route.abort('blockedbyclient');else await route.continue();
    });
-   const page=await context.newPage();page.setDefaultTimeout(15000);page.on('pageerror',(e:Error)=>errors.push(engine+': '+step+': '+clean(e.name+' '+e.message)));
+   await observeWindowExceptions(context,(_page:unknown,kind:string)=>windowExceptions.push(engine+': '+step+': '+kind));
+   const page=await context.newPage();page.setDefaultTimeout(15000);watch(page);
    await page.goto(origin+'/welcome');await page.locator('#mobile-access-page').waitFor();expect(await page.locator('h1').innerText()).toContain('Brighter work');
    for(const width of [320,390,430]){
     await page.setViewportSize({width,height:844});
@@ -69,7 +80,7 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    const response=await context.request.post(origin+'/api/company-access/invitations/MA-'+engine,{headers,data:{action:'ISSUE',operationId:randomUUID(),expectedEmployeeVersion:current.employeeVersion,expectedInvitationRevision:current.invitationRevision}});expect(response.status()).toBe(200);
    const captured=smtp.messages.find((m:{recipient:string})=>m.recipient.includes(engine+'@example.invalid'));expect(Boolean(captured)).toBe(true);
    const body=captured!.body.replace(/=\r?\n/g,'').replace(/=3D/g,'=');const proof=/#proof=([A-Za-z0-9_-]{43})/.exec(body)?.[1];if(!proof)throw Error('Owned invitation proof missing');secrets.push(proof);
-   const employee=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});await employee.addCookies([{name:'nv-lang',value:'es',url:origin}]);const join=await employee.newPage();join.setDefaultTimeout(20000);join.on('pageerror',(e:Error)=>errors.push(engine+': '+step+': '+clean(e.name+' '+e.message)));
+   const employee=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});await employee.addCookies([{name:'nv-lang',value:'es',url:origin}]);await observeWindowExceptions(employee,(_page:unknown,kind:string)=>windowExceptions.push(engine+': '+step+': '+kind));const join=await employee.newPage();join.setDefaultTimeout(20000);watch(join);
    await join.goto(origin+'/activate#proof='+proof);await join.locator('#activation-password').waitFor();await expect.poll(()=>new URL(join.url()).hash).toBe('');
    expect(await join.locator('main').innerText()).not.toMatch(/Invitation verified|invitación verificada/i);
    await join.locator('#activation-password').fill(TEST_PASSWORD);await join.locator('#activation-confirm-password').fill(TEST_PASSWORD);
@@ -108,9 +119,9 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    checks.push(engine+': Manager cannot issue invitations');
    await context.close();
   }
-  expect(errors).toEqual([]);complete=true;
+  expect(windowExceptions).toEqual([]);expect(errors).toEqual([]);complete=true;
  }catch(error){throw new Error(step+': '+clean(error instanceof Error?error.message:String(error)));}finally{
   for(const browser of browsers)await browser.close();let closed=false;try{await app.close();closed=true;}finally{await smtp.close();
-  await writeFile(evidence+'/mobile-access-results.json',JSON.stringify({complete:complete&&closed,scope:'Real Next/server actions, invocation-owned PostgreSQL and loopback SMTP only; no real email/native clipboard/production service used.',checks,errors},null,2));}
+  await writeFile(evidence+'/mobile-access-results.json',JSON.stringify({complete:complete&&closed,scope:'Real Next/server actions, invocation-owned PostgreSQL and loopback SMTP only; no real email/native clipboard/production service used.',checks,errors,windowExceptions,frameworkDiagnostics},null,2));}
  }
 });
