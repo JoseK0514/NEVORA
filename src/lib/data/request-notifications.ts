@@ -53,7 +53,7 @@ export function timeOffTransitionLocks(id: string | undefined, actorEmployeeId: 
 }
 /** Non-schedule Time Off writes still guard current recipient access, then commit
  * the mutation, cancellation and intents together. No provider dependency. */
-export async function commitRequestTransition(input: { before?: RequestSnapshot; after: RequestSnapshot; actorEmployeeId: string; mutation: SqlStatement; managementProof?: SessionMutationProof; selfServiceProof?: SessionMutationProof }, executor: SqlExecutor): Promise<boolean> {
+export async function commitRequestTransition(input: { before?: RequestSnapshot; after: RequestSnapshot; actorEmployeeId: string; mutation: SqlStatement; managementProof?: SessionMutationProof; selfServiceProof?: SessionMutationProof; admission?: readonly SqlStatement[] }, executor: SqlExecutor): Promise<boolean> {
   if (input.after.kind === 'TIME_OFF' && input.after.record.status !== 'PENDING' && !input.managementProof) throw new Error('management_authorization');
   const submission = input.after.kind === 'TIME_OFF' && input.after.record.status === 'PENDING';
   const proof = submission ? input.selfServiceProof : input.managementProof;
@@ -73,6 +73,7 @@ export async function commitRequestTransition(input: { before?: RequestSnapshot;
       ...workspaceReadGuard(workspace),
       ...timeOffTransitionLocks(proof && input.after.kind === 'TIME_OFF' ? input.after.record.id : undefined, input.actorEmployeeId, recipients),
       ...authority(),
+      ...(input.admission ?? []),
       { text: `SELECT (CASE WHEN COALESCE((SELECT jsonb_agg(r ORDER BY r."employeeId") FROM (${requestRecipientSql}) r),'[]'::jsonb)=$1::jsonb THEN '1' ELSE 'request_transition_conflict' END)::integer AS access_guarded`, values: [JSON.stringify(recipients)] },
       guardedRequestMutation(input.mutation),
       ...requestNotificationStatements({ before: input.before, after: input.after, actorEmployeeId: input.actorEmployeeId, recipients,config:bindWorkspaceNotificationConfig(readNotificationConfig(process.env),workspace) }),

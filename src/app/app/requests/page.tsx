@@ -1,3 +1,6 @@
+import {ResponsiveEmployeePlanning} from '@/components/employee-mobile/planning';
+import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
+import {requireSessionMutationProof} from '@/lib/auth/session';
 import { keepWhole } from "@/lib/keep-whole";
 import { TimeOffWithdrawal } from "@/components/time-off-withdrawal";
 import { moduleGate } from "@/lib/workspace-presentation/current.server";
@@ -74,7 +77,8 @@ export default async function RequestsPage({
   const pending = mine.filter(request => request.status === "PENDING"), decided = mine.filter(request => request.status !== "PENDING");
   const shown = view === "decided" ? decided : pending;
 
-  return <QuietPage className="q-timeoff">
+  const proof=await requireSessionMutationProof();
+  return <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="timeoff" selection={sheetOpen?'new':params.requestId??'list'} filter={view}><QuietPage className="q-timeoff">
     <QuietNav back={{ href: "/app/requests/hub", label: "Requests" }} />
     <QuietHeader title="Time off" />
     <QuietSegments label="Time-off requests" items={[
@@ -103,5 +107,5 @@ export default async function RequestsPage({
       : <p className="q-empty q-empty--lead">{view === "decided" ? "No decided requests yet." : mine.length ? "Nothing waiting." : "No time-off requests yet."}</p>}
     <Link className="q-btn" href="/app/requests?tab=new" scroll={false}>Request time off</Link>
     <TimeOffSheet open={sheetOpen} closeHref={view === "decided" ? "/app/requests?filter=decided" : "/app/requests"} requestId={randomUUID()} draftOwner={session.id} notice={notice} />
-  </QuietPage>;
+  </QuietPage></ResponsiveEmployeePlanning>;
 }

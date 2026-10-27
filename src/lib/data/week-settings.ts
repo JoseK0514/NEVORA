@@ -2,6 +2,8 @@ import { databaseDate as dateValue } from './database-date';
 import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import { getWorkspace, workspaceReadGuard, WorkspaceConcurrencyError } from './workspaces';
 import type { Workspace } from '../domain';
+import type {SqlExecutor,SqlStatement} from "../notifications/types";
+import {neonNotificationExecutor} from "./notification-transactions";
 import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
 
@@ -188,63 +190,43 @@ export async function replaceWeeklyAvailability(
   windows: AvailabilityHours[],
   changedDays: number[] | undefined,
   proof: SessionMutationProof,
+  executor: SqlExecutor = neonNotificationExecutor(),
+  admission: readonly SqlStatement[] = [],
 ) {
   assertManagementProof(proof, employeeId);
-  const sql = getDb();
-  const authority = () => managementSessionStatements(proof, employeeId, ['EMPLOYEE', 'LEAD']).map(statement => sql.query(statement.text, [...statement.values]));
+  const authority = () => managementSessionStatements(proof, employeeId, ['EMPLOYEE', 'LEAD']);
   for (let attempt = 0; attempt < 3; attempt += 1) {
-    const workspace = await getWorkspace();
-    const inputs = await readAvailabilityInputs(employeeId, weekStart);
-    const version =
-      inputs.weeks.find((week) => week.weekStart === weekStart)
-        ?.submissionVersion ?? null;
-    const update = buildWeeklyAvailabilityUpdate({
-      weekStart,
-      ...inputs,
-      windows,
-      changedDays,
-    });
-    const queries = [
-      ...workspaceReadGuard(workspace).map(statement => sql.query(statement.text, [...statement.values])),
-      sql`SELECT pg_advisory_xact_lock(hashtextextended(${"availability:" + weekStart}, 0))`,
-      sql.query('SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', [employeeId]),
-      sql.query('SELECT employee_id FROM weekly_availability_submissions WHERE employee_id=$1 AND week_start=$2 ORDER BY employee_id FOR UPDATE', [employeeId, weekStart]),
+    const workspace = await getWorkspace(executor);
+    const inputs = await readAvailabilityInputs(employeeId, weekStart, weekStart, executor);
+    const version = inputs.weeks.find(week => week.weekStart === weekStart)?.submissionVersion ?? null;
+    const update = buildWeeklyAvailabilityUpdate({weekStart, ...inputs, windows, changedDays});
+    const queries: SqlStatement[] = [
+      ...workspaceReadGuard(workspace),
+      {text:'SELECT pg_advisory_xact_lock(hashtextextended($1,0))',values:['availability:' + weekStart]},
+      {text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[employeeId]},
+      {text:'SELECT employee_id FROM weekly_availability_submissions WHERE employee_id=$1 AND week_start=$2 ORDER BY employee_id FOR UPDATE',values:[employeeId,weekStart]},
       ...authority(),
-      // Abort the whole transaction if the deadline passed after the action's check.
-      // The deadline writer shares this lock; recheck wall time after waiting.
-      sql`SELECT 1 / CASE WHEN EXISTS (SELECT 1 FROM schedule_week_settings WHERE week_start = ${weekStart} AND availability_deadline < clock_timestamp()) THEN 0 ELSE 1 END AS deadline_guard`,
-      // Check the exact read version under the lock before converting legacy days.
-      sql`SELECT (CASE WHEN (SELECT updated_at::text FROM weekly_availability_submissions WHERE employee_id = ${employeeId} AND week_start = ${weekStart}) IS NOT DISTINCT FROM ${version} THEN '1' ELSE 'availability_version_conflict' END)::integer AS version_guard`,
-      sql`DELETE FROM weekly_availability_windows WHERE employee_id = ${employeeId} AND week_start = ${weekStart}`,
-      ...update.windows.map(
-        (window) =>
-          sql`INSERT INTO weekly_availability_windows (id, week_start, employee_id, day_of_week, start_time, end_time, updated_at) VALUES (${randomUUID()}, ${weekStart}, ${employeeId}, ${window.dayOfWeek}, ${window.startTime}, ${window.endTime}, now())`,
-      ),
-      ...update.overrides.flatMap((day) => [
-        sql`DELETE FROM availability_exceptions WHERE employee_id = ${employeeId} AND date = ${day.date}`,
-        ...day.exceptions.map(
-          (exception) =>
-            sql`INSERT INTO availability_exceptions (id, employee_id, date, kind, start_time, end_time) VALUES (${randomUUID()}, ${employeeId}, ${day.date}, ${exception.kind}, ${exception.startTime ?? null}, ${exception.endTime ?? null})`,
-        ),
+      {text:'SELECT 1 / CASE WHEN EXISTS (SELECT 1 FROM schedule_week_settings WHERE week_start=$1 AND availability_deadline < clock_timestamp()) THEN 0 ELSE 1 END AS deadline_guard',values:[weekStart]},
+      {text:`SELECT (CASE WHEN (SELECT updated_at::text FROM weekly_availability_submissions WHERE employee_id=$1 AND week_start=$2) IS NOT DISTINCT FROM $3 THEN '1' ELSE 'availability_version_conflict' END)::integer AS version_guard`,values:[employeeId,weekStart,version]},
+      ...admission,
+      {text:'DELETE FROM weekly_availability_windows WHERE employee_id=$1 AND week_start=$2',values:[employeeId,weekStart]},
+      ...update.windows.map(window=>({text:'INSERT INTO weekly_availability_windows(id,week_start,employee_id,day_of_week,start_time,end_time,updated_at) VALUES($1,$2,$3,$4,$5,$6,now())',values:[randomUUID(),weekStart,employeeId,window.dayOfWeek,window.startTime,window.endTime]})),
+      ...update.overrides.flatMap(day=>[
+        {text:'DELETE FROM availability_exceptions WHERE employee_id=$1 AND date=$2',values:[employeeId,day.date]},
+        ...day.exceptions.map(exception=>({text:'INSERT INTO availability_exceptions(id,employee_id,date,kind,start_time,end_time) VALUES($1,$2,$3,$4,$5,$6)',values:[randomUUID(),employeeId,day.date,exception.kind,exception.startTime??null,exception.endTime??null]})),
       ]),
-      sql`INSERT INTO weekly_availability_submissions (week_start, employee_id, submitted_at, updated_at, uses_normal_availability) VALUES (${weekStart}, ${employeeId}, now(), now(), true) ON CONFLICT (week_start, employee_id) DO UPDATE SET updated_at = now(), uses_normal_availability = true`,
+      {text:'INSERT INTO weekly_availability_submissions(week_start,employee_id,submitted_at,updated_at,uses_normal_availability) VALUES($1,$2,now(),now(),true) ON CONFLICT(week_start,employee_id) DO UPDATE SET updated_at=now(),uses_normal_availability=true',values:[weekStart,employeeId]},
+      availabilityCancellation(weekStart,employeeId,null),
+      ...authority(),
     ];
-    const cancellation = availabilityCancellation(weekStart, employeeId, null);
-    queries.push(sql.query(cancellation.text, cancellation.values));
-    queries.push(...authority());
-    try {
-      await sql.transaction(queries);
-      return;
-    } catch (error) {
-      if ((error as { code?: string }).code === "22P02" && error instanceof Error && error.message === 'invalid input syntax for type integer: "availability_version_conflict"') continue;
-      if ((error as { code?: string }).code === "22012")
-        throw new AvailabilityDeadlineError("Weekly availability is locked");
+    try {await executor.transaction(queries);return;}
+    catch(error){
+      if((error as {code?:string}).code==='22P02' && error instanceof Error && error.message==='invalid input syntax for type integer: "availability_version_conflict"')continue;
+      if((error as {code?:string}).code==='22012')throw new AvailabilityDeadlineError('Weekly availability is locked');
       throw error;
     }
   }
-  throw new AvailabilityConcurrencyError(
-    "Availability changed while saving; review the week and try again.",
-  );
+  throw new AvailabilityConcurrencyError('Availability changed while saving; review the week and try again.');
 }
 
 export async function getUpcomingAvailabilityWeek(

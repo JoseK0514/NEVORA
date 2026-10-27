@@ -1,0 +1,56 @@
+'use client';
+import Link from 'next/link';
+import {useEffect,useRef,useState} from 'react';
+import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
+import {PlanningFrame} from './planning-frame';
+import {usePlanning} from './use-planning';
+import {PlanningOperation,PlanningOperations} from './planning-operation';
+import {PlanningFeedback,usePlanningOperation} from './planning-feedback';
+import {parsePlanningCommand,type PlanningRequest,type PlanningCommand} from '@/lib/employee-planning';
+import {saveEmployeePlanningAction,checkEmployeePlanningAction} from '@/app/app/employee-planning/actions';
+import {formatTime} from '@/lib/date-utils';
+const date=(value:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'short',month:'short',day:'numeric',year:'numeric'}).format(new Date(value+'T12:00:00Z'));
+const range=(r:PlanningRequest)=>r.startDate===r.endDate?date(r.startDate):date(r.startDate)+' – '+date(r.endDate);
+const length=(r:PlanningRequest)=>r.startTime&&r.endTime?'Part of a day · '+formatTime(r.startTime)+'–'+formatTime(r.endTime):r.startDate===r.endDate?'Full day':(Math.round((Date.parse(r.endDate)-Date.parse(r.startDate))/86400000)+1)+' full days';
+const status={PENDING:'Waiting for approval',APPROVED:'Approved',DENIED:'Declined',CANCELLED:'Withdrawn'};
+export function EmployeeTimeOff({authority,selection,filter}:{authority:string;selection:string;filter:string}){
+ const panel=usePlanning(authority,'timeoff',selection),read=panel.read?.view==='timeoff'?panel.read:null;
+ const [draft,setDraft]=useState({startDate:'',endDate:'',partial:false,startTime:'09:00',endTime:'12:00',note:''}),[operation,setOperation]=useState(()=>new PlanningOperation()),id=useRef<string|null>(null),[withdrawals]=useState(()=>new PlanningOperations());
+ const [error,setError]=useState<string|null>(null),form=useRef<HTMLFormElement>(null),receipt=useRef<HTMLHeadingElement>(null);
+ const {pending,uncertain,complete}=usePlanningOperation(operation),locked=pending||uncertain||complete;
+ const listHref='/app/requests'+(filter==='decided'?'?filter=decided':''),isNew=selection==='new',isList=selection==='list';
+ const row=read?.data.requests[0],detailList=row&&row.status!=='PENDING'?'/app/requests?filter=decided':listHref;
+ useEffect(()=>{if(complete&&isNew&&read?.enabled)receipt.current?.focus();},[complete,isNew,read?.enabled]);
+ const send=async(command:PlanningCommand)=>{const result=await saveEmployeePlanningAction(command);panel.accept(result);return result;};
+ const check=async(command:PlanningCommand)=>{const result=await checkEmployeePlanningAction(command);panel.accept(result);return result;};
+ const retry=()=>{void operation.retry(check,send,panel.allowed);};
+ const title=isNew?'Request time off':isList?'Time off':'Your time-off request';
+ return <PlanningFrame title={title} sub={isNew?'Choose the time you need away':isList?'Your requests and decisions':'Dates, status and your request timeline'} back={isList?'/app/requests/hub':detailList+(row?'#timeoff-'+row.id:'')} backLabel={isList?'Requests':'Time off'} selection={selection} state={panel.state} ready={!!read} refresh={panel.refresh}>
+  {read&&!read.enabled?<p className="em-request-notice" role="status">Time off is turned off for your company.</p>:read?<>
+   {!isNew&&(pending||uncertain)?<section className="em-request-notice"><p>An earlier time-off submission still needs to be checked.</p><Link className="em-request-text" href="/app/requests?tab=new">Return to my submission</Link></section>:null}
+   {isNew?complete?<section className="em-planning-success" aria-label="Submission result"><h2 ref={receipt} tabIndex={-1}>Request recorded</h2><p>Your time-off request was recorded. Open it to see its current approval status.</p><Link className="em-request-primary" href={'/app/requests?requestId='+operation.result?.requestId}>View my request</Link><button className="em-request-secondary" type="button" onClick={()=>{setOperation(new PlanningOperation());id.current=null;setDraft({startDate:'',endDate:'',partial:false,startTime:'09:00',endTime:'12:00',note:''});}}>Make another request</button></section>:<form ref={form} className="em-planning-form" noValidate aria-busy={pending} onSubmit={event=>{
+    event.preventDefault();if(locked||!panel.allowed())return;
+    id.current??=crypto.randomUUID();const command=parsePlanningCommand({kind:'request',requestId:id.current,startDate:draft.startDate,endDate:draft.partial?draft.startDate:draft.endDate,startTime:draft.partial?draft.startTime:null,endTime:draft.partial?draft.endTime:null,note:draft.note.trim()});
+    if(!command){setError('Choose valid dates. For part of a day, the end time must be after the start time.');const field=!draft.startDate?'[name="startDate"]':!draft.partial&&(!draft.endDate||draft.endDate<draft.startDate)?'[name="endDate"]':'[name="endTime"]';form.current?.querySelector<HTMLElement>(field)?.focus();return;}
+    setError(null);void operation.submit(command,send,panel.allowed);
+   }}><fieldset disabled={locked} className="em-planning-fields"><fieldset className="em-planning-choices"><legend>Time away</legend><label><input type="radio" name="timeAway" checked={!draft.partial} onChange={()=>setDraft(d=>({...d,partial:false}))}/>Full days</label><label><input type="radio" name="timeAway" checked={draft.partial} onChange={()=>setDraft(d=>({...d,partial:true}))}/>Part of a day</label></fieldset>
+    <div className="em-planning-dates"><label>{draft.partial?'Date':'Start date'}<input name="startDate" type="date" required value={draft.startDate} onChange={e=>{const v=e.target.value;setDraft(d=>({...d,startDate:v,endDate:!d.endDate||d.endDate< v?v:d.endDate}));setError(null);}}/></label>{!draft.partial?<label>End date<input name="endDate" type="date" required value={draft.endDate} min={draft.startDate||undefined} onChange={e=>{setDraft(d=>({...d,endDate:e.target.value}));setError(null);}}/></label>:<><label>Start time<input name="startTime" type="time" required value={draft.startTime} onChange={e=>setDraft(d=>({...d,startTime:e.target.value}))}/></label><label>End time<input name="endTime" type="time" required value={draft.endTime} onChange={e=>setDraft(d=>({...d,endTime:e.target.value}))}/></label></>}</div>
+    <label className="em-planning-note">Note <span>Optional</span><textarea name="note" rows={3} maxLength={250} value={draft.note} onChange={e=>setDraft(d=>({...d,note:e.target.value}))}/><small>{draft.note.length}/250 characters · Visible to your manager</small></label>
+   </fieldset>{error?<p className="em-creation-error" role="alert">{error}</p>:null}<p className="em-planning-help">Your manager needs to approve this request. Keep your scheduled shifts until it is approved.</p><PlanningFeedback operation={operation} onRetry={retry}/><button className="em-request-primary" type="submit" disabled={locked||!read.enabled}>{pending?'Sending…':'Send request'}</button></form>:isList?<>
+    <nav className="em-request-tabs" aria-label="Time-off requests"><Link href="/app/requests" aria-current={filter!=='decided'?'page':undefined}>Waiting</Link><Link href="/app/requests?filter=decided" aria-current={filter==='decided'?'page':undefined}>Decided</Link></nav>
+    <section aria-label={filter==='decided'?'Decided requests':'Waiting requests'}>{read.data.requests.some(r=>filter==='decided'?r.status!=='PENDING':r.status==='PENDING')?<ul className="em-request-list">{read.data.requests.filter(r=>filter==='decided'?r.status!=='PENDING':r.status==='PENDING').map(r=><li key={r.id}><Link id={'timeoff-'+r.id} className="em-request-entry" href={'/app/requests?requestId='+encodeURIComponent(r.id)+(filter==='decided'?'&filter=decided':'')}><span><strong>{range(r)}</strong><small>{length(r)}</small><small>{status[r.status]}</small></span><CaretRightIcon size={20} aria-hidden="true"/></Link></li>)}</ul>:<div className="em-request-notice"><h2>{filter==='decided'?'No decisions yet':'Nothing waiting'}</h2><p>{filter==='decided'?'Approved, declined and withdrawn requests will appear here.':'When you send a request, you can follow its status here.'}</p></div>}</section><Link className="em-request-primary" href="/app/requests?tab=new">Request time off</Link>
+   </>:row?<>
+    <section className="em-response-status" aria-label="Request status"><strong>{status[row.status]}</strong><span>{range(row)}</span><span>{length(row)}</span></section>
+    <section><h2>Timeline</h2><ol className="em-planning-timeline"><li><strong>Request sent</strong><time>{new Intl.DateTimeFormat('en-US',{timeZone:read.timeZone,dateStyle:'medium',timeStyle:'short'}).format(new Date(row.createdAt))}</time></li><li><strong>{status[row.status]}{row.reviewer&&row.status!=='CANCELLED'?' by '+row.reviewer:''}</strong>{row.reviewedAt?<time>{new Intl.DateTimeFormat('en-US',{timeZone:read.timeZone,dateStyle:'medium',timeStyle:'short'}).format(new Date(row.reviewedAt))}</time>:<span>Your manager will review your request.</span>}</li></ol></section>
+    {row.note?<section><h2>Your note</h2><p className="em-planning-own-note">{row.note}</p></section>:null}
+    {row.status==='PENDING'?<Withdrawal key={row.id} request={row} getOperation={()=>withdrawals.for(row.id)} allowed={panel.allowed} send={send} check={check}/>:null}
+   </>:<p className="em-request-notice" role="status">This request isn’t available to your current account. Return to Time off to review your requests.</p>}
+  </>:null}
+ </PlanningFrame>;
+}
+function Withdrawal({request,getOperation,allowed,send,check}:{request:PlanningRequest;getOperation:()=>PlanningOperation;allowed:()=>boolean;send:(command:PlanningCommand)=>Promise<import('@/lib/employee-planning').PlanningResult>;check:(command:PlanningCommand)=>Promise<import('@/lib/employee-planning').PlanningResult>}){
+ const [operation]=useState(getOperation),[confirmed,setConfirmed]=useState(false),{pending,uncertain,complete}=usePlanningOperation(operation);
+ // Historical non-UUID records remain readable; withdrawal follows the existing command owner's UUID contract.
+ const command=parsePlanningCommand({kind:'withdraw',requestId:request.id,confirmed:true});
+ return <section className="em-planning-form" aria-label="Withdraw request"><h2>Changed your plans?</h2><p className="em-planning-help">You can withdraw this request while it is waiting. Your scheduled shifts stay the same.</p>{command?<><label className="em-planning-check"><input type="checkbox" checked={confirmed} disabled={pending||uncertain||complete} onChange={e=>setConfirmed(e.target.checked)}/>I want to withdraw this time-off request.</label><PlanningFeedback operation={operation} onRetry={()=>{void operation.retry(check,send,allowed);}}/>{complete?<p className="em-request-notice" role="status">Request withdrawn.</p>:<button className="em-request-secondary" type="button" disabled={!confirmed||pending||uncertain} onClick={()=>{if(confirmed)void operation.submit(command,send,allowed);}}>{pending?'Withdrawing…':'Withdraw request'}</button>}</>:<p className="em-planning-help">Contact your manager about changing this older request.</p>}</section>;
+}

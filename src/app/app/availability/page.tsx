@@ -1,3 +1,6 @@
+import {ResponsiveEmployeePlanning} from '@/components/employee-mobile/planning';
+import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
+import {requireSessionMutationProof} from '@/lib/auth/session';
 import { getWorkspace } from "@/lib/data/workspaces";
 import { keepWhole } from "@/lib/keep-whole";
 import { businessDate, formatBusinessDateTime } from "@/lib/business-time";
@@ -170,8 +173,9 @@ export default async function AvailabilityPage({
     {params.saved ? <p className="q-help" role="status">{selectedWeek ? "Your availability for this schedule week has been updated." : "Your usual week has been updated."}</p> : null}
   </>;
 
+  const proof=await requireSessionMutationProof();
   return (
-    <QuietPage className="q-avail">
+    <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="availability" selection={selectedWeek??'normal'}><QuietPage className="q-avail">
       <AvailabilitySignatureEditor
         key={selectedWeek ?? "normal"}
         initialAvailability={initialAvailability}
@@ -184,6 +188,6 @@ export default async function AvailabilityPage({
           ? (locked ? "The deadline passed. Your submitted hours are kept." : deadline ? `Send it by ${inZone(deadline, { weekday: "long", month: "short", day: "numeric" })}. Your usual week stays the same.` : "Hours for this week only. Your usual week stays the same.")
           : upcomingDue ?? "Your saved usual week."}
       />
-    </QuietPage>
+    </QuietPage></ResponsiveEmployeePlanning>
   );
 }

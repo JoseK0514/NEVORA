@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { getDb, queryRows } from "@/lib/db";
 import { neonNotificationExecutor } from "./notification-transactions";
 import { commitRequestTransition, requestSnapshot, requestRecipientSql, timeOffTransitionLocks, isRequestTransitionConflict } from "./request-notifications";
-import type { RecipientAccess, SqlExecutor } from "../notifications/types";
+import type { RecipientAccess, SqlExecutor, SqlStatement } from "../notifications/types";
 import type { RequestStatus } from "@/lib/domain";
 
 import type { SessionMutationProof } from "../shift-changes/types";
@@ -60,7 +60,7 @@ export async function getTimeOffRequest(id: string, executor: SqlExecutor = neon
   return row ? mapRequest(row) : null;
 }
 
-export async function listEmployeeTimeOffRequests(employeeId: string, executor?: SqlExecutor) {
+export async function listEmployeeTimeOffRequests(employeeId: string, executor?: SqlExecutor, requestId?: string) {
   const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
   const rows = queryRows(
     await sql.query(
@@ -83,9 +83,9 @@ export async function listEmployeeTimeOffRequests(employeeId: string, executor?:
      FROM time_off_requests r
      JOIN employees e ON e.id = r.employee_id
      LEFT JOIN employees rv ON rv.id = r.reviewed_by
-     WHERE r.employee_id = $1
+     WHERE r.employee_id = $1${requestId ? " AND r.id = $2" : ""}
      ORDER BY r.created_at DESC`,
-    [employeeId],
+    requestId ? [employeeId, requestId] : [employeeId],
     ),
   );
 
@@ -151,6 +151,7 @@ export async function createTimeOffRequest(input: {
   startTime?: string;
   endTime?: string;
   reason?: string;
+  admission?: readonly SqlStatement[];
 }, executor: SqlExecutor = neonNotificationExecutor()) {
   assertManagementProof(input.proof, input.employeeId);
   const id = input.requestId ?? randomUUID();
@@ -158,6 +159,7 @@ export async function createTimeOffRequest(input: {
   const committed = await commitRequestTransition({
     actorEmployeeId: input.employeeId,
     selfServiceProof: input.proof,
+    admission: input.admission,
     after: requestSnapshot('TIME_OFF', { id, employeeId: input.employeeId, employeeName: '', startDate: input.startDate, endDate: input.endDate, startTime: input.startTime, endTime: input.endTime, reason: input.reason, status: 'PENDING', createdAt }),
     mutation: {
       text: `INSERT INTO time_off_requests (id, employee_id, start_date, end_date, start_time, end_time, reason, created_at)
@@ -222,8 +224,8 @@ import { cancelNotificationStatements } from './notifications';
 
 /** Separate own-only command; the generic terminal writer remains manager-only.
  * The immutable request has one withdrawal identity and one first terminal fact. */
-export async function withdrawTimeOffRequest(input: WithdrawalCommand & {employeeId:string;proof:SessionMutationProof}, executor:SqlExecutor=neonNotificationExecutor()):Promise<WithdrawalReceipt|null> {
-  const {employeeId,proof,...payload}=input;
+export async function withdrawTimeOffRequest(input: WithdrawalCommand & {employeeId:string;proof:SessionMutationProof;admission?:readonly SqlStatement[]}, executor:SqlExecutor=neonNotificationExecutor()):Promise<WithdrawalReceipt|null> {
+  const {employeeId,proof,admission=[],...payload}=input;
   const command=parseWithdrawalCommand(payload);
   assertManagementProof(proof,employeeId);
   const workspace=await getWorkspace(executor);
@@ -233,6 +235,7 @@ export async function withdrawTimeOffRequest(input: WithdrawalCommand & {employe
     ...workspaceReadGuard(workspace),
     ...timeOffTransitionLocks(command.requestId,employeeId,recipients),
     ...authority(),
+    ...admission,
     {text:`SELECT (CASE WHEN EXISTS (SELECT 1 FROM time_off_requests WHERE id=$1 AND employee_id=$2
       AND ((status='PENDING' AND reviewed_by IS NULL AND reviewed_at IS NULL)
         OR (status='CANCELLED' AND reviewed_by=$2 AND reviewed_at IS NOT NULL)))
