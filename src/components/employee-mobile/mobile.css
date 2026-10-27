@@ -179,5 +179,9 @@
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .q-home__clock .employee-time-footer { border-color:var(--em-line); flex-wrap:wrap; gap:var(--em-space-3); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .q-home__clock .employee-time-footer :is(small,time) { color:var(--em-muted); font-size:var(--em-size-support); line-height:var(--em-line-body); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] :is(.em-button,.q-bs--go,.q-home__retry .q-btn) { background:var(--em-teal); color:var(--em-on-action) !important; }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-employee-mobile-page="home"] .q-home > .q-next--wait { margin:var(--em-space-6) var(--em-inset) 0; }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-employee-mobile-page="home"] .q-home__clock .employee-time-refresh { min-height:var(--em-action); padding:var(--em-space-3) var(--em-space-4); border:0; border-radius:var(--em-control); background:transparent; color:var(--em-teal); font:var(--em-weight-action) var(--em-size-support)/var(--em-line-label) var(--em-font); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-employee-mobile-page="home"] .q-home__clock .employee-time-refresh:hover:not(:disabled) { background:var(--em-wash); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-employee-mobile-page="home"] .q-home__clock .employee-time-refresh:disabled { color:var(--em-muted); }
   @media (prefers-reduced-motion:reduce) { html body #employee-mobile.app-shell[data-employee-mobile="true"] :is(a,button) { transition:none; } }
 }
