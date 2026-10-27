@@ -49,3 +49,18 @@ it('reads an exact own old target beyond the recent window without exposing it t
   expect(corr(await readEmployeeHours(peer,db.executor,'corrections','target:'+f.entryId)).snapshot.targets.some(t=>t.timeEntryId===f.entryId)).toBe(false);
  }finally{await db.dispose();}
 });
+it('opens a retained exact own request outside the latest50 without leaking it to a peer',async()=>{
+ const {db,proof,peer,f}=await setup();try{
+  const {submitTimeCorrection}=await import('../../lib/time-corrections/service');let first='';
+  for(let n=0;n<51;n++){
+   const operationId=randomUUID(),start=Date.parse(f.startAt)-(10+n)*86400000;
+   const result=await submitTimeCorrection(proof,{operationId,kind:'MISSING_ENTRY',locationId:'loc-1',proposedStartAt:new Date(start).toISOString(),proposedEndAt:new Date(start+3600000).toISOString(),reason:'Fictional retained request'},db.executor);
+   expect(result.status).toBe('pending');if(n===0)first=operationId;
+  }
+  const recent=corr(await readEmployeeHours(proof,db.executor,'corrections','list')).snapshot;
+  expect(recent.totalRequests).toBe(51);expect(recent.requests).toHaveLength(50);expect(recent.requests.some(r=>r.id===first)).toBe(false);
+  const exact=corr(await readEmployeeHours(proof,db.executor,'corrections',first)).snapshot;
+  expect(exact.requests).toHaveLength(1);expect(exact.requests[0].id).toBe(first);
+  expect(corr(await readEmployeeHours(peer,db.executor,'corrections',first)).snapshot.requests).toHaveLength(0);
+ }finally{await db.dispose();}
+});
