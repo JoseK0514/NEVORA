@@ -4,7 +4,7 @@ const validKey=(key:string)=>key.length<=64&&/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(k
 export function clockerLaunchMetadata(key:string):Metadata{
  if(!validKey(key))return {};
  return {title:'Clocker | NEVORA',description:'Shared employee time clock',applicationName:'NEVORA Clocker',manifest:`/clocker/${key}/manifest.webmanifest`,
-  appleWebApp:{capable:true,title:'Clocker',statusBarStyle:'default'},icons:{apple:'/icons/fuel-apple-180.png'}};
+  appleWebApp:{capable:true,title:'Clocker',statusBarStyle:'default'},other:{'apple-mobile-web-app-capable':'yes'},icons:{apple:'/icons/fuel-apple-180.png'}};
 }
 /** Public launch identity only. Enrollment, PIN and live time data stay on their guarded routes. */
 export function clockerLaunchManifest(key:string):MetadataRoute.Manifest|null{

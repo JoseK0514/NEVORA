@@ -13,7 +13,7 @@ const request=new Request('https://fictional.invalid/clocker/2/manifest.webmanif
 beforeEach(()=>{f.active=true;f.failed=false;f.calls=[];});
 it('offers a Clocker Home Screen identity with approved Apple icon and location launch URL',async()=>{
  const metadata=await generateMetadata(args('2'));
- expect(metadata).toMatchObject({manifest:'/clocker/2/manifest.webmanifest',applicationName:'NEVORA Clocker',appleWebApp:{capable:true,title:'Clocker',statusBarStyle:'default'},icons:{apple:'/icons/fuel-apple-180.png'}});
+ expect(metadata).toMatchObject({manifest:'/clocker/2/manifest.webmanifest',applicationName:'NEVORA Clocker',appleWebApp:{capable:true,title:'Clocker',statusBarStyle:'default'},other:{'apple-mobile-web-app-capable':'yes'},icons:{apple:'/icons/fuel-apple-180.png'}});
  expect(f.calls).toEqual([]);
 });
 it('starts at the exact Clocker key in standalone mode without a portal identity or orientation lock',async()=>{
