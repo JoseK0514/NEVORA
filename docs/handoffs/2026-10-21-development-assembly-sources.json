@@ -2,8 +2,8 @@
   "schema": 1,
   "repository": "JoseK0514/NEVORA",
   "target": "development",
-  "assemblyBranch": "codex/mobile-access-onboarding-20261026",
-  "observedAt": "2026-10-26",
+  "assemblyBranch": "claude-codex-collab-nevora",
+  "observedAt": "2026-10-27",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -363,9 +363,9 @@
     },
     {
       "branch": "development",
-      "sha": "46e202786863279302026ee03a0e225c359fa55c",
+      "sha": "dfdcefa0edc9d02bad5edf79b2b5a9587b194eb2",
       "disposition": "target",
-      "reason": "Freshly fetched combined development46e2027, including merged PR29/31/32. PR35 adds frozen mobile Access only and bounded source/CI reconciliation. Main/production and separately active PR27/33/34 remain unchanged."
+      "reason": "Fresh development after merged PR35. The October 27 branch-policy change raises the active remote ceiling to seven and reserves claude-codex-collab-nevora. No other application branch is integrated and main/production remain unchanged."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -410,16 +410,22 @@
     },
     {
       "branch": "claude/home-clock-row",
-      "sha": "97f4548aa7561d4a843b7616cc055180676d514a",
+      "sha": "341680bbbc3620a7f357309464961dfa845c1b64",
       "disposition": "held",
-      "reason": "Active PR33; preserve its remote and work. Separate Home clock row and its scenario drivers; changes the existing Home presentation. Excluded from the frozen mobile Access PR35; requires separate review and matching acceptance before any integration. Recording this head is source classification, not approval or findings closure."
+      "reason": "Active PR33; preserve its remote and work. Separate Home clock row and its scenario drivers; changes the existing Home presentation. Excluded from the frozen mobile Access PR35; requires separate review and matching acceptance before any integration. Recording this head is source classification, not approval or findings closure. October 27: record the current remote head for custody only; all changes remain held and excluded from this branch-policy update. No review, merge acceptance or findings closure is inferred."
     },
     {
       "branch": "claude/quiet-everywhere",
-      "sha": "1b4060f862fdc4b0718c2a0508645bcdc9755d18",
+      "sha": "5b82c3cb4836ba61415cef1d6f3cd918c019a385",
       "disposition": "held",
-      "reason": "Active PR34; preserve its remote and work. Separate cross-application UI, payroll/schema, read-path and scoped-permission changes;411 changed paths compared with development. Excluded from the frozen mobile Access PR35; requires separate review and matching acceptance before any integration. Recording this head is source classification, not approval or findings closure."
+      "reason": "Active PR34; preserve its remote and work. Separate cross-application UI, payroll/schema, read-path and scoped-permission changes;411 changed paths compared with development. Excluded from the frozen mobile Access PR35; requires separate review and matching acceptance before any integration. Recording this head is source classification, not approval or findings closure. October 27: record the current remote head for custody only; all changes remain held and excluded from this branch-policy update. No review, merge acceptance or findings closure is inferred."
+    },
+    {
+      "branch": "codex/light-default-20261027",
+      "sha": "8cca397cfeac3cc84f3ecb39d4f5166e162fe4ca",
+      "disposition": "held",
+      "reason": "Separately active light-default work, preserved without modification or integration. Exact current head recorded for source custody only; this branch-policy change does not approve its application changes."
     }
   ],
-  "maximumActiveBranches": 6
+  "maximumActiveBranches": 7
 }
