@@ -5,7 +5,7 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createOwnedNextApp } from '../src/test/integration/owned-next-app.ts';
-import { seedOwnedApp, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture.ts';
+import { seedOwnedApp,assignOwnedManagerCompanyAccess, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture.ts';
 import { hashPassword } from '../src/lib/auth/password.ts';
 const evidence=resolve(process.env.PHASE_C_EVIDENCE_DIR??join(homedir(),'.codex/visualizations/2026/10/05/nevora-c5-ui'));
 await mkdir(evidence,{recursive:true});
@@ -26,6 +26,7 @@ try{
  await seedOwnedApp(app.database.executor);
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('C5-MANAGER','Morgan','QA','555','MANAGER','loc-1')");
  await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',['C5-MANAGER',await hashPassword(TEST_PASSWORD)]);
+ await assignOwnedManagerCompanyAccess(app.database.executor,'C5-MANAGER');
  for(const engine of ['chromium','webkit']){
   const browser=await playwright[engine].launch();browsers.push(browser);const owner=await context(browser);await login(owner);
   const p=await owner.newPage();p.setDefaultTimeout(15000);const errors=[],consoleErrors=[];p.on('pageerror',e=>errors.push(e.message));p.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text());});
