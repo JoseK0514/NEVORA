@@ -6,6 +6,11 @@ import {BlockView,shortTitle} from '@/components/legal/legal-document';
 import {EmployeeProfileDocumentFrame} from '@/components/employee-mobile/profile';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 
+export async function generateMetadata({params}:{params:Promise<{document:string}>}){
+ const {document}=await params;
+ return {title:POLICY_DOCUMENTS.find(item=>item.slug===document)?.title??'Profile'};
+}
+
 export default async function EmployeePolicyPage({params}:{params:Promise<{document:string}>}){
  if(!policiesVisible())notFound();
  const {document}=await params,doc=POLICY_DOCUMENTS.find(item=>item.slug===document);if(!doc)notFound();
