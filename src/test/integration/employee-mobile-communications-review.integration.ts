@@ -7,7 +7,7 @@ import {createOwnedNextApp} from './owned-next-app';
 import {seedOwnedApp,seedOwnedScenario,TEST_PASSWORD} from './owned-app-fixture';
 import {fixtureProof} from './shift-change-api';
 import {publishScheduleWithRevision} from './management-api';
-import {previewCommunicationAudience,executeCommunicationCommand} from '../../lib/communications/service.server';
+import {previewCommunicationAudience,executeCommunicationCommand,communicationDevelopmentGuard} from '../../lib/communications/service.server';
 import {businessDate} from '../../lib/business-time';
 import {weekStartFor} from '../../lib/date-utils';
 import {saveWorkspacePresentation} from '../../lib/workspace-presentation/service';
@@ -119,7 +119,7 @@ it('CR-3/CR-1 preserve optional read facts and recover a refused original lookup
   await page.route('**/api/employee/communications',async(route:any)=>{const body=route.request().postDataJSON();sent++;operationId=body.operationId;if(!lost){lost=true;await route.fetch();await route.abort();}else await route.continue();});
   fault(true);await panel().getByRole('button',{name:'Send update',exact:true}).click();await panel().locator('button:enabled').filter({hasText:/^Check submission status$/}).waitFor();await page.unroute('**/api/employee/communications');
   const revision=(await q<{revision:number}>('SELECT revision FROM nevora_workspace_presentation_revisions ORDER BY revision DESC LIMIT 1'))[0]?.revision??0;
-  const gateId='lookup-module-'+engine;let disabled=false;await writeFile(join(app.barriers,'armed.json'),JSON.stringify({id:gateId,stage:'before',contains:"SELECT to_regclass('nevora_workspace_presentation_revisions') IS NOT NULL AS installed"}));
+  const gateId='lookup-module-'+engine;let disabled=false;await writeFile(join(app.barriers,'armed.json'),JSON.stringify({id:gateId,stage:'before',contains:communicationDevelopmentGuard.text}));
   try{
    const response=page.waitForResponse((result:any)=>new URL(result.url()).pathname==='/api/employee/communications/operations/'+operationId);
    await panel().getByRole('button',{name:'Check submission status',exact:true}).click();await expect.poll(async()=>{try{await access(join(app.barriers,gateId+'.reached'));return true;}catch{return false;}},{timeout:5000,interval:10}).toBe(true);
