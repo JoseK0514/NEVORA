@@ -56,7 +56,7 @@ export function EmployeePasskeySection({authority}:{authority:string}){
  const add=useRef<HTMLButtonElement>(null),confirmation=useRef<HTMLDivElement>(null),feedback=useRef<HTMLParagraphElement>(null),opener=useRef<HTMLButtonElement|null>(null),previousBusy=useRef(state.busy);
  useEffect(()=>{
   if(!flag)return;
-  const manager=createPasskeyManager(authority,()=>setState({...manager.state}));owner.current=manager;
+  const manager=createPasskeyManager(authority,()=>{if(manager.state.phase!=='ready')setConfirm(null);setState({...manager.state});});owner.current=manager;
   const resume=()=>{if(document.visibilityState!=='hidden'&&navigator.onLine!==false)void manager.resume();};
   const blur=()=>manager.pause(true),pause=()=>manager.pause(),end=()=>manager.end();
   const visibility=()=>document.visibilityState==='hidden'?pause():resume();
@@ -65,9 +65,8 @@ export function EmployeePasskeySection({authority}:{authority:string}){
   const poll=setInterval(()=>{if(document.visibilityState!=='hidden'&&manager.state.phase==='ready'&&!manager.state.busy)void manager.refresh();},30000);
   return()=>{clearInterval(poll);manager.end();owner.current=null;window.removeEventListener('blur',blur);window.removeEventListener('pagehide',pause);window.removeEventListener('offline',pause);window.removeEventListener('focus',resume);window.removeEventListener('pageshow',resume);window.removeEventListener('online',resume);window.removeEventListener('nevora:signout',end);window.removeEventListener('storage',storage);document.removeEventListener('visibilitychange',visibility);};
  },[authority,flag]);
- useEffect(()=>{if(confirm&&state.phase!=='ready')setConfirm(null);},[confirm,state.phase]);
  useEffect(()=>{if(confirm){confirmation.current?.focus();confirmation.current?.scrollIntoView({block:'nearest'});}},[confirm]);
- useEffect(()=>{const wasBusy=previousBusy.current;previousBusy.current=state.busy;if(wasBusy&&!state.busy&&state.notice){setConfirm(null);requestAnimationFrame(()=>{feedback.current?.focus();feedback.current?.scrollIntoView({block:'center'});});}},[state.busy,state.notice]);
+ useEffect(()=>{const wasBusy=previousBusy.current;previousBusy.current=state.busy;if(wasBusy&&!state.busy&&state.notice){requestAnimationFrame(()=>{feedback.current?.focus();feedback.current?.scrollIntoView({block:'center'});});}},[state.busy,state.notice]);
  if(!flag)return null;
  return <EmployeePasskeyView mobile={mobile} state={state} supported={supported} confirm={confirm} addRef={add} confirmationRef={confirmation} feedbackRef={feedback}
   onAdd={()=>void owner.current?.add()} onRefresh={()=>void owner.current?.refresh()} onRemove={id=>void owner.current?.remove(id)} onCancel={()=>owner.current?.cancel()}

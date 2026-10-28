@@ -1,0 +1,71 @@
+import {it,expect} from 'vitest';
+import {createRequire} from 'node:module';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import {randomBytes,createHash} from 'node:crypto';
+import {createOwnedNextApp} from './owned-next-app';
+import {seedOwnedApp,seedOwnedScenario} from './owned-app-fixture';
+import {fictionalAuthenticator} from './passkey-authenticator.test-support';
+import {measureRenderedContrast} from '../../../scripts/browser-contrast.mjs';
+type Route={request():{method():string};fetch():Promise<unknown>;fulfill(options:{response:unknown}):Promise<void>;continue():Promise<void>};
+it('integrates own passkeys through real server verification and deliberate mobile recovery in three engines',async()=>{
+ const evidence=process.env.NEVORA_EMPLOYEE_PASSKEYS_EVIDENCE;if(!evidence)throw Error('Select explicit external passkeys evidence');await mkdir(evidence,{recursive:true});
+ const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
+ const app=await createOwnedNextApp(evidence,{passkeysEnabled:true}),origin=app.url.replace('127.0.0.1','localhost');
+ const checks:{engine:string;name:string}[]=[],captures:string[]=[],contrasts:{engine:string;theme:string;width:number;ratio:number}[]=[],errors:{engine:string;stage:string;message:string;expected:boolean}[]=[];
+ const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
+ let browser:{close():Promise<void>}|undefined,failed:(()=>Promise<void>)|undefined;
+ try{
+  await seedOwnedApp(app.database.executor);
+  for(const [index,engine] of ['chromium','webkit','firefox'].entries()){
+   const fixture=await seedOwnedScenario(app.database.executor,'PKM'+index,index),actor=fixture.actors[0];await q('UPDATE employees SET role=$2 WHERE id=$1',[actor,index===1?'LEAD':'EMPLOYEE']);
+   const token=randomBytes(32).toString('base64url'),hash=createHash('sha256').update(token).digest('hex');await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,clock_timestamp()+interval '1 day')",[hash,actor]);
+   browser=await runtime[engine].launch({headless:true});const context=await (browser as typeof runtime.chromium).newContext({viewport:{width:390,height:844},hasTouch:true,reducedMotion:'reduce',serviceWorkers:'block'});await context.addCookies([{name:'fuel_session',value:token,url:origin,httpOnly:true,sameSite:'Lax'}]);
+   const page=await context.newPage();let stage='entry',expected=false,binding='';let device=fictionalAuthenticator();
+   page.on('pageerror',(error:Error)=>errors.push({engine,stage,message:error.message,expected}));
+   page.on('console',(message:{type():string;text():string})=>{if(message.type()==='error')errors.push({engine,stage,message:message.text(),expected});});
+   page.on('request',(request:{url():string;headers():Record<string,string>})=>{if(request.url().endsWith('/api/auth/passkeys'))binding=request.headers()['x-nevora-passkey-authority']??binding;});
+   await page.exposeFunction('fictionalPasskeyCreate',(challenge:string)=>device.register(challenge,origin,'localhost'));
+   await page.addInitScript(()=>{
+    const w=window as unknown as {__pkMode:string;__pkCalls:number;fictionalPasskeyCreate:(challenge:string)=>Promise<unknown>};w.__pkMode='success';w.__pkCalls=0;
+    if(typeof window.PublicKeyCredential!=='function')Object.defineProperty(window,'PublicKeyCredential',{configurable:true,value:function(){}});
+    Object.defineProperty(navigator,'credentials',{configurable:true,value:{create:async({publicKey,signal}:{publicKey:PublicKeyCredentialCreationOptions;signal:AbortSignal})=>{
+     w.__pkCalls++;if(w.__pkMode==='cancel')throw new DOMException('Fictional cancellation','NotAllowedError');
+     if(w.__pkMode==='hold')await new Promise<void>((resolve,reject)=>{Object.assign(w,{__pkRelease:resolve});signal.addEventListener('abort',()=>reject(new DOMException('Cancelled','AbortError')),{once:true});});
+     const challenge=btoa(String.fromCharCode(...new Uint8Array(publicKey.challenge as ArrayBuffer))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');const response=await w.fictionalPasskeyCreate(challenge);return {toJSON:()=>response};
+    }}});
+    if(new URL(location.href).searchParams.has('test-unsupported'))Object.defineProperty(window,'PublicKeyCredential',{configurable:true,value:undefined});
+   });
+   const panel=page.locator('.em-passkeys'),ready=()=>page.locator('.em-passkeys[data-passkey-state="ready"]').waitFor();
+   const shot=async(name:string)=>{const path=evidence+'/'+engine+'-'+name+'.png';await page.screenshot({path,fullPage:true});captures.push(path);};
+   failed=async()=>{await shot('FAILURE-'+stage);await writeFile(evidence+'/'+engine+'-failure.html',await page.content());};
+   const record=(name:string)=>checks.push({engine,name});
+   const refresh=async()=>{await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await ready();};
+   await page.goto(origin+'/app/profile');await ready();expect(await panel.getByRole('heading',{name:'Passkeys',exact:true}).count()).toBe(1);expect(await panel.innerText()).toContain('No saved passkeys');expect(binding).toMatch(/^[a-f0-9]{64}$/);await panel.scrollIntoViewIfNeeded();await shot('empty');record('Own Employee/Lead Profile current empty state, no private prehydration sample');
+   const wrong=await page.request.get(origin+'/api/auth/passkeys',{headers:{'X-Nevora-Passkey-Authority':'b'.repeat(64)}});expect(wrong.status()).toBe(401);
+   const selector=await page.request.get(origin+'/api/auth/passkeys?employeeId='+fixture.actors[1],{headers:{'X-Nevora-Passkey-Authority':binding}});expect(selector.status()).toBe(400);record('HTTP rejects another binding and employee selector');
+   stage='native-cancel';await page.evaluate('window.__pkMode="cancel"');await panel.getByRole('button',{name:'Add a passkey',exact:true}).click();await panel.getByRole('status').filter({hasText:'Setup cancelled.'}).waitFor();expect((await q<{n:number}>('SELECT count(*)::integer n FROM employee_passkeys WHERE employee_id=$1',[actor]))[0].n).toBe(0);record('Controlled native cancellation creates no server credential');
+   stage='native-blur-resize';await page.evaluate('window.__pkMode="hold"');await panel.getByRole('button',{name:'Add a passkey',exact:true}).click();await panel.getByRole('status').filter({hasText:'Finish setup'}).waitFor();const calls=await page.evaluate('window.__pkCalls');await page.evaluate(()=>window.dispatchEvent(new Event('blur')));expect(await panel.getByRole('button',{name:'Add a passkey',exact:true}).count()).toBe(0);const node=await panel.elementHandle();await page.setViewportSize({width:1440,height:1000});expect(await node!.evaluate((el:HTMLElement)=>el.isConnected)).toBe(true);await shot('desktop-pending');await page.setViewportSize({width:390,height:844});await page.evaluate(()=>window.dispatchEvent(new Event('focus')));expect(await page.evaluate('window.__pkCalls')).toBe(calls);await page.evaluate('window.__pkRelease()');await panel.getByRole('status').filter({hasText:'Passkey added.'}).waitFor();await ready();expect((await q<{n:number}>('SELECT count(*)::integer n FROM employee_passkeys WHERE employee_id=$1 AND revoked_at IS NULL',[actor]))[0].n).toBe(1);expect((await q<{n:number}>('SELECT count(*)::integer n FROM employee_passkeys WHERE employee_id=$1',[fixture.actors[1]]))[0].n).toBe(0);await shot('saved');record('Single controlled native ceremony survives expected blur and resize; actual cryptographic server verify creates only own key');
+   stage='layout-focus';await panel.locator('summary').click();
+   for(const theme of ['light','dark'])for(const width of [320,390,430]){
+    await page.getByLabel('Appearance',{exact:true}).selectOption(theme);await page.setViewportSize({width,height:844});await ready();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    const undersized=await panel.locator('button,summary,a').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.getClientRects().length).map(el=>el.getBoundingClientRect()).filter(box=>box.width<43.5||box.height<43.5).map(box=>({width:box.width,height:box.height})));expect(undersized).toEqual([]);
+    const measured=await panel.locator('.em-passkeys-intro').evaluate(measureRenderedContrast);contrasts.push({engine,theme,width,ratio:measured.ratio});expect(measured.ratio).toBeGreaterThanOrEqual(4.5);await panel.scrollIntoViewIfNeeded();await shot(theme+'-'+width);
+    await page.evaluate(()=>document.documentElement.style.fontSize='200%');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await shot(theme+'-'+width+'-text200');await page.evaluate(()=>document.documentElement.style.fontSize='100%');
+   }
+   await page.setViewportSize({width:844,height:390});expect(await page.evaluate(()=>matchMedia('(pointer:coarse)').matches)).toBe(true);await shot('coarse-landscape');await page.setViewportSize({width:390,height:844});await page.getByLabel('Appearance',{exact:true}).selectOption('light');
+   const remove=panel.getByRole('button',{name:/^Remove /}).first();await remove.focus();await page.keyboard.press('Space');await panel.getByRole('group',{name:/Remove “/}).waitFor();expect(await panel.getByRole('group').evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);expect(await panel.innerText()).toContain('last saved passkey');await shot('remove-review');await panel.getByRole('button',{name:'Keep passkey',exact:true}).click();await expect.poll(()=>remove.evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);expect((await q<{n:number}>('SELECT count(*)::integer n FROM employee_passkeys WHERE employee_id=$1 AND revoked_at IS NULL',[actor]))[0].n).toBe(1);record('Native keyboard removal review names last-key consequences; Keep returns exact focus and preserves the key');
+   stage='unsupported';await page.evaluate(()=>Object.defineProperty(navigator,'credentials',{configurable:true,value:{}}));await page.reload();await ready();expect(await panel.getByRole('button',{name:'Add a passkey',exact:true}).count()).toBe(1);
+   // addInitScript restores the controlled native implementation on navigation.
+   await page.goto(origin+'/app/profile?test-unsupported=1');await ready();expect(await panel.getByRole('button',{name:'Add a passkey',exact:true}).count()).toBe(0);expect(await panel.getByRole('button',{name:/^Remove /}).count()).toBe(1);await shot('unsupported-saved');record('Unsupported creation preserves canonical saved metadata and removal');
+   stage='lost-removal';let release!:()=>void,held=false;const gate=new Promise<void>(resolve=>{release=resolve;});
+   await page.route('**/api/auth/passkeys/*',async(route:Route)=>{if(route.request().method()!=='DELETE'){await route.continue();return;}const response=await route.fetch();held=true;await gate;try{await route.fulfill({response});}catch{/* Timed-out consumer may already be gone. */}});
+   await panel.getByRole('button',{name:/^Remove /}).click();expected=true;await panel.getByRole('button',{name:'Remove passkey',exact:true}).click();await expect.poll(()=>held).toBe(true);await panel.getByRole('button',{name:'Refresh passkeys',exact:true}).waitFor({timeout:15000});expect(await panel.innerText()).toContain('could not confirm');await shot('unknown-removal');release();await page.unroute('**/api/auth/passkeys/*');await panel.getByRole('button',{name:'Refresh passkeys',exact:true}).click();await ready();expected=false;expect(await panel.innerText()).toContain('No saved passkeys');expect(await panel.innerText()).not.toContain('Passkey removed.');expect((await q<{n:number}>("SELECT count(*)::integer n FROM auth_passkey_audit WHERE employee_id=$1 AND event='remove'",[actor]))[0].n).toBe(1);record('Lost real committed removal reply is uncertain; explicit fresh list shows current absence, one audit and no invented success');
+   stage='denied';await q('DELETE FROM employee_sessions WHERE token_hash=$1',[hash]);expected=true;await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await page.locator('.em-passkeys[data-passkey-state="denied"]').waitFor();expected=false;expect(await panel.getByRole('button',{name:'Add a passkey',exact:true}).count()).toBe(0);await shot('denied');record('Actual session loss clears own metadata and all commands');
+   stage='signout';await page.getByRole('button',{name:'Sign out',exact:true}).click();await page.waitForURL(origin+'/login');expect(await panel.count()).toBe(0);expect((await context.cookies()).some((cookie:{name:string})=>cookie.name==='fuel_session')).toBe(false);record('Native signout removes mounted owner and session cookie');
+   await context.close();await browser!.close();browser=undefined;failed=undefined;
+  }
+  expect(errors.filter(error=>!error.expected)).toEqual([]);await writeFile(evidence+'/result.json',JSON.stringify({status:'passed',checks,captures,contrasts,errors,limits:['Controlled fictional authenticator and actual cryptographic canonical server; native OS UI/credential-store behavior and physical devices unexecuted.','Owned loopback Next development/PostgreSQL, no hosted/production certification.']},null,2));
+ }catch(error){await failed?.().catch(()=>{});await writeFile(evidence+'/failure.json',JSON.stringify({error:String(error),checks,captures,contrasts,errors},null,2));throw error;}
+ finally{await browser?.close();await app.close();}
+});
