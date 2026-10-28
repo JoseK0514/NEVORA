@@ -1,7 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
-import {useRouter} from 'next/navigation';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
@@ -41,7 +40,7 @@ export function arrangeStatements(statements:readonly Statement[]){
 export function EmployeePayView({statements,loading,error,errorCode,nextPay,statement:arrivedTarget,document:arrivedFailure,reload}:PayView){
  // Latched on arrival: cleaning the URL re-renders the page without its parameters, and the notice must stay.
  // A new non-empty arrival (another notification, another failed PDF) replaces the latch.
- const [latch,setLatch]=useState(()=>({target:arrivedTarget,failure:arrivedFailure,seq:0})),router=useRouter();
+ const [latch,setLatch]=useState(()=>({target:arrivedTarget,failure:arrivedFailure,seq:0}));
  const [open,setOpen]=useState<string|null>(latch.target);
  if((arrivedTarget||arrivedFailure)&&(arrivedTarget!==latch.target||arrivedFailure!==latch.failure)){setLatch({target:arrivedTarget,failure:arrivedFailure,seq:latch.seq+1});if(arrivedTarget)setOpen(arrivedTarget);}
  const {target,failure}=latch;
@@ -58,11 +57,12 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
    arrived.current=latch.seq;
    if(failure||missing)notice.current?.focus();
    else document.getElementById(arranged?.latest?.id===target?'pay-latest-title':`pay-statement-${target}`)?.focus();
-   // Through the router, so its own history entry agrees; a refresh then can't replay this notice.
-   if(location.search)router.replace('/app/my-pay',{scroll:false});
+   // Next integrates native replaceState without a server round trip (router.replace fetched and could be cut off
+   // by the next navigation). A refresh then can't replay this notice.
+   if(location.search)history.replaceState(null,'','/app/my-pay');
   });
   return()=>cancelAnimationFrame(frame);
- },[failure,target,statements,missing,arranged?.latest?.id,router,latch.seq]);
+ },[failure,target,statements,missing,arranged?.latest?.id,latch.seq]);
  // Returning from a PDF reloads the list; put focus back on the control that opened it.
  useEffect(()=>{
   if(!statements||!returnTo.current)return;
