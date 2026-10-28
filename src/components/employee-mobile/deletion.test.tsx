@@ -16,7 +16,7 @@ describe('Employee mobile account deletion',()=>{
   const html=render(),plain=text(html);
   expect(html).toContain('aria-label="Show password"');expect(html).toContain('aria-pressed="false"');
   const shownHtml=render({shown:true});expect(shownHtml).toContain('aria-label="Show password"');expect(shownHtml).toContain('aria-pressed="true"');expect(shownHtml).not.toContain('Hide password');
-  for(const value of ['Own Person','FICTIONAL-E1','Your access ends right away','with your password or a passkey','Calendar feed links and device alerts stop','You can’t undo it in NEVORA','Within 30 calendar days after we receive the request','NEVORA has no way to cancel it','Your job doesn’t change','What may be kept','Fictional retention.','Read the full details','Confirm it’s you','Confirm deletion request','Keep my account'])expect(plain).toContain(value);
+  for(const value of ['Own Person','FICTIONAL-E1','Your access ends right away','with your password or a passkey','Calendar feed links and device alerts stop','You can’t undo it in NEVORA','Within 30 calendar days after we receive the request','you can’t cancel it in the app','Your job doesn’t change','What may be kept','Fictional retention.','Read the full details','Confirm it’s you','Confirm deletion request','Keep my account'])expect(plain).toContain(value);
   expect(plain.indexOf('Your account')).toBeLessThan(plain.indexOf('What happens'));
   expect(plain.indexOf('What happens')).toBeLessThan(plain.indexOf('Confirm it’s you'));
   expect(html).toContain('href="/app/profile#profile-account-deletion"');
@@ -47,7 +47,8 @@ describe('Employee mobile account deletion',()=>{
   expect(failed).toContain('Nothing was saved and you’re still signed in.');
   const unknown=text(render({state:{kind:'uncertain'},retry:true}));
   expect(unknown).toContain('We don’t know yet if your request was saved');
-  expect(unknown).toContain('checking sends your deletion request now');
+  expect(unknown).toContain('this sends your deletion request now');
+  expect(unknown).toContain('choose Check my request to find out');
   expect(unknown).toContain('Check my request');
   // The request may already be accepted, so nothing offers to keep the account.
   expect(unknown).not.toContain('Keep my account');

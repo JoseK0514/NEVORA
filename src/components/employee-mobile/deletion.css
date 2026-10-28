@@ -76,6 +76,6 @@
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete .em-delete-status:focus-visible { outline:3px solid var(--em-focus); outline-offset:3px; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete .em-delete-status:focus:not(:focus-visible) { outline:none; }
  /* After acceptance every session has ended: the app's navigation can only lose the reference, so the page holds it. */
- html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:has(.em-delete:is([data-deletion-state="received"],[data-deletion-state="duplicate"],[data-deletion-state="signed_out"])) .mobile-nav { display:none; }
- html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:has(.em-delete:is([data-deletion-state="received"],[data-deletion-state="duplicate"],[data-deletion-state="signed_out"])) .app-main { padding-bottom:env(safe-area-inset-bottom,0px); }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:has(.em-delete:is([data-deletion-state="received"],[data-deletion-state="duplicate"],[data-deletion-state="signed_out"],[data-deletion-state="uncertain"])) .mobile-nav { display:none; }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:has(.em-delete:is([data-deletion-state="received"],[data-deletion-state="duplicate"],[data-deletion-state="signed_out"],[data-deletion-state="uncertain"])) .app-main { padding-bottom:env(safe-area-inset-bottom,0px); }
 }

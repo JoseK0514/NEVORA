@@ -24,6 +24,7 @@ import {hashPassword} from '../../lib/auth/password';
 import {requestAccountDeletion,type DeletionFormState} from '../../app/app/account/delete/actions';
 import {login} from '../../app/login/actions';
 import {LOGIN_LIMITS} from '../../lib/auth/login-limits.server';
+import {prepareSession} from '../../lib/auth/session-issuance';
 
 let db:Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
 const q=<T=Record<string,unknown>>(text:string,values:readonly unknown[]=[])=>db.executor.query<T>({text,values});
@@ -115,6 +116,17 @@ it('counts every password check against the sign-in limit, with or without a ses
  as('no-session');
  expect(await requestAccountDeletion({kind:'uncertain'},form({retry:'1'}))).toEqual({kind:'busy'});
  expect(await q("SELECT count(*)::int n FROM account_deletion_requests")).toEqual([{n:0}]);
+});
+
+it('fences a sign-in verified before acceptance even without the 0035 trigger',async()=>{
+ // Remove the trigger's updated_at bump so only the accepting transaction's own bump can fence issuance.
+ await q('DROP TRIGGER auth_passkey_deletion_loss ON account_deletion_requests');
+ const [reviewed]=await q<{updated_at:string;password_hash:string;password_updated_at:string}>("SELECT e.updated_at::text,c.password_hash,c.password_updated_at::text FROM employees e JOIN employee_credentials c ON c.employee_id=e.id WHERE e.id='DEL-OWN'");
+ const issuance=prepareSession('DEL-OWN',reviewed);
+ as(await session('DEL-OWN','own-fence'));
+ expect(await requestAccountDeletion(idle,form())).toMatchObject({kind:'received'});
+ await expect(db.executor.transaction([...issuance.guards,issuance.insert])).rejects.toThrow(/session_login_changed/);
+ expect(await q("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='DEL-OWN'")).toEqual([{n:0}]);
 });
 
 it('is unavailable, not lost, before migration 0034',async()=>{

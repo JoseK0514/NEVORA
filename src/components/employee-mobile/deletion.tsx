@@ -56,7 +56,7 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,passwordRef
      <ul className="em-delete-facts">
       <li><SignOutIcon size={22} aria-hidden="true"/><span><strong>You’re signed out everywhere</strong><small>You can’t sign in again with your password or a passkey. Calendar feed links and device alerts have stopped.</small></span></li>
       <li><TrashIcon size={22} aria-hidden="true"/><span><strong>We delete your account</strong><small>We aim to finish within {period??missing('DELETION_COMPLETION_PERIOD')}. If we have your email address, we’ll email you when it’s done.</small></span></li>
-      <li><BriefcaseIcon size={22} aria-hidden="true"/><span><strong>Your job doesn’t change</strong><small>Your employment and the records your employer has to keep stay the same.</small></span></li>
+      <li><BriefcaseIcon size={22} aria-hidden="true"/><span><strong>Your job doesn’t change</strong><small>Deleting your NEVORA account doesn’t end your employment or remove records your employer has to keep.</small></span></li>
      </ul>
      <p>To ask about it, email {support(state.reference)} with your reference. We’ll never ask for your password.</p>
     </section>
@@ -77,7 +77,7 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,passwordRef
      <h2 id="deletion-effects-title">What happens</h2>
      <ul className="em-delete-facts">
       <li><SignOutIcon size={22} aria-hidden="true"/><span><strong>Your access ends right away</strong><small>You’re signed out on every device and can’t sign in again with your password or a passkey. Calendar feed links and device alerts stop.</small></span></li>
-      <li><TrashIcon size={22} aria-hidden="true"/><span><strong>You can’t undo it in NEVORA</strong><small>Within {period??missing('DELETION_COMPLETION_PERIOD')}, we aim to delete your profile, sign-in details, notification subscriptions, calendar links and the content you contributed. After you confirm, NEVORA has no way to cancel it.</small></span></li>
+      <li><TrashIcon size={22} aria-hidden="true"/><span><strong>You can’t undo it in NEVORA</strong><small>Within {period??missing('DELETION_COMPLETION_PERIOD')}, we aim to delete your profile, sign-in details, notification subscriptions, calendar links and the content you contributed. After you confirm, you can’t cancel it in the app.</small></span></li>
       <li><BriefcaseIcon size={22} aria-hidden="true"/><span><strong>Your job doesn’t change</strong><small>Deleting your NEVORA account doesn’t end your employment or remove records your employer has to keep.</small></span></li>
      </ul>
      <details className="em-delete-more"><summary><ShieldCheckIcon size={22} aria-hidden="true"/><span>What may be kept</span><CaretDownIcon size={20} aria-hidden="true"/></summary>
@@ -86,6 +86,14 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,passwordRef
     </section>
     <section className="em-delete-section" aria-labelledby="deletion-confirm-title">
      <h2 id="deletion-confirm-title">Confirm it’s you</h2>
+      {!pending&&(state.kind==='failed'||state.kind==='unavailable'||state.kind==='uncertain'||state.kind==='busy'||(checking&&state.kind==='wrong_password'))?<div className={`em-delete-status em-delete-status--${state.kind==='failed'?'error':'caution'}`} ref={outcomeRef} tabIndex={-1} role="alert" aria-labelledby="deletion-outcome-title">
+      <div className="em-delete-status-heading">{state.kind==='failed'?<XCircleIcon size={24} aria-hidden="true"/>:state.kind==='uncertain'||checking?<QuestionIcon size={24} aria-hidden="true"/>:<WarningCircleIcon size={24} aria-hidden="true"/>}<h2 id="deletion-outcome-title">{state.kind==='failed'?'Your request wasn’t sent':state.kind==='unavailable'?'Account deletion isn’t available right now':state.kind==='busy'?'Too many tries':'We don’t know yet if your request was saved'}</h2></div>
+      <p>{state.kind==='failed'?'Nothing was saved and you’re still signed in. Enter your password again to retry.'
+       :state.kind==='unavailable'?<>Nothing was sent. Email {support()} and we’ll help you.</>
+       :state.kind==='busy'?(checking?'For your security, wait about 15 minutes, then check again. We still don’t know whether your request was saved.':'For your security, wait about 15 minutes, then try again. Nothing was sent.')
+       :'The connection ended before NEVORA answered. Enter your password again and choose Check my request to find out. If it wasn’t saved, this sends your deletion request now, so only check if you still want your account deleted.'}</p>
+      {state.kind==='uncertain'||(checking&&state.kind!=='unavailable')?<p>You can also email {support()}. We’ll never ask for your password.</p>:null}
+     </div>:null}
      <div className="em-delete-field">
       <label htmlFor="deletion-password">Password</label>
       <span className="em-delete-input"><input ref={passwordRef} id="deletion-password" name="password" type={shown?'text':'password'} autoComplete="current-password" required disabled={pending}
@@ -101,14 +109,6 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,passwordRef
       <span>I understand my NEVORA account will be deleted and I won’t be able to sign in again.</span></label>
      {invalid==='confirm'?<p className="em-delete-error" id="deletion-understand-error">Check this box to confirm you understand.</p>:null}
     </section>
-    {state.kind==='failed'||state.kind==='unavailable'||state.kind==='uncertain'||state.kind==='busy'||(checking&&state.kind==='wrong_password')?<div className={`em-delete-status em-delete-status--${state.kind==='failed'?'error':'caution'}`} ref={outcomeRef} tabIndex={-1} role="alert" aria-labelledby="deletion-outcome-title">
-     <div className="em-delete-status-heading">{state.kind==='failed'?<XCircleIcon size={24} aria-hidden="true"/>:state.kind==='uncertain'||checking?<QuestionIcon size={24} aria-hidden="true"/>:<WarningCircleIcon size={24} aria-hidden="true"/>}<h2 id="deletion-outcome-title">{state.kind==='failed'?'Your request wasn’t sent':state.kind==='unavailable'?'Account deletion isn’t available right now':state.kind==='busy'?'Too many tries':'We don’t know yet if your request was saved'}</h2></div>
-     <p>{state.kind==='failed'?'NEVORA couldn’t save it. Nothing was saved and you’re still signed in. Enter your password again to retry.'
-      :state.kind==='unavailable'?<>Nothing was sent. Email {support()} and we’ll help you.</>
-      :state.kind==='busy'?(checking?'For your security, wait about 15 minutes, then check again. We still don’t know whether your request was saved.':'For your security, wait about 15 minutes, then try again. Nothing was sent.')
-      :'The connection ended before NEVORA answered. Enter your password again, then Check my request finds out. If it wasn’t saved, checking sends your deletion request now, so only check if you still want your account deleted.'}</p>
-     {state.kind==='uncertain'||(checking&&state.kind!=='unavailable')?<p>You can also email {support()}. We’ll never ask for your password.</p>:null}
-    </div>:null}
     <div className="em-delete-actions">
      {state.kind!=='unavailable'?<button type="submit" className="em-request-primary em-delete-confirm" disabled={pending}>{pending?(checking?'Checking…':'Sending request…'):checking?'Check my request':'Confirm deletion request'}</button>:null}
      {!checking?<Link className="em-request-secondary" href="/app/profile#profile-account-deletion" aria-disabled={pending||undefined} tabIndex={pending?-1:undefined} onClick={event=>{if(pending)event.preventDefault();}}>Keep my account</Link>:null}
