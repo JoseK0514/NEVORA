@@ -1,5 +1,6 @@
 import { expect, it, vi } from 'vitest';
 import { DeviceController, type DeviceRuntime, sendOwnerMessage, bounded } from './device-client';
+import {DeviceRequestError} from './device-protocol';
 const status={supported:true,enabled:false,configurationAvailable:true,testAllowed:false,dismissalScope:'scope',vapidPublicKey:'public'};
 function fixture(overrides: Partial<DeviceRuntime>={}) {
  let permission: NotificationPermission='default';
@@ -54,12 +55,22 @@ it('cleanup retry retains the originally reviewed generation after a replacement
  await controller.start();await controller.turnOff();generation='replacement';await controller.reconcile();await controller.turnOff();
  expect(sent).toEqual(['original','original']);expect(controller.snapshot.cleanupPending).toBe(true);
 });
+it('a stale turn-off confirmation cannot target a replacement generation',async()=>{
+ let generation='reviewed';const sent:string[]=[];
+ const {controller}=fixture({permission:()=> 'granted',api:async(op,body)=>{if(op==='unsubscribe'){sent.push((body as {ownershipGeneration:string}).ownershipGeneration);return {status:'complete'};}return {...status,enabled:true,ownershipGeneration:generation};}});
+ await controller.start();generation='replacement';await controller.reconcile();await controller.turnOff('reviewed');
+ expect(sent).toEqual([]);expect(controller.snapshot.message).toContain('changed');
+});
 it('Not now persistence failure is explicit and does not pretend durable dismissal',async()=>{
  const {controller}=fixture({saveDismissal:()=>false});await controller.start();controller.dismiss();expect(controller.snapshot.message).toContain('remember');
 });
 it('test endpoint is only called for enabled authorized device and queued copy is honest',async()=>{
  const api=vi.fn(async(op:string)=>op==='test'?{status:'queued'}:{...status,enabled:true,testAllowed:true,ownershipGeneration:'old'});
  const {controller}=fixture({permission:()=> 'granted',api});await controller.test();expect(api).not.toHaveBeenCalled();await controller.start();await controller.test();expect(controller.snapshot.message).toContain('does not confirm receipt');expect(controller.snapshot.server.testAllowed).toBe(false);
+});
+it('a self-test authentication refusal immediately retires current device controls',async()=>{
+ const {controller}=fixture({permission:()=> 'granted',api:async op=>{if(op==='test')throw new DeviceRequestError(401,'authentication_required');return {...status,enabled:true,testAllowed:true,ownershipGeneration:'own'};}});
+ await controller.start();await controller.test();expect(controller.snapshot.accessChanged).toBe(true);expect(controller.snapshot.server.enabled).toBe(false);expect(controller.snapshot.server.testAllowed).toBe(false);
 });
 it('bounded never-resolving operations terminate',async()=>{
  vi.useFakeTimers();const promise=bounded(new Promise(()=>{}),10);const assertion=expect(promise).rejects.toThrow('timed out');await vi.advanceTimersByTimeAsync(11);await assertion;vi.useRealTimers();

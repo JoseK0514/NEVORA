@@ -8,7 +8,7 @@ import {usePathname} from 'next/navigation';
 import type {UserRole} from '../../lib/domain';
 
 type InstallEvent=Event&{prompt():Promise<void>;userChoice:Promise<{outcome:'accepted'|'dismissed'}>};
-type Owner={snapshot:DeviceSnapshot|null;paused:boolean;ending:boolean;canInstall:boolean;installMessage:string;install():void;refresh():void;enable():void;turnOff():void;test():void;postpone():void;reopen():void};
+type Owner={snapshot:DeviceSnapshot|null;paused:boolean;ending:boolean;canInstall:boolean;installMessage:string;install():void;refresh():void;enable():void;turnOff(expectedGeneration?:string|null):void;test():void;postpone():void;reopen():void};
 const Context=createContext<Owner|null>(null);
 export const useEmployeeDevice=()=>useContext(Context);
 
@@ -40,7 +40,7 @@ export function EmployeeDeviceProvider({authority,enabled,children}:{authority?:
   void event.prompt().then(()=>event.userChoice).then(choice=>{if(!ended.current)setInstallMessage(choice.outcome==='accepted'?'Install request accepted. Open NEVORA from its icon to check setup.':'Install postponed. You can use your browser menu later.');}).catch(()=>{if(!ended.current)setInstallMessage('Use your browser menu to add NEVORA to your Home Screen.');});
  }
  const act=(kind:'start'|'enable'|'turnOff'|'test'|'dismiss'|'reopen')=>{if(active.current&&!ended.current)void client.current?.[kind]();};
- return <Context.Provider value={{snapshot,paused,ending,canInstall,installMessage,install,refresh:()=>act('start'),enable:()=>act('enable'),turnOff:()=>act('turnOff'),test:()=>act('test'),postpone:()=>act('dismiss'),reopen:()=>act('reopen')}}>{children}</Context.Provider>;
+ return <Context.Provider value={{snapshot,paused,ending,canInstall,installMessage,install,refresh:()=>act('start'),enable:()=>act('enable'),turnOff:expected=>{if(active.current&&!ended.current)void client.current?.turnOff(expected);},test:()=>act('test'),postpone:()=>act('dismiss'),reopen:()=>act('reopen')}}>{children}</Context.Provider>;
 }
 
 /** Incumbent desktop presentation, sharing the same current-device controller. */

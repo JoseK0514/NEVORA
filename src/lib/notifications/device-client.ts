@@ -13,7 +13,7 @@ export type DeviceRuntime = {
   readOwner(): string | undefined; writeOwner(generation: string): void;
   readDismissal(scope?: string): boolean; saveDismissal(scope?: string): boolean;
 };
-export type DeviceSnapshot = { state: DeviceSetupState; server: DeviceStatusView; message?: string; standalone: boolean | 'unknown'; capabilities: DeviceCapabilities; validUntil?:number; cleanupPending?:boolean; accessChanged?:boolean };
+export type DeviceSnapshot = { state: DeviceSetupState; server: DeviceStatusView; message?: string; standalone: boolean | 'unknown'; capabilities: DeviceCapabilities; validUntil?:number; cleanupPending?:boolean; cleanupGeneration?:string; accessChanged?:boolean };
 const emptyStatus: DeviceStatusView = { supported: false, enabled: false, configurationAvailable: false, testAllowed: false, phase: 'loading' };
 /** Bound the UI wait only. Timing out does not cancel the underlying promise; native
  * subscription operations still require ownership fences and their lifecycle lock. */
@@ -50,7 +50,7 @@ export class DeviceController {
   private current(epoch: number) { return !this.dead && epoch === this.epoch; }
   private publish(server = this.snapshot.server, message?: string) {
     if (this.dead) return;
-    this.snapshot = { ...this.snapshot, server, message, validUntil:this.runtime.validUntil?.(),cleanupPending:!!this.cleanupGeneration,state: deriveDeviceState({ ...this.snapshot, permission: this.runtime.permission(), server, dismissed: this.dismissed }) };
+    this.snapshot = { ...this.snapshot, server, message, validUntil:this.runtime.validUntil?.(),cleanupPending:!!this.cleanupGeneration,cleanupGeneration:this.cleanupGeneration,state: deriveDeviceState({ ...this.snapshot, permission: this.runtime.permission(), server, dismissed: this.dismissed }) };
     this.changed(this.snapshot);
   }
   start() { return this.refresh(false); }
@@ -169,10 +169,11 @@ export class DeviceController {
     this.publish(this.snapshot.server, saved ? undefined : 'Could not remember Not Now on this device. Browser storage may be unavailable.');
   }
   reopen() { this.dismissed = false; this.publish(this.snapshot.server, this.snapshot.message); return this.reconcile(); }
-  async turnOff() {
+  async turnOff(expectedGeneration?:string|null) {
     if (this.dead || this.snapshot.server.phase === 'pending') return;
     const epoch = ++this.epoch;
     const generation = this.cleanupGeneration ?? this.snapshot.server.ownershipGeneration ?? this.runtime.readOwner();
+    if(expectedGeneration!==undefined&&expectedGeneration!==(generation??null)){this.publish({...this.snapshot.server,phase:'error'},'Device setup changed. Check again before turning alerts off.');return;}
     this.cleanupGeneration = generation;
     this.publish({ ...this.snapshot.server, phase: 'pending', localOwned: false });
     const cleanupCurrent = this.runtime.cleanupFence(() => this.current(epoch));
@@ -205,7 +206,8 @@ export class DeviceController {
       if (!this.current(epoch)) return;
       if ((result as {status?:string}).status !== 'queued') throw Error('test unavailable');
       this.publish(this.snapshot.server, 'Test queued. Provider acceptance does not confirm receipt. Wait five minutes before another test.');
-    } catch {
+    } catch(error) {
+      if(error instanceof DeviceRequestError&&(error.status===401||error.status===403&&error.code!=='test_not_allowed')){this.invalidate();return;}
       if (this.current(epoch)) this.publish(this.snapshot.server, 'Test unavailable or rate limited. Wait five minutes, then reload NEVORA to check again.');
     } finally { this.testing = false; }
   }
