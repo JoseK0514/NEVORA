@@ -1,6 +1,7 @@
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it,vi} from 'vitest';
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
+vi.mock('next/navigation',()=>({useRouter:()=>({replace:()=>{}})}));
 import {EmployeePayView,arrangeStatements,payPeriod,type PayView} from './pay';
 import type {PayrollStatementsResponse} from '@/lib/payroll/contracts';
 

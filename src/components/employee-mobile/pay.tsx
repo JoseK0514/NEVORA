@@ -1,6 +1,7 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
+import {useRouter} from 'next/navigation';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
@@ -37,24 +38,30 @@ export function arrangeStatements(statements:readonly Statement[]){
 
 /** Employee/Lead phone presentation of My pay (owner: MyPay in ../payroll/my-pay.tsx, which holds the read). A
  * scheduled payday comes from the pay schedule and is never presented as a payment, amount or deposit. */
-export function EmployeePayView({statements,loading,error,errorCode,nextPay,statement:target,document:failure,reload}:PayView){
- const [open,setOpen]=useState<string|null>(target);
- const notice=useRef<HTMLDivElement>(null),returnTo=useRef<string|null>(null),arrived=useRef(false);
+export function EmployeePayView({statements,loading,error,errorCode,nextPay,statement:arrivedTarget,document:arrivedFailure,reload}:PayView){
+ // Latched on arrival: cleaning the URL re-renders the page without its parameters, and the notice must stay.
+ // A new non-empty arrival (another notification, another failed PDF) replaces the latch.
+ const [latch,setLatch]=useState(()=>({target:arrivedTarget,failure:arrivedFailure,seq:0})),router=useRouter();
+ const [open,setOpen]=useState<string|null>(latch.target);
+ if((arrivedTarget||arrivedFailure)&&(arrivedTarget!==latch.target||arrivedFailure!==latch.failure)){setLatch({target:arrivedTarget,failure:arrivedFailure,seq:latch.seq+1});if(arrivedTarget)setOpen(arrivedTarget);}
+ const {target,failure}=latch;
+ const notice=useRef<HTMLDivElement>(null),returnTo=useRef<string|null>(null),arrived=useRef(-1);
  const arranged=statements?arrangeStatements(statements):null;
  const found=!!target&&!!statements?.some(item=>item.id===target);
  const missing=!!target&&!!statements&&!found;
  const byId=new Map((statements??[]).map(item=>[item.id,item]));
  // One announcement on arrival: a failed PDF, a notification's statement, or that it is no longer available.
  useEffect(()=>{
-  if(arrived.current||(!failure&&!target)||(target&&!statements))return;
-  arrived.current=true;
+  if(arrived.current===latch.seq||(!failure&&!target)||(target&&!statements))return;
+  arrived.current=latch.seq;
   const frame=requestAnimationFrame(()=>{
    if(failure||missing)notice.current?.focus();
    else document.getElementById(arranged?.latest?.id===target?'pay-latest-title':`pay-statement-${target}`)?.focus();
-   if(location.search)history.replaceState(history.state,'','/app/my-pay');
+   // Through the router, so its own history entry agrees; a refresh then can't replay this notice.
+   if(location.search)router.replace('/app/my-pay',{scroll:false});
   });
   return()=>cancelAnimationFrame(frame);
- },[failure,target,statements,missing,arranged?.latest?.id]);
+ },[failure,target,statements,missing,arranged?.latest?.id,router,latch.seq]);
  // Returning from a PDF reloads the list; put focus back on the control that opened it.
  useEffect(()=>{
   if(!statements||!returnTo.current)return;
