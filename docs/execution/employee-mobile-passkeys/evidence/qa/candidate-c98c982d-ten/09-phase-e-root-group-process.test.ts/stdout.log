@@ -1,0 +1,21 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume[39m
+
+ [32m✓[39m src/test/phase-e-root-group-process.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 8408[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: exec-clean-exit[33m 614[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: registered-exec[33m 637[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: registration-after-exec[33m 660[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: root-exit[33m 830[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: forced-root[33m 1869[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: changed-root[33m 977[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: root-marker-lost[33m 620[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: member-marker-lost[33m 650[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: recycled-member[33m 628[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: reparented-member[33m 924[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m10 passed[39m[22m[90m (10)[39m
+[2m   Start at [22m 20:25:14
+[2m   Duration [22m 8.50s[2m (tests 100%)[22m
+
+JSON report written to /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/candidate-c98c982d-ten/09-phase-e-root-group-process.test.ts/results.json

@@ -1,0 +1,12 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume[39m
+
+ [32m✓[39m src/components/employee-home-actions.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 2054[2mms[22m[39m
+   [33m[2m✓[22m[39m late_former_authority_reply_discarded[33m 2033[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m   Start at [22m 20:22:43
+[2m   Duration [22m 2.21s[2m (tests 99%)[22m
+
+JSON report written to /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/candidate-c98c982d-ten/04-employee-home-actions.test.tsx/results.json

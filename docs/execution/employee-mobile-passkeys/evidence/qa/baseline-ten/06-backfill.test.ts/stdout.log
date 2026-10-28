@@ -1,0 +1,30 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/passkeys-qa-owned-baseline-592d4212[39m
+
+ [32m✓[39m src/lib/tenancy/migrations/backfill.test.ts [2m([22m[2m66 tests[22m[2m)[22m[33m 18816[2mms[22m[39m
+   [32m✓[39m complete-row migration preflight without SQL or rewritten history [2m(23)[22m
+     [33m[2m✓[22m[39m plans inactive/historical rows with stable legacy IDs and full original-column checksums[33m 322[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects duplicate PKs, row count drift and checksum drift[33m 724[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects source or original-column shape drift and emits no partial executable plan[33m 454[2mms[22m[39m
+     [33m[2m✓[22m[39m does not accept current-active-only or unfenced snapshot capture[33m 415[2mms[22m[39m
+     [33m[2m✓[22m[39m does not accept unreconciled new writes or schema/source mismatched writer protocol[33m 411[2mms[22m[39m
+     [33m[2m✓[22m[39m discriminates DEVICE versus WORKSPACE PIN limiter ancestry[33m 496[2mms[22m[39m
+     [33m[2m✓[22m[39m requires declared JSON identity literals to be references and fails closed for unresolved captured leaves[33m 305[2mms[22m[39m
+   [32m✓[39m interruption/resume and atomic new immutable-row protocol [2m(9)[22m
+     [33m[2m✓[22m[39m rejects a saved plan whose typed owner or chunk changed after its digest was captured[33m 497[2mms[22m[39m
+   [32m✓[39m source/schema/snapshot/row-bound database namespace witnesses [2m(15)[22m
+     [33m[2m✓[22m[39m includes empty email in the retained IS NOT NULL namespace and excludes NULL[33m 534[2mms[22m[39m
+     [33m[2m✓[22m[39m requires every closed catalog even for empty tables and rejects absent result witnesses[33m 665[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects changed catalog expression, predicate, source evidence and collation checksum[33m 1184[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects omitted collation metadata, predicate mismatch, duplicate and unused witness records[33m 883[2mms[22m[39m
+   [32m✓[39m malformed comparator capture rejection without executing data accessors [2m(6)[22m
+     [33m[2m✓[22m[39m does not execute an accessor or serialize a mutated sparse original payload[33m 480[2mms[22m[39m
+   [32m✓[39m saved comparator manifest obligations [2m(2)[22m
+     [33m[2m✓[22m[39m blocks omit witnesses in a rehashed empty-work saved plan[33m 542[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m66 passed[39m[22m[90m (66)[39m
+[2m   Start at [22m 20:17:58
+[2m   Duration [22m 18.97s[2m (tests 100%)[22m
+
+JSON report written to /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/baseline-ten/06-backfill.test.ts/results.json

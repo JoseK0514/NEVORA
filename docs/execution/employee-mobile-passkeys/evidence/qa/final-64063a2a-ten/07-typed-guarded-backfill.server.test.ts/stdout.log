@@ -1,0 +1,46 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume[39m
+
+ [32m✓[39m src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts [2m([22m[2m68 tests[22m[2m)[22m[33m 24419[2mms[22m[39m
+   [32m✓[39m owned local whole-plan typed executor pure boundaries [2m(10)[22m
+     [33m[2m✓[22m[39m rejects exact facts/authority/source drift before transport[33m 452[2mms[22m[39m
+   [32m✓[39m whole-plan typed executor fictional transport lifecycle [2m(10)[22m
+     [33m[2m✓[22m[39m locks all70 source/sidecar tables before transaction MVCC/protocol reads and applies only compiler metadata[33m 693[2mms[22m[39m
+     [33m[2m✓[22m[39m preserves issued cells while detaching mutable request before first await[33m 659[2mms[22m[39m
+     [33m[2m✓[22m[39m denies wrong original backend role OID and selected role separately[33m 318[2mms[22m[39m
+     [33m[2m✓[22m[39m never attempts rollback after COMMIT has begun, returning original plan reconciliation[33m 691[2mms[22m[39m
+     [33m[2m✓[22m[39m identical complete retry does no DML and retains original manifest[33m 1035[2mms[22m[39m
+   [32m✓[39m typed atomic source, target and hostile-input regressions [2m(14)[22m
+     [33m[2m✓[22m[39m retains SQLNULL/JSONNULL/unsafe numbers/native bounds and both typed sidecar literal mirrors[33m 815[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back when exact direct attribution affects zero rows[33m 432[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back when exact sidecar insertion affects zero rows[33m 478[2mms[22m[39m
+     [33m[2m✓[22m[39m blocks wrong complete retry workspace with same original manifest[33m 891[2mms[22m[39m
+     [33m[2m✓[22m[39m blocks wrong sidecar mirror on complete retry[33m 808[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects concurrent invocation on the same client without a second transaction[33m 684[2mms[22m[39m
+   [32m✓[39m post-effect and genuine SQL-key helper failures [2m(4)[22m
+     [33m[2m✓[22m[39m blocks changed supplied opaque SQL-key class through genuine helper error issuer[33m 346[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back post-attribution role drift before commit[33m 398[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back if original source bytes change after attribution[33m 389[2mms[22m[39m
+   [32m✓[39m typed journal whole-plan successor fictional transaction regressions [2m(17)[22m
+     [33m[2m✓[22m[39m locks source70 then fixed journal2 before all transaction reads and commits matching structural state[33m 848[2mms[22m[39m
+     [33m[2m✓[22m[39m exact applied retry reads durable state and issues no source/control/journal DML[33m 1210[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects applied metadata with journalnull, never retrospectively repairing[33m 935[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects applied metadata with journalNOT_STARTED, never retrospectively repairing[33m 893[2mms[22m[39m
+     [33m[2m✓[22m[39m retains preexisting STARTED journal after fresh original source/target reconciliation[33m 1069[2mms[22m[39m
+     [33m[2m✓[22m[39m retains preexisting UNKNOWN journal after fresh original source/target reconciliation[33m 692[2mms[22m[39m
+     [33m[2m✓[22m[39m storage-registration failure rolls back every journal/source/control effect[33m 335[2mms[22m[39m
+     [33m[2m✓[22m[39m metadata failure rolls back previously inserted journal and STARTED states together[33m 373[2mms[22m[39m
+     [33m[2m✓[22m[39m refuses changed or partial persisted coverage without arming metadata[33m 367[2mms[22m[39m
+     [33m[2m✓[22m[39m lost COMMIT acknowledgement never issues secondary SQL and retains original plan reconciliation[33m 777[2mms[22m[39m
+   [32m✓[39m typed journal original-attempt reconciliation boundaries [2m(10)[22m
+     [33m[2m✓[22m[39m does not enroll uncertainty from the original journal-free entrypoint[33m 631[2mms[22m[39m
+     [33m[2m✓[22m[39m refuses originating client before SQL and preserves original uncertain result[33m 684[2mms[22m[39m
+     [33m[2m✓[22m[39m refuses cloned/serialized/wrapped genuine receipts before SQL[33m 709[2mms[22m[39m
+     [33m[2m✓[22m[39m does not enroll acknowledged successful or blocked journal results[33m 766[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m68 passed[39m[22m[90m (68)[39m
+[2m   Start at [22m 20:34:57
+[2m   Duration [22m 24.59s[2m (tests 100%)[22m
+
+JSON report written to /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-ten/07-typed-guarded-backfill.server.test.ts/results.json

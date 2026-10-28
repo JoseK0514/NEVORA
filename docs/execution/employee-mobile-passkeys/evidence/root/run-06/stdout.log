@@ -1,0 +1,71 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/test/integration/employee-mobile-communications-fixtures" without a file extension (vitest.employee-mobile-communications.config.mts:3:39). Add the file extension
+  - ESM syntax in a file loaded as CommonJS (src/test/integration/employee-mobile-communications-fixtures.ts:4:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+ ❯ |employee| src/test/integration/employee-mobile-passkeys.integration.ts (1 test | 1 failed) 34054ms
+   × integrates own passkeys through real server verification and deliberate mobile recovery in three engines 34054ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |employee| src/test/integration/employee-mobile-passkeys.integration.ts > integrates own passkeys through real server verification and deliberate mobile recovery in three engines
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/test/integration/employee-mobile-passkeys.integration.ts:69:179
+
+
+Caused by: Error: Matcher did not succeed in time.
+ ❯ src/test/integration/employee-mobile-passkeys.integration.ts:69:151
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: "route.fetch: Request context disposed.
+Call log:
+[2m  - → DELETE http://localhost:62040/api/auth/passkeys/01eb6722-e1e5-4f9a-aba4-51f7ceb3952a[22m
+[2m    - user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36[22m
+[2m    - accept: */*[22m
+[2m    - accept-encoding: gzip,deflate,br[22m
+[2m    - content-type: application/json[22m
+[2m    - cookie: fuel_session=[REDACTED_DISPOSABLE_FIXTURE_COOKIE]; nevora_pk_register=[REDACTED_DISPOSABLE_FIXTURE_COOKIE][22m
+[2m    - origin: http://localhost:62040[22m
+[2m    - referer: http://localhost:62040/app/profile?test-unsupported=1[22m
+[2m    - x-nevora-passkey-authority: 5f56c59b70b37a26acf465c6a262d012d64a972b74fbff717c1b59b0e28804e3[22m
+[2m    - sec-ch-ua: "Not=A?Brand";v="99", "HeadlessChrome";v="151", "Chromium";v="151"[22m
+[2m    - sec-ch-ua-mobile: ?0[22m
+[2m    - sec-ch-ua-platform: "macOS"[22m
+" while running route callback.
+Consider awaiting `await page.unrouteAll({ behavior: 'ignoreErrors' })`
+before the end of the test to ignore remaining routes in flight.
+ ❯ src/test/integration/employee-mobile-passkeys.integration.ts:68:165
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { log: [ '  - → DELETE http://localhost:62040/api/auth/passkeys/01eb6722-e1e5-4f9a-aba4-51f7ceb3952a', '    - user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36', '    - accept: */*', '    - accept-encoding: gzip,deflate,br', '    - content-type: application/json', '    - cookie: fuel_session=[REDACTED_DISPOSABLE_FIXTURE_COOKIE]; nevora_pk_register=[REDACTED_DISPOSABLE_FIXTURE_COOKIE]', '    - origin: http://localhost:62040', '    - referer: http://localhost:62040/app/profile?test-unsupported=1', '    - x-nevora-passkey-authority: 5f56c59b70b37a26acf465c6a262d012d64a972b74fbff717c1b59b0e28804e3', '    - sec-ch-ua: "Not=A?Brand";v="99", "HeadlessChrome";v="151", "Chromium";v="151"', '    - sec-ch-ua-mobile: ?0', '    - sec-ch-ua-platform: "macOS"' ] }
+This error originated in "src/test/integration/employee-mobile-passkeys.integration.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The last test to run before this error was "integrates own passkeys through real server verification and deliberate mobile recovery in three engines". This means either:
+- the error was thrown while Vitest was running this test, or
+- the error was thrown after the test completed, and this was the most recent test at that point.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+     Errors  1 error
+   Start at  20:25:33
+   Duration  34.44s (tests 99%, import 1%)
+
+[Payroll PostgreSQL] Owned cluster stopped.

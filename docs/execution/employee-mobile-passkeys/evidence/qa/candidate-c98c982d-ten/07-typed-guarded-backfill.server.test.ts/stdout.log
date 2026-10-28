@@ -1,0 +1,60 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume[39m
+
+ [32m✓[39m src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts [2m([22m[2m68 tests[22m[2m)[22m[33m 41560[2mms[22m[39m
+   [32m✓[39m owned local whole-plan typed executor pure boundaries [2m(10)[22m
+     [33m[2m✓[22m[39m rejects plan clone without reading nested data[33m 530[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects proxy plan without invoking any traps[33m 490[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects facts accessor before any await without executing it[33m 337[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects cycles and unknown request fields[33m 666[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects exact facts/authority/source drift before transport[33m 911[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects ambient transaction without BEGIN or ROLLBACK[33m 339[2mms[22m[39m
+     [33m[2m✓[22m[39m requires matching owned localhost socket before any query[33m 327[2mms[22m[39m
+   [32m✓[39m whole-plan typed executor fictional transport lifecycle [2m(10)[22m
+     [33m[2m✓[22m[39m locks all70 source/sidecar tables before transaction MVCC/protocol reads and applies only compiler metadata[33m 1297[2mms[22m[39m
+     [33m[2m✓[22m[39m preserves issued cells while detaching mutable request before first await[33m 1804[2mms[22m[39m
+     [33m[2m✓[22m[39m denies superuser original login despite substituted session/current operator role[33m 342[2mms[22m[39m
+     [33m[2m✓[22m[39m denies wrong original backend role OID and selected role separately[33m 539[2mms[22m[39m
+     [33m[2m✓[22m[39m returns UNCERTAIN if rollback cannot be confirmed after own BEGIN attempt[33m 363[2mms[22m[39m
+     [33m[2m✓[22m[39m never attempts rollback after COMMIT has begun, returning original plan reconciliation[33m 1219[2mms[22m[39m
+     [33m[2m✓[22m[39m identical complete retry does no DML and retains original manifest[33m 1441[2mms[22m[39m
+     [33m[2m✓[22m[39m refuses mixedpartial ownership with an absent protocol manifest[33m 306[2mms[22m[39m
+   [32m✓[39m typed atomic source, target and hostile-input regressions [2m(14)[22m
+     [33m[2m✓[22m[39m retains SQLNULL/JSONNULL/unsafe numbers/native bounds and both typed sidecar literal mirrors[33m 923[2mms[22m[39m
+     [33m[2m✓[22m[39m blocks pre-BEGIN PROTOCOL field1 drift[33m 345[2mms[22m[39m
+     [33m[2m✓[22m[39m blocks a source original wire change before arming[33m 325[2mms[22m[39m
+     [33m[2m✓[22m[39m blocks changed opaque old expression equality witness without calculating JS lower[33m 308[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back when exact direct attribution affects zero rows[33m 600[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back when exact sidecar insertion affects zero rows[33m 521[2mms[22m[39m
+     [33m[2m✓[22m[39m blocks wrong complete retry workspace with same original manifest[33m 1187[2mms[22m[39m
+     [33m[2m✓[22m[39m blocks wrong sidecar mirror on complete retry[33m 978[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects concurrent invocation on the same client without a second transaction[33m 918[2mms[22m[39m
+   [32m✓[39m post-effect and genuine SQL-key helper failures [2m(4)[22m
+     [33m[2m✓[22m[39m blocks changed supplied opaque SQL-key class through genuine helper error issuer[33m 413[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back post-attribution role drift before commit[33m 558[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back if original source bytes change after attribution[33m 475[2mms[22m[39m
+   [32m✓[39m typed journal whole-plan successor fictional transaction regressions [2m(17)[22m
+     [33m[2m✓[22m[39m rejects installation JOURNAL_SCHEMA[0,1] drift before BEGIN[33m 309[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects installation JOURNAL_TABLES[0,5] drift before BEGIN[33m 340[2mms[22m[39m
+     [33m[2m✓[22m[39m locks source70 then fixed journal2 before all transaction reads and commits matching structural state[33m 1380[2mms[22m[39m
+     [33m[2m✓[22m[39m exact applied retry reads durable state and issues no source/control/journal DML[33m 2471[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects applied metadata with journalnull, never retrospectively repairing[33m 1873[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects applied metadata with journalNOT_STARTED, never retrospectively repairing[33m 2184[2mms[22m[39m
+     [33m[2m✓[22m[39m retains preexisting STARTED journal after fresh original source/target reconciliation[33m 1414[2mms[22m[39m
+     [33m[2m✓[22m[39m retains preexisting UNKNOWN journal after fresh original source/target reconciliation[33m 1427[2mms[22m[39m
+     [33m[2m✓[22m[39m storage-registration failure rolls back every journal/source/control effect[33m 775[2mms[22m[39m
+     [33m[2m✓[22m[39m metadata failure rolls back previously inserted journal and STARTED states together[33m 936[2mms[22m[39m
+     [33m[2m✓[22m[39m refuses changed or partial persisted coverage without arming metadata[33m 626[2mms[22m[39m
+     [33m[2m✓[22m[39m lost COMMIT acknowledgement never issues secondary SQL and retains original plan reconciliation[33m 1189[2mms[22m[39m
+   [32m✓[39m typed journal original-attempt reconciliation boundaries [2m(10)[22m
+     [33m[2m✓[22m[39m does not enroll uncertainty from the original journal-free entrypoint[33m 1160[2mms[22m[39m
+     [33m[2m✓[22m[39m refuses originating client before SQL and preserves original uncertain result[33m 1160[2mms[22m[39m
+     [33m[2m✓[22m[39m refuses cloned/serialized/wrapped genuine receipts before SQL[33m 1240[2mms[22m[39m
+     [33m[2m✓[22m[39m does not enroll acknowledged successful or blocked journal results[33m 1241[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m68 passed[39m[22m[90m (68)[39m
+[2m   Start at [22m 20:23:33
+[2m   Duration [22m 42.23s[2m (tests 99%, transform 1%)[22m
+
+JSON report written to /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/candidate-c98c982d-ten/07-typed-guarded-backfill.server.test.ts/results.json

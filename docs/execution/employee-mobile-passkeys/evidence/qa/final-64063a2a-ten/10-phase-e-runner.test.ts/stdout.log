@@ -1,0 +1,40 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume[39m
+
+ [32m✓[39m src/test/phase-e-runner.test.ts [2m([22m[2m90 tests[22m[2m)[22m[33m 23303[2mms[22m[39m
+   [33m[2m✓[22m[39m propagates_child_failure and stops the invocation-owned cluster[33m 750[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL assignments executes only its exact config/fixture[33m 445[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL attention executes only its exact config/fixture[33m 518[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL communications-schema executes only its exact config/fixture[33m 446[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL communications executes only its exact config/fixture[33m 552[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL communication-ack executes only its exact config/fixture[33m 519[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL communication-notifications executes only its exact config/fixture[33m 577[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL home executes only its exact config/fixture[33m 579[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL calendar-tokens executes only its exact config/fixture[33m 509[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL calendar-feed executes only its exact config/fixture[33m 537[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL employee-navigation executes only its exact config/fixture[33m 472[2mms[22m[39m
+   [33m[2m✓[22m[39m all dispatches all ten SQL suites without accepting unknown arguments[33m 1008[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches browser home through the owned child and propagates its exit[33m 565[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches browser communications through the owned child and propagates its exit[33m 474[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches browser calendar through the owned child and propagates its exit[33m 483[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches browser navigation through the owned child and propagates its exit[33m 548[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches browser attention through the owned child and propagates its exit[33m 675[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches browser all through the owned child and propagates its exit[33m 454[2mms[22m[39m
+   [33m[2m✓[22m[39m refuses teardown if the invocation ownership marker is replaced[33m 481[2mms[22m[39m
+   [33m[2m✓[22m[39m stops a partially started owned PostgreSQL process after a startup failure[33m 489[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects zero executed tests and skipped SQL tests even when the child exits zero[33m 1457[2mms[22m[39m
+   [33m[2m✓[22m[39m accepts a tracked environment template while never forwarding application credentials[33m 626[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence acceptance rejects modified manifest custody[33m 1086[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence acceptance rejects modified ownership custody[33m 1028[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects a successful unrelated SQL fixture during execution[33m 446[2mms[22m[39m
+   [33m[2m✓[22m[39m later SQL evidence rejects fixture substitution[33m 968[2mms[22m[39m
+   [33m[2m✓[22m[39m later SQL evidence rejects duplicate-selector substitution[33m 997[2mms[22m[39m
+   [33m[2m✓[22m[39m later SQL evidence rejects command substitution[33m 1052[2mms[22m[39m
+   [33m[2m✓[22m[39m later SQL evidence rejects case-identity substitution[33m 970[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m90 passed[39m[22m[90m (90)[39m
+[2m   Start at [22m 20:36:05
+[2m   Duration [22m 23.38s[2m (tests 100%)[22m
+
+JSON report written to /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-ten/10-phase-e-runner.test.ts/results.json

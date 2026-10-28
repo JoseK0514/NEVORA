@@ -1,0 +1,119 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/passkeys-qa-owned-baseline-592d4212[39m
+
+ [31m❯[39m src/lib/data/scheduling-inputs.test.ts [2m([22m[2m19 tests[22m[2m | [22m[31m5 failed[39m[2m)[22m[32m 11[2mms[22m[39m
+   [32m✓[39m scheduling context repository [2m(1)[22m
+     [32m✓[39m loads actual dated cross-location shifts, explicit submission metadata, normal hours and dated exceptions[32m 2[2mms[22m[39m
+   [32m✓[39m target and maximum persistence [2m(2)[22m
+     [32m✓[39m reads distinct target and maximum values, defaulting only a missing maximum to 40[32m 0[2mms[22m[39m
+     [32m✓[39m saves target and maximum into the existing settings record[32m 1[2mms[22m[39m
+   [31m❯[39m normal-based weekly submissions [2m(5)[22m
+[31m     [31m×[31m confirmation without changes persists submission metadata without inventing day overrides[39m[32m 3[2mms[22m[39m
+[31m     [31m×[31m unavailable all week writes seven dated full-day exceptions[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m changes only the selected date, preserving other overrides[39m[32m 0[2mms[22m[39m
+     [32m✓[39m reads current normal hours for an unsubmitted week rather than stale seeded hours[32m 0[2mms[22m[39m
+     [32m✓[39m preserves legacy zero-window submitted weeks as unavailable[32m 0[2mms[22m[39m
+   [32m✓[39m a deadline failure during the transaction propagates as a locked submission[32m 1[2mms[22m[39m
+   [32m✓[39m health reads Sunday carry-in work by business date rather than schedule ownership[32m 0[2mms[22m[39m
+[31m   [31m×[31m the final deadline guard uses the current clock after the lock wait[39m[32m 0[2mms[22m[39m
+   [32m✓[39m missing staffing configuration stays explicit instead of inventing staff or Lead[32m 0[2mms[22m[39m
+[31m   [31m×[31m retries a stale legacy conversion after locking and preserves another saved day's override[39m[32m 1[2mms[22m[39m
+   [32m✓[39m repeated concurrent availability changes stop after bounded retries[32m 0[2mms[22m[39m
+   [32m✓[39m notification cancellation joins availability transactions [2m(3)[22m
+     [32m✓[39m deadline change/removal cancels superseded work atomically: undefined[32m 0[2mms[22m[39m
+     [32m✓[39m deadline change/removal cancels superseded work atomically: 2026-10-06T12:00:00Z[32m 0[2mms[22m[39m
+     [32m✓[39m zero-hour submission cancels its reminder in the same transaction[32m 0[2mms[22m[39m
+   [32m✓[39m loads target workspace/location/active qualifications without erasing inactive assigned position[32m 0[2mms[22m[39m
+   [32m✓[39m coverage reads retain named quotas including inactive catalog requirements[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 5 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/data/scheduling-inputs.test.ts[2m > [22mnormal-based weekly submissions[2m > [22mconfirmation without changes persists submission metadata without inventing day overrides
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m src/lib/data/scheduling-inputs.test.ts:[2m163:7[22m[39m
+    [90m161|[39m     expect(
+    [90m162|[39m       mocks.statements.some((s) => s.text.includes("uses_normal_availa…
+    [90m163|[39m     ).toBe(true);
+    [90m   |[39m       [31m^[39m
+    [90m164|[39m     expect(
+    [90m165|[39m       mocks.statements.filter((s) =>
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/data/scheduling-inputs.test.ts[2m > [22mnormal-based weekly submissions[2m > [22munavailable all week writes seven dated full-day exceptions
+[31m[1mAssertionError[22m: expected [] to have a length of 7 but got +0[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 7[39m
+[31m+ 0[39m
+
+[36m [2m❯[22m src/lib/data/scheduling-inputs.test.ts:[2m183:24[22m[39m
+    [90m181|[39m       s.text.includes("INSERT INTO availability_exceptions"),
+    [90m182|[39m     );
+    [90m183|[39m     expect(exceptions).toHaveLength(7);
+    [90m   |[39m                        [31m^[39m
+    [90m184|[39m     expect(
+    [90m185|[39m       exceptions.every(
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/data/scheduling-inputs.test.ts[2m > [22mnormal-based weekly submissions[2m > [22mchanges only the selected date, preserving other overrides
+[31m[1mAssertionError[22m: expected [] to have a length of 1 but got +0[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2m❯[22m src/lib/data/scheduling-inputs.test.ts:[2m201:21[22m[39m
+    [90m199|[39m       s.text.includes("DELETE FROM availability_exceptions"),
+    [90m200|[39m     );
+    [90m201|[39m     expect(deletes).toHaveLength(1);
+    [90m   |[39m                     [31m^[39m
+    [90m202|[39m     expect(deletes[0].values).toContain("2026-10-05");
+    [90m203|[39m     expect(
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/data/scheduling-inputs.test.ts[2m > [22mthe final deadline guard uses the current clock after the lock wait
+[31m[1mAssertionError[22m: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string[39m
+[36m [2m❯[22m src/lib/data/scheduling-inputs.test.ts:[2m260:5[22m[39m
+    [90m258|[39m       statement.text.includes("deadline_guard"),
+    [90m259|[39m     )?.text,
+    [90m260|[39m   ).toContain("availability_deadline < clock_timestamp()");
+    [90m   |[39m     [31m^[39m
+    [90m261|[39m });
+    [90m262|[39m it("missing staffing configuration stays explicit instead of inventing…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/data/scheduling-inputs.test.ts[2m > [22mretries a stale legacy conversion after locking and preserves another saved day's override
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'includes')[39m
+[36m [2m❯[22m src/lib/data/scheduling-inputs.test.ts:[2m338:45[22m[39m
+    [90m336|[39m   }>;
+    [90m337|[39m   expect(
+    [90m338|[39m     retryQueries.some((query) => query.text.includes("version_guard")),
+    [90m   |[39m                                             [31m^[39m
+    [90m339|[39m   ).toBe(true);
+    [90m340|[39m   const deletes = retryQueries.filter((query) =>
+[90m [2m❯[22m src/lib/data/scheduling-inputs.test.ts:[2m338:18[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m14 passed[39m[22m[90m (19)[39m
+[2m   Start at [22m 20:17:58
+[2m   Duration [22m 166ms[2m (transform 53%, import 35%, tests 11%, worker 1%)[22m
+
+JSON report written to /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/baseline-ten/05-scheduling-inputs.test.ts/results.json

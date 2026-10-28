@@ -1,0 +1,28 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+ ❯ src/lib/passkeys/management.test.ts (15 tests | 1 failed) 34ms
+   × does not call a successful deletion complete when its canonical follow-up read fails 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/passkeys/management.test.ts > does not call a successful deletion complete when its canonical follow-up read fails
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/lib/passkeys/management.test.ts:45:83
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 14 passed (15)
+   Start at  20:10:00
+   Duration  142ms (tests 53%, transform 32%, import 13%, worker 3%)
+
