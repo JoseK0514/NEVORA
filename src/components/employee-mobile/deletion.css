@@ -32,6 +32,8 @@
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-more > div p { padding-top:var(--em-space-4); color:var(--em-muted); font-size:var(--em-size-support); line-height:var(--em-line-body); overflow-wrap:anywhere; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-link { display:inline-flex; align-items:center; min-height:var(--em-target); color:var(--em-teal); font-weight:var(--em-weight-action); text-underline-offset:3px; overflow-wrap:anywhere; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] p .em-delete-link { display:inline; min-height:0; font:inherit; font-weight:var(--em-weight-label); }
+ /* An address may wrap at any point at large text sizes, but never gains a hyphen that changes it. */
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-link { hyphens:none; -webkit-hyphens:none; }
 
  /* Password with an inset show/hide control; the checkbox row is a full 44px target. */
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-field { display:flex; flex-direction:column; gap:var(--em-space-2); min-width:0; }

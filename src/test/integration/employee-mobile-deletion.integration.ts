@@ -58,6 +58,7 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
     const last=page.locator('.em-delete :is(.em-delete-actions,.em-delete-body > form,.em-delete-status a)').last();await last.scrollIntoViewIfNeeded();
     expect(await last.evaluate((el:HTMLElement)=>el.getBoundingClientRect().bottom<=document.querySelector('.mobile-nav')!.getBoundingClientRect().top+1)).toBe(true);
+    expect(await page.locator('.em-delete-link').evaluateAll((els:HTMLElement[])=>els.filter(el=>getComputedStyle(el).hyphens!=='none').length)).toBe(0);
     await shot(name+'-text200');await page.evaluate(()=>{document.documentElement.style.fontSize='';});await page.setViewportSize({width:390,height:844});await page.emulateMedia({colorScheme:'light'});
    };
 
@@ -148,7 +149,7 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
      await other.locator('.em-delete[data-deletion-state="idle"]').waitFor();expect(await other.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
      const small=await other.locator('.em-delete :is(a,button,summary,label.em-delete-check)').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.checkVisibility()&&!el.closest('p')&&el.getBoundingClientRect().height<43.5).length);expect(small).toBe(0);
      const confirm=other.locator('.em-delete-actions');await confirm.scrollIntoViewIfNeeded();expect(await confirm.evaluate((el:HTMLElement)=>{const nav=document.querySelector('.mobile-nav');return !nav||el.getBoundingClientRect().bottom<=nav.getBoundingClientRect().top+1;})).toBe(true);
-     const file=engine+'-landscape-coarse.png';await other.screenshot({path:evidence+'/'+file});captures.push(file);
+     const file=engine+'-landscape-coarse.png';await other.screenshot({path:evidence+'/'+file,style:'nextjs-portal {visibility:hidden;}'});captures.push(file);
      record('Genuine coarse landscape ('+metrics.touchPoints+' touch points): teal review, targets, no overflow, actions above navigation');
     }else{
      // Without a coarse pointer the 844px landscape is desktop by definition; the incumbent page must remain.
@@ -162,7 +163,7 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
     stage='role-separation';await q("UPDATE employees SET role='MANAGER' WHERE id=$1",[manager]);
     const managerContext=await activeBrowser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});
     try{const m=await managerContext.newPage();await m.goto(app.url+'/login');await login(m,manager);await m.goto(app.url+'/app/account/delete');await m.locator('.q-deletion').waitFor();
-     expect(await m.locator('.em-delete').count()).toBe(0);expect(await m.locator('#employee-mobile').count()).toBe(0);const file=engine+'-manager-390.png';await m.screenshot({path:evidence+'/'+file});captures.push(file);}
+     expect(await m.locator('.em-delete').count()).toBe(0);expect(await m.locator('#employee-mobile').count()).toBe(0);const file=engine+'-manager-390.png';await m.screenshot({path:evidence+'/'+file,style:'nextjs-portal {visibility:hidden;}'});captures.push(file);}
     finally{await managerContext.close();}
     record('Manager at phone width keeps the incumbent Quiet page; the teal port is Employee/Lead only');
    }
