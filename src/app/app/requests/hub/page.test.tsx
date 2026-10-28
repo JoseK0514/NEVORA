@@ -18,7 +18,8 @@ import RequestsHubPage from "./page";
 
 beforeEach(() => {
   auth.proof.mockReset();
-  auth.proof.mockImplementation(async () => ({ employee: { role: auth.role } }));
+  // A complete proof: the hub binds its view to the employee id and session token hash.
+  auth.proof.mockImplementation(async () => ({ employee: { id: 'fictional', firstName: 'Fictional', lastName: 'Employee', role: auth.role, primaryLocationId: 'loc-1' }, sessionTokenHash: 'a'.repeat(64) }));
 });
 
 it.each(["EMPLOYEE", "LEAD"])("retains both request destinations for %s", async (role) => {

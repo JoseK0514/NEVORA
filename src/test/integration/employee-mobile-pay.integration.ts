@@ -113,7 +113,8 @@ it('shows own published statements, linked corrections and protected PDFs with t
 
    stage='protected-documents';expectedFailure=true;
    for(const [id,suffix,notice] of [[peer.id,'/view','That statement isn’t available'],[peer.id,'','That statement isn’t available'],[tampered.id,'/view','We couldn’t open that statement'],[randomUUID(),'','That statement isn’t available']] as const){
-    await page.goto(app.url+`/api/payroll/documents/${id}${suffix}`);await page.waitForURL(app.url+'/app/my-pay');await state('ready');
+    await page.goto(app.url+`/api/payroll/documents/${id}${suffix}`);await page.waitForURL(new RegExp('/app/my-pay\\?document=(unavailable|failed)$'));await state('ready');
+    await expect.poll(()=>page.url()).toBe(app.url+'/app/my-pay');
     await expect.poll(()=>focused('.em-pay-notice--caution')).toBe(true);expect(await page.locator('.em-pay-notice--caution').innerText()).toContain(notice);
    }
    const scripted=await page.evaluate(async(path:string)=>{const r=await fetch(path,{headers:{'x-nevora-payroll':'1'}});return {status:r.status,type:r.headers.get('content-type')};},`/api/payroll/documents/${peer.id}`);

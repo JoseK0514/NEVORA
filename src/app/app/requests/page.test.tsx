@@ -3,7 +3,9 @@ import { expect, it, vi } from 'vitest';
 import RequestsPage from './page';
 
 vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{},replace:()=>{}})}));
-vi.mock('@/lib/auth/session', () => ({ requireSession: async () => ({ id: 'fictional', role: 'EMPLOYEE' }) }));
+vi.mock('@/lib/auth/session', () => ({ requireSession: async () => ({ id: 'fictional', role: 'EMPLOYEE' }),
+  // The page binds its planning view to the real proof shape (employee id and session token hash).
+  requireSessionMutationProof: async () => ({ employee: { id: 'fictional', firstName: 'Fictional', lastName: 'Employee', role: 'EMPLOYEE', primaryLocationId: 'loc-1' }, sessionTokenHash: 'a'.repeat(64) }) }));
 vi.mock('@/lib/auth/permissions', () => ({ isTimeOffReviewerRole: () => false }));
 vi.mock('@/components/manager-time-off', () => ({ ManagerTimeOff: () => null }));
 vi.mock('@/app/app/requests/time-off-form', () => ({ TimeOffForm: () => null }));
