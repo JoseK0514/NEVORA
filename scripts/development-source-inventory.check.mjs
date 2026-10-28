@@ -1,5 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {validateInventory, parseHeads, parseRemoteRefs, compareSources} from './development-source-inventory.mjs';
 
 const sha = 'a'.repeat(40), next = 'b'.repeat(40);
@@ -99,4 +100,18 @@ test('parses exact lightweight archive tags without accepting malformed or dupli
   assert.deepEqual([...parsed.heads],[['main',sha]]);assert.deepEqual([...parsed.archives],[[ref,next]]);
   assert.throws(()=>parseRemoteRefs(`${sha}\t${ref}\n${next}\t${ref}\n`));
   assert.throws(()=>parseRemoteRefs(`${sha}\trefs/something/main\n`));
+});
+
+test('published three-branch policy retains exact source archives and rejects a recreated fourth branch',()=>{
+  const i=validateInventory(JSON.parse(readFileSync(new URL('../docs/handoffs/2026-10-21-development-assembly-sources.json',import.meta.url),'utf8')));
+  assert.equal(i.maximumActiveBranches,3);
+  assert.equal(i.assemblyBranch,'claude-codex-collab-nevora');
+  assert.deepEqual(i.sources.filter(source=>!source.archiveRef).map(source=>source.branch).sort(),['development','main']);
+  const actual=new Map(i.sources.filter(source=>!source.archiveRef).map(source=>[source.branch,source.sha]));
+  actual.set(i.assemblyBranch,next);
+  const archives=new Map(i.sources.filter(source=>source.archiveRef).map(source=>[source.archiveRef,source.sha]));
+  assert.deepEqual(compareSources(i,actual,()=>true,archives),[]);
+  const retired=i.sources.find(source=>source.archiveRef);
+  actual.set(retired.branch,retired.sha);
+  assert.deepEqual(compareSources(i,actual,()=>true,archives),['Remote branch ceiling exceeded: 4 > 3']);
 });
