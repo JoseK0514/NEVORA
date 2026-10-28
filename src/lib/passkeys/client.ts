@@ -67,7 +67,7 @@ function requestOptions(json: Json): PublicKeyCredentialRequestOptions {
   };
 }
 
-function creationOptions(json: Json): PublicKeyCredentialCreationOptions {
+export function creationOptions(json: Json): PublicKeyCredentialCreationOptions {
   const native = (PublicKeyCredential as unknown as { parseCreationOptionsFromJSON?: (j: Json) => PublicKeyCredentialCreationOptions }).parseCreationOptionsFromJSON;
   if (native) return native(json);
   const user = json.user as Json;

@@ -106,6 +106,9 @@ export class PasskeyService {
   async list(proof: SessionMutationProof) {
     return this.boundary(() => this.store.list(proof));
   }
+  async snapshot(proof: SessionMutationProof) {
+    return this.boundary(() => this.store.snapshot(proof));
+  }
   async remove(proof: SessionMutationProof, id: string) {
     return this.boundary(async () => {
       if (!(await consumeAuthLimit("passkey_management", proof.employee.id, 30, this.executor))) throw new PasskeyError("rate_limited");

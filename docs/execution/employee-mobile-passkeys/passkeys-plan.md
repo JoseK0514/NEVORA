@@ -1,0 +1,29 @@
+# Employee mobile passkeys
+
+Approved continuation of Phase2 on the existing isolated feature branch; base592d4212. Canonical passkey service/store, same-origin HTTP and native WebAuthn remain the source of truth. Prototype passkeys are visual references only, never an integration or permission source.
+
+## Scope and acceptance
+
+Own Employee/Lead Profile passkeys: current saved name/added/last-used metadata, deliberate native setup, quiet cancellation, explicit Keep/Remove confirmation including the last key, canonical refresh and honest uncertain outcomes. Preserve flag-off invisibility, unsupported-browser metadata/removal, legacy manager/owner and sign-in/offer behavior. No rename, employee selector, biometric configuration, password change, policy editor, new schema, paid generation or deployment.
+
+Reuse scoped teal tokens, rem typography, regular Phosphor, native controls,44/48px targets, inline consequence review, visible focus and exact cancellation return. One owner survives resizing. Never describe every phone as Face ID. Native setup is user initiated; device stores the private credential.
+
+## Task 1: own binding and finite controller
+
+Add opt-in Employee/Lead lifetime binding to existing protected endpoints; absent header retains legacy contracts. Server always requires current actual session. Own metadata has a DB-clock/session-bounded <=45second lease. Reuse guarded canonical list and registration/removal. Strict metadata/receipt parsing, bounded headers/body, abort/fence late results, no private persistence. Synchronously expire stale command admission. Native prompt may blur the page: release visible private facts without launching a second ceremony; recheck canonical authority before verification. Pagehide/offline/signout/account storage end or cancel safely. Unknown verification is never resubmitted; fresh list reveals current facts without claiming original success. Removal retries cannot target a different ID.
+
+Tests: original HTTP contracts plus own binding/lease/session loss, parser faults, delayed/ignored abort/expiry, prompt cancellation/blur, late verification/account switch, uncertain writes/current reads. Expected: new regressions RED before production changes, then targeted GREEN.
+
+## Task 2: mobile presentation
+
+Implement own Profile security presentation with calm explanation, metadata list, progress/cancellation, truthful recovery and inline removal review. Preserve one controller and incumbent desktop/management appearance. Render/state tests first; scoped CSS from existing semantic tokens. Expected: accessible labels, no prehydration metadata, no invented permission or device state.
+
+## Task 3: real local evidence and independent review
+
+Disposable owned PostgreSQL + actual Next; real canonical server registration with a fictional cryptographic authenticator, never personal device credentials. Chromium/WebKit/Firefox mobile flows: own add/list/remove, wrong binding/foreign key/flag/unsupported/cancel/denial/lost response/signout/resize; keyboard, exact focus,320/390/430, light/dark,200% text/coarse landscape and desktop preservation. Run unit corpus, nonincremental TS, changed lint, canonical passkey SQL/HTTP and relevant Profile/Calendar regressions. Preserve failures and exact inputs; independent fresh code/UI/QA dispositions own their findings. Calendar QA-CAL-1 remains open, unrelated pass is not closure. Physical devices/OS credential stores and hosted/CI/release remain separate.
+
+## Interfaces and controls
+
+Task1 supplies strict controller/snapshot to Task2 and HTTP/browser evidence in Task3. No parallel credential engine. Product: account security only. Engineering: reuse canonical store/HTTP and stable responsive owner. Security: exact current own session, no selectors, no raw credential logging/persistence, fresh authority before native-result verify. Governance: retain failures and independent author closure; no release or risk waiver. Program: finish this bounded group; other Phase2 tools remain.
+
+Review focus: native-sheet focus/visibility races, uncertain commit after response loss, expiry before timer callback, stale cookie/account switching, malformed successful JSON, duplicate native prompts, credential storage/logging, last-key semantics, unsupported list/removal, desktop lifecycle preservation. No Jose decision is required within this approved bounded scope.

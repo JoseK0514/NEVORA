@@ -149,11 +149,19 @@ export class PasskeyStore {
   /** Return only this live session's unrevoked key metadata; public keys and
    * credential IDs are kept inside verification/storage paths. */
   async list(proof: SessionMutationProof): Promise<PasskeyMetadata[]> {
+    return (await this.snapshot(proof)).passkeys;
+  }
+
+  async snapshot(proof: SessionMutationProof): Promise<{passkeys:PasskeyMetadata[];validForMs:number}> {
     const prefix = guards(proof), results = await this.executor.transaction([...prefix,
       s(`SELECT ${metadataFields} FROM employee_passkeys WHERE employee_id=$1 AND revoked_at IS NULL ORDER BY created_at,id`, [proof.employee.id]),
+      s(`SELECT LEAST(45000,FLOOR(EXTRACT(EPOCH FROM (expires_at-clock_timestamp()))*1000))::integer AS "validForMs"
+        FROM employee_sessions WHERE token_hash=$1 AND employee_id=$2`, [proof.sessionTokenHash,proof.employee.id]),
       assertion(proof),
     ]);
-    return (results[prefix.length] as PasskeyMetadata[]).map(metadata);
+    const lease=results[prefix.length+1]?.[0] as {validForMs:number}|undefined;
+    if(!lease||!Number.isInteger(lease.validForMs)||lease.validForMs<=0)throw new PasskeyError('not_found');
+    return {passkeys:(results[prefix.length] as PasskeyMetadata[]).map(metadata),validForMs:lease.validForMs};
   }
 
   /** Retire an owned key rather than deleting its history. Repeated removal of

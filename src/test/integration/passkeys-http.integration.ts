@@ -28,6 +28,8 @@ import { POST as registerOptions } from "../../app/api/auth/passkey/register/opt
 import { POST as registerVerify } from "../../app/api/auth/passkey/register/verify/route";
 import { GET as passkeys } from "../../app/api/auth/passkeys/route";
 import { DELETE as remove } from "../../app/api/auth/passkeys/[id]/route";
+import { employeeViewAuthority } from "../../lib/employee-view-authority.server";
+import { requireSessionMutationProof } from "../../lib/auth/session";
 
 const request = (path: string, body: unknown = {}, headers: Record<string, string> = {}, method = "POST") => new Request("http://localhost:3000" + path, {
   method, headers: { origin: "http://localhost:3000", "content-type": "application/json", ...headers },
@@ -46,6 +48,27 @@ describe("passkey JSON route contract", () => {
     } catch (error) { await db.dispose(); throw error; }
   });
   afterEach(async () => { await db?.dispose(); vi.unstubAllEnvs(); });
+  it("binds own mobile metadata to a finite current-session lease without changing the legacy shape", async () => {
+    const proof = await requireSessionMutationProof();
+    const authority = employeeViewAuthority(proof, 'passkeys');
+    const response = await passkeys(request('/api/auth/passkeys', {}, { 'X-Nevora-Passkey-Authority': authority }, 'GET'));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({passkeys:[],authority,validForMs:expect.any(Number)});
+    const response2 = await passkeys(request('/api/auth/passkeys', {}, {}, 'GET'));
+    expect(await response2.json()).toEqual({passkeys:[]});
+    await db.executor.query({text:"UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '1 second' WHERE employee_id='PK-HTTP'",values:[]});
+    const short = await (await passkeys(request('/api/auth/passkeys', {}, { 'X-Nevora-Passkey-Authority': authority }, 'GET'))).json();
+    expect(short.validForMs).toBeGreaterThan(0); expect(short.validForMs).toBeLessThanOrEqual(1000);
+  });
+  it("rejects an old account binding before protected reads, challenges, verification or removal", async () => {
+    const headers = { 'X-Nevora-Passkey-Authority': 'a'.repeat(64) };
+    const results = [await passkeys(request('/api/auth/passkeys', {}, headers, 'GET')),
+      await registerOptions(request('/api/auth/passkey/register/options', {}, headers)),
+      await registerVerify(request('/api/auth/passkey/register/verify', {response:{},name:'Phone'},headers)),
+      await remove(request('/api/auth/passkeys/11111111-1111-4111-8111-111111111111', {}, headers, 'DELETE'), {params:Promise.resolve({id:'11111111-1111-4111-8111-111111111111'})})];
+    expect(results.map(result=>result.status)).toEqual([401,401,401,401]);
+    expect((await db.executor.query<{n:number}>({text:'SELECT count(*)::integer n FROM auth_passkey_challenges',values:[]}))[0].n).toBe(0);
+  });
   it("registers, lists, signs in and removes through all JSON endpoints", async () => {
     const device = fictionalAuthenticator();
     const creationResponse = await registerOptions(request("/api/auth/passkey/register/options"));

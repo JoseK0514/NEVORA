@@ -7,6 +7,7 @@ import { correctionJson, readCorrectionJson, correctionResponseHeaders } from ".
 import { passkeyConfig } from "./config";
 import { PasskeyService } from "./service.server";
 import { PasskeyError, validateFlowToken } from "./types";
+import { employeeViewAuthority } from '../../employee-view-authority.server';
 
 type Action = "login_options" | "login_verify" | "register_options" | "register_verify" | "list" | "remove";
 const errorJson = (error: string, status: number) => correctionJson({ error }, status);
@@ -47,9 +48,14 @@ export async function passkeyHttp(request: Request, action: Action, id?: string)
     if (protectedAction) {
       if (!(await getSession())) return errorJson("not_found", 401);
       try { proof = await requireSessionMutationProof(); } catch { return errorJson("not_found", 401); }
+      const binding=request.headers.get('X-Nevora-Passkey-Authority');
+      if(binding!==null&&(!['EMPLOYEE','LEAD'].includes(proof.employee.role)||binding!==employeeViewAuthority(proof,'passkeys')))
+        return errorJson('not_found',401);
     }
     const service = new PasskeyService(config);
-    if (action === "list" && proof) return correctionJson({ passkeys: await service.list(proof) });
+    if (action === "list" && proof) return request.headers.has('X-Nevora-Passkey-Authority')
+      ?correctionJson({...await service.snapshot(proof),authority:employeeViewAuthority(proof,'passkeys')})
+      :correctionJson({ passkeys: await service.list(proof) });
     if (action === "remove" && proof) {
       await service.remove(proof, id ?? "");
       return new Response(null, { status: 204, headers: correctionResponseHeaders });
