@@ -53,8 +53,9 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
  // One announcement on arrival: a failed PDF, a notification's statement, or that it is no longer available.
  useEffect(()=>{
   if(arrived.current===latch.seq||(!failure&&!target)||(target&&!statements))return;
-  arrived.current=latch.seq;
+  // Marked handled only when the frame runs: Strict Mode's mount/unmount/mount cancels an earlier frame.
   const frame=requestAnimationFrame(()=>{
+   arrived.current=latch.seq;
    if(failure||missing)notice.current?.focus();
    else document.getElementById(arranged?.latest?.id===target?'pay-latest-title':`pay-statement-${target}`)?.focus();
    // Through the router, so its own history entry agrees; a refresh then can't replay this notice.
