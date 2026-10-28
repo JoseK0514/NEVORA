@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const state = vi.hoisted(() => ({ query: vi.fn(), verify: vi.fn(), transaction: vi.fn() }));
 vi.mock("@/lib/db", () => ({ getDb: () => ({ query: state.query }), queryRows: (rows: unknown) => rows }));
-vi.mock("@/lib/auth/password", () => ({ verifyPassword: state.verify }));
+vi.mock("@/lib/auth/password", () => ({ verifyPassword: state.verify, dummyPasswordHash: async () => "fictional-dummy-hash" }));
 vi.mock("@/lib/data/notification-transactions", () => ({ neonNotificationExecutor: () => ({ transaction: state.transaction }) }));
-import { DELETION_REFERENCE, activeDeletionRequest, newDeletionReference, submitDeletionRequest } from "./requests.server";
+import { DELETION_REFERENCE, activeDeletionRequest, checkDeletionRequest, newDeletionReference, rejectedByDatabase, submitDeletionRequest } from "./requests.server";
 
 const input = { employeeId: "FICTIONAL-E1", password: "fictional-password", channel: "web" as const, policyVersion: "2026-10-20-draft" };
 const missingTable = Object.assign(new Error("relation does not exist"), { code: "42P01" });
@@ -65,5 +65,51 @@ describe("account deletion requests", () => {
   it("lets other storage failures surface so the form says it couldn't submit", async () => {
     state.transaction.mockRejectedValue(new Error("connection reset"));
     await expect(submitDeletionRequest(input)).rejects.toThrow("connection reset");
+  });
+
+  it("reports a rolled-back transaction as failed, but never a reply that may have followed COMMIT", async () => {
+    state.transaction.mockRejectedValue(Object.assign(new Error("could not serialize access"), { code: "40001" }));
+    await expect(submitDeletionRequest(input)).resolves.toEqual({ outcome: "failed" });
+    for (const unknown of [new Error("fetch failed"), Object.assign(new Error("socket hang up"), { code: "ECONNRESET" }), Object.assign(new Error("odd"), { code: 7 })]) {
+      expect(rejectedByDatabase(unknown)).toBe(false);
+      state.transaction.mockRejectedValueOnce(unknown);
+      await expect(submitDeletionRequest(input)).rejects.toBe(unknown);
+    }
+    expect(rejectedByDatabase(Object.assign(new Error("unique"), { code: "23505" }))).toBe(true);
+  });
+});
+
+describe("checking an own request without a session", () => {
+  const check = { employeeId: "FICTIONAL-E1", password: "fictional-password" };
+  const open = { reference: "DEL-7KQ2M9XA", status: "received", confirmed_at: "2030-01-01 10:00:00+00" };
+
+  it("returns only this account's open request after the password matches", async () => {
+    state.query.mockImplementation(async (text: string) => text.includes("employee_credentials") ? [{ password_hash: "fictional-hash" }] : [open]);
+    await expect(checkDeletionRequest(check)).resolves.toEqual({ outcome: "found", request: { reference: "DEL-7KQ2M9XA", status: "received", confirmedAt: "2030-01-01 10:00:00+00" } });
+    const lookup = state.query.mock.calls.find(([text]) => String(text).includes("account_deletion_requests"))!;
+    expect(lookup[0]).toMatch(/WHERE employee_id = \$1 AND status IN \('received', 'processing'\)/);
+    expect(lookup[1]).toEqual(["FICTIONAL-E1"]);
+    expect(state.transaction).not.toHaveBeenCalled();
+  });
+
+  it("says none when there is no open request", async () => {
+    await expect(checkDeletionRequest(check)).resolves.toEqual({ outcome: "none" });
+  });
+
+  it("reads no request on a wrong password, and checks unknown IDs against a dummy hash", async () => {
+    state.verify.mockResolvedValue(false);
+    await expect(checkDeletionRequest(check)).resolves.toEqual({ outcome: "wrong_password" });
+    state.query.mockResolvedValue([]);
+    state.verify.mockResolvedValue(true);
+    await expect(checkDeletionRequest({ ...check, employeeId: "FICTIONAL-UNKNOWN" })).resolves.toEqual({ outcome: "wrong_password" });
+    expect(state.verify).toHaveBeenLastCalledWith("fictional-password", "fictional-dummy-hash");
+    expect(state.query.mock.calls.some(([text]) => String(text).includes("account_deletion_requests"))).toBe(false);
+  });
+
+  it("is unavailable before migration 0034 and lets other storage errors surface", async () => {
+    state.query.mockImplementation(async (text: string) => { if (text.includes("employee_credentials")) return [{ password_hash: "fictional-hash" }]; throw missingTable; });
+    await expect(checkDeletionRequest(check)).resolves.toEqual({ outcome: "unavailable" });
+    state.query.mockImplementation(async (text: string) => { if (text.includes("employee_credentials")) return [{ password_hash: "fictional-hash" }]; throw new Error("fetch failed"); });
+    await expect(checkDeletionRequest(check)).rejects.toThrow("fetch failed");
   });
 });

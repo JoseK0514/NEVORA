@@ -7,39 +7,70 @@ import { requestAccountDeletion, type DeletionFormState } from "@/app/app/accoun
 import { logout } from "@/app/login/actions";
 import { useFieldErrors } from "@/app/app/settings/wave-c-form";
 import { SUPPORT_EMAIL } from "@/lib/legal/policies";
-import { QuietGroup, QuietList, QuietRow } from "./quiet/quiet";
+import { QuietGroup, QuietHeader, QuietList, QuietNav, QuietRow } from "./quiet/quiet";
 import { SheetRow } from "./quiet/quiet-sheet";
 import { SignOutIcon } from "@phosphor-icons/react/dist/ssr/SignOut";
 import { EyeIcon } from "@phosphor-icons/react/dist/ssr/Eye";
 import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
+import { useEmployeeMobile } from "./employee-mobile/use-mobile";
+import { EmployeeDeletionView, type DeletionView } from "./employee-mobile/deletion";
 
-type Account = { name: string; role: string; employeeId: string };
+type Account = { name: string; role: string; employeeId: string; roleKey?: "OWNER" | "MANAGER" | "LEAD" | "EMPLOYEE" };
 type Done = Extract<DeletionFormState, { reference: string }>;
+const RECEIPT = new Set(["received", "duplicate"]);
+const ENDED = new Set(["signed_out", "changed", "unavailable"]);
+const ANNOUNCED = new Set(["received", "duplicate", "failed", "unavailable", "uncertain", "busy", "signed_out", "changed"]);
 
 const unresolved = (token: string) => <mark className="legal-unresolved">[CONFIRM_{token}]</mark>;
 
-/** Review, confirm with the password, then the outcome. Every state the spec lists: review, confirm,
- * submitted, already in progress, wrong password, failure and unavailable.
+/** One owner for the whole page, mounted across resize and rotation so a receipt or an unknown outcome is never
+ * dropped by a layout change. Employee/Lead phones get the teal presentation; everyone else keeps Quiet.
+ * A rejected action call (lost reply, server error) is unknown, not a failure: the page keeps the form and asks
+ * the same question again, which returns the saved request if there is one.
  * Quiet (v4, inspection Oct 24): grouped rows on the white page for every role; the wording is unchanged. */
-export function AccountDeletionForm({ account, period, retention, existing }: {
-  account: Account; period: string | null; retention: string | null; existing: Done | null;
+export function AccountDeletionForm({ account, period, retention, existing, owner = false }: {
+  account: Account; period: string | null; retention: string | null; existing: Done | null; owner?: boolean;
 }) {
-  const [state, action, pending] = useActionState<DeletionFormState, FormData>(requestAccountDeletion, existing ?? { kind: "idle" });
   const [confirmed, setConfirmed] = useState(false);
   const [shown, setShown] = useState(false);
+  const [password, setPassword] = useState("");
+  const [retry, setRetry] = useState(false);
+  const [state, action, pending] = useActionState<DeletionFormState, FormData>(async (previous, formData) => {
+    let next: DeletionFormState;
+    try { next = await requestAccountDeletion(previous, formData); } catch { next = { kind: "uncertain" }; }
+    if (next.kind === "uncertain") setRetry(true);
+    // The password is held only while it can still be needed for this account's request.
+    if (RECEIPT.has(next.kind) || ENDED.has(next.kind)) { setPassword(""); setShown(false); }
+    return next;
+  }, existing ?? { kind: "idle" });
+  const phone = useEmployeeMobile() && (account.roleKey === "EMPLOYEE" || account.roleKey === "LEAD");
   const outcome = useRef<HTMLDivElement>(null);
-  const password = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
   const { errors, handlers } = useFieldErrors({ password: { missing: "Enter your password to confirm it’s you." } });
+  const receipt = RECEIPT.has(state.kind);
 
   useEffect(() => {
-    if (state.kind === "received" || state.kind === "duplicate" || state.kind === "failed" || state.kind === "unavailable") outcome.current?.focus();
-    else if (state.kind === "wrong_password") password.current?.focus();
+    // One response, one announcement: focus the outcome, or the password it rejected.
+    const frame = requestAnimationFrame(() => (state.kind === "wrong_password" ? passwordRef : ANNOUNCED.has(state.kind) ? outcome : null)?.current?.focus());
+    return () => cancelAnimationFrame(frame);
   }, [state]);
 
+  if (phone) {
+    const view: DeletionView = { state, pending, retry, confirmed, shown, password, period, retention };
+    return <EmployeeDeletionView account={account} view={view} action={action} outcomeRef={outcome} passwordRef={passwordRef}
+      onPassword={setPassword} onShown={() => setShown(value => !value)} onConfirmed={setConfirmed} />;
+  }
+
+  const header = <><QuietNav back={receipt ? undefined : { href: "/app/profile", label: "Profile" }} /><QuietHeader title="Delete your NEVORA account" sub="Read what happens before you confirm." /></>;
+  const workplace = <QuietGroup id="deletion-workplace" label="Your job and your workplace">
+    <p className="q-help">Deleting your NEVORA account doesn’t end your employment or remove records your employer has to keep.</p>
+    {owner ? <p className="q-help">Your company’s workspace stays open for the rest of your team. To close it, email {SUPPORT_EMAIL}.</p> : null}
+  </QuietGroup>;
+
   if (state.kind === "received" || state.kind === "duplicate") {
-    return (
+    return <>{header}
       <section className="q-deletion" aria-labelledby="deletion-done-title">
         <div className="q-deletion__done" ref={outcome} tabIndex={-1} role="status" aria-labelledby="deletion-done-title">
           <CheckCircleIcon className="q-ic q-deletion__done-icon" weight="fill" aria-hidden="true" />
@@ -52,13 +83,28 @@ export function AccountDeletionForm({ account, period, retention, existing }: {
         </div>
         <form action={logout}><button type="submit" className="q-btn q-btn--sec">Done</button></form>
       </section>
-    );
+      {workplace}
+    </>;
+  }
+
+  if (state.kind === "signed_out" || state.kind === "changed") {
+    return <>{header}
+      <div className="q-deletion__alert" ref={outcome} tabIndex={-1} role="alert">
+        <p className="q-error"><b>{state.kind === "signed_out" ? "You’re signed out" : "A different account is signed in"}</b></p>
+        <p className="q-help">{state.kind === "signed_out" ? "We didn’t find a deletion request for this account, so nothing was deleted. Sign in again to continue." : "Nothing was sent. Go to Profile to see the account that’s signed in now."}</p>
+        <Link className="q-btn q-btn--sec" href={state.kind === "signed_out" ? "/login" : "/app/profile"}>{state.kind === "signed_out" ? "Sign in" : "Go to Profile"}</Link>
+      </div>
+      {workplace}
+    </>;
   }
 
   const passwordError = state.kind === "wrong_password" ? "That password isn’t right. Try again." : errors.password;
-  return (
+  const checking = retry && state.kind !== "failed";
+  return <>{header}
     <form action={action} noValidate className="q-deletion" aria-label="Delete your NEVORA account" aria-busy={pending}
       onSubmit={event => { if (!event.currentTarget.checkValidity()) event.preventDefault(); }} {...handlers}>
+      <input type="hidden" name="account" value={account.employeeId} />
+      <input type="hidden" name="retry" value={retry ? "1" : "0"} />
       <QuietGroup id="deletion-account" label="Your account">
         <QuietList>
           <QuietRow one title="Name" value={account.name} tone="l" />
@@ -87,7 +133,8 @@ export function AccountDeletionForm({ account, period, retention, existing }: {
         <div className="q-fl q-deletion__field">
           <label htmlFor="deletion-password">Password</label>
           <div className="q-in__wrap">
-            <input ref={password} className="q-in" id="deletion-password" name="password" type={shown ? "text" : "password"} required autoComplete="current-password" disabled={pending} placeholder="Password"
+            <input ref={passwordRef} className="q-in" id="deletion-password" name="password" type={shown ? "text" : "password"} required autoComplete="current-password" disabled={pending} placeholder="Password"
+              value={password} onChange={event => setPassword(event.target.value)}
               aria-describedby={passwordError ? "deletion-password-help deletion-password-error" : "deletion-password-help"} aria-invalid={passwordError ? true : undefined} />
             <button type="button" className="q-in__eye" onClick={() => setShown(value => !value)} aria-pressed={shown} aria-label={shown ? "Hide password" : "Show password"}>{shown ? <EyeSlashIcon className="q-ic" aria-hidden="true" /> : <EyeIcon className="q-ic" aria-hidden="true" />}</button>
           </div>
@@ -99,13 +146,16 @@ export function AccountDeletionForm({ account, period, retention, existing }: {
             <input type="checkbox" className="q-tog" checked={confirmed} onChange={event => setConfirmed(event.target.checked)} disabled={pending} /></label></li>
         </QuietList>
       </QuietGroup>
-      {state.kind === "failed" || state.kind === "unavailable" ? <div className="q-deletion__alert" ref={outcome} tabIndex={-1} role="alert">
-        <p className="q-error"><b>{state.kind === "failed" ? "We could not submit your request. Please try again." : "Account deletion isn’t available right now"}</b></p>
-        <p className="q-help">{state.kind === "failed" ? "Nothing was deleted and you’re still signed in." : <>Email <a className="q-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> and we’ll help you.</>}</p>
+      {state.kind === "failed" || state.kind === "unavailable" || state.kind === "uncertain" || state.kind === "busy" ? <div className="q-deletion__alert" ref={outcome} tabIndex={-1} role="alert">
+        <p className="q-error"><b>{state.kind === "failed" ? "We could not submit your request. Please try again." : state.kind === "unavailable" ? "Account deletion isn’t available right now" : state.kind === "busy" ? "Too many tries" : "We couldn’t confirm your request"}</b></p>
+        <p className="q-help">{state.kind === "failed" ? "Nothing was saved and you’re still signed in." : state.kind === "unavailable" ? <>Email <a className="q-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> and we’ll help you.</>
+          : state.kind === "busy" ? (checking ? "Wait about 15 minutes, then check again. We still haven’t confirmed whether your request was saved." : "Wait about 15 minutes, then try again. Nothing was sent.")
+          : <>Your request may have been saved. Check your request to find out; if it wasn’t saved, it’s sent again. You can also email <a className="q-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.</>}</p>
       </div> : null}
-      <button type="submit" className="q-btn q-deletion__confirm" disabled={pending || !confirmed}>{pending ? "Sending request…" : "Confirm deletion request"}</button>
+      <button type="submit" className="q-btn q-deletion__confirm" disabled={pending || !confirmed}>{pending ? (checking ? "Checking…" : "Sending request…") : checking ? "Check my request" : "Confirm deletion request"}</button>
       <Link className="q-btn q-btn--quiet q-deletion__keep" href="/app/profile" aria-disabled={pending || undefined} tabIndex={pending ? -1 : undefined}
         onClick={event => { if (pending) event.preventDefault(); }}>Keep my account</Link>
     </form>
-  );
+    {workplace}
+  </>;
 }

@@ -133,6 +133,13 @@ export async function requireSessionMutationProof(): Promise<import('../shift-ch
   return proof;
 }
 
+/** The same capability, or null when there is no current session. For an action that must answer the page it
+ * came from (and keep what that page knows) instead of navigating to sign-in. */
+export async function readSessionMutationProof(): Promise<import('../shift-changes/types').SessionMutationProof | null> {
+  const token = (await cookies()).get(SESSION_COOKIE)?.value;
+  return token ? readMutationProofForToken(token) : null;
+}
+
 /** Same per-render, per-token sharing as readSessionForToken; a missing row still redirects in the caller. */
 const readMutationProofForToken = cache(async (token: string): Promise<import('../shift-changes/types').SessionMutationProof | null> => {
   const sessionTokenHash=hashToken(token);

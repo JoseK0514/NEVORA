@@ -61,7 +61,7 @@ export function EmployeeProfilePage({authority,lang,notificationsEnabled,policie
      <QuietRow id="profile-privacy" one href={mobile?'/app/profile/privacy':'/privacy'} title="Privacy Policy"/>
      <QuietRow id="profile-terms" one href={mobile?'/app/profile/terms':'/terms'} title="Terms of Use"/>
      <QuietRow id="profile-support" one href={mobile?'/app/profile/support':'/support'} title="Support"/>
-     <QuietRow one href="/app/account/delete" title="Delete my account" variant="danger"/>
+     <QuietRow id="profile-account-deletion" one href="/app/account/delete" title="Delete my account" variant="danger"/>
     </>:!mobile?<QuietRow one href="/support" title="Support"/>:null}
    </ul>
    {!policies&&mobile?<p className="q-help" role="status">Help and policy information isn’t available right now.</p>:null}
