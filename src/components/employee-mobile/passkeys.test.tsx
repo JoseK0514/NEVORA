@@ -20,4 +20,8 @@ it('separates current uncertainty from saved facts and never offers blind mutati
 it('states last-key consequences before explicit removal and preserves the safe Keep choice',()=>{
  const html=render({},true,true);expect(html).toContain('last saved passkey');expect(html).toContain('Keep passkey');expect(html).toContain('Remove passkey');expect(html).toContain('does not delete it from your device');
 });
+it('keeps desktop saved metadata and native confirmation in the incumbent presentation',()=>{
+ const html=renderToStaticMarkup(<EmployeePasskeyView mobile={false} state={state} supported confirm={key} onAdd={noop} onRefresh={noop} onRemove={noop} onReview={noop} onKeep={noop} onCancel={noop}/>);
+ expect(html).toContain('<dialog');expect(html).toContain('Face ID and passkeys');expect(html).not.toContain('How passkeys work');expect(html).toContain(' · Not used yet');
+});
 vi.unstubAllGlobals();

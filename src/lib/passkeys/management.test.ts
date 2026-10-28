@@ -59,3 +59,6 @@ it('only reports native registration success after the exact saved receipt is pr
  const headers:HeadersInit[]=[];vi.stubGlobal('fetch',vi.fn(async(path:string,init:RequestInit)=>{headers.push(init.headers!);if(path.endsWith('/options'))return Response.json(options);if(path.endsWith('/verify')){saved=true;return Response.json({passkey:key});}return Response.json(snapshot(saved?[key]:[]));}));
  const m=make();await m.refresh();await m.add();expect(m.state.passkeys).toEqual([key]);expect(m.state.notice).toMatch(/Passkey added/);expect(headers.every(value=>new Headers(value).get('X-Nevora-Passkey-Authority')===authority)).toBe(true);
 });
+it.each([{error:'unavailable'},{},null])('rejects a non-204 removal response %j even when a later list happens to be absent',async body=>{
+ let removed=false;vi.stubGlobal('fetch',vi.fn(async(_path:string,init:RequestInit)=>{if(init.method==='DELETE'){removed=true;return Response.json(body);}return Response.json(snapshot(removed?[]:[key]));}));const m=make();await m.refresh();await m.remove(id);expect(m.state.needsRefresh).toBe(true);expect(m.state.notice).not.toBe('Passkey removed.');
+});
