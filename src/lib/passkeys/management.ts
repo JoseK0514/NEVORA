@@ -43,6 +43,7 @@ export function createPasskeyManager(authority:string,changed:()=>void){
    if(controller.signal.aborted){await response.body?.cancel().catch(()=>{});throw Error('Late reply');}
    if(response.status===401||response.status===403){await response.body?.cancel();throw new Denied();}
    if(response.status===204&&method==='DELETE')return null;
+   if(response.ok&&(method==='DELETE'||response.status!==200)){await response.body?.cancel();throw Error('Unexpected receipt');}
    const value:unknown=await response.json();
    if(!response.ok){if(record(value)&&value.error==='not_supported')throw new Disabled();throw new Refused();}
    return value;

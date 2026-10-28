@@ -2,13 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { PASSKEY_COPY } from "@/lib/passkeys/copy";
-import { SigPendingLabel } from "@/components/signature/sig-button";
+import {PasskeyDesktopView} from "./passkey-desktop-view";
 import { deviceName, isPhoneLike, listPasskeys, passkeysAvailable, passkeysFlagOn, registerPasskey, removePasskey, type Passkey } from "@/lib/passkeys/client";
 import "./passkeys.css";
 
 const t = PASSKEY_COPY.en;
 const subscribe = () => () => {};
-const dateLabel = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
 type Load = { state: "loading" } | { state: "ready"; passkeys: Passkey[] } | { state: "failed" };
 
@@ -64,41 +63,6 @@ export function PasskeySection() {
   }
 
   const passkeys = load.state === "ready" ? load.passkeys : [];
-  return (
-    <section className="nv-card pk-section" aria-labelledby="passkeys-title">
-      <div className="nv-card__head"><h2 className="nv-card__title" id="passkeys-title">{t.sectionTitle}</h2></div>
-      <div className="nv-card__body pk-body">
-        {load.state === "loading" ? <p className="pk-muted" role="status">{t.loading}</p> : null}
-        {load.state === "failed" ? <p className="pk-notice" data-tone="error" role="alert">{t.loadFailed} <button type="button" className="nv-link" onClick={() => void refresh()}>{t.tryAgain}</button></p> : null}
-        {load.state === "ready" && passkeys.length === 0 ? <p className="pk-muted">{t.empty}</p> : null}
-        {passkeys.length ? <ul className="pk-list">
-          {passkeys.map(passkey => (
-            <li key={passkey.id} className="pk-item">
-              <span className="pk-item__text">
-                <span className="pk-item__name">{passkey.name}</span>
-                <span className="pk-item__meta">{t.added(dateLabel(passkey.createdAt))} · {passkey.lastUsedAt ? t.lastUsed(dateLabel(passkey.lastUsedAt)) : t.neverUsed}</span>
-              </span>
-              <button type="button" className="nv-link pk-remove" aria-label={t.removeLabel(passkey.name)} disabled={busy !== null}
-                onClick={event => { opener.current = event.currentTarget; setConfirm(passkey); }}>{t.remove}</button>
-            </li>
-          ))}
-        </ul> : null}
-        {notice ? <p className="pk-notice" data-tone={notice.tone} role={notice.tone === "error" ? "alert" : "status"}>{notice.text}</p> : null}
-        {supported ? <button ref={addButton} type="button" className="nv-btn pk-add" data-kind="secondary" onClick={() => void add()} disabled={busy === "remove"} aria-disabled={busy === "add" || undefined} aria-busy={busy === "add"}>
-          <SigPendingLabel pending={busy === "add"} pendingText={t.settingUp}>{phone ? t.setUpPhone : t.setUpDesktop}</SigPendingLabel>
-        </button> : <p className="pk-muted">{t.notSupported}</p>}
-      </div>
-      <dialog ref={dialog} className="pk-dialog" aria-labelledby="passkey-remove-title" aria-describedby="passkey-remove-body"
-        onClose={() => { if (confirm) { setConfirm(null); opener.current?.focus(); } }}>
-        {confirm ? <form method="dialog" className="pk-dialog__form" onSubmit={event => event.preventDefault()}>
-          <h2 id="passkey-remove-title" className="pk-dialog__title">{t.confirmTitle(confirm.name)}</h2>
-          <p id="passkey-remove-body" className="pk-muted">{t.confirmBody}</p>
-          <div className="pk-dialog__actions">
-            <button type="button" className="nv-btn" data-kind="danger" onClick={() => void remove(confirm)} aria-disabled={busy === "remove" || undefined} aria-busy={busy === "remove"}><SigPendingLabel pending={busy === "remove"} pendingText={t.removing}>{t.remove}</SigPendingLabel></button>
-            <button type="button" className="nv-btn" data-kind="secondary" data-autofocus="" onClick={() => setConfirm(null)} disabled={busy === "remove"}>{t.keep}</button>
-          </div>
-        </form> : null}
-      </dialog>
-    </section>
-  );
+  return <PasskeyDesktopView load={load.state} passkeys={passkeys} busy={busy} notice={notice} confirm={confirm} supported={supported} phone={phone} dialog={dialog} addButton={addButton}
+    onRefresh={()=>void refresh()} onAdd={()=>void add()} onReview={(key,button)=>{opener.current=button;setConfirm(key);}} onRemove={key=>void remove(key)} onKeep={()=>{setConfirm(null);opener.current?.focus();}}/>;
 }

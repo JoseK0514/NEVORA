@@ -6,6 +6,7 @@ import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {createPasskeyManager,type PasskeyState} from '../../lib/passkeys/management';
 import {passkeysAvailable,passkeysFlagOn,type Passkey} from '../../lib/passkeys/client';
 import {useEmployeeMobile} from './use-mobile';
+import {PasskeyDesktopView} from '../passkeys/passkey-desktop-view';
 import '../passkeys/passkeys.css';
 import './passkeys.css';
 
@@ -13,10 +14,17 @@ const subscribe=()=>()=>{};
 const date=(value:string)=>new Date(value).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
 type ViewProps={mobile:boolean;state:PasskeyState;supported:boolean;confirm:Passkey|null;onAdd:()=>void;onRefresh:()=>void;onRemove:(id:string)=>void;onReview:(key:Passkey,button:HTMLButtonElement)=>void;onKeep:()=>void;onCancel:()=>void;addRef?:RefObject<HTMLButtonElement|null>;confirmationRef?:RefObject<HTMLDivElement|null>;feedbackRef?:RefObject<HTMLParagraphElement|null>};
 
+function EmployeePasskeyDesktop(props:ViewProps){
+ const dialog=useRef<HTMLDialogElement>(null),fallbackAdd=useRef<HTMLButtonElement>(null),{state,confirm}=props;
+ useEffect(()=>{if(confirm){dialog.current?.showModal();dialog.current?.querySelector<HTMLElement>('[data-autofocus]')?.focus();}else if(dialog.current?.open)dialog.current.close();},[confirm]);
+ return <div data-passkey-state={state.phase}><PasskeyDesktopView load={state.phase==='ready'?'ready':state.phase==='unavailable'||state.phase==='denied'?'failed':'loading'} passkeys={state.phase==='ready'?state.passkeys??[]:[]} busy={state.busy==='removing'?'remove':state.busy?'add':null} notice={state.notice?{tone:/^(Passkey added|Passkey removed)/.test(state.notice)?'done':'error',text:state.notice}:null} confirm={state.phase==='ready'?confirm:null} supported={props.supported} phone={false} disabled={state.phase!=='ready'||state.needsRefresh} dialog={dialog} addButton={props.addRef??fallbackAdd} onRefresh={props.onRefresh} onAdd={props.onAdd} onReview={props.onReview} onRemove={key=>props.onRemove(key.id)} onKeep={props.onKeep}/></div>;
+}
+
 export function EmployeePasskeyView({mobile,state,supported,confirm,onAdd,onRefresh,onRemove,onReview,onKeep,onCancel,addRef,confirmationRef,feedbackRef}:ViewProps){
  const ready=state.phase==='ready',keys=ready?state.passkeys??[]:[],busy=state.busy!==null;
  const reviewed=ready?keys.find(key=>key.id===confirm?.id):null;
  if(state.phase==='disabled'||state.phase==='ended')return null;
+ if(!mobile)return <EmployeePasskeyDesktop mobile={mobile} state={state} supported={supported} confirm={confirm} onAdd={onAdd} onRefresh={onRefresh} onRemove={onRemove} onReview={onReview} onKeep={onKeep} onCancel={onCancel} addRef={addRef}/>;
  return <section className={`nv-card pk-section em-passkeys${mobile?' em-passkeys-mobile':''}`} aria-labelledby="passkeys-title" data-passkey-state={state.phase}>
   <div className="nv-card__head"><h2 className="nv-card__title" id="passkeys-title">{mobile?'Passkeys':'Face ID and passkeys'}</h2></div>
   <div className="nv-card__body pk-body">
@@ -53,7 +61,7 @@ export function EmployeePasskeySection({authority}:{authority:string}){
  const supported=useSyncExternalStore(subscribe,()=>passkeysAvailable()&&typeof navigator.credentials?.create==='function'&&window.isSecureContext,()=>false);
  const [state,setState]=useState<PasskeyState>({phase:'loading',busy:null,passkeys:null,notice:'',needsRefresh:false});
  const [confirm,setConfirm]=useState<Passkey|null>(null),owner=useRef<ReturnType<typeof createPasskeyManager>|null>(null);
- const add=useRef<HTMLButtonElement>(null),confirmation=useRef<HTMLDivElement>(null),feedback=useRef<HTMLParagraphElement>(null),opener=useRef<HTMLButtonElement|null>(null),previousBusy=useRef(state.busy);
+ const add=useRef<HTMLButtonElement>(null),confirmation=useRef<HTMLDivElement>(null),feedback=useRef<HTMLParagraphElement>(null),opener=useRef<HTMLButtonElement|null>(null),completion=useRef<'add'|'remove'|null>(null);
  useEffect(()=>{
   if(!flag)return;
   const manager=createPasskeyManager(authority,()=>{if(manager.state.phase!=='ready')setConfirm(null);setState({...manager.state});});owner.current=manager;
@@ -66,9 +74,13 @@ export function EmployeePasskeySection({authority}:{authority:string}){
   return()=>{clearInterval(poll);manager.end();owner.current=null;window.removeEventListener('blur',blur);window.removeEventListener('pagehide',pause);window.removeEventListener('offline',pause);window.removeEventListener('focus',resume);window.removeEventListener('pageshow',resume);window.removeEventListener('online',resume);window.removeEventListener('nevora:signout',end);window.removeEventListener('storage',storage);document.removeEventListener('visibilitychange',visibility);};
  },[authority,flag]);
  useEffect(()=>{if(confirm){confirmation.current?.focus();confirmation.current?.scrollIntoView({block:'nearest'});}},[confirm]);
- useEffect(()=>{const wasBusy=previousBusy.current;previousBusy.current=state.busy;if(wasBusy&&!state.busy&&state.notice){requestAnimationFrame(()=>{feedback.current?.focus();feedback.current?.scrollIntoView({block:'center'});});}},[state.busy,state.notice]);
+ useEffect(()=>{
+  if(!completion.current||state.busy||!state.notice||state.phase==='loading'||state.phase==='paused')return;
+  completion.current=null;const cancelled=/^Setup cancelled\./.test(state.notice);
+  const frame=requestAnimationFrame(()=>{if(owner.current?.state.phase==='ended')return;const target=cancelled||!mobile?add.current:feedback.current;target?.focus();target?.scrollIntoView({block:'center'});});return()=>cancelAnimationFrame(frame);
+ },[mobile,state.busy,state.notice,state.phase]);
  if(!flag)return null;
- return <EmployeePasskeyView mobile={mobile} state={state} supported={supported} confirm={confirm} addRef={add} confirmationRef={confirmation} feedbackRef={feedback}
-  onAdd={()=>void owner.current?.add()} onRefresh={()=>void owner.current?.refresh()} onRemove={id=>void owner.current?.remove(id)} onCancel={()=>owner.current?.cancel()}
-  onReview={(key,button)=>{opener.current=button;setConfirm(key);}} onKeep={()=>{setConfirm(null);requestAnimationFrame(()=>{if(opener.current?.isConnected)opener.current.focus();else add.current?.focus();});}}/>;
+ return <div data-passkey-owner=""><EmployeePasskeyView mobile={mobile} state={state} supported={supported} confirm={confirm} addRef={add} confirmationRef={confirmation} feedbackRef={feedback}
+  onAdd={()=>{completion.current='add';void owner.current?.add();}} onRefresh={()=>void owner.current?.refresh()} onRemove={id=>{completion.current='remove';void owner.current?.remove(id);}} onCancel={()=>{completion.current='add';owner.current?.cancel();}}
+  onReview={(key,button)=>{opener.current=button;setConfirm(key);}} onKeep={()=>{setConfirm(null);requestAnimationFrame(()=>{if(opener.current?.isConnected)opener.current.focus();else add.current?.focus();});}}/></div>;
 }
