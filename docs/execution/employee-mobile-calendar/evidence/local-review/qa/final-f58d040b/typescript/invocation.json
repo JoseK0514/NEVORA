@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-27T23:06:52.246492+00:00",
+  "cwd": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+  "argv": [
+    "node",
+    "node_modules/typescript/bin/tsc",
+    "--noEmit",
+    "--incremental",
+    "false"
+  ],
+  "environment": {
+    "HOME": "/Users/josek0514",
+    "PATH": "/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/josek0514/.codex/tmp/arg0-macos/codex-arg0xbyCxr:/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/josek0514/.npm-global/bin:/Users/josek0514/.local/bin:/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "TMPDIR": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/"
+  },
+  "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "sourceCount": 2266,
+  "recorderSha256": "cf8b76966dc0015d7e011ccda0c18ab0f93a627c00ab2f52033f1508c22f0b26",
+  "observerSha256": "4fdd04b9422791bb0029a02e445b222a2c807c7205e7ee8f3fa61e124a1cbe8d"
+}

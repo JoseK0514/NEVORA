@@ -1,4 +1,6 @@
-# Next bounded Phase2 group: employee Calendar — discovery, not execution
+# Historical Calendar discovery — superseded by the implemented continuation
+
+Calendar is now implemented with bounded local acceptance and explicit conditions; use [the Calendar handoff](../employee-mobile-calendar/HANDOFF.md) for current status. The preparation below is preserved as history.
 
 The current Profile/preferences/help/signout batch must complete independent QA/UI/code acceptance first. This note is read-only planning prepared while frozen tests run; no Calendar implementation or acceptance is claimed. Keep Phase3 closed and finish all Phase2 groups before moving on.
 

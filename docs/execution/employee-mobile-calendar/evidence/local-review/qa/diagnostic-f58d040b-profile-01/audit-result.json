@@ -1,0 +1,120 @@
+{
+  "scope": "profile-diagnostic",
+  "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "trackedStatus": "",
+  "stages": {
+    "combined": {
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "gitUnchanged": true,
+      "actualSourceHashesMatch": true,
+      "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2266,
+      "invocation": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.employee-mobile-calendar.config.mts",
+        "src/test/integration/employee-mobile-profile.integration.ts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/diagnostic-f58d040b-profile-01/combined/suite-results.json"
+      ]
+    }
+  },
+  "owners": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/diagnostic-f58d040b-profile-01/combined/profile/owned-next-jWxaDF/ownership.json",
+      "checkpoint": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2024,
+      "sourceHashesMatch": true,
+      "mirrorHashesMatch": true,
+      "mirrorInventoryMatches": true,
+      "substitutedFiles": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedArtifactsReleased": {
+        "directories": [
+          "app/node_modules",
+          "app/.next"
+        ],
+        "availableBytesBefore": 31160385536,
+        "availableBytesAfter": 32238321664
+      },
+      "pid": 39216,
+      "port": 60794,
+      "pidAlive": false,
+      "portOpen": false
+    }
+  ],
+  "ownerCount": 1,
+  "observationCount": 110,
+  "observerErrors": [
+    {
+      "port": 5432,
+      "exitCode": 1,
+      "rows": [
+        "{\"error\":\"connect ECONNREFUSED 127.0.0.1:5432\"}"
+      ],
+      "stderr": ""
+    },
+    {
+      "error": "connect ECONNREFUSED 127.0.0.1:5432"
+    }
+  ],
+  "observedDatabaseCount": 1,
+  "observedDatabases": [
+    {
+      "oid": 16384,
+      "datname": "nevora_exchange_test_c1_237da1cda27b",
+      "marker": "fuel-phase3-disposable:7631f4cb-0d34-483e-8a4a-9360a76bf1fb"
+    }
+  ],
+  "observedNamespaces": [
+    "nevora_exchange_test_"
+  ],
+  "markersValid": true,
+  "clusters": [
+    {
+      "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-R3ZJqK",
+      "pid": 38777,
+      "port": 60628,
+      "ownerHash": "f85735370702ffc6ca9e0239c09ccdbafa2e9b4f01342e620d5f4405da3970e8",
+      "directoryExists": false,
+      "pidStillAlive": false,
+      "portStillOpen": false,
+      "recheckDirectoryExists": false,
+      "recheckPidAlive": false,
+      "recheckPortOpen": false
+    }
+  ],
+  "suiteSummary": {
+    "success": true,
+    "numTotalTests": 1,
+    "numPassedTests": 1,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "numTotalTestSuites": 1,
+    "numPassedTestSuites": 1
+  },
+  "testFiles": [
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-profile.integration.ts",
+      "status": "passed",
+      "assertions": 1,
+      "failed": 0
+    }
+  ],
+  "combinedFileSetMatches": true,
+  "expectedFileCount": 1,
+  "unitCorpusRetained": true,
+  "evidenceCredentialScan": {
+    "files": 17,
+    "leakPaths": []
+  },
+  "errors": []
+}

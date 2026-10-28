@@ -1,0 +1,2146 @@
+{
+  "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "playwrightVersion": "1.62.1",
+  "serverPid": 46797,
+  "port": 64189,
+  "portStillOpen": false,
+  "browserPids": [
+    46812,
+    46822,
+    46818
+  ],
+  "browserPidsStillAlive": [],
+  "before": {
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "status": "",
+    "index": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "after": {
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "status": "",
+    "index": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "gitUnchanged": true,
+  "cases": [
+    {
+      "engine": "firefox",
+      "index": 0,
+      "configuredAbortDelayMs": null,
+      "path": "/probe/firefox/complete-control/0",
+      "consumerOutcome": {
+        "phase": "json.complete",
+        "ok": true,
+        "delay": null,
+        "aborted": false
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144167347,
+          "monotonic": 1758.075125,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete-control/0",
+          "phase": "fetch.started",
+          "delay": null,
+          "browserTime": 106
+        },
+        {
+          "at": 1793144167416,
+          "monotonic": 1826.687,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete-control/0",
+          "phase": "headers",
+          "status": 200,
+          "delay": null,
+          "browserTime": 175
+        },
+        {
+          "at": 1793144167416,
+          "monotonic": 1826.787,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete-control/0",
+          "phase": "json.complete",
+          "ok": true,
+          "delay": null,
+          "aborted": false,
+          "browserTime": 175
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 1,
+      "serverEvents": [
+        {
+          "at": 1793144167393,
+          "monotonic": 1803.976792,
+          "event": "server.hit",
+          "path": "/probe/firefox/complete-control/0"
+        },
+        {
+          "at": 1793144167410,
+          "monotonic": 1820.745125,
+          "event": "server.headers.sent",
+          "path": "/probe/firefox/complete-control/0"
+        },
+        {
+          "at": 1793144167411,
+          "monotonic": 1821.271833,
+          "event": "server.response.close",
+          "path": "/probe/firefox/complete-control/0",
+          "writableEnded": true
+        }
+      ],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 1,
+      "configuredAbortDelayMs": 0,
+      "path": "/probe/firefox/abort-0/1",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 0,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144167547,
+          "monotonic": 1957.48675,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/1",
+          "phase": "fetch.started",
+          "delay": 0,
+          "browserTime": 306
+        },
+        {
+          "at": 1793144167548,
+          "monotonic": 1958.948125,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/1",
+          "phase": "timer.abort",
+          "configuredDelay": 0,
+          "actualDelay": 1,
+          "aborted": true,
+          "browserTime": 307
+        },
+        {
+          "at": 1793144167550,
+          "monotonic": 1960.687292,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/1",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 0,
+          "aborted": true,
+          "browserTime": 307
+        }
+      ],
+      "requestObserved": false,
+      "pageTerminal": false,
+      "contextTerminal": false,
+      "serverHits": 0,
+      "serverEvents": [],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 2,
+      "configuredAbortDelayMs": 1,
+      "path": "/probe/firefox/abort-1/2",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 1,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144167671,
+          "monotonic": 2081.697583,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/2",
+          "phase": "fetch.started",
+          "delay": 1,
+          "browserTime": 429
+        },
+        {
+          "at": 1793144167671,
+          "monotonic": 2082.00575,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/2",
+          "phase": "timer.abort",
+          "configuredDelay": 1,
+          "actualDelay": 2,
+          "aborted": true,
+          "browserTime": 431
+        },
+        {
+          "at": 1793144167672,
+          "monotonic": 2082.318417,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/2",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 1,
+          "aborted": true,
+          "browserTime": 431
+        }
+      ],
+      "requestObserved": false,
+      "pageTerminal": false,
+      "contextTerminal": false,
+      "serverHits": 0,
+      "serverEvents": [],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 3,
+      "configuredAbortDelayMs": 2,
+      "path": "/probe/firefox/abort-2/3",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 2,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144167783,
+          "monotonic": 2193.178125,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/3",
+          "phase": "fetch.started",
+          "delay": 2,
+          "browserTime": 541
+        },
+        {
+          "at": 1793144167789,
+          "monotonic": 2199.17675,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/3",
+          "phase": "timer.abort",
+          "configuredDelay": 2,
+          "actualDelay": 5,
+          "aborted": true,
+          "browserTime": 546
+        },
+        {
+          "at": 1793144167789,
+          "monotonic": 2199.28975,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/3",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 2,
+          "aborted": true,
+          "browserTime": 546
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 0,
+      "serverEvents": [],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 4,
+      "configuredAbortDelayMs": 5,
+      "path": "/probe/firefox/abort-5/4",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 5,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144167908,
+          "monotonic": 2318.418083,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/4",
+          "phase": "fetch.started",
+          "delay": 5,
+          "browserTime": 668
+        },
+        {
+          "at": 1793144167918,
+          "monotonic": 2328.155708,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/4",
+          "phase": "timer.abort",
+          "configuredDelay": 5,
+          "actualDelay": 8,
+          "aborted": true,
+          "browserTime": 676
+        },
+        {
+          "at": 1793144167918,
+          "monotonic": 2328.331042,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/4",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 5,
+          "aborted": true,
+          "browserTime": 676
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 1,
+      "serverEvents": [
+        {
+          "at": 1793144167910,
+          "monotonic": 2320.24475,
+          "event": "server.hit",
+          "path": "/probe/firefox/abort-5/4"
+        },
+        {
+          "at": 1793144167917,
+          "monotonic": 2327.421333,
+          "event": "server.response.close",
+          "path": "/probe/firefox/abort-5/4",
+          "writableEnded": false
+        },
+        {
+          "at": 1793144167927,
+          "monotonic": 2338.075375,
+          "event": "server.headers.skipped.closed",
+          "path": "/probe/firefox/abort-5/4"
+        }
+      ],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 5,
+      "configuredAbortDelayMs": 0,
+      "path": "/probe/firefox/abort-0/5",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 0,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144168027,
+          "monotonic": 2437.620125,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/5",
+          "phase": "fetch.started",
+          "delay": 0,
+          "browserTime": 787
+        },
+        {
+          "at": 1793144168027,
+          "monotonic": 2438.060125,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/5",
+          "phase": "timer.abort",
+          "configuredDelay": 0,
+          "actualDelay": 0,
+          "aborted": true,
+          "browserTime": 787
+        },
+        {
+          "at": 1793144168028,
+          "monotonic": 2438.365792,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/5",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 0,
+          "aborted": true,
+          "browserTime": 787
+        }
+      ],
+      "requestObserved": false,
+      "pageTerminal": false,
+      "contextTerminal": false,
+      "serverHits": 0,
+      "serverEvents": [],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 6,
+      "configuredAbortDelayMs": 1,
+      "path": "/probe/firefox/abort-1/6",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 1,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144168135,
+          "monotonic": 2545.253417,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/6",
+          "phase": "fetch.started",
+          "delay": 1,
+          "browserTime": 895
+        },
+        {
+          "at": 1793144168137,
+          "monotonic": 2547.259583,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/6",
+          "phase": "timer.abort",
+          "configuredDelay": 1,
+          "actualDelay": 2,
+          "aborted": true,
+          "browserTime": 896
+        },
+        {
+          "at": 1793144168137,
+          "monotonic": 2547.582625,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/6",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 1,
+          "aborted": true,
+          "browserTime": 897
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 0,
+      "serverEvents": [],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 7,
+      "configuredAbortDelayMs": 2,
+      "path": "/probe/firefox/abort-2/7",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 2,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144168260,
+          "monotonic": 2670.389208,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/7",
+          "phase": "fetch.started",
+          "delay": 2,
+          "browserTime": 1019
+        },
+        {
+          "at": 1793144168263,
+          "monotonic": 2673.9305,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/7",
+          "phase": "timer.abort",
+          "configuredDelay": 2,
+          "actualDelay": 4,
+          "aborted": true,
+          "browserTime": 1023
+        },
+        {
+          "at": 1793144168263,
+          "monotonic": 2673.967542,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/7",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 2,
+          "aborted": true,
+          "browserTime": 1023
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 1,
+      "serverEvents": [
+        {
+          "at": 1793144168262,
+          "monotonic": 2672.784667,
+          "event": "server.hit",
+          "path": "/probe/firefox/abort-2/7"
+        },
+        {
+          "at": 1793144168263,
+          "monotonic": 2673.568,
+          "event": "server.response.close",
+          "path": "/probe/firefox/abort-2/7",
+          "writableEnded": false
+        },
+        {
+          "at": 1793144168278,
+          "monotonic": 2688.84175,
+          "event": "server.headers.skipped.closed",
+          "path": "/probe/firefox/abort-2/7"
+        }
+      ],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 1,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 8,
+      "configuredAbortDelayMs": 5,
+      "path": "/probe/firefox/abort-5/8",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 5,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144168377,
+          "monotonic": 2787.986583,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/8",
+          "phase": "fetch.started",
+          "delay": 5,
+          "browserTime": 1137
+        },
+        {
+          "at": 1793144168385,
+          "monotonic": 2796.038083,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/8",
+          "phase": "timer.abort",
+          "configuredDelay": 5,
+          "actualDelay": 8,
+          "aborted": true,
+          "browserTime": 1145
+        },
+        {
+          "at": 1793144168385,
+          "monotonic": 2796.079667,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/8",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 5,
+          "aborted": true,
+          "browserTime": 1145
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 1,
+      "serverEvents": [
+        {
+          "at": 1793144168379,
+          "monotonic": 2789.84775,
+          "event": "server.hit",
+          "path": "/probe/firefox/abort-5/8"
+        },
+        {
+          "at": 1793144168385,
+          "monotonic": 2795.613875,
+          "event": "server.response.close",
+          "path": "/probe/firefox/abort-5/8",
+          "writableEnded": false
+        },
+        {
+          "at": 1793144168395,
+          "monotonic": 2805.794958,
+          "event": "server.headers.skipped.closed",
+          "path": "/probe/firefox/abort-5/8"
+        }
+      ],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 9,
+      "configuredAbortDelayMs": 0,
+      "path": "/probe/firefox/abort-0/9",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 0,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144168495,
+          "monotonic": 2905.243583,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/9",
+          "phase": "fetch.started",
+          "delay": 0,
+          "browserTime": 1255
+        },
+        {
+          "at": 1793144168495,
+          "monotonic": 2905.887375,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/9",
+          "phase": "timer.abort",
+          "configuredDelay": 0,
+          "actualDelay": 0,
+          "aborted": true,
+          "browserTime": 1255
+        },
+        {
+          "at": 1793144168495,
+          "monotonic": 2906.076542,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/9",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 0,
+          "aborted": true,
+          "browserTime": 1255
+        }
+      ],
+      "requestObserved": false,
+      "pageTerminal": false,
+      "contextTerminal": false,
+      "serverHits": 0,
+      "serverEvents": [],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 10,
+      "configuredAbortDelayMs": 1,
+      "path": "/probe/firefox/abort-1/10",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 1,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144168604,
+          "monotonic": 3015.02075,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/10",
+          "phase": "fetch.started",
+          "delay": 1,
+          "browserTime": 1364
+        },
+        {
+          "at": 1793144168608,
+          "monotonic": 3018.558583,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/10",
+          "phase": "timer.abort",
+          "configuredDelay": 1,
+          "actualDelay": 2,
+          "aborted": true,
+          "browserTime": 1366
+        },
+        {
+          "at": 1793144168608,
+          "monotonic": 3018.621875,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/10",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 1,
+          "aborted": true,
+          "browserTime": 1366
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 0,
+      "serverEvents": [],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 11,
+      "configuredAbortDelayMs": 2,
+      "path": "/probe/firefox/abort-2/11",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 2,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144168728,
+          "monotonic": 3138.160792,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/11",
+          "phase": "fetch.started",
+          "delay": 2,
+          "browserTime": 1487
+        },
+        {
+          "at": 1793144168731,
+          "monotonic": 3141.616292,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/11",
+          "phase": "timer.abort",
+          "configuredDelay": 2,
+          "actualDelay": 4,
+          "aborted": true,
+          "browserTime": 1491
+        },
+        {
+          "at": 1793144168731,
+          "monotonic": 3141.659958,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/11",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 2,
+          "aborted": true,
+          "browserTime": 1491
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 1,
+      "serverEvents": [
+        {
+          "at": 1793144168729,
+          "monotonic": 3140.072208,
+          "event": "server.hit",
+          "path": "/probe/firefox/abort-2/11"
+        },
+        {
+          "at": 1793144168731,
+          "monotonic": 3141.263375,
+          "event": "server.response.close",
+          "path": "/probe/firefox/abort-2/11",
+          "writableEnded": false
+        },
+        {
+          "at": 1793144168745,
+          "monotonic": 3155.509625,
+          "event": "server.headers.skipped.closed",
+          "path": "/probe/firefox/abort-2/11"
+        }
+      ],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 12,
+      "configuredAbortDelayMs": 5,
+      "path": "/probe/firefox/abort-5/12",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 5,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144168840,
+          "monotonic": 3250.158875,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/12",
+          "phase": "fetch.started",
+          "delay": 5,
+          "browserTime": 1599
+        },
+        {
+          "at": 1793144168846,
+          "monotonic": 3256.519875,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/12",
+          "phase": "timer.abort",
+          "configuredDelay": 5,
+          "actualDelay": 6,
+          "aborted": true,
+          "browserTime": 1605
+        },
+        {
+          "at": 1793144168846,
+          "monotonic": 3256.564333,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/12",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 5,
+          "aborted": true,
+          "browserTime": 1605
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 1,
+      "serverEvents": [
+        {
+          "at": 1793144168841,
+          "monotonic": 3251.831083,
+          "event": "server.hit",
+          "path": "/probe/firefox/abort-5/12"
+        },
+        {
+          "at": 1793144168845,
+          "monotonic": 3256.037458,
+          "event": "server.response.close",
+          "path": "/probe/firefox/abort-5/12",
+          "writableEnded": false
+        },
+        {
+          "at": 1793144168857,
+          "monotonic": 3268.028,
+          "event": "server.headers.skipped.closed",
+          "path": "/probe/firefox/abort-5/12"
+        }
+      ],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 13,
+      "configuredAbortDelayMs": 0,
+      "path": "/probe/firefox/abort-0/13",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 0,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144168963,
+          "monotonic": 3373.345292,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/13",
+          "phase": "fetch.started",
+          "delay": 0,
+          "browserTime": 1723
+        },
+        {
+          "at": 1793144168963,
+          "monotonic": 3373.934667,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/13",
+          "phase": "timer.abort",
+          "configuredDelay": 0,
+          "actualDelay": 0,
+          "aborted": true,
+          "browserTime": 1723
+        },
+        {
+          "at": 1793144168963,
+          "monotonic": 3374.02225,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/13",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 0,
+          "aborted": true,
+          "browserTime": 1723
+        }
+      ],
+      "requestObserved": false,
+      "pageTerminal": false,
+      "contextTerminal": false,
+      "serverHits": 0,
+      "serverEvents": [],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 14,
+      "configuredAbortDelayMs": 1,
+      "path": "/probe/firefox/abort-1/14",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 1,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144169073,
+          "monotonic": 3483.113833,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/14",
+          "phase": "fetch.started",
+          "delay": 1,
+          "browserTime": 1832
+        },
+        {
+          "at": 1793144169074,
+          "monotonic": 3484.8855,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/14",
+          "phase": "timer.abort",
+          "configuredDelay": 1,
+          "actualDelay": 2,
+          "aborted": true,
+          "browserTime": 1834
+        },
+        {
+          "at": 1793144169074,
+          "monotonic": 3484.9165,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/14",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 1,
+          "aborted": true,
+          "browserTime": 1834
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 1,
+      "serverEvents": [
+        {
+          "at": 1793144169074,
+          "monotonic": 3484.467833,
+          "event": "server.hit",
+          "path": "/probe/firefox/abort-1/14"
+        },
+        {
+          "at": 1793144169074,
+          "monotonic": 3484.680375,
+          "event": "server.response.close",
+          "path": "/probe/firefox/abort-1/14",
+          "writableEnded": false
+        },
+        {
+          "at": 1793144169092,
+          "monotonic": 3502.427125,
+          "event": "server.headers.skipped.closed",
+          "path": "/probe/firefox/abort-1/14"
+        }
+      ],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 15,
+      "configuredAbortDelayMs": 2,
+      "path": "/probe/firefox/abort-2/15",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 2,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144169197,
+          "monotonic": 3607.490542,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/15",
+          "phase": "fetch.started",
+          "delay": 2,
+          "browserTime": 1956
+        },
+        {
+          "at": 1793144169200,
+          "monotonic": 3611.066625,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/15",
+          "phase": "timer.abort",
+          "configuredDelay": 2,
+          "actualDelay": 4,
+          "aborted": true,
+          "browserTime": 1960
+        },
+        {
+          "at": 1793144169201,
+          "monotonic": 3611.138458,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/15",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 2,
+          "aborted": true,
+          "browserTime": 1960
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 1,
+      "serverEvents": [
+        {
+          "at": 1793144169199,
+          "monotonic": 3609.291458,
+          "event": "server.hit",
+          "path": "/probe/firefox/abort-2/15"
+        },
+        {
+          "at": 1793144169200,
+          "monotonic": 3610.720458,
+          "event": "server.response.close",
+          "path": "/probe/firefox/abort-2/15",
+          "writableEnded": false
+        },
+        {
+          "at": 1793144169217,
+          "monotonic": 3627.653167,
+          "event": "server.headers.skipped.closed",
+          "path": "/probe/firefox/abort-2/15"
+        }
+      ],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 1,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 16,
+      "configuredAbortDelayMs": 5,
+      "path": "/probe/firefox/abort-5/16",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 5,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144169315,
+          "monotonic": 3726.001125,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/16",
+          "phase": "fetch.started",
+          "delay": 5,
+          "browserTime": 2076
+        },
+        {
+          "at": 1793144169322,
+          "monotonic": 3732.79,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/16",
+          "phase": "timer.abort",
+          "configuredDelay": 5,
+          "actualDelay": 6,
+          "aborted": true,
+          "browserTime": 2082
+        },
+        {
+          "at": 1793144169322,
+          "monotonic": 3733.066708,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/16",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 5,
+          "aborted": true,
+          "browserTime": 2082
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 1,
+      "serverEvents": [
+        {
+          "at": 1793144169317,
+          "monotonic": 3727.796833,
+          "event": "server.hit",
+          "path": "/probe/firefox/abort-5/16"
+        },
+        {
+          "at": 1793144169322,
+          "monotonic": 3732.494083,
+          "event": "server.response.close",
+          "path": "/probe/firefox/abort-5/16",
+          "writableEnded": false
+        },
+        {
+          "at": 1793144169335,
+          "monotonic": 3745.686375,
+          "event": "server.headers.skipped.closed",
+          "path": "/probe/firefox/abort-5/16"
+        }
+      ],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 17,
+      "configuredAbortDelayMs": 0,
+      "path": "/probe/firefox/abort-0/17",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 0,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144169446,
+          "monotonic": 3857.023083,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/17",
+          "phase": "fetch.started",
+          "delay": 0,
+          "browserTime": 2206
+        },
+        {
+          "at": 1793144169448,
+          "monotonic": 3858.131667,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/17",
+          "phase": "timer.abort",
+          "configuredDelay": 0,
+          "actualDelay": 0,
+          "aborted": true,
+          "browserTime": 2206
+        },
+        {
+          "at": 1793144169448,
+          "monotonic": 3858.432792,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/17",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 0,
+          "aborted": true,
+          "browserTime": 2206
+        }
+      ],
+      "requestObserved": false,
+      "pageTerminal": false,
+      "contextTerminal": false,
+      "serverHits": 0,
+      "serverEvents": [],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 18,
+      "configuredAbortDelayMs": 1,
+      "path": "/probe/firefox/abort-1/18",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 1,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144169559,
+          "monotonic": 3969.5055,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/18",
+          "phase": "fetch.started",
+          "delay": 1,
+          "browserTime": 2318
+        },
+        {
+          "at": 1793144169561,
+          "monotonic": 3971.59525,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/18",
+          "phase": "timer.abort",
+          "configuredDelay": 1,
+          "actualDelay": 2,
+          "aborted": true,
+          "browserTime": 2320
+        },
+        {
+          "at": 1793144169561,
+          "monotonic": 3971.696542,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/18",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 1,
+          "aborted": true,
+          "browserTime": 2320
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 0,
+      "serverEvents": [],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 19,
+      "configuredAbortDelayMs": 2,
+      "path": "/probe/firefox/abort-2/19",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 2,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144169678,
+          "monotonic": 4088.52875,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/19",
+          "phase": "fetch.started",
+          "delay": 2,
+          "browserTime": 2438
+        },
+        {
+          "at": 1793144169681,
+          "monotonic": 4091.920375,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/19",
+          "phase": "timer.abort",
+          "configuredDelay": 2,
+          "actualDelay": 3,
+          "aborted": true,
+          "browserTime": 2441
+        },
+        {
+          "at": 1793144169681,
+          "monotonic": 4091.978042,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/19",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 2,
+          "aborted": true,
+          "browserTime": 2441
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 1,
+      "serverEvents": [
+        {
+          "at": 1793144169680,
+          "monotonic": 4090.339667,
+          "event": "server.hit",
+          "path": "/probe/firefox/abort-2/19"
+        },
+        {
+          "at": 1793144169681,
+          "monotonic": 4091.69375,
+          "event": "server.response.close",
+          "path": "/probe/firefox/abort-2/19",
+          "writableEnded": false
+        },
+        {
+          "at": 1793144169699,
+          "monotonic": 4109.131167,
+          "event": "server.headers.skipped.closed",
+          "path": "/probe/firefox/abort-2/19"
+        }
+      ],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 20,
+      "configuredAbortDelayMs": 5,
+      "path": "/probe/firefox/abort-5/20",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 5,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144169798,
+          "monotonic": 4208.563083,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/20",
+          "phase": "fetch.started",
+          "delay": 5,
+          "browserTime": 2558
+        },
+        {
+          "at": 1793144169806,
+          "monotonic": 4216.51325,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/20",
+          "phase": "timer.abort",
+          "configuredDelay": 5,
+          "actualDelay": 8,
+          "aborted": true,
+          "browserTime": 2566
+        },
+        {
+          "at": 1793144169806,
+          "monotonic": 4216.542833,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/20",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 5,
+          "aborted": true,
+          "browserTime": 2566
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 1,
+      "serverEvents": [
+        {
+          "at": 1793144169800,
+          "monotonic": 4210.214958,
+          "event": "server.hit",
+          "path": "/probe/firefox/abort-5/20"
+        },
+        {
+          "at": 1793144169806,
+          "monotonic": 4216.26425,
+          "event": "server.response.close",
+          "path": "/probe/firefox/abort-5/20",
+          "writableEnded": false
+        },
+        {
+          "at": 1793144169818,
+          "monotonic": 4228.5965,
+          "event": "server.headers.skipped.closed",
+          "path": "/probe/firefox/abort-5/20"
+        }
+      ],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 21,
+      "configuredAbortDelayMs": 0,
+      "path": "/probe/firefox/abort-0/21",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 0,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144169932,
+          "monotonic": 4342.55175,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/21",
+          "phase": "fetch.started",
+          "delay": 0,
+          "browserTime": 2692
+        },
+        {
+          "at": 1793144169932,
+          "monotonic": 4342.850458,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/21",
+          "phase": "timer.abort",
+          "configuredDelay": 0,
+          "actualDelay": 0,
+          "aborted": true,
+          "browserTime": 2692
+        },
+        {
+          "at": 1793144169932,
+          "monotonic": 4343.053208,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/21",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 0,
+          "aborted": true,
+          "browserTime": 2692
+        }
+      ],
+      "requestObserved": false,
+      "pageTerminal": false,
+      "contextTerminal": false,
+      "serverHits": 0,
+      "serverEvents": [],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 22,
+      "configuredAbortDelayMs": 1,
+      "path": "/probe/firefox/abort-1/22",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 1,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144170045,
+          "monotonic": 4455.726667,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/22",
+          "phase": "fetch.started",
+          "delay": 1,
+          "browserTime": 2804
+        },
+        {
+          "at": 1793144170047,
+          "monotonic": 4457.538083,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/22",
+          "phase": "timer.abort",
+          "configuredDelay": 1,
+          "actualDelay": 3,
+          "aborted": true,
+          "browserTime": 2807
+        },
+        {
+          "at": 1793144170047,
+          "monotonic": 4457.7405,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/22",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 1,
+          "aborted": true,
+          "browserTime": 2807
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 0,
+      "serverEvents": [],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 1,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 23,
+      "configuredAbortDelayMs": 2,
+      "path": "/probe/firefox/abort-2/23",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 2,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144170169,
+          "monotonic": 4579.483833,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/23",
+          "phase": "fetch.started",
+          "delay": 2,
+          "browserTime": 2928
+        },
+        {
+          "at": 1793144170173,
+          "monotonic": 4583.171417,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/23",
+          "phase": "timer.abort",
+          "configuredDelay": 2,
+          "actualDelay": 4,
+          "aborted": true,
+          "browserTime": 2932
+        },
+        {
+          "at": 1793144170173,
+          "monotonic": 4583.385458,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/23",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 2,
+          "aborted": true,
+          "browserTime": 2932
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 0,
+      "serverEvents": [],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 24,
+      "configuredAbortDelayMs": 5,
+      "path": "/probe/firefox/abort-5/24",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 5,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144170301,
+          "monotonic": 4711.716792,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/24",
+          "phase": "fetch.started",
+          "delay": 5,
+          "browserTime": 3061
+        },
+        {
+          "at": 1793144170309,
+          "monotonic": 4720.037667,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/24",
+          "phase": "timer.abort",
+          "configuredDelay": 5,
+          "actualDelay": 7,
+          "aborted": true,
+          "browserTime": 3068
+        },
+        {
+          "at": 1793144170310,
+          "monotonic": 4720.095083,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/24",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 5,
+          "aborted": true,
+          "browserTime": 3069
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 1,
+      "serverEvents": [
+        {
+          "at": 1793144170303,
+          "monotonic": 4713.315292,
+          "event": "server.hit",
+          "path": "/probe/firefox/abort-5/24"
+        },
+        {
+          "at": 1793144170309,
+          "monotonic": 4719.644875,
+          "event": "server.response.close",
+          "path": "/probe/firefox/abort-5/24",
+          "writableEnded": false
+        },
+        {
+          "at": 1793144170319,
+          "monotonic": 4730.050583,
+          "event": "server.headers.skipped.closed",
+          "path": "/probe/firefox/abort-5/24"
+        }
+      ],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 25,
+      "configuredAbortDelayMs": 0,
+      "path": "/probe/firefox/abort-0/25",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 0,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144170431,
+          "monotonic": 4841.59925,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/25",
+          "phase": "fetch.started",
+          "delay": 0,
+          "browserTime": 3191
+        },
+        {
+          "at": 1793144170431,
+          "monotonic": 4841.926417,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/25",
+          "phase": "timer.abort",
+          "configuredDelay": 0,
+          "actualDelay": 0,
+          "aborted": true,
+          "browserTime": 3191
+        },
+        {
+          "at": 1793144170431,
+          "monotonic": 4842.00825,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-0/25",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 0,
+          "aborted": true,
+          "browserTime": 3191
+        }
+      ],
+      "requestObserved": false,
+      "pageTerminal": false,
+      "contextTerminal": false,
+      "serverHits": 0,
+      "serverEvents": [],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 26,
+      "configuredAbortDelayMs": 1,
+      "path": "/probe/firefox/abort-1/26",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 1,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144170544,
+          "monotonic": 4954.328167,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/26",
+          "phase": "fetch.started",
+          "delay": 1,
+          "browserTime": 3303
+        },
+        {
+          "at": 1793144170546,
+          "monotonic": 4956.142125,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/26",
+          "phase": "timer.abort",
+          "configuredDelay": 1,
+          "actualDelay": 2,
+          "aborted": true,
+          "browserTime": 3305
+        },
+        {
+          "at": 1793144170546,
+          "monotonic": 4956.204625,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-1/26",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 1,
+          "aborted": true,
+          "browserTime": 3305
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 1,
+      "serverEvents": [
+        {
+          "at": 1793144170545,
+          "monotonic": 4955.816208,
+          "event": "server.hit",
+          "path": "/probe/firefox/abort-1/26"
+        },
+        {
+          "at": 1793144170545,
+          "monotonic": 4955.945583,
+          "event": "server.response.close",
+          "path": "/probe/firefox/abort-1/26",
+          "writableEnded": false
+        },
+        {
+          "at": 1793144170562,
+          "monotonic": 4972.1015,
+          "event": "server.headers.skipped.closed",
+          "path": "/probe/firefox/abort-1/26"
+        }
+      ],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 27,
+      "configuredAbortDelayMs": 2,
+      "path": "/probe/firefox/abort-2/27",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 2,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144170666,
+          "monotonic": 5076.261917,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/27",
+          "phase": "fetch.started",
+          "delay": 2,
+          "browserTime": 3426
+        },
+        {
+          "at": 1793144170669,
+          "monotonic": 5079.920375,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/27",
+          "phase": "timer.abort",
+          "configuredDelay": 2,
+          "actualDelay": 2,
+          "aborted": true,
+          "browserTime": 3428
+        },
+        {
+          "at": 1793144170669,
+          "monotonic": 5079.966167,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-2/27",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 2,
+          "aborted": true,
+          "browserTime": 3428
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 1,
+      "serverEvents": [
+        {
+          "at": 1793144170667,
+          "monotonic": 5077.746917,
+          "event": "server.hit",
+          "path": "/probe/firefox/abort-2/27"
+        },
+        {
+          "at": 1793144170669,
+          "monotonic": 5079.351417,
+          "event": "server.response.close",
+          "path": "/probe/firefox/abort-2/27",
+          "writableEnded": false
+        },
+        {
+          "at": 1793144170685,
+          "monotonic": 5095.201333,
+          "event": "server.headers.skipped.closed",
+          "path": "/probe/firefox/abort-2/27"
+        }
+      ],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 28,
+      "configuredAbortDelayMs": 5,
+      "path": "/probe/firefox/abort-5/28",
+      "consumerOutcome": {
+        "phase": "fetch.rejected",
+        "errorName": "AbortError",
+        "delay": 5,
+        "aborted": true
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144170796,
+          "monotonic": 5206.878708,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/28",
+          "phase": "fetch.started",
+          "delay": 5,
+          "browserTime": 3557
+        },
+        {
+          "at": 1793144170804,
+          "monotonic": 5214.539667,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/28",
+          "phase": "timer.abort",
+          "configuredDelay": 5,
+          "actualDelay": 6,
+          "aborted": true,
+          "browserTime": 3563
+        },
+        {
+          "at": 1793144170804,
+          "monotonic": 5214.608583,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/abort-5/28",
+          "phase": "fetch.rejected",
+          "errorName": "AbortError",
+          "delay": 5,
+          "aborted": true,
+          "browserTime": 3564
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 1,
+      "serverEvents": [
+        {
+          "at": 1793144170798,
+          "monotonic": 5208.37025,
+          "event": "server.hit",
+          "path": "/probe/firefox/abort-5/28"
+        },
+        {
+          "at": 1793144170804,
+          "monotonic": 5214.290875,
+          "event": "server.response.close",
+          "path": "/probe/firefox/abort-5/28",
+          "writableEnded": false
+        },
+        {
+          "at": 1793144170816,
+          "monotonic": 5226.674333,
+          "event": "server.headers.skipped.closed",
+          "path": "/probe/firefox/abort-5/28"
+        }
+      ],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "index": 29,
+      "configuredAbortDelayMs": null,
+      "path": "/probe/firefox/complete-control/29",
+      "consumerOutcome": {
+        "phase": "json.complete",
+        "ok": true,
+        "delay": null,
+        "aborted": false
+      },
+      "consumerEvents": [
+        {
+          "at": 1793144170947,
+          "monotonic": 5358.033833,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete-control/29",
+          "phase": "fetch.started",
+          "delay": null,
+          "browserTime": 3707
+        },
+        {
+          "at": 1793144170969,
+          "monotonic": 5379.240792,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete-control/29",
+          "phase": "headers",
+          "status": 200,
+          "delay": null,
+          "browserTime": 3729
+        },
+        {
+          "at": 1793144170969,
+          "monotonic": 5379.389625,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete-control/29",
+          "phase": "json.complete",
+          "ok": true,
+          "delay": null,
+          "aborted": false,
+          "browserTime": 3729
+        }
+      ],
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true,
+      "serverHits": 1,
+      "serverEvents": [
+        {
+          "at": 1793144170949,
+          "monotonic": 5359.921125,
+          "event": "server.hit",
+          "path": "/probe/firefox/complete-control/29"
+        },
+        {
+          "at": 1793144170967,
+          "monotonic": 5378.087333,
+          "event": "server.headers.sent",
+          "path": "/probe/firefox/complete-control/29"
+        },
+        {
+          "at": 1793144170968,
+          "monotonic": 5378.363292,
+          "event": "server.response.close",
+          "path": "/probe/firefox/complete-control/29",
+          "writableEnded": true
+        }
+      ],
+      "originalPageTrackerPending": [],
+      "terminalObservationMs": 0,
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    }
+  ],
+  "orphans": [],
+  "outcome": "not_reproduced"
+}

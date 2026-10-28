@@ -1,0 +1,185 @@
+{
+  "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator('.em-calendar') to be visible\n",
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Schedule fixed hash opens the native Profile disclosure and focuses its summary; one current Calendar owner"
+    },
+    {
+      "engine": "chromium",
+      "name": "HTTP rejects an employee selector; no peer link or data exposed"
+    },
+    {
+      "engine": "chromium",
+      "name": "Actual own issue and peer isolation; controlled clipboard failure/success, native full-link selection; evidence redacts the secret"
+    }
+  ],
+  "captures": [
+    "chromium-calendar-empty.png",
+    "chromium-calendar-link-once-redacted.png",
+    "chromium-calendar-light-320.png",
+    "chromium-calendar-light-320-text200.png",
+    "chromium-calendar-light-390.png",
+    "chromium-calendar-light-390-text200.png",
+    "chromium-calendar-light-430.png",
+    "chromium-calendar-light-430-text200.png",
+    "chromium-calendar-dark-320.png",
+    "chromium-calendar-dark-320-text200.png",
+    "chromium-calendar-dark-390.png",
+    "chromium-calendar-dark-390-text200.png",
+    "chromium-calendar-dark-430.png",
+    "chromium-calendar-dark-430-text200.png",
+    "chromium-failure.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "support",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "status",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "privacy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "support",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "status",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "privacy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "support",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "status",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "privacy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "support",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "status",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "privacy",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "support",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "status",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "privacy",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "support",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "status",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "privacy",
+      "ratio": 9.009023941533343
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "stage": "provider-and-reflow",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:64992/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "provider-and-reflow",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:64992/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "provider-and-reflow",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:64992/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-27T23:28:14.482375+00:00",
+  "exitCode": 0,
+  "elapsedSeconds": 55.137,
+  "sourceUnchanged": true,
+  "after": {
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "branch": "codex/employee-mobile-local-resume-20261027",
+    "trackedStatus": "",
+    "indexDiff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "gitUnchanged": true,
+  "ownedNext": [
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/diagnostic-f58d040b-event-only-03/combined/profile/owned-next-OjnLgK/ownership.json",
+      "ownerId": "5b766dc3-59c4-4cae-b9e8-4f8ad56f9815",
+      "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+      "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/diagnostic-f58d040b-event-only-03/combined/profile/owned-next-OjnLgK",
+      "pid": 43424,
+      "port": 62977,
+      "closed": true,
+      "closedAt": "2026-10-27T23:28:10.750Z",
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "pidStillAlive": false,
+      "portStillOpen": false
+    }
+  ],
+  "clusters": [
+    {
+      "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-iIBiTy",
+      "pid": 43271,
+      "port": 62938,
+      "ownerHash": "cf684d8b8653b5c85d697ace6f11f8646f54404656de0078aa2d7db6690c8146",
+      "directoryExists": false,
+      "pidStillAlive": false,
+      "portStillOpen": false
+    }
+  ]
+}

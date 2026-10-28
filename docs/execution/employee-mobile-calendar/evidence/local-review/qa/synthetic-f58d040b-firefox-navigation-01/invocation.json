@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/usr/local/bin/node",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-firefox-navigation.cjs"
+  ],
+  "cwd": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+  "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "scriptSha256": "69ccbaac2a5329dca87b880209e19b8295d44ac7e0f8f0b8f2dac09fff3d660e",
+  "playwrightVersion": "1.62.1",
+  "runtimePath": "/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright",
+  "serverPid": 46341,
+  "port": 63963,
+  "before": {
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "status": "",
+    "index": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": {
+    "terminalObservationMs": 11000,
+    "maxFirefoxAfterFullJsonNavigationVariants": 5
+  }
+}

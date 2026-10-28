@@ -1,0 +1,1169 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Actual sign-in completes its Home and time status before the planning journey"
+    },
+    {
+      "engine": "chromium",
+      "name": "Own empty list and first invalid field focus work without creating a record"
+    },
+    {
+      "engine": "chromium",
+      "name": "timeoff-full-form passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Time-off draft survives refresh/offline in memory while private form fields release"
+    },
+    {
+      "engine": "chromium",
+      "name": "Native form Tab remains in its task or browser blur releases private facts"
+    },
+    {
+      "engine": "chromium",
+      "name": "Lost committed full-day response reconciles one original request and focuses known receipt"
+    },
+    {
+      "engine": "chromium",
+      "name": "Exact own detail shows note and timeline; back restores its list row focus"
+    },
+    {
+      "engine": "chromium",
+      "name": "A mounted known receipt can deliberately start a new request"
+    },
+    {
+      "engine": "chromium",
+      "name": "Retained legacy request fragments resolve to the exact protected own detail"
+    },
+    {
+      "engine": "chromium",
+      "name": "timeoff-partial-form passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Own partial-day submission and confirmed pending withdrawal persist; return moves to Decided and focuses withdrawn row"
+    },
+    {
+      "engine": "chromium",
+      "name": "Invalid overlapping Friday hours open and focus the actual invalid field with its error association"
+    },
+    {
+      "engine": "chromium",
+      "name": "availability-usual passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Split usual hours and edited draft survive refresh/pause; private editor releases"
+    },
+    {
+      "engine": "chromium",
+      "name": "Deliberate draft rebase preserves the newer unedited Tuesday hours"
+    },
+    {
+      "engine": "chromium",
+      "name": "availability-weekly passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Weekly lost response reconciles canonical matching hours without fabricating an operation receipt"
+    },
+    {
+      "engine": "chromium",
+      "name": "An explicitly confirmed empty week is submitted unavailability, distinct from not submitted"
+    },
+    {
+      "engine": "chromium",
+      "name": "Closed weekly deadlines are read only while usual availability remains independently available"
+    },
+    {
+      "engine": "chromium",
+      "name": "Desktop retains its original availability and time-off surfaces"
+    },
+    {
+      "engine": "chromium",
+      "name": "Current authority loss removes private planning and all editor controls"
+    },
+    {
+      "engine": "webkit",
+      "name": "Actual sign-in completes its Home and time status before the planning journey"
+    },
+    {
+      "engine": "webkit",
+      "name": "Own empty list and first invalid field focus work without creating a record"
+    },
+    {
+      "engine": "webkit",
+      "name": "timeoff-full-form passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Time-off draft survives refresh/offline in memory while private form fields release"
+    },
+    {
+      "engine": "webkit",
+      "name": "Native form Tab remains in its task or browser blur releases private facts"
+    },
+    {
+      "engine": "webkit",
+      "name": "Lost committed full-day response reconciles one original request and focuses known receipt"
+    },
+    {
+      "engine": "webkit",
+      "name": "Exact own detail shows note and timeline; back restores its list row focus"
+    },
+    {
+      "engine": "webkit",
+      "name": "A mounted known receipt can deliberately start a new request"
+    },
+    {
+      "engine": "webkit",
+      "name": "Retained legacy request fragments resolve to the exact protected own detail"
+    },
+    {
+      "engine": "webkit",
+      "name": "timeoff-partial-form passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Own partial-day submission and confirmed pending withdrawal persist; return moves to Decided and focuses withdrawn row"
+    },
+    {
+      "engine": "webkit",
+      "name": "Invalid overlapping Friday hours open and focus the actual invalid field with its error association"
+    },
+    {
+      "engine": "webkit",
+      "name": "availability-usual passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Split usual hours and edited draft survive refresh/pause; private editor releases"
+    },
+    {
+      "engine": "webkit",
+      "name": "Deliberate draft rebase preserves the newer unedited Tuesday hours"
+    },
+    {
+      "engine": "webkit",
+      "name": "availability-weekly passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Weekly lost response reconciles canonical matching hours without fabricating an operation receipt"
+    },
+    {
+      "engine": "webkit",
+      "name": "An explicitly confirmed empty week is submitted unavailability, distinct from not submitted"
+    },
+    {
+      "engine": "webkit",
+      "name": "Closed weekly deadlines are read only while usual availability remains independently available"
+    },
+    {
+      "engine": "webkit",
+      "name": "Desktop retains its original availability and time-off surfaces"
+    },
+    {
+      "engine": "webkit",
+      "name": "Current authority loss removes private planning and all editor controls"
+    },
+    {
+      "engine": "firefox",
+      "name": "Actual sign-in completes its Home and time status before the planning journey"
+    },
+    {
+      "engine": "firefox",
+      "name": "Own empty list and first invalid field focus work without creating a record"
+    },
+    {
+      "engine": "firefox",
+      "name": "timeoff-full-form passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Time-off draft survives refresh/offline in memory while private form fields release"
+    },
+    {
+      "engine": "firefox",
+      "name": "Native form Tab remains in its task or browser blur releases private facts"
+    },
+    {
+      "engine": "firefox",
+      "name": "Lost committed full-day response reconciles one original request and focuses known receipt"
+    },
+    {
+      "engine": "firefox",
+      "name": "Exact own detail shows note and timeline; back restores its list row focus"
+    },
+    {
+      "engine": "firefox",
+      "name": "A mounted known receipt can deliberately start a new request"
+    },
+    {
+      "engine": "firefox",
+      "name": "Retained legacy request fragments resolve to the exact protected own detail"
+    },
+    {
+      "engine": "firefox",
+      "name": "timeoff-partial-form passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Own partial-day submission and confirmed pending withdrawal persist; return moves to Decided and focuses withdrawn row"
+    },
+    {
+      "engine": "firefox",
+      "name": "Invalid overlapping Friday hours open and focus the actual invalid field with its error association"
+    },
+    {
+      "engine": "firefox",
+      "name": "availability-usual passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Split usual hours and edited draft survive refresh/pause; private editor releases"
+    },
+    {
+      "engine": "firefox",
+      "name": "Deliberate draft rebase preserves the newer unedited Tuesday hours"
+    },
+    {
+      "engine": "firefox",
+      "name": "availability-weekly passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Weekly lost response reconciles canonical matching hours without fabricating an operation receipt"
+    },
+    {
+      "engine": "firefox",
+      "name": "An explicitly confirmed empty week is submitted unavailability, distinct from not submitted"
+    },
+    {
+      "engine": "firefox",
+      "name": "Closed weekly deadlines are read only while usual availability remains independently available"
+    },
+    {
+      "engine": "firefox",
+      "name": "Desktop retains its original availability and time-off surfaces"
+    },
+    {
+      "engine": "firefox",
+      "name": "Current authority loss removes private planning and all editor controls"
+    }
+  ],
+  "captures": [
+    "chromium-timeoff-empty.png",
+    "chromium-timeoff-full-form-light-320.png",
+    "chromium-timeoff-full-form-light-390.png",
+    "chromium-timeoff-full-form-light-430.png",
+    "chromium-timeoff-full-form-dark-320.png",
+    "chromium-timeoff-full-form-dark-390.png",
+    "chromium-timeoff-full-form-dark-430.png",
+    "chromium-timeoff-full-form-text-200.png",
+    "chromium-timeoff-uncertain.png",
+    "chromium-timeoff-own-detail.png",
+    "chromium-timeoff-partial-form-light-320.png",
+    "chromium-timeoff-partial-form-light-390.png",
+    "chromium-timeoff-partial-form-light-430.png",
+    "chromium-timeoff-partial-form-dark-320.png",
+    "chromium-timeoff-partial-form-dark-390.png",
+    "chromium-timeoff-partial-form-dark-430.png",
+    "chromium-timeoff-partial-form-text-200.png",
+    "chromium-timeoff-withdrawn.png",
+    "chromium-availability-invalid-friday.png",
+    "chromium-availability-usual-light-320.png",
+    "chromium-availability-usual-light-390.png",
+    "chromium-availability-usual-light-430.png",
+    "chromium-availability-usual-dark-320.png",
+    "chromium-availability-usual-dark-390.png",
+    "chromium-availability-usual-dark-430.png",
+    "chromium-availability-usual-text-200.png",
+    "chromium-availability-conflict.png",
+    "chromium-availability-weekly-light-320.png",
+    "chromium-availability-weekly-light-390.png",
+    "chromium-availability-weekly-light-430.png",
+    "chromium-availability-weekly-dark-320.png",
+    "chromium-availability-weekly-dark-390.png",
+    "chromium-availability-weekly-dark-430.png",
+    "chromium-availability-weekly-text-200.png",
+    "chromium-availability-unavailable-week.png",
+    "chromium-availability-closed.png",
+    "chromium-desktop-availability.png",
+    "chromium-authority-denied.png",
+    "webkit-timeoff-empty.png",
+    "webkit-timeoff-full-form-light-320.png",
+    "webkit-timeoff-full-form-light-390.png",
+    "webkit-timeoff-full-form-light-430.png",
+    "webkit-timeoff-full-form-dark-320.png",
+    "webkit-timeoff-full-form-dark-390.png",
+    "webkit-timeoff-full-form-dark-430.png",
+    "webkit-timeoff-full-form-text-200.png",
+    "webkit-timeoff-uncertain.png",
+    "webkit-timeoff-own-detail.png",
+    "webkit-timeoff-partial-form-light-320.png",
+    "webkit-timeoff-partial-form-light-390.png",
+    "webkit-timeoff-partial-form-light-430.png",
+    "webkit-timeoff-partial-form-dark-320.png",
+    "webkit-timeoff-partial-form-dark-390.png",
+    "webkit-timeoff-partial-form-dark-430.png",
+    "webkit-timeoff-partial-form-text-200.png",
+    "webkit-timeoff-withdrawn.png",
+    "webkit-availability-invalid-friday.png",
+    "webkit-availability-usual-light-320.png",
+    "webkit-availability-usual-light-390.png",
+    "webkit-availability-usual-light-430.png",
+    "webkit-availability-usual-dark-320.png",
+    "webkit-availability-usual-dark-390.png",
+    "webkit-availability-usual-dark-430.png",
+    "webkit-availability-usual-text-200.png",
+    "webkit-availability-conflict.png",
+    "webkit-availability-weekly-light-320.png",
+    "webkit-availability-weekly-light-390.png",
+    "webkit-availability-weekly-light-430.png",
+    "webkit-availability-weekly-dark-320.png",
+    "webkit-availability-weekly-dark-390.png",
+    "webkit-availability-weekly-dark-430.png",
+    "webkit-availability-weekly-text-200.png",
+    "webkit-availability-unavailable-week.png",
+    "webkit-availability-closed.png",
+    "webkit-desktop-availability.png",
+    "webkit-authority-denied.png",
+    "firefox-timeoff-empty.png",
+    "firefox-timeoff-full-form-light-320.png",
+    "firefox-timeoff-full-form-light-390.png",
+    "firefox-timeoff-full-form-light-430.png",
+    "firefox-timeoff-full-form-dark-320.png",
+    "firefox-timeoff-full-form-dark-390.png",
+    "firefox-timeoff-full-form-dark-430.png",
+    "firefox-timeoff-full-form-text-200.png",
+    "firefox-timeoff-uncertain.png",
+    "firefox-timeoff-own-detail.png",
+    "firefox-timeoff-partial-form-light-320.png",
+    "firefox-timeoff-partial-form-light-390.png",
+    "firefox-timeoff-partial-form-light-430.png",
+    "firefox-timeoff-partial-form-dark-320.png",
+    "firefox-timeoff-partial-form-dark-390.png",
+    "firefox-timeoff-partial-form-dark-430.png",
+    "firefox-timeoff-partial-form-text-200.png",
+    "firefox-timeoff-withdrawn.png",
+    "firefox-availability-invalid-friday.png",
+    "firefox-availability-usual-light-320.png",
+    "firefox-availability-usual-light-390.png",
+    "firefox-availability-usual-light-430.png",
+    "firefox-availability-usual-dark-320.png",
+    "firefox-availability-usual-dark-390.png",
+    "firefox-availability-usual-dark-430.png",
+    "firefox-availability-usual-text-200.png",
+    "firefox-availability-conflict.png",
+    "firefox-availability-weekly-light-320.png",
+    "firefox-availability-weekly-light-390.png",
+    "firefox-availability-weekly-light-430.png",
+    "firefox-availability-weekly-dark-320.png",
+    "firefox-availability-weekly-dark-390.png",
+    "firefox-availability-weekly-dark-430.png",
+    "firefox-availability-weekly-text-200.png",
+    "firefox-availability-unavailable-week.png",
+    "firefox-availability-closed.png",
+    "firefox-desktop-availability.png",
+    "firefox-authority-denied.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "control": "timeoff-full-form",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "control": "timeoff-full-form",
+      "ratio": 8.901173739947613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "control": "timeoff-full-form",
+      "ratio": 8.901173739947613
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "control": "timeoff-full-form",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "control": "timeoff-full-form",
+      "ratio": 13.845409706459769
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "control": "timeoff-full-form",
+      "ratio": 13.845409706459769
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "control": "timeoff-partial-form",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "control": "timeoff-partial-form",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "control": "timeoff-partial-form",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "control": "timeoff-partial-form",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "control": "timeoff-partial-form",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "control": "timeoff-partial-form",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "control": "availability-usual",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "control": "availability-usual",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "control": "availability-usual",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "control": "availability-usual",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "control": "availability-usual",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "control": "availability-usual",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "control": "availability-weekly",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "control": "availability-weekly",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "control": "availability-weekly",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "control": "availability-weekly",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "control": "availability-weekly",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "control": "availability-weekly",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "control": "timeoff-full-form",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "control": "timeoff-full-form",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "control": "timeoff-full-form",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "control": "timeoff-full-form",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "control": "timeoff-full-form",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "control": "timeoff-full-form",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "control": "timeoff-partial-form",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "control": "timeoff-partial-form",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "control": "timeoff-partial-form",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "control": "timeoff-partial-form",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "control": "timeoff-partial-form",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "control": "timeoff-partial-form",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "control": "availability-usual",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "control": "availability-usual",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "control": "availability-usual",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "control": "availability-usual",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "control": "availability-usual",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "control": "availability-usual",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "control": "availability-weekly",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "control": "availability-weekly",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "control": "availability-weekly",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "control": "availability-weekly",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "control": "availability-weekly",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "control": "availability-weekly",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "control": "timeoff-full-form",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "control": "timeoff-full-form",
+      "ratio": 8.901173739947613
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "control": "timeoff-full-form",
+      "ratio": 8.901173739947613
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "control": "timeoff-full-form",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "control": "timeoff-full-form",
+      "ratio": 13.845409706459769
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "control": "timeoff-full-form",
+      "ratio": 13.845409706459769
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "control": "timeoff-partial-form",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "control": "timeoff-partial-form",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "control": "timeoff-partial-form",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "control": "timeoff-partial-form",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "control": "timeoff-partial-form",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "control": "timeoff-partial-form",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "control": "availability-usual",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "control": "availability-usual",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "control": "availability-usual",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "control": "availability-usual",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "control": "availability-usual",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "control": "availability-usual",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "control": "availability-weekly",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "control": "availability-weekly",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "control": "availability-weekly",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "control": "availability-weekly",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "control": "availability-weekly",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "control": "availability-weekly",
+      "ratio": 12.581737771441162
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "stage": "timeoff-lost-response",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "weekly-availability",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "authority-loss",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "weekly-availability",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:60751/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "weekly-availability",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:60751/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "weekly-availability",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:60751/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "authority-loss",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    }
+  ],
+  "failedRequests": [
+    {
+      "engine": "chromium",
+      "stage": "login",
+      "url": "http://127.0.0.1:60751/login",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "timeoff-empty",
+      "url": "http://127.0.0.1:60751/app/requests?tab=new&_rsc=jap5TdkMJbygaJcm",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "timeoff-lost-response",
+      "url": "http://127.0.0.1:60751/app/requests?tab=new",
+      "error": "net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "timeoff-lost-response",
+      "url": "http://127.0.0.1:60751/app/requests?tab=new",
+      "error": "net::ERR_ABORTED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "timeoff-lost-response",
+      "url": "http://127.0.0.1:60751/app/requests?requestId=ff431359-1216-464c-87de-cb5fd4f57d05&_rsc=jap5TdkMJbygaJcm",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "timeoff-lost-response",
+      "url": "http://127.0.0.1:60751/app/requests?_rsc=jap5TdkMJbygaJcm",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "timeoff-lost-response",
+      "url": "http://127.0.0.1:60751/app/requests?_rsc=-1-nP7vOFGcTiJNM",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "timeoff-lost-response",
+      "url": "http://127.0.0.1:60751/app/requests?tab=new&_rsc=-1-nP7vOFGcTiJNM",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "timeoff-lost-response",
+      "url": "http://127.0.0.1:60751/app/requests?_rsc=-1-nP7vOFGcTiJNM",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "timeoff-lost-response",
+      "url": "http://127.0.0.1:60751/app/requests?requestId=ff431359-1216-464c-87de-cb5fd4f57d05&_rsc=jap5TdkMJbygaJcm",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "timeoff-lost-response",
+      "url": "http://127.0.0.1:60751/api/employee/planning/timeoff/list",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "timeoff-lost-response",
+      "url": "http://127.0.0.1:60751/app/requests?_rsc=-1-nP7vOFGcTiJNM",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "partial-request",
+      "url": "http://127.0.0.1:60751/app/requests?tab=new&_rsc=jap5TdkMJbygaJcm",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "partial-request",
+      "url": "http://127.0.0.1:60751/app/requests?tab=new",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "partial-request",
+      "url": "http://127.0.0.1:60751/app/requests?requestId=6430f7a7-d2dc-4b97-899f-5ba12ca9e80e&_rsc=jap5TdkMJbygaJcm",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "partial-request",
+      "url": "http://127.0.0.1:60751/app/requests?filter=decided&_rsc=jap5TdkMJbygaJcm",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "weekly-availability",
+      "url": "http://127.0.0.1:60751/app/availability",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "weekly-availability",
+      "url": "http://127.0.0.1:60751/app/availability?week=2026-11-09&_rsc=gizOmTOId_Q2VuEv",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "weekly-availability",
+      "url": "http://127.0.0.1:60751/api/employee/planning/availability/normal",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "weekly-availability",
+      "url": "http://127.0.0.1:60751/app/availability?week=2026-11-09",
+      "error": "net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "weekly-availability",
+      "url": "http://127.0.0.1:60751/app/availability?week=2026-11-09",
+      "error": "net::ERR_ABORTED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "weekly-availability",
+      "url": "http://127.0.0.1:60751/app/availability?week=2026-11-09",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "weekly-availability",
+      "url": "http://127.0.0.1:60751/app/availability?_rsc=zNUoHeYIeWaBiFTA",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "desktop",
+      "url": "http://127.0.0.1:60751/app/requests/hub?_rsc=gizOmTOId_Q2VuEv",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "desktop",
+      "url": "http://127.0.0.1:60751/app/requests?_rsc=neqgM87Y4D8aaUgO",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "authority-loss",
+      "url": "http://127.0.0.1:60751/app/requests/hub?_rsc=YRSsgQOZhhVhNSbA",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "authority-loss",
+      "url": "http://127.0.0.1:60751/app/availability?_rsc=5rRjFWov5itnENCm",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "timeoff-lost-response",
+      "url": "http://127.0.0.1:60751/app/requests?tab=new",
+      "error": "Blocked by Web Inspector",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "timeoff-lost-response",
+      "url": "http://127.0.0.1:60751/api/employee/planning/timeoff/list",
+      "error": "cancelled",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "weekly-availability",
+      "url": "http://127.0.0.1:60751/app/availability?week=2026-11-16",
+      "error": "Blocked by Web Inspector",
+      "expected": true
+    },
+    {
+      "engine": "firefox",
+      "stage": "timeoff-lost-response",
+      "url": "http://127.0.0.1:60751/app/requests?tab=new",
+      "error": "NS_ERROR_FAILURE",
+      "expected": true
+    },
+    {
+      "engine": "firefox",
+      "stage": "timeoff-lost-response",
+      "url": "http://127.0.0.1:60751/icons/fuel-apple-180.png",
+      "error": "NS_BINDING_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "timeoff-lost-response",
+      "url": "http://127.0.0.1:60751/api/employee/planning/timeoff/list",
+      "error": "NS_BINDING_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "weekly-availability",
+      "url": "http://127.0.0.1:60751/app/availability?week=2026-11-23",
+      "error": "NS_ERROR_FAILURE",
+      "expected": true
+    }
+  ]
+}

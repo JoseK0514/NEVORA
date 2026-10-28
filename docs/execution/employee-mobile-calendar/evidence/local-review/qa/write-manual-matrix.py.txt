@@ -1,0 +1,89 @@
+import json,pathlib
+E=pathlib.Path(__file__).parent;A=E/'final-f58d040b';C=A/'combined';D=E/'diagnostic-f58d040b-profile-01'
+artifacts=[]
+def artifact(id,kind,description,path):
+ p=pathlib.Path(path);assert p.is_file() and p.stat().st_size,(id,p)
+ artifacts.append({'id':id,'kind':kind,'description':description,'path':str(p)})
+artifact('U','test-log','98 files/799 unit tests, actual final-candidate run',A/'units/stdout.log')
+artifact('UI','invocation','Exact98-file unit argv and sanitized environment',A/'units/invocation.json')
+artifact('TS','custody-result','Nonincremental TypeScript exit0/source/Git custody',A/'typescript/result.json')
+artifact('LINT','custody-result','Scoped ESLint exit0/source/Git custody',A/'eslint/result.json')
+artifact('CI','invocation','Exact selector-free26-file combined argv/environment',C/'invocation.json')
+artifact('SUITE','test-report','253pass/1fail,26files, exact assertion records',C/'suite-results.json')
+artifact('LOG','test-log','Full run including Profile idle failure stack and PGstop',C/'stdout.log')
+artifact('AUDIT','independent-audit','Independent hashes/inventories/PID/port/DB checks and explicit marker caveat',A/'audit-result.json')
+artifact('OBS','observation-log','1376frozen samples including3null-marker snapshots',C/'observations.json')
+artifact('CAL','browser-action-record','39Calendar checkpoints,108captures,54contrasts, actual3engines',C/'calendar/result.json')
+artifact('PLAN','scenario-invocation','Calendar scenarios stated before final Calendar execution',A/'calendar-scenario-plan.json')
+for engine in ('chromium','webkit','firefox'):
+ artifact('REC-'+engine,'screenshot','Actual original-retry recovery above fixed navigation',C/'calendar'/f'{engine}-calendar-unknown-original.png')
+for id,file,desc in [('COPY','firefox-calendar-light-320-text200-copy.png','320px200%Copy/Select controls'),('REPLACE','webkit-calendar-replace-dark-text200-control.png','Dark200%replace confirmation control'),('REVOKE','chromium-calendar-revoke-light-text200-control.png','Light200%revoke confirmation control')]:artifact(id,'screenshot',desc,C/'calendar'/file)
+artifact('PROFILE','screenshot','Failed Firefox new-account Profile surface',C/'profile/firefox-failure.png')
+artifact('PENDING','browser-diagnostic','One retained Calendar GET at original idle failure',C/'profile/firefox-pending-requests.json')
+artifact('PROFILE-HTML','browser-DOM','Ready new-account Profile and current Calendar none at failure',C/'profile/firefox-failure.html')
+artifact('DIAG','browser-event-log','Unchanged-candidate diagnostic stableIDs, completion and consumer events; no reproduction',D/'combined/profile-events.jsonl')
+artifact('DIAG-AUDIT','independent-audit','Single diagnostic runtime closure; transient startup refusal explicitly retained',D/'audit-result.json')
+checks=[x['name'] for x in json.loads((C/'calendar/result.json').read_text())['checks'] if x['engine']=='chromium']
+stages=['schedule-entry','schedule-entry browser-context request','actual-own-issue','provider-and-reflow keyboard','provider-and-reflow','private-pause','replace-confirmation','unknown-command-resize','revoke-confirmation','read-unavailable','finite-session-lease','current-session-denial','native-signout']
+rows=[]
+for i,(name,stage) in enumerate(zip(checks,stages),1):
+ refs=['CAL','CI'];
+ if i==5:refs+=['COPY','REPLACE','REVOKE']
+ if i==8:refs+=['REC-chromium','REC-webkit','REC-firefox']
+ rows.append({'scenarioId':f'CAL-{i:02}','criterionReference':'Calendar plan Task1/2/3; '+name,'surface':'Actual owned Next browser journey in Chromium/WebKit/Firefox','exactInvocation':'B; employee-mobile-calendar.integration.ts stage '+stage,'verdict':'PASS','artifactRefs':refs})
+rows.extend([
+ {'scenarioId':'STATIC-U','criterionReference':'Task3 retained Profile682 corpus plus Calendar regressions','surface':'CLI actual component/contract unit corpus','exactInvocation':'S; exact98-fileargv in UI','verdict':'PASS','artifactRefs':['U','UI']},
+ {'scenarioId':'STATIC-TS','criterionReference':'Task2/3 nonincremental TypeScript','surface':'CLI','exactInvocation':'S → node node_modules/typescript/bin/tsc --noEmit --incremental false','verdict':'PASS','artifactRefs':['TS']},
+ {'scenarioId':'STATIC-LINT','criterionReference':'Task2/3 scoped lint','surface':'CLI','exactInvocation':'S → node node_modules/eslint/bin/eslint.js with recorded changed-file list','verdict':'PASS','artifactRefs':['LINT']},
+ {'scenarioId':'SQL-CAL','criterionReference':'Task1 canonical tokens/feed/current-access rules','surface':'Actual disposable PostgreSQL,70canonical cases','exactInvocation':'B; phase-e-calendar-tokens + phase-e-calendar-feed + company-access-recovery-calendar','verdict':'PASS','artifactRefs':['SUITE','LOG']},
+ {'scenarioId':'REGRESSION','criterionReference':'Task3 all required existing regression cases','surface':'26-file selector-free SQL/browser combined gate','exactInvocation':'B','verdict':'FAIL — Profile idle at new-account;253pass/1fail','artifactRefs':['SUITE','LOG','PROFILE','PENDING','PROFILE-HTML']},
+ {'scenarioId':'CUSTODY','criterionReference':'Task3 immutable source/mirror/HEAD/index/PID/port/DB closure','surface':'Read-only filesystem/process/loopback and DB observation audit','exactInvocation':'python3 '+str(E/'audit-run.py')+' final-f58d040b','verdict':'PASS for source/runtime closure; per-instance marker sampling limited as stated','artifactRefs':['AUDIT','OBS']},
+ {'scenarioId':'DIAGNOSTIC','criterionReference':'QA-CAL-1 missing completion-event diagnosis','surface':'Unchanged-candidate real Profile browser journey plus external event observer','exactInvocation':'D','verdict':'PASS for diagnostic execution only; failure NOT REPRODUCED, QA-CAL-1 OPEN','artifactRefs':['DIAG','DIAG-AUDIT']},
+])
+adversarial=[
+ ('ADV-01','Task1 strict contract','malformed/rebound status or receipt','Reject malformed/private URL/authority/operation/generation mismatch before adoption','PASS',['U','UI']),
+ ('ADV-02','Task1 finite waits','held read/write headers/body and late completion','Bound waits, fence late responses, retain immutable unknown original','PASS',['U','CAL']),
+ ('ADV-03','Task1 monotonic lease;CR-3','delayed timers and advancing clock samples','Zero expired POST/clipboard side effects; fixed request-start deadline; preserve original recovery','PASS',['U','UI']),
+ ('ADV-04','Task1 lifecycle','lost committed reply, unrelated theme storage and media resize','Same original replay, no secondcredential; owner remains mounted; visible retry','PASS',['CAL','REC-chromium','REC-webkit','REC-firefox']),
+ ('ADV-05','Task1 authorization','current session/role/workspace/location refusal and peer selector','Own/current guards remain; no stale/private action admission','PASS',['CAL','SUITE','U']),
+ ('ADV-06','Task1 canonical lifecycle','concurrent rotate/revoke/replay and feed invalidation','Actual locking/generation winner rules and revoked feed denial','PASS',['SUITE','LOG']),
+ ('ADV-07','Task2 copy fallback','clipboard denial','Honest failure message and native select-all fallback; no claimed provider connection','PASS',['CAL','COPY']),
+ ('ADV-08','Task2 accessibility;UI-1/UI-3','320px/200%light/dark,keyboard,coarse landscape','No tested overflow;44pxtargets/48pxcritical controls; visible focus and retry above nav','PASS',['CAL','COPY','REPLACE','REVOKE','REC-chromium','REC-webkit','REC-firefox']),
+ ('ADV-09','Task1 privacy','pause/signout/expiry and stale completion','Clear private state, prevent reopened ended owner and no credential reconstruction','PASS',['CAL','U']),
+ ('ADV-10','Task3 retained Profile;QA-CAL-1','new-account request completion accounting','Original10second idle assertion must drain genuine tracked requests','FAIL; isolated diagnostic did not reproduce; cause remains unresolved',['LOG','PENDING','PROFILE-HTML','DIAG']),
+ ('ADV-11','Scope boundary','provider service outage/retry','not_applicable: feature calls no external provider API; it supplies a feed link and instructions only','not_applicable',['CAL']),
+]
+manual={'surfaceEvidence':rows,'adversarialCases':[dict(zip(('scenarioId','criterionReference','adversarialClass','expectedBehavior','verdict','artifactRefs'),x)) for x in adversarial],'artifactRefs':artifacts}
+(A/'manual-qa.json').write_text(json.dumps({'manualQa':manual},indent=2)+'\n')
+header='''# Employee mobile Calendar manualQa —f58d040b
+
+Independent QA recommendation: **NO-GO**. Required selector-free gate failed. Static/Calendar/SQL passes do not close QA-CAL-1. Original baseline and failed corrected run are preserved.
+
+Criteria: `docs/execution/employee-mobile-calendar/calendar-plan.md` Tasks1–3 and accepted scoped teal brief. No ULW plan exists; caller evidence directory used. All PASS artifact references below were checked to exist and be nonempty.
+
+Exact invocation aliases (cwd `/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume`):
+
+- S: `python3 ../..` is NOT an abbreviation to execute; complete recorder invocation: `python3 %s static --candidate f58d040b70909fa21dcb97b4f40edcfd5279226c --attempt final-f58d040b`. Exact spawned argv per static stage is recorded in invocation.json.
+- B: `python3 %s combined --candidate f58d040b70909fa21dcb97b4f40edcfd5279226c --attempt final-f58d040b`; exact child: `node scripts/payroll-postgres.mjs vitest.employee-mobile-calendar.config.mts --reporter=default --reporter=json --outputFile=%s`. No selector. Browser tests are actual Playwright actions against owned Next; browser-context response observations are not claimed as a separate curl HTTP certification.
+- D: `python3 %s combined --candidate f58d040b70909fa21dcb97b4f40edcfd5279226c --attempt diagnostic-f58d040b-profile-01`; child additionally selects `src/test/integration/employee-mobile-profile.integration.ts` and uses the externally recorded NODE_OPTIONS observer. Original assertions/timeouts unchanged.
+
+## manualQa.surfaceEvidence
+
+| scenarioId | criterionReference | surface | exactInvocation | verdict | artifactRefs |
+|---|---|---|---|---|---|
+'''%(E/'run-qa-fast-observer.py',E/'run-qa-fast-observer.py',C/'suite-results.json',E/'run-qa-profile-diagnostic.py')
+header=header.replace('`python3 ../..` is NOT an abbreviation to execute; complete recorder invocation: ','')
+def cell(v):return str(v).replace('|','\\|').replace('\n',' ')
+text=header+''.join('| '+' | '.join(cell(', '.join(v) if isinstance(v,list) else v) for v in r.values())+' |\n' for r in rows)
+text+='\n## manualQa.adversarialCases\n\n| scenarioId | criterionReference | adversarialClass | expectedBehavior | verdict | artifactRefs |\n|---|---|---|---|---|---|\n'
+for r in manual['adversarialCases']:text+='| '+' | '.join(cell(', '.join(v) if isinstance(v,list) else v) for v in r.values())+' |\n'
+text+='\n## manualQa.artifactRefs\n\n| id | kind | description | path |\n|---|---|---|---|\n'
+for r in artifacts:text+='| '+' | '.join(cell(v) for v in r.values())+' |\n'
+text+='''\n## Explicit unexecuted gates and limitations
+
+Physical devices, assistive technology, native OS clipboard permission behavior, real provider subscription/refresh, hosted production transport/build parity and release/production certification were not executed. No local PASS implies those results. Controlled clipboard stubs and synthetic pause events are labelled in browser records. The diagnostic did not reproduce QA-CAL-1 and cannot establish its cause or close the failed full gate.
+
+Custody audit independently verifies9closed ownedNext instances, actual source/mirror hashes, deadPIDs/closedports, removedownedcluster and unchangedGit. It preserves3null-marker snapshots from faster observation; valid nonempty markers were separately observed for all3required namespaces. Do not read this as every short-lived fixture being independently sampled afterCOMMENT. Diagnostic startup observer recorded a transient refused5432probe before the actual ownedlistener; it made no successful SQLconnection there.
+'''
+(A/'employee-mobile-calendar-manual-qa.md').write_text(text)
+print('Wrote',A/'employee-mobile-calendar-manual-qa.md','scenarios',len(rows),'adversarial',len(adversarial),'artifacts',len(artifacts))

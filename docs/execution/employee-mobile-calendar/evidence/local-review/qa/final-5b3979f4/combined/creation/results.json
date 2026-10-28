@@ -1,0 +1,1041 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Persisted module-off creation releases all facts and actions"
+    },
+    {
+      "engine": "chromium",
+      "name": "Current EMPLOYEE read supplies only eligible reviewed own/peer shift facts, with no private rule or absence records"
+    },
+    {
+      "engine": "chromium",
+      "name": "Native task contains document keyboard focus; chrome departure releases private facts, pointer return refreshes authority and Escape restores the originating shift"
+    },
+    {
+      "engine": "chromium",
+      "name": "Explicit My schedule dismissal also returns focus to the originating shift"
+    },
+    {
+      "engine": "chromium",
+      "name": "Actual HTTP rejects arbitrary actor selectors and never returns a foreign shift/report form"
+    },
+    {
+      "engine": "chromium",
+      "name": "Swap layout passes Light/Dark320390430,48px primary contrast,200%text/nav clearance and real native radio keyboard focus"
+    },
+    {
+      "engine": "chromium",
+      "name": "Explicit target selection/changed-target review and rapid double-submit produce one canonical swap awaiting consent, preserve assignments and open exact own detail"
+    },
+    {
+      "engine": "chromium",
+      "name": "Cover form passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Cover creates only an own OPEN offer and keeps the shift assigned until coverage completes"
+    },
+    {
+      "engine": "chromium",
+      "name": "Report with Other validation passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Report validation creates no row; unsent reason/note survives refresh/offline in memory, private UI releases, and changed source needs deliberate re-review"
+    },
+    {
+      "engine": "chromium",
+      "name": "Lost committed report response reconciles the same operation, saves one reviewed report with original note, focuses receipt and opens exact own detail"
+    },
+    {
+      "engine": "chromium",
+      "name": "Desktop retains its existing report form and does not mount Employee mobile creation"
+    },
+    {
+      "engine": "chromium",
+      "name": "Current authority loss clears all creation fields and controls"
+    },
+    {
+      "engine": "webkit",
+      "name": "Current LEAD read supplies only eligible reviewed own/peer shift facts, with no private rule or absence records"
+    },
+    {
+      "engine": "webkit",
+      "name": "Native task contains document keyboard focus; chrome departure releases private facts, pointer return refreshes authority and Escape restores the originating shift"
+    },
+    {
+      "engine": "webkit",
+      "name": "Explicit My schedule dismissal also returns focus to the originating shift"
+    },
+    {
+      "engine": "webkit",
+      "name": "Actual HTTP rejects arbitrary actor selectors and never returns a foreign shift/report form"
+    },
+    {
+      "engine": "webkit",
+      "name": "Swap layout passes Light/Dark320390430,48px primary contrast,200%text/nav clearance and real native radio keyboard focus"
+    },
+    {
+      "engine": "webkit",
+      "name": "Explicit target selection/changed-target review and rapid double-submit produce one canonical swap awaiting consent, preserve assignments and open exact own detail"
+    },
+    {
+      "engine": "webkit",
+      "name": "Cover form passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Cover creates only an own OPEN offer and keeps the shift assigned until coverage completes"
+    },
+    {
+      "engine": "webkit",
+      "name": "Report with Other validation passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Report validation creates no row; unsent reason/note survives refresh/offline in memory, private UI releases, and changed source needs deliberate re-review"
+    },
+    {
+      "engine": "webkit",
+      "name": "Lost committed report response reconciles the same operation, saves one reviewed report with original note, focuses receipt and opens exact own detail"
+    },
+    {
+      "engine": "webkit",
+      "name": "Desktop retains its existing report form and does not mount Employee mobile creation"
+    },
+    {
+      "engine": "webkit",
+      "name": "Current authority loss clears all creation fields and controls"
+    },
+    {
+      "engine": "firefox",
+      "name": "Current EMPLOYEE read supplies only eligible reviewed own/peer shift facts, with no private rule or absence records"
+    },
+    {
+      "engine": "firefox",
+      "name": "Native task contains document keyboard focus; chrome departure releases private facts, pointer return refreshes authority and Escape restores the originating shift"
+    },
+    {
+      "engine": "firefox",
+      "name": "Explicit My schedule dismissal also returns focus to the originating shift"
+    },
+    {
+      "engine": "firefox",
+      "name": "Actual HTTP rejects arbitrary actor selectors and never returns a foreign shift/report form"
+    },
+    {
+      "engine": "firefox",
+      "name": "Swap layout passes Light/Dark320390430,48px primary contrast,200%text/nav clearance and real native radio keyboard focus"
+    },
+    {
+      "engine": "firefox",
+      "name": "Explicit target selection/changed-target review and rapid double-submit produce one canonical swap awaiting consent, preserve assignments and open exact own detail"
+    },
+    {
+      "engine": "firefox",
+      "name": "Cover form passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Cover creates only an own OPEN offer and keeps the shift assigned until coverage completes"
+    },
+    {
+      "engine": "firefox",
+      "name": "Report with Other validation passes Light/Dark320390430,48px primary contrast and200%text/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Report validation creates no row; unsent reason/note survives refresh/offline in memory, private UI releases, and changed source needs deliberate re-review"
+    },
+    {
+      "engine": "firefox",
+      "name": "Lost committed report response reconciles the same operation, saves one reviewed report with original note, focuses receipt and opens exact own detail"
+    },
+    {
+      "engine": "firefox",
+      "name": "Desktop retains its existing report form and does not mount Employee mobile creation"
+    },
+    {
+      "engine": "firefox",
+      "name": "Current authority loss clears all creation fields and controls"
+    }
+  ],
+  "captures": [
+    "chromium-intercepted-swap.png",
+    "chromium-intercepted-swap-viewport.png",
+    "chromium-swap-light-320.png",
+    "chromium-swap-light-320-viewport.png",
+    "chromium-swap-light-390.png",
+    "chromium-swap-light-390-viewport.png",
+    "chromium-swap-light-430.png",
+    "chromium-swap-light-430-viewport.png",
+    "chromium-swap-dark-320.png",
+    "chromium-swap-dark-320-viewport.png",
+    "chromium-swap-dark-390.png",
+    "chromium-swap-dark-390-viewport.png",
+    "chromium-swap-dark-430.png",
+    "chromium-swap-dark-430-viewport.png",
+    "chromium-swap-text-200.png",
+    "chromium-swap-text-200-viewport.png",
+    "chromium-native-radio-focus.png",
+    "chromium-native-radio-focus-viewport.png",
+    "chromium-swap-recorded.png",
+    "chromium-swap-recorded-viewport.png",
+    "chromium-cover-light-320.png",
+    "chromium-cover-light-320-viewport.png",
+    "chromium-cover-light-390.png",
+    "chromium-cover-light-390-viewport.png",
+    "chromium-cover-light-430.png",
+    "chromium-cover-light-430-viewport.png",
+    "chromium-cover-dark-320.png",
+    "chromium-cover-dark-320-viewport.png",
+    "chromium-cover-dark-390.png",
+    "chromium-cover-dark-390-viewport.png",
+    "chromium-cover-dark-430.png",
+    "chromium-cover-dark-430-viewport.png",
+    "chromium-cover-text-200.png",
+    "chromium-cover-text-200-viewport.png",
+    "chromium-cover-review.png",
+    "chromium-cover-review-viewport.png",
+    "chromium-cover-recorded.png",
+    "chromium-cover-recorded-viewport.png",
+    "chromium-report-validation-light-320.png",
+    "chromium-report-validation-light-320-viewport.png",
+    "chromium-report-validation-light-390.png",
+    "chromium-report-validation-light-390-viewport.png",
+    "chromium-report-validation-light-430.png",
+    "chromium-report-validation-light-430-viewport.png",
+    "chromium-report-validation-dark-320.png",
+    "chromium-report-validation-dark-320-viewport.png",
+    "chromium-report-validation-dark-390.png",
+    "chromium-report-validation-dark-390-viewport.png",
+    "chromium-report-validation-dark-430.png",
+    "chromium-report-validation-dark-430-viewport.png",
+    "chromium-report-validation-text-200.png",
+    "chromium-report-validation-text-200-viewport.png",
+    "chromium-report-validation.png",
+    "chromium-report-validation-viewport.png",
+    "chromium-report-changed-shift.png",
+    "chromium-report-changed-shift-viewport.png",
+    "chromium-report-reconciled.png",
+    "chromium-report-reconciled-viewport.png",
+    "chromium-own-report-detail.png",
+    "chromium-own-report-detail-viewport.png",
+    "chromium-desktop-preserved.png",
+    "chromium-desktop-preserved-viewport.png",
+    "chromium-authority-denied.png",
+    "chromium-authority-denied-viewport.png",
+    "webkit-intercepted-swap.png",
+    "webkit-intercepted-swap-viewport.png",
+    "webkit-swap-light-320.png",
+    "webkit-swap-light-320-viewport.png",
+    "webkit-swap-light-390.png",
+    "webkit-swap-light-390-viewport.png",
+    "webkit-swap-light-430.png",
+    "webkit-swap-light-430-viewport.png",
+    "webkit-swap-dark-320.png",
+    "webkit-swap-dark-320-viewport.png",
+    "webkit-swap-dark-390.png",
+    "webkit-swap-dark-390-viewport.png",
+    "webkit-swap-dark-430.png",
+    "webkit-swap-dark-430-viewport.png",
+    "webkit-swap-text-200.png",
+    "webkit-swap-text-200-viewport.png",
+    "webkit-native-radio-focus.png",
+    "webkit-native-radio-focus-viewport.png",
+    "webkit-swap-recorded.png",
+    "webkit-swap-recorded-viewport.png",
+    "webkit-cover-light-320.png",
+    "webkit-cover-light-320-viewport.png",
+    "webkit-cover-light-390.png",
+    "webkit-cover-light-390-viewport.png",
+    "webkit-cover-light-430.png",
+    "webkit-cover-light-430-viewport.png",
+    "webkit-cover-dark-320.png",
+    "webkit-cover-dark-320-viewport.png",
+    "webkit-cover-dark-390.png",
+    "webkit-cover-dark-390-viewport.png",
+    "webkit-cover-dark-430.png",
+    "webkit-cover-dark-430-viewport.png",
+    "webkit-cover-text-200.png",
+    "webkit-cover-text-200-viewport.png",
+    "webkit-cover-review.png",
+    "webkit-cover-review-viewport.png",
+    "webkit-cover-recorded.png",
+    "webkit-cover-recorded-viewport.png",
+    "webkit-report-validation-light-320.png",
+    "webkit-report-validation-light-320-viewport.png",
+    "webkit-report-validation-light-390.png",
+    "webkit-report-validation-light-390-viewport.png",
+    "webkit-report-validation-light-430.png",
+    "webkit-report-validation-light-430-viewport.png",
+    "webkit-report-validation-dark-320.png",
+    "webkit-report-validation-dark-320-viewport.png",
+    "webkit-report-validation-dark-390.png",
+    "webkit-report-validation-dark-390-viewport.png",
+    "webkit-report-validation-dark-430.png",
+    "webkit-report-validation-dark-430-viewport.png",
+    "webkit-report-validation-text-200.png",
+    "webkit-report-validation-text-200-viewport.png",
+    "webkit-report-validation.png",
+    "webkit-report-validation-viewport.png",
+    "webkit-report-changed-shift.png",
+    "webkit-report-changed-shift-viewport.png",
+    "webkit-report-reconciled.png",
+    "webkit-report-reconciled-viewport.png",
+    "webkit-own-report-detail.png",
+    "webkit-own-report-detail-viewport.png",
+    "webkit-desktop-preserved.png",
+    "webkit-desktop-preserved-viewport.png",
+    "webkit-authority-denied.png",
+    "webkit-authority-denied-viewport.png",
+    "firefox-intercepted-swap.png",
+    "firefox-intercepted-swap-viewport.png",
+    "firefox-swap-light-320.png",
+    "firefox-swap-light-320-viewport.png",
+    "firefox-swap-light-390.png",
+    "firefox-swap-light-390-viewport.png",
+    "firefox-swap-light-430.png",
+    "firefox-swap-light-430-viewport.png",
+    "firefox-swap-dark-320.png",
+    "firefox-swap-dark-320-viewport.png",
+    "firefox-swap-dark-390.png",
+    "firefox-swap-dark-390-viewport.png",
+    "firefox-swap-dark-430.png",
+    "firefox-swap-dark-430-viewport.png",
+    "firefox-swap-text-200.png",
+    "firefox-swap-text-200-viewport.png",
+    "firefox-native-radio-focus.png",
+    "firefox-native-radio-focus-viewport.png",
+    "firefox-swap-recorded.png",
+    "firefox-swap-recorded-viewport.png",
+    "firefox-cover-light-320.png",
+    "firefox-cover-light-320-viewport.png",
+    "firefox-cover-light-390.png",
+    "firefox-cover-light-390-viewport.png",
+    "firefox-cover-light-430.png",
+    "firefox-cover-light-430-viewport.png",
+    "firefox-cover-dark-320.png",
+    "firefox-cover-dark-320-viewport.png",
+    "firefox-cover-dark-390.png",
+    "firefox-cover-dark-390-viewport.png",
+    "firefox-cover-dark-430.png",
+    "firefox-cover-dark-430-viewport.png",
+    "firefox-cover-text-200.png",
+    "firefox-cover-text-200-viewport.png",
+    "firefox-cover-review.png",
+    "firefox-cover-review-viewport.png",
+    "firefox-cover-recorded.png",
+    "firefox-cover-recorded-viewport.png",
+    "firefox-report-validation-light-320.png",
+    "firefox-report-validation-light-320-viewport.png",
+    "firefox-report-validation-light-390.png",
+    "firefox-report-validation-light-390-viewport.png",
+    "firefox-report-validation-light-430.png",
+    "firefox-report-validation-light-430-viewport.png",
+    "firefox-report-validation-dark-320.png",
+    "firefox-report-validation-dark-320-viewport.png",
+    "firefox-report-validation-dark-390.png",
+    "firefox-report-validation-dark-390-viewport.png",
+    "firefox-report-validation-dark-430.png",
+    "firefox-report-validation-dark-430-viewport.png",
+    "firefox-report-validation-text-200.png",
+    "firefox-report-validation-text-200-viewport.png",
+    "firefox-report-validation.png",
+    "firefox-report-validation-viewport.png",
+    "firefox-report-changed-shift.png",
+    "firefox-report-changed-shift-viewport.png",
+    "firefox-report-reconciled.png",
+    "firefox-report-reconciled-viewport.png",
+    "firefox-own-report-detail.png",
+    "firefox-own-report-detail-viewport.png",
+    "firefox-desktop-preserved.png",
+    "firefox-desktop-preserved-viewport.png",
+    "firefox-authority-denied.png",
+    "firefox-authority-denied-viewport.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "control": "swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "control": "swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "control": "swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "control": "swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "control": "swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "control": "swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "control": "cover",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "control": "cover",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "control": "cover",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "control": "cover",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "control": "cover",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "control": "cover",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "control": "report-validation",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "control": "report-validation",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "control": "report-validation",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "control": "report-validation",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "control": "report-validation",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "control": "report-validation",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "control": "swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "control": "swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "control": "swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "control": "swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "control": "swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "control": "swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "control": "cover",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "control": "cover",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "control": "cover",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "control": "cover",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "control": "cover",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "control": "cover",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "control": "report-validation",
+      "ratio": 8.901173739947613
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "control": "report-validation",
+      "ratio": 8.901173739947613
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "control": "report-validation",
+      "ratio": 8.901173739947613
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "control": "report-validation",
+      "ratio": 13.845409706459769
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "control": "report-validation",
+      "ratio": 13.845409706459769
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "control": "report-validation",
+      "ratio": 13.845409706459769
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "control": "swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "control": "swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "control": "swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "control": "swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "control": "swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "control": "swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "control": "cover",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "control": "cover",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "control": "cover",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "control": "cover",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "control": "cover",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "control": "cover",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "control": "report-validation",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "control": "report-validation",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "control": "report-validation",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "control": "report-validation",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "control": "report-validation",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "control": "report-validation",
+      "ratio": 12.581737771441162
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "stage": "lost-report-response",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "authority-loss",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "authority-loss",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    }
+  ],
+  "failedRequests": [
+    {
+      "engine": "chromium",
+      "stage": "intercepted-task",
+      "url": "http://127.0.0.1:59634/app/exchange/swap?sourceShiftId=qa-CREATE0-source&_rsc=gFFKmdVk-WOz59Z0",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "intercepted-task",
+      "url": "http://127.0.0.1:59634/app/exchange/swap?sourceShiftId=qa-CREATE0-source&_rsc=gTZmmSMVpqCtc0rj",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "swap-review",
+      "url": "http://127.0.0.1:59634/app/exchange?tab=requests&requestId=be9b3d1f-7eb5-4ca3-ad84-fb09af82f981&_rsc=kruF6t65-8v_ojnC",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "cover",
+      "url": "http://127.0.0.1:59634/app/exchange/swap?sourceShiftId=creation-own-cover-0&mode=cover",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "lost-report-response",
+      "url": "http://127.0.0.1:59634/app/exchange/callout?shiftId=creation-own-report-0",
+      "error": "net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "lost-report-response",
+      "url": "http://127.0.0.1:59634/app/exchange/callout?shiftId=creation-own-report-0",
+      "error": "net::ERR_ABORTED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "lost-report-response",
+      "url": "http://127.0.0.1:59634/app/exchange?tab=requests&requestId=58cd5b72-5ffc-4a9e-8d09-e7bfb3d9232d&_rsc=cPAdpI9xsb5_RXpj",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "lost-report-response",
+      "url": "http://127.0.0.1:59634/app/exchange/callout?shiftId=creation-own-report-1",
+      "error": "Blocked by Web Inspector",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "authority-loss",
+      "url": "http://127.0.0.1:59634/api/employee/creation/callout/creation-own-report-1",
+      "error": "cancelled",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "lost-report-response",
+      "url": "http://127.0.0.1:59634/app/exchange/callout?shiftId=creation-own-report-2",
+      "error": "NS_ERROR_FAILURE",
+      "expected": true
+    },
+    {
+      "engine": "firefox",
+      "stage": "authority-loss",
+      "url": "http://127.0.0.1:59634/api/employee/creation/callout/creation-own-report-2",
+      "error": "NS_BINDING_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "authority-loss",
+      "url": "http://127.0.0.1:59634/icons/fuel-apple-180.png",
+      "error": "NS_BINDING_ABORTED",
+      "expected": false
+    }
+  ],
+  "focusTransitions": [
+    {
+      "engine": "chromium",
+      "tab": 0,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "BUTTON",
+      "label": "My schedule",
+      "paused": "ready"
+    },
+    {
+      "engine": "chromium",
+      "tab": 1,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "INPUT",
+      "label": "",
+      "paused": "ready"
+    },
+    {
+      "engine": "chromium",
+      "tab": 2,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "BUTTON",
+      "label": "Send swap request",
+      "paused": "ready"
+    },
+    {
+      "engine": "chromium",
+      "tab": 3,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "A",
+      "label": "Offer this shift for cover instead",
+      "paused": "ready"
+    },
+    {
+      "engine": "chromium",
+      "tab": 4,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "BUTTON",
+      "label": "Refresh",
+      "paused": "ready"
+    },
+    {
+      "engine": "chromium",
+      "tab": 5,
+      "contained": false,
+      "hasFocus": false,
+      "tag": "BODY",
+      "label": "Skip to contentWorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsARAlex RiveraSign outNorth",
+      "paused": "paused"
+    },
+    {
+      "engine": "chromium",
+      "returned": true,
+      "contained": true,
+      "hasFocus": true
+    },
+    {
+      "engine": "webkit",
+      "tab": 0,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "BUTTON",
+      "label": "My schedule",
+      "paused": "ready"
+    },
+    {
+      "engine": "webkit",
+      "tab": 1,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "INPUT",
+      "label": "",
+      "paused": "ready"
+    },
+    {
+      "engine": "webkit",
+      "tab": 2,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "BUTTON",
+      "label": "Send swap request",
+      "paused": "ready"
+    },
+    {
+      "engine": "webkit",
+      "tab": 3,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "A",
+      "label": "Offer this shift for cover instead",
+      "paused": "ready"
+    },
+    {
+      "engine": "webkit",
+      "tab": 4,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "BUTTON",
+      "label": "Refresh",
+      "paused": "ready"
+    },
+    {
+      "engine": "webkit",
+      "tab": 5,
+      "contained": false,
+      "hasFocus": false,
+      "tag": "BODY",
+      "label": "Skip to contentWorkforceHomeMy scheduleMy timeRequestsUpdatesNotificationsARAlex RiveraSign outNorth",
+      "paused": "paused"
+    },
+    {
+      "engine": "webkit",
+      "returned": true,
+      "contained": true,
+      "hasFocus": true
+    },
+    {
+      "engine": "firefox",
+      "tab": 0,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "BUTTON",
+      "label": "My schedule",
+      "paused": "ready"
+    },
+    {
+      "engine": "firefox",
+      "tab": 1,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "INPUT",
+      "label": "",
+      "paused": "ready"
+    },
+    {
+      "engine": "firefox",
+      "tab": 2,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "BUTTON",
+      "label": "Send swap request",
+      "paused": "ready"
+    },
+    {
+      "engine": "firefox",
+      "tab": 3,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "A",
+      "label": "Offer this shift for cover instead",
+      "paused": "ready"
+    },
+    {
+      "engine": "firefox",
+      "tab": 4,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "BUTTON",
+      "label": "Refresh",
+      "paused": "ready"
+    },
+    {
+      "engine": "firefox",
+      "tab": 5,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "BUTTON",
+      "label": "Refresh",
+      "paused": "ready"
+    },
+    {
+      "engine": "firefox",
+      "tab": 6,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "BUTTON",
+      "label": "Refresh",
+      "paused": "ready"
+    },
+    {
+      "engine": "firefox",
+      "tab": 7,
+      "contained": true,
+      "hasFocus": true,
+      "tag": "BUTTON",
+      "label": "Refresh",
+      "paused": "ready"
+    }
+  ]
+}

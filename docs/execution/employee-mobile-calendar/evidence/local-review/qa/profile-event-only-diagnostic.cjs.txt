@@ -1,0 +1,40 @@
+const Module=require('node:module');
+const fs=require('node:fs');
+const log=process.env.NEVORA_PROFILE_EVENT_LOG;
+if(log){
+ const originalLoad=Module._load,seen=new WeakSet(),ids=new WeakMap();let requestSequence=0,pageSequence=0,contextSequence=0;
+ const write=row=>fs.appendFileSync(log,JSON.stringify({wallTime:Date.now(),nodeTime:performance.now(),pid:process.pid,...row})+'\n');
+ const safeError=e=>String(e??'').replace(/https?:\/\/\S+/g,'[URL]').slice(0,500);
+ const identity=request=>{if(!ids.has(request))ids.set(request,++requestSequence);return ids.get(request);};
+ function observe(emitter,engine,contextId,scope,pageId){
+  const fields=request=>({engine,contextId,scope,pageId,requestId:identity(request),method:request.method(),path:new URL(request.url()).pathname});
+  const included=request=>{const p=new URL(request.url()).pathname;return p.startsWith('/api/')||p.startsWith('/app');};
+  emitter.on('request',r=>{if(included(r))write({event:'request',...fields(r)});});
+  emitter.on('response',response=>{const r=response.request();if(!included(r))return;write({event:'response',...fields(r),status:response.status(),timing:r.timing()});response.finished().then(error=>write({event:'response.finished',...fields(r),error:error?safeError(error):null,timing:r.timing()})).catch(error=>write({event:'response.finished.reject',...fields(r),error:safeError(error)}));});
+  emitter.on('requestfinished',r=>{if(included(r))write({event:'requestfinished',...fields(r),timing:r.timing()});});
+  emitter.on('requestfailed',r=>{if(included(r))write({event:'requestfailed',...fields(r),failure:safeError(r.failure()?.errorText),timing:r.timing()});});
+  emitter.on('close',()=>write({event:'closed',engine,contextId,scope,pageId}));
+  write({event:'observed',engine,contextId,scope,pageId});
+ }
+ Module._load=function(request,parent,isMain){
+  const exported=originalLoad.apply(this,arguments);
+  if(exported?.chromium?.launch&&exported?.firefox?.launch&&exported?.webkit?.launch&&!seen.has(exported)){
+   seen.add(exported);write({event:'playwright.instrumented'});
+   for(const engine of ['chromium','webkit','firefox']){
+    const launch=exported[engine].launch;
+    exported[engine].launch=async function(...args){
+     const browser=await launch.apply(this,args),newContext=browser.newContext;
+     browser.newContext=async function(...contextArgs){
+      const context=await newContext.apply(this,contextArgs),contextId=++contextSequence;
+      observe(context,engine,contextId,'context');
+      context.on('page',page=>observe(page,engine,contextId,'page',++pageSequence));
+      return context;
+     };
+     return browser;
+    };
+   }
+  }
+  return exported;
+ };
+ write({event:'preload.ready'});
+}

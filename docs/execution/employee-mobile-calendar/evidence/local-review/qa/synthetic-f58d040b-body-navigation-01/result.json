@@ -1,0 +1,172 @@
+{
+  "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "playwrightVersion": "1.62.1",
+  "serverPid": 45952,
+  "port": 63819,
+  "portStillOpen": false,
+  "browserPids": [
+    45971,
+    45978,
+    45973,
+    45974
+  ],
+  "browserPidsStillAlive": [],
+  "before": {
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "status": "",
+    "index": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "after": {
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "status": "",
+    "index": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "gitUnchanged": true,
+  "cases": [
+    {
+      "engine": "chromium",
+      "mode": "abort-body",
+      "index": 0,
+      "path": "/probe/chromium/held/abort-body-0",
+      "headersOnlyBeforeAction": true,
+      "bodyInitiallyHeld": true,
+      "consumer": [
+        {
+          "phase": "fetch.started",
+          "browserTime": 45.3999999910593
+        },
+        {
+          "phase": "headers.body-pending",
+          "browserTime": 48.70000000298023
+        },
+        {
+          "phase": "explicit.abort",
+          "aborted": true,
+          "browserTime": 55.3999999910593
+        },
+        {
+          "phase": "body.rejected",
+          "errorName": "AbortError",
+          "aborted": true,
+          "browserTime": 55.70000000298023
+        }
+      ],
+      "terminal": {
+        "page": true,
+        "context": true,
+        "observedMs": 0
+      },
+      "secondSuccessfulRead": {
+        "path": "/probe/chromium/complete/after-abort-0",
+        "phase": "json.complete",
+        "terminal": {
+          "page": true,
+          "context": true,
+          "observedMs": 0
+        }
+      },
+      "originalPageTrackerPending": [],
+      "serverHits": 1,
+      "serverClose": [
+        {
+          "writableEnded": false
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "mode": "navigate-body",
+      "index": 0,
+      "path": "/probe/chromium/held/navigate-body-0",
+      "headersOnlyBeforeAction": true,
+      "bodyInitiallyHeld": true,
+      "consumer": [
+        {
+          "phase": "fetch.started",
+          "browserTime": 73.79999999701977
+        },
+        {
+          "phase": "headers.body-pending",
+          "browserTime": 77.59999999403954
+        }
+      ],
+      "terminal": {
+        "page": false,
+        "context": false,
+        "observedMs": 11007
+      },
+      "secondSuccessfulRead": {
+        "path": "/probe/chromium/complete/after-navigate-body-0",
+        "phase": "json.complete",
+        "terminal": {
+          "page": true,
+          "context": true,
+          "observedMs": 0
+        }
+      },
+      "originalPageTrackerPending": [
+        {
+          "engine": "chromium",
+          "scope": "page",
+          "requestId": 4,
+          "path": "/probe/chromium/held/navigate-body-0"
+        }
+      ],
+      "serverHits": 1,
+      "serverClose": [
+        {
+          "writableEnded": false
+        }
+      ]
+    }
+  ],
+  "orphans": [
+    {
+      "engine": "chromium",
+      "mode": "navigate-body",
+      "index": 0,
+      "path": "/probe/chromium/held/navigate-body-0",
+      "headersOnlyBeforeAction": true,
+      "bodyInitiallyHeld": true,
+      "consumer": [
+        {
+          "phase": "fetch.started",
+          "browserTime": 73.79999999701977
+        },
+        {
+          "phase": "headers.body-pending",
+          "browserTime": 77.59999999403954
+        }
+      ],
+      "terminal": {
+        "page": false,
+        "context": false,
+        "observedMs": 11007
+      },
+      "secondSuccessfulRead": {
+        "path": "/probe/chromium/complete/after-navigate-body-0",
+        "phase": "json.complete",
+        "terminal": {
+          "page": true,
+          "context": true,
+          "observedMs": 0
+        }
+      },
+      "originalPageTrackerPending": [
+        {
+          "engine": "chromium",
+          "scope": "page",
+          "requestId": 4,
+          "path": "/probe/chromium/held/navigate-body-0"
+        }
+      ],
+      "serverHits": 1,
+      "serverClose": [
+        {
+          "writableEnded": false
+        }
+      ]
+    }
+  ],
+  "outcome": "terminal_event_gap_reproduced"
+}

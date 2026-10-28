@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-27T23:43:48.232129+00:00",
+  "cwd": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+  "argv": [
+    "node",
+    "scripts/payroll-postgres.mjs",
+    "vitest.employee-mobile-calendar.config.mts",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile=/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/full-context-f58d040b-01/combined/suite-results.json"
+  ],
+  "environment": {
+    "HOME": "/Users/josek0514",
+    "PATH": "/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/josek0514/.codex/tmp/arg0-macos/codex-arg0xbyCxr:/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/josek0514/.npm-global/bin:/Users/josek0514/.local/bin:/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "TMPDIR": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/",
+    "NEVORA_EMPLOYEE_MOBILE_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/full-context-f58d040b-01/combined/requests",
+    "NEVORA_EMPLOYEE_RESPONSES_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/full-context-f58d040b-01/combined/responses",
+    "NEVORA_EMPLOYEE_CREATION_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/full-context-f58d040b-01/combined/creation",
+    "NEVORA_EMPLOYEE_PLANNING_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/full-context-f58d040b-01/combined/planning",
+    "NEVORA_EMPLOYEE_HOURS_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/full-context-f58d040b-01/combined/hours",
+    "NEVORA_EMPLOYEE_MESSAGES_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/full-context-f58d040b-01/combined/messages",
+    "NEVORA_EMPLOYEE_MESSAGES_REVIEW_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/full-context-f58d040b-01/combined/messages-review",
+    "NEVORA_EMPLOYEE_PROFILE_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/full-context-f58d040b-01/combined/profile",
+    "PHASE_E_EVIDENCE_DIR": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/full-context-f58d040b-01/combined/canonical-e",
+    "NEVORA_EMPLOYEE_CALENDAR_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/full-context-f58d040b-01/combined/calendar",
+    "NEVORA_TEST_PG_BIN": "/Users/josek0514/.codex/visualizations/2026/10/02/01a0f8c7-f196-7d22-8896-8d3c96547bd9/fuel-phase-3-pwa-notifications/local-postgres-runtime/package/native/bin",
+    "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE": "/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/package.json",
+    "NODE_OPTIONS": "--require=/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/full-context-event-observer.cjs",
+    "NEVORA_PROFILE_EVENT_LOG": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/full-context-f58d040b-01/combined/full-context-events.jsonl",
+    "NEVORA_EVENT_RUN_ID": "full-context-f58d040b-01"
+  },
+  "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "sourceCount": 2266,
+  "recorderSha256": "2d0b640d54877536d42abd34d69c008cfddec8d5105bd1b11187fdb49011ae99",
+  "observerSha256": "4fdd04b9422791bb0029a02e445b222a2c807c7205e7ee8f3fa61e124a1cbe8d"
+}

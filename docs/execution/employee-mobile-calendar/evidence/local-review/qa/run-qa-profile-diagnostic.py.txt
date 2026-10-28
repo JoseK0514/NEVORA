@@ -1,0 +1,89 @@
+# Bounded unchanged-candidate Profile diagnostic; original assertions and timeouts.
+# Independent final recorder: unchanged tests/argv/environment/custody; read-only DB sampling every0.5s.
+import argparse, hashlib, json, os, pathlib, re, socket, subprocess, time
+from datetime import datetime, timezone
+W=pathlib.Path('/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume')
+E=pathlib.Path(__file__).parent
+PG='/Users/josek0514/.codex/visualizations/2026/10/02/01a0f8c7-f196-7d22-8896-8d3c96547bd9/fuel-phase-3-pwa-notifications/local-postgres-runtime/package/native/bin'
+PW='/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/package.json'
+BASE='a1b62ca68207a0fd3c6de300d55e17b621c9dc47'
+def now(): return datetime.now(timezone.utc).isoformat()
+def command(argv): return subprocess.check_output(argv,cwd=W,text=True).strip()
+def sha(b): return hashlib.sha256(b).hexdigest()
+def save(p,x): p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(x,indent=2)+'\n')
+def source():
+ files=command(['git','ls-files','-z']).split('\0')
+ return {p:sha((W/p).read_bytes()) for p in files if p.startswith(('src/','public/','scripts/','db/')) or '/' not in p and p.endswith(('.json','.ts','.mts','.mjs'))}
+def state(): return {'head':command(['git','rev-parse','HEAD']),'branch':command(['git','branch','--show-current']),'trackedStatus':command(['git','status','--porcelain=v1','--untracked-files=no']),'indexDiff':sha(subprocess.check_output(['git','diff','--cached','--binary'],cwd=W))}
+def port_open(port):
+ with socket.socket() as s:s.settimeout(.25);return s.connect_ex(('127.0.0.1',int(port)))==0
+def pid_alive(pid):
+ try: os.kill(int(pid),0); return True
+ except ProcessLookupError:return False
+
+def run(name,argv,env,dest,candidate):
+ root=dest/name;root.mkdir(parents=True,exist_ok=False)
+ for key,value in env.items():
+  if key.endswith('_EVIDENCE') or key=='PHASE_E_EVIDENCE_DIR':
+   target=pathlib.Path(value);target.relative_to(root);target.mkdir(parents=True,exist_ok=True)
+ before=state();assert before['head']==candidate and before['trackedStatus']=='',before
+ inputs=source();save(root/'source-inputs.json',inputs);save(root/'before.json',before)
+ save(root/'invocation.json',{'at':now(),'cwd':str(W),'argv':argv,'environment':env,'candidate':candidate,'sourceCount':len(inputs),'recorderSha256':sha(pathlib.Path(__file__).read_bytes()),'observerSha256':sha((E/'inspect-owned-cluster-v2.cjs').read_bytes())})
+ temp=pathlib.Path(env['TMPDIR']); prior={p.resolve() for p in temp.glob('nevora-payroll-owned-*')}; seen={};observations=[];began=time.monotonic()
+ with (root/'stdout.log').open('w') as log:
+  proc=subprocess.Popen(argv,cwd=W,env=env,stdout=log,stderr=subprocess.STDOUT)
+  while proc.poll() is None:
+   obs={'at':now(),'runnerPid':proc.pid}
+   try:
+    obs['head']=command(['git','rev-parse','HEAD']);obs['frozenCandidateMatches']=obs['head']==candidate
+    for p in temp.glob('nevora-payroll-owned-*'):
+     p=p.resolve()
+     if p in prior or not (p/'owner').is_file() or not (p/'data/postmaster.pid').is_file():continue
+     try:rows=(p/'data/postmaster.pid').read_text().splitlines();owner_hash=sha((p/'owner').read_bytes())
+     except FileNotFoundError:continue
+     if len(rows)<4:continue
+     pid,port=int(rows[0]),int(rows[3]);key=str(p)
+     entry={'directory':key,'pid':pid,'port':port,'ownerHash':owner_hash}
+     seen[key]=entry;obs.setdefault('clusters',[]).append(entry)
+     if True:
+      try:
+       r=subprocess.run(['node',str(E/'inspect-owned-cluster-v2.cjs'),str(port)],text=True,capture_output=True,env=env,timeout=5)
+       obs.setdefault('databases',[]).append({'port':port,'exitCode':r.returncode,'rows':r.stdout.splitlines(),'stderr':r.stderr})
+      except subprocess.TimeoutExpired:obs.setdefault('databaseObservationErrors',[]).append({'port':port,'reason':'read-only Node pg observation exceeded5s; suite continues and this observation is incomplete'})
+   except Exception as error:
+    obs['observerError']={'type':type(error).__name__,'message':str(error)}
+   observations.append(obs);save(root/'observations.json',observations)
+   for _ in range(5):
+    if proc.poll() is not None: break
+    time.sleep(.1)
+  code=proc.wait()
+ after=state();same=source()==inputs
+ owners=[]
+ for f in root.rglob('ownership.json'):
+  x=json.loads(f.read_text());owners.append({'file':str(f),**{k:x.get(k) for k in ('ownerId','source','root','pid','port','closed','closedAt','sourceVerified','mirrorVerified')},'pidStillAlive':pid_alive(x['pid']) if x.get('pid') else None,'portStillOpen':port_open(x['port']) if x.get('port') else None})
+ clusters=[{**x,'directoryExists':pathlib.Path(x['directory']).exists(),'pidStillAlive':pid_alive(x['pid']),'portStillOpen':port_open(x['port'])} for x in seen.values()]
+ result={'at':now(),'exitCode':code,'elapsedSeconds':round(time.monotonic()-began,3),'sourceUnchanged':same,'after':after,'gitUnchanged':after==before,'ownedNext':owners,'clusters':clusters}
+ save(root/'result.json',result);print(name,json.dumps({'exitCode':code,'elapsedSeconds':result['elapsedSeconds'],'sourceUnchanged':same,'gitUnchanged':after==before}),flush=True)
+ return code or (1 if not same or before!=after else 0)
+
+p=argparse.ArgumentParser();p.add_argument('stage',choices=['static','combined','calendar']);p.add_argument('--candidate',required=True);p.add_argument('--attempt',required=True);a=p.parse_args()
+dest=E/a.attempt;dest.mkdir(parents=True,exist_ok=True)
+env={k:os.environ[k] for k in ('HOME','PATH')};env['TMPDIR']=os.environ.get('TMPDIR','/tmp/')
+if a.stage=='static':
+ argv=json.loads((E/'unit-argv-preparation.json').read_text())['argv'];codes=[run('units',argv,env,dest,a.candidate)]
+ codes.append(run('typescript',['node','node_modules/typescript/bin/tsc','--noEmit','--incremental','false'],env,dest,a.candidate))
+ files=command(['git','diff','--name-only',BASE,a.candidate,'--','src','scripts',':(top)*.mts',':(top)*.ts',':(top)*.mjs']).splitlines()
+ files=[x for x in files if x.endswith(('.ts','.tsx','.mts','.mjs')) and (W/x).is_file()]
+ save(dest/'lint-files.json',files)
+ codes.append(run('eslint',['node','node_modules/eslint/bin/eslint.js',*files],env,dest,a.candidate))
+ raise SystemExit(max(codes))
+name=a.stage
+folder=dest/name
+map={'NEVORA_EMPLOYEE_MOBILE_EVIDENCE':'requests','NEVORA_EMPLOYEE_RESPONSES_EVIDENCE':'responses','NEVORA_EMPLOYEE_CREATION_EVIDENCE':'creation','NEVORA_EMPLOYEE_PLANNING_EVIDENCE':'planning','NEVORA_EMPLOYEE_HOURS_EVIDENCE':'hours','NEVORA_EMPLOYEE_MESSAGES_EVIDENCE':'messages','NEVORA_EMPLOYEE_MESSAGES_REVIEW_EVIDENCE':'messages-review','NEVORA_EMPLOYEE_PROFILE_EVIDENCE':'profile','PHASE_E_EVIDENCE_DIR':'canonical-e','NEVORA_EMPLOYEE_CALENDAR_EVIDENCE':'calendar'}
+env.update({key:str(folder/value) for key,value in map.items()});env.update({'NEVORA_TEST_PG_BIN':PG,'NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE':PW})
+argv=['node','scripts/payroll-postgres.mjs','vitest.employee-mobile-calendar.config.mts']
+if a.stage=='calendar':argv.append('src/test/integration/employee-mobile-calendar.integration.ts')
+argv+=['src/test/integration/employee-mobile-profile.integration.ts','--reporter=default','--reporter=json','--outputFile='+str(folder/'suite-results.json')]
+env['NODE_OPTIONS']='--require='+str(E/'profile-event-diagnostic.cjs')
+env['NEVORA_PROFILE_EVENT_LOG']=str(folder/'profile-events.jsonl')
+raise SystemExit(run(name,argv,env,dest,a.candidate))

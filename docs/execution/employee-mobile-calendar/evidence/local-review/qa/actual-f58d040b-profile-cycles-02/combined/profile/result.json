@@ -1,0 +1,131 @@
+{
+  "status": "passed",
+  "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "checks": [
+    {
+      "cycle": 1,
+      "observation": "event-only",
+      "ownIdentityVerified": true,
+      "otherIdentityAbsent": true,
+      "states": {
+        "profile": "ready",
+        "calendar": "none",
+        "documentTimeOrigin": 1793144466406,
+        "path": "/app/profile"
+      }
+    },
+    {
+      "cycle": 2,
+      "observation": "event-only",
+      "ownIdentityVerified": true,
+      "otherIdentityAbsent": true,
+      "states": {
+        "profile": "ready",
+        "calendar": "none",
+        "documentTimeOrigin": 1793144466406,
+        "path": "/app/profile"
+      }
+    },
+    {
+      "cycle": 3,
+      "observation": "event-only",
+      "ownIdentityVerified": true,
+      "otherIdentityAbsent": true,
+      "states": {
+        "profile": "ready",
+        "calendar": "none",
+        "documentTimeOrigin": 1793144466406,
+        "path": "/app/profile"
+      }
+    },
+    {
+      "cycle": 4,
+      "observation": "event-only",
+      "ownIdentityVerified": true,
+      "otherIdentityAbsent": true,
+      "states": {
+        "profile": "ready",
+        "calendar": "none",
+        "documentTimeOrigin": 1793144466406,
+        "path": "/app/profile"
+      }
+    },
+    {
+      "cycle": 5,
+      "observation": "event-only",
+      "ownIdentityVerified": true,
+      "otherIdentityAbsent": true,
+      "states": {
+        "profile": "ready",
+        "calendar": "none",
+        "documentTimeOrigin": 1793144466406,
+        "path": "/app/profile"
+      }
+    },
+    {
+      "cycle": 6,
+      "observation": "consumer-on-next-document",
+      "ownIdentityVerified": true,
+      "otherIdentityAbsent": true,
+      "states": {
+        "profile": "ready",
+        "calendar": "none",
+        "documentTimeOrigin": 1793144466406,
+        "path": "/app/profile"
+      }
+    },
+    {
+      "cycle": 7,
+      "observation": "consumer-on-next-document",
+      "ownIdentityVerified": true,
+      "otherIdentityAbsent": true,
+      "states": {
+        "profile": "ready",
+        "calendar": "none",
+        "documentTimeOrigin": 1793144466406,
+        "path": "/app/profile"
+      }
+    },
+    {
+      "cycle": 8,
+      "observation": "consumer-on-next-document",
+      "ownIdentityVerified": true,
+      "otherIdentityAbsent": true,
+      "states": {
+        "profile": "ready",
+        "calendar": "none",
+        "documentTimeOrigin": 1793144466406,
+        "path": "/app/profile"
+      }
+    },
+    {
+      "cycle": 9,
+      "observation": "consumer-on-next-document",
+      "ownIdentityVerified": true,
+      "otherIdentityAbsent": true,
+      "states": {
+        "profile": "ready",
+        "calendar": "none",
+        "documentTimeOrigin": 1793144466406,
+        "path": "/app/profile"
+      }
+    },
+    {
+      "cycle": 10,
+      "observation": "consumer-on-next-document",
+      "ownIdentityVerified": true,
+      "otherIdentityAbsent": true,
+      "states": {
+        "profile": "ready",
+        "calendar": "none",
+        "documentTimeOrigin": 1793144466406,
+        "path": "/app/profile"
+      }
+    }
+  ],
+  "limits": [
+    "One ownedNext/fictitious markedDB;10bounded Firefox account-switch cycles only.",
+    "Cycles1–5 native events only. Cycles6–10 add prehydration observers for future documents; promises are preserved but observer scheduling perturbation is possible.",
+    "Original pendingMap only deletes native requestfinished/requestfailed;10s count-zero assertion unchanged. No credential/authority/body logging."
+  ]
+}

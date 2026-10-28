@@ -19,12 +19,14 @@ The approved scope remains the three-phase plan at `outputs/employee-mobile/rema
 
 - Seventh Phase2 batch, Profile/preferences/help/legal/native sign-out: accepted locally at `2e4104ce89f1abbb2d3bafd5b87341eba9753c47`. Own finite facts, prehydration privacy, logical DOM/focus order, native truthful preferences, canonical contextual help/legal, stable responsive service owners, actual session/cookie cleanup and honest unresolved-proof retention are verified. Independent 682-unit/183 SQL-browser checks, full nonincremental TypeScript, 17-file lint and eight source-mirror/runtime custody checks passed. Material code/UI findings and independently reproduced System appearance race were author-closed after meaningful RED/GREEN and actual-writer/native proof. Original4bf NO-GO182/183 remains preserved. See [Profile handoff](../employee-mobile-profile/HANDOFF.md) and authored reports. This is bounded local acceptance, not full capability-port, physical-device/AT, hosted or release certification.
 
+- Eighth Phase2 batch, Calendar: implemented and accepted for bounded local continuation with conditions at `f58d040b70909fa21dcb97b4f40edcfd5279226c`. One current own link lifecycle, finite original-read deadline, strict receipts, one-time copy/select, provider guidance and deliberate replacement/revocation use the same mobile teal system. Independent799unit/254integration tests, nonincremental TypeScript,16filelint and nine exact source/mirror/runtime closures passed. Code CR-1/CR-3 and UI-1/2/3 have author-owned closure. **QA-CAL-1 remains OPEN RISK, cause unresolved:** an earlier Firefox request-monitor failure is preserved; the current strict pass is not a causal fix. Native-event and marker-sampling limitations also remain explicit. See [Calendar handoff](../employee-mobile-calendar/HANDOFF.md), original failures and authored dispositions. No release/provider/device/AT approval is inferred.
+
 ## Remaining Phase 2 implementation
 
-1. Capability-dependent calendar, passkeys, current-device alerts and own deletion-request lifecycles. Calendar is next; current [Calendar discovery](../employee-mobile-profile/NEXT_CALENDAR_DISCOVERY.md) is not an implementation or acceptance.
+1. Capability-dependent passkeys, current-device alerts and own deletion-request lifecycles. Passkeys is the next bounded group; Calendar local acceptance and its open QA risk are recorded above.
 2. Own published Pay statements, current payroll/module gates and protected PDF view/download.
 
-Carry-forward polish: the earlier Communications partial-empty wording, enlarged acknowledgement wrapping and short dark-page canvas conditions remain open with their original authors. This Profile acceptance does not close them or certify final whole-app polish.
+Carry-forward polish: the earlier Communications partial-empty wording, enlarged acknowledgement wrapping and short dark-page canvas conditions remain open with their original authors. Profile and Calendar acceptance do not close them or certify final whole-app polish. Calendar QA-CAL-1 and its observation limits also remain visible; no causal closure is implied.
 
 Each batch must preserve current role/workspace/session/module authority, source/revision binding, immutable operation recovery, unrelated available capabilities, consistent mobile components and desktop/management separation. Maintain explicit loading/empty/partial/error/refusal/pending/success recovery states.
 
@@ -40,4 +42,4 @@ Phase 3 then performs combined-system acceptance, actual device/background/assis
 
 Current implementation owner: root. Evidence/finding owners: the executing batch and its independent reviewers. No new product code was changed by this sequencing record.
 
-Continuation ownership returned from Cloud to the original local chat at Jose’s request. The current source/handoff is `codex/employee-mobile-local-resume-20261027`, accepted application candidate `2e4104ce`; start at [Profile handoff](../employee-mobile-profile/HANDOFF.md). Original outbound/Cloud-return records remain historical. Phase2 is active and Phase3 has not started.
+Continuation ownership returned from Cloud to the original local chat at Jose’s request. The current source/handoff is `codex/employee-mobile-local-resume-20261027`, current accepted local application candidate `f58d040b` with conditions; start at [Calendar handoff](../employee-mobile-calendar/HANDOFF.md). Original outbound/Cloud-return records remain historical. Phase2 is active and Phase3 has not started.

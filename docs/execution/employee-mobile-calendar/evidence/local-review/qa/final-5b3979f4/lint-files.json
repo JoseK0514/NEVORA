@@ -1,0 +1,18 @@
+[
+  "scripts/payroll-postgres.mjs",
+  "src/components/calendar-subscription-panel-lifetime.test.tsx",
+  "src/components/calendar-subscription-panel.test.tsx",
+  "src/components/calendar-subscription-panel.tsx",
+  "src/components/employee-mobile/calendar.test.tsx",
+  "src/components/employee-mobile/calendar.tsx",
+  "src/lib/calendar/client.ts",
+  "src/lib/calendar/contract.test.ts",
+  "src/lib/calendar/contract.ts",
+  "src/lib/calendar/http.server.test.ts",
+  "src/lib/calendar/service.server.ts",
+  "src/lib/calendar/types.ts",
+  "src/test/integration/employee-mobile-calendar.integration.ts",
+  "src/test/integration/phase-e-calendar-tokens.integration.ts",
+  "vitest.employee-mobile-calendar.config.mts",
+  "vitest.employee-mobile-communications.config.mts"
+]

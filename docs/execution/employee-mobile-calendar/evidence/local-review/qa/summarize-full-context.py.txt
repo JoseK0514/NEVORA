@@ -1,0 +1,21 @@
+import pathlib,json,collections,re
+E=pathlib.Path(__file__).parent;A=E/'full-context-f58d040b-01';P=A/'combined'
+events=[json.loads(x)for x in(P/'full-context-events.jsonl').read_text().splitlines()]
+suite=json.loads((P/'suite-results.json').read_text());requests={}
+for x in events:
+ if 'requestKey'in x:requests.setdefault(x['requestKey'],[]).append(x)
+profileTest=next(x for x in suite['testResults']if x['name'].endswith('/employee-mobile-profile.integration.ts'))
+profilePids={x['pid'] for x in events if profileTest['startTime']<=x['wallTime']<=profileTest['endTime'] and x.get('path')=='/api/employee/profile'}
+orphans=[];mismatches=[]
+for key,rows in requests.items():
+ starts={x['scope']for x in rows if x['event']=='request'};ends={x['scope']for x in rows if x['event']in('requestfinished','requestfailed')}
+ if starts-ends:
+  r=rows[0];orphans.append({'requestKey':key,'engine':r['engine'],'path':r['path'],'wallTime':r['wallTime'],'missingTerminalScopes':sorted(starts-ends),'events':rows,'contextClosure':[x for x in events if x['pid']==r['pid'] and x.get('contextId')==r['contextId'] and x['event']=='closed'],'classification':'Native observer absence; not an original test assertion failure. All such entries are Chromium; no inference of original Firefox cause.'})
+ if starts!={'page','context'} or ends not in ({'page','context'},set()):mismatches.append(key)
+profileRequests={k:v for k,v in requests.items()if v[0]['pid']in profilePids}
+summary={'version':sorted({x['version']for x in events if x['event']=='playwright.instrumented'}),'eventCount':len(events),'uniqueRequestCount':len(requests),'requestIdentity':'process pid + WeakMap Request id, shared by Page and Context','pageContextTerminalMismatchCount':len(mismatches),'nativeTerminalAbsentCount':len(orphans),'nativeTerminalAbsentByEngine':dict(collections.Counter(x['engine']for x in orphans)),'orphans':orphans,'profile':{'workerPids':sorted(profilePids),'uniqueRequests':len(profileRequests),'calendarGetsByEngine':dict(collections.Counter(v[0]['engine']for v in profileRequests.values()if v[0]['path']=='/api/employee/calendar-subscriptions' and v[0]['method']=='GET')),'allRequestsHaveBothTerminals':all({r['scope']for r in v if r['event']in('requestfinished','requestfailed')}=={'page','context'}for v in profileRequests.values()),'originalTestPassed':profileTest['status']=='passed'},'limits':['Native event-only observer; no browser consumer/signal observation.','Instrumentation and actual file order can perturb timing.','The original 253/254 Firefox monitor failure remains preserved and unexplained; a new pass is not a causal fix.']}
+(A/'event-audit.json').write_text(json.dumps(summary,indent=2)+'\n')
+audit=json.loads((A/'audit-result.json').read_text());dbrows=audit['observedDatabases'];nulls=[x for x in dbrows if x['marker'] is None]
+marker={'rawAuditMarkersValid':audit['markersValid'],'rawAuditErrors':audit['errors'],'nullMarkerSnapshots':nulls,'nullOidsLaterSampledMarked':[x['oid']for x in nulls if any(y['oid']==x['oid']and y['marker']for y in dbrows)],'observedValidMarkerNamespaces':sorted({next(z for z in audit['observedNamespaces']if x['datname'].startswith(z))for x in dbrows if re.fullmatch('fuel-phase3-disposable:[a-f0-9-]{36}',x['marker']or'')}),'everyOwnedNextIdentityHasNonemptyMarker':all(re.fullmatch('fuel-phase3-disposable:[a-f0-9-]{36}',json.loads(pathlib.Path(x['path']).read_text())['identity']['marker'])for x in audit['owners']),'observerErrors':audit['observerErrors'],'classification':'RISK / sampling limitation: three transient null-marker OIDs have no marked resample. No claim that each fleeting fixture was independently sampled after COMMENT. Exact factory namespace/name/OID ownership guards remain unchanged; all three required namespace families are positively sampled with valid markers, all nine browser identities marked, and entire owned cluster removed.'}
+(A/'marker-sampling-audit.json').write_text(json.dumps(marker,indent=2)+'\n')
+print(json.dumps({k:v for k,v in summary.items()if k!='orphans'},indent=2));print(json.dumps(marker,indent=2))

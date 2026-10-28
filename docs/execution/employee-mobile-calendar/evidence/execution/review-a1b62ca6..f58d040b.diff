@@ -1,0 +1,920 @@
+# Review package: a1b62ca68207a0fd3c6de300d55e17b621c9dc47..f58d040b70909fa21dcb97b4f40edcfd5279226c
+
+## Commits
+f58d040b fix: anchor Calendar validity to the original request deadline
+5b3979f4 fix: reveal current Calendar recovery above mobile navigation
+9d8d693d fix: check Calendar lease synchronously before every action
+fc3a1874 test: preserve native touch emulation in Calendar evidence
+0597a659 test: exercise own mobile Calendar against the owned application
+05d6256b feat: present deliberate mobile Calendar setup and access management
+430a90ff fix: bound own Calendar link lifecycle and original recovery
+2d848876 docs: define bounded employee mobile Calendar continuation
+
+## Files changed
+ .../employee-mobile-calendar/calendar-plan.md      | 46 +++++++++++
+ docs/product/specs/employee-mobile-teal/README.md  |  8 ++
+ scripts/payroll-postgres.mjs                       |  2 +-
+ .../calendar-subscription-panel-lifetime.test.tsx  | 88 ++++++++++++++++++++++
+ .../calendar-subscription-panel.test.tsx           |  2 +-
+ src/components/calendar-subscription-panel.tsx     | 70 ++++++-----------
+ src/components/employee-mobile/calendar.css        | 48 ++++++++++++
+ src/components/employee-mobile/calendar.test.tsx   | 23 ++++++
+ src/components/employee-mobile/calendar.tsx        | 57 ++++++++++++++
+ src/lib/calendar/client.ts                         | 76 +++++++++++++++++++
+ src/lib/calendar/contract.test.ts                  | 15 ++++
+ src/lib/calendar/contract.ts                       | 31 ++++++++
+ src/lib/calendar/http.server.test.ts               |  2 +-
+ src/lib/calendar/service.server.ts                 | 10 ++-
+ src/lib/calendar/types.ts                          |  2 +-
+ .../employee-mobile-calendar.integration.ts        | 79 +++++++++++++++++++
+ .../phase-e-calendar-tokens.integration.ts         | 13 ++++
+ vitest.employee-mobile-calendar.config.mts         | 11 +++
+ vitest.employee-mobile-communications.config.mts   |  4 +-
+ 19 files changed, 533 insertions(+), 54 deletions(-)
+
+## Diff
+diff --git a/docs/execution/employee-mobile-calendar/calendar-plan.md b/docs/execution/employee-mobile-calendar/calendar-plan.md
+new file mode 100644
+index 00000000..558d3b1f
+--- /dev/null
++++ b/docs/execution/employee-mobile-calendar/calendar-plan.md
+@@ -0,0 +1,46 @@
++# Employee mobile Calendar continuation
++
++## Spec and source of truth
++
++Jose authorized Calendar on Employee mobile, preserving the accepted teal style and current Employee/Lead permissions. Binding spec: docs/product/specs/employee-mobile-teal/README.md and docs/execution/employee-mobile-profile/NEXT_CALENDAR_DISCOVERY.md. Start: accepted unassembled stack a1b62ca, application acceptance 2e4104ce. Current worktree/branch remains isolated; no assembly, main merge, real provider subscription or deployment.
++
++## Global constraints
++
++One canonical Calendar subscription/operation/feed owner. Preserve server own-session/workspace/role/current eligible-location rules, bearer feed lifecycle, operation receipts and generation guards. No employee selector, private persistent cache, invented provider connection, new dependency, paid resource or real notification. A copied feed survives portal logout by existing policy; revoke stops future access, not already copied events. Desktop remains incumbent presentation. Profile disclosure/hash and stable owner across resize remain.
++
++## Task 1: Bound the existing Calendar lifecycle
++
++Interfaces: CalendarSubscriptionStatus adds server-observed finite lease/current canIssue metadata; canonical GET produces it; one mounted client consumes it and exact CalendarCommand/result. Backend lifecycle remains unchanged.
++
++1. Add actual-panel hook-host regressions for unbounded read/write, unrelated storage and signout fencing. Run before implementation. Expected: meaningful current failures, preserve output.
++2. Replace the existing component's state/effects with one tested controller: strict current status and operation-bound receipt decoding; bounded headers/body; lease minus round-trip; explicit original retry after unknown outcomes; pause/expiry/signout clear private data; stale completion fences; fresh GET verifies a created URL before reveal; no secret reconstruction. Add finite metadata within existing guarded server read, without borrowing another feature's policy.
++3. Unit and canonical SQL cases prove lease, real eligibility and permission boundaries, issue/rotate/revoke/replay/current refusal. Expected: all relevant tests green.
++4. Commit code/tests and ledger result.
++
++Whole-task command: npx vitest run src/lib/calendar src/components/calendar-subscription-panel.test.tsx src/components/calendar-subscription-panel-lifetime.test.tsx
++
++## Task 2: Present the deliberate mobile Calendar flow
++
++Interfaces: consumes Task1's single controller state and existing canonical command callbacks. Mobile changes presentation only, not controller identity or permissions.
++
++1. Read craft floor immediately before edits; write semantic render regressions first. Expected: new mobile requirements initially fail.
++2. Keep optional inline Profile disclosure and Schedule fixed hash. Present current state, one-time private link copy/select, provider steps, honest independent refresh and explicit replace/revoke confirmations. Use scoped shared teal tokens, rem type, inset Phosphor carets, 44/48px targets and light/dark wrapping; omit decorative example week only on mobile. No misleading connected status or yellow warning blocks.
++3. Verify official provider instructions. Run render/controller tests, nonincremental TypeScript and scoped lint. Expected: green; desktop remains incumbent.
++4. Commit code/tests and design record.
++
++Whole-task command: npx vitest run src/lib/calendar src/components/calendar-subscription-panel.test.tsx src/components/calendar-subscription-panel-lifetime.test.tsx src/components/employee-mobile/calendar.test.tsx
++
++## Task 3: Verify and independently review the frozen continuation
++
++Interfaces: Task1 canonical guarded lifecycle + Task2 responsive single owner, accepted prior mobile stack. Tests must exercise actual owned Next, not a static prototype.
++
++1. Extend the explicit disposable PostgreSQL/config allowlist with a Calendar combined suite, preserving prior required groups/namespaces. Add actual owned Next browser scenarios in Chromium/Firefox/WebKit for create/copy/select/replace/revoke, lost response original replay, current refusal/peer isolation, pause/signout/finite expiry, held headers/body/late replies, media resize owner preservation, disclosure/hash/keyboard focus, clipboard failure, dark/narrow/landscape/enlarged text and no-overflow/targets/contrast. Canonical existing token/feed/access fixtures remain required. Preserve all failures.
++2. Freeze application/test/config commit before owned Next launch. No source/HEAD/index mutation while any owned Next lives. Run full combined suite and relevant units, TS, lint; verify source/mirror/PID/port/disposable DB custody. Expected: required gates pass, no surviving owned processes/database.
++3. Fresh whole-change code reviewer and independent UI/QA authors evaluate exact evidence and own closure. Record and remediate actual findings; no self-certified independent closure.
++4. Commit durable HANDOFF/EVIDENCE_HISTORY/phase status with actual candidate/counts/remaining native/physical/hosted/release gates. Publish feature branch only, no PR/merge/deployment unless explicitly authorized.
++
++Whole-task command: npx vitest run src/lib/calendar src/components/calendar-subscription-panel.test.tsx src/components/calendar-subscription-panel-lifetime.test.tsx src/components/employee-mobile/calendar.test.tsx
++
++## Review Focus
++
++Check finite authorization during busy and hung bodies; stale receipt/operation/authority/generation binding; unknown command retained until exact recovery; unauthorized retry behavior; account storage versus unrelated theme storage; signout cannot reopen; no one-time URL before current revalidation or in logs; original operation/service survives resize. Assess native provider copy clarity, deliberate destructive confirmation, enlarged layout/contrast/touch/focus and fixed Schedule/Profile return. Existing bearer lifecycle and current backend rules are the authority. Local evidence does not certify physical providers, native permission hardware, assistive technology or release readiness.
+diff --git a/docs/product/specs/employee-mobile-teal/README.md b/docs/product/specs/employee-mobile-teal/README.md
+index dedce8c6..7c4ece18 100644
+--- a/docs/product/specs/employee-mobile-teal/README.md
++++ b/docs/product/specs/employee-mobile-teal/README.md
+@@ -61,10 +61,18 @@ Notifications and Updates retain the same scoped palette, type, spacing, regular
+ One mounted authority-scoped owner keeps draft/list/original uncertain intent through soft navigation. Pause, expiry, denial and current module loss remove private content and stale action admission; late replies cannot invent success. A refused original lookup preserves its immutable identity and waits for fresh current authorization. Notifications remain independently usable when Updates is off. No private persistent cache, delivery/read-by-coworker claim or management capability was added.
+ 
+ The original submitted regression, subsequent independent findings, final frozen evidence and authored nonblocking conditions are recorded in `docs/execution/employee-mobile-communications/HANDOFF.md`. Three-engine local evidence is separate from physical-device/assistive-technology/hosted/release readiness and does not complete the remaining Phase2 workflows. Recorded21st metadata references27135/36949/31789/28458 were adapted with existing project/native primitives; no paid retrieval, new library or CLI review is claimed.
+ 
+ 
+ ## Phase2 Profile/preferences/help/session continuation
+ 
+ Own identity/work facts remain inside the finite canonical reader and disappear on pause, failure, denial or sign-out. The static desktop header waits for hydration; mobile visual/DOM/keyboard order agree while keyed Calendar/passkey/account owners survive resize. Native labelled preferences truthfully limit language to sign-in and appearance to this device. Shared rem type/line height, inset Phosphor carets,44/48px controls and continuous short-page canvas support enlarged text and pending states. Contextual legal/help reuse canonical facts/visibility and fixed return focus. Existing native logout owns side effects and uncertain cleanup remains honest.
+ 
+ The existing appearance owner reconciles the latest choice once before paint so coalesced native changes around System do not leave an intermediate theme; this adds no parallel owner/polling. All material Profile code/UI/QA findings have author-owned closure at application candidate2e4104ce. Exact independent682/183/static/custody evidence and remaining capability/physical-device/release limits are in [the Profile handoff](../../../execution/employee-mobile-profile/HANDOFF.md). The remaining Calendar/passkey/device/deletion/Pay ports are not certified by reachable legacy controls.
++
++## Phase2 Calendar continuation
++
++Calendar remains the optional native Profile disclosure reached by Schedule's fixed fragment, with one stable subscription/operation owner across responsive changes. Mobile replaces the decorative example with a current link state, labelled one-time copy/select field, three native provider guides and deliberate replace/revoke confirmation. Teal semantic tokens, rem type, inset regular Phosphor carets and44/48px controls carry the established system. Warnings use calm semantic surfaces and explicit recovery.
++
++The canonical own guarded read now supplies a DB-clock/session-bounded lease and current eligible-location issuance capability. One client validates exact status/operation receipts, limits header/body waits, subtracts round-trip time, clears private facts on pause/expiry/signout and preserves the original uncertain command through unrelated appearance storage or mounted resume. A created secret is displayed only after a fresh current-generation read. No credential is persisted/reconstructed and no provider connection is claimed. The existing bearer policy intentionally survives portal signout; revocation stops future access, not previously copied entries.
++
++Provider guidance checked2026-10-27 against official [Apple](https://support.apple.com/en-us/102301), [Apple iPhone guide](https://support.apple.com/en-ca/guide/iphone/iph3d1110d4/ios), [Google](https://support.google.com/calendar/answer/37100?hl=en) and [Microsoft](https://support.microsoft.com/en-us/outlook/import-or-subscribe-to-a-calendar-in-outlook-com-or-outlook-on-the-web). No real subscription, paid retrieval/generation or dependency was used. Execution and certification limits belong to the Calendar handoff.
+diff --git a/scripts/payroll-postgres.mjs b/scripts/payroll-postgres.mjs
+index 14cc14ed..4e27d49b 100644
+--- a/scripts/payroll-postgres.mjs
++++ b/scripts/payroll-postgres.mjs
+@@ -70,21 +70,21 @@ try {
+     "start",
+     "-o",
+     `-h 127.0.0.1 -p ${port} -k ${owned}`,
+   ]);
+   started = true;
+   console.log(
+     "[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.",
+   );
+   const config =
+     process.argv[2] ?? "vitest.configurable-payroll-integration.config.mts";
+-  const prefix = ["vitest.passkeys-network.config.mts", "vitest.all-ui-browser.config.mts", "vitest.owner-advisor-browser.config.mts", "vitest.employee-mobile-phase1.config.mts", "vitest.employee-mobile-requests.config.mts", "vitest.employee-mobile-responses.config.mts", "vitest.employee-mobile-creation.config.mts", "vitest.employee-mobile-planning.config.mts", "vitest.employee-mobile-hours.config.mts", "vitest.employee-mobile-communications.config.mts", "vitest.employee-mobile-profile.config.mts"].includes(config)
++  const prefix = ["vitest.passkeys-network.config.mts", "vitest.all-ui-browser.config.mts", "vitest.owner-advisor-browser.config.mts", "vitest.employee-mobile-phase1.config.mts", "vitest.employee-mobile-requests.config.mts", "vitest.employee-mobile-responses.config.mts", "vitest.employee-mobile-creation.config.mts", "vitest.employee-mobile-planning.config.mts", "vitest.employee-mobile-hours.config.mts", "vitest.employee-mobile-communications.config.mts", "vitest.employee-mobile-profile.config.mts", "vitest.employee-mobile-calendar.config.mts"].includes(config)
+     ? "nevora_exchange_test_" : "nevora_foundation_test_";
+   const env = {
+     ...process.env,
+     FUEL_TEST_DATABASE_URL: `postgresql://nevora_test@127.0.0.1:${port}/${prefix}c1_${marker.slice(0, 12)}`,
+     FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN: "yes",
+   };
+   delete env.DATABASE_URL;
+   const args = ["node_modules/vitest/vitest.mjs", "run", "--config", config, ...process.argv.slice(3)];
+   const result = spawnSync(process.execPath, args, { env, stdio: "inherit" });
+   exitCode = result.status ?? 1;
+diff --git a/src/components/calendar-subscription-panel-lifetime.test.tsx b/src/components/calendar-subscription-panel-lifetime.test.tsx
+new file mode 100644
+index 00000000..23824e1e
+--- /dev/null
++++ b/src/components/calendar-subscription-panel-lifetime.test.tsx
+@@ -0,0 +1,88 @@
++import {afterEach,beforeEach,expect,it,vi} from 'vitest';
++import {CalendarSubscriptionPanel} from './calendar-subscription-panel';
++vi.mock('./employee-mobile/use-mobile',()=>({useEmployeeMobile:()=>false}));
++const host=vi.hoisted(()=>({state:[] as unknown[],refs:[] as {current:unknown}[],effects:[] as (()=>void|(()=>void))[],s:0,r:0}));
++vi.mock('react',async()=>({...await vi.importActual<typeof import('react')>('react'),useCallback:(fn:unknown)=>fn,useEffect:(fn:()=>void|(()=>void))=>{host.effects.push(fn);},useRef:(initial:unknown)=>host.refs[host.r++]??(host.refs[host.r-1]={current:initial}),useState:(initial:unknown)=>{const n=host.s++;if(!(n in host.state))host.state[n]=typeof initial==='function'?initial():initial;return [host.state[n],(value:unknown)=>{host.state[n]=typeof value==='function'?value(host.state[n]):value;}];}}));
++const authority='a'.repeat(64),id='11111111-1111-4111-8111-111111111111',generation='22222222-2222-4222-8222-222222222222';
++const ready=(validForMs=45000)=>({state:'none',id:null,generation:null,issuedAt:null,allowedLocationIds:[],authority,observedAt:new Date().toISOString(),validForMs,canIssue:true});
++let cleanups:(()=>void)[]=[];
++const render=()=>{host.s=0;host.r=0;return CalendarSubscriptionPanel({authority});};
++const props=()=>render().props;
++async function mount(){render();cleanups=host.effects.splice(0).map(effect=>effect()).filter((fn):fn is ()=>void=>typeof fn==='function');await vi.advanceTimersByTimeAsync(0);}
++beforeEach(()=>{vi.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});host.state=[];host.refs=[];host.effects=[];vi.stubGlobal('window',new EventTarget());vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));vi.stubGlobal('navigator',{onLine:true,clipboard:{writeText:vi.fn(async()=>{})}});vi.stubGlobal('location',{origin:'https://nevora.test'});});
++afterEach(()=>{cleanups.forEach(fn=>fn());cleanups=[];vi.restoreAllMocks();vi.unstubAllGlobals();vi.useRealTimers();});
++
++it('bounds a held read and offers recovery instead of checking forever',async()=>{
++ vi.stubGlobal('fetch',vi.fn(()=>new Promise(()=>{})));await mount();await vi.advanceTimersByTimeAsync(10001);
++ expect(props().status).toMatchObject({state:'unavailable'});expect(props().busy).toBe(false);
++});
++it.each(['headers','body'])('bounds held command %s and retries exactly the original intent after a fresh read',async boundary=>{
++ const calls:RequestInit[]=[];let posts=0;
++ vi.stubGlobal('fetch',vi.fn(async(_url:string,init:RequestInit)=>{calls.push(init);if(init.method!=='POST')return Response.json(ready());posts++;if(boundary==='headers')return await new Promise<Response>(()=>{});return new Response(new ReadableStream({start(controller){controller.enqueue(new TextEncoder().encode('{'));}}));}));
++ await mount();props().onCommand('ISSUE');await vi.advanceTimersByTimeAsync(10001);
++ expect(props().busy).toBe(false);expect(props().notice).toMatch(/unknown/i);expect(props().url).toBeNull();
++ await vi.advanceTimersByTimeAsync(0);props().onRetry();await vi.advanceTimersByTimeAsync(0);
++ expect(posts).toBe(2);expect(calls.filter(call=>call.method==='POST')[1].body).toBe(calls.find(call=>call.method==='POST')!.body);
++});
++it('does not lose an uncertain original request when another tab changes appearance',async()=>{
++ const calls:RequestInit[]=[];
++ vi.stubGlobal('fetch',vi.fn(async(_url:string,init:RequestInit)=>{calls.push(init);if(init.method==='POST')throw Error('lost reply');return Response.json(ready());}));
++ await mount();props().onCommand('ISSUE');await vi.advanceTimersByTimeAsync(0);
++ window.dispatchEvent(Object.assign(new Event('storage'),{key:'nv-theme'}));await vi.advanceTimersByTimeAsync(0);props().onRetry();await vi.advanceTimersByTimeAsync(0);
++ const posts=calls.filter(call=>call.method==='POST');expect(posts).toHaveLength(2);expect(posts[1].body).toBe(posts[0].body);
++});
++it('releases facts on signout and cannot resume the ended mounted session',async()=>{
++ const request=vi.fn(async()=>Response.json(ready()));vi.stubGlobal('fetch',request);await mount();expect(props().status).toMatchObject({state:'none'});
++ window.dispatchEvent(new Event('nevora:signout'));expect(props().status).toBeNull();expect(props().paused).toBe(true);
++ for(const event of ['focus','pageshow','online'])window.dispatchEvent(new Event(event));await vi.advanceTimersByTimeAsync(60000);expect(request).toHaveBeenCalledTimes(1);
++});
++it('expires the server authorization budget even before periodic polling',async()=>{
++ vi.stubGlobal('fetch',vi.fn(async()=>Response.json(ready(100))));await mount();expect(props().status).toMatchObject({state:'none'});await vi.advanceTimersByTimeAsync(101);
++ expect(props().status).toMatchObject({state:'unavailable'});expect(props().url).toBeNull();
++});
++it('does not reveal a created private link before a fresh canonical read confirms its generation',async()=>{
++ let reads=0;vi.stubGlobal('fetch',vi.fn(async(_url:string,init:RequestInit)=>{if(init.method==='POST'){const command=JSON.parse(String(init.body));return Response.json({status:'created',operationId:command.operationId,id,generation,url:`https://nevora.test/api/calendar/${'A'.repeat(43)}/schedule.ics`});}if(++reads>1)return await new Promise<Response>(()=>{});return Response.json(ready());}));
++ await mount();props().onCommand('ISSUE');await vi.advanceTimersByTimeAsync(0);expect(props().url).toBeNull();expect(reads).toBe(2);
++});
++it.each([401,403])('denies HTTP %s without waiting for an unread body and releases that body',async status=>{
++ const cancel=vi.fn();vi.stubGlobal('fetch',vi.fn(async()=>new Response(new ReadableStream({start(controller){controller.enqueue(new TextEncoder().encode('{'));},cancel}),{status})));await mount();expect(props().status).toMatchObject({state:'unauthorized'});expect(cancel).toHaveBeenCalledOnce();await vi.advanceTimersByTimeAsync(60000);expect(fetch).toHaveBeenCalledOnce();
++});
++it.each(['fuel-portal-account-fence','fuel-portal-owner-generation',null])('account storage fence %s ends this owner instead of reopening it',async key=>{
++ vi.stubGlobal('fetch',vi.fn(async()=>Response.json(ready())));await mount();window.dispatchEvent(Object.assign(new Event('storage'),{key}));expect(props().status).toBeNull();window.dispatchEvent(new Event('focus'));await vi.advanceTimersByTimeAsync(60000);expect(fetch).toHaveBeenCalledOnce();
++});
++it('preserves unknown original through blur/resume and fences the late created reply',async()=>{
++ let deliver!:(value:Response)=>void;const calls:RequestInit[]=[];
++ vi.stubGlobal('fetch',vi.fn(async(_url:string,init:RequestInit)=>{calls.push(init);if(init.method==='POST')return await new Promise<Response>(resolve=>{deliver=resolve;});return Response.json(ready());}));
++ await mount();props().onCommand('ISSUE');await vi.advanceTimersByTimeAsync(0);const command=JSON.parse(String(calls.find(call=>call.method==='POST')!.body));
++ window.dispatchEvent(new Event('blur'));expect(props().url).toBeNull();window.dispatchEvent(new Event('focus'));await vi.advanceTimersByTimeAsync(0);
++ deliver(Response.json({status:'created',operationId:command.operationId,id,generation,url:`https://nevora.test/api/calendar/${'A'.repeat(43)}/schedule.ics`}));await vi.advanceTimersByTimeAsync(0);expect(props().url).toBeNull();expect(props().notice).toMatch(/unknown/);props().onRetry();await vi.advanceTimersByTimeAsync(0);const posts=calls.filter(call=>call.method==='POST');expect(posts).toHaveLength(2);expect(posts[1].body).toBe(posts[0].body);
++});
++it('subtracts held-response time from the lease and never admits expired actions',async()=>{
++ let deliver!:(value:Response)=>void;vi.stubGlobal('fetch',vi.fn(()=>new Promise<Response>(resolve=>{deliver=resolve;})));await mount();await vi.advanceTimersByTimeAsync(500);deliver(Response.json(ready(100)));await vi.advanceTimersByTimeAsync(0);expect(props().status).toMatchObject({state:'unavailable'});props().onCommand('ISSUE');expect(fetch).toHaveBeenCalledOnce();
++});
++it('only reveals a created URL after its own matching active generation and releases it on expiry',async()=>{
++ let active=false;vi.stubGlobal('fetch',vi.fn(async(_url:string,init:RequestInit)=>{if(init.method==='POST'){active=true;const command=JSON.parse(String(init.body));return Response.json({status:'created',operationId:command.operationId,id,generation,url:`https://nevora.test/api/calendar/${'A'.repeat(43)}/schedule.ics`});}return Response.json(active?{...ready(100),state:'active',id,generation,issuedAt:new Date().toISOString(),allowedLocationIds:['loc-1']}:ready());}));
++ await mount();props().onCommand('ISSUE');await vi.advanceTimersByTimeAsync(0);expect(props().url).toContain('/api/calendar/');await vi.advanceTimersByTimeAsync(101);expect(props().url).toBeNull();expect(props().status).toMatchObject({state:'unavailable'});
++});
++it('refuses a new issue when current canonical location eligibility is absent',async()=>{
++ vi.stubGlobal('fetch',vi.fn(async()=>Response.json({...ready(),canIssue:false})));await mount();props().onCommand('ISSUE');await vi.advanceTimersByTimeAsync(0);expect(fetch).toHaveBeenCalledOnce();
++});
++it.each(['new command','original retry'])('checks the monotonic lease before %s when native expiry callbacks are delayed',async action=>{
++ const now=vi.spyOn(performance,'now').mockReturnValue(0);let posts=0;
++ vi.stubGlobal('fetch',vi.fn(async(_url:string,init:RequestInit)=>{if(init.method==='POST'){posts++;throw Error('lost reply');}return Response.json(ready(100));}));await mount();
++ if(action==='original retry'){props().onCommand('ISSUE');await vi.advanceTimersByTimeAsync(0);expect(posts).toBe(1);}
++ now.mockReturnValue(101);if(action==='new command')props().onCommand('ISSUE');else props().onRetry();await vi.advanceTimersByTimeAsync(0);
++ expect(posts).toBe(action==='original retry'?1:0);expect(props().status).toMatchObject({state:'unavailable'});expect(props().url).toBeNull();now.mockRestore();
++});
++it('checks the monotonic lease before copying when native expiry callbacks are delayed',async()=>{
++ const now=vi.spyOn(performance,'now').mockReturnValue(0);let active=false;const copy=vi.fn(async()=>{});vi.stubGlobal('navigator',{onLine:true,clipboard:{writeText:copy}});
++ vi.stubGlobal('fetch',vi.fn(async(_url:string,init:RequestInit)=>{if(init.method==='POST'){active=true;const command=JSON.parse(String(init.body));return Response.json({status:'created',operationId:command.operationId,id,generation,url:`https://nevora.test/api/calendar/${'A'.repeat(43)}/schedule.ics`});}return Response.json(active?{...ready(100),state:'active',id,generation,issuedAt:new Date().toISOString(),allowedLocationIds:['loc-1']}:ready());}));
++ await mount();props().onCommand('ISSUE');await vi.advanceTimersByTimeAsync(0);expect(props().url).toContain('/api/calendar/');now.mockReturnValue(101);props().onCopy();await vi.advanceTimersByTimeAsync(0);
++ expect(copy).not.toHaveBeenCalled();expect(props().url).toBeNull();expect(props().status).toMatchObject({state:'unavailable'});now.mockRestore();
++});
++it('keeps the original request deadline when later clock reads advance before admission',async()=>{
++ const now=vi.spyOn(performance,'now').mockReturnValue(101).mockReturnValueOnce(0).mockReturnValueOnce(0);let posts=0;
++ vi.stubGlobal('fetch',vi.fn(async(_url:string,init:RequestInit)=>{if(init.method==='POST'){posts++;throw Error('unexpected expired write');}return Response.json(ready(100));}));
++ await mount();props().onCommand('ISSUE');await vi.advanceTimersByTimeAsync(0);
++ expect(posts).toBe(0);expect(props().status).toMatchObject({state:'unavailable'});expect(props().url).toBeNull();now.mockRestore();
++});
+diff --git a/src/components/calendar-subscription-panel.test.tsx b/src/components/calendar-subscription-panel.test.tsx
+index c8e44ef0..e69c8ea6 100644
+--- a/src/components/calendar-subscription-panel.test.tsx
++++ b/src/components/calendar-subscription-panel.test.tsx
+@@ -1,14 +1,14 @@
+ import {renderToStaticMarkup} from 'react-dom/server';
+ import {expect,it} from 'vitest';
+ import {CalendarSubscriptionView} from './calendar-subscription-panel';
+-const state={state:'active' as const,id:'id',generation:'generation',issuedAt:'2026-10-08',allowedLocationIds:['loc-1'],authority:'authority'};
++const state={state:'active' as const,id:'id',generation:'generation',issuedAt:'2026-10-08',allowedLocationIds:['loc-1'],authority:'authority',observedAt:'2026-10-08',validForMs:45000,canIssue:true};
+ const base={status:state,url:'intentional-transient-url',paused:false,busy:false,notice:'',onCommand:()=>{},onCopy:()=>{},onRetry:()=>{}};
+ it('private link is absent while hidden even if a prior ready URL is provided',()=>{const html=renderToStaticMarkup(<CalendarSubscriptionView {...base} paused/>);expect(html).not.toContain(base.url);expect(html).toContain('Calendar settings paused');});
+ it.each(['unauthorized','unavailable'] as const)('never renders a private URL or copy actions with %s status',state=>{
+  const html=renderToStaticMarkup(<CalendarSubscriptionView {...base} status={{state,reason:'read_failed'}}/>);
+  expect(html).not.toContain(base.url);expect(html).not.toContain('Copy link');expect(html).not.toContain('Select link');
+ });
+ it('lost URL offers deliberate Replace while explaining copied-data limits and client refresh',()=>{const html=renderToStaticMarkup(<CalendarSubscriptionView {...base} url={null}/>);expect(html).toContain('Replace link');expect(html).toContain('Calendar apps refresh on their own schedule');expect(html).toContain('cannot remove information already copied');expect(html).not.toContain('Calendar connected');});
+ it('copy feedback belongs to completed copy only and manual selection remains available',()=>{const html=renderToStaticMarkup(<CalendarSubscriptionView {...base}/>);expect(html).toContain('Copy link');expect(html).toContain('Select link');expect(html).not.toContain('Link copied');expect(html).toContain('Apple Calendar');expect(html).toContain('Google Calendar');expect(html).toContain('Outlook');});
+ 
+ it('unknown issuance keeps only original-operation recovery available',()=>{
+diff --git a/src/components/calendar-subscription-panel.tsx b/src/components/calendar-subscription-panel.tsx
+index cb255ad2..2589a3ee 100644
+--- a/src/components/calendar-subscription-panel.tsx
++++ b/src/components/calendar-subscription-panel.tsx
+@@ -1,108 +1,86 @@
+ 'use client';
+ import {ArrowsClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
+-import {useCallback,useEffect,useRef,useState} from 'react';
+-import type {CalendarCommand,CalendarManagementResult,CalendarSubscriptionStatus} from '@/lib/calendar/types';
++import {useEffect,useRef,useState} from 'react';
++import type {CalendarSubscriptionStatus} from '@/lib/calendar/types';
+ import Link from 'next/link';
+ import {revealFeedback} from '@/lib/reveal-feedback';
+ import {AppleLogoIcon} from '@phosphor-icons/react/dist/ssr/AppleLogo';
+ import {GoogleLogoIcon} from '@phosphor-icons/react/dist/ssr/GoogleLogo';
+ import {MicrosoftOutlookLogoIcon} from '@phosphor-icons/react/dist/ssr/MicrosoftOutlookLogo';
+ import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
+ import {LockKeyIcon} from '@phosphor-icons/react/dist/ssr/LockKey';
+ import {NavIcon} from './nav-icon';
+ import './calendar-subscription-panel.css';
++import {createCalendarClient,type CalendarClientState} from '@/lib/calendar/client';
++import {useEmployeeMobile} from './employee-mobile/use-mobile';
++import {EmployeeMobileCalendarView} from './employee-mobile/calendar';
+ import {PendingLabel} from './employee-submit-button';
+-type ViewProps={status:CalendarSubscriptionStatus|null;url:string|null;paused:boolean;busy:boolean;notice:string;onCommand:(kind:'ISSUE'|'ROTATE'|'REVOKE')=>void;onCopy:()=>void;onRetry:()=>void};
++type ViewProps={mobile?:boolean;pendingKind?:CalendarClientState['pendingKind'];status:CalendarSubscriptionStatus|null;url:string|null;paused:boolean;busy:boolean;notice:string;onCommand:(kind:'ISSUE'|'ROTATE'|'REVOKE')=>void;onCopy:()=>void;onRetry:()=>void};
+ /** Signature (phase 4): an example week, drawn the way a calendar app shows subscribed shifts. Decorative and
+  * generic; it never shows the person's own schedule. */
+ function CalendarExample(){
+  const days:[string,number,[string,number,number]|null][]=[['Mon',26,['8 – 4',22,46]],['Tue',27,['8 – 4',22,46]],['Wed',28,null],['Thu',29,['12 – 8',44,46]],['Fri',30,['8 – 2',22,33]]];
+  return <figure className="employee-calendar-example" aria-hidden="true"><figcaption><b>Example week</b><span>How shifts appear in your calendar</span></figcaption>
+   <div className="employee-calendar-example__grid">{days.map(([day,date,shift])=><div key={day}><small>{day}</small><b>{date}</b><span>{shift?<i style={{top:`${shift[1]}%`,height:`${shift[2]}%`}}><b>{shift[0]}</b>Shift</i>:null}</span></div>)}</div>
+  </figure>;
+ }
+ 
+-export function CalendarSubscriptionView({status,url,paused,busy,notice,onCommand,onCopy,onRetry}:ViewProps){
++export function CalendarSubscriptionView({status,url,paused,busy,notice,onCommand,onCopy,onRetry,mobile=false,pendingKind}:ViewProps){
+  const link=useRef<HTMLTextAreaElement>(null),feedback=useRef<HTMLDivElement>(null),unknown=notice.includes('unknown');
+  useEffect(()=>{if(notice&&feedback.current)revealFeedback(feedback.current);},[notice]);
++ if(mobile)return <EmployeeMobileCalendarView {...{status,url,paused,busy,notice,pendingKind,onCommand,onCopy,onRetry}}/>;
+  const active=status?.state==='active',available=status&&'generation' in status;
+  const currentUrl=active&&!paused?url:null;
+  return <section className="employee-view-surface employee-calendar" aria-labelledby="employee-calendar-heading" data-calendar-setting>
+   <header className="profile-section-heading"><span className="profile-icon-tile"><NavIcon name="calendar" size={24}/></span><div><h2 id="employee-calendar-heading" aria-label="Calendar subscription">Calendar sub­scrip­tion</h2><p>Your shifts, alongside your plans.</p></div></header>
+   {paused?<p role="status">Calendar settings paused. Return to this window to check the link.</p>:<>
+    <p>View your published shifts in Apple Calendar, Google Calendar, or Outlook.</p>
+    <CalendarExample/>
+    <div className="employee-calendar-status-box">
+     {!status?<p role="status">Checking calendar link…</p>:!available?<p role="alert">Calendar settings unavailable. {status.state==='unauthorized'?'Sign in again.':'Retry to check the current link.'}</p>:<>
+      <span className={`employee-calendar-state${active?' is-active':''}`}>{active?'Link active':status.state==='revoked'?'Link revoked':'No calendar link'}</span>
+-     {!active?<><p>Create a private link, then add it to your calendar app.</p><button type="button" className="button calendar-primary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ISSUE')}><PendingLabel pending={busy} pendingText="Saving…">Create link</PendingLabel></button></>:null}
+-     {active&&!currentUrl?<><p>The link is stored securely and cannot be retrieved. Replace link to create a new URL; the previous link will stop working.</p><button type="button" className="button calendar-primary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ROTATE')}><PendingLabel pending={busy} pendingText="Saving…">Replace link</PendingLabel></button></>:null}
++     {!active?<><p>Create a private link, then add it to your calendar app.</p><button type="button" className="button calendar-primary" disabled={unknown||!!status&&'canIssue'in status&&!status.canIssue} aria-disabled={busy} onClick={()=>!busy&&onCommand('ISSUE')}><PendingLabel pending={busy} pendingText="Saving…">Create link</PendingLabel></button></>:null}
++     {active&&!currentUrl?<><p>The link is stored securely and cannot be retrieved. Replace link to create a new URL; the previous link will stop working.</p><button type="button" className="button calendar-primary" disabled={unknown||!!status&&'canIssue'in status&&!status.canIssue} aria-disabled={busy} onClick={()=>!busy&&onCommand('ROTATE')}><PendingLabel pending={busy} pendingText="Saving…">Replace link</PendingLabel></button></>:null}
+     </>}
+     {currentUrl?<div className="employee-calendar-secret">
+      <label htmlFor="employee-calendar-link">Your private calendar link</label><textarea ref={link} id="employee-calendar-link" value={currentUrl} readOnly spellCheck={false} autoComplete="off" rows={3} aria-describedby="employee-calendar-link-hint"/>
+      <div className="employee-calendar-actions"><button type="button" className="button calendar-primary" onClick={onCopy} disabled={busy}>Copy link</button><button type="button" className="button secondary" onClick={()=>{link.current?.focus();link.current?.select();}} disabled={busy}>Select link</button></div>
+      <p id="employee-calendar-link-hint" className="profile-supporting-copy">This URL is shown once. Copy it now, or replace it later.</p>
+     </div>:null}
+     <div ref={feedback} tabIndex={-1}>
+    {notice?<p role="status" className="employee-notice">{notice}</p>:null}
+    {status?.state==='unauthorized'?<Link className="button secondary" href="/login">Sign in</Link>:(status?.state==='unavailable'||unknown)?<button type="button" className="nv-btn" data-kind="primary" disabled={busy} onClick={onRetry}><ArrowsClockwiseIcon size={18} aria-hidden="true"/>Try again<span className="nv-sr"> to load the calendar link</span></button>:null}
+     </div>
+    </div>
+    <p className="employee-calendar-privacy"><LockKeyIcon size={18} aria-hidden="true"/><span>This private link includes your shift times and location labels. Anyone with the link can view these details.</span></p>
+    <section className="employee-calendar-providers" aria-labelledby="calendar-provider-title">
+     <h3 id="calendar-provider-title">Subscribe in your calendar app</h3>
+     <details><summary><AppleLogoIcon size={22} aria-hidden="true"/><span>Apple Calendar<small>iPhone, iPad, and Mac</small></span><CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><div className="calendar-provider-steps"><ol><li>Copy your private calendar link.</li><li>On iPhone or iPad, open Calendar, then Calendars and Add Calendar. Choose Add Subscription Calendar.</li><li>Paste the link and follow the prompts. On Mac, choose File, then New Calendar Subscription.</li></ol><a href="https://support.apple.com/en-la/102301" target="_blank" rel="noreferrer">Apple subscription guide</a></div></details>
+     <details><summary><GoogleLogoIcon size={22} aria-hidden="true"/><span>Google Calendar<small>Set up on a computer</small></span><CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><div className="calendar-provider-steps"><ol><li>Copy your private calendar link.</li><li>On a computer, open Google Calendar. Next to Other calendars, choose Add other calendars, then From URL.</li><li>Paste the link and choose Add calendar.</li></ol><a href="https://support.google.com/calendar/answer/37100?hl=en" target="_blank" rel="noreferrer">Google subscription guide</a></div></details>
+     <details><summary><MicrosoftOutlookLogoIcon size={22} aria-hidden="true"/><span>Outlook<small>Set up on the web</small></span><CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><div className="calendar-provider-steps"><ol><li>Copy your private calendar link.</li><li>In Outlook on the web, open Calendar. Choose Add calendar, then Subscribe from web.</li><li>Paste the link and complete the import.</li></ol><a href="https://support.microsoft.com/en-us/outlook/import-or-subscribe-to-a-calendar-in-outlook-com-or-outlook-on-the-web" target="_blank" rel="noreferrer">Outlook subscription guide</a></div></details>
+    </section>
+    <p className="profile-supporting-copy">Calendar apps refresh on their own schedule. <Link href="/app/schedule">Check NEVORA</Link> for the latest schedule. Creating or copying a link does not confirm a calendar connection.</p>
+-   {active?<details className="employee-calendar-management"><summary>Manage private link<CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><p>Replacing the link stops the previous link and requires you to subscribe again. Revoking this link stops future access; it cannot remove information already copied by a calendar app.</p><div className="employee-calendar-actions">{currentUrl?<button type="button" className="button secondary" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('ROTATE')}><PendingLabel pending={busy} pendingText="Saving…">Replace link</PendingLabel></button>:null}<button type="button" className="button secondary calendar-revoke" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('REVOKE')}>Revoke link</button></div></details>:null}
++   {active?<details className="employee-calendar-management"><summary>Manage private link<CaretDownIcon size={18} className="provider-caret" aria-hidden="true"/></summary><p>Replacing the link stops the previous link and requires you to subscribe again. Revoking this link stops future access; it cannot remove information already copied by a calendar app.</p><div className="employee-calendar-actions">{currentUrl?<button type="button" className="button secondary" disabled={unknown||!!status&&'canIssue'in status&&!status.canIssue} aria-disabled={busy} onClick={()=>!busy&&onCommand('ROTATE')}><PendingLabel pending={busy} pendingText="Saving…">Replace link</PendingLabel></button>:null}<button type="button" className="button secondary calendar-revoke" disabled={unknown} aria-disabled={busy} onClick={()=>!busy&&onCommand('REVOKE')}>Revoke link</button></div></details>:null}
+ 
+   </>}
+  </section>;
+ }
+ export function CalendarSubscriptionPanel({authority}:{authority:string}){
+- const [status,setStatus]=useState<CalendarSubscriptionStatus|null>(null),[url,setUrl]=useState<string|null>(null),[paused,setPaused]=useState(false),[busy,setBusy]=useState(false),[notice,setNotice]=useState('');
+- const generation=useRef(0),work=useRef(0),busyNow=useRef(false),request=useRef<AbortController|null>(null),pending=useRef<CalendarCommand|null>(null),visible=useRef(true);
+- const refresh=useCallback(async()=>{
+-  request.current?.abort();const controller=new AbortController(),at=++generation.current;request.current=controller;
+-  try{const response=await fetch('/api/employee/calendar-subscriptions',{headers:{'X-Nevora-Calendar':'1','X-Nevora-Calendar-Authority':authority,Accept:'application/json'},credentials:'same-origin',cache:'no-store',redirect:'error',signal:controller.signal});const result=await response.json() as CalendarSubscriptionStatus;
+-   if(at!==generation.current||!visible.current)return;
+-   if(!response.ok||!('authority' in result)||result.authority!==authority){setUrl(null);setStatus({state:response.status===401||response.status===403?'unauthorized':'unavailable',reason:'read_failed'});return;}
+-   setStatus(result);
+-  }catch{if(at===generation.current&&visible.current){setUrl(null);setStatus({state:'unavailable',reason:'read_failed'});}}
+- },[authority]);
++ const mobile=useEmployeeMobile();
++ const [state,setState]=useState<CalendarClientState>({status:null,url:null,paused:true,busy:false,notice:'',pendingKind:null});
++ const owner=useRef<ReturnType<typeof createCalendarClient>|null>(null);
+  useEffect(()=>{
+-  let expiry:ReturnType<typeof setInterval>;
+-  const pause=()=>{visible.current=false;generation.current++;work.current++;busyNow.current=false;request.current?.abort();setUrl(null);setStatus(null);setBusy(false);setNotice('');setPaused(true);};
+-  const resume=()=>{if(document.visibilityState!=='visible'||!navigator.onLine){pause();return;}visible.current=true;setPaused(false);if(pending.current)setNotice('The result is unknown. Retry the same operation to check it.');void refresh();};
++  const client=createCalendarClient(authority,setState);owner.current=client;
++  const pause=()=>client.pause();
++  const resume=()=>{if(document.visibilityState!=='visible'||!navigator.onLine)client.pause();else client.start();};
+   const visibility=()=>document.visibilityState==='hidden'?pause():resume();
++  const end=()=>client.end();
++  const storage=(event:StorageEvent)=>{if(event.key===null||event.key==='fuel-portal-account-fence'||event.key==='fuel-portal-owner-generation')end();};
+   for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);
+   for(const event of ['focus','pageshow','online'])window.addEventListener(event,resume);
+-  const replacement=()=>{pending.current=null;pause();resume();};window.addEventListener('storage',replacement);document.addEventListener('visibilitychange',visibility);
+-  resume();expiry=setInterval(()=>{if(visible.current&&!busyNow.current){setUrl(null);void refresh();}},45000);
+-  return()=>{pause();clearInterval(expiry);pending.current=null;for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online'])window.removeEventListener(event,resume);window.removeEventListener('storage',replacement);document.removeEventListener('visibilitychange',visibility);};
+- // Authority is server-bound; replacing it destroys all transient private state.
+- },[authority,refresh]);
+- async function submit(kind:'ISSUE'|'ROTATE'|'REVOKE',retry=false){
+-  if(!visible.current||busyNow.current||pending.current&&!retry||status?.state==='unauthorized')return;
+-  const original=retry?pending.current:null;
+-  if(!original&&(!status||!('generation' in status)))return;
+-  const command:CalendarCommand=original??{kind,operationId:crypto.randomUUID(),authority,expectedGeneration:status&&'generation'in status?status.generation:''};pending.current=command;
+-  const at=++generation.current,operation=++work.current,controller=new AbortController();request.current?.abort();request.current=controller;busyNow.current=true;setBusy(true);setUrl(null);setNotice('');
+-  try{const response=await fetch('/api/employee/calendar-subscriptions',{method:'POST',headers:{'X-Nevora-Calendar':'1','X-Nevora-Calendar-Authority':authority,Accept:'application/json','Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',redirect:'error',signal:controller.signal,body:JSON.stringify(command)});
+-   if(at!==generation.current||!visible.current)return;
+-   if(response.status===401||response.status===403){pending.current=null;setUrl(null);setStatus({state:'unauthorized',reason:'access_denied'});setNotice(response.status===401?'Your session ended. Sign in again to manage the link.':'Your access changed. Sign in again to check your access.');return;}
+-   const result=await response.json() as CalendarManagementResult;
+-   if(at!==generation.current||!visible.current)return;
+-   if(result.status==='created'){pending.current=null;setUrl(result.url);setStatus({state:'active',id:result.id,generation:result.generation,issuedAt:new Date().toISOString(),allowedLocationIds:[],authority});setNotice('Link created.');}
+-   else if(result.status==='active_url_unavailable'){pending.current=null;setNotice('The link is active. Its URL cannot be retrieved; replace the link to create a new one.');await refresh();}
+-   else if(result.status==='revoked'){pending.current=null;setNotice('Link revoked.');await refresh();}
+-   else if(result.status==='outcome_unknown'||result.status==='unavailable'){setNotice('The result is unknown. Retry the same operation to check it.');}
+-   else{pending.current=null;setNotice(result.status==='conflict'?'The link changed. Check the current status and try again.':'Your session may have ended. Sign in again, then create the link.');setUrl(null);await refresh();}
+-  }catch{if(at===generation.current&&visible.current)setNotice('The result is unknown. Retry the same operation to check it.');}
+-  finally{if(operation===work.current&&visible.current){busyNow.current=false;setBusy(false);}}
+- }
+- async function copy(){if(!url||!visible.current)return;const at=generation.current;try{await navigator.clipboard.writeText(url);if(at===generation.current&&visible.current)setNotice('Link copied.');}catch{if(at===generation.current&&visible.current)setNotice('Copy was unavailable. Use Select link, then copy it manually.');}}
+- return <CalendarSubscriptionView status={status} url={url} paused={paused} busy={busy} notice={notice} onCommand={kind=>void submit(kind)} onCopy={()=>void copy()} onRetry={()=>pending.current?void submit(pending.current.kind,true):void refresh()}/>;
++  window.addEventListener('nevora:signout',end);window.addEventListener('storage',storage);document.addEventListener('visibilitychange',visibility);
++  resume();
++  return()=>{client.stop();owner.current=null;for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online'])window.removeEventListener(event,resume);window.removeEventListener('nevora:signout',end);window.removeEventListener('storage',storage);document.removeEventListener('visibilitychange',visibility);};
++ },[authority]);
++ return <CalendarSubscriptionView {...state} mobile={mobile} onCommand={kind=>owner.current?.command(kind)} onCopy={()=>void owner.current?.copy()} onRetry={()=>owner.current?.retry()}/>;
+ }
+diff --git a/src/components/employee-mobile/calendar.css b/src/components/employee-mobile/calendar.css
+new file mode 100644
+index 00000000..e663dc4d
+--- /dev/null
++++ b/src/components/employee-mobile/calendar.css
+@@ -0,0 +1,48 @@
++/* Calendar is a presentation of the incumbent link owner, scoped to Employee/Lead phones. */
++@media (max-width:767px), (max-width:900px) and (max-height:430px) and (orientation:landscape) and (pointer:coarse) {
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar {
++  display:flex; flex-direction:column; gap:var(--em-space-5); padding:var(--em-space-5) 0 0; min-width:0; color:var(--em-ink); font:400 var(--em-size-body)/var(--em-line-body) var(--em-font); overflow-wrap:anywhere;
++ }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar :is(header,.em-calendar-status,.em-calendar-secret,.em-calendar-feedback,.em-calendar-confirmation) { display:flex; flex-direction:column; gap:var(--em-space-3); min-width:0; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar :is(h2,h3,p) { margin:0; padding:0; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar h2 { font:var(--em-weight-section) var(--em-size-section)/var(--em-line-heading) var(--em-font); color:var(--em-ink); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar h3 { font:var(--em-weight-label) var(--em-size-body)/var(--em-line-label) var(--em-font); color:var(--em-ink); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar header p { color:var(--em-muted); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-status { padding:var(--em-space-5); border:1px solid var(--em-line); border-radius:var(--em-card); background:var(--em-surface); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar :is(.em-calendar-status p,.em-calendar-note,.em-calendar-manage p,.em-calendar-secret label) { color:var(--em-muted); font-size:var(--em-size-support); line-height:var(--em-line-body); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar .em-calendar-button { box-sizing:border-box; display:inline-flex; align-items:center; justify-content:center; gap:var(--em-space-2); min-width:0; min-height:var(--em-action); height:auto; padding:var(--em-space-3) var(--em-space-4); border:1px solid transparent; border-radius:var(--em-control); background:var(--em-teal); color:var(--em-on-action); font:var(--em-weight-action) var(--em-size-body)/var(--em-line-label) var(--em-font); text-align:center; text-decoration:none; white-space:normal; cursor:pointer; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar .em-calendar-button.secondary { background:var(--em-surface); border-color:var(--em-secondary); color:var(--em-teal); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar .em-calendar-button.danger { color:var(--em-red); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar .em-calendar-button.danger-primary { background:var(--em-red); color:var(--em-surface); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar .em-calendar-button:disabled { opacity:.6; cursor:default; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar .em-calendar-button:not(:disabled):hover { box-shadow:inset 0 0 0 100px color-mix(in srgb,currentColor 8%,transparent); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar :is(button,a,summary,textarea):focus-visible { outline:3px solid var(--em-focus); outline-offset:3px; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar :is(.em-calendar-actions) { display:flex; flex-wrap:wrap; gap:var(--em-space-3); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-actions > * { flex:1 1 150px; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar svg { flex:none; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar textarea { box-sizing:border-box; width:100%; min-width:0; max-width:100%; min-height:96px; padding:var(--em-space-3); border:1px solid var(--em-edge); border-radius:var(--em-control); background:var(--em-canvas); color:var(--em-ink); font:400 var(--em-size-body)/var(--em-line-body) var(--em-font); overflow-wrap:anywhere; resize:vertical; caret-color:var(--em-teal); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar textarea::selection { background:var(--em-teal); color:var(--em-on-action); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-feedback:not(:empty), html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-confirmation { background:var(--em-wash); padding:var(--em-space-4); border-radius:var(--em-control); color:var(--em-ink); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar > div:empty { display:none; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-privacy { display:flex; align-items:flex-start; gap:var(--em-space-3); font-size:var(--em-size-support); color:var(--em-muted); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-privacy svg { color:var(--em-teal); margin-top:2px; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-providers > h3 { margin:0 0 var(--em-space-3); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-provider-list { padding:0 var(--em-space-4); border:1px solid var(--em-line); border-radius:var(--em-card); background:var(--em-surface); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-provider-list details + details { border-top:1px solid var(--em-line); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar summary { display:flex; align-items:center; gap:var(--em-space-3); box-sizing:border-box; min-height:var(--em-target); padding:var(--em-space-4) 0; list-style:none; font-weight:var(--em-weight-label); cursor:pointer; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar summary::-webkit-details-marker { display:none; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar summary > span { flex:1; min-width:0; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar summary > svg { color:var(--em-teal); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar summary small { display:block; margin-top:var(--em-space-1); color:var(--em-muted); font:400 var(--em-size-support)/var(--em-line-body) var(--em-font); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-caret { margin-left:auto; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar details[open] > summary .em-calendar-caret { transform:rotate(180deg); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-provider-list details > div { padding:0 0 var(--em-space-4); font-size:var(--em-size-support); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar ol { margin:0; padding-left:var(--em-space-5); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar li + li { margin-top:var(--em-space-3); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-provider-list details p { margin-top:var(--em-space-3); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar a:not(.em-calendar-button) { color:var(--em-teal); text-decoration:underline; text-underline-offset:3px; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-note a { display:inline-flex; align-items:center; min-height:var(--em-target); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-provider-list a { display:inline-flex; align-items:center; min-height:var(--em-target); margin-top:var(--em-space-2); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-manage { border-top:1px solid var(--em-line); padding-top:var(--em-space-1); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-manage > div { margin-top:var(--em-space-4); }
++}
+diff --git a/src/components/employee-mobile/calendar.test.tsx b/src/components/employee-mobile/calendar.test.tsx
+new file mode 100644
+index 00000000..25a15de9
+--- /dev/null
++++ b/src/components/employee-mobile/calendar.test.tsx
+@@ -0,0 +1,23 @@
++import {renderToStaticMarkup} from 'react-dom/server';
++import {expect,it} from 'vitest';
++import {CalendarSubscriptionView} from '../calendar-subscription-panel';
++const ready={state:'active' as const,id:'own',generation:'current',issuedAt:'2026-10-27',allowedLocationIds:['loc-1'],authority:'own',observedAt:'2026-10-27',validForMs:45000,canIssue:true};
++const base={status:ready,url:null,paused:false,busy:false,notice:'',onCommand:()=>{},onCopy:()=>{},onRetry:()=>{},mobile:true};
++it('uses the accepted mobile flow without the decorative desktop example',()=>{
++ const html=renderToStaticMarkup(<CalendarSubscriptionView {...base}/>);expect(html).toContain('em-calendar');expect(html).not.toContain('Example week');expect(html).toContain('Your published shifts');expect(html).toContain('Signing out');expect(html).toContain('does not stop');expect(html).toContain('cannot remove information already copied');expect(html).toContain('aria-controls="calendar-link-confirmation"');
++});
++it('does not offer issuance while current canonical eligibility is absent',()=>{
++ const html=renderToStaticMarkup(<CalendarSubscriptionView {...base} status={{...ready,state:'none',id:null,generation:null,issuedAt:null,allowedLocationIds:[],canIssue:false}}/>);expect(html).toContain('No eligible work location');expect(html).not.toContain('>Create private link<');
++});
++it('keeps the one-time link labelled and manually selectable with provider-specific setup limits',()=>{
++ const html=renderToStaticMarkup(<CalendarSubscriptionView {...base} url="PRIVATE-ONCE"/>);expect(html).toContain('Your private calendar link');expect(html).toContain('Copy link');expect(html).toContain('Select link');expect(html).toContain('Shown once');expect(html).toContain('Computer required');expect(html).toContain('Creating or copying');expect(html).not.toContain('Calendar connected');
++});
++it('limits an uncertain write to original recovery rather than replacement or revocation',()=>{
++ const html=renderToStaticMarkup(<CalendarSubscriptionView {...base} notice="The result is unknown." pendingKind="ROTATE"/>);expect(html).toContain('Retry original request');expect(html).not.toContain('>Revoke link<');expect(html).not.toContain('>Replace link<');
++});
++it('does not render private URL/provider or management actions after pause or denial',()=>{
++ expect(renderToStaticMarkup(<CalendarSubscriptionView {...base}/>)).toContain('aria-labelledby="calendar-provider-title"');
++ for(const props of [{paused:true},{status:{state:'unauthorized' as const,reason:'access_denied'}}]){
++  const html=renderToStaticMarkup(<CalendarSubscriptionView {...base} {...props} url="PRIVATE-ONCE"/>);expect(html).not.toContain('PRIVATE-ONCE');expect(html).not.toContain('aria-labelledby="calendar-provider-title"');expect(html).not.toContain('https://support.apple.com/');expect(html).not.toContain('https://support.google.com/');expect(html).not.toContain('https://support.microsoft.com/');expect(html).not.toContain('>Revoke link<');
++ }
++});
+diff --git a/src/components/employee-mobile/calendar.tsx b/src/components/employee-mobile/calendar.tsx
+new file mode 100644
+index 00000000..572aea35
+--- /dev/null
++++ b/src/components/employee-mobile/calendar.tsx
+@@ -0,0 +1,57 @@
++'use client';
++import {useEffect,useRef,useState} from 'react';
++import Link from 'next/link';
++import {AppleLogoIcon} from '@phosphor-icons/react/dist/ssr/AppleLogo';
++import {GoogleLogoIcon} from '@phosphor-icons/react/dist/ssr/GoogleLogo';
++import {MicrosoftOutlookLogoIcon} from '@phosphor-icons/react/dist/ssr/MicrosoftOutlookLogo';
++import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
++import {LockKeyIcon} from '@phosphor-icons/react/dist/ssr/LockKey';
++import {CopyIcon} from '@phosphor-icons/react/dist/ssr/Copy';
++import type {CalendarCommand} from '../../lib/calendar/types';
++import type {CalendarClientState} from '../../lib/calendar/client';
++import {revealFeedback} from '../../lib/reveal-feedback';
++import './calendar.css';
++type Props=Omit<CalendarClientState,'pendingKind'>&{pendingKind?:CalendarCommand['kind']|null;onCommand:(kind:CalendarCommand['kind'])=>void;onCopy:()=>void;onRetry:()=>void};
++export function EmployeeMobileCalendarView({status,url,paused,busy,notice,pendingKind,onCommand,onCopy,onRetry}:Props){
++ const [confirmation,setConfirmation]=useState<{kind:'ROTATE'|'REVOKE';generation:string|null}|null>(null);
++ const priorNotice=useRef('');
++ const recoveryReady=Boolean(pendingKind&&!paused&&!busy&&status&&'authority'in status);
++ const feedback=useRef<HTMLDivElement>(null),confirm=useRef<HTMLDivElement>(null),trigger=useRef<HTMLButtonElement|null>(null),link=useRef<HTMLTextAreaElement>(null);
++ useEffect(()=>{const changed=notice!==priorNotice.current;priorNotice.current=notice;if(notice&&(changed||recoveryReady)&&feedback.current)revealFeedback(feedback.current);},[notice,recoveryReady]);
++ const available=!paused&&status&&'authority'in status,active=available&&status.state==='active',unknown=!!pendingKind;
++ const currentUrl=active?url:null,confirmationCurrent=active&&!busy&&!unknown&&confirmation&&confirmation.generation===status.generation;
++ function ask(kind:'ROTATE'|'REVOKE',button:HTMLButtonElement){if(!active||busy||unknown)return;trigger.current=button;setConfirmation({kind,generation:status.generation});requestAnimationFrame(()=>{if(confirm.current)revealFeedback(confirm.current);});}
++ function cancel(){setConfirmation(null);requestAnimationFrame(()=>trigger.current?.isConnected&&trigger.current.focus());}
++ return <section className="em-calendar" aria-labelledby="employee-calendar-heading" data-calendar-setting data-calendar-state={paused?'paused':busy?'working':status?.state??'loading'}>
++  <header><h2 id="employee-calendar-heading">Calendar link</h2><p>Your published shifts in your calendar app.</p></header>
++  <div className="em-calendar-status" aria-busy={busy}>
++   {paused?<p role="status">Calendar settings paused. Return to this window to check your link.</p>:busy?<p role="status">Saving your calendar request…</p>:!status?<p role="status">Checking your calendar link…</p>:!available?<><p role="status">{status.state==='unauthorized'?'Your access could not be confirmed. Sign in again to manage your link.':'Calendar settings could not be checked. Try again to see the current status.'}</p>{status.state==='unauthorized'?<Link className="em-calendar-button secondary" href="/login">Sign in</Link>:<button type="button" className="em-calendar-button secondary" onClick={onRetry}>Try again</button>}</>:<>
++    <h3>{active?'Link active':status.state==='revoked'?'Link revoked':'No calendar link yet'}</h3>
++    {unknown?<p>Your previous request still needs to be checked before you can change this link.</p>:active?currentUrl?<div className="em-calendar-secret">
++     <label htmlFor="employee-calendar-link">Your private calendar link</label>
++     <textarea id="employee-calendar-link" ref={link} readOnly spellCheck={false} autoComplete="off" value={currentUrl} rows={3} aria-describedby="employee-calendar-link-hint"/>
++     <p id="employee-calendar-link-hint">Shown once. Copy it now, or replace it later to get a new link.</p>
++     <div className="em-calendar-actions"><button type="button" className="em-calendar-button" onClick={onCopy}><CopyIcon size={20} aria-hidden="true"/>Copy link</button><button type="button" className="em-calendar-button secondary" onClick={()=>{link.current?.focus();link.current?.select();}}>Select link</button></div>
++    </div>:<><p>Your link is active, but its private URL cannot be shown again. Replace it if you need a new link to copy.</p>{status.canIssue?<button type="button" className="em-calendar-button" aria-controls="calendar-link-confirmation" aria-expanded={!!confirmationCurrent&&confirmation.kind==='ROTATE'} onClick={event=>ask('ROTATE',event.currentTarget)}>Replace link</button>:<p>No eligible work location is currently available. Ask your manager to review your access.</p>}</>:<><p>{status.state==='revoked'?'Future access through the previous link has stopped.':'Create a private link, then add it to your calendar app.'}</p>{status.canIssue?<button type="button" className="em-calendar-button" onClick={()=>onCommand('ISSUE')}>Create private link</button>:<p>No eligible work location is currently available. Ask your manager to review your access.</p>}</>}
++   </>}
++  </div>
++  <div ref={feedback} tabIndex={-1} className={notice&&!paused?'em-calendar-feedback':''}>
++   {notice&&!paused?<p role="status">{notice}</p>:null}
++   {unknown&&!paused&&!busy&&available?<button type="button" className="em-calendar-button secondary" onClick={onRetry}>Retry original request</button>:null}
++  </div>
++  {available&&!busy?<>
++   <p className="em-calendar-privacy"><LockKeyIcon size={20} aria-hidden="true"/><span>Keep this link private. Anyone with it can see your shift times and location labels.</span></p>
++   <section className="em-calendar-providers" aria-labelledby="calendar-provider-title">
++    <h3 id="calendar-provider-title">Add to your calendar app</h3>
++    <div className="em-calendar-provider-list">
++     <details><summary><AppleLogoIcon size={22} aria-hidden="true"/><span>Apple Calendar<small>iPhone, iPad and Mac</small></span><CaretDownIcon size={20} className="em-calendar-caret" aria-hidden="true"/></summary><div><ol><li>Copy your private link from NEVORA.</li><li>On iPhone or iPad, open Calendar, then Calendars and Add Calendar. Choose Add Subscription Calendar.</li><li>Paste the link and follow the setup prompts. On Mac, choose File, then New Calendar Subscription.</li></ol><a href="https://support.apple.com/en-us/102301" target="_blank" rel="noreferrer">Apple setup guide<span className="nv-sr"> (opens a new tab)</span></a></div></details>
++     <details><summary><GoogleLogoIcon size={22} aria-hidden="true"/><span>Google Calendar<small>Computer required for setup</small></span><CaretDownIcon size={20} className="em-calendar-caret" aria-hidden="true"/></summary><div><ol><li>Copy your private link from NEVORA.</li><li>On a computer, open Google Calendar. Beside Other calendars, choose Add other calendars, then From URL.</li><li>Paste the link and choose Add calendar.</li></ol><p>The mobile Google Calendar app cannot add a URL subscription. Your link allows access without signing in to NEVORA; keep it private.</p><a href="https://support.google.com/calendar/answer/37100?hl=en" target="_blank" rel="noreferrer">Google setup guide<span className="nv-sr"> (opens a new tab)</span></a></div></details>
++     <details><summary><MicrosoftOutlookLogoIcon size={22} aria-hidden="true"/><span>Outlook<small>Set up on the web</small></span><CaretDownIcon size={20} className="em-calendar-caret" aria-hidden="true"/></summary><div><ol><li>Copy your private link from NEVORA.</li><li>In Outlook on the web, open Calendar, then Add calendar and Subscribe from web.</li><li>Paste the link and choose Import.</li></ol><p>Use a subscription to receive updates. Uploading a calendar file does not keep it up to date.</p><a href="https://support.microsoft.com/en-us/outlook/import-or-subscribe-to-a-calendar-in-outlook-com-or-outlook-on-the-web" target="_blank" rel="noreferrer">Outlook setup guide<span className="nv-sr"> (opens a new tab)</span></a></div></details>
++    </div>
++   </section>
++   <p className="em-calendar-note">Calendar apps refresh on their own schedule. <Link href="/app/schedule">Check NEVORA</Link> for the latest schedule. Creating or copying a link does not confirm a calendar connection.</p>
++   {active&&!unknown?<details className="em-calendar-manage"><summary>Manage private link<CaretDownIcon size={20} className="em-calendar-caret" aria-hidden="true"/></summary><p>Signing out of NEVORA does not stop this subscription. Revoke the link to stop future access; this cannot remove information already copied by a calendar app.</p><div className="em-calendar-actions">{currentUrl&&status.canIssue?<button type="button" className="em-calendar-button secondary" aria-controls="calendar-link-confirmation" aria-expanded={!!confirmationCurrent&&confirmation.kind==='ROTATE'} onClick={event=>ask('ROTATE',event.currentTarget)}>Replace link</button>:null}<button type="button" className="em-calendar-button secondary danger" aria-controls="calendar-link-confirmation" aria-expanded={!!confirmationCurrent&&confirmation.kind==='REVOKE'} onClick={event=>ask('REVOKE',event.currentTarget)}>Revoke link</button></div></details>:null}
++   {confirmationCurrent?<div ref={confirm} id="calendar-link-confirmation" className="em-calendar-confirmation" role="group" aria-labelledby="calendar-confirm-title" tabIndex={-1}><h3 id="calendar-confirm-title">{confirmation.kind==='ROTATE'?'Replace your private link?':'Revoke your private link?'}</h3><p>{confirmation.kind==='ROTATE'?'The previous link will stop working. Copy the new link and add it to your calendar app again.':'Your calendar app will no longer receive shifts through this link. Events already copied may remain in the app.'}</p><div className="em-calendar-actions"><button type="button" className={`em-calendar-button${confirmation.kind==='REVOKE'?' danger-primary':''}`} onClick={()=>{if(confirmation.kind==='ROTATE'&&!status.canIssue)return;const kind=confirmation.kind;setConfirmation(null);onCommand(kind);}}>{confirmation.kind==='ROTATE'?'Replace private link':'Revoke private link'}</button><button type="button" className="em-calendar-button secondary" onClick={cancel}>Keep current link</button></div></div>:null}
++  </>:null}
++ </section>;
++}
+diff --git a/src/lib/calendar/client.ts b/src/lib/calendar/client.ts
+new file mode 100644
+index 00000000..628eb7a6
+--- /dev/null
++++ b/src/lib/calendar/client.ts
+@@ -0,0 +1,76 @@
++import type {CalendarCommand,CalendarManagementResult,CalendarSubscriptionStatus} from './types';
++
++type Ready=Extract<CalendarSubscriptionStatus,{authority:string}>;
++export type CalendarClientState={status:CalendarSubscriptionStatus|null;url:string|null;paused:boolean;busy:boolean;notice:string;pendingKind:CalendarCommand['kind']|null};
++import {parseCalendarStatus,parseCalendarResult} from './contract';
++const unknown='The result is unknown. Retry the original request to finish checking it. No new request will be created.';
++const failure:CalendarSubscriptionStatus={state:'unavailable',reason:'read_failed'};
++class AccessDenied extends Error{}
++/** One mounted link owner. No credential or pending intent is persisted. */
++export function createCalendarClient(authority:string,changed:(state:CalendarClientState)=>void){
++ let state:CalendarClientState={status:null,url:null,paused:true,busy:false,notice:'',pendingKind:null};
++ let stopped=false,ended=false,sequence=0,pending:CalendarCommand|null=null,active:AbortController|undefined;
++ let poll:ReturnType<typeof setTimeout>|undefined,expiry:ReturnType<typeof setTimeout>|undefined;
++ let lastObserved=0,validUntil=0;
++ const publish=(patch:Partial<CalendarClientState>)=>{state={...state,...patch,pendingKind:pending?.kind??null};if(!stopped)changed(state);};
++ const cancel=()=>{validUntil=0;sequence++;active?.abort();active=undefined;clearTimeout(poll);clearTimeout(expiry);};
++ const current=(at:number)=>!stopped&&!ended&&!state.paused&&at===sequence;
++ const headers={'X-Nevora-Calendar':'1','X-Nevora-Calendar-Authority':authority,Accept:'application/json'};
++ async function request(command?:CalendarCommand){
++  const controller=new AbortController();active=controller;let timeout:ReturnType<typeof setTimeout>|undefined;
++  const abort=new Promise<never>((_,reject)=>{controller.signal.addEventListener('abort',()=>reject(Error('Calendar request stopped')),{once:true});timeout=setTimeout(()=>controller.abort(),10000);});
++  try{return await Promise.race([abort,(async()=>{
++   const response=await fetch('/api/employee/calendar-subscriptions',{method:command?'POST':'GET',headers:command?{...headers,'Content-Type':'application/json'}:headers,body:command?JSON.stringify(command):undefined,credentials:'same-origin',cache:'no-store',redirect:'error',signal:controller.signal});
++   if(controller.signal.aborted){void response.body?.cancel().catch(()=>{});throw Error('Late calendar response');}
++   if(response.status===401||response.status===403){void response.body?.cancel().catch(()=>{});throw new AccessDenied();}
++   const value:unknown=await response.json();
++   if(command){const result=parseCalendarResult(value,command,location.origin);if(response.status!==(result.status==='conflict'?409:result.status==='unavailable'||result.status==='outcome_unknown'?503:200))throw Error('Unexpected calendar HTTP result');return result;}
++   if(!response.ok)throw Error('Calendar read failed');return parseCalendarStatus(value,authority);
++  })()]);}finally{clearTimeout(timeout);if(active===controller)active=undefined;}
++ }
++ const schedule=()=>{if(!stopped&&!ended&&!state.paused&&state.status?.state!=='unauthorized')poll=setTimeout(()=>void refresh(),30000);};
++ function expire(){cancel();publish({status:failure,url:null});schedule();}
++ function hasCurrentLease(){if(performance.now()<validUntil)return true;expire();return false;}
++ async function refresh(reveal?:Extract<CalendarManagementResult,{status:'created'}>){
++  if(stopped||ended||state.paused||state.busy&&!reveal)return;
++  cancel();const at=sequence,started=performance.now();publish({status:null,url:null});
++  try{
++   const result=await request() as Ready;if(!current(at))return;
++   const deadline=started+result.validForMs,remaining=deadline-performance.now(),observed=Date.parse(result.observedAt);
++   if(remaining<=0||observed<lastObserved)throw Error('Expired calendar read');lastObserved=observed;validUntil=deadline;
++   const url=reveal&&result.state==='active'&&result.id===reveal.id&&result.generation===reveal.generation?reveal.url:null;
++   publish({status:result,url,...(reveal?{notice:url?'Link created. Copy it now to use it in your calendar app.':'The link changed before it could be shown. Review its current status.'}:{})});
++   expiry=setTimeout(()=>{if(current(at))expire();},remaining);
++   schedule();
++  }catch(error){if(!current(at))return;publish({status:error instanceof AccessDenied?{state:'unauthorized',reason:'access_denied'}:failure,url:null});schedule();}
++ }
++ async function submit(kind:CalendarCommand['kind'],retry=false){
++  if(stopped||ended||state.paused||state.busy||!state.status||!('authority'in state.status)||pending&&!retry)return;
++  if(!hasCurrentLease())return;
++  const status=state.status;
++  if(!retry&&(kind==='REVOKE'?status.state!=='active':!status.canIssue||kind==='ISSUE'&&status.state==='active'||kind==='ROTATE'&&status.state!=='active'))return;
++  const command=retry?pending:{kind,operationId:crypto.randomUUID(),authority,expectedGeneration:status.generation};if(!command)return;
++  pending=command;cancel();const at=sequence;publish({status:null,url:null,busy:true,notice:''});
++  let created:Extract<CalendarManagementResult,{status:'created'}>|undefined;
++  try{
++   const result=await request(command) as CalendarManagementResult;if(!current(at))return;
++   if(result.status==='unavailable'||result.status==='outcome_unknown')publish({notice:unknown});
++   else{
++    pending=null;
++    if(result.status==='created')created=result;
++    publish({notice:result.status==='created'?'Checking the new link…':result.status==='revoked'?'Link revoked. Future access through this link has stopped.':result.status==='active_url_unavailable'?'The original request finished. Its private URL cannot be retrieved. Replace the link if you still need to copy it.':'The link or your access changed. Review the current status before continuing.'});
++   }
++  }catch(error){if(!current(at))return;if(error instanceof AccessDenied){publish({status:{state:'unauthorized',reason:'access_denied'},notice:'Your access could not be confirmed. Sign in again to check your calendar settings.',busy:false});return;}publish({notice:unknown});}
++  if(!current(at))return;publish({busy:false});await refresh(created);
++ }
++ return {
++  start(){if(stopped||ended||!state.paused)return;publish({paused:false,notice:pending?unknown:''});void refresh();},
++  refresh:()=>void refresh(),
++  command:(kind:CalendarCommand['kind'])=>void submit(kind),
++  retry:()=>{if(pending&&state.status&&'authority'in state.status)void submit(pending.kind,true);else void refresh();},
++  async copy(){const url=state.url,at=sequence;if(!url||state.paused||ended||!hasCurrentLease())return;try{await navigator.clipboard.writeText(url);if(current(at)&&state.url===url&&hasCurrentLease())publish({notice:'Link copied.'});}catch{if(current(at)&&state.url===url&&hasCurrentLease())publish({notice:'Copy was unavailable. Use Select link, then copy it manually.'});}},
++  pause(){if(stopped)return;cancel();publish({status:null,url:null,paused:true,busy:false,notice:''});},
++  end(){ended=true;pending=null;cancel();publish({status:null,url:null,paused:true,busy:false,notice:''});},
++  stop(){stopped=true;pending=null;cancel();state={...state,status:null,url:null,paused:true,busy:false};},
++ };
++}
+diff --git a/src/lib/calendar/contract.test.ts b/src/lib/calendar/contract.test.ts
+new file mode 100644
+index 00000000..1afb50ca
+--- /dev/null
++++ b/src/lib/calendar/contract.test.ts
+@@ -0,0 +1,15 @@
++import {expect,it} from 'vitest';
++import {parseCalendarStatus,parseCalendarResult} from './contract';
++const authority='a'.repeat(64),operationId='11111111-1111-4111-8111-111111111111',id='22222222-2222-4222-8222-222222222222',generation='33333333-3333-4333-8333-333333333333';
++const status={state:'none',id:null,generation:null,issuedAt:null,allowedLocationIds:[],authority,observedAt:'2026-10-27T12:00:00Z',validForMs:45000,canIssue:true};
++const command={kind:'ISSUE' as const,operationId,authority,expectedGeneration:null};
++const created={status:'created',operationId,id,generation,url:`https://nevora.test/api/calendar/${'A'.repeat(43)}/schedule.ics`};
++it('accepts bounded own current status and exact one-time receipts only',()=>{expect(parseCalendarStatus(status,authority)).toEqual(status);expect(parseCalendarResult(created,command,'https://nevora.test')).toEqual(created);});
++it.each([{validForMs:0},{validForMs:45001},{validForMs:'45000'},{canIssue:'true'},{authority:'b'.repeat(64)},{state:'active'},{id},{issuedAt:'today'},{allowedLocationIds:['loc-1']},{observedAt:'invalid'},{peer:'extra'}])('refuses malformed/unbound current status %j',patch=>{expect(()=>parseCalendarStatus({...status,...patch},authority)).toThrow();});
++it.each([{operationId:generation},{generation:'invalid'},{status:'revoked'},{status:'connected'},{url:'https://evil.test/api/calendar/'+ 'A'.repeat(43)+'/schedule.ics'},{url:created.url+'?copy=1'},{url:created.url+'#copy'},{url:created.url.replace('A/schedule','B/schedule')},{url:created.url.replace('https://','https://name:password@')},{extra:true}])('refuses stale/malformed/foreign receipt %j',patch=>{expect(()=>parseCalendarResult({...created,...patch},command,'https://nevora.test')).toThrow();});
++it('binds safe lost-response recovery and revoke generation to the original request',()=>{
++ expect(parseCalendarResult({status:'active_url_unavailable',operationId,id,generation},command,'https://nevora.test')).toMatchObject({status:'active_url_unavailable'});
++ expect(()=>parseCalendarResult({status:'outcome_unknown',operationId:id},command,'https://nevora.test')).toThrow();
++ const revoke={...command,kind:'REVOKE' as const,expectedGeneration:generation};expect(parseCalendarResult({status:'revoked',operationId,id,generation},revoke,'https://nevora.test')).toMatchObject({status:'revoked'});
++ expect(()=>parseCalendarResult({status:'revoked',operationId,id,generation:id},revoke,'https://nevora.test')).toThrow();
++});
+diff --git a/src/lib/calendar/contract.ts b/src/lib/calendar/contract.ts
+new file mode 100644
+index 00000000..bd67a8e6
+--- /dev/null
++++ b/src/lib/calendar/contract.ts
+@@ -0,0 +1,31 @@
++import type {CalendarCommand,CalendarManagementResult,CalendarSubscriptionStatus} from './types';
++type Ready=Extract<CalendarSubscriptionStatus,{authority:string}>;
++const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
++const object=(value:unknown):value is Record<string,unknown>=>!!value&&typeof value==='object'&&!Array.isArray(value);
++const keys=(value:Record<string,unknown>,expected:string[])=>Object.keys(value).sort().join(',')===[...expected].sort().join(',');
++const iso=(value:unknown):value is string=>typeof value==='string'&&Number.isFinite(Date.parse(value));
++export function parseCalendarStatus(value:unknown,authority:string):Ready{
++ if(!object(value)||!keys(value,['state','id','generation','issuedAt','allowedLocationIds','authority','observedAt','validForMs','canIssue'])||!['none','active','revoked'].includes(String(value.state))||value.authority!==authority||!iso(value.observedAt)||typeof value.validForMs!=='number'||!Number.isInteger(value.validForMs)||value.validForMs<=0||value.validForMs>45000||typeof value.canIssue!=='boolean'||!Array.isArray(value.allowedLocationIds)||value.allowedLocationIds.length>1000||!value.allowedLocationIds.every(id=>typeof id==='string'&&id.length>0&&id.length<=200)||new Set(value.allowedLocationIds).size!==value.allowedLocationIds.length)throw Error('Invalid calendar status');
++ if(value.state==='none'?value.id!==null||value.generation!==null||value.issuedAt!==null||value.allowedLocationIds.length>0:typeof value.id!=='string'||!uuid.test(value.id)||typeof value.generation!=='string'||!uuid.test(value.generation)||!iso(value.issuedAt))throw Error('Invalid calendar generation');
++ return value as Ready;
++}
++export function parseCalendarResult(value:unknown,command:CalendarCommand,origin:string):CalendarManagementResult{
++ if(!object(value)||typeof value.status!=='string')throw Error('Invalid calendar receipt');
++ if(['conflict','blocked','unavailable'].includes(value.status)){
++  if(!keys(value,['status','reason'])||typeof value.reason!=='string'||!value.reason||value.reason.length>100)throw Error('Invalid calendar refusal');
++ }else{
++  const fields=value.status==='created'?['status','operationId','id','generation','url']:value.status==='outcome_unknown'?['status','operationId']:['status','operationId','id','generation'];
++  if(!keys(value,fields)||value.operationId!==command.operationId)throw Error('Mismatched calendar operation');
++  if(value.status!=='outcome_unknown'){
++   if(typeof value.id!=='string'||!uuid.test(value.id)||typeof value.generation!=='string'||!uuid.test(value.generation))throw Error('Invalid calendar receipt');
++   if(command.kind==='REVOKE'?value.status!=='revoked'||value.generation!==command.expectedGeneration:!['created','active_url_unavailable'].includes(value.status))throw Error('Unexpected calendar receipt');
++  }
++  if(value.status==='created'){
++   if(typeof value.url!=='string')throw Error('Invalid calendar URL');
++   const url=new URL(value.url),token=url.pathname.split('/')[3];
++   if(url.origin!==origin||url.username||url.password||url.search||url.hash||!/^\/api\/calendar\/[A-Za-z0-9_-]{43}\/schedule\.ics$/.test(url.pathname)||!/[AEIMQUYcgkosw048]$/.test(token))throw Error('Invalid calendar URL');
++  }
++ }
++ if(!['created','active_url_unavailable','revoked','outcome_unknown','conflict','blocked','unavailable'].includes(value.status))throw Error('Invalid calendar receipt');
++ return value as CalendarManagementResult;
++}
+diff --git a/src/lib/calendar/http.server.test.ts b/src/lib/calendar/http.server.test.ts
+index 77ecd701..836c85ac 100644
+--- a/src/lib/calendar/http.server.test.ts
++++ b/src/lib/calendar/http.server.test.ts
+@@ -14,21 +14,21 @@ it('unknown and revoked are identical generic private 404 and never 304',async()
+ });
+ const ownProof={employee:{id:'fictional-self',firstName:'Fictional',lastName:'Self',role:'EMPLOYEE' as const,primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
+ function manageRequest(method='POST',overrides:Record<string,string>={},body:unknown={kind:'ISSUE',operationId:'fictional-operation',authority:'fixture-authority',expectedGeneration:null}){return new Request('https://fixture.invalid/api/employee/calendar-subscriptions',{method,headers:{'X-Nevora-Calendar':'1','X-Nevora-Calendar-Authority':'fixture-authority',Origin:'https://fixture.invalid','Content-Type':'application/json',...overrides},...(method==='POST'?{body:JSON.stringify(body)}:{})});}
+ it('management rejects cross-origin, missing marker, excessive body and stale authority before mutation',async()=>{
+  vi.mocked(requireSessionMutationProof).mockResolvedValue(ownProof);vi.mocked(calendarAuthority).mockReturnValue('fixture-authority');vi.mocked(manageEmployeeCalendarSubscription).mockClear();
+  for(const headers of [{Origin:'https://outside.invalid'},{'X-Nevora-Calendar':'0'},{'X-Nevora-Calendar-Authority':'stale'}] as Record<string,string>[])expect((await employeeCalendarHandler(manageRequest('POST',headers))).status).toBe(403);
+  expect((await employeeCalendarHandler(manageRequest('POST',{'Content-Length':'5000'}))).status).toBe(400);expect(manageEmployeeCalendarSubscription).not.toHaveBeenCalled();
+ });
+ it('current Employee proof controls own status and issuance without a durable URL',async()=>{
+  vi.mocked(requireSessionMutationProof).mockResolvedValue(ownProof);vi.mocked(calendarAuthority).mockReturnValue('fixture-authority');vi.mocked(validCalendarCommand).mockReturnValue(true);
+- vi.mocked(getEmployeeCalendarSubscription).mockResolvedValue({state:'none',id:null,generation:null,issuedAt:null,allowedLocationIds:[],authority:'fixture-authority'});expect((await employeeCalendarHandler(manageRequest('GET'))).status).toBe(200);
++ vi.mocked(getEmployeeCalendarSubscription).mockResolvedValue({state:'none',id:null,generation:null,issuedAt:null,allowedLocationIds:[],authority:'fixture-authority',observedAt:'2026-10-27',validForMs:45000,canIssue:true});expect((await employeeCalendarHandler(manageRequest('GET'))).status).toBe(200);
+  vi.mocked(manageEmployeeCalendarSubscription).mockResolvedValue({status:'created',operationId:'o',id:'id',generation:'g',url:'/api/calendar/fictional-sentinel/schedule.ics'});const response=await employeeCalendarHandler(manageRequest());expect(response.status).toBe(200);expect((await response.json()).url).toBe('https://fixture.invalid/api/calendar/fictional-sentinel/schedule.ics');expect(response.headers.get('Cache-Control')).toBe('no-store, private');
+  vi.mocked(requireSessionMutationProof).mockResolvedValue({...ownProof,employee:{...ownProof.employee,role:'MANAGER'}});expect((await employeeCalendarHandler(manageRequest())).status).toBe(403);
+ });
+ it('manager route permits only current manager revocation and denies issue',async()=>{
+  vi.mocked(requireSessionMutationProof).mockResolvedValue({...ownProof,employee:{...ownProof.employee,role:'MANAGER'}});vi.mocked(calendarAuthority).mockReturnValue('fixture-authority');vi.mocked(validCalendarCommand).mockReturnValue(true);vi.mocked(revokeEmployeeCalendarSubscription).mockClear();
+  expect((await managerCalendarRevokeHandler(manageRequest(),'fictional-target')).status).toBe(400);expect(revokeEmployeeCalendarSubscription).not.toHaveBeenCalled();
+  vi.mocked(revokeEmployeeCalendarSubscription).mockResolvedValue({status:'revoked',operationId:'o',id:'id',generation:'g'});expect((await managerCalendarRevokeHandler(manageRequest('POST',{}, {kind:'REVOKE',operationId:'o',authority:'fixture-authority',expectedGeneration:null}),'fictional-target')).status).toBe(200);
+  vi.mocked(requireSessionMutationProof).mockResolvedValue(ownProof);expect((await managerCalendarRevokeHandler(manageRequest(),'fictional-target')).status).toBe(403);
+ });
+ it('issuance uses the verified browser origin when Next exposes an internal loopback request URL',async()=>{
+diff --git a/src/lib/calendar/service.server.ts b/src/lib/calendar/service.server.ts
+index ff3a0628..cd8be0fe 100644
+--- a/src/lib/calendar/service.server.ts
++++ b/src/lib/calendar/service.server.ts
+@@ -7,38 +7,44 @@ import type {CalendarCommand,CalendarManagementResult,CalendarSubscriptionStatus
+ import {neonNotificationExecutor} from '../data/notification-transactions';
+ import {getWorkspace} from '../data/workspaces';
+ import {assertManagementProof,managementSessionStatements,isManagementAuthorizationError} from '../data/management-session';
+ import {calendarManagementGuards,capabilityGuards,subscriptionColumns,type SubscriptionRow} from '../data/calendar-subscriptions.server';
+ import {employeeAllowedLocationsSql} from '../data/employee-schedule';
+ import {currentCalloutReleaseSql} from '../data/shift-change-release';
+ import {createCalendarToken,calendarDigest,validCalendarToken} from './token.server';
+ import {businessDate,shiftBoundaryInstants} from '../business-time';
+ import {addDays} from '../date-utils';
+ import {serializeCalendar} from './ical';
++import {parseCalendarStatus} from './contract';
+ /** Bind management commands to the current portal session; feed tokens have an independent lifecycle. */
+ export const calendarAuthority=(proof:SessionMutationProof)=>createHash('sha256').update(JSON.stringify(['nevora:calendar:v1',proof.employee.id,proof.sessionTokenHash])).digest('hex');
+ const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+ const denied=(error:unknown)=>isOperationalAuthorizationError(error)||isManagementAuthorizationError(error)||!!(error&&typeof error==='object'&&'code' in error&&error.code==='22P02'&&'message' in error&&error.message==='invalid input syntax for type integer: "calendar_authorization"');
+ const unavailable:CalendarManagementResult={status:'unavailable',reason:'read_failed'};
+ function ownProof(proof:SessionMutationProof){assertManagementProof(proof,proof?.employee?.id);if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))throw Error('calendar_own_role');}
+ export function validCalendarCommand(value:unknown):value is CalendarCommand {
+  if(!value||typeof value!=='object')return false;
+  const v=value as Record<string,unknown>;
+  return Object.keys(v).sort().join(',')==='authority,expectedGeneration,kind,operationId'&&typeof v.kind==='string'&&['ISSUE','ROTATE','REVOKE'].includes(v.kind)&&typeof v.operationId==='string'&&uuid.test(v.operationId)&&typeof v.authority==='string'&&/^[a-f0-9]{64}$/.test(v.authority)&&(v.expectedGeneration===null||typeof v.expectedGeneration==='string'&&uuid.test(v.expectedGeneration));
+ }
+ const latestSql=(employee:string,workspace:string):SqlStatement=>({text:`SELECT ${subscriptionColumns} FROM calendar_subscriptions WHERE employee_id=$1 AND workspace_id=$2 ORDER BY issued_at DESC,id DESC LIMIT 1`,values:[employee,workspace]});
+ export async function getEmployeeCalendarSubscription(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<CalendarSubscriptionStatus>{
+  try{ownProof(proof);}catch{return {state:'unauthorized',reason:'access_denied'};}
+  try{
+-  const workspace=await getWorkspace(executor),guards=calendarManagementGuards(proof,workspace),rows=await executor.transaction([...guards,latestSql(proof.employee.id,workspace.id),...managementSessionStatements(proof,proof.employee.id,['EMPLOYEE','LEAD'])]);
++  const workspace=await getWorkspace(executor),guards=calendarManagementGuards(proof,workspace),rows=await executor.transaction([...guards,latestSql(proof.employee.id,workspace.id),
++   {text:`WITH allowed AS (${employeeAllowedLocationsSql()}) SELECT clock_timestamp()::text AS observed_at,
++    LEAST(45000,FLOOR(EXTRACT(EPOCH FROM (s.expires_at-clock_timestamp()))*1000))::integer AS valid_for_ms,
++    EXISTS(SELECT 1 FROM allowed) AS can_issue FROM employee_sessions s WHERE s.employee_id=$2 AND s.token_hash=$3`,values:[workspace.id,proof.employee.id,proof.sessionTokenHash]},
++   ...managementSessionStatements(proof,proof.employee.id,['EMPLOYEE','LEAD'])],AbortSignal.timeout(8000));
+   const row=rows[guards.length]?.[0] as SubscriptionRow|undefined;
+-  return {state:row?row.revoked_at?'revoked':'active':'none',id:row?.id??null,generation:row?.generation??null,issuedAt:row?.issued_at??null,allowedLocationIds:row?.allowed_location_ids??[],authority:calendarAuthority(proof)};
++  const lease=rows[guards.length+1]?.[0] as {observed_at:string;valid_for_ms:number;can_issue:boolean}|undefined;
++  return parseCalendarStatus({state:row?row.revoked_at?'revoked':'active':'none',id:row?.id??null,generation:row?.generation??null,issuedAt:row?.issued_at??null,allowedLocationIds:row?.allowed_location_ids??[],authority:calendarAuthority(proof),observedAt:lease?.observed_at,validForMs:lease?.valid_for_ms,canIssue:lease?.can_issue},calendarAuthority(proof));
+  }catch(error){return {state:denied(error)?'unauthorized':'unavailable',reason:'read_failed'};}
+ }
+ /** Recover a committed receipt without recovering the plaintext feed credential, which is never stored here. */
+ export async function findCalendarOperation(proof:SessionMutationProof,operationId:string,authority:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<CalendarManagementResult>{
+  if(!uuid.test(operationId)||authority!==calendarAuthority(proof))return {status:'blocked',reason:'authority_changed'};
+  try{ownProof(proof);}catch{return {status:'blocked',reason:'access_denied'};}
+  try{
+   const workspace=await getWorkspace(executor),guards=calendarManagementGuards(proof,workspace);
+   const rows=await executor.transaction([...guards,{text:'SELECT result FROM calendar_operations WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3::uuid AND authority=$4',values:[workspace.id,proof.employee.id,operationId,authority]},...managementSessionStatements(proof,proof.employee.id,['EMPLOYEE','LEAD'])]);
+   return (rows[guards.length]?.[0] as {result:CalendarManagementResult}|undefined)?.result??{status:'outcome_unknown',operationId};
+diff --git a/src/lib/calendar/types.ts b/src/lib/calendar/types.ts
+index b34f94a6..f212ab90 100644
+--- a/src/lib/calendar/types.ts
++++ b/src/lib/calendar/types.ts
+@@ -1,11 +1,11 @@
+ export type CalendarCommand={kind:'ISSUE'|'ROTATE'|'REVOKE';operationId:string;authority:string;expectedGeneration:string|null};
+ export type CalendarManagementResult=
+  | {status:'created';operationId:string;id:string;generation:string;url:string}
+  | {status:'active_url_unavailable'|'revoked';operationId:string;id:string;generation:string}
+  | {status:'conflict'|'blocked'|'unavailable';reason:string}
+  | {status:'outcome_unknown';operationId:string};
+ export type CalendarEvent={uid:string;sequence:number;stamp:string;lastModified:string;status:'CONFIRMED'|'CANCELLED';startAt:string;endAt:string;summary:string;location:string|null};
+ export type CalendarFeedRead={state:'ready';observedAt:string;events:CalendarEvent[]}|{state:'unauthorized'|'unavailable';reason:string};
+ export type CalendarSubscriptionStatus=
+- | {state:'active'|'revoked'|'none';id:string|null;generation:string|null;issuedAt:string|null;allowedLocationIds:string[];authority:string}
++ | {state:'active'|'revoked'|'none';id:string|null;generation:string|null;issuedAt:string|null;allowedLocationIds:string[];authority:string;observedAt:string;validForMs:number;canIssue:boolean}
+  | {state:'unauthorized'|'unavailable';reason:string};
+diff --git a/src/test/integration/employee-mobile-calendar.integration.ts b/src/test/integration/employee-mobile-calendar.integration.ts
+new file mode 100644
+index 00000000..aba78ddf
+--- /dev/null
++++ b/src/test/integration/employee-mobile-calendar.integration.ts
+@@ -0,0 +1,79 @@
++import {it,expect} from 'vitest';
++import {createRequire} from 'node:module';
++import {mkdir,writeFile} from 'node:fs/promises';
++import {resolve} from 'node:path';
++import {createHash} from 'node:crypto';
++import {createOwnedNextApp} from './owned-next-app';
++import {seedOwnedApp,seedOwnedScenario,TEST_PASSWORD} from './owned-app-fixture';
++import {AUTH_COPY} from '../../lib/auth-copy';
++import {measureRenderedContrast} from '../../../scripts/browser-contrast.mjs';
++import type {CalendarCommand} from '../../lib/calendar/types';
++type Route={request():{method():string;url():string;headers():Record<string,string>;postDataJSON():unknown};fetch():Promise<unknown>;fulfill(options:{response:unknown}):Promise<void>;continue():Promise<void>;abort():Promise<void>};
++const redact=(value:string)=>value.replace(/(\/api\/calendar\/)[A-Za-z0-9_-]{43}/g,'$1[REDACTED]');
++it('integrates the own finite Calendar lifecycle, deliberate mobile setup and exact recovery in three engines',async()=>{
++ const evidence=process.env.NEVORA_EMPLOYEE_CALENDAR_EVIDENCE;if(!evidence)throw Error('Select explicit external Calendar evidence directory');await mkdir(evidence,{recursive:true});
++ const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
++ const app=await createOwnedNextApp(evidence),checks:{engine:string;name:string}[]=[],captures:string[]=[],contrasts:{engine:string;theme:string;width:number;subject:string;ratio:number}[]=[],messages:{engine:string;stage:string;type:string;text:string;expected:boolean}[]=[];
++ const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
++ let browser:{close():Promise<void>}|undefined,failed:(()=>Promise<void>)|undefined;
++ try{
++  await seedOwnedApp(app.database.executor);
++  for(const [index,engine] of ['chromium','webkit','firefox'].entries()){
++   const f=await seedOwnedScenario(app.database.executor,'CALM'+index,index),actor=f.actors[0];await q('UPDATE employees SET role=$2 WHERE id=$1',[actor,index===1?'LEAD':'EMPLOYEE']);
++   browser=await runtime[engine].launch({headless:true});const context=await (browser as typeof runtime.chromium).newContext({viewport:{width:390,height:844},hasTouch:true,reducedMotion:'reduce',serviceWorkers:'block'}),page=await context.newPage();
++   page.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(30000);let stage='login',expectedFailure=false,binding='';const commands:CalendarCommand[]=[];
++   page.on('request',(request:{url():string;method():string;headers():Record<string,string>;postDataJSON():unknown})=>{if(new URL(request.url()).pathname==='/api/employee/calendar-subscriptions'){binding=request.headers()['x-nevora-calendar-authority']??binding;if(request.method()==='POST')commands.push(request.postDataJSON() as CalendarCommand);}});
++   page.on('console',(message:{type():string;text():string})=>{if(['error','warning'].includes(message.type()))messages.push({engine,stage,type:message.type(),text:redact(message.text()),expected:expectedFailure||message.type()==='warning'&&/^The resource http:\/\/127\.0\.0\.1:\d+\/(?:_next\/static\/.*\.css|fonts\/typeface\/[^ ]+\.woff2) was preloaded using link preload but not used/.test(message.text())});});page.on('pageerror',(error:Error)=>messages.push({engine,stage,type:'pageerror',text:redact(error.message),expected:false}));
++   await context.route('**/*',async(route:Route)=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==new URL(app.url).origin)await route.abort();else await route.continue();});
++   const record=(name:string)=>checks.push({engine,name});
++   const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:false,style:'nextjs-portal {visibility:hidden;} #employee-calendar-link {color:transparent !important;text-shadow:none !important;}',caret:'initial'});captures.push(file);};
++   failed=async()=>{await shot('failure');await writeFile(evidence+'/'+engine+'-failure.html',redact(await page.locator('body').innerHTML()));await writeFile(evidence+'/'+engine+'-media-diagnostic.json',JSON.stringify(await page.evaluate(()=>({width:innerWidth,height:innerHeight,coarse:matchMedia('(pointer:coarse)').matches,query:matchMedia('(max-width:767px), (max-width:900px) and (max-height:430px) and (orientation:landscape) and (pointer:coarse)').matches})),null,2));};
++   const forwardKey=engine==='webkit'&&process.platform==='darwin'?'Alt+Tab':'Tab';
++   const criticalControl=async(name:string,capture:string)=>{const control=panel.getByRole('button',{name,exact:true});await control.evaluate((el:HTMLElement)=>el.scrollIntoView({block:'center'}));const box=await control.boundingBox(),nav=await page.locator('.mobile-nav:visible').boundingBox();expect(box!.width).toBeGreaterThanOrEqual(48);expect(box!.height).toBeGreaterThanOrEqual(48);expect(box!.x).toBeGreaterThanOrEqual(0);expect(box!.x+box!.width).toBeLessThanOrEqual(await page.evaluate(()=>innerWidth));expect(box!.y).toBeGreaterThanOrEqual(0);expect(box!.y+box!.height).toBeLessThanOrEqual(nav!.y);expect(await control.evaluate((el:HTMLElement)=>el.scrollWidth<=el.clientWidth+1&&el.scrollHeight<=el.clientHeight+1)).toBe(true);await shot(capture);};
++   const confirmationMatrix=async(kind:'Replace'|'Revoke')=>{for(const theme of ['light','dark']){await page.getByLabel('Appearance',{exact:true}).selectOption(theme);await page.setViewportSize({width:320,height:844});await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});const group=panel.getByRole('group',{name:kind+' your private link?',exact:true});await group.evaluate((el:HTMLElement)=>el.scrollIntoView({block:'start'}));expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await shot('calendar-'+kind.toLowerCase()+'-'+theme+'-text200-terms');await criticalControl(kind+' private link','calendar-'+kind.toLowerCase()+'-'+theme+'-text200-control');await page.evaluate(()=>{document.documentElement.style.fontSize='100%';});}await page.setViewportSize({width:390,height:844});await page.getByLabel('Appearance',{exact:true}).selectOption('light');};
++   const panel=page.locator('.em-calendar'),ready=(state='active')=>page.locator(`.em-calendar[data-calendar-state="${state}"]`).waitFor();
++   const resume=async(state='active')=>{await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await ready(state);};
++   await page.goto(app.url+'/login');await page.getByLabel(AUTH_COPY.en.employeeId,{exact:true}).fill(actor);await page.getByLabel(AUTH_COPY.en.password,{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:AUTH_COPY.en.signIn,exact:true}).click();await page.waitForURL(app.url+'/app');await page.locator('[data-home-state="ready"]:visible,[data-home-state="partial"]:visible').waitFor();
++   stage='schedule-entry';await page.locator('.mobile-nav-link[href="/app/schedule"]:visible').click();await page.locator('.em-week-picker > summary').click();await page.getByRole('link',{name:'Calendar sync',exact:true}).click();await page.waitForURL(app.url+'/app/profile#employee-calendar-title');await ready('none');
++   expect(await page.locator('#employee-calendar-title').getAttribute('open')).not.toBeNull();expect(await page.locator('#employee-calendar-title > summary').evaluate((el:HTMLElement)=>document.activeElement===el)).toBe(true);expect(await page.locator('[data-calendar-setting]').count()).toBe(1);expect(await panel.innerText()).not.toContain('Example week');expect(binding).toMatch(/^[a-f0-9]{64}$/);await shot('calendar-empty');record('Schedule fixed hash opens the native Profile disclosure and focuses its summary; one current Calendar owner');
++   const other=await page.request.get(app.url+'/api/employee/calendar-subscriptions?employeeId='+f.actors[1],{headers:{'X-Nevora-Calendar':'1','X-Nevora-Calendar-Authority':binding}});expect(other.status()).toBe(400);record('HTTP rejects an employee selector; no peer link or data exposed');
++   stage='actual-own-issue';await panel.getByRole('button',{name:'Create private link',exact:true}).click();await page.getByLabel('Your private calendar link',{exact:true}).waitFor();const firstUrl=await page.getByLabel('Your private calendar link',{exact:true}).inputValue();expect(firstUrl.startsWith(app.url+'/api/calendar/')).toBe(true);expect((await q<{n:number}>('SELECT count(*)::integer n FROM calendar_subscriptions WHERE employee_id=$1 AND revoked_at IS NULL',[actor]))[0].n).toBe(1);expect((await q<{n:number}>('SELECT count(*)::integer n FROM calendar_subscriptions WHERE employee_id=$1',[f.actors[1]]))[0].n).toBe(0);
++   await page.evaluate(()=>{Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw Error('Fictional clipboard denial');}}});});await panel.getByRole('button',{name:'Copy link',exact:true}).click();await panel.getByRole('status').filter({hasText:'Copy was unavailable'}).waitFor();await panel.getByRole('button',{name:'Select link',exact:true}).click();expect(await page.getByLabel('Your private calendar link').evaluate((el:HTMLTextAreaElement)=>document.activeElement===el&&el.selectionStart===0&&el.selectionEnd===el.value.length)).toBe(true);
++   await page.evaluate(()=>{Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{}}});});await panel.getByRole('button',{name:'Copy link',exact:true}).click();await panel.getByRole('status').filter({hasText:'Link copied.'}).waitFor();await shot('calendar-link-once-redacted');record('Actual own issue and peer isolation; controlled clipboard failure/success, native full-link selection; evidence redacts the secret');
++   const feed=await page.request.get(firstUrl);expect(feed.status()).toBe(200);expect(await feed.text()).not.toMatch(/PRIVATE NOTE|PRIVATE COWORKER/);
++   stage='provider-and-reflow';
++   await page.getByLabel('Your private calendar link').focus();await page.keyboard.press(forwardKey);expect(await panel.getByRole('button',{name:'Copy link',exact:true}).evaluate((el:HTMLElement)=>document.activeElement===el&&getComputedStyle(el).outlineStyle!=='none'&&parseFloat(getComputedStyle(el).outlineWidth)>=2)).toBe(true);await page.keyboard.press(forwardKey);expect(await panel.getByRole('button',{name:'Select link',exact:true}).evaluate((el:HTMLElement)=>document.activeElement===el)).toBe(true);await page.keyboard.press('Enter');expect(await page.getByLabel('Your private calendar link').evaluate((el:HTMLTextAreaElement)=>document.activeElement===el&&el.selectionEnd===el.value.length)).toBe(true);record('Native '+forwardKey+' traversal uses visible focus, Copy then Select; Enter activates native selection');
++   for(const name of ['Apple Calendar','Google Calendar','Outlook'])await panel.locator('summary').filter({hasText:name}).click();
++   const apple=panel.locator('summary').filter({hasText:'Apple Calendar'});await apple.focus();await page.keyboard.press('Enter');expect(await apple.evaluate((el:HTMLElement)=>el.parentElement?.hasAttribute('open'))).toBe(false);await page.keyboard.press('Enter');expect(await apple.evaluate((el:HTMLElement)=>el.parentElement?.hasAttribute('open'))).toBe(true);
++   expect(await panel.innerText()).toContain('Computer required');expect(await panel.innerText()).toContain('does not confirm a calendar connection');
++   for(const theme of ['light','dark'])for(const width of [320,390,430]){
++    await page.getByLabel('Appearance',{exact:true}).selectOption(theme);await page.setViewportSize({width,height:844});await ready();
++    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
++    const targets=await panel.locator('button,a,summary').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.getClientRects().length).filter(el=>{const box=el.getBoundingClientRect();return box.width<43.5||box.height<43.5;}).map(el=>({text:el.textContent?.trim(),width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height})));expect(targets).toEqual([]);
++    for(const [subject,locator] of [['support',panel.locator('header p')],['status',panel.locator('.em-calendar-status h3')],['privacy',panel.locator('.em-calendar-privacy')]] as const){const m=await locator.evaluate(measureRenderedContrast);contrasts.push({engine,theme,width,subject,ratio:m.ratio});expect(m.ratio).toBeGreaterThanOrEqual(4.5);}
++    await shot('calendar-'+theme+'-'+width);
++    await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await shot('calendar-'+theme+'-'+width+'-text200');if(width===320){await page.getByLabel('Your private calendar link').evaluate((el:HTMLElement)=>el.scrollIntoView({block:'center'}));await shot('calendar-'+theme+'-320-text200-secret');await criticalControl('Copy link','calendar-'+theme+'-320-text200-copy');}await page.evaluate(()=>{document.documentElement.style.fontSize='100%';});
++   }
++   await page.setViewportSize({width:844,height:390});await panel.waitFor();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(await page.evaluate(()=>matchMedia('(pointer:coarse)').matches)).toBe(true);await shot('calendar-coarse-landscape');
++   record('Provider-specific native guides,320/390/430 light/dark and200% text plus coarse landscape; no overflow,44/48 targets and sampled text contrast');
++   await page.setViewportSize({width:390,height:844});await page.getByLabel('Appearance',{exact:true}).selectOption('light');
++   stage='private-pause';await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await ready('paused');expect(await page.getByLabel('Your private calendar link').count()).toBe(0);await shot('calendar-paused');await page.evaluate(()=>window.dispatchEvent(new Event('online')));await ready();expect(await page.getByLabel('Your private calendar link').count()).toBe(0);record('Pause releases the URL; resume reads actual active state without reconstructing its one-time credential');
++   stage='replace-confirmation';await panel.getByRole('button',{name:'Replace link',exact:true}).click();await panel.getByRole('group',{name:'Replace your private link?',exact:true}).waitFor();expect(commands).toHaveLength(1);await panel.getByRole('button',{name:'Keep current link',exact:true}).focus();await page.keyboard.press('Enter');await expect.poll(()=>panel.getByRole('button',{name:'Replace link',exact:true}).evaluate((el:HTMLElement)=>document.activeElement===el)).toBe(true);expect(commands).toHaveLength(1);
++   await panel.getByRole('button',{name:'Replace link',exact:true}).focus();await page.keyboard.press('Space');await expect.poll(()=>panel.getByRole('group',{name:'Replace your private link?',exact:true}).evaluate((el:HTMLElement)=>document.activeElement===el)).toBe(true);await confirmationMatrix('Replace');await shot('calendar-replace-confirmation');await panel.getByRole('button',{name:'Replace private link',exact:true}).click();await page.getByLabel('Your private calendar link').waitFor();expect((await page.request.get(firstUrl)).status()).toBe(404);const secondUrl=await page.getByLabel('Your private calendar link').inputValue();expect(secondUrl!==firstUrl).toBe(true);record('Replacement requires explicit consequence review; cancel returns exact focus, confirmed rotation invalidates the former feed');
++   stage='unknown-command-resize';await resume();let release!:()=>void,held=false;const gate=new Promise<void>(resolve=>{release=resolve;});
++   await page.route('**/api/employee/calendar-subscriptions',async(route:Route)=>{if(route.request().method()!=='POST'){await route.continue();return;}const response=await route.fetch();held=true;await gate;try{await route.fulfill({response});}catch{/* The caller may already have cancelled the held response. */}});
++   await panel.getByRole('button',{name:'Replace link',exact:true}).click();await panel.getByRole('button',{name:'Replace private link',exact:true}).click();await expect.poll(()=>held).toBe(true);const original=commands.at(-1)!;
++   const ownerNode=await page.locator('#employee-calendar-title').elementHandle();await page.setViewportSize({width:1440,height:1000});await page.locator('.employee-calendar').waitFor();expect(await ownerNode!.evaluate((el:HTMLElement)=>el.isConnected)).toBe(true);await shot('calendar-desktop-preserved');await page.setViewportSize({width:390,height:844});expect(await ownerNode!.evaluate((el:HTMLElement)=>el.isConnected)).toBe(true);
++   await page.evaluate(()=>window.dispatchEvent(Object.assign(new Event('storage'),{key:'nv-theme'})));expectedFailure=true;await panel.getByRole('button',{name:'Retry original request',exact:true}).waitFor({timeout:15000});const retryBounds=await panel.getByRole('button',{name:'Retry original request',exact:true}).boundingBox(),navBounds=await page.locator('.mobile-nav:visible').boundingBox();expect(retryBounds!.y).toBeGreaterThanOrEqual(0);expect(retryBounds!.y+retryBounds!.height).toBeLessThanOrEqual(navBounds!.y);await shot('calendar-unknown-original');release();await page.unroute('**/api/employee/calendar-subscriptions');await panel.getByRole('button',{name:'Retry original request',exact:true}).click();await panel.getByRole('status').filter({hasText:'original request finished'}).waitFor();await ready();expectedFailure=false;expect(commands.at(-1)).toEqual(original);expect(await page.getByLabel('Your private calendar link').count()).toBe(0);expect((await q<{n:number}>('SELECT count(*)::integer n FROM calendar_operations WHERE actor_employee_id=$1',[actor]))[0].n).toBe(3);record('Lost actual committed rotation reply times out; media resize keeps owner/original; unrelated theme storage does not lose it; exact replay creates no second credential');
++   stage='revoke-confirmation';await panel.locator('.em-calendar-manage > summary').click();await panel.getByRole('button',{name:'Revoke link',exact:true}).click();await panel.getByRole('group',{name:'Revoke your private link?',exact:true}).waitFor();await confirmationMatrix('Revoke');await shot('calendar-revoke-confirmation');await panel.getByRole('button',{name:'Revoke private link',exact:true}).click();await ready('revoked');expect((await page.request.get(secondUrl)).status()).toBe(404);expect((await q<{n:number}>('SELECT count(*)::integer n FROM calendar_subscriptions WHERE employee_id=$1 AND revoked_at IS NULL',[actor]))[0].n).toBe(0);await shot('calendar-revoked');record('Confirmed own revoke stops future feed access and leaves truthful copied-event limits');
++   stage='read-unavailable';expectedFailure=true;await page.route('**/api/employee/calendar-subscriptions',async(route:Route)=>{await route.abort();});await resume('unavailable');expect(await panel.getByRole('button',{name:'Create private link',exact:true}).count()).toBe(0);await shot('calendar-unavailable');await page.unroute('**/api/employee/calendar-subscriptions');await panel.getByRole('button',{name:'Try again',exact:true}).click();await ready('revoked');expectedFailure=false;record('Read failure removes all source actions and recovers only through an actual canonical read');
++   stage='finite-session-lease';const session=(await context.cookies()).find((cookie:{name:string})=>cookie.name==='fuel_session');expect(session).toBeTruthy();const sessionHash=createHash('sha256').update(session!.value).digest('hex');await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '3 seconds' WHERE token_hash=$1",[sessionHash]);await resume('revoked');await ready('unavailable');expect(await panel.getByRole('button',{name:'Create private link',exact:true}).count()).toBe(0);await shot('calendar-lease-expired');await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '1 day' WHERE token_hash=$1",[sessionHash]);await panel.getByRole('button',{name:'Try again',exact:true}).click();await ready('revoked');record('Actual DB session budget expires before polling; no stale actions; recovery requires current canonical session');
++   stage='current-session-denial';await q('DELETE FROM employee_sessions WHERE token_hash=$1',[sessionHash]);expectedFailure=true;await resume('unauthorized');expect(await panel.getByRole('button',{name:'Create private link',exact:true}).count()).toBe(0);expect(await panel.getByRole('link',{name:'Sign in',exact:true}).count()).toBe(1);await shot('calendar-denied');expectedFailure=false;record('Actual session loss clears private facts and denies all Calendar actions');
++   stage='native-signout';await page.getByRole('button',{name:'Sign out',exact:true}).click();await page.waitForURL(app.url+'/login');expect(await page.locator('[data-calendar-setting]').count()).toBe(0);expect((await context.cookies()).some((cookie:{name:string})=>cookie.name==='fuel_session')).toBe(false);record('Native signout ends the mounted Calendar owner and removes the portal cookie');
++   await context.close();await browser!.close();browser=undefined;failed=undefined;
++  }
++  expect(messages.filter(message=>message.type==='pageerror'||!message.expected)).toEqual([]);
++  await writeFile(evidence+'/result.json',JSON.stringify({status:'passed',checks,captures,contrasts,messages,limits:['Owned Next development with fictional disposable PostgreSQL; no provider subscription/native clipboard or physical-device certification.','Network fault injection holds a real committed POST response; held-body deadline also tested at the actual component transport boundary in unit tests.']},null,2));
++ }catch(error){await failed?.().catch(()=>{});await writeFile(evidence+'/failure.json',JSON.stringify({error:redact(String(error)),checks,captures,contrasts,messages},null,2));throw error;}
++ finally{await browser?.close();await app.close();}
++});
+diff --git a/src/test/integration/phase-e-calendar-tokens.integration.ts b/src/test/integration/phase-e-calendar-tokens.integration.ts
+index 1a7403a1..4a7fd303 100644
+--- a/src/test/integration/phase-e-calendar-tokens.integration.ts
++++ b/src/test/integration/phase-e-calendar-tokens.integration.ts
+@@ -132,10 +132,23 @@ it('fresh issue after revocation and immutable operation replay preserve their l
+  expect(replacement.status).toBe('created');if(replacement.status!=='created')throw Error('Fresh replacement unavailable');
+  expect(await manage(proof,revokeCommand,db.executor)).toEqual(revoked);
+  const replay=await manage(proof,issueCommand,db.executor);expect(replay.status).toBe('active_url_unavailable');expect(replay).not.toHaveProperty('url');
+  expect(await findCalendarOperation(proof,revokeCommand.operationId,revokeCommand.authority,db.executor)).toEqual(revoked);
+  expect(await findCalendarOperation(proof,issueCommand.operationId,issueCommand.authority,db.executor)).toEqual(replay);
+  expect((await readCalendarFeed(token,db.executor)).state).toBe('unauthorized');
+  expect((await readCalendarFeed(replacement.url.split('/')[3],db.executor)).state).toBe('ready');
+  expect(await q('SELECT count(*)::integer AS n FROM calendar_subscriptions WHERE revoked_at IS NULL')).toEqual([{n:1}]);
+  expect(await q('SELECT count(*)::integer AS n FROM calendar_operations')).toEqual([{n:3}]);
+ });
++
++it('mobile Calendar lease uses actual session expiry and current eligibility without changing bearer policy',async()=>{
++ await seed();
++ await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '2 seconds' WHERE token_hash=$1",[proof.sessionTokenHash]);
++ const initial=await status(proof,db.executor);expect(initial.state).toBe('none');if(!('validForMs'in initial))throw Error('Missing finite Calendar lease');
++ expect(initial.canIssue).toBe(true);expect(initial.validForMs).toBeGreaterThan(0);expect(initial.validForMs).toBeLessThanOrEqual(2000);expect(Number.isFinite(Date.parse(initial.observedAt))).toBe(true);
++ await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '1 day' WHERE token_hash=$1",[proof.sessionTokenHash]);
++ await q("UPDATE locations SET active=false WHERE id IN('loc-1','loc-2')");
++ expect(await status(proof,db.executor)).toMatchObject({state:'none',canIssue:false});
++ expect(await manage(proof,command(),db.executor)).toEqual({status:'blocked',reason:'no_locations'});
++ await q("UPDATE locations SET active=true WHERE id='loc-1'");expect(await status(proof,db.executor)).toMatchObject({state:'none',canIssue:true});
++ await q("UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE token_hash=$1",[proof.sessionTokenHash]);expect(await status(proof,db.executor)).toMatchObject({state:'unauthorized'});
++});
+diff --git a/vitest.employee-mobile-calendar.config.mts b/vitest.employee-mobile-calendar.config.mts
+new file mode 100644
+index 00000000..6ef7e6f5
+--- /dev/null
++++ b/vitest.employee-mobile-calendar.config.mts
+@@ -0,0 +1,11 @@
++import {defineConfig} from 'vitest/config';
++import {employeeMobileProjects} from './vitest.employee-mobile-communications.config.mts';
++export default defineConfig({test:{fileParallelism:false,passWithNoTests:false,projects:employeeMobileProjects([
++ 'src/test/integration/employee-mobile-profile-sql.integration.ts',
++ 'src/test/integration/employee-mobile-profile.integration.ts',
++ 'src/test/integration/employee-mobile-calendar.integration.ts',
++],[
++ 'src/test/integration/phase-e-calendar-tokens.integration.ts',
++ 'src/test/integration/phase-e-calendar-feed.integration.ts',
++ 'src/test/integration/company-access-recovery-calendar.integration.ts',
++])}});
+diff --git a/vitest.employee-mobile-communications.config.mts b/vitest.employee-mobile-communications.config.mts
+index b321179c..2d5c9579 100644
+--- a/vitest.employee-mobile-communications.config.mts
++++ b/vitest.employee-mobile-communications.config.mts
+@@ -25,14 +25,14 @@ const groups=[
+   'src/test/integration/phase-e-communication-ack.integration.ts',
+   'src/test/integration/communications-gap-remediation.integration.ts',
+   'src/test/integration/company-access-communications.integration.ts'
+  ]},
+  {name:'canonical-notifications',prefix:'fuel_phase3_test_',include:[
+   'src/test/integration/phase-e-communication-notifications.integration.ts'
+  ]}
+ ];
+ // Project-specific namespaces preserve every factory's existing admission fence.
+ // Timeouts, serial execution and all selected suites remain unchanged.
+-export function employeeMobileProjects(additionalEmployeeFiles:readonly string[]=[]){
+- return groups.map(group=>({extends:false as const,resolve:resolution,test:{name:group.name,include:group.name==='employee'?[...group.include,...additionalEmployeeFiles]:group.include,fileParallelism:false,maxWorkers:1,testTimeout:600000,hookTimeout:30000,env:process.env.FUEL_TEST_DATABASE_URL?{FUEL_TEST_DATABASE_URL:communicationFixtureUrl(process.env.FUEL_TEST_DATABASE_URL,group.prefix)}:{}}}));
++export function employeeMobileProjects(additionalEmployeeFiles:readonly string[]=[],additionalFoundationFiles:readonly string[]=[]){
++ return groups.map(group=>({extends:false as const,resolve:resolution,test:{name:group.name,include:group.name==='employee'?[...group.include,...additionalEmployeeFiles]:group.name==='canonical-communications'?[...group.include,...additionalFoundationFiles]:group.include,fileParallelism:false,maxWorkers:1,testTimeout:600000,hookTimeout:30000,env:process.env.FUEL_TEST_DATABASE_URL?{FUEL_TEST_DATABASE_URL:communicationFixtureUrl(process.env.FUEL_TEST_DATABASE_URL,group.prefix)}:{}}}));
+ }
+ export default defineConfig({test:{fileParallelism:false,passWithNoTests:false,projects:employeeMobileProjects()}});

@@ -1,0 +1,18 @@
+{
+  "original": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/run-qa.py",
+  "originalSha256": "a639f20e98831506e5a5c54ab1c179510865574221c877f0d22e831e7f346128",
+  "final": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/run-qa-fast-observer.py",
+  "finalSha256": "cf8b76966dc0015d7e011ccda0c18ab0f93a627c00ab2f52033f1508c22f0b26",
+  "changes": [
+    "Observe owned DB on every cycle instead of every third cycle.",
+    "Sleep at most0.5seconds between observations instead of5seconds."
+  ],
+  "unchanged": [
+    "Static and combined argv",
+    "suite/config/assertions",
+    "environment construction",
+    "source/HEAD/index capture",
+    "ownership cleanup checks"
+  ],
+  "reason": "Original full run notification suite lasted4.3seconds and was not sampled by15second observation cadence."
+}

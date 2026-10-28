@@ -1,0 +1,109 @@
+{
+  "scope": "actual-source10cycleProfilediagnostic",
+  "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "stages": {
+    "combined": {
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "gitUnchanged": true,
+      "actualSourceHashesMatch": true,
+      "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2266,
+      "invocation": [
+        "node",
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/actual-profile-owned-runner-v2.mjs",
+        "vitest.employee-mobile-calendar.config.mts"
+      ]
+    }
+  },
+  "owners": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/actual-f58d040b-profile-cycles-02/combined/profile/owned-next-Wv0vuA/ownership.json",
+      "checkpoint": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2024,
+      "sourceHashesMatch": true,
+      "mirrorHashesMatch": true,
+      "mirrorInventoryMatches": true,
+      "substitutedFiles": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedArtifactsReleased": {
+        "directories": [
+          "app/node_modules",
+          "app/.next"
+        ],
+        "availableBytesBefore": 30492884992,
+        "availableBytesAfter": 31420313600
+      },
+      "pid": 48172,
+      "port": 64974,
+      "pidAlive": false,
+      "portOpen": false
+    }
+  ],
+  "ownerCount": 1,
+  "observationCount": 78,
+  "observerErrors": [],
+  "observedDatabaseCount": 1,
+  "observedDatabases": [
+    {
+      "oid": 16384,
+      "datname": "nevora_exchange_test_c1_b5444c048a41",
+      "marker": "fuel-phase3-disposable:38132707-90db-4f94-953c-1c6685924d69"
+    }
+  ],
+  "observedNamespaces": [
+    "nevora_exchange_test_"
+  ],
+  "markersValid": true,
+  "clusters": [
+    {
+      "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-nvekw4",
+      "pid": 47973,
+      "port": 64929,
+      "ownerHash": "020ae50c2d407fa7015ba783855a6404c4f73563ee77fbd5bce7eb0cdae68292",
+      "directoryExists": false,
+      "pidStillAlive": false,
+      "portStillOpen": false,
+      "recheckDirectoryExists": false,
+      "recheckPidAlive": false,
+      "recheckPortOpen": false
+    }
+  ],
+  "clusterIdentityAudit": {
+    "metadata": {
+      "directory": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-nvekw4",
+      "pid": 47973,
+      "port": 64929,
+      "ownerHash": "020ae50c2d407fa7015ba783855a6404c4f73563ee77fbd5bce7eb0cdae68292",
+      "closed": true,
+      "directoryExists": false
+    },
+    "pidAlive": false,
+    "portOpen": false,
+    "directoryExists": false
+  },
+  "cycleSummary": {
+    "status": "passed",
+    "completedCycles": 10,
+    "failure": null
+  },
+  "eventSummary": {
+    "events": 1060,
+    "requests": 120,
+    "orphans": [],
+    "idleAssertions": 32,
+    "failedIdleAssertions": [],
+    "consumerEvents": 0,
+    "consumerCycles": []
+  },
+  "evidenceCredentialScan": {
+    "files": 12,
+    "leakPaths": []
+  },
+  "errors": []
+}

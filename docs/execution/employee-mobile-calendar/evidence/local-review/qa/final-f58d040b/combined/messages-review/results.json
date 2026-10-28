@@ -1,0 +1,236 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "CR-2 deadline cancels opening and fences late navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "CR-2 pause cancels opening and fences late navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "CR-2 refresh cancels opening and fences late navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "CR-2 deadline cancels opening and fences late navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "CR-2 pause cancels opening and fences late navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "CR-2 refresh cancels opening and fences late navigation"
+    },
+    {
+      "engine": "firefox",
+      "name": "CR-2 deadline cancels opening and fences late navigation"
+    },
+    {
+      "engine": "firefox",
+      "name": "CR-2 pause cancels opening and fences late navigation"
+    },
+    {
+      "engine": "firefox",
+      "name": "CR-2 refresh cancels opening and fences late navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "UI-COM-001 real custom field errors have associations/focus and corrected input reviews successfully"
+    },
+    {
+      "engine": "webkit",
+      "name": "UI-COM-001 real custom field errors have associations/focus and corrected input reviews successfully"
+    },
+    {
+      "engine": "firefox",
+      "name": "UI-COM-001 real custom field errors have associations/focus and corrected input reviews successfully"
+    },
+    {
+      "engine": "chromium",
+      "name": "CR-3 OPTIONAL mark-read records own reading without acknowledgement"
+    },
+    {
+      "engine": "chromium",
+      "name": "CR-1 real module-refused lookup retains exact committed original for deliberate recovery without another publication"
+    },
+    {
+      "engine": "webkit",
+      "name": "CR-3 OPTIONAL mark-read records own reading without acknowledgement"
+    },
+    {
+      "engine": "webkit",
+      "name": "CR-1 real module-refused lookup retains exact committed original for deliberate recovery without another publication"
+    },
+    {
+      "engine": "firefox",
+      "name": "CR-3 OPTIONAL mark-read records own reading without acknowledgement"
+    },
+    {
+      "engine": "firefox",
+      "name": "CR-1 real module-refused lookup retains exact committed original for deliberate recovery without another publication"
+    },
+    {
+      "engine": "chromium",
+      "name": "UI-COM-R1 late actual committed reply stays fenced; deliberate restored original lookup succeeds"
+    },
+    {
+      "engine": "webkit",
+      "name": "UI-COM-R1 late actual committed reply stays fenced; deliberate restored original lookup succeeds"
+    },
+    {
+      "engine": "firefox",
+      "name": "UI-COM-R1 late actual committed reply stays fenced; deliberate restored original lookup succeeds"
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "scenario": "open-recovery",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:61799/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "scenario": "open-recovery",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:61799/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "scenario": "open-recovery",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:61799/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "scenario": "open-recovery",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:61799/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "scenario": "open-recovery",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:61799/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "scenario": "open-recovery",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:61799/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": true
+    },
+    {
+      "engine": "firefox",
+      "scenario": "open-recovery",
+      "type": "warning",
+      "text": "[JavaScript Warning: \"The resource at “http://127.0.0.1:61799/_next/static/chunks/src_components_1-x67_9n8_h4a._.css” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:61799/app/notifications\" line: 0}]",
+      "expected": true
+    },
+    {
+      "engine": "firefox",
+      "scenario": "open-recovery",
+      "type": "warning",
+      "text": "[JavaScript Warning: \"The resource at “http://127.0.0.1:61799/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:61799/app/notifications\" line: 0}]",
+      "expected": true
+    },
+    {
+      "engine": "firefox",
+      "scenario": "open-recovery",
+      "type": "warning",
+      "text": "[JavaScript Warning: \"The resource at “http://127.0.0.1:61799/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:61799/app/notifications\" line: 0}]",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "scenario": "optional-and-original",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "scenario": "optional-and-original",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "scenario": "optional-and-original",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "scenario": "optional-and-original",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:61799/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "scenario": "optional-and-original",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:61799/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "scenario": "optional-and-original",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:61799/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": true
+    }
+  ],
+  "captures": [
+    "chromium-open-recovery-deadline.png",
+    "chromium-open-recovery-pause-new-open.png",
+    "chromium-open-recovery-refresh-new-open.png",
+    "webkit-open-recovery-deadline.png",
+    "webkit-open-recovery-pause-new-open.png",
+    "webkit-open-recovery-refresh-new-open.png",
+    "firefox-open-recovery-deadline.png",
+    "firefox-open-recovery-pause-new-open.png",
+    "firefox-open-recovery-refresh-new-open.png",
+    "chromium-form-and-original-invalid-title-long.png",
+    "chromium-form-and-original-invalid-title-320-text200.png",
+    "chromium-invalid-title-320-text200-viewport.png",
+    "chromium-form-and-original-invalid-title-empty.png",
+    "chromium-form-and-original-invalid-body-long.png",
+    "chromium-form-and-original-invalid-body-control.png",
+    "chromium-form-and-original-invalid-expiry.png",
+    "webkit-form-and-original-invalid-title-long.png",
+    "webkit-form-and-original-invalid-title-320-text200.png",
+    "webkit-invalid-title-320-text200-viewport.png",
+    "webkit-form-and-original-invalid-title-empty.png",
+    "webkit-form-and-original-invalid-body-long.png",
+    "webkit-form-and-original-invalid-body-control.png",
+    "webkit-form-and-original-invalid-expiry.png",
+    "firefox-form-and-original-invalid-title-long.png",
+    "firefox-form-and-original-invalid-title-320-text200.png",
+    "firefox-invalid-title-320-text200-viewport.png",
+    "firefox-form-and-original-invalid-title-empty.png",
+    "firefox-form-and-original-invalid-body-long.png",
+    "firefox-form-and-original-invalid-body-control.png",
+    "firefox-form-and-original-invalid-expiry.png",
+    "chromium-optional-and-original-refused-original-lookup.png",
+    "chromium-optional-and-original-original-recovered.png",
+    "webkit-optional-and-original-refused-original-lookup.png",
+    "webkit-optional-and-original-original-recovered.png",
+    "firefox-optional-and-original-refused-original-lookup.png",
+    "firefox-optional-and-original-original-recovered.png",
+    "chromium-late-committed-module-fence-after-release.png",
+    "webkit-late-committed-module-fence-after-release.png",
+    "firefox-late-committed-module-fence-after-release.png"
+  ]
+}

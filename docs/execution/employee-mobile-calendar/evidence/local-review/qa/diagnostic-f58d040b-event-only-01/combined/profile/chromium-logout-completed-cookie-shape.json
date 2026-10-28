@@ -1,0 +1,22 @@
+{
+  "cookies": [
+    {
+      "name": "nv-lang",
+      "path": "/",
+      "expires": 1824679536.311619,
+      "httpOnly": false
+    },
+    {
+      "name": "fuel_push_installation",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true
+    },
+    {
+      "name": "fuel_push_cleanup",
+      "path": "/",
+      "expires": 1794353141.062037,
+      "httpOnly": true
+    }
+  ]
+}

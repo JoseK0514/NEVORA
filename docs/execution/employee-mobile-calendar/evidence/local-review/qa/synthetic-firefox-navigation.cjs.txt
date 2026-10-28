@@ -1,0 +1,104 @@
+const http=require('node:http'),net=require('node:net'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),cp=require('node:child_process');
+const runtimePath='/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright';
+const runtime=require(runtimePath),version=require(runtimePath+'/package.json').version;
+const W='/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume';
+const E=path.join(__dirname,'synthetic-f58d040b-firefox-navigation-01');fs.mkdirSync(E,{recursive:false});
+const expected='f58d040b70909fa21dcb97b4f40edcfd5279226c';
+const git=()=>({head:cp.execFileSync('git',['rev-parse','HEAD'],{cwd:W,encoding:'utf8'}).trim(),status:cp.execFileSync('git',['status','--porcelain=v1','--untracked-files=no'],{cwd:W,encoding:'utf8'}).trim(),index:crypto.createHash('sha256').update(cp.execFileSync('git',['diff','--cached','--binary'],{cwd:W})).digest('hex')});
+const before=git();if(before.head!==expected||before.status)throw Error('Candidate not frozen');
+if(version!=='1.62.1')throw Error('Unexpected pinned Playwright version '+version);
+const events=[],hits=[],held=new Map(),ids=new WeakMap(),browserPids=new Set(),pagePending=new Map();let serial=0,browser,server,port;
+const event=row=>{const value={at:Date.now(),monotonic:performance.now(),...row};events.push(value);fs.appendFileSync(path.join(E,'events.jsonl'),JSON.stringify(value)+'\n');};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const idFor=r=>{if(!ids.has(r))ids.set(r,++serial);return ids.get(r);};
+const safeError=e=>String(e??'').replace(/https?:\/\/\S+/g,'[URL]').slice(0,400);
+function observe(emitter,engine,scope){
+ const fields=r=>({engine,scope,requestId:idFor(r),path:new URL(r.url()).pathname});
+ const include=r=>new URL(r.url()).pathname.startsWith('/probe/');
+ emitter.on('request',r=>{if(include(r)){if(scope==='page')pagePending.set(r,fields(r));event({event:'request',...fields(r)});}});
+ emitter.on('response',res=>{const r=res.request();if(!include(r))return;event({event:'response',...fields(r),status:res.status(),timing:r.timing()});res.finished().then(error=>event({event:'response.finished',...fields(r),error:error?safeError(error):null,timing:r.timing()})).catch(error=>event({event:'response.finished.reject',...fields(r),error:safeError(error)}));});
+ for(const type of ['requestfinished','requestfailed'])emitter.on(type,r=>{if(include(r)){if(scope==='page')pagePending.delete(r);event({event:type,...fields(r),timing:r.timing(),failure:type==='requestfailed'?safeError(r.failure()?.errorText):null});}});
+}
+function descendants(){const rows=cp.execFileSync('ps',['-axo','pid=,ppid='],{encoding:'utf8'}).trim().split('\n').map(s=>s.trim().split(/\s+/).map(Number));let parents=new Set([process.pid]),found=[];for(let level=0;level<10;level++){const next=rows.filter(([pid,ppid])=>parents.has(ppid)&&!found.includes(pid)).map(([pid])=>pid);if(!next.length)break;found.push(...next);parents=new Set(next);}return found;}
+function alive(pid){try{process.kill(pid,0);return true;}catch{return false;}}
+async function portOpen(p){return new Promise(resolve=>{const socket=net.connect({host:'127.0.0.1',port:p});socket.once('connect',()=>{socket.destroy();resolve(true);});socket.once('error',()=>resolve(false));socket.setTimeout(300,()=>{socket.destroy();resolve(false);});});}
+const assert=require('node:assert/strict');
+const cases=[];let failure,stop=false;
+const html='<!doctype html><title>Owned body/navigation diagnostic</title><h1>Owned body/navigation diagnostic</h1><pre id="result">Running fictional loopback cases</pre>';
+(async()=>{
+ try{
+  server=http.createServer((req,res)=>{
+   const pathname=new URL(req.url,'http://127.0.0.1').pathname;
+   if(pathname==='/lifecycle'){
+    let body='';req.on('data',chunk=>{body+=chunk;if(body.length>2048)req.destroy();});req.on('end',()=>{try{const v=JSON.parse(body);if(typeof v.caseId==='string'&&v.caseId.startsWith('/probe/firefox/')&&typeof v.aborted==='boolean'&&typeof v.time==='number')event({event:'lifecycle.beacon',caseId:v.caseId,aborted:v.aborted,time:v.time});}catch{}res.writeHead(204);res.end();});return;
+   }
+   if(!pathname.startsWith('/probe/')){res.setHeader('Content-Type','text/html');res.end(html);return;}
+   hits.push({path:pathname,at:Date.now()});event({event:'server.hit',path:pathname});res.setHeader('Content-Type','application/json');res.setHeader('Cache-Control','no-store');
+   res.on('close',()=>{event({event:'server.response.close',path:pathname,writableEnded:res.writableEnded});held.delete(pathname);});
+   if(pathname.includes('/held/')){res.writeHead(200);res.write('{"ok":');held.set(pathname,res);return;}
+   res.end('{"ok":true}');
+  });
+  await new Promise(r=>server.listen(0,'127.0.0.1',r));port=server.address().port;const origin='http://127.0.0.1:'+port;
+  fs.writeFileSync(path.join(E,'invocation.json'),JSON.stringify({argv:process.argv,cwd:W,candidate:expected,scriptSha256:crypto.createHash('sha256').update(fs.readFileSync(__filename)).digest('hex'),playwrightVersion:version,runtimePath,serverPid:process.pid,port,before,limits:{terminalObservationMs:11000,maxFirefoxAfterFullJsonNavigationVariants:5}},null,2));
+  for(const engine of ['firefox']){
+   browser=await runtime[engine].launch({headless:true});for(const pid of descendants())browserPids.add(pid);
+   const context=await browser.newContext({viewport:{width:1000,height:800},serviceWorkers:'block'});observe(context,engine,'context');
+   await context.route('**/*',async route=>{const url=new URL(route.request().url());if(url.origin!==origin){await route.abort();return;}if(url.pathname.startsWith('/probe/'))event({event:'route.observed',engine,path:url.pathname});try{await route.continue();}catch(error){event({event:'route.error',engine,path:url.pathname,error:safeError(error)});}});
+   await context.addInitScript(()=>{
+    window.qaOutcomes={};window.qaControllers={};window.qaCurrentCase=null;
+    window.qaRecord=(target,value)=>{window.qaOutcomes[target]=value;console.log('QA_BODY_DIAG:'+JSON.stringify({path:target,...value,browserTime:performance.now()}));};
+    addEventListener('pagehide',()=>{for(const [target,c] of Object.entries(window.qaControllers)){c.abort();if(target===window.qaCurrentCase)navigator.sendBeacon('/lifecycle',JSON.stringify({caseId:target,aborted:c.signal.aborted,time:Date.now()}));console.log('QA_BODY_DIAG:'+JSON.stringify({path:target,phase:'pagehide.abort',aborted:c.signal.aborted,browserTime:performance.now()}));}});
+   });
+   const page=await context.newPage();observe(page,engine,'page');
+   page.on('console',message=>{const text=message.text();if(text.startsWith('QA_BODY_DIAG:'))event({event:'consumer',engine,...JSON.parse(text.slice('QA_BODY_DIAG:'.length))});});
+   await page.goto(origin);
+   const begin=async target=>{await page.evaluate(target=>{const c=new AbortController();window.qaControllers[target]=c;window.qaRecord(target,{phase:'fetch.started'});fetch(target,{signal:c.signal}).then(r=>{window.qaRecord(target,{phase:'headers.body-pending',status:r.status});return r.json();}).then(data=>window.qaRecord(target,{phase:'json.complete',ok:data.ok===true})).catch(error=>window.qaRecord(target,{phase:'body.rejected',errorName:error.name,aborted:c.signal.aborted}));},target);};
+   const waitPhase=async(target,phase)=>{await page.waitForFunction(({target,phase})=>window.qaOutcomes[target]?.phase===phase,{target,phase},{timeout:10000});};
+   const terminal=target=>({page:events.some(x=>x.path===target&&x.scope==='page'&&['requestfinished','requestfailed'].includes(x.event)),context:events.some(x=>x.path===target&&x.scope==='context'&&['requestfinished','requestfailed'].includes(x.event))});
+   const settle=async target=>{const started=Date.now();while(Date.now()-started<11000){const t=terminal(target);if(t.page&&t.context)break;await sleep(10);}return {...terminal(target),observedMs:Date.now()-started};};
+   const complete=async label=>{const target='/probe/'+engine+'/complete/'+label;await begin(target);await waitPhase(target,'json.complete');const t=await settle(target);if(!t.page||!t.context)throw Error('Completed JSON control lacks native terminal '+target);return {path:target,phase:'json.complete',terminal:t};};
+   const run=async(mode,index)=>{
+    const target='/probe/'+engine+'/held/'+mode+'-'+index;
+    await begin(target);await page.evaluate(target=>{window.qaCurrentCase=target;},target);await waitPhase(target,'headers.body-pending');
+    const beforePhase=await page.evaluate(target=>window.qaOutcomes[target],target);if(beforePhase.phase!=='headers.body-pending'||terminal(target).page||terminal(target).context)throw Error('Held-body prerequisite not met');
+    event({event:'held-body.verified',engine,path:target,phase:beforePhase.phase});
+    let second;
+    if(mode==='abort-body'){
+     await page.evaluate(target=>{const c=window.qaControllers[target];c.abort();console.log('QA_BODY_DIAG:'+JSON.stringify({path:target,phase:'explicit.abort',aborted:c.signal.aborted,browserTime:performance.now()}));},target);await waitPhase(target,'body.rejected');
+     const outcome=await page.evaluate(target=>window.qaOutcomes[target],target);if(outcome.errorName!=='AbortError'||!outcome.aborted)throw Error('Held body did not reject AbortError');
+     second=await complete('after-abort-'+index);
+    }else if(mode==='navigate-body'||mode==='reload-body'){
+     if(mode==='reload-body')await page.reload();else await page.goto(origin+'/next/'+index);
+     second=await complete('after-'+mode+'-'+index);
+    }else{
+     const response=held.get(target);if(!response)throw Error('Held response missing');response.end('true}');await waitPhase(target,'json.complete');
+    }
+    const t=await settle(target),consumer=events.filter(x=>x.event==='consumer'&&x.path===target).map(x=>({phase:x.phase,errorName:x.errorName,aborted:x.aborted,browserTime:x.browserTime}));
+    const pending=[...pagePending.values()].filter(x=>x.engine===engine);const row={engine,mode,index,path:target,headersOnlyBeforeAction:true,bodyInitiallyHeld:true,consumer,terminal:t,secondSuccessfulRead:second??null,originalPageTrackerPending:pending,serverHits:hits.filter(x=>x.path===target).length,serverClose:events.filter(x=>x.event==='server.response.close'&&x.path===target).map(x=>({writableEnded:x.writableEnded}))};row.lifecycleBeacon=events.filter(x=>x.event==='lifecycle.beacon'&&x.caseId===target);try{assert.equal(pagePending.size,0);row.originalIdleAssertion={expected:0,actual:0,passed:true};}catch(error){row.originalIdleAssertion={expected:0,actual:pagePending.size,passed:false,diagnosticFailure:true,message:error.message};}cases.push(row);
+    if((!t.page||!t.context)&&mode!=='release-control'){stop=true;event({event:'orphan.detected',engine,path:target,pending});}
+    if(mode==='release-control'&&(!t.page||!t.context))throw Error('Released live body control lacks native terminal');
+    await page.evaluate(rows=>{document.querySelector('#result').textContent=rows.map(x=>JSON.stringify({mode:x.mode,index:x.index,pageTerminal:x.terminal.page,contextTerminal:x.terminal.context,pending:x.originalPageTrackerPending.length,consumer:x.consumer.map(y=>y.phase),secondRead:x.secondSuccessfulRead?.phase})).join('\n');},cases.filter(x=>x.engine===engine));
+   };
+   await complete('initial');
+   await run('navigate-body',0);
+   if(!stop)for(let i=1;i<=5;i++){
+    const target='/probe/firefox/complete/before-navigation-'+i;await begin(target);await page.evaluate(target=>{window.qaCurrentCase=target;},target);await waitPhase(target,'json.complete');
+    if(i%2)await page.goto(origin+'/completed-next/'+i);else await page.reload();
+    const second=await complete('after-completed-navigation-'+i),t=await settle(target),pending=[...pagePending.values()];
+    const row={engine,mode:'navigate-after-full-json',index:i,path:target,headersOnlyBeforeAction:false,bodyInitiallyHeld:false,consumer:events.filter(x=>x.event==='consumer'&&x.path===target),terminal:t,secondSuccessfulRead:second,originalPageTrackerPending:pending,lifecycleBeacon:events.filter(x=>x.event==='lifecycle.beacon'&&x.caseId===target),serverHits:hits.filter(x=>x.path===target).length,serverClose:events.filter(x=>x.event==='server.response.close'&&x.path===target)};
+    try{assert.equal(pagePending.size,0);row.originalIdleAssertion={expected:0,actual:0,passed:true};}catch(error){row.originalIdleAssertion={expected:0,actual:pagePending.size,passed:false,diagnosticFailure:true,message:error.message};}
+    cases.push(row);if(!t.page||!t.context){stop=true;event({event:'orphan.detected',engine,path:target,pending});break;}
+   }
+   await page.evaluate(rows=>{document.querySelector('#result').textContent=JSON.stringify(rows.map(x=>({mode:x.mode,index:x.index,terminal:x.terminal,consumer:x.consumer.map(v=>v.phase),beacons:x.lifecycleBeacon,originalIdleAssertion:x.originalIdleAssertion})),null,2);},cases);
+   await page.screenshot({path:path.join(E,engine+'-results.png'),fullPage:true});
+   await context.close();await browser.close();browser=undefined;if(stop)break;
+  }
+ }catch(error){failure=safeError(error);}
+ finally{
+  await browser?.close().catch(()=>{});for(const res of held.values())res.destroy();if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}
+  for(let n=0;n<20&&[...browserPids].some(alive);n++)await sleep(100);
+  const after=git(),orphans=cases.filter(x=>!x.terminal.page||!x.terminal.context);
+  const result={candidate:expected,playwrightVersion:version,serverPid:process.pid,port,portStillOpen:port?await portOpen(port):null,browserPids:[...browserPids],browserPidsStillAlive:[...browserPids].filter(alive),before,after,gitUnchanged:JSON.stringify(before)===JSON.stringify(after),cases,orphans,failure,outcome:failure?'diagnostic_failed':orphans.length?'terminal_event_gap_reproduced':'not_reproduced'};
+  fs.writeFileSync(path.join(E,'result.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({outcome:result.outcome,cases:cases.length,orphans:orphans.map(x=>({engine:x.engine,mode:x.mode,index:x.index,terminal:x.terminal,consumer:x.consumer,secondSuccessfulRead:x.secondSuccessfulRead,pending:x.originalPageTrackerPending})),failure,gitUnchanged:result.gitUnchanged,portStillOpen:result.portStillOpen,browserPidsStillAlive:result.browserPidsStillAlive}));if(failure||!result.gitUnchanged||result.portStillOpen||result.browserPidsStillAlive.length)process.exitCode=1;
+ }
+})();

@@ -1,0 +1,748 @@
+{
+  "manualQa": {
+    "surfaceEvidence": [
+      {
+        "scenarioId": "CAL-01",
+        "criterionReference": "Calendar plan Task1/2/3; Schedule fixed hash opens the native Profile disclosure and focuses its summary; one current Calendar owner",
+        "surface": "Actual owned Next browser journey in Chromium/WebKit/Firefox",
+        "exactInvocation": "B; employee-mobile-calendar.integration.ts stage schedule-entry",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "CI"
+        ]
+      },
+      {
+        "scenarioId": "CAL-02",
+        "criterionReference": "Calendar plan Task1/2/3; HTTP rejects an employee selector; no peer link or data exposed",
+        "surface": "Actual owned Next browser journey in Chromium/WebKit/Firefox",
+        "exactInvocation": "B; employee-mobile-calendar.integration.ts stage schedule-entry browser-context request",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "CI"
+        ]
+      },
+      {
+        "scenarioId": "CAL-03",
+        "criterionReference": "Calendar plan Task1/2/3; Actual own issue and peer isolation; controlled clipboard failure/success, native full-link selection; evidence redacts the secret",
+        "surface": "Actual owned Next browser journey in Chromium/WebKit/Firefox",
+        "exactInvocation": "B; employee-mobile-calendar.integration.ts stage actual-own-issue",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "CI"
+        ]
+      },
+      {
+        "scenarioId": "CAL-04",
+        "criterionReference": "Calendar plan Task1/2/3; Native Tab traversal uses visible focus, Copy then Select; Enter activates native selection",
+        "surface": "Actual owned Next browser journey in Chromium/WebKit/Firefox",
+        "exactInvocation": "B; employee-mobile-calendar.integration.ts stage provider-and-reflow keyboard",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "CI"
+        ]
+      },
+      {
+        "scenarioId": "CAL-05",
+        "criterionReference": "Calendar plan Task1/2/3; Provider-specific native guides,320/390/430 light/dark and200% text plus coarse landscape; no overflow,44/48 targets and sampled text contrast",
+        "surface": "Actual owned Next browser journey in Chromium/WebKit/Firefox",
+        "exactInvocation": "B; employee-mobile-calendar.integration.ts stage provider-and-reflow",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "CI",
+          "COPY",
+          "REPLACE",
+          "REVOKE"
+        ]
+      },
+      {
+        "scenarioId": "CAL-06",
+        "criterionReference": "Calendar plan Task1/2/3; Pause releases the URL; resume reads actual active state without reconstructing its one-time credential",
+        "surface": "Actual owned Next browser journey in Chromium/WebKit/Firefox",
+        "exactInvocation": "B; employee-mobile-calendar.integration.ts stage private-pause",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "CI"
+        ]
+      },
+      {
+        "scenarioId": "CAL-07",
+        "criterionReference": "Calendar plan Task1/2/3; Replacement requires explicit consequence review; cancel returns exact focus, confirmed rotation invalidates the former feed",
+        "surface": "Actual owned Next browser journey in Chromium/WebKit/Firefox",
+        "exactInvocation": "B; employee-mobile-calendar.integration.ts stage replace-confirmation",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "CI"
+        ]
+      },
+      {
+        "scenarioId": "CAL-08",
+        "criterionReference": "Calendar plan Task1/2/3; Lost actual committed rotation reply times out; media resize keeps owner/original; unrelated theme storage does not lose it; exact replay creates no second credential",
+        "surface": "Actual owned Next browser journey in Chromium/WebKit/Firefox",
+        "exactInvocation": "B; employee-mobile-calendar.integration.ts stage unknown-command-resize",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "CI",
+          "REC-chromium",
+          "REC-webkit",
+          "REC-firefox"
+        ]
+      },
+      {
+        "scenarioId": "CAL-09",
+        "criterionReference": "Calendar plan Task1/2/3; Confirmed own revoke stops future feed access and leaves truthful copied-event limits",
+        "surface": "Actual owned Next browser journey in Chromium/WebKit/Firefox",
+        "exactInvocation": "B; employee-mobile-calendar.integration.ts stage revoke-confirmation",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "CI"
+        ]
+      },
+      {
+        "scenarioId": "CAL-10",
+        "criterionReference": "Calendar plan Task1/2/3; Read failure removes all source actions and recovers only through an actual canonical read",
+        "surface": "Actual owned Next browser journey in Chromium/WebKit/Firefox",
+        "exactInvocation": "B; employee-mobile-calendar.integration.ts stage read-unavailable",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "CI"
+        ]
+      },
+      {
+        "scenarioId": "CAL-11",
+        "criterionReference": "Calendar plan Task1/2/3; Actual DB session budget expires before polling; no stale actions; recovery requires current canonical session",
+        "surface": "Actual owned Next browser journey in Chromium/WebKit/Firefox",
+        "exactInvocation": "B; employee-mobile-calendar.integration.ts stage finite-session-lease",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "CI"
+        ]
+      },
+      {
+        "scenarioId": "CAL-12",
+        "criterionReference": "Calendar plan Task1/2/3; Actual session loss clears private facts and denies all Calendar actions",
+        "surface": "Actual owned Next browser journey in Chromium/WebKit/Firefox",
+        "exactInvocation": "B; employee-mobile-calendar.integration.ts stage current-session-denial",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "CI"
+        ]
+      },
+      {
+        "scenarioId": "CAL-13",
+        "criterionReference": "Calendar plan Task1/2/3; Native signout ends the mounted Calendar owner and removes the portal cookie",
+        "surface": "Actual owned Next browser journey in Chromium/WebKit/Firefox",
+        "exactInvocation": "B; employee-mobile-calendar.integration.ts stage native-signout",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "CI"
+        ]
+      },
+      {
+        "scenarioId": "STATIC-U",
+        "criterionReference": "Task3 retained Profile682 corpus plus Calendar regressions",
+        "surface": "CLI actual component/contract unit corpus",
+        "exactInvocation": "S; exact98-fileargv in UI",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "U",
+          "UI"
+        ]
+      },
+      {
+        "scenarioId": "STATIC-TS",
+        "criterionReference": "Task2/3 nonincremental TypeScript",
+        "surface": "CLI",
+        "exactInvocation": "S \u2192 node node_modules/typescript/bin/tsc --noEmit --incremental false",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "TS"
+        ]
+      },
+      {
+        "scenarioId": "STATIC-LINT",
+        "criterionReference": "Task2/3 scoped lint",
+        "surface": "CLI",
+        "exactInvocation": "S \u2192 node node_modules/eslint/bin/eslint.js with recorded changed-file list",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "LINT"
+        ]
+      },
+      {
+        "scenarioId": "SQL-CAL",
+        "criterionReference": "Task1 canonical tokens/feed/current-access rules",
+        "surface": "Actual disposable PostgreSQL,70canonical cases",
+        "exactInvocation": "B; phase-e-calendar-tokens + phase-e-calendar-feed + company-access-recovery-calendar",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "SUITE",
+          "LOG"
+        ]
+      },
+      {
+        "scenarioId": "REGRESSION",
+        "criterionReference": "Task3 all required existing regression cases",
+        "surface": "26-file selector-free SQL/browser combined gate",
+        "exactInvocation": "B",
+        "verdict": "FAIL \u2014 Profile idle at new-account;253pass/1fail",
+        "artifactRefs": [
+          "SUITE",
+          "LOG",
+          "PROFILE",
+          "PENDING",
+          "PROFILE-HTML"
+        ]
+      },
+      {
+        "scenarioId": "CUSTODY",
+        "criterionReference": "Task3 immutable source/mirror/HEAD/index/PID/port/DB closure",
+        "surface": "Read-only filesystem/process/loopback and DB observation audit",
+        "exactInvocation": "python3 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/audit-run.py final-f58d040b",
+        "verdict": "PASS for source/runtime closure; per-instance marker sampling limited as stated",
+        "artifactRefs": [
+          "AUDIT",
+          "OBS"
+        ]
+      },
+      {
+        "scenarioId": "DIAGNOSTIC",
+        "criterionReference": "QA-CAL-1 missing completion-event diagnosis",
+        "surface": "Unchanged-candidate real Profile browser journey plus external event observer",
+        "exactInvocation": "D",
+        "verdict": "PASS for diagnostic execution only; failure NOT REPRODUCED, QA-CAL-1 OPEN",
+        "artifactRefs": [
+          "DIAG",
+          "DIAG-AUDIT"
+        ]
+      },
+      {
+        "scenarioId": "EO-01",
+        "criterionReference": "QA-CAL-1 original idle failure diagnosis",
+        "surface": "Real3engineProfile; Page+BrowserContext event observer; no fetch wrapper",
+        "exactInvocation": "python3 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/run-qa-profile-event-only.py combined --candidate f58d040b70909fa21dcb97b4f40edcfd5279226c --attempt diagnostic-f58d040b-event-only-01",
+        "verdict": "PASS diagnostic only; NOT REPRODUCED; QA-CAL-1 OPEN",
+        "artifactRefs": [
+          "EO-01-EVENTS",
+          "EO-01-AUDIT"
+        ]
+      },
+      {
+        "scenarioId": "EO-02",
+        "criterionReference": "QA-CAL-1 original idle failure diagnosis",
+        "surface": "Real3engineProfile; Page+BrowserContext event observer; no fetch wrapper",
+        "exactInvocation": "python3 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/run-qa-profile-event-only.py combined --candidate f58d040b70909fa21dcb97b4f40edcfd5279226c --attempt diagnostic-f58d040b-event-only-02",
+        "verdict": "PASS diagnostic only; NOT REPRODUCED; QA-CAL-1 OPEN",
+        "artifactRefs": [
+          "EO-02-EVENTS",
+          "EO-02-AUDIT"
+        ]
+      },
+      {
+        "scenarioId": "EO-03",
+        "criterionReference": "QA-CAL-1 original idle failure diagnosis",
+        "surface": "Real3engineProfile; Page+BrowserContext event observer; no fetch wrapper",
+        "exactInvocation": "python3 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/run-qa-profile-event-only.py combined --candidate f58d040b70909fa21dcb97b4f40edcfd5279226c --attempt diagnostic-f58d040b-event-only-03",
+        "verdict": "PASS diagnostic only; NOT REPRODUCED; QA-CAL-1 OPEN",
+        "artifactRefs": [
+          "EO-03-EVENTS",
+          "EO-03-AUDIT"
+        ]
+      },
+      {
+        "scenarioId": "SYNTH-01",
+        "criterionReference": "QA-CAL-1 upstream rapid-abort hypothesis",
+        "surface": "Owned-loopback HTTP + real Chromium/WebKit/Firefox;21synthetic cases",
+        "exactInvocation": "node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-rapid-abort.cjs",
+        "verdict": "PASS controls/cleanup; orphan request NOT REPRODUCED; QA-CAL-1 OPEN",
+        "artifactRefs": [
+          "SYNTH",
+          "SYNTH-CUSTODY",
+          "SYNTH-FIREFOX"
+        ]
+      },
+      {
+        "scenarioId": "SYNTH-02",
+        "criterionReference": "QA-CAL-1 afterheaders/navigation hypothesis",
+        "surface": "Owned-loopback HTTP; Chromium2cases thenstop",
+        "exactInvocation": "node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-body-navigation.cjs",
+        "verdict": "REPRODUCED native terminal gap; originalFirefoxcausalityOPEN; WebKit/FirefoxUNEXECUTED afterrequiredstop",
+        "artifactRefs": [
+          "BODY-NAV",
+          "BODY-NAV-EVENTS",
+          "BODY-NAV-CUSTODY"
+        ]
+      },
+      {
+        "scenarioId": "SYNTH-03",
+        "criterionReference": "QA-CAL-1 Firefoxafterheaders/completeJSONnavigation",
+        "surface": "Owned-loopback HTTP; pinnedFirefox6cases and successfulsecondreads",
+        "exactInvocation": "node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-firefox-navigation.cjs",
+        "verdict": "PASS diagnostic controls/cleanup; orphanNOTREPRODUCED; originalQA-CAL-1OPEN",
+        "artifactRefs": [
+          "FF-NAV",
+          "FF-NAV-EVENTS",
+          "FF-NAV-CUSTODY"
+        ]
+      },
+      {
+        "scenarioId": "SYNTH-04",
+        "criterionReference": "QA-CAL-1 nexttaskabort16msheadershypothesis",
+        "surface": "Owned-loopback pinnedFirefox; 30cases defaultfetch",
+        "exactInvocation": "node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-firefox-timed-abort.cjs",
+        "verdict": "PASS diagnostic controls/cleanup; orphanNOTREPRODUCED; originalQA-CAL-1OPEN",
+        "artifactRefs": [
+          "SYNTH-04-RESULT",
+          "SYNTH-04-SUMMARY",
+          "SYNTH-04-CUSTODY"
+        ]
+      },
+      {
+        "scenarioId": "SYNTH-05",
+        "criterionReference": "QA-CAL-1 nexttaskabort16msheadershypothesis",
+        "surface": "Owned-loopback pinnedFirefox; 14cases canonicalfetchoptions",
+        "exactInvocation": "node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-firefox-options-abort.cjs",
+        "verdict": "PASS diagnostic controls/cleanup; orphanNOTREPRODUCED; originalQA-CAL-1OPEN",
+        "artifactRefs": [
+          "SYNTH-05-RESULT",
+          "SYNTH-05-SUMMARY",
+          "SYNTH-05-CUSTODY"
+        ]
+      },
+      {
+        "scenarioId": "ACTUAL-01",
+        "criterionReference": "QA-CAL-1 actualnewaccountmountcleanup",
+        "surface": "ActualownedNext/markedPG;10Firefoxcycles",
+        "exactInvocation": "python3 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/run-qa-actual-profile-v2.py combined --candidate f58d040b70909fa21dcb97b4f40edcfd5279226c --attempt actual-f58d040b-profile-cycles-02",
+        "verdict": "PASS10native-eventcycles; failureNOTREPRODUCED; optionalconsumerobservationUNEXECUTED; originalQA-CAL-1OPEN",
+        "artifactRefs": [
+          "ACTUAL-CYCLES",
+          "ACTUAL-EVENTS",
+          "ACTUAL-AUDIT"
+        ]
+      }
+    ],
+    "adversarialCases": [
+      {
+        "scenarioId": "ADV-01",
+        "criterionReference": "Task1 strict contract",
+        "adversarialClass": "malformed/rebound status or receipt",
+        "expectedBehavior": "Reject malformed/private URL/authority/operation/generation mismatch before adoption",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "U",
+          "UI"
+        ]
+      },
+      {
+        "scenarioId": "ADV-02",
+        "criterionReference": "Task1 finite waits",
+        "adversarialClass": "held read/write headers/body and late completion",
+        "expectedBehavior": "Bound waits, fence late responses, retain immutable unknown original",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "U",
+          "CAL"
+        ]
+      },
+      {
+        "scenarioId": "ADV-03",
+        "criterionReference": "Task1 monotonic lease;CR-3",
+        "adversarialClass": "delayed timers and advancing clock samples",
+        "expectedBehavior": "Zero expired POST/clipboard side effects; fixed request-start deadline; preserve original recovery",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "U",
+          "UI"
+        ]
+      },
+      {
+        "scenarioId": "ADV-04",
+        "criterionReference": "Task1 lifecycle",
+        "adversarialClass": "lost committed reply, unrelated theme storage and media resize",
+        "expectedBehavior": "Same original replay, no secondcredential; owner remains mounted; visible retry",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "REC-chromium",
+          "REC-webkit",
+          "REC-firefox"
+        ]
+      },
+      {
+        "scenarioId": "ADV-05",
+        "criterionReference": "Task1 authorization",
+        "adversarialClass": "current session/role/workspace/location refusal and peer selector",
+        "expectedBehavior": "Own/current guards remain; no stale/private action admission",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "SUITE",
+          "U"
+        ]
+      },
+      {
+        "scenarioId": "ADV-06",
+        "criterionReference": "Task1 canonical lifecycle",
+        "adversarialClass": "concurrent rotate/revoke/replay and feed invalidation",
+        "expectedBehavior": "Actual locking/generation winner rules and revoked feed denial",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "SUITE",
+          "LOG"
+        ]
+      },
+      {
+        "scenarioId": "ADV-07",
+        "criterionReference": "Task2 copy fallback",
+        "adversarialClass": "clipboard denial",
+        "expectedBehavior": "Honest failure message and native select-all fallback; no claimed provider connection",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "COPY"
+        ]
+      },
+      {
+        "scenarioId": "ADV-08",
+        "criterionReference": "Task2 accessibility;UI-1/UI-3",
+        "adversarialClass": "320px/200%light/dark,keyboard,coarse landscape",
+        "expectedBehavior": "No tested overflow;44pxtargets/48pxcritical controls; visible focus and retry above nav",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "COPY",
+          "REPLACE",
+          "REVOKE",
+          "REC-chromium",
+          "REC-webkit",
+          "REC-firefox"
+        ]
+      },
+      {
+        "scenarioId": "ADV-09",
+        "criterionReference": "Task1 privacy",
+        "adversarialClass": "pause/signout/expiry and stale completion",
+        "expectedBehavior": "Clear private state, prevent reopened ended owner and no credential reconstruction",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "CAL",
+          "U"
+        ]
+      },
+      {
+        "scenarioId": "ADV-10",
+        "criterionReference": "Task3 retained Profile;QA-CAL-1",
+        "adversarialClass": "new-account request completion accounting",
+        "expectedBehavior": "Original10second idle assertion must drain genuine tracked requests",
+        "verdict": "FAIL; isolated diagnostic did not reproduce; cause remains unresolved",
+        "artifactRefs": [
+          "LOG",
+          "PENDING",
+          "PROFILE-HTML",
+          "DIAG"
+        ]
+      },
+      {
+        "scenarioId": "ADV-11",
+        "criterionReference": "Scope boundary",
+        "adversarialClass": "provider service outage/retry",
+        "expectedBehavior": "not_applicable: feature calls no external provider API; it supplies a feed link and instructions only",
+        "verdict": "not_applicable",
+        "artifactRefs": [
+          "CAL"
+        ]
+      }
+    ],
+    "artifactRefs": [
+      {
+        "id": "U",
+        "kind": "test-log",
+        "description": "98 files/799 unit tests, actual final-candidate run",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/units/stdout.log"
+      },
+      {
+        "id": "UI",
+        "kind": "invocation",
+        "description": "Exact98-file unit argv and sanitized environment",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/units/invocation.json"
+      },
+      {
+        "id": "TS",
+        "kind": "custody-result",
+        "description": "Nonincremental TypeScript exit0/source/Git custody",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/typescript/result.json"
+      },
+      {
+        "id": "LINT",
+        "kind": "custody-result",
+        "description": "Scoped ESLint exit0/source/Git custody",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/eslint/result.json"
+      },
+      {
+        "id": "CI",
+        "kind": "invocation",
+        "description": "Exact selector-free26-file combined argv/environment",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/invocation.json"
+      },
+      {
+        "id": "SUITE",
+        "kind": "test-report",
+        "description": "253pass/1fail,26files, exact assertion records",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/suite-results.json"
+      },
+      {
+        "id": "LOG",
+        "kind": "test-log",
+        "description": "Full run including Profile idle failure stack and PGstop",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/stdout.log"
+      },
+      {
+        "id": "AUDIT",
+        "kind": "independent-audit",
+        "description": "Independent hashes/inventories/PID/port/DB checks and explicit marker caveat",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/audit-result.json"
+      },
+      {
+        "id": "OBS",
+        "kind": "observation-log",
+        "description": "1376frozen samples including3null-marker snapshots",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/observations.json"
+      },
+      {
+        "id": "CAL",
+        "kind": "browser-action-record",
+        "description": "39Calendar checkpoints,108captures,54contrasts, actual3engines",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/calendar/result.json"
+      },
+      {
+        "id": "PLAN",
+        "kind": "scenario-invocation",
+        "description": "Calendar scenarios stated before final Calendar execution",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/calendar-scenario-plan.json"
+      },
+      {
+        "id": "REC-chromium",
+        "kind": "screenshot",
+        "description": "Actual original-retry recovery above fixed navigation",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/calendar/chromium-calendar-unknown-original.png"
+      },
+      {
+        "id": "REC-webkit",
+        "kind": "screenshot",
+        "description": "Actual original-retry recovery above fixed navigation",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/calendar/webkit-calendar-unknown-original.png"
+      },
+      {
+        "id": "REC-firefox",
+        "kind": "screenshot",
+        "description": "Actual original-retry recovery above fixed navigation",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/calendar/firefox-calendar-unknown-original.png"
+      },
+      {
+        "id": "COPY",
+        "kind": "screenshot",
+        "description": "320px200%Copy/Select controls",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/calendar/firefox-calendar-light-320-text200-copy.png"
+      },
+      {
+        "id": "REPLACE",
+        "kind": "screenshot",
+        "description": "Dark200%replace confirmation control",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/calendar/webkit-calendar-replace-dark-text200-control.png"
+      },
+      {
+        "id": "REVOKE",
+        "kind": "screenshot",
+        "description": "Light200%revoke confirmation control",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/calendar/chromium-calendar-revoke-light-text200-control.png"
+      },
+      {
+        "id": "PROFILE",
+        "kind": "screenshot",
+        "description": "Failed Firefox new-account Profile surface",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/profile/firefox-failure.png"
+      },
+      {
+        "id": "PENDING",
+        "kind": "browser-diagnostic",
+        "description": "One retained Calendar GET at original idle failure",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/profile/firefox-pending-requests.json"
+      },
+      {
+        "id": "PROFILE-HTML",
+        "kind": "browser-DOM",
+        "description": "Ready new-account Profile and current Calendar none at failure",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/profile/firefox-failure.html"
+      },
+      {
+        "id": "DIAG",
+        "kind": "browser-event-log",
+        "description": "Unchanged-candidate diagnostic stableIDs, completion and consumer events; no reproduction",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/diagnostic-f58d040b-profile-01/combined/profile-events.jsonl"
+      },
+      {
+        "id": "DIAG-AUDIT",
+        "kind": "independent-audit",
+        "description": "Single diagnostic runtime closure; transient startup refusal explicitly retained",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/diagnostic-f58d040b-profile-01/audit-result.json"
+      },
+      {
+        "id": "EO-01-EVENTS",
+        "kind": "browser-event-summary",
+        "description": "Event-only diagnostic; no failure reproduction or acceptance closure",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/diagnostic-f58d040b-event-only-01/event-summary.json"
+      },
+      {
+        "id": "EO-01-AUDIT",
+        "kind": "custody-audit",
+        "description": "Event-only diagnostic; no failure reproduction or acceptance closure",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/diagnostic-f58d040b-event-only-01/audit-result.json"
+      },
+      {
+        "id": "EO-02-EVENTS",
+        "kind": "browser-event-summary",
+        "description": "Event-only diagnostic; no failure reproduction or acceptance closure",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/diagnostic-f58d040b-event-only-02/event-summary.json"
+      },
+      {
+        "id": "EO-02-AUDIT",
+        "kind": "custody-audit",
+        "description": "Event-only diagnostic; no failure reproduction or acceptance closure",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/diagnostic-f58d040b-event-only-02/audit-result.json"
+      },
+      {
+        "id": "EO-03-EVENTS",
+        "kind": "browser-event-summary",
+        "description": "Event-only diagnostic; no failure reproduction or acceptance closure",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/diagnostic-f58d040b-event-only-03/event-summary.json"
+      },
+      {
+        "id": "EO-03-AUDIT",
+        "kind": "custody-audit",
+        "description": "Event-only diagnostic; no failure reproduction or acceptance closure",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/diagnostic-f58d040b-event-only-03/audit-result.json"
+      },
+      {
+        "id": "SYNTH",
+        "kind": "browser-protocol-diagnostic",
+        "description": "Pinned1.62.1 minimal rapid-abort experiment; no orphan reproduced",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-f58d040b-rapid-abort-01/result.json"
+      },
+      {
+        "id": "SYNTH-CUSTODY",
+        "kind": "post-exit-custody",
+        "description": "Pinned1.62.1 minimal rapid-abort experiment; no orphan reproduced",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-f58d040b-rapid-abort-01/post-exit-custody.json"
+      },
+      {
+        "id": "SYNTH-FIREFOX",
+        "kind": "screenshot",
+        "description": "Pinned1.62.1 minimal rapid-abort experiment; no orphan reproduced",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-f58d040b-rapid-abort-01/firefox-results.png"
+      },
+      {
+        "id": "BODY-NAV",
+        "kind": "browser-protocol-diagnostic",
+        "description": "Chromium held-body navigation native terminal gap; later engines notrun afterstop",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-f58d040b-body-navigation-01/result.json"
+      },
+      {
+        "id": "BODY-NAV-EVENTS",
+        "kind": "event-log",
+        "description": "Chromium held-body navigation native terminal gap; later engines notrun afterstop",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-f58d040b-body-navigation-01/events.jsonl"
+      },
+      {
+        "id": "BODY-NAV-CUSTODY",
+        "kind": "post-exit-custody",
+        "description": "Chromium held-body navigation native terminal gap; later engines notrun afterstop",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-f58d040b-body-navigation-01/post-exit-custody.json"
+      },
+      {
+        "id": "FF-NAV",
+        "kind": "browser-protocol-diagnostic",
+        "description": "SixFirefox cases with durable serverabort beacons; noorphan; originalcauseOPEN",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-f58d040b-firefox-navigation-01/result.json"
+      },
+      {
+        "id": "FF-NAV-EVENTS",
+        "kind": "event-log",
+        "description": "SixFirefox cases with durable serverabort beacons; noorphan; originalcauseOPEN",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-f58d040b-firefox-navigation-01/events.jsonl"
+      },
+      {
+        "id": "FF-NAV-CUSTODY",
+        "kind": "post-exit-custody",
+        "description": "SixFirefox cases with durable serverabort beacons; noorphan; originalcauseOPEN",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-f58d040b-firefox-navigation-01/post-exit-custody.json"
+      },
+      {
+        "id": "SYNTH-04-RESULT",
+        "kind": "browser-protocol-diagnostic",
+        "description": "30cases defaultfetch; noorphan; originalQA-CAL-1OPEN",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-f58d040b-firefox-timed-abort-01/result.json"
+      },
+      {
+        "id": "SYNTH-04-SUMMARY",
+        "kind": "case-matrix",
+        "description": "30cases defaultfetch; noorphan; originalQA-CAL-1OPEN",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-f58d040b-firefox-timed-abort-01/case-summary.json"
+      },
+      {
+        "id": "SYNTH-04-CUSTODY",
+        "kind": "post-exit-custody",
+        "description": "30cases defaultfetch; noorphan; originalQA-CAL-1OPEN",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-f58d040b-firefox-timed-abort-01/post-exit-custody.json"
+      },
+      {
+        "id": "SYNTH-05-RESULT",
+        "kind": "browser-protocol-diagnostic",
+        "description": "14cases canonicalfetchoptions; noorphan; originalQA-CAL-1OPEN",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-f58d040b-firefox-options-abort-01/result.json"
+      },
+      {
+        "id": "SYNTH-05-SUMMARY",
+        "kind": "case-matrix",
+        "description": "14cases canonicalfetchoptions; noorphan; originalQA-CAL-1OPEN",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-f58d040b-firefox-options-abort-01/case-summary.json"
+      },
+      {
+        "id": "SYNTH-05-CUSTODY",
+        "kind": "post-exit-custody",
+        "description": "14cases canonicalfetchoptions; noorphan; originalQA-CAL-1OPEN",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-f58d040b-firefox-options-abort-01/post-exit-custody.json"
+      },
+      {
+        "id": "ACTUAL-CYCLES",
+        "kind": "browser-action-record",
+        "description": "Actualsource10Firefox account-switch cycles;32idleassertions; optionalconsumerobservernotactivated",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/actual-f58d040b-profile-cycles-02/combined/profile/result.json"
+      },
+      {
+        "id": "ACTUAL-EVENTS",
+        "kind": "browser-event-log",
+        "description": "Actualsource10Firefox account-switch cycles;32idleassertions; optionalconsumerobservernotactivated",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/actual-f58d040b-profile-cycles-02/combined/profile/events.jsonl"
+      },
+      {
+        "id": "ACTUAL-AUDIT",
+        "kind": "independent-custody-audit",
+        "description": "Actualsource10Firefox account-switch cycles;32idleassertions; optionalconsumerobservernotactivated",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/actual-f58d040b-profile-cycles-02/audit-result.json"
+      }
+    ]
+  }
+}

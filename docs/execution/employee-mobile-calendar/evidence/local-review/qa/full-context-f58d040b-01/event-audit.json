@@ -1,0 +1,2077 @@
+{
+  "version": [
+    "1.62.1"
+  ],
+  "eventCount": 12948,
+  "uniqueRequestCount": 1490,
+  "requestIdentity": "process pid + WeakMap Request id, shared by Page and Context",
+  "pageContextTerminalMismatchCount": 0,
+  "nativeTerminalAbsentCount": 12,
+  "nativeTerminalAbsentByEngine": {
+    "chromium": 12
+  },
+  "orphans": [
+    {
+      "requestKey": "57909:73",
+      "engine": "chromium",
+      "path": "/api/employee/communications/context",
+      "wallTime": 1793144875858,
+      "missingTerminalScopes": [
+        "context",
+        "page"
+      ],
+      "events": [
+        {
+          "wallTime": 1793144875858,
+          "nodeTime": 46128.30525,
+          "pid": 57909,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 73,
+          "requestKey": "57909:73",
+          "stagePagePath": "/app/updates/compose",
+          "method": "GET",
+          "path": "/api/employee/communications/context",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793144875858,
+          "nodeTime": 46128.482875,
+          "pid": 57909,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 73,
+          "requestKey": "57909:73",
+          "stagePagePath": "/app/updates/compose",
+          "method": "GET",
+          "path": "/api/employee/communications/context",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        }
+      ],
+      "contextClosure": [
+        {
+          "wallTime": 1793144878187,
+          "nodeTime": 48457.268666,
+          "pid": 57909,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1
+        },
+        {
+          "wallTime": 1793144878190,
+          "nodeTime": 48460.255666,
+          "pid": 57909,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context"
+        }
+      ],
+      "classification": "Native observer absence; not an original test assertion failure. All such entries are Chromium; no inference of original Firefox cause."
+    },
+    {
+      "requestKey": "57909:83",
+      "engine": "chromium",
+      "path": "/api/employee/communications/preview",
+      "wallTime": 1793144877893,
+      "missingTerminalScopes": [
+        "context",
+        "page"
+      ],
+      "events": [
+        {
+          "wallTime": 1793144877893,
+          "nodeTime": 48164.008,
+          "pid": 57909,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 83,
+          "requestKey": "57909:83",
+          "stagePagePath": "/app/updates/compose",
+          "method": "POST",
+          "path": "/api/employee/communications/preview",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793144877894,
+          "nodeTime": 48164.165541,
+          "pid": 57909,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 83,
+          "requestKey": "57909:83",
+          "stagePagePath": "/app/updates/compose",
+          "method": "POST",
+          "path": "/api/employee/communications/preview",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793144877918,
+          "nodeTime": 48188.175083,
+          "pid": 57909,
+          "event": "response",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 83,
+          "requestKey": "57909:83",
+          "stagePagePath": "/app/updates/compose",
+          "method": "POST",
+          "path": "/api/employee/communications/preview",
+          "nativeTiming": {
+            "startTime": 1793144877894.708,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.129,
+            "responseStart": 22.565,
+            "responseEnd": -1
+          },
+          "status": 403,
+          "timing": {
+            "startTime": 1793144877894.708,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.129,
+            "responseStart": 22.565,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793144877918,
+          "nodeTime": 48188.31425,
+          "pid": 57909,
+          "event": "response",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 83,
+          "requestKey": "57909:83",
+          "stagePagePath": "/app/updates/compose",
+          "method": "POST",
+          "path": "/api/employee/communications/preview",
+          "nativeTiming": {
+            "startTime": 1793144877894.708,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.129,
+            "responseStart": 22.565,
+            "responseEnd": -1
+          },
+          "status": 403,
+          "timing": {
+            "startTime": 1793144877894.708,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.129,
+            "responseStart": 22.565,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793144878188,
+          "nodeTime": 48459.063708,
+          "pid": 57909,
+          "event": "response.finished.reject",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 83,
+          "requestKey": "57909:83",
+          "stagePagePath": "/app/updates/compose",
+          "method": "POST",
+          "path": "/api/employee/communications/preview",
+          "nativeTiming": {
+            "startTime": 1793144877894.708,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.129,
+            "responseStart": 22.565,
+            "responseEnd": -1
+          },
+          "error": "Error: Target page, context or browser has been closed"
+        },
+        {
+          "wallTime": 1793144878188,
+          "nodeTime": 48459.090125,
+          "pid": 57909,
+          "event": "response.finished.reject",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 83,
+          "requestKey": "57909:83",
+          "stagePagePath": "/app/updates/compose",
+          "method": "POST",
+          "path": "/api/employee/communications/preview",
+          "nativeTiming": {
+            "startTime": 1793144877894.708,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.129,
+            "responseStart": 22.565,
+            "responseEnd": -1
+          },
+          "error": "Error: Target page, context or browser has been closed"
+        }
+      ],
+      "contextClosure": [
+        {
+          "wallTime": 1793144878187,
+          "nodeTime": 48457.268666,
+          "pid": 57909,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1
+        },
+        {
+          "wallTime": 1793144878190,
+          "nodeTime": 48460.255666,
+          "pid": 57909,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context"
+        }
+      ],
+      "classification": "Native observer absence; not an original test assertion failure. All such entries are Chromium; no inference of original Firefox cause."
+    },
+    {
+      "requestKey": "57909:86",
+      "engine": "chromium",
+      "path": "/api/employee/messages/compose/new",
+      "wallTime": 1793144878156,
+      "missingTerminalScopes": [
+        "context",
+        "page"
+      ],
+      "events": [
+        {
+          "wallTime": 1793144878156,
+          "nodeTime": 48427.104791,
+          "pid": 57909,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 86,
+          "requestKey": "57909:86",
+          "stagePagePath": "/app/updates/compose",
+          "method": "GET",
+          "path": "/api/employee/messages/compose/new",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793144878157,
+          "nodeTime": 48427.205125,
+          "pid": 57909,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 86,
+          "requestKey": "57909:86",
+          "stagePagePath": "/app/updates/compose",
+          "method": "GET",
+          "path": "/api/employee/messages/compose/new",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793144878163,
+          "nodeTime": 48433.906666,
+          "pid": 57909,
+          "event": "response",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 86,
+          "requestKey": "57909:86",
+          "stagePagePath": "/app/updates/compose",
+          "method": "GET",
+          "path": "/api/employee/messages/compose/new",
+          "nativeTiming": {
+            "startTime": 1793144878157.341,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.119,
+            "responseStart": 5.638,
+            "responseEnd": -1
+          },
+          "status": 401,
+          "timing": {
+            "startTime": 1793144878157.341,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.119,
+            "responseStart": 5.638,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793144878163,
+          "nodeTime": 48434.081666,
+          "pid": 57909,
+          "event": "response",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 86,
+          "requestKey": "57909:86",
+          "stagePagePath": "/app/updates/compose",
+          "method": "GET",
+          "path": "/api/employee/messages/compose/new",
+          "nativeTiming": {
+            "startTime": 1793144878157.341,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.119,
+            "responseStart": 5.638,
+            "responseEnd": -1
+          },
+          "status": 401,
+          "timing": {
+            "startTime": 1793144878157.341,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.119,
+            "responseStart": 5.638,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793144878188,
+          "nodeTime": 48459.115083,
+          "pid": 57909,
+          "event": "response.finished.reject",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 86,
+          "requestKey": "57909:86",
+          "stagePagePath": "/app/updates/compose",
+          "method": "GET",
+          "path": "/api/employee/messages/compose/new",
+          "nativeTiming": {
+            "startTime": 1793144878157.341,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.119,
+            "responseStart": 5.638,
+            "responseEnd": -1
+          },
+          "error": "Error: Target page, context or browser has been closed"
+        },
+        {
+          "wallTime": 1793144878188,
+          "nodeTime": 48459.138291,
+          "pid": 57909,
+          "event": "response.finished.reject",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 86,
+          "requestKey": "57909:86",
+          "stagePagePath": "/app/updates/compose",
+          "method": "GET",
+          "path": "/api/employee/messages/compose/new",
+          "nativeTiming": {
+            "startTime": 1793144878157.341,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.119,
+            "responseStart": 5.638,
+            "responseEnd": -1
+          },
+          "error": "Error: Target page, context or browser has been closed"
+        }
+      ],
+      "contextClosure": [
+        {
+          "wallTime": 1793144878187,
+          "nodeTime": 48457.268666,
+          "pid": 57909,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1
+        },
+        {
+          "wallTime": 1793144878190,
+          "nodeTime": 48460.255666,
+          "pid": 57909,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context"
+        }
+      ],
+      "classification": "Native observer absence; not an original test assertion failure. All such entries are Chromium; no inference of original Firefox cause."
+    },
+    {
+      "requestKey": "60845:24",
+      "engine": "chromium",
+      "path": "/api/employee/requests",
+      "wallTime": 1793144963358,
+      "missingTerminalScopes": [
+        "context",
+        "page"
+      ],
+      "events": [
+        {
+          "wallTime": 1793144963358,
+          "nodeTime": 19641.542291,
+          "pid": 60845,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 24,
+          "requestKey": "60845:24",
+          "stagePagePath": "/app/requests/hub",
+          "method": "GET",
+          "path": "/api/employee/requests",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793144963358,
+          "nodeTime": 19641.669208,
+          "pid": 60845,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 24,
+          "requestKey": "60845:24",
+          "stagePagePath": "/app/requests/hub",
+          "method": "GET",
+          "path": "/api/employee/requests",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793144963365,
+          "nodeTime": 19648.580041,
+          "pid": 60845,
+          "event": "response",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 24,
+          "requestKey": "60845:24",
+          "stagePagePath": "/app/requests/hub",
+          "method": "GET",
+          "path": "/api/employee/requests",
+          "nativeTiming": {
+            "startTime": 1793144963358.492,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": 6.797,
+            "responseEnd": -1
+          },
+          "status": 401,
+          "timing": {
+            "startTime": 1793144963358.492,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": 6.797,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793144963365,
+          "nodeTime": 19648.726833,
+          "pid": 60845,
+          "event": "response",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 24,
+          "requestKey": "60845:24",
+          "stagePagePath": "/app/requests/hub",
+          "method": "GET",
+          "path": "/api/employee/requests",
+          "nativeTiming": {
+            "startTime": 1793144963358.492,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": 6.797,
+            "responseEnd": -1
+          },
+          "status": 401,
+          "timing": {
+            "startTime": 1793144963358.492,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": 6.797,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793144963401,
+          "nodeTime": 19684.071541,
+          "pid": 60845,
+          "event": "response.finished.reject",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 24,
+          "requestKey": "60845:24",
+          "stagePagePath": "/app/requests/hub",
+          "method": "GET",
+          "path": "/api/employee/requests",
+          "nativeTiming": {
+            "startTime": 1793144963358.492,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": 6.797,
+            "responseEnd": -1
+          },
+          "error": "Error: Target page, context or browser has been closed"
+        },
+        {
+          "wallTime": 1793144963401,
+          "nodeTime": 19684.11225,
+          "pid": 60845,
+          "event": "response.finished.reject",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 24,
+          "requestKey": "60845:24",
+          "stagePagePath": "/app/requests/hub",
+          "method": "GET",
+          "path": "/api/employee/requests",
+          "nativeTiming": {
+            "startTime": 1793144963358.492,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": 6.797,
+            "responseEnd": -1
+          },
+          "error": "Error: Target page, context or browser has been closed"
+        }
+      ],
+      "contextClosure": [
+        {
+          "wallTime": 1793144963400,
+          "nodeTime": 19683.380708,
+          "pid": 60845,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1
+        },
+        {
+          "wallTime": 1793144963402,
+          "nodeTime": 19684.933791,
+          "pid": 60845,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context"
+        }
+      ],
+      "classification": "Native observer absence; not an original test assertion failure. All such entries are Chromium; no inference of original Firefox cause."
+    },
+    {
+      "requestKey": "61721:37",
+      "engine": "chromium",
+      "path": "/api/notifications",
+      "wallTime": 1793145012754,
+      "missingTerminalScopes": [
+        "context",
+        "page"
+      ],
+      "events": [
+        {
+          "wallTime": 1793145012754,
+          "nodeTime": 34920.311291,
+          "pid": 61721,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 37,
+          "requestKey": "61721:37",
+          "stagePagePath": "/app/profile",
+          "method": "GET",
+          "path": "/api/notifications",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145012754,
+          "nodeTime": 34920.349291,
+          "pid": 61721,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 37,
+          "requestKey": "61721:37",
+          "stagePagePath": "/app/profile",
+          "method": "GET",
+          "path": "/api/notifications",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145012767,
+          "nodeTime": 34933.272541,
+          "pid": 61721,
+          "event": "response",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 37,
+          "requestKey": "61721:37",
+          "stagePagePath": "/app/profile",
+          "method": "GET",
+          "path": "/api/notifications",
+          "nativeTiming": {
+            "startTime": 1793145012755.178,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.098,
+            "responseStart": 9.677,
+            "responseEnd": -1
+          },
+          "status": 401,
+          "timing": {
+            "startTime": 1793145012755.178,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.098,
+            "responseStart": 9.677,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145012767,
+          "nodeTime": 34933.392875,
+          "pid": 61721,
+          "event": "response",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 37,
+          "requestKey": "61721:37",
+          "stagePagePath": "/app/profile",
+          "method": "GET",
+          "path": "/api/notifications",
+          "nativeTiming": {
+            "startTime": 1793145012755.178,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.098,
+            "responseStart": 9.677,
+            "responseEnd": -1
+          },
+          "status": 401,
+          "timing": {
+            "startTime": 1793145012755.178,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.098,
+            "responseStart": 9.677,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145012892,
+          "nodeTime": 35058.735375,
+          "pid": 61721,
+          "event": "response.finished.reject",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 37,
+          "requestKey": "61721:37",
+          "stagePagePath": "/login",
+          "method": "GET",
+          "path": "/api/notifications",
+          "nativeTiming": {
+            "startTime": 1793145012755.178,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.098,
+            "responseStart": 9.677,
+            "responseEnd": -1
+          },
+          "error": "Error: Target page, context or browser has been closed"
+        },
+        {
+          "wallTime": 1793145012892,
+          "nodeTime": 35058.758583,
+          "pid": 61721,
+          "event": "response.finished.reject",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 37,
+          "requestKey": "61721:37",
+          "stagePagePath": "/login",
+          "method": "GET",
+          "path": "/api/notifications",
+          "nativeTiming": {
+            "startTime": 1793145012755.178,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.098,
+            "responseStart": 9.677,
+            "responseEnd": -1
+          },
+          "error": "Error: Target page, context or browser has been closed"
+        }
+      ],
+      "contextClosure": [
+        {
+          "wallTime": 1793145012892,
+          "nodeTime": 35058.313166,
+          "pid": 61721,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1
+        },
+        {
+          "wallTime": 1793145012897,
+          "nodeTime": 35063.763416,
+          "pid": 61721,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context"
+        }
+      ],
+      "classification": "Native observer absence; not an original test assertion failure. All such entries are Chromium; no inference of original Firefox cause."
+    },
+    {
+      "requestKey": "62818:40",
+      "engine": "chromium",
+      "path": "/api/employee/creation/callout/creation-own-report-0",
+      "wallTime": 1793145086086,
+      "missingTerminalScopes": [
+        "context",
+        "page"
+      ],
+      "events": [
+        {
+          "wallTime": 1793145086086,
+          "nodeTime": 27961.091333,
+          "pid": 62818,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 40,
+          "requestKey": "62818:40",
+          "stagePagePath": "/app/exchange/callout",
+          "method": "GET",
+          "path": "/api/employee/creation/callout/creation-own-report-0",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145086087,
+          "nodeTime": 27961.278416,
+          "pid": 62818,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 40,
+          "requestKey": "62818:40",
+          "stagePagePath": "/app/exchange/callout",
+          "method": "GET",
+          "path": "/api/employee/creation/callout/creation-own-report-0",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        }
+      ],
+      "contextClosure": [
+        {
+          "wallTime": 1793145086940,
+          "nodeTime": 28814.732,
+          "pid": 62818,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1
+        },
+        {
+          "wallTime": 1793145086942,
+          "nodeTime": 28816.164166,
+          "pid": 62818,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context"
+        }
+      ],
+      "classification": "Native observer absence; not an original test assertion failure. All such entries are Chromium; no inference of original Firefox cause."
+    },
+    {
+      "requestKey": "62818:43",
+      "engine": "chromium",
+      "path": "/api/employee/creation/cover/creation-own-cover-0",
+      "wallTime": 1793145086824,
+      "missingTerminalScopes": [
+        "context",
+        "page"
+      ],
+      "events": [
+        {
+          "wallTime": 1793145086824,
+          "nodeTime": 28698.754125,
+          "pid": 62818,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 43,
+          "requestKey": "62818:43",
+          "stagePagePath": "/app/exchange/swap",
+          "method": "GET",
+          "path": "/api/employee/creation/cover/creation-own-cover-0",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145086824,
+          "nodeTime": 28698.919208,
+          "pid": 62818,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 43,
+          "requestKey": "62818:43",
+          "stagePagePath": "/app/exchange/swap",
+          "method": "GET",
+          "path": "/api/employee/creation/cover/creation-own-cover-0",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145086849,
+          "nodeTime": 28723.722916,
+          "pid": 62818,
+          "event": "response",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 43,
+          "requestKey": "62818:43",
+          "stagePagePath": "/app/exchange/swap",
+          "method": "GET",
+          "path": "/api/employee/creation/cover/creation-own-cover-0",
+          "nativeTiming": {
+            "startTime": 1793145086825.334,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.187,
+            "responseStart": 22.904,
+            "responseEnd": -1
+          },
+          "status": 401,
+          "timing": {
+            "startTime": 1793145086825.334,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.187,
+            "responseStart": 22.904,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145086849,
+          "nodeTime": 28724.026791,
+          "pid": 62818,
+          "event": "response",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 43,
+          "requestKey": "62818:43",
+          "stagePagePath": "/app/exchange/swap",
+          "method": "GET",
+          "path": "/api/employee/creation/cover/creation-own-cover-0",
+          "nativeTiming": {
+            "startTime": 1793145086825.334,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.187,
+            "responseStart": 22.904,
+            "responseEnd": -1
+          },
+          "status": 401,
+          "timing": {
+            "startTime": 1793145086825.334,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.187,
+            "responseStart": 22.904,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145086941,
+          "nodeTime": 28815.390458,
+          "pid": 62818,
+          "event": "response.finished.reject",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 43,
+          "requestKey": "62818:43",
+          "stagePagePath": "/app/exchange/swap",
+          "method": "GET",
+          "path": "/api/employee/creation/cover/creation-own-cover-0",
+          "nativeTiming": {
+            "startTime": 1793145086825.334,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.187,
+            "responseStart": 22.904,
+            "responseEnd": -1
+          },
+          "error": "Error: Target page, context or browser has been closed"
+        },
+        {
+          "wallTime": 1793145086941,
+          "nodeTime": 28815.417416,
+          "pid": 62818,
+          "event": "response.finished.reject",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 43,
+          "requestKey": "62818:43",
+          "stagePagePath": "/app/exchange/swap",
+          "method": "GET",
+          "path": "/api/employee/creation/cover/creation-own-cover-0",
+          "nativeTiming": {
+            "startTime": 1793145086825.334,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.187,
+            "responseStart": 22.904,
+            "responseEnd": -1
+          },
+          "error": "Error: Target page, context or browser has been closed"
+        }
+      ],
+      "contextClosure": [
+        {
+          "wallTime": 1793145086940,
+          "nodeTime": 28814.732,
+          "pid": 62818,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1
+        },
+        {
+          "wallTime": 1793145086942,
+          "nodeTime": 28816.164166,
+          "pid": 62818,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context"
+        }
+      ],
+      "classification": "Native observer absence; not an original test assertion failure. All such entries are Chromium; no inference of original Firefox cause."
+    },
+    {
+      "requestKey": "64685:69",
+      "engine": "chromium",
+      "path": "/api/employee/planning/availability/normal",
+      "wallTime": 1793145149911,
+      "missingTerminalScopes": [
+        "context",
+        "page"
+      ],
+      "events": [
+        {
+          "wallTime": 1793145149911,
+          "nodeTime": 26443.348417,
+          "pid": 64685,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 69,
+          "requestKey": "64685:69",
+          "stagePagePath": "/app/availability",
+          "method": "GET",
+          "path": "/api/employee/planning/availability/normal",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145149911,
+          "nodeTime": 26443.479917,
+          "pid": 64685,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 69,
+          "requestKey": "64685:69",
+          "stagePagePath": "/app/availability",
+          "method": "GET",
+          "path": "/api/employee/planning/availability/normal",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145149918,
+          "nodeTime": 26450.461583,
+          "pid": 64685,
+          "event": "response",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 69,
+          "requestKey": "64685:69",
+          "stagePagePath": "/app/availability",
+          "method": "GET",
+          "path": "/api/employee/planning/availability/normal",
+          "nativeTiming": {
+            "startTime": 1793145149912.1091,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.135,
+            "responseStart": 6.106,
+            "responseEnd": -1
+          },
+          "status": 401,
+          "timing": {
+            "startTime": 1793145149912.1091,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.135,
+            "responseStart": 6.106,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145149918,
+          "nodeTime": 26450.580875,
+          "pid": 64685,
+          "event": "response",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 69,
+          "requestKey": "64685:69",
+          "stagePagePath": "/app/availability",
+          "method": "GET",
+          "path": "/api/employee/planning/availability/normal",
+          "nativeTiming": {
+            "startTime": 1793145149912.1091,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.135,
+            "responseStart": 6.106,
+            "responseEnd": -1
+          },
+          "status": 401,
+          "timing": {
+            "startTime": 1793145149912.1091,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.135,
+            "responseStart": 6.106,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145149952,
+          "nodeTime": 26484.515833,
+          "pid": 64685,
+          "event": "response.finished.reject",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 69,
+          "requestKey": "64685:69",
+          "stagePagePath": "/app/availability",
+          "method": "GET",
+          "path": "/api/employee/planning/availability/normal",
+          "nativeTiming": {
+            "startTime": 1793145149912.1091,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.135,
+            "responseStart": 6.106,
+            "responseEnd": -1
+          },
+          "error": "Error: Target page, context or browser has been closed"
+        },
+        {
+          "wallTime": 1793145149952,
+          "nodeTime": 26484.537292,
+          "pid": 64685,
+          "event": "response.finished.reject",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 69,
+          "requestKey": "64685:69",
+          "stagePagePath": "/app/availability",
+          "method": "GET",
+          "path": "/api/employee/planning/availability/normal",
+          "nativeTiming": {
+            "startTime": 1793145149912.1091,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.135,
+            "responseStart": 6.106,
+            "responseEnd": -1
+          },
+          "error": "Error: Target page, context or browser has been closed"
+        }
+      ],
+      "contextClosure": [
+        {
+          "wallTime": 1793145149951,
+          "nodeTime": 26482.951292,
+          "pid": 64685,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1
+        },
+        {
+          "wallTime": 1793145149953,
+          "nodeTime": 26485.293,
+          "pid": 64685,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context"
+        }
+      ],
+      "classification": "Native observer absence; not an original test assertion failure. All such entries are Chromium; no inference of original Firefox cause."
+    },
+    {
+      "requestKey": "66129:51",
+      "engine": "chromium",
+      "path": "/api/employee/exchange",
+      "wallTime": 1793145216032,
+      "missingTerminalScopes": [
+        "context",
+        "page"
+      ],
+      "events": [
+        {
+          "wallTime": 1793145216032,
+          "nodeTime": 33147.43575,
+          "pid": 66129,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 51,
+          "requestKey": "66129:51",
+          "stagePagePath": "/app/exchange",
+          "method": "GET",
+          "path": "/api/employee/exchange",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145216032,
+          "nodeTime": 33147.716125,
+          "pid": 66129,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 51,
+          "requestKey": "66129:51",
+          "stagePagePath": "/app/exchange",
+          "method": "GET",
+          "path": "/api/employee/exchange",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        }
+      ],
+      "contextClosure": [
+        {
+          "wallTime": 1793145216774,
+          "nodeTime": 33889.69075,
+          "pid": 66129,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1
+        },
+        {
+          "wallTime": 1793145216778,
+          "nodeTime": 33893.571083,
+          "pid": 66129,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context"
+        }
+      ],
+      "classification": "Native observer absence; not an original test assertion failure. All such entries are Chromium; no inference of original Firefox cause."
+    },
+    {
+      "requestKey": "66129:54",
+      "engine": "chromium",
+      "path": "/api/employee/exchange/f741c030-8e96-4f2d-9e10-d588135631c0",
+      "wallTime": 1793145216710,
+      "missingTerminalScopes": [
+        "context",
+        "page"
+      ],
+      "events": [
+        {
+          "wallTime": 1793145216710,
+          "nodeTime": 33826.043083,
+          "pid": 66129,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 54,
+          "requestKey": "66129:54",
+          "stagePagePath": "/app/exchange",
+          "method": "GET",
+          "path": "/api/employee/exchange/f741c030-8e96-4f2d-9e10-d588135631c0",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145216710,
+          "nodeTime": 33826.265708,
+          "pid": 66129,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 54,
+          "requestKey": "66129:54",
+          "stagePagePath": "/app/exchange",
+          "method": "GET",
+          "path": "/api/employee/exchange/f741c030-8e96-4f2d-9e10-d588135631c0",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145216725,
+          "nodeTime": 33841.254333,
+          "pid": 66129,
+          "event": "response",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 54,
+          "requestKey": "66129:54",
+          "stagePagePath": "/app/exchange",
+          "method": "GET",
+          "path": "/api/employee/exchange/f741c030-8e96-4f2d-9e10-d588135631c0",
+          "nativeTiming": {
+            "startTime": 1793145216710.1099,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": 15.021,
+            "responseEnd": -1
+          },
+          "status": 401,
+          "timing": {
+            "startTime": 1793145216710.1099,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": 15.021,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145216726,
+          "nodeTime": 33841.494291,
+          "pid": 66129,
+          "event": "response",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 54,
+          "requestKey": "66129:54",
+          "stagePagePath": "/app/exchange",
+          "method": "GET",
+          "path": "/api/employee/exchange/f741c030-8e96-4f2d-9e10-d588135631c0",
+          "nativeTiming": {
+            "startTime": 1793145216710.1099,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": 15.021,
+            "responseEnd": -1
+          },
+          "status": 401,
+          "timing": {
+            "startTime": 1793145216710.1099,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": 15.021,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145216775,
+          "nodeTime": 33891.235541,
+          "pid": 66129,
+          "event": "response.finished.reject",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 54,
+          "requestKey": "66129:54",
+          "stagePagePath": "/app/exchange",
+          "method": "GET",
+          "path": "/api/employee/exchange/f741c030-8e96-4f2d-9e10-d588135631c0",
+          "nativeTiming": {
+            "startTime": 1793145216710.1099,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": 15.021,
+            "responseEnd": -1
+          },
+          "error": "Error: Target page, context or browser has been closed"
+        },
+        {
+          "wallTime": 1793145216775,
+          "nodeTime": 33891.2625,
+          "pid": 66129,
+          "event": "response.finished.reject",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 54,
+          "requestKey": "66129:54",
+          "stagePagePath": "/app/exchange",
+          "method": "GET",
+          "path": "/api/employee/exchange/f741c030-8e96-4f2d-9e10-d588135631c0",
+          "nativeTiming": {
+            "startTime": 1793145216710.1099,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": 15.021,
+            "responseEnd": -1
+          },
+          "error": "Error: Target page, context or browser has been closed"
+        }
+      ],
+      "contextClosure": [
+        {
+          "wallTime": 1793145216774,
+          "nodeTime": 33889.69075,
+          "pid": 66129,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1
+        },
+        {
+          "wallTime": 1793145216778,
+          "nodeTime": 33893.571083,
+          "pid": 66129,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context"
+        }
+      ],
+      "classification": "Native observer absence; not an original test assertion failure. All such entries are Chromium; no inference of original Firefox cause."
+    },
+    {
+      "requestKey": "68807:61",
+      "engine": "chromium",
+      "path": "/api/employee/my-time",
+      "wallTime": 1793145334900,
+      "missingTerminalScopes": [
+        "context",
+        "page"
+      ],
+      "events": [
+        {
+          "wallTime": 1793145334900,
+          "nodeTime": 27403.647125,
+          "pid": 68807,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 61,
+          "requestKey": "68807:61",
+          "stagePagePath": "/app/my-time",
+          "method": "GET",
+          "path": "/api/employee/my-time",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145334900,
+          "nodeTime": 27403.870583,
+          "pid": 68807,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 61,
+          "requestKey": "68807:61",
+          "stagePagePath": "/app/my-time",
+          "method": "GET",
+          "path": "/api/employee/my-time",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        }
+      ],
+      "contextClosure": [
+        {
+          "wallTime": 1793145337888,
+          "nodeTime": 30392.336917,
+          "pid": 68807,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1
+        },
+        {
+          "wallTime": 1793145337894,
+          "nodeTime": 30397.744333,
+          "pid": 68807,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context"
+        }
+      ],
+      "classification": "Native observer absence; not an original test assertion failure. All such entries are Chromium; no inference of original Firefox cause."
+    },
+    {
+      "requestKey": "68807:76",
+      "engine": "chromium",
+      "path": "/api/employee/hours/records/overview",
+      "wallTime": 1793145337842,
+      "missingTerminalScopes": [
+        "context",
+        "page"
+      ],
+      "events": [
+        {
+          "wallTime": 1793145337842,
+          "nodeTime": 30346.192208,
+          "pid": 68807,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 76,
+          "requestKey": "68807:76",
+          "stagePagePath": "/app/my-time",
+          "method": "GET",
+          "path": "/api/employee/hours/records/overview",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145337842,
+          "nodeTime": 30346.345208,
+          "pid": 68807,
+          "event": "request",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 76,
+          "requestKey": "68807:76",
+          "stagePagePath": "/app/my-time",
+          "method": "GET",
+          "path": "/api/employee/hours/records/overview",
+          "nativeTiming": {
+            "startTime": 0,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": -1,
+            "responseStart": -1,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145337853,
+          "nodeTime": 30357.436458,
+          "pid": 68807,
+          "event": "response",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 76,
+          "requestKey": "68807:76",
+          "stagePagePath": "/app/my-time",
+          "method": "GET",
+          "path": "/api/employee/hours/records/overview",
+          "nativeTiming": {
+            "startTime": 1793145337843.546,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.174,
+            "responseStart": 9.163,
+            "responseEnd": -1
+          },
+          "status": 401,
+          "timing": {
+            "startTime": 1793145337843.546,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.174,
+            "responseStart": 9.163,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145337854,
+          "nodeTime": 30357.837875,
+          "pid": 68807,
+          "event": "response",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 76,
+          "requestKey": "68807:76",
+          "stagePagePath": "/app/my-time",
+          "method": "GET",
+          "path": "/api/employee/hours/records/overview",
+          "nativeTiming": {
+            "startTime": 1793145337843.546,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.174,
+            "responseStart": 9.163,
+            "responseEnd": -1
+          },
+          "status": 401,
+          "timing": {
+            "startTime": 1793145337843.546,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.174,
+            "responseStart": 9.163,
+            "responseEnd": -1
+          }
+        },
+        {
+          "wallTime": 1793145337892,
+          "nodeTime": 30396.087792,
+          "pid": 68807,
+          "event": "response.finished.reject",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context",
+          "requestId": 76,
+          "requestKey": "68807:76",
+          "stagePagePath": "/app/my-time",
+          "method": "GET",
+          "path": "/api/employee/hours/records/overview",
+          "nativeTiming": {
+            "startTime": 1793145337843.546,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.174,
+            "responseStart": 9.163,
+            "responseEnd": -1
+          },
+          "error": "Error: Target page, context or browser has been closed"
+        },
+        {
+          "wallTime": 1793145337892,
+          "nodeTime": 30396.155333,
+          "pid": 68807,
+          "event": "response.finished.reject",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1,
+          "requestId": 76,
+          "requestKey": "68807:76",
+          "stagePagePath": "/app/my-time",
+          "method": "GET",
+          "path": "/api/employee/hours/records/overview",
+          "nativeTiming": {
+            "startTime": 1793145337843.546,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.174,
+            "responseStart": 9.163,
+            "responseEnd": -1
+          },
+          "error": "Error: Target page, context or browser has been closed"
+        }
+      ],
+      "contextClosure": [
+        {
+          "wallTime": 1793145337888,
+          "nodeTime": 30392.336917,
+          "pid": 68807,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "page",
+          "pageId": 1
+        },
+        {
+          "wallTime": 1793145337894,
+          "nodeTime": 30397.744333,
+          "pid": 68807,
+          "event": "closed",
+          "engine": "chromium",
+          "contextId": 1,
+          "scope": "context"
+        }
+      ],
+      "classification": "Native observer absence; not an original test assertion failure. All such entries are Chromium; no inference of original Firefox cause."
+    }
+  ],
+  "profile": {
+    "workerPids": [
+      67843
+    ],
+    "uniqueRequests": 130,
+    "calendarGetsByEngine": {
+      "chromium": 11,
+      "webkit": 11,
+      "firefox": 9
+    },
+    "allRequestsHaveBothTerminals": true,
+    "originalTestPassed": true
+  },
+  "limits": [
+    "Native event-only observer; no browser consumer/signal observation.",
+    "Instrumentation and actual file order can perturb timing.",
+    "The original 253/254 Firefox monitor failure remains preserved and unexplained; a new pass is not a causal fix."
+  ]
+}

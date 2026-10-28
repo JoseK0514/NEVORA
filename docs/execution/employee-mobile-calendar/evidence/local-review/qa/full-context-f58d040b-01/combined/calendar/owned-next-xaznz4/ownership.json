@@ -1,0 +1,27 @@
+{
+  "ownerId": "edd75439-15ea-4dba-a734-151866a85cb0",
+  "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+  "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/full-context-f58d040b-01/combined/calendar/owned-next-xaznz4",
+  "runtime": "Next development + owned PostgreSQL; substituted DB transport",
+  "started": true,
+  "pid": 61804,
+  "port": 59389,
+  "url": "http://127.0.0.1:59389",
+  "identity": {
+    "name": "nevora_exchange_test_c1_67cf317c1dea",
+    "oid": 474796,
+    "marker": "fuel-phase3-disposable:94b0f49f-64df-44ed-9591-5a57830f612a"
+  },
+  "closed": true,
+  "closedAt": "2026-10-27T23:50:56.001Z",
+  "sourceVerified": true,
+  "mirrorVerified": true,
+  "derivedArtifactsReleased": {
+    "directories": [
+      "app/node_modules",
+      "app/.next"
+    ],
+    "availableBytesBefore": 29845176320,
+    "availableBytesAfter": 30927224832
+  }
+}
