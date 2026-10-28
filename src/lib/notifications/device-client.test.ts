@@ -415,3 +415,18 @@ it('a hung passive status check is bounded and its late result cannot restore ow
     expect(controller.snapshot.state).toBe('error');
   } finally { vi.useRealTimers(); }
 });
+it('legacy unbound status waits for a running enrollment, so a late proof cookie cannot overwrite a newer one',async()=>{
+ const b=await cleanupBrowserFixture();
+ const fetched:string[]=[];vi.stubGlobal('fetch',vi.fn(async(url:string)=>{fetched.push(url);return new Response(JSON.stringify({supported:true,enabled:false,configurationAvailable:true}),{status:200,headers:{'Content-Type':'application/json'}});}));
+ let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve;});
+ const enrollment=b.runtime.withEnrollment(()=>gate);
+ await vi.waitFor(()=>expect(b.locks.request).toHaveBeenCalledTimes(1));
+ // Another controller in this browser (another tab, or the management popover) reads status.
+ const other=b.browserRuntime();const status=other.api('status');
+ await new Promise(resolve=>setTimeout(resolve,50));
+ // The status request has not left the browser while the enrollment holds the lifecycle lock.
+ expect(fetched).toEqual([]);
+ release();await enrollment;await status;
+ expect(fetched).toEqual(['/app/api/push/status']);
+ expect(b.locks.request).toHaveBeenCalledTimes(2);
+});

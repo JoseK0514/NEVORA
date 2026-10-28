@@ -390,9 +390,10 @@ export function browserRuntime(authority?:string): DeviceRuntime {
         return value;
       } finally { clearTimeout(timer); }
       };
-      // Status can issue an HttpOnly installation proof. Its actual response
-      // joins the native lifecycle lock so late headers cannot race enrollment.
-      return authority&&operation==='status'&&!enrollmentLockHeld&&typeof navigator.locks?.request==='function'?withSubscriptionLock(execute):execute();
+      // Status can issue an HttpOnly installation proof. Its actual response joins the native lifecycle lock so late
+      // headers cannot race enrollment. Bound and legacy unbound reads alike: the server keeps refreshing an unchanged
+      // proof for unbound reads (its one-year expiry slides), so only ordering here keeps an older one from landing last.
+      return operation==='status'&&!enrollmentLockHeld&&typeof navigator.locks?.request==='function'?withSubscriptionLock(execute):execute();
     },
     prepare: async () => {
       if (!navigator.locks?.request) throw Error('Browser lifecycle coordination unavailable');
