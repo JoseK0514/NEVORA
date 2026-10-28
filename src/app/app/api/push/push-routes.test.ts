@@ -12,6 +12,25 @@ it('forged_identity_is_rejected', async () => { const s = await setup(); for (co
     const r = await s.handlers.mutation(s.request({ subscription: s.sub, [field]: 'foreign' }), 'subscribe');
     expect(r.status).toBe(400);
 } expect(s.enroll).not.toHaveBeenCalled(); });
+it('a device page bound to another session cannot read status or enroll',async()=>{
+ const s=await setup();
+ const headers={'X-Nevora-Device-Authority':'foreign-session'};
+ expect((await s.handlers.status(new Request('https://fuel.example/app/api/push/status',{headers}))).status).toBe(401);
+ expect((await s.handlers.mutation(s.request({subscription:s.sub},headers),'subscribe')).status).toBe(401);
+ expect(s.enroll).not.toHaveBeenCalled();
+});
+it('bound device status retires at the current session budget and unbound status keeps its contract',async()=>{
+ const s=await setup(),{employeeViewAuthority}=await import('../../../../lib/employee-view-authority.server'),{createHash}=await import('node:crypto');
+ const employee=await s.session(),hash=createHash('sha256').update('fictional-session').digest('hex');
+ const authority=employeeViewAuthority({employee,sessionTokenHash:hash},'notifications');
+ const request=new Request('https://fuel.example/app/api/push/status',{headers:{'X-Nevora-Device-Authority':authority}});
+ const legacy=await (await s.handlers.status()).json();expect(legacy).not.toHaveProperty('authority');expect(legacy).not.toHaveProperty('validForMs');
+ const api=await import('../../../../lib/notifications/subscription-service');let budget=1200;
+ const handlers=api.createPushHandlers({config:s.config,cookies:async()=>s.cookies,session:s.session,subscriptions:()=>s.repo,clock:()=>new Date(),sessionBudget:async()=>budget});
+ const result=await (await handlers.status(request)).json();expect(result.authority).toBe(authority);expect(result.validForMs).toBeGreaterThan(0);expect(result.validForMs).toBeLessThanOrEqual(1200);
+ budget=0;expect((await handlers.status(request)).status).toBe(401);
+ s.cookieValues.set('fuel_session','a-different-session');expect((await handlers.status(request)).status).toBe(401);
+});
 it('authenticated_same_origin_bounded_json_only', async () => { const s = await setup(); for (const headers of ([{ Origin: 'https://evil.test' }, { Origin: 'null' }, { 'Content-Type': 'text/plain' }, { 'Content-Length': '8193' }] as Record<string, string>[]))
     expect((await s.handlers.mutation(s.request({ subscription: s.sub }, headers), 'subscribe')).status).toBeGreaterThanOrEqual(400); expect((await s.handlers.mutation(s.request({ subscription: s.sub }, {}, 'GET'), 'subscribe')).status).toBe(405); expect((await s.handlers.mutation(s.request({ padding: 'x'.repeat(8193) }), 'subscribe')).status).toBe(413); s.session.mockResolvedValueOnce(null as never); expect((await s.handlers.mutation(s.request({ subscription: s.sub }), 'subscribe')).status).toBe(401); });
 it('same_owner_enrollment_is_idempotent', async () => { const s = await setup(); const a = await s.handlers.mutation(s.request({ subscription: s.sub }), 'subscribe'); expect(a.status).toBe(200); const current = s.getCurrent()!; const b = await s.handlers.mutation(s.request({ subscription: s.sub, ownershipGeneration: current.generation }), 'subscribe'); expect(b.status).toBe(200); expect(s.enroll.mock.calls[1][0].generation).toBe(current.generation); expect(s.enroll.mock.calls[1][0].expectedGeneration).toBe(current.generation); const plain = JSON.stringify(await b.json()); expect(plain).not.toContain('fictional'); expect(plain).not.toContain('encrypted'); });

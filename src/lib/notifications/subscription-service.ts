@@ -5,6 +5,7 @@ import { CLEANUP_COOKIE, INSTALLATION_COOKIE, createInstallationProof, encryptSu
 import type { CookieReader } from './installation';
 import type { SessionEmployee } from '../auth/session';
 import type { DeviceStatus, InstallationProof, InstallationRecord, PushRuntimeConfig, NotificationIntent, SubscriptionRepository } from './types';
+import {employeeViewAuthority} from '../employee-view-authority.server';
 export type ValidatedSubscription = {
     endpoint: string;
     expirationTime: number | null;
@@ -88,6 +89,7 @@ export type PushHandlerDeps = {
     session(): Promise<SessionEmployee | null>;
     subscriptions(): SubscriptionRepository;
     clock(): Date;
+    sessionBudget?(employeeId:string,sessionTokenHash:string):Promise<number>;
 };
 function response(value: unknown, status = 200) { return Response.json(value, { status, headers: { 'Cache-Control': 'no-store' } }); }
 async function readJson(request: Request): Promise<Record<string, unknown>> {
@@ -148,6 +150,19 @@ export function createPushHandlers(deps: PushHandlerDeps) {
         };
     }
     const cleanupDeps = deps.cleanupDeps ?? createLogoutDeps(config);
+    async function binding(request:Request|undefined,employee:SessionEmployee,cookies:PushCookieStore) {
+        const expected=request?.headers.get('X-Nevora-Device-Authority');
+        if(expected===undefined||expected===null)return null;
+        const token=cookies.get('fuel_session')?.value;
+        if(!token||!['EMPLOYEE','LEAD'].includes(employee.role))reject(401,'authentication_required');
+        const sessionTokenHash=createHash('sha256').update(token).digest('hex');
+        const authority=employeeViewAuthority({employee,sessionTokenHash},'notifications');
+        if(expected!==authority)reject(401,'authentication_required');
+        const started=performance.now();
+        const budget=deps.sessionBudget?await deps.sessionBudget(employee.id,sessionTokenHash):45000;
+        if(!Number.isFinite(budget)||budget<=0)reject(401,'authentication_required');
+        return {authority,budget:Math.min(45000,Math.floor(budget)),started};
+    }
     async function reconcile(cookies: PushCookieStore, employeeId: string): Promise<boolean> {
         const hadPending = !!cookies.get(CLEANUP_COOKIE);
         if ((await reconcilePendingInstallation(cookies, config, cleanupDeps)).state !== 'complete') reject(409, 'cleanup_pending');
@@ -155,19 +170,26 @@ export function createPushHandlers(deps: PushHandlerDeps) {
         return hadPending;
     }
     return {
-        async status(): Promise<Response> {
+        async status(request?:Request): Promise<Response> {
             try {
                 const employee = await deps.session();
                 if (!employee)
                     return response({ error: 'authentication_required' }, 401);
                 const cookies = await deps.cookies();
+                const bound=await binding(request,employee,cookies);
+                const current=(value:DeviceStatus)=>{
+                    if(!bound)return response(value);
+                    const validForMs=Math.floor(bound.budget-(performance.now()-bound.started));
+                    if(validForMs<=0)reject(401,'authentication_required');
+                    return response({...value,authority:bound.authority,validForMs});
+                };
                 const key = protectionKey();
                 if (!config.featureEnabled && !cookies.get(CLEANUP_COOKIE))
-                    return response(project(employee.id, null, null));
+                    return current(project(employee.id, null, null));
                 if (!key) {
                     if (cookies.get(CLEANUP_COOKIE))
                         reject(409, 'cleanup_pending');
-                    return response(project(employee.id, null, null));
+                    return current(project(employee.id, null, null));
                 }
                 let proof = readInstallationProof(cookies, key, config.environment);
                 await reconcile(cookies, employee.id);
@@ -178,7 +200,7 @@ export function createPushHandlers(deps: PushHandlerDeps) {
                 if (proof && record?.employeeId === employee.id && record.status === 'active' && record.generation === proof.generation && record.installationHash === proof.installationHash && record.environment === config.environment) proof = { ...proof, associatedSessionHash: record.sessionHash };
                 if (proof)
                     cookies.set(INSTALLATION_COOKIE, sealInstallationProof(proof, key), cookieOptions(365 * 86400));
-                return response(project(employee.id, proof, record, cookies.get("fuel_session") ? createHash("sha256").update(cookies.get("fuel_session")!.value).digest("hex") : undefined));
+                return current(project(employee.id, proof, record, cookies.get("fuel_session") ? createHash("sha256").update(cookies.get("fuel_session")!.value).digest("hex") : undefined));
             }
             catch (error) {
                 return response({ error: error instanceof PushRequestError ? error.code : 'temporarily_unavailable' }, error instanceof PushRequestError ? error.status : 503);
@@ -200,6 +222,7 @@ export function createPushHandlers(deps: PushHandlerDeps) {
                 if (operation === 'test' && (config.environment !== 'test' || !config.testDeliveryEnabled || !config.testAccountIds.includes(employee.id)))
                     reject(403, 'test_not_allowed');
                 const cookies = await deps.cookies();
+                await binding(request,employee,cookies);
                 const token = cookies.get('fuel_session')?.value;
                 if (!token)
                     reject(401, 'authentication_required');
@@ -279,7 +302,13 @@ export function createPushHandlers(deps: PushHandlerDeps) {
 }
 async function runtimeHandlers() {
     const [{ cookies }, { getSession }, { sqlSubscriptionRepository }] = await Promise.all([import('next/headers'), import('../auth/session'), import('../data/push-subscriptions')]);
-    return createPushHandlers({ config: readNotificationConfig(process.env), cookies: async () => await cookies() as PushCookieStore, session: getSession, subscriptions: () => sqlSubscriptionRepository(), clock: () => new Date() });
+    return createPushHandlers({ config: readNotificationConfig(process.env), cookies: async () => await cookies() as PushCookieStore, session: getSession, subscriptions: () => sqlSubscriptionRepository(), clock: () => new Date(),
+        sessionBudget:async(employeeId,sessionTokenHash)=>{
+            const [{getDb,queryRows},{getWorkspace}]=await Promise.all([import('../db'),import('../data/workspaces')]);
+            if(!(await getWorkspace()).active)return 0;
+            const rows=queryRows<{budget:number}>(await getDb().query(`SELECT least(45000,floor(extract(epoch FROM (s.expires_at-clock_timestamp()))*1000))::integer AS budget FROM employee_sessions s JOIN employees e ON e.id=s.employee_id WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role IN ('EMPLOYEE','LEAD') AND s.expires_at>clock_timestamp()`,[sessionTokenHash,employeeId]));
+            return rows[0]?.budget??0;
+        }});
 }
 export async function handlePushMutation(request: Request, operation: 'subscribe' | 'unsubscribe' | 'test'): Promise<Response> { return (await runtimeHandlers()).mutation(request, operation); }
-export async function handlePushStatus(): Promise<Response> { return (await runtimeHandlers()).status(); }
+export async function handlePushStatus(request?:Request): Promise<Response> { return (await runtimeHandlers()).status(request); }

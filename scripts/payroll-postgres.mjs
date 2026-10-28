@@ -78,7 +78,7 @@ try {
   const config =
     process.argv[2] ?? "vitest.configurable-payroll-integration.config.mts";
   const prefix = ["vitest.passkeys-network.config.mts", "vitest.all-ui-browser.config.mts", "vitest.owner-advisor-browser.config.mts", "vitest.employee-mobile-phase1.config.mts", "vitest.employee-mobile-requests.config.mts", "vitest.employee-mobile-responses.config.mts", "vitest.employee-mobile-creation.config.mts", "vitest.employee-mobile-planning.config.mts", "vitest.employee-mobile-hours.config.mts", "vitest.employee-mobile-communications.config.mts", "vitest.employee-mobile-profile.config.mts", "vitest.employee-mobile-calendar.config.mts"].includes(config)
-    || config === 'vitest.employee-mobile-passkeys.config.mts' ? "nevora_exchange_test_" : "nevora_foundation_test_";
+    || ['vitest.employee-mobile-passkeys.config.mts','vitest.employee-mobile-device-alerts.config.mts'].includes(config) ? "nevora_exchange_test_" : "nevora_foundation_test_";
   const env = {
     ...process.env,
     FUEL_TEST_DATABASE_URL: `postgresql://nevora_test@127.0.0.1:${port}/${prefix}c1_${marker.slice(0, 12)}`,

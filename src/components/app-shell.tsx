@@ -16,6 +16,7 @@ import { NavIcon } from "@/components/nav-icon";
 import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
 import { PortalDeviceSetup } from "./portal-device-setup";
+import {EmployeeDeviceProvider,EmployeeDevicePopover} from './employee-mobile/device-owner';
 import { PortalAccountMenu } from "./portal-account-menu";
 import { SheetGestures } from "./sheet-gestures";
 import { Toaster } from "./toaster";
@@ -70,7 +71,9 @@ function TabPending() {
  * mutation still enforces current server/database authorization.
  */
 export function AppShell(props:AppShellProps){
- return <AppNavigationProvider key={JSON.stringify([props.user.id,props.user.role])}>{props.messagesAuthority&&props.communicationAuthority&&['EMPLOYEE','LEAD'].includes(props.user.role)?<EmployeeMessageProvider key={props.messagesAuthority} authority={props.messagesAuthority} core={props.communicationAuthority}><AppShellView {...props}/></EmployeeMessageProvider>:<AppShellView {...props}/>}</AppNavigationProvider>;
+ const employee=['EMPLOYEE','LEAD'].includes(props.user.role);
+ const content=employee?<EmployeeDeviceProvider key={props.notificationAuthority} authority={props.notificationAuthority} enabled={props.notificationsEnabled??false}><AppShellView {...props}/></EmployeeDeviceProvider>:<AppShellView {...props}/>;
+ return <AppNavigationProvider key={JSON.stringify([props.user.id,props.user.role])}>{props.messagesAuthority&&props.communicationAuthority&&employee?<EmployeeMessageProvider key={props.messagesAuthority} authority={props.messagesAuthority} core={props.communicationAuthority}>{content}</EmployeeMessageProvider>:content}</AppNavigationProvider>;
 }
 
 function AppShellView({
@@ -409,7 +412,7 @@ function AppShellView({
       <SheetGestures />
       <Toaster />
       <FormValidation />
-      {notificationsEnabled ? <PortalDeviceSetup role={user.role} /> : null}
+      {notificationsEnabled ? employee?<EmployeeDevicePopover role={user.role}/>:<PortalDeviceSetup role={user.role} /> : null}
     </div>
   );
 }

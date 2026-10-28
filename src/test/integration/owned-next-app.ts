@@ -1,5 +1,5 @@
 import { assertPilotLedger, validatePilot, PILOT, type OwnerAdvisorPilot } from './owner-advisor-pilot.mjs';
-import { createHash, randomUUID } from 'node:crypto';
+import { createECDH,createHash, randomUUID } from 'node:crypto';
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
 import { constants, cpSync, createWriteStream } from 'node:fs';
 import { access, copyFile, lstat, mkdir, mkdtemp, readFile, readdir, realpath, rm, statfs, writeFile } from 'node:fs/promises';
@@ -141,13 +141,22 @@ export function ownedMailEnvironment(origin:string,options:OwnedMailOptions={}):
  return {...flags,FUEL_PORTAL_ORIGIN:url.origin,NEVORA_RECOVERY_SMTP_HOST:'127.0.0.1',NEVORA_RECOVERY_SMTP_PORT:String(port),NEVORA_RECOVERY_FROM:invitation?'invitation@example.invalid':'recovery@example.invalid'};
 }
 
+/** Fictional browser enrollment only; no provider credential, sender or worker. */
+export function ownedDeviceEnvironment(origin:string,enabled=false):Record<string,string>{
+ if(!enabled)return {};
+ const url=new URL(origin);
+ if(url.protocol!=='http:'||url.hostname!=='127.0.0.1'||!url.port||url.username||url.password||url.pathname!=='/'||url.search||url.hash)throw Error('Owned device origin must identify the loopback application.');
+ const key=createECDH('prime256v1');key.setPrivateKey(Buffer.alloc(32,23));
+ return {FUEL_PORTAL_ORIGIN:url.origin,PUSH_ENVIRONMENT:'test',PUSH_FEATURE_ENABLED:'true',PUSH_DELIVERY_ENABLED:'false',PUSH_TEST_DELIVERY_ENABLED:'false',PUSH_VAPID_PUBLIC_KEY:key.getPublicKey().toString('base64url'),PUSH_SUBSCRIPTION_ENCRYPTION_KEY:Buffer.alloc(32,73).toString('base64url')};
+}
+
 /**
  * Real Next development runtime, real login/session/actions and canonical local
  * SQL. The scratch DB adapter is replaced; E can additionally pin Next's exact
  * generated dev type-reference paths. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { loginDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; passkeysEnabled?: boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { loginDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
   if (options.clockerPinKey !== undefined && !/^[a-f0-9]{64}$/.test(options.clockerPinKey)) throw new Error('Owned Clocker PIN key must be 32-byte hex.');
   validateOwnedMailOptions(options);
   const advisorEnvironment = ownedAdvisorEnvironment(options);
@@ -277,6 +286,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { l
       NEVORA_CLOCKER_PUNCH_ENABLED: options.clockerPunchEnabled === true ? 'true' : 'false',
       ...ownedMailEnvironment(url,options),
       NEXT_TELEMETRY_DISABLED: '1', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
+      ...ownedDeviceEnvironment(url,options.deviceAlertsEnabled),
       NEVORA_OWNED_APP_DATABASE: database.connectionString,
       NEVORA_OWNED_APP_IDENTITY: JSON.stringify(identity), NEVORA_OWNED_APP_BARRIERS: barriers,
       ...(options.loginDiagnostics?{NODE_OPTIONS:'--import='+pathToFileURL(join(mirror,'src/test/integration/owned-login-diagnostics.mjs')).href,NEVORA_OWNED_LOGIN_ORIGIN:url}:{}),

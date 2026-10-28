@@ -40,6 +40,14 @@ it('turn off reports pending server cleanup, suppresses first and never resets r
  const order:string[]=[];const {controller}=fixture({permission:()=> 'granted',api:async op=>op==='unsubscribe'?{status:'pending'}:{...status,enabled:true,ownershipGeneration:'old'},suppress:async()=>{order.push('suppress');},unsubscribe:async()=>{order.push('unsubscribe');}});
  await controller.start();await controller.turnOff();expect(order).toEqual(['suppress','unsubscribe']);expect(controller.snapshot.state).toBe('error');expect(controller.snapshot.message).toContain('cleanup');
 });
+it('a passive refresh cannot reclaim a generation after an uncertain turn-off',async()=>{
+ const own=vi.fn(async()=>true),suppress=vi.fn(async()=>{});
+ const {controller}=fixture({permission:()=> 'granted',api:async op=>op==='unsubscribe'?{status:'pending'}:{...status,enabled:true,ownershipGeneration:'original-generation'},own,suppress});
+ await controller.start();await controller.turnOff();own.mockClear();suppress.mockClear();
+ await controller.reconcile();
+ expect(own).not.toHaveBeenCalled();expect(suppress).toHaveBeenCalledWith('original-generation');
+ expect(controller.snapshot.state).toBe('error');expect(controller.snapshot.message).toContain('cleanup');
+});
 it('Not now persistence failure is explicit and does not pretend durable dismissal',async()=>{
  const {controller}=fixture({saveDismissal:()=>false});await controller.start();controller.dismiss();expect(controller.snapshot.message).toContain('remember');
 });

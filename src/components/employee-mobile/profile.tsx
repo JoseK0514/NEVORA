@@ -32,7 +32,7 @@ export function EmployeeProfilePage({authority,lang,notificationsEnabled,policie
  const mobile=useEmployeeMobile(),hydrated=useSyncExternalStore(subscribeHydration,()=>true,()=>false),[ending,setEnding]=useState(false);
  useEffect(()=>{const end=()=>setEnding(true);window.addEventListener('nevora:signout',end);return()=>window.removeEventListener('nevora:signout',end);},[]);
  useEffect(()=>{
-  if(!mobile||!/^#profile-(privacy|terms|support|account-deletion)$/.test(location.hash))return;
+  if(!mobile||!/^#profile-(privacy|terms|support|account-deletion|device-alerts)$/.test(location.hash))return;
   const frame=requestAnimationFrame(()=>{const row=document.getElementById(location.hash.slice(1));row?.querySelector<HTMLAnchorElement>('a')?.focus();});
   return()=>cancelAnimationFrame(frame);
  },[mobile]);
@@ -44,7 +44,7 @@ export function EmployeeProfilePage({authority,lang,notificationsEnabled,policie
    <ul className="q-list">
     {!mobile?<ProfileSettingRows lang={lang}/>:null}
     <QuietRow one href="/app/notifications" title="Notifications"/>
-    {notificationsEnabled?<li><button type="button" className="q-row q-row--one q-row--btn" popoverTarget="portal-device-settings"><span className="q-rt"><b>Alerts on this device</b></span><CaretRightIcon className="q-chev" aria-hidden="true"/></button></li>:null}
+    {notificationsEnabled?mobile?<QuietRow id="profile-device-alerts" one href="/app/profile/device-alerts" title="Alerts on this device"/>:<li><button type="button" className="q-row q-row--one q-row--btn" popoverTarget="portal-device-settings"><span className="q-rt"><b>Alerts on this device</b></span><CaretRightIcon className="q-chev" aria-hidden="true"/></button></li>:null}
    </ul>
    {notificationsEnabled?null:<p className="q-help">Alerts on this device aren’t turned on for your workplace yet.</p>}
   </section>;

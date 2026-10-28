@@ -1,7 +1,9 @@
 import { deriveDeviceState, readDismissal, saveDismissal, type DeviceCapabilities, type DeviceSetupState, type DeviceStatusView } from './device-state';
 import type { DeviceStatus } from './types';
+import {DeviceRequestError,parseDeviceStatus,parseDeviceEnrollment,parseDeviceReceipt} from './device-protocol';
 
 export type DeviceRuntime = {
+  strict?:boolean; validUntil?():number;
   capabilities: DeviceCapabilities; standalone: boolean | 'unknown';
   permission(): NotificationPermission | 'unsupported'; requestPermission(): Promise<NotificationPermission>;
   api(operation: 'status' | 'subscribe' | 'unsubscribe' | 'test', body?: object): Promise<object>;
@@ -11,7 +13,7 @@ export type DeviceRuntime = {
   readOwner(): string | undefined; writeOwner(generation: string): void;
   readDismissal(scope?: string): boolean; saveDismissal(scope?: string): boolean;
 };
-export type DeviceSnapshot = { state: DeviceSetupState; server: DeviceStatusView; message?: string; standalone: boolean | 'unknown'; capabilities: DeviceCapabilities };
+export type DeviceSnapshot = { state: DeviceSetupState; server: DeviceStatusView; message?: string; standalone: boolean | 'unknown'; capabilities: DeviceCapabilities; validUntil?:number; cleanupPending?:boolean; accessChanged?:boolean };
 const emptyStatus: DeviceStatusView = { supported: false, enabled: false, configurationAvailable: false, testAllowed: false, phase: 'loading' };
 /** Bound the UI wait only. Timing out does not cancel the underlying promise; native
  * subscription operations still require ownership fences and their lifecycle lock. */
@@ -33,6 +35,7 @@ export class DeviceController {
   private refreshTask?: Promise<void>;
   private nativeOperations = 0;
   private testing = false;
+  private cleanupGeneration?: string;
   private async trackNative<T>(operation: () => Promise<T>): Promise<T> {
     this.nativeOperations++;
     try { return await operation(); } finally { this.nativeOperations--; }
@@ -42,11 +45,12 @@ export class DeviceController {
     this.snapshot = { state: 'loading', server: { ...emptyStatus }, capabilities: runtime.capabilities, standalone: runtime.standalone };
   }
   dispose() { this.dead = true; this.epoch++; }
-  invalidate() { this.publish({ ...this.snapshot.server, phase: 'error', localOwned: false }, 'Account or device ownership changed. Reload NEVORA to check this session.'); this.dispose(); }
+  invalidate() { this.snapshot={...this.snapshot,accessChanged:true};this.publish({ ...emptyStatus, phase: 'error', localOwned: false }, 'Account or device ownership changed. Reload NEVORA to check this session.'); this.dispose(); }
+  private fresh(){return !this.runtime.validUntil||this.runtime.validUntil()>performance.now();}
   private current(epoch: number) { return !this.dead && epoch === this.epoch; }
   private publish(server = this.snapshot.server, message?: string) {
     if (this.dead) return;
-    this.snapshot = { ...this.snapshot, server, message, state: deriveDeviceState({ ...this.snapshot, permission: this.runtime.permission(), server, dismissed: this.dismissed }) };
+    this.snapshot = { ...this.snapshot, server, message, validUntil:this.runtime.validUntil?.(),cleanupPending:!!this.cleanupGeneration,state: deriveDeviceState({ ...this.snapshot, permission: this.runtime.permission(), server, dismissed: this.dismissed }) };
     this.changed(this.snapshot);
   }
   start() { return this.refresh(false); }
@@ -71,6 +75,15 @@ export class DeviceController {
       const status = await this.runtime.api('status');
       if (!this.current(epoch)) return;
       if (!isStatus(status)) throw Error('Invalid status');
+      if (this.cleanupGeneration) {
+        await this.runtime.suppress(this.cleanupGeneration);
+        if (!this.current(epoch)) return;
+        if (status.enabled) {
+          this.publish({ ...status, phase: 'error', localOwned: false }, 'Server cleanup is pending. Notifications remain suppressed locally where possible. Retry Turn Off; you can still sign out.');
+          return;
+        }
+        this.cleanupGeneration = undefined;
+      }
       if (!passive) this.dismissed = this.runtime.readDismissal(status.dismissalScope);
       if (!passive) this.publish({ ...status, phase: 'loading' });
       if (status.configurationAvailable && this.runtime.capabilities.serviceWorker && this.runtime.capabilities.secure) {
@@ -90,6 +103,7 @@ export class DeviceController {
             this.publish({ ...status, subscriptionMissing: !hasSubscription });
             return;
           } else {
+            if(!this.fresh())throw Error('Device status expired');
             const owned = await this.runtime.own(status.ownershipGeneration);
             if (!this.current(epoch)) { await this.runtime.suppress(status.ownershipGeneration); return; }
             if (!owned) throw Error('Local ownership unavailable');
@@ -100,12 +114,15 @@ export class DeviceController {
         }
       }
       this.publish(status);
-    } catch {
+    } catch(error) {
+      if(error instanceof DeviceRequestError&&(error.status===401||error.status===403)){this.invalidate();return;}
       if (this.current(epoch)) this.publish({ ...this.snapshot.server, phase: 'error' }, 'Device setup is unavailable. Retry, or turn off notifications if cleanup is pending.');
     }
   }
   async enable() {
     if (this.snapshot.state !== 'ready' || this.dead || !this.snapshot.server.vapidPublicKey) return;
+    if(this.nativeOperations||this.testing)return;
+    if(!this.fresh()){await this.start();return;}
     if (this.runtime.permission() === 'denied' || this.runtime.permission() === 'unsupported') { this.publish(); return; }
     const epoch = ++this.epoch;
     try { this.runtime.beginOwnershipChange(); }
@@ -120,6 +137,7 @@ export class DeviceController {
       const result = await permission;
       if (!this.current(epoch)) return;
       if (result !== 'granted') { this.publish({ ...this.snapshot.server, phase: undefined }); return; }
+      if(this.runtime.strict){const fresh=await this.runtime.api('status');if(!this.current(epoch))return;if(!isStatus(fresh)||fresh.enabled||!fresh.configurationAvailable||fresh.vapidPublicKey!==this.snapshot.server.vapidPublicKey)throw Error('Device setup changed');}
       await bounded(this.trackNative(() => this.runtime.withEnrollment(async () => {
         const subscription = await this.runtime.subscribe(this.snapshot.server.vapidPublicKey!, () => this.current(epoch));
         if (!this.current(epoch)) return;
@@ -127,15 +145,18 @@ export class DeviceController {
         if (isStatus(status)) generation = status.ownershipGeneration;
         if (!this.current(epoch)) { if (generation) await this.runtime.suppress(generation); return; }
         if (!isStatus(status) || !status.enabled || !generation) throw Error('Enrollment incomplete');
-        this.publish({ ...status, phase: 'pending' });
+        let verifiedStatus:DeviceStatus=status;
+        if(this.runtime.strict){const fresh=await this.runtime.api('status');if(!this.current(epoch)){await this.runtime.suppress(generation);return;}if(!isStatus(fresh)||!fresh.enabled||fresh.ownershipGeneration!==generation)throw Error('Enrollment changed');verifiedStatus=fresh;}
+        this.publish({ ...verifiedStatus, phase: 'pending' });
         const owned = await this.runtime.own(generation);
         if (!this.current(epoch)) { await this.runtime.suppress(generation); return; }
-        if (!owned) throw Error('Local ownership unavailable');
+        if (!owned||!this.fresh()) throw Error('Local ownership unavailable');
         this.runtime.writeOwner(generation);
-        this.publish({ ...status, localOwned: true }, 'Notifications enabled on this device.');
+        this.publish({ ...verifiedStatus, localOwned: true }, 'Notifications enabled on this device.');
       })), 20000);
-    } catch {
+    } catch(error) {
       if (generation) await this.runtime.suppress(generation).catch(() => {});
+      if(error instanceof DeviceRequestError&&(error.status===401||error.status===403)){this.invalidate();return;}
       if (this.current(epoch)) {
         this.epoch++; // A bounded UI wait cannot let a late native operation enroll.
         this.publish({ ...this.snapshot.server, phase: 'error' }, 'Setup could not finish. Turn off stops server delivery. If reopening does not help, this browser notification setup may need recovery. Ask your manager for help.');
@@ -151,7 +172,8 @@ export class DeviceController {
   async turnOff() {
     if (this.dead || this.snapshot.server.phase === 'pending') return;
     const epoch = ++this.epoch;
-    const generation = this.snapshot.server.ownershipGeneration ?? this.runtime.readOwner();
+    const generation = this.cleanupGeneration ?? this.snapshot.server.ownershipGeneration ?? this.runtime.readOwner();
+    this.cleanupGeneration = generation;
     this.publish({ ...this.snapshot.server, phase: 'pending', localOwned: false });
     const cleanupCurrent = this.runtime.cleanupFence(() => this.current(epoch));
     // Local and server cleanup are independent; failure of either cannot skip the other.
@@ -164,8 +186,12 @@ export class DeviceController {
       await bounded(local).catch(() => {});
       if (!this.current(epoch)) return;
       if ((result as {status?: string}).status !== 'complete') throw Error('cleanup pending');
+      if(this.runtime.strict&&this.nativeOperations)throw Error('Local cleanup pending');
+      if(this.runtime.strict){const fresh=await this.runtime.api('status');if(!this.current(epoch))return;if(!isStatus(fresh)||fresh.enabled)throw Error('Cleanup not confirmed');}
+      this.cleanupGeneration = undefined;
       this.publish({ ...this.snapshot.server, phase: undefined, enabled: false, ownershipGeneration: undefined, testAllowed: false, localOwned: false }, 'Notifications turned off on this device.');
-    } catch {
+    } catch(error) {
+      if(error instanceof DeviceRequestError&&(error.status===401||error.status===403)){this.invalidate();return;}
       if (this.current(epoch)) this.publish({ ...this.snapshot.server, phase: 'error' }, 'Server cleanup is pending. Notifications remain suppressed locally where possible. Retry Turn Off; you can still sign out.');
     }
   }
@@ -304,7 +330,8 @@ export function observeController(controller: DeviceController) {
   window.addEventListener('storage', fence);
   return () => { controller.dispose(); controllers.delete(controller); window.removeEventListener('storage', fence); };
 }
-export function browserRuntime(): DeviceRuntime {
+export function browserRuntime(authority?:string): DeviceRuntime {
+  let validUntil=0;
   let lifetime = ++browserOwnershipLifetime;
   const beginOwnershipChange = () => {
     const written = announceOwnershipChange(); lifetime = browserOwnershipLifetime;
@@ -316,6 +343,7 @@ export function browserRuntime(): DeviceRuntime {
   const capabilities = { secure: window.isSecureContext, serviceWorker: 'serviceWorker' in navigator, push: 'PushManager' in window, notifications: 'Notification' in window, requiresStandalone: ios, installPrompt: false };
   let registration: ServiceWorkerRegistration | undefined;
   return {
+    strict:!!authority,...(authority?{validUntil:()=>validUntil}:{}),
     capabilities, standalone,
     beginOwnershipChange,
     withEnrollment: action => withSubscriptionLock(async () => {
@@ -328,10 +356,16 @@ export function browserRuntime(): DeviceRuntime {
     requestPermission: () => Notification.requestPermission(),
     api: async (operation, body) => {
       const abort = new AbortController(); const timer = setTimeout(() => abort.abort(), 8000);
+      const started=performance.now();
       try {
-        const response = await fetch(`/app/api/push/${operation}`, { method: operation === 'status' ? 'GET' : 'POST', credentials: 'same-origin', cache: 'no-store', signal: abort.signal, ...(operation === 'status' ? {} : { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body ?? {}) }) });
+        const response = await fetch(`/app/api/push/${operation}`, { method: operation === 'status' ? 'GET' : 'POST', credentials: 'same-origin', cache: 'no-store', signal: abort.signal,headers:{...(authority?{'X-Nevora-Device-Authority':authority}:{}),...(operation==='status'?{}:{'Content-Type':'application/json'})}, ...(operation === 'status' ? {} : { body: JSON.stringify(body ?? {}) }) });
         const value = await response.json();
-        if (!response.ok) throw Error(value.error === 'cleanup_pending' ? 'cleanup pending' : 'Device request unavailable');
+        if (!response.ok) throw authority?new DeviceRequestError(response.status,typeof value?.error==='string'?value.error:'unavailable'):Error(value.error === 'cleanup_pending' ? 'cleanup pending' : 'Device request unavailable');
+        if(authority){
+          if(operation==='status'){if(response.status!==200)throw Error('Invalid device response');const status=parseDeviceStatus(value,authority);validUntil=performance.now()+status.validForMs-(performance.now()-started);if(validUntil<=performance.now())throw Error('Device status expired');}
+          else if(operation==='subscribe'){if(response.status!==200)throw Error('Invalid enrollment response');parseDeviceEnrollment(value);}
+          else parseDeviceReceipt(value,operation,(body as {ownershipGeneration?:string}|undefined)?.ownershipGeneration,response.status);
+        }
         return value;
       } finally { clearTimeout(timer); }
     },
