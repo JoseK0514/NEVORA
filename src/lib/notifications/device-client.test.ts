@@ -48,6 +48,12 @@ it('a passive refresh cannot reclaim a generation after an uncertain turn-off',a
  expect(own).not.toHaveBeenCalled();expect(suppress).toHaveBeenCalledWith('original-generation');
  expect(controller.snapshot.state).toBe('error');expect(controller.snapshot.message).toContain('cleanup');
 });
+it('cleanup retry retains the originally reviewed generation after a replacement appears',async()=>{
+ let generation='original';const sent:string[]=[];
+ const {controller}=fixture({permission:()=> 'granted',api:async(op,body)=>{if(op==='unsubscribe'){sent.push((body as {ownershipGeneration:string}).ownershipGeneration);return {status:'pending'};}return {...status,enabled:true,ownershipGeneration:generation};}});
+ await controller.start();await controller.turnOff();generation='replacement';await controller.reconcile();await controller.turnOff();
+ expect(sent).toEqual(['original','original']);expect(controller.snapshot.cleanupPending).toBe(true);
+});
 it('Not now persistence failure is explicit and does not pretend durable dismissal',async()=>{
  const {controller}=fixture({saveDismissal:()=>false});await controller.start();controller.dismiss();expect(controller.snapshot.message).toContain('remember');
 });

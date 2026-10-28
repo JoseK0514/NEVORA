@@ -147,7 +147,9 @@ export function ownedDeviceEnvironment(origin:string,enabled=false):Record<strin
  const url=new URL(origin);
  if(url.protocol!=='http:'||url.hostname!=='127.0.0.1'||!url.port||url.username||url.password||url.pathname!=='/'||url.search||url.hash)throw Error('Owned device origin must identify the loopback application.');
  const key=createECDH('prime256v1');key.setPrivateKey(Buffer.alloc(32,23));
- return {FUEL_PORTAL_ORIGIN:url.origin,PUSH_ENVIRONMENT:'test',PUSH_FEATURE_ENABLED:'true',PUSH_DELIVERY_ENABLED:'false',PUSH_TEST_DELIVERY_ENABLED:'false',PUSH_VAPID_PUBLIC_KEY:key.getPublicKey().toString('base64url'),PUSH_SUBSCRIPTION_ENCRYPTION_KEY:Buffer.alloc(32,73).toString('base64url')};
+ // NextRequest normalizes loopback hosts to localhost. The browser and strict
+ // origin guard must use that same explicit local origin, preserving the port.
+ return {FUEL_PORTAL_ORIGIN:url.origin.replace('127.0.0.1','localhost'),PUSH_ENVIRONMENT:'test',PUSH_FEATURE_ENABLED:'true',PUSH_DELIVERY_ENABLED:'false',PUSH_TEST_DELIVERY_ENABLED:'false',PUSH_VAPID_PUBLIC_KEY:key.getPublicKey().toString('base64url'),PUSH_SUBSCRIPTION_ENCRYPTION_KEY:Buffer.alloc(32,73).toString('base64url')};
 }
 
 /**

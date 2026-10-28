@@ -56,7 +56,7 @@ export class DeviceController {
   start() { return this.refresh(false); }
   /** Visibility/reopening never prompts or cancels a user/native operation.
    * One bounded pass coalesces concurrent events; dismissal is a UI choice. */
-  reconcile() { return this.refresh(true); }
+  reconcile() { return this.refresh(!this.cleanupGeneration); }
   private refresh(passive: boolean): Promise<void> {
     if (this.dead || this.nativeOperations || this.testing || this.snapshot.server.phase === 'pending') return Promise.resolve();
     if (this.refreshTask) return this.refreshTask;
@@ -86,7 +86,7 @@ export class DeviceController {
       }
       if (!passive) this.dismissed = this.runtime.readDismissal(status.dismissalScope);
       if (!passive) this.publish({ ...status, phase: 'loading' });
-      if (status.configurationAvailable && this.runtime.capabilities.serviceWorker && this.runtime.capabilities.secure) {
+      if (status.configurationAvailable && this.runtime.capabilities.serviceWorker && this.runtime.capabilities.secure&&this.runtime.capabilities.push&&this.runtime.capabilities.notifications&&(!this.runtime.capabilities.requiresStandalone||this.runtime.standalone===true)) {
         await this.runtime.prepare();
         if (!this.current(epoch)) return;
         const old = this.runtime.readOwner();
@@ -355,6 +355,7 @@ export function browserRuntime(authority?:string): DeviceRuntime {
     permission: () => 'Notification' in window ? Notification.permission : 'unsupported',
     requestPermission: () => Notification.requestPermission(),
     api: async (operation, body) => {
+      const execute=async()=>{
       const abort = new AbortController(); const timer = setTimeout(() => abort.abort(), 8000);
       const started=performance.now();
       try {
@@ -368,6 +369,10 @@ export function browserRuntime(authority?:string): DeviceRuntime {
         }
         return value;
       } finally { clearTimeout(timer); }
+      };
+      // Status can issue an HttpOnly installation proof. Its actual response
+      // joins the native lifecycle lock so late headers cannot race enrollment.
+      return authority&&operation==='status'&&!enrollmentLockHeld&&typeof navigator.locks?.request==='function'?withSubscriptionLock(execute):execute();
     },
     prepare: async () => {
       if (!navigator.locks?.request) throw Error('Browser lifecycle coordination unavailable');

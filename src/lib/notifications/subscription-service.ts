@@ -194,11 +194,14 @@ export function createPushHandlers(deps: PushHandlerDeps) {
                 let proof = readInstallationProof(cookies, key, config.environment);
                 await reconcile(cookies, employee.id);
                 proof = readInstallationProof(cookies, key, config.environment);
+                const storedProof=proof;
                 const record = proof ? await deps.subscriptions().findInstallation(proof.installationHash, config.environment) : null;
                 if (config.featureEnabled && !proof && !cookies.get(INSTALLATION_COOKIE))
                     proof = createInstallationProof(config.environment);
                 if (proof && record?.employeeId === employee.id && record.status === 'active' && record.generation === proof.generation && record.installationHash === proof.installationHash && record.environment === config.environment) proof = { ...proof, associatedSessionHash: record.sessionHash };
-                if (proof)
+                // A delayed bound read must not send an unchanged old generation
+                // after a newer enrollment response has updated the browser cookie.
+                if (proof&&(!bound||!storedProof||proof.installationHash!==storedProof.installationHash||proof.generation!==storedProof.generation||proof.associatedSessionHash!==storedProof.associatedSessionHash))
                     cookies.set(INSTALLATION_COOKIE, sealInstallationProof(proof, key), cookieOptions(365 * 86400));
                 return current(project(employee.id, proof, record, cookies.get("fuel_session") ? createHash("sha256").update(cookies.get("fuel_session")!.value).digest("hex") : undefined));
             }
