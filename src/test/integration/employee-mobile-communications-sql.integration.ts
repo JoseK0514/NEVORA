@@ -4,6 +4,7 @@ import {seedOwnedApp} from './owned-app-fixture';
 import {fixtureProof} from './shift-change-api';
 import {readEmployeeNotificationList,readEmployeeNotificationPage} from '../../lib/data/employee-notification-list.server';
 import type {EmployeeViewSnapshot} from '../../lib/employee-view';
+import {makeOwnedCommunicationNoticesDue} from './employee-mobile-communications-fixtures';
 const notifications=(r:EmployeeViewSnapshot)=>{if(r.state!=='ready'||r.kind!=='notifications')throw Error('Own notices unavailable');return r;};
 async function setup(){const db=await createDisposableExchangeDatabase({mode:'current-runtime'});try{await seedOwnedApp(db.executor);const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>db.executor.query<T>({text,values});await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('MSG-A','Fictional','Employee','555-0191','EMPLOYEE','loc-1'),('MSG-B','Fictional','Peer','555-0192','LEAD','loc-1');INSERT INTO employee_location_eligibility VALUES('MSG-A','loc-1'),('MSG-B','loc-1')");return {db,q,proof:await fixtureProof(db.executor,'MSG-A'),peer:await fixtureProof(db.executor,'MSG-B')};}catch(error){await db.dispose();throw error;}}
 it('pages the complete own notification candidates without leaking a peer or weakening the legacy bounded list',async()=>{
@@ -31,7 +32,9 @@ async function publishUpdates(executor:import('../../lib/notifications/types').S
   const draft={type:'LOCATION_ANNOUNCEMENT' as const,scope:{kind:'LOCATION' as const,locationId:'loc-1'},title:'Fictional update '+i,body:'Actual test-only workplace message.',acknowledgement:'OPTIONAL' as const,expiresAt:null};
   const preview=await previewCommunicationAudience(owner,draft,executor);if(preview.state!=='ready')throw Error('No current audience');
   const result=await executeCommunicationCommand(owner,{kind:'PUBLISH',operationId:randomUUID(),authority:preview.authority,draft,audienceFingerprint:preview.fingerprint},executor);if(result.status!=='committed')throw Error('Publication unavailable');ids.push(result.id);
- }return {owner,ids};
+ }
+ await makeOwnedCommunicationNoticesDue(executor,ids,['MSG-A','MSG-B'],count*2);
+ return {owner,ids};
 }
 it('retains the existing finite notification-read budget for a full page of distinct team updates',async()=>{
  const {db,proof}=await setup();try{

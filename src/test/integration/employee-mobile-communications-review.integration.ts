@@ -11,6 +11,7 @@ import {previewCommunicationAudience,executeCommunicationCommand,communicationDe
 import {businessDate} from '../../lib/business-time';
 import {weekStartFor} from '../../lib/date-utils';
 import {saveWorkspacePresentation} from '../../lib/workspace-presentation/service';
+import {makeOwnedCommunicationNoticesDue} from './employee-mobile-communications-fixtures';
 
 const engines=['chromium','webkit','firefox'] as const;
 const evidence=process.env.NEVORA_EMPLOYEE_MESSAGES_REVIEW_EVIDENCE;
@@ -33,11 +34,13 @@ beforeAll(async()=>{
   await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id,is_designated_lead) VALUES($1,'message-review-today',$2,$3,'08:00','16:00','qa-pos',true)",['message-review-shift-'+index,actor,today]);
  }
  await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'QAOWNER'},app.database.executor);
+ const publicationIds:string[]=[];
  for(let i=0;i<3;i++){
   const draft={type:'LOCATION_ANNOUNCEMENT' as const,scope:{kind:'LOCATION' as const,locationId:'loc-1'},title:'Review update '+i,body:'Fictional current reading facts.',acknowledgement:'OPTIONAL' as const,expiresAt:null};
   const audience=await previewCommunicationAudience(owner,draft,app.database.executor);if(audience.state!=='ready')throw Error('Owned review audience unavailable');
-  expect((await executeCommunicationCommand(owner,{kind:'PUBLISH',operationId:randomUUID(),authority:audience.authority,draft,audienceFingerprint:audience.fingerprint},app.database.executor)).status).toBe('committed');
+  const published=await executeCommunicationCommand(owner,{kind:'PUBLISH',operationId:randomUUID(),authority:audience.authority,draft,audienceFingerprint:audience.fingerprint},app.database.executor);expect(published.status).toBe('committed');if(published.status==='committed')publicationIds.push(published.id);
  }
+ await writeFile(evidence+'/due-notice-fixture.json',JSON.stringify(await makeOwnedCommunicationNoticesDue(app.database.executor,publicationIds,actors,9),null,2));
 });
 afterAll(async()=>{try{await app?.close();}finally{if(evidence)await writeFile(evidence+'/results.json',JSON.stringify({checks,messages,captures},null,2));}});
 
@@ -67,7 +70,7 @@ it('CR-2 bounds held notification opens and fences stale results across private 
    await page.route('**/api/employee/messages/open/*',async(route:any)=>{if(!first){await route.continue();return;}first=false;try{const response=await route.fetch();await gate;await route.fulfill({response});}finally{handled();}});
    fault(true);
    try{
-    await panel().locator('.em-message-list a').first().click();await panel().getByText('Opening current details…',{exact:true}).waitFor();
+    await panel().locator('.em-message-list a').first().click();await panel().getByText('Opening current details…',{exact:true}).waitFor();await expect.poll(()=>first).toBe(false);
     if(mode==='deadline'){
      await panel().getByText('This notice couldn’t be opened with your current access.',{exact:false}).waitFor();
      expect(await panel().getByText('Opening current details…',{exact:true}).count()).toBe(0);
@@ -81,7 +84,7 @@ it('CR-2 bounds held notification opens and fences stale results across private 
      await panel().getByRole('link',{name:'Notifications',exact:true}).click();await ready('notifications');
     }
     checks.push({engine,name:'CR-2 '+mode+' cancels opening and fences late navigation'});
-   }finally{release();await done;await page.unroute('**/api/employee/messages/open/*');fault(false);}
+   }finally{release();if(!first)await done;await page.unroute('**/api/employee/messages/open/*');fault(false);}
   }
  });
 });

@@ -12,6 +12,7 @@ import {businessDate} from '../../lib/business-time';
 import {weekStartFor} from '../../lib/date-utils';
 import {saveWorkspacePresentation} from '../../lib/workspace-presentation/service';
 import {measureRenderedContrast} from '../../../scripts/browser-contrast.mjs';
+import {makeOwnedCommunicationNoticesDue} from './employee-mobile-communications-fixtures';
 
 it('integrates employee mobile messages with current audience, explicit receipts and original submission recovery',async()=>{
  const evidence=process.env.NEVORA_EMPLOYEE_MESSAGES_EVIDENCE;
@@ -38,6 +39,7 @@ it('integrates employee mobile messages with current audience, explicit receipts
     const audience=await previewCommunicationAudience(owner,draft,app.database.executor);if(audience.state!=='ready')throw Error('Owned audience unavailable');
     const result=await executeCommunicationCommand(owner,{kind:'PUBLISH',operationId:randomUUID(),authority:audience.authority,draft,audienceFingerprint:audience.fingerprint},app.database.executor);if(result.status!=='committed')throw Error('Owned publication unavailable');ids.push(result.id);
    }
+   await writeFile(evidence+'/'+engine+'-due-notice-fixture.json',JSON.stringify(await makeOwnedCommunicationNoticesDue(app.database.executor,ids,[actor],27),null,2));
    browser=await runtime[engine].launch({headless:true});const activeBrowser=browser as unknown as {newContext:(options:unknown)=>Promise<ReturnType<typeof runtime.chromium.newContext>>;close():Promise<void>};
    const context=await activeBrowser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'}),page=await context.newPage();
    page.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(30000);
