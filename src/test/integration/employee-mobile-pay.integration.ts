@@ -100,6 +100,13 @@ it('shows own published statements, linked corrections and protected PDFs with t
    expect(createHash('sha256').update(await readFile(saved)).digest('hex')).toBe(createHash('sha256').update(correction.bytes).digest('hex'));
    expect(page.url()).toBe(app.url+'/app/my-pay');
    record('Download delivers the exact published bytes without leaving Pay');
+   stage='download-fails';expectedFailure=true;await modules(['payStatements']);
+   // The list is still on screen; access ended on the server. Download must navigate back, not save a file (PAY-CR-9).
+   const savedFile=page.waitForEvent('download',{timeout:5000}).then(()=>true,()=>false);
+   await page.locator(`#pay-download-latest-${correction.id}`).click();await page.waitForURL(new RegExp('/app/my-pay\\?document=unavailable$'));
+   expect(await savedFile).toBe(false);await page.waitForLoadState('domcontentloaded');await shot('download-after-access-ended');
+   await modules([]);await page.goto(app.url+'/app/my-pay');await state('ready');expectedFailure=false;
+   record('A Download whose access ended navigates back to Pay instead of saving a file');
 
    stage='matrix';
    for(const theme of ['light','dark'])for(const width of [320,390,430]){

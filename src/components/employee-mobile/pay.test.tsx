@@ -28,7 +28,7 @@ describe('Employee mobile Pay',()=>{
   expect(plain).toContain('This corrects your earlier statement for the same period.');
   expect(html).toContain(`href="/api/payroll/documents/${ids.correction}/view" target="_blank" rel="noopener"`);
   expect(html).toContain(`aria-label="View corrected statement, payday January\u00a024, 2030 (opens separately)"`);
-  expect(html).toContain(`href="/api/payroll/documents/${ids.correction}" download="statement-2030-01-24.pdf" aria-label="Download corrected statement, payday January\u00a024, 2030"`);
+  expect(html).toContain(`href="/api/payroll/documents/${ids.correction}" aria-label="Download corrected statement, payday January\u00a024, 2030"`);
   // The replaced original points to its correction first; its own files are outlined and named as replaced.
   expect(plain).toContain('Use the corrected statement');
   expect(html).toContain(`aria-label="View replaced statement, payday January\u00a024, 2030 (opens separately)"`);

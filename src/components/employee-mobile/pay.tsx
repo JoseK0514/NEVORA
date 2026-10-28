@@ -72,12 +72,14 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
  const role=(item:Statement)=>item.correctedBy?'replaced statement':item.corrects?'corrected statement':'statement';
  const goTo=(next:string)=>{if(arranged?.latest?.id===next)document.getElementById('pay-latest-title')?.focus();else{setOpen(next);requestAnimationFrame(()=>document.getElementById(`pay-statement-${next}`)?.focus());}};
  // A replaced statement points to its correction first; its own files stay available but secondary (PAY-UI-2).
+ // Download relies on the route's attachment header, not a `download` attribute: with the attribute a failed
+ // statement's redirect back to My pay would be saved as a file instead of shown (PAY-CR-9).
  const actions=(item:Statement,where:string)=>{
   const label=`${role(item)}, payday ${day(item.payday)}`,quiet=!!item.correctedBy;
   return <div className="em-pay-actions">
    {quiet&&item.correctedBy&&byId.has(item.correctedBy)?<button type="button" className="em-request-primary em-pay-use" onClick={()=>goTo(item.correctedBy!)}>Use the corrected statement</button>:null}
    {item.viewUrl?<a id={`pay-view-${where}-${item.id}`} className={quiet?'em-request-secondary':'em-request-primary'} href={`${documentHref(item)}/view`} target="_blank" rel="noopener" aria-label={`View ${label} (opens separately)`} onClick={()=>{returnTo.current=`pay-view-${where}-${item.id}`;}}><ArrowSquareOutIcon size={20} aria-hidden="true"/>View</a>:null}
-   <a id={`pay-download-${where}-${item.id}`} className={item.viewUrl||quiet?'em-request-secondary':'em-request-primary'} href={documentHref(item)} download={item.filename} aria-label={`Download ${label}`} onClick={()=>{returnTo.current=`pay-download-${where}-${item.id}`;}}><DownloadSimpleIcon size={20} aria-hidden="true"/>Download</a>
+   <a id={`pay-download-${where}-${item.id}`} className={item.viewUrl||quiet?'em-request-secondary':'em-request-primary'} href={documentHref(item)} aria-label={`Download ${label}`} onClick={()=>{returnTo.current=`pay-download-${where}-${item.id}`;}}><DownloadSimpleIcon size={20} aria-hidden="true"/>Download</a>
   </div>;
  };
  const relation=(item:Statement)=>item.correctedBy?<p className="em-pay-relation">A corrected statement replaced this one. Use the corrected statement for this period.</p>
