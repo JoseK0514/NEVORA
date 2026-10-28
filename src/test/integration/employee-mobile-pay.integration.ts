@@ -20,15 +20,18 @@ it('shows own published statements, linked corrections and protected PDFs with t
  const app=await createOwnedNextApp(evidence,{payrollEnabled:true}),checks:{engine:string;name:string}[]=[],captures:string[]=[],contrasts:{engine:string;theme:string;width:number;subject:string;ratio:number}[]=[],messages:{engine:string;type:string;text:string;expected:boolean;stage:string}[]=[],media:Record<string,unknown>[]=[];
  const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
  let presentation=0;const modules=async(disabled:string[])=>{await q("SELECT nevora_set_workspace_presentation($1,'workspace-fuel','QAOWNER',$2,$3,$4)",[randomUUID(),presentation,JSON.stringify({version:1,brand:{},modules:{disabled}}),createHash('sha256').update(String(presentation)).digest('hex')]);presentation++;};
- // Fictional published statements, shaped exactly like the publication rows the payroll worker writes.
- const publish=async(employee:string,label:string,period:{startDate:string;endDate:string},payday:string,correctionOf:string|null=null)=>{
-  const runId=randomUUID(),id=randomUUID(),doc=await PDFDocument.create();doc.addPage().drawText('Fictional statement '+label);
+ // Fictional published statements, shaped exactly like the publication rows the payroll worker writes: one
+ // company run per period (or one correction of it), with one document per person.
+ type Period={startDate:string;endDate:string};
+ const run=async(period:Period,payday:string,correctionOf:string|null=null)=>{const id=randomUUID();
+  await q("INSERT INTO payroll_runs(workspace_id,id,start_date,end_date,correction_of) VALUES('workspace-fuel',$1,$2,$3,$4)",[id,period.startDate,period.endDate,correctionOf]);
+  await q("INSERT INTO payroll_run_revisions(workspace_id,run_id,revision,payload) VALUES('workspace-fuel',$1,1,$2::jsonb)",[id,JSON.stringify({...newRun(id,period,payday,correctionOf),status:'APPROVED'})]);
+  await q("INSERT INTO payroll_publications(workspace_id,run_id) VALUES('workspace-fuel',$1)",[id]);return {id,period,payday};};
+ const statement=async(owner:{id:string;period:Period;payday:string},employee:string,label:string)=>{
+  const id=randomUUID(),doc=await PDFDocument.create();doc.addPage().drawText('Fictional statement '+label);
   const bytes=Buffer.from(await doc.save()),digest=createHash('sha256').update(bytes).digest('hex');
-  await q("INSERT INTO payroll_runs(workspace_id,id,start_date,end_date,correction_of) VALUES('workspace-fuel',$1,$2,$3,$4)",[runId,period.startDate,period.endDate,correctionOf]);
-  await q("INSERT INTO payroll_run_revisions(workspace_id,run_id,revision,payload) VALUES('workspace-fuel',$1,1,$2::jsonb)",[runId,JSON.stringify({...newRun(runId,period,payday,correctionOf),status:'APPROVED'})]);
-  await q("INSERT INTO payroll_documents(workspace_id,id,run_id,employee_id,kind,filename,sha256,content,payload) VALUES('workspace-fuel',$1,$2,$3,'EMPLOYEE_STATEMENT',$4,$5,$6,$7::jsonb)",[id,runId,employee,`statement-${label}.pdf`,digest,bytes,JSON.stringify({period,payday,coverage:{complete:true,locationIds:['loc-1']}})]);
-  await q("INSERT INTO payroll_publications(workspace_id,run_id) VALUES('workspace-fuel',$1)",[runId]);
-  return {runId,id,bytes};
+  await q("INSERT INTO payroll_documents(workspace_id,id,run_id,employee_id,kind,filename,sha256,content,payload) VALUES('workspace-fuel',$1,$2,$3,'EMPLOYEE_STATEMENT',$4,$5,$6,$7::jsonb)",[id,owner.id,employee,`statement-${label}.pdf`,digest,bytes,JSON.stringify({period:owner.period,payday:owner.payday,coverage:{complete:true,locationIds:['loc-1']}})]);
+  return {runId:owner.id,id,bytes};
  };
  let browser:{close():Promise<void>}|undefined,failed:(()=>Promise<void>)|undefined;
  try{
@@ -36,11 +39,12 @@ it('shows own published statements, linked corrections and protected PDFs with t
   for(const [index,engine] of ['chromium','webkit','firefox'].entries()){
    const f=await seedOwnedScenario(app.database.executor,'PAYM'+index,index),[actor,emptyActor,manager]=f.actors;
    await q("UPDATE employees SET role=$2 WHERE id=$1",[actor,index===1?'LEAD':'EMPLOYEE']);await q("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[emptyActor]);
-   const year=2040+index,old=await publish(actor,`old-${engine}`,{startDate:`${year}-01-01`,endDate:`${year}-01-14`},`${year}-01-19`);
-   const original=await publish(actor,`original-${engine}`,{startDate:`${year}-01-15`,endDate:`${year}-01-28`},`${year}-02-02`);
-   const correction=await publish(actor,`correction-${engine}`,{startDate:`${year}-01-15`,endDate:`${year}-01-28`},`${year}-02-02`,original.runId);
-   const peer=await publish(manager,`peer-${engine}`,{startDate:`${year}-01-15`,endDate:`${year}-01-28`},`${year}-02-02`);
-   const tampered=await publish(actor,`tampered-${engine}`,{startDate:`${year-1}-12-01`,endDate:`${year-1}-12-14`},`${year-1}-12-19`);
+   const year=2040+index,first=await run({startDate:`${year}-01-01`,endDate:`${year}-01-14`},`${year}-01-19`),second=await run({startDate:`${year}-01-15`,endDate:`${year}-01-28`},`${year}-02-02`);
+   const fixed=await run(second.period,second.payday,second.id),december=await run({startDate:`${year-1}-12-01`,endDate:`${year-1}-12-14`},`${year-1}-12-19`);
+   const old=await statement(first,actor,`old-${engine}`),original=await statement(second,actor,`original-${engine}`),correction=await statement(fixed,actor,`correction-${engine}`);
+   // A coworker's statement in the very same run: it must never be named or opened by this person.
+   const peer=await statement(second,manager,`peer-${engine}`),tampered=await statement(december,actor,`tampered-${engine}`);
+   void old;
    await q("UPDATE payroll_documents SET content=$2 WHERE id=$1",[tampered.id,Buffer.from('%PDF-1.7 altered after publication')]);
    const activeBrowser=await runtime[engine].launch({headless:true});browser=activeBrowser;
    const context=await activeBrowser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block',acceptDownloads:true}),page=await context.newPage();

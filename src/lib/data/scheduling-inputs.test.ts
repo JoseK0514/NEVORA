@@ -14,13 +14,21 @@ vi.mock("@/lib/db", () => ({
         return statement;
       },
       { query: (text:string, values:unknown[]) => {
-        if (text.includes('created_at::text AS "createdAt"') && text.includes('FROM workspaces')) return [{id:'northside',name:'Northside Services',timeZone:'America/New_York',active:true,createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'}];
-        if ((text.includes('FROM workspaces') && !text.includes('FROM shifts')) || text.includes('WITH cancelled AS') || /FOR (?:SHARE|UPDATE)|management_authorization/.test(text)) return {text,values};
-        return mocks.query(text,values);
-      }, transaction: mocks.transaction },
+        // Like Neon, query() is lazy: awaiting it runs it, and transaction() receives it unevaluated with its text.
+        const run = () => answer(text, values);
+        return { text, values, then: (yes: (rows: unknown) => unknown, no: (error: unknown) => unknown) => Promise.resolve().then(run).then(yes, no) };
+      }, transaction: (queries: Array<{ text: string; values: unknown[] }>) => {
+        for (const query of queries) mocks.statements.push({ text: query.text, values: query.values });
+        return mocks.transaction(queries);
+      } },
     ),
   queryRows: (rows: unknown) => rows,
 }));
+function answer(text: string, values: unknown[]) {
+        if (text.includes('created_at::text AS "createdAt"') && text.includes('FROM workspaces')) return [{id:'northside',name:'Northside Services',timeZone:'America/New_York',active:true,createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'}];
+        if ((text.includes('FROM workspaces') && !text.includes('FROM shifts')) || text.includes('WITH cancelled AS') || /FOR (?:SHARE|UPDATE)|management_authorization/.test(text)) return {text,values};
+        return mocks.query(text,values);
+}
 import { getShiftValidationContext, listWeekShifts } from "./schedules";
 import {
   listEmployeeHourTargets,
@@ -166,7 +174,11 @@ describe("normal-based weekly submissions", () => {
         s.text.includes("INSERT INTO availability_exceptions"),
       ),
     ).toHaveLength(0);
-    expect(mocks.statements[0].text).toContain("pg_advisory_xact_lock");
+    // The availability lock is taken before any write (a workspace read guard may precede it).
+    const lock = mocks.statements.findIndex((s) => s.text.includes("pg_advisory_xact_lock"));
+    const firstWrite = mocks.statements.findIndex((s) => /^\s*(INSERT|DELETE|UPDATE)\b/i.test(s.text));
+    expect(lock).toBeGreaterThanOrEqual(0);
+    expect(firstWrite).toBeGreaterThan(lock);
     expect(
       mocks.statements.some(
         (s) =>
