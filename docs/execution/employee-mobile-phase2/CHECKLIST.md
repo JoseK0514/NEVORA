@@ -18,18 +18,18 @@ Legend: `[ ]` open · `[~]` in progress / awaiting review · `[x]` done with evi
   - [x] Unit + real-Postgres integration (concurrency, duplicates, stale session, lost reply, consequences, fence)
   - [x] Browser evidence (3 engines, both themes, 200% text, coarse landscape, keyboard)
   - [~] Independent review: UI **GO** (minors 19–22 fixed, closure with reviewer); code **GO with conditions** (CR-4/6/8 partial; two Jose decisions)
-- [~] 2. Own published Pay and protected PDFs — `848e9cc5`; independent code and UI reviews running
+- [x] 2. Own published Pay and protected PDFs — [handoff](../employee-mobile-pay/HANDOFF.md); reviews GO with conditions at `848e9cc5`, conditions fixed at `ec063e5f`/`28ee6a75`, reviewer closure pending
 - [ ] Phase 2 exit review (combined checks on the assembled revision; Jose checkpoint)
 
 ## Open corrections and risks (inherited)
 
-- [~] A. Communications CR-4 / UI-COM-002 / UI-COM-003 — fixes at `fb065b37`; browser recheck and original-author closure pending
-- [~] B. QA-OWN-3 — fixed at `663377ba` (turn-off ledger apart from IndexedDB; RED on `003bbe2c`); residual when all browser storage fails needs Jose's risk decision; QA-author closure pending
-- [~] C. Legacy unbound status-cookie race — fixed at `9e261b65` (legacy status joins the lifecycle lock; server contract unchanged; RED with old condition)
-- [~] D. Default suite — 13 deterministic failures repaired as test-fidelity defects (`15bdc3fb`, `13f5d1c0`); process-observation investigation running (`LEADER_UNPROVEN` after a 2 s `ps` timeout hypothesis)
+- [~] A. Communications — CR-4 fixed (`fb065b37`, `28ee6a75`); UI-COM-002 fixed and browser-verified (`950ae1ea`); UI-COM-003 fixed at default size (pixels verified in 3 engines) but a band remains at 200% text — open; original-author closure pending
+- [~] B. QA-OWN-3 — fixed at `663377ba`, hardened at `28ee6a75` (bounded multi-generation ledger, unsaved-intent message); RED on `003bbe2c`; two residuals need Jose (storage-wide failure; a restarted worker before the app reopens); QA-author closure pending
+- [x] C. Legacy unbound status-cookie race — fixed at `9e261b65` (legacy status joins the lifecycle lock; server contract unchanged; RED with old condition); code review: GO
+- [~] D. Default suite — **green at `848e9cc5`** (9,869 passed, 0 failed); 13 deterministic failures were test-fidelity defects (`15bdc3fb`, `13f5d1c0`). Process-observation tests reproduce under CPU saturation; `ps` latency ruled out; cause unresolved
 - [ ] E. Calendar QA-CAL-1 Firefox request-monitor anomaly — not started
 - [ ] F. Earlier landscape evidence audit/replay — not started (new batches here use viewport captures and media-verified coarse landscape)
-- [~] G. Fixture forced-abort / cleanup-failure — test written (`owned-next-app-cancellation.integration.ts`); run pending
+- [x] G. Fixture forced-abort / refused-teardown — `owned-next-app-cancellation.integration.ts` 2/2 at `e5965943`
 
 ## Findings raised in this continuation
 
