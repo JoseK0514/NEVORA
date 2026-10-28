@@ -14,14 +14,15 @@ const text=(html:string)=>html.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ');
 describe('Employee mobile account deletion',()=>{
  it('reviews the own account and the actual consequences before the password and confirmation',()=>{
   const html=render(),plain=text(html);
-  for(const value of ['Own Person','FICTIONAL-E1','Your access ends right away','with your password or a passkey','Calendar feed links and device alerts stop','Your account is deleted later','within 30 calendar days after we receive the request','Your job doesn’t change','What may be kept','Fictional retention.','Read the full details','Confirm it’s you','Confirm deletion request','Keep my account'])expect(plain).toContain(value);
+  expect(html).toContain('aria-label="Show password"');expect(html).toContain('aria-pressed="false"');
+  const shownHtml=render({shown:true});expect(shownHtml).toContain('aria-label="Show password"');expect(shownHtml).toContain('aria-pressed="true"');expect(shownHtml).not.toContain('Hide password');
+  for(const value of ['Own Person','FICTIONAL-E1','Your access ends right away','with your password or a passkey','Calendar feed links and device alerts stop','You can’t undo it in NEVORA','Within 30 calendar days after we receive the request','NEVORA has no way to cancel it','Your job doesn’t change','What may be kept','Fictional retention.','Read the full details','Confirm it’s you','Confirm deletion request','Keep my account'])expect(plain).toContain(value);
   expect(plain.indexOf('Your account')).toBeLessThan(plain.indexOf('What happens'));
   expect(plain.indexOf('What happens')).toBeLessThan(plain.indexOf('Confirm it’s you'));
   expect(html).toContain('href="/app/profile#profile-account-deletion"');
   expect(html).toMatch(/<input[^>]*name="account"[^>]*value="FICTIONAL-E1"/);
   expect(html).toMatch(/<input[^>]*name="retry"[^>]*value="0"/);
   expect(html).toMatch(/<input[^>]*autoComplete="current-password"/);
-  expect(html).toMatch(/aria-label="Show password"[^>]*>|aria-pressed="false"/);
   // No promise this screen can't keep: no withdrawal right, no "deleted now".
   expect(plain).not.toMatch(/cancel your request|withdraw|deleted now|immediately deleted/i);
  });
@@ -41,12 +42,14 @@ describe('Employee mobile account deletion',()=>{
 
  it('says nothing was saved only for a rolled-back request',()=>{
   const failed=text(render({state:{kind:'failed'}}));
-  expect(failed).toContain('We couldn’t send your request');
+  expect(failed).toContain('Your request wasn’t sent');
   expect(failed).toContain('Nothing was saved and you’re still signed in.');
   const unknown=text(render({state:{kind:'uncertain'},retry:true}));
-  expect(unknown).toContain('We couldn’t confirm your request');
-  expect(unknown).toContain('may have been saved');
+  expect(unknown).toContain('We don’t know yet if your request was saved');
+  expect(unknown).toContain('checking sends your deletion request now');
   expect(unknown).toContain('Check my request');
+  // The request may already be accepted, so nothing offers to keep the account.
+  expect(unknown).not.toContain('Keep my account');
   expect(unknown).not.toContain('Nothing was saved');
   expect(unknown).not.toContain('was received');
   expect(render({state:{kind:'uncertain'},retry:true})).toMatch(/<input[^>]*name="retry"[^>]*value="1"/);
@@ -54,16 +57,16 @@ describe('Employee mobile account deletion',()=>{
 
  it('keeps the unknown outcome visible through a mistyped password and the attempt limit',()=>{
   const wrong=text(render({state:{kind:'wrong_password'},retry:true}));
-  expect(wrong).toContain('We couldn’t confirm your request');
+  expect(wrong).toContain('We don’t know yet if your request was saved');
   expect(wrong).toContain('That password isn’t right');
   const busy=text(render({state:{kind:'busy'},retry:true}));
-  expect(busy).toContain('We still haven’t confirmed whether your request was saved.');
+  expect(busy).toContain('We still don’t know whether your request was saved.');
   expect(text(render({state:{kind:'busy'}}))).toContain('Nothing was sent.');
  });
 
  it('shows the confirmed reference, its consequences and support, with no way back into the app',()=>{
   const html=render({state:{kind:'received',reference:'DEL-7KQ2M9XA',confirmedAt:'2030-01-01 10:00:00+00'}}),plain=text(html);
-  for(const value of ['Your deletion request was received','DEL-7KQ2M9XA','Received','Copy reference','You’re signed out everywhere','We aim to finish within 30 calendar days','we’ll email you when it’s done','We’ll never ask for your password','Done'])expect(plain).toContain(value);
+  for(const value of ['Deletion requested','Your deletion request was received','DEL-7KQ2M9XA','Received','Copy reference','You’re signed out everywhere','We aim to finish within 30 calendar days','we’ll email you when it’s done','Your job doesn’t change','We’ll never ask for your password','Done'])expect(plain).toContain(value);
   expect(html).toContain('href="mailto:support@thevelani.com?subject=Account%20deletion%20DEL-7KQ2M9XA"');
   expect(html).not.toContain('em-request-back');
   expect(html).not.toContain('name="password"');

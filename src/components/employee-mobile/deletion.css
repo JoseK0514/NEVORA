@@ -47,7 +47,7 @@
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-check:has(input[aria-invalid="true"]) { border-color:var(--em-red); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-check input { flex:none; width:22px; height:22px; margin:1px 0 0; accent-color:var(--em-teal); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-check span { min-width:0; }
- html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-error { color:var(--em-red); font-size:var(--em-size-support); font-weight:var(--em-weight-label); line-height:var(--em-line-body); }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete :is(.em-delete-field,.em-delete-section) > p.em-delete-error { color:var(--em-red); font-size:var(--em-size-support); font-weight:var(--em-weight-label); line-height:var(--em-line-body); }
 
  /* Outcome surfaces: semantic washes, never color alone (each has an icon and a heading). */
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-status { display:flex; flex-direction:column; gap:var(--em-space-3); padding:var(--em-space-5); border:1px solid var(--em-line); border-radius:var(--em-card); background:var(--em-surface); color:var(--em-ink); min-width:0; }
@@ -63,15 +63,19 @@
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-reference { display:flex; flex-direction:column; gap:var(--em-space-2); padding:var(--em-space-4); border-radius:var(--em-control); background:var(--em-surface); min-width:0; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-reference-label,
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-reference-time { color:var(--em-muted); font-size:var(--em-size-support); line-height:var(--em-line-body); }
- html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-reference-value { color:var(--em-ink); font:var(--em-weight-label) var(--em-size-shift)/var(--em-line-shift) ui-monospace,"SF Mono",monospace; letter-spacing:.04em; overflow-wrap:anywhere; user-select:all; }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-reference-value { color:var(--em-ink); font:var(--em-weight-title) var(--em-size-shift)/var(--em-line-shift) var(--em-font); font-variant-numeric:tabular-nums; letter-spacing:.06em; overflow-wrap:anywhere; user-select:all; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-copy { color:var(--em-muted); font-size:var(--em-size-support); line-height:var(--em-line-body); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-copy:empty { display:none; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-actions { display:flex; flex-direction:column; gap:var(--em-space-3); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete .em-delete-confirm { background:var(--em-red); color:var(--em-on-action); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete .em-delete-confirm:disabled { opacity:.6; cursor:progress; }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete .em-delete-confirm:not(:disabled):is(:hover,:active) { filter:brightness(.9); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete :is(.em-request-secondary,.em-request-primary)[aria-disabled="true"] { opacity:.6; pointer-events:none; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete .legal-unresolved { padding:0 4px; border-radius:4px; background:var(--em-amber-wash); color:var(--em-amber); font-family:ui-monospace,monospace; font-size:.875em; overflow-wrap:anywhere; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete :is(a,button,summary,input):focus-visible,
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete .em-delete-status:focus-visible { outline:3px solid var(--em-focus); outline-offset:3px; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete .em-delete-status:focus:not(:focus-visible) { outline:none; }
+ /* After acceptance every session has ended: the app's navigation can only lose the reference, so the page holds it. */
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:has(.em-delete:is([data-deletion-state="received"],[data-deletion-state="duplicate"],[data-deletion-state="signed_out"])) .mobile-nav { display:none; }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:has(.em-delete:is([data-deletion-state="received"],[data-deletion-state="duplicate"],[data-deletion-state="signed_out"])) .app-main { padding-bottom:env(safe-area-inset-bottom,0px); }
 }

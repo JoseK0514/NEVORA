@@ -38,6 +38,7 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    // Viewport captures only: a full-page capture turns touch emulation off in installed Chromium.
    const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,style:'nextjs-portal {visibility:hidden;}',caret:'initial'});captures.push(file);};
    failed=async()=>{await shot('failure');await writeFile(evidence+'/'+engine+'-failure.html',await page.locator('body').innerHTML());await writeFile(evidence+'/'+engine+'-pending.json',JSON.stringify([...pending.values()],null,2));};
+   const dark=async(name:string)=>{await page.emulateMedia({colorScheme:'dark'});await expect.poll(()=>page.locator('html').getAttribute('data-theme')).toBe('dark');await shot(name+'-dark');await page.emulateMedia({colorScheme:'light'});await expect.poll(()=>page.locator('html').getAttribute('data-theme')).toBe('light');};
    const forwardKey=engine==='webkit'&&process.platform==='darwin'?'Alt+Tab':'Tab';
    const focused=(locator:{evaluate(fn:(el:HTMLElement)=>boolean):Promise<boolean>})=>locator.evaluate((el:HTMLElement)=>document.activeElement===el);
    const state=(kind:string)=>page.locator(`.em-delete[data-deletion-state="${kind}"]`).waitFor();
@@ -52,12 +53,12 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
      const small=await page.locator('.em-delete :is(a,button,summary,label.em-delete-check,input:not([type=hidden]):not([type=checkbox]))').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.checkVisibility({visibilityProperty:true,opacityProperty:true})&&!el.closest('p')&&el.getBoundingClientRect().height<43.5).map(el=>el.outerHTML.slice(0,80)));expect(small).toEqual([]);
      expect(await page.locator('.em-delete h1').evaluate((el:HTMLElement)=>getComputedStyle(el).fontSize)).toBe('32px');
      const inset=await page.locator('.em-delete :is(.em-delete-facts,.em-delete-account)').evaluateAll((cards:HTMLElement[])=>cards.flatMap(card=>{const box=card.getBoundingClientRect();return [...card.querySelectorAll<HTMLElement>('svg,strong,small,dt,dd')].filter(el=>{const r=el.getBoundingClientRect();return r.width>0&&(r.left<box.left+15.5||r.right>box.right-15.5);}).map(el=>el.textContent||el.tagName);}));expect(inset).toEqual([]);
-     await shot(name+'-'+theme+'-'+width);
+     await page.evaluate(()=>scrollTo(0,0));await shot(name+'-'+theme+'-'+width+'-top');await page.evaluate(()=>scrollTo(0,document.body.scrollHeight));await shot(name+'-'+theme+'-'+width);
     }
     await page.setViewportSize({width:320,height:844});await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
     const last=page.locator('.em-delete :is(.em-delete-actions,.em-delete-body > form,.em-delete-status a)').last();await last.scrollIntoViewIfNeeded();
-    expect(await last.evaluate((el:HTMLElement)=>el.getBoundingClientRect().bottom<=document.querySelector('.mobile-nav')!.getBoundingClientRect().top+1)).toBe(true);
+    expect(await last.evaluate((el:HTMLElement)=>{const nav=document.querySelector<HTMLElement>('.mobile-nav');const limit=nav&&getComputedStyle(nav).display!=='none'?nav.getBoundingClientRect().top:innerHeight;return el.getBoundingClientRect().bottom<=limit+1;})).toBe(true);
     expect(await page.locator('.em-delete-link').evaluateAll((els:HTMLElement[])=>els.filter(el=>getComputedStyle(el).hyphens!=='none').length)).toBe(0);
     await shot(name+'-text200');await page.evaluate(()=>{document.documentElement.style.fontSize='';});await page.setViewportSize({width:390,height:844});await page.emulateMedia({colorScheme:'light'});
    };
@@ -83,10 +84,11 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    expect(await page.locator('#deletion-password').getAttribute('aria-describedby')).toBe('deletion-password-help deletion-password-error');
    await page.locator('#deletion-password').fill('fictional-wrong-password');await page.keyboard.press('Enter');
    await page.locator('#deletion-understand-error').waitFor();await expect.poll(()=>focused(page.locator('#deletion-understand'))).toBe(true);
-   expect(await own()).toEqual([]);await shot('validation');
+   expect(await page.locator('#deletion-understand-error').evaluate((el:HTMLElement)=>{const probe=document.createElement('span');probe.style.color='var(--em-red)';el.parentElement!.append(probe);const red=getComputedStyle(probe).color;probe.remove();return getComputedStyle(el).color===red&&getComputedStyle(document.getElementById('deletion-password-error')!).color===red;})).toBe(true);
+   expect(await own()).toEqual([]);await shot('validation');await dark('validation');
    await page.locator('#deletion-password').focus();await page.keyboard.press(forwardKey);
-   const eye=page.getByRole('button',{name:'Show password',exact:true});expect(await focused(eye)).toBe(true);await page.keyboard.press('Space');
-   expect(await page.locator('#deletion-password').getAttribute('type')).toBe('text');expect(await focused(page.getByRole('button',{name:'Hide password',exact:true}))).toBe(true);await page.keyboard.press('Space');
+   const eye=page.getByRole('button',{name:'Show password',exact:true});expect(await focused(eye)).toBe(true);expect(await eye.getAttribute('aria-pressed')).toBe('false');await page.keyboard.press('Space');
+   expect(await page.locator('#deletion-password').getAttribute('type')).toBe('text');expect(await focused(eye)).toBe(true);expect(await eye.getAttribute('aria-pressed')).toBe('true');await page.keyboard.press('Space');
    expect(await page.locator('#deletion-password').getAttribute('type')).toBe('password');
    await page.keyboard.press(forwardKey);expect(await focused(page.locator('#deletion-understand'))).toBe(true);await page.keyboard.press('Space');expect(await page.locator('#deletion-understand').isChecked()).toBe(true);
    record('Field-linked validation focuses the first problem; native '+forwardKey+' reaches show/hide and the confirmation checkbox');
@@ -96,7 +98,7 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    await page.setViewportSize({width:390,height:844});await state('idle');expect(await page.locator('#deletion-password').inputValue()).toBe('fictional-wrong-password');expect(await page.locator('#deletion-understand').isChecked()).toBe(true);
    record('Desktop keeps Quiet; one owner keeps the typed password and confirmation across resize');
 
-   stage='wrong-password';await page.locator('.em-delete-confirm').click();await state('wrong_password');
+   stage='wrong-password';await page.locator('.em-delete-confirm').click();await state('wrong_password');await shot('wrong-password');
    await expect.poll(()=>focused(page.locator('#deletion-password'))).toBe(true);expect(await page.locator('#deletion-password-error').innerText()).toBe('That password isn’t right. Try again.');
    expect(await own()).toEqual([]);expect(await sessions(actor)).toBe(1);await idle();
    record('Wrong password: field error, focus returns to the password, nothing saved, still signed in');
@@ -106,17 +108,19 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    await q('CREATE TRIGGER fictional_reject_deletion BEFORE INSERT ON account_deletion_requests FOR EACH ROW EXECUTE FUNCTION fictional_reject_deletion()');
    await page.locator('#deletion-password').fill(TEST_PASSWORD);await page.locator('.em-delete-confirm').click();await state('failed');
    await expect.poll(()=>focused(page.locator('.em-delete-status--error'))).toBe(true);expect(await page.locator('.em-delete-status--error').innerText()).toContain('Nothing was saved and you’re still signed in.');
-   expect(await own()).toEqual([]);expect(await sessions(actor)).toBe(1);await shot('failed');await idle();
+   expect(await own()).toEqual([]);expect(await sessions(actor)).toBe(1);expect(await page.locator('.em-delete-status--error #deletion-outcome-title').innerText()).toBe('Your request wasn’t sent');await shot('failed');await dark('failed');await idle();
    await q('DROP TRIGGER fictional_reject_deletion ON account_deletion_requests');expectedFailure=false;
    record('A database-rejected request says nothing was saved only because PostgreSQL rolled it back; the session stays');
 
-   stage='lost-reply';expectedFailure=true;let delivered=false;
-   await page.route('**/app/account/delete',async(route:Route)=>{if(route.request().method()==='POST'&&route.request().headers()['next-action']){await route.fetch();delivered=true;await route.abort('connectionreset');return;}await route.fallback();});
-   await page.locator('.em-delete-confirm').click();await state('uncertain');expect(delivered).toBe(true);
+   stage='lost-reply';expectedFailure=true;let delivered=false,held=false,release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve;});
+   await page.route('**/app/account/delete',async(route:Route)=>{if(route.request().method()==='POST'&&route.request().headers()['next-action']){held=true;await gate;await route.fetch();delivered=true;await route.abort('connectionreset');return;}await route.fallback();});
+   await page.locator('.em-delete-confirm').click();await expect.poll(()=>held).toBe(true);
+   expect(await page.locator('.em-delete-form').getAttribute('aria-busy')).toBe('true');expect(await page.locator('.em-delete-confirm').innerText()).toBe('Sending request…');expect(await page.locator('.em-delete-confirm').isDisabled()).toBe(true);expect(await own()).toEqual([]);await shot('pending');
+   release();await state('uncertain');expect(delivered).toBe(true);
    const [saved]=await own();expect(saved).toMatchObject({status:'received'});expect(await sessions(actor)).toBe(0);
-   const unknown=await page.locator('.em-delete-status--caution').innerText();expect(unknown).toContain('We couldn’t confirm your request');expect(unknown).toContain('may have been saved');expect(unknown).not.toContain('Nothing was saved');expect(unknown).not.toContain(saved.reference);
+   const unknown=await page.locator('.em-delete-status--caution').innerText();expect(unknown).toContain('We don’t know yet if your request was saved');expect(unknown).toContain('checking sends your deletion request now');expect(await page.getByRole('link',{name:'Keep my account',exact:true}).count()).toBe(0);expect(unknown).not.toContain('Nothing was saved');expect(unknown).not.toContain(saved.reference);
    await expect.poll(()=>focused(page.locator('.em-delete-status--caution'))).toBe(true);expect(page.url()).toBe(app.url+'/app/account/delete');
-   await shot('uncertain');await page.unroute('**/app/account/delete');await idle();expectedFailure=false;
+   await shot('uncertain');await dark('uncertain');await page.unroute('**/app/account/delete');await idle();expectedFailure=false;
    record('A reply lost after COMMIT shows an unconfirmed outcome on the same page: no false failure, no invented reference');
 
    stage='recover';await page.getByRole('button',{name:'Check my request',exact:true}).click();await state('received');
@@ -124,7 +128,8 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    expect(await page.locator('.em-delete-reference-value').innerText()).toBe(saved.reference);expect((await own()).length).toBe(1);
    const receipt=await page.locator('.em-delete').innerText();
    for(const text of ['Your deletion request was received','Received','You’re signed out everywhere','we’ll email you when it’s done','We’ll never ask for your password'])expect(receipt).toContain(text);
-   expect(await page.locator('.em-request-back').count()).toBe(0);expect(await page.locator('#deletion-password').count()).toBe(0);
+   expect(await page.locator('.em-request-back').count()).toBe(0);expect(await page.locator('#deletion-password').count()).toBe(0);expect(await page.locator('.em-delete h1').innerText()).toBe('Deletion requested');
+   expect(await page.locator('.mobile-nav').evaluate((el:HTMLElement)=>getComputedStyle(el).display)).toBe('none');
    expect(await page.locator(`a[href="mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Account deletion '+saved.reference)}"]`).count()).toBe(1);
    if(engine==='chromium')await context.grantPermissions(['clipboard-read','clipboard-write'],{origin:app.url});
    await page.getByRole('button',{name:'Copy reference',exact:true}).click();await expect.poll(()=>page.locator('.em-delete-copy').innerText()).toMatch(/^(Reference copied\.|Couldn’t copy\. Write the reference down instead\.)$/);
@@ -151,6 +156,11 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
      const confirm=other.locator('.em-delete-actions');await confirm.scrollIntoViewIfNeeded();expect(await confirm.evaluate((el:HTMLElement)=>{const nav=document.querySelector('.mobile-nav');return !nav||el.getBoundingClientRect().bottom<=nav.getBoundingClientRect().top+1;})).toBe(true);
      const file=engine+'-landscape-coarse.png';await other.screenshot({path:evidence+'/'+file,style:'nextjs-portal {visibility:hidden;}'});captures.push(file);
      record('Genuine coarse landscape ('+metrics.touchPoints+' touch points): teal review, targets, no overflow, actions above navigation');
+     await q('DELETE FROM employee_sessions WHERE employee_id=$1',[landscapeActor]);
+     await other.locator('#deletion-password').fill(TEST_PASSWORD);await other.locator('#deletion-understand').check();await other.locator('.em-delete-confirm').click();
+     await other.locator('.em-delete[data-deletion-state="signed_out"]').waitFor();expect(await other.locator('.em-delete').innerText()).toContain('nothing was deleted');expect(await other.locator('a[href="/login"]').count()).toBeGreaterThan(0);
+     const ended=engine+'-landscape-signed-out.png';await other.screenshot({path:evidence+'/'+ended,style:'nextjs-portal {visibility:hidden;}'});captures.push(ended);
+     record('A session that ended elsewhere: the password check finds no request and says nothing was deleted, with Sign in');
     }else{
      // Without a coarse pointer the 844px landscape is desktop by definition; the incumbent page must remain.
      await other.locator('.q-deletion').waitFor();expect(await other.locator('.em-delete').count()).toBe(0);
