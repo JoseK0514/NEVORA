@@ -1,0 +1,18 @@
+[
+  "scripts/payroll-postgres.mjs",
+  "src/app/app/profile/page.tsx",
+  "src/components/employee-mobile/passkeys.test.tsx",
+  "src/components/employee-mobile/passkeys.tsx",
+  "src/components/passkeys/passkey-desktop-view.tsx",
+  "src/components/passkeys/passkey-section.tsx",
+  "src/lib/auth/passkeys/http.server.ts",
+  "src/lib/auth/passkeys/service.server.ts",
+  "src/lib/auth/passkeys/store.server.ts",
+  "src/lib/employee-view-authority.server.ts",
+  "src/lib/passkeys/client.ts",
+  "src/lib/passkeys/management.test.ts",
+  "src/lib/passkeys/management.ts",
+  "src/test/integration/employee-mobile-passkeys.integration.ts",
+  "src/test/integration/passkeys-http.integration.ts",
+  "vitest.employee-mobile-passkeys.config.mts"
+]

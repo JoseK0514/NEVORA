@@ -1,0 +1,26 @@
+{
+  "candidate": "64063a2ac10f946f1268f325cd0de99555d87257",
+  "runtime": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-09/owned-next-0pdumg/app",
+  "matchingFiles": [
+    {
+      "path": "src/components/employee-mobile/passkeys.tsx",
+      "repositorySha256": "366125a3e15117a0b5275627cc3b4c834e720d1bef87050e90a19830aaf07f76",
+      "runtimeSha256": "366125a3e15117a0b5275627cc3b4c834e720d1bef87050e90a19830aaf07f76"
+    },
+    {
+      "path": "src/components/employee-mobile/passkeys.css",
+      "repositorySha256": "ca419122d8d45d0378e6cebb2907d3b063e046aca65fd605f5bcad1f30eb6722",
+      "runtimeSha256": "ca419122d8d45d0378e6cebb2907d3b063e046aca65fd605f5bcad1f30eb6722"
+    },
+    {
+      "path": "src/components/passkeys/passkey-desktop-view.tsx",
+      "repositorySha256": "95bbe5bb11999ff9cf2d6ee470c8bbf533bd857405e1133b60afa2ad9b9cae11",
+      "runtimeSha256": "95bbe5bb11999ff9cf2d6ee470c8bbf533bd857405e1133b60afa2ad9b9cae11"
+    },
+    {
+      "path": "src/test/integration/employee-mobile-passkeys.integration.ts",
+      "repositorySha256": "5cbcb5f19bc1ad8cc2dead1cfd42eb45c8b14ec9edd3e689e1cf955686ae3065",
+      "runtimeSha256": "5cbcb5f19bc1ad8cc2dead1cfd42eb45c8b14ec9edd3e689e1cf955686ae3065"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "candidate": "64063a2ac10f946f1268f325cd0de99555d87257",
+  "at": "2026-10-28T00:45:33.915841+00:00",
+  "method": "Independent visual inspection of actual screenshots using view_image; sampled states, not a claim every screenshot or physical device was inspected.",
+  "samples": [
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/passkeys/chromium-remove-review.png",
+      "sha256": "d57327e636b97de6b6edb5a8e5de1f284c0bc64a049fb2352983d21c8603cdb5",
+      "observation": "Removal consequences and explicit Keep/Remove controls are readable; focused review has a visible outline and remains above navigation."
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/passkeys/chromium-dark-320-text200-remove.png",
+      "sha256": "f75a535fcbfb2edc1746ba004516b42cb7993d456b2055b98e1805ef4d400dcb",
+      "observation": "The targeted Remove control is visible above reflowed navigation at320px/200%; lower Add can be reached by scrolling and is separately asserted/captured by the integration suite."
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/passkeys/chromium-coarse-landscape.png",
+      "sha256": "a1157a9011a26adef7eccb4e9171dc194ad6d3751b2171285b3ee99d8e069ae3",
+      "observation": "Screenshot shows lower Account/Signout/navigation, not passkeys; not used as evidence of passkey landscape layout. Supplemental targeted landscape probe required."
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/passkeys/firefox-remove-review.png",
+      "sha256": "500f4c846021bc1fc9e571b95b1673bd21763c874df41ab29da4252378eae007",
+      "observation": "Firefox review outline is visibly present around the current removal confirmation; both decisions and last-key text are legible."
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/passkeys/webkit-keep-dark-text200.png",
+      "sha256": "d6676390643936091d664bb9731d706b91cb7b7daa64fe6e96c5ad4e2b47a910",
+      "observation": "WebKit targeted Keep control is fully visible with clear focus at320px/200% dark; separate scrolling is needed for lower controls."
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/passkeys/firefox-unknown-removal.png",
+      "sha256": "ef081b4d8d5a74cff4c25f2fb130900a527deed11b1be5d0e058e5ae843fd35c",
+      "observation": "Unknown committed-removal outcome is stated honestly, with Refresh passkeys and no success or stale saved-key claim."
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/employee-dark-landscape-remove.png",
+      "sha256": "527686cbcaa05377e31e0bd91076d987b7535d622614dfcaca14338bc2b32336",
+      "observation": "Actual Employee dark landscape review has visible outline, readable consequences, and full Keep/Remove controls above navigation."
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/lead-light-landscape-keep.png",
+      "sha256": "5b09c7944ffe51b47713e2c2db6a1294c54e3dc058ee42dfdaa7aa78f034236d",
+      "observation": "Actual Lead light landscape review exposes both decisions above navigation with visible group outline."
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/manager-saved-dialog.png",
+      "sha256": "eebe426a6cb7d01ce9a6971cdaf35eda06782f242ad46775da33ed015b5ed38e",
+      "observation": "Actual Manager desktop uses incumbent saved-key list and modal confirmation, not the mobile inline presentation; Keep/focus return were independently asserted."
+    },
+    {
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/flag-off/employee.png",
+      "sha256": "95a08025c9102e0398f4eae5739fdffb6e17c254d41570490b6f0d9ebe8a81be",
+      "observation": "Hydrated Employee mobile Profile omits the passkey section between Calendar and Account. DOM and zero-passkey-request checks cover Employee and Lead. Full-page capture contains the fixed navigation at its original viewport position."
+    }
+  ],
+  "landscapeCoverageResolution": "Original combined coarse screenshot alone was insufficient. Independent supplemental saved/removal scenarios now pass for Employee/Lead in light/dark at844x390, with targeted44px/control-clearance assertions and visible focused-review screenshots.",
+  "developmentOverlayNote": "Supplemental screenshots retain Next development indicator; no hosted appearance or production claim."
+}

@@ -1,0 +1,17 @@
+node_modules/vitest/dist/chunks/cac.CLrZKo1g.js
+1167: 			poll: {
+1168: 				description: "Default options for `expect.poll()`",
+1169: 				argument: "",
+1170: 				subcommands: {
+1171: 					interval: {
+1172: 						description: "Poll interval in milliseconds for `expect.poll()` assertions (default: `50`)",
+1173: 						argument: "<interval>"
+1174: 					},
+1175: 					timeout: {
+1176: 						description: "Poll timeout in milliseconds for `expect.poll()` assertions (default: `1000`)",
+1177: 						argument: "<timeout>"
+1178: 					}
+1179: 				},
+1180: 				transform(value) {
+1181: 					if (typeof value !== "object") throw new TypeError(`Unexpected value for --expect.poll: ${value}. If you need to configure timeout, use --expect.poll.timeout=<timeout>`);
+1182: 					return value;

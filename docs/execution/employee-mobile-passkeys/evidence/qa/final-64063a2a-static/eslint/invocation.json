@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-28T00:34:24.145672+00:00",
+  "cwd": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+  "argv": [
+    "node",
+    "node_modules/eslint/bin/eslint.js",
+    "scripts/payroll-postgres.mjs",
+    "src/app/app/profile/page.tsx",
+    "src/components/employee-mobile/passkeys.test.tsx",
+    "src/components/employee-mobile/passkeys.tsx",
+    "src/components/passkeys/passkey-desktop-view.tsx",
+    "src/components/passkeys/passkey-section.tsx",
+    "src/lib/auth/passkeys/http.server.ts",
+    "src/lib/auth/passkeys/service.server.ts",
+    "src/lib/auth/passkeys/store.server.ts",
+    "src/lib/employee-view-authority.server.ts",
+    "src/lib/passkeys/client.ts",
+    "src/lib/passkeys/management.test.ts",
+    "src/lib/passkeys/management.ts",
+    "src/test/integration/employee-mobile-passkeys.integration.ts",
+    "src/test/integration/passkeys-http.integration.ts",
+    "vitest.employee-mobile-passkeys.config.mts"
+  ],
+  "environment": {
+    "HOME": "/Users/josek0514",
+    "PATH": "/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/josek0514/.codex/tmp/arg0-macos/codex-arg0xbyCxr:/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/josek0514/.npm-global/bin:/Users/josek0514/.local/bin:/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "TMPDIR": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/owned-tmp/"
+  },
+  "candidate": "64063a2ac10f946f1268f325cd0de99555d87257",
+  "sourceCount": 2274,
+  "recorderSha256": "3476d7b883f0a72bdf3aefbab93c39e44e853bdf74593358f1247c4cad0939a7",
+  "observerSha256": "4fdd04b9422791bb0029a02e445b222a2c807c7205e7ee8f3fa61e124a1cbe8d"
+}

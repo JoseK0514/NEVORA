@@ -1,0 +1,287 @@
+[
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/independent-custody-verification.json",
+    "target": "evidence/qa-runtime/final-64063a2a-run02/combined/independent-custody-verification.json",
+    "sourceSHA256": "0272bf22914a19ab343d1728bb9e3e0c534ecefc78d2668c0a8a89ea44d3ab58",
+    "portableSHA256": "0272bf22914a19ab343d1728bb9e3e0c534ecefc78d2668c0a8a89ea44d3ab58",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/invocation.json",
+    "target": "evidence/qa-runtime/final-64063a2a-run02/combined/invocation.json",
+    "sourceSHA256": "15537ace4a4049c9208391f354e50b38a600249deddd6913f771d71ae8b914c1",
+    "portableSHA256": "15537ace4a4049c9208391f354e50b38a600249deddd6913f771d71ae8b914c1",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/observations.json",
+    "target": "evidence/qa-runtime/final-64063a2a-run02/combined/observations.json",
+    "sourceSHA256": "cfb0cf14d2fdddd1aae761e1c208dfc014d2b254f36d594175c882c481e83e4a",
+    "portableSHA256": "cfb0cf14d2fdddd1aae761e1c208dfc014d2b254f36d594175c882c481e83e4a",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/passkey-network/http-verification.json",
+    "target": "evidence/qa-runtime/final-64063a2a-run02/combined/passkey-network/http-verification.json",
+    "sourceSHA256": "1f2fc35d488f3800f8163bd72fb96274a1711a487143f68e1c699220966d1172",
+    "portableSHA256": "1f2fc35d488f3800f8163bd72fb96274a1711a487143f68e1c699220966d1172",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/passkeys/firefox-remove-review.png",
+    "target": "evidence/qa-runtime/final-64063a2a-run02/combined/passkeys/firefox-remove-review.png",
+    "sourceSHA256": "500f4c846021bc1fc9e571b95b1673bd21763c874df41ab29da4252378eae007",
+    "portableSHA256": "500f4c846021bc1fc9e571b95b1673bd21763c874df41ab29da4252378eae007",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/passkeys/result.json",
+    "target": "evidence/qa-runtime/final-64063a2a-run02/combined/passkeys/result.json",
+    "sourceSHA256": "12db7bcf2ad1908c00369b7c79c61d2f226b1225b4ddd3ea0eb26687457c9a9c",
+    "portableSHA256": "12db7bcf2ad1908c00369b7c79c61d2f226b1225b4ddd3ea0eb26687457c9a9c",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/passkeys/webkit-keep-dark-text200.png",
+    "target": "evidence/qa-runtime/final-64063a2a-run02/combined/passkeys/webkit-keep-dark-text200.png",
+    "sourceSHA256": "d6676390643936091d664bb9731d706b91cb7b7daa64fe6e96c5ad4e2b47a910",
+    "portableSHA256": "d6676390643936091d664bb9731d706b91cb7b7daa64fe6e96c5ad4e2b47a910",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/result.json",
+    "target": "evidence/qa-runtime/final-64063a2a-run02/combined/result.json",
+    "sourceSHA256": "f7644189705bed306410317e9c2f663990161013feb10c31df9cb4e2d057d915",
+    "portableSHA256": "f7644189705bed306410317e9c2f663990161013feb10c31df9cb4e2d057d915",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/stdout.log",
+    "target": "evidence/qa-runtime/final-64063a2a-run02/combined/stdout.log",
+    "sourceSHA256": "6525b23f49d73521e3e883f76ffb8c3c15047dbf2ef9b21bff3c8e38149135a1",
+    "portableSHA256": "6525b23f49d73521e3e883f76ffb8c3c15047dbf2ef9b21bff3c8e38149135a1",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/suite-results.json",
+    "target": "evidence/qa-runtime/final-64063a2a-run02/combined/suite-results.json",
+    "sourceSHA256": "3c6265080fa4c2d42d41ef641ff92420285a91f5e8d004571bbd56d03f7b176d",
+    "portableSHA256": "3c6265080fa4c2d42d41ef641ff92420285a91f5e8d004571bbd56d03f7b176d",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement-probe.mts",
+    "target": "evidence/qa-runtime/final-64063a2a-supplement/supplement-probe.mts.txt",
+    "sourceSHA256": "5effb6135741a2dbac1ced83e427ea8ce56440b6a4b2f2cb6b8b30c19f471452",
+    "portableSHA256": "5effb6135741a2dbac1ced83e427ea8ce56440b6a4b2f2cb6b8b30c19f471452",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/independent-custody-verification.json",
+    "target": "evidence/qa-runtime/final-64063a2a-supplement/supplement/independent-custody-verification.json",
+    "sourceSHA256": "232ab6d3fa9c56848b5b8306c990e847cccfbd2bcbe80a7c614c29805c5a881e",
+    "portableSHA256": "232ab6d3fa9c56848b5b8306c990e847cccfbd2bcbe80a7c614c29805c5a881e",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/invocation.json",
+    "target": "evidence/qa-runtime/final-64063a2a-supplement/supplement/invocation.json",
+    "sourceSHA256": "0edf63251c96674ab4e72e832b7f6ed1fc0b0151cee3de54a749d5245621b49d",
+    "portableSHA256": "0edf63251c96674ab4e72e832b7f6ed1fc0b0151cee3de54a749d5245621b49d",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/employee-dark-landscape-remove.png",
+    "target": "evidence/qa-runtime/final-64063a2a-supplement/supplement/legacy-roles/employee-dark-landscape-remove.png",
+    "sourceSHA256": "527686cbcaa05377e31e0bd91076d987b7535d622614dfcaca14338bc2b32336",
+    "portableSHA256": "527686cbcaa05377e31e0bd91076d987b7535d622614dfcaca14338bc2b32336",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/lead-light-landscape-keep.png",
+    "target": "evidence/qa-runtime/final-64063a2a-supplement/supplement/legacy-roles/lead-light-landscape-keep.png",
+    "sourceSHA256": "5b09c7944ffe51b47713e2c2db6a1294c54e3dc058ee42dfdaa7aa78f034236d",
+    "portableSHA256": "5b09c7944ffe51b47713e2c2db6a1294c54e3dc058ee42dfdaa7aa78f034236d",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/manager-saved-dialog.png",
+    "target": "evidence/qa-runtime/final-64063a2a-supplement/supplement/legacy-roles/manager-saved-dialog.png",
+    "sourceSHA256": "eebe426a6cb7d01ce9a6971cdaf35eda06782f242ad46775da33ed015b5ed38e",
+    "portableSHA256": "eebe426a6cb7d01ce9a6971cdaf35eda06782f242ad46775da33ed015b5ed38e",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/owner-saved-dialog.png",
+    "target": "evidence/qa-runtime/final-64063a2a-supplement/supplement/legacy-roles/owner-saved-dialog.png",
+    "sourceSHA256": "be6e6fe262fa94b87cf15a67536d0497bd989e03ad63f172d89f9de25819989c",
+    "portableSHA256": "be6e6fe262fa94b87cf15a67536d0497bd989e03ad63f172d89f9de25819989c",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/probe-result.json",
+    "target": "evidence/qa-runtime/final-64063a2a-supplement/supplement/probe-result.json",
+    "sourceSHA256": "4d37b449c2db2e73f01cc914deaadacb75fff9227efb94522f34eafb5ab5ff9c",
+    "portableSHA256": "4d37b449c2db2e73f01cc914deaadacb75fff9227efb94522f34eafb5ab5ff9c",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/result.json",
+    "target": "evidence/qa-runtime/final-64063a2a-supplement/supplement/result.json",
+    "sourceSHA256": "17dadd71f99d068a30c091488da767ea1ab38df511149156790973d84091983d",
+    "portableSHA256": "17dadd71f99d068a30c091488da767ea1ab38df511149156790973d84091983d",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a/combined/result.json",
+    "target": "evidence/qa-runtime/final-64063a2a/combined/result.json",
+    "sourceSHA256": "5e4916088d68d86c323116e32d3c8b1a75ddb92a68615a59618f84dfd7fc7f13",
+    "portableSHA256": "5e4916088d68d86c323116e32d3c8b1a75ddb92a68615a59618f84dfd7fc7f13",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/BASELINE_FAILURES.md",
+    "target": "evidence/qa/BASELINE_FAILURES.md",
+    "sourceSHA256": "70e63f999005ac9c3b1e3a34c42f96b3cf57be77ebfe7d4a82b13f62bcdcdc61",
+    "portableSHA256": "70e63f999005ac9c3b1e3a34c42f96b3cf57be77ebfe7d4a82b13f62bcdcdc61",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/acceptance-matrix.json",
+    "target": "evidence/qa/acceptance-matrix.json",
+    "sourceSHA256": "6181e7519b325801983ecf71eab38c0dfd61e5629f0186aa66e61f2e90a196da",
+    "portableSHA256": "6181e7519b325801983ecf71eab38c0dfd61e5629f0186aa66e61f2e90a196da",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/baseline-assessment.json",
+    "target": "evidence/qa/baseline-assessment.json",
+    "sourceSHA256": "80e71c897b2cdaafebf0514525a55e50df7c49c82875ac184ce52d95733a55e8",
+    "portableSHA256": "80e71c897b2cdaafebf0514525a55e50df7c49c82875ac184ce52d95733a55e8",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/baseline-ten/summary.json",
+    "target": "evidence/qa/baseline-ten/summary.json",
+    "sourceSHA256": "a3b65a50fc7234d0a758af5c6e1059ab65a1a03df1ae5cd19195054076d9660c",
+    "portableSHA256": "a3b65a50fc7234d0a758af5c6e1059ab65a1a03df1ae5cd19195054076d9660c",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/c98c982d-static/preflight-refusal.json",
+    "target": "evidence/qa/c98c982d-static/preflight-refusal.json",
+    "sourceSHA256": "60664b3c4e704773750a1b42eb6bcd92987651250054b5ab745743f06e33c8e0",
+    "portableSHA256": "60664b3c4e704773750a1b42eb6bcd92987651250054b5ab745743f06e33c8e0",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/eslint/invocation.json",
+    "target": "evidence/qa/final-64063a2a-static/eslint/invocation.json",
+    "sourceSHA256": "7fcb9c22e544f2151df6b33d752abe7ff78998869f7cb442107e825c07e2ad6a",
+    "portableSHA256": "7fcb9c22e544f2151df6b33d752abe7ff78998869f7cb442107e825c07e2ad6a",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/eslint/result.json",
+    "target": "evidence/qa/final-64063a2a-static/eslint/result.json",
+    "sourceSHA256": "fc1ae6efb259b2b67aeac2fe27e4a07f51399ff2bb10f4cc3e3d607b20a40d8f",
+    "portableSHA256": "fc1ae6efb259b2b67aeac2fe27e4a07f51399ff2bb10f4cc3e3d607b20a40d8f",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/typescript/invocation.json",
+    "target": "evidence/qa/final-64063a2a-static/typescript/invocation.json",
+    "sourceSHA256": "5ae214a46844a808da9631869d7142d36c82a7f9550f594cbf9b89df2d946557",
+    "portableSHA256": "5ae214a46844a808da9631869d7142d36c82a7f9550f594cbf9b89df2d946557",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/typescript/result.json",
+    "target": "evidence/qa/final-64063a2a-static/typescript/result.json",
+    "sourceSHA256": "3233a588c700b55fef3ef4032865e17f6dabb7db39ccc55b4e922ea434e11a7b",
+    "portableSHA256": "3233a588c700b55fef3ef4032865e17f6dabb7db39ccc55b4e922ea434e11a7b",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/invocation.json",
+    "target": "evidence/qa/final-64063a2a-static/units/invocation.json",
+    "sourceSHA256": "111657aaf83ffa1751631005ee8fea8f074070dae421f3dcd1704ede86e3c986",
+    "portableSHA256": "111657aaf83ffa1751631005ee8fea8f074070dae421f3dcd1704ede86e3c986",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/result.json",
+    "target": "evidence/qa/final-64063a2a-static/units/result.json",
+    "sourceSHA256": "7496e6252ca777fc00c4ded1ecbbcb5e6f6e29016840d1102c0eab15d54c8e52",
+    "portableSHA256": "7496e6252ca777fc00c4ded1ecbbcb5e6f6e29016840d1102c0eab15d54c8e52",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/suite-results.json",
+    "target": "evidence/qa/final-64063a2a-static/units/suite-results.json",
+    "sourceSHA256": "ca8d97e6e5f0d5a9960bf349977bba282fe6d8fb4a33045e48cb5dad0c0d7bdb",
+    "portableSHA256": "63d0ac77cb30aa69cc4efe7a14ca1771cd03dfca0906f15340d11585a3dc55f1",
+    "redactions": [
+      {
+        "kind": "disposable calendar feed capability",
+        "occurrences": 10
+      }
+    ]
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-ten/summary.json",
+    "target": "evidence/qa/final-64063a2a-ten/summary.json",
+    "sourceSHA256": "b0210f507af184ac6ee9e52acc72545f92c74b4fff2de6479759e6eae81e2921",
+    "portableSHA256": "b0210f507af184ac6ee9e52acc72545f92c74b4fff2de6479759e6eae81e2921",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-custody-release.json",
+    "target": "evidence/qa/final-custody-release.json",
+    "sourceSHA256": "abcd5d3865f945f74986cd0730ce34f187dd9847958edbd7e067dc2f225330b9",
+    "portableSHA256": "abcd5d3865f945f74986cd0730ce34f187dd9847958edbd7e067dc2f225330b9",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-ten-comparison.json",
+    "target": "evidence/qa/final-ten-comparison.json",
+    "sourceSHA256": "8485e02c490a6608e87b1721652e07a6a35022b442ef6ecad5d291e7944c9a6d",
+    "portableSHA256": "8485e02c490a6608e87b1721652e07a6a35022b442ef6ecad5d291e7944c9a6d",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/manual-visual-review.json",
+    "target": "evidence/qa/manual-visual-review.json",
+    "sourceSHA256": "4dd8b4f15142292533d372498d82d6b8844e3ce7f9c083ee37a2dd44a1b210b8",
+    "portableSHA256": "4dd8b4f15142292533d372498d82d6b8844e3ce7f9c083ee37a2dd44a1b210b8",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/original-stdout.log",
+    "target": "evidence/qa/original-stdout.log",
+    "sourceSHA256": "1497d8f3688fe8bf870144f6f1f9098327c740471af3317b555c3cba62dbc35f",
+    "portableSHA256": "1497d8f3688fe8bf870144f6f1f9098327c740471af3317b555c3cba62dbc35f",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/pg-startup-diagnostic/postgres.log",
+    "target": "evidence/qa/pg-startup-diagnostic/postgres.log",
+    "sourceSHA256": "1931abc46940fd02d9b8b1878cba86d32e2fe1b7dae84f89247a60232205fc82",
+    "portableSHA256": "1931abc46940fd02d9b8b1878cba86d32e2fe1b7dae84f89247a60232205fc82",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/runtime-inventory.json",
+    "target": "evidence/qa/runtime-inventory.json",
+    "sourceSHA256": "9119230301a331ed31167f922d361b433677f1a17b8728863cb2284a546097de",
+    "portableSHA256": "9119230301a331ed31167f922d361b433677f1a17b8728863cb2284a546097de",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/setup.json",
+    "target": "evidence/qa/setup.json",
+    "sourceSHA256": "e0b7681a1c77aefe997baac5a8a5365c69a98c22231ea822e4d8d9fd0ad3119c",
+    "portableSHA256": "e0b7681a1c77aefe997baac5a8a5365c69a98c22231ea822e4d8d9fd0ad3119c",
+    "redactions": []
+  }
+]

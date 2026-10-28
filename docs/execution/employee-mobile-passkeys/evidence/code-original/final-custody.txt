@@ -1,0 +1,7 @@
+HEAD=356bca2382a34bfda8db11e8f9d4dae404e67004
+
+$ git diff --stat d36ea8b04fcc455bd0cac3eaff23fa76847592cf..HEAD
+ src/components/employee-mobile/passkeys.test.tsx             | 4 ++++
+ src/lib/passkeys/management.test.ts                          | 3 +++
+ src/test/integration/employee-mobile-passkeys.integration.ts | 4 ++--
+ 3 files changed, 9 insertions(+), 2 deletions(-)

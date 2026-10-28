@@ -1,0 +1,9 @@
+# CR-PK-2 runtime evidence interim
+
+Original finding and b93a155b rereview remain unchanged. Current test candidate is `80469d60fa01e6c1b156ffc962aef3640d5f7424`; git diff since `b93a155b64f0273782a47e0efedbc00b2fe59bb1` changes only the browser test. Four reviewed app files in each owned run05/run06 snapshot were independently compared byte-for-byte to b93a155b and match (8 comparisons): `/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-cancellation-closure/runtime-source-custody.json`.
+
+Both run05 and run06 failure artifacts contain completed Chromium checkpoints for controlled native NotAllowedError cancellation and explicit Cancel setup. Source assertions require the Add button to equal `document.activeElement` and zero server keys before each checkpoint is recorded. These are useful passing checkpoint observations inside **failed full journeys**, not passing three-engine results. Neither artifact contains WebKit/Firefox focus evidence.
+
+Run06 fails later at `employee-mobile-passkeys.integration.ts:69:179`, the `expect.poll(()=>held).toBe(true)` assertion. `held` is set after route.fetch returns. The installed Vitest default poll timeout is 1000 ms (`installed-poll-timeout.txt`); a first DELETE route compilation taking longer could trigger teardown before fetch completes. This is a diagnostic lead only, not a proven cause or closed harness issue. The route callback error may be downstream of teardown. No assertion was weakened or changed by this reviewer.
+
+**CR-PK-2 remains OPEN for the specified three-engine evidence.** No new app/runtime was started. Root owns subsequent runtime evidence; this reviewer retains finding closure. Physical native OS visibility/prompt behavior remains unexecuted, and Calendar QA-CAL-1 remains OPEN RISK.

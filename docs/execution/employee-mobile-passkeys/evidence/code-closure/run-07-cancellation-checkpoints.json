@@ -1,0 +1,26 @@
+[
+  {
+    "engine": "chromium",
+    "name": "Controlled native cancellation creates no server credential and returns exact Add focus"
+  },
+  {
+    "engine": "chromium",
+    "name": "Explicit Cancel setup aborts the controlled native promise and returns exact Add focus"
+  },
+  {
+    "engine": "webkit",
+    "name": "Controlled native cancellation creates no server credential and returns exact Add focus"
+  },
+  {
+    "engine": "webkit",
+    "name": "Explicit Cancel setup aborts the controlled native promise and returns exact Add focus"
+  },
+  {
+    "engine": "firefox",
+    "name": "Controlled native cancellation creates no server credential and returns exact Add focus"
+  },
+  {
+    "engine": "firefox",
+    "name": "Explicit Cancel setup aborts the controlled native promise and returns exact Add focus"
+  }
+]

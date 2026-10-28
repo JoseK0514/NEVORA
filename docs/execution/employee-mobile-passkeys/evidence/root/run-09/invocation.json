@@ -1,0 +1,24 @@
+{
+  "candidate": "64063a2ac10f946f1268f325cd0de99555d87257",
+  "cwd": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+  "argv": [
+    "node",
+    "scripts/payroll-postgres.mjs",
+    "vitest.employee-mobile-passkeys.config.mts",
+    "src/test/integration/employee-mobile-passkeys.integration.ts"
+  ],
+  "explicitEnvironment": {
+    "NEVORA_EMPLOYEE_PASSKEYS_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-09",
+    "NEVORA_TEST_PG_BIN": "/Users/josek0514/.codex/visualizations/2026/10/02/01a0f8c7-f196-7d22-8896-8d3c96547bd9/fuel-phase-3-pwa-notifications/local-postgres-runtime/package/native/bin",
+    "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE": "/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/package.json"
+  },
+  "recordBasis": "Reconstructed after execution from exact issued root tool command and assigned env; not a full inherited-environment snapshot.",
+  "gate": "passed",
+  "actualChildExit": 0,
+  "wrapper": "Captures actual child exit before log summary and exits with that code.",
+  "limits": [
+    "Owned Next development and disposable PostgreSQL",
+    "Native create is a controlled fictional authenticator; canonical cryptographic verification is actual",
+    "No nativeOS/device store/hosted/release certification"
+  ]
+}

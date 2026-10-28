@@ -1,0 +1,19 @@
+{
+  "candidate": "3415d46c05bc2bb7238664844568d393e42eeb49",
+  "cwd": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+  "argv": [
+    "node",
+    "scripts/payroll-postgres.mjs",
+    "vitest.employee-mobile-passkeys.config.mts",
+    "src/test/integration/employee-mobile-passkeys.integration.ts"
+  ],
+  "explicitEnvironment": {
+    "NEVORA_EMPLOYEE_PASSKEYS_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-08",
+    "NEVORA_TEST_PG_BIN": "/Users/josek0514/.codex/visualizations/2026/10/02/01a0f8c7-f196-7d22-8896-8d3c96547bd9/fuel-phase-3-pwa-notifications/local-postgres-runtime/package/native/bin",
+    "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE": "/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/package.json"
+  },
+  "recordBasis": "Exact command and explicitly assigned env reconstructed from issued root tool invocation; not a full inherited-environment snapshot.",
+  "stdout": "stdout.log",
+  "gate": "RUNNING: explicit visible-focus regression",
+  "wrapper": "Root command postprocessed the child log; wrapper exit0 alone is not a passing Vitest gate. Interpret actual suite/Errors summary."
+}

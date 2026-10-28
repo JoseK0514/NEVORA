@@ -1,5 +1,7 @@
 # Employee mobile Calendar — implemented, local acceptance with conditions
 
+Current continuation: [Employee mobile Passkeys](../employee-mobile-passkeys/HANDOFF.md) is accepted locally at64063a2a with conditions. This Calendar record remains the prior batch; its QA-CAL-1 risk is still open.
+
 The Calendar continuation is implemented on `codex/employee-mobile-local-resume-20261027`. Accepted **application/test/config candidate: `f58d040b70909fa21dcb97b4f40edcfd5279226c`**, based on the accepted unassembled Profile stack `a1b62ca`. Independent [code](evidence/reviews/code/CODE_FINAL.md), [UI](evidence/reviews/ui/UI_FINAL_F58.md) and [QA](evidence/reviews/qa/QA_REVIEW.md) approve this bounded local continuation with conditions. No merge, deployment, hosted build, real provider connection or native-device certification is claimed.
 
 **QA-CAL-1 remains OPEN RISK, cause unresolved.** An earlier exact-candidate full run passed253/254, failing a Firefox Profile request-idle assertion after switching accounts. The current strict full gate passes254/254, but that does not establish a causal fix or permanent reliability. Preserve the earlier failure and diagnostic history; if it recurs, stop the failing gate and investigate correlated evidence before changing assertions or application behavior. This is local implementation acceptance, not release authorization.

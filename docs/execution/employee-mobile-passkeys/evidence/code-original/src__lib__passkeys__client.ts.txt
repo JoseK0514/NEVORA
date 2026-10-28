@@ -1,0 +1,165 @@
+src/lib/passkeys/client.ts
+   1 /* Face ID / passkeys, client side (sign-in redesign, docs/product/specs/auth-premium/SPEC.md). Codex owns the server
+   2  * (contract below); this file only calls it. Native navigator.credentials, no extra dependency.
+   3  *   POST /api/auth/passkey/login/options {}                 -> PublicKeyCredentialRequestOptionsJSON (discoverable)
+   4  *   POST /api/auth/passkey/login/verify {response}           -> {redirect}  (sets the session cookie)
+   5  *   POST /api/auth/passkey/register/options (signed in)      -> PublicKeyCredentialCreationOptionsJSON
+   6  *   POST /api/auth/passkey/register/verify {response, name}  -> {passkey}
+   7  *   GET  /api/auth/passkeys (signed in)                      -> {passkeys: Passkey[]}
+   8  *   DELETE /api/auth/passkeys/:id                            -> 204
+   9  *   Errors: {error: "not_supported" | "cancelled" | "not_found" | "rate_limited" | "account_disabled" | "unavailable"} */
+  10 
+  11 export type Passkey = { id: string; name: string; createdAt: string; lastUsedAt: string | null };
+  12 export type PasskeyError = "not_supported" | "cancelled" | "not_found" | "rate_limited" | "account_disabled" | "unavailable";
+  13 export type PasskeyResult<T> = { ok: true; value: T } | { ok: false; error: PasskeyError };
+  14 
+  15 const ERRORS: readonly PasskeyError[] = ["not_supported", "cancelled", "not_found", "rate_limited", "account_disabled", "unavailable"];
+  16 
+  17 /** NEXT_PUBLIC_NEVORA_PASSKEYS=on turns passkeys on; with it off nothing about them shows. */
+  18 export const passkeysFlagOn = () => process.env.NEXT_PUBLIC_NEVORA_PASSKEYS === "on";
+  19 
+  20 /** Flag on and the browser has WebAuthn. Call only in the browser (after hydration). */
+  21 export const passkeysAvailable = () => passkeysFlagOn() && typeof window !== "undefined" && typeof window.PublicKeyCredential === "function";
+  22 
+  23 /** Phones and tablets say Face ID; computers say passkey. */
+  24 export const isPhoneLike = () => typeof window !== "undefined" && (window.matchMedia?.("(pointer: coarse)").matches ?? false) && window.innerWidth < 1024;
+  25 
+  26 /** A name for the new passkey from the device, e.g. "iPhone". */
+  27 export function deviceName(userAgent = typeof navigator === "undefined" ? "" : navigator.userAgent): string {
+  28   if (/iPhone/.test(userAgent)) return "iPhone";
+  29   if (/iPad/.test(userAgent) || (/Macintosh/.test(userAgent) && typeof navigator !== "undefined" && navigator.maxTouchPoints > 1)) return "iPad";
+  30   if (/Android/.test(userAgent)) return /Mobile/.test(userAgent) ? "Android phone" : "Android tablet";
+  31   if (/Macintosh|Mac OS X/.test(userAgent)) return "Mac";
+  32   if (/Windows/.test(userAgent)) return "Windows computer";
+  33   if (/CrOS/.test(userAgent)) return "Chromebook";
+  34   return "This device";
+  35 }
+  36 
+  37 /* ---------- base64url <-> ArrayBuffer ---------- */
+  38 export function fromBase64url(value: string): ArrayBuffer {
+  39   const base64 = value.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(value.length / 4) * 4, "=");
+  40   const binary = atob(base64);
+  41   const bytes = new Uint8Array(binary.length);
+  42   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  43   return bytes.buffer;
+  44 }
+  45 /** Preserve a view's byte offset/length when serializing WebAuthn binary data;
+  46  * encoding its backing buffer would include unrelated bytes. */
+  47 export function toBase64url(buffer: ArrayBuffer | ArrayBufferView | null | undefined): string | undefined {
+  48   if (!buffer) return undefined;
+  49   const bytes = buffer instanceof ArrayBuffer ? new Uint8Array(buffer) : new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+  50   let binary = "";
+  51   for (const byte of bytes) binary += String.fromCharCode(byte);
+  52   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  53 }
+  54 
+  55 type Json = Record<string, unknown>;
+  56 type Descriptor = { id: string; type: string; transports?: string[] };
+  57 
+  58 /** Prefer the browser's WebAuthn JSON parser; older browsers need the binary
+  59  * challenge and credential IDs decoded before navigator.credentials.get. */
+  60 function requestOptions(json: Json): PublicKeyCredentialRequestOptions {
+  61   const native = (PublicKeyCredential as unknown as { parseRequestOptionsFromJSON?: (j: Json) => PublicKeyCredentialRequestOptions }).parseRequestOptionsFromJSON;
+  62   if (native) return native(json);
+  63   return {
+  64     ...(json as unknown as PublicKeyCredentialRequestOptions),
+  65     challenge: fromBase64url(String(json.challenge)),
+  66     allowCredentials: (json.allowCredentials as Descriptor[] | undefined)?.map(d => ({ ...d, id: fromBase64url(d.id) })) as PublicKeyCredentialDescriptor[] | undefined,
+  67   };
+  68 }
+  69 
+  70 export function creationOptions(json: Json): PublicKeyCredentialCreationOptions {
+  71   const native = (PublicKeyCredential as unknown as { parseCreationOptionsFromJSON?: (j: Json) => PublicKeyCredentialCreationOptions }).parseCreationOptionsFromJSON;
+  72   if (native) return native(json);
+  73   const user = json.user as Json;
+  74   return {
+  75     ...(json as unknown as PublicKeyCredentialCreationOptions),
+  76     challenge: fromBase64url(String(json.challenge)),
+  77     user: { ...(user as unknown as PublicKeyCredentialUserEntity), id: fromBase64url(String(user.id)) },
+  78     excludeCredentials: (json.excludeCredentials as Descriptor[] | undefined)?.map(d => ({ ...d, id: fromBase64url(d.id) })) as PublicKeyCredentialDescriptor[] | undefined,
+  79   };
+  80 }
+  81 
+  82 /** The credential as WebAuthn JSON (toJSON where the browser has it). */
+  83 export function credentialJSON(credential: PublicKeyCredential): Json {
+  84   const own = (credential as unknown as { toJSON?: () => Json }).toJSON;
+  85   if (typeof own === "function") return own.call(credential);
+  86   const response = credential.response as AuthenticatorAttestationResponse & AuthenticatorAssertionResponse;
+  87   const isAssertion = "authenticatorData" in response && response.authenticatorData;
+  88   return {
+  89     id: credential.id, rawId: toBase64url(credential.rawId), type: credential.type,
+  90     authenticatorAttachment: credential.authenticatorAttachment ?? undefined,
+  91     clientExtensionResults: credential.getClientExtensionResults?.() ?? {},
+  92     response: isAssertion
+  93       ? { clientDataJSON: toBase64url(response.clientDataJSON), authenticatorData: toBase64url(response.authenticatorData), signature: toBase64url(response.signature), userHandle: toBase64url(response.userHandle) }
+  94       : { clientDataJSON: toBase64url(response.clientDataJSON), attestationObject: toBase64url(response.attestationObject), transports: response.getTransports?.() ?? [] },
+  95   };
+  96 }
+  97 
+  98 /** A user who closes the system sheet, or a timeout, is a quiet cancel; nothing else is. */
+  99 function browserError(error: unknown): PasskeyError {
+ 100   const name = error instanceof DOMException || (error && typeof error === "object" && "name" in error) ? String((error as { name: unknown }).name) : "";
+ 101   if (name === "NotAllowedError" || name === "AbortError") return "cancelled";
+ 102   if (name === "NotSupportedError" || name === "SecurityError") return "not_supported";
+ 103   if (name === "InvalidStateError") return "unavailable";
+ 104   return "unavailable";
+ 105 }
+ 106 
+ 107 async function call<T>(path: string, init: RequestInit): Promise<PasskeyResult<T>> {
+ 108   try {
+ 109     const response = await fetch(path, { credentials: "same-origin", cache: "no-store", ...init, headers: { "Content-Type": "application/json", ...(init.headers ?? {}) } });
+ 110     if (response.status === 204) return { ok: true, value: undefined as T };
+ 111     const data = await response.json().catch(() => ({}));
+ 112     if (!response.ok || (data && typeof data === "object" && "error" in data)) {
+ 113       const code = (data as { error?: string }).error;
+ 114       return { ok: false, error: ERRORS.includes(code as PasskeyError) ? code as PasskeyError : "unavailable" };
+ 115     }
+ 116     return { ok: true, value: data as T };
+ 117   } catch {
+ 118     return { ok: false, error: "unavailable" };
+ 119   }
+ 120 }
+ 121 
+ 122 /** Sign in with a discoverable passkey. On success the server has set the session; go to `redirect`. */
+ 123 export async function signInWithPasskey(): Promise<PasskeyResult<{ redirect: string }>> {
+ 124   if (!passkeysAvailable()) return { ok: false, error: "not_supported" };
+ 125   const options = await call<Json>("/api/auth/passkey/login/options", { method: "POST", body: "{}" });
+ 126   if (!options.ok) return options;
+ 127   let credential: Credential | null;
+ 128   try { credential = await navigator.credentials.get({ publicKey: requestOptions(options.value) }); }
+ 129   catch (error) { return { ok: false, error: browserError(error) }; }
+ 130   if (!credential) return { ok: false, error: "cancelled" };
+ 131   return call<{ redirect: string }>("/api/auth/passkey/login/verify", { method: "POST", body: JSON.stringify({ response: credentialJSON(credential as PublicKeyCredential) }) });
+ 132 }
+ 133 
+ 134 /** Register a passkey for the signed-in person, named after the device. */
+ 135 export async function registerPasskey(name = deviceName()): Promise<PasskeyResult<{ passkey: Passkey }>> {
+ 136   if (!passkeysAvailable()) return { ok: false, error: "not_supported" };
+ 137   const options = await call<Json>("/api/auth/passkey/register/options", { method: "POST", body: "{}" });
+ 138   if (!options.ok) return options;
+ 139   let credential: Credential | null;
+ 140   try { credential = await navigator.credentials.create({ publicKey: creationOptions(options.value) }); }
+ 141   catch (error) { return { ok: false, error: browserError(error) }; }
+ 142   if (!credential) return { ok: false, error: "cancelled" };
+ 143   return call<{ passkey: Passkey }>("/api/auth/passkey/register/verify", { method: "POST", body: JSON.stringify({ response: credentialJSON(credential as PublicKeyCredential), name }) });
+ 144 }
+ 145 
+ 146 export const listPasskeys = () => call<{ passkeys: Passkey[] }>("/api/auth/passkeys", { method: "GET" });
+ 147 export const removePasskey = (id: string) => call<void>(`/api/auth/passkeys/${encodeURIComponent(id)}`, { method: "DELETE" });
+ 148 
+ 149 /* ---------- One-time offer after a password sign-in ---------- */
+ 150 // These storage markers control presentation only. They neither prove a login
+ 151 // succeeded nor authorize passkey registration; the server checks the session.
+ 152 const OFFER_PENDING = "nv-passkey-offer";
+ 153 const OFFER_DISMISSED = "nv-passkey-offer-dismissed";
+ 154 const DAY = 24 * 60 * 60 * 1000;
+ 155 
+ 156 /** Set when the password form is submitted; the app reads it once after the sign-in lands. */
+ 157 export function markPasswordSignIn() { try { sessionStorage.setItem(OFFER_PENDING, "1"); } catch { /* storage off: no offer */ } }
+ 158 export function passwordSignInPending(): boolean { try { return sessionStorage.getItem(OFFER_PENDING) === "1"; } catch { return false; } }
+ 159 export function clearPasswordSignIn() { try { sessionStorage.removeItem(OFFER_PENDING); } catch { /* storage off */ } }
+ 160 /** "Not now" is remembered on this device for 30 days. */
+ 161 export function offerDismissedRecently(now = Date.now()): boolean {
+ 162   try { const at = Number(localStorage.getItem(OFFER_DISMISSED)); return Number.isFinite(at) && at > 0 && now - at < 30 * DAY; } catch { return true; }
+ 163 }
+ 164 export function dismissOffer(now = Date.now()) { try { localStorage.setItem(OFFER_DISMISSED, String(now)); } catch { /* storage off */ } }

@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-28T00:27:07.452852+00:00",
+  "invocation": [
+    "python3",
+    ".omo/evidence/passkeys-independent-qa/run-qa.py",
+    "static",
+    "--candidate",
+    "c98c982db25d6867377a36be0111cacf63ed90b0",
+    "--attempt",
+    "c98c982d-static"
+  ],
+  "exitCode": 1,
+  "expected": "c98c982db25d6867377a36be0111cacf63ed90b0",
+  "observed": "80469d60fa01e6c1b156ffc962aef3640d5f7424",
+  "trackedStatus": "",
+  "guard": "assert before[head]==candidate and before[trackedStatus]==empty",
+  "testProcessesStarted": false
+}

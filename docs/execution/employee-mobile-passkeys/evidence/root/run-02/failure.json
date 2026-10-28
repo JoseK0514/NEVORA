@@ -1,0 +1,78 @@
+{
+  "error": "AssertionError: expected false to be true // Object.is equality",
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Own Employee/Lead Profile current empty state, no private prehydration sample"
+    },
+    {
+      "engine": "chromium",
+      "name": "HTTP rejects another binding and employee selector"
+    },
+    {
+      "engine": "chromium",
+      "name": "Controlled native cancellation creates no server credential"
+    },
+    {
+      "engine": "chromium",
+      "name": "Single controlled native ceremony survives expected blur and resize; actual cryptographic server verify creates only own key"
+    }
+  ],
+  "captures": [
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-02/chromium-empty.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-02/chromium-desktop-pending.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-02/chromium-saved.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-02/chromium-light-320.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-02/chromium-light-320-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-02/chromium-light-390.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-02/chromium-light-390-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-02/chromium-light-430.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-02/chromium-light-430-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-02/chromium-dark-320.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-02/chromium-dark-320-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-02/chromium-dark-390.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-02/chromium-dark-390-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-02/chromium-dark-430.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-02/chromium-dark-430-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-02/chromium-FAILURE-layout-focus.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "ratio": 7.712974522476015
+    }
+  ],
+  "errors": []
+}

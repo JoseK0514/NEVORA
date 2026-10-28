@@ -1,0 +1,4 @@
+{
+  "status": "incomplete",
+  "reason": "Combined temporary root removed. Supplemental root retained a tsx-501 derived cache, so initial empty-directory assertion stopped cleanup. Cache ownership and contents type subsequently verified and cache removed. No app or database process was running."
+}

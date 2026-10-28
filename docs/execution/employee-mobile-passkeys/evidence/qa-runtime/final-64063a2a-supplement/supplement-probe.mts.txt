@@ -1,0 +1,94 @@
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises';
+import {spawnSync} from 'node:child_process';
+import {createServer} from 'node:net';
+import {randomBytes,createHash} from 'node:crypto';
+import {join} from 'node:path';
+import {tmpdir} from 'node:os';
+import {createOwnedNextApp} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/owned-next-app.ts';
+import {seedOwnedApp,assignOwnedManagerCompanyAccess} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/owned-app-fixture.ts';
+import {fictionalAuthenticator} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/passkey-authenticator.test-support.ts';
+const evidence=process.env.NEVORA_QA_SUPPLEMENT_EVIDENCE!;
+assert(evidence&&process.env.NEVORA_TEST_PG_BIN&&!process.env.DATABASE_URL);
+const port=await new Promise<number>((resolve,reject)=>{const server=createServer();server.once('error',reject);server.listen(0,'127.0.0.1',()=>{const p=(server.address() as {port:number}).port;server.close(()=>resolve(p));});});
+const cluster=await mkdtemp(join(tmpdir(),'nevora-payroll-owned-')),data=join(cluster,'data'),marker=randomBytes(16).toString('hex');
+await writeFile(join(cluster,'owner'),marker,{mode:0o600});
+const run=(name:string,args:string[])=>{const result=spawnSync(join(process.env.NEVORA_TEST_PG_BIN!,name),args,{encoding:'utf8',timeout:45000});assert.equal(result.status,0,result.stderr);};
+let started=false;const checks:unknown[]=[],errors:string[]=[];
+const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE!)('playwright');
+try{
+ run('initdb',['-D',data,'-U','nevora_test','--auth-local=trust','--auth-host=trust','--encoding=UTF8','--no-locale']);
+ run('pg_ctl',['-D',data,'-l',join(cluster,'postgres.log'),'-w','start','-o',`-h 127.0.0.1 -p ${port} -k ${cluster}`]);started=true;
+ process.env.FUEL_TEST_DATABASE_URL=`postgresql://nevora_test@127.0.0.1:${port}/nevora_exchange_test_c1_${marker.slice(0,12)}`;
+ process.env.FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN='yes';
+ for(const enabled of [false,true]){
+  const folder=join(evidence,enabled?'legacy-roles':'flag-off');await mkdir(folder,{recursive:true});
+  const app=await createOwnedNextApp(folder,{passkeysEnabled:enabled});let browser;
+  try{
+   await seedOwnedApp(app.database.executor);const q=(text:string,values:unknown[]=[])=>app.database.executor.query({text,values});
+   browser=await runtime.chromium.launch({headless:true});
+   for(const role of enabled?['EMPLOYEE','LEAD','MANAGER','OWNER']:['EMPLOYEE','LEAD']){
+    const id=role==='OWNER'?'QAOWNER':'QA-PROBE-'+role;
+    if(role!=='OWNER'){
+     await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,'Fictional',$2,'555-0199',$2,'loc-1')",[id,role]);
+     await q("INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) SELECT $1,password_hash,false FROM employee_credentials WHERE employee_id='QAOWNER'",[id]);
+     await q("INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES($1,'loc-1')",[id]);
+     if(role==='MANAGER')await assignOwnedManagerCompanyAccess(app.database.executor,id);
+    }
+    const token=randomBytes(32).toString('base64url');await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,clock_timestamp()+interval '1 hour')",[createHash('sha256').update(token).digest('hex'),id]);
+    const origin=app.url.replace('127.0.0.1','localhost');
+    const managed=['MANAGER','OWNER'].includes(role);const context=await browser.newContext({viewport:{width:managed?1440:enabled?844:390,height:enabled&&!managed?390:900},hasTouch:!managed,reducedMotion:'reduce',serviceWorkers:'block'});
+    await context.addCookies([{name:'fuel_session',value:token,url:origin,httpOnly:true,sameSite:'Lax'}]);const page=await context.newPage();const requests:string[]=[];
+    page.on('request',(request:{url():string})=>{if(new URL(request.url()).pathname.startsWith('/api/auth/passkey'))requests.push(new URL(request.url()).pathname);});
+    page.on('pageerror',(error:Error)=>errors.push(role+': '+error.message));
+    await page.goto(origin+'/app/profile');
+    if(enabled&&managed){
+     await page.locator('.premium-manager-profile').waitFor();await page.locator('.pk-section').getByRole('button',{name:/Add|Set up/}).waitFor();
+     assert.equal(await page.locator('.em-passkeys').count(),0);assert.equal(await page.locator('[data-passkey-owner]').count(),0);
+     assert.equal(await page.locator('.pk-section').getByRole('heading',{name:'Face ID and passkeys',exact:true}).count(),1);
+     assert(requests.includes('/api/auth/passkeys'));
+     const device=fictionalAuthenticator(),headers={origin,'content-type':'application/json'};
+     const optionsResponse=await page.request.post(origin+'/api/auth/passkey/register/options',{headers,data:{}});assert.equal(optionsResponse.status(),200);
+     const options=await optionsResponse.json(),keyName='Fictional '+role+' key';
+     const verifyResponse=await page.request.post(origin+'/api/auth/passkey/register/verify',{headers,data:{response:device.register(options.challenge,origin,'localhost'),name:keyName}});assert.equal(verifyResponse.status(),200);
+     await page.reload();const panel=page.locator('.pk-section');await panel.getByText(keyName,{exact:true}).waitFor();const remove=panel.getByRole('button',{name:'Remove '+keyName,exact:true});await remove.click();const dialog=panel.getByRole('dialog');await dialog.waitFor();
+     const keep=dialog.getByRole('button',{name:'Keep',exact:true});assert.equal(await keep.evaluate((el:HTMLElement)=>el===document.activeElement),true);
+     await page.screenshot({path:join(folder,role.toLowerCase()+'-saved-dialog.png'),fullPage:true});await keep.click();assert.equal(await remove.evaluate((el:HTMLElement)=>el===document.activeElement),true);await panel.scrollIntoViewIfNeeded();
+    }else if(enabled){
+     const panel=page.locator('.em-passkeys');await page.locator('.em-passkeys[data-passkey-state="ready"]').waitFor();
+     assert.equal(await page.evaluate(()=>matchMedia('(pointer:coarse)').matches),true);
+     const headers={origin,'content-type':'application/json'},device=fictionalAuthenticator(),keyName='Fictional '+role+' landscape key';
+     const start=await page.request.post(origin+'/api/auth/passkey/register/options',{headers,data:{}});assert.equal(start.status(),200);
+     const options=await start.json(),registered=await page.request.post(origin+'/api/auth/passkey/register/verify',{headers,data:{response:device.register(options.challenge,origin,'localhost'),name:keyName}});assert.equal(registered.status(),200);
+     await page.reload();await panel.getByText(keyName,{exact:true}).waitFor();
+     for(const theme of ['light','dark']){
+      await page.getByLabel('Appearance',{exact:true}).selectOption(theme);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+      const remove=panel.getByRole('button',{name:'Remove '+keyName,exact:true});await remove.evaluate((el:HTMLElement)=>el.scrollIntoView({block:'center'}));await page.screenshot({path:join(folder,role.toLowerCase()+'-'+theme+'-landscape-saved.png'),fullPage:false});
+      await remove.click();const review=panel.getByRole('group',{name:/Remove “/});await review.waitFor();assert.equal(await review.evaluate((el:HTMLElement)=>el===document.activeElement&&getComputedStyle(el).outlineStyle!=='none'&&parseFloat(getComputedStyle(el).outlineWidth)>=2),true);
+      for(const name of ['Keep passkey','Remove passkey']){
+       const control=panel.getByRole('button',{name,exact:true});await control.evaluate((el:HTMLElement)=>el.scrollIntoView({block:'center'}));const box=await control.boundingBox(),nav=await page.locator('.mobile-nav:visible').boundingBox();assert(box&&nav&&box.width>=44&&box.height>=44&&box.x>=0&&box.x+box.width<=844&&box.y>=0&&box.y+box.height<=nav.y);
+       await page.screenshot({path:join(folder,role.toLowerCase()+'-'+theme+'-landscape-'+name.split(' ')[0].toLowerCase()+'.png'),fullPage:false});
+      }
+      await panel.getByRole('button',{name:'Keep passkey',exact:true}).click();await page.waitForFunction((name:string)=>document.activeElement?.getAttribute('aria-label')==='Remove '+name,keyName);
+     }
+     checks.push({role,status:'passed',scenario:'coarse landscape saved metadata/removal confirmation',width:844,height:390,themes:['light','dark'],observable:'No horizontal overflow; visible focused review; Keep/Remove targets44px or larger and above fixed navigation; exact focus restored without removal'});
+    }else{
+     await page.locator('.em-profile-private[data-profile-state="ready"]').waitFor();
+     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+     assert.equal(await page.locator('.pk-section,.em-passkeys,[data-passkey-owner]').count(),0);assert.deepEqual(requests,[]);
+    }
+    const screenshot=join(folder,role.toLowerCase()+'.png');await page.screenshot({path:screenshot,fullPage:true});
+    const html=join(folder,role.toLowerCase()+'.html');await writeFile(html,await page.content());
+    checks.push({role,flagEnabled:enabled,status:'passed',passkeyRequests:requests,screenshot,html,observable:enabled&&!managed?'Employee/Lead coarse landscape passkey controls remain reachable':enabled?'Incumbent Manager/Owner desktop saved metadata and native dialog retained; Keep receives focus and returns it to exact Remove; employee mobile owner absent':'Employee/Lead hydrated mobile Profile has zero passkey controls/owners and no passkey HTTP request'});
+    await context.close();
+   }
+  }catch(error){const pages=browser?browser.contexts().flatMap((context:{pages():unknown[]})=>context.pages()):[];for(const [index,page] of pages.entries()){await page.screenshot({path:join(folder,'failure-'+index+'.png'),fullPage:true}).catch(()=>{});await writeFile(join(folder,'failure-'+index+'.html'),await page.content()).catch(()=>{});}throw error;}finally{await browser?.close();await app.close();}
+ }
+ assert.deepEqual(errors,[]);await writeFile(join(evidence,'probe-result.json'),JSON.stringify({status:'passed',checks,errors,limits:['Chromium-only supplemental role and flag probe. No native credential ceremony or physical device exercised.']},null,2));
+}catch(error){await writeFile(join(evidence,'probe-failure.json'),JSON.stringify({error:String(error),checks,errors},null,2));throw error;}
+finally{
+ if(started)run('pg_ctl',['-D',data,'-w','stop','-m','fast']);
+ try{await writeFile(join(evidence,'postgres.log'),await readFile(join(cluster,'postgres.log')));}catch{}
+ await rm(cluster,{recursive:true,force:true});console.log('Supplement owned PostgreSQL stopped and scratch removed.');
+}

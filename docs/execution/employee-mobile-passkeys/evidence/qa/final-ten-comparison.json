@@ -1,0 +1,208 @@
+{
+  "candidate": "64063a2ac10f946f1268f325cd0de99555d87257",
+  "statusAfter": "",
+  "allInvocationSHAsMatch": true,
+  "passed": 300,
+  "failed": 13,
+  "skipped": 0,
+  "candidateFailuresNotReproducedBaseline": [],
+  "sameBaselineFailureIdentities": [
+    [
+      "src/app/app/requests/hub/page.test.tsx",
+      "lists the person's own time off, waiting first, and never turns a failed read into no requests"
+    ],
+    [
+      "src/app/app/requests/hub/page.test.tsx",
+      "retains both request destinations for EMPLOYEE"
+    ],
+    [
+      "src/app/app/requests/hub/page.test.tsx",
+      "retains both request destinations for LEAD"
+    ],
+    [
+      "src/app/app/requests/page.test.tsx",
+      "marks a waiting request amber and an approval green, with a timeline"
+    ],
+    [
+      "src/app/app/requests/page.test.tsx",
+      "names who decided a request and when, and never names anyone on a withdrawal"
+    ],
+    [
+      "src/app/app/requests/page.withdrawal-carry-forward.test.tsx",
+      "keeps withdrawal inside its own request row, next to the facts and the waiting status"
+    ],
+    [
+      "src/app/app/requests/page.withdrawal-carry-forward.test.tsx",
+      "marks a waiting request amber and an approval green, with a timeline"
+    ],
+    [
+      "src/app/app/requests/page.withdrawal-carry-forward.test.tsx",
+      "offers a confirmed withdrawal only for the current employee pending request"
+    ],
+    [
+      "src/lib/data/scheduling-inputs.test.ts",
+      "normal-based weekly submissions changes only the selected date, preserving other overrides"
+    ],
+    [
+      "src/lib/data/scheduling-inputs.test.ts",
+      "normal-based weekly submissions confirmation without changes persists submission metadata without inventing day overrides"
+    ],
+    [
+      "src/lib/data/scheduling-inputs.test.ts",
+      "normal-based weekly submissions unavailable all week writes seven dated full-day exceptions"
+    ],
+    [
+      "src/lib/data/scheduling-inputs.test.ts",
+      "retries a stale legacy conversion after locking and preserves another saved day's override"
+    ],
+    [
+      "src/lib/data/scheduling-inputs.test.ts",
+      "the final deadline guard uses the current clock after the lock wait"
+    ]
+  ],
+  "baselineOnlyFailures": [
+    [
+      "src/test/phase-e-runner.test.ts",
+      "all dispatches all ten SQL suites without accepting unknown arguments"
+    ],
+    [
+      "src/test/phase-e-runner.test.ts",
+      "dispatches browser communications through the owned child and propagates its exit"
+    ],
+    [
+      "src/test/phase-e-runner.test.ts",
+      "supports_each_allowlisted_suite: SQL employee-navigation executes only its exact config/fixture"
+    ]
+  ],
+  "originalFailuresAbsentFinalSerial": [
+    [
+      "src/components/employee-home-actions.test.tsx",
+      "late_former_authority_reply_discarded"
+    ],
+    [
+      "src/lib/data/scheduling-inputs.test.ts",
+      "normal-based weekly submissions > changes only the selected date, preserving other overrides"
+    ],
+    [
+      "src/lib/data/scheduling-inputs.test.ts",
+      "normal-based weekly submissions > confirmation without changes persists submission metadata without inventing day overrides"
+    ],
+    [
+      "src/lib/data/scheduling-inputs.test.ts",
+      "normal-based weekly submissions > unavailable all week writes seven dated full-day exceptions"
+    ],
+    [
+      "src/lib/tenancy/migrations/backfill.test.ts",
+      "source/schema/snapshot/row-bound database namespace witnesses > rejects changed catalog expression, predicate, source evidence and collation checksum"
+    ],
+    [
+      "src/lib/tenancy/migrations/backfill.test.ts",
+      "source/schema/snapshot/row-bound database namespace witnesses > rejects omitted collation metadata, predicate mismatch, duplicate and unused witness records"
+    ],
+    [
+      "src/lib/tenancy/migrations/backfill.test.ts",
+      "source/schema/snapshot/row-bound database namespace witnesses > requires every closed catalog even for empty tables and rejects absent result witnesses"
+    ],
+    [
+      "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "typed atomic source, target and hostile-input regressions > blocks wrong sidecar mirror on complete retry"
+    ],
+    [
+      "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "typed journal whole-plan successor fictional transaction regressions > exact applied retry reads durable state and issues no source/control/journal DML"
+    ],
+    [
+      "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "typed journal whole-plan successor fictional transaction regressions > locks source70 then fixed journal2 before all transaction reads and commits matching structural state"
+    ],
+    [
+      "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "typed journal whole-plan successor fictional transaction regressions > retains preexisting STARTED journal after fresh original source/target reconciliation"
+    ],
+    [
+      "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "typed journal whole-plan successor fictional transaction regressions > retains preexisting UNKNOWN journal after fresh original source/target reconciliation"
+    ],
+    [
+      "src/test/phase-e-browser-evidence.test.ts",
+      "rejects relocated duplicate-cell"
+    ],
+    [
+      "src/test/phase-e-browser-evidence.test.ts",
+      "rejects relocated empty-checks"
+    ],
+    [
+      "src/test/phase-e-browser-evidence.test.ts",
+      "rejects relocated missing-cell"
+    ],
+    [
+      "src/test/phase-e-browser-evidence.test.ts",
+      "rejects relocated owner-mismatch"
+    ],
+    [
+      "src/test/phase-e-browser-evidence.test.ts",
+      "rejects relocated sha"
+    ],
+    [
+      "src/test/phase-e-browser-evidence.test.ts",
+      "rejects relocated symlink"
+    ],
+    [
+      "src/test/phase-e-browser-evidence.test.ts",
+      "rejects relocated traversal"
+    ],
+    [
+      "src/test/phase-e-browser-evidence.test.ts",
+      "rejects relocated tree"
+    ],
+    [
+      "src/test/phase-e-root-group-process.test.ts",
+      "root-group actual exec: root-exit"
+    ],
+    [
+      "src/test/phase-e-runner.test.ts",
+      "accepts a tracked environment template while never forwarding application credentials"
+    ],
+    [
+      "src/test/phase-e-runner.test.ts",
+      "all dispatches all ten SQL suites without accepting unknown arguments"
+    ],
+    [
+      "src/test/phase-e-runner.test.ts",
+      "evidence acceptance rejects modified manifest custody"
+    ],
+    [
+      "src/test/phase-e-runner.test.ts",
+      "evidence acceptance rejects modified ownership custody"
+    ],
+    [
+      "src/test/phase-e-runner.test.ts",
+      "later SQL evidence rejects case-identity substitution"
+    ],
+    [
+      "src/test/phase-e-runner.test.ts",
+      "later SQL evidence rejects command substitution"
+    ],
+    [
+      "src/test/phase-e-runner.test.ts",
+      "later SQL evidence rejects duplicate-selector substitution"
+    ],
+    [
+      "src/test/phase-e-runner.test.ts",
+      "later SQL evidence rejects fixture substitution"
+    ],
+    [
+      "src/test/phase-e-runner.test.ts",
+      "rejects a successful unrelated SQL fixture during execution"
+    ],
+    [
+      "src/test/phase-e-runner.test.ts",
+      "supports_each_allowlisted_suite: SQL calendar-tokens executes only its exact config/fixture"
+    ],
+    [
+      "src/test/phase-e-runner.test.ts",
+      "supports_each_allowlisted_suite: SQL communications executes only its exact config/fixture"
+    ]
+  ],
+  "claim": "13 unchanged pre-existing failures remain. No full-unit-green claim. Original timeout and process observation failures did not recur in final serial run; this does not establish a fix or close intermittent failure risk."
+}

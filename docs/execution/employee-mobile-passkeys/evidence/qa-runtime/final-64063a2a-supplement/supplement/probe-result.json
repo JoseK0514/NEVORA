@@ -1,0 +1,104 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "role": "EMPLOYEE",
+      "flagEnabled": false,
+      "status": "passed",
+      "passkeyRequests": [],
+      "screenshot": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/flag-off/employee.png",
+      "html": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/flag-off/employee.html",
+      "observable": "Employee/Lead hydrated mobile Profile has zero passkey controls/owners and no passkey HTTP request"
+    },
+    {
+      "role": "LEAD",
+      "flagEnabled": false,
+      "status": "passed",
+      "passkeyRequests": [],
+      "screenshot": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/flag-off/lead.png",
+      "html": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/flag-off/lead.html",
+      "observable": "Employee/Lead hydrated mobile Profile has zero passkey controls/owners and no passkey HTTP request"
+    },
+    {
+      "role": "EMPLOYEE",
+      "status": "passed",
+      "scenario": "coarse landscape saved metadata/removal confirmation",
+      "width": 844,
+      "height": 390,
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "observable": "No horizontal overflow; visible focused review; Keep/Remove targets44px or larger and above fixed navigation; exact focus restored without removal"
+    },
+    {
+      "role": "EMPLOYEE",
+      "flagEnabled": true,
+      "status": "passed",
+      "passkeyRequests": [
+        "/api/auth/passkeys",
+        "/api/auth/passkeys",
+        "/api/auth/passkeys"
+      ],
+      "screenshot": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/employee.png",
+      "html": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/employee.html",
+      "observable": "Employee/Lead coarse landscape passkey controls remain reachable"
+    },
+    {
+      "role": "LEAD",
+      "status": "passed",
+      "scenario": "coarse landscape saved metadata/removal confirmation",
+      "width": 844,
+      "height": 390,
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "observable": "No horizontal overflow; visible focused review; Keep/Remove targets44px or larger and above fixed navigation; exact focus restored without removal"
+    },
+    {
+      "role": "LEAD",
+      "flagEnabled": true,
+      "status": "passed",
+      "passkeyRequests": [
+        "/api/auth/passkeys",
+        "/api/auth/passkeys",
+        "/api/auth/passkeys",
+        "/api/auth/passkeys"
+      ],
+      "screenshot": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/lead.png",
+      "html": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/lead.html",
+      "observable": "Employee/Lead coarse landscape passkey controls remain reachable"
+    },
+    {
+      "role": "MANAGER",
+      "flagEnabled": true,
+      "status": "passed",
+      "passkeyRequests": [
+        "/api/auth/passkeys",
+        "/api/auth/passkeys",
+        "/api/auth/passkeys"
+      ],
+      "screenshot": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/manager.png",
+      "html": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/manager.html",
+      "observable": "Incumbent Manager/Owner desktop saved metadata and native dialog retained; Keep receives focus and returns it to exact Remove; employee mobile owner absent"
+    },
+    {
+      "role": "OWNER",
+      "flagEnabled": true,
+      "status": "passed",
+      "passkeyRequests": [
+        "/api/auth/passkeys",
+        "/api/auth/passkeys",
+        "/api/auth/passkeys"
+      ],
+      "screenshot": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/owner.png",
+      "html": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/owner.html",
+      "observable": "Incumbent Manager/Owner desktop saved metadata and native dialog retained; Keep receives focus and returns it to exact Remove; employee mobile owner absent"
+    }
+  ],
+  "errors": [],
+  "limits": [
+    "Chromium-only supplemental role and flag probe. No native credential ceremony or physical device exercised."
+  ]
+}

@@ -1,0 +1,32 @@
+src/app/app/profile/page.tsx
+   1 import {redirect} from 'next/navigation';
+   2 import {requireSessionMutationProof} from '@/lib/auth/session';
+   3 import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
+   4 import {readNotificationConfig} from '@/lib/notifications/config';
+   5 import {CalendarSubscriptionPanel} from '@/components/calendar-subscription-panel';
+   6 import {calendarAuthority} from '@/lib/calendar/service.server';
+   7 import {ProfileCalendarDisclosure} from '@/components/profile-calendar-disclosure';
+   8 import {QuietNav} from '@/components/quiet/quiet';
+   9 import {EmployeeProfilePage} from '@/components/employee-mobile/profile';
+  10 import {policiesVisible} from '@/lib/legal/policies';
+  11 import {ManagerProfilePage} from '@/components/manager-profile/manager-profile';
+  12 import {EmployeePasskeySection} from '@/components/employee-mobile/passkeys';
+  13 import {getWorkspace} from '@/lib/data/workspaces';
+  14 import {readAuthLang} from '@/lib/auth-lang.server';
+  15 
+  16 export const metadata = { title: "Profile" };
+  17 export default async function ProfilePage(){
+  18  const proof=await requireSessionMutationProof();if(['OWNER','MANAGER'].includes(proof.employee.role))return <ManagerProfilePage proof={proof}/>;if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))redirect('/app');
+  19  const authority=employeeViewAuthority(proof,'profile');
+  20  const notificationsEnabled=readNotificationConfig(process.env).featureEnabled;
+  21  const workspaceName=await getWorkspace().then(workspace=>workspace.name).catch(()=>null);
+  22  const lang=await readAuthLang();
+  23  const {firstName,lastName,role}=proof.employee;
+  24  const initials=`${firstName.trim()[0]??''}${lastName.trim()[0]??''}`.toUpperCase();
+  25  const roleLabel=role==='LEAD'?'Lead':'Employee';
+  26  const calAuthority=calendarAuthority(proof);
+  27  return <EmployeeProfilePage authority={authority} lang={lang} notificationsEnabled={notificationsEnabled} policies={policiesVisible()}
+  28   legacyHeader={<><QuietNav back={{href:'/app/more',label:'More'}}/><div className="q-who"><span className="q-av q-av--lg" aria-hidden="true">{initials}</span><div><h1>{firstName} {lastName}</h1><p>{roleLabel}{workspaceName?` · ${workspaceName}`:''}</p></div></div></>}
+  29   calendar={<ProfileCalendarDisclosure><CalendarSubscriptionPanel key={calAuthority} authority={calAuthority}/></ProfileCalendarDisclosure>}
+  30   passkeys={<EmployeePasskeySection key={employeeViewAuthority(proof,'passkeys')} authority={employeeViewAuthority(proof,'passkeys')}/>}/>;
+  31 }

@@ -1,0 +1,2 @@
+All 138 result-listed capture paths exist and are nonempty.
+No visual/outline certification is inferred from this filesystem verification.

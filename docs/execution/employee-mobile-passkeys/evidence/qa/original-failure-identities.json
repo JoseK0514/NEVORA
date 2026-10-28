@@ -1,0 +1,170 @@
+[
+  {
+    "file": "src/test/phase-e-browser-evidence.test.ts",
+    "name": "rejects relocated missing-cell"
+  },
+  {
+    "file": "src/test/phase-e-browser-evidence.test.ts",
+    "name": "rejects relocated duplicate-cell"
+  },
+  {
+    "file": "src/test/phase-e-browser-evidence.test.ts",
+    "name": "rejects relocated empty-checks"
+  },
+  {
+    "file": "src/test/phase-e-browser-evidence.test.ts",
+    "name": "rejects relocated sha"
+  },
+  {
+    "file": "src/test/phase-e-browser-evidence.test.ts",
+    "name": "rejects relocated tree"
+  },
+  {
+    "file": "src/test/phase-e-browser-evidence.test.ts",
+    "name": "rejects relocated owner-mismatch"
+  },
+  {
+    "file": "src/test/phase-e-browser-evidence.test.ts",
+    "name": "rejects relocated traversal"
+  },
+  {
+    "file": "src/test/phase-e-browser-evidence.test.ts",
+    "name": "rejects relocated symlink"
+  },
+  {
+    "file": "src/test/phase-e-root-group-process.test.ts",
+    "name": "root-group actual exec: root-exit"
+  },
+  {
+    "file": "src/test/phase-e-runner.test.ts",
+    "name": "supports_each_allowlisted_suite: SQL communications executes only its exact config/fixture"
+  },
+  {
+    "file": "src/test/phase-e-runner.test.ts",
+    "name": "supports_each_allowlisted_suite: SQL calendar-tokens executes only its exact config/fixture"
+  },
+  {
+    "file": "src/test/phase-e-runner.test.ts",
+    "name": "all dispatches all ten SQL suites without accepting unknown arguments"
+  },
+  {
+    "file": "src/test/phase-e-runner.test.ts",
+    "name": "accepts a tracked environment template while never forwarding application credentials"
+  },
+  {
+    "file": "src/test/phase-e-runner.test.ts",
+    "name": "evidence acceptance rejects modified manifest custody"
+  },
+  {
+    "file": "src/test/phase-e-runner.test.ts",
+    "name": "evidence acceptance rejects modified ownership custody"
+  },
+  {
+    "file": "src/test/phase-e-runner.test.ts",
+    "name": "rejects a successful unrelated SQL fixture during execution"
+  },
+  {
+    "file": "src/test/phase-e-runner.test.ts",
+    "name": "later SQL evidence rejects fixture substitution"
+  },
+  {
+    "file": "src/test/phase-e-runner.test.ts",
+    "name": "later SQL evidence rejects duplicate-selector substitution"
+  },
+  {
+    "file": "src/test/phase-e-runner.test.ts",
+    "name": "later SQL evidence rejects command substitution"
+  },
+  {
+    "file": "src/test/phase-e-runner.test.ts",
+    "name": "later SQL evidence rejects case-identity substitution"
+  },
+  {
+    "file": "src/components/employee-home-actions.test.tsx",
+    "name": "late_former_authority_reply_discarded"
+  },
+  {
+    "file": "src/lib/data/scheduling-inputs.test.ts",
+    "name": "normal-based weekly submissions > confirmation without changes persists submission metadata without inventing day overrides"
+  },
+  {
+    "file": "src/lib/data/scheduling-inputs.test.ts",
+    "name": "normal-based weekly submissions > unavailable all week writes seven dated full-day exceptions"
+  },
+  {
+    "file": "src/lib/data/scheduling-inputs.test.ts",
+    "name": "normal-based weekly submissions > changes only the selected date, preserving other overrides"
+  },
+  {
+    "file": "src/lib/data/scheduling-inputs.test.ts",
+    "name": "the final deadline guard uses the current clock after the lock wait"
+  },
+  {
+    "file": "src/lib/data/scheduling-inputs.test.ts",
+    "name": "retries a stale legacy conversion after locking and preserves another saved day's override"
+  },
+  {
+    "file": "src/app/app/requests/page.test.tsx",
+    "name": "marks a waiting request amber and an approval green, with a timeline"
+  },
+  {
+    "file": "src/app/app/requests/page.test.tsx",
+    "name": "names who decided a request and when, and never names anyone on a withdrawal"
+  },
+  {
+    "file": "src/app/app/requests/page.withdrawal-carry-forward.test.tsx",
+    "name": "marks a waiting request amber and an approval green, with a timeline"
+  },
+  {
+    "file": "src/app/app/requests/page.withdrawal-carry-forward.test.tsx",
+    "name": "offers a confirmed withdrawal only for the current employee pending request"
+  },
+  {
+    "file": "src/app/app/requests/page.withdrawal-carry-forward.test.tsx",
+    "name": "keeps withdrawal inside its own request row, next to the facts and the waiting status"
+  },
+  {
+    "file": "src/lib/tenancy/migrations/backfill.test.ts",
+    "name": "source/schema/snapshot/row-bound database namespace witnesses > requires every closed catalog even for empty tables and rejects absent result witnesses"
+  },
+  {
+    "file": "src/lib/tenancy/migrations/backfill.test.ts",
+    "name": "source/schema/snapshot/row-bound database namespace witnesses > rejects changed catalog expression, predicate, source evidence and collation checksum"
+  },
+  {
+    "file": "src/lib/tenancy/migrations/backfill.test.ts",
+    "name": "source/schema/snapshot/row-bound database namespace witnesses > rejects omitted collation metadata, predicate mismatch, duplicate and unused witness records"
+  },
+  {
+    "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+    "name": "typed atomic source, target and hostile-input regressions > blocks wrong sidecar mirror on complete retry"
+  },
+  {
+    "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+    "name": "typed journal whole-plan successor fictional transaction regressions > locks source70 then fixed journal2 before all transaction reads and commits matching structural state"
+  },
+  {
+    "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+    "name": "typed journal whole-plan successor fictional transaction regressions > exact applied retry reads durable state and issues no source/control/journal DML"
+  },
+  {
+    "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+    "name": "typed journal whole-plan successor fictional transaction regressions > retains preexisting STARTED journal after fresh original source/target reconciliation"
+  },
+  {
+    "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+    "name": "typed journal whole-plan successor fictional transaction regressions > retains preexisting UNKNOWN journal after fresh original source/target reconciliation"
+  },
+  {
+    "file": "src/app/app/requests/hub/page.test.tsx",
+    "name": "retains both request destinations for EMPLOYEE"
+  },
+  {
+    "file": "src/app/app/requests/hub/page.test.tsx",
+    "name": "retains both request destinations for LEAD"
+  },
+  {
+    "file": "src/app/app/requests/hub/page.test.tsx",
+    "name": "lists the person's own time off, waiting first, and never turns a failed read into no requests"
+  }
+]

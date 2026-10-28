@@ -1,0 +1,25 @@
+{
+  "candidate": "80469d60",
+  "reviewed": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-06/chromium-verifying.png",
+      "size": 48400,
+      "sha256": "96dba8e1757fe4b1f224a340007552c22e9e7852c8aab31275db571649146388"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-06/chromium-unsupported-saved.png",
+      "size": 56630,
+      "sha256": "c7b6c24668da9ecef18a706ea65d1225a2acf6b05a1fca7451c6fdb5d0db0e4a"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-06/chromium-remove-review.png",
+      "size": 61751,
+      "sha256": "d57327e636b97de6b6edb5a8e5de1f284c0bc64a049fb2352983d21c8603cdb5"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-06/failure.json",
+      "size": 8468,
+      "sha256": "cc4faae93004dd453724492a079cf71e30d69eee802a1175d9ab8c4b62d6d1fb"
+    }
+  ]
+}
