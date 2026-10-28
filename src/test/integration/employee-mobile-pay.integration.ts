@@ -70,7 +70,8 @@ it('shows own published statements, linked corrections and protected PDFs with t
    await page.goto(app.url+'/login');await login(page,actor);
    stage='open-from-more';await page.locator('.mobile-nav-link[href="/app/more"]:visible').click();await page.waitForURL(app.url+'/app/more');
    await page.locator('a[href="/app/my-pay"]:visible').first().click();await page.waitForURL(app.url+'/app/my-pay');await state('ready');
-   const body=await page.locator('.em-pay').innerText();
+   // Month and day are joined by a no-break space on screen (PAY-UI-7); compare words, not spacing.
+   const body=(await page.locator('.em-pay').innerText()).replace(/\u00a0/g,' ');
    expect(body).toContain('Latest statement');expect(body).toContain(`Payday February 2, ${year}`);expect(body).toContain('Correction');expect(body).toContain('This corrects your earlier statement for the same period.');
    expect(body).toContain('Earlier statements');expect(body).toContain('Replaced');expect(body).not.toMatch(/\$|deposit|net pay/i);
    expect(body).toContain('Next scheduled payday');expect(body).toContain('From your workplace’s pay schedule');
