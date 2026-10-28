@@ -47,7 +47,9 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
     try { next = await requestAccountDeletion(previous, formData); } catch { next = { kind: "uncertain" }; }
     if (next.kind === "uncertain") setRetry(true);
     // The password is held only while it can still be needed for this account's request.
-    if (RECEIPT.has(next.kind) || ENDED.has(next.kind) || next.kind === "wrong_password") forget();
+    // React resets an action form's uncontrolled fields after every reply; forget the copy too, so a later resize
+    // can't bring back a password the page no longer shows. Each retry is a deliberate re-entry.
+    forget();
     if (next.kind !== "idle") setShown(false);
     return next;
   }, existing ?? { kind: "idle" });

@@ -116,6 +116,8 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
 
    stage='lost-reply';expectedFailure=true;let delivered=false,held=false,release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve;});
    await page.route('**/app/account/delete',async(route:Route)=>{if(route.request().method()==='POST'&&route.request().headers()['next-action']){held=true;await gate;await route.fetch();delivered=true;await route.abort('connectionreset');return;}await route.fallback();});
+   // React reset the field after the rejected reply; retrying is a deliberate re-entry.
+   expect(await page.locator('#deletion-password').inputValue()).toBe('');await page.locator('#deletion-password').fill(TEST_PASSWORD);
    await page.locator('.em-delete-confirm').click();await expect.poll(()=>held).toBe(true);
    expect(await page.locator('.em-delete-form').getAttribute('aria-busy')).toBe('true');expect(await page.locator('.em-delete-confirm').innerText()).toBe('Sending request…');expect(await page.locator('.em-delete-confirm').isDisabled()).toBe(true);expect(await own()).toEqual([]);await shot('pending');
    release();await state('uncertain');expect(delivered).toBe(true);
@@ -125,7 +127,7 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    await shot('uncertain');await dark('uncertain');await page.unroute('**/app/account/delete');await idle();expectedFailure=false;
    record('A reply lost after COMMIT shows an unconfirmed outcome on the same page: no false failure, no invented reference');
 
-   stage='recover';await page.getByRole('button',{name:'Check my request',exact:true}).click();await state('received');
+   stage='recover';expect(await page.locator('#deletion-password').inputValue()).toBe('');await page.locator('#deletion-password').fill(TEST_PASSWORD);await page.getByRole('button',{name:'Check my request',exact:true}).click();await state('received');
    await expect.poll(()=>focused(page.locator('.em-delete-status--done'))).toBe(true);
    expect(await page.locator('.em-delete-reference-value').innerText()).toBe(saved.reference);expect((await own()).length).toBe(1);
    const receipt=await page.locator('.em-delete').innerText();

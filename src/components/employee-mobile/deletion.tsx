@@ -103,10 +103,10 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,passwordRef
     </section>
     {state.kind==='failed'||state.kind==='unavailable'||state.kind==='uncertain'||state.kind==='busy'||(checking&&state.kind==='wrong_password')?<div className={`em-delete-status em-delete-status--${state.kind==='failed'?'error':'caution'}`} ref={outcomeRef} tabIndex={-1} role="alert" aria-labelledby="deletion-outcome-title">
      <div className="em-delete-status-heading">{state.kind==='failed'?<XCircleIcon size={24} aria-hidden="true"/>:state.kind==='uncertain'||checking?<QuestionIcon size={24} aria-hidden="true"/>:<WarningCircleIcon size={24} aria-hidden="true"/>}<h2 id="deletion-outcome-title">{state.kind==='failed'?'Your request wasn’t sent':state.kind==='unavailable'?'Account deletion isn’t available right now':state.kind==='busy'?'Too many tries':'We don’t know yet if your request was saved'}</h2></div>
-     <p>{state.kind==='failed'?'NEVORA couldn’t save it. Nothing was saved and you’re still signed in. You can try again.'
+     <p>{state.kind==='failed'?'NEVORA couldn’t save it. Nothing was saved and you’re still signed in. Enter your password again to retry.'
       :state.kind==='unavailable'?<>Nothing was sent. Email {support()} and we’ll help you.</>
       :state.kind==='busy'?(checking?'For your security, wait about 15 minutes, then check again. We still don’t know whether your request was saved.':'For your security, wait about 15 minutes, then try again. Nothing was sent.')
-      :'The connection ended before NEVORA answered. Check my request finds out. If it wasn’t saved, checking sends your deletion request now, so only check if you still want your account deleted.'}</p>
+      :'The connection ended before NEVORA answered. Enter your password again, then Check my request finds out. If it wasn’t saved, checking sends your deletion request now, so only check if you still want your account deleted.'}</p>
      {state.kind==='uncertain'||(checking&&state.kind!=='unavailable')?<p>You can also email {support()}. We’ll never ask for your password.</p>:null}
     </div>:null}
     <div className="em-delete-actions">
