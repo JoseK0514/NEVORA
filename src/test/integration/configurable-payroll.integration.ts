@@ -389,11 +389,18 @@ it("own statements link a published correction to the statement it replaced, and
   expect(before).toHaveLength(1);
   expect(before[0]).toMatchObject({ corrects: null, correctedBy: null });
   const corrected = await command(owner, { action: "CORRECT", operationId: randomUUID(), runId: original.id, expectedRevision: original.revision, reason: "Fictional corrected reference", amounts: { ...seeded.amounts, sourceReference: "QA-linked-correction" } }, f.db.executor);
-  // Until the correction is approved and published, nothing links: an unpublished document is never named.
-  expect((await statements(a, f.db.executor)).statements).toEqual(before);
   const draft = (await runs(owner, f.db.executor)).runs.find((x) => x.id === corrected.runId)!;
   await command(owner, { action: "APPROVE", operationId: randomUUID(), runId: draft.id, expectedRevision: draft.revision, reviewToken: draft.reviewToken }, f.db.executor);
-  for (let i = 0; i < 4; i++) await workerOnce(f.db.executor);
+  // Run the worker until the correction's documents exist but are not yet published: an unpublished document is
+  // never named, even though it is this person's own and its run corrects a published one.
+  let unpublishedChecked = false;
+  for (let i = 0; i < 6; i++) {
+    const [state] = await f.q<{ docs: number; published: number }>("SELECT (SELECT count(*)::int FROM payroll_documents WHERE run_id=$1 AND employee_id=$2) AS docs,(SELECT count(*)::int FROM payroll_publications WHERE run_id=$1) AS published", [corrected.runId, seeded.ids.a]);
+    if (state.docs > 0 && state.published === 0) { expect((await statements(a, f.db.executor)).statements).toEqual(before); unpublishedChecked = true; }
+    if (state.published > 0) break;
+    await workerOnce(f.db.executor);
+  }
+  expect(unpublishedChecked).toBe(true);
   const after = (await statements(a, f.db.executor)).statements;
   expect(after).toHaveLength(2);
   const replacement = after.find((x) => x.id !== before[0].id)!;

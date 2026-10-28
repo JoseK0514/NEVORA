@@ -177,7 +177,10 @@ describe("normal-based weekly submissions", () => {
     // The availability lock is taken before any write (a workspace read guard may precede it).
     const lock = mocks.statements.findIndex((s) => s.text.includes("pg_advisory_xact_lock"));
     const firstWrite = mocks.statements.findIndex((s) => /^\s*(INSERT|DELETE|UPDATE)\b/i.test(s.text));
+    const firstRowLock = mocks.statements.findIndex((s) => /FROM (employees|weekly_availability_submissions)\b[\s\S]*FOR (SHARE|UPDATE)/.test(s.text));
     expect(lock).toBeGreaterThanOrEqual(0);
+    // The availability lock comes before the employee/submission row locks and every write.
+    expect(firstRowLock).toBeGreaterThan(lock);
     expect(firstWrite).toBeGreaterThan(lock);
     expect(
       mocks.statements.some(

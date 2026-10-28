@@ -41,9 +41,14 @@ describe("opening a pay statement", () => {
     expect(missing.headers.get("Cache-Control")).toBe("no-store");
     state.document.mockRejectedValueOnce(new PayrollError("DOCUMENT_UNAVAILABLE", 503));
     expect((await route(navigate(suffix), context)).headers.get("Location")).toBe("/app/my-pay?document=failed");
+    // Any other server failure is temporary, never reported as a file-check failure (PAY-CR-1).
+    for (const temporary of [new PayrollError("PAYROLL_DISABLED", 503), new PayrollError("CONFLICT", 503), new Error("connection reset")]) {
+      state.document.mockRejectedValueOnce(temporary);
+      expect((await route(navigate(suffix), context)).headers.get("Location")).toBe("/app/my-pay?document=temporary");
+    }
     state.module.mockResolvedValue(false);
     expect((await route(navigate(suffix), context)).headers.get("Location")).toBe("/app/my-pay?document=unavailable");
-    expect(state.document).toHaveBeenCalledTimes(2);
+    expect(state.document).toHaveBeenCalledTimes(5);
   });
 
   it("sends an ended session to sign-in, returning to My pay", async () => {
@@ -54,7 +59,7 @@ describe("opening a pay statement", () => {
     expect(state.document).not.toHaveBeenCalled();
   });
 
-  it("keeps the JSON contract for scripted reads and for management", async () => {
+  it("keeps the JSON contract for scripted reads and for signed-in management", async () => {
     state.document.mockRejectedValue(new PayrollError("DOCUMENT_UNAVAILABLE", 404));
     const scriptedFailure = await download(scripted(), context);
     expect(scriptedFailure.status).toBe(404);
@@ -65,12 +70,14 @@ describe("opening a pay statement", () => {
     expect(manager.headers.get("Location")).toBeNull();
     state.session.mockResolvedValue(null);
     expect((await download(scripted(), context)).status).toBe(401);
+    // Without a session the role is unknown: every navigation, management's too, goes to sign-in (PAY-CR-4).
+    expect((await download(navigate(), context)).headers.get("Location")).toBe("/login?returnTo=%2Fapp%2Fmy-pay");
   });
 
   it("treats a request without fetch metadata as a navigation only when it asks for HTML", () => {
     const plain = (accept: string) => new Request("http://fictional.test/x", { headers: { accept } });
-    expect(navigationFailure(plain("text/html,application/xhtml+xml"), 404, "LEAD")?.headers.get("Location")).toBe("/app/my-pay?document=unavailable");
-    expect(navigationFailure(plain("application/json"), 404, "LEAD")).toBeNull();
-    expect(navigationFailure(navigate(), 404, "OWNER")).toBeNull();
+    expect(navigationFailure(plain("text/html,application/xhtml+xml"), "unavailable", "LEAD")?.headers.get("Location")).toBe("/app/my-pay?document=unavailable");
+    expect(navigationFailure(plain("application/json"), "unavailable", "LEAD")).toBeNull();
+    expect(navigationFailure(navigate(), "unavailable", "OWNER")).toBeNull();
   });
 });

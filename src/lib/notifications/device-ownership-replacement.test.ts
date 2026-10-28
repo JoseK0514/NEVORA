@@ -48,7 +48,7 @@ it('QA-OWN-3: after IDB suppression, native unsubscribe and server cleanup all f
  const first=f.controller();await first.start();expect(first.snapshot.state).toBe('enabled');
  f.db.fail();await first.turnOff();expect(first.snapshot.state).toBe('error');
  await vi.waitFor(()=>expect(f.subscription.unsubscribe).toHaveBeenCalledOnce());
- expect(f.values.get('fuel-portal-turn-off-pending')).toBe(gen);
+ expect(JSON.parse(f.values.get('fuel-portal-turn-off-pending')!)).toEqual([gen]);
  const ownedBefore=setOwner(f.messages);
  first.dispose();f.db.recover();f.replaceWorker();const next=f.controller();await next.start();
  // The safe outcome: cleanup resumes; nothing claims alerts are on; the worker is suppressed, not re-owned.
@@ -81,4 +81,23 @@ it('QA-OWN-3: a remembered turn-off never blocks a different generation (a fresh
  const c=f.controller();await c.start();
  expect(c.snapshot.state).toBe('enabled');expect(c.snapshot.cleanupPending).toBe(false);
  expect(f.values.get('fuel-portal-turn-off-pending')).toBe('generation-older');
+});
+
+it('OWN-CR-3: a second remembered turn-off on a shared device keeps the first, and an earlier single value still counts',async()=>{
+ const f=fixture();f.values.set('fuel-portal-turn-off-pending',gen);
+ const legacy=f.controller();await legacy.start();
+ expect(legacy.snapshot.cleanupPending).toBe(true);expect(legacy.snapshot.state).not.toBe('enabled');
+ legacy.dispose();
+ const runtime=browserRuntime(authority);
+ expect(runtime.rememberTurnOff!('generation-other-account',true)).toBe(true);
+ expect(runtime.pendingTurnOff!(gen)).toBe(true);expect(runtime.pendingTurnOff!('generation-other-account')).toBe(true);
+ expect(runtime.rememberTurnOff!(gen,false)).toBe(true);
+ expect(runtime.pendingTurnOff!(gen)).toBe(false);expect(runtime.pendingTurnOff!('generation-other-account')).toBe(true);
+});
+
+it('OWN-CR-2: when this browser cannot keep the request, the person is told to retry before relying on it',async()=>{
+ const f=fixture();const c=f.controller();await c.start();
+ f.db.fail();f.failLocalStorage();await c.turnOff();
+ expect(c.snapshot.state).toBe('error');
+ expect(c.snapshot.message).toContain('This browser couldn’t save your request');
 });

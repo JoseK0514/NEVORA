@@ -37,8 +37,11 @@ it('shows own published statements, linked corrections and protected PDFs with t
  let browser:{close():Promise<void>}|undefined,failed:(()=>Promise<void>)|undefined;
  try{
   await seedOwnedApp(app.database.executor);
-  await saveSettings(await fixtureProof(app.database.executor,'QAOWNER'),{action:'SAVE_SETTINGS',operationId:randomUUID(),expectedRevision:0,effectiveFrom:'2026-01-01',reason:'Fictional pay schedule',
-   preferences:{companyName:'Northside QA Workforce',language:'en',currency:'USD',schedule:{frequency:'WEEKLY',anchorDate:'2026-09-21',paydayOffsetDays:2},rules:[],automation:{prepare:false,publish:false,reminders:false,reminderLeadDays:[1]},bankProfile:'NEUTRAL_UNVERIFIED'}} as Parameters<typeof saveSettings>[1],app.database.executor);
+  // The payroll service checks its flag in this test process too; restore it right after the one setup call.
+  const flag=process.env.NEVORA_PAYROLL_ENABLED;process.env.NEVORA_PAYROLL_ENABLED='true';
+  try{await saveSettings(await fixtureProof(app.database.executor,'QAOWNER'),{action:'SAVE_SETTINGS',operationId:randomUUID(),expectedRevision:0,effectiveFrom:'2026-01-01',reason:'Fictional pay schedule',
+   preferences:{companyName:'Northside QA Workforce',language:'en',currency:'USD',schedule:{frequency:'WEEKLY',anchorDate:'2026-09-21',paydayOffsetDays:2},rules:[],automation:{prepare:false,publish:false,reminders:false,reminderLeadDays:[1]},bankProfile:'NEUTRAL_UNVERIFIED'}} as Parameters<typeof saveSettings>[1],app.database.executor);}
+  finally{if(flag===undefined)delete process.env.NEVORA_PAYROLL_ENABLED;else process.env.NEVORA_PAYROLL_ENABLED=flag;}
   for(const [index,engine] of ['chromium','webkit','firefox'].entries()){
    const f=await seedOwnedScenario(app.database.executor,'PAYM'+index,index),[actor,emptyActor,manager]=f.actors;
    await q("UPDATE employees SET role=$2 WHERE id=$1",[actor,index===1?'LEAD':'EMPLOYEE']);await q("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[emptyActor]);

@@ -2,7 +2,7 @@ import { getSession, requireSessionMutationProof } from "@/lib/auth/session";
 import { boundary, failure, headers, json } from "@/lib/payroll/http";
 import { document } from "@/lib/payroll/access";
 import { moduleEnabled } from "@/lib/workspace-presentation/current.server";
-import { navigationFailure } from "../navigation";
+import { documentFailure, navigationFailure } from "../navigation";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export async function GET(
@@ -19,13 +19,13 @@ export async function GET(
   try {
     const session = await getSession();
     if (!session)
-      return navigationFailure(request, 401, null) ?? json(
+      return navigationFailure(request, "signed_out", null) ?? json(
         { error: "AUTHENTICATION_REQUIRED", message: "Sign in again." },
         401,
       );
     role = session.role;
     if (["EMPLOYEE", "LEAD"].includes(session.role) && !(await moduleEnabled("payStatements")))
-      return navigationFailure(request, 404, role) ?? json({ error: "MODULE_OFF", message: "Pay statements are turned off." }, 404);
+      return navigationFailure(request, "unavailable", role) ?? json({ error: "MODULE_OFF", message: "Pay statements are turned off." }, 404);
     const d = await document(
       await requireSessionMutationProof(),
       (await context.params).id,
@@ -39,7 +39,6 @@ export async function GET(
       },
     });
   } catch (error) {
-    const response = failure(error);
-    return navigationFailure(request, response.status, role) ?? response;
+    return navigationFailure(request, documentFailure(error), role) ?? failure(error);
   }
 }

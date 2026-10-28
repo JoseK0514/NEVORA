@@ -48,7 +48,7 @@ const newestFirst = (a: { payday: string }, b: { payday: string }) => b.payday.l
 /** v5 "One look" (Jose approved round 2 "exactly like this" on Oct 24, 2026; mockup E11): an Employee's or Lead's Pay tab.
  * The next payday as one line, this week's time, then the published statements and the privacy note (wording unchanged).
  * Same statements read, refresh and download links as before. */
-export function MyPay({ nextPay = null, statement = null, document = null }: { nextPay?: NextPay; statement?: string | null; document?: 'unavailable' | 'failed' | null }) {
+export function MyPay({ nextPay = null, statement = null, document = null }: { nextPay?: NextPay; statement?: string | null; document?: 'unavailable' | 'failed' | 'temporary' | null }) {
   const { data, loading, error, errorCode, reload } = usePayrollResource('/api/payroll/statements', readStatements);
   // One read for both presentations, so rotating a phone never refetches or drops the list.
   if (useEmployeeMobile()) return <QuietPage><EmployeePayView statements={data?.statements ?? null} loading={loading} error={error} errorCode={errorCode} nextPay={nextPay} statement={statement} document={document} reload={() => void reload()} /></QuietPage>;
@@ -59,6 +59,8 @@ export function MyPay({ nextPay = null, statement = null, document = null }: { n
   return <QuietPage className="q-pay">
     <div className="q-top-gap" aria-hidden="true" />
     <QuietHeader title="Pay" />
+    {/* A statement link that failed returns here on desktop too, with the same explanation as the phone view. */}
+    {document ? <div className="q-emptyblock" role="alert"><p className="q-empty">{document === 'failed' ? 'We couldn’t open that statement. It didn’t pass NEVORA’s file check. Try again later, or ask your manager.' : document === 'temporary' ? 'We couldn’t open that statement just now. Try again in a moment.' : 'That statement isn’t available. It may have been replaced, or your access changed.'}</p></div> : null}
     {payday ? <div className="q-lead"><b>{`Next payday is ${payday}`}</b><i>{[when, nextPay?.period ? `for ${periodLabel(nextPay.period.startDate, nextPay.period.endDate).replace('–', ' – ')}` : null].filter(Boolean).join(' · ')}</i></div> : null}
     <div className="q-grp" style={{ marginTop: payday ? 32 : 28 }}><h2 id="mp-week">This week</h2></div>
     <QuietList label="This week">

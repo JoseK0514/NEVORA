@@ -15,7 +15,7 @@ const STATEMENT = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}
 export default async function MyPayPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
   const statement = typeof params.statement === 'string' && STATEMENT.test(params.statement) ? params.statement : null;
-  const document = params.document === 'unavailable' || params.document === 'failed' ? params.document : null;
+  const document = params.document === 'unavailable' || params.document === 'failed' || params.document === 'temporary' ? params.document : null;
   const moduleOff = await moduleGate("payStatements");
   if (moduleOff) return moduleOff;
 

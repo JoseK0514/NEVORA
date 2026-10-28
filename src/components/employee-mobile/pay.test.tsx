@@ -87,4 +87,10 @@ describe('Employee mobile Pay',()=>{
   expect(text(render({statements:[],document:'unavailable'}))).not.toContain('Your current statements are below');
   expect(text(render({loading:true,statements:null,nextPay:next}))).toContain('Next scheduled payday');
  });
+ it('names revoked access and a temporary PDF failure without blaming the file or offering a futile retry (PAY-CR-1, PAY-CR-3)',()=>{
+  const denied=render({statements:null,error:'x',errorCode:'FORBIDDEN'});
+  expect(denied).toContain('data-pay-state="denied"');expect(text(denied)).toContain('Your access to pay statements changed');expect(text(denied)).not.toContain('Try again');
+  const temporary=text(render({document:'temporary'}));
+  expect(temporary).toContain('We couldn’t open that statement');expect(temporary).toContain('Try again in a moment');expect(temporary).not.toContain('file check');
+ });
 });

@@ -3,8 +3,6 @@
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .page-frame:has(>.em-requests-mobile)>:is(.q-page,.cm-page,.sig-page) { display:none; }
   /* UI-COM-003: a short page fills the canvas down to the navigation in both themes. */
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .page-frame:has(.em-messages) { box-sizing:border-box; min-height:calc(100svh - var(--em-nav-height,80px)); background:var(--em-canvas); }
- html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-requests-mobile:has(> .em-messages) { min-height:calc(100svh - var(--em-nav-height,80px)); background:var(--em-canvas); }
- html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-requests.em-messages { min-height:calc(100svh - var(--em-nav-height,80px)); }
  /* UI-COM-002: interface words wrap whole; only a word wider than the line breaks, and only user-written copy breaks anywhere. */
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-requests.em-messages { overflow-wrap:break-word; hyphens:manual; -webkit-hyphens:manual; }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-messages :is(p,fieldset) { margin:0; }

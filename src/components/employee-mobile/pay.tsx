@@ -15,7 +15,8 @@ import './requests.css';
 import './pay.css';
 
 type Statement=PayrollStatementsResponse['statements'][number];
-export type PayView={statements:Statement[]|null;loading:boolean;error:string;errorCode:string;nextPay:NextPay;statement:string|null;document:'unavailable'|'failed'|null;reload():void};
+export type PayDocumentFailure='unavailable'|'failed'|'temporary';
+export type PayView={statements:Statement[]|null;loading:boolean;error:string;errorCode:string;nextPay:NextPay;statement:string|null;document:PayDocumentFailure|null;reload():void};
 
 const utc=(date:string)=>new Date(`${date}T12:00:00Z`);
 const day=(date:string,weekday=false)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',...(weekday?{weekday:'long'}:{}),month:'long',day:'numeric',...(weekday?{}:{year:'numeric'})}).format(utc(date)).replace(/([A-Za-z]+) (\d)/,'$1\u00a0$2');
@@ -82,8 +83,8 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
  const relation=(item:Statement)=>item.correctedBy?<p className="em-pay-relation">A corrected statement replaced this one. Use the corrected statement for this period.</p>
   :item.corrects?<p className="em-pay-relation">This corrects your earlier statement for the same period.</p>:null;
  const chip=(item:Statement)=>item.correctedBy?<span className="em-pay-chip em-pay-chip--muted">Replaced</span>:item.corrects?<span className="em-pay-chip">Correction</span>:null;
- const paused=errorCode==='PAUSED'||errorCode==='OFFLINE',signedOut=errorCode==='SIGNED_OUT',off=errorCode==='MODULE_OFF';
- const state=loading?'loading':signedOut?'signed-out':off?'module-off':paused?'paused':error?'error':!arranged?.latest?'empty':'ready';
+ const paused=errorCode==='PAUSED'||errorCode==='OFFLINE',signedOut=errorCode==='SIGNED_OUT',off=errorCode==='MODULE_OFF',denied=errorCode==='FORBIDDEN';
+ const state=loading?'loading':signedOut?'signed-out':off?'module-off':denied?'denied':paused?'paused':error?'error':!arranged?.latest?'empty':'ready';
  // Statements can only follow in these states, so only these show arrival notices and the scheduled payday.
  const listed=state==='ready'||state==='empty'||state==='loading';
  const surface=(tone:''|'caution'|'error',icon:ReactNode,title:string,body:string,action?:ReactNode,live:'status'|'alert'='status')=><div className={`em-pay-notice${tone?' em-pay-notice--'+tone:''}`} role={live} aria-labelledby={`pay-${state}-title`}><div className="em-pay-notice-heading">{icon}<h2 id={`pay-${state}-title`}>{title}</h2></div><p>{body}</p>{action}</div>;
@@ -92,8 +93,8 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
   <header className="em-request-heading"><h1>Pay</h1><p>Your published pay statements</p></header>
   <div className="em-pay-body" aria-busy={loading}>
    {(failure||missing)&&listed&&state!=='loading'?<div ref={notice} tabIndex={-1} className="em-pay-notice em-pay-notice--caution" role="alert" aria-labelledby="pay-notice-title">
-    <div className="em-pay-notice-heading"><WarningCircleIcon size={24} aria-hidden="true"/><h2 id="pay-notice-title">{failure==='failed'?'We couldn’t open that statement':'That statement isn’t available'}</h2></div>
-    <p>{failure==='failed'?'It didn’t pass NEVORA’s file check, so it wasn’t opened. Try again later, or ask your manager.':state==='empty'?'It may have been replaced, or your access changed.':'It may have been replaced, or your access changed. Your current statements are below.'}</p>
+    <div className="em-pay-notice-heading"><WarningCircleIcon size={24} aria-hidden="true"/><h2 id="pay-notice-title">{failure==='failed'||failure==='temporary'?'We couldn’t open that statement':'That statement isn’t available'}</h2></div>
+    <p>{failure==='failed'?'It didn’t pass NEVORA’s file check, so it wasn’t opened. Try again later, or ask your manager.':failure==='temporary'?'NEVORA couldn’t open it just now. Try again in a moment.':state==='empty'?'It may have been replaced, or your access changed.':'It may have been replaced, or your access changed. Your current statements are below.'}</p>
    </div>:null}
    {nextPay&&listed?<section className="em-pay-section" aria-labelledby="pay-next-title">
     <h2 id="pay-next-title">Next scheduled payday</h2>
@@ -105,6 +106,7 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
    </section>:null}
    {state==='loading'?<p className="em-pay-card em-pay-quiet" role="status">Loading your statements…</p>
     :state==='signed-out'?surface('',<InfoIcon size={24} aria-hidden="true"/>,'Sign in to see your statements','Your session ended. Statements stay private until you sign in again.',<Link className="em-request-primary" href="/login?returnTo=%2Fapp%2Fmy-pay">Sign in</Link>,'alert')
+    :state==='denied'?surface('',<InfoIcon size={24} aria-hidden="true"/>,'Your access to pay statements changed','NEVORA can’t show your statements right now. If that seems wrong, ask your manager.')
     :state==='module-off'?surface('',<InfoIcon size={24} aria-hidden="true"/>,'Pay statements are turned off','Your workplace isn’t sharing pay statements in NEVORA right now. Ask your manager where to find your pay information.')
     :state==='paused'?surface('',<InfoIcon size={24} aria-hidden="true"/>,errorCode==='OFFLINE'?'You’re offline':'Statements are paused',errorCode==='OFFLINE'?'Reconnect to see your current statements.':'Statements are hidden while NEVORA is in the background. They reload when you return.')
     :state==='error'?surface('error',<WarningCircleIcon size={24} aria-hidden="true"/>,'Couldn’t load your statements','Check your connection, then try again.',<button type="button" className="em-request-secondary" onClick={reload}>Try again</button>,'alert')

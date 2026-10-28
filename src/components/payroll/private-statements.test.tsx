@@ -54,3 +54,17 @@ describe('private employee statement presentation', () => {
     expect(renderToStaticMarkup(<MyPay />)).not.toContain('No published statements yet');
   });
 });
+
+describe('desktop My pay after a statement link failed (PAY-CR-2)', () => {
+  it.each([
+    ['unavailable', 'That statement isn’t available.'],
+    ['failed', 'It didn’t pass NEVORA’s file check.'],
+    ['temporary', 'We couldn’t open that statement just now.'],
+  ] as const)('explains %s instead of returning silently', (document, words) => {
+    const html = renderToStaticMarkup(<MyPay document={document} />);
+    expect(html).toContain('role="alert"');expect(html).toContain(words);
+  });
+  it('shows no notice on an ordinary visit', () => {
+    expect(renderToStaticMarkup(<MyPay />)).not.toContain('That statement isn’t available');
+  });
+});
