@@ -79,7 +79,7 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
  const relation=(item:Statement)=>item.correctedBy?<p className="em-pay-relation">A corrected statement replaced this one. Use the corrected statement for this period.{byId.has(item.correctedBy)?<> <a className="em-pay-link" href={`#pay-statement-${item.correctedBy}`} onClick={event=>{event.preventDefault();const next=item.correctedBy!;if(arranged?.latest?.id===next)document.getElementById('pay-latest-title')?.focus();else{setOpen(next);requestAnimationFrame(()=>document.getElementById(`pay-statement-${next}`)?.focus());}}}>Go to the corrected statement</a></>:null}</p>
   :item.corrects?<p className="em-pay-relation">This corrects your earlier statement for the same period.</p>:null;
  const chip=(item:Statement)=>item.correctedBy?<span className="em-pay-chip em-pay-chip--muted">Replaced</span>:item.corrects?<span className="em-pay-chip">Correction</span>:null;
- const paused=errorCode==='PAUSED'||errorCode==='OFFLINE',signedOut=errorCode==='401',off=errorCode==='MODULE_OFF';
+ const paused=errorCode==='PAUSED'||errorCode==='OFFLINE',signedOut=errorCode==='SIGNED_OUT',off=errorCode==='MODULE_OFF';
  const state=loading?'loading':signedOut?'signed-out':off?'module-off':paused?'paused':error?'error':!arranged?.latest?'empty':'ready';
  return <div className="em-requests em-pay" data-pay-state={state}>
   <header className="em-request-heading"><Link className="em-request-back" href="/app/more"><CaretLeftIcon size={18} aria-hidden="true"/>More</Link><h1>Pay</h1><p>Your published pay statements</p></header>

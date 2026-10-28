@@ -22,7 +22,8 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  // Why the read stopped, for callers that explain it: a server code (MODULE_OFF), an HTTP status, NETWORK, PAUSED or OFFLINE.
+  // Why the read stopped, for callers that explain it: SIGNED_OUT (any 401), a server code (MODULE_OFF), an HTTP status,
+  // NETWORK, UNREADABLE, PAUSED or OFFLINE.
   const [errorCode, setErrorCode] = useState('');
   const generation = useRef({ value: 0 });
   const reload = useCallback(async () => {
@@ -38,7 +39,7 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
         // IS-B13: an ended session says so, and the state offers Sign in (PayrollState), not a retry that can't work.
         setError(failure instanceof PayrollRequestError && failure.status === 401 ? PAYROLL_SIGNED_OUT
           : failure instanceof Error && !(failure instanceof TypeError) ? failure.message : 'Payroll could not load.');
-        setErrorCode(failure instanceof PayrollRequestError ? failure.code || String(failure.status) : failure instanceof TypeError ? 'NETWORK' : 'UNREADABLE');
+        setErrorCode(failure instanceof PayrollRequestError ? (failure.status === 401 ? 'SIGNED_OUT' : failure.code || String(failure.status)) : failure instanceof TypeError ? 'NETWORK' : 'UNREADABLE');
       }
     } finally { if (generation.current.value === current) setLoading(false); }
   }, [path, decode]);

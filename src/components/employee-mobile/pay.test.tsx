@@ -47,7 +47,7 @@ describe('Employee mobile Pay',()=>{
  it.each([
   [{loading:true,statements:null},'loading','Loading your statements…'],
   [{statements:[]},'empty','No published statements yet'],
-  [{statements:null,error:'x',errorCode:'401'},'signed-out','Sign in to see your statements'],
+  [{statements:null,error:'x',errorCode:'SIGNED_OUT'},'signed-out','Sign in to see your statements'],
   [{statements:null,error:'x',errorCode:'MODULE_OFF'},'module-off','Pay statements are turned off'],
   [{statements:null,error:'x',errorCode:'PAUSED'},'paused','Statements are paused'],
   [{statements:null,error:'x',errorCode:'OFFLINE'},'paused','You’re offline'],
@@ -59,7 +59,7 @@ describe('Employee mobile Pay',()=>{
  });
 
  it('returns an ended session to My pay after sign-in and offers retry only where it can work',()=>{
-  expect(render({statements:null,error:'x',errorCode:'401'})).toContain('href="/login?returnTo=%2Fapp%2Fmy-pay"');
+  expect(render({statements:null,error:'x',errorCode:'SIGNED_OUT'})).toContain('href="/login?returnTo=%2Fapp%2Fmy-pay"');
   expect(text(render({statements:null,error:'x',errorCode:'NETWORK'}))).toContain('Try again');
   expect(text(render({statements:null,error:'x',errorCode:'MODULE_OFF'}))).not.toContain('Try again');
  });
