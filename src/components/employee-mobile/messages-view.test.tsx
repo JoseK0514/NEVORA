@@ -14,3 +14,14 @@ it.each(['NONE','OPTIONAL','REQUIRED'] as const)('CR-3 preserves separate allowe
  const html=renderToStaticMarkup(<MessageDetail item={{state:'ready',id:'id',revisionId:'revision',contentHash:'hash',title:'Team update',body:'Fictional content.',type:'LOCATION_ANNOUNCEMENT',publishedAt:'2026-10-27T13:00:00Z',editedAt:null,acknowledgement:mode,ownAcknowledgedAt:null,ownReadAt:null,authority:'authority',observedAt:'2026-10-27T13:00:00Z',validForMs:45000,timeZone:'America/Puerto_Rico',expiresAt:null,authorContext:'Location update',canWithdraw:false}} busy={false} onAction={()=>{}}/>);
  expect(html.includes('Mark as read')).toBe(mode!=='REQUIRED');expect(html.includes('Acknowledge update')).toBe(mode!=='NONE');
 });
+it('never calls a partial page with no confirmed rows empty (CR-4)',()=>{
+ for(const [search,filter] of [['','all'],['','unread'],['Schedule','all']] as const){
+  const html=renderToStaticMarkup(<MessageInbox kind="notifications" items={search?[]:[]} partial search={search} filter={filter} timeZone="America/Puerto_Rico" onSearch={noop} onFilter={noop} onOpen={noop}/>);
+  expect(html).toContain('Nothing confirmed on this page');expect(html).toContain('couldn’t be checked, so they aren’t listed');
+  expect(html).not.toContain('There are no current items on this page');expect(html).not.toContain('No matches on this page');
+  // One explanation, not a warning plus an empty claim.
+  expect(html.match(/couldn’t be checked/g)).toHaveLength(1);
+ }
+ const complete=renderToStaticMarkup(<MessageInbox kind="updates" items={[]} partial={false} search="" filter="all" timeZone="America/Puerto_Rico" onSearch={noop} onFilter={noop} onOpen={noop}/>);
+ expect(complete).toContain('There are no current items on this page');
+});
