@@ -3,7 +3,8 @@
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .page-frame:has(.em-delete) { box-sizing:border-box; min-height:calc(100svh - var(--em-nav-height,80px)); margin:0; padding:0 !important; max-width:none; background:var(--em-canvas); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .q-delete:has(> .em-delete) { margin:0; padding:0; max-width:none; min-height:calc(100svh - var(--em-nav-height,80px)); background:var(--em-canvas); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete { min-height:inherit; }
- html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete :is(h2,p,dl,dd,ul) { margin:0; padding:0; }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete :is(h2,p,dd) { margin:0; padding:0; }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete :is(ul,dl) { margin:0; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-body,
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-form { display:flex; flex-direction:column; gap:var(--em-gap); min-width:0; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-body { padding:var(--em-space-6) var(--em-inset) var(--em-space-8); }
@@ -30,7 +31,7 @@
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-more > div { display:flex; flex-direction:column; gap:var(--em-space-2); padding:0 0 var(--em-space-4); border-top:1px solid var(--em-line); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-more > div p { padding-top:var(--em-space-4); color:var(--em-muted); font-size:var(--em-size-support); line-height:var(--em-line-body); overflow-wrap:anywhere; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-link { display:inline-flex; align-items:center; min-height:var(--em-target); color:var(--em-teal); font-weight:var(--em-weight-action); text-underline-offset:3px; overflow-wrap:anywhere; }
- html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] p .em-delete-link { display:inline; min-height:0; }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] p .em-delete-link { display:inline; min-height:0; font:inherit; font-weight:var(--em-weight-label); }
 
  /* Password with an inset show/hide control; the checkbox row is a full 44px target. */
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete-field { display:flex; flex-direction:column; gap:var(--em-space-2); min-width:0; }
@@ -69,5 +70,6 @@
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete :is(.em-request-secondary,.em-request-primary)[aria-disabled="true"] { opacity:.6; pointer-events:none; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete .legal-unresolved { padding:0 4px; border-radius:4px; background:var(--em-amber-wash); color:var(--em-amber); font-family:ui-monospace,monospace; font-size:.875em; overflow-wrap:anywhere; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete :is(a,button,summary,input):focus-visible,
- html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete .em-delete-status:focus { outline:3px solid var(--em-focus); outline-offset:3px; }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete .em-delete-status:focus-visible { outline:3px solid var(--em-focus); outline-offset:3px; }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-delete .em-delete-status:focus:not(:focus-visible) { outline:none; }
 }

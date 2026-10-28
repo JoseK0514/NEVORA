@@ -51,6 +51,7 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
      for(const [subject,selector] of subjects){const measured=await page.locator(selector).first().evaluate(measureRenderedContrast);contrasts.push({engine,theme,width,subject,ratio:measured.ratio});expect(measured.ratio,subject).toBeGreaterThanOrEqual(4.5);}
      const small=await page.locator('.em-delete :is(a,button,summary,label.em-delete-check,input:not([type=hidden]):not([type=checkbox]))').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.checkVisibility({visibilityProperty:true,opacityProperty:true})&&!el.closest('p')&&el.getBoundingClientRect().height<43.5).map(el=>el.outerHTML.slice(0,80)));expect(small).toEqual([]);
      expect(await page.locator('.em-delete h1').evaluate((el:HTMLElement)=>getComputedStyle(el).fontSize)).toBe('32px');
+     const inset=await page.locator('.em-delete :is(.em-delete-facts,.em-delete-account)').evaluateAll((cards:HTMLElement[])=>cards.flatMap(card=>{const box=card.getBoundingClientRect();return [...card.querySelectorAll<HTMLElement>('svg,strong,small,dt,dd')].filter(el=>{const r=el.getBoundingClientRect();return r.width>0&&(r.left<box.left+15.5||r.right>box.right-15.5);}).map(el=>el.textContent||el.tagName);}));expect(inset).toEqual([]);
      await shot(name+'-'+theme+'-'+width);
     }
     await page.setViewportSize({width:320,height:844});await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});
@@ -77,10 +78,10 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    record('Keep my account returns to Profile with focus on the exact Delete row');
 
    stage='validation';await page.locator('.em-delete-confirm').click();
-   await page.locator('#deletion-password-error').waitFor();expect(await focused(page.locator('#deletion-password'))).toBe(true);
+   await page.locator('#deletion-password-error').waitFor();await expect.poll(()=>focused(page.locator('#deletion-password'))).toBe(true);
    expect(await page.locator('#deletion-password').getAttribute('aria-describedby')).toBe('deletion-password-help deletion-password-error');
    await page.locator('#deletion-password').fill('fictional-wrong-password');await page.keyboard.press('Enter');
-   await page.locator('#deletion-understand-error').waitFor();expect(await focused(page.locator('#deletion-understand'))).toBe(true);
+   await page.locator('#deletion-understand-error').waitFor();await expect.poll(()=>focused(page.locator('#deletion-understand'))).toBe(true);
    expect(await own()).toEqual([]);await shot('validation');
    await page.locator('#deletion-password').focus();await page.keyboard.press(forwardKey);
    const eye=page.getByRole('button',{name:'Show password',exact:true});expect(await focused(eye)).toBe(true);await page.keyboard.press('Space');
