@@ -167,3 +167,28 @@ Both are small, contained changes. DEL-CR-3, -4, -5 and -7 should land in the sa
 1. Resolve DEL-CR-10's wording with Jose.
 2. Either finish the open parts of DEL-CR-4 (session and credential guard in the batch, plus a test of the explicit bump) or have Jose record them as accepted risk.
 3. Track the remaining DEL-CR-8 test gaps and DEL-CR-6's operational identity step as named follow-ups.
+
+## Closure at 6931d90d
+
+- **Revision checked:** `6931d90d`.
+- **Scope check:** `git diff --stat 6931d90d..HEAD`, restricted to account-deletion code, the action, the desktop owner and phone view, auth, login and the deletion SQL test, is empty. No deletion code changed after this revision.
+- **Diff read:** `cb3c67ee..6931d90d`. It touches the phone view (copy, and the outcome banner moved above the password), CSS, the unit test and one new SQL integration case.
+- **Evidence read:**
+  - `evidence/run-8.log`: 2 files and 9 tests passed, from `scratchpad/red-base`.
+  - `evidence/fence-red-without-bump.txt`: the new case fails with "promise resolved … instead of rejecting".
+  - **Caveat:** the RED file doesn't record the revision or the diff it ran against. I accept it based on the failure's shape, which is exactly what removing the bump would produce, but future RED captures should include `git rev-parse` and the applied diff.
+
+| ID | Status | Basis |
+|---|---|---|
+| DEL-CR-4 | **Partially closed (residual minor)** | **Race part, closed:** `employee-mobile-deletion-sql.integration.ts` ("fences a sign-in verified before acceptance even without the 0035 trigger") drops `auth_passkey_deletion_loss`, prepares issuance from a credential reviewed before acceptance, accepts through the real action, and expects `session_login_changed` with zero sessions. It is GREEN with the explicit bump and RED without it, so the bump is now proven on its own. **Still open:** the accepting batch doesn't assert that `proof.sessionTokenHash` still exists or that the verified credential revision is unchanged. Impact is low because the password is re-verified just before the batch. **Still advisory:** the non-monotonic `clock_timestamp()` bump. |
+| DEL-CR-8 | **Partially closed (residual minor)** | The explicit-bump race now has a real-PostgreSQL test that fails without the fix. Still missing: an integration run with the passkeys flag on (unit-mocked only) and any render test of the desktop Quiet `uncertain`, `busy`, `signed_out` and `changed` states. Both are recorded in HANDOFF.md. |
+| DEL-CR-10 | **Closed** | The copy now reads "After you confirm, you can’t cancel it in the app." That is true and no longer denies the support withdrawal route in the runbook. The unit test pins the new wording. Whether to mention support withdrawal, and which identity check it needs (the DEL-CR-6 residual), are listed as decisions for Jose in HANDOFF.md and REMAINING-WORK.md. That is the right owner. |
+
+### Updated verdict
+
+**GO with conditions.** Neither condition is a code defect:
+
+1. Jose either records the DEL-CR-4 residual (no session or credential recheck inside the accepting batch) as an accepted risk, or it gets fixed.
+2. The DEL-CR-6, DEL-CR-8 and DEL-CR-10 follow-ups stay tracked in HANDOFF.md and REMAINING-WORK.md until Jose decides.
+
+No blocker or material finding remains open.

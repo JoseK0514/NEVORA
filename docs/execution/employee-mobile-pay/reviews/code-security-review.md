@@ -157,3 +157,61 @@ Verified sound (B):
 | D. Test repairs | **GO with conditions** | Strengthen TEST-CR-1 and TEST-CR-3. The requests page repairs are genuine. |
 | E. Communications | **GO with conditions** | Fix COM-CR-1. Verify COM-CR-2 in a browser. Closure stays with the original authors. |
 | **Overall** | **GO with conditions** | No blockers. Two material items in Pay (PAY-CR-1, PAY-CR-2) and one material disclosure item in Alerts (OWN-CR-1) must be closed or explicitly accepted by Jose before release. |
+
+## Closure at 240eb14b
+
+- **Reviewed:** `git diff 848e9cc5..240eb14b -- src` (fixes in `28ee6a75`, `ec063e5f`, `ddd78c87`). I checked the author's dispositions against the code; I did not take them on trust. No application or test files were edited.
+- **Checks run by this reviewer:** `npx vitest run` on navigation, pay, private-statements, device-client, device-ownership-replacement, scheduling-inputs, messages-view and destinations. Result: 8 files, 162 tests passed.
+- **Evidence read:**
+  - `pay-configurable-run-2.log`: the TEST-CR-3 case passed (1 passed, 36 skipped).
+  - `docs/execution/employee-mobile-phase2/REMAINING-WORK.md` §"Decisions only Jose can make" item 1.
+- **Gap: no passing Pay browser run at the fixed revision.**
+  - `pay-browser-run-11.log` (00:57, red-base at `950ae1ea`) failed.
+  - `pay-browser-run-12.log` (01:01, red-base at `28ee6a75`) failed: `expected … to contain 'Payday February 2, 2040'` (the no-break-space change; `ddd78c87` addresses this in the test).
+  - red-base has since moved to `bc8a5742`. I found no passing three-engine run for `ddd78c87` or `240eb14b`. The last passing browser run is still run 10, at `848e9cc5`.
+
+### Per-finding status
+
+| ID | Status | Basis |
+|---|---|---|
+| PAY-CR-1 | **Closed** | `navigation.ts` `documentFailure()` gives `integrity` only for `PayrollError DOCUMENT_UNAVAILABLE`/503. The only thrower of that pair is the hash mismatch at `access.ts:59`. Any other error, including a caught `NEXT_REDIRECT`, maps to `temporary`, worded "couldn't open it just now". Route tests cover `PAYROLL_DISABLED`/503, `CONFLICT`/503 and a thrown `Error`. The page allow-list adds `temporary`. Scripted reads still get `failure()` JSON. |
+| PAY-CR-2 | **Closed, with a minor residual** | Desktop `MyPay` renders a `role="alert"` notice for `unavailable`, `failed` and `temporary`, and `private-statements.test.tsx` covers it. Residual (minor): the desktop view does not clean the URL, so a refresh replays the notice, and it still ignores `?statement=`. |
+| PAY-CR-3 | **Closed** | `use-payroll.ts` maps any 403 to `FORBIDDEN`. The phone view now has a `denied` state ("Your access to pay statements changed") with no Retry, and a unit test covers it. There is no browser case for revoked access; this gap is recorded. |
+| PAY-CR-4 | **Closed** | The test is renamed. The redirect for an unauthenticated management navigation is documented in the comment and tested. |
+| PAY-CR-5 | **Open, accepted (minor)** | Unchanged. The rationale holds for PDF failures, which arrive by full navigation. A repeated identical notification tap on a mounted page is still not announced. |
+| PAY-CR-6 – 8 | **Open (advisory)** | Unchanged. PAY-CR-7 is partly improved: arrival notices now wait for a listed state. |
+| OWN-CR-1 | **Closed as disclosure; residual for Jose** | REMAINING-WORK.md now states both residuals (localStorage failure, and a restarted worker showing pushes until NEVORA is next opened) and names a server-side mitigation option. Accepting the risk is Jose's decision. |
+| OWN-CR-2 | **Closed** | `turnOff` records `intentUnsaved` when `rememberTurnOff` returns false and adds "This browser couldn't save your request…". The test uses `failLocalStorage()`. |
+| OWN-CR-3 | **Closed** | The ledger is a JSON list of up to 8 generations, and a legacy single value is read as a one-item list. Removal is exact-match only. Malformed JSON reads as empty, which is the safe failure. Tested. |
+| OWN-CR-4 | **Open (advisory), slightly more relevant** | Stale entries are still never removed when the server reports `enabled:false`. With an 8-slot limit, accumulated stale entries can now evict a live one. This needs at least 8 failed turn-offs; optionally prune generations that the server reports as off. |
+| RACE-CR-1 / 2 | **Open (minor / advisory), recorded** | Unchanged. |
+| TEST-CR-1 | **Closed, with a minor residual** | The test now asserts that the lock comes before the employee/submission row locks and before every write. Residual: `deadline_guard`/`version_guard` ordering is still not asserted. |
+| TEST-CR-2 | n/a | No defect. |
+| TEST-CR-3 | **Closed** | The worker loop reaches "documents exist, publication absent" and asserts that nothing is linked there. `unpublishedChecked` must be true, and the SQL run passed 1/1. |
+| COM-CR-1 | **Closed** | With `rows.length > 0`, the copy now reads "No confirmed matches on this page". Test added. |
+| COM-CR-2 | **Closed in code; still needs a browser check** | `min-height` is now set only on `.page-frame` (`border-box`), so the padding is included. |
+| COM-CR-3 | **Partly addressed** | `hyphens:manual`. The comment still overstates scope (list titles use `break-word`). Advisory only. |
+
+### New findings at 240eb14b
+
+**PAY-CR-9: material: the new `download` attribute likely defeats Download failure recovery**
+- `src/components/employee-mobile/pay.tsx` `actions()` now renders `download={item.filename}` on the Download link (`ec063e5f`).
+- Scenario: Download is used on a missing, revoked, integrity-failed or temporarily failing statement. With the `download` attribute, browsers treat the click as a download rather than a page navigation, so the 303 to `/app/my-pay?document=…` does not return the person to Pay with a notice. Same-origin Chromium likely follows the redirect and saves the My pay HTML as `statement-….pdf`, an unopenable "statement" with no explanation. Other engines may show a failed download in their download UI. Either way, PAY-CR-1/2 recovery never reaches the person on this path.
+- Not verified in a browser:
+  - the browser suite tests only a *successful* Download click;
+  - its failure cases use `page.goto` (a plain navigation);
+  - no browser run has passed since this change.
+- Fix: drop `download` (the route already sends `Content-Disposition: attachment; filename=…`). If it is kept, add a three-engine browser case that clicks Download for the coworker, tampered and missing statements and asserts the Pay notice.
+
+**PAY-CR-10: material (evidence): no passing three-engine Pay browser run at the fixed revision** (see the gap above). Required before closure is final.
+
+### Updated verdict
+
+| Area | Verdict |
+|---|---|
+| A. Pay | **GO with conditions:** fix or disprove PAY-CR-9, and produce a passing three-engine Pay browser run at the final revision (PAY-CR-10). PAY-CR-1 through 4 are closed. |
+| B. QA-OWN-3 | **GO with conditions:** code findings are closed. The two disclosed residuals need Jose's decision, and closure stays with the Alerts QA author. |
+| C. Status race | **GO** (RACE-CR-1 recorded). |
+| D. Test repairs | **GO.** TEST-CR-1 and TEST-CR-3 are closed; the guard-ordering residual is minor. |
+| E. Communications | **GO with condition:** browser recheck of COM-CR-2 by the original authors. |
+| **Overall** | **GO with conditions.** No blockers. Remaining before release: PAY-CR-9, the PAY-CR-10 browser evidence, and Jose's decision on the QA-OWN-3 residuals. |

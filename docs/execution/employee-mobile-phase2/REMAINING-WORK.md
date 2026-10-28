@@ -8,13 +8,13 @@ needs the items marked *exit* below and Jose's checkpoint. Phase 3 has not start
 | # | Item | Owner | State |
 |---|---|---|---|
 | 1 | Deletion reviewers close DEL-UI-19..22 and CR-4/6/8 leftovers | Independent UI / code reviewers | Fixes landed at `6931d90d`; closure pending |
-| 2 | Pay reviewers close PAY-UI-1..12 and PAY-CR-1..4, OWN-CR-2/3, TEST-CR-1/3, COM-CR-1/2 | Independent reviewers | Fixes landed at `ec063e5f` and `28ee6a75`; closure pending |
+| 2 | Pay reviewer closures | Independent reviewers | Code: closed except accepted minors; UI: closed except PAY-UI-13 recheck (fixed at `944f859a`) and PAY-UI-10 (devices) |
 | 3 | QA-OWN-3 closure | Original Alerts QA author | Fix at `663377ba`/`28ee6a75`; RED on `003bbe2c`; residual needs Jose (below) |
-| 4 | Communications CR-4, UI-COM-002, UI-COM-003 closure | Original Communications authors | CR-4 and UI-COM-002 fixed; UI-COM-003 fixed at default text size (pixel-verified) but a ~30 px black band above navigation remains at 200% text — **open** |
+| 4 | Communications CR-4, UI-COM-002, UI-COM-003 closure | Original Communications authors | All three fixed (UI-COM-003 at every text size from `bc8a5742`, pixel-verified in 3 engines); a supplementary independent check agrees; advisories S-1..S-5 recorded in `employee-mobile-communications/claude-continuation/supplementary-ui-check.md` |
 | 5 | Process-observation tests (`phase-e-process`, `phase-e-root-group-process`, `phase-e-runner`) | Engineering | Pass in a full suite run; fail with their recorded signatures under CPU saturation; `ps` latency ruled out; **cause unresolved** |
 | 6 | Calendar QA-CAL-1 Firefox request-monitor anomaly | Engineering + Calendar QA author | **Not started** |
 | 7 | Audit and replay earlier landscape evidence captured with full-page Chromium screenshots | Engineering + original authors | **Not started**; batches here use viewport captures and media-verified coarse landscape |
-| 8 | Combined checks on one assembled revision and a Jose checkpoint | Root + Jose | Default suite green at `848e9cc5`; see STATUS for the final head |
+| 8 | Combined checks on one assembled revision and a Jose checkpoint | Root + Jose | At `e65ca90d`: default suite 9,878/0 failed, deletion 9/9, Pay and Communications browser journeys passed; Pay re-passed at `944f859a`. Jose checkpoint pending |
 | 9 | Reconcile with `origin/development` and concurrent Codex/Claude branches | Coordinator | Not done here; this branch is unassembled |
 
 ## Decisions only Jose can make

@@ -3,7 +3,7 @@
 Implemented and verified for **bounded local continuation with conditions**. No payroll run, amount, provider,
 production data or real notification was used. Branch `claude/employee-mobile-phase2-20261027`.
 
-Final Pay revision: see [Phase 2 status](../employee-mobile-phase2/STATUS.md) for the exact head and its runs.
+Final Pay revision: `944f859a63d16180d9d48bd2513acd670cb31c77` (browser [run 15](evidence/browser-run-15.log)). Assembled-revision default suite at `e65ca90d`: 9,878 passed, 0 failed.
 [Gallery](gallery/) · [Code/security review](reviews/code-security-review.md) · [UI/UX review](reviews/ui-ux-review.md)
 
 ## What employees get (Employee/Lead phones; desktop and Manager/Owner keep Quiet)
@@ -35,7 +35,7 @@ are `no-store, private`. The service worker never handles payroll responses.
 | Payroll SQL (`configurable-payroll`) | 37/37, including correction linkage on real runs; the unpublished step now runs between document creation and publication |
 | Company-access notification authority | 39/39 with the exact statement destination |
 | Unit (payroll, routes, destinations, Pay view) | Pass; see Phase 2 status for the combined count at the final head |
-| Three-engine browser journey | 31 checks at `848e9cc5` (run 10); later runs at the final head are recorded in Phase 2 status |
+| Three-engine browser journey | Passed at `944f859a` (run 15): Chromium 13, WebKit 12, Firefox 12 checks; 84 captures; 126 contrast samples, minimum 5.03:1; 0 page or console errors. Includes a Download whose access ended navigating back instead of saving a file |
 
 Browser runs 1–9 failed and are preserved in [evidence](evidence/). Each failure found something real:
 - fixture shapes: one company run per period; immutable documents;
@@ -46,11 +46,13 @@ Browser runs 1–9 failed and are preserved in [evidence](evidence/). Each failu
 
 ## Independent review status
 
-- UI/UX at `848e9cc5`: **GO with conditions**. Material PAY-UI-1..4 and minors 5–10, 12 were fixed at `ec063e5f`;
-  closure is the reviewer's. PAY-UI-10 (Home Screen session and download behavior) needs physical devices.
-- Code/security at `848e9cc5`: **GO with conditions**. PAY-CR-1..4 were fixed at `28ee6a75`; closure is the
-  reviewer's. PAY-CR-5 (a second identical arrival while mounted is not re-announced) is accepted as minor: PDF
-  failures arrive by full navigation.
+- UI/UX: **GO with conditions** at `848e9cc5`; closure at `e65ca90d` closed PAY-UI-1..8 and 12. PAY-UI-13 (unpadded
+  loading card) fixed at `944f859a` and recaptured; recheck is the reviewer's. PAY-UI-14 (the shared incumbent
+  module-gate page after access ends) is outside this port. PAY-UI-10 needs physical-device proof before release.
+- Code/security: **GO with conditions** at `848e9cc5`; closure at `240eb14b` closed PAY-CR-1..4, OWN-CR-2/3,
+  TEST-CR-1/3, COM-CR-1/2 (OWN-CR-1 closed as disclosed residual for Jose). New PAY-CR-9 (a `download` attribute
+  could save a failed redirect as a file) fixed at `e65ca90d` with a browser case. PAY-CR-5..8 and RACE-CR-1/2
+  are accepted as minor.
 
 ## Not covered
 

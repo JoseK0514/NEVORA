@@ -138,3 +138,54 @@ Evidence folder: `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-REA
 - **Before acceptance:** close PAY-UI-1 to PAY-UI-4 with fresh three-engine evidence. That includes a rendered next-payday card and the corrected landscape header.
 - **Before release:** satisfy PAY-UI-10 with physical-device Home Screen proof.
 - **Can follow:** PAY-UI-5 to PAY-UI-9 may ship as a short polish pass. PAY-UI-11 and PAY-UI-12 are advisory.
+
+## Closure at e65ca90d
+
+- **Reviewer:** the same independent UI/UX reviewer.
+- **Revision:** worktree HEAD `e65ca90d8cf2675168cc133e2e7a959cd61f6d16`.
+- **Diff read:** `git diff 848e9cc5..e65ca90d` over `pay.tsx`, `pay.css`, `my-pay.tsx`, `app-shell.tsx` and `mobile.css`. `quiet-shell.css` is unchanged.
+- **Evidence:** `/private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS/8dc318c3-a7c1-41c9-b2d0-c675318ab347/scratchpad/evidence/pay-run-14/`. `results.json` has 37 checks. Sampled contrast is at least 5.03:1; the Correction chip is now 14.0:1 light and 10.25:1 dark.
+- **Images inspected:**
+  - Next payday, notifications and recovery: `chromium-next-payday`, `chromium-notification-statement`, `firefox-notification-statement`, `firefox-notification-missing-dark`, `webkit-document-integrity-failed-dark`
+  - Ready: `webkit-pay-light-390`, `chromium-pay-dark-390`, `firefox-pay-light-320-top`
+  - Enlarged text and landscape: `webkit-pay-text200-top`, `chromium-landscape-empty`
+  - Page states: `chromium-paused`, `chromium-error`, `chromium-loading`, `firefox-empty-portrait`, `firefox-module-off`
+  - Other: `webkit-download-after-access-ended`, `chromium-manager-390`
+
+### Status of each finding
+
+| ID | Status | Basis |
+|---|---|---|
+| PAY-UI-1 | **Closed** | The arrival notice renders only when `listed && state !== 'loading'`. Paused, error and module-off show one status surface and no stale notice (`chromium-paused`, `chromium-error`, `firefox-module-off`). The empty-state copy drops "below". |
+| PAY-UI-2 | **Closed** | A replaced statement leads with a full-width 48px "Use the corrected statement". Its View and Download are outlined (`firefox-notification-statement`). Accessible names now say "replaced statement" or "corrected statement". |
+| PAY-UI-3 | **Closed** | The next payday is now 16px label weight with a 22px icon, clearly below the 22px statement title (`chromium-next-payday`, `firefox-pay-light-320-top`, `webkit-pay-text200-top`). It is shown only in loading, empty and ready. The copy still says "From your workplace's pay schedule", with no payment or amount wording. |
+| PAY-UI-4 | **Closed** | The `pay` marker is applied. Coarse landscape shows the white header with the wordmark, workspace name and bell. The "+" is gone (`chromium-landscape-empty`). |
+| PAY-UI-5 | **Closed** | The inline link was removed; the 48px button replaces it. |
+| PAY-UI-6 | **Closed** | Both chips sit under the period line. Correction is ink on wash, so it no longer uses the action teal for text. |
+| PAY-UI-7 | **Closed** | At 320px the title wraps as "Payday / February 2, 2042". |
+| PAY-UI-8 | **Closed** | Every status surface uses an `h2` at 19px (`chromium-error`, `chromium-paused`, the dark notices). |
+| PAY-UI-9 | **Closed, with an advisory residue** | States no longer sit under "Latest statement". Residue: the privacy line ("Only your own published statements are available here") still shows under module-off (`firefox-module-off`). Hiding it is optional. |
+| PAY-UI-10 | **Open as a release condition (accepted deferral)** | The hint now reads "View opens the PDF on its own. Close it to come back to Pay.", and the accessible name ends "(opens separately)". Not adding `download` is accepted: PAY-CR-9 means a failed statement's redirect could otherwise be saved as a file, and the access-ended Download check passes. Physical iPhone and Android Home Screen proof of View and Download is still required before release (recorded for Phase 3). |
+| PAY-UI-11 | **Closed, with one minor residue** | Integrity-failed (light and dark), unavailable, error, loading, portrait empty, the 200% top, and Manager after load are all captured. Residue: `results.json` still records WebKit landscape as "Genuine coarse landscape (0 touch points)". Label it as emulated media. |
+| PAY-UI-12 | **Closed (code-verified)** | `:active` wash on summaries and hour rows, and `brightness(.92)` on buttons. Static captures cannot show a pressed state, so this is verified in code only. |
+
+### New findings
+
+- **PAY-UI-13: Minor, an acceptance condition (a trivial fix).** In `chromium-loading`, the loading card collapses to a thin pill with "Loading your statements…" pressed against its left border, with no padding. This is the state every visit shows first.
+  - **Cause:** `.em-pay :is(h2,h3,p){padding:0}` is more specific than `.em-pay-card`, so it strips the card padding from `<p class="em-pay-card em-pay-quiet">`. The code predates this round; it was not captured before.
+  - **Change:** render loading as a `div`, or exclude `.em-pay-card` from the reset. Recapture it.
+- **PAY-UI-14: Minor.** Downloading after access has ended (`webkit-download-after-access-ended`) lands on the shared module gate, not on Pay.
+  - **What is wrong:** the gate says "Pay statements **is** turned off". It uses the legacy card style with a "Back to Home ›" text link. Its tab bar shows Hours instead of Pay. It reads differently from Pay's own "Pay statements are turned off" surface.
+  - **Change:** fix the grammar ("are"). Preferably route Employee/Lead Pay requests to Pay's own module-off state, or restyle the gate with the scoped mobile tokens.
+- **PAY-UI-15: Advisory.**
+  - The desktop failed-link notice is not captured. On desktop the `?document=` parameter is never cleaned, so a refresh repeats the notice.
+  - The fixture shows statements dated 2040–2042 alongside a next payday in November 2026. That is harmless for testing but confusing in screenshots shown for approval. Align the fixture years.
+
+### Updated verdict
+
+**GO with conditions.**
+
+- **Before acceptance:** close PAY-UI-13 with a fresh loading capture. It is a one-line CSS fix.
+- **Before release:** PAY-UI-10 still needs physical-device Home Screen proof.
+- **Follow-up:** PAY-UI-14, the PAY-UI-9 and PAY-UI-11 residues, and PAY-UI-15 can ship as follow-up polish.
+- PAY-UI-1 to PAY-UI-8 and PAY-UI-12 are closed.
