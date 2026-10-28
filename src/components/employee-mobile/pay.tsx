@@ -1,7 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
-import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
@@ -72,8 +71,8 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
  const actions=(item:Statement,where:string)=>{
   const label=`statement, payday ${day(item.payday)}`;
   return <div className="em-pay-actions">
-   {item.viewUrl?<a id={`pay-view-${where}-${item.id}`} className="em-request-primary" href={`${documentHref(item)}/view`} target="_blank" rel="noopener" aria-label={`View ${label} (opens in a new tab)`} onClick={()=>{returnTo.current=`pay-view-${where}-${item.id}`;}}><ArrowSquareOutIcon size={20} aria-hidden="true"/>View PDF</a>:null}
-   <a id={`pay-download-${where}-${item.id}`} className={item.viewUrl?'em-request-secondary':'em-request-primary'} href={documentHref(item)} aria-label={`Download ${label}`} onClick={()=>{returnTo.current=`pay-download-${where}-${item.id}`;}}><DownloadSimpleIcon size={20} aria-hidden="true"/>Download PDF</a>
+   {item.viewUrl?<a id={`pay-view-${where}-${item.id}`} className="em-request-primary" href={`${documentHref(item)}/view`} target="_blank" rel="noopener" aria-label={`View ${label} (opens in a new tab)`} onClick={()=>{returnTo.current=`pay-view-${where}-${item.id}`;}}><ArrowSquareOutIcon size={20} aria-hidden="true"/>View</a>:null}
+   <a id={`pay-download-${where}-${item.id}`} className={item.viewUrl?'em-request-secondary':'em-request-primary'} href={documentHref(item)} aria-label={`Download ${label}`} onClick={()=>{returnTo.current=`pay-download-${where}-${item.id}`;}}><DownloadSimpleIcon size={20} aria-hidden="true"/>Download</a>
   </div>;
  };
  const relation=(item:Statement)=>item.correctedBy?<p className="em-pay-relation">A corrected statement replaced this one. Use the corrected statement for this period.{byId.has(item.correctedBy)?<> <a className="em-pay-link" href={`#pay-statement-${item.correctedBy}`} onClick={event=>{event.preventDefault();const next=item.correctedBy!;if(arranged?.latest?.id===next)document.getElementById('pay-latest-title')?.focus();else{setOpen(next);requestAnimationFrame(()=>document.getElementById(`pay-statement-${next}`)?.focus());}}}>Go to the corrected statement</a></>:null}</p>
@@ -82,7 +81,8 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
  const paused=errorCode==='PAUSED'||errorCode==='OFFLINE',signedOut=errorCode==='SIGNED_OUT',off=errorCode==='MODULE_OFF';
  const state=loading?'loading':signedOut?'signed-out':off?'module-off':paused?'paused':error?'error':!arranged?.latest?'empty':'ready';
  return <div className="em-requests em-pay" data-pay-state={state}>
-  <header className="em-request-heading"><Link className="em-request-back" href="/app/more"><CaretLeftIcon size={18} aria-hidden="true"/>More</Link><h1>Pay</h1><p>Your published pay statements</p></header>
+  {/* Pay is a top-level tab, like Hours and Schedule: no back link. */}
+  <header className="em-request-heading"><h1>Pay</h1><p>Your published pay statements</p></header>
   <div className="em-pay-body">
    {failure||missing?<div ref={notice} tabIndex={-1} className="em-pay-notice em-pay-notice--caution" role="alert" aria-labelledby="pay-notice-title">
     <div className="em-pay-notice-heading"><WarningCircleIcon size={24} aria-hidden="true"/><h2 id="pay-notice-title">{failure==='failed'?'We couldn’t open that statement':'That statement isn’t available'}</h2></div>
@@ -117,7 +117,7 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
     <h2 id="pay-earlier-title">Earlier statements</h2>
     <ul className="em-pay-list">{arranged.earlier.map(item=><li key={item.id}>
      <details open={open===item.id} onToggle={event=>{const isOpen=event.currentTarget.open;setOpen(current=>isOpen?item.id:current===item.id?null:current);}}>
-      <summary id={`pay-statement-${item.id}`}><span><strong>Payday {day(item.payday)}</strong><small>{payPeriod(item.period.startDate,item.period.endDate)} · PDF</small></span>{chip(item)}<CaretDownIcon size={20} aria-hidden="true"/></summary>
+      <summary id={`pay-statement-${item.id}`}><span><strong>Payday {day(item.payday)}</strong><small>{payPeriod(item.period.startDate,item.period.endDate)} · PDF</small>{chip(item)}</span><CaretDownIcon size={20} aria-hidden="true"/></summary>
       <div>{relation(item)}{actions(item,'earlier')}</div>
      </details>
     </li>)}</ul>
