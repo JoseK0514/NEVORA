@@ -27,10 +27,14 @@ describe('Employee mobile Pay',()=>{
   expect(plain).toContain('Latest statement');expect(plain).toContain('Payday January 24, 2030');expect(plain).toContain('Correction');
   expect(plain).toContain('This corrects your earlier statement for the same period.');
   expect(html).toContain(`href="/api/payroll/documents/${ids.correction}/view" target="_blank" rel="noopener"`);
-  expect(html).toContain(`aria-label="View statement, payday January 24, 2030 (opens in a new tab)"`);
-  expect(html).toContain(`href="/api/payroll/documents/${ids.correction}" aria-label="Download statement, payday January 24, 2030"`);
+  expect(html).toContain(`aria-label="View corrected statement, payday January\u00a024, 2030 (opens separately)"`);
+  expect(html).toContain(`href="/api/payroll/documents/${ids.correction}" download="statement-2030-01-24.pdf" aria-label="Download corrected statement, payday January\u00a024, 2030"`);
+  // The replaced original points to its correction first; its own files are outlined and named as replaced.
+  expect(plain).toContain('Use the corrected statement');
+  expect(html).toContain(`aria-label="View replaced statement, payday January\u00a024, 2030 (opens separately)"`);
+  expect(html).toMatch(new RegExp(`id="pay-view-earlier-${ids.original}" class="em-request-secondary"`));
   expect(plain).toContain('Earlier statements');expect(plain).toContain('Replaced');
-  expect(plain).toContain('A corrected statement replaced this one.');expect(plain).toContain('Go to the corrected statement');
+  expect(plain).toContain('A corrected statement replaced this one.');
   expect(plain).toContain('Only your own published statements are available here.');
   // No figures, deposits or payment status: statements carry none.
   expect(plain).not.toMatch(/\$|deposit|paid|amount|net pay/i);
@@ -71,5 +75,16 @@ describe('Employee mobile Pay',()=>{
   expect(render({statement:ids.original})).toMatch(/<details open="">\s*<summary id="pay-statement-00000000-0000-4000-8000-000000000002"/);
   // While the list is still loading, nothing is claimed missing yet.
   expect(text(render({statement:'00000000-0000-4000-8000-00000000000f',statements:null,loading:true}))).not.toContain('isn’t available');
+ });
+ it('shows arrival notices and the scheduled payday only where statements can follow (PAY-UI-1, PAY-UI-3)',()=>{
+  const next={payday:'2030-02-07',daysUntil:3};
+  for(const errorCode of ['PAUSED','OFFLINE','MODULE_OFF','SIGNED_OUT','NETWORK']){
+   const plain=text(render({statements:null,error:'x',errorCode,document:'unavailable',nextPay:next}));
+   expect(plain,errorCode).not.toContain('That statement isn’t available');expect(plain,errorCode).not.toContain('Next scheduled payday');
+   expect(plain,errorCode).not.toContain('Latest statement');
+  }
+  expect(text(render({statements:[],document:'unavailable',nextPay:next}))).toContain('That statement isn’t available');
+  expect(text(render({statements:[],document:'unavailable'}))).not.toContain('Your current statements are below');
+  expect(text(render({loading:true,statements:null,nextPay:next}))).toContain('Next scheduled payday');
  });
 });

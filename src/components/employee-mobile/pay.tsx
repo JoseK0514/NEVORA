@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useRef,useState,type ReactNode} from 'react';
 import Link from 'next/link';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
@@ -18,7 +18,7 @@ type Statement=PayrollStatementsResponse['statements'][number];
 export type PayView={statements:Statement[]|null;loading:boolean;error:string;errorCode:string;nextPay:NextPay;statement:string|null;document:'unavailable'|'failed'|null;reload():void};
 
 const utc=(date:string)=>new Date(`${date}T12:00:00Z`);
-const day=(date:string,weekday=false)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',...(weekday?{weekday:'long'}:{}),month:'long',day:'numeric',...(weekday?{}:{year:'numeric'})}).format(utc(date));
+const day=(date:string,weekday=false)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',...(weekday?{weekday:'long'}:{}),month:'long',day:'numeric',...(weekday?{}:{year:'numeric'})}).format(utc(date)).replace(/([A-Za-z]+) (\d)/,'$1\u00a0$2');
 /** "Sep 21 – 27, 2026" or "Sep 28 – Oct 4, 2026", ending with the year so history stays unambiguous. */
 export function payPeriod(start:string,end:string){
  const short=(date:string,month=true)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',...(month?{month:'short'}:{}),day:'numeric'}).format(utc(date));
@@ -50,7 +50,7 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
  const byId=new Map((statements??[]).map(item=>[item.id,item]));
  // One announcement on arrival: a failed PDF, a notification's statement, or that it is no longer available.
  useEffect(()=>{
-  if(arrived.current===latch.seq||(!failure&&!target)||(target&&!statements))return;
+  if(arrived.current===latch.seq||(!failure&&!target)||!statements)return;
   // Marked handled only when the frame runs: Strict Mode's mount/unmount/mount cancels an earlier frame.
   const frame=requestAnimationFrame(()=>{
    arrived.current=latch.seq;
@@ -68,51 +68,58 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
   const id=returnTo.current,frame=requestAnimationFrame(()=>{const el=document.getElementById(id);if(el&&(document.activeElement===document.body||!document.activeElement)){el.focus();returnTo.current=null;}});
   return()=>cancelAnimationFrame(frame);
  },[statements]);
+ const role=(item:Statement)=>item.correctedBy?'replaced statement':item.corrects?'corrected statement':'statement';
+ const goTo=(next:string)=>{if(arranged?.latest?.id===next)document.getElementById('pay-latest-title')?.focus();else{setOpen(next);requestAnimationFrame(()=>document.getElementById(`pay-statement-${next}`)?.focus());}};
+ // A replaced statement points to its correction first; its own files stay available but secondary (PAY-UI-2).
  const actions=(item:Statement,where:string)=>{
-  const label=`statement, payday ${day(item.payday)}`;
+  const label=`${role(item)}, payday ${day(item.payday)}`,quiet=!!item.correctedBy;
   return <div className="em-pay-actions">
-   {item.viewUrl?<a id={`pay-view-${where}-${item.id}`} className="em-request-primary" href={`${documentHref(item)}/view`} target="_blank" rel="noopener" aria-label={`View ${label} (opens in a new tab)`} onClick={()=>{returnTo.current=`pay-view-${where}-${item.id}`;}}><ArrowSquareOutIcon size={20} aria-hidden="true"/>View</a>:null}
-   <a id={`pay-download-${where}-${item.id}`} className={item.viewUrl?'em-request-secondary':'em-request-primary'} href={documentHref(item)} aria-label={`Download ${label}`} onClick={()=>{returnTo.current=`pay-download-${where}-${item.id}`;}}><DownloadSimpleIcon size={20} aria-hidden="true"/>Download</a>
+   {quiet&&item.correctedBy&&byId.has(item.correctedBy)?<button type="button" className="em-request-primary em-pay-use" onClick={()=>goTo(item.correctedBy!)}>Use the corrected statement</button>:null}
+   {item.viewUrl?<a id={`pay-view-${where}-${item.id}`} className={quiet?'em-request-secondary':'em-request-primary'} href={`${documentHref(item)}/view`} target="_blank" rel="noopener" aria-label={`View ${label} (opens separately)`} onClick={()=>{returnTo.current=`pay-view-${where}-${item.id}`;}}><ArrowSquareOutIcon size={20} aria-hidden="true"/>View</a>:null}
+   <a id={`pay-download-${where}-${item.id}`} className={item.viewUrl||quiet?'em-request-secondary':'em-request-primary'} href={documentHref(item)} download={item.filename} aria-label={`Download ${label}`} onClick={()=>{returnTo.current=`pay-download-${where}-${item.id}`;}}><DownloadSimpleIcon size={20} aria-hidden="true"/>Download</a>
   </div>;
  };
- const relation=(item:Statement)=>item.correctedBy?<p className="em-pay-relation">A corrected statement replaced this one. Use the corrected statement for this period.{byId.has(item.correctedBy)?<> <a className="em-pay-link" href={`#pay-statement-${item.correctedBy}`} onClick={event=>{event.preventDefault();const next=item.correctedBy!;if(arranged?.latest?.id===next)document.getElementById('pay-latest-title')?.focus();else{setOpen(next);requestAnimationFrame(()=>document.getElementById(`pay-statement-${next}`)?.focus());}}}>Go to the corrected statement</a></>:null}</p>
+ const relation=(item:Statement)=>item.correctedBy?<p className="em-pay-relation">A corrected statement replaced this one. Use the corrected statement for this period.</p>
   :item.corrects?<p className="em-pay-relation">This corrects your earlier statement for the same period.</p>:null;
  const chip=(item:Statement)=>item.correctedBy?<span className="em-pay-chip em-pay-chip--muted">Replaced</span>:item.corrects?<span className="em-pay-chip">Correction</span>:null;
  const paused=errorCode==='PAUSED'||errorCode==='OFFLINE',signedOut=errorCode==='SIGNED_OUT',off=errorCode==='MODULE_OFF';
  const state=loading?'loading':signedOut?'signed-out':off?'module-off':paused?'paused':error?'error':!arranged?.latest?'empty':'ready';
+ // Statements can only follow in these states, so only these show arrival notices and the scheduled payday.
+ const listed=state==='ready'||state==='empty'||state==='loading';
+ const surface=(tone:''|'caution'|'error',icon:ReactNode,title:string,body:string,action?:ReactNode,live:'status'|'alert'='status')=><div className={`em-pay-notice${tone?' em-pay-notice--'+tone:''}`} role={live} aria-labelledby={`pay-${state}-title`}><div className="em-pay-notice-heading">{icon}<h2 id={`pay-${state}-title`}>{title}</h2></div><p>{body}</p>{action}</div>;
  return <div className="em-requests em-pay" data-pay-state={state}>
   {/* Pay is a top-level tab, like Hours and Schedule: no back link. */}
   <header className="em-request-heading"><h1>Pay</h1><p>Your published pay statements</p></header>
-  <div className="em-pay-body">
-   {failure||missing?<div ref={notice} tabIndex={-1} className="em-pay-notice em-pay-notice--caution" role="alert" aria-labelledby="pay-notice-title">
+  <div className="em-pay-body" aria-busy={loading}>
+   {(failure||missing)&&listed&&state!=='loading'?<div ref={notice} tabIndex={-1} className="em-pay-notice em-pay-notice--caution" role="alert" aria-labelledby="pay-notice-title">
     <div className="em-pay-notice-heading"><WarningCircleIcon size={24} aria-hidden="true"/><h2 id="pay-notice-title">{failure==='failed'?'We couldn’t open that statement':'That statement isn’t available'}</h2></div>
-    <p>{failure==='failed'?'It didn’t pass NEVORA’s file check, so it wasn’t opened. Try again later, or ask your manager.':'It may have been replaced, or your access changed. Your current statements are below.'}</p>
+    <p>{failure==='failed'?'It didn’t pass NEVORA’s file check, so it wasn’t opened. Try again later, or ask your manager.':state==='empty'?'It may have been replaced, or your access changed.':'It may have been replaced, or your access changed. Your current statements are below.'}</p>
    </div>:null}
-   {nextPay?<section className="em-pay-section" aria-labelledby="pay-next-title">
+   {nextPay&&listed?<section className="em-pay-section" aria-labelledby="pay-next-title">
     <h2 id="pay-next-title">Next scheduled payday</h2>
-    <div className="em-pay-card em-pay-next"><CalendarBlankIcon size={24} aria-hidden="true"/><span>
+    <div className="em-pay-card em-pay-next"><CalendarBlankIcon size={22} aria-hidden="true"/><span>
      <strong>{day(nextPay.payday,true)}</strong>
      <small>{[nextPay.daysUntil===0?'Today':nextPay.daysUntil===1?'Tomorrow':`In ${nextPay.daysUntil} days`,nextPay.period?`for ${payPeriod(nextPay.period.startDate,nextPay.period.endDate)}`:null].filter(Boolean).join(' · ')}</small>
      <small>From your workplace’s pay schedule. A statement appears here after payroll is published.</small>
     </span></div>
    </section>:null}
-   <section className="em-pay-section" aria-labelledby="pay-latest-heading" aria-busy={loading}>
-    <h2 id="pay-latest-heading">Latest statement</h2>
-    {state==='loading'?<p className="em-pay-card em-pay-quiet" role="status">Loading your statements…</p>
-     :state==='signed-out'?<div className="em-pay-notice" role="alert"><div className="em-pay-notice-heading"><InfoIcon size={24} aria-hidden="true"/><h3>Sign in to see your statements</h3></div><p>Your session ended. Statements stay private until you sign in again.</p><Link className="em-request-primary" href="/login?returnTo=%2Fapp%2Fmy-pay">Sign in</Link></div>
-     :state==='module-off'?<div className="em-pay-notice" role="status"><div className="em-pay-notice-heading"><InfoIcon size={24} aria-hidden="true"/><h3>Pay statements are turned off</h3></div><p>Your workplace isn’t sharing pay statements in NEVORA right now. Ask your manager where to find your pay information.</p></div>
-     :state==='paused'?<div className="em-pay-notice" role="status"><div className="em-pay-notice-heading"><InfoIcon size={24} aria-hidden="true"/><h3>{errorCode==='OFFLINE'?'You’re offline':'Statements are paused'}</h3></div><p>{errorCode==='OFFLINE'?'Reconnect to see your current statements.':'Statements are hidden while NEVORA is in the background. They reload when you return.'}</p></div>
-     :state==='error'?<div className="em-pay-notice em-pay-notice--error" role="alert"><div className="em-pay-notice-heading"><WarningCircleIcon size={24} aria-hidden="true"/><h3>Couldn’t load your statements</h3></div><p>Check your connection, then try again.</p><button type="button" className="em-request-secondary" onClick={reload}>Try again</button></div>
-     :state==='empty'?<div className="em-pay-card em-pay-quiet"><FileTextIcon size={24} aria-hidden="true"/><span><strong>No published statements yet</strong><small>Your statements appear here after your workplace publishes payroll.</small></span></div>
-     :arranged?.latest?<article className="em-pay-card em-pay-latest" aria-labelledby="pay-latest-title">
-      {chip(arranged.latest)}
+   {state==='loading'?<p className="em-pay-card em-pay-quiet" role="status">Loading your statements…</p>
+    :state==='signed-out'?surface('',<InfoIcon size={24} aria-hidden="true"/>,'Sign in to see your statements','Your session ended. Statements stay private until you sign in again.',<Link className="em-request-primary" href="/login?returnTo=%2Fapp%2Fmy-pay">Sign in</Link>,'alert')
+    :state==='module-off'?surface('',<InfoIcon size={24} aria-hidden="true"/>,'Pay statements are turned off','Your workplace isn’t sharing pay statements in NEVORA right now. Ask your manager where to find your pay information.')
+    :state==='paused'?surface('',<InfoIcon size={24} aria-hidden="true"/>,errorCode==='OFFLINE'?'You’re offline':'Statements are paused',errorCode==='OFFLINE'?'Reconnect to see your current statements.':'Statements are hidden while NEVORA is in the background. They reload when you return.')
+    :state==='error'?surface('error',<WarningCircleIcon size={24} aria-hidden="true"/>,'Couldn’t load your statements','Check your connection, then try again.',<button type="button" className="em-request-secondary" onClick={reload}>Try again</button>,'alert')
+    :state==='empty'?<div className="em-pay-card em-pay-quiet"><FileTextIcon size={22} aria-hidden="true"/><span><strong>No published statements yet</strong><small>Your statements appear here after your workplace publishes payroll.</small></span></div>
+    :arranged?.latest?<section className="em-pay-section" aria-labelledby="pay-latest-heading">
+     <h2 id="pay-latest-heading">Latest statement</h2>
+     <article className="em-pay-card em-pay-latest" aria-labelledby="pay-latest-title">
       <h3 id="pay-latest-title" tabIndex={-1}>Payday {day(arranged.latest.payday)}</h3>
       <p>{payPeriod(arranged.latest.period.startDate,arranged.latest.period.endDate)} · PDF</p>
+      {chip(arranged.latest)}
       {relation(arranged.latest)}
       {actions(arranged.latest,'latest')}
-      {arranged.latest.viewUrl?<p className="em-pay-hint">View opens in a new tab. Close it to come back here.</p>:null}
-     </article>:null}
-   </section>
+      {arranged.latest.viewUrl?<p className="em-pay-hint">View opens the PDF on its own. Close it to come back to Pay.</p>:null}
+     </article>
+    </section>:null}
    {state==='ready'&&arranged&&arranged.earlier.length?<section className="em-pay-section" aria-labelledby="pay-earlier-title">
     <h2 id="pay-earlier-title">Earlier statements</h2>
     <ul className="em-pay-list">{arranged.earlier.map(item=><li key={item.id}>

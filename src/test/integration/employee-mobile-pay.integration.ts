@@ -7,7 +7,8 @@ import {PDFDocument} from 'pdf-lib';
 import {createOwnedNextApp} from './owned-next-app';
 import {seedOwnedApp,seedOwnedScenario,TEST_PASSWORD} from './owned-app-fixture';
 import {AUTH_COPY} from '../../lib/auth-copy';
-import {newRun} from '../../lib/payroll/service';
+import {newRun,saveSettings} from '../../lib/payroll/service';
+import {fixtureProof} from './shift-change-api';
 import {measureRenderedContrast} from '../../../scripts/browser-contrast.mjs';
 
 type BrowserRequest={url():string;method():string};
@@ -36,6 +37,8 @@ it('shows own published statements, linked corrections and protected PDFs with t
  let browser:{close():Promise<void>}|undefined,failed:(()=>Promise<void>)|undefined;
  try{
   await seedOwnedApp(app.database.executor);
+  await saveSettings(await fixtureProof(app.database.executor,'QAOWNER'),{action:'SAVE_SETTINGS',operationId:randomUUID(),expectedRevision:0,effectiveFrom:'2026-01-01',reason:'Fictional pay schedule',
+   preferences:{companyName:'Northside QA Workforce',language:'en',currency:'USD',schedule:{frequency:'WEEKLY',anchorDate:'2026-09-21',paydayOffsetDays:2},rules:[],automation:{prepare:false,publish:false,reminders:false,reminderLeadDays:[1]},bankProfile:'NEUTRAL_UNVERIFIED'}} as Parameters<typeof saveSettings>[1],app.database.executor);
   for(const [index,engine] of ['chromium','webkit','firefox'].entries()){
    const f=await seedOwnedScenario(app.database.executor,'PAYM'+index,index),[actor,emptyActor,manager]=f.actors;
    await q("UPDATE employees SET role=$2 WHERE id=$1",[actor,index===1?'LEAD':'EMPLOYEE']);await q("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[emptyActor]);
@@ -67,13 +70,16 @@ it('shows own published statements, linked corrections and protected PDFs with t
    const body=await page.locator('.em-pay').innerText();
    expect(body).toContain('Latest statement');expect(body).toContain(`Payday February 2, ${year}`);expect(body).toContain('Correction');expect(body).toContain('This corrects your earlier statement for the same period.');
    expect(body).toContain('Earlier statements');expect(body).toContain('Replaced');expect(body).not.toMatch(/\$|deposit|net pay/i);
+   expect(body).toContain('Next scheduled payday');expect(body).toContain('From your workplace’s pay schedule');
+   expect(await page.locator('#employee-mobile').getAttribute('data-employee-mobile-page')).toBe('pay');await shot('next-payday');
    expect(await page.locator(`a[href="/api/payroll/documents/${correction.id}/view"]`).count()).toBe(1);
    const html=await page.locator('.em-pay').innerHTML();expect(html).not.toContain(peer.id);
    record('More opens teal Pay: own published statements, correction first, replaced original labelled, no figures, no peer document');
 
-   stage='correction-link';await page.locator(`#pay-statement-${original.id}`).click();await page.getByRole('link',{name:'Go to the corrected statement',exact:true}).click();
+   stage='correction-link';await page.locator(`#pay-statement-${original.id}`).click();await page.getByRole('button',{name:'Use the corrected statement',exact:true}).click();
    await expect.poll(()=>focused('#pay-latest-title')).toBe(true);
-   record('Replaced statement explains itself and moves focus to its correction');
+   expect(await page.locator(`#pay-view-earlier-${original.id}`).getAttribute('class')).toBe('em-request-secondary');
+   record('Replaced statement leads with Use the corrected statement, keeps its own files secondary, and moves focus to the correction');
 
    stage='view';const viewed=context.waitForEvent('response',(response:{url():string})=>response.url().endsWith(`/api/payroll/documents/${correction.id}/view`));
    // Real keyboard: from the focused statement heading, native Tab reaches View; Enter opens it.
@@ -104,7 +110,7 @@ it('shows own published statements, linked corrections and protected PDFs with t
    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
    const last=page.locator('.em-pay-privacy');await last.scrollIntoViewIfNeeded();
    expect(await last.evaluate((el:HTMLElement)=>el.getBoundingClientRect().bottom<=document.querySelector('.mobile-nav')!.getBoundingClientRect().top+1)).toBe(true);
-   await shot('pay-text200');await page.evaluate(()=>{document.documentElement.style.fontSize='';});await page.setViewportSize({width:390,height:844});await page.emulateMedia({colorScheme:'light'});
+   await page.evaluate(()=>scrollTo(0,0));await shot('pay-text200-top');await page.evaluate(()=>scrollTo(0,document.body.scrollHeight));await shot('pay-text200');await page.evaluate(()=>{document.documentElement.style.fontSize='';});await page.setViewportSize({width:390,height:844});await page.emulateMedia({colorScheme:'light'});
    record('Light/dark at 320/390/430, contrast, 44px targets, token type, 200% text clear of navigation');
 
    stage='notification-destination';await page.goto(app.url+`/app/my-pay?statement=${original.id}`);await state('ready');
@@ -112,6 +118,7 @@ it('shows own published statements, linked corrections and protected PDFs with t
    await expect.poll(()=>page.url()).toBe(app.url+'/app/my-pay');await shot('notification-statement');
    await page.goto(app.url+`/app/my-pay?statement=${peer.id}`);await state('ready');await expect.poll(()=>focused('.em-pay-notice--caution')).toBe(true);
    expect(await page.locator('.em-pay-notice--caution').innerText()).toContain('That statement isn’t available');expect(await page.locator('.em-pay').innerHTML()).not.toContain(peer.id);
+   await page.emulateMedia({colorScheme:'dark'});await expect.poll(()=>page.locator('html').getAttribute('data-theme')).toBe('dark');await shot('notification-missing-dark');await page.emulateMedia({colorScheme:'light'});
    record('A notification opens its exact own statement; a statement that is not own and published is never revealed');
 
    stage='protected-documents';expectedFailure=true;
@@ -119,11 +126,19 @@ it('shows own published statements, linked corrections and protected PDFs with t
     await page.goto(app.url+`/api/payroll/documents/${id}${suffix}`);await page.waitForURL(new RegExp('/app/my-pay\\?document=(unavailable|failed)$'));await state('ready');
     await expect.poll(()=>page.url()).toBe(app.url+'/app/my-pay');
     await expect.poll(()=>focused('.em-pay-notice--caution')).toBe(true);expect(await page.locator('.em-pay-notice--caution').innerText()).toContain(notice);
+    if(id===tampered.id){await shot('document-integrity-failed');await page.emulateMedia({colorScheme:'dark'});await expect.poll(()=>page.locator('html').getAttribute('data-theme')).toBe('dark');await shot('document-integrity-failed-dark');await page.emulateMedia({colorScheme:'light'});}
    }
    const scripted=await page.evaluate(async(path:string)=>{const r=await fetch(path,{headers:{'x-nevora-payroll':'1'}});return {status:r.status,type:r.headers.get('content-type')};},`/api/payroll/documents/${peer.id}`);
-   expect(scripted.status).toBe(404);expect(scripted.type).toContain('application/json');await shot('document-failed');expectedFailure=false;
+   expect(scripted.status).toBe(404);expect(scripted.type).toContain('application/json');await shot('document-unavailable');expectedFailure=false;
    record('Coworker, missing and integrity-failed PDFs return to Pay with calm recovery; scripted reads keep the JSON 404');
 
+   stage='loading-and-error';expectedFailure=true;let releaseRead!:()=>void;const heldRead=new Promise<void>(resolve=>{releaseRead=resolve;});
+   await page.route('**/api/payroll/statements',async(route:{fetch():Promise<unknown>;fulfill(o:{response:unknown}):Promise<void>})=>{const response=await route.fetch();await heldRead;await route.fulfill({response});});
+   await page.evaluate(()=>{dispatchEvent(new Event('online'));});await state('loading');await shot('loading');releaseRead();await state('ready');await page.unroute('**/api/payroll/statements');
+   await page.route('**/api/payroll/statements',(route:{abort():Promise<void>})=>route.abort());await page.evaluate(()=>{dispatchEvent(new Event('online'));});await state('error');
+   expect(await page.locator('.em-pay').innerHTML()).not.toContain(correction.id);await shot('error');await page.unroute('**/api/payroll/statements');
+   await page.getByRole('button',{name:'Try again',exact:true}).click();await state('ready');expectedFailure=false;
+   record('Held read shows loading; a refused read shows a retryable error with no stale statement; Try again recovers');
    stage='module-off';expectedFailure=true;await modules(['payStatements']);
    await page.evaluate(()=>{dispatchEvent(new Event('offline'));});await state('paused');expect(await page.locator('.em-pay').innerHTML()).not.toContain(correction.id);await shot('paused');
    await page.evaluate(()=>{dispatchEvent(new Event('online'));});await state('module-off');expect(await page.locator('.em-pay').innerHTML()).not.toContain('/api/payroll/documents/');await shot('module-off');
@@ -145,13 +160,14 @@ it('shows own published statements, linked corrections and protected PDFs with t
    try{
     const other=await landscape.newPage();await other.goto(app.url+'/login');await login(other,emptyActor);await other.goto(app.url+'/app/my-pay');
     const metrics=await other.evaluate(()=>({coarse:matchMedia('(pointer: coarse)').matches,landscape:matchMedia('(orientation: landscape)').matches,touchPoints:navigator.maxTouchPoints,width:innerWidth,height:innerHeight}));media.push({engine,...metrics});
-    if(metrics.coarse){await other.locator('.em-pay[data-pay-state="empty"]').waitFor();expect(await other.locator('.em-pay').innerText()).toContain('No published statements yet');expect(await other.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    if(metrics.coarse){await other.locator('.em-pay[data-pay-state="empty"]').waitFor();expect(await other.locator('#employee-mobile').getAttribute('data-employee-mobile-page')).toBe('pay');expect(await other.locator('.em-pay').innerText()).toContain('No published statements yet');expect(await other.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
      const shotFile=engine+'-landscape-empty.png';await other.screenshot({path:evidence+'/'+shotFile,style:'nextjs-portal {visibility:hidden;}'});captures.push(shotFile);record('Genuine coarse landscape ('+metrics.touchPoints+' touch points): empty state, no overflow');}
     else{await other.locator('.q-pay').waitFor();expect(await other.locator('.em-pay').count()).toBe(0);record('No coarse pointer: 844px landscape keeps the desktop Pay (recorded, not claimed as mobile)');}
+    await other.setViewportSize({width:390,height:844});await other.locator('.em-pay[data-pay-state="empty"]').waitFor();const portrait=engine+'-empty-portrait.png';await other.screenshot({path:evidence+'/'+portrait,style:'nextjs-portal {visibility:hidden;}'});captures.push(portrait);
    }finally{await landscape.close();}
    if(engine==='chromium'){
     stage='role-separation';await q("UPDATE employees SET role='MANAGER' WHERE id=$1",[manager]);const managerContext=await activeBrowser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});
-    try{const m=await managerContext.newPage();await m.goto(app.url+'/login');await login(m,manager);await m.goto(app.url+'/app/my-pay');await m.getByRole('heading',{name:'My pay',exact:true}).waitFor();expect(await m.locator('.em-pay').count()).toBe(0);
+    try{const m=await managerContext.newPage();await m.goto(app.url+'/login');await login(m,manager);await m.goto(app.url+'/app/my-pay');await m.getByRole('heading',{name:'My pay',exact:true}).waitFor();await expect.poll(()=>m.locator('.q-page').innerText()).not.toContain('Loading…');expect(await m.locator('.em-pay').count()).toBe(0);
      const shotFile=engine+'-manager-390.png';await m.screenshot({path:evidence+'/'+shotFile,style:'nextjs-portal {visibility:hidden;}'});captures.push(shotFile);}
     finally{await managerContext.close();}
     record('Manager at phone width keeps the incumbent Quiet My pay');
