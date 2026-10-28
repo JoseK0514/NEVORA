@@ -1,5 +1,5 @@
 'use client';
-import {useState,type RefObject} from 'react';
+import {useState,type Ref,type RefObject} from 'react';
 import Link from 'next/link';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
@@ -20,8 +20,8 @@ import {SUPPORT_EMAIL} from '@/lib/legal/policies';
 import './requests.css';
 import './deletion.css';
 
-export type DeletionView={state:DeletionFormState;pending:boolean;retry:boolean;confirmed:boolean;shown:boolean;password:string;period:string|null;retention:string|null};
-type Props={account:{name:string;role:string;employeeId:string};view:DeletionView;action(formData:FormData):void;outcomeRef?:RefObject<HTMLDivElement|null>;passwordRef?:RefObject<HTMLInputElement|null>;onPassword(value:string):void;onShown():void;onConfirmed(value:boolean):void};
+export type DeletionView={state:DeletionFormState;pending:boolean;retry:boolean;confirmed:boolean;shown:boolean;period:string|null;retention:string|null};
+type Props={account:{name:string;role:string;employeeId:string};view:DeletionView;action(formData:FormData):void;outcomeRef?:RefObject<HTMLDivElement|null>;passwordRef?:Ref<HTMLInputElement>;onPassword(value:string):void;onShown():void;onConfirmed(value:boolean):void};
 
 /** Postgres timestamptz text ("2026-10-27 23:45:01.123456-04") as a local date and time, or null. */
 export function receivedAt(text:string){
@@ -37,7 +37,7 @@ const support=(reference?:string)=><a className="em-delete-link" href={`mailto:$
  * consequences are the service's actual ones (sessions, passkeys and calendar feeds end in the accepting
  * transaction; alerts need a session; erasure follows the runbook later). Nothing here decides an outcome. */
 export function EmployeeDeletionView({account,view,action,outcomeRef,passwordRef,onPassword,onShown,onConfirmed}:Props){
- const {state,pending,retry,confirmed,shown,password,period,retention}=view;
+ const {state,pending,retry,confirmed,shown,period,retention}=view;
  const [invalid,setInvalid]=useState<'password'|'confirm'|null>(null);
  const receipt=state.kind==='received'||state.kind==='duplicate';
  const ended=state.kind==='signed_out'||state.kind==='changed';
@@ -66,7 +66,7 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,passwordRef
      <p>{state.kind==='signed_out'?'We didn’t find a deletion request for this account, so nothing was deleted. Sign in again to continue.':'Nothing was sent. Go to Profile to see the account that’s signed in now.'}</p>
      <Link className="em-request-primary" href={state.kind==='signed_out'?'/login':'/app/profile'}>{state.kind==='signed_out'?'Sign in':'Go to Profile'}</Link>
     </div>:<form action={action} noValidate aria-label="Delete your NEVORA account" aria-busy={pending} className="em-delete-form"
-     onSubmit={event=>{const next=!password?'password':!confirmed?'confirm':null;setInvalid(next);if(!next)return;event.preventDefault();requestAnimationFrame(()=>(next==='password'?passwordRef?.current:document.getElementById('deletion-understand'))?.focus());}}>
+     onSubmit={event=>{const field=event.currentTarget.elements.namedItem('password') as HTMLInputElement|null,next=!field?.value?'password':!confirmed?'confirm':null;setInvalid(next);if(!next)return;event.preventDefault();requestAnimationFrame(()=>(next==='password'?field:document.getElementById('deletion-understand'))?.focus());}}>
     <input type="hidden" name="account" value={account.employeeId}/>
     <input type="hidden" name="retry" value={retry?'1':'0'}/>
     <section className="em-delete-section" aria-labelledby="deletion-account-title">
@@ -88,7 +88,7 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,passwordRef
      <h2 id="deletion-confirm-title">Confirm it’s you</h2>
      <div className="em-delete-field">
       <label htmlFor="deletion-password">Password</label>
-      <span className="em-delete-input"><input ref={passwordRef} id="deletion-password" name="password" type={shown?'text':'password'} autoComplete="current-password" required disabled={pending} value={password}
+      <span className="em-delete-input"><input ref={passwordRef} id="deletion-password" name="password" type={shown?'text':'password'} autoComplete="current-password" required disabled={pending}
        onChange={event=>{onPassword(event.target.value);if(invalid==='password')setInvalid(null);}}
        aria-describedby={passwordError?'deletion-password-help deletion-password-error':'deletion-password-help'} aria-invalid={passwordError?true:undefined}/>
        <button type="button" onClick={onShown} aria-pressed={shown} aria-label="Show password">{shown?<EyeSlashIcon size={22} aria-hidden="true"/>:<EyeIcon size={22} aria-hidden="true"/>}</button></span>

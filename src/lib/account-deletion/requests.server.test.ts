@@ -38,15 +38,17 @@ describe("account deletion requests", () => {
     expect(statements[1].text).toMatch(/INSERT INTO account_deletion_requests[\s\S]*ON CONFLICT \(employee_id\) WHERE status IN \('received', 'processing'\) DO NOTHING/);
     expect(statements[1].values).toEqual([expect.any(String), expect.stringMatching(DELETION_REFERENCE), "FICTIONAL-E1", "web", "2026-10-20-draft"]);
     expect(statements[2].text).toMatch(/DELETE FROM employee_sessions WHERE employee_id = \$1/);
-    expect(statements[3].text).toMatch(/UPDATE calendar_subscriptions[\s\S]*'account_loss'/);
+    expect(statements[3].text).toMatch(/UPDATE employees SET updated_at = clock_timestamp\(\) WHERE id = \$1/);
+    expect(statements[4].text).toMatch(/UPDATE calendar_subscriptions[\s\S]*'account_loss'/);
     expect(statements.every(statement => statement.values.includes("FICTIONAL-E1"))).toBe(true);
   });
 
-  it("returns the open request instead of making another one", async () => {
-    state.query.mockImplementation(async (text: string) => text.includes("employee_credentials") ? [{ password_hash: "fictional-hash" }]
-      : [{ reference: "DEL-7KQ2M9XA", status: "received", confirmed_at: "2030-01-01 10:00:00+00" }]);
+  it("returns the open request instead of making another one, and still ends every session", async () => {
+    state.transaction.mockImplementation(async (statements: unknown[]) =>
+      [...statements.slice(0, -1).map(() => []), [{ reference: "DEL-7KQ2M9XA", status: "received", confirmed_at: "2030-01-01 10:00:00+00", created: false }]]);
     await expect(submitDeletionRequest(input)).resolves.toEqual({ outcome: "duplicate", request: { reference: "DEL-7KQ2M9XA", status: "received", confirmedAt: "2030-01-01 10:00:00+00" } });
-    expect(state.transaction).not.toHaveBeenCalled();
+    const statements = state.transaction.mock.calls[0][0] as { text: string }[];
+    expect(statements.some(statement => /DELETE FROM employee_sessions/.test(statement.text))).toBe(true);
   });
 
   it("reports a concurrent confirmation as the same request", async () => {
@@ -70,12 +72,13 @@ describe("account deletion requests", () => {
   it("reports a rolled-back transaction as failed, but never a reply that may have followed COMMIT", async () => {
     state.transaction.mockRejectedValue(Object.assign(new Error("could not serialize access"), { code: "40001" }));
     await expect(submitDeletionRequest(input)).resolves.toEqual({ outcome: "failed" });
-    for (const unknown of [new Error("fetch failed"), Object.assign(new Error("socket hang up"), { code: "ECONNRESET" }), Object.assign(new Error("odd"), { code: 7 })]) {
+    for (const unknown of [new Error("fetch failed"), Object.assign(new Error("socket hang up"), { code: "ECONNRESET" }), Object.assign(new Error("odd"), { code: 7 }),
+      ...["08006", "08007", "57P01", "40003", "53200", "XX000", "EPIPE"].map(code => Object.assign(new Error(code), { code }))]) {
       expect(rejectedByDatabase(unknown)).toBe(false);
       state.transaction.mockRejectedValueOnce(unknown);
       await expect(submitDeletionRequest(input)).rejects.toBe(unknown);
     }
-    expect(rejectedByDatabase(Object.assign(new Error("unique"), { code: "23505" }))).toBe(true);
+    for (const code of ["23505", "22001", "42501", "P0001", "40001", "40P01"]) expect(rejectedByDatabase(Object.assign(new Error(code), { code })), code).toBe(true);
   });
 });
 

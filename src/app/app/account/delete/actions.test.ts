@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const state = vi.hoisted(() => ({ proof: vi.fn(), admit: vi.fn(), submit: vi.fn(), check: vi.fn(), active: vi.fn(), visible: vi.fn(), order: [] as string[] }));
+const state = vi.hoisted(() => ({ proof: vi.fn(), admit: vi.fn(), allowed: vi.fn(), submit: vi.fn(), check: vi.fn(), active: vi.fn(), visible: vi.fn(), order: [] as string[] }));
 vi.mock("next/headers", () => ({ headers: async () => new Headers({ "x-forwarded-for": "203.0.113.9" }) }));
 vi.mock("@/lib/auth/session", () => ({ readSessionMutationProof: state.proof }));
 vi.mock("@/lib/auth/login-limits.server", () => ({ admitLoginAttempt: state.admit, clientAddress: (value: string | null) => value }));
+vi.mock("@/lib/auth/login-limits", () => ({ passwordLoginAllowed: state.allowed }));
 vi.mock("@/lib/account-deletion/requests.server", () => ({ submitDeletionRequest: state.submit, checkDeletionRequest: state.check, activeDeletionRequest: state.active }));
 vi.mock("@/lib/legal/policies", () => ({ POLICY_VERSION: "2026-10-20", policiesVisible: state.visible }));
 import { requestAccountDeletion, type DeletionFormState } from "./actions";
@@ -20,6 +21,7 @@ beforeEach(() => {
   state.visible.mockReturnValue(true);
   state.proof.mockResolvedValue(proof);
   state.admit.mockImplementation(async () => { state.order.push("admit"); return true; });
+  state.allowed.mockImplementation(async () => { state.order.push("allowed"); return true; });
   state.submit.mockImplementation(async () => { state.order.push("submit"); return { outcome: "received", request }; });
   state.check.mockImplementation(async () => { state.order.push("check"); return { outcome: "none" }; });
   state.active.mockResolvedValue(null);
@@ -28,7 +30,7 @@ beforeEach(() => {
 describe("requesting account deletion", () => {
   it("counts the password check like sign-in before submitting the signed-in person's request", async () => {
     await expect(requestAccountDeletion(idle, form())).resolves.toEqual(receipt("received"));
-    expect(state.order).toEqual(["admit", "submit"]);
+    expect(state.order).toEqual(["admit", "allowed", "submit"]);
     expect(state.admit).toHaveBeenCalledWith("FICTIONAL-E1", "203.0.113.9");
     expect(state.submit).toHaveBeenCalledWith({ employeeId: "FICTIONAL-E1", password: "fictional-password", channel: "web", policyVersion: "2026-10-20" });
   });
@@ -39,7 +41,11 @@ describe("requesting account deletion", () => {
     expect(state.submit).not.toHaveBeenCalled();
   });
 
-  it("stops at the attempt limit before any password is checked", async () => {
+  it("stops at either sign-in limit before any password is checked", async () => {
+    state.allowed.mockResolvedValueOnce(false);
+    await expect(requestAccountDeletion(idle, form())).resolves.toEqual({ kind: "busy" });
+    state.proof.mockResolvedValueOnce(null);state.allowed.mockResolvedValueOnce(false);
+    await expect(requestAccountDeletion({ kind: "uncertain" }, form())).resolves.toEqual({ kind: "busy" });
     state.admit.mockResolvedValue(false);
     await expect(requestAccountDeletion(idle, form())).resolves.toEqual({ kind: "busy" });
     expect(state.submit).not.toHaveBeenCalled();
@@ -95,7 +101,7 @@ describe("after acceptance ended the session", () => {
   it("recovers the reference with a counted password check, never a new request", async () => {
     state.check.mockImplementation(async () => { state.order.push("check"); return { outcome: "found", request }; });
     await expect(requestAccountDeletion({ kind: "uncertain" }, form())).resolves.toEqual(receipt("received"));
-    expect(state.order).toEqual(["admit", "check"]);
+    expect(state.order).toEqual(["admit", "allowed", "check"]);
     expect(state.check).toHaveBeenCalledWith({ employeeId: "FICTIONAL-E1", password: "fictional-password" });
     expect(state.submit).not.toHaveBeenCalled();
   });

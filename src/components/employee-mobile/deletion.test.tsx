@@ -7,7 +7,7 @@ import {EmployeeDeletionView,receivedAt,type DeletionView} from './deletion';
 import type {DeletionFormState} from '@/app/app/account/delete/actions';
 
 const account={name:'Own Person',role:'Employee',employeeId:'FICTIONAL-E1'};
-const base:DeletionView={state:{kind:'idle'},pending:false,retry:false,confirmed:false,shown:false,password:'',period:'30 calendar days after we receive the request',retention:'Fictional retention.'};
+const base:DeletionView={state:{kind:'idle'},pending:false,retry:false,confirmed:false,shown:false,period:'30 calendar days after we receive the request',retention:'Fictional retention.'};
 const render=(view:Partial<DeletionView>&{state?:DeletionFormState}={})=>renderToStaticMarkup(createElement(EmployeeDeletionView,{account,view:{...base,...view},action:()=>{},onPassword:()=>{},onShown:()=>{},onConfirmed:()=>{}}));
 const text=(html:string)=>html.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ');
 
@@ -23,18 +23,19 @@ describe('Employee mobile account deletion',()=>{
   expect(html).toMatch(/<input[^>]*name="account"[^>]*value="FICTIONAL-E1"/);
   expect(html).toMatch(/<input[^>]*name="retry"[^>]*value="0"/);
   expect(html).toMatch(/<input[^>]*autoComplete="current-password"/);
+  expect(html).not.toMatch(/<input[^>]*name="password"[^>]*value=/);
   // No promise this screen can't keep: no withdrawal right, no "deleted now".
   expect(plain).not.toMatch(/cancel your request|withdraw|deleted now|immediately deleted/i);
  });
 
  it('associates password and confirmation errors with their fields',()=>{
-  const html=render({state:{kind:'wrong_password'},password:'x'});
+  const html=render({state:{kind:'wrong_password'}});
   expect(html).toMatch(/aria-describedby="deletion-password-help deletion-password-error"[^>]*aria-invalid="true"|aria-invalid="true"[^>]*aria-describedby="deletion-password-help deletion-password-error"/);
   expect(text(html)).toContain('That password isn’t right. Try again.');
  });
 
  it('keeps the form while sending and labels the busy action',()=>{
-  const html=render({pending:true,confirmed:true,password:'x'});
+  const html=render({pending:true,confirmed:true});
   expect(html).toContain('aria-busy="true"');
   expect(text(html)).toContain('Sending request…');
   expect(html).toMatch(/aria-disabled="true"[^>]*tabindex="-1"|tabindex="-1"[^>]*aria-disabled="true"/i);

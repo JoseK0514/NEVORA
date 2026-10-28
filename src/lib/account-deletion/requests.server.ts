@@ -3,8 +3,9 @@ import { getDb, queryRows } from "@/lib/db";
 import { dummyPasswordHash, verifyPassword } from "@/lib/auth/password";
 import { neonNotificationExecutor } from "@/lib/data/notification-transactions";
 
-/** A person's own account deletion request. Identity always comes from the server session; the password is
- * checked again right before the request is accepted. See docs/compliance/account-deletion-runbook.md. */
+/** A person's own account deletion request. A request is only ever created for the server session's person, with
+ * the password checked again first. Without a session, checkDeletionRequest returns that person's open request after
+ * the same password proof, so a lost reply can still show its reference. See docs/compliance/account-deletion-runbook.md. */
 export type DeletionStatus = "received" | "processing" | "completed" | "withdrawn";
 export type DeletionRequest = { reference: string; status: DeletionStatus; confirmedAt: string };
 export type DeletionChannel = "web" | "ios" | "android";
@@ -27,10 +28,13 @@ function schemaMissing(error: unknown) {
   return !!error && typeof error === "object" && "code" in error && ["42P01", "42703"].includes(String((error as { code: unknown }).code));
 }
 
-/** PostgreSQL answered with an error, so the transaction rolled back. Anything else (a reset connection, a lost
- * HTTP reply) may have been sent after COMMIT: the caller must treat it as unknown, never as "nothing was saved". */
+/** PostgreSQL rejected a statement, so the transaction rolled back: data (22), integrity (23), access or syntax (42),
+ * check option (44), a raised exception (P0), serialization failure or deadlock. Everything else may have followed
+ * COMMIT (connection loss 08, shutdown 57P, "completion unknown" 40003, resources, internal errors, socket codes):
+ * the caller must treat it as unknown, never as "nothing was saved". */
 export function rejectedByDatabase(error: unknown) {
-  return !!error && typeof error === "object" && "code" in error && /^[0-9A-Z]{5}$/.test(String((error as { code: unknown }).code));
+  const code = !!error && typeof error === "object" && "code" in error ? String((error as { code: unknown }).code) : "";
+  return /^(22|23|42|44|P0)[0-9A-Z]{3}$/.test(code) || code === "40001" || code === "40P01";
 }
 
 type Row = { reference: string; status: DeletionStatus; confirmed_at: string };
@@ -60,9 +64,8 @@ export async function submitDeletionRequest(input: {
       WHERE c.employee_id = $1 AND e.active LIMIT 1`, [input.employeeId]))[0];
   if (!credential || !input.password || !(await verifyPassword(input.password, credential.password_hash))) return { outcome: "wrong_password" };
 
-  const existing = await activeDeletionRequest(input.employeeId).catch(() => null);
-  if (existing) return { outcome: "duplicate", request: existing };
-
+  // No early return for an open request: the transaction below still ends every session, so "signed out
+  // everywhere" stays true for a duplicate as well.
   const id = randomUUID(), reference = newDeletionReference();
   try {
     // The employee lock serializes acceptance; the partial unique conflict target
@@ -78,6 +81,9 @@ export async function submitDeletionRequest(input: {
         ON CONFLICT (employee_id) WHERE status IN ('received', 'processing') DO NOTHING`,
         values: [id, reference, input.employeeId, input.channel, input.policyVersion] },
       { text: "DELETE FROM employee_sessions WHERE employee_id = $1", values: [input.employeeId] },
+      // Fences a sign-in that verified the password before this commit (session issuance compares updated_at),
+      // without relying only on the 0035 trigger, which does the same.
+      { text: "UPDATE employees SET updated_at = clock_timestamp() WHERE id = $1", values: [input.employeeId] },
       { text: `UPDATE calendar_subscriptions SET revoked_at = clock_timestamp(), revocation_reason = 'account_loss'
           WHERE employee_id = $1 AND revoked_at IS NULL`, values: [input.employeeId] },
       { text: `SELECT reference, status, confirmed_at::text AS confirmed_at, (id = $2) AS created FROM account_deletion_requests

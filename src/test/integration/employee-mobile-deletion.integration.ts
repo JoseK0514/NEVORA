@@ -82,9 +82,11 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    stage='validation';await page.locator('.em-delete-confirm').click();
    await page.locator('#deletion-password-error').waitFor();await expect.poll(()=>focused(page.locator('#deletion-password'))).toBe(true);
    expect(await page.locator('#deletion-password').getAttribute('aria-describedby')).toBe('deletion-password-help deletion-password-error');
+   const semanticRed=(selector:string)=>page.locator(selector).evaluate((el:HTMLElement)=>{const probe=document.createElement('span');probe.style.color='var(--em-red)';el.parentElement!.append(probe);const red=getComputedStyle(probe).color;probe.remove();return getComputedStyle(el).color===red;});
+   expect(await semanticRed('#deletion-password-error')).toBe(true);
    await page.locator('#deletion-password').fill('fictional-wrong-password');await page.keyboard.press('Enter');
    await page.locator('#deletion-understand-error').waitFor();await expect.poll(()=>focused(page.locator('#deletion-understand'))).toBe(true);
-   expect(await page.locator('#deletion-understand-error').evaluate((el:HTMLElement)=>{const probe=document.createElement('span');probe.style.color='var(--em-red)';el.parentElement!.append(probe);const red=getComputedStyle(probe).color;probe.remove();return getComputedStyle(el).color===red&&getComputedStyle(document.getElementById('deletion-password-error')!).color===red;})).toBe(true);
+   expect(await semanticRed('#deletion-understand-error')).toBe(true);expect(await page.locator('#deletion-password').getAttribute('value')).toBeNull();
    expect(await own()).toEqual([]);await shot('validation');await dark('validation');
    await page.locator('#deletion-password').focus();await page.keyboard.press(forwardKey);
    const eye=page.getByRole('button',{name:'Show password',exact:true});expect(await focused(eye)).toBe(true);expect(await eye.getAttribute('aria-pressed')).toBe('false');await page.keyboard.press('Space');
@@ -99,7 +101,7 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    record('Desktop keeps Quiet; one owner keeps the typed password and confirmation across resize');
 
    stage='wrong-password';await page.locator('.em-delete-confirm').click();await state('wrong_password');await shot('wrong-password');
-   await expect.poll(()=>focused(page.locator('#deletion-password'))).toBe(true);expect(await page.locator('#deletion-password-error').innerText()).toBe('That password isn’t right. Try again.');
+   await expect.poll(()=>focused(page.locator('#deletion-password'))).toBe(true);expect(await page.locator('#deletion-password-error').innerText()).toBe('That password isn’t right. Try again.');expect(await page.locator('#deletion-password').inputValue()).toBe('');
    expect(await own()).toEqual([]);expect(await sessions(actor)).toBe(1);await idle();
    record('Wrong password: field error, focus returns to the password, nothing saved, still signed in');
 

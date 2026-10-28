@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useCallback, useEffect, useRef, useState } from "react";
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { requestAccountDeletion, type DeletionFormState } from "@/app/app/account/delete/actions";
 import { logout } from "@/app/login/actions";
@@ -35,19 +35,24 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
 }) {
   const [confirmed, setConfirmed] = useState(false);
   const [shown, setShown] = useState(false);
-  const [password, setPassword] = useState("");
+  // Uncontrolled on purpose: React would otherwise mirror a controlled value into the DOM value attribute. The typed
+  // text lives only in this mounted ref, so a resize that swaps presentations keeps it.
+  const typed = useRef("");
+  const passwordRef = useRef<HTMLInputElement | null>(null);
+  const forget = () => { typed.current = ""; if (passwordRef.current) passwordRef.current.value = ""; };
+  const bindPassword = useCallback((input: HTMLInputElement | null) => { passwordRef.current = input; if (input && typed.current && !input.value) input.value = typed.current; }, []);
   const [retry, setRetry] = useState(false);
   const [state, action, pending] = useActionState<DeletionFormState, FormData>(async (previous, formData) => {
     let next: DeletionFormState;
     try { next = await requestAccountDeletion(previous, formData); } catch { next = { kind: "uncertain" }; }
     if (next.kind === "uncertain") setRetry(true);
     // The password is held only while it can still be needed for this account's request.
-    if (RECEIPT.has(next.kind) || ENDED.has(next.kind)) { setPassword(""); setShown(false); }
+    if (RECEIPT.has(next.kind) || ENDED.has(next.kind) || next.kind === "wrong_password") forget();
+    if (next.kind !== "idle") setShown(false);
     return next;
   }, existing ?? { kind: "idle" });
   const phone = useEmployeeMobile() && (account.roleKey === "EMPLOYEE" || account.roleKey === "LEAD");
   const outcome = useRef<HTMLDivElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
   const { errors, handlers } = useFieldErrors({ password: { missing: "Enter your password to confirm it’s you." } });
   const receipt = RECEIPT.has(state.kind);
 
@@ -58,9 +63,9 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
   }, [state]);
 
   if (phone) {
-    const view: DeletionView = { state, pending, retry, confirmed, shown, password, period, retention };
-    return <EmployeeDeletionView account={account} view={view} action={action} outcomeRef={outcome} passwordRef={passwordRef}
-      onPassword={setPassword} onShown={() => setShown(value => !value)} onConfirmed={setConfirmed} />;
+    const view: DeletionView = { state, pending, retry, confirmed, shown, period, retention };
+    return <EmployeeDeletionView account={account} view={view} action={action} outcomeRef={outcome} passwordRef={bindPassword}
+      onPassword={value => { typed.current = value; }} onShown={() => setShown(value => !value)} onConfirmed={setConfirmed} />;
   }
 
   const header = <><QuietNav back={receipt ? undefined : { href: "/app/profile", label: "Profile" }} /><QuietHeader title="Delete your NEVORA account" sub="Read what happens before you confirm." /></>;
@@ -133,8 +138,8 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
         <div className="q-fl q-deletion__field">
           <label htmlFor="deletion-password">Password</label>
           <div className="q-in__wrap">
-            <input ref={passwordRef} className="q-in" id="deletion-password" name="password" type={shown ? "text" : "password"} required autoComplete="current-password" disabled={pending} placeholder="Password"
-              value={password} onChange={event => setPassword(event.target.value)}
+            <input ref={bindPassword} className="q-in" id="deletion-password" name="password" type={shown ? "text" : "password"} required autoComplete="current-password" disabled={pending} placeholder="Password"
+              onChange={event => { typed.current = event.target.value; }}
               aria-describedby={passwordError ? "deletion-password-help deletion-password-error" : "deletion-password-help"} aria-invalid={passwordError ? true : undefined} />
             <button type="button" className="q-in__eye" onClick={() => setShown(value => !value)} aria-pressed={shown} aria-label={shown ? "Hide password" : "Show password"}>{shown ? <EyeSlashIcon className="q-ic" aria-hidden="true" /> : <EyeIcon className="q-ic" aria-hidden="true" />}</button>
           </div>
@@ -146,7 +151,7 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
             <input type="checkbox" className="q-tog" checked={confirmed} onChange={event => setConfirmed(event.target.checked)} disabled={pending} /></label></li>
         </QuietList>
       </QuietGroup>
-      {state.kind === "failed" || state.kind === "unavailable" || state.kind === "uncertain" || state.kind === "busy" ? <div className="q-deletion__alert" ref={outcome} tabIndex={-1} role="alert">
+      {state.kind === "failed" || state.kind === "unavailable" || state.kind === "uncertain" || state.kind === "busy" || (checking && state.kind === "wrong_password") ? <div className="q-deletion__alert" ref={outcome} tabIndex={-1} role="alert">
         <p className="q-error"><b>{state.kind === "failed" ? "We could not submit your request. Please try again." : state.kind === "unavailable" ? "Account deletion isn’t available right now" : state.kind === "busy" ? "Too many tries" : "We couldn’t confirm your request"}</b></p>
         <p className="q-help">{state.kind === "failed" ? "Nothing was saved and you’re still signed in." : state.kind === "unavailable" ? <>Email <a className="q-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> and we’ll help you.</>
           : state.kind === "busy" ? (checking ? "Wait about 15 minutes, then check again. We still haven’t confirmed whether your request was saved." : "Wait about 15 minutes, then try again. Nothing was sent.")

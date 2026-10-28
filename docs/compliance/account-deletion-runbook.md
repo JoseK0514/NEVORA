@@ -56,5 +56,7 @@ kept and until when. Only mark a request completed when every step above is done
 
 ## Withdrawing
 
-If the person changes their mind before processing starts, set `status = 'withdrawn'`. They can then sign in again
+If the person changes their mind before processing starts, set `status = 'withdrawn'`. Confirm it is the account's
+person first; a reference alone isn't proof, because the app shows it again to anyone who proves the password.
+(Added with the Employee mobile port; Jose/operations to confirm the identity step.) They can then sign in again
 with their password (calendar feeds stay revoked; they can turn them on again in Profile).

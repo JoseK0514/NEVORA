@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { readSessionMutationProof } from "@/lib/auth/session";
 import { admitLoginAttempt, clientAddress } from "@/lib/auth/login-limits.server";
+import { passwordLoginAllowed } from "@/lib/auth/login-limits";
 import { activeDeletionRequest, checkDeletionRequest, submitDeletionRequest, type DeletionRequest } from "@/lib/account-deletion/requests.server";
 import { POLICY_VERSION, policiesVisible } from "@/lib/legal/policies";
 
@@ -32,7 +33,9 @@ export async function requestAccountDeletion(previous: DeletionFormState, formDa
   if (proof && proof.employee.id !== account) return { kind: "changed" };
   if (!account) return { kind: "signed_out" };
   try {
+    // The same two limits as password sign-in, in the same order.
     if (!(await admitLoginAttempt(account, clientAddress((await headers()).get("x-forwarded-for"))))) return { kind: "busy" };
+    if (!(await passwordLoginAllowed(account))) return { kind: "busy" };
   } catch {
     // Nothing about the request was sent yet; only an earlier attempt can still be unknown.
     return retried ? { kind: "uncertain" } : { kind: "failed" };
