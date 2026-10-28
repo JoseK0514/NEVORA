@@ -8,6 +8,11 @@ it('current-device setup offers explicit consent without employee topic or other
  const html=await view(ready);expect(html).toContain('Turn on alerts');expect(html).toContain('Not now');expect(html).not.toMatch(/type="checkbox"|role="switch"|Other devices|Quiet hours|SMS/);
  expect(await view(ready,{paused:true})).not.toContain('Turn on alerts');expect(await view(ready,{enabled:false})).not.toContain('Turn on alerts');
 });
+it('settled feature-off and paused states are not announced as busy',async()=>{
+ expect(await view(null,{enabled:false})).toContain('aria-busy="false"');
+ expect(await view(null,{paused:true})).toContain('aria-busy="false"');
+ expect(await view(null)).toContain('aria-busy="true"');
+});
 it('an uncertain cleanup offers original recovery without an enabled claim or test command',async()=>{
  const html=await view({...ready,state:'error',cleanupPending:true,server:{...ready.server,enabled:true,ownershipGeneration:'original',testAllowed:true,localOwned:false},message:'Server cleanup is pending.'});
  expect(html).toContain('Alerts may still be on');expect(html).toContain('Retry turn off');expect(html).toContain('latest status');expect(html).not.toContain('Test notification');expect(html).not.toContain('Alerts are on');

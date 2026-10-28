@@ -72,6 +72,20 @@ it('a self-test authentication refusal immediately retires current device contro
  const {controller}=fixture({permission:()=> 'granted',api:async op=>{if(op==='test')throw new DeviceRequestError(401,'authentication_required');return {...status,enabled:true,testAllowed:true,ownershipGeneration:'own'};}});
  await controller.start();await controller.test();expect(controller.snapshot.accessChanged).toBe(true);expect(controller.snapshot.server.enabled).toBe(false);expect(controller.snapshot.server.testAllowed).toBe(false);
 });
+it('ownership acknowledged after the read lease expires is suppressed instead of shown enabled',async()=>{
+ vi.useFakeTimers({toFake:['setTimeout','clearTimeout','performance']});
+ try{
+  const expires=performance.now()+100;let active=false;
+  const {controller}=fixture({strict:true,validUntil:()=>expires,permission:()=> 'granted',api:async()=>({...status,enabled:true,ownershipGeneration:'own'}),own:async()=>{await new Promise(resolve=>setTimeout(resolve,101));active=true;return true;},suppress:async()=>{active=false;}});
+  const start=controller.start();await vi.advanceTimersByTimeAsync(102);await start;
+  expect(controller.snapshot.state).toBe('error');expect(active).toBe(false);
+ }finally{vi.useRealTimers();}
+});
+it('expiry during the ownership storage boundary suppresses the acknowledged generation',async()=>{
+ let expires=performance.now()+10000,active=false;
+ const {controller}=fixture({strict:true,validUntil:()=>expires,permission:()=> 'granted',api:async()=>({...status,enabled:true,testAllowed:true,ownershipGeneration:'own'}),own:async()=>{active=true;return true;},writeOwner:()=>{expires=performance.now()-1;},suppress:async()=>{active=false;}});
+ await controller.start();expect(controller.snapshot.state).toBe('error');expect(active).toBe(false);expect(controller.snapshot.message).not.toContain('enabled');
+});
 it('bounded never-resolving operations terminate',async()=>{
  vi.useFakeTimers();const promise=bounded(new Promise(()=>{}),10);const assertion=expect(promise).rejects.toThrow('timed out');await vi.advanceTimersByTimeAsync(11);await assertion;vi.useRealTimers();
 });

@@ -50,6 +50,10 @@ export class DeviceController {
   private current(epoch: number) { return !this.dead && epoch === this.epoch; }
   private publish(server = this.snapshot.server, message?: string) {
     if (this.dead) return;
+    if(this.runtime.strict&&!this.fresh()&&!['loading','pending','error'].includes(server.phase??'')){
+      server={...server,phase:'error',localOwned:false,testAllowed:false};
+      message='Device status expired. Check again before starting a new request.';
+    }
     this.snapshot = { ...this.snapshot, server, message, validUntil:this.runtime.validUntil?.(),cleanupPending:!!this.cleanupGeneration,cleanupGeneration:this.cleanupGeneration,state: deriveDeviceState({ ...this.snapshot, permission: this.runtime.permission(), server, dismissed: this.dismissed }) };
     this.changed(this.snapshot);
   }
@@ -107,7 +111,9 @@ export class DeviceController {
             const owned = await this.runtime.own(status.ownershipGeneration);
             if (!this.current(epoch)) { await this.runtime.suppress(status.ownershipGeneration); return; }
             if (!owned) throw Error('Local ownership unavailable');
+            if(!this.fresh()){await this.runtime.suppress(status.ownershipGeneration);throw Error('Device status expired');}
             this.runtime.writeOwner(status.ownershipGeneration);
+            if(!this.fresh()){await this.runtime.suppress(status.ownershipGeneration);throw Error('Device status expired');}
             this.publish({ ...status, localOwned: true });
             return;
           }
@@ -152,6 +158,7 @@ export class DeviceController {
         if (!this.current(epoch)) { await this.runtime.suppress(generation); return; }
         if (!owned||!this.fresh()) throw Error('Local ownership unavailable');
         this.runtime.writeOwner(generation);
+        if(!this.fresh())throw Error('Device status expired');
         this.publish({ ...verifiedStatus, localOwned: true }, 'Notifications enabled on this device.');
       })), 20000);
     } catch(error) {

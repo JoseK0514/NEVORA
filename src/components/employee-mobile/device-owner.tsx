@@ -22,7 +22,7 @@ export function EmployeeDeviceProvider({authority,enabled,children}:{authority?:
   const owner=new DeviceController(browserRuntime(authority),next=>{if(ended.current)return;setSnapshot({...next});setPaused(!active.current);});client.current=owner;
   const stop=observeController(owner);
   const pause=()=>{active.current=false;setPaused(true);};
-  const resume=()=>{if(ended.current||document.visibilityState==='hidden'||navigator.onLine===false)return;active.current=true;setPaused(false);void owner.reconcile();};
+  const resume=()=>{if(ended.current||document.visibilityState==='hidden'||navigator.onLine===false)return;active.current=true;if(owner.snapshot.validUntil&&owner.snapshot.validUntil<=performance.now()){setPaused(true);void owner.start();}else{setPaused(false);void owner.reconcile();}};
   const visibility=()=>document.visibilityState==='hidden'?pause():resume();
   const end=()=>{ended.current=true;active.current=false;owner.dispose();setSnapshot(null);setPaused(true);setEnding(true);prompt.current=null;setCanInstall(false);};
   const beforeInstall=(event:Event)=>{event.preventDefault();if(ended.current)return;prompt.current=event as InstallEvent;setCanInstall(true);};
@@ -31,7 +31,7 @@ export function EmployeeDeviceProvider({authority,enabled,children}:{authority?:
   return()=>{ended.current=true;stop();client.current=null;clearInterval(poll);window.removeEventListener('blur',pause);window.removeEventListener('focus',resume);window.removeEventListener('pagehide',pause);window.removeEventListener('pageshow',resume);window.removeEventListener('offline',pause);window.removeEventListener('online',resume);window.removeEventListener('nevora:signout',end);window.removeEventListener('beforeinstallprompt',beforeInstall);document.removeEventListener('visibilitychange',visibility);};
  },[authority,enabled]);
  useEffect(()=>{
-  if(!snapshot?.validUntil||snapshot.validUntil<=performance.now()||snapshot.state==='error'||snapshot.accessChanged)return;
+  if(!snapshot?.validUntil||snapshot.state==='error'||snapshot.accessChanged)return;
   const timer=setTimeout(()=>{setPaused(true);if(active.current&&!ended.current)void client.current?.start();},Math.max(0,snapshot.validUntil-performance.now()));return()=>clearTimeout(timer);
  },[snapshot]);
  function install(){
