@@ -90,8 +90,10 @@ function validDocument(value: unknown): value is PayrollStatementsResponse['stat
   const path = `/api/payroll/documents/${encodeURIComponent(value.id)}`;
   return value.downloadUrl === path && (value.viewUrl === undefined || value.viewUrl === `${path}/view`);
 }
+const link = (value: unknown) => value === undefined || value === null || (typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value));
 function validStatement(value: unknown): value is PayrollStatementsResponse['statements'][number] {
-  return validDocument(value) && value.kind === 'EMPLOYEE_STATEMENT' && typeof value.employeeId === 'string' && validPeriod(value.period) && validDate(value.payday);
+  return validDocument(value) && value.kind === 'EMPLOYEE_STATEMENT' && typeof value.employeeId === 'string' && validPeriod(value.period) && validDate(value.payday)
+    && link((value as Record<string, unknown>).corrects) && link((value as Record<string, unknown>).correctedBy) && (value as Record<string, unknown>).corrects !== value.id;
 }
 function validYtd(value: unknown) {
   return record(value) && Number.isInteger(value.year) && ['grossMinor', 'netMinor', 'socialSecurityWagesMinor', 'medicareWagesMinor', 'sinotWagesMinor'].every(key => minor(value[key])) && ['deductions', 'employerContributions', 'employerWagesMinor'].every(key => record(value[key]) && Object.values(value[key]).every(minor));

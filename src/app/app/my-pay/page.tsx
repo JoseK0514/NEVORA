@@ -8,7 +8,14 @@ import { currentPayPeriod } from '@/lib/payroll/pay-calendar.server';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { businessDate } from '@/lib/business-time';
 
-export default async function MyPayPage() {
+const STATEMENT = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+/** `statement`: the exact statement a notification named. `document`: why opening a PDF came back here. Both only
+ * select wording and focus; the statements read decides what exists. */
+export default async function MyPayPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const params = await searchParams;
+  const statement = typeof params.statement === 'string' && STATEMENT.test(params.statement) ? params.statement : null;
+  const document = params.document === 'unavailable' || params.document === 'failed' ? params.document : null;
   const moduleOff = await moduleGate("payStatements");
   if (moduleOff) return moduleOff;
 
@@ -25,5 +32,5 @@ export default async function MyPayPage() {
   }
   // Quiet: Owners and Managers get My pay (v4); Employees and Leads get the Pay tab (v5).
   if (isManagerRole(session.role)) return <QuietMyPay key={session.id} nextPay={nextPay} />;
-  return <MyPay key={session.id} nextPay={nextPay} />;
+  return <MyPay key={session.id} nextPay={nextPay} statement={statement} document={document} />;
 }

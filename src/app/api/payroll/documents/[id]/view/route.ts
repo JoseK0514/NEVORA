@@ -2,6 +2,7 @@ import { getSession, requireSessionMutationProof } from "@/lib/auth/session";
 import { boundary, failure, headers, json } from "@/lib/payroll/http";
 import { document } from "@/lib/payroll/access";
 import { moduleEnabled } from "@/lib/workspace-presentation/current.server";
+import { navigationFailure } from "../../navigation";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export async function GET(
@@ -14,16 +15,18 @@ export async function GET(
       { error: "REQUEST_REJECTED", message: "Request unavailable." },
       rejected,
     );
+  let role: string | null = null;
   try {
     const session = await getSession();
     if (!session)
-      return json(
+      return navigationFailure(request, 401, null) ?? json(
         { error: "AUTHENTICATION_REQUIRED", message: "Sign in again." },
         401,
       );
+    role = session.role;
     // Same rule as the download route: with Pay statements turned off, employees can't open them by URL either.
     if (["EMPLOYEE", "LEAD"].includes(session.role) && !(await moduleEnabled("payStatements")))
-      return json({ error: "MODULE_OFF", message: "Pay statements are turned off." }, 404);
+      return navigationFailure(request, 404, role) ?? json({ error: "MODULE_OFF", message: "Pay statements are turned off." }, 404);
     const d = await document(
       await requireSessionMutationProof(),
       (await context.params).id,
@@ -38,6 +41,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    return failure(error);
+    const response = failure(error);
+    return navigationFailure(request, response.status, role) ?? response;
   }
 }

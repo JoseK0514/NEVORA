@@ -12,7 +12,8 @@ import { documentProjection } from "./service";
 import { guarded, statement as q, workspaceSql as ws } from "./store";
 import { uuid, PayrollError } from "./model";
 import { payrollObjectScopeSql } from "./native/scope";
-const published = `EXISTS(SELECT 1 FROM payroll_publications p JOIN payroll_runs_current r ON r.workspace_id=p.workspace_id AND r.run_id=p.run_id WHERE p.workspace_id=d.workspace_id AND p.run_id=d.run_id AND r.payload->>'status'='APPROVED')`;
+const publishedAs = (doc: string) => `EXISTS(SELECT 1 FROM payroll_publications p JOIN payroll_runs_current r ON r.workspace_id=p.workspace_id AND r.run_id=p.run_id WHERE p.workspace_id=${doc}.workspace_id AND p.run_id=${doc}.run_id AND r.payload->>'status'='APPROVED')`;
+const published = publishedAs("d");
 type DocRow = {
     id: string;
     kind: PayrollDocument["kind"];
@@ -28,11 +29,18 @@ type DocRow = {
         payday: string;
     };
 };
+/** The same person's statement in the run linked by `runs` (`run_id` → `correction_of` or the reverse), published
+ * under the same rule; another person's or an unpublished document is never named. */
+const ownLinked = (join: string) => `(SELECT o.id::text FROM payroll_runs lr JOIN payroll_documents o ON o.workspace_id=lr.workspace_id AND ${join} AND o.employee_id=d.employee_id AND o.kind='EMPLOYEE_STATEMENT'
+    WHERE lr.workspace_id=d.workspace_id AND ${publishedAs("o")} ORDER BY o.id LIMIT 1)`;
 export async function statements(proof: SessionMutationProof, ex: SqlExecutor = neonNotificationExecutor()): Promise<PayrollStatementsResponse> {
-    const docs = await guarded<DocRow>(proof, "SELF", q(`SELECT d.id::text,d.kind,d.employee_id,d.filename,d.sha256,true AS published,d.payload FROM payroll_documents d WHERE workspace_id=${ws} AND d.employee_id=$1 AND d.kind='EMPLOYEE_STATEMENT' AND ${published} ORDER BY d.payload->>'payday' DESC`, proof.employee.id), ex);
+    const docs = await guarded<DocRow & { corrects: string | null; corrected_by: string | null }>(proof, "SELF", q(`SELECT d.id::text,d.kind,d.employee_id,d.filename,d.sha256,true AS published,d.payload,
+        ${ownLinked("lr.id=d.run_id AND o.run_id=lr.correction_of")} AS corrects,
+        ${ownLinked("lr.correction_of=d.run_id AND o.run_id=lr.id")} AS corrected_by
+        FROM payroll_documents d WHERE workspace_id=${ws} AND d.employee_id=$1 AND d.kind='EMPLOYEE_STATEMENT' AND ${published} ORDER BY d.payload->>'payday' DESC`, proof.employee.id), ex);
     return {
         version: "PAYROLL_API_V1",
-        statements: docs.map((d) => ({ ...documentProjection(d), ...d.payload })),
+        statements: docs.map((d) => ({ ...documentProjection(d), ...d.payload, corrects: d.corrects, correctedBy: d.corrected_by })),
     };
 }
 /** Return authorized bytes and metadata, concealing missing/unauthorized IDs as 404.

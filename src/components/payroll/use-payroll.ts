@@ -22,10 +22,12 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  // Why the read stopped, for callers that explain it: a server code (MODULE_OFF), an HTTP status, NETWORK, PAUSED or OFFLINE.
+  const [errorCode, setErrorCode] = useState('');
   const generation = useRef({ value: 0 });
   const reload = useCallback(async () => {
     const current = ++generation.current.value;
-    setLoading(true); setError('');
+    setLoading(true); setError(''); setErrorCode('');
     try {
       const next = decode(await payrollRequest(path));
       if (generation.current.value === current) setData(next);
@@ -36,13 +38,14 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
         // IS-B13: an ended session says so, and the state offers Sign in (PayrollState), not a retry that can't work.
         setError(failure instanceof PayrollRequestError && failure.status === 401 ? PAYROLL_SIGNED_OUT
           : failure instanceof Error && !(failure instanceof TypeError) ? failure.message : 'Payroll could not load.');
+        setErrorCode(failure instanceof PayrollRequestError ? failure.code || String(failure.status) : failure instanceof TypeError ? 'NETWORK' : 'UNREADABLE');
       }
     } finally { if (generation.current.value === current) setLoading(false); }
   }, [path, decode]);
   useEffect(() => {
     let active = true; const lifecycle = generation.current;
     queueMicrotask(() => { if (active) void reload(); });
-    const clear = () => { lifecycle.value++; setData(null); setLoading(false); setError(navigator.onLine ? 'Payroll is paused while this page is hidden. Return to reload current access.' : 'Payroll is unavailable offline. Reconnect to reload current access.'); };
+    const clear = () => { lifecycle.value++; setData(null); setLoading(false); setErrorCode(navigator.onLine ? 'PAUSED' : 'OFFLINE'); setError(navigator.onLine ? 'Payroll is paused while this page is hidden. Return to reload current access.' : 'Payroll is unavailable offline. Reconnect to reload current access.'); };
     const visible = () => { if (document.visibilityState === 'hidden') clear(); else void reload(); };
     const refresh = () => { if (document.visibilityState !== 'hidden') void reload(); };
     window.addEventListener('offline', clear); window.addEventListener('online', refresh);
@@ -55,7 +58,7 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
       document.removeEventListener('visibilitychange', visible);
     };
   }, [reload]);
-  return { data, loading, error, reload };
+  return { data, loading, error, errorCode, reload };
 }
 
 /** Toast copy for a receipt-confirmed command; never shown before the receipt. */

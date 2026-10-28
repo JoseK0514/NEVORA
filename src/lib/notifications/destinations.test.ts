@@ -56,3 +56,13 @@ it('adds only the matching encoded request fragment to validated contextual rout
  expect(withRequestFragment('/app/schedule?week=2026-10-05')).toBe('/app/schedule?week=2026-10-05');
  expect(withRequestFragment('https://foreign.invalid/app/requests?requestId=abc')).toBeNull();
 });
+
+describe('exact pay statement destination',()=>{
+  const id='3f2b8c1e-9a4d-4e7f-8b21-6c5d4e3f2a10';
+  it('admits one lowercase statement id on My pay and nothing else',()=>{
+    expect(safeReturnTo('/app/my-pay')).toBe('/app/my-pay');
+    expect(safeReturnTo(`/app/my-pay?statement=${id}`)).toBe(`/app/my-pay?statement=${id}`);
+    for(const refused of [`/app/my-pay?statement=${id.toUpperCase()}`,'/app/my-pay?statement=DEL-7KQ2M9XA','/app/my-pay?statement=',`/app/my-pay?statement=${id}&statement=${id}`,`/app/my-pay?statement=${id}&employeeId=QA-B`,`/app/timecards?statement=${id}`])
+      expect(safeReturnTo(refused),refused).toBeNull();
+  });
+});

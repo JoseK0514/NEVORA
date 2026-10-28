@@ -281,6 +281,10 @@ export type PayrollStatementsResponse = {
     statements: (PayrollDocument & {
         period: PayrollPeriod;
         payday: string;
+        /** The person's own published statement this one corrects, or null. Absent from older servers. */
+        corrects?: string | null;
+        /** The person's own published statement that corrects this one, or null. Absent from older servers. */
+        correctedBy?: string | null;
     })[];
 };
 export type PayrollErrorResponse = {

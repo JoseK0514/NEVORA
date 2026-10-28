@@ -14,7 +14,7 @@ const ROUTE_PARAMS: Record<string, readonly string[]> = {
   '/app': [],
   '/app/account/delete': [],
   '/app/payroll': [],
-  '/app/my-pay': [], '/app/schedule': ['week','employeeId'], '/app/availability': ['week','employeeId'],
+  '/app/my-pay': ['statement'], '/app/schedule': ['week','employeeId'], '/app/availability': ['week','employeeId'],
   '/app/requests': ['tab','requestId'], '/app/exchange': ['tab','requestId'],
   '/app/schedule/coverage': ['week','date','locationId','start','end','lead','repair','positionId','refresh'],
   '/app/notifications/open': ['notificationId'],
@@ -50,6 +50,7 @@ export function safeReturnTo(candidate: string | undefined): string | null {
     else if (key === 'repair') { /* Validated as a bounded canonical locator below. */ }
     else if (key === 'refresh') { if (value !== '1') return null; }
     else if (key === 'lead') { if (value !== '1') return null; }
+    else if (key === 'statement') { if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(value)) return null; }
     else if (key === 'tab') {
       if (!(rawPath === '/app/requests' ? ['new','my','team','pending','approved','declined'] : ['available','requests','my','history','pending','coverage','activity']).includes(value)) return null;
     } else if (!safeId(value)) return null;

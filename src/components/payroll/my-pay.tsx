@@ -9,6 +9,8 @@ import Link from 'next/link';
 import { DownloadIcon } from '../signature/signature';
 import styles from './my-pay.module.css';
 import { QuietHeader, QuietList, QuietNav, QuietPage, QuietRow } from '../quiet/quiet';
+import { useEmployeeMobile } from '../employee-mobile/use-mobile';
+import { EmployeePayView } from '../employee-mobile/pay';
 
 /* My pay in the Signature style (phase 1, approved Oct 20, 2026; target:
  * docs/product/specs/employee-style/signature/phase-1/p1c-pay.png). The band carries the next payday from the pay
@@ -46,8 +48,10 @@ const newestFirst = (a: { payday: string }, b: { payday: string }) => b.payday.l
 /** v5 "One look" (Jose approved round 2 "exactly like this" on Oct 24, 2026; mockup E11): an Employee's or Lead's Pay tab.
  * The next payday as one line, this week's time, then the published statements and the privacy note (wording unchanged).
  * Same statements read, refresh and download links as before. */
-export function MyPay({ nextPay = null }: { nextPay?: NextPay }) {
-  const { data, loading, error, reload } = usePayrollResource('/api/payroll/statements', readStatements);
+export function MyPay({ nextPay = null, statement = null, document = null }: { nextPay?: NextPay; statement?: string | null; document?: 'unavailable' | 'failed' | null }) {
+  const { data, loading, error, errorCode, reload } = usePayrollResource('/api/payroll/statements', readStatements);
+  // One read for both presentations, so rotating a phone never refetches or drops the list.
+  if (useEmployeeMobile()) return <QuietPage><EmployeePayView statements={data?.statements ?? null} loading={loading} error={error} errorCode={errorCode} nextPay={nextPay} statement={statement} document={document} reload={() => void reload()} /></QuietPage>;
   const statements = data ? [...data.statements].sort(newestFirst) : [];
   const days = nextPay?.daysUntil;
   const payday = nextPay ? new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric' }).format(utc(nextPay.payday)) : null;

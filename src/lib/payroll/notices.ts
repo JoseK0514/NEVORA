@@ -69,7 +69,8 @@ export async function checkPayrollNotice(intent: NotificationIntent, recipientId
             reason: "current_private_payroll_source",
             effectiveVersion: r.version,
             expiresAt: intent.expiresAt,
-            destination: r.kind === "PAYROLL_PREPARATION" ? "/app/payroll" : "/app/my-pay",
+            // A statement notice opens that exact statement; My pay rechecks it is still own and published.
+            destination: r.kind === "PAYROLL_PREPARATION" ? "/app/payroll" : `/app/my-pay?statement=${intent.source.id.toLowerCase()}`,
         };
     }
     catch {

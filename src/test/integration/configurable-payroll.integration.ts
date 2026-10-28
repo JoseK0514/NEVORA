@@ -378,6 +378,35 @@ it("nonzero finalized time imports exact authoritative values, corrections link 
     "87660",
   );
 });
+it("own statements link a published correction to the statement it replaced, and name nobody else's", async () => {
+  const seeded = await seedPayrollFixture(f.db.executor, { published: true });
+  const owner = seeded.proof;
+  const original = (await runs(owner, f.db.executor)).runs.find((x) => x.id === seeded.runId)!;
+  await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('e',64),$1,now()+interval '1 day'),(repeat('f',64),$2,now()+interval '1 day')", [seeded.ids.a, seeded.ids.b]);
+  const a = { employee: { ...owner.employee, id: seeded.ids.a, role: "EMPLOYEE" as const }, sessionTokenHash: "e".repeat(64) };
+  const b = { employee: { ...owner.employee, id: seeded.ids.b, role: "EMPLOYEE" as const }, sessionTokenHash: "f".repeat(64) };
+  const before = (await statements(a, f.db.executor)).statements;
+  expect(before).toHaveLength(1);
+  expect(before[0]).toMatchObject({ corrects: null, correctedBy: null });
+  const corrected = await command(owner, { action: "CORRECT", operationId: randomUUID(), runId: original.id, expectedRevision: original.revision, reason: "Fictional corrected reference", amounts: { ...seeded.amounts, sourceReference: "QA-linked-correction" } }, f.db.executor);
+  // Until the correction is approved and published, nothing links: an unpublished document is never named.
+  expect((await statements(a, f.db.executor)).statements).toEqual(before);
+  const draft = (await runs(owner, f.db.executor)).runs.find((x) => x.id === corrected.runId)!;
+  await command(owner, { action: "APPROVE", operationId: randomUUID(), runId: draft.id, expectedRevision: draft.revision, reviewToken: draft.reviewToken }, f.db.executor);
+  for (let i = 0; i < 4; i++) await workerOnce(f.db.executor);
+  const after = (await statements(a, f.db.executor)).statements;
+  expect(after).toHaveLength(2);
+  const replacement = after.find((x) => x.id !== before[0].id)!;
+  expect(after.find((x) => x.id === before[0].id)).toMatchObject({ corrects: null, correctedBy: replacement.id });
+  expect(replacement).toMatchObject({ corrects: before[0].id, correctedBy: null, period: before[0].period, payday: before[0].payday });
+  // The other employee in the same runs sees no link to this person's documents.
+  const others = (await statements(b, f.db.executor)).statements;
+  expect(JSON.stringify(others)).not.toContain(before[0].id);
+  expect(JSON.stringify(others)).not.toContain(replacement.id);
+  // Both documents remain verified bytes for their owner only.
+  expect((await document(a, replacement.id, f.db.executor)).bytes.subarray(0, 5).toString()).toBe("%PDF-");
+  await expect(document(b, replacement.id, f.db.executor)).rejects.toThrow("DOCUMENT_UNAVAILABLE");
+});
 it("scheduled preparation creates one durable waiting job/run across retries and consumes saved preferences", async () => {
   await saveSettings(
     proof,
@@ -1056,11 +1085,13 @@ it("private open denies another employee, disabled flag, inactive account and ch
   expect((await handler("c34-b")(request)).status).toBe(404);
   const currentOwner = await handler("c34-a")(request);
   expect(currentOwner.status).toBe(303);
-  expect(currentOwner.headers.get("location")).toBe("/app/my-pay");
+  // A statement notice opens that exact own statement on My pay (the source is the document).
+  expect(currentOwner.headers.get("location")).toBe(`/app/my-pay?statement=${a.source.id}`);
+  expect(a.source.id).toMatch(/^[0-9a-f-]{36}$/);
   expect(currentOwner.headers.get("cache-control")).toBe("no-store");
   expect(
     new URL(currentOwner.headers.get("location")!, "https://portal.example").href,
-  ).toBe("https://portal.example/app/my-pay");
+  ).toBe(`https://portal.example/app/my-pay?statement=${a.source.id}`);
   process.env.NEVORA_PAYROLL_ENABLED = "false";
   expect((await handler("c34-a")(request)).status).toBe(404);
   process.env.NEVORA_PAYROLL_ENABLED = "true";
