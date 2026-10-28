@@ -9,6 +9,9 @@ export type DeviceRuntime = {
   api(operation: 'status' | 'subscribe' | 'unsubscribe' | 'test', body?: object): Promise<object>;
   prepare(): Promise<void>; hasSubscription(): Promise<boolean>; subscribe(key: string, current: () => boolean): Promise<object>; own(generation: string): Promise<boolean>;
   suppress(generation: string): Promise<void>; unsubscribe(current: () => boolean): Promise<void>;
+  /** QA-OWN-3: a turn-off intent kept apart from the worker's IndexedDB, so it survives when that write, the native
+   * unsubscribe and the server all fail. Optional: runtimes without it keep the earlier behavior. */
+  pendingTurnOff?(): string | undefined; rememberTurnOff?(generation: string, pending: boolean): boolean;
   beginOwnershipChange(): void; withEnrollment(action: () => Promise<void>): Promise<void>; cleanupFence(current: () => boolean): () => boolean;
   readOwner(): string | undefined; writeOwner(generation: string): void;
   readDismissal(scope?: string): boolean; saveDismissal(scope?: string): boolean;
@@ -79,6 +82,9 @@ export class DeviceController {
       const status = await this.runtime.api('status');
       if (!this.current(epoch)) return;
       if (!isStatus(status)) throw Error('Invalid status');
+      // A replaced controller/worker has lost the in-memory cleanup; the remembered intent for this exact enabled
+      // generation restores it, so cleanup resumes instead of passive re-ownership. Other generations are unaffected.
+      if (!this.cleanupGeneration && status.enabled && status.ownershipGeneration && this.runtime.pendingTurnOff?.() === status.ownershipGeneration) this.cleanupGeneration = status.ownershipGeneration;
       if (this.cleanupGeneration) {
         await this.runtime.suppress(this.cleanupGeneration);
         if (!this.current(epoch)) return;
@@ -86,6 +92,7 @@ export class DeviceController {
           this.publish({ ...status, phase: 'error', localOwned: false }, 'Server cleanup is pending. Notifications remain suppressed locally where possible. Retry Turn Off; you can still sign out.');
           return;
         }
+        this.runtime.rememberTurnOff?.(this.cleanupGeneration, false);
         this.cleanupGeneration = undefined;
       }
       if (!passive) this.dismissed = this.runtime.readDismissal(status.dismissalScope);
@@ -182,6 +189,8 @@ export class DeviceController {
     const generation = this.cleanupGeneration ?? this.snapshot.server.ownershipGeneration ?? this.runtime.readOwner();
     if(expectedGeneration!==undefined&&expectedGeneration!==(generation??null)){this.publish({...this.snapshot.server,phase:'error'},'Device setup changed. Check again before turning alerts off.');return;}
     this.cleanupGeneration = generation;
+    // Before any of the three cleanups: if all of them fail, this is what keeps a replacement from re-owning it.
+    if (generation) this.runtime.rememberTurnOff?.(generation, true);
     this.publish({ ...this.snapshot.server, phase: 'pending', localOwned: false });
     const cleanupCurrent = this.runtime.cleanupFence(() => this.current(epoch));
     // Local and server cleanup are independent; failure of either cannot skip the other.
@@ -197,6 +206,7 @@ export class DeviceController {
       if(this.runtime.strict&&this.nativeOperations)throw Error('Local cleanup pending');
       if(this.runtime.strict){const fresh=await this.runtime.api('status');if(!this.current(epoch))return;if(!isStatus(fresh)||fresh.enabled)throw Error('Cleanup not confirmed');}
       this.cleanupGeneration = undefined;
+      if (generation) this.runtime.rememberTurnOff?.(generation, false);
       this.publish({ ...this.snapshot.server, phase: undefined, enabled: false, ownershipGeneration: undefined, testAllowed: false, localOwned: false }, 'Notifications turned off on this device.');
     } catch(error) {
       if(error instanceof DeviceRequestError&&(error.status===401||error.status===403)){this.invalidate();return;}
@@ -224,6 +234,7 @@ const OWNER_KEY = 'fuel-portal-owner-generation';
 const FENCE_KEY = 'fuel-portal-account-fence';
 const PROBE_KEY = 'fuel-portal-coordination-probe';
 const OPERATION_KEY = 'fuel-portal-subscription-operation';
+const TURN_OFF_KEY = 'fuel-portal-turn-off-pending';
 const SUBSCRIPTION_LOCK = 'fuel-portal-subscription-lifecycle';
 const controllers = new Set<DeviceController>();
 let preparedRegistration: ServiceWorkerRegistration | undefined;
@@ -418,6 +429,15 @@ export function browserRuntime(authority?:string): DeviceRuntime {
     },
     suppress: generation => suppressRegistration(registration ?? preparedRegistration, generation),
     unsubscribe: current => unsubscribeCurrent(registration, current),
+    pendingTurnOff: () => { try { return localStorage.getItem(TURN_OFF_KEY) || undefined; } catch { return undefined; } },
+    rememberTurnOff: (generation, pending) => {
+      // Independent of coordinationWriteFailed: losing this ledger must not disable other coordination.
+      try {
+        if (pending) localStorage.setItem(TURN_OFF_KEY, generation);
+        else if (localStorage.getItem(TURN_OFF_KEY) === generation) localStorage.removeItem(TURN_OFF_KEY);
+        return (localStorage.getItem(TURN_OFF_KEY) === generation) === pending;
+      } catch { return false; }
+    },
     readOwner, writeOwner: generation => { if (!writeCoordination(OWNER_KEY, generation)) throw Error('Ownership coordination write failed'); },
     readDismissal: scope => { try { return readDismissal(localStorage, scope); } catch { return false; } },
     saveDismissal: scope => { try { return saveDismissal(localStorage, scope); } catch { return false; } },
