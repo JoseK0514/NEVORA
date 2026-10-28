@@ -9,7 +9,7 @@ import {QuietNav} from '@/components/quiet/quiet';
 import {EmployeeProfilePage} from '@/components/employee-mobile/profile';
 import {policiesVisible} from '@/lib/legal/policies';
 import {ManagerProfilePage} from '@/components/manager-profile/manager-profile';
-import {PasskeySection} from '@/components/passkeys/passkey-section';
+import {EmployeePasskeySection} from '@/components/employee-mobile/passkeys';
 import {getWorkspace} from '@/lib/data/workspaces';
 import {readAuthLang} from '@/lib/auth-lang.server';
 
@@ -27,5 +27,5 @@ export default async function ProfilePage(){
  return <EmployeeProfilePage authority={authority} lang={lang} notificationsEnabled={notificationsEnabled} policies={policiesVisible()}
   legacyHeader={<><QuietNav back={{href:'/app/more',label:'More'}}/><div className="q-who"><span className="q-av q-av--lg" aria-hidden="true">{initials}</span><div><h1>{firstName} {lastName}</h1><p>{roleLabel}{workspaceName?` · ${workspaceName}`:''}</p></div></div></>}
   calendar={<ProfileCalendarDisclosure><CalendarSubscriptionPanel key={calAuthority} authority={calAuthority}/></ProfileCalendarDisclosure>}
-  passkeys={<PasskeySection/>}/>;
+  passkeys={<EmployeePasskeySection key={employeeViewAuthority(proof,'passkeys')} authority={employeeViewAuthority(proof,'passkeys')}/>}/>;
 }
