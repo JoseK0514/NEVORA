@@ -22,26 +22,31 @@ const actors:string[]=[],checks:unknown[]=[],messages:{engine:string;scenario:st
 const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
 beforeAll(async()=>{
  if(!evidence)throw Error('Choose external NEVORA_EMPLOYEE_MESSAGES_REVIEW_EVIDENCE');
- await mkdir(evidence,{recursive:true});
+ // Cancel inside the outer hook so the runtime's existing90-second readiness
+ // window and owned cleanup can finish before Vitest starts another fixture.
+ const setup=new AbortController(),deadline=setTimeout(()=>setup.abort(new Error('Owned Communications setup exceeded 120 seconds')),120000);
+ try{
+ await mkdir(evidence,{recursive:true});setup.signal.throwIfAborted();
  runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
- app=await createOwnedNextApp(evidence);
- await seedOwnedApp(app.database.executor);owner=await fixtureProof(app.database.executor,'QAOWNER');
+ app=await createOwnedNextApp(evidence,{signal:setup.signal});setup.signal.throwIfAborted();
+ await seedOwnedApp(app.database.executor);setup.signal.throwIfAborted();owner=await fixtureProof(app.database.executor,'QAOWNER');setup.signal.throwIfAborted();
  const today=businessDate(new Date(),'America/Puerto_Rico'),week=weekStartFor(today);
- await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('message-review-today','loc-1',$1,'DRAFT','QAOWNER')",[week]);
+ await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('message-review-today','loc-1',$1,'DRAFT','QAOWNER')",[week]);setup.signal.throwIfAborted();
  for(const [index] of engines.entries()){
-  const fixture=await seedOwnedScenario(app.database.executor,'MESSAGEREVIEW'+index,index),actor=fixture.actors[0];actors.push(actor);
-  if(index===1)await q("UPDATE employees SET role='LEAD' WHERE id=$1",[actor]);
-  await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id,is_designated_lead) VALUES($1,'message-review-today',$2,$3,'08:00','16:00','qa-pos',true)",['message-review-shift-'+index,actor,today]);
+  const fixture=await seedOwnedScenario(app.database.executor,'MESSAGEREVIEW'+index,index),actor=fixture.actors[0];setup.signal.throwIfAborted();actors.push(actor);
+  if(index===1)await q("UPDATE employees SET role='LEAD' WHERE id=$1",[actor]);setup.signal.throwIfAborted();
+  await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id,is_designated_lead) VALUES($1,'message-review-today',$2,$3,'08:00','16:00','qa-pos',true)",['message-review-shift-'+index,actor,today]);setup.signal.throwIfAborted();
  }
- await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'QAOWNER'},app.database.executor);
+ await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'QAOWNER'},app.database.executor);setup.signal.throwIfAborted();
  const publicationIds:string[]=[];
  for(let i=0;i<3;i++){
   const draft={type:'LOCATION_ANNOUNCEMENT' as const,scope:{kind:'LOCATION' as const,locationId:'loc-1'},title:'Review update '+i,body:'Fictional current reading facts.',acknowledgement:'OPTIONAL' as const,expiresAt:null};
-  const audience=await previewCommunicationAudience(owner,draft,app.database.executor);if(audience.state!=='ready')throw Error('Owned review audience unavailable');
-  const published=await executeCommunicationCommand(owner,{kind:'PUBLISH',operationId:randomUUID(),authority:audience.authority,draft,audienceFingerprint:audience.fingerprint},app.database.executor);expect(published.status).toBe('committed');if(published.status==='committed')publicationIds.push(published.id);
+  const audience=await previewCommunicationAudience(owner,draft,app.database.executor);setup.signal.throwIfAborted();if(audience.state!=='ready')throw Error('Owned review audience unavailable');
+  const published=await executeCommunicationCommand(owner,{kind:'PUBLISH',operationId:randomUUID(),authority:audience.authority,draft,audienceFingerprint:audience.fingerprint},app.database.executor);setup.signal.throwIfAborted();expect(published.status).toBe('committed');if(published.status==='committed')publicationIds.push(published.id);
  }
- await writeFile(evidence+'/due-notice-fixture.json',JSON.stringify(await makeOwnedCommunicationNoticesDue(app.database.executor,publicationIds,actors,9),null,2));
-});
+ await writeFile(evidence+'/due-notice-fixture.json',JSON.stringify(await makeOwnedCommunicationNoticesDue(app.database.executor,publicationIds,actors,9),null,2));setup.signal.throwIfAborted();
+ }catch(error){try{await app?.close();}catch(cleanup){throw new AggregateError([error,cleanup],'Owned Communications setup and cleanup failed');}throw error;}finally{clearTimeout(deadline);}
+},180000);
 afterAll(async()=>{try{await app?.close();}finally{if(evidence)await writeFile(evidence+'/results.json',JSON.stringify({checks,messages,captures},null,2));}});
 
 async function withPage(engine:typeof engines[number],scenario:string,run:(page:any,ready:(view:string)=>Promise<void>,shot:(name:string)=>Promise<void>,fault:(value:boolean)=>void)=>Promise<void>){
