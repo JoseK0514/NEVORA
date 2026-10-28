@@ -2,6 +2,15 @@
 
 These instructions apply to implementation work in this repository.
 
+## Active branches
+
+Jose's October 28 policy permits exactly `development` (dev), `main`, and
+`claude-codex-collab-nevora`. Use those existing branches; use detached worktrees
+for isolation instead of creating other local or remote branches. Retired sources
+remain recoverable through archive tags and local recovery refs. Do not recreate
+a retired branch without Jose's new authorization. Main and production continue
+to require explicit authorization.
+
 ## Development integration
 
 Start new release work from freshly fetched `origin/development`. Development is

@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-10-27",
+  "observedAt": "2026-10-28",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -219,7 +219,8 @@
       "branch": "codex/ci-spend-controls-20261023",
       "sha": "e49edcd8607be18a40fd2c7ae3fc48542d801597",
       "disposition": "held",
-      "reason": "Active draft CI spending PR27 appeared during finalization. Preserve its remote and local work; exclude its workflow changes from this approved integration and reconcile any advancement before cleanup. Preserved outside the Clocker collaboration integration."
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/ci-spend-controls-20261023"
     },
     {
       "branch": "codex/clean-ui-development-20261020",
@@ -363,9 +364,9 @@
     },
     {
       "branch": "development",
-      "sha": "84c3fc357b006220ef6bbf29580e7327228c9659",
+      "sha": "682ecea9fa61548f68274c896ffa4e2d92b62989",
       "disposition": "target",
-      "reason": "Current development governance commit is preserved in this collaboration integration. Clocker source, staging evidence and archived PR35 lineage are retained; separately held application work remains excluded. No main or production promotion."
+      "reason": "Current development three-branch retirement policy is incorporated into collaboration. Archived source dispositions and existing collaboration application work are preserved; no main or production promotion."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -412,13 +413,15 @@
       "branch": "claude/home-clock-row",
       "sha": "341680bbbc3620a7f357309464961dfa845c1b64",
       "disposition": "held",
-      "reason": "Active PR33; preserve its remote and work. Separate Home clock row and its scenario drivers; changes the existing Home presentation. Excluded from the frozen mobile Access PR35; requires separate review and matching acceptance before any integration. Recording this head is source classification, not approval or findings closure. October 27: record the current remote head for custody only; all changes remain held and excluded from this branch-policy update. No review, merge acceptance or findings closure is inferred. Preserved outside the Clocker collaboration integration."
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/claude/home-clock-row"
     },
     {
       "branch": "claude/quiet-everywhere",
       "sha": "5b82c3cb4836ba61415cef1d6f3cd918c019a385",
       "disposition": "held",
-      "reason": "Active PR34; preserve its remote and work. Separate cross-application UI, payroll/schema, read-path and scoped-permission changes;411 changed paths compared with development. Excluded from the frozen mobile Access PR35; requires separate review and matching acceptance before any integration. Recording this head is source classification, not approval or findings closure. October 27: record the current remote head for custody only; all changes remain held and excluded from this branch-policy update. No review, merge acceptance or findings closure is inferred. Preserved outside the Clocker collaboration integration."
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/claude/quiet-everywhere"
     },
     {
       "branch": "codex/mobile-access-onboarding-20261026",
@@ -431,8 +434,51 @@
       "branch": "codex/light-default-20261027",
       "sha": "2f6103b10b86848bac59d0a7481e4cbd70265020",
       "disposition": "included",
-      "reason": "Jose requested submission to the collaboration branch for Claude inspection before further CI or integration. Includes the Light-default change and its CI/test-infrastructure follow-ups. Review delivery only; PR36 remains unmerged and no combined-source acceptance is claimed."
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source was already included in the collaboration branch before cleanup; its development integration and combined-source acceptance remain separate. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/light-default-20261027"
+    },
+    {
+      "branch": "codex/employee-mobile-cloud-handoff-20261027",
+      "sha": "e06eeff35960336b2c33f1bd1037823d62a8405a",
+      "disposition": "held",
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/employee-mobile-cloud-handoff-20261027"
+    },
+    {
+      "branch": "codex/employee-mobile-cloud-return-20261027",
+      "sha": "c21ac528fefac35de7534d47be196fec2866c066",
+      "disposition": "held",
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/employee-mobile-cloud-return-20261027"
+    },
+    {
+      "branch": "codex/employee-mobile-local-resume-20261027",
+      "sha": "003bbe2ca42c40efffe975294ec3577aa2633bac",
+      "disposition": "held",
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/employee-mobile-local-resume-20261027"
+    },
+    {
+      "branch": "codex/owner-desktop-cloud-handoff-20261027",
+      "sha": "b16302978be01bb0e288bfc3e785c7e13a9a2c11",
+      "disposition": "held",
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/owner-desktop-cloud-handoff-20261027"
+    },
+    {
+      "branch": "codex/owner-desktop-cloud-return-g11-20261027",
+      "sha": "5141ba9097d93d955930c6859b3d8d8d142b5521",
+      "disposition": "held",
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/owner-desktop-cloud-return-g11-20261027"
+    },
+    {
+      "branch": "codex/owner-mobile-cloud-handoff-20261027",
+      "sha": "e673e6e05b1c38c25706803946efe82c2c591625",
+      "disposition": "held",
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/owner-mobile-cloud-handoff-20261027"
     }
   ],
-  "maximumActiveBranches": 7
+  "maximumActiveBranches": 3
 }
