@@ -93,4 +93,11 @@ describe('Employee mobile Pay',()=>{
   const temporary=text(render({document:'temporary'}));
   expect(temporary).toContain('We couldn’t open that statement');expect(temporary).toContain('Try again in a moment');expect(temporary).not.toContain('file check');
  });
+ it('pads the loading card like every other card and keeps the privacy line to listed states (PAY-UI-13, PAY-UI-9)',()=>{
+  const loading=render({loading:true,statements:null});
+  expect(loading).toMatch(/<div class="em-pay-card em-pay-quiet" role="status"><span><small>Loading your statements…<\/small><\/span><\/div>/);
+  expect(loading).not.toMatch(/<p class="em-pay-card/);
+  expect(text(render({statements:null,error:'x',errorCode:'MODULE_OFF'}))).not.toContain('Only your own published statements');
+  expect(text(render())).toContain('Only your own published statements');
+ });
 });

@@ -106,7 +106,7 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
      <small>From your workplace’s pay schedule. A statement appears here after payroll is published.</small>
     </span></div>
    </section>:null}
-   {state==='loading'?<p className="em-pay-card em-pay-quiet" role="status">Loading your statements…</p>
+   {state==='loading'?<div className="em-pay-card em-pay-quiet" role="status"><span><small>Loading your statements…</small></span></div>
     :state==='signed-out'?surface('',<InfoIcon size={24} aria-hidden="true"/>,'Sign in to see your statements','Your session ended. Statements stay private until you sign in again.',<Link className="em-request-primary" href="/login?returnTo=%2Fapp%2Fmy-pay">Sign in</Link>,'alert')
     :state==='denied'?surface('',<InfoIcon size={24} aria-hidden="true"/>,'Your access to pay statements changed','NEVORA can’t show your statements right now. If that seems wrong, ask your manager.')
     :state==='module-off'?surface('',<InfoIcon size={24} aria-hidden="true"/>,'Pay statements are turned off','Your workplace isn’t sharing pay statements in NEVORA right now. Ask your manager where to find your pay information.')
@@ -137,7 +137,7 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
     <h2 id="pay-hours-title">Your hours</h2>
     <ul className="em-pay-links"><li><Link href="/app/my-time">My time<CaretRightIcon size={20} aria-hidden="true"/></Link></li><li><Link href="/app/timecards">Timecards<CaretRightIcon size={20} aria-hidden="true"/></Link></li></ul>
    </section>
-   <p className="em-pay-privacy">Only your own published statements are available here. Downloaded files may contain personal pay information.</p>
+   {listed?<p className="em-pay-privacy">Only your own published statements are available here. Downloaded files may contain personal pay information.</p>:null}
   </div>
  </div>;
 }
