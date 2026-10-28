@@ -21,7 +21,8 @@ export function copyOwnedDependencies(source: string, mirror: string): void {
   });
 }
 function trackedApplicationFiles(source: string): string[] {
-  const gitPaths = (args: string[]) => execFileSync('git', args, { cwd: source, encoding: 'utf8' }).split('\0').filter(Boolean);
+  // The tracked list passed Node's 1 MiB default once preserved evidence grew; an overflow is ENOBUFS, never a partial list.
+  const gitPaths = (args: string[]) => execFileSync('git', args, { cwd: source, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }).split('\0').filter(Boolean);
   if (gitPaths(['ls-files', '-o', '--exclude-standard', '-z']).some(applicationInput)) throw Error('Untracked application source cannot produce exact-SHA evidence');
   if (gitPaths(['diff', '--name-only', 'HEAD', '-z']).some(applicationInput)) throw Error('Tracked application source differs from HEAD');
   return gitPaths(['ls-files', '-c', '-z']).filter(applicationInput).sort();
