@@ -1,0 +1,34 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/test/integration/employee-mobile-communications-fixtures" without a file extension (vitest.employee-mobile-communications.config.mts:3:39). Add the file extension
+  - ESM syntax in a file loaded as CommonJS (src/test/integration/employee-mobile-communications-fixtures.ts:4:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+ ❯ |employee| src/test/integration/employee-mobile-device-alerts.integration.ts (1 test | 1 failed) 24672ms
+   × integrates own current-device enrollment, protected cleanup and mobile states in three engines 24671ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |employee| src/test/integration/employee-mobile-device-alerts.integration.ts > integrates own current-device enrollment, protected cleanup and mobile states in three engines
+AssertionError: expected 403 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 403
+
+ ❯ src/test/integration/employee-mobile-device-alerts.integration.ts:50:281
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  21:44:31
+   Duration  24.92s (tests 99%)
+
+[Payroll PostgreSQL] Owned cluster stopped.

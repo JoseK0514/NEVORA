@@ -1,0 +1,43 @@
+{
+  "cwd": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+  "argv": [
+    "/usr/local/bin/node",
+    "scripts/payroll-postgres.mjs",
+    "vitest.employee-mobile-device-alerts.config.mts",
+    "src/test/integration/phase-e-communications-schema.integration.ts",
+    "src/test/integration/employee-mobile-device-alerts.integration.ts",
+    "src/test/integration/employee-mobile-communications.integration.ts",
+    "src/test/integration/employee-mobile-communications-review.integration.ts",
+    "src/test/integration/employee-mobile-communications-sql.integration.ts",
+    "src/test/integration/passkey-network.integration.ts"
+  ],
+  "environment": {
+    "HOME": "/Users/josek0514",
+    "PATH": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "TMPDIR": "/tmp/nevora-alerts-recovery.enj9qwak",
+    "NEVORA_TEST_PG_BIN": "/Users/josek0514/.codex/visualizations/2026/10/02/01a0f8c7-f196-7d22-8896-8d3c96547bd9/fuel-phase-3-pwa-notifications/local-postgres-runtime/package/native/bin",
+    "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE": "/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/package.json",
+    "NEVORA_EMPLOYEE_MOBILE_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/requests",
+    "NEVORA_EMPLOYEE_RESPONSES_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/responses",
+    "NEVORA_EMPLOYEE_CREATION_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/creation",
+    "NEVORA_EMPLOYEE_PLANNING_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/planning",
+    "NEVORA_EMPLOYEE_HOURS_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/hours",
+    "NEVORA_EMPLOYEE_MESSAGES_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications",
+    "NEVORA_EMPLOYEE_MESSAGES_REVIEW_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review",
+    "NEVORA_EMPLOYEE_PROFILE_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/profile",
+    "NEVORA_EMPLOYEE_CALENDAR_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/calendar",
+    "NEVORA_EMPLOYEE_PASSKEYS_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/passkeys",
+    "NEVORA_EMPLOYEE_DEVICE_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/device",
+    "NEVORA_PASSKEY_NETWORK_EVIDENCE": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/passkey-network",
+    "PHASE_E_EVIDENCE_DIR": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/canonical-communications"
+  },
+  "selectedFiles": [
+    "phase-e-communications-schema.integration.ts",
+    "employee-mobile-device-alerts.integration.ts",
+    "employee-mobile-communications.integration.ts",
+    "employee-mobile-communications-review.integration.ts",
+    "employee-mobile-communications-sql.integration.ts",
+    "passkey-network.integration.ts"
+  ],
+  "expectedSource": "7ddf37715ff89ba4b397cf22ec8b67ae5d53de2e"
+}

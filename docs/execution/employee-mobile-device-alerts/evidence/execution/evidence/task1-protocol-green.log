@@ -1,0 +1,13 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run src/lib/notifications/device-protocol.test.ts src/lib/notifications/device-client.test.ts src/app/app/api/push/push-routes.test.ts
+
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+
+ Test Files  3 passed (3)
+      Tests  65 passed (65)
+   Start at  21:35:11
+   Duration  2.95s (tests 98%, transform 1%, import 1%)
+

@@ -1,0 +1,54 @@
+{
+  "snapshot": {
+    "state": "error",
+    "server": {
+      "supported": true,
+      "enabled": true,
+      "configurationAvailable": true,
+      "testAllowed": false,
+      "ownershipGeneration": "generation-original",
+      "vapidPublicKey": "fictional",
+      "authority": "fictional-authority",
+      "validForMs": 45000,
+      "phase": "error"
+    },
+    "capabilities": {
+      "secure": true,
+      "serviceWorker": true,
+      "push": true,
+      "notifications": true,
+      "requiresStandalone": false,
+      "installPrompt": false
+    },
+    "standalone": false,
+    "message": "Device setup is unavailable. Retry, or turn off notifications if cleanup is pending.",
+    "validUntil": 45250.823375,
+    "cleanupPending": false
+  },
+  "workerState": {
+    "current": null,
+    "suppressed": [
+      "generation-original"
+    ],
+    "blocked": false
+  },
+  "messages": [
+    {
+      "version": 1,
+      "type": "SET_OWNER",
+      "generation": "generation-original"
+    },
+    {
+      "version": 1,
+      "type": "SUPPRESS_OWNER",
+      "generation": "generation-original"
+    },
+    {
+      "version": 1,
+      "type": "SET_OWNER",
+      "generation": "generation-original"
+    }
+  ],
+  "operation": "",
+  "nativeUnsubscribeCalls": 1
+}

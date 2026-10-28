@@ -1,0 +1,8 @@
+{
+  "head": "b368200d33e6c3498d468f2ea386b99c21a68b3a",
+  "status": " M src/components/employee-mobile/device-alerts.test.tsx\n M src/components/employee-mobile/device-alerts.tsx\n M src/components/employee-mobile/device-owner.tsx\n M src/lib/notifications/device-client.test.ts\n M src/lib/notifications/device-client.ts\n M src/test/integration/employee-mobile-device-alerts.integration.ts\n",
+  "hashes": {
+    "src/lib/notifications/device-client.ts": "e72d2ce2d46b45bfa4944ca674d17a22bf197eda6d362afbea76ba267145d023",
+    "public/fuel-portal-sw.js": "f6ccbabe455ed2179d58f48d4219d9b709736e6cec437e876616b66a2ed9f3cb"
+  }
+}

@@ -1,0 +1,33 @@
+import os,sys,pathlib,subprocess,tempfile,json,time
+repo=pathlib.Path('/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume')
+qa=repo.parent.parent/'outputs/employee-mobile-device-alerts/reviews/qa';expected=sys.argv[1];out=qa/'affected-recovery-02';out.mkdir(exist_ok=True)
+head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=repo,text=True).strip();dirty=subprocess.check_output(['git','status','--porcelain','--untracked-files=no'],cwd=repo,text=True)
+if head!=expected or dirty:raise RuntimeError('Expected clean frozen source required')
+(out/'head.txt').write_text(head+'\n');tmp=tempfile.mkdtemp(prefix='nevora-alerts-recovery.',dir='/tmp');(out/'tmpdir.txt').write_text(tmp+'\n')
+env={'HOME':'/Users/josek0514','PATH':'/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin','TMPDIR':tmp,'NEVORA_TEST_PG_BIN':'/Users/josek0514/.codex/visualizations/2026/10/02/01a0f8c7-f196-7d22-8896-8d3c96547bd9/fuel-phase-3-pwa-notifications/local-postgres-runtime/package/native/bin','NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE':'/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/package.json'}
+vars={'NEVORA_EMPLOYEE_MOBILE_EVIDENCE':'requests','NEVORA_EMPLOYEE_RESPONSES_EVIDENCE':'responses','NEVORA_EMPLOYEE_CREATION_EVIDENCE':'creation','NEVORA_EMPLOYEE_PLANNING_EVIDENCE':'planning','NEVORA_EMPLOYEE_HOURS_EVIDENCE':'hours','NEVORA_EMPLOYEE_MESSAGES_EVIDENCE':'communications','NEVORA_EMPLOYEE_MESSAGES_REVIEW_EVIDENCE':'communications-review','NEVORA_EMPLOYEE_PROFILE_EVIDENCE':'profile','NEVORA_EMPLOYEE_CALENDAR_EVIDENCE':'calendar','NEVORA_EMPLOYEE_PASSKEYS_EVIDENCE':'passkeys','NEVORA_EMPLOYEE_DEVICE_EVIDENCE':'device','NEVORA_PASSKEY_NETWORK_EVIDENCE':'passkey-network','PHASE_E_EVIDENCE_DIR':'canonical-communications'}
+for k,v in vars.items():
+ d=out/v;d.mkdir(exist_ok=True);env[k]=str(d)
+files=['phase-e-communications-schema.integration.ts','employee-mobile-device-alerts.integration.ts','employee-mobile-communications.integration.ts','employee-mobile-communications-review.integration.ts','employee-mobile-communications-sql.integration.ts','passkey-network.integration.ts']
+cmd=['/usr/local/bin/node','scripts/payroll-postgres.mjs','vitest.employee-mobile-device-alerts.config.mts']+['src/test/integration/'+f for f in files]
+(out/'invocation.json').write_text(json.dumps({'cwd':str(repo),'argv':cmd,'environment':env,'selectedFiles':files,'expectedSource':expected},indent=2))
+seen={}
+with(out/'run.log').open('w')as log:
+ p=subprocess.Popen(cmd,cwd=repo,env=env,stdout=log,stderr=subprocess.STDOUT)
+ while p.poll()is None:
+  rows={}
+  for line in subprocess.check_output(['ps','-axo','pid=,ppid=,lstart=,command='],text=True).splitlines():
+   x=line.split(None,7)
+   if len(x)==8:rows[int(x[0])]={'pid':int(x[0]),'ppid':int(x[1]),'start':' '.join(x[2:7]),'command':x[7]}
+  owned={p.pid};changed=True
+  while changed:
+   old=len(owned);owned.update(k for k,v in rows.items()if v['ppid']in owned);changed=len(owned)>old
+  for k in owned:
+   if k in rows:seen[str(k)+':'+rows[k]['start']]=rows[k]
+  (out/'owned-process-history.json').write_text(json.dumps({'rootPid':p.pid,'processes':list(seen.values())},indent=2));time.sleep(2)
+ code=p.returncode
+(out/'exit-code.txt').write_text(str(code)+'\n');(out/'tmpdir-after.json').write_text(json.dumps([str(p)for p in pathlib.Path(tmp).rglob('*')],indent=2))
+try:os.rmdir(tmp)
+except OSError:pass
+(out/'source-after.txt').write_text(subprocess.check_output(['git','rev-parse','HEAD'],cwd=repo,text=True)+subprocess.check_output(['git','status','--porcelain','--untracked-files=no'],cwd=repo,text=True))
+print(json.dumps({'exit':code,'evidence':str(out)}));sys.exit(code)

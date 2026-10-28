@@ -1,0 +1,13 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run src/lib/notifications/device-client.test.ts
+
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+
+ Test Files  1 passed (1)
+      Tests  46 passed (46)
+   Start at  21:33:13
+   Duration  2.93s (tests 99%, transform 1%)
+

@@ -1,0 +1,31 @@
+▲ Next.js 16.4.2 (Turbopack)
+- Local:         http://127.0.0.1:56733
+- Network:       http://127.0.0.1:56733
+✓ Ready in 664ms
+⚠ Warning: Next.js ignored package-lock.json in /Users/josek0514 because it would include your home directory (/Users/josek0514).
+ To use this directory, set `turbopack.root` in your Next.js config.
+
+✓ Running next.config.ts took 1308ms
+- Experiments (use with caution):
+  ⨯ turbopackFileSystemCacheForBuild
+
+ GET /login 200 in 386ms (next.js: 142ms, application-code: 244ms)
+ GET /app/profile/device-alerts 200 in 226ms (next.js: 29ms, application-code: 197ms)
+ GET /app/profile/device-alerts 200 in 118ms (next.js: 0.6ms, application-code: 117ms)
+ GET /api/notifications 200 in 149ms (next.js: 88ms, application-code: 61ms)
+ GET /app/profile/device-alerts 200 in 131ms (next.js: 2.0ms, application-code: 129ms)
+ GET /api/notifications 200 in 77ms (next.js: 3ms, application-code: 74ms)
+ GET /api/company-access/operational-authority 200 in 53ms (next.js: 32ms, application-code: 21ms)
+ GET /app/profile 200 in 548ms (next.js: 21ms, application-code: 527ms)
+ GET /api/company-access/operational-authority 200 in 54ms (next.js: 2ms, application-code: 52ms)
+ GET /api/notifications 200 in 75ms (next.js: 1.2ms, application-code: 74ms)
+ GET /api/company-access/operational-authority 200 in 19ms (next.js: 4ms, application-code: 15ms)
+ GET /app/profile/device-alerts 200 in 178ms (next.js: 0.8ms, application-code: 177ms)
+ GET /api/manager/inbox-count 200 in 48ms (next.js: 30ms, application-code: 18ms)
+ GET /api/notifications 200 in 192ms (next.js: 0.8ms, application-code: 191ms)
+ GET /app/profile 200 in 295ms (next.js: 0.7ms, application-code: 294ms)
+ GET /api/manager/inbox-count 200 in 15ms (next.js: 0.5ms, application-code: 15ms)
+ GET /api/notifications 200 in 78ms (next.js: 0.7ms, application-code: 77ms)
+ GET /api/manager/inbox-count 200 in 92ms (next.js: 0.4ms, application-code: 91ms)
+ GET /api/management/profile 200 in 27ms (next.js: 21ms, application-code: 5ms)
+[?25h

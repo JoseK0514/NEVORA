@@ -1,0 +1,41 @@
+▲ Next.js 16.4.2 (Turbopack)
+- Local:         http://127.0.0.1:59899
+- Network:       http://127.0.0.1:59899
+✓ Ready in 286ms
+⚠ Warning: Next.js ignored package-lock.json in /Users/josek0514 because it would include your home directory (/Users/josek0514).
+ To use this directory, set `turbopack.root` in your Next.js config.
+
+✓ Running next.config.ts took 940ms
+- Experiments (use with caution):
+  ⨯ turbopackFileSystemCacheForBuild
+
+ GET /login 200 in 436ms (next.js: 156ms, application-code: 280ms)
+ GET /login 200 in 135ms (next.js: 1.1ms, application-code: 134ms)
+ GET /app/profile 200 in 276ms (next.js: 33ms, application-code: 243ms)
+ GET /app/api/push/status 200 in 157ms (next.js: 33ms, application-code: 124ms)
+ GET /api/employee/calendar-subscriptions 200 in 70ms (next.js: 19ms, application-code: 51ms)
+ GET /api/employee/profile 200 in 301ms (next.js: 52ms, application-code: 249ms)
+ GET /app/profile/device-alerts 200 in 55ms (next.js: 9ms, application-code: 45ms)
+ GET /app/api/push/status 200 in 51ms (next.js: 0.6ms, application-code: 50ms)
+ GET /api/notifications 200 in 188ms (next.js: 34ms, application-code: 154ms)
+ GET /app/api/push/status 401 in 8ms (next.js: 0.6ms, application-code: 7ms)
+ GET /app/api/push/status 200 in 9ms (next.js: 0.5ms, application-code: 9ms)
+ POST /app/api/push/subscribe 401 in 26ms (next.js: 19ms, application-code: 6ms)
+ GET /app/api/push/status 200 in 16ms (next.js: 0.4ms, application-code: 15ms)
+ POST /app/api/push/subscribe 200 in 11ms (next.js: 0.4ms, application-code: 11ms)
+ GET /app/api/push/status 200 in 6ms (next.js: 0.4ms, application-code: 5ms)
+ GET /app/api/push/status 200 in 10ms (next.js: 0.3ms, application-code: 9ms)
+ GET /api/notifications 200 in 26ms (next.js: 0.6ms, application-code: 25ms)
+ GET /app/profile 200 in 34ms (next.js: 0.7ms, application-code: 33ms)
+ GET /api/employee/calendar-subscriptions 200 in 14ms (next.js: 0.9ms, application-code: 13ms)
+ GET /api/employee/profile 200 in 15ms (next.js: 0.4ms, application-code: 15ms)
+ GET /app/profile/device-alerts 200 in 26ms (next.js: 0.8ms, application-code: 25ms)
+ GET /app/profile 200 in 31ms (next.js: 1.2ms, application-code: 30ms)
+ GET /api/employee/calendar-subscriptions 200 in 17ms (next.js: 0.8ms, application-code: 16ms)
+ GET /api/employee/profile 200 in 28ms (next.js: 0.4ms, application-code: 27ms)
+ GET /app/profile/device-alerts 200 in 36ms (next.js: 1.8ms, application-code: 34ms)
+ GET /app/profile 200 in 19ms (next.js: 0.6ms, application-code: 19ms)
+ GET /api/employee/calendar-subscriptions 200 in 12ms (next.js: 0.6ms, application-code: 11ms)
+ GET /api/employee/profile 200 in 14ms (next.js: 0.4ms, application-code: 13ms)
+ GET /app/profile/device-alerts 200 in 22ms (next.js: 0.5ms, application-code: 21ms)
+[?25h

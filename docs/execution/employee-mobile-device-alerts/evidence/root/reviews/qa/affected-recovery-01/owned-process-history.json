@@ -1,0 +1,47 @@
+{
+  "rootPid": 51266,
+  "processes": [
+    {
+      "pid": 51266,
+      "ppid": 51257,
+      "start": "Tue Oct 27 22:57:55 2026",
+      "command": "/usr/local/bin/node scripts/payroll-postgres.mjs vitest.employee-mobile-device-alerts.config.mts src/test/integration/phase-e-communications-schema.integration.ts src/test/integration/employee-mobile-device-alerts.integration.ts src/test/integration/employee-mobile-communications.integration.ts src/test/integration/employee-mobile-communications-review.integration.ts src/test/integration/employee-mobile-communications-sql.integration.ts src/test/integration/passkey-network.integration.ts"
+    },
+    {
+      "pid": 51297,
+      "ppid": 51294,
+      "start": "Tue Oct 27 22:57:56 2026",
+      "command": "/usr/local/bin/node --experimental-import-meta-resolve --require /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/suppress-warnings.cjs --conditions node --conditions development /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/dist/workers/forks.js"
+    },
+    {
+      "pid": 51294,
+      "ppid": 51266,
+      "start": "Tue Oct 27 22:57:56 2026",
+      "command": "/usr/local/bin/node node_modules/vitest/vitest.mjs run --config vitest.employee-mobile-device-alerts.config.mts src/test/integration/phase-e-communications-schema.integration.ts src/test/integration/employee-mobile-device-alerts.integration.ts src/test/integration/employee-mobile-communications.integration.ts src/test/integration/employee-mobile-communications-review.integration.ts src/test/integration/employee-mobile-communications-sql.integration.ts src/test/integration/passkey-network.integration.ts"
+    },
+    {
+      "pid": 51640,
+      "ppid": 51294,
+      "start": "Tue Oct 27 22:58:02 2026",
+      "command": "/usr/local/bin/node --experimental-import-meta-resolve --require /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/suppress-warnings.cjs --conditions node --conditions development /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/dist/workers/forks.js"
+    },
+    {
+      "pid": 51879,
+      "ppid": 51640,
+      "start": "Tue Oct 27 22:58:27 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-01/communications-review/owned-next-B2KZIU/app/node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 63275"
+    },
+    {
+      "pid": 51880,
+      "ppid": 51879,
+      "start": "Tue Oct 27 22:58:27 2026",
+      "command": "next-server (v16.4.2) "
+    },
+    {
+      "pid": 51954,
+      "ppid": 51294,
+      "start": "Tue Oct 27 22:58:34 2026",
+      "command": "/usr/local/bin/node --experimental-import-meta-resolve --require /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/suppress-warnings.cjs --conditions node --conditions development /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/dist/workers/forks.js"
+    }
+  ]
+}

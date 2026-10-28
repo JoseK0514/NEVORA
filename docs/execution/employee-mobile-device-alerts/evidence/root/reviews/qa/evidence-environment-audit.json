@@ -1,0 +1,100 @@
+{
+  "selectedFileCount": 32,
+  "selectedFiles": [
+    "src/test/integration/communications-gap-remediation.integration.ts",
+    "src/test/integration/company-access-communications.integration.ts",
+    "src/test/integration/company-access-recovery-calendar.integration.ts",
+    "src/test/integration/employee-mobile-calendar.integration.ts",
+    "src/test/integration/employee-mobile-communications-review.integration.ts",
+    "src/test/integration/employee-mobile-communications-sql.integration.ts",
+    "src/test/integration/employee-mobile-communications.integration.ts",
+    "src/test/integration/employee-mobile-creation-privacy.integration.ts",
+    "src/test/integration/employee-mobile-creation.integration.ts",
+    "src/test/integration/employee-mobile-device-alerts.integration.ts",
+    "src/test/integration/employee-mobile-exchange-privacy.integration.ts",
+    "src/test/integration/employee-mobile-hours-sql.integration.ts",
+    "src/test/integration/employee-mobile-hours.integration.ts",
+    "src/test/integration/employee-mobile-passkeys.integration.ts",
+    "src/test/integration/employee-mobile-planning-sql.integration.ts",
+    "src/test/integration/employee-mobile-planning.integration.ts",
+    "src/test/integration/employee-mobile-profile-sql.integration.ts",
+    "src/test/integration/employee-mobile-profile.integration.ts",
+    "src/test/integration/employee-mobile-requests.integration.ts",
+    "src/test/integration/employee-mobile-responses.integration.ts",
+    "src/test/integration/notifications.integration.ts",
+    "src/test/integration/passkey-network.integration.ts",
+    "src/test/integration/passkeys-http.integration.ts",
+    "src/test/integration/passkeys.integration.ts",
+    "src/test/integration/phase-e-calendar-feed.integration.ts",
+    "src/test/integration/phase-e-calendar-tokens.integration.ts",
+    "src/test/integration/phase-e-communication-ack.integration.ts",
+    "src/test/integration/phase-e-communication-notifications.integration.ts",
+    "src/test/integration/phase-e-communications-schema.integration.ts",
+    "src/test/integration/phase-e-communications.integration.ts",
+    "src/test/integration/shift-change-hardening.integration.ts",
+    "src/test/integration/shift-change-views.integration.ts"
+  ],
+  "requiredEvidenceVariables": {
+    "NEVORA_EMPLOYEE_CALENDAR_EVIDENCE": [
+      "src/test/integration/employee-mobile-calendar.integration.ts"
+    ],
+    "NEVORA_EMPLOYEE_MESSAGES_REVIEW_EVIDENCE": [
+      "src/test/integration/employee-mobile-communications-review.integration.ts"
+    ],
+    "NEVORA_EMPLOYEE_MESSAGES_EVIDENCE": [
+      "src/test/integration/employee-mobile-communications.integration.ts"
+    ],
+    "NEVORA_EMPLOYEE_CREATION_EVIDENCE": [
+      "src/test/integration/employee-mobile-creation.integration.ts"
+    ],
+    "NEVORA_EMPLOYEE_DEVICE_EVIDENCE": [
+      "src/test/integration/employee-mobile-device-alerts.integration.ts",
+      "src/test/integration/employee-mobile-device-alerts.integration.ts"
+    ],
+    "NEVORA_EMPLOYEE_HOURS_EVIDENCE": [
+      "src/test/integration/employee-mobile-hours.integration.ts"
+    ],
+    "NEVORA_EMPLOYEE_PASSKEYS_EVIDENCE": [
+      "src/test/integration/employee-mobile-passkeys.integration.ts"
+    ],
+    "NEVORA_EMPLOYEE_PLANNING_EVIDENCE": [
+      "src/test/integration/employee-mobile-planning.integration.ts"
+    ],
+    "NEVORA_EMPLOYEE_PROFILE_EVIDENCE": [
+      "src/test/integration/employee-mobile-profile.integration.ts"
+    ],
+    "NEVORA_EMPLOYEE_MOBILE_EVIDENCE": [
+      "src/test/integration/employee-mobile-requests.integration.ts"
+    ],
+    "NEVORA_EMPLOYEE_RESPONSES_EVIDENCE": [
+      "src/test/integration/employee-mobile-responses.integration.ts"
+    ],
+    "NEVORA_PASSKEY_NETWORK_EVIDENCE": [
+      "src/test/integration/passkey-network.integration.ts"
+    ],
+    "PHASE_E_EVIDENCE_DIR": [
+      "src/test/integration/phase-e-communications-schema.integration.ts"
+    ]
+  },
+  "providedInitial": [
+    "NEVORA_EMPLOYEE_CALENDAR_EVIDENCE",
+    "NEVORA_EMPLOYEE_CREATION_EVIDENCE",
+    "NEVORA_EMPLOYEE_DEVICE_EVIDENCE",
+    "NEVORA_EMPLOYEE_HOURS_EVIDENCE",
+    "NEVORA_EMPLOYEE_MESSAGES_EVIDENCE",
+    "NEVORA_EMPLOYEE_MESSAGES_REVIEW_EVIDENCE",
+    "NEVORA_EMPLOYEE_MOBILE_EVIDENCE",
+    "NEVORA_EMPLOYEE_PASSKEYS_EVIDENCE",
+    "NEVORA_EMPLOYEE_PLANNING_EVIDENCE",
+    "NEVORA_EMPLOYEE_PROFILE_EVIDENCE",
+    "NEVORA_EMPLOYEE_RESPONSES_EVIDENCE",
+    "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE",
+    "NEVORA_TEST_PG_BIN",
+    "TMPDIR"
+  ],
+  "missingInitial": [
+    "NEVORA_PASSKEY_NETWORK_EVIDENCE",
+    "PHASE_E_EVIDENCE_DIR"
+  ],
+  "note": "Initial omitted two explicit evidence directories; keep run01, diagnose actual final errors, then rerun affected suites under same SHA with complete evidence environment."
+}

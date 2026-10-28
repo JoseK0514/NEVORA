@@ -1,0 +1,4 @@
+src/lib/notifications/device-client.ts(149,22): error TS2345: Argument of type '{ phase: "pending"; }' is not assignable to parameter of type 'DeviceStatusView'.
+  Type '{ phase: "pending"; }' is missing the following properties from type 'DeviceStatus': supported, enabled, configurationAvailable, testAllowed
+src/lib/notifications/device-client.ts(154,22): error TS2345: Argument of type '{ localOwned: true; }' is not assignable to parameter of type 'DeviceStatusView'.
+  Type '{ localOwned: true; }' is missing the following properties from type 'DeviceStatus': supported, enabled, configurationAvailable, testAllowed

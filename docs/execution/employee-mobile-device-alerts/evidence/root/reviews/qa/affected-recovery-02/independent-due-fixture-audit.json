@@ -1,0 +1,34 @@
+[
+  {
+    "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/due-notice-fixture.json",
+    "total": 42,
+    "targeted": 9,
+    "beforeTargetFuture": 9,
+    "afterTargetDue": 9,
+    "errors": []
+  },
+  {
+    "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/firefox-due-notice-fixture.json",
+    "total": 524,
+    "targeted": 27,
+    "beforeTargetFuture": 27,
+    "afterTargetDue": 27,
+    "errors": []
+  },
+  {
+    "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/chromium-due-notice-fixture.json",
+    "total": 87,
+    "targeted": 27,
+    "beforeTargetFuture": 27,
+    "afterTargetDue": 27,
+    "errors": []
+  },
+  {
+    "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/webkit-due-notice-fixture.json",
+    "total": 262,
+    "targeted": 27,
+    "beforeTargetFuture": 27,
+    "afterTargetDue": 27,
+    "errors": []
+  }
+]

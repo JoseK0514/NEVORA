@@ -1,0 +1,102 @@
+[
+  {
+    "command": "BEGIN",
+    "rowCount": null,
+    "rows": []
+  },
+  {
+    "command": "DO",
+    "rowCount": null,
+    "rows": []
+  },
+  {
+    "command": "SELECT",
+    "rowCount": 1,
+    "rows": [
+      {
+        "owned_database": "nevora_exchange_test_c1_6a2655065288",
+        "observed_at": "2026-10-28T02:33:24.661Z",
+        "local_time": "2026-10-27 22:33:24.661237"
+      }
+    ]
+  },
+  {
+    "command": "SELECT",
+    "rowCount": 3,
+    "rows": [
+      {
+        "environment": "test",
+        "source_kind": "COMMUNICATION",
+        "type": "COMMUNICATION",
+        "rows": "27",
+        "earliest_due": "2026-10-28T11:00:00.000Z",
+        "latest_due": "2026-10-28T11:00:00.000Z",
+        "future_due": "27",
+        "currently_due": "0"
+      },
+      {
+        "environment": "test",
+        "source_kind": "SCHEDULE",
+        "type": "SCHEDULE_ACKNOWLEDGEMENT_REMINDER",
+        "rows": "6",
+        "earliest_due": "2026-10-29T11:00:00.000Z",
+        "latest_due": "2026-10-29T11:00:00.000Z",
+        "future_due": "6",
+        "currently_due": "0"
+      },
+      {
+        "environment": "test",
+        "source_kind": "SCHEDULE",
+        "type": "SCHEDULE_PUBLISHED",
+        "rows": "9",
+        "earliest_due": "2026-10-28T11:00:00.000Z",
+        "latest_due": "2026-10-28T11:00:00.000Z",
+        "future_due": "9",
+        "currently_due": "0"
+      }
+    ]
+  },
+  {
+    "command": "SELECT",
+    "rowCount": 4,
+    "rows": [
+      {
+        "source_kind": "COMMUNICATION",
+        "purpose": "EVENT",
+        "urgency": "normal",
+        "due_at": "2026-10-28T11:00:00.000Z",
+        "created_at": "2026-10-28T02:24:02.959Z",
+        "expires_at": "2026-11-27T02:24:02.954Z"
+      },
+      {
+        "source_kind": "COMMUNICATION",
+        "purpose": "EVENT",
+        "urgency": "normal",
+        "due_at": "2026-10-28T11:00:00.000Z",
+        "created_at": "2026-10-28T02:24:02.959Z",
+        "expires_at": "2026-11-27T02:24:02.954Z"
+      },
+      {
+        "source_kind": "COMMUNICATION",
+        "purpose": "EVENT",
+        "urgency": "normal",
+        "due_at": "2026-10-28T11:00:00.000Z",
+        "created_at": "2026-10-28T02:24:02.959Z",
+        "expires_at": "2026-11-27T02:24:02.954Z"
+      },
+      {
+        "source_kind": "COMMUNICATION",
+        "purpose": "EVENT",
+        "urgency": "normal",
+        "due_at": "2026-10-28T11:00:00.000Z",
+        "created_at": "2026-10-28T02:24:02.959Z",
+        "expires_at": "2026-11-27T02:24:02.954Z"
+      }
+    ]
+  },
+  {
+    "command": "COMMIT",
+    "rowCount": null,
+    "rows": []
+  }
+]

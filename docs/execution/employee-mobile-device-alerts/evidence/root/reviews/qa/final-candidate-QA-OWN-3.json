@@ -1,0 +1,51 @@
+{
+  "snapshot": {
+    "state": "enabled",
+    "server": {
+      "supported": true,
+      "enabled": true,
+      "configurationAvailable": true,
+      "testAllowed": false,
+      "ownershipGeneration": "generation-original",
+      "vapidPublicKey": "fictional",
+      "authority": "fictional-authority",
+      "validForMs": 45000,
+      "localOwned": true
+    },
+    "capabilities": {
+      "secure": true,
+      "serviceWorker": true,
+      "push": true,
+      "notifications": true,
+      "requiresStandalone": false,
+      "installPrompt": false
+    },
+    "standalone": false,
+    "validUntil": 45311.26175,
+    "cleanupPending": false
+  },
+  "workerState": {
+    "current": "generation-original",
+    "suppressed": [],
+    "blocked": false
+  },
+  "messages": [
+    {
+      "version": 1,
+      "type": "SET_OWNER",
+      "generation": "generation-original"
+    },
+    {
+      "version": 1,
+      "type": "SUPPRESS_OWNER",
+      "generation": "generation-original"
+    },
+    {
+      "version": 1,
+      "type": "SET_OWNER",
+      "generation": "generation-original"
+    }
+  ],
+  "operation": "",
+  "nativeUnsubscribeCalls": 1
+}

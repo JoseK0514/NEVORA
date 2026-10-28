@@ -1,0 +1,35 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run src/lib/notifications/device-protocol.test.ts
+
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+ ❯ src/lib/notifications/device-protocol.test.ts (2 tests | 2 failed) 6ms
+   × only accepts a finite current-session device projection with coherent ownership 4ms
+   × turn-off and test require their exact receipt and original generation 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/notifications/device-protocol.test.ts > only accepts a finite current-session device projection with coherent ownership
+AssertionError: expected {} to have property "parseDeviceStatus"
+ ❯ protocol src/lib/notifications/device-protocol.test.ts:4:95
+
+ ❯ src/lib/notifications/device-protocol.test.ts:6:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/lib/notifications/device-protocol.test.ts > turn-off and test require their exact receipt and original generation
+AssertionError: expected {} to have property "parseDeviceStatus"
+ ❯ protocol src/lib/notifications/device-protocol.test.ts:4:95
+
+ ❯ src/lib/notifications/device-protocol.test.ts:10:29
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  21:34:41
+   Duration  78ms (transform 47%, tests 27%, import 18%, worker 8%)
+

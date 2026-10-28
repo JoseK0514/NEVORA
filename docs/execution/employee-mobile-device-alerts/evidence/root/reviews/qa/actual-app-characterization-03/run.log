@@ -1,0 +1,30 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume[39m
+
+ [31m❯[39m ../../outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization.integration.ts [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 21610[2mms[22m[39m
+[31m   [31m×[31m independently characterizes actual native keyboard and coarse landscape on unchanged app source[39m[33m 21609[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m ../../outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization.integration.ts[2m > [22mindependently characterizes actual native keyboard and coarse landscape on unchanged app source
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m ../../outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization.integration.ts:[2m77:212[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 22:48:55
+[2m   Duration [22m 21.81s[2m (tests 99%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

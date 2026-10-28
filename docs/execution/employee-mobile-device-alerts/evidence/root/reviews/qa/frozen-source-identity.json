@@ -1,0 +1,17 @@
+{
+  "head": "ebec721a3d6cfd842a5037fc4598b77e2454d9e8",
+  "status": "",
+  "files": {
+    "src/lib/notifications/device-client.ts": "e72d2ce2d46b45bfa4944ca674d17a22bf197eda6d362afbea76ba267145d023",
+    "src/lib/notifications/device-state.ts": "1722643849dfd1148700a661b0e14b36b853338b9ad1be4ae3263112febf797a",
+    "src/lib/notifications/device-protocol.ts": "f91a36e8dbf7413c04947faad2b602f7bcffe29379709710bba433d108ce9237",
+    "public/fuel-portal-sw.js": "f6ccbabe455ed2179d58f48d4219d9b709736e6cec437e876616b66a2ed9f3cb",
+    "src/components/employee-mobile/device-owner.tsx": "65558b70015851024436b5fbe029efa6643fe9c5312eea637016c77b186a6512",
+    "src/components/employee-mobile/device-alerts.tsx": "d5a61e5ce95b1a97cbb37a8e77fbed905270ded3a33c76af571e61d915cf98a4"
+  },
+  "baseline": "059f4ac2",
+  "baselineWorkerSHA256": "f6ccbabe455ed2179d58f48d4219d9b709736e6cec437e876616b66a2ed9f3cb",
+  "baselineDeviceStateSHA256": "1722643849dfd1148700a661b0e14b36b853338b9ad1be4ae3263112febf797a",
+  "probeSHA256": "6d8ac768ced9139c78c7bfb386b40fc6448dac22163c954f53143ea417150862",
+  "baselineExtractSHA256": "ccaafc82aa35562d7d0001f4cd73517b3b7aabb0e472c62b1c539d6ccf2061de"
+}

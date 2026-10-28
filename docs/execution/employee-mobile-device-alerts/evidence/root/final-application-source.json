@@ -1,0 +1,104 @@
+{
+  "applicationCandidate": "72b1c192e8f2f05bcdd51b41cbf895ebce0d3dc5",
+  "verificationCandidate": "7ddf37715ff89ba4b397cf22ec8b67ae5d53de2e",
+  "branch": "codex/employee-mobile-local-resume-20261027",
+  "trackedStatus": "",
+  "base": "059f4ac2fbd4cc50bb526bb0f1001465de2e2ce2",
+  "testOnlyPathsSinceApplication": [
+    "src/test/integration/employee-mobile-communications-fixtures.ts",
+    "src/test/integration/employee-mobile-communications-review.integration.ts",
+    "src/test/integration/employee-mobile-communications-sql.integration.ts",
+    "src/test/integration/employee-mobile-communications.integration.ts",
+    "src/test/integration/employee-mobile-device-alerts.integration.ts"
+  ],
+  "files": [
+    {
+      "path": "scripts/payroll-postgres.mjs",
+      "sha256": "ca38009484b7b73836d08991ed378f5d057715756778efa8a526d6a8a5fdd3ee"
+    },
+    {
+      "path": "src/app/app/api/push/push-routes.test.ts",
+      "sha256": "33f9bd51cf7d086b5ea8372b24ea5e79d8d7466b43521a18b6a79c1c025004a7"
+    },
+    {
+      "path": "src/app/app/profile/device-alerts/page.tsx",
+      "sha256": "0ce62e42b45af708ae6e3df67ec6ce7ff10296723b6b63a660830a9b9254071c"
+    },
+    {
+      "path": "src/components/app-shell.tsx",
+      "sha256": "08dcfdf96518cf44e420379eb650210de0ecceb8add3d95dbf2c898123094255"
+    },
+    {
+      "path": "src/components/employee-mobile/device-alerts.css",
+      "sha256": "e96c5e8f1a003a60bae36f91ad985f064f7252fd8bcd3906e45f1fdd9c4c4b5c"
+    },
+    {
+      "path": "src/components/employee-mobile/device-alerts.test.tsx",
+      "sha256": "456bcba1f1122d24148e6b44abced2ad16cf2e54db7b76c1231ee6b4a485b939"
+    },
+    {
+      "path": "src/components/employee-mobile/device-alerts.tsx",
+      "sha256": "fdb4ec6506525803605059a07c3a3d742a219d01c52f1bd5d36bc1ce60badd4d"
+    },
+    {
+      "path": "src/components/employee-mobile/device-owner.tsx",
+      "sha256": "1e0448f5cb1161f859398f78a20bd0dbef50e3ffbca540c61da56ec39e4a796f"
+    },
+    {
+      "path": "src/components/employee-mobile/profile.tsx",
+      "sha256": "a9468c765df17ccc0fcc7e99c2997051c185c9a2696cd1635f815e1e27a0d008"
+    },
+    {
+      "path": "src/lib/notifications/device-client.test.ts",
+      "sha256": "5049b465e94f1504a145552edbfe5bd8560300e23ba9df5092f807add50139a5"
+    },
+    {
+      "path": "src/lib/notifications/device-client.ts",
+      "sha256": "a299726fd6cb63d7fc0210f8dbb69f5339073bb7c0f880ef257ab9f9da2a3a71"
+    },
+    {
+      "path": "src/lib/notifications/device-protocol.test.ts",
+      "sha256": "897bb8b581ae0efd99348a422c8c2bf732c863b7ce708b3428a824e4d1313a02"
+    },
+    {
+      "path": "src/lib/notifications/device-protocol.ts",
+      "sha256": "f91a36e8dbf7413c04947faad2b602f7bcffe29379709710bba433d108ce9237"
+    },
+    {
+      "path": "src/lib/notifications/subscription-service.ts",
+      "sha256": "e57d05ff9d8b0feb23446f5931b85d1ef4998c02940bf7604cc233b9f929a025"
+    },
+    {
+      "path": "src/test/integration/employee-mobile-communications-fixtures.ts",
+      "sha256": "f3affa6be6489f54fa845431573b5d36ecbfa554f9585c2dbe5d1e5422d003cd"
+    },
+    {
+      "path": "src/test/integration/employee-mobile-communications-review.integration.ts",
+      "sha256": "0c75e342ba9ff1597448361b65014135b77b75cd4b3de87129bd8eb8489b4007"
+    },
+    {
+      "path": "src/test/integration/employee-mobile-communications-sql.integration.ts",
+      "sha256": "1902a1b26a5491095869edac99d98fc4742b348529321c9148bbc75d30655cfb"
+    },
+    {
+      "path": "src/test/integration/employee-mobile-communications.integration.ts",
+      "sha256": "2fcc101f8e82eca9af48296f9c94033e18ebfe6073e15f0b6f08581337ebfec2"
+    },
+    {
+      "path": "src/test/integration/employee-mobile-device-alerts.integration.ts",
+      "sha256": "5431d5e2fdec5d202538e933e2bda91904cf6f623d8da8879d1abad86005c0ca"
+    },
+    {
+      "path": "src/test/integration/owned-device-environment.test.ts",
+      "sha256": "47c457797cca993342d8c2019c7a22b72ec00a3cba5869992f4761aee0becaeb"
+    },
+    {
+      "path": "src/test/integration/owned-next-app.ts",
+      "sha256": "a6b15307214f65480ab2e7178f3071f78637cc5315133b533af3b6c742c396ac"
+    },
+    {
+      "path": "vitest.employee-mobile-device-alerts.config.mts",
+      "sha256": "0495e2adfe7c714e1bdb160e45c565061284ba5ae199576da1fa42cf14af7e80"
+    }
+  ]
+}

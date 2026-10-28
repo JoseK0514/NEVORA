@@ -1,0 +1,13 @@
+import {it,expect} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/dist/index.js';
+import {createElement} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/react/index.js';
+import {renderToStaticMarkup} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/react-dom/server.node.js';
+import {writeFileSync} from 'node:fs';
+import {EmployeeDeviceAlertsView} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/components/employee-mobile/device-alerts';
+it('QA-A11Y-1 feature-off is settled unavailable, but currently leaves aria-busy true indefinitely',()=>{
+ const noop=()=>{};
+ const html=renderToStaticMarkup(createElement(EmployeeDeviceAlertsView,{snapshot:null,paused:false,enabled:false,canInstall:false,confirm:false,onEnable:noop,onRefresh:noop,onPostpone:noop,onInstall:noop,onReview:noop,onKeep:noop,onTurnOff:noop,onTest:noop}));
+ writeFileSync('/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/feature-off-busy.html',html);
+ expect(html).toContain('Workplace alerts are unavailable');
+ expect(html).toContain('aria-busy="true"');
+ expect(html).not.toContain('Turn on alerts');
+});

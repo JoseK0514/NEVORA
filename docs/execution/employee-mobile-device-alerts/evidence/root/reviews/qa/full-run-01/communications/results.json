@@ -1,0 +1,108 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Actual sign-in and current Home status settled"
+    },
+    {
+      "engine": "chromium",
+      "name": "Initial held real read exposes loading without stale private rows"
+    },
+    {
+      "engine": "chromium",
+      "name": "notifications Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    }
+  ],
+  "captures": [
+    "chromium-notifications-light-320-viewport.png",
+    "chromium-notifications-light-320.png",
+    "chromium-notifications-light-390-viewport.png",
+    "chromium-notifications-light-390.png",
+    "chromium-notifications-light-430-viewport.png",
+    "chromium-notifications-light-430.png",
+    "chromium-notifications-dark-320-viewport.png",
+    "chromium-notifications-dark-320.png",
+    "chromium-notifications-dark-390-viewport.png",
+    "chromium-notifications-dark-390.png",
+    "chromium-notifications-dark-430-viewport.png",
+    "chromium-notifications-dark-430.png",
+    "chromium-notifications-text-200-viewport.png",
+    "chromium-notifications-text-200.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "stage": "notifications",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:57312/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "notifications",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:57312/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "notifications",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:57312/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false
+    }
+  ],
+  "failedRequests": [
+    {
+      "engine": "chromium",
+      "stage": "login",
+      "url": "http://127.0.0.1:57312/login",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    }
+  ]
+}

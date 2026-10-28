@@ -1,0 +1,24 @@
+{
+  "nodeExecutable": "/usr/local/bin/node",
+  "nodeVersion": "v24.19.0",
+  "nodeSHA256": "1f08f0e5b8d9a0136c6219f4cea4d3b4fb8ffa4d96e0ff64869ce0dda6dd6a35",
+  "playwrightPackage": "/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/package.json",
+  "playwrightVersion": "1.62.1",
+  "binaries": {
+    "initdb": {
+      "path": "/Users/josek0514/.codex/visualizations/2026/10/02/01a0f8c7-f196-7d22-8896-8d3c96547bd9/fuel-phase-3-pwa-notifications/local-postgres-runtime/package/native/bin/initdb",
+      "sha256": "8aad5fa27591903ab45a9251c3b26dd3465a7daec1fc2c03cedc3ca267b35ab3",
+      "version": "initdb (PostgreSQL) 17.10"
+    },
+    "pg_ctl": {
+      "path": "/Users/josek0514/.codex/visualizations/2026/10/02/01a0f8c7-f196-7d22-8896-8d3c96547bd9/fuel-phase-3-pwa-notifications/local-postgres-runtime/package/native/bin/pg_ctl",
+      "sha256": "a304fd74fffe000e06194315445f713727e2d74668deb51752a4cabb6e26c826",
+      "version": "pg_ctl (PostgreSQL) 17.10"
+    },
+    "postgres": {
+      "path": "/Users/josek0514/.codex/visualizations/2026/10/02/01a0f8c7-f196-7d22-8896-8d3c96547bd9/fuel-phase-3-pwa-notifications/local-postgres-runtime/package/native/bin/postgres",
+      "sha256": "8776e8dfcc8fd7eaaf02db978d00f225a1905b6cbe9ecdd3cf5e86cf3a00e33f",
+      "version": "postgres (PostgreSQL) 17.10"
+    }
+  }
+}

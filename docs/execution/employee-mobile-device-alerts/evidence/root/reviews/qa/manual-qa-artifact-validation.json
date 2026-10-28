@@ -1,0 +1,327 @@
+[
+  {
+    "path": "ownership-replacement.test.ts",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "candidate-ownership-probe.log",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "baseline-ownership-probe.log",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "candidate-QA-OWN-1.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "baseline-QA-OWN-1.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "candidate-QA-OWN-2.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "baseline-QA-OWN-2.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "final-probes.log",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "final-probes.exit.txt",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "final-candidate-QA-OWN-1.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "final-candidate-QA-OWN-2.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "final-focused-units.log",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "final-focused-units.exit.txt",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "final-source-delta.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "final-disabled-busy.html",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "final-paused-busy.html",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "final-loading-busy.html",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "qa-a11y-1-feature-off-busy.md",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "full-run-01/combined-gate.log",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "full-run-01/summary.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "full-run-01/exit-code.txt",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-01/run.log",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-01/summary.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-01/qa-recovered-custody.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/invocation.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/run.log",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/summary.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/exit-code.txt",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/independent-custody-audit.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/owned-process-history.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/tmpdir-after.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/device/result.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/device/webkit-light-text200-Turn-off-alerts.png",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/device/firefox-dark-coarse-landscape-1.png",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/device/gates-result.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/device/feature-off/EMPLOYEE.png",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/device/capability-gates/install.png",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "static-keyboard/results.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "static-touch-transition.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "actual-app-characterization-07/result.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "capture-keyboard-characterization.md",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/device/result.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/device/chromium-light-coarse-landscape-2.png",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/device/webkit-dark-coarse-landscape-1.png",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/communications/results.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/communications-review/results.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/journey-observation-audit.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/run.log",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/passkey-network/http-verification.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/canonical-communications/",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "full-run-01/cleanup-audit.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "full-run-01/closure-process-ports.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "diagnostic-first-four-custody.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "diagnostic-final-three-custody.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "retained-four-unit-files.log",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "retained-four-unit-files.exit.txt",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "independently-read-root-default-results.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "ownership-retained-risk.md",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "baseline-QA-OWN-3.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "final-candidate-QA-OWN-3.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "quiet-hours-observation-text.log",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "quiet-hours-observation-text.exit.txt",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "affected-recovery-02/independent-due-fixture-audit.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "coverage-reconciliation.json",
+    "exists": true,
+    "nonempty": true
+  },
+  {
+    "path": "final-qa-report.md",
+    "exists": true,
+    "nonempty": true
+  }
+]

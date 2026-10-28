@@ -1,0 +1,26 @@
+import {createRequire} from 'node:module';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+const runtime=createRequire('/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/package.json')('playwright');
+const output=resolve('/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/static-keyboard');await mkdir(output,{recursive:true});
+const records=[];
+for(const engine of ['webkit','chromium']){
+ const browser=await runtime[engine].launch({headless:true});
+ try{
+  const context=await browser.newContext({viewport:{width:320,height:844},hasTouch:true});
+  await context.route('**/*',route=>route.abort());const page=await context.newPage();
+  for(const chord of ['Tab','Alt+Tab']){
+   await page.setContent(`<!doctype html><html><head><style>body{font:16px sans-serif;padding:20px;background:#f4f8f6;color:#122c2b}button,a,summary{display:block;min-height:48px;margin:12px 0;font:inherit}button{width:100%}:focus-visible{outline:3px solid #007876;outline-offset:3px}#group{margin:30px 0;padding:16px;border:1px solid #a8c8c4;border-radius:16px;background:white}</style></head><body><div id="group" tabindex="-1" role="group" aria-label="Confirmation"><p>Turn off alerts here?</p><button id="keep">Keep current setup</button><button id="off">Turn off alerts</button></div><a id="link" href="#help">View notifications</a><details><summary id="summary">Home Screen setup</summary><p>Native help.</p></details><script>document.getElementById('group').focus()</script></body></html>`);
+   const steps=[];
+   for(let n=0;n<4;n++){
+    if(n)await page.keyboard.press(chord);
+    const state=await page.evaluate(()=>{const el=document.activeElement,s=getComputedStyle(el);return {id:el.id,tag:el.tagName,text:el.textContent,tabIndex:el.tabIndex,outlineStyle:s.outlineStyle,outlineWidth:s.outlineWidth,outlineColor:s.outlineColor,rect:el.getBoundingClientRect().toJSON(),innerWidth,innerHeight,coarse:matchMedia('(pointer:coarse)').matches}});
+    const capture=engine+'-'+chord.replace('+','-')+'-'+n+'.png';await page.screenshot({path:output+'/'+capture});steps.push({key:n?chord:'initial app-like group focus',state,capture});
+   }
+   records.push({engine,chord,steps});
+  }
+  await context.close();
+ }finally{await browser.close();}
+}
+await writeFile(output+'/results.json',JSON.stringify({platform:process.platform,records,limitations:['Static native DOM fixture; not the application. Initial group focus mirrors app entry; control traversal is actual keyboard input. No DOM tabindex adjustment, no OS preference change.']},null,2));
+console.log(JSON.stringify(records.map(r=>({engine:r.engine,chord:r.chord,focus:r.steps.map(s=>s.state.id)})),null,2));

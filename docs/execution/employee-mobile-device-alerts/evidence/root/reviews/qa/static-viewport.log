@@ -1,0 +1,140 @@
+[
+  {
+    "engine": "chromium",
+    "requested": {
+      "width": 390,
+      "height": 844
+    },
+    "actual": {
+      "innerWidth": 390,
+      "innerHeight": 844,
+      "screen": {
+        "width": 390,
+        "height": 844
+      },
+      "queries": {
+        "(pointer:coarse)": true,
+        "(pointer:fine)": false,
+        "(orientation:landscape)": false,
+        "(max-width:900px)": true,
+        "(max-height:430px)": false,
+        "(max-width:900px) and (max-height:430px) and (orientation:landscape) and (pointer:coarse)": false
+      }
+    }
+  },
+  {
+    "engine": "chromium",
+    "requested": {
+      "width": 320,
+      "height": 844
+    },
+    "actual": {
+      "innerWidth": 320,
+      "innerHeight": 844,
+      "screen": {
+        "width": 320,
+        "height": 844
+      },
+      "queries": {
+        "(pointer:coarse)": true,
+        "(pointer:fine)": false,
+        "(orientation:landscape)": false,
+        "(max-width:900px)": true,
+        "(max-height:430px)": false,
+        "(max-width:900px) and (max-height:430px) and (orientation:landscape) and (pointer:coarse)": false
+      }
+    }
+  },
+  {
+    "engine": "chromium",
+    "requested": {
+      "width": 844,
+      "height": 390
+    },
+    "actual": {
+      "innerWidth": 844,
+      "innerHeight": 390,
+      "screen": {
+        "width": 844,
+        "height": 390
+      },
+      "queries": {
+        "(pointer:coarse)": true,
+        "(pointer:fine)": false,
+        "(orientation:landscape)": true,
+        "(max-width:900px)": true,
+        "(max-height:430px)": true,
+        "(max-width:900px) and (max-height:430px) and (orientation:landscape) and (pointer:coarse)": true
+      }
+    }
+  },
+  {
+    "engine": "webkit",
+    "requested": {
+      "width": 390,
+      "height": 844
+    },
+    "actual": {
+      "innerWidth": 390,
+      "innerHeight": 844,
+      "screen": {
+        "width": 390,
+        "height": 844
+      },
+      "queries": {
+        "(pointer:coarse)": true,
+        "(pointer:fine)": false,
+        "(orientation:landscape)": false,
+        "(max-width:900px)": true,
+        "(max-height:430px)": false,
+        "(max-width:900px) and (max-height:430px) and (orientation:landscape) and (pointer:coarse)": false
+      }
+    }
+  },
+  {
+    "engine": "webkit",
+    "requested": {
+      "width": 320,
+      "height": 844
+    },
+    "actual": {
+      "innerWidth": 320,
+      "innerHeight": 844,
+      "screen": {
+        "width": 320,
+        "height": 844
+      },
+      "queries": {
+        "(pointer:coarse)": true,
+        "(pointer:fine)": false,
+        "(orientation:landscape)": false,
+        "(max-width:900px)": true,
+        "(max-height:430px)": false,
+        "(max-width:900px) and (max-height:430px) and (orientation:landscape) and (pointer:coarse)": false
+      }
+    }
+  },
+  {
+    "engine": "webkit",
+    "requested": {
+      "width": 844,
+      "height": 390
+    },
+    "actual": {
+      "innerWidth": 844,
+      "innerHeight": 390,
+      "screen": {
+        "width": 844,
+        "height": 390
+      },
+      "queries": {
+        "(pointer:coarse)": true,
+        "(pointer:fine)": false,
+        "(orientation:landscape)": true,
+        "(max-width:900px)": true,
+        "(max-height:430px)": true,
+        "(max-width:900px) and (max-height:430px) and (orientation:landscape) and (pointer:coarse)": true
+      }
+    }
+  }
+]

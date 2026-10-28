@@ -1,0 +1,19 @@
+#!/bin/zsh
+set -u
+cd /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+unset DATABASE_URL
+test "$(git rev-parse HEAD)" = "72b1c192e8f2f05bcdd51b41cbf895ebce0d3dc5" || exit 91
+test -z "$(git status --porcelain --untracked-files=no)" || exit 92
+mkdir -p /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization-05
+qa_tmp=$(mktemp -d /tmp/nevora-alerts-diag.XXXXXX)
+export TMPDIR="$qa_tmp"
+printf "%s\n" "$qa_tmp" > /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization-05/tmpdir.txt
+export NEVORA_TEST_PG_BIN=/Users/josek0514/.codex/visualizations/2026/10/02/01a0f8c7-f196-7d22-8896-8d3c96547bd9/fuel-phase-3-pwa-notifications/local-postgres-runtime/package/native/bin
+export NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/package.json
+export NEVORA_QA_DEVICE_DIAGNOSTICS=/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization-05
+/usr/local/bin/node scripts/payroll-postgres.mjs ../../outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization.config.mts > /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization-05/run.log 2>&1
+qa_status=$?
+printf "%s\n" "$qa_status" > /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization-05/exit-code.txt
+find "$qa_tmp" -maxdepth 2 -print > /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization-05/tmpdir-after.txt
+rmdir "$qa_tmp" 2>/dev/null || true
+exit "$qa_status"

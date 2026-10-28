@@ -1,0 +1,80 @@
+{
+  "sourceAfter": "7ddf37715ff89ba4b397cf22ec8b67ae5d53de2e\n",
+  "exit": "0",
+  "tmpAbsent": true,
+  "residualProvenOwnedProcesses": [],
+  "mirrors": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/ownership.json",
+      "checkpoint": "7ddf37715ff89ba4b397cf22ec8b67ae5d53de2e",
+      "inputs": 2040,
+      "hashMismatches": [],
+      "pidAbsent": true,
+      "portRefused": true,
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedRemoved": true
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/passkey-network/owned-next-2OzZf7/ownership.json",
+      "checkpoint": "7ddf37715ff89ba4b397cf22ec8b67ae5d53de2e",
+      "inputs": 2040,
+      "hashMismatches": [],
+      "pidAbsent": true,
+      "portRefused": true,
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedRemoved": true
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/device/owned-next-HhYuZK/ownership.json",
+      "checkpoint": "7ddf37715ff89ba4b397cf22ec8b67ae5d53de2e",
+      "inputs": 2040,
+      "hashMismatches": [],
+      "pidAbsent": true,
+      "portRefused": true,
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedRemoved": true
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/owned-next-zZ8Z9a/ownership.json",
+      "checkpoint": "7ddf37715ff89ba4b397cf22ec8b67ae5d53de2e",
+      "inputs": 2040,
+      "hashMismatches": [],
+      "pidAbsent": true,
+      "portRefused": true,
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedRemoved": true
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/device/capability-gates/owned-next-LuIF6i/ownership.json",
+      "checkpoint": "7ddf37715ff89ba4b397cf22ec8b67ae5d53de2e",
+      "inputs": 2040,
+      "hashMismatches": [],
+      "pidAbsent": true,
+      "portRefused": true,
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedRemoved": true
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/device/feature-off/owned-next-rrqXH6/ownership.json",
+      "checkpoint": "7ddf37715ff89ba4b397cf22ec8b67ae5d53de2e",
+      "inputs": 2040,
+      "hashMismatches": [],
+      "pidAbsent": true,
+      "portRefused": true,
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedRemoved": true
+    }
+  ]
+}

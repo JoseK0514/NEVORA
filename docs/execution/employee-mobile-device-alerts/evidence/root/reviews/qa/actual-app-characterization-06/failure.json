@@ -1,0 +1,102 @@
+{
+  "error": "TimeoutError: page.waitForURL: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"**/app/profile\" until \"load\"\n  navigated to \"http://localhost:61097/app/profile#profile-device-alerts\"\n============================================================",
+  "checks": [
+    {
+      "engine": "webkit",
+      "name": "Owned Next dev-indicator preference disabled through its middleware; application error observers unchanged"
+    },
+    {
+      "engine": "webkit",
+      "name": "Protected own Employee/Lead page, no native prompt or subscription on entry"
+    },
+    {
+      "engine": "webkit",
+      "name": "Postponement and deliberate re-entry never request permission"
+    },
+    {
+      "engine": "webkit",
+      "name": "Old/foreign session binding refused before any enrollment"
+    },
+    {
+      "engine": "webkit",
+      "name": "Pause removes current status/actions; focus checks canonical current ownership without enrollment"
+    },
+    {
+      "engine": "webkit",
+      "name": "Deliberate permission, one native subscribe, actual encrypted SQL enrollment and matching local worker ownership"
+    }
+  ],
+  "captures": [
+    "webkit-ready.png",
+    "webkit-enabled.png",
+    "webkit-FAILURE-keyboard-diagnostic.png"
+  ],
+  "errors": [
+    {
+      "engine": "webkit",
+      "stage": "authority",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "authority",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    }
+  ],
+  "contrasts": [],
+  "transport": [
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/subscribe",
+      "method": "POST"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/subscribe",
+      "method": "POST"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    }
+  ],
+  "diagnostics": []
+}

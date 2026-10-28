@@ -1,0 +1,42 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run src/lib/notifications/device-client.test.ts
+
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+ ❯ src/lib/notifications/device-client.test.ts (46 tests | 1 failed) 2841ms
+   × a passive refresh cannot reclaim a generation after an uncertain turn-off 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/notifications/device-client.test.ts > a passive refresh cannot reclaim a generation after an uncertain turn-off
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      "original-generation",
+    ]
+
+
+Number of calls: 1
+
+ ❯ src/lib/notifications/device-client.test.ts:48:18
+     46|  await controller.start();await controller.turnOff();own.mockClear();s…
+     47|  await controller.reconcile();
+     48|  expect(own).not.toHaveBeenCalled();expect(suppress).toHaveBeenCalledW…
+       |                  ^
+     49|  expect(controller.snapshot.state).toBe('error');expect(controller.sna…
+     50| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 45 passed (46)
+   Start at  21:32:46
+   Duration  2.94s (tests 99%, transform 1%)
+

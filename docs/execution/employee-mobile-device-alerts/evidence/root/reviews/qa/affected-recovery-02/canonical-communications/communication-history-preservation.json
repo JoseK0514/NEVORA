@@ -1,0 +1,556 @@
+{
+  "before": {
+    "schedules": [
+      {
+        "row": {
+          "id": "history",
+          "status": "PUBLISHED",
+          "created_at": "2026-10-27T23:02:54.634807-04:00",
+          "created_by": "owner",
+          "updated_at": "2026-10-27T23:02:54.634807-04:00",
+          "week_start": "2030-10-07",
+          "location_id": "loc-1",
+          "published_at": null,
+          "published_by": null
+        }
+      }
+    ],
+    "shifts": [
+      {
+        "row": {
+          "id": "history-shift",
+          "date": "2030-10-07",
+          "notes": null,
+          "end_time": "16:00:00",
+          "created_at": "2026-10-27T23:02:54.634807-04:00",
+          "start_time": "08:00:00",
+          "updated_at": "2026-10-27T23:02:54.634807-04:00",
+          "employee_id": "employee",
+          "position_id": null,
+          "schedule_id": "history",
+          "terms_revision": 1,
+          "generated_claims": null,
+          "assignment_origin": "MANAGER",
+          "is_designated_lead": false,
+          "assignment_episode_id": "a6ee2bee-c230-4365-88db-4d37a36c00a4"
+        }
+      }
+    ],
+    "schedule_publication_revisions": [
+      {
+        "row": {
+          "id": "history-revision",
+          "source_id": null,
+          "created_at": "2026-10-27T23:02:54.634807-04:00",
+          "created_by": "owner",
+          "week_start": "2030-10-07",
+          "source_type": "PUBLISH",
+          "revision_number": 1,
+          "affected_location_id": null
+        }
+      }
+    ],
+    "schedule_publication_revision_shifts": [
+      {
+        "row": {
+          "id": "history-snapshot",
+          "date": "2030-10-07",
+          "notes": null,
+          "end_time": "16:00:00",
+          "start_time": "08:00:00",
+          "employee_id": "employee",
+          "location_id": "loc-1",
+          "position_id": null,
+          "revision_id": "history-revision",
+          "schedule_id": "history",
+          "position_name": null,
+          "source_shift_id": "history-shift",
+          "is_designated_lead": false,
+          "is_callout_approved": false
+        }
+      }
+    ],
+    "schedule_acknowledgements": [
+      {
+        "row": {
+          "week_start": "2030-10-07",
+          "employee_id": "employee",
+          "acknowledged_at": "2026-10-27T23:02:54.634807-04:00",
+          "publication_revision_id": "history-revision"
+        }
+      }
+    ],
+    "time_entries": [
+      {
+        "row": {
+          "id": "history-entry",
+          "status": "CLOCKED_OUT",
+          "version": 1,
+          "device_id": "history-device",
+          "created_at": "2026-10-27T23:02:54.634807-04:00",
+          "updated_at": "2026-10-27T23:02:54.634807-04:00",
+          "clock_in_at": "2030-10-07T08:00:00-04:00",
+          "employee_id": "employee",
+          "location_id": "loc-1",
+          "clock_out_at": "2030-10-07T16:00:00-04:00",
+          "schedule_context": null
+        }
+      }
+    ],
+    "break_entries": [
+      {
+        "row": {
+          "id": "history-break",
+          "version": 1,
+          "break_end_at": "2030-10-07T12:30:00-04:00",
+          "break_type_id": null,
+          "time_entry_id": "history-entry",
+          "break_start_at": "2030-10-07T12:00:00-04:00",
+          "break_type_snapshot": null
+        }
+      }
+    ],
+    "time_correction_requests": [
+      {
+        "row": {
+          "id": "60000000-0000-4000-8000-000000000001",
+          "kind": "MISSING_ENTRY",
+          "reason": "Fictional correction",
+          "proposal": {
+            "endAt": "2030-10-08T20:00:00Z",
+            "startAt": "2030-10-08T12:00:00Z"
+          },
+          "created_at": "2026-10-27T23:02:54.642714-04:00",
+          "employee_id": "employee",
+          "location_id": "loc-1",
+          "request_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "workspace_id": "workspace-fuel",
+          "time_entry_id": null,
+          "break_entry_id": null,
+          "source_revision": 0,
+          "source_snapshot": {
+            "historical": "source"
+          },
+          "base_adjustment_id": null,
+          "requested_by_employee_id": "employee"
+        }
+      }
+    ],
+    "time_correction_events": [
+      {
+        "row": {
+          "id": "60000000-0000-4000-8000-000000000002",
+          "result": {
+            "historical": true
+          },
+          "revision": 1,
+          "event_kind": "REQUESTED",
+          "request_id": "60000000-0000-4000-8000-000000000001",
+          "occurred_at": "2026-10-27T23:02:54.64457-04:00",
+          "adjustment_id": null,
+          "decision_note": null,
+          "operation_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "actor_employee_id": "employee"
+        }
+      }
+    ],
+    "timecard_revisions": [
+      {
+        "row": {
+          "note": null,
+          "action": "APPROVE",
+          "end_date": "2030-10-13",
+          "revision": 1,
+          "snapshot": {
+            "historical": "revision"
+          },
+          "start_date": "2030-10-07",
+          "employee_id": "employee",
+          "occurred_at": "2026-10-27T23:02:54.64519-04:00",
+          "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "command_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "operation_id": "70000000-0000-4000-8000-000000000001",
+          "workspace_id": "workspace-fuel",
+          "actor_employee_id": "owner"
+        }
+      }
+    ]
+  },
+  "after": {
+    "schedules": [
+      {
+        "row": {
+          "id": "history",
+          "status": "PUBLISHED",
+          "created_at": "2026-10-27T23:02:54.634807-04:00",
+          "created_by": "owner",
+          "updated_at": "2026-10-27T23:02:54.634807-04:00",
+          "week_start": "2030-10-07",
+          "location_id": "loc-1",
+          "published_at": null,
+          "published_by": null
+        }
+      }
+    ],
+    "shifts": [
+      {
+        "row": {
+          "id": "history-shift",
+          "date": "2030-10-07",
+          "notes": null,
+          "end_time": "16:00:00",
+          "created_at": "2026-10-27T23:02:54.634807-04:00",
+          "start_time": "08:00:00",
+          "updated_at": "2026-10-27T23:02:54.634807-04:00",
+          "employee_id": "employee",
+          "position_id": null,
+          "schedule_id": "history",
+          "terms_revision": 1,
+          "generated_claims": null,
+          "assignment_origin": "MANAGER",
+          "is_designated_lead": false,
+          "assignment_episode_id": "a6ee2bee-c230-4365-88db-4d37a36c00a4"
+        }
+      }
+    ],
+    "schedule_publication_revisions": [
+      {
+        "row": {
+          "id": "history-revision",
+          "source_id": null,
+          "created_at": "2026-10-27T23:02:54.634807-04:00",
+          "created_by": "owner",
+          "week_start": "2030-10-07",
+          "source_type": "PUBLISH",
+          "revision_number": 1,
+          "affected_location_id": null
+        }
+      }
+    ],
+    "schedule_publication_revision_shifts": [
+      {
+        "row": {
+          "id": "history-snapshot",
+          "date": "2030-10-07",
+          "notes": null,
+          "end_time": "16:00:00",
+          "start_time": "08:00:00",
+          "employee_id": "employee",
+          "location_id": "loc-1",
+          "position_id": null,
+          "revision_id": "history-revision",
+          "schedule_id": "history",
+          "position_name": null,
+          "source_shift_id": "history-shift",
+          "is_designated_lead": false,
+          "is_callout_approved": false
+        }
+      }
+    ],
+    "schedule_acknowledgements": [
+      {
+        "row": {
+          "week_start": "2030-10-07",
+          "employee_id": "employee",
+          "acknowledged_at": "2026-10-27T23:02:54.634807-04:00",
+          "publication_revision_id": "history-revision"
+        }
+      }
+    ],
+    "time_entries": [
+      {
+        "row": {
+          "id": "history-entry",
+          "status": "CLOCKED_OUT",
+          "version": 1,
+          "device_id": "history-device",
+          "created_at": "2026-10-27T23:02:54.634807-04:00",
+          "updated_at": "2026-10-27T23:02:54.634807-04:00",
+          "clock_in_at": "2030-10-07T08:00:00-04:00",
+          "employee_id": "employee",
+          "location_id": "loc-1",
+          "clock_out_at": "2030-10-07T16:00:00-04:00",
+          "schedule_context": null
+        }
+      }
+    ],
+    "break_entries": [
+      {
+        "row": {
+          "id": "history-break",
+          "version": 1,
+          "break_end_at": "2030-10-07T12:30:00-04:00",
+          "break_type_id": null,
+          "time_entry_id": "history-entry",
+          "break_start_at": "2030-10-07T12:00:00-04:00",
+          "break_type_snapshot": null
+        }
+      }
+    ],
+    "time_correction_requests": [
+      {
+        "row": {
+          "id": "60000000-0000-4000-8000-000000000001",
+          "kind": "MISSING_ENTRY",
+          "reason": "Fictional correction",
+          "proposal": {
+            "endAt": "2030-10-08T20:00:00Z",
+            "startAt": "2030-10-08T12:00:00Z"
+          },
+          "created_at": "2026-10-27T23:02:54.642714-04:00",
+          "employee_id": "employee",
+          "location_id": "loc-1",
+          "request_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "workspace_id": "workspace-fuel",
+          "time_entry_id": null,
+          "break_entry_id": null,
+          "source_revision": 0,
+          "source_snapshot": {
+            "historical": "source"
+          },
+          "base_adjustment_id": null,
+          "requested_by_employee_id": "employee"
+        }
+      }
+    ],
+    "time_correction_events": [
+      {
+        "row": {
+          "id": "60000000-0000-4000-8000-000000000002",
+          "result": {
+            "historical": true
+          },
+          "revision": 1,
+          "event_kind": "REQUESTED",
+          "request_id": "60000000-0000-4000-8000-000000000001",
+          "occurred_at": "2026-10-27T23:02:54.64457-04:00",
+          "adjustment_id": null,
+          "decision_note": null,
+          "operation_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "actor_employee_id": "employee"
+        }
+      }
+    ],
+    "timecard_revisions": [
+      {
+        "row": {
+          "note": null,
+          "action": "APPROVE",
+          "end_date": "2030-10-13",
+          "revision": 1,
+          "snapshot": {
+            "historical": "revision"
+          },
+          "start_date": "2030-10-07",
+          "employee_id": "employee",
+          "occurred_at": "2026-10-27T23:02:54.64519-04:00",
+          "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "command_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "operation_id": "70000000-0000-4000-8000-000000000001",
+          "workspace_id": "workspace-fuel",
+          "actor_employee_id": "owner"
+        }
+      }
+    ]
+  },
+  "retained": {
+    "communications": [
+      {
+        "row": {
+          "id": "10000000-0000-4000-8000-000000000001",
+          "state": "PUBLISHED",
+          "created_at": "2026-10-27T23:02:54.70356-04:00",
+          "workspace_id": "workspace-fuel",
+          "head_revision_id": "20000000-0000-4000-8000-000000000001",
+          "author_employee_id": "owner"
+        }
+      }
+    ],
+    "communication_revisions": [
+      {
+        "row": {
+          "id": "20000000-0000-4000-8000-000000000001",
+          "body": "Fictional\noperational detail",
+          "type": "LOCATION_ANNOUNCEMENT",
+          "title": "Café 😀",
+          "version": 1,
+          "created_at": "2026-10-27T23:02:54.707551-04:00",
+          "created_by": "owner",
+          "expires_at": null,
+          "scope_kind": "LOCATION",
+          "location_id": "loc-1",
+          "content_hash": "7e7cf3ae66e8d9de0d6d1b6a630062e8c858cb0f75afa1acc29c0d6d3c8dd2bf",
+          "published_at": "2030-10-07T08:00:00-04:00",
+          "workspace_id": "workspace-fuel",
+          "business_date": null,
+          "acknowledgement": "REQUIRED",
+          "source_shift_id": null,
+          "communication_id": "10000000-0000-4000-8000-000000000001",
+          "terms_fingerprint": null,
+          "audience_fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "audience_observed_at": "2030-10-07T08:00:00-04:00",
+          "assignment_episode_id": null
+        }
+      }
+    ],
+    "communication_recipients": [
+      {
+        "row": {
+          "grant_kind": "LOCATION",
+          "provenance": {
+            "eligibility": "primary_location",
+            "audienceFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "employee_id": "employee",
+          "location_id": "loc-1",
+          "observed_at": "2030-10-07T08:00:00-04:00",
+          "revision_id": "20000000-0000-4000-8000-000000000001",
+          "content_hash": "7e7cf3ae66e8d9de0d6d1b6a630062e8c858cb0f75afa1acc29c0d6d3c8dd2bf",
+          "workspace_id": "workspace-fuel",
+          "source_shift_id": null,
+          "communication_id": "10000000-0000-4000-8000-000000000001",
+          "terms_fingerprint": null,
+          "assignment_episode_id": null
+        }
+      }
+    ],
+    "communication_receipts": [
+      {
+        "row": {
+          "id": "30000000-0000-4000-8000-000000000001",
+          "employee_id": "employee",
+          "revision_id": "20000000-0000-4000-8000-000000000001",
+          "content_hash": "7e7cf3ae66e8d9de0d6d1b6a630062e8c858cb0f75afa1acc29c0d6d3c8dd2bf",
+          "workspace_id": "workspace-fuel",
+          "acknowledged_at": "2026-10-27T23:02:54.721195-04:00",
+          "communication_id": "10000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "communication_operations": [],
+    "communication_lifecycle": []
+  },
+  "afterPresentationRollback": {
+    "communications": [
+      {
+        "row": {
+          "id": "10000000-0000-4000-8000-000000000001",
+          "state": "PUBLISHED",
+          "created_at": "2026-10-27T23:02:54.70356-04:00",
+          "workspace_id": "workspace-fuel",
+          "head_revision_id": "20000000-0000-4000-8000-000000000001",
+          "author_employee_id": "owner"
+        }
+      }
+    ],
+    "communication_revisions": [
+      {
+        "row": {
+          "id": "20000000-0000-4000-8000-000000000001",
+          "body": "Fictional\noperational detail",
+          "type": "LOCATION_ANNOUNCEMENT",
+          "title": "Café 😀",
+          "version": 1,
+          "created_at": "2026-10-27T23:02:54.707551-04:00",
+          "created_by": "owner",
+          "expires_at": null,
+          "scope_kind": "LOCATION",
+          "location_id": "loc-1",
+          "content_hash": "7e7cf3ae66e8d9de0d6d1b6a630062e8c858cb0f75afa1acc29c0d6d3c8dd2bf",
+          "published_at": "2030-10-07T08:00:00-04:00",
+          "workspace_id": "workspace-fuel",
+          "business_date": null,
+          "acknowledgement": "REQUIRED",
+          "source_shift_id": null,
+          "communication_id": "10000000-0000-4000-8000-000000000001",
+          "terms_fingerprint": null,
+          "audience_fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "audience_observed_at": "2030-10-07T08:00:00-04:00",
+          "assignment_episode_id": null
+        }
+      }
+    ],
+    "communication_recipients": [
+      {
+        "row": {
+          "grant_kind": "LOCATION",
+          "provenance": {
+            "eligibility": "primary_location",
+            "audienceFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "employee_id": "employee",
+          "location_id": "loc-1",
+          "observed_at": "2030-10-07T08:00:00-04:00",
+          "revision_id": "20000000-0000-4000-8000-000000000001",
+          "content_hash": "7e7cf3ae66e8d9de0d6d1b6a630062e8c858cb0f75afa1acc29c0d6d3c8dd2bf",
+          "workspace_id": "workspace-fuel",
+          "source_shift_id": null,
+          "communication_id": "10000000-0000-4000-8000-000000000001",
+          "terms_fingerprint": null,
+          "assignment_episode_id": null
+        }
+      }
+    ],
+    "communication_receipts": [
+      {
+        "row": {
+          "id": "30000000-0000-4000-8000-000000000001",
+          "employee_id": "employee",
+          "revision_id": "20000000-0000-4000-8000-000000000001",
+          "content_hash": "7e7cf3ae66e8d9de0d6d1b6a630062e8c858cb0f75afa1acc29c0d6d3c8dd2bf",
+          "workspace_id": "workspace-fuel",
+          "acknowledged_at": "2026-10-27T23:02:54.721195-04:00",
+          "communication_id": "10000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "communication_operations": [],
+    "communication_lifecycle": []
+  },
+  "migrationHashes": {
+    "0001_initial.sql": "330e125060422506f92403307224b739b73f5fc8697ed43039b22e56bcba61a1",
+    "0002_schedule_health.sql": "0dd019d1658c22763d11531ef72b39db9e5a106bb418b1a4fc63f5caaff7f9f0",
+    "0003_schedule_assistance.sql": "d82513ab58c0e8a84f976a05c2be0e342309467c586ded8347cce4ef9001900a",
+    "0004_assistance_layer.sql": "c0263d1e40bbfe3aa646a4740b0fe345728783eac39dfda916495ccf7a1ab7e5",
+    "0005_time_clock.sql": "fc4afbdf4770bd7a3a718cd54fd204bc8df1b96296c04cb676dab3f4f6d0c4e5",
+    "0006_scheduling_rule_inputs.sql": "4a0eb437395a5f4d1873c9b06b3c1104da5a23319e968d422a5a14f3c310483a",
+    "0007_portal_web_push.sql": "020c45cbeb1c5000be22b3ce240f94225fc0c88471e540a67246dd54085440d2",
+    "0008_workspace_positions.sql": "f517e18d468556c25814141a959427c969f620fa4ac6e98cc709b31ee1d88756",
+    "0009_schedule_generation.sql": "aadde6a1f5d3167ed4f346817d1feeb0c9f99f28d50adcf904a989b86120f007",
+    "0010_shift_coverage_automation.sql": "0d8b55abe49995204bda9e63492026158b91b8dc4ca414d05c77b595a6474d8e",
+    "0011_clocker_devices.sql": "788b748bbbd995c44f40d130ea079296aa3e6affcad86c78cbb3857e866c0cd0",
+    "0012_clocker_pins.sql": "9b607ca2e9e111953695ba5cf1a1dbc87f65ae483caeccc3d8056f19aab8c90f",
+    "0013_clocker_punches.sql": "f222d8b52e5cace6698f22b8d4a10fa5ffcd93db1d8c7d5cfd551a02b74216e5",
+    "0014_clocker_breaks.sql": "c20cd86b16fe2f82c05b69687402c52f37a648eb1d79c8f1418436ed8e4c5508",
+    "0015_clocker_schedule_context.sql": "5b5160bff760e17d4e235c35e4936271fba0b8124f5da8a8989e01478fff6796",
+    "0016_time_corrections.sql": "36532a3efc7c641a96b447f5caf2efbd3c4184cbfae2c6e080b548fa3fac4b35",
+    "0017_missing_time_supersession.sql": "2a35c4e3180c3294c7197af56415b231bf66a0b30417000e08de17d161ef8fea",
+    "0018_timecards.sql": "0221827d5faa0670a85661b6a15e59882382703a42bb9800576c30a1f66c1a81",
+    "0019_payroll_export_mappings.sql": "1610d1018824ec84ba9cdbe2f42f3ae36c12ba509a735ea10dce3ee21b594262",
+    "0020_account_recovery.sql": "26bc594863f1950588250be50a1ae66ba2191f90e8a908aea6a41a6ac76c61db",
+    "0021_timecard_reassignment_interlock.sql": "c5e9f1df923c67d4764427cca9f005fed93a4cb148c4a469866d15d4253b4918",
+    "0022_timecard_reopen_revision_authority.sql": "616dc741d8b48679b05958cfbd9dcf3ece018a356892034f2f1ad6a644ba584b",
+    "0023_employee_attention_receipts.sql": "2758fd0dd5567839537483bb49eba8f4e5618b67a9a77c1deccf0e550cefcef1",
+    "0023_template_ownership.sql": "0352f4db63cb5ede8f47aec1178b8cf9cbdfb010d678c412fc1c127abca7439c",
+    "0024_contextual_communications.sql": "f130df4238379aa50347decbc863c51f37b108a9f5975b49ca8696b49fc08277",
+    "0024_schedule_copy_receipts.sql": "fc13bcef690b30f6c3eb932581f19947835efbb0c8d523e54ca4c89331e4f3ee",
+    "0025_calendar_subscriptions.sql": "357bce5c806af4f3f0d9ff8a5b48e09a90b1342e8168206efce4f949072d824b",
+    "0025_company_policies.sql": "247139b09eb20e587061ddb925367dea9176b0c8acb0c062f0d517b4ad9a427a",
+    "0026_attendance_observations.sql": "470cca7063764347d3bf0cde4163b1dc6629fc3aed08d2daaa57e6f97b2715db",
+    "0026_tenant_ownership_expand.sql": "fb5fd364f2e355c059a501422dd016d4284f9bac0287fb3d69548d52caaf43cb",
+    "0027_payroll_period_custody.sql": "1b2999603afe74c8d36d8643386b2944d82ae6c83ccd395669b46a774695c826",
+    "0027_tenant_ownership_validate.sql": "2490ac1ea678a8b0d735fecf935d034861d5c3774b4e6c435d7599e868075d82",
+    "0028_configurable_payroll.sql": "6e6da74c87fb76b49af1beea70e9bef71a6d3e0fb3924c4b24896a6eb499a839",
+    "0029_payroll_private_notices.sql": "42fc345790410582084db999b7069a242f14efb5deb91dfa4b75e084a0290576",
+    "0030_notification_source_kinds.sql": "32cc7ee9d071c40e0f79b78918ba2cf7d46be6b0a69ef1d0d2eff5f321eea6b0",
+    "0031_native_payroll.sql": "bbe2857612e5ee1fc359f93e695a28c61f95b02846b1b3eb9aaae1e990b338bf",
+    "0031_workspace_presentation.sql": "cb684bdfd7b3457048eb39f7b144e8c1e561a220682e9d3a346c8ae9937cab7e",
+    "0032_company_access_invitations.sql": "361edcc14081de6c196d3fe157a8e5bda91da942eec5db5fb1f9c6279e0b2612",
+    "0032_workspace_words_modules.sql": "978301c0e13541471aa7a42835eae36bd0efbcee51fa1972e41363dc5273163e",
+    "0033_management_alert_preferences.sql": "ba1e1e117c1c04be5359318d056bc2d4b6dbe33c29bcde78bf38f97f9345cccc",
+    "0034_account_deletion_requests.sql": "43c750a764e6e6e77c10126469beee7d805bbeed7a5f50b0262ff9558c26f8da",
+    "0035_passkeys.sql": "ca7d8071ff3a7e9d34b06b7a51818e7709c669296c60e3da96c1c29273c9a98d",
+    "0036_owner_advisor.sql": "fb5bd778da67f4e6d4b803e34fa663a6d74d78a345dd3e566005e25a796c30c7",
+    "0037_owner_briefing_reviews.sql": "51ed917185d10de4b7a5add636707ce76a6bdb832d7161521c0769b33cbd2986"
+  }
+}

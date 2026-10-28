@@ -1,0 +1,62 @@
+from pathlib import Path
+from urllib.parse import unquote
+import hashlib,json,re,subprocess
+repo=Path('/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume')
+doc=repo/'docs/execution/employee-mobile-device-alerts'
+app='72b1c192e8f2f05bcdd51b41cbf895ebce0d3dc5';candidate='7ddf37715ff89ba4b397cf22ec8b67ae5d53de2e'
+def read(path): return json.loads(path.read_text())
+def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
+manifest=read(doc/'PRESERVATION_MANIFEST.json')
+assert manifest['applicationCandidate']==app and manifest['verificationCandidate']==candidate
+for entry in manifest['entries']:
+ assert digest(Path(entry['source']))==entry['sourceSHA256'], 'Original changed: '+entry['source']
+ assert digest(doc/entry['target'])==entry['portableSHA256'], 'Portable changed: '+entry['target']
+ if '/reviews/' in entry['source'] and entry['source'].endswith('.md'):
+  assert entry['sourceSHA256']==entry['portableSHA256'], 'Authored report changed'
+ assert not any(part in {'node_modules','.next','.git'} for part in Path(entry['target']).parts)
+refs=read(doc/'PORTABLE_QA_REFERENCES.json')
+assert manifest['qaRegisteredReferenceTokens']==65 and len(refs)==63
+for entry in refs:
+ target=doc/entry['target'];assert target.is_file() and target.stat().st_size>0
+ assert digest(target)==entry['portableSHA256']
+source=read(doc/'evidence/root/final-application-source.json')
+assert source['verificationCandidate']==candidate
+for entry in source['files']:
+ assert digest(repo/entry['path'])==entry['sha256'], 'Application/test source changed: '+entry['path']
+assert all(path.startswith('src/test/') for path in source['testOnlyPathsSinceApplication'])
+qa=doc/'evidence/root/reviews/qa'
+summary=read(qa/'affected-recovery-02/summary.json')
+assert summary['exit']==0 and summary['files']=={'passed':6,'failed':0,'total':6}
+assert summary['tests']=={'passed':27,'failed':0,'skipped':0,'total':27}
+coverage=read(qa/'coverage-reconciliation.json')
+assert coverage['originalFull32']['exit']==1 and coverage['originalFull32']['testsFailed']==7
+assert coverage['coverageAccounting']=={'unaffected26FilesPassingTests':344,'affected6FilesLatestPassingTests':27,'totalLogicalTestInventory':371,'oneCleanFull32InvocationOnFinalSHA':False}
+custody=read(qa/'affected-recovery-02/independent-custody-audit.json')
+assert custody['sourceAfter'].strip()==candidate and custody['tmpAbsent'] and not custody['residualProvenOwnedProcesses']
+assert len(custody['mirrors'])==6
+for mirror in custody['mirrors']:
+ assert mirror['checkpoint']==candidate and mirror['inputs']==2040 and not mirror['hashMismatches']
+ assert all(mirror[k] for k in ('pidAbsent','portRefused','closed','sourceVerified','mirrorVerified','derivedRemoved'))
+device=qa/'affected-recovery-02/device';view=read(device/'result.json')
+assert view['status']=='passed' and len(view['checks'])==45 and len(view['captures'])==63
+assert len(view['contrasts'])==24 and min(row['ratio'] for row in view['contrasts'])>=4.5
+assert len(view['landscapes'])==6 and all(row['capability']['coarse'] for row in view['landscapes'])
+assert not [row for row in view['errors'] if not row['expected']]
+for capture in view['captures']:
+ path=(device/capture).resolve();assert path.is_relative_to(device.resolve()) and path.is_file()
+assert read(device/'gates-result.json')['status']=='passed'
+default=read(doc/'evidence/root/default-unit-assessment.json')
+assert default['failed']==16 and default['passed']==9803 and default['pending']==801 and default['actualExit']==1
+for report in ('reviews/code/employee-mobile-device-alerts-7ddf3771-final-code-review.md','reviews/ui/employee-mobile-device-alerts-clone-fidelity.md','reviews/qa/final-qa-report.md'):
+ path=doc/'evidence/root'/report;assert path.is_file() and path.stat().st_size>300
+markdown=[doc/'HANDOFF.md',doc/'EVIDENCE_HISTORY.md',doc/'QA_REFERENCES.md',doc/'gallery/README.md',repo/'docs/execution/employee-mobile-phase2/STATUS.md',repo/'docs/product/specs/employee-mobile-teal/README.md']
+for path in markdown:
+ for ref in re.findall(r'!?\[[^\]]*\]\(([^)]+)\)',path.read_text()):
+  ref=ref.strip('<>')
+  if re.match(r'^[a-z]+://',ref) or ref.startswith('#'):continue
+  target=unquote(ref.split('#',1)[0])
+  assert (path.parent/target).exists(), 'Broken documentation link: '+str(path)+' -> '+target
+changed=subprocess.check_output(['git','diff','--name-only',candidate],cwd=repo,text=True).splitlines()
+untracked=subprocess.check_output(['git','ls-files','--others','--exclude-standard'],cwd=repo,text=True).splitlines()
+assert all(path.startswith('docs/') for path in changed+untracked), 'Non-document changes after verified candidate'
+print(json.dumps({'status':'passed','application':app,'verification':candidate,'sourceFiles':len(source['files']),'preservedFiles':len(manifest['entries']),'registeredQaReferences':65,'uniquePortableQaArtifacts':63,'scopedTestsVerifiedAcrossRuns':371,'widerDefaultFailuresRetained':16}))

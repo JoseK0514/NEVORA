@@ -1,0 +1,75 @@
+import {it,expect,vi} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/dist/index.js';
+import {readFileSync,writeFileSync} from 'node:fs';
+const evidence=process.env.NEVORA_QA_PROBE_LABEL;
+function record(id:string,value:unknown){if(!['candidate','baseline'].includes(evidence??''))throw Error('Explicit evidence label required');writeFileSync('/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/'+evidence+'-'+id+'.json',JSON.stringify(value,null,2));}
+import {runInNewContext} from 'node:vm';
+import {DeviceController,browserRuntime} from '#device-under-test';
+const source=readFileSync('/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/public/fuel-portal-sw.js','utf8');
+const origin='https://portal.example';const gen='generation-original';const authority='fictional-authority';
+// Actual deployed worker source executes. Only native IDB/PushManager/MessageChannel
+// boundaries are doubles. Shared IDB data survives worker/controller replacement.
+function storage(){
+ const data=new Map<string,unknown>();let failed=false;
+ return {data,fail(){failed=true},recover(){failed=false},open(){
+  const request:any={onupgradeneeded(){},onsuccess(){},onerror(){}};
+  queueMicrotask(()=>{if(failed){request.onerror();return;}request.result={createObjectStore(){},close(){},transaction(){
+   const tx:any={oncomplete(){},onerror(){},onabort(){},objectStore:()=>({get(key:string){const read:any={onsuccess(){}};queueMicrotask(()=>{read.result=structuredClone(data.get(key));read.onsuccess();queueMicrotask(()=>tx.oncomplete());});return read},put(v:unknown,key:string){data.set(key,structuredClone(v))}})};return tx;
+  }};request.onupgradeneeded();request.onsuccess();});return request;
+ }};
+}
+function worker(db:ReturnType<typeof storage>,messages:any[]){
+ const handlers=new Map();const client={id:'portal',url:origin+'/app',type:'window',postMessage(){}};
+ const self={location:{origin},addEventListener:(name:string,fn:any)=>handlers.set(name,fn),clients:{get:async()=>client},registration:{scope:origin+'/app',getNotifications:async()=>[]}};
+ runInNewContext(source,{self,indexedDB:db,URL,Request,Response,Date,Promise,Set,console});
+ return {postMessage(message:any,ports:any[]){messages.push(message);handlers.get('message')({source:client,data:message,ports,waitUntil:(p:Promise<unknown>)=>{void p}})}};
+}
+function fixture(){
+ const db=storage(),messages:any[]=[];let active=worker(db,messages);const values=new Map<string,string>();
+ const subscription={unsubscribe:vi.fn(async()=>{throw Error('native rejected')}),toJSON:()=>({endpoint:'fictional'})};
+ const registration={get active(){return active},waiting:null,pushManager:{getSubscription:async()=>subscription},getNotifications:async()=>[]};
+ const locks={request:async(_n:string,_o:unknown,action:()=>unknown)=>action()};
+ const notification={permission:'granted',requestPermission:vi.fn()};
+ vi.stubGlobal('Notification',notification);
+ vi.stubGlobal('window',{isSecureContext:true,PushManager:{},Notification:notification,matchMedia:()=>({matches:false}),addEventListener(){},removeEventListener(){}});
+ vi.stubGlobal('navigator',{userAgent:'fictional',platform:'fictional',maxTouchPoints:0,locks,serviceWorker:{register:async()=>registration,getRegistration:async()=>registration}});
+ vi.stubGlobal('location',{pathname:'/app'});
+ vi.stubGlobal('localStorage',{getItem:(key:string)=>values.get(key)??null,setItem:(key:string,value:string)=>values.set(key,value)});
+ vi.stubGlobal('fetch',vi.fn(async(url:string)=>url.endsWith('/status')?new Response(JSON.stringify({supported:true,enabled:true,configurationAvailable:true,testAllowed:false,ownershipGeneration:gen,vapidPublicKey:'fictional',authority,validForMs:45000}),{status:200}):new Response(JSON.stringify({error:'cleanup_pending'}),{status:503})));
+ const controller=()=>new DeviceController(browserRuntime(authority),()=>{});
+ return {db,messages,values,subscription,controller,replaceWorker(){active=worker(db,messages)}};
+}
+it('QA-OWN-1 durable worker suppression rejects passive reclaim after rejected native unsubscribe and controller+worker replacement',async()=>{
+ const f=fixture();try{
+  const first=f.controller();await first.start();expect(first.snapshot.state).toBe('enabled');
+  await first.turnOff();expect(first.snapshot.state).toBe('error');await vi.waitFor(()=>expect(f.subscription.unsubscribe).toHaveBeenCalledOnce());
+  expect(f.values.get('fuel-portal-subscription-operation')).toBe('');
+  expect(f.db.data.get('state')).toEqual({current:null,suppressed:[gen],blocked:false});
+  first.dispose();f.replaceWorker();const next=f.controller();await next.start();
+  expect(next.snapshot.state).toBe('error');expect(next.snapshot.server.localOwned).not.toBe(true);
+  expect(f.messages.at(-1)).toEqual({version:1,type:'SET_OWNER',generation:gen});
+  expect(f.db.data.get('state')).toEqual({current:null,suppressed:[gen],blocked:false});
+  record('QA-OWN-1',{snapshot:next.snapshot,workerState:f.db.data.get('state'),messages:f.messages,operation:f.values.get('fuel-portal-subscription-operation'),nativeUnsubscribeCalls:f.subscription.unsubscribe.mock.calls.length});
+  console.log('QA-OWN-1 VERIFIED actual worker rejected SET_OWNER after durable suppression; new document remained error, not enabled');
+ }finally{vi.unstubAllGlobals();}
+});
+it('QA-OWN-2 retained opaque native-operation tombstone blocks passive SET_OWNER admission',async()=>{
+ const f=fixture();try{
+  f.values.set('fuel-portal-subscription-operation','opaque-prior-document-operation');
+  const c=f.controller();await c.start();expect(c.snapshot.state).toBe('error');expect(f.messages).toEqual([]);
+  expect(f.values.get('fuel-portal-subscription-operation')).toBe('opaque-prior-document-operation');
+  record('QA-OWN-2',{snapshot:c.snapshot,messages:f.messages,operation:f.values.get('fuel-portal-subscription-operation')});
+  console.log('QA-OWN-2 VERIFIED opaque native-operation marker was not reset and no SET_OWNER was issued');
+ }finally{vi.unstubAllGlobals();}
+});
+it('QA-OWN-3 reproduction: failed durable suppression plus failed native/server cleanup can reclaim after worker replacement',async()=>{
+ const f=fixture();try{
+  const first=f.controller();await first.start();expect(first.snapshot.state).toBe('enabled');
+  f.db.fail();await first.turnOff();expect(first.snapshot.state).toBe('error');
+  await vi.waitFor(()=>expect(f.subscription.unsubscribe).toHaveBeenCalledOnce());expect(f.values.get('fuel-portal-subscription-operation')).toBe('');
+  first.dispose();f.db.recover();f.replaceWorker();const next=f.controller();await next.start();
+  expect(next.snapshot.state).toBe('enabled');expect(next.snapshot.server.localOwned).toBe(true);
+  expect(f.db.data.get('state')).toEqual({current:gen,suppressed:[],blocked:false});
+  record('QA-OWN-3',{snapshot:next.snapshot,workerState:f.db.data.get('state'),messages:f.messages,operation:f.values.get('fuel-portal-subscription-operation'),nativeUnsubscribeCalls:f.subscription.unsubscribe.mock.calls.length});
+  console.log('QA-OWN-3 ISSUE REPRODUCED: IDB suppression write failed; native unsubscribe rejected; server cleanup unknown; replacement worker passively restored generation');
+ }finally{vi.unstubAllGlobals();}
+});

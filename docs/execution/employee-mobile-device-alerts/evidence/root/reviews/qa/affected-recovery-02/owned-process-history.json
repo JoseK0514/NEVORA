@@ -1,0 +1,863 @@
+{
+  "rootPid": 53550,
+  "processes": [
+    {
+      "pid": 53550,
+      "ppid": 53543,
+      "start": "Tue Oct 27 23:02:50 2026",
+      "command": "/usr/local/bin/node scripts/payroll-postgres.mjs vitest.employee-mobile-device-alerts.config.mts src/test/integration/phase-e-communications-schema.integration.ts src/test/integration/employee-mobile-device-alerts.integration.ts src/test/integration/employee-mobile-communications.integration.ts src/test/integration/employee-mobile-communications-review.integration.ts src/test/integration/employee-mobile-communications-sql.integration.ts src/test/integration/passkey-network.integration.ts"
+    },
+    {
+      "pid": 53576,
+      "ppid": 53550,
+      "start": "Tue Oct 27 23:02:51 2026",
+      "command": "/usr/local/bin/node node_modules/vitest/vitest.mjs run --config vitest.employee-mobile-device-alerts.config.mts src/test/integration/phase-e-communications-schema.integration.ts src/test/integration/employee-mobile-device-alerts.integration.ts src/test/integration/employee-mobile-communications.integration.ts src/test/integration/employee-mobile-communications-review.integration.ts src/test/integration/employee-mobile-communications-sql.integration.ts src/test/integration/passkey-network.integration.ts"
+    },
+    {
+      "pid": 53578,
+      "ppid": 53576,
+      "start": "Tue Oct 27 23:02:51 2026",
+      "command": "/usr/local/bin/node --experimental-import-meta-resolve --require /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/suppress-warnings.cjs --conditions node --conditions development /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/dist/workers/forks.js"
+    },
+    {
+      "pid": 53892,
+      "ppid": 53576,
+      "start": "Tue Oct 27 23:02:54 2026",
+      "command": "/usr/local/bin/node --experimental-import-meta-resolve --require /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/suppress-warnings.cjs --conditions node --conditions development /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/dist/workers/forks.js"
+    },
+    {
+      "pid": 54050,
+      "ppid": 54047,
+      "start": "Tue Oct 27 23:03:08 2026",
+      "command": "next-server (v16.4.2) "
+    },
+    {
+      "pid": 54047,
+      "ppid": 53892,
+      "start": "Tue Oct 27 23:03:08 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 64348"
+    },
+    {
+      "pid": 54414,
+      "ppid": 53892,
+      "start": "Tue Oct 27 23:03:14 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/tmp/nevora-alerts-recovery.enj9qwak/playwright_chromiumdev_profile-4X00tc --remote-debugging-pipe --no-startup-window"
+    },
+    {
+      "pid": 54415,
+      "ppid": 54414,
+      "start": "Tue Oct 27 23:03:14 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=gpu-process --no-sandbox --disable-breakpad --headless --use-angle=swiftshader-webgl --enable-unsafe-swiftshader --gpu-preferences=WAAAAAAAAAAgAAAEAAAAAAAAAAAAAGAAQAAAAAAAAAAAAAAAAAAAADgAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAoAAAAAAAAAAgAAAAAAAAADAAAAAEAAAAAAAAAAAAAAAgAAAAAAAAACAAAAAAAAAA= --shared-files --field-trial-handle=1718379636,r,11110041281846392481,4892357144799887395,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,16520920984536543345,345177348216754211,4 --trace-process-track-uuid=3190708988185955192"
+    },
+    {
+      "pid": 54416,
+      "ppid": 54414,
+      "start": "Tue Oct 27 23:03:14 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --no-sandbox --use-angle=swiftshader-webgl --use-gl=angle --mute-audio --headless=old --shared-files --field-trial-handle=1718379636,r,11110041281846392481,4892357144799887395,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,16520920984536543345,345177348216754211,4 --trace-process-track-uuid=3190708989122997041"
+    },
+    {
+      "pid": 54417,
+      "ppid": 54414,
+      "start": "Tue Oct 27 23:03:14 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=renderer --headless=old --no-sandbox --disable-back-forward-cache --disable-background-timer-throttling --disable-breakpad --force-color-profile=srgb --remote-debugging-pipe --allow-pre-commit-input --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --disable-gpu-compositing --lang=en-US --num-raster-threads=4 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=4 --time-ticks-at-unix-epoch=-1793020367391720 --launch-time-ticks=136227501004 --shared-files --field-trial-handle=1718379636,r,11110041281846392481,4892357144799887395,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,16520920984536543345,345177348216754211,4 --trace-process-track-uuid=3190708990060038890"
+    },
+    {
+      "pid": 54487,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:03:18 2026",
+      "command": "(node)"
+    },
+    {
+      "pid": 54667,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:03:34 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 54675,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:03:34 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 54701,
+      "ppid": 53892,
+      "start": "Tue Oct 27 23:03:36 2026",
+      "command": "bash /Users/josek0514/Library/Caches/ms-playwright/webkit-2336/pw_run.sh --inspector-pipe --headless --no-startup-window"
+    },
+    {
+      "pid": 54707,
+      "ppid": 54701,
+      "start": "Tue Oct 27 23:03:36 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/webkit-2336/Playwright.app/Contents/MacOS/Playwright --inspector-pipe --headless --no-startup-window"
+    },
+    {
+      "pid": 54759,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:03:42 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 54844,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:03:57 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 54851,
+      "ppid": 54847,
+      "start": "Tue Oct 27 23:03:58 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -prefsHandle 0:26975 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {87d18c49-f6c7-481b-93a5-fd94b8dfa6d6} -parentPid 54847 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-gpbFyF org.mozilla.machname.533780540 1 socket"
+    },
+    {
+      "pid": 54852,
+      "ppid": 54847,
+      "start": "Tue Oct 27 23:03:59 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -isForBrowser -prefsHandle 0:27727 -prefMapHandle 1:288790 -jsInitHandle 2:156236 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -sbLevel 3 -parentBuildID 20260722112722 -ipcHandle 0 -initialChannelId {f010ceec-ac7e-4f59-adc6-b571e848e495} -parentPid 54847 -greomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/omni.ja -appomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser/omni.ja -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-gpbFyF org.mozilla.machname.741828270 2 tab"
+    },
+    {
+      "pid": 54854,
+      "ppid": 54847,
+      "start": "Tue Oct 27 23:03:59 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -prefsHandle 0:27772 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {66ba6825-1664-4977-83c9-bb990d479d25} -parentPid 54847 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-gpbFyF org.mozilla.machname.1674233596 3 rdd"
+    },
+    {
+      "pid": 54857,
+      "ppid": 54847,
+      "start": "Tue Oct 27 23:03:59 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -isForBrowser -prefsHandle 0:27111 -prefMapHandle 1:288790 -jsInitHandle 2:156236 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -sbLevel 3 -parentBuildID 20260722112722 -ipcHandle 0 -initialChannelId {0ff3806b-b185-44b2-82f9-cbf67eff8086} -parentPid 54847 -greomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/omni.ja -appomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser/omni.ja -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-gpbFyF org.mozilla.machname.1969891245 4 tab"
+    },
+    {
+      "pid": 54847,
+      "ppid": 53892,
+      "start": "Tue Oct 27 23:03:58 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-gpbFyF -juggler-pipe -silent"
+    },
+    {
+      "pid": 54862,
+      "ppid": 54847,
+      "start": "Tue Oct 27 23:04:00 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -sandboxingKind 0 -prefsHandle 0:44648 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {2f36a981-e271-4370-905e-d5c66e7a087b} -parentPid 54847 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-gpbFyF org.mozilla.machname.918126150 5 utility"
+    },
+    {
+      "pid": 54943,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:04:14 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 54942,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:04:14 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 54957,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:04:16 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 54963,
+      "ppid": 53892,
+      "start": "Tue Oct 27 23:04:17 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/tmp/nevora-alerts-recovery.enj9qwak/playwright_chromiumdev_profile-pKpV9s --remote-debugging-pipe --no-startup-window"
+    },
+    {
+      "pid": 54967,
+      "ppid": 54963,
+      "start": "Tue Oct 27 23:04:17 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=gpu-process --no-sandbox --disable-breakpad --headless --use-angle=swiftshader-webgl --enable-unsafe-swiftshader --gpu-preferences=WAAAAAAAAAAgAAAEAAAAAAAAAAAAAGAAQAAAAAAAAAAAAAAAAAAAADgAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAoAAAAAAAAAAgAAAAAAAAADAAAAAEAAAAAAAAAAAAAAAgAAAAAAAAACAAAAAAAAAA= --shared-files --field-trial-handle=1718379636,r,9538909937741040645,16357769638565871132,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,9922372244822665476,3604752959958734455,4 --trace-process-track-uuid=3190708988185955192"
+    },
+    {
+      "pid": 54968,
+      "ppid": 54963,
+      "start": "Tue Oct 27 23:04:17 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --no-sandbox --use-angle=swiftshader-webgl --use-gl=angle --mute-audio --headless=old --shared-files --field-trial-handle=1718379636,r,9538909937741040645,16357769638565871132,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,9922372244822665476,3604752959958734455,4 --trace-process-track-uuid=3190708989122997041"
+    },
+    {
+      "pid": 54969,
+      "ppid": 54963,
+      "start": "Tue Oct 27 23:04:17 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=renderer --headless=old --no-sandbox --disable-back-forward-cache --disable-background-timer-throttling --disable-breakpad --force-color-profile=srgb --remote-debugging-pipe --allow-pre-commit-input --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --disable-gpu-compositing --lang=en-US --num-raster-threads=4 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=4 --time-ticks-at-unix-epoch=-1793020367391921 --launch-time-ticks=136290378665 --shared-files --field-trial-handle=1718379636,r,9538909937741040645,16357769638565871132,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,9922372244822665476,3604752959958734455,4 --trace-process-track-uuid=3190708990060038890"
+    },
+    {
+      "pid": 54992,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:04:20 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 54999,
+      "ppid": 53892,
+      "start": "Tue Oct 27 23:04:21 2026",
+      "command": "bash /Users/josek0514/Library/Caches/ms-playwright/webkit-2336/pw_run.sh --inspector-pipe --headless --no-startup-window"
+    },
+    {
+      "pid": 55005,
+      "ppid": 54999,
+      "start": "Tue Oct 27 23:04:21 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/webkit-2336/Playwright.app/Contents/MacOS/Playwright --inspector-pipe --headless --no-startup-window"
+    },
+    {
+      "pid": 55038,
+      "ppid": 53892,
+      "start": "Tue Oct 27 23:04:26 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-qYNfEg -juggler-pipe -silent"
+    },
+    {
+      "pid": 55043,
+      "ppid": 55038,
+      "start": "Tue Oct 27 23:04:27 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -prefsHandle 0:26975 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {f0bd1dfe-ead4-43cb-beb6-e4a9b115e69e} -parentPid 55038 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-qYNfEg org.mozilla.machname.769976002 1 socket"
+    },
+    {
+      "pid": 55046,
+      "ppid": 55038,
+      "start": "Tue Oct 27 23:04:27 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -isForBrowser -prefsHandle 0:27727 -prefMapHandle 1:288790 -jsInitHandle 2:156236 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -sbLevel 3 -parentBuildID 20260722112722 -ipcHandle 0 -initialChannelId {aeb7c3eb-6baa-44b3-84c3-872acac6aac8} -parentPid 55038 -greomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/omni.ja -appomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser/omni.ja -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-qYNfEg org.mozilla.machname.537436388 2 tab"
+    },
+    {
+      "pid": 55047,
+      "ppid": 55038,
+      "start": "Tue Oct 27 23:04:27 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -prefsHandle 0:27772 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {8850e837-6a41-45a7-8c6b-3ccd4a859c4a} -parentPid 55038 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-qYNfEg org.mozilla.machname.1566799303 3 rdd"
+    },
+    {
+      "pid": 55049,
+      "ppid": 55038,
+      "start": "Tue Oct 27 23:04:27 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -isForBrowser -prefsHandle 0:27185 -prefMapHandle 1:288790 -jsInitHandle 2:156236 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -sbLevel 3 -parentBuildID 20260722112722 -ipcHandle 0 -initialChannelId {b4615f32-8d2a-481f-9230-fbbb086c0426} -parentPid 55038 -greomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/omni.ja -appomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser/omni.ja -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-qYNfEg org.mozilla.machname.951768419 4 tab"
+    },
+    {
+      "pid": 55057,
+      "ppid": 55038,
+      "start": "Tue Oct 27 23:04:27 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -sandboxingKind 0 -prefsHandle 0:44574 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {c1a290e1-5393-4aaa-8a13-961eb7b6c0db} -parentPid 55038 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-qYNfEg org.mozilla.machname.45039205 5 utility"
+    },
+    {
+      "pid": 55103,
+      "ppid": 55099,
+      "start": "Tue Oct 27 23:04:31 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=renderer --headless=old --no-sandbox --disable-back-forward-cache --disable-background-timer-throttling --disable-breakpad --force-color-profile=srgb --remote-debugging-pipe --allow-pre-commit-input --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --disable-gpu-compositing --lang=en-US --num-raster-threads=4 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=4 --time-ticks-at-unix-epoch=-1793020367391966 --launch-time-ticks=136304453579 --shared-files --field-trial-handle=1718379636,r,18056442150745211691,16574674751095277305,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,11352051668426034868,14527915917255766148,4 --trace-process-track-uuid=3190708990060038890"
+    },
+    {
+      "pid": 55099,
+      "ppid": 53892,
+      "start": "Tue Oct 27 23:04:31 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/tmp/nevora-alerts-recovery.enj9qwak/playwright_chromiumdev_profile-VNlDXF --remote-debugging-pipe --no-startup-window"
+    },
+    {
+      "pid": 55101,
+      "ppid": 55099,
+      "start": "Tue Oct 27 23:04:31 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=gpu-process --no-sandbox --disable-breakpad --headless --use-angle=swiftshader-webgl --enable-unsafe-swiftshader --gpu-preferences=WAAAAAAAAAAgAAAEAAAAAAAAAAAAAGAAQAAAAAAAAAAAAAAAAAAAADgAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAoAAAAAAAAAAgAAAAAAAAADAAAAAEAAAAAAAAAAAAAAAgAAAAAAAAACAAAAAAAAAA= --shared-files --field-trial-handle=1718379636,r,18056442150745211691,16574674751095277305,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,11352051668426034868,14527915917255766148,4 --trace-process-track-uuid=3190708988185955192"
+    },
+    {
+      "pid": 55102,
+      "ppid": 55099,
+      "start": "Tue Oct 27 23:04:31 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --no-sandbox --use-angle=swiftshader-webgl --use-gl=angle --mute-audio --headless=old --shared-files --field-trial-handle=1718379636,r,18056442150745211691,16574674751095277305,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,11352051668426034868,14527915917255766148,4 --trace-process-track-uuid=3190708989122997041"
+    },
+    {
+      "pid": 55124,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:04:34 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 55144,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:04:36 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 55171,
+      "ppid": 55165,
+      "start": "Tue Oct 27 23:04:38 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/webkit-2336/Playwright.app/Contents/MacOS/Playwright --inspector-pipe --headless --no-startup-window"
+    },
+    {
+      "pid": 55165,
+      "ppid": 53892,
+      "start": "Tue Oct 27 23:04:38 2026",
+      "command": "bash /Users/josek0514/Library/Caches/ms-playwright/webkit-2336/pw_run.sh --inspector-pipe --headless --no-startup-window"
+    },
+    {
+      "pid": 55200,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:04:41 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 55196,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:04:41 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 55215,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:04:43 2026",
+      "command": "(node)"
+    },
+    {
+      "pid": 55250,
+      "ppid": 53892,
+      "start": "Tue Oct 27 23:04:44 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-BlKNQ6 -juggler-pipe -silent"
+    },
+    {
+      "pid": 55251,
+      "ppid": 55250,
+      "start": "Tue Oct 27 23:04:44 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -prefsHandle 0:26975 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {c8eed66e-046f-4d3f-9f41-dc8ce87e873e} -parentPid 55250 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-BlKNQ6 org.mozilla.machname.2106243982 1 socket"
+    },
+    {
+      "pid": 55253,
+      "ppid": 55250,
+      "start": "Tue Oct 27 23:04:45 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -isForBrowser -prefsHandle 0:27727 -prefMapHandle 1:288790 -jsInitHandle 2:156236 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -sbLevel 3 -parentBuildID 20260722112722 -ipcHandle 0 -initialChannelId {3fcf204d-0a2a-4b5d-9ee2-2e850be76b4e} -parentPid 55250 -greomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/omni.ja -appomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser/omni.ja -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-BlKNQ6 org.mozilla.machname.1718963633 2 tab"
+    },
+    {
+      "pid": 55254,
+      "ppid": 55250,
+      "start": "Tue Oct 27 23:04:45 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -prefsHandle 0:27772 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {3e16be37-2b1d-439f-b382-1fdb0d6a3de4} -parentPid 55250 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-BlKNQ6 org.mozilla.machname.1508659214 3 rdd"
+    },
+    {
+      "pid": 55256,
+      "ppid": 55250,
+      "start": "Tue Oct 27 23:04:45 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -isForBrowser -prefsHandle 0:27185 -prefMapHandle 1:288790 -jsInitHandle 2:156236 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -sbLevel 3 -parentBuildID 20260722112722 -ipcHandle 0 -initialChannelId {5e021a74-3051-48aa-90cf-d89ffb872e98} -parentPid 55250 -greomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/omni.ja -appomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser/omni.ja -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-BlKNQ6 org.mozilla.machname.737079032 4 tab"
+    },
+    {
+      "pid": 55272,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:04:47 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 55258,
+      "ppid": 55250,
+      "start": "Tue Oct 27 23:04:45 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -sandboxingKind 0 -prefsHandle 0:44574 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {4db0804b-c8e6-45c7-8560-381cd85764a0} -parentPid 55250 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-BlKNQ6 org.mozilla.machname.703772006 5 utility"
+    },
+    {
+      "pid": 55293,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:04:49 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 55301,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:04:51 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 55307,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:04:51 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 55319,
+      "ppid": 53892,
+      "start": "Tue Oct 27 23:04:52 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/tmp/nevora-alerts-recovery.enj9qwak/playwright_chromiumdev_profile-0xbjTc --remote-debugging-pipe --no-startup-window"
+    },
+    {
+      "pid": 55320,
+      "ppid": 55319,
+      "start": "Tue Oct 27 23:04:52 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=gpu-process --no-sandbox --disable-breakpad --headless --use-angle=swiftshader-webgl --enable-unsafe-swiftshader --gpu-preferences=WAAAAAAAAAAgAAAEAAAAAAAAAAAAAGAAQAAAAAAAAAAAAAAAAAAAADgAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAoAAAAAAAAAAgAAAAAAAAADAAAAAEAAAAAAAAAAAAAAAgAAAAAAAAACAAAAAAAAAA= --shared-files --field-trial-handle=1718379636,r,5772544894975972108,16629156033053735900,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,3978347169217500348,4969414600443218945,4 --trace-process-track-uuid=3190708988185955192"
+    },
+    {
+      "pid": 55321,
+      "ppid": 55319,
+      "start": "Tue Oct 27 23:04:52 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --no-sandbox --use-angle=swiftshader-webgl --use-gl=angle --mute-audio --headless=old --shared-files --field-trial-handle=1718379636,r,5772544894975972108,16629156033053735900,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,3978347169217500348,4969414600443218945,4 --trace-process-track-uuid=3190708989122997041"
+    },
+    {
+      "pid": 55322,
+      "ppid": 55319,
+      "start": "Tue Oct 27 23:04:52 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=renderer --headless=old --no-sandbox --disable-back-forward-cache --disable-background-timer-throttling --disable-breakpad --force-color-profile=srgb --remote-debugging-pipe --allow-pre-commit-input --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --disable-gpu-compositing --lang=en-US --num-raster-threads=4 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=4 --time-ticks-at-unix-epoch=-1793020367392033 --launch-time-ticks=136325322713 --shared-files --field-trial-handle=1718379636,r,5772544894975972108,16629156033053735900,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,3978347169217500348,4969414600443218945,4 --trace-process-track-uuid=3190708990060038890"
+    },
+    {
+      "pid": 55352,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:04:56 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 55372,
+      "ppid": 53892,
+      "start": "Tue Oct 27 23:04:57 2026",
+      "command": "bash /Users/josek0514/Library/Caches/ms-playwright/webkit-2336/pw_run.sh --inspector-pipe --headless --no-startup-window"
+    },
+    {
+      "pid": 55378,
+      "ppid": 55372,
+      "start": "Tue Oct 27 23:04:57 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/webkit-2336/Playwright.app/Contents/MacOS/Playwright --inspector-pipe --headless --no-startup-window"
+    },
+    {
+      "pid": 55403,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:05:00 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 55424,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:05:02 2026",
+      "command": "(node)"
+    },
+    {
+      "pid": 55430,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:05:02 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 55439,
+      "ppid": 53892,
+      "start": "Tue Oct 27 23:05:02 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-sp0zVf -juggler-pipe -silent"
+    },
+    {
+      "pid": 55440,
+      "ppid": 55439,
+      "start": "Tue Oct 27 23:05:03 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -prefsHandle 0:26975 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {097be0a7-a1cc-4b3f-9376-411b22b6bb6e} -parentPid 55439 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-sp0zVf org.mozilla.machname.1349577073 1 socket"
+    },
+    {
+      "pid": 55441,
+      "ppid": 55439,
+      "start": "Tue Oct 27 23:05:03 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -isForBrowser -prefsHandle 0:27727 -prefMapHandle 1:288790 -jsInitHandle 2:156236 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -sbLevel 3 -parentBuildID 20260722112722 -ipcHandle 0 -initialChannelId {2c39b4a4-7632-4349-8631-b914f11d1bd9} -parentPid 55439 -greomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/omni.ja -appomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser/omni.ja -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-sp0zVf org.mozilla.machname.1001782892 2 tab"
+    },
+    {
+      "pid": 55442,
+      "ppid": 55439,
+      "start": "Tue Oct 27 23:05:03 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -prefsHandle 0:27772 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {86c1f923-693a-458a-b0d5-39251c8bbb64} -parentPid 55439 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-sp0zVf org.mozilla.machname.1196847868 3 rdd"
+    },
+    {
+      "pid": 55444,
+      "ppid": 55439,
+      "start": "Tue Oct 27 23:05:03 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -isForBrowser -prefsHandle 0:27185 -prefMapHandle 1:288790 -jsInitHandle 2:156236 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -sbLevel 3 -parentBuildID 20260722112722 -ipcHandle 0 -initialChannelId {444c2ca1-cd24-4cf4-9268-439db5e796cc} -parentPid 55439 -greomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/omni.ja -appomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser/omni.ja -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-sp0zVf org.mozilla.machname.1834508023 4 tab"
+    },
+    {
+      "pid": 55445,
+      "ppid": 55439,
+      "start": "Tue Oct 27 23:05:04 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -sandboxingKind 0 -prefsHandle 0:44574 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {95e5c4bb-bf87-4feb-b502-8ff8deb95998} -parentPid 55439 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-sp0zVf org.mozilla.machname.7474802 5 utility"
+    },
+    {
+      "pid": 55470,
+      "ppid": 54050,
+      "start": "Tue Oct 27 23:05:06 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/owned-next-4NdsaK/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 55511,
+      "ppid": 53576,
+      "start": "Tue Oct 27 23:05:10 2026",
+      "command": "/usr/local/bin/node --experimental-import-meta-resolve --require /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/suppress-warnings.cjs --conditions node --conditions development /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/dist/workers/forks.js"
+    },
+    {
+      "pid": 55586,
+      "ppid": 55511,
+      "start": "Tue Oct 27 23:05:22 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/owned-next-zZ8Z9a/app/node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 65305"
+    },
+    {
+      "pid": 55587,
+      "ppid": 55586,
+      "start": "Tue Oct 27 23:05:22 2026",
+      "command": "next-server (v16.4.2) "
+    },
+    {
+      "pid": 56154,
+      "ppid": 55511,
+      "start": "Tue Oct 27 23:05:28 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/tmp/nevora-alerts-recovery.enj9qwak/playwright_chromiumdev_profile-6H0cO4 --remote-debugging-pipe --no-startup-window"
+    },
+    {
+      "pid": 56155,
+      "ppid": 56154,
+      "start": "Tue Oct 27 23:05:28 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=gpu-process --no-sandbox --disable-breakpad --headless --use-angle=swiftshader-webgl --enable-unsafe-swiftshader --gpu-preferences=WAAAAAAAAAAgAAAEAAAAAAAAAAAAAGAAQAAAAAAAAAAAAAAAAAAAADgAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAoAAAAAAAAAAgAAAAAAAAADAAAAAEAAAAAAAAAAAAAAAgAAAAAAAAACAAAAAAAAAA= --shared-files --field-trial-handle=1718379636,r,1719926222073767469,5827427376124366365,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,5140940462605598190,3721327093719919791,4 --trace-process-track-uuid=3190708988185955192"
+    },
+    {
+      "pid": 56156,
+      "ppid": 56154,
+      "start": "Tue Oct 27 23:05:28 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --no-sandbox --use-angle=swiftshader-webgl --use-gl=angle --mute-audio --headless=old --shared-files --field-trial-handle=1718379636,r,1719926222073767469,5827427376124366365,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,5140940462605598190,3721327093719919791,4 --trace-process-track-uuid=3190708989122997041"
+    },
+    {
+      "pid": 56158,
+      "ppid": 56154,
+      "start": "Tue Oct 27 23:05:28 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=renderer --headless=old --no-sandbox --disable-back-forward-cache --disable-background-timer-throttling --disable-breakpad --force-color-profile=srgb --remote-debugging-pipe --allow-pre-commit-input --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --disable-gpu-compositing --lang=en-US --num-raster-threads=4 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=4 --time-ticks-at-unix-epoch=-1793020367390980 --launch-time-ticks=136361347616 --shared-files --field-trial-handle=1718379636,r,1719926222073767469,5827427376124366365,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,5140940462605598190,3721327093719919791,4 --trace-process-track-uuid=3190708990060038890"
+    },
+    {
+      "pid": 56234,
+      "ppid": 55587,
+      "start": "Tue Oct 27 23:05:39 2026",
+      "command": "(node)"
+    },
+    {
+      "pid": 56306,
+      "ppid": 55587,
+      "start": "Tue Oct 27 23:05:52 2026",
+      "command": "(node)"
+    },
+    {
+      "pid": 56337,
+      "ppid": 55587,
+      "start": "Tue Oct 27 23:05:56 2026",
+      "command": "(node)"
+    },
+    {
+      "pid": 56359,
+      "ppid": 55587,
+      "start": "Tue Oct 27 23:05:58 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/owned-next-zZ8Z9a/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 56880,
+      "ppid": 55511,
+      "start": "Tue Oct 27 23:06:01 2026",
+      "command": "bash /Users/josek0514/Library/Caches/ms-playwright/webkit-2336/pw_run.sh --inspector-pipe --headless --no-startup-window"
+    },
+    {
+      "pid": 56886,
+      "ppid": 56880,
+      "start": "Tue Oct 27 23:06:01 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/webkit-2336/Playwright.app/Contents/MacOS/Playwright --inspector-pipe --headless --no-startup-window"
+    },
+    {
+      "pid": 56928,
+      "ppid": 55587,
+      "start": "Tue Oct 27 23:06:08 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/owned-next-zZ8Z9a/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 56965,
+      "ppid": 55587,
+      "start": "Tue Oct 27 23:06:14 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/owned-next-zZ8Z9a/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 56984,
+      "ppid": 55587,
+      "start": "Tue Oct 27 23:06:16 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/owned-next-zZ8Z9a/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 56997,
+      "ppid": 55587,
+      "start": "Tue Oct 27 23:06:18 2026",
+      "command": "(node)"
+    },
+    {
+      "pid": 57047,
+      "ppid": 55587,
+      "start": "Tue Oct 27 23:06:25 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/owned-next-zZ8Z9a/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 57048,
+      "ppid": 55587,
+      "start": "Tue Oct 27 23:06:25 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/owned-next-zZ8Z9a/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 57049,
+      "ppid": 55587,
+      "start": "Tue Oct 27 23:06:25 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/owned-next-zZ8Z9a/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 57103,
+      "ppid": 55587,
+      "start": "Tue Oct 27 23:06:31 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/owned-next-zZ8Z9a/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 57639,
+      "ppid": 55511,
+      "start": "Tue Oct 27 23:06:35 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-6vN53f -juggler-pipe -silent"
+    },
+    {
+      "pid": 57642,
+      "ppid": 57639,
+      "start": "Tue Oct 27 23:06:35 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -prefsHandle 0:26975 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {e5bea7f6-d296-4dbe-92dd-e766873fc1b4} -parentPid 57639 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-6vN53f org.mozilla.machname.1353732405 1 socket"
+    },
+    {
+      "pid": 57643,
+      "ppid": 57639,
+      "start": "Tue Oct 27 23:06:36 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -isForBrowser -prefsHandle 0:27727 -prefMapHandle 1:288790 -jsInitHandle 2:156236 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -sbLevel 3 -parentBuildID 20260722112722 -ipcHandle 0 -initialChannelId {84368fdb-5be8-4994-82c6-b9e83ee78886} -parentPid 57639 -greomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/omni.ja -appomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser/omni.ja -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-6vN53f org.mozilla.machname.442331848 2 tab"
+    },
+    {
+      "pid": 57644,
+      "ppid": 57639,
+      "start": "Tue Oct 27 23:06:36 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -prefsHandle 0:27772 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {c93c2d45-eb5a-4a5e-bb9b-2e678e7617dc} -parentPid 57639 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-6vN53f org.mozilla.machname.2114179477 3 rdd"
+    },
+    {
+      "pid": 57647,
+      "ppid": 57639,
+      "start": "Tue Oct 27 23:06:36 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -isForBrowser -prefsHandle 0:27185 -prefMapHandle 1:288790 -jsInitHandle 2:156236 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -sbLevel 3 -parentBuildID 20260722112722 -ipcHandle 0 -initialChannelId {fa4580e8-5b6f-4c8c-9b94-c992b4e4abe5} -parentPid 57639 -greomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/omni.ja -appomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser/omni.ja -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-6vN53f org.mozilla.machname.98454368 4 tab"
+    },
+    {
+      "pid": 57654,
+      "ppid": 57639,
+      "start": "Tue Oct 27 23:06:37 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -sandboxingKind 0 -prefsHandle 0:44574 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {0ef353c6-ce27-4294-984e-ec2979bbd470} -parentPid 57639 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-6vN53f org.mozilla.machname.566267103 5 utility"
+    },
+    {
+      "pid": 57733,
+      "ppid": 55587,
+      "start": "Tue Oct 27 23:06:48 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/owned-next-zZ8Z9a/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 57755,
+      "ppid": 55587,
+      "start": "Tue Oct 27 23:06:52 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/owned-next-zZ8Z9a/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 57792,
+      "ppid": 55587,
+      "start": "Tue Oct 27 23:06:56 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/owned-next-zZ8Z9a/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 57830,
+      "ppid": 55587,
+      "start": "Tue Oct 27 23:07:00 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/owned-next-zZ8Z9a/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 57893,
+      "ppid": 55511,
+      "start": "Tue Oct 27 23:07:04 2026",
+      "command": "(git)"
+    },
+    {
+      "pid": 57916,
+      "ppid": 53576,
+      "start": "Tue Oct 27 23:07:07 2026",
+      "command": "/usr/local/bin/node --experimental-import-meta-resolve --require /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/suppress-warnings.cjs --conditions node --conditions development /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/dist/workers/forks.js"
+    },
+    {
+      "pid": 58050,
+      "ppid": 57916,
+      "start": "Tue Oct 27 23:07:19 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/device/owned-next-HhYuZK/app/node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 50945"
+    },
+    {
+      "pid": 58055,
+      "ppid": 58050,
+      "start": "Tue Oct 27 23:07:19 2026",
+      "command": "next-server (v16.4.2) "
+    },
+    {
+      "pid": 58172,
+      "ppid": 58168,
+      "start": "Tue Oct 27 23:07:23 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=renderer --headless=old --no-sandbox --disable-back-forward-cache --disable-background-timer-throttling --disable-breakpad --force-color-profile=srgb --remote-debugging-pipe --allow-pre-commit-input --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --disable-gpu-compositing --lang=en-US --num-raster-threads=4 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=4 --time-ticks-at-unix-epoch=-1793020367389466 --launch-time-ticks=136475614779 --shared-files --field-trial-handle=1718379636,r,8878149118557634264,7839575357197227395,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,2805652539690866035,16782165250734638975,4 --trace-process-track-uuid=3190708990060038890"
+    },
+    {
+      "pid": 58168,
+      "ppid": 57916,
+      "start": "Tue Oct 27 23:07:22 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/tmp/nevora-alerts-recovery.enj9qwak/playwright_chromiumdev_profile-433jPn --remote-debugging-pipe --no-startup-window"
+    },
+    {
+      "pid": 58169,
+      "ppid": 58168,
+      "start": "Tue Oct 27 23:07:22 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=gpu-process --no-sandbox --disable-breakpad --headless --use-angle=swiftshader-webgl --enable-unsafe-swiftshader --gpu-preferences=WAAAAAAAAAAgAAAEAAAAAAAAAAAAAGAAQAAAAAAAAAAAAAAAAAAAADgAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAoAAAAAAAAAAgAAAAAAAAADAAAAAEAAAAAAAAAAAAAAAgAAAAAAAAACAAAAAAAAAA= --shared-files --field-trial-handle=1718379636,r,8878149118557634264,7839575357197227395,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,2805652539690866035,16782165250734638975,4 --trace-process-track-uuid=3190708988185955192"
+    },
+    {
+      "pid": 58170,
+      "ppid": 58168,
+      "start": "Tue Oct 27 23:07:22 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --no-sandbox --use-angle=swiftshader-webgl --use-gl=angle --mute-audio --headless=old --shared-files --field-trial-handle=1718379636,r,8878149118557634264,7839575357197227395,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,2805652539690866035,16782165250734638975,4 --trace-process-track-uuid=3190708989122997041"
+    },
+    {
+      "pid": 58322,
+      "ppid": 57916,
+      "start": "Tue Oct 27 23:07:37 2026",
+      "command": "(bash)"
+    },
+    {
+      "pid": 58328,
+      "ppid": 58322,
+      "start": "Tue Oct 27 23:07:37 2026",
+      "command": "(Playwright)"
+    },
+    {
+      "pid": 58638,
+      "ppid": 57916,
+      "start": "Tue Oct 27 23:07:52 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-Yta8GU -juggler-pipe -silent"
+    },
+    {
+      "pid": 58646,
+      "ppid": 58638,
+      "start": "Tue Oct 27 23:07:53 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -prefsHandle 0:26975 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {01c936fd-3315-481d-8b40-496735082154} -parentPid 58638 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-Yta8GU org.mozilla.machname.1284888354 1 socket"
+    },
+    {
+      "pid": 58647,
+      "ppid": 58638,
+      "start": "Tue Oct 27 23:07:53 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -isForBrowser -prefsHandle 0:27727 -prefMapHandle 1:288790 -jsInitHandle 2:156236 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -sbLevel 3 -parentBuildID 20260722112722 -ipcHandle 0 -initialChannelId {4dcf26a6-6dad-47da-8eb1-bbc6f3b2e1d2} -parentPid 58638 -greomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/omni.ja -appomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser/omni.ja -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-Yta8GU org.mozilla.machname.603268435 2 tab"
+    },
+    {
+      "pid": 58648,
+      "ppid": 58638,
+      "start": "Tue Oct 27 23:07:53 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -prefsHandle 0:27772 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {61b92592-c1e7-40c1-8286-a4c39c01e9e4} -parentPid 58638 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-Yta8GU org.mozilla.machname.1483464329 3 rdd"
+    },
+    {
+      "pid": 58650,
+      "ppid": 58638,
+      "start": "Tue Oct 27 23:07:54 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -isForBrowser -prefsHandle 0:27185 -prefMapHandle 1:288790 -jsInitHandle 2:156236 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -sbLevel 3 -parentBuildID 20260722112722 -ipcHandle 0 -initialChannelId {3ddd15cf-0122-4a57-9a03-829f61d07308} -parentPid 58638 -greomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/omni.ja -appomni /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser/omni.ja -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-Yta8GU org.mozilla.machname.942166319 4 tab"
+    },
+    {
+      "pid": 58663,
+      "ppid": 58638,
+      "start": "Tue Oct 27 23:07:54 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container -parentBuildID 20260722112722 -sandboxingKind 0 -prefsHandle 0:44574 -prefMapHandle 1:288790 -sbStartup -sbAppPath /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app -ipcHandle 0 -initialChannelId {d4de960e-5591-4a4c-ad3b-87f9963adfa7} -parentPid 58638 -appDir /Users/josek0514/Library/Caches/ms-playwright/firefox-1538/firefox/Nightly.app/Contents/Resources/browser -profile /private/tmp/nevora-alerts-recovery.enj9qwak/playwright_firefoxdev_profile-Yta8GU org.mozilla.machname.1828283931 5 utility"
+    },
+    {
+      "pid": 59041,
+      "ppid": 57916,
+      "start": "Tue Oct 27 23:08:27 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/device/feature-off/owned-next-rrqXH6/app/node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 51436"
+    },
+    {
+      "pid": 59042,
+      "ppid": 59041,
+      "start": "Tue Oct 27 23:08:27 2026",
+      "command": "next-server (v16.4.2) "
+    },
+    {
+      "pid": 59192,
+      "ppid": 57916,
+      "start": "Tue Oct 27 23:08:31 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/tmp/nevora-alerts-recovery.enj9qwak/playwright_chromiumdev_profile-NIMjc6 --remote-debugging-pipe --no-startup-window"
+    },
+    {
+      "pid": 59194,
+      "ppid": 59192,
+      "start": "Tue Oct 27 23:08:31 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=gpu-process --no-sandbox --disable-breakpad --headless --use-angle=swiftshader-webgl --enable-unsafe-swiftshader --gpu-preferences=WAAAAAAAAAAgAAAEAAAAAAAAAAAAAGAAQAAAAAAAAAAAAAAAAAAAADgAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAoAAAAAAAAAAgAAAAAAAAADAAAAAEAAAAAAAAAAAAAAAgAAAAAAAAACAAAAAAAAAA= --shared-files --field-trial-handle=1718379636,r,15256268083293074958,7587144970314548851,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,12791855815531018004,8396408636719703357,4 --trace-process-track-uuid=3190708988185955192"
+    },
+    {
+      "pid": 59195,
+      "ppid": 59192,
+      "start": "Tue Oct 27 23:08:31 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --no-sandbox --use-angle=swiftshader-webgl --use-gl=angle --mute-audio --headless=old --shared-files --field-trial-handle=1718379636,r,15256268083293074958,7587144970314548851,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,12791855815531018004,8396408636719703357,4 --trace-process-track-uuid=3190708989122997041"
+    },
+    {
+      "pid": 59199,
+      "ppid": 59192,
+      "start": "Tue Oct 27 23:08:31 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=renderer --headless=old --no-sandbox --disable-back-forward-cache --disable-background-timer-throttling --disable-breakpad --force-color-profile=srgb --remote-debugging-pipe --allow-pre-commit-input --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --disable-gpu-compositing --lang=en-US --num-raster-threads=4 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=4 --time-ticks-at-unix-epoch=-1793020367389647 --launch-time-ticks=136544601683 --shared-files --field-trial-handle=1718379636,r,15256268083293074958,7587144970314548851,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,12791855815531018004,8396408636719703357,4 --trace-process-track-uuid=3190708990060038890"
+    },
+    {
+      "pid": 59240,
+      "ppid": 59192,
+      "start": "Tue Oct 27 23:08:33 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=renderer --headless=old --no-sandbox --disable-back-forward-cache --disable-background-timer-throttling --disable-breakpad --force-color-profile=srgb --remote-debugging-pipe --allow-pre-commit-input --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --disable-gpu-compositing --lang=en-US --num-raster-threads=4 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=5 --time-ticks-at-unix-epoch=-1793020367389647 --launch-time-ticks=136546585480 --shared-files --field-trial-handle=1718379636,r,15256268083293074958,7587144970314548851,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,12791855815531018004,8396408636719703357,4 --trace-process-track-uuid=3190708990997080739"
+    },
+    {
+      "pid": 59262,
+      "ppid": 59192,
+      "start": "Tue Oct 27 23:08:35 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=renderer --headless=old --no-sandbox --disable-back-forward-cache --disable-background-timer-throttling --disable-breakpad --force-color-profile=srgb --remote-debugging-pipe --allow-pre-commit-input --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --disable-gpu-compositing --lang=en-US --num-raster-threads=4 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=7 --time-ticks-at-unix-epoch=-1793020367389647 --launch-time-ticks=136548439046 --shared-files --field-trial-handle=1718379636,r,15256268083293074958,7587144970314548851,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,12791855815531018004,8396408636719703357,4 --trace-process-track-uuid=3190708992871164437"
+    },
+    {
+      "pid": 59438,
+      "ppid": 57916,
+      "start": "Tue Oct 27 23:08:51 2026",
+      "command": "(node)"
+    },
+    {
+      "pid": 59439,
+      "ppid": 59438,
+      "start": "Tue Oct 27 23:08:52 2026",
+      "command": "next-server (v16.4.2) "
+    },
+    {
+      "pid": 59572,
+      "ppid": 57916,
+      "start": "Tue Oct 27 23:08:55 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/tmp/nevora-alerts-recovery.enj9qwak/playwright_chromiumdev_profile-uur0bu --remote-debugging-pipe --no-startup-window"
+    },
+    {
+      "pid": 59573,
+      "ppid": 59572,
+      "start": "Tue Oct 27 23:08:56 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=gpu-process --no-sandbox --disable-breakpad --headless --use-angle=swiftshader-webgl --enable-unsafe-swiftshader --gpu-preferences=WAAAAAAAAAAgAAAEAAAAAAAAAAAAAGAAQAAAAAAAAAAAAAAAAAAAADgAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAoAAAAAAAAAAgAAAAAAAAADAAAAAEAAAAAAAAAAAAAAAgAAAAAAAAACAAAAAAAAAA= --shared-files --field-trial-handle=1718379636,r,3653944306609872430,13272620912829493094,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,8102550065994574380,8472665700548070023,4 --trace-process-track-uuid=3190708988185955192"
+    },
+    {
+      "pid": 59574,
+      "ppid": 59572,
+      "start": "Tue Oct 27 23:08:56 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --no-sandbox --use-angle=swiftshader-webgl --use-gl=angle --mute-audio --headless=old --shared-files --field-trial-handle=1718379636,r,3653944306609872430,13272620912829493094,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,8102550065994574380,8472665700548070023,4 --trace-process-track-uuid=3190708989122997041"
+    },
+    {
+      "pid": 59578,
+      "ppid": 59572,
+      "start": "Tue Oct 27 23:08:56 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell --type=renderer --headless=old --no-sandbox --disable-back-forward-cache --disable-background-timer-throttling --disable-breakpad --force-color-profile=srgb --remote-debugging-pipe --allow-pre-commit-input --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --disable-gpu-compositing --lang=en-US --num-raster-threads=4 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=4 --time-ticks-at-unix-epoch=-1793020367389711 --launch-time-ticks=136568740671 --shared-files --field-trial-handle=1718379636,r,3653944306609872430,13272620912829493094,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=1935764596,r,8102550065994574380,8472665700548070023,4 --trace-process-track-uuid=3190708990060038890"
+    },
+    {
+      "pid": 59722,
+      "ppid": 53576,
+      "start": "Tue Oct 27 23:09:01 2026",
+      "command": "/usr/local/bin/node --experimental-import-meta-resolve --require /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/suppress-warnings.cjs --conditions node --conditions development /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/dist/workers/forks.js"
+    },
+    {
+      "pid": 59802,
+      "ppid": 59722,
+      "start": "Tue Oct 27 23:09:11 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/passkey-network/owned-next-2OzZf7/app/node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 51812"
+    },
+    {
+      "pid": 59803,
+      "ppid": 59802,
+      "start": "Tue Oct 27 23:09:12 2026",
+      "command": "next-server (v16.4.2) "
+    },
+    {
+      "pid": 59824,
+      "ppid": 59803,
+      "start": "Tue Oct 27 23:09:15 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/passkey-network/owned-next-2OzZf7/app/node_modules/next/dist/compiled/jest-worker/processChild.js"
+    },
+    {
+      "pid": 59841,
+      "ppid": 53576,
+      "start": "Tue Oct 27 23:09:17 2026",
+      "command": "/usr/local/bin/node --experimental-import-meta-resolve --require /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/suppress-warnings.cjs --conditions node --conditions development /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/dist/workers/forks.js"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run src/components/employee-mobile/device-alerts.test.tsx
+
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+ ❯ src/components/employee-mobile/device-alerts.test.tsx (3 tests | 3 failed) 10ms
+   × current-device setup offers explicit consent without employee topic or other-device controls 6ms
+   × an uncertain cleanup offers original recovery without an enabled claim or test command 2ms
+   × only verified enabled ownership exposes the gated test and removal explains its scope 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/employee-mobile/device-alerts.test.tsx > current-device setup offers explicit consent without employee topic or other-device controls
+AssertionError: expected {} to have property "EmployeeDeviceAlertsView"
+ ❯ view src/components/employee-mobile/device-alerts.test.tsx:6:151
+
+ ❯ src/components/employee-mobile/device-alerts.test.tsx:8:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/components/employee-mobile/device-alerts.test.tsx > an uncertain cleanup offers original recovery without an enabled claim or test command
+AssertionError: expected {} to have property "EmployeeDeviceAlertsView"
+ ❯ view src/components/employee-mobile/device-alerts.test.tsx:6:151
+
+ ❯ src/components/employee-mobile/device-alerts.test.tsx:12:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/components/employee-mobile/device-alerts.test.tsx > only verified enabled ownership exposes the gated test and removal explains its scope
+AssertionError: expected {} to have property "EmployeeDeviceAlertsView"
+ ❯ view src/components/employee-mobile/device-alerts.test.tsx:6:151
+
+ ❯ src/components/employee-mobile/device-alerts.test.tsx:17:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  21:36:08
+   Duration  111ms (import 43%, transform 32%, tests 21%, worker 4%)
+
