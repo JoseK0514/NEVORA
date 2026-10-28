@@ -1,0 +1,1726 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Profile row opens the teal deletion review: own account, actual consequences, retention disclosure, password last"
+    },
+    {
+      "engine": "chromium",
+      "name": "Review light/dark at 320/390/430, sampled contrast, 44px targets, token type, 200% text with actions above navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "Keep my account returns to Profile with focus on the exact Delete row"
+    },
+    {
+      "engine": "chromium",
+      "name": "Field-linked validation focuses the first problem; native Tab reaches show/hide and the confirmation checkbox"
+    },
+    {
+      "engine": "chromium",
+      "name": "Desktop keeps Quiet; one owner keeps the typed password and confirmation across resize"
+    },
+    {
+      "engine": "chromium",
+      "name": "Wrong password: field error, focus returns to the password, nothing saved, still signed in"
+    },
+    {
+      "engine": "chromium",
+      "name": "A database-rejected request says nothing was saved only because PostgreSQL rolled it back; the session stays"
+    },
+    {
+      "engine": "chromium",
+      "name": "A reply lost after COMMIT shows an unconfirmed outcome on the same page: no false failure, no invented reference"
+    },
+    {
+      "engine": "chromium",
+      "name": "Check my request recovers the committed reference with a counted password check after every session ended"
+    },
+    {
+      "engine": "chromium",
+      "name": "Receipt light/dark at 320/390/430, contrast, targets, 200% text with Done above navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "Done removes the dead cookie; the right password still cannot sign in while the request is open"
+    },
+    {
+      "engine": "chromium",
+      "name": "Genuine coarse landscape (1 touch points): teal review, targets, no overflow, actions above navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "A session that ended elsewhere: the password check finds no request and says nothing was deleted, with Sign in"
+    },
+    {
+      "engine": "chromium",
+      "name": "Manager at phone width keeps the incumbent Quiet page; the teal port is Employee/Lead only"
+    },
+    {
+      "engine": "webkit",
+      "name": "Profile row opens the teal deletion review: own account, actual consequences, retention disclosure, password last"
+    },
+    {
+      "engine": "webkit",
+      "name": "Review light/dark at 320/390/430, sampled contrast, 44px targets, token type, 200% text with actions above navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "Keep my account returns to Profile with focus on the exact Delete row"
+    },
+    {
+      "engine": "webkit",
+      "name": "Field-linked validation focuses the first problem; native Alt+Tab reaches show/hide and the confirmation checkbox"
+    },
+    {
+      "engine": "webkit",
+      "name": "Desktop keeps Quiet; one owner keeps the typed password and confirmation across resize"
+    },
+    {
+      "engine": "webkit",
+      "name": "Wrong password: field error, focus returns to the password, nothing saved, still signed in"
+    },
+    {
+      "engine": "webkit",
+      "name": "A database-rejected request says nothing was saved only because PostgreSQL rolled it back; the session stays"
+    },
+    {
+      "engine": "webkit",
+      "name": "A reply lost after COMMIT shows an unconfirmed outcome on the same page: no false failure, no invented reference"
+    },
+    {
+      "engine": "webkit",
+      "name": "Check my request recovers the committed reference with a counted password check after every session ended"
+    },
+    {
+      "engine": "webkit",
+      "name": "Receipt light/dark at 320/390/430, contrast, targets, 200% text with Done above navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "Done removes the dead cookie; the right password still cannot sign in while the request is open"
+    },
+    {
+      "engine": "webkit",
+      "name": "Genuine coarse landscape (0 touch points): teal review, targets, no overflow, actions above navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "A session that ended elsewhere: the password check finds no request and says nothing was deleted, with Sign in"
+    },
+    {
+      "engine": "firefox",
+      "name": "Profile row opens the teal deletion review: own account, actual consequences, retention disclosure, password last"
+    },
+    {
+      "engine": "firefox",
+      "name": "Review light/dark at 320/390/430, sampled contrast, 44px targets, token type, 200% text with actions above navigation"
+    },
+    {
+      "engine": "firefox",
+      "name": "Keep my account returns to Profile with focus on the exact Delete row"
+    },
+    {
+      "engine": "firefox",
+      "name": "Field-linked validation focuses the first problem; native Tab reaches show/hide and the confirmation checkbox"
+    },
+    {
+      "engine": "firefox",
+      "name": "Desktop keeps Quiet; one owner keeps the typed password and confirmation across resize"
+    },
+    {
+      "engine": "firefox",
+      "name": "Wrong password: field error, focus returns to the password, nothing saved, still signed in"
+    },
+    {
+      "engine": "firefox",
+      "name": "A database-rejected request says nothing was saved only because PostgreSQL rolled it back; the session stays"
+    },
+    {
+      "engine": "firefox",
+      "name": "A reply lost after COMMIT shows an unconfirmed outcome on the same page: no false failure, no invented reference"
+    },
+    {
+      "engine": "firefox",
+      "name": "Check my request recovers the committed reference with a counted password check after every session ended"
+    },
+    {
+      "engine": "firefox",
+      "name": "Receipt light/dark at 320/390/430, contrast, targets, 200% text with Done above navigation"
+    },
+    {
+      "engine": "firefox",
+      "name": "Done removes the dead cookie; the right password still cannot sign in while the request is open"
+    },
+    {
+      "engine": "firefox",
+      "name": "No coarse pointer in this engine: 844px landscape correctly keeps the desktop presentation (recorded, not claimed as mobile)"
+    }
+  ],
+  "captures": [
+    "chromium-review-light-320-top.png",
+    "chromium-review-light-320.png",
+    "chromium-review-light-390-top.png",
+    "chromium-review-light-390.png",
+    "chromium-review-light-430-top.png",
+    "chromium-review-light-430.png",
+    "chromium-review-dark-320-top.png",
+    "chromium-review-dark-320.png",
+    "chromium-review-dark-390-top.png",
+    "chromium-review-dark-390.png",
+    "chromium-review-dark-430-top.png",
+    "chromium-review-dark-430.png",
+    "chromium-review-text200.png",
+    "chromium-validation.png",
+    "chromium-validation-dark.png",
+    "chromium-wrong-password.png",
+    "chromium-failed.png",
+    "chromium-failed-dark.png",
+    "chromium-pending.png",
+    "chromium-uncertain.png",
+    "chromium-uncertain-dark.png",
+    "chromium-receipt-light-320-top.png",
+    "chromium-receipt-light-320.png",
+    "chromium-receipt-light-390-top.png",
+    "chromium-receipt-light-390.png",
+    "chromium-receipt-light-430-top.png",
+    "chromium-receipt-light-430.png",
+    "chromium-receipt-dark-320-top.png",
+    "chromium-receipt-dark-320.png",
+    "chromium-receipt-dark-390-top.png",
+    "chromium-receipt-dark-390.png",
+    "chromium-receipt-dark-430-top.png",
+    "chromium-receipt-dark-430.png",
+    "chromium-receipt-text200.png",
+    "chromium-signin-refused.png",
+    "chromium-landscape-coarse.png",
+    "chromium-landscape-signed-out.png",
+    "chromium-manager-390.png",
+    "webkit-review-light-320-top.png",
+    "webkit-review-light-320.png",
+    "webkit-review-light-390-top.png",
+    "webkit-review-light-390.png",
+    "webkit-review-light-430-top.png",
+    "webkit-review-light-430.png",
+    "webkit-review-dark-320-top.png",
+    "webkit-review-dark-320.png",
+    "webkit-review-dark-390-top.png",
+    "webkit-review-dark-390.png",
+    "webkit-review-dark-430-top.png",
+    "webkit-review-dark-430.png",
+    "webkit-review-text200.png",
+    "webkit-validation.png",
+    "webkit-validation-dark.png",
+    "webkit-wrong-password.png",
+    "webkit-failed.png",
+    "webkit-failed-dark.png",
+    "webkit-pending.png",
+    "webkit-uncertain.png",
+    "webkit-uncertain-dark.png",
+    "webkit-receipt-light-320-top.png",
+    "webkit-receipt-light-320.png",
+    "webkit-receipt-light-390-top.png",
+    "webkit-receipt-light-390.png",
+    "webkit-receipt-light-430-top.png",
+    "webkit-receipt-light-430.png",
+    "webkit-receipt-dark-320-top.png",
+    "webkit-receipt-dark-320.png",
+    "webkit-receipt-dark-390-top.png",
+    "webkit-receipt-dark-390.png",
+    "webkit-receipt-dark-430-top.png",
+    "webkit-receipt-dark-430.png",
+    "webkit-receipt-text200.png",
+    "webkit-signin-refused.png",
+    "webkit-landscape-coarse.png",
+    "webkit-landscape-signed-out.png",
+    "firefox-review-light-320-top.png",
+    "firefox-review-light-320.png",
+    "firefox-review-light-390-top.png",
+    "firefox-review-light-390.png",
+    "firefox-review-light-430-top.png",
+    "firefox-review-light-430.png",
+    "firefox-review-dark-320-top.png",
+    "firefox-review-dark-320.png",
+    "firefox-review-dark-390-top.png",
+    "firefox-review-dark-390.png",
+    "firefox-review-dark-430-top.png",
+    "firefox-review-dark-430.png",
+    "firefox-review-text200.png",
+    "firefox-validation.png",
+    "firefox-validation-dark.png",
+    "firefox-wrong-password.png",
+    "firefox-failed.png",
+    "firefox-failed-dark.png",
+    "firefox-pending.png",
+    "firefox-uncertain.png",
+    "firefox-uncertain-dark.png",
+    "firefox-receipt-light-320-top.png",
+    "firefox-receipt-light-320.png",
+    "firefox-receipt-light-390-top.png",
+    "firefox-receipt-light-390.png",
+    "firefox-receipt-light-430-top.png",
+    "firefox-receipt-light-430.png",
+    "firefox-receipt-dark-320-top.png",
+    "firefox-receipt-dark-320.png",
+    "firefox-receipt-dark-390-top.png",
+    "firefox-receipt-dark-390.png",
+    "firefox-receipt-dark-430-top.png",
+    "firefox-receipt-dark-430.png",
+    "firefox-receipt-text200.png",
+    "firefox-signin-refused.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "consequence",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "confirm",
+      "ratio": 6.056099084376946
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "keep",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "help",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "consequence",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "confirm",
+      "ratio": 6.056099084376946
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "keep",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "help",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "consequence",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "confirm",
+      "ratio": 6.056099084376946
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "keep",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "help",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "consequence",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "confirm",
+      "ratio": 9.342950111702907
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "keep",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "help",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "consequence",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "confirm",
+      "ratio": 9.342950111702907
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "keep",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "help",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "consequence",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "confirm",
+      "ratio": 9.342950111702907
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "keep",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "help",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "status",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "reference",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "time",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "next",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "done",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "status",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "reference",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "time",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "next",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "done",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "status",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "reference",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "time",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "next",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "done",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "status",
+      "ratio": 12.320192499722165
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "reference",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "time",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "next",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "done",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "status",
+      "ratio": 12.320192499722165
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "reference",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "time",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "next",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "done",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "status",
+      "ratio": 12.320192499722165
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "reference",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "time",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "next",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "done",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "consequence",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "confirm",
+      "ratio": 6.056099084376946
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "keep",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "help",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "consequence",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "confirm",
+      "ratio": 6.056099084376946
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "keep",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "help",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "consequence",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "confirm",
+      "ratio": 6.056099084376946
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "keep",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "help",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "consequence",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "confirm",
+      "ratio": 9.342950111702907
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "keep",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "help",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "consequence",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "confirm",
+      "ratio": 9.342950111702907
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "keep",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "help",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "consequence",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "confirm",
+      "ratio": 9.342950111702907
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "keep",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "help",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "status",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "reference",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "time",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "next",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "done",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "status",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "reference",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "time",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "next",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "done",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "status",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "reference",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "time",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "next",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "done",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "status",
+      "ratio": 12.320192499722165
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "reference",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "time",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "next",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "done",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "status",
+      "ratio": 12.320192499722165
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "reference",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "time",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "next",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "done",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "status",
+      "ratio": 12.320192499722165
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "reference",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "time",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "next",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "done",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "consequence",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "confirm",
+      "ratio": 6.056099084376946
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "keep",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "help",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "consequence",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "confirm",
+      "ratio": 6.056099084376946
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "keep",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "help",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "consequence",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "confirm",
+      "ratio": 6.056099084376946
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "keep",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "help",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "consequence",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "confirm",
+      "ratio": 9.342950111702907
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "keep",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "help",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "consequence",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "confirm",
+      "ratio": 9.342950111702907
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "keep",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "help",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "consequence",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "confirm",
+      "ratio": 9.342950111702907
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "keep",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "help",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "status",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "reference",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "time",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "next",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "done",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "status",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "reference",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "time",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "next",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "done",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "status",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "reference",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "time",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "next",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "done",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "status",
+      "ratio": 12.320192499722165
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "reference",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "time",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "next",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "done",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "status",
+      "ratio": 12.320192499722165
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "reference",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "time",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "next",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "done",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "status",
+      "ratio": 12.320192499722165
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "reference",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "time",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "next",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "done",
+      "ratio": 12.581737771441162
+    }
+  ],
+  "media": [
+    {
+      "engine": "chromium",
+      "coarse": true,
+      "landscape": true,
+      "touchPoints": 1,
+      "width": 844,
+      "height": 390
+    },
+    {
+      "engine": "webkit",
+      "coarse": true,
+      "landscape": true,
+      "touchPoints": 0,
+      "width": 844,
+      "height": 390
+    },
+    {
+      "engine": "firefox",
+      "coarse": false,
+      "landscape": true,
+      "touchPoints": 0,
+      "width": 844,
+      "height": 390
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_CONNECTION_RESET",
+      "expected": true,
+      "stage": "lost-reply"
+    },
+    {
+      "engine": "webkit",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:58780/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false,
+      "stage": "open-from-profile"
+    },
+    {
+      "engine": "webkit",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:58780/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false,
+      "stage": "open-from-profile"
+    },
+    {
+      "engine": "webkit",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:58780/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false,
+      "stage": "open-from-profile"
+    },
+    {
+      "engine": "webkit",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:58780/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false,
+      "stage": "open-from-profile"
+    }
+  ],
+  "limits": [
+    "Controlled loopback browsers and fictional accounts. Deletion acceptance is the recorded request; later erasure follows docs/compliance/account-deletion-runbook.md and is not exercised. Root 200% text is not OS Dynamic Type. Physical devices, screen readers, hosted transport and release remain separate."
+  ]
+}

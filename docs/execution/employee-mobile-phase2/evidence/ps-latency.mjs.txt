@@ -1,0 +1,12 @@
+// Times the exact observation phase-e-owned.mjs makes (ps -p <pid> -o pid=,stat=, 2s timeout) while the default
+// suite runs. Writes one JSON line per sample; stops when the stop file appears.
+import {spawnSync} from 'node:child_process';
+import {appendFileSync,existsSync} from 'node:fs';
+const [out,stop]=process.argv.slice(2);
+while(!existsSync(stop)){
+ const start=performance.now();
+ const r=spawnSync('ps',['-p',String(process.pid),'-o','pid=,stat='],{encoding:'utf8',timeout:2000});
+ const ms=performance.now()-start;
+ appendFileSync(out,JSON.stringify({at:Date.now(),ms:Math.round(ms),status:r.status,error:r.error?.code??null,stderr:(r.stderr||'').trim().slice(0,80)})+'\n');
+ await new Promise(resolve=>setTimeout(resolve,250));
+}
