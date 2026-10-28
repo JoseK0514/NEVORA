@@ -56,6 +56,7 @@ it('shows own published statements, linked corrections and protected PDFs with t
    const record=(name:string)=>checks.push({engine,name});
    const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,style:'nextjs-portal {visibility:hidden;}',caret:'initial'});captures.push(file);};
    failed=async()=>{await shot('failure');await writeFile(evidence+'/'+engine+'-failure.html',await page.locator('body').innerHTML());};
+   const forwardKey=engine==='webkit'&&process.platform==='darwin'?'Alt+Tab':'Tab';
    const focused=(selector:string)=>page.locator(selector).evaluate((el:HTMLElement)=>document.activeElement===el);
    const state=(kind:string)=>page.locator(`.em-pay[data-pay-state="${kind}"]`).waitFor();
    const login=async(target:typeof page,id:string)=>{await target.getByLabel(AUTH_COPY.en.employeeId,{exact:true}).fill(id);await target.getByLabel(AUTH_COPY.en.password,{exact:true}).fill(TEST_PASSWORD);await target.getByRole('button',{name:AUTH_COPY.en.signIn,exact:true}).click();await target.waitForURL(app.url+'/app');};
@@ -75,12 +76,14 @@ it('shows own published statements, linked corrections and protected PDFs with t
    record('Replaced statement explains itself and moves focus to its correction');
 
    stage='view';const viewed=context.waitForEvent('response',(response:{url():string})=>response.url().endsWith(`/api/payroll/documents/${correction.id}/view`));
-   const popup=context.waitForEvent('page');await page.locator(`#pay-view-latest-${correction.id}`).click();
+   // Real keyboard: from the focused statement heading, native Tab reaches View; Enter opens it.
+   await page.keyboard.press(forwardKey);expect(await focused(`#pay-view-latest-${correction.id}`)).toBe(true);
+   const popup=context.waitForEvent('page');await page.keyboard.press('Enter');
    const response=await viewed,tab=await popup;expect(response.status()).toBe(200);
    const headers=await response.allHeaders();expect(headers['content-type']).toBe('application/pdf');expect(headers['cache-control']).toBe('no-store, private');expect(headers['content-disposition']).toBe(`inline; filename="statement-correction-${engine}.pdf"`);
    expect(createHash('sha256').update(correction.bytes).digest('hex')).toBe(headers['x-content-sha256']);
    await tab.close();await page.bringToFront();await expect.poll(()=>focused(`#pay-view-latest-${correction.id}`)).toBe(true);
-   record('View opens the verified PDF in a new tab (never cached) and focus stays on its control after returning');
+   record('Keyboard '+forwardKey+' and Enter open the verified PDF in a new tab (never cached); focus is on View after returning');
 
    stage='download';const download=page.waitForEvent('download');await page.locator(`#pay-download-latest-${correction.id}`).click();const file=await download;
    expect(file.suggestedFilename()).toBe(`statement-correction-${engine}.pdf`);const saved=evidence+'/'+engine+'-downloaded.pdf';await file.saveAs(saved);
