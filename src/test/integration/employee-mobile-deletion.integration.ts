@@ -134,7 +134,7 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    await expect.poll(()=>focused(page.locator('.em-delete-status--done'))).toBe(true);
    expect(await page.locator('.em-delete-reference-value').innerText()).toBe(saved.reference);expect((await own()).length).toBe(1);
    const receipt=await page.locator('.em-delete').innerText();
-   for(const text of ['Your deletion request was received','Received','You’re signed out everywhere','we’ll email you when it’s done','We’ll never ask for your password'])expect(receipt).toContain(text);
+   for(const text of ['Your deletion request was received','Changed your mind? Contact support before the request is processed.','Received','You’re signed out everywhere','we’ll email you when it’s done','We’ll never ask for your password'])expect(receipt).toContain(text);
    expect(await page.locator('.em-request-back').count()).toBe(0);expect(await page.locator('#deletion-password').count()).toBe(0);expect(await page.locator('.em-delete h1').innerText()).toBe('Deletion requested');
    expect(await page.locator('.mobile-nav').evaluate((el:HTMLElement)=>getComputedStyle(el).display)).toBe('none');
    expect(await page.locator(`a[href="mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Account deletion '+saved.reference)}"]`).count()).toBe(1);

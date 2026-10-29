@@ -17,8 +17,6 @@ jobs:
   mobile-access:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
-    env:
-      NEVORA_MOBILE_ACCESS_EVIDENCE: ${{ runner.temp }}/nevora-mobile-access
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -50,6 +48,8 @@ jobs:
           test -x /usr/lib/postgresql/16/bin/pg_ctl
           echo "NEVORA_TEST_PG_BIN=/usr/lib/postgresql/16/bin" >> "$GITHUB_ENV"
       - name: Verify real Access, rotation and Quick guide
+        env:
+          NEVORA_MOBILE_ACCESS_EVIDENCE: ${{ runner.temp }}/nevora-mobile-access
         shell: bash
         run: |
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"

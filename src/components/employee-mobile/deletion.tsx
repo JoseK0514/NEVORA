@@ -59,6 +59,7 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,passwordRef
       <li><BriefcaseIcon size={22} aria-hidden="true"/><span><strong>Your job doesn’t change</strong><small>Deleting your NEVORA account doesn’t end your employment or remove records your employer has to keep.</small></span></li>
      </ul>
      <p>To ask about it, email {support(state.reference)} with your reference. We’ll never ask for your password.</p>
+     <p>Changed your mind? Contact support before the request is processed.</p>
     </section>
     <form action={logout}><button type="submit" className="em-request-primary">Done</button></form>
    </>:ended?<div className="em-delete-status" ref={outcomeRef} tabIndex={-1} role="alert" aria-labelledby="deletion-ended-title">
