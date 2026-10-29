@@ -45,7 +45,7 @@ Files: mobile-access/use-mobile-presentation.ts; mobile-access.css; onboarding-g
 - [x] Preserve form drafts and exact auth/session/role behavior through rotation; run full existing Access suite including compatibility cases. Fix CI runner.temp wiring, then distinguish source configuration from a real Actions pass.
 
 
-Local implementation/verification complete at393c8440; actual Actions verification remains pending (BATCH-02).
+Local implementation is verified; hosted Access/guide/landscape passed at0c7fa56f in40973929823 (CI register). Rollout remains held.
 
 ## Task3: Employee source-confirmed inspection findings
 
@@ -63,6 +63,9 @@ Files: employee-mobile/messages.tsx,hours-frame.tsx,planning-frame.tsx,pay.tsx,p
 
 Discovery identifies existing real routes for every principal surface, AI manager and combobox search; do not create duplicate engines. Existing Schedule scroll containment is already present.
 
+- [x] Approved4.6 Owner Inbox coverage-first order, matching desktop selection and actionable keyboard return. Manager order retained; exact0b50 three-engine native replay and full/static pass (BATCH-11).
+- [ ] Approved4.6 own-details blur notice with original pending/unknown command retained across private-frame retirement.
+- [ ] Approved4.6 independent Today scheduled names while Team links are unavailable.
 - [ ] Resolve missing DESIGN-SPEC/project HTML and unavailable binding business-rule rows. Inspect supplied PNGs/prototype as references, not app/data proof. Owner look/business-rule decisions remain pending;4.6 behaviors are explicitly confirmed in INPUTS.json.
 - [ ] Shell/navigation/search/five roots/history/opener focus. Then Home/Inbox/Team; then Schedule/sheets; then Timecards/Insights/Exports; then Payroll; then Settings/Clocker admin; then Updates/notifications/advisor/account.
 - [ ] Each sub-batch declares exact source/test ownership and reproduction before edits; real-source counts/overnights/partial states/role gates remain authoritative.
@@ -80,7 +83,7 @@ Files: existing Clocker presenters/services and owned configs identified in disc
 
 Files: scripts/rehearsal/migration-plan.mts; src/test/migration-order.test.ts; deployment/compliance/Clocker setup docs.
 
-- [ ] Confirm exact filename ledger for collab0038–0042 andPR34 independent0038/0039; preserve filenames, rehearse disposable upgrade/fresh ordering including invitations0042. Verify lock budget/index validity, never production.
+- [x] Confirm exact filename ledger for collab0038–0042 andPR34 independent0038/0039; preserve filenames, rehearse disposable upgrade/fresh ordering including invitations0042. Verify lock budget/index validity, never production.
 - [ ] Prepare tested tablet setup/replacement/recovery guide, support ownership and operational deletion checklist. Pending identity/support policy stays marked pending.
 
 ## Task7: Final gate and Claude handoff
@@ -99,3 +102,5 @@ Batch07: Open-shifts related destinations now form an accessible named row group
 BATCH-08 verifies Home/Pay hierarchy locally. Hosted Access first successful actual run is40957836154 at1e174c56 (3/3, zero skipped/runtime/window errors, guide396/actual66/landscape120/rotations24). The captured c7 Home200 proof gap is preserved and corrected atf0787219 with an actual32px root and native glyph-bound/clearance assertions. Root/detail chrome, Quick guide placement, remaining type audit, Owner/Clocker integration and final same-source acceptance remain open.
 
 Batch09/10: actual tab-aware Employee root/detail chrome and contextual Quick guide completed; final Schedule16px/Phosphor/type and More canvas reflow verified. BATCH-09/10 receipts preserve all failures. Full default10245/0/801 inherited skips at93a950dd; final two-file visual follow-up2e0 has41 focused tests, Phase1/native type three-engine passes and TSC/lint/startup/build0. Hosted new-source replay and all11 final same-candidate gate remain open.
+
+Batch11/12: local exact0b50be70 passes default10,255/0/801 inherited skips; Node migration-plan12; combined owned migrations11; real Owner Inbox1(all3eng/12checks84captures/raw0console0); TSC/lint/startup/build0.49 migration filenames plus2held, index mismatch/invalid preflight and exact filename-only upgrade planning are integrated. No final release/independent/hosted-tablet acceptance or deployment claimed.

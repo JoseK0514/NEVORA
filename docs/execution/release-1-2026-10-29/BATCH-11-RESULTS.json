@@ -1,0 +1,155 @@
+{
+  "source": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+  "native": {
+    "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/owner-inbox/results.json",
+    "passed": 1,
+    "flowChecks": 12,
+    "captures": 84,
+    "pageErrors": [],
+    "consoleMessages": [],
+    "engines": [
+      "chromium",
+      "webkit",
+      "firefox"
+    ],
+    "widths": [
+      320,
+      390,
+      768,
+      844,
+      1024,
+      1280,
+      1440
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "limit": "Root-font setting100/200 with containment only; existing pixel-sized Owner typography and actual coarse landscape/physical devices remain unverified. No final UI acceptance."
+  },
+  "attempts": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/owner-inbox-red.log",
+      "result": "Initial test preparation included hoisted-fixture error; component ordering RED genuine"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/owner-inbox-red-corrected.log",
+      "result": "Three genuine ordering/wiring failures"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/owner-inbox-native-first.log",
+      "result": "Actual Escape actionable-opener focus RED"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/owner-inbox-native-second.log",
+      "result": "All layout/flow assertions pass; zero-error gate fails9 WebKit document replacement diagnostics"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/owner-inbox-native-third.log",
+      "result": "Actual sidebar-link fixture passes12checks84captures0errors0messages at4e9182ed"
+    }
+  ],
+  "focusedTests": 38,
+  "sharedStatic": {
+    "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/summary.json",
+    "defaultPassed": 10255,
+    "defaultFailed": 0,
+    "inheritedSkipped": 801,
+    "steps": [
+      {
+        "name": "migration-plan",
+        "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+        "startedAt": "2026-10-29T23:43:47.638Z",
+        "finishedAt": "2026-10-29T23:43:49.400Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/migration-plan.log"
+      },
+      {
+        "name": "migrations",
+        "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+        "startedAt": "2026-10-29T23:43:50.467Z",
+        "finishedAt": "2026-10-29T23:44:01.387Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/migrations.log"
+      },
+      {
+        "name": "owner-inbox",
+        "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+        "startedAt": "2026-10-29T23:44:02.515Z",
+        "finishedAt": "2026-10-29T23:44:49.248Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/owner-inbox.log"
+      },
+      {
+        "name": "default",
+        "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+        "startedAt": "2026-10-29T23:44:50.295Z",
+        "finishedAt": "2026-10-29T23:55:08.661Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/default.log"
+      },
+      {
+        "name": "typecheck",
+        "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+        "startedAt": "2026-10-29T23:55:09.722Z",
+        "finishedAt": "2026-10-29T23:55:37.636Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/typecheck.log"
+      },
+      {
+        "name": "lint",
+        "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+        "startedAt": "2026-10-29T23:55:38.610Z",
+        "finishedAt": "2026-10-29T23:56:23.955Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/lint.log"
+      },
+      {
+        "name": "startup",
+        "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+        "startedAt": "2026-10-29T23:56:24.940Z",
+        "finishedAt": "2026-10-29T23:56:27.459Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/startup.log"
+      },
+      {
+        "name": "build",
+        "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+        "startedAt": "2026-10-29T23:56:28.429Z",
+        "finishedAt": "2026-10-29T23:56:48.306Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/build.log"
+      }
+    ]
+  },
+  "remaining": [
+    "Owner own-details blur notice/exact command preservation",
+    "Home current scheduled names during Team unavailable",
+    "Pending Owner look/business decisions and broader Owner UI/keyboard/reflow review",
+    "Final shared-source Employee/Owner/Clocker release acceptance"
+  ]
+}

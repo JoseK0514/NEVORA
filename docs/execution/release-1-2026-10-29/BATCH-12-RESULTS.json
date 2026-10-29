@@ -1,0 +1,342 @@
+{
+  "source": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+  "currentPlan": {
+    "source": "manifest",
+    "base": [
+      "0001_initial.sql",
+      "0002_schedule_health.sql",
+      "0003_schedule_assistance.sql",
+      "0004_assistance_layer.sql",
+      "0005_time_clock.sql",
+      "0006_scheduling_rule_inputs.sql",
+      "0007_portal_web_push.sql",
+      "0008_workspace_positions.sql",
+      "0009_schedule_generation.sql",
+      "0010_shift_coverage_automation.sql",
+      "0011_clocker_devices.sql",
+      "0012_clocker_pins.sql",
+      "0013_clocker_punches.sql",
+      "0014_clocker_breaks.sql",
+      "0015_clocker_schedule_context.sql",
+      "0016_time_corrections.sql",
+      "0017_missing_time_supersession.sql",
+      "0018_timecards.sql",
+      "0019_payroll_export_mappings.sql",
+      "0020_account_recovery.sql",
+      "0021_timecard_reassignment_interlock.sql",
+      "0022_timecard_reopen_revision_authority.sql",
+      "0023_employee_attention_receipts.sql",
+      "0024_contextual_communications.sql",
+      "0025_calendar_subscriptions.sql",
+      "0023_template_ownership.sql",
+      "0024_schedule_copy_receipts.sql",
+      "0025_company_policies.sql",
+      "0026_attendance_observations.sql",
+      "0027_payroll_period_custody.sql",
+      "0028_configurable_payroll.sql",
+      "0029_payroll_private_notices.sql",
+      "0030_notification_source_kinds.sql",
+      "0031_workspace_presentation.sql",
+      "0032_workspace_words_modules.sql",
+      "0033_management_alert_preferences.sql",
+      "0034_account_deletion_requests.sql",
+      "0035_passkeys.sql",
+      "0036_owner_advisor.sql",
+      "0037_owner_briefing_reviews.sql",
+      "0038_read_path_indexes.sql",
+      "0039_native_payroll_setup_records.sql",
+      "0038_clocker_pin_operation_reference.sql",
+      "0039_clocker_review_requests.sql",
+      "0040_clocker_photo_policy_evidence.sql",
+      "0041_clocker_photo_platform_cleanup.sql"
+    ],
+    "final": [
+      "0031_native_payroll.sql",
+      "0032_company_access_invitations.sql",
+      "0042_company_invitation_lifetime.sql"
+    ],
+    "held": [
+      "0026_tenant_ownership_expand.sql",
+      "0027_tenant_ownership_validate.sql"
+    ],
+    "current": [
+      "0001_initial.sql",
+      "0002_schedule_health.sql",
+      "0003_schedule_assistance.sql",
+      "0004_assistance_layer.sql",
+      "0005_time_clock.sql",
+      "0006_scheduling_rule_inputs.sql",
+      "0007_portal_web_push.sql",
+      "0008_workspace_positions.sql",
+      "0009_schedule_generation.sql",
+      "0010_shift_coverage_automation.sql",
+      "0011_clocker_devices.sql",
+      "0012_clocker_pins.sql",
+      "0013_clocker_punches.sql",
+      "0014_clocker_breaks.sql",
+      "0015_clocker_schedule_context.sql",
+      "0016_time_corrections.sql",
+      "0017_missing_time_supersession.sql",
+      "0018_timecards.sql",
+      "0019_payroll_export_mappings.sql",
+      "0020_account_recovery.sql",
+      "0021_timecard_reassignment_interlock.sql",
+      "0022_timecard_reopen_revision_authority.sql",
+      "0023_employee_attention_receipts.sql",
+      "0024_contextual_communications.sql",
+      "0025_calendar_subscriptions.sql",
+      "0023_template_ownership.sql",
+      "0024_schedule_copy_receipts.sql",
+      "0025_company_policies.sql",
+      "0026_attendance_observations.sql",
+      "0027_payroll_period_custody.sql",
+      "0028_configurable_payroll.sql",
+      "0029_payroll_private_notices.sql",
+      "0030_notification_source_kinds.sql",
+      "0031_workspace_presentation.sql",
+      "0032_workspace_words_modules.sql",
+      "0033_management_alert_preferences.sql",
+      "0034_account_deletion_requests.sql",
+      "0035_passkeys.sql",
+      "0036_owner_advisor.sql",
+      "0037_owner_briefing_reviews.sql",
+      "0038_read_path_indexes.sql",
+      "0039_native_payroll_setup_records.sql",
+      "0038_clocker_pin_operation_reference.sql",
+      "0039_clocker_review_requests.sql",
+      "0040_clocker_photo_policy_evidence.sql",
+      "0041_clocker_photo_platform_cleanup.sql",
+      "0031_native_payroll.sql",
+      "0032_company_access_invitations.sql",
+      "0042_company_invitation_lifetime.sql"
+    ],
+    "inputs": [
+      {
+        "path": "scripts/company-setup.ts",
+        "sha256": "8082f04031b2569e84aa7735fbb2983a73a65ee022b4ec49a212e21a6f15a999"
+      },
+      {
+        "path": "src/test/integration/local-postgres.ts",
+        "sha256": "6e70ee09c1188c7eeed628d26ff9e3aba0e7ef873b20198885de3c9bda7d7526"
+      },
+      {
+        "path": "db/migrations/order.ts",
+        "sha256": "91d20334072c547ddb748cb20c3ab0c34eea2c505926459e3fae6f2dbbf067b2"
+      }
+    ],
+    "missing": [
+      "0001_initial.sql",
+      "0002_schedule_health.sql",
+      "0003_schedule_assistance.sql",
+      "0004_assistance_layer.sql",
+      "0005_time_clock.sql",
+      "0006_scheduling_rule_inputs.sql",
+      "0007_portal_web_push.sql",
+      "0008_workspace_positions.sql",
+      "0009_schedule_generation.sql",
+      "0010_shift_coverage_automation.sql",
+      "0011_clocker_devices.sql",
+      "0012_clocker_pins.sql",
+      "0013_clocker_punches.sql",
+      "0014_clocker_breaks.sql",
+      "0015_clocker_schedule_context.sql",
+      "0016_time_corrections.sql",
+      "0017_missing_time_supersession.sql",
+      "0018_timecards.sql",
+      "0019_payroll_export_mappings.sql",
+      "0020_account_recovery.sql",
+      "0021_timecard_reassignment_interlock.sql",
+      "0022_timecard_reopen_revision_authority.sql",
+      "0023_employee_attention_receipts.sql",
+      "0024_contextual_communications.sql",
+      "0025_calendar_subscriptions.sql",
+      "0023_template_ownership.sql",
+      "0024_schedule_copy_receipts.sql",
+      "0025_company_policies.sql",
+      "0026_attendance_observations.sql",
+      "0027_payroll_period_custody.sql",
+      "0028_configurable_payroll.sql",
+      "0029_payroll_private_notices.sql",
+      "0030_notification_source_kinds.sql",
+      "0031_workspace_presentation.sql",
+      "0032_workspace_words_modules.sql",
+      "0033_management_alert_preferences.sql",
+      "0034_account_deletion_requests.sql",
+      "0035_passkeys.sql",
+      "0036_owner_advisor.sql",
+      "0037_owner_briefing_reviews.sql",
+      "0038_read_path_indexes.sql",
+      "0039_native_payroll_setup_records.sql",
+      "0038_clocker_pin_operation_reference.sql",
+      "0039_clocker_review_requests.sql",
+      "0040_clocker_photo_policy_evidence.sql",
+      "0041_clocker_photo_platform_cleanup.sql",
+      "0031_native_payroll.sql",
+      "0032_company_access_invitations.sql",
+      "0042_company_invitation_lifetime.sql"
+    ]
+  },
+  "sqlFiles": {
+    "pr34Source": "60252ca6c9356b665efd73240dc8f0b003415bbd",
+    "hashes": {
+      "0038_read_path_indexes.sql": {
+        "collab": "16f733bdf74e4e4edbf4995ea93d1b652bf5ff3d92655faf2f4a717cad251325",
+        "pr34": "989dc9e469811b84e738da7d7025df1740e5b679882952927d276df8fd2a6b5b"
+      },
+      "0039_native_payroll_setup_records.sql": {
+        "collab": "38e0b4de2e04ecf4dbc247a80ea9230b24358bec1ffa38289cb1baf71106adea",
+        "pr34": "38e0b4de2e04ecf4dbc247a80ea9230b24358bec1ffa38289cb1baf71106adea"
+      }
+    }
+  },
+  "rehearsal": {
+    "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/migration-results.json",
+    "passed": 11,
+    "failed": 0,
+    "nodePlannerPassed": 12,
+    "scope": [
+      "Actual fresh company and Owner",
+      "Atomic setup rollback and retry",
+      "Concurrent setup serialization",
+      "Wrong-definition index refusal",
+      "Genuinely interrupted concurrent invalid-index refusal",
+      "Five-second lock timeout under60s statement limit and valid retry",
+      "Old full-chain upgrade adding exactly two files",
+      "Existing company rows preserved",
+      "Setup UPDATE/DELETE/TRUNCATE rejected",
+      "168h invitation allowed and168h+1s rejected"
+    ]
+  },
+  "attempts": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/release1-migrations-red.log",
+      "result": "Missing two files and fresh setup-record table:2fail5pass"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/release1-migrations-first-green.log",
+      "result": "Manifest/fresh7pass"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/release1-index-guards-red.log",
+      "result": "Wrong/invalid indexes silently skipped:2fail8pass"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/release1-index-guards-green.log",
+      "result": "10pass"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/release1-upgrade-plan-red.log",
+      "result": "Missing applied-ledger planning and rejection:2fail10pass"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/release1-upgrade-plan-green.log",
+      "result": "12pass"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/owner-migrations-type.log",
+      "result": "TS5097 on rehearsal graph crossing compiler scope"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/owner-migrations-type-replay.log",
+      "result": "0 after sharing only pure .ts validator; no compiler flag changes"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/release1-migrations-combined.log",
+      "result": "11pass before exact-source replay"
+    }
+  ],
+  "sharedStatic": {
+    "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+    "results": [
+      {
+        "name": "migration-plan",
+        "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+        "startedAt": "2026-10-29T23:43:47.638Z",
+        "finishedAt": "2026-10-29T23:43:49.400Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/migration-plan.log"
+      },
+      {
+        "name": "migrations",
+        "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+        "startedAt": "2026-10-29T23:43:50.467Z",
+        "finishedAt": "2026-10-29T23:44:01.387Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/migrations.log"
+      },
+      {
+        "name": "owner-inbox",
+        "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+        "startedAt": "2026-10-29T23:44:02.515Z",
+        "finishedAt": "2026-10-29T23:44:49.248Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/owner-inbox.log"
+      },
+      {
+        "name": "default",
+        "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+        "startedAt": "2026-10-29T23:44:50.295Z",
+        "finishedAt": "2026-10-29T23:55:08.661Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/default.log"
+      },
+      {
+        "name": "typecheck",
+        "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+        "startedAt": "2026-10-29T23:55:09.722Z",
+        "finishedAt": "2026-10-29T23:55:37.636Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/typecheck.log"
+      },
+      {
+        "name": "lint",
+        "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+        "startedAt": "2026-10-29T23:55:38.610Z",
+        "finishedAt": "2026-10-29T23:56:23.955Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/lint.log"
+      },
+      {
+        "name": "startup",
+        "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+        "startedAt": "2026-10-29T23:56:24.940Z",
+        "finishedAt": "2026-10-29T23:56:27.459Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/startup.log"
+      },
+      {
+        "name": "build",
+        "checkpoint": "0b50be70bd6e41524623d6073cbcbc64c5f0a5d8",
+        "startedAt": "2026-10-29T23:56:28.429Z",
+        "finishedAt": "2026-10-29T23:56:48.306Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch13-static/build.log"
+      }
+    ]
+  },
+  "limit": "No existing ledger, hosted transport, production data or deployment used. Large-table lock window, hosted restore, final tablet/PIN/photo/service checks and independent FR-AUTH remain open."
+}

@@ -184,13 +184,32 @@
       ],
       "repairStatus": "f7dca6ee awaits actual Help URL and visible exact Back within existing deadline, preserves exact href assertion and error gates. Full local Access3passed at de4; hosted new-source replay pending.",
       "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40963858890"
+    },
+    {
+      "id": 40973929823,
+      "head": "0c7fa56fbdf444ce56c529b844fb295bf351a91f",
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40973929823",
+      "conclusion": "success",
+      "passed": 3,
+      "failed": 0,
+      "pending": 0,
+      "checks": 18,
+      "errors": [],
+      "windowExceptions": [],
+      "frameworkDiagnostics": [],
+      "guideContrasts": 66,
+      "componentGuide": 396,
+      "landscape": 120,
+      "rotations": 24,
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40973929823/mobile-access-0c7fa56fbdf444ce56c529b844fb295bf351a91f",
+      "limit": "Exact hosted Employee checkpoint precedes Owner Inbox and combined migration chain; final same-candidate release gate remains open."
     }
   ],
   "actualSuccessfulRun": {
-    "id": 40957836154,
-    "head": "1e174c56ecd84a811ed8445b4651f3ed5ce03563",
+    "id": 40973929823,
+    "head": "0c7fa56fbdf444ce56c529b844fb295bf351a91f",
     "conclusion": "success",
-    "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40957836154",
-    "scope": "Dedicated real Access/landscape/guide only; final release still open."
+    "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40973929823",
+    "limit": "Exact hosted Employee checkpoint precedes Owner Inbox and combined migration chain; final same-candidate release gate remains open."
   }
 }
