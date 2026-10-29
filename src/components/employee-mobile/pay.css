@@ -1,5 +1,8 @@
 /* My pay on Employee/Lead phones. Scoped tokens from mobile.css only; desktop and other roles keep Quiet. */
+.em-pay-prehydrate { display:none; }
 @media (max-width:767px), (max-height:500px) and (orientation:landscape) and (pointer:coarse) {
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .q-page.q-pay { display:none; }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-pay-prehydrate { display:block; margin:var(--em-space-6) var(--em-inset); color:var(--em-muted); font-size:var(--em-size-support); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .page-frame:has(.em-pay) { box-sizing:border-box; min-height:calc(100svh - var(--em-nav-height,80px)); margin:0; padding:0 !important; max-width:none; background:var(--em-canvas); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .q-page:has(> .em-pay) { margin:0; padding:0; max-width:none; min-height:calc(100svh - var(--em-nav-height,80px)); background:var(--em-canvas); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-pay { min-height:inherit; }

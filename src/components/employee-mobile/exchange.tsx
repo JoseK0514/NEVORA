@@ -21,7 +21,7 @@ function EmployeeMobileExchange({authority,mode,selection}:{authority:string;mod
  const [state,setState]=useState<PrivatePanelState<EmployeeExchangeSnapshot>>({snapshot:null,refreshing:true,paused:false}),[operations,setOperations]=useState(()=>new Map<string,EmployeeRequestOperation>());
  const control=useRef<ReturnType<typeof createPrivateSnapshotController<EmployeeExchangeSnapshot>>|null>(null);
  const lifetime=useRef<{selection:string|null;revision:number|null;allowed:EmployeeResponseKind[]}|null>(null),pathname=usePathname();
- const focusReturn=useRef<string|null>(null);
+ const focusReturn=useRef<string|null>(null),focusedDetail=useRef<string|null>(null);
  const refresh=useCallback(()=>control.current?.refresh(),[]);
  useEffect(()=>{
   const controller=createPrivateSnapshotController<EmployeeExchangeSnapshot>(next=>{
@@ -49,7 +49,13 @@ function EmployeeMobileExchange({authority,mode,selection}:{authority:string;mod
   return()=>{mounted=false;lifetime.current=null;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
  },[authority,pathname,selection]);
  useEffect(()=>{
-  if(selection){focusReturn.current=null;return;}
+  if(selection){
+   focusReturn.current=null;
+   // The row that opened this request is gone; its heading takes focus once its details have loaded.
+   if(!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.selection===selection&&focusedDetail.current!==selection){focusedDetail.current=selection;document.querySelector<HTMLElement>('.em-exchange h1')?.focus();}
+   return;
+  }
+  focusedDetail.current=null;
   if(state.paused||state.snapshot?.state!=='ready'||state.snapshot.selection!==null)return;
   let hash:string;try{hash=decodeURIComponent(window.location.hash.slice(1));}catch{return;}
   if(!hash||focusReturn.current===hash)return;

@@ -17,10 +17,11 @@ import {assertEmployeeViewProof,employeeViewGuards,readEmployeeWorkspace,employe
 import {isManagementAuthorizationError} from './management-session';
 import {payrollNoticeReadSql} from '../payroll/notices';
 import {attentionSourceVersion} from './employee-attention-receipts.server';
+import {NOTIFICATION_KINDS,NOTIFICATION_LABELS} from '../notification-labels';
 
 const LIMIT=25,MAX_READS=64,MAX_BYTES=1_000_000,BUDGET_MS=8000;
-const supported=['SCHEDULE','TIME_OFF','EXCHANGE','CALLOUT','AVAILABILITY','SELF_TEST','COMMUNICATION','PAYROLL_STATEMENT'] as const;
-const labels:Record<typeof supported[number],string>={SCHEDULE:'Schedule update',TIME_OFF:'Time off update',EXCHANGE:'Shift request update',CALLOUT:'Unable to work update',AVAILABILITY:'Availability update',SELF_TEST:'Device notification test',COMMUNICATION:'Team update',PAYROLL_STATEMENT:'Pay statement update'};
+const supported=NOTIFICATION_KINDS;
+const labels=NOTIFICATION_LABELS;
 // Cancelled notices were superseded (for example by a republished schedule) and have no current intent; they are
 // neither listed nor counted as unchecked, and they never use up the page window.
 const candidateSql=(actor='$1',paged=false,at?:string,id?:string)=>`SELECT id,read_at::text AS read${paged?`,to_char(created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS "cursorAt"`:''} FROM notifications WHERE employee_id=${actor} AND cancelled_at IS NULL${at&&id?` AND (created_at,id)<(${at}::timestamptz,${id}::text)`:''} ORDER BY created_at DESC,id DESC LIMIT 26`;

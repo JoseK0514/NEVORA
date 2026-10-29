@@ -18,7 +18,7 @@ import { EmployeePayView } from '../employee-mobile/pay';
  * so the page shows paydays and the provider's documents, never figures. Same read, refresh and states as before. */
 
 type Statement = PayrollStatementsResponse['statements'][number];
-export type NextPay = { payday: string; daysUntil: number; period?: { startDate: string; endDate: string } } | null;
+export type NextPay = { payday: string; daysUntil: number; period?: { startDate: string; endDate: string }; /** Workspace zone, so an open page can keep 'Today/Tomorrow' current. */ timeZone?: string } | null;
 
 const utc = (date: string) => new Date(`${date}T12:00:00Z`);
 const longDay = (date: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'long', day: 'numeric' }).format(utc(date));
@@ -56,7 +56,8 @@ export function MyPay({ nextPay = null, statement = null, document = null }: { n
   const days = nextPay?.daysUntil;
   const payday = nextPay ? new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric' }).format(utc(nextPay.payday)) : null;
   const when = days === undefined ? null : days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`;
-  return <QuietPage className="q-pay">
+  // On a phone the server renders this before hydration picks the phone view; Pay CSS hides it there and shows the status line.
+  return <><QuietPage className="q-pay">
     <div className="q-top-gap" aria-hidden="true" />
     <QuietHeader title="Pay" />
     {/* A statement link that failed returns here on desktop too, with the same explanation as the phone view. */}
@@ -78,7 +79,7 @@ export function MyPay({ nextPay = null, statement = null, document = null }: { n
         </li>)}</QuietList>
       : <p className="q-empty">No published statements yet.</p>}
     <p className="q-help">Only your own published statements are available here. Downloaded files may contain personal pay information.</p>
-  </QuietPage>;
+  </QuietPage><p className="em-pay-prehydrate" role="status">Loading your pay…</p></>;
 }
 
 /** Quiet (v4, approved Oct 23): My pay for Owners and Managers. The next payday as one lead line, then the statements. */

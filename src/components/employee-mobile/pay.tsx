@@ -10,6 +10,7 @@ import {DownloadSimpleIcon} from '@phosphor-icons/react/dist/ssr/DownloadSimple'
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import type {PayrollStatementsResponse} from '@/lib/payroll/contracts';
+import {businessDate} from '@/lib/business-time';
 import type {NextPay} from '../payroll/my-pay';
 import './requests.css';
 import './pay.css';
@@ -37,7 +38,19 @@ export function arrangeStatements(statements:readonly Statement[]){
 
 /** Employee/Lead phone presentation of My pay (owner: MyPay in ../payroll/my-pay.tsx, which holds the read). A
  * scheduled payday comes from the pay schedule and is never presented as a payment, amount or deposit. */
+/** Days until the scheduled payday, kept current while the page stays open (it starts from the server's count). */
+function useDaysUntil(nextPay:NextPay){
+ const [days,setDays]=useState(nextPay?.daysUntil??null);
+ useEffect(()=>{
+  if(!nextPay?.timeZone)return;const zone=nextPay.timeZone,payday=nextPay.payday;
+  const update=()=>{try{setDays(Math.round((Date.parse(`${payday}T12:00:00Z`)-Date.parse(`${businessDate(new Date(),zone)}T12:00:00Z`))/86_400_000));}catch{}};
+  update();const timer=setInterval(update,60_000);window.addEventListener('focus',update);document.addEventListener('visibilitychange',update);
+  return()=>{clearInterval(timer);window.removeEventListener('focus',update);document.removeEventListener('visibilitychange',update);};
+ },[nextPay?.payday,nextPay?.timeZone]);
+ return days;
+}
 export function EmployeePayView({statements,loading,error,errorCode,nextPay,statement:arrivedTarget,document:arrivedFailure,reload}:PayView){
+ const daysUntil=useDaysUntil(nextPay);
  // Latched on arrival: cleaning the URL re-renders the page without its parameters, and the notice must stay.
  // A new non-empty arrival (another notification, another failed PDF) replaces the latch.
  const [latch,setLatch]=useState(()=>({target:arrivedTarget,failure:arrivedFailure,seq:0}));
@@ -98,11 +111,11 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
     <div className="em-pay-notice-heading"><WarningCircleIcon size={24} aria-hidden="true"/><h2 id="pay-notice-title">{failure==='failed'||failure==='temporary'?'We couldn’t open that statement':'That statement isn’t available'}</h2></div>
     <p>{failure==='failed'?'It didn’t pass NEVORA’s file check, so it wasn’t opened. Try again later, or ask your manager.':failure==='temporary'?'NEVORA couldn’t open it just now. Try again in a moment.':state==='empty'?'It may have been replaced, or your access changed.':'It may have been replaced, or your access changed. Your current statements are below.'}</p>
    </div>:null}
-   {nextPay&&listed?<section className="em-pay-section" aria-labelledby="pay-next-title">
+   {nextPay&&listed&&daysUntil!==null&&daysUntil>=0?<section className="em-pay-section" aria-labelledby="pay-next-title">
     <h2 id="pay-next-title">Next scheduled payday</h2>
     <div className="em-pay-card em-pay-next"><CalendarBlankIcon size={22} aria-hidden="true"/><span>
      <strong>{day(nextPay.payday,true)}</strong>
-     <small>{[nextPay.daysUntil===0?'Today':nextPay.daysUntil===1?'Tomorrow':`In ${nextPay.daysUntil} days`,nextPay.period?`for ${payPeriod(nextPay.period.startDate,nextPay.period.endDate)}`:null].filter(Boolean).join(' · ')}</small>
+     <small>{[daysUntil===0?'Today':daysUntil===1?'Tomorrow':`In ${daysUntil} days`,nextPay.period?`for ${payPeriod(nextPay.period.startDate,nextPay.period.endDate)}`:null].filter(Boolean).join(' · ')}</small>
      <small>From your workplace’s pay schedule. A statement appears here after payroll is published.</small>
     </span></div>
    </section>:null}

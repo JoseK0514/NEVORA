@@ -28,7 +28,7 @@ export default async function MyPayPage({ searchParams }: { searchParams: Promis
   if (pay && zone) {
     const today = businessDate(new Date(), zone);
     const daysUntil = Math.round((Date.parse(`${pay.payday}T12:00:00Z`) - Date.parse(`${today}T12:00:00Z`)) / 86_400_000);
-    if (daysUntil >= 0) nextPay = { payday: pay.payday, daysUntil, period: pay.period };
+    if (daysUntil >= 0) nextPay = { payday: pay.payday, daysUntil, period: pay.period, timeZone: zone };
   }
   // Quiet: Owners and Managers get My pay (v4); Employees and Leads get the Pay tab (v5).
   if (isManagerRole(session.role)) return <QuietMyPay key={session.id} nextPay={nextPay} />;

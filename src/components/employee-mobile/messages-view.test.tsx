@@ -29,3 +29,8 @@ it('a partial page whose confirmed rows are only filtered out says no confirmed 
  const html=renderToStaticMarkup(<MessageInbox kind="notifications" items={[item]} partial search="Nothing like this" filter="all" timeZone="America/Puerto_Rico" onSearch={noop} onFilter={noop} onOpen={noop}/>);
  expect(html).toContain('No confirmed matches on this page');expect(html).not.toContain('Nothing confirmed on this page');
 });
+it('chooses notification actions and icons by kind, never from an update author’s own title (L-12)',()=>{
+ const notice=(id:string,label:string)=>({id,label,at:'2026-10-27T13:00:00Z',href:'/app/notifications/open?notificationId='+id,reviewState:'unread' as const,actionState:'available' as const});
+ const html=renderToStaticMarkup(<MessageInbox kind="notifications" items={[notice('a','Pay statement update'),notice('b','Availability update')]} partial={false} search="" filter="all" timeZone="America/Puerto_Rico" onSearch={noop} onFilter={noop} onOpen={noop}/>);
+ expect(html).toContain('View statement');expect(html).toContain('View availability');
+});
