@@ -147,20 +147,25 @@ export async function registerOwnedProcess({ kind, pid, ownerId }) {
 // Hold Node's entry point until the creation-handle identity has been pinned.
 // NODE_OPTIONS preserves the caller's argv/execArgv and orders this import before
 // command-line imports. Restore the caller's options before any descendants run.
+// Worker threads inherit parsed startup imports even after NODE_OPTIONS changes.
+// They share the already-pinned PID and must not repeat its IPC wait or env reset.
 function pinnedNodeEnvironment(env, ownerId) {
   const gate = `
-    ${env.NODE_OPTIONS === undefined ? 'delete process.env.NODE_OPTIONS;' : `process.env.NODE_OPTIONS = ${JSON.stringify(env.NODE_OPTIONS)};`}
-    await new Promise((ready, reject) => {
-      const close = () => { process.off('message', message); process.off('disconnect', disconnected); };
-      const disconnected = () => { close(); reject(Error('Owned supervisor disconnected before root pin')); };
-      const message = value => {
-        if (value?.type !== 'owned-root-pinned' || value.ownerId !== ${JSON.stringify(ownerId)}) return;
-        close(); ready();
-      };
-      process.on('message', message);
-      process.once('disconnect', disconnected);
-      process.send({ type: 'owned-root-ready' }, error => { if (error) disconnected(); });
-    });
+    import { isMainThread } from 'node:worker_threads';
+    if (isMainThread) {
+      ${env.NODE_OPTIONS === undefined ? 'delete process.env.NODE_OPTIONS;' : `process.env.NODE_OPTIONS = ${JSON.stringify(env.NODE_OPTIONS)};`}
+      await new Promise((ready, reject) => {
+        const close = () => { process.off('message', message); process.off('disconnect', disconnected); };
+        const disconnected = () => { close(); reject(Error('Owned supervisor disconnected before root pin')); };
+        const message = value => {
+          if (value?.type !== 'owned-root-pinned' || value.ownerId !== ${JSON.stringify(ownerId)}) return;
+          close(); ready();
+        };
+        process.on('message', message);
+        process.once('disconnect', disconnected);
+        process.send({ type: 'owned-root-ready' }, error => { if (error) disconnected(); });
+      });
+    }
   `;
   return { ...env, NODE_OPTIONS: '--import="data:text/javascript,' + encodeURIComponent(gate) + '"' + (env.NODE_OPTIONS ? ' ' + env.NODE_OPTIONS : '') };
 }
