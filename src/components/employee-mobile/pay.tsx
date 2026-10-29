@@ -111,9 +111,9 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
     <div className="em-pay-notice-heading"><WarningCircleIcon size={24} aria-hidden="true"/><h2 id="pay-notice-title">{failure==='failed'||failure==='temporary'?'We couldn’t open that statement':'That statement isn’t available'}</h2></div>
     <p>{failure==='failed'?'It didn’t pass NEVORA’s file check, so it wasn’t opened. Try again later, or ask your manager.':failure==='temporary'?'NEVORA couldn’t open it just now. Try again in a moment.':state==='empty'?'It may have been replaced, or your access changed.':'It may have been replaced, or your access changed. Your current statements are below.'}</p>
    </div>:null}
-   {nextPay&&listed&&daysUntil!==null&&daysUntil>=0?<section className="em-pay-section" aria-labelledby="pay-next-title">
+   {nextPay&&listed&&daysUntil!==null&&daysUntil>=0?<section className="em-pay-section em-pay-schedule" aria-labelledby="pay-next-title">
     <h2 id="pay-next-title">Next scheduled payday</h2>
-    <div className="em-pay-card em-pay-next"><CalendarBlankIcon size={22} aria-hidden="true"/><span>
+    <div className="em-pay-next"><CalendarBlankIcon size={22} aria-hidden="true"/><span>
      <strong>{day(nextPay.payday,true)}</strong>
      <small>{[daysUntil===0?'Today':daysUntil===1?'Tomorrow':`In ${daysUntil} days`,nextPay.period?`for ${payPeriod(nextPay.period.startDate,nextPay.period.endDate)}`:null].filter(Boolean).join(' · ')}</small>
      <small>From your workplace’s pay schedule. A statement appears here after payroll is published.</small>

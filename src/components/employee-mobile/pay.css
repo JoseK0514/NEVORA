@@ -10,12 +10,14 @@
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-pay h2 { color:var(--em-ink); font:var(--em-weight-section) var(--em-size-section)/var(--em-line-heading) var(--em-font); letter-spacing:-.02em; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-pay h3 { color:var(--em-ink); font:var(--em-weight-label) var(--em-size-body)/var(--em-line-heading) var(--em-font); }
 
- /* Cards: next payday, latest statement, empty and loading share Profile's surface. */
+ /* Statements, empty and loading share Profile's surface; scheduled payday is supporting metadata. */
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-pay-card { display:flex; flex-direction:column; gap:var(--em-space-2); padding:var(--em-space-5); border:1px solid var(--em-line); border-radius:var(--em-card); background:var(--em-surface); color:var(--em-ink); min-width:0; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] :is(.em-pay-next,.em-pay-quiet:has(> svg)) { flex-direction:row; align-items:flex-start; gap:var(--em-space-3); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] :is(.em-pay-next,.em-pay-quiet) > svg { flex:none; color:var(--em-teal); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] :is(.em-pay-next,.em-pay-quiet) > span { display:flex; flex-direction:column; gap:var(--em-space-1); min-width:0; }
- html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-pay-next strong { color:var(--em-ink); font:var(--em-weight-label) var(--em-size-body)/var(--em-line-heading) var(--em-font); }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-pay-next { display:flex; }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-pay-schedule > h2 { color:var(--em-muted); font:var(--em-weight-action) var(--em-size-support)/var(--em-line-label) var(--em-font); }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-pay-next strong { color:var(--em-ink); font:var(--em-weight-label) var(--em-size-section)/var(--em-line-heading) var(--em-font); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-pay-quiet strong { color:var(--em-ink); font:var(--em-weight-label) var(--em-size-body)/var(--em-line-heading) var(--em-font); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] :is(.em-pay-next,.em-pay-quiet) small,
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] p.em-pay-quiet { color:var(--em-muted); font-size:var(--em-size-support); line-height:var(--em-line-body); }

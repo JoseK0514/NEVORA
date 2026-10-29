@@ -236,10 +236,12 @@ export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTim
       {intro}
       {snapshot ? <section aria-labelledby="employee-reviewed-next-heading">
         <h2 id="employee-reviewed-next-heading" className={mobile ? "em-section-title" : "nv-sr"}>Your shift</h2>
+        <div className="em-day-summary">
         <NextCard snapshot={snapshot} mobile={mobile}/>
         {snapshot.publicationState === 'partial' ? <p className="q-next__note" role="status">{unpublishedNote(snapshot.unpublishedLocations ?? [])}</p> : null}
-        {/* While a shift is under way, the clock status sits under the card. */}
+        {/* The independent recorded-time reader also stays available without a scheduled shift. */}
         {underWay || mobile ? <aside className="q-home__clock" aria-label="Own recorded time"><h2 className="em-mobile-only em-section-title">Your time today</h2>{ownTimeSlot}</aside> : null}
+        </div>
       </section> : <div className="q-next q-next--wait" role="status">
         <div className="q-next__top"><span>{summary}</span><span/></div>
         <b className="q-next__time" aria-hidden="true">&nbsp;</b>
