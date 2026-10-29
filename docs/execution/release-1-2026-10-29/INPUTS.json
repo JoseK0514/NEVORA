@@ -4,15 +4,21 @@
   "handoff": "docs/handoffs/2026-10-29-claude-to-codex-release-1-finish.md",
   "handoffSha256": "d5efb813003c1a2a05c2af9c14024934a77dfd115dbd5f1d95d9b9402d57bcf0",
   "authorization": "Jose explicitly authorized fast-forward push ofcb6 and Release1 continuation; no development/main merge/deployment.",
-  "section4": "Only4.1 and4.6 explicitly confirmed in this turn. Logo4.7 pending; deletion-support/identity and alert-risk acceptance pending. Existing approved final password/current-proof guard retained.",
+  "section4": "Explicitly confirmed4.1,4.3,4.4,4.6. Logo4.7, alert residual-risk4.5 and business rules4.8 remain pending. Existing final password/current-proof guard retained.",
   "businessRules": "Claude artifact requires sign-in in available browser; confirmed rows requested asynchronously. Do not infer decisions.",
   "missingReferences": [],
   "availableReferences": "Six PNG boards in Desktop corporate-mockups; Owner prototype is fictional, never app integration proof.",
   "recoveredCorporateSource": "/Users/josek0514/Desktop/NEVORA-UI-READINESS/.claude/worktrees/v4-quiet/docs/product/specs/corporate-mockups",
   "referenceConflicts": "Recovered original Owner roots Home/Schedule/Time/Payroll/Team differ from later Home/Schedule/Inbox/Team/More; logo and business-rule confirmation remain pending.",
   "confirmedDecisions": {
-    "section4.1": "Jose confirmed tablet + PIN only: no phone clock-in/break/clock-out controls for Release1.",
-    "section4.6": "Jose confirmed Owner personal-detail unsaved edits clear on blur with a message; scheduled names have no profile links when Team unavailable; Inbox coverage first."
+    "section4.1": "Confirmed tablet + PIN only; no phone clock-in/break/clock-out controls for Release1.",
+    "section4.6": "Confirmed Owner self-edit blur clear with notice; Today names without profile links when Team unavailable; coverage-first Owner Inbox.",
+    "section4.3": "Confirmed exact wording: Changed your mind? Contact support before the request is processed.",
+    "section4.4": "Confirmed verified control of pre-request account email plus Employee ID, documented in runbook; ID/matching From alone insufficient.",
+    "section4.2": "Existing final password/current-session safeguard retained; no new relaxation or workflow change inferred.",
+    "section4.5": "Residual-risk acceptance remains pending; no real notification providers enabled.",
+    "section4.7": "Logo explicitly kept pending.",
+    "section4.8": "Business-review artifact requires login; confirmed answers requested and pending."
   },
   "corporateSourceHashes": {
     "/Users/josek0514/Desktop/NEVORA-UI-READINESS/.claude/worktrees/v4-quiet/docs/product/specs/corporate-mockups/DESIGN-SPEC.md": "3af4d0afd64251833729d3a6defb1ee9685bbc88489dd3ca77556f9080cb1dbb",

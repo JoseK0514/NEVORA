@@ -1,6 +1,6 @@
 # Batch01 — Quick guide semantic-theme repair
 
-Status: component regression repaired; authenticated Access/default/static validation pending. Not release acceptance or rollout enablement.
+Status: verified locally at5c96bb98. Not release acceptance or rollout enablement.
 
 Source: collabcb6d1396 + this named batch. Parent read-only discovery mapped Owner/Clocker/Employee; it found the corporate specification under the v4-quiet worktree, and the INPUTS register pins its exact bytes. No Section4 recommendation was inferred approved. Jose subsequently explicitly confirmed4.1 tablet/PIN-only clocking and4.6 Owner behavior; all other recommendations stay pending.
 
@@ -21,3 +21,13 @@ The strengthened component regression uses the actual portal stylesheet/page-fra
 At093 full default/static/owned startup/build passed without source drift; this does not override the real Access failure. Clocker verification at093 passed46 authority plus147 shard1 checks (including14 reconciliation), then stopped normally at the requested source-change boundary.31 SQL files remain; no FR-AUTH/hosted acceptance inferred.
 
 At421 the actual Employee first-Home guide passed22 text measurements across Light/Dark (minimum5.42085); the Access journey then stopped on an inherited desktop-only `.profile-signout-row` selector. Current profile.tsx:69 intentionally uses `.em-profile-signout` on mobile; the existing Profile journey already uses the exact accessible Sign out button. The Access selector now follows that same visible semantic control; all real logout, session, prefill/account-switch/role assertions remain. Before-copy421 retained in the execution ledger; failing batch01-access2 log retained. No timeout or exception gate was changed.
+
+## Final local receipt at5c96bb98
+
+Both Access tests passed in Chromium, WebKit and Firefox:18 recorded real journey checks,66 actual first-Home Light/Dark samples, minimum5.42085:1, no runtime errors/window exceptions. One existing narrowly attributed WebKit framework-navigation diagnostic remains recorded; no new suppression. The strengthened native component regression passed264 measurements.
+
+Default:10,219 passed,0 failed,801 pending (owned/database/provider tests are separate). Nonincremental TypeScript, full ESLint, real owned-Postgres long-path startup and source-bound build all exited0. Source remained unchanged throughout. BATCH-01-RESULTS.json records the exact source and external artifacts.
+
+Clocker preliminary coverage spans42 unique SQL files/572 cases plus46 authority cases across0937872d and5c96bb98;31 files/425 cases ran at5c96bb98. All passed and owned clusters stopped. This is explicitly mixed-revision baseline coverage; final same-SHA/hosted/physical acceptance and FR-AUTH-001 remain open.
+
+Jose subsequently approved deletion receipt wording4.3 and pre-request email-control plus Employee ID verification4.4. INPUTS.json records those approvals. No alert residual-risk acceptance or logo/business-rule approval inferred.

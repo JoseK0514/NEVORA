@@ -31,10 +31,10 @@
 
 Files: mobile-access/onboarding-guide.css; integration/mobile-onboarding-ui.integration.tsx; vitest.mobile-access-browser.config.mts; actual Access journey capture calls. Consume Employee semantic tokens from employee-mobile/mobile.css; produce readable informational guide without changing authorization or flags.
 
-- [ ] Add rendered native3-engine contrast/target/focus regression for actual guide markup plus actual Employee stylesheet, Light/Dark,320/390,100/200%; assert text>=4.5:1.
-- [ ] Run focused Access configuration with explicit external evidence; preserve RED artifacts before changing CSS.
-- [ ] Replace guide literal palette with inherited semantic ink/muted/line/surface/teal/focus tokens and existing Light fallbacks; keep its behavior and feature flags unchanged.
-- [ ] GREEN replay, actual owned Access journey and default/static checks; retain viewport captures only. Commit/push named batch only after appropriate checks.
+- [x] Add rendered native3-engine contrast/target/focus regression for actual guide markup plus actual Employee stylesheet, Light/Dark,320/390,100/200%; assert text>=4.5:1.
+- [x] Run focused Access configuration with explicit external evidence; preserve RED artifacts before changing CSS.
+- [x] Replace guide literal palette with inherited semantic ink/muted/line/surface/teal/focus tokens and existing Light fallbacks; keep its behavior and feature flags unchanged.
+- [x] GREEN replay, actual owned Access journey and default/static checks; retain viewport captures only. Commit/push named batch only after appropriate checks.
 
 ## Task2: Access coarse landscape
 

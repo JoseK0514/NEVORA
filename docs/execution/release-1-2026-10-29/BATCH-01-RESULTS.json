@@ -1,0 +1,118 @@
+{
+  "checkpoint": "5c96bb98160c0931ebb2fe4f2dc153c4a7af419f",
+  "static": [
+    {
+      "name": "default",
+      "checkpoint": "5c96bb98160c0931ebb2fe4f2dc153c4a7af419f",
+      "startedAt": "2026-10-29T19:28:01.855Z",
+      "finishedAt": "2026-10-29T19:33:45.871Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch01-final-static/default.log"
+    },
+    {
+      "name": "typecheck",
+      "checkpoint": "5c96bb98160c0931ebb2fe4f2dc153c4a7af419f",
+      "startedAt": "2026-10-29T19:33:46.452Z",
+      "finishedAt": "2026-10-29T19:33:59.386Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch01-final-static/typecheck.log"
+    },
+    {
+      "name": "lint",
+      "checkpoint": "5c96bb98160c0931ebb2fe4f2dc153c4a7af419f",
+      "startedAt": "2026-10-29T19:33:59.963Z",
+      "finishedAt": "2026-10-29T19:34:21.172Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch01-final-static/lint.log"
+    },
+    {
+      "name": "startup",
+      "checkpoint": "5c96bb98160c0931ebb2fe4f2dc153c4a7af419f",
+      "startedAt": "2026-10-29T19:34:21.747Z",
+      "finishedAt": "2026-10-29T19:34:23.277Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch01-final-static/startup.log"
+    },
+    {
+      "name": "build",
+      "checkpoint": "5c96bb98160c0931ebb2fe4f2dc153c4a7af419f",
+      "startedAt": "2026-10-29T19:34:23.847Z",
+      "finishedAt": "2026-10-29T19:34:32.745Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch01-final-static/build.log"
+    }
+  ],
+  "default": {
+    "passed": 10219,
+    "failed": 0,
+    "pending": 801,
+    "note": "801 database/provider/owned cases excluded by default; not universal release acceptance."
+  },
+  "access": {
+    "complete": true,
+    "engines": [
+      "chromium",
+      "webkit",
+      "firefox"
+    ],
+    "tests": 2,
+    "recordedJourneyChecks": 18,
+    "guideTextMeasurements": 66,
+    "minimumContrast": 5.420851497656459,
+    "errors": [],
+    "windowExceptions": [],
+    "frameworkDiagnostics": [
+      {
+        "engine": "webkit",
+        "step": "webkit: logout and account switch",
+        "navigation": {
+          "phase": "requested",
+          "sequence": 5,
+          "sourceHistoryEvents": 0,
+          "ageMs": 43
+        },
+        "signature": "webkit-native-framework-fetch",
+        "resourceKind": "next-frames",
+        "sameOwnedOrigin": true,
+        "exactMessage": true,
+        "messageFingerprint": "0c97bd360e27915cf40a3d9c35c47498e075b081bac49242e814b77a5bbebc36"
+      }
+    ],
+    "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch01-access3"
+  },
+  "component": {
+    "measurements": 264,
+    "failed": 0,
+    "minimumContrast": 5.420851497656459,
+    "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/quick-guide-title-green"
+  },
+  "clockerPreliminary": {
+    "checkpoint": "5c96bb98160c0931ebb2fe4f2dc153c4a7af419f",
+    "verifiedAt": "2026-10-29T19:34:34.644587+00:00",
+    "sourceCleanAfterExecution": true,
+    "coordinatorExitCode": 0,
+    "newFiles": 31,
+    "newPassedTests": 425,
+    "mixedRevisionClockerFiles": 42,
+    "mixedRevisionClockerCases": 572,
+    "authorityCasesAtPreviousSha": 46,
+    "sameShaFinalGateComplete": false,
+    "reportSha256": "6b7ff5897157306e09701d1e443a5def547c3ae5d27ba982320625c1d32ea108"
+  },
+  "releaseAcceptance": false
+}
