@@ -1,5 +1,8 @@
 import {it,expect} from 'vitest';
 import {Client} from 'pg';
+import {randomUUID} from 'node:crypto';
+import {BASE_MIGRATIONS,FINAL_MIGRATIONS} from '../../../db/migrations/order';
+import {missingMigrationFiles} from '../../lib/migration-order';
 import {readFile} from 'node:fs/promises';
 import {createDisposableFoundationDatabase} from './local-postgres';
 const indexSql=()=>readFile('db/migrations/0038_read_path_indexes.sql','utf8');
@@ -31,3 +34,27 @@ it('refuses an actual interrupted concurrent index without silently dropping or 
   expect((await client.query("SELECT indisvalid FROM pg_index WHERE indexrelid='schedule_revision_shifts_source_idx'::regclass")).rows).toEqual([{indisvalid:false}]);
  }finally{await blocker.query('ROLLBACK').catch(()=>{});await blocker.end();await builder.end();}
 }));
+
+it('upgrades the existing full chain by exact filename, preserves rows and keeps setup records immutable',async()=>{
+ const database=await createDisposableFoundationDatabase({mode:'empty'}),client=new Client({connectionString:database.connectionString});
+ try{
+  await client.connect();const additions=['0038_read_path_indexes.sql','0039_native_payroll_setup_records.sql'];
+  const legacy=BASE_MIGRATIONS.filter(file=>!additions.includes(file));
+  for(const file of legacy)await client.query(await readFile('db/migrations/'+file,'utf8'));
+  await client.query("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('R1-OWNER','Fictional','Upgrade','2025550141','OWNER','loc-1')");
+  for(const file of FINAL_MIGRATIONS)await client.query(await readFile('db/migrations/'+file,'utf8'));
+  const before=(await client.query('SELECT id,name FROM workspaces ORDER BY id')).rows;
+  const applied=[...legacy,...FINAL_MIGRATIONS];const missing=missingMigrationFiles([...BASE_MIGRATIONS,...FINAL_MIGRATIONS],applied);expect(missing).toEqual(additions);
+  for(const file of missing){await client.query(await readFile('db/migrations/'+file,'utf8'));applied.push(file as typeof applied[number]);}
+  expect(missingMigrationFiles([...BASE_MIGRATIONS,...FINAL_MIGRATIONS],applied)).toEqual([]);
+  expect((await client.query('SELECT id,name FROM workspaces ORDER BY id')).rows).toEqual(before);
+  const hash='a'.repeat(64),payload={factsSha256:hash,revision:1,kind:'COMPANY_DEFAULTS',subjectId:'COMPANY'};
+  await client.query("INSERT INTO native_payroll_setup_records(workspace_id,kind,subject_id,revision,operation_id,actor_employee_id,facts_sha256,payload) VALUES('workspace-fuel','COMPANY_DEFAULTS','COMPANY',1,$1,'R1-OWNER',$2,$3)",[randomUUID(),hash,JSON.stringify(payload)]);
+  for(const sql of ["UPDATE native_payroll_setup_records SET revision=2","DELETE FROM native_payroll_setup_records","TRUNCATE native_payroll_setup_records"]){await expect(client.query(sql)).rejects.toThrow('immutable ledger');}
+  expect((await client.query('SELECT revision,payload FROM native_payroll_setup_records_current')).rows).toEqual([{revision:1,payload}]);
+  await client.query("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('R1-INVITEE','Fictional','Invitee','2025550142','EMPLOYEE','loc-1')");
+  const insert="INSERT INTO company_invitations(workspace_id,id,employee_id,revision,target_version,email_fingerprint,issuer_employee_id,issuer_generation,issued_at,expires_at,retired_at,retired_reason) VALUES('workspace-fuel',$1,'R1-INVITEE',$2,'fictional-reviewed-version',$3,'R1-OWNER',1,'2026-10-29T12:00:00Z',$4,clock_timestamp(),'REVOKED')";
+  await client.query(insert,[randomUUID(),1,hash,'2026-11-05T12:00:00Z']);
+  await expect(client.query(insert,[randomUUID(),2,hash,'2026-11-05T12:00:01Z'])).rejects.toMatchObject({constraint:'company_invitations_lifetime'});
+ }finally{await client.end();await database.dispose();}
+});

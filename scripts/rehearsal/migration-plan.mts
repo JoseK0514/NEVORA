@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import ts from 'typescript';
+import {missingMigrationFiles} from '../../src/lib/migration-order.ts';
 import { requireMigrationCoverage } from './guards.mts';
 
 const heldContract = ['0026_tenant_ownership_expand.sql', '0027_tenant_ownership_validate.sql'];
@@ -61,7 +62,7 @@ function requireManifestImport(source: ts.SourceFile, name: string) {
   assert.ok(imported, `Installer must import ${name} from the authoritative migration manifest.`);
 }
 
-export function readMigrationPlan(root: string) {
+export function readMigrationPlan(root: string, applied: readonly string[] = []) {
   const inputs: { path: string; sha256: string }[] = [];
   const read = (path: string) => {
     const text = readFileSync(join(root, path), 'utf8');
@@ -93,5 +94,6 @@ export function readMigrationPlan(root: string) {
   assert.deepEqual(held, heldContract, 'Held tenancy migrations cannot enter this rehearsal.');
   const current = [...base, ...final];
   requireMigrationCoverage(readdirSync(join(root, 'db/migrations')).filter(file => file.endsWith('.sql')), current, held);
-  return { source, base, final, held, current, inputs };
+  const missing = missingMigrationFiles(current, applied);
+  return { source, base, final, held, current, inputs, missing };
 }
