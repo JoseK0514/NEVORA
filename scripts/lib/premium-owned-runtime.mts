@@ -7,6 +7,7 @@ import { dirname, join, resolve } from 'node:path';
 import { createDisposableExchangeDatabase } from '../../src/test/integration/local-postgres';
 import { createOwnedDbAdapter, assertExternalEvidencePath } from '../../src/test/integration/owned-next-app';
 import type { OwnedDatabaseIdentity } from '../../src/test/integration/owned-pg-transport';
+import { gitFileList } from './git-files.mjs';
 
 export async function ownedRuntime(evidence: string, production: boolean, options: { pushCapture?: boolean } = {}) {
   const source = process.cwd();
@@ -27,7 +28,7 @@ export async function ownedRuntime(evidence: string, production: boolean, option
   };
   try {
     const checkpoint = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-    const files = execFileSync('git', ['ls-files', '-z'], { encoding: 'utf8' }).split('\0').filter(Boolean);
+    const files = gitFileList(['ls-files', '-z']);
     const hashes: Record<string, string> = {};
     for (const path of files) {
       await mkdir(dirname(join(app, path)), { recursive: true });

@@ -5,6 +5,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync,
 import { createServer } from 'node:net';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { gitFileList } from './lib/git-files.mjs';
 
 export function ownedExecutionTimeout(mode, suite) {
   assert(['sql','browser'].includes(mode), 'Unknown execution mode');
@@ -445,7 +446,7 @@ export function verifySourceManifestMetadata(source, manifest, checkpoint) {
     expectedHashes[file] = file === 'src/lib/db.ts' ? approvedHash : file === 'next-env.d.ts' ? typesHash : originalHash;
   }
   if (manifest.originalDbHash !== manifest.hashes['src/lib/db.ts']) throw Error('Source manifest mismatch: original DB');
-  const files = execFileSync('git', ['ls-files', '-c', '-o', '--exclude-standard', '-z'], { cwd: source, encoding: 'utf8' }).split('\0').filter(Boolean)
+  const files = gitFileList(['ls-files', '-c', '-o', '--exclude-standard', '-z'], { cwd: source })
     .filter(file => ['src/', 'public/'].some(prefix => file.startsWith(prefix)) || ['package.json', 'package-lock.json', 'tsconfig.json', 'next-env.d.ts', 'next.config.ts'].includes(file))
     .filter(file => existsSync(join(source, file))).sort();
   assert.deepEqual(Object.keys(manifest.hashes).sort(), [...new Set(files)], 'Source manifest mismatch: missing runtime source');
