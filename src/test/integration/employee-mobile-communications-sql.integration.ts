@@ -64,6 +64,20 @@ it('rechecks Updates module permission inside the actual employee command transa
   expect((await executeCommunicationCommand(proof,command,await employeeUpdatesExecutor(proof,db.executor))).status).toBe('committed');
  }finally{await db.dispose();}
 });
+it('treats superseded (cancelled) own notices as gone, not as notices that could not be checked',async()=>{
+ const {db,q,proof}=await setup();try{
+  // A republished schedule cancels its earlier notices. They are no longer current, so the list must not call itself partial.
+  const notice=(id:string,created:string,cancelled:boolean)=>q("INSERT INTO notifications(id,employee_id,type,title,body,event_key,environment,source_kind,source_id,source_version,effective_version,purpose,due_at,expires_at,urgency,push_state,created_at,cancelled_at) VALUES($1,'MSG-A','TIME_OFF_APPROVED','Fictional','Fictional',$1,'test','TIME_OFF','own-leave','APPROVED','APPROVED','EVENT',now()-interval '1 hour',now()+interval '1 day','high',CASE WHEN $3 THEN 'cancelled' ELSE 'pending' END,$2::timestamptz,CASE WHEN $3 THEN now() END)",[id,created,cancelled]);
+  await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) VALUES('own-leave','MSG-A',current_date+30,current_date+30,'APPROVED','Fictional approved leave')");
+  await notice('superseded-notice','2026-10-27T15:00:00Z',true);await notice('current-notice','2026-10-27T14:00:00Z',false);
+  for(const read of [(await readEmployeeNotificationPage(proof,'test',db.executor)).value,await readEmployeeNotificationList(proof,'test',db.executor)]){
+   const value=notifications(read);expect(value.items.map(i=>i.id)).toEqual(['current-notice']);expect(value.coverage).toBe('complete');
+  }
+  // Superseded notices must not use up the page window either: 25 newer cancelled rows leave the older current notice listed.
+  for(let i=0;i<25;i++)await notice('superseded-'+String(i).padStart(2,'0'),'2026-10-27T16:00:00Z',true);
+  const page=await readEmployeeNotificationPage(proof,'test',db.executor);expect(notifications(page.value).items.map(i=>i.id)).toEqual(['current-notice']);expect(notifications(page.value).coverage).toBe('complete');expect(page.nextCursor).toBeNull();
+ }finally{await db.dispose();}
+});
 it('hides disabled-module notifications while retaining unrelated own notices',async()=>{
  const {db,q,proof}=await setup();try{
   const {owner}=await publishUpdates(db.executor,1);expect(notifications((await readEmployeeNotificationPage(proof,'test',db.executor)).value).items.some(i=>i.label==='Team update')).toBe(true);
