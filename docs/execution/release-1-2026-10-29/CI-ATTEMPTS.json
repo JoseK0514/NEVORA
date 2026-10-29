@@ -65,7 +65,118 @@
       ],
       "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40955560516",
       "repairStatus": "c68c45ee waits actual More URL and visible Profile within already-configured browser deadline before preserving unique1 assertion. No configured timeout, retry, role bypass or error allowance changed. Local fullAccess passes with12 recorded navigation timings; Chromium More readiness1132ms. Hosted replay still required."
+    },
+    {
+      "id": 40957836154,
+      "head": "1e174c56ecd84a811ed8445b4651f3ed5ce03563",
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40957836154",
+      "conclusion": "success",
+      "passed": 3,
+      "failed": 0,
+      "pending": 0,
+      "checks": 18,
+      "errors": [],
+      "windowExceptions": [],
+      "frameworkDiagnostics": [],
+      "profileNavigation": [
+        {
+          "engine": "chromium",
+          "actor": "Employee",
+          "elapsedMs": 1883,
+          "state": "More ready",
+          "path": "/app/more"
+        },
+        {
+          "engine": "chromium",
+          "actor": "Employee",
+          "elapsedMs": 3588,
+          "state": "Profile ready",
+          "path": "/app/profile"
+        },
+        {
+          "engine": "chromium",
+          "actor": "Manager",
+          "elapsedMs": 501,
+          "state": "More ready",
+          "path": "/app/more"
+        },
+        {
+          "engine": "chromium",
+          "actor": "Manager",
+          "elapsedMs": 984,
+          "state": "Profile ready",
+          "path": "/app/profile"
+        },
+        {
+          "engine": "webkit",
+          "actor": "Employee",
+          "elapsedMs": 954,
+          "state": "More ready",
+          "path": "/app/more"
+        },
+        {
+          "engine": "webkit",
+          "actor": "Employee",
+          "elapsedMs": 2277,
+          "state": "Profile ready",
+          "path": "/app/profile"
+        },
+        {
+          "engine": "webkit",
+          "actor": "Manager",
+          "elapsedMs": 683,
+          "state": "More ready",
+          "path": "/app/more"
+        },
+        {
+          "engine": "webkit",
+          "actor": "Manager",
+          "elapsedMs": 1850,
+          "state": "Profile ready",
+          "path": "/app/profile"
+        },
+        {
+          "engine": "firefox",
+          "actor": "Employee",
+          "elapsedMs": 1075,
+          "state": "More ready",
+          "path": "/app/more"
+        },
+        {
+          "engine": "firefox",
+          "actor": "Employee",
+          "elapsedMs": 1746,
+          "state": "Profile ready",
+          "path": "/app/profile"
+        },
+        {
+          "engine": "firefox",
+          "actor": "Manager",
+          "elapsedMs": 335,
+          "state": "More ready",
+          "path": "/app/more"
+        },
+        {
+          "engine": "firefox",
+          "actor": "Manager",
+          "elapsedMs": 895,
+          "state": "Profile ready",
+          "path": "/app/profile"
+        }
+      ],
+      "guideContrasts": 66,
+      "componentGuide": 396,
+      "landscape": 120,
+      "rotations": 24,
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40957836154/artifact/mobile-access-1e174c56ecd84a811ed8445b4651f3ed5ce03563",
+      "limit": "Exact hosted source precedes this Home/Pay layout batch; not final same-SHA release acceptance."
     }
   ],
-  "actualSuccessfulRun": null
+  "actualSuccessfulRun": {
+    "id": 40957836154,
+    "head": "1e174c56ecd84a811ed8445b4651f3ed5ce03563",
+    "conclusion": "success",
+    "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40957836154",
+    "scope": "Dedicated real Access/landscape/guide only; final release still open."
+  }
 }

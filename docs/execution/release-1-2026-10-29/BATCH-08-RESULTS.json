@@ -1,0 +1,1546 @@
+{
+  "scope": "Home daily frame, Pay scheduled-date hierarchy, viewport capture quality and real enlarged Home coverage",
+  "applicationSource": "0e353bf5",
+  "nativeSources": {
+    "hierarchyRed": "21756249",
+    "hierarchyGreen": "0e353bf5",
+    "captureOnlyReplay": "c7a17738",
+    "actual200Home": "f0787219"
+  },
+  "red": {
+    "sha": "217562491bb1a67a773d0e08f689b90540d59d10",
+    "lane": "red",
+    "results": [
+      {
+        "suite": "phase1",
+        "sha": "217562491bb1a67a773d0e08f689b90540d59d10",
+        "exitCode": 1,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/hierarchy-journeys-red/phase1",
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/hierarchy-journeys-red/phase1.log"
+      },
+      {
+        "suite": "pay",
+        "sha": "217562491bb1a67a773d0e08f689b90540d59d10",
+        "exitCode": 1,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/hierarchy-journeys-red/pay",
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/hierarchy-journeys-red/pay.log"
+      }
+    ]
+  },
+  "green": {
+    "sha": "0e353bf50bc3ee9dfb61a5838465ad6bb57e4bdb",
+    "lane": "green",
+    "results": [
+      {
+        "suite": "phase1",
+        "sha": "0e353bf50bc3ee9dfb61a5838465ad6bb57e4bdb",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/hierarchy-journeys-green/phase1",
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/hierarchy-journeys-green/phase1.log"
+      },
+      {
+        "suite": "pay",
+        "sha": "0e353bf50bc3ee9dfb61a5838465ad6bb57e4bdb",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/hierarchy-journeys-green/pay",
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/hierarchy-journeys-green/pay.log"
+      }
+    ]
+  },
+  "staticAtApplicationSource": {
+    "checkpoint": "0e353bf50bc3ee9dfb61a5838465ad6bb57e4bdb",
+    "results": [
+      {
+        "name": "default",
+        "checkpoint": "0e353bf50bc3ee9dfb61a5838465ad6bb57e4bdb",
+        "startedAt": "2026-10-29T21:34:20.509Z",
+        "finishedAt": "2026-10-29T21:44:52.758Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch10-static/default.log"
+      },
+      {
+        "name": "typecheck",
+        "checkpoint": "0e353bf50bc3ee9dfb61a5838465ad6bb57e4bdb",
+        "startedAt": "2026-10-29T21:44:53.748Z",
+        "finishedAt": "2026-10-29T21:45:21.841Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch10-static/typecheck.log"
+      },
+      {
+        "name": "lint",
+        "checkpoint": "0e353bf50bc3ee9dfb61a5838465ad6bb57e4bdb",
+        "startedAt": "2026-10-29T21:45:22.824Z",
+        "finishedAt": "2026-10-29T21:46:07.876Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch10-static/lint.log"
+      },
+      {
+        "name": "startup",
+        "checkpoint": "0e353bf50bc3ee9dfb61a5838465ad6bb57e4bdb",
+        "startedAt": "2026-10-29T21:46:08.845Z",
+        "finishedAt": "2026-10-29T21:46:11.336Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch10-static/startup.log"
+      },
+      {
+        "name": "build",
+        "checkpoint": "0e353bf50bc3ee9dfb61a5838465ad6bb57e4bdb",
+        "startedAt": "2026-10-29T21:46:12.303Z",
+        "finishedAt": "2026-10-29T21:46:29.463Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch10-static/build.log"
+      }
+    ]
+  },
+  "default": {
+    "numPassedTests": 10229,
+    "numFailedTests": 0,
+    "numPendingTests": 801,
+    "success": true
+  },
+  "phase1Actual200": {
+    "checks": 58,
+    "captures": 59,
+    "errors": [],
+    "consoleMessages": [
+      {
+        "engine": "chromium",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED",
+        "expectedTransportFailure": true,
+        "authorityLoss": false,
+        "url": "http://127.0.0.1:61890/api/employee/home",
+        "at": 1793311604492
+      },
+      {
+        "engine": "chromium",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED",
+        "expectedTransportFailure": true,
+        "authorityLoss": false,
+        "url": "http://127.0.0.1:61890/api/employee/home",
+        "at": 1793311605123
+      },
+      {
+        "engine": "chromium",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED",
+        "expectedTransportFailure": true,
+        "authorityLoss": false,
+        "url": "http://127.0.0.1:61890/app/schedule?week=2026-11-09",
+        "at": 1793311607934
+      },
+      {
+        "engine": "chromium",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "expectedTransportFailure": false,
+        "authorityLoss": true,
+        "url": "http://127.0.0.1:61890/api/employee/home",
+        "at": 1793311613002
+      },
+      {
+        "engine": "chromium",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "expectedTransportFailure": false,
+        "authorityLoss": true,
+        "url": "http://127.0.0.1:61890/api/employee/home",
+        "at": 1793311613631
+      },
+      {
+        "engine": "webkit",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "expectedTransportFailure": false,
+        "authorityLoss": true,
+        "url": "http://127.0.0.1:61890/api/employee/home",
+        "at": 1793311635217
+      }
+    ],
+    "refusals": [
+      {
+        "engine": "chromium",
+        "path": "/api/employee/my-time",
+        "status": 503,
+        "state": "unavailable",
+        "reason": "read_failed",
+        "privateDataPresent": false
+      },
+      {
+        "engine": "chromium",
+        "path": "/api/employee/home",
+        "status": 503,
+        "state": "unavailable",
+        "reason": "read_failed",
+        "privateDataPresent": false
+      },
+      {
+        "engine": "chromium",
+        "path": "/api/employee/my-time",
+        "status": 401,
+        "state": "unavailable",
+        "reason": "access_denied",
+        "privateDataPresent": false
+      },
+      {
+        "engine": "chromium",
+        "path": "/api/employee/home",
+        "status": 401,
+        "state": "unauthorized",
+        "reason": "access_denied",
+        "privateDataPresent": false
+      },
+      {
+        "engine": "chromium",
+        "path": "/api/employee/my-time",
+        "status": 401,
+        "state": "unavailable",
+        "reason": "access_denied",
+        "privateDataPresent": false
+      },
+      {
+        "engine": "webkit",
+        "path": "/api/employee/home",
+        "status": 401,
+        "state": "unauthorized",
+        "reason": "access_denied",
+        "privateDataPresent": false
+      },
+      {
+        "engine": "webkit",
+        "path": "/api/employee/my-time",
+        "status": 401,
+        "state": "unavailable",
+        "reason": "access_denied",
+        "privateDataPresent": false
+      },
+      {
+        "engine": "firefox",
+        "path": "/api/employee/home",
+        "status": 401,
+        "state": "unauthorized",
+        "reason": "access_denied",
+        "privateDataPresent": false
+      },
+      {
+        "engine": "firefox",
+        "path": "/api/employee/my-time",
+        "status": 401,
+        "state": "unavailable",
+        "reason": "access_denied",
+        "privateDataPresent": false
+      }
+    ],
+    "controlContrast": [
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 320,
+        "control": "recorded-time Refresh",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 390,
+        "control": "recorded-time Refresh",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 430,
+        "control": "recorded-time Refresh",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 320,
+        "control": "recorded-time Refresh",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 390,
+        "control": "recorded-time Refresh",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 430,
+        "control": "recorded-time Refresh",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 390,
+        "control": "Home retry",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 390,
+        "control": "Home retry",
+        "ratio": 12.581737771441162
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 320,
+        "control": "recorded-time Refresh",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 390,
+        "control": "recorded-time Refresh",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 430,
+        "control": "recorded-time Refresh",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 320,
+        "control": "recorded-time Refresh",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 390,
+        "control": "recorded-time Refresh",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 430,
+        "control": "recorded-time Refresh",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 320,
+        "control": "recorded-time Refresh",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 390,
+        "control": "recorded-time Refresh",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 430,
+        "control": "recorded-time Refresh",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 320,
+        "control": "recorded-time Refresh",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 390,
+        "control": "recorded-time Refresh",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 430,
+        "control": "recorded-time Refresh",
+        "ratio": 10.771713285410929
+      }
+    ],
+    "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/home-viewport-200-replay",
+    "actualScaleGuard": "After Home document navigation, explicitly set200%, require computed html font32px and data-text-step200 plus expanded nav rows, then inspect every visible summary text Range and control clearance.",
+    "typecheckExitCode": 0
+  },
+  "pay": {
+    "checks": 37,
+    "captures": 84,
+    "contrasts": [
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 320,
+        "subject": "title",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 320,
+        "subject": "latest",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 320,
+        "subject": "period",
+        "ratio": 5.420851497656459
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 320,
+        "subject": "chip",
+        "ratio": 13.99556745580012
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 320,
+        "subject": "view",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 320,
+        "subject": "download",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 320,
+        "subject": "privacy",
+        "ratio": 5.028921154815613
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 390,
+        "subject": "title",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 390,
+        "subject": "latest",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 390,
+        "subject": "period",
+        "ratio": 5.420851497656459
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 390,
+        "subject": "chip",
+        "ratio": 13.99556745580012
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 390,
+        "subject": "view",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 390,
+        "subject": "download",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 390,
+        "subject": "privacy",
+        "ratio": 5.028921154815613
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 430,
+        "subject": "title",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 430,
+        "subject": "latest",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 430,
+        "subject": "period",
+        "ratio": 5.420851497656459
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 430,
+        "subject": "chip",
+        "ratio": 13.99556745580012
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 430,
+        "subject": "view",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 430,
+        "subject": "download",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "chromium",
+        "theme": "light",
+        "width": 430,
+        "subject": "privacy",
+        "ratio": 5.028921154815613
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 320,
+        "subject": "title",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 320,
+        "subject": "latest",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 320,
+        "subject": "period",
+        "ratio": 7.712974522476015
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 320,
+        "subject": "chip",
+        "ratio": 10.253689134485551
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 320,
+        "subject": "view",
+        "ratio": 12.581737771441162
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 320,
+        "subject": "download",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 320,
+        "subject": "privacy",
+        "ratio": 9.009023941533343
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 390,
+        "subject": "title",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 390,
+        "subject": "latest",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 390,
+        "subject": "period",
+        "ratio": 7.712974522476015
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 390,
+        "subject": "chip",
+        "ratio": 10.253689134485551
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 390,
+        "subject": "view",
+        "ratio": 12.581737771441162
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 390,
+        "subject": "download",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 390,
+        "subject": "privacy",
+        "ratio": 9.009023941533343
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 430,
+        "subject": "title",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 430,
+        "subject": "latest",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 430,
+        "subject": "period",
+        "ratio": 7.712974522476015
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 430,
+        "subject": "chip",
+        "ratio": 10.253689134485551
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 430,
+        "subject": "view",
+        "ratio": 12.581737771441162
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 430,
+        "subject": "download",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "chromium",
+        "theme": "dark",
+        "width": 430,
+        "subject": "privacy",
+        "ratio": 9.009023941533343
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 320,
+        "subject": "title",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 320,
+        "subject": "latest",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 320,
+        "subject": "period",
+        "ratio": 5.420851497656459
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 320,
+        "subject": "chip",
+        "ratio": 13.99556745580012
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 320,
+        "subject": "view",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 320,
+        "subject": "download",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 320,
+        "subject": "privacy",
+        "ratio": 5.028921154815613
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 390,
+        "subject": "title",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 390,
+        "subject": "latest",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 390,
+        "subject": "period",
+        "ratio": 5.420851497656459
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 390,
+        "subject": "chip",
+        "ratio": 13.99556745580012
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 390,
+        "subject": "view",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 390,
+        "subject": "download",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 390,
+        "subject": "privacy",
+        "ratio": 5.028921154815613
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 430,
+        "subject": "title",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 430,
+        "subject": "latest",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 430,
+        "subject": "period",
+        "ratio": 5.420851497656459
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 430,
+        "subject": "chip",
+        "ratio": 13.99556745580012
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 430,
+        "subject": "view",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 430,
+        "subject": "download",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "webkit",
+        "theme": "light",
+        "width": 430,
+        "subject": "privacy",
+        "ratio": 5.028921154815613
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 320,
+        "subject": "title",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 320,
+        "subject": "latest",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 320,
+        "subject": "period",
+        "ratio": 7.712974522476015
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 320,
+        "subject": "chip",
+        "ratio": 10.253689134485551
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 320,
+        "subject": "view",
+        "ratio": 12.581737771441162
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 320,
+        "subject": "download",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 320,
+        "subject": "privacy",
+        "ratio": 9.009023941533343
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 390,
+        "subject": "title",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 390,
+        "subject": "latest",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 390,
+        "subject": "period",
+        "ratio": 7.712974522476015
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 390,
+        "subject": "chip",
+        "ratio": 10.253689134485551
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 390,
+        "subject": "view",
+        "ratio": 12.581737771441162
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 390,
+        "subject": "download",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 390,
+        "subject": "privacy",
+        "ratio": 9.009023941533343
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 430,
+        "subject": "title",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 430,
+        "subject": "latest",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 430,
+        "subject": "period",
+        "ratio": 7.712974522476015
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 430,
+        "subject": "chip",
+        "ratio": 10.253689134485551
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 430,
+        "subject": "view",
+        "ratio": 12.581737771441162
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 430,
+        "subject": "download",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "webkit",
+        "theme": "dark",
+        "width": 430,
+        "subject": "privacy",
+        "ratio": 9.009023941533343
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 320,
+        "subject": "title",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 320,
+        "subject": "latest",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 320,
+        "subject": "period",
+        "ratio": 5.420851497656459
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 320,
+        "subject": "chip",
+        "ratio": 13.99556745580012
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 320,
+        "subject": "view",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 320,
+        "subject": "download",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 320,
+        "subject": "privacy",
+        "ratio": 5.028921154815613
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 390,
+        "subject": "title",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 390,
+        "subject": "latest",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 390,
+        "subject": "period",
+        "ratio": 5.420851497656459
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 390,
+        "subject": "chip",
+        "ratio": 13.99556745580012
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 390,
+        "subject": "view",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 390,
+        "subject": "download",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 390,
+        "subject": "privacy",
+        "ratio": 5.028921154815613
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 430,
+        "subject": "title",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 430,
+        "subject": "latest",
+        "ratio": 15.709442826878028
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 430,
+        "subject": "period",
+        "ratio": 5.420851497656459
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 430,
+        "subject": "chip",
+        "ratio": 13.99556745580012
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 430,
+        "subject": "view",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 430,
+        "subject": "download",
+        "ratio": 6.089452668960573
+      },
+      {
+        "engine": "firefox",
+        "theme": "light",
+        "width": 430,
+        "subject": "privacy",
+        "ratio": 5.028921154815613
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 320,
+        "subject": "title",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 320,
+        "subject": "latest",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 320,
+        "subject": "period",
+        "ratio": 7.712974522476015
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 320,
+        "subject": "chip",
+        "ratio": 10.253689134485551
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 320,
+        "subject": "view",
+        "ratio": 12.581737771441162
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 320,
+        "subject": "download",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 320,
+        "subject": "privacy",
+        "ratio": 9.009023941533343
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 390,
+        "subject": "title",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 390,
+        "subject": "latest",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 390,
+        "subject": "period",
+        "ratio": 7.712974522476015
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 390,
+        "subject": "chip",
+        "ratio": 10.253689134485551
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 390,
+        "subject": "view",
+        "ratio": 12.581737771441162
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 390,
+        "subject": "download",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 390,
+        "subject": "privacy",
+        "ratio": 9.009023941533343
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 430,
+        "subject": "title",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 430,
+        "subject": "latest",
+        "ratio": 13.8788410741722
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 430,
+        "subject": "period",
+        "ratio": 7.712974522476015
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 430,
+        "subject": "chip",
+        "ratio": 10.253689134485551
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 430,
+        "subject": "view",
+        "ratio": 12.581737771441162
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 430,
+        "subject": "download",
+        "ratio": 10.771713285410929
+      },
+      {
+        "engine": "firefox",
+        "theme": "dark",
+        "width": 430,
+        "subject": "privacy",
+        "ratio": 9.009023941533343
+      }
+    ],
+    "media": [
+      {
+        "engine": "chromium",
+        "coarse": true,
+        "landscape": true,
+        "touchPoints": 1,
+        "width": 844,
+        "height": 390
+      },
+      {
+        "engine": "webkit",
+        "coarse": true,
+        "landscape": true,
+        "touchPoints": 0,
+        "width": 844,
+        "height": 390
+      },
+      {
+        "engine": "firefox",
+        "coarse": false,
+        "landscape": true,
+        "touchPoints": 0,
+        "width": 844,
+        "height": 390
+      }
+    ],
+    "messages": [
+      {
+        "engine": "chromium",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:61120/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+        "expected": true,
+        "stage": "download-fails"
+      },
+      {
+        "engine": "chromium",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:61120/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+        "expected": true,
+        "stage": "download-fails"
+      },
+      {
+        "engine": "chromium",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:61120/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+        "expected": true,
+        "stage": "download-fails"
+      },
+      {
+        "engine": "chromium",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "expected": true,
+        "stage": "protected-documents"
+      },
+      {
+        "engine": "chromium",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_FAILED",
+        "expected": true,
+        "stage": "loading-and-error"
+      },
+      {
+        "engine": "chromium",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "expected": true,
+        "stage": "module-off"
+      },
+      {
+        "engine": "chromium",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "expected": true,
+        "stage": "module-off"
+      },
+      {
+        "engine": "chromium",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "expected": true,
+        "stage": "session-ended"
+      },
+      {
+        "engine": "webkit",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:61120/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": true,
+        "stage": "download-fails"
+      },
+      {
+        "engine": "webkit",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:61120/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": true,
+        "stage": "download-fails"
+      },
+      {
+        "engine": "webkit",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:61120/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": true,
+        "stage": "download-fails"
+      },
+      {
+        "engine": "webkit",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "expected": true,
+        "stage": "protected-documents"
+      },
+      {
+        "engine": "webkit",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "expected": true,
+        "stage": "module-off"
+      },
+      {
+        "engine": "webkit",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "expected": true,
+        "stage": "module-off"
+      },
+      {
+        "engine": "webkit",
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "expected": true,
+        "stage": "session-ended"
+      }
+    ],
+    "limits": [
+      "Controlled loopback browsers and fictional statements written in the publication shape; no payroll run, amount or provider was exercised. Native PDF viewers, Files/Downloads, physical devices, screen readers and hosted transport remain separate."
+    ],
+    "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/hierarchy-journeys-green/pay"
+  },
+  "retainedCaptureGap": {
+    "source": "c7a17738",
+    "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/home-viewport-replay",
+    "status": "Native test passed its assertions, but its newHome200 capture was actually normal-size after page.goto reset inline style. Not accepted as200% proof. Corrected and fully replayed atf0787219.",
+    "incumbentCoverage": "Original flow/assertion results remain preserved; this record does not erase the failed proof."
+  },
+  "hostedAccess": {
+    "id": 40957836154,
+    "head": "1e174c56ecd84a811ed8445b4651f3ed5ce03563",
+    "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40957836154",
+    "conclusion": "success",
+    "passed": 3,
+    "failed": 0,
+    "pending": 0,
+    "checks": 18,
+    "errors": [],
+    "windowExceptions": [],
+    "frameworkDiagnostics": [],
+    "profileNavigation": [
+      {
+        "engine": "chromium",
+        "actor": "Employee",
+        "elapsedMs": 1883,
+        "state": "More ready",
+        "path": "/app/more"
+      },
+      {
+        "engine": "chromium",
+        "actor": "Employee",
+        "elapsedMs": 3588,
+        "state": "Profile ready",
+        "path": "/app/profile"
+      },
+      {
+        "engine": "chromium",
+        "actor": "Manager",
+        "elapsedMs": 501,
+        "state": "More ready",
+        "path": "/app/more"
+      },
+      {
+        "engine": "chromium",
+        "actor": "Manager",
+        "elapsedMs": 984,
+        "state": "Profile ready",
+        "path": "/app/profile"
+      },
+      {
+        "engine": "webkit",
+        "actor": "Employee",
+        "elapsedMs": 954,
+        "state": "More ready",
+        "path": "/app/more"
+      },
+      {
+        "engine": "webkit",
+        "actor": "Employee",
+        "elapsedMs": 2277,
+        "state": "Profile ready",
+        "path": "/app/profile"
+      },
+      {
+        "engine": "webkit",
+        "actor": "Manager",
+        "elapsedMs": 683,
+        "state": "More ready",
+        "path": "/app/more"
+      },
+      {
+        "engine": "webkit",
+        "actor": "Manager",
+        "elapsedMs": 1850,
+        "state": "Profile ready",
+        "path": "/app/profile"
+      },
+      {
+        "engine": "firefox",
+        "actor": "Employee",
+        "elapsedMs": 1075,
+        "state": "More ready",
+        "path": "/app/more"
+      },
+      {
+        "engine": "firefox",
+        "actor": "Employee",
+        "elapsedMs": 1746,
+        "state": "Profile ready",
+        "path": "/app/profile"
+      },
+      {
+        "engine": "firefox",
+        "actor": "Manager",
+        "elapsedMs": 335,
+        "state": "More ready",
+        "path": "/app/more"
+      },
+      {
+        "engine": "firefox",
+        "actor": "Manager",
+        "elapsedMs": 895,
+        "state": "Profile ready",
+        "path": "/app/profile"
+      }
+    ],
+    "guideContrasts": 66,
+    "componentGuide": 396,
+    "landscape": 120,
+    "rotations": 24,
+    "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40957836154/artifact/mobile-access-1e174c56ecd84a811ed8445b4651f3ed5ce03563",
+    "limit": "Exact hosted source precedes this Home/Pay layout batch; not final same-SHA release acceptance."
+  },
+  "releaseAcceptance": false,
+  "independentFindingsSelfClosed": false
+}

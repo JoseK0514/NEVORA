@@ -51,11 +51,13 @@ Local implementation/verification complete at393c8440; actual Actions verificati
 
 Files: employee-mobile/messages.tsx,hours-frame.tsx,planning-frame.tsx,pay.tsx,pay.css,requests.tsx,requests.css,passkeys.css,profile.css,mobile.css; employee-home-quiet.tsx and relevant existing tests.
 
-- [ ] Add meaningful copy/geometry/contrast regressions before each fix: Notifications versus Updates, loading versus retry, empty versus retained drafts, neutral Pay error, contextual Back.
-- [ ] Reproduce actual Passkeys clipping/ring and computed type/header ownership before a scoped fix. Preserve expected keyboard focus and1400+ desktop.
-- [ ] Reduce visual card competition by grouping navigation/disclosures, preserving independent actual recorded-time reader even with no scheduled shift. Keep module/auth gates; no phone punch actions are added.
-- [ ] Defined root/detail header rule, exact Open-shifts row structure and shared type tokens; verify portrait/landscape and submitted/empty/error/Calendar/form states from5C.9.
-- [ ] Run affected original journeys, Lead/Manager compatibility and full default after each named batch; final all-journey results file pins one candidate.
+- [x] State/copy/loading/contextual Back repairs, with original recovery owners retained (BATCH-04).
+- [x] Reproduce and repair actual Profile/Passkeys clipping, shadow and measured body type (BATCH-06).
+- [x] Group Open shifts destinations into accessible rows (BATCH-07).
+- [x] Merge Home's daily frames while preserving independent recorded time; flatten Pay scheduled-date metadata. Native and full static pass; real Home200% replay and viewport capture cleanup recorded in BATCH-08.
+- [ ] Define and test shared root/detail chrome against actual Pay tabs and query-specific Schedule/Hours leaves; integrate Quick guide placement without remounting business owners.
+- [ ] Finish measured type/weight audit, especially schedule-change disclosure; preserve earlier route-specific approved refinements instead of replacing the theme.
+- [ ] Run affected original journeys and Lead/Manager compatibility after final presentation changes. Final all11 Employee receipts must pin one candidate; intermediate batches do not close original-author findings.
 
 ## Task4: Owner integration batches (binding design/policy pending)
 
@@ -93,3 +95,5 @@ The handoff is Jose's execution authority. This plan organizes that approved sco
 Task3 bounded progress: state/copy/contextual Back batch04 verified; Profile/Passkeys measured polish batch06 verified locally.9fa native Profile/Calendar/closure pass;4bb Access real sign-out identity reset passes all3 engines. BATCH-06 retains original RED and startup configuration failure/replay. Home/Pay card hierarchy, remaining type leaves/weights and shared root/detail chrome remain open; related-link rows are addressed in batch07. Actual hosted Access replay still required; no final same-SHA or independent review closure claimed.
 
 Batch07: Open-shifts related destinations now form an accessible named row group; original Requests39/39 and native geometry pass. Source9b default/startup/lint pass; new test measurement annotation errors caught by TSC/build are retained, correcteddd4ab224 and replayed TSC/lint/build0 atc68. Access fixture readiness corrected after hosted40955560516 failure; full localAccess3/3/18checks/rawerrors0/window0/framework0 and12 navigation timing records atc68. Hosted replay remains required. Read-only migration inventory validates47 current+2 supplemental distinct filenames; combined fresh/upgrade rehearsal remains open. No original-author or final release closure claimed.
+
+BATCH-08 verifies Home/Pay hierarchy locally. Hosted Access first successful actual run is40957836154 at1e174c56 (3/3, zero skipped/runtime/window errors, guide396/actual66/landscape120/rotations24). The captured c7 Home200 proof gap is preserved and corrected atf0787219 with an actual32px root and native glyph-bound/clearance assertions. Root/detail chrome, Quick guide placement, remaining type audit, Owner/Clocker integration and final same-source acceptance remain open.

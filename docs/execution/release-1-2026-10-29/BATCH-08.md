@@ -1,0 +1,15 @@
+# Batch 08 — Home and Pay hierarchy
+
+Home now groups the scheduled shift and independently recorded clock status in one mobile frame, separated by a rule. The same reader, source predicate, links and operation owners remain. The wrapper is permanent across viewport changes; its styling applies only to the approved mobile presentation. Desktop keeps its existing presentation. The status label uses the existing 14px support token.
+
+Pay's next scheduled payday is supporting metadata rather than a fourth competing card. Its date, period and workplace-schedule explanation remain. Published statements, protected PDF actions, correction relations and every unavailable/private state retain their original behavior. No amount or deposit promise was added.
+
+Both native regressions failed before the application change: Home lacked the shared frame and Pay retained its separate border. At `0e353bf5`, the original Phase 1 and Pay configurations pass in Chromium, WebKit and Firefox. Pay records 37 checks, 84 viewport captures and 126 contrast samples. The full suite passes 10,229 tests, with zero failures and 801 default pending cases; TypeScript, lint, owned startup and the source-bound build all pass. Required owned suites and final same-source acceptance remain separate.
+
+Phase 1's capture helper now uses viewport screenshots throughout and hides only the Next development overlay while taking the photograph. Assertions, runtime-error observation and real DOM behavior remain active. Older captures and failed attempts are preserved.
+
+Screenshot inspection found a gap in the first added Home enlarged-text check: navigating to Home reset the inline font scale, so its passing `c7a17738` run was not accepted as 200% proof. The corrected `f0787219` test applies the scale after navigation and requires a computed 32px root, the 200% presentation marker and the expanded navigation rows before checking actual text ranges and control clearance. Its complete three-engine replay passes 58 checks with 59 viewport captures and no page errors. The actual enlarged screenshots were inspected. Source application bytes remain those tested at `0e353bf5`; only the fixture changed afterward.
+
+Hosted Access is now verified on `1e174c56`: [run 40957836154](https://github.com/JoseK0514/NEVORA/actions/runs/40957836154) passes all three tests without failures or skips. Downloaded artifacts confirm 18 real flow checks, 66 authenticated guide contrasts, 396 native guide contrasts, 120 landscape cases, 24 rotations and zero raw, window or framework errors. More readiness took 1,883ms in Chromium and 1,075ms in Firefox, supporting the route-readiness repair rather than a one-second assertion poll. All four preceding failed hosted attempts remain in the register.
+
+That hosted SHA precedes this layout batch. It closes the bounded Access verification attempt at that source, not final release acceptance. Quick guide placement, shared root/detail headers, remaining measured type/weight work, Owner and Clocker tasks, pending policy decisions, physical-device/AT/provider checks and original-author closures remain open.
