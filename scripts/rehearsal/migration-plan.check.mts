@@ -86,3 +86,15 @@ test('reads this checkout actual installer/adapter/inventory', () => {
   assert.ok(plan.current.includes('0018_timecards.sql'));
   assert.ok(!plan.current.some(file => held.includes(file)));
 });
+test('plans only missing full filenames when an upgraded database already has the final adoption chain', () => {
+  const current=readMigrationPlan(process.cwd()).current;
+  const supplemental=['0038_read_path_indexes.sql','0039_native_payroll_setup_records.sql'];
+  const previous=current.filter(file=>!supplemental.includes(file));
+  assert.deepEqual(readMigrationPlan(process.cwd(),previous).missing,supplemental);
+  assert.deepEqual(readMigrationPlan(process.cwd(),current).missing,[]);
+});
+test('stops unknown, prefix-only, duplicate and historical renamed ledger entries before upgrade planning', () => {
+  for(const applied of [['0038'],['0038_native_payroll_setup_records.sql'],['0026_tenant_ownership_expand.sql'],['0001_initial.sql','0001_initial.sql']]){
+    assert.throws(()=>readMigrationPlan(process.cwd(),applied),/ledger/);
+  }
+});
