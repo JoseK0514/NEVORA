@@ -7,6 +7,7 @@ import {randomUUID} from 'node:crypto';
 import {createOwnedNextApp} from './owned-next-app';
 import {createOwnedSmtp} from './owned-smtp';
 import {seedOwnedApp,TEST_PASSWORD} from './owned-app-fixture';
+import {measureRenderedContrast} from '../../../scripts/browser-contrast.mjs';
 import {hashPassword} from '../../lib/auth/password';
 
 it('integrates frozen mobile Access with real sessions, activation, recovery and protected Owner permissions',async()=>{
@@ -16,6 +17,7 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
  const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
  const smtp=await createOwnedSmtp();
  const app=await createOwnedNextApp(evidence,{mobileAccessEnabled:true,mobileSupportEnabled:true,recoverySmtpPort:smtp.port,invitationSmtpPort:smtp.port,pinDevTypeReferences:true}).catch(async error=>{await smtp.close();throw error;});
+ const guideContrast:unknown[]=[];
  const checks:string[]=[],errors:string[]=[],windowExceptions:string[]=[],frameworkDiagnostics:unknown[]=[],browsers:{close():Promise<void>}[]=[];
  const {observeDocumentNavigation,observeWindowExceptions}=await import(pathToFileURL(resolve('scripts/browser-navigation-diagnostic.mjs')).href);
  const {projectFrameworkNativeDiagnostic}=await import(pathToFileURL(resolve('scripts/role-redirect-diagnostic.mjs')).href);
@@ -53,7 +55,7 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
       expect((await page.goto(origin+path))?.status()).toBe(200);await page.locator('#mobile-access-page').waitFor();
       expect(await page.locator('#mobile-access-page').getAttribute('lang')).toBe(lang);
       expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),engine+path+width+lang).toBe(true);
-      if(engine==='chromium'&&width===390){await page.addStyleTag({content:'nextjs-portal{display:none}'});await page.screenshot({path:evidence+'/'+lang+path.replaceAll('/','-')+'.png',fullPage:true});}
+      if(engine==='chromium'&&width===390){await page.addStyleTag({content:'nextjs-portal{display:none}'});await page.screenshot({path:evidence+'/'+lang+path.replaceAll('/','-')+'.png',fullPage:false});}
       await page.addStyleTag({content:'html{font-size:200%}'});
       expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),engine+path+width+lang+' enlarged').toBe(true);
      }
@@ -94,7 +96,7 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    await join.setViewportSize({width:390,height:844});await expect.poll(()=>join.locator('.ma-passwords').count()).toBe(1);expect(await join.locator('#activation-confirm-password').inputValue()).toBe(TEST_PASSWORD);
    await join.locator('.ma-language').click();await expect.poll(()=>join.locator('#mobile-access-page').getAttribute('lang')).toBe('es');
    await join.locator('button[type="submit"]').click();await join.locator('#activation-employee-id').waitFor();expect(await join.locator('#activation-employee-id').inputValue()).toBe('MA-'+engine);
-   await join.locator('a[href*="activated=1"]').click();expect(await join.locator('#login-employee-id').inputValue()).toBe('MA-'+engine);await join.locator('#login-password').fill(TEST_PASSWORD);await join.locator('button[type="submit"]').click();await join.waitForURL('**/app',{timeout:45000});await join.locator('.ma-onboarding summary').waitFor();await join.locator('.ma-onboarding summary').click();expect(await join.locator('.ma-guide-list a[href="/app/schedule"]').count()).toBe(1);await join.waitForLoadState('networkidle');await join.addStyleTag({content:'nextjs-portal{display:none}'});await join.screenshot({path:evidence+'/'+engine+'-first-home.png',fullPage:true});
+   await join.locator('a[href*="activated=1"]').click();expect(await join.locator('#login-employee-id').inputValue()).toBe('MA-'+engine);await join.locator('#login-password').fill(TEST_PASSWORD);await join.locator('button[type="submit"]').click();await join.waitForURL('**/app',{timeout:45000});await join.locator('.ma-onboarding summary').waitFor();await join.locator('.ma-onboarding summary').click();expect(await join.locator('.ma-guide-list a[href="/app/schedule"]').count()).toBe(1);for(const theme of ['light','dark']){await join.evaluate((theme:string)=>{localStorage.setItem('nv-theme',theme);document.documentElement.dataset.theme=theme;(window as Window&{__nvApplyTheme?:()=>void}).__nvApplyTheme?.();},theme);expect(await join.locator('html').getAttribute('data-theme')).toBe(theme);for(const label of await join.locator('.ma-onboarding :is(summary,h2,b,small,p):visible').all()){const sample=await label.evaluate(measureRenderedContrast);guideContrast.push({engine,theme,ratio:sample.ratio});expect(sample.ratio).toBeGreaterThanOrEqual(4.5);}await join.screenshot({path:evidence+'/'+engine+'-first-guide-'+theme+'.png',fullPage:false});}await join.evaluate(()=>{localStorage.setItem('nv-theme','light');document.documentElement.dataset.theme='light';(window as Window&{__nvApplyTheme?:()=>void}).__nvApplyTheme?.();});await join.waitForLoadState('networkidle');await join.addStyleTag({content:'nextjs-portal{display:none}'});await join.screenshot({path:evidence+'/'+engine+'-first-home.png',fullPage:false});
    expect((await employee.request.post(origin+'/api/company-access/invitations/MA-'+engine,{headers:{Origin:origin,'x-nevora-company-access':'1','x-nevora-actor':'MA-'+engine},data:{action:'ISSUE'}})).status()).toBe(403);
    const badReset=await employee.request.post(origin+'/api/auth/reset-access',{headers:{Origin:origin,'x-nevora-recovery':'1'},data:{proof:'K7M4PQ8R2T',password:TEST_PASSWORD}});expect(badReset.status()).toBe(400);
    checks.push(engine+': real Owner-issued local email → activation → confirmed ID → ordinary sign-in → real Employee Home; employee issuance denied; short proof rejected');
@@ -127,6 +129,6 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
   expect(windowExceptions).toEqual([]);expect(errors).toEqual([]);complete=true;
  }catch(error){throw new Error(step+': '+clean(error instanceof Error?error.message:String(error)));}finally{
   for(const browser of browsers)await browser.close();let closed=false;try{await app.close();closed=true;}finally{await smtp.close();
-  await writeFile(evidence+'/mobile-access-results.json',JSON.stringify({complete:complete&&closed,scope:'Real Next/server actions, invocation-owned PostgreSQL and loopback SMTP only; no real email/native clipboard/production service used.',checks,errors,windowExceptions,frameworkDiagnostics},null,2));}
+  await writeFile(evidence+'/mobile-access-results.json',JSON.stringify({complete:complete&&closed,scope:'Real Next/server actions, invocation-owned PostgreSQL and loopback SMTP only; no real email/native clipboard/production service used.',checks,errors,windowExceptions,frameworkDiagnostics,guideContrast},null,2));}
  }
 });
