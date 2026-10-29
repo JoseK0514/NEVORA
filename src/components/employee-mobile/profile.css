@@ -19,7 +19,7 @@
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-profile-facts > div { display:flex; flex-direction:column; gap:var(--em-space-1); padding:var(--em-space-4) 0; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-profile-facts > div + div { border-top:1px solid var(--em-line); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-profile-facts dt { font-size:var(--em-size-support); color:var(--em-muted); }
- html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-profile-facts dd { margin:0; color:var(--em-ink); overflow-wrap:anywhere; }
+ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-profile-facts dd { margin:0; color:var(--em-ink); font-size:var(--em-size-body); line-height:var(--em-line-body); overflow-wrap:anywhere; }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-profile :is(.q-help,.em-profile-note,.em-profile-read-footer) { margin-top:var(--em-space-3); color:var(--em-muted); font-size:var(--em-size-support); line-height:var(--em-line-body); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-profile-read-footer { display:flex; flex-direction:column; gap:var(--em-space-2); }
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-profile-read-footer button { background:transparent; border-color:transparent; }
