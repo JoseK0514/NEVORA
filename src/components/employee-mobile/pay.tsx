@@ -124,7 +124,7 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
     :state==='denied'?surface('',<InfoIcon size={24} aria-hidden="true"/>,'Your access to pay statements changed','NEVORA can’t show your statements right now. If that seems wrong, ask your manager.')
     :state==='module-off'?surface('',<InfoIcon size={24} aria-hidden="true"/>,'Pay statements are turned off','Your workplace isn’t sharing pay statements in NEVORA right now. Ask your manager where to find your pay information.')
     :state==='paused'?surface('',<InfoIcon size={24} aria-hidden="true"/>,errorCode==='OFFLINE'?'You’re offline':'Statements are paused',errorCode==='OFFLINE'?'Reconnect to see your current statements.':'Statements are hidden while NEVORA is in the background. They reload when you return.')
-    :state==='error'?surface('error',<WarningCircleIcon size={24} aria-hidden="true"/>,'Couldn’t load your statements','Check your connection, then try again.',<button type="button" className="em-request-secondary" onClick={reload}>Try again</button>,'alert')
+    :state==='error'?surface('',<InfoIcon size={24} aria-hidden="true"/>,'Couldn’t load your statements','Check your connection, then try again.',<button type="button" className="em-request-secondary" onClick={reload}>Try again</button>,'alert')
     :state==='empty'?<div className="em-pay-card em-pay-quiet"><FileTextIcon size={22} aria-hidden="true"/><span><strong>No published statements yet</strong><small>Your statements appear here after your workplace publishes payroll.</small></span></div>
     :arranged?.latest?<section className="em-pay-section" aria-labelledby="pay-latest-heading">
      <h2 id="pay-latest-heading">Latest statement</h2>
