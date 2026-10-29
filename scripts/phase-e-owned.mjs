@@ -425,7 +425,7 @@ export function captureSource(source, expectedSha) {
   const checkpoint = git(['rev-parse', 'HEAD']), tree = git(['rev-parse', 'HEAD^{tree}']);
   assert.equal(checkpoint, expectedSha, 'Phase E source SHA mismatch');
   assert.equal(git(['status', '--porcelain=v1']), '', 'Phase E verification requires a clean worktree');
-  const files = git(['ls-files', '-z']).split('\0').filter(Boolean);
+  const files = gitFileList(['ls-files', '-z'], {cwd:source});
   // The repository's checked-in empty template is source custody, never a
   // runtime environment file. Owned children receive only the explicit allowlist.
   if (files.some(file => file.split('/').some(part => part.startsWith('.env') && part !== '.env.example'))) throw Error('Refusing tracked environment files in verification source');

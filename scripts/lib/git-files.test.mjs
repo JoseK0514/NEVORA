@@ -23,3 +23,18 @@ it('lists more than 1 MiB of file names, where the default buffer fails', () => 
   expect(files[0]).toBe(name(0));
   expect(files.join('\0').length).toBeGreaterThan(1024 * 1024);
 });
+
+it('captures every committed source hash above 1 MiB and still rejects later source changes', async () => {
+  const { captureSource, assertSourceUnchanged } = await import('../phase-e-owned.mjs');
+  execFileSync('git', ['add', '.'], { cwd: root });
+  execFileSync('git', ['-c', 'user.name=Fictional QA', '-c', 'user.email=qa@example.invalid', 'commit', '-qm', 'large source inventory'], { cwd: root });
+  const checkpoint=execFileSync('git', ['rev-parse', 'HEAD'], {cwd:root,encoding:'utf8'}).trim();
+  let custody, failure;
+  try { custody=captureSource(root,checkpoint); } catch(error) { failure=error.code??error.message; }
+  expect(failure).toBeUndefined();
+  expect(Object.keys(custody.hashes)).toHaveLength(count);
+  expect(custody.hashes[name(count-1)]).toBe('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+  expect(()=>assertSourceUnchanged(root,custody)).not.toThrow();
+  writeFileSync(join(root,name(count-1)),'changed');
+  expect(()=>assertSourceUnchanged(root,custody)).toThrow(/clean worktree/);
+});
