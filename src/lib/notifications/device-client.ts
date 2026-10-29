@@ -212,7 +212,7 @@ export class DeviceController {
     } catch(error) {
       if(error instanceof DeviceRequestError&&(error.status===401||error.status===403)){this.invalidate();return;}
       // OWN-CR-2: say so when nothing in this browser could keep the request.
-      if (this.current(epoch)) this.publish({ ...this.snapshot.server, phase: 'error' }, 'Server cleanup is pending. Notifications remain suppressed locally where possible. Retry Turn Off; you can still sign out.' + (this.intentUnsaved ? ' This browser couldn’t save your request, so retry here before you rely on alerts being off.' : ''));
+      if (this.current(epoch)) this.publish({ ...this.snapshot.server, phase: 'error' }, 'Server cleanup is pending. Notifications remain suppressed locally where possible. Retry Turn Off; you can still sign out.' + (this.intentUnsaved ? ' This browser couldn’t save the recovery reminder. To stop alerts now, block NEVORA notifications in your device or browser settings, then retry cleanup.' : ''));
     }
   }
   async test() {

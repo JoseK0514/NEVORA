@@ -11,6 +11,20 @@ const OFFLINE = '/fuel-portal-offline.html';
 const PUBLIC_ASSETS = [OFFLINE, '/images/nevora-wordmark.png', '/icons/fuel-192.png', '/icons/fuel-512.png', '/icons/fuel-maskable-192.png', '/icons/fuel-maskable-512.png', '/icons/fuel-apple-180.png'];
 const GENERATION = /^[A-Za-z0-9_-]{1,128}$/;
 const MAX_SUPPRESSED = 128;
+// Separate from public assets: opaque tombstones survive upgrades/retirement.
+const SUPPRESSION_CACHE = 'fuel-portal-owner-suppression-v1';
+const suppressionKey = generation => new URL('/fuel-portal-owner-state/' + (generation ? 'generation/' + generation : 'blocked'), self.location.origin).href;
+async function cachedSuppression(generation) {
+  const cache = await caches.open(SUPPRESSION_CACHE);
+  if (await cache.match(suppressionKey(null))) return 'blocked';
+  return await cache.match(suppressionKey(generation)) ? 'suppressed' : 'clear';
+}
+async function cacheSuppression(generation) {
+  const cache = await caches.open(SUPPRESSION_CACHE);
+  if (await cache.match(suppressionKey(null)) || await cache.match(suppressionKey(generation))) return;
+  const saturated = (await cache.keys()).length >= MAX_SUPPRESSED;
+  await cache.put(suppressionKey(saturated ? null : generation), new Response('1', { headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' } }));
+}
 let work = Promise.resolve();
 let ownerStorageFailed = false;
 // Receipt order is preserved even when source lookup or storage is asynchronous.
@@ -117,8 +131,20 @@ self.addEventListener('message', event => {
     let previous;
     let status = 'unavailable';
     try {
+      if (message.type === 'SUPPRESS_OWNER') {
+        // Independent writes: either durable store must survive a worker restart.
+        const [fallback, primary] = await Promise.allSettled([
+          cacheSuppression(message.generation),
+          ownerState(state => suppress(state, message.generation)),
+        ]);
+        if (primary.status === 'rejected') ownerStorageFailed = true;
+        if (fallback.status === 'fulfilled' || primary.status === 'fulfilled') status = 'suppressed';
+        return;
+      }
+      const cached = await cachedSuppression(message.generation);
+      if (cached === 'blocked') return;
+      if (cached === 'suppressed') { status = 'suppressed'; return; }
       const state = await ownerState(state => {
-        if (message.type === 'SUPPRESS_OWNER') { suppress(state, message.generation); return; }
         if (ownerStorageFailed || state.blocked || state.suppressed.includes(message.generation)) return;
         if (state.current && state.current !== message.generation) { previous = state.current; suppress(state, previous); }
         if (!state.blocked) state.current = message.generation;
@@ -134,7 +160,10 @@ self.addEventListener('message', event => {
       event.ports?.[0]?.postMessage({ version: 1, type: 'OWNER_STATE', generation: message.generation, status });
       // Best effort clearing remains useful when durable storage has failed.
       if (message.type === 'SUPPRESS_OWNER') await closeGeneration(message.generation);
-      if (previous) await closeGeneration(previous);
+      if (previous) {
+        await cacheSuppression(previous).catch(() => {});
+        await closeGeneration(previous);
+      }
     }
   }).catch(() => {}));
 });
@@ -161,7 +190,7 @@ function validEnvelope(value) {
   return value.title === title && value.body === body;
 }
 async function owns(envelope) {
-  if (ownerStorageFailed) return false;
+  if (ownerStorageFailed || await cachedSuppression(envelope.ownershipGeneration) !== 'clear') return false;
   const state = await ownerState();
   return !state.blocked && state.current === envelope.ownershipGeneration && !state.suppressed.includes(envelope.ownershipGeneration);
 }

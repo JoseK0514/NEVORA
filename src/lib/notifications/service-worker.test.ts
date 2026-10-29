@@ -44,9 +44,8 @@ function storage() {
 }
 type Client = { id: string; url: string; type: string; focus: ReturnType<typeof vi.fn>; navigate: ReturnType<typeof vi.fn>; postMessage: ReturnType<typeof vi.fn> };
 function client(path: string, id = path): Client { return { id, url: new URL(path, origin).href, type: 'window', focus: vi.fn(async () => {}), navigate: vi.fn(async () => {}), postMessage: vi.fn() }; }
-function harness(db = storage(), retire = false) {
+function harness(db = storage(), retire = false, stores = new Map<string, Map<string, Response>>()) {
   const handlers = new Map<string, (event: Record<string, unknown>) => void>();
-  const stores = new Map<string, Map<string, Response>>();
   const writes: string[] = [];
   const windows: Client[] = [client('/app', 'portal')];
   const notices: { title: string; data: typeof envelope; close: ReturnType<typeof vi.fn> }[] = [];
@@ -65,6 +64,7 @@ function harness(db = storage(), retire = false) {
       if (!stores.has(name)) stores.set(name, new Map());
       return {
         put: async (request: Request | string, response: Response) => { const url = typeof request === 'string' ? request : request.url; writes.push(url); stores.get(name)!.set(url, response.clone()); },
+        keys: async () => [...stores.get(name)!.keys()].map(url => new Request(new URL(url, origin))),
         match: async (request: Request | string) => stores.get(name)!.get(typeof request === 'string' ? request : request.url)?.clone(),
       };
     },
@@ -83,7 +83,7 @@ function harness(db = storage(), retire = false) {
   const message = (type: string, gen = generation, source = windows[0], extra = {}) => dispatch('message', { source, data: { version: 1, type, generation: gen, ...extra } });
   const push = (value: unknown = envelope) => dispatch('push', { data: { json: () => value } });
   const fetchRequest = (path: string, method = 'GET', mode = 'navigate', headers = {}) => dispatch('fetch', { request: { url: new URL(path, origin).href, method, mode, headers: new Headers(headers) } });
-  return { self, stores, writes, windows, network, notices, db, dispatch, message, push, fetchRequest };
+  return { self, caches, stores, writes, windows, network, notices, db, dispatch, message, push, fetchRequest };
 }
 
 describe('portal service worker source', () => {
@@ -237,4 +237,39 @@ describe('portal service worker source', () => {
     expect(h.self.registration.unregister).toHaveBeenCalledOnce(); expect([...h.stores.keys()]).toEqual(['another-app-v1']); expect(h.writes).toEqual([]); expect(await h.fetchRequest('/app')).toBeUndefined();
     expect(h.self.skipWaiting).not.toHaveBeenCalled(); expect(h.self.clients.claim).not.toHaveBeenCalled();
   });
+});
+
+
+describe('durable suppression independent of IndexedDB',()=>{
+ it('does not display or reopen a failed turn-off generation after worker restart before the app reopens',async()=>{
+  const first=harness();await first.message('SET_OWNER');first.db.fail();await first.message('SUPPRESS_OWNER');
+  first.db.recover();const restarted=harness(first.db,false,first.stores);
+  await restarted.push();expect(restarted.notices).toEqual([]);
+  await restarted.message('SET_OWNER');await restarted.push();expect(restarted.notices).toEqual([]);
+  await restarted.message('SET_OWNER','fresh-opt-in');await restarted.push({...envelope,ownershipGeneration:'fresh-opt-in'});
+  expect(restarted.notices).toHaveLength(1);
+ });
+ it('keeps fallback tombstones through public-cache upgrades and retirement',async()=>{
+  const first=harness();await first.message('SET_OWNER');first.db.fail();await first.message('SUPPRESS_OWNER');first.db.recover();
+  await first.dispatch('activate');const retired=harness(first.db,true,first.stores);await retired.dispatch('activate');
+  const next=harness(first.db,false,first.stores);await next.push();expect(next.notices).toEqual([]);
+ });
+ it('acknowledges unavailable when neither durable store can record suppression',async()=>{
+  const h=harness();await h.message('SET_OWNER');h.db.fail();vi.spyOn(h.caches,'open').mockRejectedValue(new Error('cache storage unavailable'));
+  const port={postMessage:vi.fn()};await h.dispatch('message',{source:h.windows[0],data:{version:1,type:'SUPPRESS_OWNER',generation},ports:[port]});
+  expect(port.postMessage).toHaveBeenLastCalledWith({version:1,type:'OWNER_STATE',generation,status:'unavailable'});
+  h.db.recover();await h.push();expect(h.notices).toEqual([]);
+ });
+ it('retains IDB suppression if the independent fallback fails',async()=>{
+  const h=harness();await h.message('SET_OWNER');vi.spyOn(h.caches,'open').mockRejectedValue(new Error('cache storage unavailable'));
+  await h.message('SUPPRESS_OWNER');const restarted=harness(h.db,false,h.stores);await restarted.push();expect(restarted.notices).toEqual([]);
+ });
+ it('fails closed after fallback-only saturation without evicting an old generation',async()=>{
+  const h=harness();await h.message('SET_OWNER');h.db.fail();
+  for(let i=0;i<129;i++)await h.message('SUPPRESS_OWNER','old-'+i);
+  h.db.recover();const restarted=harness(h.db,false,h.stores);await restarted.message('SET_OWNER','fresh');await restarted.push({...envelope,ownershipGeneration:'fresh'});
+  expect(restarted.notices).toEqual([]);
+  expect([...h.stores.values()].reduce((sum,store)=>sum+store.size,0)).toBeLessThanOrEqual(129);
+ });
+
 });

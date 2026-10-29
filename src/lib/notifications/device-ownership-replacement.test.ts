@@ -20,14 +20,16 @@ function storage(){
   }};request.onupgradeneeded();request.onsuccess();});return request;
  }};
 }
-function worker(db:ReturnType<typeof storage>,messages:any[]){
+function worker(db:ReturnType<typeof storage>,messages:any[],caches:unknown){
  const handlers=new Map();const client={id:'portal',url:origin+'/app',type:'window',postMessage(){}};
  const self={location:{origin},addEventListener:(name:string,fn:any)=>handlers.set(name,fn),clients:{get:async()=>client},registration:{scope:origin+'/app',getNotifications:async()=>[]}};
- runInNewContext(source,{self,indexedDB:db,URL,Request,Response,Date,Promise,Set,console});
+ runInNewContext(source,{self,caches,indexedDB:db,URL,Request,Response,Date,Promise,Set,console});
  return {postMessage(message:any,ports:any[]){messages.push(message);handlers.get('message')({source:client,data:message,ports,waitUntil:(p:Promise<unknown>)=>{void p}})}};
 }
 function fixture(){
- const db=storage(),messages:any[]=[];let active=worker(db,messages);const values=new Map<string,string>();let failLocal=false;
+ const db=storage(),messages:any[]=[],stores=new Map<string,Map<string,Response>>();
+ const caches={open:async(name:string)=>{if(!stores.has(name))stores.set(name,new Map());const store=stores.get(name)!;return {keys:async()=>[...store.keys()].map(k=>new Request(k)),match:async(key:string)=>store.get(key)?.clone(),put:async(key:string,value:Response)=>{store.set(key,value.clone())}}}};
+ let active=worker(db,messages,caches);const values=new Map<string,string>();let failLocal=false;
  const subscription={unsubscribe:vi.fn(async()=>{throw Error('native rejected')}),toJSON:()=>({endpoint:'fictional'})};
  const registration={get active(){return active},waiting:null,pushManager:{getSubscription:async()=>subscription},getNotifications:async()=>[]};
  const locks={request:async(_n:string,_o:unknown,action:()=>unknown)=>action()};
@@ -39,7 +41,7 @@ function fixture(){
  vi.stubGlobal('localStorage',{getItem:(key:string)=>values.get(key)??null,setItem:(key:string,value:string)=>{if(failLocal)throw Error('storage unavailable');values.set(key,value);},removeItem:(key:string)=>{values.delete(key);}});
  vi.stubGlobal('fetch',vi.fn(async(url:string)=>url.endsWith('/status')?new Response(JSON.stringify({supported:true,enabled:true,configurationAvailable:true,testAllowed:false,ownershipGeneration:gen,vapidPublicKey:'fictional',authority,validForMs:45000}),{status:200}):new Response(JSON.stringify({error:'cleanup_pending'}),{status:503})));
  const controller=()=>new DeviceController(browserRuntime(authority),()=>{});
- return {db,messages,values,subscription,controller,replaceWorker(){active=worker(db,messages)},failLocalStorage(){failLocal=true;}};
+ return {db,messages,values,subscription,controller,replaceWorker(){active=worker(db,messages,caches)},failLocalStorage(){failLocal=true;}};
 }
 const setOwner=(messages:any[])=>messages.filter(m=>m.type==='SET_OWNER'&&m.generation===gen).length;
 
@@ -99,5 +101,7 @@ it('OWN-CR-2: when this browser cannot keep the request, the person is told to r
  const f=fixture();const c=f.controller();await c.start();
  f.db.fail();f.failLocalStorage();await c.turnOff();
  expect(c.snapshot.state).toBe('error');
- expect(c.snapshot.message).toContain('This browser couldn’t save your request');
+ expect(c.snapshot.message).toContain('This browser couldn’t save the recovery reminder');
+ expect(c.snapshot.message).toContain('block NEVORA notifications');
+ expect(c.snapshot.cleanupPending).toBe(true);
 });
