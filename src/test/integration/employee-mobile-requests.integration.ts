@@ -11,6 +11,8 @@ import {executeShiftChange} from '../../lib/data/shift-changes';
 import {readEmployeeRequests} from '../../lib/data/employee-requests.server';
 import {measureRenderedContrast} from '../../../scripts/browser-contrast.mjs';
 
+type RelatedRowMeasurement={height:number;width:number;insetLeft:number;insetRight:number;arrowInset:number;separator:boolean;bodySize:number};
+
 it('integrates protected Employee Requests and eligible pickup using actual SQL and three browser engines',async()=>{
  const evidence=process.env.NEVORA_EMPLOYEE_MOBILE_EVIDENCE;
  if(!evidence)throw Error('Select explicit external evidence directory');
@@ -128,7 +130,7 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
     expect(await page.locator('.page-frame').evaluate((el:HTMLElement)=>getComputedStyle(el).backgroundColor===getComputedStyle(el.querySelector('.em-requests')!).backgroundColor)).toBe(true);
     const small=await page.locator('.em-requests:visible a,.em-requests:visible button,.em-requests:visible summary').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.getClientRects().length&&(el.getBoundingClientRect().height<43.5)).map(el=>el.textContent));
     expect(small).toEqual([]);
-    const rows=await related.evaluate((nav:HTMLElement)=>{
+    const rows:RelatedRowMeasurement[]=await related.evaluate((nav:HTMLElement)=>{
      const bounds=nav.getBoundingClientRect();return [...nav.querySelectorAll<HTMLAnchorElement>('a')].map((link,index)=>{
       const box=link.getBoundingClientRect(),icon=link.querySelector<SVGElement>('svg[aria-hidden="true"]')?.getBoundingClientRect(),style=getComputedStyle(link);
       return {height:box.height,width:box.width,insetLeft:box.left-bounds.left,insetRight:bounds.right-box.right,arrowInset:icon?bounds.right-icon.right:0,separator:index===0||parseFloat(style.borderTopWidth)>=1,bodySize:parseFloat(style.fontSize)/parseFloat(getComputedStyle(document.documentElement).fontSize)};
