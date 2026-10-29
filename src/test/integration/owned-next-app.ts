@@ -299,7 +299,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { m
       ...((options.loginDiagnostics||options.calendarDiagnostics)?{NODE_OPTIONS:[
         ...(options.loginDiagnostics?['--import='+pathToFileURL(join(mirror,'src/test/integration/owned-login-diagnostics.mjs')).href]:[]),
         ...(options.calendarDiagnostics?['--import='+pathToFileURL(join(mirror,'src/test/integration/owned-calendar-diagnostics.mjs')).href]:[]),
-      ].join(' '),...(options.loginDiagnostics?{NEVORA_OWNED_LOGIN_ORIGIN:url}:{}),...(options.calendarDiagnostics?{NEVORA_OWNED_CALENDAR_ORIGIN:url,NEVORA_OWNED_PROCESS_OWNER:options.processOwnerId??ownerId}:{})}:{}),
+      ].join(' '),...(options.loginDiagnostics?{NEVORA_OWNED_LOGIN_ORIGIN:url}:{}),...(options.calendarDiagnostics?{NEVORA_OWNED_CALENDAR_ORIGIN:url,NEVORA_OWNED_PROCESS_OWNER:options.processOwnerId??ownerId.replaceAll('-','')}:{})}:{}),
       ...(options.processOwnerId ? { NEVORA_OWNED_PROCESS_OWNER: options.processOwnerId } : {}),
     };
     options.signal?.throwIfAborted();
