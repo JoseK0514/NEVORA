@@ -71,7 +71,7 @@ function KitRow({ entry }: { entry: InboxEntry }) {
   const selected = selection?.selected === entry.key;
   // Quiet (v4): name, one detail line, a value on the right (the one red is how late someone is), a chevron or one small button.
   return <li className="inbox-row" data-urgent={entry.urgent || undefined} data-selected={selected || undefined}>
-    {entry.button ? <div className={`q-row${entry.leading ? " q-row--av" : ""}${entry.meta ? "" : " q-row--one"}`} data-inbox-key={entry.key}>
+    {entry.button ? <div className={`q-row${entry.leading ? " q-row--av" : ""}${entry.meta ? "" : " q-row--one"}`} data-inbox-key={entry.key} aria-current={selected ? "true" : undefined}>
       {entry.leading}
       <span className="q-rt"><b>{entry.title}</b>{entry.meta ? <i>{entry.meta}</i> : null}</span>
       <Link className="q-bs" href={entry.href} aria-label={entry.label} onClick={event => selection?.select(entry, event)}>{entry.button}</Link>
@@ -364,7 +364,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
     const target = row && row.getClientRects().length ? row : heading;
     if (!target) return;
     if (!target.matches("a, button, summary, [tabindex]")) target.tabIndex = -1;
-    target.focus({ preventScroll: true });
+    (target.matches("a, button") ? target : target.querySelector<HTMLElement>("a, button") ?? target).focus({ preventScroll: true });
   }, [ready, hasShown]);
   useLayoutEffect(() => {
     const column = listColumn.current;
@@ -505,7 +505,7 @@ export function InboxDetail({ entry, sheet = false }: { entry: InboxEntry; sheet
       if (!row) return;
       event.preventDefault();
       row.closest("details")?.setAttribute("open", "");
-      row.focus();
+      (row.matches("a, button, [tabindex]") ? row : row.querySelector<HTMLElement>("a, button") ?? row).focus();
     }}>
     <div className="inbox-detail__head">
       {entry.leading}
