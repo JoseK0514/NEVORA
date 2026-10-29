@@ -3,6 +3,8 @@
 Phase 2 implementation is complete for both remaining feature ports, but **Phase 2 has not exited**. The exit
 needs the items marked *exit* below and Jose's checkpoint. Phase 3 has not started.
 
+> **Update, October 28 (Claude assembly).** Phase 2 is now assembled with `claude-codex-collab-nevora` in a detached worktree (`7ab3b7bb` app, `4dfc2806` tests); it is not pushed under the three-branch policy. Item 9 (reconciliation) is done locally, pending Jose's publish decision. Items 5, 6 and 7 have root-cause or audit reports but no fixes. New fixes, the open Phase 1 WebKit failure and the pre-existing collab Clocker allocation failure are in [CLAUDE-ASSEMBLY-2026-10-28.md](CLAUDE-ASSEMBLY-2026-10-28.md).
+
 ## Phase 2 exit
 
 | # | Item | Owner | State |
