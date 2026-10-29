@@ -7,6 +7,7 @@ import {measureRenderedContrast} from '../../../scripts/browser-contrast.mjs';
 import {createOwnedNextApp} from './owned-next-app';
 import {seedOwnedApp,seedOwnedScenario,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from './owned-app-fixture';
 import {publishScheduleWithRevision} from './management-api';
+import {fixtureReadGate} from './fixture-read-gate';
 import {expectedNotificationRefusal,safeNotificationRefusal,type ObservedNotificationRefusal} from './authority-refusal-observation';
 import {businessDate} from '../../lib/business-time';
 import {weekStartFor,addDays} from '../../lib/date-utils';
@@ -16,7 +17,7 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
  if(!evidence)throw Error('Select explicit external NEVORA_EMPLOYEE_MOBILE_EVIDENCE');
  await mkdir(evidence,{recursive:true});
  const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
- const app=await createOwnedNextApp(evidence),checks:{engine:string;name:string}[]=[],errors:string[]=[],captures:string[]=[],consoleMessages:{engine:string;type:string;text:string;expectedTransportFailure:boolean;authorityLoss:boolean;url:string;at:number}[]=[],refusals:{engine:string;path:string;status:number;state:string;reason:string;privateDataPresent:boolean}[]=[],responseChecks:Promise<void>[]=[],notificationRefusals:ObservedNotificationRefusal[]=[],controlContrast:{engine:string;theme:string;width:number;control:string;ratio:number}[]=[];
+ const app=await createOwnedNextApp(evidence),checks:{engine:string;name:string}[]=[],errors:string[]=[],captures:string[]=[],consoleMessages:{engine:string;type:string;text:string;expectedTransportFailure:boolean;authorityLoss:boolean;url:string;at:number}[]=[],refusals:{engine:string;path:string;status:number;state:string;reason:string;privateDataPresent:boolean}[]=[],responseChecks:Promise<void>[]=[],notificationRefusals:ObservedNotificationRefusal[]=[],fixtureEvents:{engine:string;event:string;at:number;active:number}[]=[],controlContrast:{engine:string;theme:string;width:number;control:string;ratio:number}[]=[];
  const q=(text:string,values:unknown[]=[])=>app.database.executor.query({text,values});
  let browser:{close():Promise<void>}|undefined,failureScreenshot:(()=>Promise<void>)|undefined;
  try{
@@ -38,13 +39,14 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
   for(const engine of ['chromium','webkit','firefox']){
    const activeBrowser=await runtime[engine].launch({headless:true});browser=activeBrowser;
    const context=await activeBrowser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});
+   const notificationGate=fixtureReadGate(event=>fixtureEvents.push({engine,...event}));
    let expectedTransportFailure=false,authorityLoss=false;const page=await context.newPage();page.on('console',(message:{type():string;text():string;location():{url:string}})=>{if(['error','warning'].includes(message.type())){const entry={engine,type:message.type(),text:message.text(),expectedTransportFailure,authorityLoss,url:message.location().url,at:Date.now()};consoleMessages.push(entry);}});failureScreenshot=async()=>{await page.screenshot({path:evidence+'/failure.png',fullPage:false});await writeFile(evidence+'/failure-layout.json',JSON.stringify(await page.evaluate(()=>({path:location.pathname,roots:[...document.querySelectorAll('[data-employee-mobile]')].map(el=>({id:el.id,active:el.getAttribute('data-employee-mobile-active'),page:el.getAttribute('data-employee-mobile-page')})),elements:[...document.querySelectorAll('.mobile-header,.mobile-header .brand,.q-home,.q-sched-e,.mobile-nav')].map(el=>{const style=getComputedStyle(el),rect=el.getBoundingClientRect();return{class:el.className,display:style.display,visibility:style.visibility,x:rect.x,y:rect.y,width:rect.width,height:rect.height};})})),null,2));};page.setDefaultTimeout(15000);page.on('pageerror',(e:Error)=>errors.push(engine+': '+e.message));
    await context.route('**/*',async(route:{request():{url():string};fetch():Promise<{status():number;json():Promise<Record<string,unknown>>}>;fulfill(options:{response:{status():number;json():Promise<Record<string,unknown>>}}):Promise<void>;abort():Promise<void>;continue():Promise<void>})=>{
     const url=new URL(route.request().url());
     if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){errors.push('Unexpected external origin '+url.origin);await route.abort();return;}
     if(url.pathname==='/api/notifications'){
      const intentionalAtStart=authorityLoss;
-     const captured=(async()=>{const response=await route.fetch();if([401,403].includes(response.status())){const body=await response.json();notificationRefusals.push({engine,url:url.href,status:response.status(),at:Date.now(),authorityLoss:intentionalAtStart||authorityLoss,bodySafe:safeNotificationRefusal(body)});}await route.fulfill({response});})();
+     const captured=notificationGate.read(async()=>{const response=await route.fetch();if([401,403].includes(response.status())){const body=await response.json();notificationRefusals.push({engine,url:url.href,status:response.status(),at:Date.now(),authorityLoss:intentionalAtStart||authorityLoss,bodySafe:safeNotificationRefusal(body)});}await route.fulfill({response});});
      const settled=captured.catch(async()=>{errors.push(engine+': notification response capture failed');await route.abort().catch(()=>{});});responseChecks.push(settled);await settled;return;
     }
     if(authorityLoss&&['/api/employee/home','/api/employee/my-time'].includes(url.pathname)){
@@ -155,14 +157,14 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
     await context.unroute('**/app/schedule?**');await page.getByRole('button',{name:'Retry confirmation',exact:true}).click();await page.getByRole('heading',{name:'You’re up to date',exact:true}).waitFor();
     expect((await q('SELECT employee_id FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,f.week])).length).toBe(1);expectedTransportFailure=false;record('Lost committed response preserves original operation and retry recovers one canonical receipt');
 
-    await q("UPDATE shifts SET end_time='21:00' WHERE id='em-own-split'");await publishScheduleWithRevision({locationId:'loc-1',weekStart:f.week,managerId:'QAOWNER'},app.database.executor);
+    await notificationGate.mutate(async()=>{await q("UPDATE shifts SET end_time='21:00' WHERE id='em-own-split'");await publishScheduleWithRevision({locationId:'loc-1',weekStart:f.week,managerId:'QAOWNER'},app.database.executor);},15000);
     await load('/app/schedule?week='+f.week+'&day='+f.sourceDate);await page.getByRole('button',{name:'Confirm schedule',exact:true}).waitFor();
     expect(await page.locator('.q-sched-e:visible').innerText()).not.toContain('You’re up to date');await shot('schedule-republished');
-    await q('DELETE FROM shifts WHERE id=$1 OR id=$2',[f.sourceId,'em-own-split']);await publishScheduleWithRevision({locationId:'loc-1',weekStart:f.week,managerId:'QAOWNER'},app.database.executor);
+    await notificationGate.mutate(async()=>{await q('DELETE FROM shifts WHERE id=$1 OR id=$2',[f.sourceId,'em-own-split']);await publishScheduleWithRevision({locationId:'loc-1',weekStart:f.week,managerId:'QAOWNER'},app.database.executor);},15000);
     await load('/app/schedule?week='+f.week);await page.getByRole('button',{name:'Confirm schedule',exact:true}).waitFor();
     expect(await page.locator('.q-sched-e:visible').innerText()).toContain('No assignments remain this week');await shot('schedule-empty-removal');
     await page.getByRole('button',{name:'Confirm schedule',exact:true}).click();await page.getByRole('heading',{name:'You’re up to date',exact:true}).waitFor();record('Republished changed and removed own assignments invalidate the old confirmation and preserve exact empty-week review');
-    await q("DELETE FROM shifts WHERE id='em-own-today'");await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'QAOWNER'},app.database.executor);
+    await notificationGate.mutate(async()=>{await q("DELETE FROM shifts WHERE id='em-own-today'");await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'QAOWNER'},app.database.executor);},15000);
     await load('/app');await ready();await page.getByRole('link',{name:'View schedule, no upcoming shift',exact:true}).waitFor();await page.locator('.employee-time-badge[data-state="OFF_CLOCK"]').waitFor();await shot('home-no-upcoming-shift');record('Real no-upcoming-shift Home retains actual recorded-clock access');
     await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id) VALUES('em-own-today','em-now-0',$1,$2,'00:00','24:00','qa-pos')",[actor,today]);await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'QAOWNER'},app.database.executor);
     await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id,is_designated_lead) VALUES($1,'qa-EMP1-schedule-0',$2,$3,'08:00','16:00','qa-pos',true),('em-own-split','qa-EMP1-schedule-0',$2,$3,'17:00','20:00','qa-pos',false)",[f.sourceId,actor,f.sourceDate]);await publishScheduleWithRevision({locationId:'loc-1',weekStart:f.week,managerId:'QAOWNER'},app.database.executor);
@@ -198,7 +200,8 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
    }
    await context.close();await activeBrowser.close();browser=undefined;
   }
+  for(const engine of ['chromium','webkit','firefox']){let mutation=false;for(const event of fixtureEvents.filter(row=>row.engine===engine)){if(event.event==='mutation-start'){expect(event.active).toBe(0);mutation=true;}if(event.event==='read-start')expect(mutation).toBe(false);if(event.event==='mutation-end')mutation=false;}}
   await Promise.all(responseChecks);for(const entry of consoleMessages.filter(entry=>entry.type==='error')){const hydration=/hydration|didn.t match|server.rendered|Invalid/.test(entry.text);const transport=entry.expectedTransportFailure&&/Failed to load resource.*(?:ERR_FAILED|Load failed)|Failed to fetch|NetworkError|Load failed/.test(entry.text);const match=entry.text.match(/status of (401|403|503)/);const denied=entry.authorityLoss&&match&&refusals.some(r=>r.engine===entry.engine&&r.status===Number(match[1])&&!r.privateDataPresent&&['unauthorized','unavailable'].includes(r.state));const notificationDenied=expectedNotificationRefusal(entry,app.url,notificationRefusals);if(hydration||(!transport&&!denied&&!notificationDenied))errors.push(entry.engine+': console '+entry.text);}expect(errors).toEqual([]);
  }catch(error){await failureScreenshot?.().catch(()=>{});throw error;}
- finally{await browser?.close();await app.close();await writeFile(evidence+'/results.json',JSON.stringify({checks,errors,captures,consoleMessages,refusals,notificationRefusals,controlContrast,ownedApp:app.root},null,2));}
+ finally{await browser?.close();await app.close();await writeFile(evidence+'/results.json',JSON.stringify({checks,errors,captures,consoleMessages,refusals,notificationRefusals,fixtureEvents,controlContrast,ownedApp:app.root},null,2));}
 });

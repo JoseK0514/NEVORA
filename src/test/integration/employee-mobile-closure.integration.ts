@@ -47,9 +47,9 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
    await context.route('**/*',async(route:any)=>{const u=new URL(route.request().url());if(['http:','https:'].includes(u.protocol)&&u.origin!==new URL(app.url).origin)await route.abort();else await route.continue();});
    page.on('pageerror',(error:Error)=>failures.push({engine,path:page.url(),error:error.message,stack:error.stack}));
    // Reproduce live-nth rebinding before touching application data. The exact
-   // production measurement callback must retain the original end control.
-   await page.setContent('<main><button id="first" style="display:block;width:100px;height:44px">First</button><button id="last" style="display:block;width:100px;height:44px">Last</button><button hidden>Hidden</button></main>');
-   const bound=(await page.locator('main').evaluateHandle(lastVisibleEmployeeAction)).asElement();expect(bound).not.toBeNull();expect(await bound!.getAttribute('id')).toBe('last');
+   // matrix measurement callback must retain the original end control.
+   await page.setContent('<main><details><summary>More</summary><button id="closed" style="margin-top:200px">Closed control</button></details><button id="first" style="display:block;width:100px;height:44px">First</button><button id="last" style="display:block;width:100px;height:44px">Last</button><button hidden>Hidden</button></main>');
+   const bound=(await page.locator('main').evaluateHandle(lastVisibleEmployeeAction)).asElement();expect(bound).not.toBeNull();expect(await page.locator('#closed').isVisible()).toBe(false);expect(await bound!.getAttribute('id')).toBe('last');
    await page.evaluate(()=>{const inserted=document.createElement('button');inserted.id='inserted';inserted.textContent='Inserted';document.querySelector('main')!.prepend(inserted);});
    expect(await page.locator('main button:visible').nth(1).getAttribute('id')).toBe('first');expect(await bound!.getAttribute('id')).toBe('last');expect(await bound!.evaluate((el:HTMLElement)=>el.isConnected)).toBe(true);await bound!.dispose();selectionControls.push({engine,liveNthRebound:true,exactNodePreserved:true});
    await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
