@@ -1,4 +1,4 @@
-@media (max-width:767px), (max-width:900px) and (max-height:430px) and (orientation:landscape) and (pointer:coarse) {
+@media (max-width:767px), (max-height:500px) and (orientation:landscape) and (pointer:coarse) {
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-creation .em-request-back { appearance:none; border:0; background:transparent; padding:0; font:inherit; color:var(--em-teal); cursor:pointer; }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-creation-form { margin:0; }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-creation-fields { display:flex; flex-direction:column; gap:var(--em-gap); }

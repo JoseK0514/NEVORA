@@ -1,5 +1,5 @@
 /* Calendar is a presentation of the incumbent link owner, scoped to Employee/Lead phones. */
-@media (max-width:767px), (max-width:900px) and (max-height:430px) and (orientation:landscape) and (pointer:coarse) {
+@media (max-width:767px), (max-height:500px) and (orientation:landscape) and (pointer:coarse) {
  html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar {
   display:flex; flex-direction:column; gap:var(--em-space-5); padding:var(--em-space-5) 0 0; min-width:0; color:var(--em-ink); font:400 var(--em-size-body)/var(--em-line-body) var(--em-font); overflow-wrap:anywhere;
  }

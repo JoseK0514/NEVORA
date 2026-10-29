@@ -1,4 +1,4 @@
-@media (max-width:767px), (max-width:900px) and (max-height:430px) and (orientation:landscape) and (pointer:coarse) {
+@media (max-width:767px), (max-height:500px) and (orientation:landscape) and (pointer:coarse) {
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .page-frame:has(>.em-requests-mobile)>:is(.q-mytime,.q-timecards) { display:none; }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours :is(p,dl,dd) { margin:0; }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-hours :is(.em-request-notice,.em-hours-success,.em-hours-form,.em-hours-fields,.em-hours-field,.em-hours-disclosure-body) { display:flex; flex-direction:column; gap:var(--em-space-4); min-width:0; }

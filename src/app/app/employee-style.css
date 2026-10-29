@@ -104,7 +104,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] {
   --g-t-small: 400 calc(14 * var(--type-unit, 1px))/1.45 var(--design-font-body);
   --g-t-caption: 400 calc(12 * var(--type-unit, 1px))/1.4 var(--design-font-body);
 }
-@media (min-width: 768px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 768px) and (not ((max-height: 500px) and (orientation: landscape) and (pointer: coarse))) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-e5] {
     --nv-t-title-1: 600 2rem/2.5rem var(--nv-font);
     --nv-t-title-3: 600 1.125rem/1.5rem var(--nv-font);
