@@ -10,6 +10,6 @@ it('refuses malformed selections, a profile in the notification feed and an exte
  const e=envelope();for(const value of [{...e,selection:'bad-page'},{...e,authority:'forged'},{...e,data:{...e.data,value:{...e.data.value,kind:'profile'}}},{...e,data:{...e.data,value:{...e.data.value,validForMs:100}}}])expect(parseEmployeeMessages(value)).toEqual({state:'unavailable',reason:'read_failed'});
 });
 it('refuses management roster or coworker shifts on an Employee compose context',()=>{
- const e={...envelope(),view:'compose',selection:'new',data:{state:'ready',authority:'b'.repeat(64),observedAt:'2026-10-27T17:00:00Z',validForMs:45000,timeZone:'America/Puerto_Rico',management:false,businessDate:'2026-10-27',locations:[{id:'loc-1',label:'Main Office'}],shifts:[]}};
+ const e={...envelope(),view:'compose',selection:'new',data:{state:'ready',authority:'b'.repeat(64),observedAt:'2026-10-27T17:00:00Z',validForMs:45000,timeZone:'America/Puerto_Rico',management:false,businessDate:'2026-10-27',locations:[{id:'loc-1',label:'Main Office',todayTeam:true}],shifts:[]}};
  expect(parseEmployeeMessages(e).state).toBe('ready');expect(parseEmployeeMessages({...e,data:{...e.data,management:true}}).state).toBe('unavailable');expect(parseEmployeeMessages({...e,data:{...e.data,shifts:[{id:'peer-shift'}]}}).state).toBe('unavailable');
 });

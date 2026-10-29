@@ -104,3 +104,20 @@ it('resolves exact notification destinations through current canonical access wi
   expect((await readEmployeeMessageDestination(peer,notice.id,'test',db.executor)).state).toBe('unavailable');await q("UPDATE employees SET primary_location_id='loc-2' WHERE id='MSG-A';DELETE FROM employee_location_eligibility WHERE employee_id='MSG-A'");expect((await readEmployeeMessageDestination(proof,notice.id,'test',db.executor)).state).toBe('unavailable');
  }finally{await db.dispose();}
 });
+it('tells an employee before writing where they can message today’s team, matching the send check',async()=>{
+ const {db,q,proof}=await setup();try{
+  const {readCommunicationContext,previewCommunicationAudience}=await import('../../lib/communications/service.server');
+  const {publishScheduleWithRevision}=await import('./management-api');const {businessDate}=await import('../../lib/business-time');const {weekStartFor}=await import('../../lib/date-utils');
+  const today=businessDate(new Date(),'America/Puerto_Rico'),week=weekStartFor(today);
+  await q("INSERT INTO employee_location_eligibility VALUES('MSG-A','loc-2')");
+  // loc-1: own published shift today. loc-2: own shift today on a draft (unpublished) schedule.
+  await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('tt-1','loc-1',$1,'DRAFT','QAOWNER'),('tt-2','loc-2',$1,'DRAFT','QAOWNER')",[week]);
+  await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id) VALUES('tt-shift-1','tt-1','MSG-A',$1,'08:00','16:00','qa-pos'),('tt-shift-2','tt-2','MSG-A',$1,'08:00','16:00','qa-pos')",[today]);
+  await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'QAOWNER'},db.executor);
+  const context=await readCommunicationContext(proof,db.executor);if(context.state!=='ready')throw Error('Context unavailable');
+  expect(Object.fromEntries(context.locations.map(l=>[l.id,l.todayTeam]))).toEqual({'loc-1':true,'loc-2':false});
+  const draft=(locationId:string)=>({type:'TODAYS_TEAM' as const,scope:{kind:'TODAYS_TEAM' as const,locationId,businessDate:today},title:'Fictional',body:'Test-only message.',acknowledgement:'OPTIONAL' as const,expiresAt:null});
+  expect((await previewCommunicationAudience(proof,draft('loc-1'),db.executor)).state).toBe('ready');
+  expect((await previewCommunicationAudience(proof,draft('loc-2'),db.executor)).state).not.toBe('ready');
+ }finally{await db.dispose();}
+});

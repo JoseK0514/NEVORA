@@ -51,7 +51,7 @@ export function parseEmployeeMessages(value:unknown):EmployeeMessages{
   }
   if(!object(value.data))return failed();const context=value.data;
   if(unavailable(context,['unauthorized','unavailable']))return {...outer,view:'compose',data:context as CommunicationContext};
-  if(!keys(context,['state','authority','observedAt','validForMs','management','businessDate','timeZone','locations','shifts'])||context.state!=='ready'||!lifetime(context,outer)||context.management!==false||!isValidIsoDate(String(context.businessDate))||!Array.isArray(context.shifts)||context.shifts.length!==0||!Array.isArray(context.locations)||context.locations.length>100||context.locations.some(l=>!object(l)||!keys(l,['id','label'])||!string(l.id,200)||!string(l.label,300))||new Set(context.locations.map(l=>l.id)).size!==context.locations.length)return failed();
+  if(!keys(context,['state','authority','observedAt','validForMs','management','businessDate','timeZone','locations','shifts'])||context.state!=='ready'||!lifetime(context,outer)||context.management!==false||!isValidIsoDate(String(context.businessDate))||!Array.isArray(context.shifts)||context.shifts.length!==0||!Array.isArray(context.locations)||context.locations.length>100||context.locations.some(l=>!object(l)||!keys(l,['id','label','todayTeam'])||!string(l.id,200)||!string(l.label,300)||typeof l.todayTeam!=='boolean')||new Set(context.locations.map(l=>l.id)).size!==context.locations.length)return failed();
   return {...outer,view:'compose',data:context as CommunicationContext};
  }catch{return failed();}
 }
