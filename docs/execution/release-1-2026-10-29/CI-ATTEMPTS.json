@@ -11,6 +11,25 @@
       "cause": "Unsupported runner.temp use in job.env; GitHub context table permits runner in step.env.",
       "reference": "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability",
       "repair": "036c7a8e moves external evidence variable to verification step.env"
+    },
+    {
+      "id": 40945665879,
+      "head": "3e0fa436540fdd64ee26e4c74ae354dc5c2caa45",
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40945665879",
+      "status": "completed",
+      "conclusion": "failure",
+      "workflowAndRuntimeInstall": "passed",
+      "tests": {
+        "passed": 1,
+        "failed": 2
+      },
+      "findings": [
+        "WebKit final Manager issuance check reused the Owner context: navigation to /login interrupted by /app.",
+        "Landscape networkidle wait timed out before Firefox cases;80 completed layout samples had0 assertion failures.",
+        "Quick guide396 measurements passed, including native Linux keyboard."
+      ],
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40945665879",
+      "repairStatus": "Targeted test actor-isolation and actual-UI readiness repairs prepared; no retry/assertion weakening."
     }
   ],
   "actualSuccessfulRun": null

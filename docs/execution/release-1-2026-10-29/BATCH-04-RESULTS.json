@@ -1,0 +1,114 @@
+{
+  "checkpoint": "7a07c47fed2e1cbdaccfa50575c4b57158960968",
+  "static": [
+    {
+      "name": "default",
+      "checkpoint": "7a07c47fed2e1cbdaccfa50575c4b57158960968",
+      "startedAt": "2026-10-29T20:05:13.934Z",
+      "finishedAt": "2026-10-29T20:11:57.103Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch04-static/default.log"
+    },
+    {
+      "name": "typecheck",
+      "checkpoint": "7a07c47fed2e1cbdaccfa50575c4b57158960968",
+      "startedAt": "2026-10-29T20:12:00.054Z",
+      "finishedAt": "2026-10-29T20:12:21.730Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch04-static/typecheck.log"
+    },
+    {
+      "name": "lint",
+      "checkpoint": "7a07c47fed2e1cbdaccfa50575c4b57158960968",
+      "startedAt": "2026-10-29T20:12:22.715Z",
+      "finishedAt": "2026-10-29T20:12:55.023Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch04-static/lint.log"
+    },
+    {
+      "name": "startup",
+      "checkpoint": "7a07c47fed2e1cbdaccfa50575c4b57158960968",
+      "startedAt": "2026-10-29T20:12:55.668Z",
+      "finishedAt": "2026-10-29T20:12:57.299Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch04-static/startup.log"
+    },
+    {
+      "name": "build",
+      "checkpoint": "7a07c47fed2e1cbdaccfa50575c4b57158960968",
+      "startedAt": "2026-10-29T20:12:57.912Z",
+      "finishedAt": "2026-10-29T20:13:12.015Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch04-static/build.log"
+    }
+  ],
+  "default": {
+    "passed": 10229,
+    "failed": 0,
+    "pending": 801
+  },
+  "focusedPresentation": {
+    "passed": 23,
+    "failed": 0,
+    "redFailures": 8
+  },
+  "affectedOwnedFiles": [
+    {
+      "suite": "communications",
+      "selector": "employee-mobile-communications",
+      "config": "vitest.employee-mobile-communications.config.mts",
+      "passed": 15,
+      "failed": 0,
+      "pending": 0,
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch04-journeys-serial/communications"
+    },
+    {
+      "suite": "planning",
+      "selector": "employee-mobile-planning",
+      "config": "vitest.employee-mobile-planning.config.mts",
+      "passed": 10,
+      "failed": 0,
+      "pending": 0,
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch04-journeys-serial/planning"
+    },
+    {
+      "suite": "hours",
+      "selector": "employee-mobile-hours",
+      "config": "vitest.employee-mobile-hours.config.mts",
+      "passed": 13,
+      "failed": 0,
+      "pending": 0,
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch04-journeys-a/hours"
+    },
+    {
+      "suite": "pay",
+      "selector": "employee-mobile-pay",
+      "config": "vitest.employee-mobile-pay.config.mts",
+      "passed": 1,
+      "failed": 0,
+      "pending": 0,
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch04-journeys-serial/pay"
+    }
+  ],
+  "ownedPassed": 39,
+  "firstAttemptsPreserved": [
+    "batch04-journeys-a",
+    "batch04-journeys-b"
+  ],
+  "releaseAcceptance": false
+}
