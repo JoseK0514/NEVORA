@@ -55,7 +55,7 @@ export async function requestAccountDeletion(previous: DeletionFormState, formDa
   // Every session row is deleted on acceptance, so this browser's cookie opens nothing. Clearing it here would
   // re-render the page without a session and send the person to sign-in before they see their reference; Done signs out.
   try {
-    const result = await submitDeletionRequest({ employeeId: proof.employee.id, password, channel: "web", policyVersion: POLICY_VERSION });
+    const result = await submitDeletionRequest({ employeeId: proof.employee.id, sessionTokenHash: proof.sessionTokenHash, password, channel: "web", policyVersion: POLICY_VERSION });
     if (result.outcome === "received" || result.outcome === "duplicate") return done(retried && result.outcome === "duplicate" ? "received" : result.outcome, result.request);
     if (result.outcome === "failed") return retried ? { kind: "uncertain" } : { kind: "failed" };
     return { kind: result.outcome };

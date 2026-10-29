@@ -3,7 +3,7 @@
 import {createHash} from 'node:crypto';
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
-const context=await vi.hoisted(async()=>{const {AsyncLocalStorage}=await import('node:async_hooks');return {executor:null as SqlExecutor|null,cookie:'',lose:false,device:new AsyncLocalStorage<string>()};});
+const context=await vi.hoisted(async()=>{const {AsyncLocalStorage}=await import('node:async_hooks');return {executor:null as SqlExecutor|null,cookie:'',lose:false,beforeAccept:null as null|(()=>Promise<void>),device:new AsyncLocalStorage<string>()};});
 vi.mock('@/lib/db',()=>{
  const statement=(text:string,values:readonly unknown[]=[])=>({statement:{text,values},then:(yes:(r:unknown[])=>unknown,no:(e:unknown)=>unknown)=>context.executor!.query({text,values}).then(yes,no)});
  const tagged=Object.assign((strings:TemplateStringsArray,...values:unknown[])=>statement(strings.reduce((t,p,i)=>t+(i?'$'+i:'')+p,''),values),{
@@ -15,7 +15,7 @@ vi.mock('next/headers',()=>({cookies:async()=>{const cookie=context.device.getSt
 // The accepting transaction commits; only its reply is lost when `lose` is set. That is the Neon HTTP case.
 vi.mock('@/lib/data/notification-transactions',async original=>({...await original<Record<string,unknown>>(),neonNotificationExecutor:()=>({
  query:(s:SqlStatement)=>context.executor!.query(s),
- transaction:async(s:SqlStatement[])=>{const rows=await context.executor!.transaction(s);if(context.lose&&s.some(x=>x.text.includes('INSERT INTO account_deletion_requests'))){context.lose=false;throw new TypeError('fetch failed');}return rows;},
+ transaction:async(s:SqlStatement[])=>{if(s.some(x=>x.text.includes('INSERT INTO account_deletion_requests'))){const before=context.beforeAccept;context.beforeAccept=null;await before?.();}const rows=await context.executor!.transaction(s);if(context.lose&&s.some(x=>x.text.includes('INSERT INTO account_deletion_requests'))){context.lose=false;throw new TypeError('fetch failed');}return rows;},
 })}));
 vi.mock('next/navigation',()=>({redirect:(destination:string)=>{throw Object.assign(new Error('redirect'),{destination});},notFound:()=>{throw new Error('notFound');}}));
 import {createDisposableExchangeDatabase} from './local-postgres';
@@ -36,7 +36,7 @@ const as=(token:string)=>{context.cookie=token;};
 const open=()=>q<{reference:string;status:string;channel:string;workspace_id:string}>("SELECT reference,status,channel,workspace_id FROM account_deletion_requests WHERE employee_id='DEL-OWN' AND status IN ('received','processing')");
 
 beforeEach(async()=>{
- db=await createDisposableExchangeDatabase({mode:'current-runtime'});context.executor=db.executor;context.lose=false;
+ db=await createDisposableExchangeDatabase({mode:'current-runtime'});context.executor=db.executor;context.lose=false;context.beforeAccept=null;
  await seedOwnedApp(db.executor);
  const passwordHash=await hashPassword(TEST_PASSWORD);
  for(const [id,role] of [['DEL-OWN','EMPLOYEE'],['DEL-PEER','LEAD']] as const){
@@ -135,4 +135,23 @@ it('is unavailable, not lost, before migration 0034',async()=>{
  expect(await requestAccountDeletion(idle,form())).toEqual({kind:'unavailable'});
  as('no-session');
  expect(await requestAccountDeletion(idle,form())).toEqual({kind:'unavailable'});
+});
+
+// Each boundary runs after the real password check and before the real accepting SQL transaction.
+// Removing the transaction's current-session/credential guard must make these create an unauthorized request.
+it.each(['signed-out','expired','password-reset','inactive'] as const)('refuses %s authority lost after password verification, with no deletion consequences',async boundary=>{
+ const token=await session('DEL-OWN','own-boundary-'+boundary);as(token);
+ let boundaryFeeds:unknown;
+ const feeds=()=>q("SELECT id,revoked_at::text,revocation_reason FROM calendar_subscriptions WHERE employee_id='DEL-OWN' ORDER BY id");
+ context.beforeAccept=async()=>{
+  if(boundary==='signed-out')await q('DELETE FROM employee_sessions WHERE token_hash=$1',[hash(token)]);
+  if(boundary==='expired')await q("UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE token_hash=$1",[hash(token)]);
+  if(boundary==='password-reset')await q("UPDATE employee_credentials SET password_hash=$1,password_updated_at=clock_timestamp() WHERE employee_id='DEL-OWN'",[await hashPassword('different-fictional-password')]);
+  if(boundary==='inactive')await q("UPDATE employees SET active=false WHERE id='DEL-OWN'");
+  // Password reset/deactivation themselves revoke feeds through canonical triggers.
+  boundaryFeeds=await feeds();
+ };
+ expect(await requestAccountDeletion(idle,form())).toEqual({kind:'failed'});
+ expect(await open()).toEqual([]);
+ expect(await feeds()).toEqual(boundaryFeeds);
 });

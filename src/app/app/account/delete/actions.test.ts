@@ -32,7 +32,7 @@ describe("requesting account deletion", () => {
     await expect(requestAccountDeletion(idle, form())).resolves.toEqual(receipt("received"));
     expect(state.order).toEqual(["admit", "allowed", "submit"]);
     expect(state.admit).toHaveBeenCalledWith("FICTIONAL-E1", "203.0.113.9");
-    expect(state.submit).toHaveBeenCalledWith({ employeeId: "FICTIONAL-E1", password: "fictional-password", channel: "web", policyVersion: "2026-10-20" });
+    expect(state.submit).toHaveBeenCalledWith({ employeeId: "FICTIONAL-E1", sessionTokenHash: proof.sessionTokenHash, password: "fictional-password", channel: "web", policyVersion: "2026-10-20" });
   });
 
   it("refuses a page that showed another account, without checking any password", async () => {

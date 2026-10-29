@@ -57,12 +57,12 @@ export async function activeDeletionRequest(employeeId: string): Promise<Deletio
  * same open request. Acceptance is saved before any success is reported; in the same transaction every session
  * of the person ends and their calendar feeds are revoked, so nothing keeps showing their information. */
 export async function submitDeletionRequest(input: {
-  employeeId: string; password: string; channel: DeletionChannel; policyVersion: string;
+  employeeId: string; sessionTokenHash: string; password: string; channel: DeletionChannel; policyVersion: string;
 }): Promise<SubmitResult> {
-  const credential = queryRows<{ password_hash: string }>(await getDb().query(
-    `SELECT c.password_hash FROM employee_credentials c JOIN employees e ON e.id = c.employee_id
+  const credential = queryRows<{ password_hash: string; password_updated_at: string }>(await getDb().query(
+    `SELECT c.password_hash, c.password_updated_at::text AS password_updated_at FROM employee_credentials c JOIN employees e ON e.id = c.employee_id
       WHERE c.employee_id = $1 AND e.active LIMIT 1`, [input.employeeId]))[0];
-  if (!credential || !input.password || !(await verifyPassword(input.password, credential.password_hash))) return { outcome: "wrong_password" };
+  if (!input.sessionTokenHash || !credential || !input.password || !(await verifyPassword(input.password, credential.password_hash))) return { outcome: "wrong_password" };
 
   // No early return for an open request: the transaction below still ends every session, so "signed out
   // everywhere" stays true for a duplicate as well.
@@ -74,6 +74,17 @@ export async function submitDeletionRequest(input: {
     // it does not perform the later account/data erasure from the runbook.
     const results = await neonNotificationExecutor().transaction([
       { text: "SELECT id FROM employees WHERE id = $1 FOR UPDATE", values: [input.employeeId] },
+      // Match the lifecycle → credential → session lock order used by sign-in/recovery.
+      // Recheck in a separate statement after locks: a pre-lock snapshot is not authority.
+      { text: "SELECT employee_id FROM employee_credentials WHERE employee_id = $1 FOR SHARE", values: [input.employeeId] },
+      { text: "SELECT token_hash FROM employee_sessions WHERE employee_id = $1 AND token_hash = $2 FOR UPDATE", values: [input.employeeId, input.sessionTokenHash] },
+      { text: `SELECT (CASE WHEN EXISTS (
+          SELECT 1 FROM employees e JOIN employee_credentials c ON c.employee_id = e.id
+          WHERE e.id = $1 AND e.active AND c.password_hash = $3 AND c.password_updated_at::text = $4
+            AND (EXISTS (SELECT 1 FROM employee_sessions s WHERE s.employee_id = e.id AND s.token_hash = $2 AND s.expires_at > clock_timestamp())
+              OR EXISTS (SELECT 1 FROM account_deletion_requests r WHERE r.employee_id = e.id AND r.status IN ('received', 'processing')))
+        ) THEN '1' ELSE 'deletion_authority_changed' END)::integer`,
+        values: [input.employeeId, input.sessionTokenHash, credential.password_hash, credential.password_updated_at] },
       { text: `INSERT INTO account_deletion_requests
           (id, reference, employee_id, workspace_id, channel, policy_version, status, verified_at, confirmed_at)
         SELECT $1, $2, e.id, l.workspace_id, $4, $5, 'received', clock_timestamp(), clock_timestamp()

@@ -6,15 +6,15 @@ vi.mock("@/lib/auth/password", () => ({ verifyPassword: state.verify, dummyPassw
 vi.mock("@/lib/data/notification-transactions", () => ({ neonNotificationExecutor: () => ({ transaction: state.transaction }) }));
 import { DELETION_REFERENCE, activeDeletionRequest, checkDeletionRequest, newDeletionReference, rejectedByDatabase, submitDeletionRequest } from "./requests.server";
 
-const input = { employeeId: "FICTIONAL-E1", password: "fictional-password", channel: "web" as const, policyVersion: "2026-10-20-draft" };
+const input = { employeeId: "FICTIONAL-E1", sessionTokenHash: "a".repeat(64), password: "fictional-password", channel: "web" as const, policyVersion: "2026-10-20-draft" };
 const missingTable = Object.assign(new Error("relation does not exist"), { code: "42P01" });
 
 beforeEach(() => {
   vi.clearAllMocks();
   state.verify.mockResolvedValue(true);
-  state.query.mockImplementation(async (text: string) => text.includes("employee_credentials") ? [{ password_hash: "fictional-hash" }] : []);
-  state.transaction.mockImplementation(async (statements: { values: unknown[] }[]) =>
-    [...statements.slice(0, -1).map(() => []), [{ reference: statements[1].values[1], status: "received", confirmed_at: "2030-01-01 10:00:00+00", created: true }]]);
+  state.query.mockImplementation(async (text: string) => text.includes("employee_credentials") ? [{ password_hash: "fictional-hash", password_updated_at: "2030-01-01 09:00:00+00" }] : []);
+  state.transaction.mockImplementation(async (statements: { text: string; values: unknown[] }[]) =>
+    [...statements.slice(0, -1).map(() => []), [{ reference: statements.find((s: { text: string; values: unknown[] }) => /INSERT INTO account_deletion_requests/.test(s.text))!.values[1], status: "received", confirmed_at: "2030-01-01 10:00:00+00", created: true }]]);
 });
 
 describe("account deletion requests", () => {
@@ -35,11 +35,11 @@ describe("account deletion requests", () => {
     expect(result).toMatchObject({ outcome: "received", request: { status: "received" } });
     const statements = state.transaction.mock.calls[0][0] as { text: string; values: unknown[] }[];
     expect(statements[0].text).toMatch(/FOR UPDATE/);
-    expect(statements[1].text).toMatch(/INSERT INTO account_deletion_requests[\s\S]*ON CONFLICT \(employee_id\) WHERE status IN \('received', 'processing'\) DO NOTHING/);
-    expect(statements[1].values).toEqual([expect.any(String), expect.stringMatching(DELETION_REFERENCE), "FICTIONAL-E1", "web", "2026-10-20-draft"]);
-    expect(statements[2].text).toMatch(/DELETE FROM employee_sessions WHERE employee_id = \$1/);
-    expect(statements[3].text).toMatch(/UPDATE employees SET updated_at = clock_timestamp\(\) WHERE id = \$1/);
-    expect(statements[4].text).toMatch(/UPDATE calendar_subscriptions[\s\S]*'account_loss'/);
+    expect(statements[4].text).toMatch(/INSERT INTO account_deletion_requests[\s\S]*ON CONFLICT \(employee_id\) WHERE status IN \('received', 'processing'\) DO NOTHING/);
+    expect(statements[4].values).toEqual([expect.any(String), expect.stringMatching(DELETION_REFERENCE), "FICTIONAL-E1", "web", "2026-10-20-draft"]);
+    expect(statements[5].text).toMatch(/DELETE FROM employee_sessions WHERE employee_id = \$1/);
+    expect(statements[6].text).toMatch(/UPDATE employees SET updated_at = clock_timestamp\(\) WHERE id = \$1/);
+    expect(statements[7].text).toMatch(/UPDATE calendar_subscriptions[\s\S]*'account_loss'/);
     expect(statements.every(statement => statement.values.includes("FICTIONAL-E1"))).toBe(true);
   });
 
@@ -58,7 +58,7 @@ describe("account deletion requests", () => {
   });
 
   it("before migration 0034: no open requests, and a request is unavailable rather than lost", async () => {
-    state.query.mockImplementation(async (text: string) => { if (text.includes("employee_credentials")) return [{ password_hash: "fictional-hash" }]; throw missingTable; });
+    state.query.mockImplementation(async (text: string) => { if (text.includes("employee_credentials")) return [{ password_hash: "fictional-hash", password_updated_at: "2030-01-01 09:00:00+00" }]; throw missingTable; });
     await expect(activeDeletionRequest("FICTIONAL-E1")).resolves.toBeNull();
     state.transaction.mockRejectedValue(missingTable);
     await expect(submitDeletionRequest(input)).resolves.toEqual({ outcome: "unavailable" });
@@ -87,7 +87,7 @@ describe("checking an own request without a session", () => {
   const open = { reference: "DEL-7KQ2M9XA", status: "received", confirmed_at: "2030-01-01 10:00:00+00" };
 
   it("returns only this account's open request after the password matches", async () => {
-    state.query.mockImplementation(async (text: string) => text.includes("employee_credentials") ? [{ password_hash: "fictional-hash" }] : [open]);
+    state.query.mockImplementation(async (text: string) => text.includes("employee_credentials") ? [{ password_hash: "fictional-hash", password_updated_at: "2030-01-01 09:00:00+00" }] : [open]);
     await expect(checkDeletionRequest(check)).resolves.toEqual({ outcome: "found", request: { reference: "DEL-7KQ2M9XA", status: "received", confirmedAt: "2030-01-01 10:00:00+00" } });
     const lookup = state.query.mock.calls.find(([text]) => String(text).includes("account_deletion_requests"))!;
     expect(lookup[0]).toMatch(/WHERE employee_id = \$1 AND status IN \('received', 'processing'\)/);
@@ -110,9 +110,9 @@ describe("checking an own request without a session", () => {
   });
 
   it("is unavailable before migration 0034 and lets other storage errors surface", async () => {
-    state.query.mockImplementation(async (text: string) => { if (text.includes("employee_credentials")) return [{ password_hash: "fictional-hash" }]; throw missingTable; });
+    state.query.mockImplementation(async (text: string) => { if (text.includes("employee_credentials")) return [{ password_hash: "fictional-hash", password_updated_at: "2030-01-01 09:00:00+00" }]; throw missingTable; });
     await expect(checkDeletionRequest(check)).resolves.toEqual({ outcome: "unavailable" });
-    state.query.mockImplementation(async (text: string) => { if (text.includes("employee_credentials")) return [{ password_hash: "fictional-hash" }]; throw new Error("fetch failed"); });
+    state.query.mockImplementation(async (text: string) => { if (text.includes("employee_credentials")) return [{ password_hash: "fictional-hash", password_updated_at: "2030-01-01 09:00:00+00" }]; throw new Error("fetch failed"); });
     await expect(checkDeletionRequest(check)).rejects.toThrow("fetch failed");
   });
 });
