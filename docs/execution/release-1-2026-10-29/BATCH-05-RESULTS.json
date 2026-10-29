@@ -1,0 +1,97 @@
+{
+  "checkpoint": "8fb7274f9e8619fa2f204a6259184ae4836f162d",
+  "static": [
+    {
+      "name": "default",
+      "checkpoint": "8fb7274f9e8619fa2f204a6259184ae4836f162d",
+      "startedAt": "2026-10-29T20:18:44.474Z",
+      "finishedAt": "2026-10-29T20:25:22.115Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch05-static/default.log"
+    },
+    {
+      "name": "typecheck",
+      "checkpoint": "8fb7274f9e8619fa2f204a6259184ae4836f162d",
+      "startedAt": "2026-10-29T20:25:22.741Z",
+      "finishedAt": "2026-10-29T20:25:37.554Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch05-static/typecheck.log"
+    },
+    {
+      "name": "lint",
+      "checkpoint": "8fb7274f9e8619fa2f204a6259184ae4836f162d",
+      "startedAt": "2026-10-29T20:25:38.174Z",
+      "finishedAt": "2026-10-29T20:26:02.617Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch05-static/lint.log"
+    },
+    {
+      "name": "startup",
+      "checkpoint": "8fb7274f9e8619fa2f204a6259184ae4836f162d",
+      "startedAt": "2026-10-29T20:26:03.238Z",
+      "finishedAt": "2026-10-29T20:26:04.863Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch05-static/startup.log"
+    },
+    {
+      "name": "build",
+      "checkpoint": "8fb7274f9e8619fa2f204a6259184ae4836f162d",
+      "startedAt": "2026-10-29T20:26:05.482Z",
+      "finishedAt": "2026-10-29T20:26:15.998Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch05-static/build.log"
+    }
+  ],
+  "default": {
+    "passed": 10229,
+    "failed": 0,
+    "pending": 801
+  },
+  "access": {
+    "testsPassed": 3,
+    "checks": 18,
+    "errors": [],
+    "windowExceptions": [],
+    "frameworkDiagnostics": [
+      {
+        "engine": "webkit",
+        "step": "webkit: logout and account switch",
+        "navigation": {
+          "phase": "requested",
+          "sequence": 5,
+          "sourceHistoryEvents": 0,
+          "ageMs": 21
+        },
+        "signature": "webkit-native-framework-fetch",
+        "resourceKind": "next-frames",
+        "sameOwnedOrigin": true,
+        "exactMessage": true,
+        "messageFingerprint": "744b3b45742f3ee51d1cdd05a976cd2f422f87c8b04a8288161614bb42c30413"
+      }
+    ],
+    "actualGuideMeasurements": 66,
+    "nativeGuideMeasurements": 396,
+    "minimumContrast": 5.420851497656459,
+    "landscapeCases": 120,
+    "rotations": 24,
+    "failures": 0,
+    "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch05-access"
+  },
+  "hostedCi": "New run required after push; preceding hosted failures retained in CI-ATTEMPTS.json.",
+  "releaseAcceptance": false
+}

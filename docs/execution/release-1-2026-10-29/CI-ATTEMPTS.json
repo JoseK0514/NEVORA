@@ -29,7 +29,7 @@
         "Quick guide396 measurements passed, including native Linux keyboard."
       ],
       "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40945665879",
-      "repairStatus": "Targeted test actor-isolation and actual-UI readiness repairs prepared; no retry/assertion weakening."
+      "repairStatus": "Implemented8fb7274f: isolated independent Manager actor and rendered-UI landscape readiness, preserving original assertions/timeouts. Full local suite/static pass. Hosted rerun pending push."
     }
   ],
   "actualSuccessfulRun": null
