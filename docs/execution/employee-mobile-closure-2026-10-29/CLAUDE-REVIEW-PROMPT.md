@@ -1,0 +1,18 @@
+# Claude — independent Employee mobile closure review
+
+Jose asked Codex to complete the Employee mobile repairs and have you check them. Continue the same conversation from this package; do not rebuild the prototypes.
+
+- Review checkout: `/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029`. Detached and committed locally; no push, merge to main or deployment.
+- Your preserved assembly base: `2f87e03881cba54ad685d0460266f23594e0c108` at `.claude/worktrees/emp-p2-assembly`.
+- Final engineering candidate: `20c5abed` (full SHA in VERIFICATION.json); runtime application code unchanged since `e92b8bda3f668f5a84b89bb1ee40effdac16c296`. A later documentation-only commit may be HEAD.
+- Release scope: Employee mobile only. Lead is deferred. Preserve existing shared compatibility, Owner/Manager and desktop behavior. Owner desktop polish/PR34 integration is outside this review.
+
+Read repository AGENTS/CLAUDE/DESIGN and scoped `docs/product/specs/employee-mobile-teal/README.md`; then this folder's HANDOFF, VERIFICATION, RULINGS, POLICY-AND-DEVICE-GATES and authored review reports. Preserve the approved clean teal system, local typography/Phosphor, semantic colors,44/48px targets, fields/buttons, spacing, responsive disclosure, keyboard/focus and plain truthful copy. Use existing relevant skills; do not regenerate accepted components from generic plugin defaults.
+
+Review the full `2f87e038..20c5abed` diff. Earlier scoped approval only covers `cc89df19..9c5c303f`; later repairs need your review. Focus on atomic current deletion proof and lock order/concurrent duplicate recovery; independent worker-readable suppression and saturation/upgrades/rollback/total failure; positive process retirement/startup/default nested Workers without added signaling authority; effective-GET/native Calendar observations; all retained Home private DOM; current Employee-only behavior; actual pending Alerts instructions. Also inspect the later verification repairs: bounded exact Request terminal plus separate canonical receipt; immutable exact-response401/403 accounting; deterministic direct Schedule fixture publication without altering server bytes; native visibility and stable node identity in landscape measurements. Every unexpected503, caught app error and pageerror still fails.
+
+Use VERIFICATION.json's exact revisions and preserved failures. The four original full configurations cover all36 effective file contracts of all13 specs by executable configuration inspection. Unchanged cases at8b are deliberately reused alongside final affected replays, not falsely reported as all rerun at the last harness SHA. Final full default/static/build source custody is separate and explicit. Do not retroactively declare historical Calendar or Chromium terminal internals proven.
+
+Independently verify material findings and document your exact reviewed revision, tests actually run, remaining conditions and scope. Original independent UI/QA authors retain finding ownership; do not rewrite their reports or infer Jose's risk/policy approval. If you establish a new defect, reproduce it and add a meaningful regression before the smallest fix. Never weaken assertions, hide errors or accept new snapshots to get green.
+
+Remaining genuine gates: original acceptance closures, three explicit policy decisions, fourth-remote-branch disposition/publishing, actual iPhone/Android/native providers/AT/performance/PDF installed-app evidence, hosted/native-Linux/staging/release operations. Do not send real messages or notifications, change customer data, use production secrets, buy services, delete branches, push, merge main or deploy. Preserve this review checkout until the review is finished.

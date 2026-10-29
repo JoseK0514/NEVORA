@@ -1,3 +1,17 @@
+# Employee mobile — current engineering continuation, October29
+
+Current local review checkout is `work/employee-mobile-closure-20261029`, detached from Claude's preserved assembly `2f87e038`. The frozen engineering candidate is `20c5abed`; runtime application source is unchanged since `e92b8bda`. See [current closure handoff](../employee-mobile-closure-2026-10-29/HANDOFF.md), [verification manifest](../employee-mobile-closure-2026-10-29/VERIFICATION.json) and [remaining work](REMAINING-WORK.md).
+
+Employee is the only first-release role. Lead is deferred. Owner/Manager and desktop compatibility remain protected. All changes are local; nothing was pushed, merged into main or deployed.
+
+The continuation implements atomic current deletion authority, independent worker-readable alert suppression and truthful pending guidance, deterministic supervisor races, full42-file Clocker allocation, source-capture repair, exact Calendar observation, stronger retained-Home privacy checks, and viewport/coarse/large-text landscape coverage. Historical “not started” or “fix not implemented” statements below describe earlier revisions. Exact final checks and all failed attempts are in the new manifest; passing local checks do not certify devices or independently close another author's finding.
+
+**Phase2 remains open for independent acceptance and Jose's checkpoint. Phase3/release acceptance is not granted here.** Claude next reviews the complete final diff, including later changes outside the earlier scoped approval. Original Communications/Alerts/Calendar/Deletion/Pay finding owners retain closure. Policy, actual-device/provider/AT/hosted/release and fourth-branch/publishing gates remain explicit in the new handoff.
+
+---
+
+## Historical sequence retained verbatim
+
 # Employee mobile — Phase 2 status and Phase 3 gate
 
 Jose confirmed sequencing on 2026-10-27: finish everything assigned to Phase 2 before moving to Phase 3. Phase 2 remains active; Phase 3 has not started. This instruction does not authorize a production merge or deployment.

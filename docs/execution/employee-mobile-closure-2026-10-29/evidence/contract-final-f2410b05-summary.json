@@ -1,0 +1,23 @@
+{
+  "checkpoint": "f2410b056421795221596ab52312b2d1ae9aed40",
+  "applicationCandidate": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+  "method": "Four original full configurations cover all36 effective contracts from all13 specifications; extra strict Creation preflight and936-case landscape; maximum2 independent owned lanes",
+  "results": [
+    {
+      "name": "creation-preflight",
+      "configuration": "device-alerts",
+      "extra": [
+        "src/test/integration/employee-mobile-creation.integration.ts"
+      ],
+      "checkpoint": "f2410b056421795221596ab52312b2d1ae9aed40",
+      "startedAt": "2026-10-29T17:30:39.005Z",
+      "finishedAt": "2026-10-29T17:31:30.097Z",
+      "exitCode": 1,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-f2410b05/creation-preflight.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-f2410b05/creation-preflight"
+    }
+  ],
+  "stopping": false
+}

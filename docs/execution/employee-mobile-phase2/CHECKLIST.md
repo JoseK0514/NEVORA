@@ -1,3 +1,22 @@
+# Employee mobile — current closure checklist, October29
+
+Current source and exact results: [closure handoff](../employee-mobile-closure-2026-10-29/HANDOFF.md) and [verification manifest](../employee-mobile-closure-2026-10-29/VERIFICATION.json). Historical checklist below is preserved; it is not the current unstarted-work list.
+
+- [x] Current deletion authority inside acceptance transaction, with real SQL RED/GREEN and duplicate/lost-reply controls.
+- [x] Independent worker-readable suppression across restart, saturation/upgrade controls and immediate settings guidance for unconfirmed turn-off.
+- [x] Supervisor/pinning/default nested Worker repair, full42-file Clocker allocation and source-capture regression.
+- [x] Exact Calendar GET/native observation and retained Home privacy controls; historical uninstrumented cause remains explicitly uncertain.
+- [x] 34-workflow Employee permission/source map and viewport/coarse/large-text landscape instrumentation. See final execution results rather than infer passing from this checklist.
+- [~] Claude's independent full-diff review; original author-owned findings and Phase2 acceptance checkpoint. Local test outcomes are recorded separately and do not self-close these.
+- [ ] Jose's three policy decisions and remote branch/publishing disposition.
+- [ ] Actual iPhone/Android/provider/AT/performance/PDF evidence and hosted/native-Linux/staging/release operations after Phase2 exit.
+
+Employee only for first release; Lead deferred. No push, main merge or deployment.
+
+---
+
+## Historical checklist retained verbatim
+
 # Employee mobile Phase 2 — working checklist
 
 Continuation of `codex/employee-mobile-local-resume-20261027` at `003bbe2c`, on branch

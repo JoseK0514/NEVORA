@@ -1,0 +1,34 @@
+{
+  "checkpoint": "20c5abed9e3d422983b112726b69f8dc1ea62813",
+  "applicationCandidate": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+  "method": "Four original full configurations cover all36 effective contracts from all13 specifications; extra strict Creation preflight and936-case landscape; maximum2 independent owned lanes",
+  "results": [
+    {
+      "name": "phase1",
+      "configuration": "phase1",
+      "extra": [],
+      "checkpoint": "20c5abed9e3d422983b112726b69f8dc1ea62813",
+      "startedAt": "2026-10-29T18:23:19.439Z",
+      "finishedAt": "2026-10-29T18:25:37.337Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-20c5abed/phase1.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-20c5abed/phase1"
+    },
+    {
+      "name": "closure",
+      "configuration": "closure",
+      "extra": [],
+      "checkpoint": "20c5abed9e3d422983b112726b69f8dc1ea62813",
+      "startedAt": "2026-10-29T18:23:19.448Z",
+      "finishedAt": "2026-10-29T18:26:24.558Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-20c5abed/closure.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-20c5abed/closure"
+    }
+  ],
+  "stopping": false
+}

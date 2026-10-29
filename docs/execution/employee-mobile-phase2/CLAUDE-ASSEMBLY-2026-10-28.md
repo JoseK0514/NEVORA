@@ -1,3 +1,5 @@
+> Current continuation (October29): see [Codex closure handoff](../employee-mobile-closure-2026-10-29/HANDOFF.md) and its exact verification manifest. This authored assembly report is retained as a historical revision record; later engineering repairs do not independently close its reviewers' findings.
+
 # Employee mobile Phase 2 — assembly, verification and polish (Claude, October 28)
 
 ## Where this work is

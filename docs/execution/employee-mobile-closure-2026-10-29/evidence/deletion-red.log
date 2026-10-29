@@ -1,0 +1,115 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/test/integration/employee-mobile-communications-fixtures" without a file extension (vitest.employee-mobile-communications.config.mts:3:39). Add the file extension
+  - ESM syntax in a file loaded as CommonJS (src/test/integration/employee-mobile-communications-fixtures.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029
+
+ ❯ |employee| src/test/integration/employee-mobile-deletion-sql.integration.ts (12 tests | 4 failed) 3712ms
+   × refuses signed-out authority lost after password verification, with no deletion consequences 276ms
+   × refuses expired authority lost after password verification, with no deletion consequences 272ms
+   × refuses password-reset authority lost after password verification, with no deletion consequences 298ms
+   × refuses inactive authority lost after password verification, with no deletion consequences 274ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |employee| src/test/integration/employee-mobile-deletion-sql.integration.ts > refuses signed-out authority lost after password verification, with no deletion consequences
+AssertionError: expected { kind: 'received', …(2) } to deeply equal { kind: 'failed' }
+
+- Expected
++ Received
+
+  {
+-   "kind": "failed",
++   "confirmedAt": "2026-10-29 11:47:14.42903-04",
++   "kind": "received",
++   "reference": "DEL-N7SDXYTL",
+  }
+
+ ❯ src/test/integration/employee-mobile-deletion-sql.integration.ts:150:52
+    148|   if(boundary==='inactive')await q("UPDATE employees SET active=false …
+    149|  };
+    150|  expect(await requestAccountDeletion(idle,form())).toEqual({kind:'fail…
+       |                                                    ^
+    151|  expect(await open()).toEqual([]);
+    152|  expect(await q("SELECT count(*)::int n FROM calendar_subscriptions WH…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  |employee| src/test/integration/employee-mobile-deletion-sql.integration.ts > refuses expired authority lost after password verification, with no deletion consequences
+AssertionError: expected { kind: 'received', …(2) } to deeply equal { kind: 'failed' }
+
+- Expected
++ Received
+
+  {
+-   "kind": "failed",
++   "confirmedAt": "2026-10-29 11:47:14.702964-04",
++   "kind": "received",
++   "reference": "DEL-TLSRV2C2",
+  }
+
+ ❯ src/test/integration/employee-mobile-deletion-sql.integration.ts:150:52
+    148|   if(boundary==='inactive')await q("UPDATE employees SET active=false …
+    149|  };
+    150|  expect(await requestAccountDeletion(idle,form())).toEqual({kind:'fail…
+       |                                                    ^
+    151|  expect(await open()).toEqual([]);
+    152|  expect(await q("SELECT count(*)::int n FROM calendar_subscriptions WH…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  |employee| src/test/integration/employee-mobile-deletion-sql.integration.ts > refuses password-reset authority lost after password verification, with no deletion consequences
+AssertionError: expected { kind: 'received', …(2) } to deeply equal { kind: 'failed' }
+
+- Expected
++ Received
+
+  {
+-   "kind": "failed",
++   "confirmedAt": "2026-10-29 11:47:15.00125-04",
++   "kind": "received",
++   "reference": "DEL-V4Q7SEAD",
+  }
+
+ ❯ src/test/integration/employee-mobile-deletion-sql.integration.ts:150:52
+    148|   if(boundary==='inactive')await q("UPDATE employees SET active=false …
+    149|  };
+    150|  expect(await requestAccountDeletion(idle,form())).toEqual({kind:'fail…
+       |                                                    ^
+    151|  expect(await open()).toEqual([]);
+    152|  expect(await q("SELECT count(*)::int n FROM calendar_subscriptions WH…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  |employee| src/test/integration/employee-mobile-deletion-sql.integration.ts > refuses inactive authority lost after password verification, with no deletion consequences
+AssertionError: expected { kind: 'received', …(2) } to deeply equal { kind: 'failed' }
+
+- Expected
++ Received
+
+  {
+-   "kind": "failed",
++   "confirmedAt": "2026-10-29 11:47:15.275225-04",
++   "kind": "received",
++   "reference": "DEL-HCFMNRVJ",
+  }
+
+ ❯ src/test/integration/employee-mobile-deletion-sql.integration.ts:150:52
+    148|   if(boundary==='inactive')await q("UPDATE employees SET active=false …
+    149|  };
+    150|  expect(await requestAccountDeletion(idle,form())).toEqual({kind:'fail…
+       |                                                    ^
+    151|  expect(await open()).toEqual([]);
+    152|  expect(await q("SELECT count(*)::int n FROM calendar_subscriptions WH…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 8 passed (12)
+   Start at  11:47:11
+   Duration  4.04s (tests 93%, transform 5%, import 2%)
+
+[Payroll PostgreSQL] Owned cluster stopped.

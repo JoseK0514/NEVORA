@@ -1,0 +1,433 @@
+{
+  "base": "2f87e03881cba54ad685d0460266f23594e0c108",
+  "engineeringCandidate": "20c5abed9e3d422983b112726b69f8dc1ea62813",
+  "applicationCandidate": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+  "documentationHead": "A later local documentation-only commit; see git log. No application bytes changed after applicationCandidate.",
+  "environment": {
+    "host": "Darwin/macOS local",
+    "node": "v24.19.0",
+    "database": "Invocation-owned fictional PostgreSQL17 loopback; existing approved local runtime; no production credentials/provider delivery",
+    "browsers": [
+      "Playwright Chromium",
+      "Playwright WebKit",
+      "Playwright Firefox"
+    ],
+    "physicalDeviceCertified": false,
+    "hostedCIExecuted": false,
+    "nativeLinuxCertified": false
+  },
+  "scope": "Employee mobile first release only; Lead deferred; existing compatibility checks retained",
+  "default": {
+    "checkpoint": "20c5abed9e3d422983b112726b69f8dc1ea62813",
+    "passed": 10219,
+    "failed": 0,
+    "skipped": 801,
+    "raw": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-6/default-results.json"
+  },
+  "staticAndNative": [
+    {
+      "name": "default",
+      "checkpoint": "20c5abed9e3d422983b112726b69f8dc1ea62813",
+      "startedAt": "2026-10-29T18:23:23.106Z",
+      "finishedAt": "2026-10-29T18:29:58.025Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-6/default.log"
+    },
+    {
+      "name": "typecheck",
+      "checkpoint": "20c5abed9e3d422983b112726b69f8dc1ea62813",
+      "startedAt": "2026-10-29T18:29:58.639Z",
+      "finishedAt": "2026-10-29T18:30:12.777Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-6/typecheck.log"
+    },
+    {
+      "name": "lint",
+      "checkpoint": "20c5abed9e3d422983b112726b69f8dc1ea62813",
+      "startedAt": "2026-10-29T18:30:13.371Z",
+      "finishedAt": "2026-10-29T18:30:36.667Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-6/lint.log"
+    },
+    {
+      "name": "startup",
+      "checkpoint": "20c5abed9e3d422983b112726b69f8dc1ea62813",
+      "startedAt": "2026-10-29T18:30:37.241Z",
+      "finishedAt": "2026-10-29T18:30:38.826Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-6/startup.log"
+    },
+    {
+      "name": "build",
+      "checkpoint": "20c5abed9e3d422983b112726b69f8dc1ea62813",
+      "startedAt": "2026-10-29T18:30:39.402Z",
+      "finishedAt": "2026-10-29T18:30:48.759Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-6/build.log"
+    }
+  ],
+  "effectiveConfigurationCoverage": {
+    "specifications": 13,
+    "distinctContracts": 36,
+    "completeOriginalConfigurations": [
+      "device-alerts",
+      "phase1",
+      "deletion",
+      "pay"
+    ],
+    "proof": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-20c5abed/configuration-coverage.json",
+    "unknownOptionsFailClosed": true
+  },
+  "contractExecution": {
+    "method": "Original full runs plus affected strict replays; no omitted assertions or result relabeling. Runtime application source is identical across these engineering revisions.",
+    "originalFullRuns": {
+      "checkpoint": "8b75493e42a7935960c79494be6c96cf6cc6513d",
+      "applicationCandidate": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+      "method": "Four original full configurations cover all36 effective contracts from all13 specifications; extra strict Creation preflight and936-case landscape; maximum2 independent owned lanes",
+      "results": [
+        {
+          "name": "phase1",
+          "configuration": "phase1",
+          "extra": [],
+          "checkpoint": "8b75493e42a7935960c79494be6c96cf6cc6513d",
+          "startedAt": "2026-10-29T17:49:15.264Z",
+          "finishedAt": "2026-10-29T17:51:37.153Z",
+          "exitCode": 1,
+          "signal": null,
+          "error": null,
+          "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/phase1.log",
+          "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/phase1"
+        },
+        {
+          "name": "deletion",
+          "configuration": "deletion",
+          "extra": [],
+          "checkpoint": "8b75493e42a7935960c79494be6c96cf6cc6513d",
+          "startedAt": "2026-10-29T17:51:37.173Z",
+          "finishedAt": "2026-10-29T17:52:45.536Z",
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/deletion.log",
+          "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/deletion"
+        },
+        {
+          "name": "pay",
+          "configuration": "pay",
+          "extra": [],
+          "checkpoint": "8b75493e42a7935960c79494be6c96cf6cc6513d",
+          "startedAt": "2026-10-29T17:52:45.551Z",
+          "finishedAt": "2026-10-29T17:54:08.908Z",
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/pay.log",
+          "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/pay"
+        },
+        {
+          "name": "closure",
+          "configuration": "closure",
+          "extra": [],
+          "checkpoint": "8b75493e42a7935960c79494be6c96cf6cc6513d",
+          "startedAt": "2026-10-29T17:54:08.919Z",
+          "finishedAt": "2026-10-29T17:57:50.588Z",
+          "exitCode": 1,
+          "signal": null,
+          "error": null,
+          "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/closure.log",
+          "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/closure"
+        },
+        {
+          "name": "device-alerts",
+          "configuration": "device-alerts",
+          "extra": [],
+          "checkpoint": "8b75493e42a7935960c79494be6c96cf6cc6513d",
+          "startedAt": "2026-10-29T17:49:15.249Z",
+          "finishedAt": "2026-10-29T18:08:08.767Z",
+          "exitCode": 1,
+          "signal": null,
+          "error": null,
+          "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts.log",
+          "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts"
+        }
+      ],
+      "stopping": false
+    },
+    "unchangedPassesRetained": {
+      "deviceAlerts": {
+        "passed": 372,
+        "of": 373,
+        "exception": "Creation failed, then replaced by its passing affected replay at f8369ee1; original run stays exit1"
+      },
+      "deletion": {
+        "passed": 13,
+        "failed": 0
+      },
+      "pay": {
+        "passed": 1,
+        "failed": 0
+      }
+    },
+    "affectedReplays": [
+      {
+        "checkpoint": "f8369ee1a9bd1b9b1e53478ff670ac6d783ad185",
+        "applicationCandidate": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+        "method": "Four original full configurations cover all36 effective contracts from all13 specifications; extra strict Creation preflight and936-case landscape; maximum2 independent owned lanes",
+        "results": [
+          {
+            "name": "creation",
+            "configuration": "creation",
+            "extra": [
+              "src/test/integration/employee-mobile-creation.integration.ts"
+            ],
+            "checkpoint": "f8369ee1a9bd1b9b1e53478ff670ac6d783ad185",
+            "startedAt": "2026-10-29T18:14:05.659Z",
+            "finishedAt": "2026-10-29T18:15:34.907Z",
+            "exitCode": 0,
+            "signal": null,
+            "error": null,
+            "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-f8369ee1/creation.log",
+            "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-f8369ee1/creation"
+          },
+          {
+            "name": "phase1",
+            "configuration": "phase1",
+            "extra": [],
+            "checkpoint": "f8369ee1a9bd1b9b1e53478ff670ac6d783ad185",
+            "startedAt": "2026-10-29T18:14:05.670Z",
+            "finishedAt": "2026-10-29T18:15:58.504Z",
+            "exitCode": 1,
+            "signal": null,
+            "error": null,
+            "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-f8369ee1/phase1.log",
+            "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-f8369ee1/phase1"
+          },
+          {
+            "name": "closure",
+            "configuration": "closure",
+            "extra": [],
+            "checkpoint": "f8369ee1a9bd1b9b1e53478ff670ac6d783ad185",
+            "startedAt": "2026-10-29T18:15:58.515Z",
+            "finishedAt": "2026-10-29T18:18:35.909Z",
+            "exitCode": 1,
+            "signal": null,
+            "error": null,
+            "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-f8369ee1/closure.log",
+            "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-f8369ee1/closure"
+          }
+        ],
+        "stopping": false
+      },
+      {
+        "checkpoint": "20c5abed9e3d422983b112726b69f8dc1ea62813",
+        "applicationCandidate": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+        "method": "Four original full configurations cover all36 effective contracts from all13 specifications; extra strict Creation preflight and936-case landscape; maximum2 independent owned lanes",
+        "results": [
+          {
+            "name": "phase1",
+            "configuration": "phase1",
+            "extra": [],
+            "checkpoint": "20c5abed9e3d422983b112726b69f8dc1ea62813",
+            "startedAt": "2026-10-29T18:23:19.439Z",
+            "finishedAt": "2026-10-29T18:25:37.337Z",
+            "exitCode": 0,
+            "signal": null,
+            "error": null,
+            "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-20c5abed/phase1.log",
+            "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-20c5abed/phase1"
+          },
+          {
+            "name": "closure",
+            "configuration": "closure",
+            "extra": [],
+            "checkpoint": "20c5abed9e3d422983b112726b69f8dc1ea62813",
+            "startedAt": "2026-10-29T18:23:19.448Z",
+            "finishedAt": "2026-10-29T18:26:24.558Z",
+            "exitCode": 0,
+            "signal": null,
+            "error": null,
+            "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-20c5abed/closure.log",
+            "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-20c5abed/closure"
+          }
+        ],
+        "stopping": false
+      }
+    ],
+    "changedSinceFullRun": [
+      "src/test/authority-refusal-observation.test.ts",
+      "src/test/fixture-read-gate.test.ts",
+      "src/test/integration/authority-refusal-observation.ts",
+      "src/test/integration/employee-layout-observation.ts",
+      "src/test/integration/employee-mobile-closure.integration.ts",
+      "src/test/integration/employee-mobile-creation.integration.ts",
+      "src/test/integration/employee-mobile-phase1.integration.ts",
+      "src/test/integration/fixture-read-gate.ts",
+      "src/test/integration/owned-creation-diagnostics.d.mts",
+      "src/test/integration/request-termination-observer.ts",
+      "src/test/request-termination-observer.test.ts"
+    ],
+    "applicationDiffSinceE92": [],
+    "closedContractTestCountAcrossCompatibleRuns": 388,
+    "notClaimed": "The full Device-alerts command and all13 duplicate specifications were not rerun at the final harness SHA."
+  },
+  "journeys": {
+    "phase1": {
+      "checkpoint": "20c5abed9e3d422983b112726b69f8dc1ea62813",
+      "checks": 55,
+      "unexpectedErrors": 0,
+      "captures": 38
+    },
+    "creation": {
+      "checkpoint": "f8369ee1a9bd1b9b1e53478ff670ac6d783ad185",
+      "checks": 40,
+      "captures": 96,
+      "unexpectedErrors": 0,
+      "receiptAndExactTerminalBeforeNavigation": true
+    },
+    "landscape": {
+      "checkpoint": "20c5abed9e3d422983b112726b69f8dc1ea62813",
+      "tasks": 26,
+      "cases": 936,
+      "failures": 0,
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "textScalePercent": [
+        100,
+        200
+      ],
+      "sizes": [
+        [
+          667,
+          375
+        ],
+        [
+          844,
+          390
+        ],
+        [
+          932,
+          430
+        ]
+      ],
+      "allEmployee": true,
+      "selectionControls": [
+        {
+          "engine": "chromium",
+          "liveNthRebound": true,
+          "exactNodePreserved": true
+        },
+        {
+          "engine": "webkit",
+          "liveNthRebound": true,
+          "exactNodePreserved": true
+        },
+        {
+          "engine": "firefox",
+          "liveNthRebound": true,
+          "exactNodePreserved": true
+        }
+      ]
+    }
+  },
+  "additionalLocalCI": {
+    "checkpoint": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+    "results": [
+      {
+        "name": "notifications-config",
+        "checkpoint": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+        "startedAt": "2026-10-29T16:57:18.169Z",
+        "finishedAt": "2026-10-29T16:57:18.355Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/local-ci-e92b8bda/notifications-config.log"
+      },
+      {
+        "name": "foundation-config",
+        "checkpoint": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+        "startedAt": "2026-10-29T16:57:18.355Z",
+        "finishedAt": "2026-10-29T16:57:18.523Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/local-ci-e92b8bda/foundation-config.log"
+      },
+      {
+        "name": "release-engineering",
+        "checkpoint": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+        "startedAt": "2026-10-29T16:57:18.524Z",
+        "finishedAt": "2026-10-29T16:57:28.877Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/local-ci-e92b8bda/release-engineering.log"
+      },
+      {
+        "name": "archive-contracts",
+        "checkpoint": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+        "startedAt": "2026-10-29T16:57:28.877Z",
+        "finishedAt": "2026-10-29T16:57:29.024Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/local-ci-e92b8bda/archive-contracts.log"
+      },
+      {
+        "name": "archive-evidence",
+        "checkpoint": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+        "startedAt": "2026-10-29T16:57:29.024Z",
+        "finishedAt": "2026-10-29T16:57:29.396Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/local-ci-e92b8bda/archive-evidence.log"
+      },
+      {
+        "name": "advisor-contract",
+        "checkpoint": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+        "startedAt": "2026-10-29T16:57:29.397Z",
+        "finishedAt": "2026-10-29T16:57:31.353Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/local-ci-e92b8bda/advisor-contract.log"
+      }
+    ]
+  },
+  "reviews": {
+    "wholeChange": "evidence/whole-change-review.md \u2014 NEEDS FIX,2f87e038..cc89df19",
+    "fixWave": "evidence/final-fix-wave-scoped-review.md \u2014 CLEAR,cc89df19..9c5c303f only",
+    "laterChanges": "Claude must independently review later repairs and the full final range; prior scoped approval is not extended."
+  },
+  "remainingGates": [
+    "Original independent author finding dispositions and Claude full-range review",
+    "Jose Phase2 checkpoint and three explicit policy decisions",
+    "Fourth-remote-branch disposition and publishing approval",
+    "Actual iPhone/Android/native providers/AT/performance/installed-app PDF evidence",
+    "Hosted/native-Linux/staging/release operations and production authorization"
+  ],
+  "publication": {
+    "pushed": false,
+    "mainMerged": false,
+    "deployed": false,
+    "realMessagesSent": false
+  },
+  "history": "evidence/history-index.json; all original failed/interrupted runs remain external and distinctly copied/indexed"
+}

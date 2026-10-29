@@ -1,0 +1,32 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029
+
+ ❯ .superpowers/sdd/PLAN/pending-guidance.test.ts (2 tests | 2 failed) 16ms
+   × pending turn-off gives an immediate settings safeguard when both worker stores fail, including replacement=false 14ms
+   × pending turn-off gives an immediate settings safeguard when both worker stores fail, including replacement=true 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  .superpowers/sdd/PLAN/pending-guidance.test.ts > pending turn-off gives an immediate settings safeguard when both worker stores fail, including replacement=false
+ FAIL  .superpowers/sdd/PLAN/pending-guidance.test.ts > pending turn-off gives an immediate settings safeguard when both worker stores fail, including replacement=true
+AssertionError: expected 'Server cleanup is pending. Notificati…' to contain 'block NEVORA notifications in your de…'
+
+Expected: "block NEVORA notifications in your device or browser settings"
+Received: "Server cleanup is pending. Notifications remain suppressed locally where possible. Retry Turn Off; you can still sign out."
+
+ ❯ .superpowers/sdd/PLAN/pending-guidance.test.ts:57:35
+     55|  if(replace){first.dispose();f.replaceWorker();current=f.controller();…
+     56|  expect(current.snapshot.state).toBe('error');expect(current.snapshot.…
+     57|  expect(current.snapshot.message).toContain('block NEVORA notification…
+       |                                   ^
+     58|  expect(current.snapshot.message).not.toContain('Notifications turned …
+     59|  expect(current.snapshot.message).not.toContain('couldn’t save the rec…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  12:43:36
+   Duration  84ms (tests 45%, transform 34%, import 17%, worker 4%)
+

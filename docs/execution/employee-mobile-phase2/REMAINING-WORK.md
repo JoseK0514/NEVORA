@@ -1,54 +1,29 @@
-# Employee mobile — all work left (as of 2026-10-28)
+# Employee mobile — remaining work, October29,2026
 
-Phase 2 implementation is complete for both remaining feature ports, but **Phase 2 has not exited**. The exit
-needs the items marked *exit* below and Jose's checkpoint. Phase 3 has not started.
+Current engineering continuation is the detached Codex checkout described in [closure handoff](../employee-mobile-closure-2026-10-29/HANDOFF.md), based on Claude's separate assembly `2f87e038`. Employee is the only first-release role; Lead is deferred. This supersedes the old “not started” engineering inventory. The historical October28 inventory remains in `REMAINING-WORK-2026-10-28-ARCHIVE.md`.
 
-> **Update, October 28 (Claude assembly).** Phase 2 is now assembled with `claude-codex-collab-nevora` in a detached worktree (`7ab3b7bb` app, `4dfc2806` tests); it is not pushed under the three-branch policy. Item 9 (reconciliation) is done locally, pending Jose's publish decision. Items 5, 6 and 7 have root-cause or audit reports but no fixes. New fixes, the open Phase 1 WebKit failure and the pre-existing collab Clocker allocation failure are in [CLAUDE-ASSEMBLY-2026-10-28.md](CLAUDE-ASSEMBLY-2026-10-28.md).
+Phase2 has **not exited** and Phase3/release acceptance is not granted by local implementation or a passing test. Original independent reviewers own their findings.
 
-## Phase 2 exit
+## Local engineering delivered for review
 
-| # | Item | Owner | State |
-|---|---|---|---|
-| 1 | Deletion reviewers close DEL-UI-19..22 and CR-4/6/8 leftovers | Independent UI / code reviewers | Fixes landed at `6931d90d`; closure pending |
-| 2 | Pay reviewer closures | Independent reviewers | Code: closed except accepted minors; UI: closed except PAY-UI-13 recheck (fixed at `944f859a`) and PAY-UI-10 (devices) |
-| 3 | QA-OWN-3 closure | Original Alerts QA author | Fix at `663377ba`/`28ee6a75`; RED on `003bbe2c`; residual needs Jose (below) |
-| 4 | Communications CR-4, UI-COM-002, UI-COM-003 closure | Original Communications authors | All three fixed (UI-COM-003 at every text size from `bc8a5742`, pixel-verified in 3 engines); a supplementary independent check agrees; advisories S-1..S-5 recorded in `employee-mobile-communications/claude-continuation/supplementary-ui-check.md` |
-| 5 | Process-observation tests (`phase-e-process`, `phase-e-root-group-process`, `phase-e-runner`) | Engineering | Pass in a full suite run; fail with their recorded signatures under CPU saturation; `ps` latency ruled out; **cause unresolved** |
-| 6 | Calendar QA-CAL-1 Firefox request-monitor anomaly | Engineering + Calendar QA author | **Not started** |
-| 7 | Audit and replay earlier landscape evidence captured with full-page Chromium screenshots | Engineering + original authors | **Not started**; batches here use viewport captures and media-verified coarse landscape |
-| 8 | Combined checks on one assembled revision and a Jose checkpoint | Root + Jose | At `e65ca90d`: default suite 9,878/0 failed, deletion 9/9, Pay and Communications browser journeys passed; Pay re-passed at `944f859a`. Jose checkpoint pending |
-| 9 | Reconcile with `origin/development` and concurrent Codex/Claude branches | Coordinator | Not done here; this branch is unassembled |
+| Work | Current evidence and limit |
+|---|---|
+| Atomic deletion authority | Current employee, credential revision and exact session checked inside acceptance transaction; four real SQL boundaries RED→GREEN; legitimate concurrent/lost-reply recovery retained. Support policy remains unapproved. |
+| Restarted-worker suppression | Independent opaque CacheStorage generation tombstones cover failed IndexedDB persistence across worker restart. Saturation blocks admission. Complete worker-readable-storage/native/server failure remains explicitly pending with immediate permission-block guidance; no risk accepted. |
+| Process supervision | Deterministic exit/retirement/pinning races repaired; real default/nested Node Worker startup control retained. Darwin local and Linux-marker simulations are not Linux-native certification. |
+| Calendar observation | Exact effective-GET, request identity, native server absence and positive controls; mutations/malformed/saturated observations fail closed. Current strict journey passes; exact historical uninstrumented cause cannot be proven retrospectively. |
+| Landscape/capture audit | Eight helpers use capability-preserving viewport captures; real26-task matrix covers three engines/sizes, both themes and100/200% type with touch/coarse, target/contrast/overflow/reachability checks. See exact final results, including all failed attempts. |
+| CI/source custody | All42 Clocker SQL files allocated; 64MiB tracked-file capture handles the9,000-file regression and rejects source drift. Allocation proof does not mean all42 SQL suites ran. |
+| Combined verification | Full original four configurations cover36 contracts of all13 specifications; final affected replays, full default/type/lint/build/native startup results and exact revisions are in the verification manifest. Earlier failures remain preserved. |
+| Workflow parity |34 original groups mapped to current Employee authority and code. This source map is not physical-device certification or permission to add management features. |
 
-## Decisions only Jose can make
+## Still required
 
-1. **QA-OWN-3 residual.** The turn-off is now remembered outside IndexedDB, so a replacement controller no
-   longer re-owns the generation. Two residuals remain:
-   - if `localStorage` also fails, nothing in the browser can remember the intent;
-   - a restarted service worker cannot read `localStorage`, so until NEVORA is next opened it can still show a
-     push for a generation whose server cleanup failed.
+1. **Claude's independent review.** Review the complete local diff and evidence, including later changes outside the scoped9c5 code approval. Reproduce any material finding before changing it; retain error gates and authorization. Do not interpret Codex's result as closure by an original reviewer.
+2. **Original acceptance closures.** Communications CR-4/UI-COM-002/UI-COM-003; Alerts QA-OWN-3 with the new mitigation and exact residual; Calendar QA-CAL-1 historical-cause disposition; Deletion reviewer leftovers; Pay recheck and physical-device conditions; original landscape-evidence dispositions. Preserve authored reports and actual conditions rather than rewrite their conclusions.
+3. **Jose's three policy decisions.** Exact remaining alert-total-failure release disposition; whether Support copy may offer asking about deletion withdrawal; the approved operational identity-verification method for withdrawal. [Concrete proposals and limits](../employee-mobile-closure-2026-10-29/POLICY-AND-DEVICE-GATES.md). No reference-only identity proof, secret collection, promised cancellation/deadline or accepted risk is invented.
+4. **Repository disposition.** Fresh remote heads remain the three permitted lines plus the existing fourth Claude Phase2 branch. Candidate contains current development/collaboration heads, but the inventory gate still refuses the unclassified fourth branch/ceiling. Publishing the detached assembly and deleting/archiving that remote branch require Jose's decision. No push, main merge or deployment happened here.
+5. **After Phase2 exit: actual device/service/AT acceptance.** Supported iPhone/Android browsers and installed apps, OS text sizes, keyboards/safe areas, VoiceOver/TalkBack, physical passkeys, Calendar providers, push/background/restart/turn-off/sign-out, protected PDF View/Download and representative performance. Local engines do not certify these.
+6. **Hosted/release operations.** Hosted CI/staging, native Linux process behavior, operational deletion handling, approved rollout/monitoring/rollback and final production authorization. A rollback must preserve worker suppression semantics.
 
-   Accept, or ask for a server-side mitigation (for example, delivery refusing a generation with a recorded
-   failed turn-off).
-2. **Deletion copy.** Whether to say that support may be able to withdraw a request before processing (the runbook
-   allows it; the app now says only that it can't be cancelled in the app).
-3. **Withdrawal identity check.** Which identity proof operations require before withdrawing a deletion request.
-
-## Phase 3 (not started; needs Phase 2 exit)
-
-- Reconcile the 34 workflow groups against current authorized Employee/Lead desktop behavior.
-- Direct URLs, cross-page navigation and every outcome state, isolation, revocation, concurrency, session expiry,
-  interrupted networks, background/resume and sign-out cleanup across the assembled app.
-- **Physical devices and services** (blocked here: no approved devices, accounts or hosted environment):
-  iPhone/Android browsers and Home Screen installs, portrait/landscape, OS text size, safe areas, virtual
-  keyboards, VoiceOver/TalkBack, real passkeys, calendar subscriptions, push and PDFs. Includes PAY-UI-10:
-  whether View from a Home Screen app carries the session.
-- Performance budget and measurement on representative devices and connections.
-- Production build, CI, staging, document/provider and operational checks; deletion-request handling.
-- Release candidate, rollout and monitoring plan, rollback. Production merge and deployment need Jose's explicit
-  authorization.
-
-## Engineering follow-ups found here
-
-- HARN-1: `scripts/phase-e-owned.mjs:448` and `scripts/lib/premium-owned-runtime.mts:30` list tracked files with
-  Node's default 1 MiB `execFileSync` buffer; the repository already exceeds it (fixed only in `owned-next-app.ts`).
-- The incumbent sign-in page's "deleting" message (DEL-UI-16) shows a greeting above the error with no icon or link.
+Owner desktop polish and PR34 integration belong to their separate workstream. No new Employee feature port is invented to match a desktop count; current server permissions and conditional capabilities remain authoritative.

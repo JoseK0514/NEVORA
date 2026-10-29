@@ -1,0 +1,73 @@
+{
+  "checkpoint": "8b75493e42a7935960c79494be6c96cf6cc6513d",
+  "applicationCandidate": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+  "method": "Four original full configurations cover all36 effective contracts from all13 specifications; extra strict Creation preflight and936-case landscape; maximum2 independent owned lanes",
+  "results": [
+    {
+      "name": "phase1",
+      "configuration": "phase1",
+      "extra": [],
+      "checkpoint": "8b75493e42a7935960c79494be6c96cf6cc6513d",
+      "startedAt": "2026-10-29T17:49:15.264Z",
+      "finishedAt": "2026-10-29T17:51:37.153Z",
+      "exitCode": 1,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/phase1.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/phase1"
+    },
+    {
+      "name": "deletion",
+      "configuration": "deletion",
+      "extra": [],
+      "checkpoint": "8b75493e42a7935960c79494be6c96cf6cc6513d",
+      "startedAt": "2026-10-29T17:51:37.173Z",
+      "finishedAt": "2026-10-29T17:52:45.536Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/deletion.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/deletion"
+    },
+    {
+      "name": "pay",
+      "configuration": "pay",
+      "extra": [],
+      "checkpoint": "8b75493e42a7935960c79494be6c96cf6cc6513d",
+      "startedAt": "2026-10-29T17:52:45.551Z",
+      "finishedAt": "2026-10-29T17:54:08.908Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/pay.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/pay"
+    },
+    {
+      "name": "closure",
+      "configuration": "closure",
+      "extra": [],
+      "checkpoint": "8b75493e42a7935960c79494be6c96cf6cc6513d",
+      "startedAt": "2026-10-29T17:54:08.919Z",
+      "finishedAt": "2026-10-29T17:57:50.588Z",
+      "exitCode": 1,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/closure.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/closure"
+    },
+    {
+      "name": "device-alerts",
+      "configuration": "device-alerts",
+      "extra": [],
+      "checkpoint": "8b75493e42a7935960c79494be6c96cf6cc6513d",
+      "startedAt": "2026-10-29T17:49:15.249Z",
+      "finishedAt": "2026-10-29T18:08:08.767Z",
+      "exitCode": 1,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts"
+    }
+  ],
+  "stopping": false
+}

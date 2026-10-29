@@ -1,0 +1,98 @@
+[
+  {
+    "name": "combined-closure-1",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-1/summary.json",
+    "sha256": "7aa83bdd72c437568b9122f8e41b24e53fba7574136563a1cda5b8346ccfd8b6",
+    "copy": "combined-closure-1-summary.json"
+  },
+  {
+    "name": "combined-closure-2",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-2/summary.json",
+    "sha256": "521c3ac4372a7622601c067232448af178e1787c97ad378ea58a06d872b9e9b0",
+    "copy": "combined-closure-2-summary.json"
+  },
+  {
+    "name": "combined-closure-3",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-3/summary.json",
+    "sha256": "9a67d7c954eb4b000e343fd13867475b38b06c347bf4e04322660b83e5af5dff",
+    "copy": "combined-closure-3-summary.json"
+  },
+  {
+    "name": "combined-closure-4",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-4/summary.json",
+    "sha256": "aef8bb1d1667db5e3a3cb55ee98b474387092a5be91dc6fc9bdb12c5012fa3bd",
+    "copy": "combined-closure-4-summary.json"
+  },
+  {
+    "name": "combined-final-e92b8bda",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-final-e92b8bda/summary.json",
+    "sha256": "2092498c9bae0446c549e38474ef246743a1f5b5d5acdf8d07c42250c098cb8e",
+    "copy": "combined-final-e92b8bda-summary.json"
+  },
+  {
+    "name": "contract-final-8b75493e",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/summary.json",
+    "sha256": "71df161237e313c330bdd03c65432e70843a741d5524015ac2cf03d66d7290b4",
+    "copy": "contract-final-8b75493e-summary.json"
+  },
+  {
+    "name": "contract-final-f2410b05",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-f2410b05/summary.json",
+    "sha256": "60a5104c46a6e65ecfc397e1e62458f6d5aa869049266e721e65c0dc82bc03f8",
+    "copy": "contract-final-f2410b05-summary.json"
+  },
+  {
+    "name": "final-static-closure-1",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-1/summary.json",
+    "sha256": "3770da2137e9812652f78803fcd08e1910e4c94b0495c21354c9027b9440191e",
+    "copy": "final-static-closure-1-summary.json"
+  },
+  {
+    "name": "final-static-closure-2",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-2/summary.json",
+    "sha256": "f6f5d851b8e52cf6fe4340c0259ee565be34b3b2d11f5a969344c2e0f7778596",
+    "copy": "final-static-closure-2-summary.json"
+  },
+  {
+    "name": "final-static-closure-3",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-3/summary.json",
+    "sha256": "78c7b48d8c7626d7c32ca551caaebfda07fa9b1e24397ba9e51d52cc9c4e4f2b",
+    "copy": "final-static-closure-3-summary.json"
+  },
+  {
+    "name": "final-static-closure-4",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-4/summary.json",
+    "sha256": "eb1c84f309d69fa84263be284ccadbfc7954ecc10c2826333a670b217abd63d2",
+    "copy": "final-static-closure-4-summary.json"
+  },
+  {
+    "name": "final-static-closure-5",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-5/summary.json",
+    "sha256": "55cf88a1f1b7b2e0ad52bbd42fe42ae8e0236df993c7ec288cf9cad7330d451b",
+    "copy": "final-static-closure-5-summary.json"
+  },
+  {
+    "name": "final-static-closure-6",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-6/summary.json",
+    "sha256": "b6c41bfdf2b553b013c0b083825f5b0de30b93febe61e99591583138a602b9fa",
+    "copy": "final-static-closure-6-summary.json"
+  },
+  {
+    "name": "local-ci-e92b8bda",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/local-ci-e92b8bda/summary.json",
+    "sha256": "1533bc7fd28a6b9f34528479a99304dcf5c4f061e85a244647b41c829c2116b1",
+    "copy": "local-ci-e92b8bda-summary.json"
+  },
+  {
+    "name": "targeted-final-20c5abed",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-20c5abed/summary.json",
+    "sha256": "4c29052e9088e7bc21d18868d1dae31e1ad4d175993a1d07a883bbfe2db094d8",
+    "copy": "targeted-final-20c5abed-summary.json"
+  },
+  {
+    "name": "targeted-final-f8369ee1",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-f8369ee1/summary.json",
+    "sha256": "984b8307fdfad329bf34c6005f11420274691fc149375d641f1f93443d6c6bc1",
+    "copy": "targeted-final-f8369ee1-summary.json"
+  }
+]

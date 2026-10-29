@@ -1,0 +1,25 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029
+
+ ❯ src/components/employee-mobile/device-alerts.test.tsx (4 tests | 1 failed) 168ms
+   × an uncertain cleanup offers original recovery without an enabled claim or test command 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/employee-mobile/device-alerts.test.tsx > an uncertain cleanup offers original recovery without an enabled claim or test command
+AssertionError: expected '<div class="em-device" data-device-st…' to contain 'block NEVORA notifications in your de…'
+
+Expected: "block NEVORA notifications in your device or browser settings"
+Received: "<div class="em-device" data-device-state="error"><section class="em-device-status" aria-labelledby="device-status-title" aria-busy="false"><div class="em-device-status-heading"><span class="em-device-symbol"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256" aria-hidden="true"><path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"></path></svg></span><h2 id="device-status-title">Alerts may still be on</h2></div><p>Check again asks NEVORA for the latest status. Retry turn off sends your earlier turn-off request again.</p><div class="em-device-actions"><button type="button" class="em-request-primary">Check again</button><button type="button" class="em-request-secondary">Retry turn off</button></div></section><div tabindex="-1" class="em-device-feedback"><p role="status">We haven’t confirmed this change. You can keep using NEVORA or sign out.</p></div><section class="em-device-help" aria-labelledby="device-help-title"><h2 id="device-help-title">About device alerts</h2><p>These settings apply to this browser on this device. Your inbox stays available when device alerts are off.</p><a class="em-device-link" href="/app/notifications">View your notifications</a><details><summary><span>Home Screen setup</span><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256" aria-hidden="true"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path></svg></summary><div><p>Open your browser menu and choose Install app or Add to Home Screen if offered. Open NEVORA from the new icon.</p><p>Reading these instructions does not install NEVORA or allow alerts.</p></div></details><details><summary><span>Permission and delivery</span><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256" aria-hidden="true"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path></svg></summary><div><p>Your browser must allow notifications, and NEVORA must finish setting up this device. Permission alone does not mean setup is complete.</p><p>Your device can silence or delay alerts. A queued test does not confirm that an alert appeared. Check NEVORA for current work updates.</p></div></details></section></div>"
+
+ ❯ src/components/employee-mobile/device-alerts.test.tsx:18:15
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  12:49:43
+   Duration  247ms (tests 87%, import 7%, transform 5%, worker 1%)
+

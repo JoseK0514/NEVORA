@@ -1,0 +1,62 @@
+[
+  {
+    "engine": "chromium",
+    "selected": "closed",
+    "frameworkVisible": false,
+    "native": {
+      "rect": {
+        "x": 8,
+        "y": 147,
+        "width": 101.21875,
+        "height": 21,
+        "top": 147,
+        "right": 109.21875,
+        "bottom": 168,
+        "left": 8
+      },
+      "checkVisibility": false,
+      "display": "inline-block",
+      "visibility": "visible"
+    }
+  },
+  {
+    "engine": "webkit",
+    "selected": "closed",
+    "frameworkVisible": false,
+    "native": {
+      "rect": {
+        "x": 8,
+        "y": 145.046875,
+        "width": 92.34375,
+        "height": 18,
+        "top": 145.046875,
+        "right": 100.34375,
+        "bottom": 163.046875,
+        "left": 8
+      },
+      "checkVisibility": false,
+      "display": "inline-block",
+      "visibility": "visible"
+    }
+  },
+  {
+    "engine": "firefox",
+    "selected": "closed",
+    "frameworkVisible": false,
+    "native": {
+      "rect": {
+        "x": 8,
+        "y": 151.1999969482422,
+        "width": 102.14999389648438,
+        "height": 22,
+        "top": 151.1999969482422,
+        "right": 110.14999389648438,
+        "bottom": 173.1999969482422,
+        "left": 8
+      },
+      "checkVisibility": false,
+      "display": "inline-block",
+      "visibility": "visible"
+    }
+  }
+]

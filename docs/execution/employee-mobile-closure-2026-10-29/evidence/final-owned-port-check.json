@@ -1,0 +1,131 @@
+{
+  "checkedAt": "2026-10-29T18:32:23.396388+00:00",
+  "checks": [
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/messages/owned-next-2hnxRv/ownership.json",
+      "port": 52686,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/calendar/owned-next-8PHy0x/ownership.json",
+      "port": 53056,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/messages_review/owned-next-0zr3jv/ownership.json",
+      "port": 51196,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/responses/owned-next-GXkWge/ownership.json",
+      "port": 53924,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/planning/owned-next-XvQh20/ownership.json",
+      "port": 53635,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/passkeys/owned-next-UEvVdp/ownership.json",
+      "port": 53336,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/creation/owned-next-a6z74E/ownership.json",
+      "port": 50653,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/profile/owned-next-32ZNFW/ownership.json",
+      "port": 54458,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/mobile/owned-next-sYHloE/ownership.json",
+      "port": 54293,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/passkey-network/owned-next-E3IejY/ownership.json",
+      "port": 51173,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/device/owned-next-C9UMxk/ownership.json",
+      "port": 52147,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/hours/owned-next-SeNj7w/ownership.json",
+      "port": 54126,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/closure/closure/owned-next-Z5RnW6/ownership.json",
+      "port": 51191,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/deletion/deletion/owned-next-baekJW/ownership.json",
+      "port": 50345,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/pay/pay/owned-next-qjK4KN/ownership.json",
+      "port": 50728,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/phase1/mobile/owned-next-dkZ3Ib/ownership.json",
+      "port": 65117,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-f8369ee1/closure/closure/owned-next-BrYdTR/ownership.json",
+      "port": 56469,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-f8369ee1/creation/creation/owned-next-waNnWw/ownership.json",
+      "port": 55774,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-f8369ee1/phase1/mobile/owned-next-zbDlYP/ownership.json",
+      "port": 55775,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-20c5abed/closure/closure/owned-next-DxKAKz/ownership.json",
+      "port": 57864,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    },
+    {
+      "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-20c5abed/phase1/mobile/owned-next-asp66t/ownership.json",
+      "port": 57865,
+      "listenerObserved": false,
+      "lsofExitCode": 1
+    }
+  ]
+}

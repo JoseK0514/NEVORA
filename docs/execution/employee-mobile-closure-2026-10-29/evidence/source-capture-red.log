@@ -1,0 +1,33 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029
+
+ ❯ scripts/lib/git-files.test.mjs (2 tests | 1 failed) 1217ms
+   × captures every committed source hash above 1 MiB and still rejects later source changes 537ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  scripts/lib/git-files.test.mjs > captures every committed source hash above 1 MiB and still rejects later source changes
+AssertionError: expected 'ENOBUFS' to be undefined
+
+- Expected:
+undefined
+
++ Received:
+"ENOBUFS"
+
+ ❯ scripts/lib/git-files.test.mjs:34:19
+     32|   let custody, failure;
+     33|   try { custody=captureSource(root,checkpoint); } catch(error) { failu…
+     34|   expect(failure).toBeUndefined();
+       |                   ^
+     35|   expect(Object.keys(custody.hashes)).toHaveLength(count);
+     36|   expect(custody.hashes[name(count-1)]).toBe('e3b0c44298fc1c149afbf4c8…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  12:32:26
+   Duration  1.28s (tests 99%, transform 1%)
+

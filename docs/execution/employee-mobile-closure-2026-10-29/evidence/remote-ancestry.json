@@ -1,0 +1,27 @@
+{
+  "candidate": "b0f64ef1a44708d15f1609b83f71e4cb11b8b08a",
+  "heads": [
+    {
+      "sha": "0f375dd761aab01f4b89673ab5ca03e10e0af271",
+      "ref": "refs/heads/claude-codex-collab-nevora",
+      "ancestorExitCode": 0
+    },
+    {
+      "sha": "4a68e5c8db9e8c266fec41fd35d659c2db96f6c8",
+      "ref": "refs/heads/claude/employee-mobile-phase2-20261027",
+      "ancestorExitCode": 0
+    },
+    {
+      "sha": "682ecea9fa61548f68274c896ffa4e2d92b62989",
+      "ref": "refs/heads/development",
+      "ancestorExitCode": 0
+    },
+    {
+      "sha": "7ffd013e39a9763a0655aa092b159dea4cbbfb50",
+      "ref": "refs/heads/main",
+      "ancestorExitCode": 0
+    }
+  ],
+  "headInventoryWrittenAt": "2026-10-29T16:34:40.146Z",
+  "ancestryRecordedAt": "2026-10-29T16:46:37.986Z"
+}

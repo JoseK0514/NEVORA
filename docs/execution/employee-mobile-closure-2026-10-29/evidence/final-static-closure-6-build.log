@@ -1,0 +1,192 @@
+
+> fuel-scheduler@0.1.0 build
+> next build
+
+▲ Next.js 16.4.2 (Turbopack)
+✓ Running next.config.ts took 39ms
+- Experiments (use with caution):
+  ⨯ turbopackFileSystemCacheForBuild
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 3.0s
+  Running TypeScript ...
+  Finished TypeScript in 2.7s ...
+  Collecting page data using 9 workers ...
+  Generating static pages using 9 workers (0/56) ...
+  Generating static pages using 9 workers (14/56)
+  Generating static pages using 9 workers (28/56)
+  Generating static pages using 9 workers (42/56)
+✓ Generating static pages using 9 workers (56/56) in 235ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /access-help/[[...topic]]
+├ ○ /account-deletion
+├ ƒ /activate
+├ ƒ /api/auth/activate
+├ ƒ /api/auth/passkey/login/options
+├ ƒ /api/auth/passkey/login/verify
+├ ƒ /api/auth/passkey/register/options
+├ ƒ /api/auth/passkey/register/verify
+├ ƒ /api/auth/passkeys
+├ ƒ /api/auth/passkeys/[id]
+├ ƒ /api/auth/recovery
+├ ƒ /api/auth/reset-access
+├ ƒ /api/calendar/[token]/schedule.ics
+├ ƒ /api/clocker/[location]/photos
+├ ƒ /api/clocker/[location]/photos/[photoId]
+├ ƒ /api/clocker/[location]/pin
+├ ƒ /api/clocker/[location]/punch
+├ ƒ /api/clocker/[location]/review
+├ ƒ /api/clocker/[location]/setup
+├ ƒ /api/clocker/photos/review
+├ ƒ /api/company-access/employee-operations/[operationId]
+├ ƒ /api/company-access/invitation-operations/[operationId]
+├ ƒ /api/company-access/invitations/[employeeId]
+├ ƒ /api/company-access/operational-authority
+├ ƒ /api/company-access/operational-scopes/[employeeId]
+├ ƒ /api/company-policies
+├ ƒ /api/employee/calendar-subscriptions
+├ ƒ /api/employee/communications
+├ ƒ /api/employee/communications/[id]
+├ ƒ /api/employee/communications/context
+├ ƒ /api/employee/communications/operations/[id]
+├ ƒ /api/employee/communications/preview
+├ ƒ /api/employee/creation/[mode]/[sourceId]
+├ ƒ /api/employee/exchange
+├ ƒ /api/employee/exchange/[requestId]
+├ ƒ /api/employee/home
+├ ƒ /api/employee/hours/[view]/[selection]
+├ ƒ /api/employee/messages/[view]/[selection]
+├ ƒ /api/employee/messages/open/[id]
+├ ƒ /api/employee/my-time
+├ ƒ /api/employee/notifications
+├ ƒ /api/employee/planning/[view]/[selection]
+├ ƒ /api/employee/profile
+├ ƒ /api/employee/requests
+├ ƒ /api/employee/time-corrections
+├ ƒ /api/internal/notifications/dispatch
+├ ƒ /api/internal/notifications/reminders
+├ ƒ /api/management/profile
+├ ƒ /api/management/profile/alerts
+├ ƒ /api/manager/account-recovery
+├ ƒ /api/manager/action-center
+├ ƒ /api/manager/attendance
+├ ƒ /api/manager/calendar-subscriptions/[employeeId]/revoke
+├ ƒ /api/manager/clock-monitor
+├ ƒ /api/manager/clocker-recovery
+├ ƒ /api/manager/communications
+├ ƒ /api/manager/communications/[id]
+├ ƒ /api/manager/communications/context
+├ ƒ /api/manager/communications/operations/[id]
+├ ƒ /api/manager/communications/preview
+├ ƒ /api/manager/finder
+├ ƒ /api/manager/inbox-count
+├ ƒ /api/manager/time-corrections
+├ ƒ /api/manager/timecards
+├ ƒ /api/manager/today
+├ ƒ /api/notifications
+├ ƒ /api/notifications/read
+├ ƒ /api/owner/advisor
+├ ƒ /api/owner/clocker-recovery
+├ ƒ /api/payroll-export
+├ ƒ /api/payroll-export/profiles
+├ ƒ /api/payroll/documents/[id]
+├ ƒ /api/payroll/documents/[id]/view
+├ ƒ /api/payroll/native-profiles
+├ ƒ /api/payroll/portal-statements
+├ ƒ /api/payroll/receipts
+├ ƒ /api/payroll/runs
+├ ƒ /api/payroll/settings
+├ ƒ /api/payroll/statements
+├ ƒ /api/period-close
+├ ƒ /api/period-close/artifact
+├ ƒ /api/reports
+├ ƒ /api/reports/export
+├ ƒ /api/schedule-copy
+├ ƒ /api/timecards
+├ ƒ /api/workspace-presentation
+├ ƒ /api/workspace-presentation/logo
+├ ƒ /api/workspace-presentation/logo/[assetId]
+├ ƒ /api/workspaces/[locator]/session
+├ ƒ /app
+├ ƒ /app/(.)exchange/callout
+├ ƒ /app/(.)exchange/swap
+├ ƒ /app/account-recovery
+├ ƒ /app/account/delete
+├ ƒ /app/ai-manager
+├ ƒ /app/api/push/status
+├ ƒ /app/api/push/subscribe
+├ ƒ /app/api/push/test
+├ ƒ /app/api/push/unsubscribe
+├ ƒ /app/availability
+├ ƒ /app/clocker-recovery
+├ ƒ /app/dev-inspect
+├ ƒ /app/employees
+├ ƒ /app/employees/[employeeId]
+├ ƒ /app/employees/[employeeId]/clocker-pin
+├ ƒ /app/employees/new
+├ ƒ /app/exchange
+├ ƒ /app/exchange/callout
+├ ƒ /app/exchange/swap
+├ ƒ /app/inbox
+├ ƒ /app/more
+├ ƒ /app/my-pay
+├ ƒ /app/my-time
+├ ƒ /app/notifications
+├ ƒ /app/notifications/open
+├ ƒ /app/payroll
+├ ƒ /app/payroll-export
+├ ƒ /app/profile
+├ ƒ /app/profile/[document]
+├ ƒ /app/profile/device-alerts
+├ ƒ /app/reports
+├ ƒ /app/requests
+├ ƒ /app/requests/hub
+├ ƒ /app/schedule
+├ ƒ /app/schedule/copy-receipt
+├ ƒ /app/schedule/coverage
+├ ƒ /app/schedule/edit
+├ ƒ /app/schedule/new
+├ ƒ /app/schedule/settings
+├ ƒ /app/schedule/templates
+├ ƒ /app/settings
+├ ƒ /app/settings/branding
+├ ƒ /app/settings/breaks
+├ ƒ /app/settings/clocker
+├ ƒ /app/settings/clocker/photos
+├ ƒ /app/settings/clocker/photos/review
+├ ƒ /app/settings/clocker/pins
+├ ƒ /app/settings/company-policies
+├ ƒ /app/settings/features
+├ ƒ /app/settings/locations
+├ ƒ /app/settings/locations/[locationId]
+├ ƒ /app/settings/locations/new
+├ ƒ /app/settings/payroll
+├ ƒ /app/settings/positions
+├ ƒ /app/settings/workspace
+├ ƒ /app/timecards
+├ ƒ /app/updates
+├ ƒ /app/updates/[id]
+├ ƒ /app/updates/compose
+├ ƒ /clocker/[location]
+├ ƒ /clocker/[location]/manifest.webmanifest
+├ ○ /dev-inspect
+├ ƒ /forgot-access
+├ ƒ /fuel-portal.webmanifest
+├ ƒ /login
+├ ○ /privacy
+├ ƒ /reset-access
+├ ○ /support
+├ ○ /terms
+├ ƒ /ui-preview/home
+├ ƒ /ui-preview/kit
+├ ƒ /ui-preview/signature
+└ ƒ /welcome
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

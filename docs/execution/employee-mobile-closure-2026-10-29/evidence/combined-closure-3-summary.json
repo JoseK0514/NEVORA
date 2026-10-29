@@ -1,0 +1,61 @@
+{
+  "checkpoint": "b0f64ef1a44708d15f1609b83f71e4cb11b8b08a",
+  "scope": "Employee-only release; existing compatibility-role regressions retained",
+  "results": [
+    {
+      "suite": "phase1",
+      "checkpoint": "b0f64ef1a44708d15f1609b83f71e4cb11b8b08a",
+      "startedAt": "2026-10-29T16:33:29.526Z",
+      "finishedAt": "2026-10-29T16:34:32.894Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-3/phase1.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-3/phase1"
+    },
+    {
+      "suite": "requests",
+      "checkpoint": "b0f64ef1a44708d15f1609b83f71e4cb11b8b08a",
+      "startedAt": "2026-10-29T16:34:32.903Z",
+      "finishedAt": "2026-10-29T16:35:13.095Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-3/requests.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-3/requests"
+    },
+    {
+      "suite": "responses",
+      "checkpoint": "b0f64ef1a44708d15f1609b83f71e4cb11b8b08a",
+      "startedAt": "2026-10-29T16:35:13.101Z",
+      "finishedAt": "2026-10-29T16:36:35.285Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-3/responses.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-3/responses"
+    },
+    {
+      "suite": "creation",
+      "checkpoint": "b0f64ef1a44708d15f1609b83f71e4cb11b8b08a",
+      "startedAt": "2026-10-29T16:36:35.292Z",
+      "finishedAt": "2026-10-29T16:39:17.491Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-3/creation.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-3/creation"
+    },
+    {
+      "suite": "planning",
+      "checkpoint": "b0f64ef1a44708d15f1609b83f71e4cb11b8b08a",
+      "startedAt": "2026-10-29T16:39:17.503Z",
+      "finishedAt": "2026-10-29T16:42:39.544Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-3/planning.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-3/planning"
+    }
+  ]
+}

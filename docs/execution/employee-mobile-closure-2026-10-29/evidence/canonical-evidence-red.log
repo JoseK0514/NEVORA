@@ -1,0 +1,26 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029
+
+ ❯ src/test/employee-mobile-evidence.test.ts (2 tests | 1 failed) 344ms
+   × supplies every Employee browser journey selected transitively by the full configurations 12ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/employee-mobile-evidence.test.ts > supplies every Employee browser journey selected transitively by the full configurations
+TypeError: .toMatch() expects to receive a string, but got undefined
+ ❯ src/test/employee-mobile-evidence.test.ts:15:72
+     13|  const required=new Set([...files].flatMap(file=>[...readFileSync(file…
+     14|  expect(required.size).toBeGreaterThanOrEqual(16);
+     15|  for(const variable of required)expect(environment[variable],variable)…
+       |                                                                        ^
+     16|  expect(new Set(Object.values(environment)).size).toBe(Object.keys(env…
+     17| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  13:27:50
+   Duration  438ms (tests 94%, transform 4%, import 2%)
+

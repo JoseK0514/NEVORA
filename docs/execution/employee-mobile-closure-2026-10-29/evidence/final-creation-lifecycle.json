@@ -1,0 +1,196 @@
+{
+  "lifecycle": [
+    {
+      "engine": "chromium",
+      "event": "direct-navigation",
+      "stage": "swap-review",
+      "mode": "swap",
+      "at": 1793297678829,
+      "from": "/app/schedule"
+    },
+    {
+      "engine": "chromium",
+      "event": "direct-navigation",
+      "stage": "cover",
+      "mode": "cover",
+      "at": 1793297683547,
+      "from": "/app/exchange"
+    },
+    {
+      "engine": "chromium",
+      "event": "request",
+      "stage": "cover",
+      "at": 1793297684654,
+      "error": null
+    },
+    {
+      "engine": "chromium",
+      "event": "requestfailed",
+      "stage": "cover",
+      "at": 1793297684813,
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "event": "cover-receipt",
+      "at": 1793297684861
+    },
+    {
+      "engine": "chromium",
+      "event": "cover-transport-quiescent",
+      "terminal": "requestfailed",
+      "at": 1793297684861
+    },
+    {
+      "engine": "chromium",
+      "event": "direct-navigation",
+      "stage": "report-draft",
+      "mode": "callout",
+      "at": 1793297684890,
+      "from": "/app/exchange/swap"
+    },
+    {
+      "engine": "chromium",
+      "event": "direct-navigation",
+      "stage": "authority-loss",
+      "mode": "cover",
+      "at": 1793297689319,
+      "from": "/app/exchange/callout"
+    },
+    {
+      "engine": "chromium",
+      "event": "engine-teardown-start",
+      "at": 1793297690066
+    },
+    {
+      "engine": "webkit",
+      "event": "direct-navigation",
+      "stage": "swap-review",
+      "mode": "swap",
+      "at": 1793297696529,
+      "from": "/app/schedule"
+    },
+    {
+      "engine": "webkit",
+      "event": "direct-navigation",
+      "stage": "cover",
+      "mode": "cover",
+      "at": 1793297699796,
+      "from": "/app/exchange"
+    },
+    {
+      "engine": "webkit",
+      "event": "request",
+      "stage": "cover",
+      "at": 1793297701938,
+      "error": null
+    },
+    {
+      "engine": "webkit",
+      "event": "cover-receipt",
+      "at": 1793297702123
+    },
+    {
+      "engine": "webkit",
+      "event": "requestfinished",
+      "stage": "cover",
+      "at": 1793297702126,
+      "error": null
+    },
+    {
+      "engine": "webkit",
+      "event": "cover-transport-quiescent",
+      "terminal": "requestfinished",
+      "at": 1793297702126
+    },
+    {
+      "engine": "webkit",
+      "event": "direct-navigation",
+      "stage": "report-draft",
+      "mode": "callout",
+      "at": 1793297702155,
+      "from": "/app/exchange/swap"
+    },
+    {
+      "engine": "webkit",
+      "event": "direct-navigation",
+      "stage": "authority-loss",
+      "mode": "cover",
+      "at": 1793297706271,
+      "from": "/app/exchange/callout"
+    },
+    {
+      "engine": "webkit",
+      "event": "engine-teardown-start",
+      "at": 1793297706933
+    },
+    {
+      "engine": "firefox",
+      "event": "direct-navigation",
+      "stage": "swap-review",
+      "mode": "swap",
+      "at": 1793297716398,
+      "from": "/app/schedule"
+    },
+    {
+      "engine": "firefox",
+      "event": "direct-navigation",
+      "stage": "cover",
+      "mode": "cover",
+      "at": 1793297720025,
+      "from": "/app/exchange"
+    },
+    {
+      "engine": "firefox",
+      "event": "request",
+      "stage": "cover",
+      "at": 1793297721525,
+      "error": null
+    },
+    {
+      "engine": "firefox",
+      "event": "requestfinished",
+      "stage": "cover",
+      "at": 1793297721728,
+      "error": null
+    },
+    {
+      "engine": "firefox",
+      "event": "cover-receipt",
+      "at": 1793297721781
+    },
+    {
+      "engine": "firefox",
+      "event": "cover-transport-quiescent",
+      "terminal": "requestfinished",
+      "at": 1793297721781
+    },
+    {
+      "engine": "firefox",
+      "event": "direct-navigation",
+      "stage": "report-draft",
+      "mode": "callout",
+      "at": 1793297721837,
+      "from": "/app/exchange/swap"
+    },
+    {
+      "engine": "firefox",
+      "event": "direct-navigation",
+      "stage": "authority-loss",
+      "mode": "cover",
+      "at": 1793297726728,
+      "from": "/app/exchange/callout"
+    },
+    {
+      "engine": "firefox",
+      "event": "engine-teardown-start",
+      "at": 1793297727583
+    },
+    {
+      "event": "test-teardown-start",
+      "at": 1793297727996
+    }
+  ],
+  "checkCount": 40,
+  "unexpectedPageerrors": 0
+}
