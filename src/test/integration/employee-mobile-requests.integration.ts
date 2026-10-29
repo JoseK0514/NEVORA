@@ -113,6 +113,11 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
    expect(await page.locator('.em-open-detail:visible').innerText()).toContain('immediately');
    expect(await page.locator('.em-open-detail:visible').innerText()).toContain('Ends');
    expect(await page.locator('.em-open-shift:visible').innerText()).toContain('Overnight');
+   const related=page.locator('.em-request-links');
+   expect(await related.getAttribute('aria-label')).toBe('More shift options');
+   expect(await related.getAttribute('role')??await related.evaluate((el:HTMLElement)=>el.tagName.toLowerCase())).toBe('nav');
+   expect(await related.getByRole('link').count()).toBe(3);
+   expect(await related.getByRole('link').evaluateAll((links:HTMLAnchorElement[])=>links.map(link=>new URL(link.href).pathname+new URL(link.href).search))).toEqual(['/app/exchange?tab=foryou','/app/exchange?tab=requests','/app/schedule']);
    record('Mobile hub navigation, distinct eligibility, keyboard disclosure and actual overnight pickup terms');
    for(const theme of ['light','dark'])for(const width of [320,390,430]){
     await page.setViewportSize({width,height:844});await page.evaluate((theme:string)=>document.documentElement.setAttribute('data-theme',theme),theme);
@@ -122,6 +127,14 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
     expect(await page.locator('.page-frame').evaluate((el:HTMLElement)=>getComputedStyle(el).backgroundColor===getComputedStyle(el.querySelector('.em-requests')!).backgroundColor)).toBe(true);
     const small=await page.locator('.em-requests:visible a,.em-requests:visible button,.em-requests:visible summary').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.getClientRects().length&&(el.getBoundingClientRect().height<43.5)).map(el=>el.textContent));
     expect(small).toEqual([]);
+    const rows=await related.evaluate((nav:HTMLElement)=>{
+     const bounds=nav.getBoundingClientRect();return [...nav.querySelectorAll<HTMLAnchorElement>('a')].map((link,index)=>{
+      const box=link.getBoundingClientRect(),icon=link.querySelector<SVGElement>('svg[aria-hidden="true"]')?.getBoundingClientRect(),style=getComputedStyle(link);
+      return {height:box.height,width:box.width,insetLeft:box.left-bounds.left,insetRight:bounds.right-box.right,arrowInset:icon?bounds.right-icon.right:0,separator:index===0||parseFloat(style.borderTopWidth)>=1,bodySize:parseFloat(style.fontSize)/parseFloat(getComputedStyle(document.documentElement).fontSize)};
+     });
+    });
+    expect(rows).toHaveLength(3);for(const row of rows){expect(row.height).toBeGreaterThanOrEqual(44);expect(row.insetLeft).toBeGreaterThanOrEqual(12);expect(row.insetRight).toBeGreaterThanOrEqual(12);expect(row.arrowInset).toBeGreaterThanOrEqual(12);expect(row.separator).toBe(true);expect(row.bodySize).toBe(1);}
+    expect(Math.max(...rows.map(row=>row.width))-Math.min(...rows.map(row=>row.width))).toBeLessThanOrEqual(1);
     await button.focus();await shot('open-'+theme+'-'+width);
    }
    record('Light/dark 320/390/430, actual primary contrast, minimum targets, visible focus and no page overflow');
