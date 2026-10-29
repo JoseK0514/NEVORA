@@ -117,3 +117,20 @@ it('offers Call and Text on a shift with no clock-in when Team has the number, a
   // No number (a location-scoped Manager, or none on file): no Call or Text.
   expect(detail()).not.toMatch(/tel:|sms:/);
 });
+
+const missedShift = {id: 'missed', employeeId: 'AUDIT-M', employeeName: 'Morgan Rivera', locationId: 'main', locationName: 'Main Office', positionName: null, startAt: '2026-10-16T11:00:00Z', endAt: '2026-10-16T19:00:00Z', status: 'not_clocked_in' as const, firstClockInAt: null, late: false};
+const withMissed = {state: 'ready' as const, observedAt: '2026-10-16T14:30:00Z', validForMs: 30000, timeZone: 'America/Puerto_Rico', today: '2026-10-16', counts: {scheduled: 1, clockedIn: 0, late: 0, notClockedIn: 1}, shifts: [missedShift], missed: [missedShift]};
+it.each([true, false])('keeps coverage and the default detail in Owner order only when coverageFirst=%s', coverageFirst => {
+  const output = renderToStaticMarkup(createElement(InboxSurface, {snapshot: ready([item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT')]), today: withMissed, connection: 'ready', onRefresh: () => {}, timeZone: 'America/Puerto_Rico', coverageFirst} as Parameters<typeof InboxSurface>[0]));
+  const before = output.indexOf('id="inbox-urgent"') < output.indexOf('id="missed-punches"');
+  expect(before).toBe(coverageFirst);
+  const pane = output.split('class="nv-card inbox-detail"')[1].split('</section>')[0];
+  expect(pane).toContain('tabindex="-1">' + (coverageFirst ? 'Title gap' : 'Morgan Rivera') + '</h2>');
+  expect(output).not.toMatch(/name="decision"|Approve<|Decline</);
+});
+it('does not render an empty coverage group or displace the only missed shift', () => {
+  const output = renderToStaticMarkup(createElement(InboxSurface, {snapshot: ready([]), today: withMissed, connection: 'ready', onRefresh: () => {}, timeZone: 'America/Puerto_Rico', coverageFirst: true} as Parameters<typeof InboxSurface>[0]));
+  expect(output).not.toContain('id="inbox-urgent"');
+  expect(output).toContain('id="missed-punches"');
+  expect(output).toContain('tabindex="-1">Morgan Rivera</h2>');
+});
