@@ -56,8 +56,7 @@ export function MyPay({ nextPay = null, statement = null, document = null }: { n
   const days = nextPay?.daysUntil;
   const payday = nextPay ? new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric' }).format(utc(nextPay.payday)) : null;
   const when = days === undefined ? null : days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`;
-  // On a phone the server renders this before hydration picks the phone view; Pay CSS hides it there and shows the status line.
-  return <><QuietPage className="q-pay">
+  return <QuietPage className="q-pay">
     <div className="q-top-gap" aria-hidden="true" />
     <QuietHeader title="Pay" />
     {/* A statement link that failed returns here on desktop too, with the same explanation as the phone view. */}
@@ -79,7 +78,7 @@ export function MyPay({ nextPay = null, statement = null, document = null }: { n
         </li>)}</QuietList>
       : <p className="q-empty">No published statements yet.</p>}
     <p className="q-help">Only your own published statements are available here. Downloaded files may contain personal pay information.</p>
-  </QuietPage><p className="em-pay-prehydrate" role="status">Loading your pay…</p></>;
+  </QuietPage>;
 }
 
 /** Quiet (v4, approved Oct 23): My pay for Owners and Managers. The next payday as one lead line, then the statements. */
