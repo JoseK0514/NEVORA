@@ -20,8 +20,8 @@ async function fresh<T>(run:(client:Client,database:Database)=>Promise<T>){
 describe('fresh company setup for the assembled application',()=>{
  it('installs current payroll and access against the configured company and real Owner',()=>fresh(async client=>{
   const result=await setupCompany(client,readCompanyInput(config));
-  expect((await client.query("SELECT to_regclass('native_payroll_ledger') AS native, to_regclass('company_access_adoption') AS access")).rows)
-   .toEqual([{native:'native_payroll_ledger',access:'company_access_adoption'}]);
+  expect((await client.query("SELECT to_regclass('native_payroll_ledger') AS native, to_regclass('company_access_adoption') AS access, to_regclass('native_payroll_setup_records') AS setup")).rows)
+   .toEqual([{native:'native_payroll_ledger',access:'company_access_adoption',setup:'native_payroll_setup_records'}]);
   expect((await client.query('SELECT workspace_id,state,legacy_manager_census FROM company_access_adoption')).rows)
    .toEqual([{workspace_id:result.workspaceId,state:'ENFORCED',legacy_manager_census:[]}]);
   expect((await client.query('SELECT workspace_id,employee_id,generation::text FROM operational_subject_versions')).rows)
