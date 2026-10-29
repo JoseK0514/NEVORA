@@ -21,10 +21,12 @@ const results=[];
 for(const suite of suites){
  assert.equal(head(),checkpoint,'Candidate changed during verification');
  const directory=join(destination,suite),log=join(destination,suite+'.log'),fd=openSync(log,'wx');
+ const evidence=employeeMobileEvidence(destination,suite);
+ for(const path of Object.values(evidence))mkdirSync(path,{recursive:true});
  const startedAt=new Date().toISOString();
  let result;
  try{result=spawnSync(process.execPath,['scripts/payroll-postgres.mjs','vitest.employee-mobile-'+suite+'.config.mts'],{
-  env:{...process.env,...employeeMobileEvidence(destination,suite)},stdio:['ignore',fd,fd],
+  env:{...process.env,...evidence},stdio:['ignore',fd,fd],
  });}finally{closeSync(fd);}
  results.push({suite,checkpoint,startedAt,finishedAt:new Date().toISOString(),exitCode:result.status,signal:result.signal,error:result.error?.message??null,log,directory});
  writeFileSync(join(destination,'summary.json'),JSON.stringify({checkpoint,scope:'Employee-only release; existing compatibility-role regressions retained',results},null,2));
