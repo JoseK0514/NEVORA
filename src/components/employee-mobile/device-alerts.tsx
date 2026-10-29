@@ -3,7 +3,7 @@ import {useEffect,useRef,useState,type RefObject} from 'react';
 import Link from 'next/link';
 import {BellIcon} from '@phosphor-icons/react/dist/ssr/Bell';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
-import type {DeviceSnapshot} from '../../lib/notifications/device-client';
+import {DEVICE_TURN_OFF_PENDING_MESSAGE,type DeviceSnapshot} from '../../lib/notifications/device-client';
 import {EmployeeProfileDocumentFrame} from './profile';
 import {PortalSignout} from '../portal-signout';
 import {useEmployeeDevice} from './device-owner';
@@ -28,7 +28,7 @@ export function EmployeeDeviceAlertsView({confirmationRef,feedbackRef,turnOffRef
    </>}
   </section>
   {allowed&&p.confirm&&!busy?<div ref={confirmationRef} className="em-device-confirmation" tabIndex={-1} role="group" aria-labelledby="device-turnoff-title"><h2 id="device-turnoff-title">Turn off alerts here?</h2><p>NEVORA will try to stop alerts for this account in this browser. We’ll check the result before confirming they’re off.</p><p>Your browser permission, other devices, and notifications in NEVORA stay the same. An alert already queued by your device may still appear.</p><div className="em-device-actions"><button type="button" className="em-request-secondary" onClick={p.onKeep}>Keep current setup</button><button type="button" className="em-request-secondary em-device-danger" onClick={p.onTurnOff}>Turn off alerts</button></div></div>:null}
-  <div ref={feedbackRef} tabIndex={-1} className="em-device-feedback">{allowed&&s?.message?<p role="status">{cleanup?'We haven’t confirmed this change. You can keep using NEVORA or sign out.':state==='error'?'Setup could not finish. Check again before starting a new request. You can ask your manager for help.':s.message}</p>:null}{allowed&&p.installMessage?<p role="status">{p.installMessage}</p>:null}</div>
+  <div ref={feedbackRef} tabIndex={-1} className="em-device-feedback">{allowed&&s?.message?<p role="status">{cleanup?DEVICE_TURN_OFF_PENDING_MESSAGE:state==='error'?'Setup could not finish. Check again before starting a new request. You can ask your manager for help.':s.message}</p>:null}{allowed&&p.installMessage?<p role="status">{p.installMessage}</p>:null}</div>
   <section className="em-device-help" aria-labelledby="device-help-title"><h2 id="device-help-title">About device alerts</h2><p>These settings apply to this browser on this device. Your inbox stays available when device alerts are off.</p><Link className="em-device-link" href="/app/notifications">View your notifications</Link>
    <details><summary><span>Home Screen setup</span><CaretDownIcon size={20} aria-hidden="true"/></summary><div><p>{s?.capabilities.requiresStandalone?'In Safari, open Share, then Add to Home Screen. Turn on Open as Web App if offered. Open NEVORA from the new icon.':'Open your browser menu and choose Install app or Add to Home Screen if offered. Open NEVORA from the new icon.'}</p><p>Reading these instructions does not install NEVORA or allow alerts.</p></div></details>
    <details><summary><span>Permission and delivery</span><CaretDownIcon size={20} aria-hidden="true"/></summary><div><p>Your browser must allow notifications, and NEVORA must finish setting up this device. Permission alone does not mean setup is complete.</p><p>Your device can silence or delay alerts. A queued test does not confirm that an alert appeared. Check NEVORA for current work updates.</p></div></details>

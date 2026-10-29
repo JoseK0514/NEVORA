@@ -6,9 +6,11 @@ This is a concrete review package, not an accepted exception or release approval
 
 The independent CacheStorage tombstone now covers worker restart after an IndexedDB suppression-write failure, even before the app is reopened. It contains only an opaque generation, survives public-cache upgrades/retirement, and cannot be cleared by passive enrollment. Saturation fails closed; a fresh generation is independently checked. Tests reproduce the previous display failure and prove this mitigation.
 
-**Remaining irreducible boundary:** if all durable browser stores, native unsubscribe and server cleanup fail simultaneously, a restarted worker cannot know an intent that no component retained. The app must keep cleanup pending, never claim alerts are off, and offer the real immediate safeguard: block NEVORA notifications in device/browser settings, then retry cleanup. Site-data erasure while the native subscription/server record survive is likewise not proof of opt-out.
+**Remaining irreducible boundary:** if both worker-readable stores (IndexedDB and CacheStorage), native unsubscribe and server cleanup fail simultaneously, a restarted worker cannot read an intent kept only in page storage. A successful localStorage reminder does not protect background delivery before the app reopens; failure of that reminder also removes page recovery. The app keeps cleanup pending, never claims alerts are off, and always offers the real immediate safeguard: block NEVORA notifications in device/browser settings, then retry. Site-data erasure while the native subscription/server record survive is likewise not proof of opt-out.
 
 Recommendation: keep the explicit unconfirmed state and immediate settings guidance; require physical-device/provider evidence before enabling production alerts. Do not assert zero residual risk or silently accept it. Jose's release disposition remains required for this exact boundary; this document grants none.
+
+Rollback must preserve a suppression-aware worker or retire delivery through verified controls. Reverting to historical worker bytes is not proven safe by a cache that those bytes do not consult.
 
 ## Deletion support and withdrawal
 

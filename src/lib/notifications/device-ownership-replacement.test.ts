@@ -2,10 +2,13 @@
 // (docs/execution/employee-mobile-device-alerts/evidence/root/reviews/qa/ownership-replacement.test.ts.txt).
 // The actual public/fuel-portal-sw.js runs in a VM; only native IDB/PushManager/MessageChannel/fetch are doubles.
 // The probe asserted the unsafe outcome to prove reproduction; these tests assert the safe one.
-import {it,expect,vi,afterEach} from 'vitest';
+import {it,expect,vi,beforeEach,afterEach} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
-import {DeviceController,browserRuntime} from './device-client';
+let DeviceController: typeof import('./device-client').DeviceController;
+let browserRuntime: typeof import('./device-client').browserRuntime;
+// Each fixture is a fresh browser; replacements within one test share its lifetime.
+beforeEach(async()=>{vi.resetModules();({DeviceController,browserRuntime}=await import('./device-client'));});
 const source=readFileSync('public/fuel-portal-sw.js','utf8');
 afterEach(()=>{vi.unstubAllGlobals();});
 const origin='https://portal.example';const gen='generation-original';const authority='fictional-authority';
@@ -27,8 +30,8 @@ function worker(db:ReturnType<typeof storage>,messages:any[],caches:unknown){
  return {postMessage(message:any,ports:any[]){messages.push(message);handlers.get('message')({source:client,data:message,ports,waitUntil:(p:Promise<unknown>)=>{void p}})}};
 }
 function fixture(){
- const db=storage(),messages:any[]=[],stores=new Map<string,Map<string,Response>>();
- const caches={open:async(name:string)=>{if(!stores.has(name))stores.set(name,new Map());const store=stores.get(name)!;return {keys:async()=>[...store.keys()].map(k=>new Request(k)),match:async(key:string)=>store.get(key)?.clone(),put:async(key:string,value:Response)=>{store.set(key,value.clone())}}}};
+ const db=storage(),messages:any[]=[],stores=new Map<string,Map<string,Response>>();let cacheFailed=false;
+ const caches={open:async(name:string)=>{if(cacheFailed)throw Error('Cache unavailable');if(!stores.has(name))stores.set(name,new Map());const store=stores.get(name)!;return {keys:async()=>[...store.keys()].map(k=>new Request(k)),match:async(key:string)=>store.get(key)?.clone(),put:async(key:string,value:Response)=>{store.set(key,value.clone())}}}};
  let active=worker(db,messages,caches);const values=new Map<string,string>();let failLocal=false;
  const subscription={unsubscribe:vi.fn(async()=>{throw Error('native rejected')}),toJSON:()=>({endpoint:'fictional'})};
  const registration={get active(){return active},waiting:null,pushManager:{getSubscription:async()=>subscription},getNotifications:async()=>[]};
@@ -41,7 +44,7 @@ function fixture(){
  vi.stubGlobal('localStorage',{getItem:(key:string)=>values.get(key)??null,setItem:(key:string,value:string)=>{if(failLocal)throw Error('storage unavailable');values.set(key,value);},removeItem:(key:string)=>{values.delete(key);}});
  vi.stubGlobal('fetch',vi.fn(async(url:string)=>url.endsWith('/status')?new Response(JSON.stringify({supported:true,enabled:true,configurationAvailable:true,testAllowed:false,ownershipGeneration:gen,vapidPublicKey:'fictional',authority,validForMs:45000}),{status:200}):new Response(JSON.stringify({error:'cleanup_pending'}),{status:503})));
  const controller=()=>new DeviceController(browserRuntime(authority),()=>{});
- return {db,messages,values,subscription,controller,replaceWorker(){active=worker(db,messages,caches)},failLocalStorage(){failLocal=true;}};
+ return {db,messages,values,subscription,controller,failWorkerStorage(){db.fail();cacheFailed=true;},replaceWorker(){active=worker(db,messages,caches)},failLocalStorage(){failLocal=true;}};
 }
 const setOwner=(messages:any[])=>messages.filter(m=>m.type==='SET_OWNER'&&m.generation===gen).length;
 
@@ -104,4 +107,18 @@ it('OWN-CR-2: when this browser cannot keep the request, the person is told to r
  expect(c.snapshot.message).toContain('This browser couldn’t save the recovery reminder');
  expect(c.snapshot.message).toContain('block NEVORA notifications');
  expect(c.snapshot.cleanupPending).toBe(true);
+});
+
+
+it.each([false,true])('pending turn-off gives an immediate settings safeguard when both worker stores fail, including replacement=%s',async(replace)=>{
+ const f=fixture(),first=f.controller();await first.start();expect(first.snapshot.state).toBe('enabled');
+ f.failWorkerStorage();await first.turnOff();
+ expect(JSON.parse(f.values.get('fuel-portal-turn-off-pending')!)).toEqual([gen]);
+ const owners=setOwner(f.messages);let current=first;
+ if(replace){first.dispose();f.replaceWorker();current=f.controller();await current.start();}
+ expect(current.snapshot.state).toBe('error');expect(current.snapshot.cleanupPending).toBe(true);
+ expect(current.snapshot.message).toContain('block NEVORA notifications in your device or browser settings');
+ expect(current.snapshot.message).not.toContain('Notifications turned off');
+ expect(current.snapshot.message).not.toContain('couldn’t save the recovery reminder');
+ expect(setOwner(f.messages)).toBe(owners);
 });

@@ -1,6 +1,7 @@
 'use client';
 
 import {useState, type MouseEvent, type ReactNode} from 'react';
+import Link from 'next/link';
 import {AuthBrand} from '../auth-brand';
 import {NavIcon} from '../nav-icon';
 import {ActionMenu} from '../action-menu';
@@ -72,7 +73,7 @@ function PreviewShell({role, notice, children}: {role: PreviewRole; notice: (mes
           </button> : null}
           <button type="button" className="portal-header-notifications" aria-label="Sample notifications" onClick={() => notice('This is a frozen sample. Notifications are not connected.')}><NavIcon name="notifications" size={22}/></button>
           <PortalAccountMenu initials={`${profile.first_name[0]}${profile.last_name[0]}`} name={`${profile.first_name} ${profile.last_name}`}>
-            {employee ? <a href="/app/profile" className="nevora-action-menu-item">Your profile</a> : null}
+            {employee ? <Link href="/app/profile" className="nevora-action-menu-item">Your profile</Link> : null}
             <div className="nevora-action-menu-divider" />
             <button type="button" className="nevora-action-menu-item portal-account-signout" onClick={event => { event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover(); notice('Sign out is not connected in this sample.'); }}>Sign out</button>
           </PortalAccountMenu>

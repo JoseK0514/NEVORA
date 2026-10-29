@@ -15,7 +15,7 @@ it('settled feature-off and paused states are not announced as busy',async()=>{
 });
 it('an uncertain cleanup offers original recovery without an enabled claim or test command',async()=>{
  const html=await view({...ready,state:'error',cleanupPending:true,server:{...ready.server,enabled:true,ownershipGeneration:'original',testAllowed:true,localOwned:false},message:'Server cleanup is pending.'});
- expect(html).toContain('Alerts may still be on');expect(html).toContain('Retry turn off');expect(html).toContain('latest status');expect(html).not.toContain('Test notification');expect(html).not.toContain('Alerts are on');
+ expect(html).toContain('block NEVORA notifications in your device or browser settings');expect(html).not.toContain('Server cleanup is pending.');expect(html).toContain('Alerts may still be on');expect(html).toContain('Retry turn off');expect(html).toContain('latest status');expect(html).not.toContain('Test notification');expect(html).not.toContain('Alerts are on');
 });
 it('only verified enabled ownership exposes the gated test and removal explains its scope',async()=>{
  const snapshot:DeviceSnapshot={...ready,state:'enabled',server:{...ready.server,enabled:true,ownershipGeneration:'own',localOwned:true,testAllowed:true}};

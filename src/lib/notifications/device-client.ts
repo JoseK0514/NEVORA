@@ -18,6 +18,7 @@ export type DeviceRuntime = {
 };
 export type DeviceSnapshot = { state: DeviceSetupState; server: DeviceStatusView; message?: string; standalone: boolean | 'unknown'; capabilities: DeviceCapabilities; validUntil?:number; cleanupPending?:boolean; cleanupGeneration?:string; accessChanged?:boolean };
 const emptyStatus: DeviceStatusView = { supported: false, enabled: false, configurationAvailable: false, testAllowed: false, phase: 'loading' };
+export const DEVICE_TURN_OFF_PENDING_MESSAGE = 'Turn-off is still pending. To stop alerts now, block NEVORA notifications in your device or browser settings. Then return here and retry. You can still sign out.';
 /** Bound the UI wait only. Timing out does not cancel the underlying promise; native
  * subscription operations still require ownership fences and their lifecycle lock. */
 export function bounded<T>(promise: Promise<T>, ms = 2500): Promise<T> {
@@ -72,7 +73,7 @@ export class DeviceController {
     this.refreshTask = bounded(this.readStatus(epoch, passive), 20000).catch(() => {
       if (this.current(epoch)) {
         this.epoch++;
-        this.publish({ ...this.snapshot.server, phase: 'error' }, 'Device setup is unavailable. Retry, or turn off notifications if cleanup is pending.');
+        this.publish({ ...this.snapshot.server, phase: 'error' }, this.cleanupGeneration ? DEVICE_TURN_OFF_PENDING_MESSAGE : 'Device setup is unavailable. Retry, or turn off notifications if cleanup is pending.');
       }
     }).finally(() => { this.refreshTask = undefined; });
     return this.refreshTask;
@@ -90,7 +91,7 @@ export class DeviceController {
         await this.runtime.suppress(this.cleanupGeneration);
         if (!this.current(epoch)) return;
         if (status.enabled) {
-          this.publish({ ...status, phase: 'error', localOwned: false }, 'Server cleanup is pending. Notifications remain suppressed locally where possible. Retry Turn Off; you can still sign out.');
+          this.publish({ ...status, phase: 'error', localOwned: false }, DEVICE_TURN_OFF_PENDING_MESSAGE);
           return;
         }
         this.runtime.rememberTurnOff?.(this.cleanupGeneration, false);
@@ -130,7 +131,7 @@ export class DeviceController {
       this.publish(status);
     } catch(error) {
       if(error instanceof DeviceRequestError&&(error.status===401||error.status===403)){this.invalidate();return;}
-      if (this.current(epoch)) this.publish({ ...this.snapshot.server, phase: 'error' }, 'Device setup is unavailable. Retry, or turn off notifications if cleanup is pending.');
+      if (this.current(epoch)) this.publish({ ...this.snapshot.server, phase: 'error' }, this.cleanupGeneration ? DEVICE_TURN_OFF_PENDING_MESSAGE : 'Device setup is unavailable. Retry, or turn off notifications if cleanup is pending.');
     }
   }
   async enable() {
@@ -211,8 +212,8 @@ export class DeviceController {
       this.publish({ ...this.snapshot.server, phase: undefined, enabled: false, ownershipGeneration: undefined, testAllowed: false, localOwned: false }, 'Notifications turned off on this device.');
     } catch(error) {
       if(error instanceof DeviceRequestError&&(error.status===401||error.status===403)){this.invalidate();return;}
-      // OWN-CR-2: say so when nothing in this browser could keep the request.
-      if (this.current(epoch)) this.publish({ ...this.snapshot.server, phase: 'error' }, 'Server cleanup is pending. Notifications remain suppressed locally where possible. Retry Turn Off; you can still sign out.' + (this.intentUnsaved ? ' This browser couldn’t save the recovery reminder. To stop alerts now, block NEVORA notifications in your device or browser settings, then retry cleanup.' : ''));
+      // Worker-readable stores can fail even when the page saves its reminder.
+      if (this.current(epoch)) this.publish({ ...this.snapshot.server, phase: 'error' }, DEVICE_TURN_OFF_PENDING_MESSAGE + (this.intentUnsaved ? ' This browser couldn’t save the recovery reminder.' : ''));
     }
   }
   async test() {

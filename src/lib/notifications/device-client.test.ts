@@ -39,7 +39,7 @@ it('stale status never restores owner after signout/dispose',async()=>{
 });
 it('turn off reports pending server cleanup, suppresses first and never resets recovery',async()=>{
  const order:string[]=[];const {controller}=fixture({permission:()=> 'granted',api:async op=>op==='unsubscribe'?{status:'pending'}:{...status,enabled:true,ownershipGeneration:'old'},suppress:async()=>{order.push('suppress');},unsubscribe:async()=>{order.push('unsubscribe');}});
- await controller.start();await controller.turnOff();expect(order).toEqual(['suppress','unsubscribe']);expect(controller.snapshot.state).toBe('error');expect(controller.snapshot.message).toContain('cleanup');
+ await controller.start();await controller.turnOff();expect(order).toEqual(['suppress','unsubscribe']);expect(controller.snapshot.state).toBe('error');expect(controller.snapshot.message).toContain('Turn-off is still pending');expect(controller.snapshot.message).toContain('block NEVORA notifications in your device or browser settings');
 });
 it('a passive refresh cannot reclaim a generation after an uncertain turn-off',async()=>{
  const own=vi.fn(async()=>true),suppress=vi.fn(async()=>{});
@@ -47,7 +47,7 @@ it('a passive refresh cannot reclaim a generation after an uncertain turn-off',a
  await controller.start();await controller.turnOff();own.mockClear();suppress.mockClear();
  await controller.reconcile();
  expect(own).not.toHaveBeenCalled();expect(suppress).toHaveBeenCalledWith('original-generation');
- expect(controller.snapshot.state).toBe('error');expect(controller.snapshot.message).toContain('cleanup');
+ expect(controller.snapshot.state).toBe('error');expect(controller.snapshot.message).toContain('Turn-off is still pending');expect(controller.snapshot.message).toContain('block NEVORA notifications in your device or browser settings');
 });
 it('cleanup retry retains the originally reviewed generation after a replacement appears',async()=>{
  let generation='original';const sent:string[]=[];
