@@ -1,5 +1,8 @@
 # Active remote branch limit
 
+Historical decision: superseded on October 27 by the
+[seven-branch policy](2026-10-27-seven-branch-policy.md). The active ceiling is now seven.
+
 Jose explicitly changed the limit on 2026-10-23: “We will now leave it on 6 for now not more”, then clarified “One is for Claude”.
 
 Preserve the six existing remote branches, including Claude-UI-Fix. Do not archive or retire that branch under the superseded five-branch proposal. This authorizes a maximum of six, not a seventh branch or automatic acceptance of new work. Exact source heads, ancestry, classification, recoverable historical archives and the main/development protections remain enforced.

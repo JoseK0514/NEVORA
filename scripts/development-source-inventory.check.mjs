@@ -1,5 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {validateInventory, parseHeads, parseRemoteRefs, compareSources} from './development-source-inventory.mjs';
 
 const sha = 'a'.repeat(40), next = 'b'.repeat(40);
@@ -30,6 +31,16 @@ test('does not hide new work pushed to the assembly branch after integration', (
   assert.deepEqual(compareSources(inventory(),actual,value=>value===sha),[
     'Remote assembly has changes absent from this checkout',
   ]);
+});
+test('recognizes the approved Claude/Codex collaboration branch without bypassing ancestry', () => {
+  const i=inventory();i.assemblyBranch='claude-codex-collab-nevora';
+  const actual=heads();actual.set(i.assemblyBranch,next);
+  assert.deepEqual(compareSources(i,actual,()=>true),[]);
+  assert.deepEqual(compareSources(i,actual,value=>value===sha),[
+    'Remote assembly has changes absent from this checkout',
+  ]);
+  i.assemblyBranch='claude/other';
+  assert.throws(()=>validateInventory(i));
 });
 test('rejects invalid hashes, duplicate sources and relaxed main disposition', () => {
   for (const mutate of [i=>i.sources[0].sha='short',i=>i.sources.push(i.sources[0]),i=>i.sources[0].disposition='reference']) {
@@ -75,7 +86,13 @@ test('enforces the approved remote branch ceiling without hiding extra heads',()
   assert.deepEqual(compareSources(i,actual,()=>true),[]);
   actual.set('seventh',next);
   assert.deepEqual(compareSources(i,actual,()=>true),['Unclassified branch: seventh','Remote branch ceiling exceeded: 7 > 6']);
-  for(const value of [0,7,1.5,'6']){i.maximumActiveBranches=value;assert.throws(()=>validateInventory(i));}
+  i.maximumActiveBranches=7;
+  assert.deepEqual(compareSources(i,actual,()=>true),['Unclassified branch: seventh']);
+  i.sources.push({branch:'seventh',sha:next,disposition:'held',reason:'approved seventh branch'});
+  assert.deepEqual(compareSources(i,actual,()=>true),[]);
+  actual.set('eighth',next);
+  assert.deepEqual(compareSources(i,actual,()=>true),['Unclassified branch: eighth','Remote branch ceiling exceeded: 8 > 7']);
+  for(const value of [0,8,1.5,'7']){i.maximumActiveBranches=value;assert.throws(()=>validateInventory(i));}
 });
 test('parses exact lightweight archive tags without accepting malformed or duplicate refs',()=>{
   const ref='refs/tags/archive/branches/2026-10-22/feature';
@@ -83,4 +100,18 @@ test('parses exact lightweight archive tags without accepting malformed or dupli
   assert.deepEqual([...parsed.heads],[['main',sha]]);assert.deepEqual([...parsed.archives],[[ref,next]]);
   assert.throws(()=>parseRemoteRefs(`${sha}\t${ref}\n${next}\t${ref}\n`));
   assert.throws(()=>parseRemoteRefs(`${sha}\trefs/something/main\n`));
+});
+
+test('published three-branch policy retains exact source archives and rejects a recreated fourth branch',()=>{
+  const i=validateInventory(JSON.parse(readFileSync(new URL('../docs/handoffs/2026-10-21-development-assembly-sources.json',import.meta.url),'utf8')));
+  assert.equal(i.maximumActiveBranches,3);
+  assert.equal(i.assemblyBranch,'claude-codex-collab-nevora');
+  assert.deepEqual(i.sources.filter(source=>!source.archiveRef).map(source=>source.branch).sort(),['development','main']);
+  const actual=new Map(i.sources.filter(source=>!source.archiveRef).map(source=>[source.branch,source.sha]));
+  actual.set(i.assemblyBranch,next);
+  const archives=new Map(i.sources.filter(source=>source.archiveRef).map(source=>[source.archiveRef,source.sha]));
+  assert.deepEqual(compareSources(i,actual,()=>true,archives),[]);
+  const retired=i.sources.find(source=>source.archiveRef);
+  actual.set(retired.branch,retired.sha);
+  assert.deepEqual(compareSources(i,actual,()=>true,archives),['Remote branch ceiling exceeded: 4 > 3']);
 });

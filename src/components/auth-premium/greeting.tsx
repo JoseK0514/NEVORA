@@ -16,8 +16,8 @@ const serverHour = () => -1;
 
 /** The server renders "Welcome back"; after hydration the device's hour picks the greeting, so there is no mismatch
  * and never a blank title. */
-export function Greeting({ words, id, as = "h1", className = "ap-title" }: { words: Greetings; id?: string; /** "p" for the phone band's copy (the sheet keeps the h1). */ as?: "h1" | "p"; className?: string }) {
+export function Greeting({ words, id, as = "h1", className = "ap-title", mobileTitle }: { words: Greetings; id?: string; /** "p" for the phone band's copy (the sheet keeps the h1). */ as?: "h1" | "p"; className?: string; mobileTitle?: string }) {
   const hour = useSyncExternalStore(subscribe, currentHour, serverHour);
   const Tag = as;
-  return <Tag className={className} id={id}>{hour < 0 ? words.welcome : greetingFor(hour, words)}</Tag>;
+  return <Tag className={className} id={id}>{mobileTitle ? <><span className="ma-only">{mobileTitle}</span><span className="ma-desktop">{hour < 0 ? words.welcome : greetingFor(hour, words)}</span></> : hour < 0 ? words.welcome : greetingFor(hour, words)}</Tag>;
 }

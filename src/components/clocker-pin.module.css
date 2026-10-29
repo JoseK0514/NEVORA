@@ -136,3 +136,7 @@
 }
 @media (max-width:360px) { .keypad { grid-template-columns: repeat(3, 68px); gap: 10px 18px; } .keypad button { width: 68px; height: 68px; } }
 @media (prefers-reduced-motion:reduce) { .terminal * { animation: none !important; transition: none !important; } }
+
+.privacyWarning{display:grid;gap:12px;width:100%;margin-top:24px;padding:16px;border:1px solid var(--ck-edge);border-radius:12px;background:var(--ck-page);color:var(--ck-ink);}.privacyWarning p{margin:0;}.privacyWarning button{width:100%;}
+
+.terminal:has([data-clocker-state=success])>.privacyWarning{display:none;}

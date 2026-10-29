@@ -13,6 +13,7 @@ export async function companyAccessFixture(options:{database?:'foundation'|'exch
    INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES
    (repeat('a',64),'owner',clock_timestamp()+interval '1 hour'),(repeat('b',64),'manager',clock_timestamp()+interval '1 hour');`);
   await q(await readFile('db/migrations/0032_company_access_invitations.sql','utf8'));
+  await q(await readFile('db/migrations/0042_company_invitation_lifetime.sql','utf8'));
   const sqlFailures:{code:string;position:string}[]=[];
   const original=db.executor;
   db.executor={...original,async transaction(statements,signal){

@@ -2,14 +2,15 @@
   "schema": 1,
   "repository": "JoseK0514/NEVORA",
   "target": "development",
-  "assemblyBranch": "codex/premium-backend",
-  "observedAt": "2026-10-24",
+  "assemblyBranch": "claude-codex-collab-nevora",
+  "observedAt": "2026-10-28",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
-      "sha": "3103829366dbf27b21c0860a7ef13fc458648563",
+      "sha": "8e9073974b52053e557382ec5199dbce9d5aa32c",
       "disposition": "included",
-      "reason": "Quiet v4 and Claude's bounded functional repairs are included unchanged from 31038293, based directly on development 8d4a3792. Review and full matching cloud acceptance remain required before integration. Preserve Claude's branch and visual style."
+      "reason": "PR31 is merged and this exact tip is an ancestor of development46e2027. Recoverable remote-head retirement for PR35 source reconciliation: retain the exact archive tag, local branches/worktrees and every open PR branch. No application source is overlaid or independent acceptance inferred.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-26/Claude-UI-Fix"
     },
     {
       "branch": "claude/role-nav-webkit",
@@ -50,14 +51,14 @@
       "branch": "claude/bold-joliot-ec227c",
       "sha": "3c281cdb09bc2912e6ab007714e482ec02649dc9",
       "disposition": "held",
-      "reason": "Older Phase C browser drivers and a Clocker component label change; excluded from this bounded UI integration pending comparison with current drivers.",
+      "reason": "Older Phase C browser drivers and a Clocker component label change; excluded from this bounded UI integration pending comparison with current drivers. Preserved outside the Clocker collaboration integration.",
       "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/bold-joliot-ec227c"
     },
     {
       "branch": "claude/business-foundations",
       "sha": "cb35605b33e6151125518ecfa45de3735d708105",
       "disposition": "held",
-      "reason": "Optional bilingual public landing and business notes are retained separately while the R1 release checks are completed.",
+      "reason": "Optional bilingual public landing and business notes are retained separately while the R1 release checks are completed. Preserved outside the Clocker collaboration integration.",
       "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/business-foundations"
     },
     {
@@ -218,7 +219,8 @@
       "branch": "codex/ci-spend-controls-20261023",
       "sha": "e49edcd8607be18a40fd2c7ae3fc48542d801597",
       "disposition": "held",
-      "reason": "Active draft CI spending PR27 appeared during finalization. Preserve its remote and local work; exclude its workflow changes from this approved integration and reconcile any advancement before cleanup."
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/ci-spend-controls-20261023"
     },
     {
       "branch": "codex/clean-ui-development-20261020",
@@ -238,7 +240,7 @@
       "branch": "codex/f10-original-owner-bootstrap-20261011",
       "sha": "838c77325272696c5f9cc29fab14d664708d2e3c",
       "disposition": "held",
-      "reason": "Separate original-owner tenant bootstrap; not activated by this single-company release.",
+      "reason": "Separate original-owner tenant bootstrap; not activated by this single-company release. Preserved outside the Clocker collaboration integration.",
       "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/f10-original-owner-bootstrap-20261011"
     },
     {
@@ -294,7 +296,8 @@
       "branch": "codex/owner-ai-release-testing-20261023",
       "sha": "2ea580d623c76dd7d717492d209552461b5b4a28",
       "disposition": "included",
-      "reason": "PR29's reviewed CI supervision, dependency and diagnostic changes are included without overlapping Claude UI paths. Its existing failed workflow is retained as failed evidence; new assembled-source acceptance is mandatory. The assembly reuses the inactive Codex premium-backend remote by fast-forward, retaining its original 2d425b4b ancestry and historical evidence without overlaying 2042 historical docs onto current development."
+      "reason": "PR29 is merged and this exact tip is an ancestor of development46e2027. Recoverable remote-head retirement for PR35 source reconciliation: retain the exact archive tag, local branches/worktrees and every open PR branch. No application source is overlaid or independent acceptance inferred.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-26/codex/owner-ai-release-testing-20261023"
     },
     {
       "branch": "codex/ready-desktop",
@@ -361,9 +364,9 @@
     },
     {
       "branch": "development",
-      "sha": "8d4a3792aceb9cd56e7e33ce318f4d5e9a74f9bb",
+      "sha": "682ecea9fa61548f68274c896ffa4e2d92b62989",
       "disposition": "target",
-      "reason": "Freshly fetched combined development after PR25; preserved as the base for Claude Quiet v4 and the reviewed CI repairs. No development merge is claimed before matching cloud acceptance."
+      "reason": "Current development three-branch retirement policy is incorporated into collaboration. Archived source dispositions and existing collaboration application work are preserved; no main or production promotion."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -398,7 +401,84 @@
       "disposition": "superseded",
       "reason": "Earlier UI/login prototype replaced by later authenticated application and auth implementations.",
       "archiveRef": "refs/tags/archive/branches/2026-10-23/v0/resolve-login-runtime-errors-01fd3e6c"
+    },
+    {
+      "branch": "claude/quiet-check-skeleton",
+      "sha": "16a9169ce1fc0d6eee9f3e1319d3db825ab1236f",
+      "disposition": "included",
+      "archiveRef": "refs/tags/archive/branches/2026-10-26/claude/quiet-check-skeleton",
+      "reason": "PR32 is merged and this exact tip is an ancestor of development46e2027. Recoverable remote-head retirement for PR35 source reconciliation: retain the exact archive tag, local branches/worktrees and every open PR branch. No application source is overlaid or independent acceptance inferred."
+    },
+    {
+      "branch": "claude/home-clock-row",
+      "sha": "341680bbbc3620a7f357309464961dfa845c1b64",
+      "disposition": "held",
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/claude/home-clock-row"
+    },
+    {
+      "branch": "claude/quiet-everywhere",
+      "sha": "5b82c3cb4836ba61415cef1d6f3cd918c019a385",
+      "disposition": "held",
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/claude/quiet-everywhere"
+    },
+    {
+      "branch": "codex/mobile-access-onboarding-20261026",
+      "sha": "574a90c9d6add697fb23298e24c1e1c981c365c8",
+      "disposition": "included",
+      "reason": "Merged PR35 is included in development dfdcefa. The exact remote archive was verified on October27 at 574a90c9; the separately retired remote head remains recoverable. Preserve local branches and worktrees.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-27/codex/mobile-access-onboarding-20261026"
+    },
+    {
+      "branch": "codex/light-default-20261027",
+      "sha": "2f6103b10b86848bac59d0a7481e4cbd70265020",
+      "disposition": "included",
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source was already included in the collaboration branch before cleanup; its development integration and combined-source acceptance remain separate. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/light-default-20261027"
+    },
+    {
+      "branch": "codex/employee-mobile-cloud-handoff-20261027",
+      "sha": "e06eeff35960336b2c33f1bd1037823d62a8405a",
+      "disposition": "held",
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/employee-mobile-cloud-handoff-20261027"
+    },
+    {
+      "branch": "codex/employee-mobile-cloud-return-20261027",
+      "sha": "c21ac528fefac35de7534d47be196fec2866c066",
+      "disposition": "held",
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/employee-mobile-cloud-return-20261027"
+    },
+    {
+      "branch": "codex/employee-mobile-local-resume-20261027",
+      "sha": "003bbe2ca42c40efffe975294ec3577aa2633bac",
+      "disposition": "held",
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/employee-mobile-local-resume-20261027"
+    },
+    {
+      "branch": "codex/owner-desktop-cloud-handoff-20261027",
+      "sha": "b16302978be01bb0e288bfc3e785c7e13a9a2c11",
+      "disposition": "held",
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/owner-desktop-cloud-handoff-20261027"
+    },
+    {
+      "branch": "codex/owner-desktop-cloud-return-g11-20261027",
+      "sha": "5141ba9097d93d955930c6859b3d8d8d142b5521",
+      "disposition": "held",
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/owner-desktop-cloud-return-g11-20261027"
+    },
+    {
+      "branch": "codex/owner-mobile-cloud-handoff-20261027",
+      "sha": "e673e6e05b1c38c25706803946efe82c2c591625",
+      "disposition": "held",
+      "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/owner-mobile-cloud-handoff-20261027"
     }
   ],
-  "maximumActiveBranches": 6
+  "maximumActiveBranches": 3
 }

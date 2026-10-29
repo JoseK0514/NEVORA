@@ -1,7 +1,7 @@
 import { parsePunchCommand } from './punch-command';
 import type { PunchAction, PunchCommand, PunchReceipt, PunchSnapshot, PunchView } from './punch-types';
 import type { BreakSelection, BreakTypeSnapshot } from './break-types';
-export type ClockView=PunchView&{state:'ready';subject:string;firstName:string;expiresAt:string;locationId:string};
+export type ClockView=PunchView&{state:'ready';subject:string;firstName:string;expiresAt:string;locationId:string;photoCaptureAvailable?:boolean};
 export type PendingPunch={subject:string;command:PunchCommand};
 type Storage=Pick<globalThis.Storage,'getItem'|'setItem'|'removeItem'>;
 type RecoveryStorage=Storage&Pick<globalThis.Storage,'key'|'length'>;
@@ -74,16 +74,16 @@ export function makePunchCommand(action:PunchAction,view:ClockView,commandId:str
   timeEntryId:s.entry?.id??null,timeEntryVersion:s.entry?.version??null,breakEntryId:s.break?.id??null,breakEntryVersion:s.break?.version??null},
   ...(action==='START_BREAK'?{breakType:{id:selection!.id,version:selection!.version}}:{})});
 }
-function pending(value:unknown):PendingPunch{
+export function parsePendingPunch(value:unknown):PendingPunch{
  if(!object(value)||Object.keys(value).length!==2||!hash(value.subject))return invalid();
  return {subject:value.subject,command:parsePunchCommand(value.command)};
 }
 export function readPendingPunch(storage:Storage,location:string):PendingPunch|null{
  const text=storage.getItem(recoveryKey(location));if(text===null)return null;
- if(text.length>2048)return invalid();return pending(JSON.parse(text));
+ if(text.length>2048)return invalid();return parsePendingPunch(JSON.parse(text));
 }
 export function savePendingPunch(storage:Storage,location:string,value:PendingPunch):void{
- const safe=pending(value),text=JSON.stringify(safe),previous=readPendingPunch(storage,location);
+ const safe=parsePendingPunch(value),text=JSON.stringify(safe),previous=readPendingPunch(storage,location);
  if(previous&&JSON.stringify(previous)!==text)throw Error('A previous clock action still needs verification.');
  storage.setItem(recoveryKey(location),text);
  if(storage.getItem(recoveryKey(location))!==text)throw Error('Recovery storage is unavailable. No action was sent.');
@@ -97,7 +97,7 @@ export function readSubjectPendingPunch(storage:Storage,location:string,subject:
  if(!hash(subject))return invalid();
  const value=storage.getItem(subjectKey(location,subject));
  let own:PendingPunch|null=null;
- if(value!==null){if(value.length>2048)return invalid();own=pending(JSON.parse(value));if(own.subject!==subject)return invalid();}
+ if(value!==null){if(value.length>2048)return invalid();own=parsePendingPunch(JSON.parse(value));if(own.subject!==subject)return invalid();}
  // Legacy intent is retained in place. Corrupt legacy data cannot be replayed
  // or retired, but does not prevent a separately verified employee's new slot.
  let legacy:PendingPunch|null=null;try{legacy=readPendingPunch(storage,location);}catch{ /* manager-assisted review; preserve bytes */ }
@@ -107,13 +107,13 @@ export function readSubjectPendingPunch(storage:Storage,location:string,subject:
 /** Persist and read back the exact subject-scoped intent before sending. Refuse
  * overwrite while another unresolved command occupies this employee/device slot. */
 export function saveSubjectPendingPunch(storage:Storage,location:string,value:PendingPunch):void{
- const safe=pending(value),text=JSON.stringify(safe),previous=readSubjectPendingPunch(storage,location,safe.subject);
+ const safe=parsePendingPunch(value),text=JSON.stringify(safe),previous=readSubjectPendingPunch(storage,location,safe.subject);
  if(previous&&JSON.stringify(previous)!==text)throw Error('Your previous action still needs verification.');
  storage.setItem(subjectKey(location,safe.subject),text);
  if(storage.getItem(subjectKey(location,safe.subject))!==text)throw Error('Recovery storage is unavailable. No action was sent.');
 }
 export function forgetSubjectPendingPunch(storage:Storage,location:string,value:PendingPunch):void{
- const safe=pending(value),current=readSubjectPendingPunch(storage,location,safe.subject);
+ const safe=parsePendingPunch(value),current=readSubjectPendingPunch(storage,location,safe.subject);
  if(!current||JSON.stringify(current)!==JSON.stringify(safe))throw Error('Recovery intent changed. It was kept.');
  const key=subjectKey(location,safe.subject);
  if(storage.getItem(key)!==null){storage.removeItem(key);if(storage.getItem(key)!==null)throw Error('Recovery storage could not be cleared.');}
@@ -123,7 +123,7 @@ export function forgetSubjectPendingPunch(storage:Storage,location:string,value:
 }
 export function pendingPunchReferences(storage:RecoveryStorage,location:string):{commandId:string|null;action:string|null}[]{
  const keys=Array.from({length:storage.length},(_,i)=>storage.key(i)).filter((k):k is string=>Boolean(k)&&(k===recoveryKey(location)||k!.startsWith(`nevora.clocker.pending.v2:${location}:`)));
- return keys.map(key=>{try{const raw=storage.getItem(key);if(!raw||raw.length>2048)return {commandId:null,action:null};const value=pending(JSON.parse(raw));return {commandId:value.command.commandId,action:value.command.action};}catch{return {commandId:null,action:null};}}).filter((v,i,all)=>v.commandId===null||all.findIndex(x=>x.commandId===v.commandId)===i);
+ return keys.map(key=>{try{const raw=storage.getItem(key);if(!raw||raw.length>2048)return {commandId:null,action:null};const value=parsePendingPunch(JSON.parse(raw));return {commandId:value.command.commandId,action:value.command.action};}catch{return {commandId:null,action:null};}}).filter((v,i,all)=>v.commandId===null||all.findIndex(x=>x.commandId===v.commandId)===i);
 }
 /** Use only after current state followed by absent receipt, under the same employee/device subject.
  * A fresh verification invalidates old commands: recovery never rewrites their verification or ID. */
@@ -138,9 +138,9 @@ export class PunchRequestError extends Error{
 }
 /** Submit with a bounded HTTP wait. Timeout/fetch failure leaves commit status
  * unknown; retain the original command and recover its receipt before any replay. */
-export async function postPunch(location:string,body:object):Promise<unknown>{
+export async function postPunch(location:string,body:object,signal?:AbortSignal):Promise<unknown>{
  const response=await fetch(`/api/clocker/${encodeURIComponent(location)}/punch`,{method:'POST',credentials:'same-origin',cache:'no-store',
-  headers:{'Content-Type':'application/json','X-Nevora-Clocker':'1'},body:JSON.stringify(body),signal:AbortSignal.timeout(12000)});
+  headers:{'Content-Type':'application/json','X-Nevora-Clocker':'1'},body:JSON.stringify(body),signal:signal?AbortSignal.any([signal,AbortSignal.timeout(12000)]):AbortSignal.timeout(12000)});
  const data:unknown=await response.json();
  if(!response.ok)throw new PunchRequestError(object(data)&&typeof data.code==='string'?data.code:'UNAVAILABLE',object(data)&&typeof data.error==='string'?data.error:'The clock result could not be confirmed.',response.status);
  return data;

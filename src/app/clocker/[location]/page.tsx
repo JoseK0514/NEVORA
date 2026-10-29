@@ -1,3 +1,5 @@
+import type {Metadata} from 'next';
+import {clockerLaunchMetadata} from '@/lib/clocker/installation';
 import { readPinKey } from '@/lib/clocker/pin-crypto.server';
 import { notFound } from "next/navigation";
 import { ClockerSetup } from "@/components/clocker-setup";
@@ -9,6 +11,10 @@ import { clockerBrandStyle } from "@/lib/workspace-presentation/derive";
 // Resolve configured location identity on every request; never read customer
 // configuration during static production generation.
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({params}:{params:Promise<{location:string}>}):Promise<Metadata>{
+ const {location}=await params;return clockerLaunchMetadata(location);
+}
 
 export default async function ClockerPage({
   params,
@@ -23,5 +29,5 @@ export default async function ClockerPage({
   let pinEnabled = false;
   try { readPinKey(); pinEnabled = true; } catch { /* PIN setup stays unavailable until configured. */ }
   const brand = await currentBrand();
-  return <ClockerSetup brand={{ style: clockerBrandStyle(brand.tokens), logoUrl: brand.logoUrl }} punchEnabled={process.env.NEVORA_CLOCKER_PUNCH_ENABLED === 'true'} pinEnabled={pinEnabled} locationKey={key} locationLabel={location.name} timeZone={workspace.timeZone} />;
+  return <ClockerSetup uiV2={process.env.NEVORA_CLOCKER_UI_V2==='true'} brand={{ style: clockerBrandStyle(brand.tokens), logoUrl: brand.logoUrl }} punchEnabled={process.env.NEVORA_CLOCKER_PUNCH_ENABLED === 'true'} pinEnabled={pinEnabled} locationKey={key} locationLabel={location.name} timeZone={workspace.timeZone} />;
 }

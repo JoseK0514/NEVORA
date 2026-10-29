@@ -1,3 +1,4 @@
+import {readEmployeeClockerPin,type EmployeePinView} from '@/lib/clocker/pins.server';
 import type { ReactNode } from "react";
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -43,15 +44,16 @@ export default async function EmployeeProfilePage({
   const actor=proof.employee;
   const source=await withOperationalCompany(proof,async()=>{
     const profile=await readOperationalEmployeeProfile(proof,employeeId);
-    if(profile.state==='unavailable')return {profile,positions:[],operational:null,profileUnavailable:false,invitation:null};
+    if(profile.state==='unavailable')return {profile,positions:[],operational:null,profileUnavailable:false,invitation:null,pin:null};
     const positions=await listPositions({includeInactive:true});
     let operational=null,profileUnavailable=false;
     try{operational=await readOperationalRuleProfileView(proof,profile.data.profile.id);}catch{profileUnavailable=true;}
     const invitation=proof.employee.role==='OWNER'?await readInvitationStatus(proof,employeeId):null;
-    return {profile,positions,operational,profileUnavailable,invitation};
+    let pin:EmployeePinView|null=null;if(proof.employee.role==='OWNER'&&profile.data.profile.active){try{pin=await readEmployeeClockerPin({employeeId:proof.employee.id,sessionTokenHash:proof.sessionTokenHash},employeeId);}catch{}}
+    return {profile,positions,operational,profileUnavailable,invitation,pin};
   });
   if(source.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={source.reason}/>;
-  const {profile,positions,operational,profileUnavailable,invitation}=source.data;
+  const {profile,positions,operational,profileUnavailable,invitation,pin}=source.data;
   if(profile.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={profile.reason}/>;
   const {profile:employee,locations,ownerScope}=profile.data;
   const primaryLocation = locations.find(
@@ -84,7 +86,7 @@ export default async function EmployeeProfilePage({
         <QuietRow title="Role" value={roleLabel} tone="l" />
       </ul></QuietGroup>
       {canManageCore && employee.active ? <QuietGroup label="Access" id="member-access"><ul className="q-list">
-        <QuietRow href={`${base}/clocker-pin`} title="Clocker PIN" value="Set" tone="l" />
+        {actor.role==='OWNER'&&employee.role!=='OWNER' ? <QuietRow href={`${base}/clocker-pin`} title="Clocker PIN" value={pin?(pin.configured?"Set":"Not set"):"Unavailable"} tone="l" /> : null}
         {recoverable ? <QuietRow href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} title="Account" value={invitation?.state === "ready" && invitation.eligibility !== "ALREADY_ACTIVATED" ? (invitation.invitation?.state === "ISSUED" ? "Invited" : "Not activated") : "Active"} tone="l" /> : null}
       </ul></QuietGroup> : null}
     </QuietPage>
@@ -109,8 +111,8 @@ export default async function EmployeeProfilePage({
             {actor.role==='OWNER'&&employee.role!=='OWNER'&&(ownerScope?<ManagerOperationalScopePanel actorId={actor.id} current={ownerScope} locations={locations}/>:<p role="status">Management access could not be confirmed. Refresh this employee before changing access.</p>)}
             {canManageCore && employee.active ? <Card title="Access">
               <Rows label="Access">
-                <Row href={`/app/employees/${encodeURIComponent(employee.id)}/clocker-pin`} title="Clocker PIN" meta="For the shared tablet. Separate from portal sign-in."
-                  leading={<Tile><KeyIcon size={20} weight="bold" /></Tile>} />
+                {actor.role==='OWNER'&&employee.role!=='OWNER' ? <Row href={`/app/employees/${encodeURIComponent(employee.id)}/clocker-pin`} title="Clocker PIN" meta="For the shared tablet. Separate from portal sign-in."
+                  leading={<Tile><KeyIcon size={20} weight="bold" /></Tile>} /> : null}
                 {/* Managers can help Employees and Leads; only an Owner can reset a Manager (matches the server rule). */}
                 {employee.id !== actor.id && (actor.role === "OWNER" || employee.role === "EMPLOYEE" || employee.role === "LEAD") ? <Row href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} title="Account recovery" meta="Help them back in after you check who they are."
                   leading={<Tile><LockKeyIcon size={20} weight="bold" /></Tile>} /> : null}

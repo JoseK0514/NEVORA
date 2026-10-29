@@ -20,3 +20,5 @@ html:has(body .nf-page), body:has(.nf-page) { background: #F7F6F3; }
 .nf-foot .login-brand-lockup { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; transform: none; }
 .nf-foot .login-brand-lockup :is(img, svg) { display: block; width: 104px; max-width: 104px; height: auto; }
 .nf-foot .login-brand-module { font-size: .6875rem; color: #6F6C66; }
+.nf-foot .brand-legal-links { display: flex; justify-content: center; flex-wrap: wrap; }
+.nf-foot .brand-legal-links a + a::before { content: "·"; padding: 0 8px; }

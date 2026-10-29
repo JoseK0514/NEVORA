@@ -1,3 +1,5 @@
+import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
+import {AccessJourneyProvider} from "@/components/mobile-access/journey";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { NUVORA_BRAND } from "../lib/brand";
@@ -39,7 +41,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         {/* Appearance: light or dark from the choice in Profile and the device setting, set before first paint. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
-      <body>{children}</body>
+      <body>{mobileAccessEnabled() ? <AccessJourneyProvider>{children}</AccessJourneyProvider> : children}</body>
     </html>
   );
 }

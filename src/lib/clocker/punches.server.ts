@@ -24,7 +24,7 @@ const statement=(text:string,values:readonly unknown[]=[]):SqlStatement=>({text,
 /** Persisted writer. Every method requires server-derived current PIN/device proof. */
 export class ClockerPunchService {
  private readonly key:Buffer;
- constructor(key:Buffer,private readonly executor:SqlExecutor=neonNotificationExecutor()){
+ constructor(key:Buffer,private readonly executor:SqlExecutor=neonNotificationExecutor(),private readonly options:{photoEvidence?:boolean}={}){
   if(!Buffer.isBuffer(key)||key.length!==32)throw new ClockerPunchError('UNAVAILABLE');
   this.key=Buffer.from(key);
  }
@@ -35,7 +35,7 @@ export class ClockerPunchService {
    proof.device.workspaceId,proof.device.deviceId,proof.device.credentialVersion,
    proof.employeeId,proof.tokenHash,proof.pinVersion,proof.employeeUpdatedAt])).digest('hex');
  }
- private async guarded<T>(proof:ClockerIdentityProof,body:SqlStatement,captureCommandId?:string):Promise<T>{
+ private async guarded<T>(proof:ClockerIdentityProof,body:SqlStatement,captureCommandId?:string,photoCommandId?:string):Promise<T>{
   this.context(proof);
   try{
    const workspace=await getWorkspace(this.executor);
@@ -47,6 +47,10 @@ export class ClockerPunchService {
    ];
    const results=await this.executor.transaction([
     ...guards,...(capture?.before??[]),body,...(capture?.after??[]),
+    ...(this.options.photoEvidence&&photoCommandId?[
+     statement("SELECT set_config('nevora.clocker.photo_workspace',$1,true)",[proof.device.workspaceId]),
+     statement('SELECT clocker_photo_capture_expectation($1,$2,$3::uuid)',[proof.device.workspaceId,proof.device.deviceId,photoCommandId]),
+    ]:[]),
     // An operation may wait on a deeper time-entry lock. Expiry must roll back all writes.
     ...clockerIdentityWriteGuards(proof),...(capture?.cleanup??[]),
    ]);
@@ -80,7 +84,7 @@ export class ClockerPunchService {
    'SELECT clocker_apply_punch($1,$2,$3,$4,$5::uuid,$6,$7::jsonb,$8) AS value',
    [proof.employeeId,proof.device.deviceId,proof.device.locationId,proof.device.credentialVersion,
     command.commandId,command.action,JSON.stringify({...command.expected,...(command.breakType?{breakType:command.breakType}:{})}),requestHash]),
-   command.action==='CLOCK_IN'?command.commandId:undefined);
+   command.action==='CLOCK_IN'?command.commandId:undefined,command.commandId);
  }
  /** Recovery after fresh PIN verification is read-only and still employee/device scoped.
   * null means no committed receipt was observed, NOT proof that an in-flight request was cancelled. */

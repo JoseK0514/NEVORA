@@ -1,0 +1,119 @@
+{
+  "scope": "PR35 source inventory, stalled-view recovery and CI reconciliation; final hosted exact-head checks remain authoritative",
+  "basePrHead": "bf54d146d1003716ccf1a856258467134031e514",
+  "localPhaseDCandidate": "4330c34cec5769e93a8480c1bb511277a1cf5a8b",
+  "localPhaseD": {
+    "passed": true,
+    "checks": 207,
+    "errors": [],
+    "sourceClean": true,
+    "runtimeClosed": true,
+    "report": "pr35-source-navigation-phase-d/report.json",
+    "engines": [
+      "chromium",
+      "webkit"
+    ],
+    "explicitSourceRecovery": "Same document; all held destination flights terminated; exact source preserved; original15sdeadline; actual role redirect retained"
+  },
+  "localOwnerAdvisorCandidate": "6d31122653413d7f521629a91342260885a70bf4",
+  "localOwnerAdvisor": {
+    "passed": true,
+    "checks": 28,
+    "errors": []
+  },
+  "inventory": {
+    "passed": true,
+    "sources": 60,
+    "activeHeads": 6,
+    "ceiling": 6,
+    "implementationUnchanged": true,
+    "archivedTips": [
+      {
+        "branch": "Claude-UI-Fix",
+        "sha": "8e9073974b52053e557382ec5199dbce9d5aa32c",
+        "mergedPr": 31,
+        "archiveRef": "refs/tags/archive/branches/2026-10-26/Claude-UI-Fix"
+      },
+      {
+        "branch": "claude/quiet-check-skeleton",
+        "sha": "16a9169ce1fc0d6eee9f3e1319d3db825ab1236f",
+        "mergedPr": 32,
+        "archiveRef": "refs/tags/archive/branches/2026-10-26/claude/quiet-check-skeleton"
+      },
+      {
+        "branch": "codex/owner-ai-release-testing-20261023",
+        "sha": "2ea580d623c76dd7d717492d209552461b5b4a28",
+        "mergedPr": 29,
+        "archiveRef": "refs/tags/archive/branches/2026-10-26/codex/owner-ai-release-testing-20261023"
+      }
+    ]
+  },
+  "guardTests": {
+    "inventoryDeadlineDiagnostic": 65,
+    "allPassed": true,
+    "report": "pr35-source-navigation-guards.log"
+  },
+  "frozenRuntimeFilesUnchanged": 33,
+  "productionApplicationFilesChanged": true,
+  "authenticationPermissionsChanged": false,
+  "initialCi": {
+    "run": 40434162558,
+    "head": "bf54d146d1003716ccf1a856258467134031e514",
+    "mergeCandidate": "60590390fd7dce8972c955df9a14b391928e9aba",
+    "result": "failed steps retained; remaining obsolete run cancelled; never accepted as passing"
+  },
+  "externalEvidenceSha256": {
+    "pr35-retirement-plan.json": "9dd8405a2ad1b6c44e807d3f39128dbc2c137edc30bd7c8f179aeb9908ab1cd7",
+    "pr35-archive-verification.json": "6bb57a0df0eabd76f146703ec1f97d23b7bf4603f07d2ef596d2dad4e83f9872",
+    "pr35-retirement-result.json": "9d83aa6a4dde25df0a98d5c90decd5984720f5229fc1573061b567f0e06b13c6",
+    "pr35-inventory-after.log": "79822af17b29257a8e086b2f493dc4577fa2a43ff40ee4db1ed62045bdfe3223",
+    "pr35-inventory-regressions.log": "90d81d368f8a1cf8c43d3c0008411e9404724f2220bf389a6ff4f89c5e98dc37",
+    "pr35-owner-advisor-fixed.log": "5afa7a816231077354850368ebf6a74fb09bc255fb24841e7a0f5555c2e3d1f2",
+    "pr35-navigation-guards.log": "253be9cd61a31853f56744967e551672cdd1c76205d16e00c21d50e72f5653b7",
+    "pr35-phase-d-reproduce.log": "082025504e72f4f744441cd40d707f9eb43aaac92c6b3a93f7d1c78b069aa2af",
+    "pr35-phase-d-fixed.log": "59cdb6278fbe4c7640d5d1399980c81118bd5e0770522ddae5a6d1496fd313cd",
+    "pr35-attendance-initial.log": "eb3c6c6b4b40a6ab8e0e9ffbb6f84ef43684ef2726ac806568a7659c1ec693f1",
+    "pr35-source-navigation-phase-d.log": "4553e0a05426f45cde7ce9c3ca0499e072dae5ca2f070baef0ace26422f68cd4",
+    "pr35-source-navigation-phase-d/report.json": "8dc0cc6553420325c91433c28861a1890cfab09a247762d9dc01638dc1d04c48",
+    "pr35-source-navigation-red.log": "86a92cd9564fb1210a22efcc8505f31b5329c7fabbead7f2150b833f1127b231",
+    "pr35-source-navigation-green.log": "2448c448debb23dd73aab035cdd0e7a57fee18427a772cdbef26376f2a7f355b",
+    "pr35-source-navigation-guards.log": "c43626c237c7e94587d4e0c8098d8f54a334c977a851df9d47b66bb9bb78da16",
+    "pr35-candidate-inventory.log": "79822af17b29257a8e086b2f493dc4577fa2a43ff40ee4db1ed62045bdfe3223",
+    "pr35-adopted-home-mobile.log": "ecd47d57b39bf7226d3db8885d9ed02d39af097dfc9b3c48ef33eb20efc5904e",
+    "pr35-adopted-home-mobile/mobile-access-results.json": "7a1d5de06bca4fc32adde7643866946e9ccac791295f94e36e883ca9de6cdb20"
+  },
+  "limits": [
+    "No merge or deployment.",
+    "Local browser is not physical-device/production/independent certification.",
+    "Final exact-head hosted CI and fresh live inventory are required; live PR checks are authoritative.",
+    "One strictly projected native WebKit development-framework diagnostic was retained; no real window exception or unmatched pageerror was accepted."
+  ],
+  "additionalSourceCorrection": "After a fresh authority response, explicit recovery uses priority Next navigation to the captured accepted source URL, preempting the stalled destination. Existing fresh-render fallback, server-clock authority cutoff and private-data retirement are preserved. No document reload, authentication or permission change.",
+  "acceptance": "The current priority-navigation application source passed the complete207-check Chromium/WebKit PhaseD run. Final PR-head hosted CI (using the generated merge candidate) and a fresh live source inventory remain required; PR checks are authoritative. Cancelled/superseded runs are not acceptance.",
+  "applicationFilesChanged": [
+    "src/components/company-access/scoped-read-frame.tsx"
+  ],
+  "stalledRecoveryRegression": {
+    "red": "pr35-source-navigation-red.log:10passed/1failed; pending recovery did not replace accepted source",
+    "green": "pr35-source-navigation-green.log:69passed across frame/fence/navigation suites",
+    "typecheck": "PASS",
+    "scopedLint": "PASS"
+  },
+  "mobileHarness": "Real Profile sign-out before role switch; independent real-window error/rejection observations with negative controls; narrow existing WebKit framework diagnostic projection only during observed owned-document navigation. Contextual Help is followed through actual links; management sign-in waits for its authorized Home instead of background network silence.",
+  "localMobileCandidate": "24ba6122dfb8c2c7224896228a3d87d49a27bbf8",
+  "localMobile": {
+    "passed": true,
+    "checks": 18,
+    "engines": [
+      "chromium",
+      "webkit",
+      "firefox"
+    ],
+    "durationSeconds": 97.65,
+    "errors": [],
+    "windowExceptions": [],
+    "retainedFrameworkDiagnostics": 1,
+    "sourceRuntimeUnchangedSincePhaseD": true,
+    "report": "pr35-adopted-home-mobile/mobile-access-results.json"
+  }
+}

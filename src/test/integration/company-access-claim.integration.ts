@@ -80,6 +80,7 @@ it('expired custody is invalid and terminal digests clear only after the 24-hour
   expect(await f.q('SELECT proof_digest FROM company_invitations WHERE id=$1',[id])).toEqual([{proof_digest:null}]);
   await f.q("UPDATE company_invitations SET retired_at=clock_timestamp(),retired_reason='EXPIRED' WHERE id=$1",[id]);
   const fresh=await issued(f);await claimInvitation(fresh.proof,ownedPassword,f.db.executor);
+  expect(await f.q("SELECT expires_at-issued_at=interval '168 hours' AS seven_days FROM company_invitations WHERE id=$1",[fresh.receipt.invitationId])).toEqual([{seven_days:true}]);
   expect(await clearTerminalInvitationDigests(f.db.executor)).toBe(0);
   expect(await f.q('SELECT proof_digest IS NOT NULL AS retained FROM company_invitations WHERE id=$1',[fresh.receipt.invitationId])).toEqual([{retained:true}]);
  }finally{await f.db.dispose();}

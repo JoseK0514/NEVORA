@@ -228,7 +228,7 @@ function PremiumHomeView(props: Props & { view: Exclude<ManagerDashboardView, 'o
       {props.view === 'attendance' ? <div className="manager-attendance-stack">
         <ManagerAttendanceReview />
         <ManagerTimeCorrections key={props.correctionAuthority??props.actorId} actorId={props.actorId} authority={props.correctionAuthority}/>
-        <Link className="nv-link" href="/app/clocker-recovery">Clocker recovery</Link>
+        {props.role==='OWNER' ? <Link className="nv-link" href="/app/clocker-recovery">Clocker recovery</Link> : null}
       </div> : props.view === 'team' ? <TeamTab {...props} /> : <ActivityTab {...props} />}
     </div>
   </div>;

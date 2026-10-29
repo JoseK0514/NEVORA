@@ -46,7 +46,7 @@ export const BASE_MIGRATIONS = [
   '0034_account_deletion_requests.sql',
   '0035_passkeys.sql',
   '0036_owner_advisor.sql',
-  '0037_owner_briefing_reviews.sql',
+  '0037_owner_briefing_reviews.sql', '0038_clocker_pin_operation_reference.sql', '0039_clocker_review_requests.sql', '0040_clocker_photo_policy_evidence.sql', '0041_clocker_photo_platform_cleanup.sql',
 ] as const;
 
 /** Applied last, in exactly this order, once the company and Owner exist:
@@ -54,6 +54,7 @@ export const BASE_MIGRATIONS = [
 export const FINAL_MIGRATIONS = [
   '0031_native_payroll.sql',
   '0032_company_access_invitations.sql',
+  '0042_company_invitation_lifetime.sql',
 ] as const;
 
 /** Held Phase F tenant preparation. Never applied to any deployed chain;

@@ -2,20 +2,20 @@ import { createElement, type ComponentProps } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 
-const m = vi.hoisted(() => ({ role: 'MANAGER', targetRole: 'EMPLOYEE', active: true, version: 0, unavailable: false, denied: false, missing: false, read: vi.fn(), profile:vi.fn() }));
+const m = vi.hoisted(() => ({ role: 'OWNER', targetRole: 'EMPLOYEE', active: true, version: 0, unavailable: false, denied: false, missing: false, read: vi.fn(), profile:vi.fn() }));
 vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>m.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load()}}));
 vi.mock('next/link', () => ({ default: ({ href, children, ...props }: ComponentProps<'a'>) => createElement('a', { href, ...props }, children) }));
 vi.mock('next/navigation', () => ({ notFound: () => { throw Error('notFound'); } }));
-vi.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['OWNER', 'MANAGER'], requireRoles: async () => ({ role: m.role }) }));
+vi.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['OWNER', 'MANAGER'], requireRoles: async (roles:string[]) => {if(!roles.includes(m.role))throw Error('role_denied');return {role:m.role};} }));
 vi.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => ({ employee: { id: 'actor' }, sessionTokenHash: 'proof' }) }));
 vi.mock('@/lib/data/employees', () => ({ getEmployeeManagementProfile: m.profile }));
 vi.mock('@/lib/clocker/pin-crypto.server', () => ({ readPinKey: () => { if (m.unavailable) throw Error('private infrastructure error'); return Buffer.alloc(32); } }));
 vi.mock('@/lib/clocker/pins.server', () => ({ readEmployeeClockerPin: m.read }));
-vi.mock('./actions', () => ({ saveClockerPinAction: vi.fn() }));
+vi.mock('./actions', () => ({ saveClockerPinAction: vi.fn(),checkClockerPinSaveAction:vi.fn() }));
 import EmployeeClockerPinPage from './page';
 
 beforeEach(() => {
-  Object.assign(m, { role: 'MANAGER', targetRole: 'EMPLOYEE', active: true, version: 0, unavailable: false, denied:false, missing: false });
+  Object.assign(m, { role: 'OWNER', targetRole: 'EMPLOYEE', active: true, version: 0, unavailable: false, denied:false, missing: false });
   m.profile.mockReset();m.profile.mockImplementation(async()=>m.missing?null:({firstName:'Avery',lastName:'Lane',role:m.targetRole,active:m.active}));
   m.read.mockReset();
   m.read.mockImplementation(async () => ({ employeeId: 'worker', version: m.version, configured: m.version > 0 }));
@@ -40,12 +40,7 @@ it('explains reset consequences and retains the current version without exposing
   expect(html).toContain('name="expectedVersion" value="7"');
   expect(html).not.toContain('value="0123"');
 });
-it('withholds all PIN controls and reads for Manager-to-Owner access', async () => {
-  m.targetRole = 'OWNER';
-  const html = await render();
-  expect(html).toContain('Owner access required'); expect(html).not.toContain('<form');
-  expect(m.read).not.toHaveBeenCalled();
-});
+it.each(['MANAGER','EMPLOYEE','LEAD'])('denies %s before private profile or PIN reads',async role=>{m.role=role;await expect(render()).rejects.toThrow('role_denied');expect(m.profile).not.toHaveBeenCalled();expect(m.read).not.toHaveBeenCalled();});
 it('allows an Owner to manage another Owner', async () => {
   m.targetRole = 'OWNER'; m.role = 'OWNER';
   expect(await render()).toContain('<form'); expect(m.read).toHaveBeenCalledOnce();
@@ -77,3 +72,4 @@ it('withholds company PIN and profile reads when current scope denies the page',
 
 // This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
 vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+it('keeps Save unavailable until complete PIN input is present',async()=>{const html=await render();expect(html).toMatch(/<button[^>]*form="clocker-pin-form"[^>]*disabled=""/);});

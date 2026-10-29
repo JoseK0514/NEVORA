@@ -1,5 +1,7 @@
 'use client';
 
+import {ClockerOwnerRequests} from './clocker-owner-requests';
+import {ClockerOwnerNav} from './clocker-owner-nav';
 import {useEffect, useId, useRef, useState, useSyncExternalStore} from 'react';
 import Link from 'next/link';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
@@ -21,7 +23,7 @@ const actionNames: Record<string, string> = {
   CLOCK_IN: 'Clock in', CLOCK_OUT: 'Clock out', START_BREAK: 'Start break', END_BREAK: 'End break',
 };
 
-/** Wave C: Clocker recovery on the kit (Owners and Managers). The private snapshot controller,
+/** Wave C: Clocker recovery on the kit (Owners). The private snapshot controller,
  * its pause-on-blur and the request are unchanged; checking a receipt never changes recorded time. */
 export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {actorId: string; timeZone: string; from?: 'settings'; observation?:ScopedObservation}) {
   const hydrated = useSyncExternalStore(subscribe, () => true, () => false);
@@ -111,7 +113,9 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
 
   const errorId = `${inputId}-error`;
   // Quiet (v4, approved Oct 23): the reference, Check, the receipt when there is one, and one row to Timecards.
-  const content = <SettingsFrame back={back} settingsCrumb={false} title="Clocker recovery" summary="Look up a saved clock-in receipt.">
+  const content = <SettingsFrame back={back} settingsCrumb={false} title="Clocker recovery" summary="Look up a saved clock action.">
+    <ClockerOwnerNav current="recovery"/>
+    <ClockerOwnerRequests actorId={actorId} timeZone={timeZone} onSelect={value=>{setReference(value);setHasSelection(true);setInvalid('');selected.current=value;submitted.current=true;controller.current?.refresh();}}/>
     <form noValidate className="wc-form" aria-label="Check a saved action" data-guard={hydrated ? undefined : ''}
       onInvalidCapture={event => { event.preventDefault(); setInvalid((event.target as HTMLInputElement).validity.valueMissing ? 'Enter the saved reference.' : 'Use the full reference: 32 letters and numbers in five groups, with dashes.'); (event.target as HTMLInputElement).focus(); }}
       onSubmit={event => {
@@ -148,7 +152,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
       <h2 className="q-sr" id="recovery-result-heading">Receipt</h2>
       {pending ? <p className="q-empty" role="status" style={{ marginTop: 24 }}>Checking the saved receipt…</p>
         : ready ? <div ref={feedback} tabIndex={-1} className="wc-feedback">
-          <div role="status" className="q-lead" style={{ marginTop: 32 }}><b>{ready.receipts.length ? 'Recorded action found' : 'Not recorded yet'}</b>
+          <div role="status" className="q-lead" style={{ marginTop: 32 }}><b>{ready.receipts.length ? 'Recorded action found' : 'No saved receipt found'}</b>
             <i>{ready.receipts.length ? 'Check it with the employee, then they finish on the same tablet.' : 'It may still be in progress. They check again on the same tablet.'}</i></div>
           {ready.receipts.length ? <ul className="q-list" style={{ marginTop: 12 }}>{ready.receipts.map((receipt, index) => <li key={[receipt.employeeId, receipt.performedAt, index].join('-')}>
             <div className="q-row q-row--av"><span className="q-av" aria-hidden="true">{receipt.employeeName.split(' ').filter(Boolean).slice(0, 2).map(part => part[0]).join('')}</span>

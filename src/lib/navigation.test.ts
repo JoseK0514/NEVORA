@@ -101,7 +101,7 @@ describe('More sheet groups (MG3)', () => {
     const {teamToolsForRole} = await import('./navigation');
     const withTools = moreNavigationGroups(mobileMoreForRole('MANAGER', {enabled: true} as never, {operational:company}), teamToolsForRole('MANAGER', {operational:company}));
     expect(withTools.map(group => group.label)).toEqual(['Time and pay', 'Planning', 'Team tools', 'Account']);
-    expect(withTools.find(group => group.label === 'Team tools')?.items.map(item => item.label)).toEqual(['Attendance', 'Team overview', 'Schedule activity', 'Clocker recovery', 'Account recovery']);
+    expect(withTools.find(group => group.label === 'Team tools')?.items.map(item => item.label)).toEqual(['Attendance', 'Team overview', 'Schedule activity', 'Account recovery']);
     expect(teamToolsForRole('EMPLOYEE')).toEqual([]);
     expect(teamToolsForRole('LEAD')).toEqual([]);
   });

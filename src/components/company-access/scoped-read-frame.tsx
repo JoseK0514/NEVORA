@@ -31,9 +31,9 @@ function noteFence(current:CurrentAuthority){
 function retireTab(){tab.retiredAt=performance.now();tab.cutoff=null;tab.fence=null;}
 /** The proactive refresh re-renders only this page (a same-address replace), so the router cache of other pages, and
  * the tabs' prefetches, survive; router.refresh() emptied it every ~10 s and every tab re-rendered in the background. */
-function refreshPage(router:{replace:(href:string,options?:{scroll?:boolean})=>void;refresh:()=>void},version?:{current:string}){
+function refreshPage(router:{replace:(href:string,options?:{scroll?:boolean})=>void;refresh:()=>void},version?:{current:string},href=window.location.pathname+window.location.search+window.location.hash){
  const before=version?.current;
- router.replace(window.location.pathname+window.location.search+window.location.hash,{scroll:false});
+ router.replace(href,{scroll:false});
  // A page that came from a prefetch can be answered from the router cache (kept for minutes) with no new render. If no
  // newer page arrived, refresh for real.
  if(version)setTimeout(()=>{if(version.current===before)router.refresh();},1500);
@@ -57,8 +57,8 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  const required=useRef(true),latest=useRef(-Infinity),retiredThrough=useRef(-Infinity),proactiveVersion=useRef('');
  const anchor=useRef<CurrentAuthority|null>(null);
  const observationRef=useRef(observation),versionRef=useRef('');
- // Set by Refresh current view: that recovery fetches fresh at once instead of trying the router cache first.
- const explicitRefresh=useRef(false);
+ // Explicit recovery uses a fresh authority read; a stalled navigation also needs a source navigation to preempt it.
+ const explicitRefresh=useRef(false),explicitSource=useRef<string|null>(null);
  const controls=useRef<{recover:(tabWide?:boolean)=>void;pause:()=>void;complete:(view:CurrentAuthority)=>void}|null>(null);
  const observed=observation?Date.parse(observation.observedAt):NaN,duration=observation?.validForMs??0;
  const version=observation?JSON.stringify([observation.authority,observation.observedAt,duration]):'unavailable';
@@ -80,7 +80,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
     const key=JSON.stringify([current.authority,current.observedAt,current.requestStartedAt]);
     // A refresh waits behind an unfinished Server Action. A same-page replace
     // fetches fresh dynamic data while discarding that action's stale router result.
-    if(lastRefresh!==key){lastRefresh=key;if(explicitRefresh.current){explicitRefresh.current=false;router.refresh();}else if(anchor.current)refreshPage(router,versionRef);else router.refresh();}
+    if(lastRefresh!==key){lastRefresh=key;if(explicitRefresh.current){explicitRefresh.current=false;const source=explicitSource.current;explicitSource.current=null;if(source!==null)refreshPage(router,versionRef,source);else router.refresh();}else if(anchor.current)refreshPage(router,versionRef);else router.refresh();}
    }
   },async signal=>{
    requestStartedAt=performance.now();
@@ -156,7 +156,11 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
 
  // Effects run before any microtask, so the mount check (queued in the controller effect) reads this page's observation.
  useEffect(()=>{observationRef.current=observation;versionRef.current=version;},[observation,version]);
- const refreshCurrent=()=>{explicitRefresh.current=true;navigation?.discard();controls.current?.recover();};
+ const refreshCurrent=()=>{
+  // NAVIGATE preempts Next's pending queue; REFRESH waits behind it. Capture the accepted source before discarding.
+  explicitSource.current=navigation?.current()?.source??null;
+  explicitRefresh.current=true;navigation?.discard();controls.current?.recover();
+ };
  const ready=!recovery.required&&!!observation&&body.phase==='ready'&&body.authority===observation.authority;
  // Every tab tap runs a fresh check (about a second on the hosted preview). It draws the page's own quiet shape; only a
  // check still unresolved after STUCK_MS (or begun while a page change waits) shows its words and Refresh current view.

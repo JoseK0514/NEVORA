@@ -38,9 +38,10 @@ it('sets a separate unique PIN, stores hashes only and never changes portal cred
  expect(await readEmployeeClockerPin(owner,'c2-a',db.executor)).toEqual(result);
  expect(await readEmployeeClockerPin(owner,'c2-b',db.executor)).toEqual({employeeId:'c2-b',configured:false,version:0});
 });
-it('allows a Manager to set an Employee PIN but denies Owner targets',async()=>{
- await expect(set('c2-a','0123',0,manager)).resolves.toMatchObject({version:1});
+it('denies Manager PIN writes for both Employee and Owner targets',async()=>{
+ await expect(set('c2-a','0123',0,manager)).rejects.toMatchObject({code:'FORBIDDEN'});
  await expect(set('c2-owner','4567',0,manager)).rejects.toMatchObject({code:'FORBIDDEN'});
+ expect(await q('SELECT * FROM employee_clocker_pins')).toEqual([]);expect(await q('SELECT * FROM clocker_pin_events')).toEqual([]);
 });
 it.each(['inactive-target','inactive-actor','expired-session','forged-session','employee-role'])('denies %s before any PIN write',async kind=>{
  let proof=owner;
@@ -195,11 +196,15 @@ it('rolls back a PIN reset if its management session expires during the PIN-row 
  const worker=new Client({connectionString:db.connectionString});
  await blocker.connect();await worker.connect();
  const pid=(await worker.query('SELECT pg_backend_pid() AS pid')).rows[0].pid;
- let transactions=0;
+ let expiryScheduled=false;
  const executor:SqlExecutor={
   query:async<T>(statement:SqlStatement)=>(await worker.query(statement.text,[...statement.values])).rows as T[],
   transaction:async statements=>{
-   if(++transactions===2)await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '700 milliseconds' WHERE token_hash=repeat('a',64)");
+   if(statements.some(statement=>statement.text.includes('INSERT INTO employee_clocker_pins'))){
+    // Slow preparation must not spend the fixture's expiry before the write.
+    await q('SELECT pg_sleep(0.8)');expect(expiryScheduled).toBe(false);
+    await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '700 milliseconds' WHERE token_hash=repeat('a',64)");expiryScheduled=true;
+   }
    await worker.query('BEGIN');
    try{const rows:unknown[][]=[];for(const statement of statements)rows.push((await worker.query(statement.text,[...statement.values])).rows);await worker.query('COMMIT');return rows;}
    catch(error){await worker.query('ROLLBACK');throw error;}
@@ -217,6 +222,7 @@ it('rolls back a PIN reset if its management session expires during the PIN-row 
    if(row.blocked){blocked=true;break;}
    await new Promise(resolve=>setTimeout(resolve,10));
   }
+  expect(expiryScheduled,'expiry is scheduled for the actual PIN write batch').toBe(true);
   expect(blocked,'PIN reset reaches the held row after initial authorization').toBe(true);
   await q("SELECT pg_sleep(GREATEST(0,extract(epoch FROM expires_at-clock_timestamp()))::double precision+0.05) FROM employee_sessions WHERE token_hash=repeat('a',64)");
   expect(await q("SELECT expires_at<=clock_timestamp() AS expired FROM employee_sessions WHERE token_hash=repeat('a',64)")).toEqual([{expired:true}]);

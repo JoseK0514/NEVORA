@@ -15,7 +15,7 @@ describe("sign-in words", () => {
     expect(keys(AUTH_COPY.es).sort()).toEqual(keys(AUTH_COPY.en).sort());
     for (const value of Object.values(AUTH_COPY.es)) if (typeof value === "string") expect(value.trim()).not.toBe("");
     expect(AUTH_COPY.es.signIn).toBe("Iniciar sesión");
-    expect(AUTH_COPY.es.forgotAccess).toBe("¿Olvidaste tu acceso?");
+    expect(AUTH_COPY.es.forgotAccess).toBe("¿Olvidaste tu contraseña?");
     expect(AUTH_COPY.es.bandLine).toBe("Tu semana, en un solo lugar.");
   });
 

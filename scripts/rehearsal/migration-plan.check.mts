@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path';
 import { readMigrationPlan } from './migration-plan.mts';
 
 const base = ['0001_initial.sql', '0002_schedule_health.sql', '0023_employee_attention_receipts.sql', '0023_template_ownership.sql'];
-const final = ['0031_native_payroll.sql', '0032_company_access_invitations.sql'];
+const final = ['0031_native_payroll.sql', '0032_company_access_invitations.sql', '0042_company_invitation_lifetime.sql'];
 const held = ['0026_tenant_ownership_expand.sql', '0027_tenant_ownership_validate.sql'];
 const list = (files: string[]) => JSON.stringify(files);
 function fixture(manifest = false) {

@@ -20,8 +20,9 @@ describe('migration order authority', () => {
 
   it('keeps the final Company Access order and the held tenant files fixed', () => {
     // 0031 before 0032, both after the company and Owner exist; 0032 adoption
-    // is immutable, so this order is part of the deployed contract.
-    expect([...FINAL_MIGRATIONS]).toEqual(['0031_native_payroll.sql', '0032_company_access_invitations.sql']);
+    // is immutable, so this order is part of the deployed contract. 0042 widens
+    // 0032's invitation lifetime and must follow it.
+    expect([...FINAL_MIGRATIONS]).toEqual(['0031_native_payroll.sql', '0032_company_access_invitations.sql', '0042_company_invitation_lifetime.sql']);
     expect([...HELD_MIGRATIONS]).toEqual(['0026_tenant_ownership_expand.sql', '0027_tenant_ownership_validate.sql']);
     expect(BASE_MIGRATIONS.some(file => (HELD_MIGRATIONS as readonly string[]).includes(file))).toBe(false);
   });

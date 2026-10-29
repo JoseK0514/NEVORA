@@ -1,0 +1,25 @@
+{
+  "complete": true,
+  "scope": "Real Next/server actions, invocation-owned PostgreSQL and loopback SMTP only; no real email/native clipboard/production service used.",
+  "checks": [
+    "chromium: mobile EN/ES,320/390/430,normal/200% layouts",
+    "chromium: locale drafts, contextual Back, manual-copy fallback and fixed mail recipient",
+    "chromium: real Owner-issued local email → activation → confirmed ID → ordinary sign-in → real Employee Home; employee issuance denied; short proof rejected",
+    "chromium: real recovery mail, editable receipt, identity correction, full-proof locale/resize custody, atomic reset/session revocation/single use and new-password sign-in",
+    "chromium: real logout clears ID; different-role sign-in has no Employee guide; prior activation intro does not return after account switch",
+    "chromium: Manager cannot issue invitations",
+    "webkit: mobile EN/ES,320/390/430,normal/200% layouts",
+    "webkit: locale drafts, contextual Back, manual-copy fallback and fixed mail recipient",
+    "webkit: real Owner-issued local email → activation → confirmed ID → ordinary sign-in → real Employee Home; employee issuance denied; short proof rejected",
+    "webkit: real recovery mail, editable receipt, identity correction, full-proof locale/resize custody, atomic reset/session revocation/single use and new-password sign-in",
+    "webkit: real logout clears ID; different-role sign-in has no Employee guide; prior activation intro does not return after account switch",
+    "webkit: Manager cannot issue invitations",
+    "firefox: mobile EN/ES,320/390/430,normal/200% layouts",
+    "firefox: locale drafts, contextual Back, manual-copy fallback and fixed mail recipient",
+    "firefox: real Owner-issued local email → activation → confirmed ID → ordinary sign-in → real Employee Home; employee issuance denied; short proof rejected",
+    "firefox: real recovery mail, editable receipt, identity correction, full-proof locale/resize custody, atomic reset/session revocation/single use and new-password sign-in",
+    "firefox: real logout clears ID; different-role sign-in has no Employee guide; prior activation intro does not return after account switch",
+    "firefox: Manager cannot issue invitations"
+  ],
+  "errors": []
+}

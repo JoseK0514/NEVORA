@@ -14,10 +14,10 @@ it('leaves Employee/Lead navigation and request ownership independent of managem
 it.each([undefined,{state:'unavailable',reason:'read_failed'} as const,scoped,{...company,scope:null,source:'UNASSIGNED' as const}])('withholds the relocated global Team tools without current Company access',operational=>{
  expect(teamToolsForRole('MANAGER',{operational})).toEqual([]);
 });
-it('retains the relocated Team tools for an Owner and a currently company-authorized Manager',()=>{
+it('keeps Clocker recovery Owner-only while retaining other Company Manager tools',()=>{
  const expected=['/app?view=attendance','/app?view=team','/app?view=activity','/app/clocker-recovery','/app/account-recovery'];
  expect(teamToolsForRole('OWNER').map(item=>item.href)).toEqual(expected);
- expect(teamToolsForRole('MANAGER',{operational:company}).map(item=>item.href)).toEqual(expected);
+ expect(teamToolsForRole('MANAGER',{operational:company}).map(item=>item.href)).toEqual(['/app?view=attendance','/app?view=team','/app?view=activity','/app/account-recovery']);
  expect(teamToolsForRole('MANAGER',{operational:{...company,role:'OWNER'}})).toEqual([]);
  for(const role of ['EMPLOYEE','LEAD'] as const)expect(teamToolsForRole(role,{operational:company})).toEqual([]);
 });

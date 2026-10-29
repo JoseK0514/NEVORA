@@ -1,6 +1,8 @@
 'use client';
+import {useMobilePresentation} from '@/components/mobile-access/use-mobile-presentation';
 
 import Link from 'next/link';
+import {MobileRecoveryRequest} from './mobile-access/recovery-views';
 import {useEffect,useRef,type FormEventHandler} from 'react';
 import {RecoverySubmit} from './recovery-submit';
 import {AUTH_COPY,authMessage,type AuthLang} from '@/lib/auth-copy';
@@ -8,12 +10,14 @@ import {AUTH_COPY,authMessage,type AuthLang} from '@/lib/auth-copy';
 /** Presentation only: AccountRecovery owns the existing request and privacy contract.
  * Quiet (v4, approved Oct 23): the title and one line, two fields, Request recovery, then I have a code and
  * Can't use your email? (which opens its answer in place). */
-export function RecoveryRequest({hydrated,busy,done,message,onSubmit,lang='en'}:{
- hydrated:boolean;busy:boolean;done:boolean;message:string;onSubmit:FormEventHandler<HTMLFormElement>;lang?:AuthLang;
+export function RecoveryRequest({hydrated,busy,done,message,onSubmit,lang='en',mobileAccess=false,onReview,draft}:{
+ hydrated:boolean;busy:boolean;done:boolean;message:string;onSubmit:FormEventHandler<HTMLFormElement>;lang?:AuthLang;mobileAccess?:boolean;onReview?:()=>void;draft?:{employeeId:string;email:string};
 }){
  const t=AUTH_COPY[lang];
  const feedback=useRef<HTMLDivElement>(null);
  useEffect(()=>{if(message)feedback.current?.focus();},[message,done]);
+ const mobile=useMobilePresentation(mobileAccess,'recovery-employee-id recovery-email');
+ if(mobile)return <MobileRecoveryRequest {...{hydrated,busy,done,message,onSubmit,lang,onReview,draft}}/>;
  return <>
   <div className="q-hd"><h1>{t.forgotTitle}</h1><p>{t.quiet.forgotSub}</p></div>
   {done?<div className="q-auth__receipt" ref={feedback} role="status" tabIndex={-1}>

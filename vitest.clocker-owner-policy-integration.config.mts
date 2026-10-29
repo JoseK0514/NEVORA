@@ -1,0 +1,3 @@
+import {defineConfig} from 'vitest/config';
+import {fileURLToPath} from 'node:url';
+export default defineConfig({resolve:{alias:{'server-only':fileURLToPath(new URL('./node_modules/next/dist/compiled/server-only/empty.js',import.meta.url)),'@':fileURLToPath(new URL('./src',import.meta.url))}},test:{include:['src/test/integration/clocker-pin-operations.integration.ts','src/test/integration/clocker-owner-policy.integration.ts','src/test/integration/clocker-recovery-review.integration.ts','src/test/integration/clocker-manager-scope.integration.ts','src/test/integration/company-access-pin-management.integration.ts','src/test/integration/company-access-recovery-calendar.integration.ts'],fileParallelism:false,testTimeout:20000,hookTimeout:30000}});

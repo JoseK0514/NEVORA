@@ -34,6 +34,8 @@ export type EmployeeHomeQuietViewProps = {
   refreshing: boolean;
   onRetry: () => void;
   ownTimeSlot: ReactNode;
+  /** Optional generic onboarding; never replaces or authorizes a private Home read. */
+  intro?:ReactNode;
   displayName?: string;
   timeZone?: string;
   workspaceName?: string;
@@ -198,7 +200,7 @@ function Glance({week}: {week: HomeWeek}) {
   </ul>;
 }
 
-export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTimeSlot, displayName, timeZone, workspaceName, week, teamMessage = false}: EmployeeHomeQuietViewProps) {
+export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTimeSlot, intro, displayName, timeZone, workspaceName, week, teamMessage = false}: EmployeeHomeQuietViewProps) {
   const [showAll, setShowAll] = useState(false);
   const mobile = useEmployeeMobile();
   // Offline and "window in the background" both pause Home; the card says which.
@@ -231,6 +233,7 @@ export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTim
     <div className="q-home" data-home-state={viewState} aria-busy={refreshing || loading}>
       <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon className="q-ic" aria-hidden="true"/></QuietBarIcon></QuietBar>
       <div className="q-hello"><small>{date}</small><h1>{mobile ? 'Today' : name && snapshot ? `${greeting(snapshot.observedAt, snapshot.timeZone)}, ${name}` : 'Home'}</h1></div>
+      {intro}
       {snapshot ? <section aria-labelledby="employee-reviewed-next-heading">
         <h2 id="employee-reviewed-next-heading" className={mobile ? "em-section-title" : "nv-sr"}>Your shift</h2>
         <NextCard snapshot={snapshot} mobile={mobile}/>

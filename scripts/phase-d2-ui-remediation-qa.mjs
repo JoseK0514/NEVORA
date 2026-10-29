@@ -6,7 +6,7 @@ import {Temporal} from '@js-temporal/polyfill';
 import {hashPassword} from '../src/lib/auth/password.ts';
 import {TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {safeD2Error,safeD2Text,unexpectedD2Runtime} from './d2-runtime-failures.mjs';
-import {finishD2ForegroundRecovery} from './d2-foreground-recovery.mjs';
+import {finishD2ForegroundRecovery,waitForD2RscQuiescence} from './d2-foreground-recovery.mjs';
 
 // Runs only inside the existing owned PostgreSQL / exact-clean-SHA D2 gate.
 export async function verifyD2UiRemediation({app,browser,engine,evidence,report,checked,context,login,geometry,widths}){
@@ -30,7 +30,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
  await login(employee,employeeId);await login(owner,'QAOWNER');
  const ep=await employee.newPage(),mp=await owner.newPage();
  ep.setDefaultTimeout(15000);mp.setDefaultTimeout(15000);
- let phase='normal',stage='initial',requestSequence=0;
+ let phase='normal',stage='initial',requestSequence=0,managerRscVersion=0;
  const observations={engine,console:[],runtime:[],failedRequests:[],injectedFailures:[],keyboard:[],states:[],network:[]};
  const startedAt=performance.now(),requests=new WeakMap(),consoleDetails=[],managerRscRequests=new Set();
  const clean=safeD2Text;
@@ -44,7 +44,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   page.on('pageerror',error=>observations.runtime.push({role,phase,stage,atMs:Math.round(performance.now()-startedAt),...safeD2Error(error)}));
   page.on('request',request=>{
    const url=new URL(request.url());if(url.origin!==app.url||!(url.pathname==='/app'||url.pathname.startsWith('/api/')||url.pathname==='/__nextjs_original-stack-frames'))return;
-   if(role==='manager'&&url.pathname==='/app'&&request.headers().rsc==='1')managerRscRequests.add(request);
+   if(role==='manager'&&url.pathname==='/app'&&request.headers().rsc==='1'){managerRscRequests.add(request);managerRscVersion++;}
    const id=++requestSequence;requests.set(request,id);record({role,id,event:'request',path:clean(url.pathname),method:request.method(),rsc:request.headers().rsc==='1',serverAction:!!request.headers()['next-action'],document:request.isNavigationRequest()});
   });
   page.on('response',response=>{const id=requests.get(response.request());if(id)record({role,id,event:'response',status:response.status()});});
@@ -159,12 +159,13 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   await mp.waitForLoadState('networkidle');
   const recoveryDeadline=performance.now()+15000;
-  while(managerRscRequests.size){assert(performance.now()<recoveryDeadline,'Foreground RSC recovery must finish before a separate hard reload');await new Promise(resolve=>setTimeout(resolve,25));}
+  const quiescent=await waitForD2RscQuiescence(()=>({pending:managerRscRequests.size,version:managerRscVersion}),recoveryDeadline);
   assert.equal(await mp.locator('.manager-correction-row').filter({hasText:name}).count(),2);
   assert.equal(managerRscRequests.size,0,'Observed foreground RSC requests must be drained at the reload boundary');
   await Promise.all(consoleDetails);const beforeReload=unexpectedD2Runtime(observations);assert.deepEqual(beforeReload.runtime,[]);assert.deepEqual(beforeReload.console,[],'Foreground recovery must not emit a JavaScript exception');
   assert.equal(managerRscRequests.size,0,'Foreground RSC must remain drained after console extraction');
-  record({role:'manager',event:'foreground-recovery-ready',pendingRscRequests:managerRscRequests.size,freshRscRequestId:requests.get(foregroundResponse.request()),freshCorrectionRequestId:requests.get(correctionResponse.request())});
+  assert.equal(managerRscVersion,quiescent.version,'A new foreground recovery cannot cross the reload boundary');
+  record({role:'manager',event:'foreground-recovery-ready',pendingRscRequests:managerRscRequests.size,rscVersion:quiescent.version,quietMs:500,freshRscRequestId:requests.get(foregroundResponse.request()),freshCorrectionRequestId:requests.get(correctionResponse.request())});
   await mp.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
   const approve=mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first();await approve.waitFor();await approve.focus();
   const managerFocus=await approve.evaluate(el=>({active:document.activeElement===el,outlineStyle:getComputedStyle(el).outlineStyle,outlineWidth:getComputedStyle(el).outlineWidth}));

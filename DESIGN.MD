@@ -1308,3 +1308,16 @@ The visible text of every page, for owner, employee and both payroll roles, was 
   - The exchanges integration suite (14 files, 163 tests) passed on a throwaway database inside the preview's disposable cluster. The database was created and dropped by the tests; no other database was touched.
   - Browser: the 156-check sweep passes, as do U1, U2, U3, U4, U8, B3, B4 and the D1–D6 checks.
   - The B3 flow now runs with as many future shifts as the calendar allows. On Oct 17 only the Oct 18 shift could still be offered.
+
+## Mobile Access form card — approved 2026-10-27
+
+Applies to phones (under 768px) with mobile Access on, on four forms only: Sign in, Forgot password, New password and Set up your account (including their receipts, errors and invitation states). Welcome, Access Help, Support and every desktop or tablet layout are unchanged. Reference: Gusto Mobile sign-in. Mockup and build comparison: https://claude.ai/artifact/QK93PaFrKPPP5m7TtbetSQ. Styles: the "Access form card" block at the end of `src/components/mobile-access/mobile-access.css`; markup: `AccessCard` and `AccessOutside` in `src/components/mobile-access/chrome.tsx`.
+
+- **Page:** soft white `#F7F6F3` (the Signature sheet), kept under an explicit Dark preference.
+- **Header:** the wordmark is centred at 104px; the language switch sits at the right in a three-column grid, so large text never overlaps the two.
+- **Card:** white, 16px radius, padding 24px 20px 20px, 1px ink edge at 6%, shadow `0 1px 2px rgba(16,24,22,.05), 0 10px 30px rgba(16,24,22,.08)`, 12px below the header.
+- **Inside the card:** the title, fields, help for a field, the form's buttons and any error or notice. Below the card, centred, 8px apart and 28px down: "can't do this" help and quiet links. "Back to sign in" stays above the card.
+- **Title:** centred, 24px, line height 1.25, tracking −0.025em; subtitle centred at 15px, at most 30 characters wide.
+- **Fields:** the label sits inside a 3.5rem (56px) field at 0.75rem/560, ending in "…" rather than wrapping at very large text. Focus turns the label teal and shows the example text; an invalid field turns the label and border red.
+- **Sign in:** "Forgot password?" sits under the password field inside the card; "Activate account" and "Where do I find my Employee ID?" sit below the card.
+- **Kept:** teal actions, system type, 12px control radius, 44px targets, the blue focus ring, all copy, and no Face ID or "Remember me".

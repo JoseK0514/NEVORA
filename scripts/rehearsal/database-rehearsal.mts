@@ -468,7 +468,7 @@ try {
     const { name, client } = await database(source, 'prepasskeys');
     try {
       await migrations(client, base.filter(x => x !== '0035_passkeys.sql')); const f = await seedPeople(client);
-      await migrations(client, ['0031_native_payroll.sql', '0032_company_access_invitations.sql']); await enrich(client, f);
+      await migrations(client, ['0031_native_payroll.sql', '0032_company_access_invitations.sql', '0042_company_invitation_lifetime.sql']); await enrich(client, f);
       const before = await tableState(client);
       await check('upgrade-pre-passkeys', '0035 preserves populated payroll, Company Access, credentials and sessions', async () => {
         await migrations(client, ['0035_passkeys.sql']); assert.deepEqual(await tableState(client, before), before);

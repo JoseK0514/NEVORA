@@ -19,7 +19,7 @@ it("keeps selected-week facts, draft context and exact week destinations in the 
 });
 
 it("preserves the remaining manager views behind meaningful phone actions", () => {
-  const html = renderToStaticMarkup(<MobileHomeTools weekStart="2026-10-12"/>);
+  const html = renderToStaticMarkup(<MobileHomeTools weekStart="2026-10-12" owner/>);
   for (const view of ['attendance', 'team', 'activity']) {
     expect(html).toContain(`href="/app?week=2026-10-12&amp;view=${view}"`);
   }
@@ -39,3 +39,5 @@ it("an empty roster shows an empty bar rather than dividing by zero", () => {
   expect(html).toContain('0<span> of 0</span>');
   expect(html).toContain('style="width:0%"');
 });
+
+it("keeps account recovery and attendance available without Owner Clocker controls",()=>{const html=renderToStaticMarkup(<MobileHomeTools weekStart="2026-10-12"/>);expect(html).not.toContain("/app/clocker-recovery");expect(html).toContain("/app/account-recovery");expect(html).toContain("view=attendance");});
