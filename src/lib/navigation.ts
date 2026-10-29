@@ -134,6 +134,8 @@ export function activeNavigationHref(role: UserRole, path: string, payroll?: Pay
       (matches("/app/requests") || matches("/app/exchange"))) return "/app/requests/hub";
   // IS-67: an employee's Timecards belongs to the Hours family, so the Pay or Hours tab stays current on it.
   if ((role === "EMPLOYEE" || role === "LEAD") && matches("/app/timecards")) return "/app/my-time";
+  // Account deletion opens from Profile, so Profile's place (More) stays current on it.
+  if ((role === "EMPLOYEE" || role === "LEAD") && matches("/app/account")) return "/app/profile";
   return navigationForRole(role, payroll, context)
     .filter(item => item.href === "/app" ? pathname === "/app" : matches(item.href))
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;

@@ -53,6 +53,8 @@ describe('phone tabs', () => {
     // v5 One look: Notifications opens from Home's bell (Home stays lit there), as for Owners; the More page lists it by name.
     expect(activeMobileTab(role, '/app/notifications', payroll)).toBe('/app');
     expect(activeMobileTab(role, '/app/exchange', payroll)).toBe('/app/requests/hub');
+    expect(activeMobileTab(role, '/app/account/delete', payroll)).toBe('more');
+    expect(activeMobileTab(role, '/app/account-recovery', payroll)).toBeUndefined();
     expect(mobileMoreForRole(role, payroll).map(item => item.href)).toEqual(['/app/updates','/app/profile']);
   });
   it.each(['MANAGER','OWNER'] as const)('gives %s Home, Schedule, Inbox and Team, with every other destination in More', role => {

@@ -24,6 +24,9 @@ it('never calls a partial page with no confirmed rows empty (CR-4)',()=>{
  }
  const complete=renderToStaticMarkup(<MessageInbox kind="updates" items={[]} partial={false} search="" filter="all" timeZone="America/Puerto_Rico" onSearch={noop} onFilter={noop} onOpen={noop}/>);
  expect(complete).toContain('There are no current items on this page');
+ expect(complete).toContain('No current updates');expect(complete).not.toContain('No matches on this page');expect(complete).not.toContain('Older items may be on another page');
+ const earlier=renderToStaticMarkup(<MessageInbox kind="notifications" items={[item]} partial={false} search="No match" filter="all" timeZone="America/Puerto_Rico" more onSearch={noop} onFilter={noop} onOpen={noop}/>);
+ expect(earlier).toContain('No matches on this page');expect(earlier).toContain('Older items may be on another page');
 });
 it('a partial page whose confirmed rows are only filtered out says no confirmed matches (COM-CR-1)',()=>{
  const html=renderToStaticMarkup(<MessageInbox kind="notifications" items={[item]} partial search="Nothing like this" filter="all" timeZone="America/Puerto_Rico" onSearch={noop} onFilter={noop} onOpen={noop}/>);

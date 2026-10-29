@@ -76,6 +76,10 @@
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-nv-e5] .mobile-nav .mobile-nav-link.active { color:var(--em-teal); background:var(--em-wash); box-shadow:none; font-weight:var(--em-weight-label); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-nv-e5] .mobile-nav .mobile-nav-link svg { width:22px; height:22px; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] :is(a,button,input,select,textarea,summary):focus-visible { outline:3px solid var(--em-focus); outline-offset:3px; }
+  /* A page or section title takes focus only so screen readers announce it; it is not a control, so it draws no ring. */
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] :is(h1,h2)[tabindex="-1"]:focus { outline:none; }
+  /* Home and Schedule keep Quiet's page wrapper; give it the canvas so Dark has no black band under the content. */
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) .q-page:has(.q-home,.q-sched-e) { background:var(--em-canvas); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-mobile-only { display:block; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) .q-home > .q-bar { display:none; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) .q-hello {
@@ -156,6 +160,8 @@
   @media (max-width:359px) {
     html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] { --em-inset:20px; }
     html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) :is(.q-wk,.q-glance) { margin-inline:6px; padding-inline:0; column-gap:0; }
+    /* Seven 44px days need 308px, wider than the card column here; without its box the strip doesn't read as misaligned. */
+    html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) :is(.q-wk,.q-glance) { background:transparent; border-color:transparent; }
     html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) :is(.q-wk,.q-glance) a { min-width:44px; }
   }
 
