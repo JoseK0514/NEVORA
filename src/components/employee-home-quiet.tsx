@@ -233,7 +233,6 @@ export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTim
     <div className="q-home" data-home-state={viewState} aria-busy={refreshing || loading}>
       <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon className="q-ic" aria-hidden="true"/></QuietBarIcon></QuietBar>
       <div className="q-hello"><small>{date}</small><h1>{mobile ? 'Today' : name && snapshot ? `${greeting(snapshot.observedAt, snapshot.timeZone)}, ${name}` : 'Home'}</h1></div>
-      {intro}
       {snapshot ? <section aria-labelledby="employee-reviewed-next-heading">
         <h2 id="employee-reviewed-next-heading" className={mobile ? "em-section-title" : "nv-sr"}>Your shift</h2>
         <div className="em-day-summary">
@@ -251,6 +250,7 @@ export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTim
         {denied ? <Link className="q-btn" href="/login">Sign in</Link>
           : <button className="q-btn" type="button" data-home-refresh onClick={onRetry} disabled={refreshing} aria-busy={refreshing || undefined}>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span></button>}
       </div> : null}
+      {intro}
       {snapshot ? <div data-home-group="actions"><QuietSection id="employee-home-todo" title="Needs you" aside={partial ? `${todos.length} known ${todos.length === 1 ? 'item' : 'items'}` : undefined}>
         <QuietList>
           {todos.length ? visible.map(row => <TodoRow key={row.key} row={row} zone={snapshot.timeZone}/>)

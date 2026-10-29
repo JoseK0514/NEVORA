@@ -108,7 +108,9 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
    }
    await page.getByRole('link',{name:/Open shifts 1 shift matches/}).click();await page.waitForURL(app.url+'/app/exchange?tab=available');await ready();
    await page.getByRole('heading',{name:'Open shifts',exact:true}).waitFor();
-   await page.locator('.mobile-header .brand:visible').waitFor();
+   expect(await page.locator('.mobile-header .brand:visible').count()).toBe(0);
+   expect(await page.getByRole('heading',{name:'Open shifts',exact:true}).count()).toBe(1);
+   expect(await page.locator('.em-request-heading').getByRole('link',{name:'Requests',exact:true}).getAttribute('href')).toBe('/app/requests/hub');
    expect(await page.locator('.em-open-shift:visible').count()).toBe(1);
    await page.locator('.em-open-shift:visible > summary').focus();await page.keyboard.press('Enter');
    await page.getByRole('button',{name:'Pick up shift',exact:true}).waitFor();

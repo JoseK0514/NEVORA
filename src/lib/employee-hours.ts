@@ -5,6 +5,8 @@ import type {TimecardsResult} from './timecards/read-model';
 import {parsePeriod} from './timecards/project';
 import {parseEmployeeTimeCorrections,type EmployeeTimeCorrections} from './time-corrections/read-model';
 import {parseCorrectionRequestCommand,type CorrectionRequestCommand} from './time-corrections/validation';
+import {hoursRequestId,hoursRecordId} from './employee-hours-identifiers';
+export {hoursRequestId,hoursRecordId} from './employee-hours-identifiers';
 export type HoursView='records'|'cards'|'corrections';
 export type HoursDecision={requestId:string;status:'APPROVED'|'REJECTED';at:string;by:string;note:string|null};
 type Lifetime={state:'ready';kind:'hours';view:HoursView;selection:string;authority:string;observedAt:string;validForMs:number;timeZone:string};
@@ -14,8 +16,6 @@ export type HoursCorrectionResult={status:'recorded';operationId:string;requestI
 const object=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const keys=(v:Record<string,unknown>,names:string[])=>Object.keys(v).length===names.length&&names.every(name=>Object.hasOwn(v,name));
 const text=(v:unknown,max=300):v is string=>typeof v==='string'&&!!v.trim()&&v.length<=max;
-export const hoursRequestId=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(v);
-export const hoursRecordId=(v:unknown):v is string=>typeof v==='string'&&/^[A-Za-z0-9][A-Za-z0-9_-]{0,199}$/.test(v);
 const instant=(v:unknown)=>typeof v==='string'&&Number.isFinite(Date.parse(v));
 export function validHoursSelection(view:string,selection:string){try{if(view==='records')return selection==='overview';if(view==='corrections')return selection==='list'||selection.startsWith('target:')&&hoursRecordId(selection.slice(7))||hoursRequestId(selection);if(view==='cards'&&/^\d{4}-\d{2}-\d{2}_\d{4}-\d{2}-\d{2}$/.test(selection)){parsePeriod(...selection.split('_') as [string,string]);return true;}}catch{}return false;}
 export function hoursInstant(value:string,zone:string){if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value))throw Error('Choose a date and time');return Temporal.PlainDateTime.from(value,{overflow:'reject'}).toZonedDateTime(zone,{disambiguation:'reject'}).toInstant().toString();}
