@@ -36,4 +36,3 @@ AssertionError: expected [ { …(3) } ] to deeply equal []
       Tests  1 failed | 6 passed (7)
    Start at  11:54:55
    Duration  72ms (transform 51%, import 22%, tests 19%, worker 8%)
-

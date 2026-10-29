@@ -23,4 +23,3 @@ TypeError: .toMatch() expects to receive a string, but got undefined
       Tests  1 failed | 1 passed (2)
    Start at  13:27:50
    Duration  438ms (tests 94%, transform 4%, import 2%)
-

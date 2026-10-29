@@ -22,4 +22,3 @@ Received: "<div class="em-device" data-device-state="error"><section class="em-d
       Tests  1 failed | 3 passed (4)
    Start at  12:49:43
    Duration  247ms (tests 87%, import 7%, transform 5%, worker 1%)
-
