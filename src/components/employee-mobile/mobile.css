@@ -86,6 +86,7 @@
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) :is(.q-page:has(.q-home,.q-sched-e),.q-page.q-sched-e) { background:var(--em-canvas); max-width:none; }
   /* Contextual tasks use their own Back and title in portrait and short touch landscape. */
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-employee-mobile-chrome="detail"] .mobile-header { display:none; }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-employee-mobile-page="other"][data-employee-mobile-chrome="root"] .page-frame { background:var(--em-canvas); }
   /* More is still a Quiet page; give it the same canvas, title band and card rows as the other Employee pages. */
   html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .q-page.em-more {
     --q-bg:var(--em-canvas); --q-ink:var(--em-ink); --q-grey:var(--em-muted); --q-body:var(--em-muted); --q-line:var(--em-line);

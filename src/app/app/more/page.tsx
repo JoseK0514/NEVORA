@@ -1,3 +1,4 @@
+import { keepWhole } from '@/lib/keep-whole';
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
 import { payrollFeatureEnabled, readPayrollCapabilities } from "@/lib/payroll/service";
 import { readOperationalAuthority } from "@/lib/company-access/operational-scope.server";
@@ -33,7 +34,7 @@ async function EmployeeMore({ firstName, lastName, role }: { firstName: string; 
     <div className="q-top-gap" aria-hidden="true" />
     <QuietHeader title="More" />
     <QuietList style={{ marginTop: 16 }}>
-      <QuietRow href="/app/profile" avatar={initialsOf(`${firstName} ${lastName}`)} title={`${firstName} ${lastName}`} detail={`${role === "LEAD" ? "Lead" : "Employee"} · Profile`} label={`Profile, ${firstName} ${lastName}`} />
+      <QuietRow href="/app/profile" avatar={initialsOf(`${firstName} ${lastName}`)} title={`${firstName} ${lastName}`} detail={keepWhole(`${role === "LEAD" ? "Lead" : "Employee"} · Profile`)} label={`Profile, ${firstName} ${lastName}`} />
     </QuietList>
     <QuietList label="Your work" style={{ marginTop: 24 }}>
       {has.has("/app/updates") ? <QuietRow href="/app/updates" icon={ic(MegaphoneIcon)} title="Updates" /> : null}
