@@ -1,5 +1,5 @@
 'use client';
-import {createContext,useContext,useLayoutEffect,useRef,useState,type InputHTMLAttributes,type ReactNode} from 'react';
+import {createContext,useContext,useState,type InputHTMLAttributes,type ReactNode} from 'react';
 import {usePathname} from 'next/navigation';
 
 type Journey={draftId:string;setDraftId:(value:string)=>void;confirmedId:string|null;confirm:(value:string)=>void;dismiss:()=>void};
@@ -9,11 +9,12 @@ export const useAccessJourney=()=>useContext(Context);
 /** UI continuity only. No proof/password, browser storage or authorization is held here. */
 export function AccessJourneyProvider({children}:{children:ReactNode}) {
  const [draftId,setDraftId]=useState(''),[confirmedId,setConfirmedId]=useState<string|null>(null);
- const pathname=usePathname(),previous=useRef(pathname);
- useLayoutEffect(()=>{
-  const leaving=previous.current.startsWith('/app')&&!pathname.startsWith('/app');previous.current=pathname;
-  if(leaving){setDraftId('');setConfirmedId(null);}
- },[pathname]);
+ const pathname=usePathname(),[previous,setPrevious]=useState(pathname);
+ if(previous!==pathname){
+  setPrevious(pathname);
+  // Reset before the public page mounts its uncontrolled ID field. An effect is too late.
+  if(previous.startsWith('/app')&&!pathname.startsWith('/app')){setDraftId('');setConfirmedId(null);}
+ }
  return <Context.Provider value={{draftId,setDraftId,confirmedId,confirm:value=>{setDraftId(value);setConfirmedId(value);},dismiss:()=>setConfirmedId(null)}}>{children}</Context.Provider>;
 }
 export function AccessEmployeeIdInput(props:InputHTMLAttributes<HTMLInputElement>) {
