@@ -44,14 +44,14 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
    const context=await active.newContext({viewport:{width:667,height:375},hasTouch:true,...(engine==='firefox'?{}:{isMobile:true}),reducedMotion:'reduce',serviceWorkers:'block'}),page=await context.newPage();
    page.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(30000);
    await context.route('**/*',async(route:any)=>{const u=new URL(route.request().url());if(['http:','https:'].includes(u.protocol)&&u.origin!==new URL(app.url).origin)await route.abort();else await route.continue();});
-   page.on('pageerror',(error:Error)=>failures.push({engine,error:error.message}));
+   page.on('pageerror',(error:Error)=>failures.push({engine,path:page.url(),error:error.message,stack:error.stack}));
    await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
    const cases:[string,string,string][]=[
     ['home','/app','[data-home-state="ready"],[data-home-state="partial"]'],
     ['schedule','/app/schedule?week='+f.week,'.q-sched-e'],
     ['requests','/app/requests/hub','.em-requests[data-requests-state="ready"]'],
-    ['incoming-response','/app/exchange?requestId='+incoming.requestId,'.em-exchange[data-exchange-state="ready"]'],
-    ['own-request','/app/exchange?requestId='+own.requestId,'.em-exchange[data-exchange-state="ready"]'],
+    ['incoming-response','/app/exchange?tab=foryou&requestId='+incoming.requestId,'.em-exchange[data-exchange-state="ready"]'],
+    ['own-request','/app/exchange?tab=requests&requestId='+own.requestId,'.em-exchange[data-exchange-state="ready"]'],
     ['swap-create','/app/exchange/swap?sourceShiftId='+creation,'.em-creation[data-creation-state="ready"]'],
     ['cover-create','/app/exchange/swap?sourceShiftId='+creation+'&mode=cover','.em-creation[data-creation-state="ready"]'],
     ['unable-to-work','/app/exchange/callout?shiftId='+report,'.em-creation[data-creation-state="ready"]'],
@@ -95,7 +95,13 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
       const ratio=(await label.evaluate(measureRenderedContrast)).ratio;samples.push(ratio);expect(ratio,name+' contrast '+engine+theme+scale).toBeGreaterThanOrEqual(4.5);
      }
      if(await actions.count()){
-      const last=actions.last();await last.scrollIntoViewIfNeeded();clearance=await last.evaluate((el:HTMLElement)=>{const bar=document.querySelector('.mobile-nav'),shell=document.querySelector('#employee-mobile')!;return {text:el.textContent?.slice(0,80),targetBottom:el.getBoundingClientRect().bottom,navTop:bar?.getBoundingClientRect().top,navHeight:bar?.getBoundingClientRect().height,padding:getComputedStyle(shell).paddingBottom,reserved:getComputedStyle(shell).getPropertyValue('--em-nav-height'),scrollY,scrollHeight:document.documentElement.scrollHeight,innerHeight,clear:!bar||el.getBoundingClientRect().bottom<=bar.getBoundingClientRect().top+1};});expect((clearance as {clear:boolean}).clear,name+' last action '+engine+scale).toBe(true);
+      // Test actual reachability: native centering includes the fixed bar, so
+      // finish the same extra scroll a person can make. Choose the visual end,
+      // since Home deliberately orders its week strip differently in the DOM.
+      const index=await actions.evaluateAll((elements:HTMLElement[])=>elements.reduce((best,el,i)=>el.getBoundingClientRect().bottom>elements[best].getBoundingClientRect().bottom?i:best,0));
+      const last=actions.nth(index);await last.scrollIntoViewIfNeeded();
+      await last.evaluate((el:HTMLElement)=>{const nav=document.querySelector('.mobile-nav');if(nav)window.scrollBy(0,Math.max(0,el.getBoundingClientRect().bottom-nav.getBoundingClientRect().top+16));});
+      clearance=await last.evaluate((el:HTMLElement)=>{const bar=document.querySelector('.mobile-nav'),shell=document.querySelector('#employee-mobile')!;return {text:el.textContent?.slice(0,80),targetBottom:el.getBoundingClientRect().bottom,navTop:bar?.getBoundingClientRect().top,navHeight:bar?.getBoundingClientRect().height,padding:getComputedStyle(shell).paddingBottom,reserved:getComputedStyle(shell).getPropertyValue('--em-nav-height'),scrollY,scrollHeight:document.documentElement.scrollHeight,innerHeight,clear:!bar||el.getBoundingClientRect().bottom<=bar.getBoundingClientRect().top+1};});expect((clearance as {clear:boolean}).clear,name+' last action '+engine+scale).toBe(true);
      }
      results.push({engine,name,path,size,theme,scale,contrastSamples:samples,...metrics});
      if(size.width===844&&scale===200)await page.screenshot({path:evidence+'/'+engine+'-'+name+'-'+theme+'-text200.png',fullPage:false,style:'nextjs-portal{visibility:hidden;}'});

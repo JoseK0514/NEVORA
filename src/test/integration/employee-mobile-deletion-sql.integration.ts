@@ -67,8 +67,11 @@ it('accepts once, ends every own session and calendar feed in the same commit, a
 
 it('resolves concurrent confirmations from two devices to one request and one reference',async()=>{
  const tokens=[await session('DEL-OWN','own-a'),await session('DEL-OWN','own-b')];
+ let arrivals=0,release!:()=>void;const gate=new Promise<void>(ready=>{release=ready;});
+ const barrier=async()=>{arrivals++;if(arrivals===2){release();return;}context.beforeAccept=barrier;await gate;};context.beforeAccept=barrier;
  // Two devices, each with its own cookie, confirm at the same moment.
  const results=await Promise.all(tokens.map(token=>context.device.run(token,()=>requestAccountDeletion(idle,form()))));
+ expect(arrivals).toBe(2); // Both passwords were verified before either accepting transaction began.
  const references=new Set(results.map(result=>'reference' in result?result.reference:result.kind));
  expect(references.size).toBe(1);
  expect(await q("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='DEL-OWN'")).toEqual([{n:0}]);
