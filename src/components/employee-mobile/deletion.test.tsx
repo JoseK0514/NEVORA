@@ -76,6 +76,14 @@ describe('Employee mobile account deletion',()=>{
   expect(text(render({state:{kind:'duplicate',reference:'DEL-7KQ2M9XA',confirmedAt:'2030-01-01'}}))).toContain('A deletion request is already in progress');
  });
 
+ it.each(['received','duplicate'] as const)('explains the approved support route on a %s receipt without offering in-app withdrawal',kind=>{
+  const html=render({state:{kind,reference:'DEL-7KQ2M9XA',confirmedAt:'2030-01-01 10:00:00+00'}}),plain=text(html);
+  expect(plain).toContain('Changed your mind? Contact support before the request is processed.');
+  expect(html).toContain('mailto:support@thevelani.com?subject=Account%20deletion%20DEL-7KQ2M9XA');
+  expect(html).not.toMatch(/href=["'][^"']*(?:withdraw|cancel)/);
+  expect(plain).not.toMatch(/will restore|cancel now|withdraw now/i);
+ });
+
  it('ends the form for a changed or signed-out account without claiming a deletion',()=>{
   const out=render({state:{kind:'signed_out'}});
   expect(text(out)).toContain('nothing was deleted');

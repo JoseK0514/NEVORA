@@ -1,3 +1,4 @@
+import {readFile} from 'node:fs/promises';
 // Real action/SQL regressions for own account-deletion requests. Only the framework context (cookies, headers)
 // and the database transport are adapted; every statement runs on the disposable PostgreSQL.
 import {createHash} from 'node:crypto';
@@ -157,4 +158,28 @@ it.each(['signed-out','expired','password-reset','inactive'] as const)('refuses 
  expect(await requestAccountDeletion(idle,form())).toEqual({kind:'failed'});
  expect(await open()).toEqual([]);
  expect(await feeds()).toEqual(boundaryFeeds);
+});
+
+async function withdrawalStatement(){
+ const runbook=await readFile('docs/compliance/account-deletion-runbook.md','utf8');
+ const section=runbook.slice(runbook.indexOf('## Withdrawing'));
+ const statement=section.match(/```sql\n([\s\S]*?)```/);
+ expect(statement,'Runbook must supply the guarded withdrawal statement').not.toBeNull();
+ return statement![1];
+}
+it('rehearses the runbook withdrawal only for the exact received request and never reuses revoked access',async()=>{
+ const statement=await withdrawalStatement();as(await session('DEL-OWN','withdraw-own'));
+ const accepted=await requestAccountDeletion(idle,form());expect(accepted.kind).toBe('received');if(accepted.kind!=='received')throw Error('Missing receipt');
+ for(const values of [[accepted.reference,'foreign-workspace','DEL-OWN'],[accepted.reference,'workspace-fuel','DEL-PEER']])expect(await q(statement,values)).toEqual([]);
+ expect(await q(statement,[accepted.reference,'workspace-fuel','DEL-OWN'])).toEqual([{reference:accepted.reference,employee_id:'DEL-OWN',workspace_id:'workspace-fuel',status:'withdrawn'}]);
+ expect(await q(statement,[accepted.reference,'workspace-fuel','DEL-OWN'])).toEqual([]);
+ expect(await q("SELECT token_hash FROM employee_sessions WHERE employee_id='DEL-OWN'")).toEqual([]);
+ expect(await q("SELECT id FROM calendar_subscriptions WHERE employee_id='DEL-OWN' AND revoked_at IS NULL")).toEqual([]);
+});
+it('refuses the runbook withdrawal once processing started',async()=>{
+ const statement=await withdrawalStatement();as(await session('DEL-OWN','processing-own'));
+ const accepted=await requestAccountDeletion(idle,form());expect(accepted.kind).toBe('received');if(accepted.kind!=='received')throw Error('Missing receipt');
+ await q("UPDATE account_deletion_requests SET status='processing' WHERE reference=$1",[accepted.reference]);
+ expect(await q(statement,[accepted.reference,'workspace-fuel','DEL-OWN'])).toEqual([]);
+ expect(await open()).toMatchObject([{reference:accepted.reference,status:'processing'}]);
 });
