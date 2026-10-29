@@ -7,13 +7,19 @@ const marker = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]
 export function installOwnedCalendarDiagnostics({origin, publish}) {
   const url = new URL(origin);
   if (url.protocol !== 'http:' || url.hostname !== '127.0.0.1' || !url.port || url.origin !== origin) throw Error('Calendar diagnostics require an owned loopback origin');
-  let sequence = 0;
+  let sequence = 0, saturated = false;
   const observe = ({request, response}) => {
     const id = request.headers['x-nevora-qa-calendar-read'];
     if (typeof id !== 'string' || !marker.test(id) || request.method !== 'GET' || request.headers.host !== url.host ||
-      !['127.0.0.1','::ffff:127.0.0.1'].includes(request.socket.localAddress) || sequence >= 1024) return;
+      !['127.0.0.1','::ffff:127.0.0.1'].includes(request.socket.localAddress)) return;
     const route = new URL(request.url, origin);
     if (route.origin !== origin || route.pathname !== '/api/employee/calendar-subscriptions') return;
+    if (sequence >= 1024) {
+      // Never let omitted receipt data become evidence of absence. Emit once;
+      // the classifier refuses all orphan exceptions for this observation run.
+      if (!saturated) { saturated = true; publish({event:'unavailable',process:process.pid,reason:'capacity'}); }
+      return;
+    }
     const serial = ++sequence;
     const emit = event => publish({id, process:process.pid, request:serial, event, complete:response.writableFinished === true});
     emit('start');
