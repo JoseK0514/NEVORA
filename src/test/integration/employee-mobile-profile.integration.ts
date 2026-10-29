@@ -87,7 +87,7 @@ it('integrates current own Profile, preferences, contextual help and native sign
    await page.evaluate(()=>{document.documentElement.style.fontSize='100%';delete document.documentElement.dataset.textStep;});await page.setViewportSize({width:390,height:844});
    await page.getByLabel('Sign-in language',{exact:true}).focus();await page.keyboard.press('Tab');expect(await page.getByLabel('Appearance',{exact:true}).evaluate((el:HTMLElement)=>document.activeElement===el)).toBe(true);
    record('200% text retains enlarged headings/facts and navigation clearance; native Tab reaches the next labelled preference');
-   await page.emulateMedia({colorScheme:'dark'});await page.getByLabel('Appearance',{exact:true}).selectOption('system');await expect.poll(()=>page.locator('html').getAttribute('data-theme')).toBe('dark');expect(await page.evaluate(()=>localStorage.getItem('nv-theme'))).toBeNull();
+   await page.emulateMedia({colorScheme:'dark'});await page.getByLabel('Appearance',{exact:true}).selectOption('system');await expect.poll(()=>page.locator('html').getAttribute('data-theme')).toBe('dark');expect(await page.evaluate(()=>localStorage.getItem('nv-theme'))).toBe('system');
    await page.emulateMedia({colorScheme:'light'});await expect.poll(()=>page.locator('html').getAttribute('data-theme')).toBe('light');await shot('profile-system-light');await page.getByLabel('Appearance',{exact:true}).selectOption('dark');
    record('System follows this device media setting; explicit choice is device storage, not an employee/workspace preference');
    stage='language-reload';await idle();const reloaded=page.waitForEvent('load');await page.getByLabel('Sign-in language',{exact:true}).selectOption('es');await reloaded;await ready();await idle();
