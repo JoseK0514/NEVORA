@@ -75,8 +75,9 @@ function isDescendant(pid, ancestor, table) {
 function processIdentity(pid) {
   if (!Number.isSafeInteger(pid) || pid < 2) throw Error('Invalid owned process identity');
   const result = spawnSync('ps', ['-p', String(pid), '-o', 'pid=,ppid=,pgid=,lstart=,stat=,command='], { encoding: 'utf8', timeout: 2000 });
-  if (result.status === 1 || !result.stdout?.trim()) return undefined;
-  if (result.error || result.status !== 0) throw Error('Cannot verify owned process identity');
+  if (result.error || result.stderr?.trim()) throw Error('Cannot verify owned process identity');
+  if (result.status === 1 && !result.stdout?.trim()) return undefined;
+  if (result.status !== 0 || !result.stdout?.trim()) throw Error('Cannot verify owned process identity');
   const parts = result.stdout.trim().split(/\s+/);
   if (parts[8]?.startsWith('Z')) return undefined;
   return { pid, ppid: Number(parts[1]), pgid: Number(parts[2]), started: parts.slice(3, 8).join(' '), commandHash: hash(parts.slice(9).join(' ')) };
@@ -143,13 +144,34 @@ export async function registerOwnedProcess({ kind, pid, ownerId }) {
     process.send({ type: 'register-owned-process', requestId, kind, pid, ownerId }, error => { if (error) finish(Error('Owned runtime supervisor disconnected')); });
   });
 }
+// Hold Node's entry point until the creation-handle identity has been pinned.
+// NODE_OPTIONS preserves the caller's argv/execArgv and orders this import before
+// command-line imports. Restore the caller's options before any descendants run.
+function pinnedNodeEnvironment(env, ownerId) {
+  const gate = `
+    ${env.NODE_OPTIONS === undefined ? 'delete process.env.NODE_OPTIONS;' : `process.env.NODE_OPTIONS = ${JSON.stringify(env.NODE_OPTIONS)};`}
+    await new Promise((ready, reject) => {
+      const close = () => { process.off('message', message); process.off('disconnect', disconnected); };
+      const disconnected = () => { close(); reject(Error('Owned supervisor disconnected before root pin')); };
+      const message = value => {
+        if (value?.type !== 'owned-root-pinned' || value.ownerId !== ${JSON.stringify(ownerId)}) return;
+        close(); ready();
+      };
+      process.on('message', message);
+      process.once('disconnect', disconnected);
+      process.send({ type: 'owned-root-ready' }, error => { if (error) disconnected(); });
+    });
+  `;
+  return { ...env, NODE_OPTIONS: '--import="data:text/javascript,' + encodeURIComponent(gate) + '"' + (env.NODE_OPTIONS ? ' ' + env.NODE_OPTIONS : '') };
+}
 /** Async supervision keeps the cleanup owner alive for grace, then signals only
  * independently observed descendants carrying this invocation's random marker.
  * Start/command identity is rechecked before every fallback signal; mutable
  * runtime ownership JSON is never sufficient authority to signal a PID. */
 export async function superviseOwnedChild({ command, args, cwd, env, ownerId, timeoutMs, graceMs = 7500, signal }) {
   if (!/^[a-f0-9]{32}$/.test(ownerId) || !Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || !Number.isSafeInteger(graceMs) || graceMs < 1) throw Error('Invalid owned supervision contract');
-  const leases = new Map(), child = spawn(command, args, { cwd, env: { ...env, NEVORA_OWNED_PROCESS_OWNER: ownerId }, detached: process.platform !== 'win32', stdio: ['ignore', 'inherit', 'inherit', 'ipc'] });
+  const childEnv = command === process.execPath ? pinnedNodeEnvironment(env, ownerId) : env;
+  const leases = new Map(), child = spawn(command, args, { cwd, env: { ...childEnv, NEVORA_OWNED_PROCESS_OWNER: ownerId }, detached: process.platform !== 'win32', stdio: ['ignore', 'inherit', 'inherit', 'ipc'] });
   let failure, observationFailure, escalation, rootLease, initialRootExit, stopping = false;
   // Keep only our bounded reason codes and identity hashes, never argv/env.
   const retainObservationFailure = error => {
@@ -201,8 +223,14 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
         if (identity.pid !== previous.pid || identity.started !== previous.started || identity.pgid !== previous.pgid || identity.ppid !== previous.ppid || !isDescendant(pid, leader.pid, table) || !isDescendant(leader.pid, child.pid, table)) throw Object.assign(Error('Owned member continuity changed'), {
           observationFailure: { reason: 'MEMBER_CONTINUITY_CHANGED', expected: processLeaseFields(previous), observed: processLeaseFields(identity) },
         });
-        const actualLeader = ownedProcessIdentity(leader.pid, ownerId, true);
-        if (!actualLeader) throw Error('Owned group leader is no longer proven');
+        const actualLeader = ownedProcessIdentity(leader.pid, ownerId, true, { allowRetirement: true, phase: 'member-environment' });
+        if (!actualLeader || actualLeader === retiredProcess) {
+          // A stale changed-title sample grants no lease or signaling authority.
+          // Both lifetimes must have retired; a surviving or uncertain member
+          // still requires its live, independently proven leader.
+          if (observedProcessExit(leader.pid) && observedProcessExit(identity.pid)) return;
+          throw Error('Owned group leader is no longer proven');
+        }
         assertSameProcess(actualLeader, leader);
         // Retain the original command hash: it must not become independent PID
         // or registration authority if this worker later loses its group proof.
@@ -212,6 +240,9 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
     leases.set(pid, { ...identity, ppid:previous?.ppid??table.get(pid).ppid, lastObservedPpid:identity.ppid, kind: previous?.kind === 'owned-descendant' ? kind : previous?.kind ?? kind });
   };
   const snapshot = () => {
+    // SIGCHLD delivery may lag behind ps. Once our root is positively retired,
+    // the exit path owns cleanup from existing leases, without new discoveries.
+    if (child.pid && observedProcessExit(child.pid)) return;
     const table = processTable();
     for (const lease of leases.values()) if (rootLease && lease.pgid === rootLease.pid) {
       const actual = processIdentity(lease.pid);
@@ -257,6 +288,10 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
     }
   });
   child.on('message', message => {
+    if (message?.type === 'owned-root-ready') {
+      if (rootLease && !stopping && child.connected) child.send({ type: 'owned-root-pinned', ownerId }, error => { if (error) stop('Owned child startup gate failed', 1); });
+      return;
+    }
     if (message?.type !== 'register-owned-process') return;
     let accepted = false;
     try {

@@ -7,7 +7,8 @@ import {expect,it} from 'vitest';
 const runner=resolve('scripts/phase-e-owned.mjs');
 type Mode='exit-23'|'exit-0'|'failed-observer'|'missing-marker'|'observer-stderr'|'zombie-stderr';
 
-/** Gate a real child exit before its first native identity read. Negative cases
+/** Bypass the Node startup gate to force an unobservable root (e.g. external
+ * termination or an ungated executable), then gate its real exit before proof. Negative cases
  * inject an observer error or omit the actual child marker, never fake a PID. */
 function earlyRootExit(mode:Mode){
  const root=mkdtempSync(join(tmpdir(),'nevora-e-root-exit-'));
@@ -16,7 +17,7 @@ function earlyRootExit(mode:Mode){
   writeFileSync(childPath,`import fs from 'node:fs';process.on('SIGTERM',()=>process.exit(23));fs.writeFileSync(${JSON.stringify(ready)},'ready');${mode==='observer-stderr'?'setTimeout(()=>process.exit(23),1000);':''}setInterval(()=>{if(fs.existsSync(${JSON.stringify(gate)}))process.exit(${mode==='exit-0'?0:23});},5);`);
   writeFileSync(driver,`import assert from 'node:assert/strict';import fs from 'node:fs';import cp from 'node:child_process';import {syncBuiltinESMExports} from 'node:module';
 const nativeSpawn=cp.spawn,nativeRead=cp.spawnSync,ownerId='e'.repeat(32),mode=${JSON.stringify(mode)};let created,actualExit,intercepted=false,gone;const fallbackSignals=[],nativeKill=process.kill.bind(process);
-cp.spawn=function(command,args,options){if(args[0]!==${JSON.stringify(childPath)})return nativeSpawn(command,args,options);const env={...options.env};if(mode==='missing-marker')delete env.NEVORA_OWNED_PROCESS_OWNER;created=nativeSpawn(command,args,{...options,env});created.once('exit',(status,signal)=>{actualExit={status,signal};});return created;};
+cp.spawn=function(command,args,options){if(args[0]!==${JSON.stringify(childPath)})return nativeSpawn(command,args,options);const env={...options.env};delete env.NODE_OPTIONS;if(mode==='missing-marker')delete env.NEVORA_OWNED_PROCESS_OWNER;created=nativeSpawn(command,args,{...options,env});created.once('exit',(status,signal)=>{actualExit={status,signal};});return created;};
 cp.spawnSync=function(command,args,options){
  if(command==='ps'&&args[0]==='-p'&&args[1]===String(created?.pid)){
   if(!intercepted){intercepted=true;const wait=Date.now()+3000;while(!fs.existsSync(${JSON.stringify(ready)})&&Date.now()<wait)Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,5);assert(fs.existsSync(${JSON.stringify(ready)}),'Actual child was not ready');
