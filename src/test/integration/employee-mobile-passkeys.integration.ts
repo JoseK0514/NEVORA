@@ -13,6 +13,7 @@ it('integrates own passkeys through real server verification and deliberate mobi
  const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
  const app=await createOwnedNextApp(evidence,{passkeysEnabled:true}),origin=app.url.replace('127.0.0.1','localhost');
  const transport:{engine:string;stage:string;event:string;at:number;status?:number}[]=[],checks:{engine:string;name:string}[]=[],captures:string[]=[],contrasts:{engine:string;theme:string;width:number;subject:string;ratio:number}[]=[],errors:{engine:string;stage:string;message:string;expected:boolean}[]=[];
+ const presentation:unknown[]=[];
  const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
  let browser:{close():Promise<void>}|undefined,failed:(()=>Promise<void>)|undefined;
  try{
@@ -43,7 +44,14 @@ it('integrates own passkeys through real server verification and deliberate mobi
 
    });
    const panel=page.locator('.em-passkeys'),ready=()=>page.locator('.em-passkeys[data-passkey-state="ready"]').waitFor();
-   const shot=async(name:string)=>{const path=evidence+'/'+engine+'-'+name+'.png';await page.screenshot({path,fullPage:false,caret:'initial',style:'nextjs-portal {visibility:hidden;}'});captures.push(path);};
+   const shot=async(name:string)=>{presentation.push({engine,name,...await page.evaluate(()=>{
+    const visible=(el:Element)=>Boolean(el.getClientRects().length),rootSize=parseFloat(getComputedStyle(document.documentElement).fontSize),elements=[...document.querySelectorAll<HTMLElement>('#employee-mobile :is(h1,h2,h3,p,dt,dd,small,summary,button,a)')].filter(visible);
+    const heading=elements.find(el=>el.tagName==='H2'&&el.textContent?.trim()==='Passkeys'),button=elements.find(el=>el.tagName==='BUTTON'&&el.textContent?.trim()==='Add a passkey');
+    const style=(el:HTMLElement|undefined)=>{if(!el)return null;const s=getComputedStyle(el),r=el.getBoundingClientRect();return {fontSize:s.fontSize,fontWeight:s.fontWeight,letterSpacing:s.letterSpacing,boxShadow:s.boxShadow,outline:s.outline,hover:el.matches(':hover'),focusVisible:el.matches(':focus-visible'),left:r.left,right:r.right};};
+    let firstLetter=null;const clips=[];
+    if(heading){const walker=document.createTreeWalker(heading,NodeFilter.SHOW_TEXT),text=walker.nextNode();if(text?.textContent){const range=document.createRange();range.setStart(text,0);range.setEnd(text,1);const box=range.getBoundingClientRect();firstLetter={left:box.left,right:box.right};}for(let el:HTMLElement|null=heading;el;el=el.parentElement){const css=getComputedStyle(el);if(['hidden','clip','auto','scroll'].includes(css.overflowX)){const box=el.getBoundingClientRect();clips.push({tag:el.tagName,className:el.className,left:box.left,right:box.right,overflow:css.overflowX});}}}
+    return {width:innerWidth,height:innerHeight,theme:document.documentElement.dataset.theme,rootSize,heading:style(heading),button:style(button),firstLetter,clips,type:elements.map(el=>{const css=getComputedStyle(el);return {tag:el.tagName,className:el.className,size:parseFloat(css.fontSize),weight:css.fontWeight};})};
+   })});const path=evidence+'/'+engine+'-'+name+'.png';await page.screenshot({path,fullPage:false,caret:'initial',style:'nextjs-portal {visibility:hidden;}'});captures.push(path);};
    const critical=async(name:string,capture:string,help=false)=>{await ready();const control=help?panel.locator('summary'):panel.getByRole('button',{name,exact:true});await control.focus();await control.evaluate((el:HTMLElement)=>el.scrollIntoView({block:'center'}));const box=await control.boundingBox(),nav=await page.locator('.mobile-nav:visible').boundingBox();expect(box!.width).toBeGreaterThanOrEqual(44);expect(box!.height).toBeGreaterThanOrEqual(44);expect(box!.x).toBeGreaterThanOrEqual(0);expect(box!.x+box!.width).toBeLessThanOrEqual(await page.evaluate(()=>innerWidth));expect(box!.y).toBeGreaterThanOrEqual(0);expect(box!.y+box!.height).toBeLessThanOrEqual(nav!.y);expect(await control.evaluate((el:HTMLElement)=>el.scrollWidth<=el.clientWidth+1&&el.scrollHeight<=el.clientHeight+1)).toBe(true);const measured=await control.evaluate(measureRenderedContrast);contrasts.push({engine,theme:await page.evaluate(()=>document.documentElement.dataset.theme??'light'),width:await page.evaluate(()=>innerWidth),subject:help?'help':name,ratio:measured.ratio});expect(measured.ratio).toBeGreaterThanOrEqual(4.5);await shot(capture);};
    failed=async()=>{await shot('FAILURE-'+stage);await writeFile(evidence+'/'+engine+'-failure.html',await page.content());};
    const record=(name:string)=>checks.push({engine,name});
@@ -77,7 +85,7 @@ it('integrates own passkeys through real server verification and deliberate mobi
    stage='signout';await page.getByRole('button',{name:'Sign out',exact:true}).click();await page.waitForURL(origin+'/login');expect(await panel.count()).toBe(0);expect((await context.cookies()).some((cookie:{name:string})=>cookie.name==='fuel_session')).toBe(false);record('Native signout removes mounted owner and session cookie');
    await context.close();await browser!.close();browser=undefined;failed=undefined;
   }
-  expect(errors.filter(error=>!error.expected)).toEqual([]);await writeFile(evidence+'/result.json',JSON.stringify({status:'passed',checks,captures,contrasts,errors,transport,limits:['Controlled fictional authenticator and actual cryptographic canonical server; native OS UI/credential-store behavior and physical devices unexecuted.','Owned loopback Next development/PostgreSQL, no hosted/production certification.']},null,2));
- }catch(error){await failed?.().catch(()=>{});await writeFile(evidence+'/failure.json',JSON.stringify({error:String(error).split('Call log:')[0],checks,captures,contrasts,errors,transport},null,2));throw error;}
+  expect(errors.filter(error=>!error.expected)).toEqual([]);await writeFile(evidence+'/result.json',JSON.stringify({status:'passed',checks,captures,contrasts,errors,transport,presentation,limits:['Controlled fictional authenticator and actual cryptographic canonical server; native OS UI/credential-store behavior and physical devices unexecuted.','Owned loopback Next development/PostgreSQL, no hosted/production certification.']},null,2));
+ }catch(error){await failed?.().catch(()=>{});await writeFile(evidence+'/failure.json',JSON.stringify({error:String(error).split('Call log:')[0],checks,captures,contrasts,errors,transport,presentation},null,2));throw error;}
  finally{await browser?.close();await app.close();}
 });
