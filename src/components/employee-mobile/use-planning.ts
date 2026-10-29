@@ -10,7 +10,7 @@ export function usePlanning(authority:string,view:PlanningView,selection:string)
    const response=await fetch('/api/employee/planning/'+view+'/'+encodeURIComponent(selection),{credentials:'same-origin',cache:'no-store',redirect:'error',signal,headers:{Accept:'application/json','X-Nevora-Employee-View':authority}});
    if(response.status===401||response.status===403)return {state:'unavailable',reason:'access_denied'};
    if(!response.ok)throw Error('Planning unavailable');return response.json();
-  },value=>{const read=parseEmployeePlanning(value);return read.state==='ready'&&(read.authority!==authority||read.view!==view||read.selection!==selection)?{state:'unavailable',reason:'access_denied'}:read;},reason=>({state:'unavailable',reason}));
+  },value=>{const read=parseEmployeePlanning(value);return read.state==='ready'&&(read.authority!==authority||read.view!==view||read.selection!==selection)?{state:'unavailable',reason:'access_denied'}:read;},reason=>({state:'unavailable',reason}),()=>'read_failed');
   control.current=controller;let mounted=true;
   const pause=()=>controller.pause(),sync=()=>{controller.pause();if(document.visibilityState!=='hidden'&&navigator.onLine)controller.start();};
   document.addEventListener('visibilitychange',sync);for(const e of ['blur','pagehide','offline'])window.addEventListener(e,pause);for(const e of ['focus','pageshow','online','storage'])window.addEventListener(e,sync);
