@@ -75,7 +75,7 @@
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .mobile-nav-link::before { content:none; display:none; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-nv-e5] .mobile-nav .mobile-nav-link.active { color:var(--em-teal); background:var(--em-wash); box-shadow:none; font-weight:var(--em-weight-label); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-nv-e5] .mobile-nav .mobile-nav-link svg { width:22px; height:22px; }
-  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] :is(a,button,input,summary):focus-visible { outline:3px solid var(--em-focus); outline-offset:3px; }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] :is(a,button,input,select,textarea,summary):focus-visible { outline:3px solid var(--em-focus); outline-offset:3px; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-mobile-only { display:block; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) .q-home > .q-bar { display:none; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:is([data-employee-mobile-page="home"],[data-employee-mobile-page="schedule"]) .q-hello {
@@ -183,5 +183,7 @@
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-employee-mobile-page="home"] .q-home__clock .employee-time-refresh { min-height:var(--em-action); padding:var(--em-space-3) var(--em-space-4); border:0; border-radius:var(--em-control); background:transparent; color:var(--em-teal); font:var(--em-weight-action) var(--em-size-support)/var(--em-line-label) var(--em-font); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-employee-mobile-page="home"] .q-home__clock .employee-time-refresh:hover:not(:disabled) { background:var(--em-wash); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-employee-mobile-page="home"] .q-home__clock .employee-time-refresh:disabled { color:var(--em-muted); }
+  /* The clock status chip came from the incumbent light-only style; in Dark it sits on the card like other chips. */
+  html[data-theme="dark"] body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .employee-time-badge { background:var(--em-surface); color:var(--em-muted); border-color:var(--em-line); }
   @media (prefers-reduced-motion:reduce) { html body #employee-mobile.app-shell[data-employee-mobile="true"] :is(a,button) { transition:none; } }
 }

@@ -11,6 +11,9 @@ import {correctionAuthority} from '@/lib/time-corrections/authority.server';
 import { requireSession,requireSessionMutationProof } from "@/lib/auth/session";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { currentPayPeriod } from "@/lib/payroll/pay-calendar.server";
+import { payrollFeatureEnabled, readPayrollCapabilities } from "@/lib/payroll/service";
+import { currentBrand } from "@/lib/workspace-presentation/current.server";
+import { mobileTabsForRole } from "@/lib/navigation";
 
 export default async function MyTimePage({searchParams}:{searchParams:Promise<{view?:string;start?:string;end?:string;entry?:string;requestId?:string;edit?:string;filter?:string;from?:string}>}={searchParams:Promise.resolve({})}) {
   const session = await requireSession();
@@ -32,5 +35,8 @@ export default async function MyTimePage({searchParams}:{searchParams:Promise<{v
   const paidLine=pay?`Paid ${new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'long',month:'short',day:'numeric'}).format(new Date(`${pay.payday}T12:00:00Z`))} for ${pay.period.startDate.slice(0,7)===pay.period.endDate.slice(0,7)?`${shortDate(pay.period.startDate)}–${Number(pay.period.endDate.slice(8))}`:`${shortDate(pay.period.startDate)} – ${shortDate(pay.period.endDate)}`}`:undefined;
   const today=businessDate(new Date(),zone);let period={startDate:addDays(today,-6),endDate:today};try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{}
   const view=params.view==='cards'?'cards':params.view==='corrections'?'corrections':'records';
-  return <ResponsiveEmployeeHours authority={employeeViewAuthority(proof,'hours')} view={view} period={period} entryId={hoursRecordId(params.entry)?params.entry:null} requestId={hoursRequestId(params.requestId)?params.requestId:null} edit={params.edit&&params.edit.length<=500?params.edit:null} filter={params.filter==='decided'?'decided':'waiting'} fromCards={params.from==='cards'}><EmployeeTimePanel key={authority} authority={authority} corporate={corporate} signature={{todayLabel,payLine:paidLine}} /></ResponsiveEmployeeHours>;
+  // Hours belongs to the Pay tab when Pay is shown (back to Pay); otherwise Hours is its own tab (no back link). Same rules as the layout.
+  const [payroll,brand]=await Promise.all([payrollFeatureEnabled()?readPayrollCapabilities(proof):Promise.resolve(undefined),currentBrand()]);
+  const parent=mobileTabsForRole(session.role,payroll,{modules:brand.modules}).some(tab=>tab.href==='/app/my-pay')?{href:'/app/my-pay',label:'Pay'}:null;
+  return <ResponsiveEmployeeHours authority={employeeViewAuthority(proof,'hours')} parent={parent} view={view} period={period} entryId={hoursRecordId(params.entry)?params.entry:null} requestId={hoursRequestId(params.requestId)?params.requestId:null} edit={params.edit&&params.edit.length<=500?params.edit:null} filter={params.filter==='decided'?'decided':'waiting'} fromCards={params.from==='cards'}><EmployeeTimePanel key={authority} authority={authority} corporate={corporate} signature={{todayLabel,payLine:paidLine}} /></ResponsiveEmployeeHours>;
 }

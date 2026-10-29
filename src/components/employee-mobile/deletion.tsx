@@ -27,7 +27,7 @@ type Props={account:{name:string;role:string;employeeId:string};view:DeletionVie
 export function receivedAt(text:string){
  const iso=text.trim().replace(' ','T').replace(/(\.\d{3})\d+/,'$1').replace(/([+-]\d\d)$/,'$1:00');
  const time=Date.parse(iso);
- return Number.isFinite(time)?new Intl.DateTimeFormat(undefined,{dateStyle:'medium',timeStyle:'short'}).format(time):null;
+ return Number.isFinite(time)?new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}).format(time):null;
 }
 
 const missing=(token:string)=><mark className="legal-unresolved">[CONFIRM_{token}]</mark>;

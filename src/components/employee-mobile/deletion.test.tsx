@@ -95,7 +95,7 @@ describe('Employee mobile account deletion',()=>{
  });
 
  it('reads Postgres timestamptz text in any offset and drops what it cannot read',()=>{
-  expect(receivedAt('2030-01-01 10:00:00+00')).toBe(new Intl.DateTimeFormat(undefined,{dateStyle:'medium',timeStyle:'short'}).format(Date.UTC(2030,0,1,10)));
+  expect(receivedAt('2030-01-01 10:00:00+00')).toBe(new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}).format(Date.UTC(2030,0,1,10)));
   expect(receivedAt('2030-01-01 06:00:00.123456-04')).toBe(receivedAt('2030-01-01 10:00:00.123+00'));
   expect(receivedAt('2030-01-01 15:30:00+05:30')).toBe(receivedAt('2030-01-01 10:00:00+00'));
   expect(receivedAt('not a time')).toBeNull();

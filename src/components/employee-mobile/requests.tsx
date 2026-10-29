@@ -4,6 +4,8 @@ import {useCallback,useEffect,useRef,useState,useSyncExternalStore,type ReactNod
 import {usePathname} from 'next/navigation';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
+import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
+import {shiftRequestStatus,timeOffStatus} from './request-status';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {CalendarMinusIcon} from '@phosphor-icons/react/dist/ssr/CalendarMinus';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
@@ -19,7 +21,7 @@ import {formatTime,addDays} from '@/lib/date-utils';
 type Mode='hub'|'open';
 const day=(date:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'short',month:'short',day:'numeric'}).format(new Date(date+'T12:00:00Z'));
 const href=(row:OwnRequest)=>row.kind==='timeOff'?`/app/requests?requestId=${encodeURIComponent(row.id)}`:`/app/exchange?tab=requests&requestId=${encodeURIComponent(row.id)}`;
-const status=(value:string)=>({OPEN:'Offered for cover',EMPLOYEE_PENDING:'Awaiting a teammate',MANAGER_PENDING:'Awaiting manager review',APPROVED:'Approved',PENDING:'Awaiting approval',DENIED:'Declined',CANCELLED:'Cancelled',EXPIRED:'Expired'}[value]??'Open request to check status');
+const status=(row:OwnRequest)=>row.kind==='timeOff'?timeOffStatus[row.status]??'Open to check status':shiftRequestStatus(row.status,{callout:row.kind==='callout'});
 function Entry({href,title,detail,icon}:{href:string;title:string;detail?:string;icon:ReactNode}){
  return <li><Link className="em-request-entry" href={href}><span className="em-request-icon" aria-hidden="true">{icon}</span><span><strong>{title}</strong>{detail?<small>{detail}</small>:null}</span><CaretRightIcon aria-hidden="true"/></Link></li>;
 }
@@ -97,9 +99,9 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  const eligible=snapshot?.open?.filter(row=>row.check==='eligible')??[],unconfirmed=snapshot?.open?.filter(row=>row.check==='unavailable')??[],refused=snapshot?.open?.filter(row=>row.check==='refused')??[];
  return <div className="q-page em-requests" data-requests-state={state.paused?'paused':snapshot?'ready':denied?'denied':state.refreshing?'loading':'unavailable'}>
-  <header className="em-request-heading">{mode==='open'?<Link className="em-request-back" href="/app/requests/hub">‹ Requests</Link>:null}<h1>{mode==='hub'?'Requests':'Open shifts'}</h1><p>{mode==='hub'?'Your requests and shift options':'Find a shift that works for you'}</p></header>
+  <header className="em-request-heading">{mode==='open'?<Link className="em-request-back" href="/app/requests/hub"><CaretLeftIcon size={18} aria-hidden="true"/>Requests</Link>:null}<h1>{mode==='hub'?'Requests':'Open shifts'}</h1><p>{mode==='hub'?'Your requests and shift options':'Find a shift that works for you'}</p></header>
   <div className="em-request-body">
-   {!snapshot?<section className="em-request-notice" aria-label="Requests status"><p role="status">{state.paused?'Requests paused. Return online to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current requests…':'We couldn’t load your requests. Try again.'}</p>{denied?<Link className="em-request-secondary" href="/login">Sign in</Link>:<button className="em-request-secondary" type="button" disabled={state.paused||state.refreshing} onClick={refresh}>{state.refreshing?'Checking…':'Try again'}</button>}</section>:<>
+   {!snapshot?<section className="em-request-notice" aria-label="Requests status"><p role="status">{state.paused?'Requests paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current requests…':'We couldn’t load your requests. Try again.'}</p>{denied?<Link className="em-request-secondary" href="/login">Sign in</Link>:<button className="em-request-secondary" type="button" disabled={state.paused||state.refreshing} onClick={refresh}>{state.refreshing?'Checking…':'Try again'}</button>}</section>:<>
     {mode==='hub'?<>
      {snapshot.modules.marketplace?<IncomingRequestSection count={snapshot.incoming} onRetry={refresh}/>:null}
      <section aria-labelledby="em-options-heading"><h2 id="em-options-heading">Your options</h2><ul className="em-request-list">
@@ -108,7 +110,7 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
       <Entry href="/app/availability" title="Availability" detail="Let your manager know when you can work" icon={<ClockIcon/>}/>
      </ul></section>
      <section aria-labelledby="em-recent-heading"><h2 id="em-recent-heading">Recent requests</h2>
-      {snapshot.recent===null?<p className="em-request-notice" role="status">Your request history couldn’t be checked. Open the request type below to try again.</p>:snapshot.recent.length?<ul className="em-request-list">{snapshot.recent.map(row=><Entry key={row.kind+row.id} href={href(row)} title={`${row.kind==='timeOff'?'Time off':row.kind==='callout'?'Unable to work':'Shift request'} · ${day(row.date)}`} detail={status(row.status)} icon={row.kind==='timeOff'?<CalendarMinusIcon/>:<ArrowsLeftRightIcon/>}/>)}</ul>:<p className="em-request-notice">No requests yet. Start with one of the options above.</p>}
+      {snapshot.recent===null?<p className="em-request-notice" role="status">Your request history couldn’t be checked. Open the request type below to try again.</p>:snapshot.recent.length?<ul className="em-request-list">{snapshot.recent.map(row=><Entry key={row.kind+row.id} href={href(row)} title={`${row.kind==='timeOff'?'Time off':row.kind==='callout'?'Unable to work':'Shift request'} · ${day(row.date)}`} detail={status(row)} icon={row.kind==='timeOff'?<CalendarMinusIcon/>:<ArrowsLeftRightIcon/>}/>)}</ul>:<p className="em-request-notice">No requests yet. Start with one of the options above.</p>}
       <div className="em-request-links">{snapshot.modules.timeOff?<Link href="/app/requests?tab=my">All time-off requests</Link>:null}{snapshot.modules.marketplace?<Link href="/app/exchange?tab=requests">My shift requests</Link>:null}</div>
      </section>
     </>:snapshot.modules.marketplace?<>

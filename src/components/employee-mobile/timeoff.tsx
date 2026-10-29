@@ -6,13 +6,14 @@ import {PlanningFrame} from './planning-frame';
 import {usePlanning} from './use-planning';
 import {PlanningOperation,PlanningOperations} from './planning-operation';
 import {PlanningFeedback,usePlanningOperation} from './planning-feedback';
+import {timeOffStatus} from './request-status';
 import {parsePlanningCommand,type PlanningRequest,type PlanningCommand} from '@/lib/employee-planning';
 import {saveEmployeePlanningAction,checkEmployeePlanningAction} from '@/app/app/employee-planning/actions';
 import {formatTimeRange,isValidIsoDate} from '@/lib/date-utils';
 const date=(value:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'short',month:'short',day:'numeric',year:'numeric'}).format(new Date(value+'T12:00:00Z'));
 const range=(r:PlanningRequest)=>r.startDate===r.endDate?date(r.startDate):date(r.startDate)+' – '+date(r.endDate);
 const length=(r:PlanningRequest)=>r.startTime&&r.endTime?'Part of a day · '+formatTimeRange(r.startTime,r.endTime):r.startDate===r.endDate?'Full day':(Math.round((Date.parse(r.endDate)-Date.parse(r.startDate))/86400000)+1)+' full days';
-const status={PENDING:'Waiting for approval',APPROVED:'Approved',DENIED:'Declined',CANCELLED:'Withdrawn'};
+const status=timeOffStatus;
 export function EmployeeTimeOff({authority,selection,filter}:{authority:string;selection:string;filter:string}){
  const panel=usePlanning(authority,'timeoff',selection),read=panel.read?.view==='timeoff'?panel.read:null;
  const [draft,setDraft]=useState({startDate:'',endDate:'',partial:false,startTime:'09:00',endTime:'12:00',note:''}),[operation,setOperation]=useState(()=>new PlanningOperation()),id=useRef<string|null>(null),[withdrawals]=useState(()=>new PlanningOperations());
