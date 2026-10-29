@@ -63,7 +63,7 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
     ['missing-time','/app/my-time?view=corrections&edit=new','.em-hours[data-hours-state="ready"]'],
     ['pay','/app/my-pay','.em-pay'],
     ['notifications','/app/notifications','.em-messages[data-messages-state="ready"]'],
-    ['updates-compose','/app/updates/new','.em-messages[data-messages-state="ready"]'],
+    ['updates-compose','/app/updates/compose','.em-messages[data-messages-state="ready"]'],
     ['more','/app/more','.em-more'],
     ['profile','/app/profile','.em-profile-private[data-profile-state="ready"]'],
     ['calendar','/app/profile#employee-calendar-title','.em-calendar'],
@@ -75,10 +75,12 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
     ['terms','/app/profile/terms','main h1'],
    ];
    for(const [name,path,ready]of cases){
-    await page.goto(app.url+path);await page.locator(ready+':visible').first().waitFor();
+    try{await page.goto(app.url+path);await page.locator(ready+':visible').first().waitFor();}catch(error){failures.push({engine,name,path,stage:'ready',error:String(error)});continue;}
     for(const size of [{width:667,height:375},{width:844,height:390},{width:932,height:430}])for(const theme of ['light','dark'])for(const scale of [100,200]){
+     let clearance:unknown;try{
      await page.setViewportSize(size);await page.evaluate(({theme,scale}:any)=>{localStorage.setItem('nv-theme',theme);document.documentElement.dataset.theme=theme;document.documentElement.style.fontSize=scale+'%';document.documentElement.dataset.textStep=String(scale);}, {theme,scale});
      await page.waitForFunction(()=>matchMedia('(pointer: coarse)').matches&&document.querySelector('#employee-mobile')?.getAttribute('data-employee-mobile-active')==='true');
+     await page.evaluate(()=>new Promise<void>(ready=>requestAnimationFrame(()=>requestAnimationFrame(()=>ready()))));
      const metrics=await page.evaluate(()=>({coarse:matchMedia('(pointer:coarse)').matches,overflow:Math.max(0,document.documentElement.scrollWidth-innerWidth),teal:getComputedStyle(document.querySelector('#employee-mobile')!).getPropertyValue('--em-teal').trim()}));
      expect(metrics.overflow,name+engine+JSON.stringify(size)+theme+scale).toBeLessThanOrEqual(1);expect(metrics.teal).toBe(theme==='dark'?'#a9e2da':'#0b6e69');
      const actions=page.locator('main :is(button,a,input,select,textarea,summary):visible');
@@ -93,11 +95,13 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
       const ratio=(await label.evaluate(measureRenderedContrast)).ratio;samples.push(ratio);expect(ratio,name+' contrast '+engine+theme+scale).toBeGreaterThanOrEqual(4.5);
      }
      if(await actions.count()){
-      const last=actions.last();await last.scrollIntoViewIfNeeded();expect(await last.evaluate((el:HTMLElement)=>{const bar=document.querySelector('.mobile-nav');return !bar||el.getBoundingClientRect().bottom<=bar.getBoundingClientRect().top+1;}),name+' last action '+engine+scale).toBe(true);
+      const last=actions.last();await last.scrollIntoViewIfNeeded();clearance=await last.evaluate((el:HTMLElement)=>{const bar=document.querySelector('.mobile-nav'),shell=document.querySelector('#employee-mobile')!;return {text:el.textContent?.slice(0,80),targetBottom:el.getBoundingClientRect().bottom,navTop:bar?.getBoundingClientRect().top,navHeight:bar?.getBoundingClientRect().height,padding:getComputedStyle(shell).paddingBottom,reserved:getComputedStyle(shell).getPropertyValue('--em-nav-height'),scrollY,scrollHeight:document.documentElement.scrollHeight,innerHeight,clear:!bar||el.getBoundingClientRect().bottom<=bar.getBoundingClientRect().top+1};});expect((clearance as {clear:boolean}).clear,name+' last action '+engine+scale).toBe(true);
      }
      results.push({engine,name,path,size,theme,scale,contrastSamples:samples,...metrics});
      if(size.width===844&&scale===200)await page.screenshot({path:evidence+'/'+engine+'-'+name+'-'+theme+'-text200.png',fullPage:false,style:'nextjs-portal{visibility:hidden;}'});
+     }catch(error){failures.push({engine,name,path,size,theme,scale,error:String(error),clearance});if(size.width===844&&scale===200)await page.screenshot({path:evidence+'/'+engine+'-'+name+'-'+theme+'-failure.png',fullPage:false});}
     }
+    console.log('Landscape checked '+engine+' '+name);
     await page.evaluate(()=>{document.documentElement.style.fontSize='100%';document.documentElement.dataset.textStep='100';});
    }
    await context.close();await active.close();browser=undefined;
