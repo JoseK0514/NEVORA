@@ -2,6 +2,7 @@
    the Employee/Lead shell marker and mobile media query; desktop retains Signature. */
 .em-mobile-only, .em-week-picker { display: none; }
 .em-publication-caret { display:none; }
+.publication-place { display:inline-block; white-space:nowrap; }
 .em-schedule-top { display:flex; flex-direction:column; }
 .em-schedule-top > .q-bar { order:-1; }
 @media screen and (max-width: 767px), screen and (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
@@ -183,6 +184,7 @@
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .q-changes .em-publication-caret { display:block; flex:none; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .q-changes details[open] .em-publication-caret { transform:rotate(180deg); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .q-changes li { min-width:0; gap:var(--em-space-2); padding:var(--em-space-4) 0; font:400 var(--em-size-body)/var(--em-line-body) var(--em-font); color:var(--em-muted); overflow-wrap:anywhere; }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .q-changes .publication-place { max-width:100%; white-space:normal; vertical-align:top; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .q-changes li strong { font:var(--em-weight-label) var(--em-size-body)/var(--em-line-body) var(--em-font); color:var(--em-ink); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-calendar-link { display:flex; align-items:center; justify-content:center; min-height:var(--em-target); color:var(--em-teal); font-size:var(--em-size-support); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] :is(#employee-calendar-title,#employee-calendar-heading) { hyphens:manual; overflow-wrap:normal; }
