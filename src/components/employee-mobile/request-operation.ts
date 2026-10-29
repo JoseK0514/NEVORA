@@ -6,6 +6,8 @@ type Send=(data:FormData)=>Promise<ShiftChangeResult>;
 export class EmployeeRequestOperation {
  readonly state:ShiftChangeFormState;
  kind:EmployeeResponseKind|null=null;
+ /** A confirmed response from the previous revision of this request, kept so its confirmation stays on screen after the refresh. */
+ receipt:{kind:EmployeeResponseKind;result:ShiftChangeResult}|null=null;
  private version=0;
  private listeners=new Set<()=>void>();
  constructor(readonly requestId:string,readonly revision:number,identity:()=>string=()=>crypto.randomUUID()){this.state=new ShiftChangeFormState(identity);}

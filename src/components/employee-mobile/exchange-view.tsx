@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import {useEffect,useSyncExternalStore} from 'react';
+import {useEffect,useRef,useSyncExternalStore} from 'react';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
@@ -10,6 +10,7 @@ import type {EmployeeExchangeSnapshot,EmployeeRequestDetail,EmployeeResponseKind
 import {formatTime,addDays} from '@/lib/date-utils';
 import {shiftChangeFeedback} from '../shift-change-form-state';
 import type {EmployeeRequestOperation} from './request-operation';
+import type {ShiftChangeResult} from '@/lib/shift-changes/types';
 export type ExchangeMode='incoming'|'mine';
 export const requestListHref=(mode:ExchangeMode)=>'/app/exchange?tab='+(mode==='incoming'?'foryou':'requests');
 export const requestKind=(row:RequestSummary)=>row.kind==='callout'?'Unable to work':row.kind==='swap'?'Swap request':row.viewer==='recipient'?'Shift pickup':'Cover offer';
@@ -23,10 +24,13 @@ export function RequestShiftSlot({slot,title}:{slot:RequestSlot|null;title:strin
 function HistoryTime({slot,title}:{slot:HistorySlot|null;title:string}){
  return slot?<span>{title}: {day(slot.date)} · {formatTime(slot.startTime)} – {formatTime(slot.endTime)}{slot.endTime<=slot.startTime?` · Ends ${day(addDays(slot.date,1))}`:''}</span>:null;
 }
+const confirmed=(kind:EmployeeResponseKind,result:ShiftChangeResult)=>kind==='WITHDRAW'?'Your response was withdrawn. Check your current schedule.':kind==='DECLINE'?'You declined this swap.':kind==='CANCEL_CALLOUT'?'Your report was cancelled. Check your current schedule.':kind==='CANCEL'?'Your request was cancelled. Check your current schedule.':shiftChangeFeedback(result);
 export function ResponseControls({detail,operation,onRespond,onRetry,onRefresh}:{detail:EmployeeRequestDetail;operation:EmployeeRequestOperation|null;onRespond:(kind:EmployeeResponseKind)=>void;onRetry:()=>void;onRefresh:()=>void}){
  useSyncExternalStore(operation?.subscribe??(()=>()=>{}),operation?.snapshot??(()=>0),operation?.snapshot??(()=>0));
  const pending=operation?.state.pending??false,result=operation?.state.result,uncertain=operation?.state.uncertain??false;
- const settled=!!result&&['completed','pending','closed'].includes(result.status);
+ const settled=!!result&&['completed','pending','closed'].includes(result.status),receipt=result?null:operation?.receipt??null,confirmation=useRef<HTMLParagraphElement>(null);
+ // The pressed button goes away once the response settles; the confirmation takes focus so it is announced.
+ useEffect(()=>{if(settled||receipt)confirmation.current?.focus();},[settled,receipt]);
  useEffect(()=>{if(settled)onRefresh();},[settled,onRefresh]);
  const allowed=detail.checks.filter(check=>check.allowed),accept=allowed.find(check=>check.kind==='ACCEPT');
  return <section className="em-response-actions" aria-label="Your response" aria-busy={pending}>
@@ -35,7 +39,7 @@ export function ResponseControls({detail,operation,onRespond,onRetry,onRefresh}:
   {detail.checks.filter(check=>!check.allowed).map(check=><p key={check.kind} role="status">{actionLabels[check.kind]} unavailable. {check.notice??'Refresh to check the current request.'}</p>)}
   {!uncertain&&!settled?allowed.map(check=><button key={check.kind} className={check.kind==='ACCEPT'?'em-request-primary':'em-request-secondary'} type="button" disabled={pending||operation===null} onClick={()=>onRespond(check.kind)}>{pending&&operation?.kind===check.kind?'Submitting…':actionLabels[check.kind]}</button>):null}
   {pending?<p role="status">{uncertain?'Checking the original response…':'Submitting your response…'}</p>:null}
-  {result?<p role={settled?'status':'alert'}>{settled&&operation?.kind==='WITHDRAW'?'Your response was withdrawn. Check your current schedule.':settled&&operation?.kind==='DECLINE'?'You declined this swap.':settled&&operation?.kind==='CANCEL_CALLOUT'?'Your report was cancelled. Check your current schedule.':settled&&operation?.kind==='CANCEL'?'Your request was cancelled. Check your current schedule.':shiftChangeFeedback(result)}</p>:null}
+  {result?<p ref={settled?confirmation:undefined} tabIndex={settled?-1:undefined} role={settled?'status':'alert'}>{settled&&operation?.kind?confirmed(operation.kind,result):shiftChangeFeedback(result)}</p>:receipt?<p ref={confirmation} tabIndex={-1} role="status">{confirmed(receipt.kind,receipt.result)}</p>:null}
   {uncertain?<button className="em-request-secondary" type="button" disabled={pending} onClick={onRetry}>Check response status</button>:null}
   {result&&!uncertain&&!settled?<button className="em-request-secondary" type="button" onClick={onRefresh}>Refresh request</button>:null}
   {settled?<Link className="em-request-text" href="/app/schedule">View my current schedule</Link>:null}

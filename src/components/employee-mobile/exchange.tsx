@@ -30,7 +30,9 @@ function EmployeeMobileExchange({authority,mode,selection}:{authority:string;mod
    const summary=read?.detail?.summary;
    if(summary?.revision)setOperations(previous=>{
     const old=previous.get(summary.id);if(old&&(old.revision===summary.revision||old.state.pending||old.state.uncertain))return previous;
-    return new Map(previous).set(summary.id,new EmployeeRequestOperation(summary.id,summary.revision!));
+    const next=new EmployeeRequestOperation(summary.id,summary.revision!),settled=old?.state.result&&['completed','pending','closed'].includes(old.state.result.status);
+    next.receipt=settled&&old.kind?{kind:old.kind,result:old.state.result!}:old?.receipt??null;
+    return new Map(previous).set(summary.id,next);
    });
    setState(next);
   },async signal=>{

@@ -31,3 +31,12 @@ it('describes swap and pickup withdrawal consequences using their actual request
  const swap=render(snapshot({detail:pending}));expect(swap).toContain('Withdrawing closes this swap request. Both employees keep their currently assigned shifts.');expect(swap).not.toContain('pickup request');
  const pickup=render(snapshot({detail:{...pending,summary:{...pending.summary,kind:'coverage'},requested:null}}));expect(pickup).toContain('Withdrawing closes this pickup request. The shift stays with its currently assigned employee.');
 });
+it('keeps the confirmation of a settled response after the refresh replaces its operation (M-4)',()=>{
+ const withReceipt=(kind:'WITHDRAW'|'DECLINE'|'CANCEL')=>{const operation=new EmployeeRequestOperation('own-request',2);operation.receipt={kind,result:{status:'closed'} as never};
+  return renderToStaticMarkup(<EmployeeExchangeView state={{snapshot:snapshot(),refreshing:false,paused:false}} authority={authority} mode="incoming" selection="own-request" operation={operation} onRefresh={()=>{}} onRespond={()=>{}} onRetry={()=>{}}/>);};
+ expect(withReceipt('DECLINE')).toMatch(/role="status"[^>]*>You declined this swap\./);
+ expect(withReceipt('WITHDRAW')).toContain('Your response was withdrawn. Check your current schedule.');
+ expect(withReceipt('CANCEL')).toContain('Your request was cancelled. Check your current schedule.');
+ // A fresh operation without a receipt claims nothing.
+ expect(render(snapshot())).not.toMatch(/withdrawn|declined this swap|was cancelled/);
+});

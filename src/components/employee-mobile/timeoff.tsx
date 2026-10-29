@@ -45,10 +45,16 @@ export function EmployeeTimeOff({authority,selection,filter}:{authority:string;s
     <section className="em-response-status" aria-label="Request status"><strong>{status[row.status]}</strong><span>{range(row)}</span><span>{length(row)}</span></section>
     <section><h2>Timeline</h2><ol className="em-planning-timeline"><li><strong>Request sent</strong><time>{new Intl.DateTimeFormat('en-US',{timeZone:read.timeZone,dateStyle:'medium',timeStyle:'short'}).format(new Date(row.createdAt))}</time></li><li><strong>{status[row.status]}{row.reviewer&&row.status!=='CANCELLED'?' by '+row.reviewer:''}</strong>{row.reviewedAt?<time>{new Intl.DateTimeFormat('en-US',{timeZone:read.timeZone,dateStyle:'medium',timeStyle:'short'}).format(new Date(row.reviewedAt))}</time>:<span>Your manager will review your request.</span>}</li></ol></section>
     {row.note?<section><h2>Your note</h2><p className="em-planning-own-note">{row.note}</p></section>:null}
-    {row.status==='PENDING'?<Withdrawal key={row.id} request={row} getOperation={()=>withdrawals.for(row.id)} allowed={panel.allowed} send={send} check={check}/>:null}
+    {row.status==='PENDING'?<Withdrawal key={row.id} request={row} getOperation={()=>withdrawals.for(row.id)} allowed={panel.allowed} send={send} check={check}/>:withdrawals.peek(row.id)?<WithdrawalReceipt key={row.id} operation={withdrawals.peek(row.id)!}/>:null}
    </>:<p className="em-request-notice" role="status">This request isn’t available to your current account. Return to Time off to review your requests.</p>}
   </>:null}
  </PlanningFrame>;
+}
+/** After the refresh shows the request as withdrawn, this page's own confirmed withdrawal keeps its confirmation and focus. */
+function WithdrawalReceipt({operation}:{operation:PlanningOperation}){
+ const {complete}=usePlanningOperation(operation),receipt=useRef<HTMLParagraphElement>(null);
+ useEffect(()=>{if(complete)receipt.current?.focus();},[complete]);
+ return complete?<p ref={receipt} tabIndex={-1} className="em-request-notice" role="status">Request withdrawn. Your scheduled shifts stay the same.</p>:null;
 }
 function Withdrawal({request,getOperation,allowed,send,check}:{request:PlanningRequest;getOperation:()=>PlanningOperation;allowed:()=>boolean;send:(command:PlanningCommand)=>Promise<import('@/lib/employee-planning').PlanningResult>;check:(command:PlanningCommand)=>Promise<import('@/lib/employee-planning').PlanningResult>}){
  const [operation]=useState(getOperation),[confirmed,setConfirmed]=useState(false),{pending,uncertain,complete}=usePlanningOperation(operation);

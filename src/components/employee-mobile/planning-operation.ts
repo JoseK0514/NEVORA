@@ -37,6 +37,8 @@ export class PlanningOperation{
 export class PlanningOperations {
  private operations=new Map<string,PlanningOperation>();
  for(selection:string){let operation=this.operations.get(selection);if(!operation){operation=new PlanningOperation();this.operations.set(selection,operation);}return operation;}
+ /** The operation for a request, if this page already has one; never creates one. */
+ peek(selection:string){return this.operations.get(selection);}
  reset(selection:string){this.operations.set(selection,new PlanningOperation());}
  other(selection:string){return [...this.operations.entries()].find(([key,op])=>key!==selection&&(op.pending||op.uncertain));}
 }
