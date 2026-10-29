@@ -75,7 +75,9 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
     ['terms','/app/profile/terms','main h1'],
    ];
    for(const [name,path,ready]of cases){
-    try{await page.goto(app.url+path);await page.locator(ready+':visible').first().waitFor();}catch(error){failures.push({engine,name,path,stage:'ready',error:String(error)});continue;}
+    // Login already navigated to Home. Let that actual document become ready;
+    // an immediate duplicate goto used to tear down its still-hydrating owner.
+    try{if(page.url()!==app.url+path)await page.goto(app.url+path);await page.locator(ready+':visible').first().waitFor();}catch(error){failures.push({engine,name,path,stage:'ready',error:String(error)});continue;}
     for(const size of [{width:667,height:375},{width:844,height:390},{width:932,height:430}])for(const theme of ['light','dark'])for(const scale of [100,200]){
      let clearance:unknown;try{
      await page.setViewportSize(size);await page.evaluate(({theme,scale}:any)=>{localStorage.setItem('nv-theme',theme);document.documentElement.dataset.theme=theme;document.documentElement.style.fontSize=scale+'%';document.documentElement.dataset.textStep=String(scale);}, {theme,scale});
