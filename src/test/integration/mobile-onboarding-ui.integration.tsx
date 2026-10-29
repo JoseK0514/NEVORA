@@ -29,7 +29,7 @@ it('keeps the actual Quick guide readable and keyboard usable in both Employee t
      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
      expect(await summary.evaluate((el:HTMLElement)=>Number.parseFloat(getComputedStyle(el).fontSize))).toBe(16*scale/100);
      expect(await summary.locator('svg').count()).toBe(1);
-     const guide=await page.locator('.ma-onboarding').boundingBox();expect(guide?.x).toBe(24);expect(guide?.width).toBe(width-48);
+     const inset=width<359?20:24,guide=await page.locator('.ma-onboarding').boundingBox();expect(guide?.x).toBe(inset);expect(guide?.width).toBe(width-2*inset);
      for(const part of await page.locator('.ma-onboarding-intro,.ma-guide-list').all())expect(await part.evaluate((el:HTMLElement)=>Number.parseFloat(getComputedStyle(el).borderTopWidth))).toBe(0);
      for(const label of await page.locator('.ma-onboarding :is(summary,h2,b,small,p):visible').all()){
       const text=(await label.innerText()).trim(),sample=await label.evaluate(measureRenderedContrast);measurements.push({engine,theme,width,scale,text,ratio:sample.ratio});
