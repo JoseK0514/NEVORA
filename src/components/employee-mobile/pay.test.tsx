@@ -101,3 +101,11 @@ describe('Employee mobile Pay',()=>{
   expect(text(render())).toContain('Only your own published statements');
  });
 });
+
+it('keeps a generic statement read failure neutral while preserving its alert and retry',()=>{
+ const html=render({statements:null,error:'Temporary network error',errorCode:'NETWORK'});
+ expect(html).toContain('class="em-pay-notice" role="alert"');
+ expect(html).not.toContain('em-pay-notice--error');expect(html).not.toContain('em-pay-notice--caution');
+ expect(text(html)).toContain('Couldn’t load your statements');expect(text(html)).toContain('Try again');
+ expect(html).not.toContain('EMPLOYEE_STATEMENT');
+});
