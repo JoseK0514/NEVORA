@@ -79,6 +79,8 @@ it('shows own published statements, linked corrections and protected PDFs with t
    expect(body).toContain('Earlier statements');expect(body).toContain('Replaced');expect(body).not.toMatch(/\$|deposit|net pay/i);
    expect(body).toContain('Next scheduled payday');expect(body).toContain('From your workplace’s pay schedule');
    expect(await page.locator('#employee-mobile').getAttribute('data-employee-mobile-page')).toBe('pay');await shot('next-payday');
+   const nextPay=await page.locator('.em-pay-next').evaluate((el:HTMLElement)=>{const style=getComputedStyle(el);return {border:parseFloat(style.borderTopWidth),background:style.backgroundColor,padding:parseFloat(style.paddingLeft)};});
+   expect(nextPay.border).toBe(0);expect(nextPay.background).toBe('rgba(0, 0, 0, 0)');expect(nextPay.padding).toBe(0);
    expect(await page.locator(`a[href="/api/payroll/documents/${correction.id}/view"]`).count()).toBe(1);
    const html=await page.locator('.em-pay').innerHTML();expect(html).not.toContain(peer.id);
    record('More opens teal Pay: own published statements, correction first, replaced original labelled, no figures, no peer document');
@@ -118,6 +120,7 @@ it('shows own published statements, linked corrections and protected PDFs with t
     for(const [subject,selector] of [['title','.em-pay h1'],['latest','#pay-latest-title'],['period','.em-pay-latest > p'],['chip','.em-pay-chip'],['view','.em-pay-latest .em-request-primary'],['download','.em-pay-latest .em-request-secondary'],['privacy','.em-pay-privacy']] as const){const measured=await page.locator(selector).first().evaluate(measureRenderedContrast);contrasts.push({engine,theme,width,subject,ratio:measured.ratio});expect(measured.ratio,subject).toBeGreaterThanOrEqual(4.5);}
     const small=await page.locator('.em-pay :is(a,button,summary)').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.checkVisibility({visibilityProperty:true,opacityProperty:true})&&!el.closest('p')&&el.getBoundingClientRect().height<43.5).map(el=>el.outerHTML.slice(0,80)));expect(small).toEqual([]);
     expect(await page.locator('.em-pay h1').evaluate((el:HTMLElement)=>getComputedStyle(el).fontSize)).toBe('32px');
+    expect(await page.locator('.em-pay-next').evaluate((el:HTMLElement)=>parseFloat(getComputedStyle(el).borderTopWidth))).toBe(0);
     await page.evaluate(()=>scrollTo(0,0));await shot(`pay-${theme}-${width}-top`);await page.evaluate(()=>scrollTo(0,document.body.scrollHeight));await shot(`pay-${theme}-${width}`);
    }
    await page.setViewportSize({width:320,height:844});await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});
