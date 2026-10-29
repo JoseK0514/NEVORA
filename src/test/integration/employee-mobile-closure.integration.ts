@@ -12,6 +12,7 @@ import type {ShiftChangeCommand} from '../../lib/shift-changes/types';
 import {publishScheduleWithRevision} from './management-api';
 import {addDays,weekStartFor} from '../../lib/date-utils';
 import {businessDate} from '../../lib/business-time';
+import {lastVisibleEmployeeAction} from './employee-layout-observation';
 import {measureRenderedContrast} from '../../../scripts/browser-contrast.mjs';
 
 it('keeps authorized Employee tasks usable in actual coarse landscape, both themes and enlarged text',async()=>{
@@ -19,7 +20,7 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
  const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
  const app=await createOwnedNextApp(evidence,{payrollEnabled:true,passkeysEnabled:true,deviceAlertsEnabled:true});
  const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
- const results:unknown[]=[],failures:unknown[]=[];let browser:{close():Promise<void>}|undefined;
+ const results:unknown[]=[],failures:unknown[]=[],selectionControls:unknown[]=[];let browser:{close():Promise<void>}|undefined;
  try{
   await seedOwnedApp(app.database.executor);
   for(const [index,engine]of ['chromium','webkit','firefox'].entries()){
@@ -45,6 +46,12 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
    page.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(30000);
    await context.route('**/*',async(route:any)=>{const u=new URL(route.request().url());if(['http:','https:'].includes(u.protocol)&&u.origin!==new URL(app.url).origin)await route.abort();else await route.continue();});
    page.on('pageerror',(error:Error)=>failures.push({engine,path:page.url(),error:error.message,stack:error.stack}));
+   // Reproduce live-nth rebinding before touching application data. The exact
+   // production measurement callback must retain the original end control.
+   await page.setContent('<main><button id="first" style="display:block;width:100px;height:44px">First</button><button id="last" style="display:block;width:100px;height:44px">Last</button><button hidden>Hidden</button></main>');
+   const bound=(await page.locator('main').evaluateHandle(lastVisibleEmployeeAction)).asElement();expect(bound).not.toBeNull();expect(await bound!.getAttribute('id')).toBe('last');
+   await page.evaluate(()=>{const inserted=document.createElement('button');inserted.id='inserted';inserted.textContent='Inserted';document.querySelector('main')!.prepend(inserted);});
+   expect(await page.locator('main button:visible').nth(1).getAttribute('id')).toBe('first');expect(await bound!.getAttribute('id')).toBe('last');expect(await bound!.evaluate((el:HTMLElement)=>el.isConnected)).toBe(true);await bound!.dispose();selectionControls.push({engine,liveNthRebound:true,exactNodePreserved:true});
    await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
    const cases:[string,string,string][]=[
     ['home','/app','[data-home-state="ready"],[data-home-state="partial"]'],
@@ -68,7 +75,7 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
     ['profile','/app/profile','.em-profile-private[data-profile-state="ready"]'],
     ['calendar','/app/profile#employee-calendar-title','.em-calendar'],
     ['passkeys','/app/profile#passkeys-title','.em-passkeys'],
-    ['alerts','/app/profile/device-alerts','.em-device'],
+    ['alerts','/app/profile/device-alerts','.em-device:not([data-device-state="loading"]):not([data-device-state="pending"])'],
     ['deletion','/app/account/delete','.em-delete'],
     ['support','/app/profile/support','main h1'],
     ['privacy','/app/profile/privacy','main h1'],
@@ -100,10 +107,11 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
       // Test actual reachability: native centering includes the fixed bar, so
       // finish the same extra scroll a person can make. Choose the visual end,
       // since Home deliberately orders its week strip differently in the DOM.
-      const index=await actions.evaluateAll((elements:HTMLElement[])=>elements.reduce((best,el,i)=>el.getBoundingClientRect().bottom>elements[best].getBoundingClientRect().bottom?i:best,0));
-      const last=actions.nth(index);await last.scrollIntoViewIfNeeded();
+      const handle=await page.locator('main').evaluateHandle(lastVisibleEmployeeAction),last=handle.asElement();
+      expect(last,name+' visual-end control').not.toBeNull();if(!last)throw Error('No connected visual-end control');
+      await last.scrollIntoViewIfNeeded();
       await last.evaluate((el:HTMLElement)=>{const nav=document.querySelector('.mobile-nav');if(nav)window.scrollBy(0,Math.max(0,el.getBoundingClientRect().bottom-nav.getBoundingClientRect().top+16));});
-      clearance=await last.evaluate((el:HTMLElement)=>{const bar=document.querySelector('.mobile-nav'),shell=document.querySelector('#employee-mobile')!;return {text:el.textContent?.slice(0,80),targetBottom:el.getBoundingClientRect().bottom,navTop:bar?.getBoundingClientRect().top,navHeight:bar?.getBoundingClientRect().height,padding:getComputedStyle(shell).paddingBottom,reserved:getComputedStyle(shell).getPropertyValue('--em-nav-height'),scrollY,scrollHeight:document.documentElement.scrollHeight,innerHeight,clear:!bar||el.getBoundingClientRect().bottom<=bar.getBoundingClientRect().top+1};});expect((clearance as {clear:boolean}).clear,name+' last action '+engine+scale).toBe(true);
+      clearance=await last.evaluate((el:HTMLElement)=>{const bar=document.querySelector('.mobile-nav'),shell=document.querySelector('#employee-mobile')!;return {connected:el.isConnected,text:el.textContent?.slice(0,80),targetBottom:el.getBoundingClientRect().bottom,navTop:bar?.getBoundingClientRect().top,navHeight:bar?.getBoundingClientRect().height,padding:getComputedStyle(shell).paddingBottom,reserved:getComputedStyle(shell).getPropertyValue('--em-nav-height'),scrollY,scrollHeight:document.documentElement.scrollHeight,innerHeight,clear:el.isConnected&&el.getBoundingClientRect().width>0&&el.getBoundingClientRect().height>0&&(!bar||el.getBoundingClientRect().bottom<=bar.getBoundingClientRect().top+1)};});expect((clearance as {clear:boolean}).clear,name+' last action '+engine+scale).toBe(true);await handle.dispose();
      }
      results.push({engine,name,path,size,theme,scale,contrastSamples:samples,...metrics});
      if(size.width===844&&scale===200)await page.screenshot({path:evidence+'/'+engine+'-'+name+'-'+theme+'-text200.png',fullPage:false,style:'nextjs-portal{visibility:hidden;}'});
@@ -115,5 +123,5 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
    await context.close();await active.close();browser=undefined;
   }
   expect(failures).toEqual([]);
- }finally{await writeFile(evidence+'/results.json',JSON.stringify({results,failures},null,2));await browser?.close();await app.close();}
+ }finally{await writeFile(evidence+'/results.json',JSON.stringify({results,failures,selectionControls},null,2));await browser?.close();await app.close();}
 },600000);

@@ -7,6 +7,7 @@ import {measureRenderedContrast} from '../../../scripts/browser-contrast.mjs';
 import {createOwnedNextApp} from './owned-next-app';
 import {seedOwnedApp,seedOwnedScenario,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from './owned-app-fixture';
 import {publishScheduleWithRevision} from './management-api';
+import {expectedNotificationRefusal,safeNotificationRefusal,type ObservedNotificationRefusal} from './authority-refusal-observation';
 import {businessDate} from '../../lib/business-time';
 import {weekStartFor,addDays} from '../../lib/date-utils';
 
@@ -15,7 +16,7 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
  if(!evidence)throw Error('Select explicit external NEVORA_EMPLOYEE_MOBILE_EVIDENCE');
  await mkdir(evidence,{recursive:true});
  const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
- const app=await createOwnedNextApp(evidence),checks:{engine:string;name:string}[]=[],errors:string[]=[],captures:string[]=[],consoleMessages:{engine:string;type:string;text:string;expectedTransportFailure:boolean;authorityLoss:boolean}[]=[],refusals:{engine:string;path:string;status:number;state:string;reason:string;privateDataPresent:boolean}[]=[],responseChecks:Promise<void>[]=[],controlContrast:{engine:string;theme:string;width:number;control:string;ratio:number}[]=[];
+ const app=await createOwnedNextApp(evidence),checks:{engine:string;name:string}[]=[],errors:string[]=[],captures:string[]=[],consoleMessages:{engine:string;type:string;text:string;expectedTransportFailure:boolean;authorityLoss:boolean;url:string;at:number}[]=[],refusals:{engine:string;path:string;status:number;state:string;reason:string;privateDataPresent:boolean}[]=[],responseChecks:Promise<void>[]=[],notificationRefusals:ObservedNotificationRefusal[]=[],controlContrast:{engine:string;theme:string;width:number;control:string;ratio:number}[]=[];
  const q=(text:string,values:unknown[]=[])=>app.database.executor.query({text,values});
  let browser:{close():Promise<void>}|undefined,failureScreenshot:(()=>Promise<void>)|undefined;
  try{
@@ -37,10 +38,15 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
   for(const engine of ['chromium','webkit','firefox']){
    const activeBrowser=await runtime[engine].launch({headless:true});browser=activeBrowser;
    const context=await activeBrowser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});
-   let expectedTransportFailure=false,authorityLoss=false;const page=await context.newPage();page.on('console',(message:{type():string;text():string})=>{if(['error','warning'].includes(message.type())){const entry={engine,type:message.type(),text:message.text(),expectedTransportFailure,authorityLoss};consoleMessages.push(entry);}});failureScreenshot=async()=>{await page.screenshot({path:evidence+'/failure.png',fullPage:false});await writeFile(evidence+'/failure-layout.json',JSON.stringify(await page.evaluate(()=>({path:location.pathname,roots:[...document.querySelectorAll('[data-employee-mobile]')].map(el=>({id:el.id,active:el.getAttribute('data-employee-mobile-active'),page:el.getAttribute('data-employee-mobile-page')})),elements:[...document.querySelectorAll('.mobile-header,.mobile-header .brand,.q-home,.q-sched-e,.mobile-nav')].map(el=>{const style=getComputedStyle(el),rect=el.getBoundingClientRect();return{class:el.className,display:style.display,visibility:style.visibility,x:rect.x,y:rect.y,width:rect.width,height:rect.height};})})),null,2));};page.setDefaultTimeout(15000);page.on('pageerror',(e:Error)=>errors.push(engine+': '+e.message));
+   let expectedTransportFailure=false,authorityLoss=false;const page=await context.newPage();page.on('console',(message:{type():string;text():string;location():{url:string}})=>{if(['error','warning'].includes(message.type())){const entry={engine,type:message.type(),text:message.text(),expectedTransportFailure,authorityLoss,url:message.location().url,at:Date.now()};consoleMessages.push(entry);}});failureScreenshot=async()=>{await page.screenshot({path:evidence+'/failure.png',fullPage:false});await writeFile(evidence+'/failure-layout.json',JSON.stringify(await page.evaluate(()=>({path:location.pathname,roots:[...document.querySelectorAll('[data-employee-mobile]')].map(el=>({id:el.id,active:el.getAttribute('data-employee-mobile-active'),page:el.getAttribute('data-employee-mobile-page')})),elements:[...document.querySelectorAll('.mobile-header,.mobile-header .brand,.q-home,.q-sched-e,.mobile-nav')].map(el=>{const style=getComputedStyle(el),rect=el.getBoundingClientRect();return{class:el.className,display:style.display,visibility:style.visibility,x:rect.x,y:rect.y,width:rect.width,height:rect.height};})})),null,2));};page.setDefaultTimeout(15000);page.on('pageerror',(e:Error)=>errors.push(engine+': '+e.message));
    await context.route('**/*',async(route:{request():{url():string};fetch():Promise<{status():number;json():Promise<Record<string,unknown>>}>;fulfill(options:{response:{status():number;json():Promise<Record<string,unknown>>}}):Promise<void>;abort():Promise<void>;continue():Promise<void>})=>{
     const url=new URL(route.request().url());
     if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){errors.push('Unexpected external origin '+url.origin);await route.abort();return;}
+    if(url.pathname==='/api/notifications'){
+     const intentionalAtStart=authorityLoss;
+     const captured=(async()=>{const response=await route.fetch();if([401,403].includes(response.status())){const body=await response.json();notificationRefusals.push({engine,url:url.href,status:response.status(),at:Date.now(),authorityLoss:intentionalAtStart||authorityLoss,bodySafe:safeNotificationRefusal(body)});}await route.fulfill({response});})();
+     const settled=captured.catch(async()=>{errors.push(engine+': notification response capture failed');await route.abort().catch(()=>{});});responseChecks.push(settled);await settled;return;
+    }
     if(authorityLoss&&['/api/employee/home','/api/employee/my-time'].includes(url.pathname)){
      // Read the actual server bytes before delivering the unchanged response. A
      // page navigation can retire Chromium's response-body handle immediately.
@@ -192,7 +198,7 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
    }
    await context.close();await activeBrowser.close();browser=undefined;
   }
-  await Promise.all(responseChecks);for(const entry of consoleMessages.filter(entry=>entry.type==='error')){const hydration=/hydration|didn.t match|server.rendered|Invalid/.test(entry.text);const transport=entry.expectedTransportFailure&&/Failed to load resource.*(?:ERR_FAILED|Load failed)|Failed to fetch|NetworkError|Load failed/.test(entry.text);const match=entry.text.match(/status of (401|403|503)/);const denied=entry.authorityLoss&&match&&refusals.some(r=>r.engine===entry.engine&&r.status===Number(match[1])&&!r.privateDataPresent&&['unauthorized','unavailable'].includes(r.state));if(hydration||(!transport&&!denied))errors.push(entry.engine+': console '+entry.text);}expect(errors).toEqual([]);
+  await Promise.all(responseChecks);for(const entry of consoleMessages.filter(entry=>entry.type==='error')){const hydration=/hydration|didn.t match|server.rendered|Invalid/.test(entry.text);const transport=entry.expectedTransportFailure&&/Failed to load resource.*(?:ERR_FAILED|Load failed)|Failed to fetch|NetworkError|Load failed/.test(entry.text);const match=entry.text.match(/status of (401|403|503)/);const denied=entry.authorityLoss&&match&&refusals.some(r=>r.engine===entry.engine&&r.status===Number(match[1])&&!r.privateDataPresent&&['unauthorized','unavailable'].includes(r.state));const notificationDenied=expectedNotificationRefusal(entry,app.url,notificationRefusals);if(hydration||(!transport&&!denied&&!notificationDenied))errors.push(entry.engine+': console '+entry.text);}expect(errors).toEqual([]);
  }catch(error){await failureScreenshot?.().catch(()=>{});throw error;}
- finally{await browser?.close();await app.close();await writeFile(evidence+'/results.json',JSON.stringify({checks,errors,captures,consoleMessages,refusals,controlContrast,ownedApp:app.root},null,2));}
+ finally{await browser?.close();await app.close();await writeFile(evidence+'/results.json',JSON.stringify({checks,errors,captures,consoleMessages,refusals,notificationRefusals,controlContrast,ownedApp:app.root},null,2));}
 });
