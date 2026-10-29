@@ -29,7 +29,7 @@ async function EmployeeMore({ firstName, lastName, role }: { firstName: string; 
   // Only places the company has switched on (Updates is a feature a company can turn off).
   const has = new Set(navigationForRole(role, undefined, { modules: brand.modules, words: wordPreset(brand.words).en }).map(entry => entry.href));
   const ic = (Icon: typeof BellIcon) => <Icon className="q-ic" aria-hidden="true" />;
-  return <QuietPage>
+  return <QuietPage className="em-more">
     <div className="q-top-gap" aria-hidden="true" />
     <QuietHeader title="More" />
     <QuietList style={{ marginTop: 16 }}>
