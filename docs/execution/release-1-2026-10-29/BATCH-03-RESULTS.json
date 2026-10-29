@@ -1,0 +1,140 @@
+{
+  "checkpoint": "036c7a8e548977a7b4a7fa79722632c16fec7804",
+  "static": [
+    {
+      "name": "default",
+      "checkpoint": "036c7a8e548977a7b4a7fa79722632c16fec7804",
+      "startedAt": "2026-10-29T19:55:34.852Z",
+      "finishedAt": "2026-10-29T20:01:14.235Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch03-static/default.log"
+    },
+    {
+      "name": "typecheck",
+      "checkpoint": "036c7a8e548977a7b4a7fa79722632c16fec7804",
+      "startedAt": "2026-10-29T20:01:14.816Z",
+      "finishedAt": "2026-10-29T20:01:28.221Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch03-static/typecheck.log"
+    },
+    {
+      "name": "lint",
+      "checkpoint": "036c7a8e548977a7b4a7fa79722632c16fec7804",
+      "startedAt": "2026-10-29T20:01:28.801Z",
+      "finishedAt": "2026-10-29T20:01:50.760Z",
+      "exitCode": 1,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch03-static/lint.log"
+    },
+    {
+      "name": "startup",
+      "checkpoint": "036c7a8e548977a7b4a7fa79722632c16fec7804",
+      "startedAt": "2026-10-29T20:01:51.339Z",
+      "finishedAt": "2026-10-29T20:01:52.943Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch03-static/startup.log"
+    },
+    {
+      "name": "build",
+      "checkpoint": "036c7a8e548977a7b4a7fa79722632c16fec7804",
+      "startedAt": "2026-10-29T20:01:53.549Z",
+      "finishedAt": "2026-10-29T20:02:04.374Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch03-static/build.log"
+    }
+  ],
+  "lintFollowup": {
+    "exitCode": 0,
+    "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch03-lint-repair.log",
+    "reason": "Initial full lint found3 no-children-prop errors in an ignored next-batch test draft. Converted draft to ordinary JSX, no rule suppressed; tracked code unchanged. Full lint rerun passed."
+  },
+  "default": {
+    "passed": 10221,
+    "failed": 0,
+    "pending": 801
+  },
+  "uiUnit": {
+    "passed": 11,
+    "failed": 0
+  },
+  "ownedDeletion": {
+    "testsPassed": 15,
+    "sqlTests": 14,
+    "browserJourneys": 1,
+    "engines": [
+      "chromium",
+      "webkit",
+      "firefox"
+    ],
+    "checks": 39,
+    "captures": 110,
+    "contrastSamples": 198,
+    "minimumContrast": 5.028921154815613,
+    "unexpectedErrors": 0,
+    "retainedMessages": [
+      {
+        "engine": "chromium",
+        "type": "error",
+        "text": "Failed to load resource: net::ERR_CONNECTION_RESET",
+        "expected": true,
+        "stage": "lost-reply"
+      },
+      {
+        "engine": "webkit",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:53788/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false,
+        "stage": "open-from-profile"
+      },
+      {
+        "engine": "webkit",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:53788/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false,
+        "stage": "open-from-profile"
+      },
+      {
+        "engine": "webkit",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:53788/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false,
+        "stage": "open-from-profile"
+      },
+      {
+        "engine": "webkit",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:53788/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false,
+        "stage": "open-from-profile"
+      },
+      {
+        "engine": "webkit",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:53788/_next/static/chunks/src_16v422c_-q8cb._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false,
+        "stage": "open-from-profile"
+      }
+    ],
+    "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch03-deletion"
+  },
+  "withdrawalSqlSha256": "da4a845ecc97ef369ffbe21e9aa9ff68ea6b8bacdab6ef3b08e63991ec210be7",
+  "limitations": [
+    "Controlled loopback browsers and fictional accounts. Deletion acceptance is the recorded request; later erasure follows docs/compliance/account-deletion-runbook.md and is not exercised. Root 200% text is not OS Dynamic Type. Physical devices, screen readers, hosted transport and release remain separate.",
+    "Operator email-control verification, historical-contact source and live mailbox readiness remain unverified; fail closed until Operations establishes them. No real support mail or production SQL executed."
+  ],
+  "releaseAcceptance": false
+}

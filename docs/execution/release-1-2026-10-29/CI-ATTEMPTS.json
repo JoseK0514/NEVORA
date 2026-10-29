@@ -1,0 +1,17 @@
+{
+  "workflow": ".github/workflows/mobile-access.yml",
+  "attempts": [
+    {
+      "id": 40944082224,
+      "head": "fcbf3c528d50493feb42fa0eafdbcb8b2976da58",
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40944082224",
+      "status": "completed",
+      "conclusion": "failure",
+      "jobs": 0,
+      "cause": "Unsupported runner.temp use in job.env; GitHub context table permits runner in step.env.",
+      "reference": "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability",
+      "repair": "036c7a8e moves external evidence variable to verification step.env"
+    }
+  ],
+  "actualSuccessfulRun": null
+}

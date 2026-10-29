@@ -96,7 +96,11 @@ UPDATE account_deletion_requests
 
 Exactly one returned row confirms the withdrawal. Record that outcome in the same restricted case. Zero rows
 means it was **not** withdrawn by this statement: re-read the request and escalate; do not retry with a broader
-condition or report success. The status condition prevents withdrawal if processing wins the race. Processing
+condition or report success. If the connection fails or the reply is lost, treat the outcome as unknown: re-read that exact
+reference/workspace/Employee ID and reconcile the restricted case before reporting an outcome. Do not broaden the
+condition or recreate access to resolve an unknown result.
+
+The status condition prevents withdrawal if processing wins the race. Processing
 or completed requests cannot be withdrawn through this procedure.
 
 Do not recreate sessions, passkeys, subscriptions or calendar feeds. A withdrawn request removes only the deletion

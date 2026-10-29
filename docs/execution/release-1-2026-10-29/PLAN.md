@@ -61,7 +61,7 @@ Files: employee-mobile/messages.tsx,hours-frame.tsx,planning-frame.tsx,pay.tsx,p
 
 Discovery identifies existing real routes for every principal surface, AI manager and combobox search; do not create duplicate engines. Existing Schedule scroll containment is already present.
 
-- [ ] Resolve missing DESIGN-SPEC/project HTML and unavailable binding business-rule rows. Inspect supplied PNGs/prototype as references, not app/data proof. Owner look/Section4 behavior remains pending.
+- [ ] Resolve missing DESIGN-SPEC/project HTML and unavailable binding business-rule rows. Inspect supplied PNGs/prototype as references, not app/data proof. Owner look/business-rule decisions remain pending;4.6 behaviors are explicitly confirmed in INPUTS.json.
 - [ ] Shell/navigation/search/five roots/history/opener focus. Then Home/Inbox/Team; then Schedule/sheets; then Timecards/Insights/Exports; then Payroll; then Settings/Clocker admin; then Updates/notifications/advisor/account.
 - [ ] Each sub-batch declares exact source/test ownership and reproduction before edits; real-source counts/overnights/partial states/role gates remain authoritative.
 - [ ] Reproduce PR34 Monday00:01 payroll context against current engine; no blanket00:00 policy change. Port rem/Safari-Tab fixes independently of history-sheet defects; do not mergePR34 whole.
