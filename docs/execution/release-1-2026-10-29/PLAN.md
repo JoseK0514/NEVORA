@@ -40,9 +40,12 @@ Files: mobile-access/onboarding-guide.css; integration/mobile-onboarding-ui.inte
 
 Files: mobile-access/use-mobile-presentation.ts; mobile-access.css; onboarding-guide.css; existing mobile-access browser integration and CI workflow. Consume the existing Employee coarse-landscape condition and actual login/activation/recovery owners.
 
-- [ ] Reproduce844x390 touch sign-in fallback/Welcome fold. Add pointer/media/card/header/primary-target/200% assertions in the existing3-engine fixture.
-- [ ] Synchronize hook and all scoped CSS media; fit Welcome illustration to short landscape without hiding title or primary actions. Do not change the unapproved logo or switch rollout on.
-- [ ] Preserve form drafts and exact auth/session/role behavior through rotation; run full existing Access suite including compatibility cases. Fix CI runner.temp wiring, then distinguish source configuration from a real Actions pass.
+- [x] Reproduce844x390 touch sign-in fallback/Welcome fold. Add pointer/media/card/header/primary-target/200% assertions in the existing3-engine fixture.
+- [x] Synchronize hook and all scoped CSS media; fit Welcome illustration to short landscape without hiding title or primary actions. Do not change the unapproved logo or switch rollout on.
+- [x] Preserve form drafts and exact auth/session/role behavior through rotation; run full existing Access suite including compatibility cases. Fix CI runner.temp wiring, then distinguish source configuration from a real Actions pass.
+
+
+Local implementation/verification complete at393c8440; actual Actions verification remains pending (BATCH-02).
 
 ## Task3: Employee source-confirmed inspection findings
 
