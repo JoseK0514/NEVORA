@@ -47,6 +47,24 @@
       ],
       "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40949328383",
       "repairStatus": "9fa3abf7 follows actual More\u2192Profile links, exposing genuine stale-ID signout RED.4bb48f35 repairs continuity reset timing. Full local Access and static/replayed startup pass; no new diagnostic suppression. Hosted replay required after push."
+    },
+    {
+      "id": 40955560516,
+      "head": "1f015da5939f5eeebc5746e0e46df72c1635f0c9",
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40955560516",
+      "status": "completed",
+      "conclusion": "failure",
+      "tests": {
+        "passed": 2,
+        "failed": 1
+      },
+      "findings": [
+        "Chromium sign-out/account-switch stopped when profile.count polled0 against expected1; helper did not await More route and used Vitest default1000ms poll.",
+        "Only4 real flow records completed; raw errors/window exceptions/framework diagnostics empty. WebKit actual flow was not reached.",
+        "Guide396 and landscape120/24 passed."
+      ],
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40955560516",
+      "repairStatus": "c68c45ee waits actual More URL and visible Profile within already-configured browser deadline before preserving unique1 assertion. No configured timeout, retry, role bypass or error allowance changed. Local fullAccess passes with12 recorded navigation timings; Chromium More readiness1132ms. Hosted replay still required."
     }
   ],
   "actualSuccessfulRun": null

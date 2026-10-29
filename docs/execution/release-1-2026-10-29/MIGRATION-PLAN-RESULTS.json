@@ -1,0 +1,439 @@
+{
+  "status": "read-only-plan-validated",
+  "collab": "9b2cd313b9b89262c21c0243d7883c42179584b9",
+  "sourceClean": true,
+  "supplementalSource": "/Users/josek0514/Desktop/NEVORA-UI-READINESS/.claude/worktrees/pr34-reconcile",
+  "supplementalHead": "60252ca6c9356b665efd73240dc8f0b003415bbd",
+  "supplementalClean": true,
+  "currentPlan": {
+    "source": "manifest",
+    "base": [
+      "0001_initial.sql",
+      "0002_schedule_health.sql",
+      "0003_schedule_assistance.sql",
+      "0004_assistance_layer.sql",
+      "0005_time_clock.sql",
+      "0006_scheduling_rule_inputs.sql",
+      "0007_portal_web_push.sql",
+      "0008_workspace_positions.sql",
+      "0009_schedule_generation.sql",
+      "0010_shift_coverage_automation.sql",
+      "0011_clocker_devices.sql",
+      "0012_clocker_pins.sql",
+      "0013_clocker_punches.sql",
+      "0014_clocker_breaks.sql",
+      "0015_clocker_schedule_context.sql",
+      "0016_time_corrections.sql",
+      "0017_missing_time_supersession.sql",
+      "0018_timecards.sql",
+      "0019_payroll_export_mappings.sql",
+      "0020_account_recovery.sql",
+      "0021_timecard_reassignment_interlock.sql",
+      "0022_timecard_reopen_revision_authority.sql",
+      "0023_employee_attention_receipts.sql",
+      "0024_contextual_communications.sql",
+      "0025_calendar_subscriptions.sql",
+      "0023_template_ownership.sql",
+      "0024_schedule_copy_receipts.sql",
+      "0025_company_policies.sql",
+      "0026_attendance_observations.sql",
+      "0027_payroll_period_custody.sql",
+      "0028_configurable_payroll.sql",
+      "0029_payroll_private_notices.sql",
+      "0030_notification_source_kinds.sql",
+      "0031_workspace_presentation.sql",
+      "0032_workspace_words_modules.sql",
+      "0033_management_alert_preferences.sql",
+      "0034_account_deletion_requests.sql",
+      "0035_passkeys.sql",
+      "0036_owner_advisor.sql",
+      "0037_owner_briefing_reviews.sql",
+      "0038_clocker_pin_operation_reference.sql",
+      "0039_clocker_review_requests.sql",
+      "0040_clocker_photo_policy_evidence.sql",
+      "0041_clocker_photo_platform_cleanup.sql"
+    ],
+    "final": [
+      "0031_native_payroll.sql",
+      "0032_company_access_invitations.sql",
+      "0042_company_invitation_lifetime.sql"
+    ],
+    "held": [
+      "0026_tenant_ownership_expand.sql",
+      "0027_tenant_ownership_validate.sql"
+    ],
+    "current": [
+      "0001_initial.sql",
+      "0002_schedule_health.sql",
+      "0003_schedule_assistance.sql",
+      "0004_assistance_layer.sql",
+      "0005_time_clock.sql",
+      "0006_scheduling_rule_inputs.sql",
+      "0007_portal_web_push.sql",
+      "0008_workspace_positions.sql",
+      "0009_schedule_generation.sql",
+      "0010_shift_coverage_automation.sql",
+      "0011_clocker_devices.sql",
+      "0012_clocker_pins.sql",
+      "0013_clocker_punches.sql",
+      "0014_clocker_breaks.sql",
+      "0015_clocker_schedule_context.sql",
+      "0016_time_corrections.sql",
+      "0017_missing_time_supersession.sql",
+      "0018_timecards.sql",
+      "0019_payroll_export_mappings.sql",
+      "0020_account_recovery.sql",
+      "0021_timecard_reassignment_interlock.sql",
+      "0022_timecard_reopen_revision_authority.sql",
+      "0023_employee_attention_receipts.sql",
+      "0024_contextual_communications.sql",
+      "0025_calendar_subscriptions.sql",
+      "0023_template_ownership.sql",
+      "0024_schedule_copy_receipts.sql",
+      "0025_company_policies.sql",
+      "0026_attendance_observations.sql",
+      "0027_payroll_period_custody.sql",
+      "0028_configurable_payroll.sql",
+      "0029_payroll_private_notices.sql",
+      "0030_notification_source_kinds.sql",
+      "0031_workspace_presentation.sql",
+      "0032_workspace_words_modules.sql",
+      "0033_management_alert_preferences.sql",
+      "0034_account_deletion_requests.sql",
+      "0035_passkeys.sql",
+      "0036_owner_advisor.sql",
+      "0037_owner_briefing_reviews.sql",
+      "0038_clocker_pin_operation_reference.sql",
+      "0039_clocker_review_requests.sql",
+      "0040_clocker_photo_policy_evidence.sql",
+      "0041_clocker_photo_platform_cleanup.sql",
+      "0031_native_payroll.sql",
+      "0032_company_access_invitations.sql",
+      "0042_company_invitation_lifetime.sql"
+    ],
+    "inputs": [
+      {
+        "path": "scripts/company-setup.ts",
+        "sha256": "8082f04031b2569e84aa7735fbb2983a73a65ee022b4ec49a212e21a6f15a999"
+      },
+      {
+        "path": "src/test/integration/local-postgres.ts",
+        "sha256": "99c7fd7bebbecf6bbf3029ab4c1e1480dc2e8dac3be6912147241bfc2eb20a34"
+      },
+      {
+        "path": "db/migrations/order.ts",
+        "sha256": "f603e45931fe69844ee41d6b07f80bba8b4d30985e43a3f812597a6b95eb8b98"
+      }
+    ]
+  },
+  "proposedBase": [
+    "0001_initial.sql",
+    "0002_schedule_health.sql",
+    "0003_schedule_assistance.sql",
+    "0004_assistance_layer.sql",
+    "0005_time_clock.sql",
+    "0006_scheduling_rule_inputs.sql",
+    "0007_portal_web_push.sql",
+    "0008_workspace_positions.sql",
+    "0009_schedule_generation.sql",
+    "0010_shift_coverage_automation.sql",
+    "0011_clocker_devices.sql",
+    "0012_clocker_pins.sql",
+    "0013_clocker_punches.sql",
+    "0014_clocker_breaks.sql",
+    "0015_clocker_schedule_context.sql",
+    "0016_time_corrections.sql",
+    "0017_missing_time_supersession.sql",
+    "0018_timecards.sql",
+    "0019_payroll_export_mappings.sql",
+    "0020_account_recovery.sql",
+    "0021_timecard_reassignment_interlock.sql",
+    "0022_timecard_reopen_revision_authority.sql",
+    "0023_employee_attention_receipts.sql",
+    "0024_contextual_communications.sql",
+    "0025_calendar_subscriptions.sql",
+    "0023_template_ownership.sql",
+    "0024_schedule_copy_receipts.sql",
+    "0025_company_policies.sql",
+    "0026_attendance_observations.sql",
+    "0027_payroll_period_custody.sql",
+    "0028_configurable_payroll.sql",
+    "0029_payroll_private_notices.sql",
+    "0030_notification_source_kinds.sql",
+    "0031_workspace_presentation.sql",
+    "0032_workspace_words_modules.sql",
+    "0033_management_alert_preferences.sql",
+    "0034_account_deletion_requests.sql",
+    "0035_passkeys.sql",
+    "0036_owner_advisor.sql",
+    "0037_owner_briefing_reviews.sql",
+    "0038_read_path_indexes.sql",
+    "0039_native_payroll_setup_records.sql",
+    "0038_clocker_pin_operation_reference.sql",
+    "0039_clocker_review_requests.sql",
+    "0040_clocker_photo_policy_evidence.sql",
+    "0041_clocker_photo_platform_cleanup.sql"
+  ],
+  "final": [
+    "0031_native_payroll.sql",
+    "0032_company_access_invitations.sql",
+    "0042_company_invitation_lifetime.sql"
+  ],
+  "held": [
+    "0026_tenant_ownership_expand.sql",
+    "0027_tenant_ownership_validate.sql"
+  ],
+  "files": [
+    {
+      "filename": "0001_initial.sql",
+      "owner": "collab",
+      "sha256": "330e125060422506f92403307224b739b73f5fc8697ed43039b22e56bcba61a1"
+    },
+    {
+      "filename": "0002_schedule_health.sql",
+      "owner": "collab",
+      "sha256": "0dd019d1658c22763d11531ef72b39db9e5a106bb418b1a4fc63f5caaff7f9f0"
+    },
+    {
+      "filename": "0003_schedule_assistance.sql",
+      "owner": "collab",
+      "sha256": "d82513ab58c0e8a84f976a05c2be0e342309467c586ded8347cce4ef9001900a"
+    },
+    {
+      "filename": "0004_assistance_layer.sql",
+      "owner": "collab",
+      "sha256": "c0263d1e40bbfe3aa646a4740b0fe345728783eac39dfda916495ccf7a1ab7e5"
+    },
+    {
+      "filename": "0005_time_clock.sql",
+      "owner": "collab",
+      "sha256": "fc4afbdf4770bd7a3a718cd54fd204bc8df1b96296c04cb676dab3f4f6d0c4e5"
+    },
+    {
+      "filename": "0006_scheduling_rule_inputs.sql",
+      "owner": "collab",
+      "sha256": "4a0eb437395a5f4d1873c9b06b3c1104da5a23319e968d422a5a14f3c310483a"
+    },
+    {
+      "filename": "0007_portal_web_push.sql",
+      "owner": "collab",
+      "sha256": "020c45cbeb1c5000be22b3ce240f94225fc0c88471e540a67246dd54085440d2"
+    },
+    {
+      "filename": "0008_workspace_positions.sql",
+      "owner": "collab",
+      "sha256": "f517e18d468556c25814141a959427c969f620fa4ac6e98cc709b31ee1d88756"
+    },
+    {
+      "filename": "0009_schedule_generation.sql",
+      "owner": "collab",
+      "sha256": "aadde6a1f5d3167ed4f346817d1feeb0c9f99f28d50adcf904a989b86120f007"
+    },
+    {
+      "filename": "0010_shift_coverage_automation.sql",
+      "owner": "collab",
+      "sha256": "0d8b55abe49995204bda9e63492026158b91b8dc4ca414d05c77b595a6474d8e"
+    },
+    {
+      "filename": "0011_clocker_devices.sql",
+      "owner": "collab",
+      "sha256": "788b748bbbd995c44f40d130ea079296aa3e6affcad86c78cbb3857e866c0cd0"
+    },
+    {
+      "filename": "0012_clocker_pins.sql",
+      "owner": "collab",
+      "sha256": "9b607ca2e9e111953695ba5cf1a1dbc87f65ae483caeccc3d8056f19aab8c90f"
+    },
+    {
+      "filename": "0013_clocker_punches.sql",
+      "owner": "collab",
+      "sha256": "f222d8b52e5cace6698f22b8d4a10fa5ffcd93db1d8c7d5cfd551a02b74216e5"
+    },
+    {
+      "filename": "0014_clocker_breaks.sql",
+      "owner": "collab",
+      "sha256": "c20cd86b16fe2f82c05b69687402c52f37a648eb1d79c8f1418436ed8e4c5508"
+    },
+    {
+      "filename": "0015_clocker_schedule_context.sql",
+      "owner": "collab",
+      "sha256": "5b5160bff760e17d4e235c35e4936271fba0b8124f5da8a8989e01478fff6796"
+    },
+    {
+      "filename": "0016_time_corrections.sql",
+      "owner": "collab",
+      "sha256": "36532a3efc7c641a96b447f5caf2efbd3c4184cbfae2c6e080b548fa3fac4b35"
+    },
+    {
+      "filename": "0017_missing_time_supersession.sql",
+      "owner": "collab",
+      "sha256": "2a35c4e3180c3294c7197af56415b231bf66a0b30417000e08de17d161ef8fea"
+    },
+    {
+      "filename": "0018_timecards.sql",
+      "owner": "collab",
+      "sha256": "0221827d5faa0670a85661b6a15e59882382703a42bb9800576c30a1f66c1a81"
+    },
+    {
+      "filename": "0019_payroll_export_mappings.sql",
+      "owner": "collab",
+      "sha256": "1610d1018824ec84ba9cdbe2f42f3ae36c12ba509a735ea10dce3ee21b594262"
+    },
+    {
+      "filename": "0020_account_recovery.sql",
+      "owner": "collab",
+      "sha256": "26bc594863f1950588250be50a1ae66ba2191f90e8a908aea6a41a6ac76c61db"
+    },
+    {
+      "filename": "0021_timecard_reassignment_interlock.sql",
+      "owner": "collab",
+      "sha256": "c5e9f1df923c67d4764427cca9f005fed93a4cb148c4a469866d15d4253b4918"
+    },
+    {
+      "filename": "0022_timecard_reopen_revision_authority.sql",
+      "owner": "collab",
+      "sha256": "616dc741d8b48679b05958cfbd9dcf3ece018a356892034f2f1ad6a644ba584b"
+    },
+    {
+      "filename": "0023_employee_attention_receipts.sql",
+      "owner": "collab",
+      "sha256": "2758fd0dd5567839537483bb49eba8f4e5618b67a9a77c1deccf0e550cefcef1"
+    },
+    {
+      "filename": "0024_contextual_communications.sql",
+      "owner": "collab",
+      "sha256": "f130df4238379aa50347decbc863c51f37b108a9f5975b49ca8696b49fc08277"
+    },
+    {
+      "filename": "0025_calendar_subscriptions.sql",
+      "owner": "collab",
+      "sha256": "357bce5c806af4f3f0d9ff8a5b48e09a90b1342e8168206efce4f949072d824b"
+    },
+    {
+      "filename": "0023_template_ownership.sql",
+      "owner": "collab",
+      "sha256": "0352f4db63cb5ede8f47aec1178b8cf9cbdfb010d678c412fc1c127abca7439c"
+    },
+    {
+      "filename": "0024_schedule_copy_receipts.sql",
+      "owner": "collab",
+      "sha256": "fc13bcef690b30f6c3eb932581f19947835efbb0c8d523e54ca4c89331e4f3ee"
+    },
+    {
+      "filename": "0025_company_policies.sql",
+      "owner": "collab",
+      "sha256": "247139b09eb20e587061ddb925367dea9176b0c8acb0c062f0d517b4ad9a427a"
+    },
+    {
+      "filename": "0026_attendance_observations.sql",
+      "owner": "collab",
+      "sha256": "470cca7063764347d3bf0cde4163b1dc6629fc3aed08d2daaa57e6f97b2715db"
+    },
+    {
+      "filename": "0027_payroll_period_custody.sql",
+      "owner": "collab",
+      "sha256": "1b2999603afe74c8d36d8643386b2944d82ae6c83ccd395669b46a774695c826"
+    },
+    {
+      "filename": "0028_configurable_payroll.sql",
+      "owner": "collab",
+      "sha256": "6e6da74c87fb76b49af1beea70e9bef71a6d3e0fb3924c4b24896a6eb499a839"
+    },
+    {
+      "filename": "0029_payroll_private_notices.sql",
+      "owner": "collab",
+      "sha256": "42fc345790410582084db999b7069a242f14efb5deb91dfa4b75e084a0290576"
+    },
+    {
+      "filename": "0030_notification_source_kinds.sql",
+      "owner": "collab",
+      "sha256": "32cc7ee9d071c40e0f79b78918ba2cf7d46be6b0a69ef1d0d2eff5f321eea6b0"
+    },
+    {
+      "filename": "0031_workspace_presentation.sql",
+      "owner": "collab",
+      "sha256": "cb684bdfd7b3457048eb39f7b144e8c1e561a220682e9d3a346c8ae9937cab7e"
+    },
+    {
+      "filename": "0032_workspace_words_modules.sql",
+      "owner": "collab",
+      "sha256": "978301c0e13541471aa7a42835eae36bd0efbcee51fa1972e41363dc5273163e"
+    },
+    {
+      "filename": "0033_management_alert_preferences.sql",
+      "owner": "collab",
+      "sha256": "ba1e1e117c1c04be5359318d056bc2d4b6dbe33c29bcde78bf38f97f9345cccc"
+    },
+    {
+      "filename": "0034_account_deletion_requests.sql",
+      "owner": "collab",
+      "sha256": "43c750a764e6e6e77c10126469beee7d805bbeed7a5f50b0262ff9558c26f8da"
+    },
+    {
+      "filename": "0035_passkeys.sql",
+      "owner": "collab",
+      "sha256": "ca7d8071ff3a7e9d34b06b7a51818e7709c669296c60e3da96c1c29273c9a98d"
+    },
+    {
+      "filename": "0036_owner_advisor.sql",
+      "owner": "collab",
+      "sha256": "fb5bd778da67f4e6d4b803e34fa663a6d74d78a345dd3e566005e25a796c30c7"
+    },
+    {
+      "filename": "0037_owner_briefing_reviews.sql",
+      "owner": "collab",
+      "sha256": "51ed917185d10de4b7a5add636707ce76a6bdb832d7161521c0769b33cbd2986"
+    },
+    {
+      "filename": "0038_clocker_pin_operation_reference.sql",
+      "owner": "collab",
+      "sha256": "a6962bdf12631eb3225d19b71811e4e56f4120788a1d89ae6fd931336736a8e2"
+    },
+    {
+      "filename": "0039_clocker_review_requests.sql",
+      "owner": "collab",
+      "sha256": "0ceb6b870596a14ad1254a83e18033e08b8501e0817e34369967cb85c4e305fe"
+    },
+    {
+      "filename": "0040_clocker_photo_policy_evidence.sql",
+      "owner": "collab",
+      "sha256": "476ef1887bf0c16688783736941454e8d209d93f5f31f05826a74de953836787"
+    },
+    {
+      "filename": "0041_clocker_photo_platform_cleanup.sql",
+      "owner": "collab",
+      "sha256": "335291af02ac2ba5beba2194c0dc1e316397502388ddcd1aa6497dd61ab7118c"
+    },
+    {
+      "filename": "0031_native_payroll.sql",
+      "owner": "collab",
+      "sha256": "bbe2857612e5ee1fc359f93e695a28c61f95b02846b1b3eb9aaae1e990b338bf"
+    },
+    {
+      "filename": "0032_company_access_invitations.sql",
+      "owner": "collab",
+      "sha256": "361edcc14081de6c196d3fe157a8e5bda91da942eec5db5fb1f9c6279e0b2612"
+    },
+    {
+      "filename": "0042_company_invitation_lifetime.sql",
+      "owner": "collab",
+      "sha256": "2392d691cd079688ee9b496b9f3dd493e8f963feb3859c724d2ea153414bfa1c"
+    },
+    {
+      "filename": "0038_read_path_indexes.sql",
+      "owner": "pr34-read-only",
+      "sha256": "989dc9e469811b84e738da7d7025df1740e5b679882952927d276df8fd2a6b5b"
+    },
+    {
+      "filename": "0039_native_payroll_setup_records.sql",
+      "owner": "pr34-read-only",
+      "sha256": "38e0b4de2e04ecf4dbc247a80ea9230b24358bec1ffa38289cb1baf71106adea"
+    }
+  ],
+  "limitations": [
+    "No files renamed or migrations applied. Proposed supplemental migrations are not yet in collab.",
+    "Hosted ledger rows and historical renamed0038_native_payroll_setup_records.sql are unverified.",
+    "Full combined fresh/upgrade, lock contention and invalid-index rehearsal remain required after selected PR34 sources are integrated.",
+    "Container rehearsal is currently unavailable: docker executable absent from PATH. Existing approved native PostgreSQL fixtures are available; no replacement runtime installed."
+  ]
+}
