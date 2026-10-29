@@ -114,8 +114,9 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
    expect(await page.locator('.em-open-detail:visible').innerText()).toContain('Ends');
    expect(await page.locator('.em-open-shift:visible').innerText()).toContain('Overnight');
    const related=page.locator('.em-request-links');
+   await related.scrollIntoViewIfNeeded();await shot('open-options');
    expect(await related.getAttribute('aria-label')).toBe('More shift options');
-   expect(await related.getAttribute('role')??await related.evaluate((el:HTMLElement)=>el.tagName.toLowerCase())).toBe('nav');
+   expect(await page.getByRole('navigation',{name:'More shift options',exact:true}).count()).toBe(1);
    expect(await related.getByRole('link').count()).toBe(3);
    expect(await related.getByRole('link').evaluateAll((links:HTMLAnchorElement[])=>links.map(link=>new URL(link.href).pathname+new URL(link.href).search))).toEqual(['/app/exchange?tab=foryou','/app/exchange?tab=requests','/app/schedule']);
    record('Mobile hub navigation, distinct eligibility, keyboard disclosure and actual overnight pickup terms');
@@ -135,6 +136,7 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
     });
     expect(rows).toHaveLength(3);for(const row of rows){expect(row.height).toBeGreaterThanOrEqual(44);expect(row.insetLeft).toBeGreaterThanOrEqual(12);expect(row.insetRight).toBeGreaterThanOrEqual(12);expect(row.arrowInset).toBeGreaterThanOrEqual(12);expect(row.separator).toBe(true);expect(row.bodySize).toBe(1);}
     expect(Math.max(...rows.map(row=>row.width))-Math.min(...rows.map(row=>row.width))).toBeLessThanOrEqual(1);
+    await related.scrollIntoViewIfNeeded();await shot('open-options-'+theme+'-'+width);
     await button.focus();await shot('open-'+theme+'-'+width);
    }
    record('Light/dark 320/390/430, actual primary contrast, minimum targets, visible focus and no page overflow');
