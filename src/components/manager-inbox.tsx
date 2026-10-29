@@ -258,22 +258,22 @@ function Section({ id, title, count, note, children }: { id: string; title: stri
   </section>;
 }
 
-export function ManagerInbox({ contacts, ...props }: { weekStart: string; actorId: string; timeZone: string; contacts?: InboxContacts }) {
+export function ManagerInbox({ contacts, ...props }: { weekStart: string; actorId: string; timeZone: string; contacts?: InboxContacts; coverageFirst?: boolean }) {
   return <Phones.Provider value={contacts ?? null}><InboxView {...props} /></Phones.Provider>;
 }
 
-function InboxView({ weekStart, actorId, timeZone }: { weekStart: string; actorId: string; timeZone: string }) {
+function InboxView({ weekStart, actorId, timeZone, coverageFirst }: { weekStart: string; actorId: string; timeZone: string; coverageFirst?: boolean }) {
   const { snapshot, connection, refresh } = useActionCenter(weekStart, actorId);
   const { snapshot: today, refresh: refreshToday } = useToday();
   // W2: ?filter= is the source of truth, so Back from a review restores it.
   const initialFilter = inboxFilter(useSearchParams()?.get("filter"));
   // Refresh asks both reads again: the action center and today's clock-ins.
-  return <InboxSurface snapshot={snapshot} today={today} connection={connection} onRefresh={() => { refresh(); refreshToday(); }} timeZone={timeZone} initialFilter={initialFilter} />;
+  return <InboxSurface snapshot={snapshot} today={today} connection={connection} onRefresh={() => { refresh(); refreshToday(); }} timeZone={timeZone} initialFilter={initialFilter} coverageFirst={coverageFirst} />;
 }
 
 /** Presentation only: receives the released action center observation and today's shifts. */
-export function InboxSurface({ snapshot, today = null, connection, onRefresh: refresh, timeZone, initialFilter = "all" }: {
-  snapshot: ActionCenter | null; today?: Today | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string; initialFilter?: InboxFilter;
+export function InboxSurface({ snapshot, today = null, connection, onRefresh: refresh, timeZone, initialFilter = "all", coverageFirst = false }: {
+  snapshot: ActionCenter | null; today?: Today | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string; initialFilter?: InboxFilter; coverageFirst?: boolean;
 }) {
   const phones = useContext(Phones);
   // Quiet (v4): three segments; "all" (an old link) opens Act now.
@@ -319,9 +319,17 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const total = value ? value.count + value.planning.length + value.past.length : 0;
   const updated = ready ? clock(ready.observedAt, timeZone) : null;
   const show = (group: InboxFilter) => filter === "all" || filter === group;
+  // Clean Manager (v3): the parts of "Act now", each under its own heading.
+  const gaps = value ? value.now.filter(item => item.type === "COVERAGE_GAP") : [];
+  const otherNow = value ? value.now.filter(item => item.type !== "COVERAGE_GAP") : [];
+  const gapPlaces = [...new Set(gaps.map(gapPlace))].map(place => ({ place, items: gaps.filter(item => gapPlace(item) === place) }));
   // The rows on screen, in order; the pane shows the selected one, or the first. The pane keeps an item's full title.
   const entries: InboxEntry[] = value ? [
-    ...(show("now") ? [...value.noClockIn.map(shift => shiftEntry(shift, timeZone, ready?.observedAt, true, phones?.phones[shift.employeeId], phones?.observation)), ...value.now.map(item => itemEntry(item, false, filter, timeZone))] : []),
+    ...(show("now") ? (() => {
+      const missed = value.noClockIn.map(shift => shiftEntry(shift, timeZone, ready?.observedAt, true, phones?.phones[shift.employeeId], phones?.observation));
+      const urgent = (coverageFirst ? [...gapPlaces.flatMap(group => group.items), ...otherNow] : value.now).map(item => itemEntry(item, false, filter, timeZone));
+      return coverageFirst ? [...urgent, ...missed] : [...missed, ...urgent];
+    })() : []),
     ...(show("requests") ? value.requests.map(item => itemEntry(item, false, filter, timeZone)) : []),
     ...(show("planning") ? [...value.planning.map(item => itemEntry(item, false, filter, timeZone)), ...value.past.map(item => itemEntry(item, true, filter, timeZone))] : []),
   ] : [];
@@ -379,16 +387,37 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
     document.getElementById("inbox-detail-title")?.focus({ preventScroll: true });
   }, [selectedKey]);
 
-  // Clean Manager (v3): the parts of "Act now", each under its own heading.
-  const gaps = value ? value.now.filter(item => item.type === "COVERAGE_GAP") : [];
-  const otherNow = value ? value.now.filter(item => item.type !== "COVERAGE_GAP") : [];
-  const gapPlaces = [...new Set(gaps.map(gapPlace))].map(place => ({ place, items: gaps.filter(item => gapPlace(item) === place) }));
   const plan = value ? planGroups(value.planning) : [];
   const counts: Record<InboxFilter, number> = value
     ? { all: value.count, now: value.noClockIn.length + value.now.length, requests: value.requests.length, planning: plan.length + (value.past.length ? 1 : 0) }
     : { all: 0, now: 0, requests: 0, planning: 0 };
   const missedShown = 3;
   const missedPlaces = value ? new Set(value.noClockIn.map(shift => shift.locationName)).size > 1 : false;
+
+  const missedSection = value && (show("now") && value!.noClockIn.length ? <div key="missed" id="missed-punches">
+          <Section id="missed" title="Not clocked in" count={value!.noClockIn.length}>
+            <ul className="q-list inbox-list">
+              {value!.noClockIn.slice(0, missedShown).map(shift => <ShiftRow key={shift.id} shift={shift} timeZone={timeZone} observedAt={ready?.observedAt} showPlace={missedPlaces} />)}
+              {value!.noClockIn.length > missedShown ? <li className="premium-group cm-more">
+                <details open={value!.noClockIn.slice(missedShown).some(shift => `shift:${shift.id}` === shownKey) || undefined}>
+                  <summary className="q-row q-row--one"><span className="q-rt"><b>{`Show ${value!.noClockIn.length - missedShown} more`}</b></span><CaretDownIcon className="q-chev" aria-hidden="true" /></summary>
+                  <ul className="q-list inbox-list">{value!.noClockIn.slice(missedShown).map(shift => <ShiftRow key={shift.id} shift={shift} timeZone={timeZone} observedAt={ready?.observedAt} showPlace={missedPlaces} />)}</ul>
+                </details>
+              </li> : null}
+            </ul>
+          </Section>
+        </div> : null);
+  const urgentSection = value && (show("now") && value!.now.length ? <Section key="urgent" id="urgent" title={otherNow.length ? "Act now" : "Open shifts"} count={value!.now.length}>
+          <ul className="q-list inbox-list">
+            {gapPlaces.map(({ place, items }) => items.length === 1
+              ? <KitRow key={items[0].id} entry={gapEntry(items[0], filter, timeZone)} />
+              : <Disclosure key={place} title={place} items={items} count={items.length}
+                  meta={<MetaParts text={items.map(item => mobileActionDetail(item.detail).split(" · ")[1]).filter(Boolean).join(" · ")} />}>
+                  {items.map(item => <KitRow key={item.id} entry={gapEntry(item, filter, timeZone)} />)}
+                </Disclosure>)}
+            {otherNow.map(item => <ItemRow key={item.id} item={item} filter={filter} timeZone={timeZone} />)}
+          </ul>
+        </Section> : null);
 
   // Quiet (v4, approved Oct 23): title, three segments (Act now, Requests, Plan ahead), then plain lists. No band, no footer.
   return <div className="q-page manager-inbox premium-inbox cm-inbox" data-nv-page="" data-inbox-state={ready ? (total ? "ready" : "clear") : connection}>
@@ -419,30 +448,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
           <p className="q-empty" style={{ marginTop: 24 }}>Clock-ins can’t be checked right now.</p>
           <button type="button" className="q-btn q-btn--sec" onClick={refresh}>Try again</button>
         </section> : null}
-        {show("now") && value!.noClockIn.length ? <div id="missed-punches">
-          <Section id="missed" title="Not clocked in" count={value!.noClockIn.length}>
-            <ul className="q-list inbox-list">
-              {value!.noClockIn.slice(0, missedShown).map(shift => <ShiftRow key={shift.id} shift={shift} timeZone={timeZone} observedAt={ready.observedAt} showPlace={missedPlaces} />)}
-              {value!.noClockIn.length > missedShown ? <li className="premium-group cm-more">
-                <details open={value!.noClockIn.slice(missedShown).some(shift => `shift:${shift.id}` === shownKey) || undefined}>
-                  <summary className="q-row q-row--one"><span className="q-rt"><b>{`Show ${value!.noClockIn.length - missedShown} more`}</b></span><CaretDownIcon className="q-chev" aria-hidden="true" /></summary>
-                  <ul className="q-list inbox-list">{value!.noClockIn.slice(missedShown).map(shift => <ShiftRow key={shift.id} shift={shift} timeZone={timeZone} observedAt={ready.observedAt} showPlace={missedPlaces} />)}</ul>
-                </details>
-              </li> : null}
-            </ul>
-          </Section>
-        </div> : null}
-        {show("now") && value!.now.length ? <Section id="urgent" title={otherNow.length ? "Act now" : "Open shifts"} count={value!.now.length}>
-          <ul className="q-list inbox-list">
-            {gapPlaces.map(({ place, items }) => items.length === 1
-              ? <KitRow key={items[0].id} entry={gapEntry(items[0], filter, timeZone)} />
-              : <Disclosure key={place} title={place} items={items} count={items.length}
-                  meta={<MetaParts text={items.map(item => mobileActionDetail(item.detail).split(" · ")[1]).filter(Boolean).join(" · ")} />}>
-                  {items.map(item => <KitRow key={item.id} entry={gapEntry(item, filter, timeZone)} />)}
-                </Disclosure>)}
-            {otherNow.map(item => <ItemRow key={item.id} item={item} filter={filter} timeZone={timeZone} />)}
-          </ul>
-        </Section> : null}
+        {coverageFirst ? [urgentSection, missedSection] : [missedSection, urgentSection]}
         {show("requests") && (value!.requests.length || filter === "requests") ? <Section id="requests" title="Requests" count={value!.requests.length}>
           <ul className="q-list inbox-list">
             {groupInboxItems(value!.requests).flatMap(entry => entry.kind === "item" ? [entry.item] : entry.items).map(item => <ItemRow key={item.id} item={item} filter={filter} timeZone={timeZone} />)}

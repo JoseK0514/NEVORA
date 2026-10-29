@@ -24,5 +24,5 @@ export default async function InboxPage() {
     ? { observation: { authority: directory.authority, observedAt: directory.observedAt, validForMs: directory.validForMs },
         phones: Object.fromEntries(directory.data.employees.filter(employee => employee.active && employee.phone).map(employee => [employee.id, employee.phone])) }
     : undefined;
-  return <ManagerInbox weekStart={weekStart} actorId={session.id} timeZone={workspace.timeZone} contacts={contacts} />;
+  return <ManagerInbox weekStart={weekStart} actorId={session.id} timeZone={workspace.timeZone} contacts={contacts} coverageFirst={session.role === "OWNER"} />;
 }
