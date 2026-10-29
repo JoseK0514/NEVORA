@@ -1,0 +1,644 @@
+{
+  "scope": "Bounded Employee Profile/Passkeys surface polish and Access signed-out ID privacy repair; Release1 remains in progress",
+  "profilePasskeys": {
+    "redSource": "6e660197",
+    "greenSource": "416a4a4f",
+    "redPresentationFailures": 147,
+    "greenPresentationFailures": 0,
+    "nativeEngines": [
+      "chromium",
+      "webkit",
+      "firefox"
+    ],
+    "incumbentChecks": 36,
+    "viewportCaptures": 150,
+    "contrasts": 90,
+    "minimumContrast": 5.420851497656459,
+    "expectedTransportErrors": 9,
+    "unexpectedErrors": [],
+    "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/profile-passkeys-green",
+    "limits": [
+      "Controlled fictional authenticator and actual cryptographic canonical server; native OS UI/credential-store behavior and physical devices unexecuted.",
+      "Owned loopback Next development/PostgreSQL, no hosted/production certification."
+    ]
+  },
+  "serialAt9fa3abf7": {
+    "sha": "9fa3abf758af29cb4d7f9f0c0d94339765ff0c74",
+    "lane": "serial",
+    "results": [
+      {
+        "suite": "access",
+        "sha": "9fa3abf758af29cb4d7f9f0c0d94339765ff0c74",
+        "exitCode": 1,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch06-journeys-serial/access",
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch06-journeys-serial/access.log"
+      },
+      {
+        "suite": "profile",
+        "sha": "9fa3abf758af29cb4d7f9f0c0d94339765ff0c74",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch06-journeys-serial/profile",
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch06-journeys-serial/profile.log"
+      },
+      {
+        "suite": "calendar",
+        "sha": "9fa3abf758af29cb4d7f9f0c0d94339765ff0c74",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch06-journeys-serial/calendar",
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch06-journeys-serial/calendar.log"
+      },
+      {
+        "suite": "closure",
+        "sha": "9fa3abf758af29cb4d7f9f0c0d94339765ff0c74",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch06-journeys-serial/closure",
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch06-journeys-serial/closure.log"
+      }
+    ]
+  },
+  "staticAt9fa3abf7": {
+    "checkpoint": "9fa3abf758af29cb4d7f9f0c0d94339765ff0c74",
+    "results": [
+      {
+        "name": "default",
+        "checkpoint": "9fa3abf758af29cb4d7f9f0c0d94339765ff0c74",
+        "startedAt": "2026-10-29T20:48:27.168Z",
+        "finishedAt": "2026-10-29T20:54:28.098Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch06-static/default.log"
+      },
+      {
+        "name": "typecheck",
+        "checkpoint": "9fa3abf758af29cb4d7f9f0c0d94339765ff0c74",
+        "startedAt": "2026-10-29T20:54:28.734Z",
+        "finishedAt": "2026-10-29T20:54:43.540Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch06-static/typecheck.log"
+      },
+      {
+        "name": "lint",
+        "checkpoint": "9fa3abf758af29cb4d7f9f0c0d94339765ff0c74",
+        "startedAt": "2026-10-29T20:54:44.158Z",
+        "finishedAt": "2026-10-29T20:55:08.691Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch06-static/lint.log"
+      },
+      {
+        "name": "startup",
+        "checkpoint": "9fa3abf758af29cb4d7f9f0c0d94339765ff0c74",
+        "startedAt": "2026-10-29T20:55:09.341Z",
+        "finishedAt": "2026-10-29T20:55:10.971Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch06-static/startup.log"
+      },
+      {
+        "name": "build",
+        "checkpoint": "9fa3abf758af29cb4d7f9f0c0d94339765ff0c74",
+        "startedAt": "2026-10-29T20:55:11.577Z",
+        "finishedAt": "2026-10-29T20:55:21.996Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch06-static/build.log"
+      }
+    ]
+  },
+  "defaultAt9fa3abf7": {
+    "numPassedTests": 10229,
+    "numFailedTests": 0,
+    "numPendingTests": 801,
+    "success": true
+  },
+  "accessPrivacy": {
+    "redSource": "9fa3abf7",
+    "cause": "Layout effect reset happened after uncontrolled login ID input mounted with prior Access draft. Real More/Profile links preserve root provider and expose the failure.",
+    "greenSource": "4bb48f35",
+    "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch07-access",
+    "nativeResult": {
+      "complete": true,
+      "scope": "Real Next/server actions, invocation-owned PostgreSQL and loopback SMTP only; no real email/native clipboard/production service used.",
+      "checks": [
+        "chromium: mobile EN/ES,320/390/430,normal/200% layouts",
+        "chromium: locale drafts, contextual Back, manual-copy fallback and fixed mail recipient",
+        "chromium: real Owner-issued local email \u2192 activation \u2192 confirmed ID \u2192 ordinary sign-in \u2192 real Employee Home; employee issuance denied; short proof rejected",
+        "chromium: real recovery mail, editable receipt, identity correction, full-proof locale/resize custody, atomic reset/session revocation/single use and new-password sign-in",
+        "chromium: real logout clears ID; different-role sign-in has no Employee guide; prior activation intro does not return after account switch",
+        "chromium: Manager cannot issue invitations",
+        "webkit: mobile EN/ES,320/390/430,normal/200% layouts",
+        "webkit: locale drafts, contextual Back, manual-copy fallback and fixed mail recipient",
+        "webkit: real Owner-issued local email \u2192 activation \u2192 confirmed ID \u2192 ordinary sign-in \u2192 real Employee Home; employee issuance denied; short proof rejected",
+        "webkit: real recovery mail, editable receipt, identity correction, full-proof locale/resize custody, atomic reset/session revocation/single use and new-password sign-in",
+        "webkit: real logout clears ID; different-role sign-in has no Employee guide; prior activation intro does not return after account switch",
+        "webkit: Manager cannot issue invitations",
+        "firefox: mobile EN/ES,320/390/430,normal/200% layouts",
+        "firefox: locale drafts, contextual Back, manual-copy fallback and fixed mail recipient",
+        "firefox: real Owner-issued local email \u2192 activation \u2192 confirmed ID \u2192 ordinary sign-in \u2192 real Employee Home; employee issuance denied; short proof rejected",
+        "firefox: real recovery mail, editable receipt, identity correction, full-proof locale/resize custody, atomic reset/session revocation/single use and new-password sign-in",
+        "firefox: real logout clears ID; different-role sign-in has no Employee guide; prior activation intro does not return after account switch",
+        "firefox: Manager cannot issue invitations"
+      ],
+      "errors": [],
+      "windowExceptions": [],
+      "frameworkDiagnostics": [],
+      "guideContrast": [
+        {
+          "engine": "chromium",
+          "theme": "light",
+          "label": "Tu trabajo, en un solo lugar.",
+          "ratio": 15.709442826878028
+        },
+        {
+          "engine": "chromium",
+          "theme": "light",
+          "label": "Una gu\u00eda breve para empezar.",
+          "ratio": 5.420851497656459
+        },
+        {
+          "engine": "chromium",
+          "theme": "light",
+          "label": "Gu\u00eda r\u00e1pida",
+          "ratio": 5.649182118606885
+        },
+        {
+          "engine": "chromium",
+          "theme": "light",
+          "label": "Consulta tu horario",
+          "ratio": 15.709442826878028
+        },
+        {
+          "engine": "chromium",
+          "theme": "light",
+          "label": "Revisa cu\u00e1ndo y d\u00f3nde trabajas.",
+          "ratio": 5.420851497656459
+        },
+        {
+          "engine": "chromium",
+          "theme": "light",
+          "label": "Revisa tus horas",
+          "ratio": 15.709442826878028
+        },
+        {
+          "engine": "chromium",
+          "theme": "light",
+          "label": "Consulta tu tiempo registrado.",
+          "ratio": 5.420851497656459
+        },
+        {
+          "engine": "chromium",
+          "theme": "light",
+          "label": "Solicita tiempo libre",
+          "ratio": 15.709442826878028
+        },
+        {
+          "engine": "chromium",
+          "theme": "light",
+          "label": "Env\u00eda una solicitud a tu trabajo.",
+          "ratio": 5.420851497656459
+        },
+        {
+          "engine": "chromium",
+          "theme": "light",
+          "label": "Pide ayuda",
+          "ratio": 15.709442826878028
+        },
+        {
+          "engine": "chromium",
+          "theme": "light",
+          "label": "Tu gerente o el due\u00f1o puede ayudarte con preguntas de tu trabajo.",
+          "ratio": 5.420851497656459
+        },
+        {
+          "engine": "chromium",
+          "theme": "dark",
+          "label": "Tu trabajo, en un solo lugar.",
+          "ratio": 13.8788410741722
+        },
+        {
+          "engine": "chromium",
+          "theme": "dark",
+          "label": "Una gu\u00eda breve para empezar.",
+          "ratio": 7.712974522476015
+        },
+        {
+          "engine": "chromium",
+          "theme": "dark",
+          "label": "Gu\u00eda r\u00e1pida",
+          "ratio": 12.581737771441162
+        },
+        {
+          "engine": "chromium",
+          "theme": "dark",
+          "label": "Consulta tu horario",
+          "ratio": 13.8788410741722
+        },
+        {
+          "engine": "chromium",
+          "theme": "dark",
+          "label": "Revisa cu\u00e1ndo y d\u00f3nde trabajas.",
+          "ratio": 7.712974522476015
+        },
+        {
+          "engine": "chromium",
+          "theme": "dark",
+          "label": "Revisa tus horas",
+          "ratio": 13.8788410741722
+        },
+        {
+          "engine": "chromium",
+          "theme": "dark",
+          "label": "Consulta tu tiempo registrado.",
+          "ratio": 7.712974522476015
+        },
+        {
+          "engine": "chromium",
+          "theme": "dark",
+          "label": "Solicita tiempo libre",
+          "ratio": 13.8788410741722
+        },
+        {
+          "engine": "chromium",
+          "theme": "dark",
+          "label": "Env\u00eda una solicitud a tu trabajo.",
+          "ratio": 7.712974522476015
+        },
+        {
+          "engine": "chromium",
+          "theme": "dark",
+          "label": "Pide ayuda",
+          "ratio": 13.8788410741722
+        },
+        {
+          "engine": "chromium",
+          "theme": "dark",
+          "label": "Tu gerente o el due\u00f1o puede ayudarte con preguntas de tu trabajo.",
+          "ratio": 7.712974522476015
+        },
+        {
+          "engine": "webkit",
+          "theme": "light",
+          "label": "Tu trabajo, en un solo lugar.",
+          "ratio": 15.709442826878028
+        },
+        {
+          "engine": "webkit",
+          "theme": "light",
+          "label": "Una gu\u00eda breve para empezar.",
+          "ratio": 5.420851497656459
+        },
+        {
+          "engine": "webkit",
+          "theme": "light",
+          "label": "Gu\u00eda r\u00e1pida",
+          "ratio": 5.649182118606885
+        },
+        {
+          "engine": "webkit",
+          "theme": "light",
+          "label": "Consulta tu horario",
+          "ratio": 15.709442826878028
+        },
+        {
+          "engine": "webkit",
+          "theme": "light",
+          "label": "Revisa cu\u00e1ndo y d\u00f3nde trabajas.",
+          "ratio": 5.420851497656459
+        },
+        {
+          "engine": "webkit",
+          "theme": "light",
+          "label": "Revisa tus horas",
+          "ratio": 15.709442826878028
+        },
+        {
+          "engine": "webkit",
+          "theme": "light",
+          "label": "Consulta tu tiempo registrado.",
+          "ratio": 5.420851497656459
+        },
+        {
+          "engine": "webkit",
+          "theme": "light",
+          "label": "Solicita tiempo libre",
+          "ratio": 15.709442826878028
+        },
+        {
+          "engine": "webkit",
+          "theme": "light",
+          "label": "Env\u00eda una solicitud a tu trabajo.",
+          "ratio": 5.420851497656459
+        },
+        {
+          "engine": "webkit",
+          "theme": "light",
+          "label": "Pide ayuda",
+          "ratio": 15.709442826878028
+        },
+        {
+          "engine": "webkit",
+          "theme": "light",
+          "label": "Tu gerente o el due\u00f1o puede ayudarte con preguntas de tu trabajo.",
+          "ratio": 5.420851497656459
+        },
+        {
+          "engine": "webkit",
+          "theme": "dark",
+          "label": "Tu trabajo, en un solo lugar.",
+          "ratio": 13.8788410741722
+        },
+        {
+          "engine": "webkit",
+          "theme": "dark",
+          "label": "Una gu\u00eda breve para empezar.",
+          "ratio": 7.712974522476015
+        },
+        {
+          "engine": "webkit",
+          "theme": "dark",
+          "label": "Gu\u00eda r\u00e1pida",
+          "ratio": 12.581737771441162
+        },
+        {
+          "engine": "webkit",
+          "theme": "dark",
+          "label": "Consulta tu horario",
+          "ratio": 13.8788410741722
+        },
+        {
+          "engine": "webkit",
+          "theme": "dark",
+          "label": "Revisa cu\u00e1ndo y d\u00f3nde trabajas.",
+          "ratio": 7.712974522476015
+        },
+        {
+          "engine": "webkit",
+          "theme": "dark",
+          "label": "Revisa tus horas",
+          "ratio": 13.8788410741722
+        },
+        {
+          "engine": "webkit",
+          "theme": "dark",
+          "label": "Consulta tu tiempo registrado.",
+          "ratio": 7.712974522476015
+        },
+        {
+          "engine": "webkit",
+          "theme": "dark",
+          "label": "Solicita tiempo libre",
+          "ratio": 13.8788410741722
+        },
+        {
+          "engine": "webkit",
+          "theme": "dark",
+          "label": "Env\u00eda una solicitud a tu trabajo.",
+          "ratio": 7.712974522476015
+        },
+        {
+          "engine": "webkit",
+          "theme": "dark",
+          "label": "Pide ayuda",
+          "ratio": 13.8788410741722
+        },
+        {
+          "engine": "webkit",
+          "theme": "dark",
+          "label": "Tu gerente o el due\u00f1o puede ayudarte con preguntas de tu trabajo.",
+          "ratio": 7.712974522476015
+        },
+        {
+          "engine": "firefox",
+          "theme": "light",
+          "label": "Tu trabajo, en un solo lugar.",
+          "ratio": 15.709442826878028
+        },
+        {
+          "engine": "firefox",
+          "theme": "light",
+          "label": "Una gu\u00eda breve para empezar.",
+          "ratio": 5.420851497656459
+        },
+        {
+          "engine": "firefox",
+          "theme": "light",
+          "label": "Gu\u00eda r\u00e1pida",
+          "ratio": 5.649182118606885
+        },
+        {
+          "engine": "firefox",
+          "theme": "light",
+          "label": "Consulta tu horario",
+          "ratio": 15.709442826878028
+        },
+        {
+          "engine": "firefox",
+          "theme": "light",
+          "label": "Revisa cu\u00e1ndo y d\u00f3nde trabajas.",
+          "ratio": 5.420851497656459
+        },
+        {
+          "engine": "firefox",
+          "theme": "light",
+          "label": "Revisa tus horas",
+          "ratio": 15.709442826878028
+        },
+        {
+          "engine": "firefox",
+          "theme": "light",
+          "label": "Consulta tu tiempo registrado.",
+          "ratio": 5.420851497656459
+        },
+        {
+          "engine": "firefox",
+          "theme": "light",
+          "label": "Solicita tiempo libre",
+          "ratio": 15.709442826878028
+        },
+        {
+          "engine": "firefox",
+          "theme": "light",
+          "label": "Env\u00eda una solicitud a tu trabajo.",
+          "ratio": 5.420851497656459
+        },
+        {
+          "engine": "firefox",
+          "theme": "light",
+          "label": "Pide ayuda",
+          "ratio": 15.709442826878028
+        },
+        {
+          "engine": "firefox",
+          "theme": "light",
+          "label": "Tu gerente o el due\u00f1o puede ayudarte con preguntas de tu trabajo.",
+          "ratio": 5.420851497656459
+        },
+        {
+          "engine": "firefox",
+          "theme": "dark",
+          "label": "Tu trabajo, en un solo lugar.",
+          "ratio": 13.8788410741722
+        },
+        {
+          "engine": "firefox",
+          "theme": "dark",
+          "label": "Una gu\u00eda breve para empezar.",
+          "ratio": 7.712974522476015
+        },
+        {
+          "engine": "firefox",
+          "theme": "dark",
+          "label": "Gu\u00eda r\u00e1pida",
+          "ratio": 12.581737771441162
+        },
+        {
+          "engine": "firefox",
+          "theme": "dark",
+          "label": "Consulta tu horario",
+          "ratio": 13.8788410741722
+        },
+        {
+          "engine": "firefox",
+          "theme": "dark",
+          "label": "Revisa cu\u00e1ndo y d\u00f3nde trabajas.",
+          "ratio": 7.712974522476015
+        },
+        {
+          "engine": "firefox",
+          "theme": "dark",
+          "label": "Revisa tus horas",
+          "ratio": 13.8788410741722
+        },
+        {
+          "engine": "firefox",
+          "theme": "dark",
+          "label": "Consulta tu tiempo registrado.",
+          "ratio": 7.712974522476015
+        },
+        {
+          "engine": "firefox",
+          "theme": "dark",
+          "label": "Solicita tiempo libre",
+          "ratio": 13.8788410741722
+        },
+        {
+          "engine": "firefox",
+          "theme": "dark",
+          "label": "Env\u00eda una solicitud a tu trabajo.",
+          "ratio": 7.712974522476015
+        },
+        {
+          "engine": "firefox",
+          "theme": "dark",
+          "label": "Pide ayuda",
+          "ratio": 13.8788410741722
+        },
+        {
+          "engine": "firefox",
+          "theme": "dark",
+          "label": "Tu gerente o el due\u00f1o puede ayudarte con preguntas de tu trabajo.",
+          "ratio": 7.712974522476015
+        }
+      ]
+    },
+    "staticPending": false,
+    "reference": "https://react.dev/reference/react/useState#storing-information-from-previous-renders",
+    "staticOriginalAttempt": {
+      "checkpoint": "4bb48f35f8be90e2522bc53bdbbeb747d2976e98",
+      "results": [
+        {
+          "name": "default",
+          "checkpoint": "4bb48f35f8be90e2522bc53bdbbeb747d2976e98",
+          "startedAt": "2026-10-29T21:02:37.886Z",
+          "finishedAt": "2026-10-29T21:09:29.607Z",
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "custodyError": null,
+          "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch07-static/default.log"
+        },
+        {
+          "name": "typecheck",
+          "checkpoint": "4bb48f35f8be90e2522bc53bdbbeb747d2976e98",
+          "startedAt": "2026-10-29T21:09:30.233Z",
+          "finishedAt": "2026-10-29T21:09:45.546Z",
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "custodyError": null,
+          "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch07-static/typecheck.log"
+        },
+        {
+          "name": "lint",
+          "checkpoint": "4bb48f35f8be90e2522bc53bdbbeb747d2976e98",
+          "startedAt": "2026-10-29T21:09:46.189Z",
+          "finishedAt": "2026-10-29T21:10:11.167Z",
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "custodyError": null,
+          "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch07-static/lint.log"
+        },
+        {
+          "name": "startup",
+          "checkpoint": "4bb48f35f8be90e2522bc53bdbbeb747d2976e98",
+          "startedAt": "2026-10-29T21:10:11.786Z",
+          "finishedAt": "2026-10-29T21:10:12.477Z",
+          "exitCode": 1,
+          "signal": null,
+          "error": null,
+          "custodyError": null,
+          "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch07-static/startup.log"
+        },
+        {
+          "name": "build",
+          "checkpoint": "4bb48f35f8be90e2522bc53bdbbeb747d2976e98",
+          "startedAt": "2026-10-29T21:10:13.094Z",
+          "finishedAt": "2026-10-29T21:10:24.379Z",
+          "exitCode": 0,
+          "signal": null,
+          "error": null,
+          "custodyError": null,
+          "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch07-static/build.log"
+        }
+      ]
+    },
+    "startupReplay": {
+      "exitCode": 0,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch07-startup-replay.log",
+      "reason": "Coordinator omitted NEVORA_TEST_PG_BIN; original guard correctly stopped before database creation. Approved explicit runtime supplied on same source for replay."
+    },
+    "default": {
+      "numPassedTests": 10229,
+      "numFailedTests": 0,
+      "numPendingTests": 801,
+      "success": true
+    },
+    "hostedReplay": "Required after push; no success claimed."
+  },
+  "releaseAcceptance": false,
+  "independentFindingsClosedByThisReport": false
+}

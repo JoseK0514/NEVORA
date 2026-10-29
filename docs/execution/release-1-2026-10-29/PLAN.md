@@ -89,3 +89,5 @@ Files: scripts/rehearsal/migration-plan.mts; src/test/migration-order.test.ts; d
 ## Execution notes
 
 The handoff is Jose's execution authority. This plan organizes that approved scope; it does not re-request approval for non-policy repairs. Root owns implementation; read-only agents mapped Owner, Clocker and Employee findings. Further code ownership is assigned explicitly per bounded task.
+
+Task3 bounded progress: state/copy/contextual Back batch04 verified; Profile/Passkeys measured polish batch06 verified locally.9fa native Profile/Calendar/closure pass;4bb Access real sign-out identity reset passes all3 engines. BATCH-06 retains original RED and startup configuration failure/replay. Home/Pay card hierarchy, remaining type leaves/weights, shared root/detail chrome and related-link rows remain open. Actual hosted Access replay still required; no final same-SHA or independent review closure claimed.

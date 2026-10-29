@@ -30,6 +30,23 @@
       ],
       "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40945665879",
       "repairStatus": "Implemented8fb7274f: isolated independent Manager actor and rendered-UI landscape readiness, preserving original assertions/timeouts. Full local suite/static pass. Hosted rerun pending push."
+    },
+    {
+      "id": 40949328383,
+      "head": "47839e1debe54d4e2f5732cba9ab271c7f9c8159",
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40949328383",
+      "status": "completed",
+      "conclusion": "failure",
+      "tests": {
+        "passed": 2,
+        "failed": 1
+      },
+      "findings": [
+        "All18 flow checks completed, but raw runtime gate caught7 WebKit native same-owned-origin API fetch diagnostics during document replacement. Independent window exceptions and framework diagnostics were empty.",
+        "Landscape120 cases/24 rotations and Quick guide396 measurements passed."
+      ],
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40949328383",
+      "repairStatus": "9fa3abf7 follows actual More\u2192Profile links, exposing genuine stale-ID signout RED.4bb48f35 repairs continuity reset timing. Full local Access and static/replayed startup pass; no new diagnostic suppression. Hosted replay required after push."
     }
   ],
   "actualSuccessfulRun": null
