@@ -20,10 +20,10 @@ it('keeps the actual Quick guide readable and keyboard usable in both Employee t
   for(const engine of ['chromium','webkit','firefox']){
    const browser=await runtime[engine].launch({headless:true});
    try{
-    const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});page.setDefaultTimeout(10000);
+    const page=await browser.newPage({viewport:{width:390,height:844},hasTouch:true,reducedMotion:'reduce'});page.setDefaultTimeout(10000);
     page.on('pageerror',(error:Error)=>failures.push({engine,error:error.message}));
-    for(const theme of ['light','dark'])for(const width of [320,390])for(const scale of [100,200]){
-     await page.setViewportSize({width,height:844});
+    for(const theme of ['light','dark'])for(const width of [320,390,844])for(const scale of [100,200]){
+     await page.setViewportSize({width,height:width===844?390:844});
      await page.setContent('<!doctype html><html data-theme="'+theme+'" style="font-size:'+scale+'%"><head><style>*{box-sizing:border-box}body{margin:0}#employee-mobile{min-height:100vh}'+css+'</style></head><body><main id="employee-mobile" class="app-shell nevora-portal" data-employee-mobile="true" data-employee-mobile-page="home"><div class="page-frame">'+markup+'</div></main></body></html>');
      expect(await page.locator('.ma-onboarding h2').count()).toBe(1);const summary=page.locator('.ma-onboarding summary');await summary.focus();await page.keyboard.press('Enter');expect(await page.locator('.ma-onboarding details').getAttribute('open')).not.toBeNull();
      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
@@ -32,7 +32,7 @@ it('keeps the actual Quick guide readable and keyboard usable in both Employee t
       if(sample.ratio<4.5)failures.push({engine,theme,width,scale,text,ratio:sample.ratio});
      }
      for(const target of await page.locator('.ma-onboarding :is(a,button,summary):visible').all())expect(await target.evaluate((el:HTMLElement)=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
-     await page.keyboard.press(engine==='webkit'?'Alt+Tab':'Tab');expect(await page.locator('.ma-guide-list a').first().evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);
+     await page.keyboard.press(engine==='webkit'&&process.platform==='darwin'?'Alt+Tab':'Tab');expect(await page.locator('.ma-guide-list a').first().evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);
      await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:join(evidence,engine+'-'+theme+'-'+width+'-text'+scale+'.png'),fullPage:false});
     }
    }finally{await browser.close();}
