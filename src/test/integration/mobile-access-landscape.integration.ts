@@ -20,7 +20,7 @@ it('keeps one mobile Access presentation in short touch landscape and preserves 
     page.on('pageerror',(error:Error)=>failures.push({engine,error:error.message}));
     await context.addInitScript(()=>{addEventListener('error',()=>{document.documentElement.dataset.accessWindowError='true';});addEventListener('unhandledrejection',()=>{document.documentElement.dataset.accessWindowError='true';});});
     for(const theme of ['light','dark'])for(const scale of [100,200])for(const path of ['/welcome','/login','/forgot-access','/reset-access','/activate','/access-help','/access-help/email','/access-help/invitation','/access-help/support','/access-help/owner-contact']){
-     expect((await page.goto(app.url+path))?.status()).toBe(200);await page.locator('#mobile-access-page').waitFor();await page.waitForLoadState('networkidle');
+     expect((await page.goto(app.url+path))?.status()).toBe(200);await page.locator('#mobile-access-page').waitFor();await page.locator('.ma-header:visible').waitFor();if(['/login','/forgot-access'].includes(path))await page.locator('.ma-card').waitFor();
      await page.evaluate(({theme,scale}:{theme:string;scale:number})=>{localStorage.setItem('nv-theme',theme);document.documentElement.dataset.theme=theme;(window as Window&{__nvApplyTheme?:()=>void}).__nvApplyTheme?.();document.documentElement.style.fontSize=scale+'%';scrollTo(0,0);},{theme,scale});
      const sample=await page.evaluate(()=>{
       const visible=(selector:string)=>[...document.querySelectorAll<HTMLElement>(selector)].filter(el=>el.getClientRects().length&&getComputedStyle(el).visibility!=='hidden');

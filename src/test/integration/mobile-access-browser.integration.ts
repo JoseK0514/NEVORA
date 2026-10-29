@@ -76,10 +76,10 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    const mail=new URL(await page.locator('.ma-draft a').getAttribute('href'));expect(mail.protocol).toBe('mailto:');expect(mail.pathname).toBe('support@thevelani.com');expect([...mail.searchParams.keys()]).toEqual(['subject','body']);
    checks.push(engine+': locale drafts, contextual Back, manual-copy fallback and fixed mail recipient');
    await context.addCookies([{name:'nv-lang',value:'en',url:origin}]);
-   async function login(id:string,password=TEST_PASSWORD){
-    step=engine+': sign-in for '+id;await page.goto(origin+'/login');await page.locator('#login-employee-id').fill(id);await page.locator('#login-password').fill(password);await page.locator('button[type="submit"]').click();await page.waitForURL('**/app',{timeout:45000});
+   async function login(id:string,password=TEST_PASSWORD,target=page){
+    step=engine+': sign-in for '+id;await target.goto(origin+'/login');await target.locator('#login-employee-id').fill(id);await target.locator('#login-password').fill(password);await target.locator('button[type="submit"]').click();await target.waitForURL('**/app',{timeout:45000});
     // Both fixtures predate the owned adoption migration, which grants the existing Manager company scope.
-    step=engine+': authorized management Home for '+id;await page.locator('.premium-home').waitFor();
+    step=engine+': authorized management Home for '+id;await target.locator('.premium-home').waitFor();
    }
    step=engine+': invitation and activation';await login('QAOWNER');
    const headers={'Origin':origin,'x-nevora-company-access':'1','x-nevora-actor':'QAOWNER'};
@@ -122,7 +122,14 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    await join.goto(origin+'/app/profile');await join.getByRole('button',{name:'Sign out',exact:true}).waitFor();await join.waitForLoadState('networkidle');await join.getByRole('button',{name:'Sign out',exact:true}).click();await join.waitForURL('**/login');expect(await join.locator('#login-employee-id').inputValue()).toBe('');await join.locator('#login-employee-id').fill('MA-'+engine);await join.locator('#login-password').fill(nextPassword);await join.locator('button[type="submit"]').click();await join.waitForURL('**/app',{timeout:45000});await join.locator('.ma-onboarding').waitFor();expect(await join.locator('.ma-onboarding-intro').count()).toBe(0);
    checks.push(engine+': real logout clears ID; different-role sign-in has no Employee guide; prior activation intro does not return after account switch');
    await employee.close();
-   await login('MA-MANAGER');expect((await context.request.post(origin+'/api/company-access/invitations/MA-'+engine,{headers:{Origin:origin,'x-nevora-company-access':'1','x-nevora-actor':'MA-MANAGER'},data:{action:'ISSUE'}})).status()).toBe(403);
+   // Keep the Owner setup session isolated from this independent Manager permission check.
+   const managerContext=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});
+   try{
+    await observeWindowExceptions(managerContext,(_page:unknown,kind:string)=>windowExceptions.push(engine+': '+step+': '+kind));
+    const managerPage=await managerContext.newPage();managerPage.setDefaultTimeout(15000);watch(managerPage);
+    await login('MA-MANAGER',TEST_PASSWORD,managerPage);
+    expect((await managerContext.request.post(origin+'/api/company-access/invitations/MA-'+engine,{headers:{Origin:origin,'x-nevora-company-access':'1','x-nevora-actor':'MA-MANAGER'},data:{action:'ISSUE'}})).status()).toBe(403);
+   }finally{await managerContext.close();}
    checks.push(engine+': Manager cannot issue invitations');
    await context.close();
   }
