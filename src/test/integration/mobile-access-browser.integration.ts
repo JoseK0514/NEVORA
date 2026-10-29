@@ -18,6 +18,7 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
  const smtp=await createOwnedSmtp();
  const app=await createOwnedNextApp(evidence,{mobileAccessEnabled:true,mobileSupportEnabled:true,recoverySmtpPort:smtp.port,invitationSmtpPort:smtp.port,pinDevTypeReferences:true}).catch(async error=>{await smtp.close();throw error;});
  const guideContrast:unknown[]=[];
+ const profileNavigation:{engine:string;actor:string;elapsedMs:number;state:string;path:string}[]=[];
  const checks:string[]=[],errors:string[]=[],windowExceptions:string[]=[],frameworkDiagnostics:unknown[]=[],browsers:{close():Promise<void>}[]=[];
  const {observeDocumentNavigation,observeWindowExceptions}=await import(pathToFileURL(resolve('scripts/browser-navigation-diagnostic.mjs')).href);
  const {projectFrameworkNativeDiagnostic}=await import(pathToFileURL(resolve('scripts/role-redirect-diagnostic.mjs')).href);
@@ -88,10 +89,17 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    const captured=smtp.messages.find((m:{recipient:string})=>m.recipient.includes(engine+'@example.invalid'));expect(Boolean(captured)).toBe(true);
    const body=captured!.body.replace(/=\r?\n/g,'').replace(/=3D/g,'=');const proof=/#proof=([A-Za-z0-9_-]{43})/.exec(body)?.[1];if(!proof)throw Error('Owned invitation proof missing');secrets.push(proof);
    const employee=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});await employee.addCookies([{name:'nv-lang',value:'es',url:origin}]);await observeWindowExceptions(employee,(_page:unknown,kind:string)=>windowExceptions.push(engine+': '+step+': '+kind));const join=await employee.newPage();join.setDefaultTimeout(20000);watch(join);
-   async function openOwnProfile(){
-    await join.locator('.mobile-nav:visible a[href="/app/more"]').click();
-    const profile=join.locator('main a[href="/app/profile"]:visible');await expect.poll(()=>profile.count()).toBe(1);await profile.click();
-    await join.waitForURL('**/app/profile');await join.getByRole('button',{name:'Sign out',exact:true}).waitFor();
+   async function openOwnProfile(actor:'Employee'|'Manager'){
+    const started=Date.now(),previousStep=step;let state='opening More';
+    try{
+     step=engine+': '+actor+' More navigation';
+     await join.locator('.mobile-nav:visible a[href="/app/more"]').click();await join.waitForURL('**/app/more');
+     const profile=join.locator('main a[href="/app/profile"]:visible');await profile.waitFor();expect(await profile.count()).toBe(1);
+     state='More ready';profileNavigation.push({engine,actor,elapsedMs:Date.now()-started,state,path:new URL(join.url()).pathname});
+     step=engine+': '+actor+' Profile navigation';await profile.click();
+     await join.waitForURL('**/app/profile');await join.getByRole('button',{name:'Sign out',exact:true}).waitFor();
+     state='Profile ready';profileNavigation.push({engine,actor,elapsedMs:Date.now()-started,state,path:new URL(join.url()).pathname});step=previousStep;
+    }catch(error){profileNavigation.push({engine,actor,elapsedMs:Date.now()-started,state:'failed after '+state,path:new URL(join.url()).pathname});throw error;}
    }
    await join.goto(origin+'/activate#proof='+proof);await join.locator('#activation-password').waitFor();await expect.poll(()=>new URL(join.url()).hash).toBe('');
    expect(await join.locator('main').innerText()).not.toMatch(/Invitation verified|invitación verificada/i);
@@ -122,9 +130,9 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    expect((await employee.request.post(origin+'/api/auth/reset-access',{headers:{Origin:origin,'x-nevora-recovery':'1'},data:{proof:resetProof,password:nextPassword}})).status()).toBe(400);
    await join.locator('a[href="/login"]').filter({hasText:'Sign in with new password'}).click();await join.locator('#login-employee-id').fill('MA-'+engine);await join.locator('#login-password').fill(nextPassword);await join.locator('button[type="submit"]').click();await join.waitForURL('**/app',{timeout:45000});
    checks.push(engine+': real recovery mail, editable receipt, identity correction, full-proof locale/resize custody, atomic reset/session revocation/single use and new-password sign-in');
-   step=engine+': logout and account switch';await openOwnProfile();await join.getByRole('button',{name:'Sign out',exact:true}).click();await join.waitForURL('**/login');expect(await join.locator('#login-employee-id').inputValue()).toBe('');
+   step=engine+': logout and account switch';await openOwnProfile('Employee');await join.getByRole('button',{name:'Sign out',exact:true}).click();await join.waitForURL('**/login');expect(await join.locator('#login-employee-id').inputValue()).toBe('');
    await join.locator('#login-employee-id').fill('MA-MANAGER');await join.locator('#login-password').fill(TEST_PASSWORD);await join.locator('button[type="submit"]').click();await join.waitForURL('**/app',{timeout:45000});expect(await join.locator('.ma-onboarding').count()).toBe(0);await join.waitForLoadState('networkidle');
-   await openOwnProfile();await join.getByRole('button',{name:'Sign out',exact:true}).click();await join.waitForURL('**/login');expect(await join.locator('#login-employee-id').inputValue()).toBe('');await join.locator('#login-employee-id').fill('MA-'+engine);await join.locator('#login-password').fill(nextPassword);await join.locator('button[type="submit"]').click();await join.waitForURL('**/app',{timeout:45000});await join.locator('.ma-onboarding').waitFor();expect(await join.locator('.ma-onboarding-intro').count()).toBe(0);
+   await openOwnProfile('Manager');await join.getByRole('button',{name:'Sign out',exact:true}).click();await join.waitForURL('**/login');expect(await join.locator('#login-employee-id').inputValue()).toBe('');await join.locator('#login-employee-id').fill('MA-'+engine);await join.locator('#login-password').fill(nextPassword);await join.locator('button[type="submit"]').click();await join.waitForURL('**/app',{timeout:45000});await join.locator('.ma-onboarding').waitFor();expect(await join.locator('.ma-onboarding-intro').count()).toBe(0);
    checks.push(engine+': real logout clears ID; different-role sign-in has no Employee guide; prior activation intro does not return after account switch');
    await employee.close();
    // Keep the Owner setup session isolated from this independent Manager permission check.
@@ -141,6 +149,6 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
   expect(windowExceptions).toEqual([]);expect(errors).toEqual([]);complete=true;
  }catch(error){throw new Error(step+': '+clean(error instanceof Error?error.message:String(error)));}finally{
   for(const browser of browsers)await browser.close();let closed=false;try{await app.close();closed=true;}finally{await smtp.close();
-  await writeFile(evidence+'/mobile-access-results.json',JSON.stringify({complete:complete&&closed,scope:'Real Next/server actions, invocation-owned PostgreSQL and loopback SMTP only; no real email/native clipboard/production service used.',checks,errors,windowExceptions,frameworkDiagnostics,guideContrast},null,2));}
+  await writeFile(evidence+'/mobile-access-results.json',JSON.stringify({complete:complete&&closed,scope:'Real Next/server actions, invocation-owned PostgreSQL and loopback SMTP only; no real email/native clipboard/production service used.',checks,errors,windowExceptions,frameworkDiagnostics,guideContrast,profileNavigation},null,2));}
  }
 });
