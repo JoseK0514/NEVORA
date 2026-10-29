@@ -55,8 +55,8 @@ Files: employee-mobile/messages.tsx,hours-frame.tsx,planning-frame.tsx,pay.tsx,p
 - [x] Reproduce and repair actual Profile/Passkeys clipping, shadow and measured body type (BATCH-06).
 - [x] Group Open shifts destinations into accessible rows (BATCH-07).
 - [x] Merge Home's daily frames while preserving independent recorded time; flatten Pay scheduled-date metadata. Native and full static pass; real Home200% replay and viewport capture cleanup recorded in BATCH-08.
-- [ ] Define and test shared root/detail chrome against actual Pay tabs and query-specific Schedule/Hours leaves; integrate Quick guide placement without remounting business owners.
-- [ ] Finish measured type/weight audit, especially schedule-change disclosure; preserve earlier route-specific approved refinements instead of replacing the theme.
+- [x] Define and test shared root/detail chrome against actual Pay tabs and query-specific Schedule/Hours leaves; integrate Quick guide placement without remounting business owners.
+- [x] Finish measured type/weight audit, especially schedule-change disclosure; preserve earlier route-specific approved refinements instead of replacing the theme.
 - [ ] Run affected original journeys and Lead/Manager compatibility after final presentation changes. Final all11 Employee receipts must pin one candidate; intermediate batches do not close original-author findings.
 
 ## Task4: Owner integration batches (binding design/policy pending)
@@ -97,3 +97,5 @@ Task3 bounded progress: state/copy/contextual Back batch04 verified; Profile/Pas
 Batch07: Open-shifts related destinations now form an accessible named row group; original Requests39/39 and native geometry pass. Source9b default/startup/lint pass; new test measurement annotation errors caught by TSC/build are retained, correcteddd4ab224 and replayed TSC/lint/build0 atc68. Access fixture readiness corrected after hosted40955560516 failure; full localAccess3/3/18checks/rawerrors0/window0/framework0 and12 navigation timing records atc68. Hosted replay remains required. Read-only migration inventory validates47 current+2 supplemental distinct filenames; combined fresh/upgrade rehearsal remains open. No original-author or final release closure claimed.
 
 BATCH-08 verifies Home/Pay hierarchy locally. Hosted Access first successful actual run is40957836154 at1e174c56 (3/3, zero skipped/runtime/window errors, guide396/actual66/landscape120/rotations24). The captured c7 Home200 proof gap is preserved and corrected atf0787219 with an actual32px root and native glyph-bound/clearance assertions. Root/detail chrome, Quick guide placement, remaining type audit, Owner/Clocker integration and final same-source acceptance remain open.
+
+Batch09/10: actual tab-aware Employee root/detail chrome and contextual Quick guide completed; final Schedule16px/Phosphor/type and More canvas reflow verified. BATCH-09/10 receipts preserve all failures. Full default10245/0/801 inherited skips at93a950dd; final two-file visual follow-up2e0 has41 focused tests, Phase1/native type three-engine passes and TSC/lint/startup/build0. Hosted new-source replay and all11 final same-candidate gate remain open.

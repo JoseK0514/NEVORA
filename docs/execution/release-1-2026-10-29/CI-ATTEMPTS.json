@@ -170,6 +170,20 @@
       "rotations": 24,
       "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40957836154/artifact/mobile-access-1e174c56ecd84a811ed8445b4651f3ed5ce03563",
       "limit": "Exact hosted source precedes this Home/Pay layout batch; not final same-SHA release acceptance."
+    },
+    {
+      "id": 40963858890,
+      "head": "9da03f59fe117f16c5ba8c8c95238b64d60e3794",
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40963858890",
+      "conclusion": "failure",
+      "passed": 2,
+      "failed": 1,
+      "findings": [
+        "Firefox Help Back href was sampled before contextual route committed;13flow groups44guide contrasts completed; raw/window/framework errors0.",
+        "Guide396 and landscape120/24 passed."
+      ],
+      "repairStatus": "f7dca6ee awaits actual Help URL and visible exact Back within existing deadline, preserves exact href assertion and error gates. Full local Access3passed at de4; hosted new-source replay pending.",
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40963858890"
     }
   ],
   "actualSuccessfulRun": {

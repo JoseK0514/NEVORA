@@ -1,0 +1,210 @@
+{
+  "scope": "Schedule publication typography, More theme continuity and normal-pointer Back navigation",
+  "static93": {
+    "checkpoint": "93a950dda90a58c95ed3b8c0749d0a97dc2ae8ed",
+    "results": [
+      {
+        "name": "default",
+        "checkpoint": "93a950dda90a58c95ed3b8c0749d0a97dc2ae8ed",
+        "startedAt": "2026-10-29T23:09:31.795Z",
+        "finishedAt": "2026-10-29T23:19:48.234Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch11-static/default.log"
+      },
+      {
+        "name": "typecheck",
+        "checkpoint": "93a950dda90a58c95ed3b8c0749d0a97dc2ae8ed",
+        "startedAt": "2026-10-29T23:19:49.230Z",
+        "finishedAt": "2026-10-29T23:20:17.519Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch11-static/typecheck.log"
+      },
+      {
+        "name": "lint",
+        "checkpoint": "93a950dda90a58c95ed3b8c0749d0a97dc2ae8ed",
+        "startedAt": "2026-10-29T23:20:18.484Z",
+        "finishedAt": "2026-10-29T23:21:03.043Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch11-static/lint.log"
+      },
+      {
+        "name": "startup",
+        "checkpoint": "93a950dda90a58c95ed3b8c0749d0a97dc2ae8ed",
+        "startedAt": "2026-10-29T23:21:04.022Z",
+        "finishedAt": "2026-10-29T23:21:06.493Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch11-static/startup.log"
+      },
+      {
+        "name": "build",
+        "checkpoint": "93a950dda90a58c95ed3b8c0749d0a97dc2ae8ed",
+        "startedAt": "2026-10-29T23:21:07.465Z",
+        "finishedAt": "2026-10-29T23:21:26.346Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch11-static/build.log"
+      }
+    ]
+  },
+  "static2e": {
+    "checkpoint": "2e0dcd5817b6af9982c6d9b9e534b0903fc7f5fe",
+    "results": [
+      {
+        "name": "typecheck",
+        "checkpoint": "2e0dcd5817b6af9982c6d9b9e534b0903fc7f5fe",
+        "startedAt": "2026-10-29T23:28:00.269Z",
+        "finishedAt": "2026-10-29T23:28:28.436Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch12-static/typecheck.log"
+      },
+      {
+        "name": "lint",
+        "checkpoint": "2e0dcd5817b6af9982c6d9b9e534b0903fc7f5fe",
+        "startedAt": "2026-10-29T23:28:29.417Z",
+        "finishedAt": "2026-10-29T23:29:13.858Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch12-static/lint.log"
+      },
+      {
+        "name": "startup",
+        "checkpoint": "2e0dcd5817b6af9982c6d9b9e534b0903fc7f5fe",
+        "startedAt": "2026-10-29T23:29:14.832Z",
+        "finishedAt": "2026-10-29T23:29:17.318Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch12-static/startup.log"
+      },
+      {
+        "name": "build",
+        "checkpoint": "2e0dcd5817b6af9982c6d9b9e534b0903fc7f5fe",
+        "startedAt": "2026-10-29T23:29:18.323Z",
+        "finishedAt": "2026-10-29T23:29:35.482Z",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/batch12-static/build.log"
+      }
+    ]
+  },
+  "greenPayProfile": {
+    "sha": "93a950dda90a58c95ed3b8c0749d0a97dc2ae8ed",
+    "lane": "badge-fixed",
+    "results": [
+      {
+        "suite": "pay",
+        "sha": "93a950dda90a58c95ed3b8c0749d0a97dc2ae8ed",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/type-more-journeys-badge-fixed/pay",
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/type-more-journeys-badge-fixed/pay.log"
+      },
+      {
+        "suite": "profile",
+        "sha": "93a950dda90a58c95ed3b8c0749d0a97dc2ae8ed",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/type-more-journeys-badge-fixed/profile",
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/type-more-journeys-badge-fixed/profile.log"
+      }
+    ]
+  },
+  "measurements": [
+    {
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/more-frame-green/results.json",
+      "checks": 64,
+      "errors": 0,
+      "captures": 83,
+      "consoleMessages": 6
+    },
+    {
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/type-2e0-replay/results.json",
+      "scope": "Native rendered source component and source CSS only; real publication authorization remains in the owned Schedule journey",
+      "measurements": 144,
+      "errors": 0
+    },
+    {
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/type-more-journeys-badge-fixed/pay/results.json",
+      "checks": 40,
+      "captures": 84,
+      "contrasts": 126,
+      "messages": 19
+    },
+    {
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/type-more-journeys-badge-fixed/profile/results.json",
+      "checks": 42,
+      "captures": 111,
+      "contrasts": 54,
+      "messages": 10
+    },
+    {
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/type-more-journeys-green/closure/results.json",
+      "failures": 0
+    }
+  ],
+  "finalNativeTypeSource": "2e0dcd5817b6af9982c6d9b9e534b0903fc7f5fe",
+  "nativeTypeMinimumContrast": 5.028921154815613,
+  "focusedTests2e": 41,
+  "attempts": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/more-theme-red",
+      "meaning": "Unchanged de4 replay after preparation assertion failed; NOT a More-theme RED"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/type-more-journeys-green",
+      "meaning": "171: Phase1 Dark canvas and Pay pointer failure; unfiltered Profile umbrella179passed6failed; Closure passed"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/type-more-journeys-corrected",
+      "meaning": "307: Phase1 passed; disk-space guard stopped before remaining suites"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/type-more-journeys-remaining",
+      "meaning": "307: Pay Back intercepted by development indicator, bounded Profile7passed"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/more-frame-red",
+      "meaning": "08a: actual page-frame color differs from semantic canvas"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/more-frame-green",
+      "meaning": "2e0: Phase1 1passed,64checks83captures0pageerrors"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/closed-evidence-cow-results.json",
+      "meaning": "55 closed owned mirrors,37656 byte-identical files copied with native same-volume copy-on-write; source/captures/logs retained"
+    }
+  ],
+  "knownFailedSupplementaryAttempts": [
+    "Native summary15px vs16px RED at091",
+    "Word range RED at171: Workforce wraps midword",
+    "Node FICLONE_FORCE ENOSYS before target rename; native cp -c later verified"
+  ],
+  "finalLimit": "Full default10245/0/801skips is93, not2e. Final all11 and Owner/Clocker same-candidate acceptance remain open; no rollout/production/deployment."
+}
