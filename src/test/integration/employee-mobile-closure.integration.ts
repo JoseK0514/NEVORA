@@ -80,18 +80,22 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
      await page.setViewportSize(size);await page.evaluate(({theme,scale}:any)=>{localStorage.setItem('nv-theme',theme);document.documentElement.dataset.theme=theme;document.documentElement.style.fontSize=scale+'%';document.documentElement.dataset.textStep=String(scale);}, {theme,scale});
      await page.waitForFunction(()=>matchMedia('(pointer: coarse)').matches&&document.querySelector('#employee-mobile')?.getAttribute('data-employee-mobile-active')==='true');
      const metrics=await page.evaluate(()=>({coarse:matchMedia('(pointer:coarse)').matches,overflow:Math.max(0,document.documentElement.scrollWidth-innerWidth),teal:getComputedStyle(document.querySelector('#employee-mobile')!).getPropertyValue('--em-teal').trim()}));
-     expect(metrics.overflow,name+engine+JSON.stringify(size)+theme+scale).toBeLessThanOrEqual(1);expect(metrics.teal).toBeTruthy();
+     expect(metrics.overflow,name+engine+JSON.stringify(size)+theme+scale).toBeLessThanOrEqual(1);expect(metrics.teal).toBe(theme==='dark'?'#a9e2da':'#0b6e69');
      const actions=page.locator('main :is(button,a,input,select,textarea,summary):visible');
      const small=await actions.evaluateAll((elements:HTMLElement[])=>elements.flatMap(el=>{
-      if(el.closest('nextjs-portal')||el.matches('a:not([class])'))return [];
+      if(el.closest('nextjs-portal')||(el.matches('a')&&getComputedStyle(el).display==='inline'&&el.closest('p,li')))return [];
       const target=el.matches('input[type="checkbox"],input[type="radio"]')?el.closest('label')??el:el;
-      const r=target.getBoundingClientRect();return r.height<43.5?[{text:el.textContent?.slice(0,60),tag:el.tagName,height:r.height}]:[];
+      const r=target.getBoundingClientRect();return r.height<43.5||r.width<43.5?[{text:el.textContent?.slice(0,60),tag:el.tagName,height:r.height,width:r.width}]:[];
      }));expect(small,name+engine+theme+scale).toEqual([]);
-     const label=page.locator('main h1:visible').first();expect((await label.evaluate(measureRenderedContrast)).ratio).toBeGreaterThanOrEqual(4.5);
+     const samples: number[]=[];
+     for(const label of (await page.locator('main :is(h1,h2,label,.em-request-primary,.em-request-secondary,.em-creation-help,.em-planning-help,.em-hours-help):visible').all()).slice(0,6)){
+      if(!await label.isEnabled()||!(await label.innerText()).trim())continue;
+      const ratio=(await label.evaluate(measureRenderedContrast)).ratio;samples.push(ratio);expect(ratio,name+' contrast '+engine+theme+scale).toBeGreaterThanOrEqual(4.5);
+     }
      if(await actions.count()){
       const last=actions.last();await last.scrollIntoViewIfNeeded();expect(await last.evaluate((el:HTMLElement)=>{const bar=document.querySelector('.mobile-nav');return !bar||el.getBoundingClientRect().bottom<=bar.getBoundingClientRect().top+1;}),name+' last action '+engine+scale).toBe(true);
      }
-     results.push({engine,name,path,size,theme,scale,...metrics});
+     results.push({engine,name,path,size,theme,scale,contrastSamples:samples,...metrics});
      if(size.width===844&&scale===200)await page.screenshot({path:evidence+'/'+engine+'-'+name+'-'+theme+'-text200.png',fullPage:false,style:'nextjs-portal{visibility:hidden;}'});
     }
     await page.evaluate(()=>{document.documentElement.style.fontSize='100%';document.documentElement.dataset.textStep='100';});
