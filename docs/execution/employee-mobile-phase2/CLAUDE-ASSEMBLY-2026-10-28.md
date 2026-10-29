@@ -54,6 +54,24 @@
 - L-8 is accepted as is.
 - The verification script's repeated sign-ins hit the app's own limiter (10 per account and 60 per address per 15 minutes). That is the limiter working; the runs reuse saved sessions.
 
+## Batch 3 — Employee visual pass and the Owner Schedule grid (October 29)
+
+Scope: Owner and Employee only; Jose put the Lead role on hold on October 29.
+
+| Commit | What | Evidence |
+|---|---|---|
+| `e61b9f91` | 320px Dark pass. Page titles that take focus for screen readers draw no control ring. The Home/Schedule Quiet wrapper uses the canvas (it left a black band in Dark). Account deletion lights More. An unfiltered empty Updates or Notifications page names itself; the older-page hint shows only when an older page exists. Under 360px the widened week strip drops its box. A single Timecards period notice is a sentence. | Captures at 320×700 Dark and 390×844 Light; probe: focus stays on the title with `outline: none`; unit tests. |
+| `3ccf680f` | The Communications journey types the kept draft as a scheduled author. After M-5 its module off/on stage had no draft (the unscheduled employee no longer gets a form); the draft-restore assertions are unchanged. | The journey failed at `d1ff8fdb` because it wasn't rerun then; it passes in all three engines. |
+| `ad89fe30` | One title-to-subtitle gap (8px) on every page. More, the last Employee page on the Quiet look (pure black in Dark, 34px title, 20px inset), moves to the teal canvas, title band and card rows. Home and Schedule drop Quiet's 720px desktop column, which applied to a phone held sideways. Non-tab pages hide the shell header sideways as they do upright, because Quiet's rule stops at 767px. Employee CSS only; the shared `quiet-shell.css` is unchanged. | Header metrics probe on 16 pages; landscape probe on 16 pages at Chromium 844×390 and 667×375 and WebKit 932×430: coarse media asserted, no sidebar, no sideways scroll, last control clears the bar. The 8 "small target" hits are checkboxes inside full-row labels of 44px or more. |
+| `1e6e3150` | The Profile journey expects `'system'` to be stored for System, the rule since PR36 (`32ce3b5c`). | The Profile journey passes. |
+| `b08b0a78` | Cherry-pick of `aa22ea28` from the PR34 reconciliation: the Owner Schedule grid scroller contains its screen-reader labels. | Reproduced here: Owner Schedule scrolled 224px sideways at 844px. After the fix there is no sideways scroll at 761, 844, 1024 or 1440, in Light and Dark. |
+
+**Journeys at `ad89fe30`/`1e6e3150`:** Phase 1, Hours, Pay, Deletion, Profile, Planning, Requests, Device alerts, Calendar, Passkeys and Communications all pass. Phase 1's WebKit duplicate `.q-home` did not recur in this run.
+
+**Not carried over:** the PR34 reconciliation's large-text (`29cfdaf4`) and Safari sheet-keyboard (`be072445`) fixes change `quiet/ps.css`, `u1`–`u4.css` and `modal-tab-wrap.ts`. Those files exist only on the PR34 line, so the fixes stay there.
+
+**Owner desktop, observed but not changed:** titles are 34px on Quiet pages and 24px on Clean Manager pages (Timecards, Insights, Time exports, Payroll). Today, Team and Settings sit in a narrow column while Inbox, Schedule and Timecards use the full width. Settings and Profile show a "‹ More" back link beside the sidebar. The Owner desktop companion (`475491f1`) is outside Git, and PR34 is held, so where Owner polish lands is Jose's call.
+
 ## Investigations (read-only agents; reports in `evidence/claude-assembly-2026-10-28/`)
 
 - **Process-observation tests (item 5).** The mechanism is identified. `scripts/phase-e-owned.mjs` misreads a normal child exit that lands between two back-to-back `ps` reads, and load widens the window 10–30×. Fixes and deterministic boundary-fixture tests are specified there, but **not implemented**.
