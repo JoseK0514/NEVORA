@@ -32,6 +32,28 @@
 | `57405252` | M-4: withdraw, decline and cancel confirmations vanished on refresh and focus fell to `<body>`. | Browser RED, then GREEN in Chromium, WebKit and Firefox. The component test fails on the old view. |
 | `7ab3b7bb` | Polish: Pay/Hours header and canvas, Hours back link, one status vocabulary, secondary-button token, select/textarea focus, Dark Off-clock chip, Puerto Rico time label, caret icon, paused copy, receipt locale. | Viewport captures in Light and Dark; Employee mobile unit tests 97/97. |
 
+## Batch 2 — Updates eligibility and small fixes (October 29)
+
+| Commit | What | Evidence |
+|---|---|---|
+| `d1ff8fdb` | M-5: compose says before writing where an employee can message today's team. The context carries `todayTeam` per location from the send check's own facts; it is display-only and send still decides. Phone compose offers only those locations; with none it says "You're not scheduled today". | New PostgreSQL case: the flag agrees with the employee's audience preview (ready vs refused). Communications SQL 10/10. The journey's unscheduled-author stage checks the explanation; `policy.test.ts` still proves server refusal. |
+| `36cf1d25` | L-1, L-2, L-5, L-10, L-12. | Unit: Employee mobile, Pay, notification labels. |
+| `78112567` | L-11 was not reproduced; the placeholder was removed. With JS bundles held, the access-frame skeleton shows before hydration, so no desktop Pay ever appeared on the phone. | Held-bundle probe (Chromium). |
+
+**Browser verification**, Chromium, WebKit and Firefox, 390×844, fictional accounts:
+
+- Compose offers only today's location to a scheduled employee, and explains before writing to an unscheduled one.
+- The Availability week changes only on View week.
+- The Requests hub links to the Time off list.
+- Pay's countdown goes from Tomorrow to Today across midnight (browser clock), with no reload.
+
+**Limits:**
+
+- Notifications had no due rows in the fixture; L-12 is covered by unit tests.
+- The Exchange heading focus (L-2) is not exercised in a browser, because there is no swap fixture.
+- L-8 is accepted as is.
+- The verification script's repeated sign-ins hit the app's own limiter (10 per account and 60 per address per 15 minutes). That is the limiter working; the runs reuse saved sessions.
+
 ## Investigations (read-only agents; reports in `evidence/claude-assembly-2026-10-28/`)
 
 - **Process-observation tests (item 5).** The mechanism is identified. `scripts/phase-e-owned.mjs` misreads a normal child exit that lands between two back-to-back `ps` reads, and load widens the window 10–30×. Fixes and deterministic boundary-fixture tests are specified there, but **not implemented**.
@@ -40,7 +62,7 @@
 - **Code inspection (20 findings, no authorization gaps).**
   - Fixed: H-1, M-1 through M-4, M-6, M-7, L-3, L-4, L-6, L-7 and L-9.
   - Dismissed with evidence: L-13 (Employee ID shows `AR0142`, not a UUID).
-  - Open: M-5 (Updates compose eligibility shown only after the form is filled; needs a server read or Jose's wording), L-1, L-2, L-5, L-8, L-10, L-11 and L-12.
+  - Batch 2 below closes M-5, L-1, L-2, L-5, L-10 and L-12; L-11 did not reproduce; L-8 is accepted.
 
 ## Checks on the final head
 
