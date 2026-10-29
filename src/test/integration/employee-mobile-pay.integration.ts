@@ -53,7 +53,10 @@ it('shows own published statements, linked corrections and protected PDFs with t
    void old;
    // The ledger is immutable, so a stored digest that doesn't match the bytes models storage corruption.
    const activeBrowser=await runtime[engine].launch({headless:true});browser=activeBrowser;
-   const context=await activeBrowser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block',acceptDownloads:true}),page=await context.newPage();
+   const context=await activeBrowser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block',acceptDownloads:true});
+   // Light is the default since PR36; this journey's theme checks follow the device, which is the explicit System choice.
+   await context.addInitScript(()=>{try{localStorage.setItem('nv-theme','system');}catch{}});
+   const page=await context.newPage();
    page.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(30000);
    let stage='login',expectedFailure=false;
    page.on('console',(message:{type():string;text():string})=>{if(['error','warning'].includes(message.type()))messages.push({engine,type:message.type(),text:message.text(),expected:expectedFailure,stage});});

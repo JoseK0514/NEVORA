@@ -24,7 +24,10 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    const f=await seedOwnedScenario(app.database.executor,'DELM'+index,index),[actor,landscapeActor,manager]=f.actors;
    await q("UPDATE employees SET role=$2 WHERE id=$1",[actor,index===1?'LEAD':'EMPLOYEE']);await q("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[landscapeActor]);
    const activeBrowser=await runtime[engine].launch({headless:true});browser=activeBrowser;
-   const context=await activeBrowser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'}),page=await context.newPage();
+   const context=await activeBrowser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});
+   // Light is the default since PR36; this journey's theme checks follow the device, which is the explicit System choice.
+   await context.addInitScript(()=>{try{localStorage.setItem('nv-theme','system');}catch{}});
+   const page=await context.newPage();
    page.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(30000);
    let stage='login',expectedFailure=false;
    const pending=new Map<BrowserRequest,string>();
