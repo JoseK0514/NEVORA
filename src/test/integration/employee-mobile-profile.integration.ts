@@ -1,7 +1,8 @@
 import {it,expect} from 'vitest';
 import {createRequire} from 'node:module';
-import {mkdir,writeFile} from 'node:fs/promises';
-import {resolve} from 'node:path';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
+import {resolve,join} from 'node:path';
+import {calendarTrace,installCalendarFetchObservation,pendingReads} from './calendar-request-monitor';
 import {createHash} from 'node:crypto';
 import {createOwnedNextApp} from './owned-next-app';
 import {seedOwnedApp,seedOwnedScenario,TEST_PASSWORD} from './owned-app-fixture';
@@ -15,7 +16,7 @@ it('integrates current own Profile, preferences, contextual help and native sign
  const evidence=process.env.NEVORA_EMPLOYEE_PROFILE_EVIDENCE;if(!evidence)throw Error('Select explicit external profile evidence directory');
  await mkdir(evidence,{recursive:true});
  const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
- const app=await createOwnedNextApp(evidence),checks:{engine:string;name:string}[]=[],captures:string[]=[],contrasts:{engine:string;theme:string;width:number;subject:string;ratio:number}[]=[],messages:{engine:string;type:string;text:string;expected:boolean;stage:string;url:string}[]=[];
+ const app=await createOwnedNextApp(evidence,{calendarDiagnostics:true}),checks:{engine:string;name:string}[]=[],captures:string[]=[],contrasts:{engine:string;theme:string;width:number;subject:string;ratio:number}[]=[],messages:{engine:string;type:string;text:string;expected:boolean;stage:string;url:string}[]=[];
  const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
  let browser:{close():Promise<void>}|undefined,failed:(()=>Promise<void>)|undefined;
  try{
@@ -27,23 +28,32 @@ it('integrates current own Profile, preferences, contextual help and native sign
    const context=await activeBrowser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'}),page=await context.newPage();
    page.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(30000);
    let stage='login',expectedFailure=false,binding='';
-   const pending=new Map<BrowserRequest,{path:string;method:string;stage:string;startedAt:number}>();
-   page.on('request',(request:BrowserRequest)=>{const path=new URL(request.url()).pathname;if(path.startsWith('/api/')||path.startsWith('/app'))pending.set(request,{path,method:request.method(),stage,startedAt:Date.now()});if(path==='/api/employee/profile')binding=request.headers()['x-nevora-employee-view']??'';});
-   for(const event of ['requestfinished','requestfailed'])page.on(event,(request:BrowserRequest)=>pending.delete(request));
-   const idle=()=>expect.poll(()=>pending.size,{timeout:10000}).toBe(0);
+   const pending=new Map<BrowserRequest,{path:string;method:string;stage:string;startedAt:number;id?:string;response?:boolean}>();
+   const retiredCalendarReads:{id:string;stage:string}[]=[];const finishedCalendarReads=new Set<string>();await installCalendarFetchObservation(page);
+   page.on('request',(request:BrowserRequest)=>{const path=new URL(request.url()).pathname;if(path.startsWith('/api/')||path.startsWith('/app'))pending.set(request,{path,method:request.method(),stage,startedAt:Date.now(),id:request.headers()['x-nevora-qa-calendar-read']});if(path==='/api/employee/profile')binding=request.headers()['x-nevora-employee-view']??'';});
+   page.on('response',(response:{request():BrowserRequest})=>{const row=pending.get(response.request());if(row)row.response=true;});
+   for(const event of ['requestfinished','requestfailed'])page.on(event,(request:BrowserRequest)=>{const row=pending.get(request);if(event==='requestfinished'&&row?.id)finishedCalendarReads.add(row.id);pending.delete(request);});
+   const idle=()=>expect.poll(async()=>{
+    const aborted=await page.evaluate(()=>(window as Window&{__nevoraAbortedCalendarReads?:string[]}).__nevoraAbortedCalendarReads??[]);
+    const trace=calendarTrace(await readFile(join(app.root,'next.log'),'utf8'));
+    // Only Firefox has the independently reproduced missing-terminal-event bug.
+    const current=pendingReads([...pending.values()],aborted,trace,finishedCalendarReads);
+    if(engine==='firefox')for(const [request,row]of pending)if(!current.includes(row)){retiredCalendarReads.push({id:row.id!,stage:row.stage});pending.delete(request);}
+    return pending.size;
+   },{timeout:10000}).toBe(0);
    const record=(name:string)=>checks.push({engine,name});
    page.on('console',(message:{type():string;text():string})=>{if(['error','warning'].includes(message.type()))messages.push({engine,type:message.type(),text:message.text(),expected:expectedFailure,stage,url:page.url()});});
    page.on('pageerror',(error:Error)=>messages.push({engine,type:'pageerror',text:error.message,expected:false,stage,url:page.url()}));
    await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==new URL(app.url).origin){await route.abort();return;}await route.continue();});
-   const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:true,style:'nextjs-portal {visibility:hidden;}',caret:'initial'});captures.push(file);};
+   const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:false,style:'nextjs-portal {visibility:hidden;}',caret:'initial'});captures.push(file);};
    const viewport=async(name:string)=>{const file=engine+'-'+name+'-viewport.png';await page.screenshot({path:evidence+'/'+file,style:'nextjs-portal {visibility:hidden;}',caret:'initial'});captures.push(file);};
-   failed=async()=>{await shot('failure');await writeFile(evidence+'/'+engine+'-failure.html',await page.locator('body').innerHTML());await writeFile(evidence+'/'+engine+'-pending-requests.json',JSON.stringify([...pending.values()],null,2));await writeFile(evidence+'/'+engine+'-theme-diagnostic.json',JSON.stringify(await page.evaluate(()=>({theme:document.documentElement.dataset.theme,choice:document.documentElement.dataset.themeChoice,stored:localStorage.getItem('nv-theme'),dark:matchMedia('(prefers-color-scheme: dark)').matches,visibility:document.visibilityState})),null,2));};
+   failed=async()=>{await shot('failure');await writeFile(evidence+'/'+engine+'-failure.html',await page.locator('body').innerHTML());await writeFile(evidence+'/'+engine+'-pending-requests.json',JSON.stringify({pending:[...pending.values()],retiredCalendarReads},null,2));await writeFile(evidence+'/'+engine+'-theme-diagnostic.json',JSON.stringify(await page.evaluate(()=>({theme:document.documentElement.dataset.theme,choice:document.documentElement.dataset.themeChoice,stored:localStorage.getItem('nv-theme'),dark:matchMedia('(prefers-color-scheme: dark)').matches,visibility:document.visibilityState})),null,2));};
    const ready=()=>page.locator('.em-profile-private[data-profile-state="ready"]').waitFor();
    const login=async(id:string,lang:AuthLang)=>{const copy=AUTH_COPY[lang];await page.getByLabel(copy.employeeId,{exact:true}).fill(id);await page.getByLabel(copy.password,{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:copy.signIn,exact:true}).click();await page.waitForURL(app.url+'/app');await page.locator('[data-home-state="ready"]:visible,[data-home-state="partial"]:visible').waitFor();await page.locator('.employee-time-badge:visible').waitFor();};
    const openProfile=async()=>{await page.locator('.mobile-nav-link[href="/app/more"]:visible').click();await page.waitForURL(app.url+'/app/more');await page.locator('a[href="/app/profile"]:visible').first().click();await page.waitForURL(app.url+'/app/profile');};
    await page.goto(app.url+'/login');await login(actor,'en');
    const noScript=await activeBrowser.newContext({viewport:{width:390,height:844},javaScriptEnabled:false,serviceWorkers:'block',storageState:await context.storageState()});
-   try{const initial=await noScript.newPage();await initial.goto(app.url+'/app/profile');await initial.screenshot({path:evidence+'/'+engine+'-profile-before-hydration.png',fullPage:true});await writeFile(evidence+'/'+engine+'-profile-before-hydration.html',await initial.locator('body').innerHTML());expect(await initial.locator('.q-profile-e .q-who').count()).toBe(0);expect(await initial.locator('.q-profile-e').innerText()).not.toContain(ownName);}finally{await noScript.close();}
+   try{const initial=await noScript.newPage();await initial.goto(app.url+'/app/profile');await initial.screenshot({path:evidence+'/'+engine+'-profile-before-hydration.png',fullPage:false});await writeFile(evidence+'/'+engine+'-profile-before-hydration.html',await initial.locator('body').innerHTML());expect(await initial.locator('.q-profile-e .q-who').count()).toBe(0);expect(await initial.locator('.q-profile-e').innerText()).not.toContain(ownName);}finally{await noScript.close();}
    await page.bringToFront();await idle();record('Actual server-rendered mobile Profile DOM without hydration excludes static desktop identity');
    // Hold the actual own read, not a fabricated profile or authorization result.
    let releaseRead!:()=>void,readObserved=false;const heldRead=new Promise<void>(resolve=>{releaseRead=resolve;});
@@ -128,7 +138,7 @@ it('integrates current own Profile, preferences, contextual help and native sign
    expect(await page.locator('.em-profile').evaluate((el:HTMLElement)=>el.getBoundingClientRect().bottom>=document.querySelector('.mobile-nav')!.getBoundingClientRect().top-1)).toBe(true);
    releaseLogout();await page.waitForURL(app.url+'/login');await idle();await page.unroute('**/app/profile*');expect((await q<{n:number}>('SELECT count(*)::integer AS n FROM employee_sessions WHERE employee_id=$1',[f.actors[1]]))[0].n).toBe(0);const cookies=await context.cookies();await writeFile(evidence+'/'+engine+'-logout-completed-cookie-shape.json',JSON.stringify(await cookieShape(),null,2));expect(cookies.some((cookie:{name:string})=>cookie.name==='fuel_session')).toBe(false);const retained=cookies.find((cookie:{name:string})=>cookie.name===CLEANUP_COOKIE);expect(retained?.value).toBe(opaque);expect(retained?.httpOnly).toBe(true);expect(await page.locator('body').innerText()).not.toContain(peer.name);await shot('profile-signout-unresolved-device-proof');
    record('Native signout immediately clears private DOM/services and fences device ownership; real session deleted, cookie removed, opaque unresolved device cleanup retained without a false all-complete claim');
-   await idle();await context.close();await browser!.close();browser=undefined;failed=undefined;
+   await idle();await writeFile(evidence+'/'+engine+'-calendar-observer.json',JSON.stringify({retiredCalendarReads,trace:calendarTrace(await readFile(join(app.root,'next.log'),'utf8'))},null,2));await context.close();await browser!.close();browser=undefined;failed=undefined;
   }
   expect(messages.filter(m=>m.type==='pageerror')).toEqual([]);expect(messages.filter(m=>m.type==='error'&&!m.expected)).toEqual([]);
  }catch(error){await failed?.();throw error;}

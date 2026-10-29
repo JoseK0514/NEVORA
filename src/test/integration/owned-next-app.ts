@@ -159,7 +159,7 @@ export function ownedDeviceEnvironment(origin:string,enabled=false):Record<strin
  * generated dev type-reference paths. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;calendarDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
   if (options.clockerPinKey !== undefined && !/^[a-f0-9]{64}$/.test(options.clockerPinKey)) throw new Error('Owned Clocker PIN key must be 32-byte hex.');
   validateOwnedMailOptions(options);
   const advisorEnvironment = ownedAdvisorEnvironment(options);
@@ -296,7 +296,10 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { m
       ...ownedDeviceEnvironment(url,options.deviceAlertsEnabled),
       NEVORA_OWNED_APP_DATABASE: database.connectionString,
       NEVORA_OWNED_APP_IDENTITY: JSON.stringify(identity), NEVORA_OWNED_APP_BARRIERS: barriers,
-      ...(options.loginDiagnostics?{NODE_OPTIONS:'--import='+pathToFileURL(join(mirror,'src/test/integration/owned-login-diagnostics.mjs')).href,NEVORA_OWNED_LOGIN_ORIGIN:url}:{}),
+      ...((options.loginDiagnostics||options.calendarDiagnostics)?{NODE_OPTIONS:[
+        ...(options.loginDiagnostics?['--import='+pathToFileURL(join(mirror,'src/test/integration/owned-login-diagnostics.mjs')).href]:[]),
+        ...(options.calendarDiagnostics?['--import='+pathToFileURL(join(mirror,'src/test/integration/owned-calendar-diagnostics.mjs')).href]:[]),
+      ].join(' '),...(options.loginDiagnostics?{NEVORA_OWNED_LOGIN_ORIGIN:url}:{}),...(options.calendarDiagnostics?{NEVORA_OWNED_CALENDAR_ORIGIN:url,NEVORA_OWNED_PROCESS_OWNER:options.processOwnerId??ownerId}:{})}:{}),
       ...(options.processOwnerId ? { NEVORA_OWNED_PROCESS_OWNER: options.processOwnerId } : {}),
     };
     options.signal?.throwIfAborted();

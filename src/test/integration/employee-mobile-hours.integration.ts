@@ -38,11 +38,11 @@ it('integrates own mobile punches, timecards and correction recovery without pun
    page.on('pageerror',(error:Error)=>messages.push({engine,stage,type:'pageerror',text:error.stack??error.message,expected:false}));
    page.on('requestfailed',(request:{url():string;failure():{errorText:string}|null})=>failedRequests.push({engine,stage,url:request.url(),error:request.failure()?.errorText??null,expected}));
    await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==new URL(app.url).origin){await route.abort();return;}await route.continue();});
-   failure=async()=>{await page.screenshot({path:evidence+'/'+engine+'-failure.png',fullPage:true,caret:'initial'});await writeFile(evidence+'/'+engine+'-failure.html',await page.locator('body').innerHTML());};
+   failure=async()=>{await page.screenshot({path:evidence+'/'+engine+'-failure.png',fullPage:false,caret:'initial'});await writeFile(evidence+'/'+engine+'-failure.html',await page.locator('body').innerHTML());};
    const panel=()=>page.locator('.em-hours:visible');
    const ready=async(view:string,selection?:string)=>{await page.locator('.em-hours:visible[data-hours-state="ready"][data-hours-view="'+view+'"]'+(selection?'[data-hours-context^="'+view+'|'+selection+'|"]':'')).waitFor();await panel().locator('.em-request-footer button:not(:disabled)').waitFor();};
    const load=async(path:string,view='records',selection?:string)=>{await page.goto(app.url+path);await ready(view,selection);};
-   const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:true,caret:'initial',style:'nextjs-portal {visibility:hidden;}'});captures.push(file);};
+   const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:false,caret:'initial',style:'nextjs-portal {visibility:hidden;}'});captures.push(file);};
    const matrix=async(name:string,control:string,button=false)=>{
     for(const theme of ['light','dark'])for(const width of [320,390,430]){
      await page.setViewportSize({width,height:844});await page.evaluate((theme:string)=>document.documentElement.dataset.theme=theme,theme);

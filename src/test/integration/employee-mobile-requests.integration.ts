@@ -68,11 +68,11 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
    page.on('request',(request:{url():string;headers():Record<string,string>})=>{if(new URL(request.url()).pathname==='/api/employee/requests')binding=request.headers()['x-nevora-employee-view']??'';});
    page.on('console',(message:{type():string;text():string})=>{if(['error','warning'].includes(message.type()))messages.push({engine,type:message.type(),text:message.text(),expected:expectedFailure,stage,url:page.url()});});
    page.on('pageerror',(error:Error)=>messages.push({engine,type:'pageerror',text:error.message,expected:false,stage,url:page.url()}));
-   failed=async()=>{await page.screenshot({path:evidence+'/'+engine+'-failure.png',fullPage:true});await writeFile(evidence+'/'+engine+'-failure.html',await page.locator('body').innerHTML());};
+   failed=async()=>{await page.screenshot({path:evidence+'/'+engine+'-failure.png',fullPage:false});await writeFile(evidence+'/'+engine+'-failure.html',await page.locator('body').innerHTML());};
    await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==new URL(app.url).origin){await route.abort();return;}await route.continue();});
    const ready=()=>page.locator('.em-requests:visible[data-requests-state="ready"]').waitFor();
    const load=async(path:string)=>{await page.goto(app.url+path);await ready();};
-   const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:true,style:'nextjs-portal {visibility:hidden;}'});captures.push(file);};
+   const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:false,style:'nextjs-portal {visibility:hidden;}'});captures.push(file);};
    await page.goto(app.url+'/login');
    await page.getByLabel('Employee ID',{exact:true}).fill(actor);
    await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
