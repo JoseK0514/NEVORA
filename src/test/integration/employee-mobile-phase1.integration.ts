@@ -142,7 +142,7 @@ it('integrates approved Employee mobile Home and Schedule with real own reads, c
     await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id) VALUES('em-own-today','em-now-0',$1,$2,'00:00','24:00','qa-pos')",[actor,today]);await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'QAOWNER'},app.database.executor);
     await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id,is_designated_lead) VALUES($1,'qa-EMP1-schedule-0',$2,$3,'08:00','16:00','qa-pos',true),('em-own-split','qa-EMP1-schedule-0',$2,$3,'17:00','20:00','qa-pos',false)",[f.sourceId,actor,f.sourceDate]);await publishScheduleWithRevision({locationId:'loc-1',weekStart:f.week,managerId:'QAOWNER'},app.database.executor);
 
-    await page.setViewportSize({width:320,height:844});await page.goto(app.url+'/app/profile#employee-calendar-title');await page.locator('.profile-calendar-disclosure[open]').waitFor();await page.locator('.employee-calendar-state:visible').waitFor();
+    await page.setViewportSize({width:320,height:844});await page.goto(app.url+'/app/profile#employee-calendar-title');await page.locator('.profile-calendar-disclosure[open]').waitFor();await page.locator('.em-calendar[data-calendar-state]:visible').waitFor();
     for(const scale of [125,150,200]){
      await page.evaluate((n:number)=>{document.documentElement.style.fontSize=n+'%';window.dispatchEvent(new Event('resize'));},scale);
      await page.waitForFunction((n:number)=>document.documentElement.getAttribute('data-text-step')===String(n),scale);
