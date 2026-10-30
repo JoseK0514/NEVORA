@@ -18,7 +18,7 @@ export function WorkflowControls({ date, disabled, inspect }: { date: string; di
         <label htmlFor="oa-coverage-date">Coverage date</label>
         <input id="oa-coverage-date" type="date" value={coverageDate} required disabled={disabled} onChange={e => setCoverageDate(e.target.value)} />
         <button className="nv-btn" data-kind="secondary" disabled={disabled}>Prepare coverage options</button>
-        <button className="nv-btn" data-kind="secondary" type="button" disabled={disabled} onClick={() => inspect({ name: "coverage_plan", args: { date: coverageDate } })}>Compare day plans</button>
+        <button className="nv-btn" data-kind="secondary" type="button" disabled={disabled} onClick={e => { if (e.currentTarget.form?.reportValidity()) inspect({ name: "coverage_plan", args: { date: coverageDate } }); }}>Compare day plans</button>
       </form>
       <form onSubmit={e => { e.preventDefault(); inspect({ name: "attendance_payroll_review", args: { startDate, endDate, language } }); }}>
         <label htmlFor="oa-period-start">Period start</label><input id="oa-period-start" type="date" value={startDate} required disabled={disabled} onChange={e => setStartDate(e.target.value)} />
