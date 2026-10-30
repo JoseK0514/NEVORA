@@ -64,8 +64,10 @@ it('disables registration when no active location exists and points to Locations
 
 it('offers adding the first device and no device rows for an empty inventory', () => {
   const html = render([]);
-  expect(html).toContain('Add the shared tablet at each location.');
-  expect(html).toMatch(/<button class="q-btn"[^>]*>Add device<\/button>/);
+  // Release 1 (board O-ClockerDevices): the three setup steps and one "Set up a new tablet" (one tablet per location).
+  expect(html).toContain('Add a tablet in 3 steps');
+  expect(html).toContain('One tablet per location works best.');
+  expect(html).toMatch(/<button class="q-btn"[^>]*>Set up a new tablet<\/button>/);
   expect(html).not.toContain('data-clocker-device=');
   expect(html).not.toContain('type="search"');
   expect(html).not.toContain('nevora-action-menu-item');

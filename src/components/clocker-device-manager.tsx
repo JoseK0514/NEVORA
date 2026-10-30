@@ -169,10 +169,17 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
           <CaretRight className="q-chev" aria-hidden="true" />
         </button>
       </li>;
-    })}</ul> : <EmptyState headingLevel={3} icon={null} title={devices.length ? (filter === 'ALL' ? 'No active devices' : filter === 'SETUP' ? 'Nothing needs setup' : 'No removed devices') : 'No devices yet'}
-      action={devices.length ? null : <button className="q-btn" type="button" disabled={!hydrated || !activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}>Add device</button>}>
-      {devices.length ? '' : 'Add the shared tablet at each location.'}
-    </EmptyState>}
+    })}</ul> : filter === 'ALL' ? <section className="clocker-steps" aria-labelledby="clocker-steps-title">
+      {/* Corporate (Release 1, board O-ClockerDevices): with no active tablet, the three setup steps and one way to start. */}
+      <div className="q-grp"><h2 id="clocker-steps-title">{devices.length ? 'No active tablets · add one in 3 steps' : 'Add a tablet in 3 steps'}</h2></div>
+      <ol className="q-list clocker-steps__list">
+        <li><div className="q-row q-row--one"><span className="clocker-steps__n" aria-hidden="true">1</span><span className="q-rt"><b>On the tablet, open the Clocker page.</b></span></div></li>
+        <li><div className="q-row q-row--one"><span className="clocker-steps__n" aria-hidden="true">2</span><span className="q-rt"><b>Tap below to get a setup code.</b></span></div></li>
+        <li><div className="q-row q-row--one"><span className="clocker-steps__n" aria-hidden="true">3</span><span className="q-rt"><b>Pick the location. People use their PIN.</b></span></div></li>
+      </ol>
+      <button className="q-btn" type="button" disabled={!hydrated || !activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}>Set up a new tablet</button>
+      <p className="q-help">One tablet per location works best.</p>
+    </section> : <EmptyState headingLevel={3} icon={null} title={filter === 'SETUP' ? 'Nothing needs setup' : 'No removed devices'}>{''}</EmptyState>}
     <dialog ref={dialog} className="wc-dialog" aria-labelledby="clocker-dialog-title" aria-describedby="clocker-dialog-text" onCancel={event => { event.preventDefault(); close(); }}>
       {selection ? <form noValidate onSubmit={submit} key={`${selection.operation}-${selection.device?.id ?? 'new'}`} aria-busy={pending} className="wc-dialog__form" {...handlers}>
         <div className="wc-dialog__head">
