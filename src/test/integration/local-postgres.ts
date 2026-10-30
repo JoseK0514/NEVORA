@@ -90,10 +90,13 @@ async function createOwnedDatabase(prefix: 'fuel_phase3_test_' | 'nevora_foundat
   }
   const pool = new Pool({ connectionString: target.href, connectionTimeoutMillis: 3000, statement_timeout: 5000, max: 20 });
   let disposed = false;
+  let poolEnded = false;
   const dispose = async () => {
     if (disposed) return;
     await assertOwned();
-    await pool.end();
+    // A refused teardown (a leaked backend) may be retried; ending the pool
+    // twice would mask that refusal with pg-pool's double-end error.
+    if (!poolEnded) { poolEnded = true; await pool.end(); }
     // Pool drainage can precede the server processing each TCP Terminate.
     // Prove those backends are gone before DROP ... FORCE can race shutdown.
     const closedBy = performance.now() + 3000;

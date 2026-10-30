@@ -449,9 +449,14 @@ async function heldExecutor(defer: (cleanup: () => void | Promise<unknown>) => v
   };
 }
 async function observeBlocked(pid: number) {
-  for (let i = 0; i < 100; i++) {
+  // Bound the wait by time, not attempts: a warm poll takes ~0.2 ms, so a fixed
+  // count can expire before the other session even reaches its lock wait.
+  // 5 s matches the held sessions' statement_timeout.
+  const deadline = performance.now() + 5000;
+  do {
     if ((await q('SELECT cardinality(pg_blocking_pids($1))>0 blocked', [pid]))[0].blocked) return;
-  }
+    await new Promise(resolve => setTimeout(resolve, 5));
+  } while (performance.now() < deadline);
   throw Error('Expected actual PostgreSQL blocking barrier');
 }
 it.each(['profile', 'membership', 'membership-insert', 'normal-availability-insert', 'coverage-cascade', 'availability', 'leave', 'manual-insert', 'manual-edit', 'foreign-week'].flatMap(kind => ['writer-first', 'generation-first'].map(order => ({
@@ -480,7 +485,9 @@ it.each(['profile', 'membership', 'membership-insert', 'normal-availability-inse
       query: async <T,>(s: SqlStatement) => {
         reads++;
         const result=await generation.executor.query<T>(s);
-        if(kind==='profile'&&order==='writer-first'&&!writing){writing=write();defer(()=>writing);await writer.ready;}
+        // Release before draining: this defer is registered after the scope's own
+        // release defer, so without it a failed scope would await a paused writer forever.
+        if(kind==='profile'&&order==='writer-first'&&!writing){writing=write();defer(()=>writing);defer(()=>writer.release());await Promise.race([writer.ready,writing]);}
         return result;
       }
     };
@@ -492,7 +499,7 @@ it.each(['profile', 'membership', 'membership-insert', 'normal-availability-inse
       eligibleLocationIds: ['loc-2']
     }, writer.executor) : writer.executor.transaction([statement]);
     if (order === 'writer-first') {
-      if(kind!=='profile'){writing=write();defer(()=>writing);await writer.ready;}
+      if(kind!=='profile'){writing=write();defer(()=>writing);await Promise.race([writer.ready,writing]);}
       const generating = run(request, counted);
       defer(() => generating);
       defer(() => writer.release());
@@ -507,7 +514,7 @@ it.each(['profile', 'membership', 'membership-insert', 'normal-availability-inse
     } else {
       const generating = run(request, counted);
       defer(() => generating);
-      await generation.ready;
+      await Promise.race([generation.ready, generating]);
       const writing = write();
       defer(() => writing);
       defer(() => generation.release());

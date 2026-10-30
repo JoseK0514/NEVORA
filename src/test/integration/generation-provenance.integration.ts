@@ -176,10 +176,15 @@ async function heldExecutor(defer:(cleanup:()=>void|Promise<unknown>)=>void,hold
  return {executor,pid,ready,release};
 }
 async function observeBlocked(pid:number) {
- for(let attempt=0;attempt<100;attempt++) {
+ // Bound the wait by time, not attempts: a warm poll takes ~0.2 ms, so a fixed
+ // count can expire before the other session even reaches its lock wait.
+ // 5 s matches the held sessions' statement_timeout.
+ const deadline=performance.now()+5000;
+ do {
    const rows=await q('SELECT cardinality(pg_blocking_pids($1))>0 AS blocked',[pid]);
    if(rows[0].blocked) return;
- }
+   await new Promise(resolve=>setTimeout(resolve,5));
+ } while(performance.now()<deadline);
  throw new Error('Expected actual PostgreSQL lock wait was not observed.');
 }
 it.each(['profile','absent-membership','coverage-cascade','foreign-week-shift'].flatMap(kind=>['writer-first','generation-first'].map(order=>({kind,order}))))('serializes $kind with $order using actual PostgreSQL locks',async({kind,order})=>{
@@ -192,15 +197,17 @@ it.each(['profile','absent-membership','coverage-cascade','foreign-week-shift'].
   let writing:Promise<unknown>|undefined;
   const generationExecutor:SqlExecutor={...generation.executor,query:async<T>(statement:SqlStatement)=>{
    const result=await generation.executor.query<T>(statement);
-   if(kind==='profile'&&order==='writer-first'&&!writing){writing=runWriter();defer(()=>writing);await writer.ready;}
+   // Release before draining: this defer is registered after the scope's own
+   // release defer, so without it a failed scope would await a paused writer forever.
+   if(kind==='profile'&&order==='writer-first'&&!writing){writing=runWriter();defer(()=>writing);defer(()=>writer.release());await Promise.race([writer.ready,writing]);}
    return result;
   }};
   if(order==='writer-first') {
-    if(kind!=='profile'){writing=runWriter();defer(()=>writing);await writer.ready;}
+    if(kind!=='profile'){writing=runWriter();defer(()=>writing);await Promise.race([writer.ready,writing]);}
     const deleting=a.deleteGeneratedDraftShift(input,generationExecutor);defer(()=>deleting);defer(()=>writer.release());
     await observeBlocked(generation.pid);writer.release();await writing;expect((await deleting).status).toBe('deleted');
   }else{
-    const deleting=a.deleteGeneratedDraftShift(input,generation.executor);defer(()=>deleting);await generation.ready;
+    const deleting=a.deleteGeneratedDraftShift(input,generation.executor);defer(()=>deleting);await Promise.race([generation.ready,deleting]);
     const writing=runWriter();defer(()=>writing);defer(()=>generation.release());
     await observeBlocked(writer.pid);generation.release();expect((await deleting).status).toBe('deleted');await writing;
   }
