@@ -10,7 +10,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  let stage='seed';cellRuntimeErrors.setStageReader(()=>stage);
  const tabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',backTabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
  const checks=[],contrast=[],focusTrace=[],expiryRecovery=[],runtimeErrors=[],loginAttempts=[],navigationAttempts=[],prefix=`navigation-${engine}-${width}`,headers={};
- let badgeBounds=null,retainedOverflowFailure=false;
+ let badgeBounds=null,retainedOverflowFailure=false,corporate=false;
  const q=(text,values=[])=>app.database.executor.query({text,values});
  page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]').replace(/[A-Za-z0-9_-]{40,}/g,'[long value]'),path:new URL(page.url()).pathname.replace(/\/api\/calendar\/[^/]+/g,'/api/calendar/[redacted]'),lastCompleted:checks.at(-1),stack:error.stack?.replace(/https?:[^\s)]+/g,'[URL]').replace(/[A-Za-z0-9_-]{40,}/g,'[long value]')});});
  page.on('request',request=>{const path=new URL(request.url()).pathname;if(path.startsWith('/api/employee/')||path==='/api/notifications')headers[path]=request.headers()['x-nevora-employee-view'];});
@@ -66,11 +66,13 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[href="/app/profile"]').count(),0,'Profile is reached from the account menu');
    assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[aria-current]').count(),0,'Account pages do not select an unrelated sidebar section');return;
   }
-  // v5: an Employee's or Lead's More is a page; its rows reach Updates, Notifications and Profile.
-  if(mobile&&!primary){const more=page.locator('.mobile-nav a[href="/app/more"]');await more.tap();await page.waitForURL(u=>u.pathname==='/app/more');await settle();}
+  // v5 (Lead): More is a tab-bar page. Corporate Employee (approved Oct 26): More opens from the header avatar.
+  // Either way its rows reach Updates, Notifications and Profile.
+  if(mobile&&!primary){const more=corporate?page.locator('.mobile-header a.c-top-avatar[href="/app/more"]'):page.locator('.mobile-nav a[href="/app/more"]');await more.tap();await page.waitForURL(u=>u.pathname==='/app/more');await settle();}
   const root=mobile?(primary?page.locator('.mobile-nav'):page.locator('main')):page.locator('nav[aria-label="Primary navigation"]');
   const destination=root.locator('a[href="'+href+'"]').first();if(mobile){const rect=await destination.boundingBox();assert(rect);await destination.evaluate(e=>e.addEventListener('touchstart',()=>{window.__employeeNavigationTouch=true;},{once:true}));await page.evaluate(()=>{window.__employeeNavigationTouch=false;});await destination.tap({position:{x:rect.width-8,y:rect.height/2}});assert(await page.evaluate(()=>window.__employeeNavigationTouch),'Native mobile navigation dispatched touchstart');}else await destination.click();await page.waitForURL(u=>u.pathname===href);await settle();
-  await page.waitForFunction(({mobile,primary,href})=>mobile?(primary?document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===href:document.querySelector('.mobile-nav a[href="'+(href==='/app/notifications'?'/app':'/app/more')+'"]')?.classList.contains('active')):document.querySelector('nav[aria-label="Primary navigation"] a[aria-current="page"]')?.getAttribute('href')===href,{mobile,primary,href});
+  // Corporate Employee: More, Updates, Profile and Notifications light Home (there is no More tab).
+  await page.waitForFunction(({mobile,primary,href,corporate})=>mobile?(primary?document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===href:document.querySelector('.mobile-nav a[href="'+(corporate||href==='/app/notifications'?'/app':'/app/more')+'"]')?.classList.contains('active')):document.querySelector('nav[aria-label="Primary navigation"] a[aria-current="page"]')?.getAttribute('href')===href,{mobile,primary,href,corporate});
   assert.equal(await page.locator('#employee-more-navigation').count(),0,'v5 has no More pop-up');
  }
  // Profile keeps aria-hidden placeholder rows; inbox controls exist even in a ready empty view.
@@ -115,21 +117,25 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   assert.equal(walked,4,'Native reverse traversal walks the account rows above Sign out');
   await page.mouse.move(0,0);await page.mouse.up();checks.push('Native '+tabKey+' traversal and scroll keeps Sign out and the account rows unobscured above mobile navigation');checks.push('Actual composited normal/hover/pressed/focus text and focus-outline contrast measured');
  }
- async function bounds(){assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'document horizontal overflow');const bad=await page.locator('main .q-list a.q-row,main .q-list button.q-row,main .q-btn,.profile-signout-row,[data-inbox-row] > a').evaluateAll(elements=>elements.filter(e=>{const r=e.getBoundingClientRect();return r.width&& (r.left< -1||r.right>innerWidth+1||r.height<43);}).map(e=>e.textContent));assert.deepEqual(bad,[]);}
+ async function bounds(){assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'document horizontal overflow');const bad=await page.locator('main .q-list a.q-row,main .q-list button.q-row,main .q-btn,main .c-rows a.c-row,main .c-rows button.c-row,main .c-btn,.profile-signout-row,[data-inbox-row] > a').evaluateAll(elements=>elements.filter(e=>{const r=e.getBoundingClientRect();return r.width&& (r.left< -1||r.right>innerWidth+1||r.height<43);}).map(e=>e.textContent));assert.deepEqual(bad,[]);}
  try{
   const label='E'+(engine==='chromium'?'C':'W')+width,scenario=await seedOwnedScenario(app.database.executor,label,[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0)+42),actor=scenario.actors[0],requestId='e41-'+label,noticeId='notice-'+label;
   await q('DELETE FROM notifications WHERE employee_id=$1',[actor]);
   await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) VALUES($1,$2,current_date+7,current_date+7,'APPROVED','Fictional private reason')",[requestId,actor]);
   await q("INSERT INTO notifications(id,employee_id,type,title,body,event_key,environment,source_kind,source_id,source_version,effective_version,purpose,due_at,expires_at,urgency,push_state) VALUES($1,$2,'TIME_OFF_DECIDED','STORED PRIVATE TITLE','STORED PRIVATE BODY',$1,'test','TIME_OFF',$3,'APPROVED','APPROVED','EVENT',now()-interval '1 hour',now()+interval '1 day','high','pending')",[noticeId,actor,requestId]);
-  const actualRole=[320,1440].includes(width)?'EMPLOYEE':'LEAD';await q('UPDATE employees SET role=$1 WHERE id=$2',[actualRole,actor]);
+  const actualRole=[320,1440].includes(width)?'EMPLOYEE':'LEAD';await q('UPDATE employees SET role=$1 WHERE id=$2',[actualRole,actor]);corporate=actualRole==='EMPLOYEE';
   stage='login';await login(actor);await settle();
-  const badge=await page.waitForFunction(()=>{
-   for(const portal of document.querySelectorAll('nextjs-portal'))for(const button of portal.shadowRoot?.querySelectorAll('[data-nextjs-dev-tools-button][aria-label="Open Next.js Dev Tools"]')??[]){
+  // next.config.ts sets devIndicators:false (93a950dd): the development badge is not drawn at all, so it can cover
+  // neither the bottom tab bar nor the header's Back/avatar. Observe every rendered badge after hydration settles.
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  badgeBounds=await page.evaluate(()=>{
+   const visible=[];
+   for(const portal of document.querySelectorAll('nextjs-portal'))for(const button of portal.shadowRoot?.querySelectorAll('[data-nextjs-dev-tools-button]')??[]){
     const style=getComputedStyle(button),rect=button.getBoundingClientRect();
-    if(style.display!=='none'&&style.visibility==='visible'&&rect.width>0&&rect.height>0&&rect.y<100)return {x:rect.x,y:rect.y,width:rect.width,height:rect.height};
+    if(style.display!=='none'&&style.visibility!=='hidden'&&rect.width>0&&rect.height>0)visible.push({x:rect.x,y:rect.y,width:rect.width,height:rect.height});
    }
-   return false;
-  });badgeBounds=await badge.jsonValue();await badge.dispose();assert(badgeBounds&&badgeBounds.y<100,'Configured development badge stays clear of bottom navigation');
+   return visible;
+  });assert.deepEqual(badgeBounds,[],'Configured development badge is off, so it stays clear of the header and bottom navigation');
   assert.equal(await page.evaluate(()=>matchMedia('(pointer: coarse)').matches),width<768,'Emulated touch pointer matches required context');assert.equal(await page.evaluate(()=>innerWidth),width);checks.push(`Actual authenticated ${actualRole} role`);checks.push('Required CSS width and mobile touch emulation verified; native taps used on mobile navigation');
   for(const href of ['/app/schedule','/app/my-time','/app']){await nav(href);const current=await page.locator('.mobile-nav').isVisible()?page.locator('.mobile-nav a[aria-current="page"]'):page.locator('nav[aria-label="Primary navigation"] a[aria-current="page"]');assert.equal(await current.getAttribute('href'),href);}
   checks.push('Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation');
@@ -139,19 +145,28 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   for(const [link,path] of [[timeOff,'/app/requests'],[shifts,'/app/exchange']]){
    await link.click();await page.waitForURL(u=>u.pathname===path);await settle();
    await page.locator('main a.q-nav__l[href="/app/requests/hub"]').waitFor();assert.equal(await page.locator('main a.q-nav__l[href="/app/requests/hub"]').count(),1,'Back to Requests');assert.equal(await page.locator('.section-tabs').count(),0);
-   if(await page.locator('.mobile-nav').isVisible()){assert.equal(await page.locator('.mobile-nav a[aria-current="page"]').getAttribute('href'),'/app/requests/hub');assert.equal(await page.locator('.mobile-nav a[href="/app/more"]').evaluate(e=>e.classList.contains('active')),false);}
+   if(await page.locator('.mobile-nav').isVisible()){
+    assert.equal(await page.locator('.mobile-nav a[aria-current="page"]').getAttribute('href'),'/app/requests/hub');
+    // Lead: the More tab stays unselected. Corporate Employee: no More tab, and the header avatar (More) is not current.
+    if(corporate){assert.equal(await page.locator('.mobile-nav a[href="/app/more"]').count(),0,'Corporate Employee has no More tab');assert.equal(await page.locator('.mobile-header a.c-top-avatar[href="/app/more"]').getAttribute('aria-current'),null);}
+    else assert.equal(await page.locator('.mobile-nav a[href="/app/more"]').evaluate(e=>e.classList.contains('active')),false);
+   }
    await page.goBack();await settle();
   }
   checks.push('Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs and selected ownership');
   await nav('/app/availability');assert.equal(new URL(page.url()).pathname,'/app/availability');
   if(await page.locator('.mobile-nav').isVisible()){
-   // v5: More is a page. The keyboard opens it from the tab bar; its rows keep a fixed order; Back returns.
-   const trigger=page.locator('.mobile-nav a[href="/app/more"]');await trigger.focus();await page.keyboard.press('Enter');await page.waitForURL(u=>u.pathname==='/app/more');await settle();
-   await page.locator('main .q-list a.q-row[href="/app/profile"]').waitFor();
-   const order=await page.locator('main .q-list a.q-row').evaluateAll(es=>es.map(e=>e.getAttribute('href')));
+   // v5 (Lead): More is a page opened from the tab bar. Corporate Employee (board E-More): the header avatar opens it.
+   // The keyboard opens it; its rows keep the approved fixed order; Back returns.
+   const trigger=corporate?page.locator('.mobile-header a.c-top-avatar[href="/app/more"]'):page.locator('.mobile-nav a[href="/app/more"]');await trigger.focus();await page.keyboard.press('Enter');await page.waitForURL(u=>u.pathname==='/app/more');await settle();
+   const moreRows=corporate?'main .c-rows a.c-row':'main .q-list a.q-row';
+   await page.locator(moreRows+'[href="/app/profile"]').waitFor();
+   const order=await page.locator(moreRows).evaluateAll(es=>es.map(e=>e.getAttribute('href')));
    assert(order.includes('/app/profile')&&order.includes('/app/notifications'),'More lists Profile and Notifications');
-   const known=['/app/profile','/app/updates','/app/notifications'];assert.deepEqual(order.filter(href=>known.includes(href)),known.filter(href=>order.includes(href)),'More keeps its row order');
-   assert(await trigger.evaluate(e=>e.classList.contains('active')));await page.goBack();await page.waitForURL(u=>u.pathname==='/app/availability');await settle();
+   const known=corporate?['/app/profile','/app/notifications','/app/updates']:['/app/profile','/app/updates','/app/notifications'];assert.deepEqual(order.filter(href=>known.includes(href)),known.filter(href=>order.includes(href)),'More keeps its row order');
+   if(corporate){assert.equal(await trigger.getAttribute('aria-current'),'page');assert.equal(await page.locator('.mobile-nav a[aria-current="page"]').getAttribute('href'),'/app','More lights Home');}
+   else assert(await trigger.evaluate(e=>e.classList.contains('active')));
+   await page.goBack();await page.waitForURL(u=>u.pathname==='/app/availability');await settle();
    checks.push('More page reached by native Enter with explicit row order; Back returns');
   }else{await nav('/app/profile',true);checks.push('Native keyboard desktop account-menu Profile navigation and focus handoff');}
   stage='layout';await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);assert(await page.getByText('Alerts on this device aren’t turned on for your workplace yet.',{exact:true}).isVisible());await bounds();await screenshot('profile');await accessibility('Profile');await contrastStates();
