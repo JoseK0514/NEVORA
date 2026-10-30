@@ -70,7 +70,8 @@ export function sidebarNavigation(role: UserRole, items: NavigationItem[]): Navi
   return items
     .filter(item => !(holders[item.href] && present.has(holders[item.href])) && !(management ? ACCOUNT_MENU_ENTRIES : EMPLOYEE_ACCOUNT_MENU_ENTRIES).has(item.href))
     // D-4: the people page is "Team" in the sidebar, as on the phone tab.
-    .map(item => management && item.href === "/app/employees" ? { ...item, label: "Team" } : item);
+    // Corporate (Release 1): the desktop sidebar uses the phone's names for Timecards (Time) and Inbox (Things to do).
+    .map(item => !management ? item : item.href === "/app/employees" ? { ...item, label: "Team" } : item.href === "/app/timecards" ? { ...item, label: "Time" } : item.href === "/app/inbox" ? { ...item, label: "Things to do" } : item);
 }
 
 /** The sidebar entry to highlight: a page whose own entry left the sidebar lights its holder. */
@@ -96,17 +97,15 @@ export function teamToolsForRole(role: UserRole, context: NavContext = {}): Navi
   return role === "OWNER" || role === "MANAGER" && current?.state === "ready" && current.role === "MANAGER" && current.scope?.mode === "COMPANY" ? TEAM_TOOLS.filter(item=>role==='OWNER'||item.href!=='/app/clocker-recovery') : [];
 }
 
-/** Presentation groups consume only already-authorized navigation entries. Team tools, when given, sit before Workspace. */
+/** Presentation groups consume only already-authorized navigation entries. Corporate (Release 1): the desktop sidebar mirrors
+ * the phone, so the five tabs and Things to do come first with no heading, then Team tools, then More. */
 export function managementNavigationGroups(items: NavigationItem[], tools: NavigationItem[] = []) {
   const definitions = [
-    {label:'Plan', hrefs:['/app','/app/ai-manager','/app/inbox','/app/schedule','/app/availability','/app/exchange','/app/schedule/templates','/app/schedule/settings']},
-    // "People", not "Team", so the Team entry isn't filed under a heading of the same name.
-    {label:'People', hrefs:['/app/employees','/app/requests','/app/updates']},
-    {label:'Time and pay', hrefs:['/app/timecards','/app/payroll','/app/payroll-export','/app/reports','/app/my-pay']},
-    {label:'Workspace', hrefs:['/app/settings']},
+    {label:'', hrefs:['/app','/app/schedule','/app/timecards','/app/payroll','/app/employees','/app/inbox']},
+    {label:'More', hrefs:['/app/ai-manager','/app/reports','/app/updates','/app/schedule/settings','/app/schedule/templates','/app/availability','/app/exchange','/app/requests','/app/payroll-export','/app/my-pay','/app/settings']},
   ];
   const groups = definitions.map(group=>({label:group.label,items:group.hrefs.flatMap(href=>items.filter(item=>item.href===href))}));
-  if (tools.length) groups.splice(3, 0, {label:'Team tools', items:tools});
+  if (tools.length) groups.splice(1, 0, {label:'Team tools', items:tools});
   return groups.filter(group=>group.items.length);
 }
 

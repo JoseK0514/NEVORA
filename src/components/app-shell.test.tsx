@@ -140,10 +140,15 @@ it("preserves configured Fuel customer identity in the sidebar", () => {
   expect(html).toContain("Fuel Coffee Drive");
 });
 
-it('groups authorized owner destinations and provides an accessible sidebar control', () => {
+// Corporate (Release 1): the desktop sidebar mirrors the phone. Home, Schedule, Time, Payroll and Team, then Things to do,
+// then Team tools and More; Time and Things to do carry the phone's names.
+it('groups authorized owner destinations like the phone and provides an accessible sidebar control', () => {
  const {html}=render('OWNER','/app/schedule');
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
- for(const label of ['Plan','People','Time and pay','Workspace']) expect(sidebar).toContain(label);
+ expect([...sidebar.matchAll(/class="nav-label">([^<]+)</g)].map(match=>match[1]).slice(0,4)).toEqual(['Home','Schedule','Time','Team']);
+ expect(sidebar).toContain('<span class="nav-label">Things to do</span>');
+ for(const label of ['Team tools','More']) expect(sidebar).toContain(`<h2 class="sidebar-group-label">${label}</h2>`);
+ for(const label of ['Plan','People','Time and pay','Workspace']) expect(sidebar).not.toContain(`>${label}</h2>`);
  expect(html).toContain('aria-label="Collapse sidebar"');
  expect(html).toContain('aria-expanded="true"');
 });
@@ -217,10 +222,10 @@ it.each(['EMPLOYEE','LEAD'] as const)('keeps the %s Updates destination under th
  // v5: Updates opens from the More page, so the More tab is the active one.
  expect(mobile).toContain('href="/app/more" class="mobile-nav-link manager-more-trigger active"');
 });
-it('D1: the desktop top bar shows workspace, section and page, and pins Workspace in the sidebar',()=>{
+it('D1: the desktop top bar shows workspace and page; a primary section has no group name',()=>{
  const {html}=render('OWNER','/app/timecards');
- expect(html).toContain('<ol class="portal-location"><li class="portal-location-workspace" title="Northside Services">Northside Services</li><li>Time and pay</li><li><span aria-current="page">Timecards</span></li></ol>');
- expect(html).toContain('data-group="Workspace"');
+ expect(html).toContain('<ol class="portal-location"><li class="portal-location-workspace" title="Northside Services">Northside Services</li><li><span aria-current="page">Time</span></li></ol>');
+ expect(html).toContain('data-group="More"');
 });
 it('D-4: Time off, Shift requests and Availability light Inbox, and the trail still names the page', () => {
  for (const [pathname, label] of [['/app/requests', 'Time off'], ['/app/exchange', 'Shift requests'], ['/app/availability', 'Availability']] as const) {
@@ -229,10 +234,10 @@ it('D-4: Time off, Shift requests and Availability light Inbox, and the trail st
   // IS-P4-08: Inbox is the current section there, not the current page.
   expect(sidebar).toContain('href="/app/inbox" class="nav-link active" aria-current="true"');
   expect(sidebar).not.toContain('href="/app/requests"');
-  expect(html).toContain(`<li>Plan</li><li><a href="/app/inbox">Inbox</a></li><li><span aria-current="page">${label}</span></li></ol>`);
+  expect(html).toContain(`<li><a href="/app/inbox">Things to do</a></li><li><span aria-current="page">${label}</span></li></ol>`);
  }
  const {html} = render('OWNER', '/app/payroll-export');
- expect(html).toContain('<li>Time and pay</li><li><a href="/app/timecards">Timecards</a></li><li><span aria-current="page">Time exports</span></li></ol>');
+ expect(html).toContain('<li><a href="/app/timecards">Time</a></li><li><span aria-current="page">Time exports</span></li></ol>');
  expect(html).toContain('<span class="nav-label">Team</span>');
 });
 it('IS-P4-09 and IS-P4-14: Home\'s views end the trail with their own name, and a skip link comes first', () => {

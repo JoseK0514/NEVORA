@@ -59,3 +59,35 @@
 @media (max-width: 767px) { html:is(:root, [data-theme]) body .app-shell[data-nv-corp]:not([data-corp-root]) .c-top-avatar { display: none !important; } }
 /* The corporate look is light only for now (the approved boards are light). */
 html:has(.app-shell[data-nv-corp]) { color-scheme: light; }
+
+/* Corporate desktop and tablet (Release 1): the same tokens as the phone boards. A white sidebar and top bar on the grey
+ * canvas; the sidebar mirrors the phone tabs (no heading), then Team tools and More under quiet 13px labels. */
+@media (min-width: 768px) {
+  html:has(.app-shell[data-nv-corp]), html:is(:root, [data-theme]) body:has(.app-shell[data-nv-corp]),
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp], html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .app-main,
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame { background: #F5F6F6 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar { background: #FFFFFF !important; border: 0 !important; box-shadow: 1px 0 0 #E3E5E6 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .sidebar-brand .login-brand-lockup { display: inline-flex !important; flex-direction: column !important; align-items: center !important; gap: 4px !important; color: #0E1A3A !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .sidebar-brand .brand-wordmark { height: 16px !important; width: auto !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .sidebar-brand .login-brand-module {
+    display: block !important; margin: 0 -2.4px 0 0 !important; font: 600 9px/12px Inter, "Inter Fallback", -apple-system, sans-serif !important;
+    letter-spacing: 2.4px !important; text-transform: uppercase !important; color: #6B7075 !important; opacity: 1 !important;
+  }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-link {
+    min-height: 36px !important; padding: 0 12px !important; gap: 12px !important; border-radius: 8px !important; background: transparent !important; box-shadow: none !important;
+    color: #1A1C1E !important; font: 500 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: 0 !important;
+  }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-link .nav-icon, html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-link .nav-icon svg { color: #4A4F54 !important; width: 20px !important; height: 20px !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-link:hover { background: #F5F6F6 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-link.active { background: #E6F1EF !important; color: #0B6E69 !important; font-weight: 600 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-link.active .nav-icon, html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-link.active .nav-icon svg { color: #0B6E69 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-link:focus-visible { outline: 2px solid #0B6E69 !important; outline-offset: -2px !important; }
+  /* The menu scrolls inside the sidebar instead of clipping its last entries on shorter screens. */
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .sidebar-nav { flex: 1 1 auto !important; min-height: 0 !important; overflow-y: auto !important; overscroll-behavior: contain; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .sidebar-group-label { margin: 16px 12px 4px !important; padding: 0 !important; font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif !important; color: #6B7075 !important; letter-spacing: 0 !important; text-transform: none !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-count {
+    display: grid !important; place-items: center !important; min-width: 22px !important; height: 22px !important; padding: 0 6px !important; margin-left: auto !important;
+    border-radius: 11px !important; background: #0B6E69 !important; color: #FFFFFF !important; font: 600 13px/1 Inter, "Inter Fallback", -apple-system, sans-serif !important; box-shadow: none !important;
+  }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-header { background: #FFFFFF !important; border: 0 !important; box-shadow: 0 1px 0 #E3E5E6 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+}
