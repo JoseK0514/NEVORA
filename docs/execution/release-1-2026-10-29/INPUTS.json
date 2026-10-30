@@ -18,7 +18,11 @@
     "section4.2": "Existing final password/current-session safeguard retained; no new relaxation or workflow change inferred.",
     "section4.5": "Residual-risk acceptance remains pending; no real notification providers enabled.",
     "section4.7": "Logo explicitly kept pending.",
-    "section4.8": "Business-review artifact requires login; confirmed answers requested and pending."
+    "section4.8": "Business-review artifact requires login; confirmed answers requested and pending.",
+    "ownership.2026-10-29": "Jose: Claude takes over all remaining Release 1 work on claude-codex-collab-nevora from 8f2109a9; Codex stops pushing and runs production migrations and deploy only after inspection and Jose's go.",
+    "businessRules.1": "Jose: phone clock-in is not in Release 1 (tablet + PIN only); the Owner per-location option is a later update.",
+    "businessRules.4": "Jose: edits to a published week collect as pending changes and notify people once, when the Owner taps Publish changes.",
+    "ownerLook": "Jose: Owner desktop and mobile follow the approved corporate mockups (docs/product/specs/corporate-mockups, Oct 26), without the phone clock controls they show."
   },
   "corporateSourceHashes": {
     "/Users/josek0514/Desktop/NEVORA-UI-READINESS/.claude/worktrees/v4-quiet/docs/product/specs/corporate-mockups/DESIGN-SPEC.md": "3af4d0afd64251833729d3a6defb1ee9685bbc88489dd3ca77556f9080cb1dbb",
@@ -91,5 +95,22 @@
     "/Users/josek0514/Desktop/NEVORA-UI-READINESS/.claude/worktrees/v4-quiet/docs/product/specs/corporate-mockups/project/P-ClockerKiosk.dc.html": "4848d7428c96d848b989827af8fe6c6569c6a32854a3e3a2df0075196a99bb16",
     "/Users/josek0514/Desktop/NEVORA-UI-READINESS/.claude/worktrees/v4-quiet/docs/product/specs/corporate-mockups/project/P-Forgot.dc.html": "b9ec0a985cf3a7de175c180485a5f97bd6e9e8dd7363e5b42e2cf8198c1823a7",
     "/Users/josek0514/Desktop/NEVORA-UI-READINESS/.claude/worktrees/v4-quiet/docs/product/specs/corporate-mockups/project/P-SignIn.dc.html": "9bfd130be6dcbd756384c28ae287f362208db732a057379cb8bbfe2e5e02b4a1"
-  }
+  },
+  "recommendedDefaultsApplied": {
+    "note": "Claude recommendations, applied unless Jose overrides; not explicit approvals.",
+    "section4.5": "QA-OWN-3 residuals accepted for Release 1; server-side guard tracked as a follow-up.",
+    "section4.7": "Logo: NEVORA wordmark with Workforce centred under it on Access; company name in the in-app header.",
+    "businessRules.5": "Early clock-in: allowed and flagged (no block setting in Release 1).",
+    "businessRules.6": "Clock-in with no shift: allowed and flagged (today's rule).",
+    "businessRules.7": "New-company exchange defaults: Manager review; requests 2 h and completion 1 h before the shift.",
+    "businessRules.8": "Open shifts: deferred to a later update (needs a schema change).",
+    "businessRules.9": "Approved time off over shifts: decision page offers to release those shifts for cover, on by default.",
+    "businessRules.10": "Attendance flag defaults: late after 5 min, early leave 5 min, missing clock-out after 30 min, long breaks.",
+    "businessRules.11": "Time export: paid hours with unpaid meals removed and overtime split; Puerto Rico rules still need counsel confirmation.",
+    "businessRules.12": "Over 40 hours stays a warning showing overtime cost; add a warning for under 8 hours between shifts."
+  },
+  "deferredToLeadManagerRelease": [
+    "businessRules.2 What a Lead sees",
+    "businessRules.3 Location Manager powers"
+  ]
 }
