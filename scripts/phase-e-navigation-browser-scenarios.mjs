@@ -49,7 +49,9 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  const actionsInFlight=new Set(),actionDone=request=>actionsInFlight.delete(request);
  page.on('request',request=>{if(request.method()==='POST'&&typeof request.headers()['next-action']==='string')actionsInFlight.add(request);});
  page.on('requestfinished',actionDone);page.on('requestfailed',actionDone);
- async function actionsSettled(){for(const request of [...actionsInFlight]){const response=await request.response().catch(()=>null);if(response)await response.finished().catch(()=>null);actionsInFlight.delete(request);}}
+ // A received action response has committed on the server; Playwright's finished() can miss the stream close under load,
+ // so the wait for the body is bounded instead of open-ended (the callers' SQL readbacks prove the single commit).
+ async function actionsSettled(){for(const request of [...actionsInFlight]){const response=await request.response().catch(()=>null);if(response)await Promise.race([response.finished().catch(()=>null),new Promise(done=>setTimeout(done,10_000))]);actionsInFlight.delete(request);}}
  async function nav(href,keyboard=false){
   assert(['/app','/app/schedule','/app/requests/hub','/app/my-time','/app/availability','/app/profile','/app/notifications','/app/updates'].includes(href),'Known navigation diagnostic destination');
   const source=new URL(page.url()).pathname,start=performance.now(),row={destination:href,keyboard,status:'started',requests:[],omittedRequests:0};
