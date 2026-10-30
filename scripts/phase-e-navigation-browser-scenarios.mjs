@@ -181,7 +181,10 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   if(await page.locator('.mobile-nav').isVisible()){
    // v5 (Lead): More is a page opened from the tab bar. Corporate Employee (board E-More): the header avatar opens it.
    // The keyboard opens it; its rows keep the approved fixed order; Back returns.
-   const trigger=corporate?page.locator('.mobile-header a.c-top-avatar[href="/app/more"]'):page.locator('.mobile-nav a[href="/app/more"]');await trigger.focus();await page.keyboard.press('Enter');await page.waitForURL(u=>u.pathname==='/app/more');await settle();
+   // Corporate: the avatar sits in the header of a tab's own page (a pushed page such as Availability shows Back
+   // instead), so the keyboard opens More from the Requests tab page and Back returns there.
+   const moreFrom=corporate?'/app/requests/hub':'/app/availability';if(corporate){await nav('/app/requests/hub');assert(await page.locator('.mobile-header a.c-top-avatar[href="/app/more"]').isVisible(),'The avatar opens More from a tab page');}
+   const trigger=corporate?page.locator('.mobile-header a.c-top-avatar[href="/app/more"]'):page.locator('.mobile-nav a[href="/app/more"]');await trigger.focus();assert(await trigger.evaluate(e=>e===document.activeElement));await page.keyboard.press('Enter');await page.waitForURL(u=>u.pathname==='/app/more');await settle();
    const moreRows=corporate?'main .c-rows a.c-row':'main .q-list a.q-row';
    await page.locator(moreRows+'[href="/app/profile"]').waitFor();
    const order=await page.locator(moreRows).evaluateAll(es=>es.map(e=>e.getAttribute('href')));
@@ -189,7 +192,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    const known=corporate?['/app/profile','/app/notifications','/app/updates']:['/app/profile','/app/updates','/app/notifications'];assert.deepEqual(order.filter(href=>known.includes(href)),known.filter(href=>order.includes(href)),'More keeps its row order');
    if(corporate){assert.equal(await trigger.getAttribute('aria-current'),'page');assert.equal(await page.locator('.mobile-nav a[aria-current="page"]').getAttribute('href'),'/app','More lights Home');}
    else assert(await trigger.evaluate(e=>e.classList.contains('active')));
-   await page.goBack();await page.waitForURL(u=>u.pathname==='/app/availability');await settle();
+   await page.goBack();await page.waitForURL(u=>u.pathname===moreFrom);await settle();
    checks.push('More page reached by native Enter with explicit row order; Back returns');
   }else{await nav('/app/profile',true);checks.push('Native keyboard desktop account-menu Profile navigation and focus handoff');}
   stage='layout';await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);assert(await page.getByText('Alerts on this device aren’t turned on for your workplace yet.',{exact:true}).isVisible());await bounds();await screenshot('profile');await accessibility('Profile');await contrastStates();
