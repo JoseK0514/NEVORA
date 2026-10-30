@@ -98,10 +98,13 @@ html:has(.app-shell[data-nv-corp]) { color-scheme: light; }
 /* Pushed pages (Release 1): on a phone the page draws its own white header ("‹ Home  Things to do"), so the shell's header
  * steps aside and the page's large title gives way to it. Tablets and desktop keep the sidebar and the large title. */
 html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-nav--phone { display: none !important; }
+/* A pushed page's 13px line under its phone header (the wide title carries it elsewhere). */
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-phone-sub { display: none; margin: 0; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
 @media (max-width: 767px) {
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp]:not([data-corp-root]):has(.c-page > .c-nav) .mobile-header { display: none !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp]:not([data-corp-root]) .c-nav--phone { display: grid !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp]:not([data-corp-root]) .c-page:has(> .c-nav--phone) > .c-title--wide { display: none !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp]:not([data-corp-root]) .c-page:has(> .c-nav--phone) > .c-phone-sub { display: block; }
 }
 
 /* Bridge (Release 1): pages still built on the older kit (nv-*, Wave A forms) take the corporate tokens inside the

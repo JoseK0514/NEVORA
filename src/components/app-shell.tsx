@@ -280,7 +280,7 @@ function AppShellView({
       data-mobile-workforce={pathname ? "true" : undefined}
       data-employee-corporate={employee && (pathname === "/app/my-time" || pathname === "/app/timecards") ? "true" : undefined}
       // Corporate (Release 1, approved Oct 26): Owner and Manager. A tab's own page shows the white header (logo, bell, avatar).
-      data-nv-corp={employee ? undefined : ""} data-corp-root={!employee && mobileTabs.some(tab => tab.href === pathname) ? "" : undefined}>
+      data-nv-corp={employee ? undefined : ""} data-corp-root={!employee && mobileTabs.some(tab => tab.href === pathname) && !(pathname === "/app" && search?.get("view")) ? "" : undefined}>
       {/* IS-P4-14: on desktop, the sidebar and header come first; this skips them. Shown only on focus, and only on desktop. */}
       <a className="portal-skip-link" href="#main-content">Skip to content</a>
       <aside className="sidebar" data-collapsed={collapsed}>
