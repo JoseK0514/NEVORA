@@ -171,3 +171,50 @@
   html body #employee-mobile[data-nv-corp] .em-hours .c-stats { margin:0 !important; }
   html body #employee-mobile[data-nv-corp] .em-hours .c-stat { margin:0 !important; }
 }
+/* Pay (boards G-E-Pay, E-Paycheck): each section is a card with a 44px label row; the latest statement fills its card;
+ * earlier statements are rows that open in place; chips are kit pills. Your hours is the Time tab now. */
+@media screen and (max-width: 767px), screen and (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-body { display:flex !important; flex-direction:column !important; gap:12px !important; padding:12px 16px 24px !important; background:transparent !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-section { margin:0 !important; padding:0 !important; border:0 !important; border-radius:12px !important; background:#FFFFFF !important; box-shadow:0 0 0 1px #E3E5E6 !important; overflow:hidden; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-section > h2 { display:flex !important; align-items:center !important; min-height:44px !important; margin:0 !important; padding:0 16px !important; box-shadow:inset 0 -1px 0 #EDEEEF !important; color:#4A4F54 !important; font-size:13px !important; line-height:18px !important; font-weight:600 !important; letter-spacing:0 !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay section[aria-labelledby="pay-hours-title"] { display:none !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-next { display:flex !important; gap:12px !important; margin:0 !important; padding:12px 16px 14px !important; border:0 !important; background:none !important; box-shadow:none !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-next > svg { flex:none; width:20px !important; height:20px !important; margin-top:1px; color:#4A4F54 !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-next > span { display:flex; flex-direction:column; gap:2px; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-next strong { font-size:20px !important; line-height:26px !important; font-weight:600 !important; color:#1A1C1E !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-next small { font-size:13px !important; line-height:18px !important; color:#6B7075 !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-card { margin:0 !important; padding:14px 16px 16px !important; border:0 !important; border-radius:0 !important; background:none !important; box-shadow:none !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay > .em-pay-body > .em-pay-card { border-radius:12px !important; background:#FFFFFF !important; box-shadow:0 0 0 1px #E3E5E6 !important; display:flex; gap:12px; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-latest h3 { margin:0 !important; font-size:20px !important; line-height:26px !important; font-weight:600 !important; color:#1A1C1E !important; letter-spacing:0 !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-latest > p { margin:2px 0 0 !important; font-size:13px !important; line-height:18px !important; color:#6B7075 !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-latest > :is(.em-pay-chip, .em-pay-relation) { margin-top:8px !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-hint { margin:10px 0 0 !important; font-size:13px !important; line-height:18px !important; color:#6B7075 !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-chip { display:inline-flex !important; align-items:center !important; height:22px !important; padding:0 8px !important; border:0 !important; border-radius:11px !important; background:#EAF0FD !important; color:#1D4ED8 !important; font-size:13px !important; line-height:18px !important; font-weight:600 !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-chip--muted { background:#EDEEEF !important; color:#4A4F54 !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-relation { font-size:13px !important; line-height:18px !important; color:#4A4F54 !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay :is(.em-pay-actions, .em-pay-latest) :is(.em-request-primary, .em-request-secondary) { width:auto !important; flex:1 !important; height:44px !important; min-height:44px !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list { margin:0 !important; padding:0 !important; list-style:none !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list > li { margin:0 !important; padding:0 !important; border:0 !important; background:none !important; box-shadow:inset 0 -1px 0 #EDEEEF !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list > li:last-child { box-shadow:none !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list summary { display:flex !important; align-items:center !important; gap:12px !important; min-height:56px !important; padding:8px 16px !important; border:0 !important; background:none !important; box-shadow:none !important; cursor:pointer; list-style:none; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list summary::-webkit-details-marker { display:none; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list summary > span { flex:1; display:flex; flex-wrap:wrap; align-items:center; column-gap:8px; row-gap:2px; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list summary strong { flex-basis:100%; font-size:15px !important; line-height:20px !important; font-weight:600 !important; color:#1A1C1E !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list summary small { font-size:13px !important; line-height:18px !important; color:#6B7075 !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list summary > svg { flex:none; width:16px !important; height:16px !important; color:#A7ACB1 !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list details > div { display:flex; flex-direction:column; gap:10px; padding:0 16px 14px !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay :is(.em-pay-notice) { margin:0 !important; padding:14px 16px !important; border:0 !important; border-radius:12px !important; background:#FFFFFF !important; box-shadow:0 0 0 1px #E3E5E6 !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-notice--caution { box-shadow:0 0 0 1px #F4D3A6 !important; background:#FFFBF5 !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-notice-heading { display:flex; align-items:center; gap:8px; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-notice-heading h2 { margin:0 !important; font-size:15px !important; line-height:20px !important; font-weight:600 !important; color:#1A1C1E !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-notice-heading svg { width:20px !important; height:20px !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-notice p { margin:4px 0 0 !important; font-size:15px !important; line-height:20px !important; color:#4A4F54 !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-privacy { margin:0 !important; font-size:13px !important; line-height:18px !important; color:#6B7075 !important; }
+}
+@media screen and (max-width: 767px), screen and (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list details { margin:0 !important; padding:0 !important; border:0 !important; border-radius:0 !important; background:none !important; box-shadow:none !important; }
+}
+@media screen and (max-width: 767px), screen and (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
+  /* A list straight on the page (Notifications, Updates) is one card of rows. */
+  html body #employee-mobile[data-nv-corp] .em-request-body > .em-request-list { border-radius:12px !important; background:#FFFFFF !important; box-shadow:0 0 0 1px #E3E5E6 !important; overflow:hidden; }
+}
