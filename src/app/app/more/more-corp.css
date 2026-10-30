@@ -1,0 +1,7 @@
+/* More (board O-More): values are quiet, the icons grey, Sign out a red outline at the end. */
+:is(#c-root, html) .c-more .c-row__value { font-weight: 400; color: var(--c-grey); }
+:is(#c-root, html) .c-more .c-row__icon { color: var(--c-ink2); }
+:is(#c-root, html) .c-more .c-more__signout { margin: 0; }
+/* Board O-More: one-line rows of 44px with 20px icons. */
+:is(#c-root, html) .c-more .c-row--one { min-height: 44px; padding-top: 4px; padding-bottom: 4px; }
+:is(#c-root, html) .c-more .c-row__icon .c-ic { width: 20px; height: 20px; }

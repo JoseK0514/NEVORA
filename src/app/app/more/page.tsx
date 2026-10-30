@@ -16,12 +16,22 @@ import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
 import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
 import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
+import { ArrowsLeftRightIcon, BuildingsIcon, CalendarXIcon, ChartBarIcon, CoffeeIcon, DeviceTabletIcon, MapPinIcon, PaletteIcon, ReceiptIcon, SlidersHorizontalIcon, SparkleIcon, TagIcon, ToggleRightIcon, UserCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import Link from "next/link";
+import { CorpAvatar, CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
+import { PortalSignout } from "@/components/portal-signout";
+import { getWorkspace } from "@/lib/data/workspaces";
+import { listLocations } from "@/lib/data/employees";
+import { listPositions } from "@/lib/data/positions";
+import { listBreakTypes } from "@/lib/clocker/break-types.server";
+import { listClockerDevices } from "@/lib/clocker/devices.server";
+import { currentPayPeriod } from "@/lib/payroll/pay-calendar.server";
+import { pathEnabled } from "@/lib/workspace-presentation/modules";
+import { lower } from "@/lib/workspace-presentation/words";
+import "./more-corp.css";
 
 export const metadata = { title: "More" };
 
-/** Quiet (v4): More is a page. Work first (time, pay, updates), then the account. Only destinations the role has. */
-const WORK = ["/app/timecards", "/app/payroll", "/app/reports", "/app/updates", "/app/my-pay"];
-const ACCOUNT = ["/app/settings", "/app/profile"];
 
 /** v5 One look (approved Oct 24, mockup E15): an Employee's or Lead's More is a page too. The profile first, then the
  * places that aren't tabs, then help. The calendar row opens Profile's calendar setup (its existing deep link). */
@@ -54,24 +64,74 @@ export default async function MorePage() {
   if (session.role === "EMPLOYEE" || session.role === "LEAD") return <EmployeeMore firstName={session.firstName} lastName={session.lastName} role={session.role} />;
   if (!isManagerRole(session.role)) redirect("/app");
   const proof = await requireSessionMutationProof();
-  const [operational, payroll, brand] = await Promise.all([
+  const [operational, payroll, brand, workspace] = await Promise.all([
     readOperationalAuthority(proof),
     payrollFeatureEnabled() ? readPayrollCapabilities(proof) : Promise.resolve(undefined),
     currentBrand(),
+    getWorkspace(),
   ]);
-  const navigation = navigationForRole(session.role, payroll, { operational, modules: brand.modules, words: wordPreset(brand.words).en, ownerAdvisorEnabled: process.env.NEVORA_OWNER_ADVISOR_ENABLED === "true" });
-  const item = (href: string) => navigation.find(entry => entry.href === href);
-  const work = WORK.map(item).filter(entry => entry !== undefined);
-  const account = ACCOUNT.map(item).filter(entry => entry !== undefined);
-  return <QuietPage>
-    <div className="q-bar" aria-hidden="true" />
-    <QuietHeader title="More" />
-    {work.length ? <QuietList label="Work" style={{ marginTop: 16 }}>
-      {work.map(entry => <QuietRow key={entry.href} href={entry.href} title={entry.label} />)}
-    </QuietList> : null}
-    <QuietList label="Account" style={{ marginTop: 32 }}>
-      {account.map(entry => <QuietRow key={entry.href} href={entry.href} title={entry.label} />)}
-      <QuietRow href="/support" title="Support" />
-    </QuietList>
-  </QuietPage>;
+  const words = wordPreset(brand.words).en;
+  const navigation = navigationForRole(session.role, payroll, { operational, modules: brand.modules, words, ownerAdvisorEnabled: process.env.NEVORA_OWNER_ADVISOR_ENABLED === "true" });
+  const has = (href: string) => navigation.some(entry => entry.href === href);
+  const label = (href: string, fallback: string) => navigation.find(entry => entry.href === href)?.label ?? fallback;
+  const owner = session.role === "OWNER";
+  // Each value is a fact its page already holds; a failed read leaves the value out, never a wrong number.
+  const ids = { employeeId: proof.employee.id, sessionTokenHash: proof.sessionTokenHash };
+  const [locations, positions, breakTypes, devices, pay] = owner ? await Promise.all([
+    listLocations({ includeInactive: false }).then(rows => rows.length).catch(() => null),
+    listPositions().then(rows => rows.length).catch(() => null),
+    listBreakTypes(ids).then(rows => rows.filter(row => row.active).length).catch(() => null),
+    listClockerDevices(ids).then(rows => rows.filter(row => row.state === "ACTIVE").length).catch(() => null),
+    payroll?.canConfigure ? currentPayPeriod().catch(() => null) : Promise.resolve(null),
+  ]) : [null, null, null, null, null];
+  const frequency = pay?.frequency ? ({ WEEKLY: "Weekly", BIWEEKLY: "Every two weeks", SEMIMONTHLY: "Twice a month", MONTHLY: "Monthly" } as const)[pay.frequency] : undefined;
+  const ic = (Icon: typeof BellIcon) => <Icon className="c-ic" aria-hidden="true" />;
+  const row = (href: string, title: string, Icon: typeof BellIcon, value?: number | string | null) =>
+    <li key={href}><CorpRow href={href} title={title} icon={ic(Icon)} value={value === null || value === undefined ? undefined : String(value)} chevron /></li>;
+  const settings = owner && pathEnabled("/app/settings", brand.modules);
+  const company = workspace.name;
+  // Corporate (Release 1, board O-More): opened from the header avatar. The company, Insights and Updates, the
+  // business's settings with their counts, the company and the account, then Sign out. Only destinations the role has.
+  return <CorpPage className="c-more" labelledBy="more-title">
+    <CorpNav title="More" right={<Link href="/app">Done</Link>} phoneOnly />
+    <CorpTitle id="more-title" title="More" wide />
+    <CorpCard as="div" ariaLabel="Company">
+      <CorpRows label="Company"><li><CorpRow href={owner ? "/app/settings/workspace" : "/app/profile"} bold title={company}
+        detail={[locations !== null ? `${locations} ${locations === 1 ? lower(words.location) : lower(words.locations)}` : null, `${session.firstName} ${session.lastName}, ${owner ? "owner" : "manager"}`].filter(Boolean).join(" · ")}
+        avatar={<CorpAvatar initials={initialsOf(company)} />} chevron /></li></CorpRows>
+    </CorpCard>
+    <CorpCard as="div" ariaLabel="Work">
+      <CorpRows label="Work">
+        {has("/app/reports") ? row("/app/reports", label("/app/reports", "Insights"), ChartBarIcon) : null}
+        {has("/app/updates") ? row("/app/updates", label("/app/updates", "Updates"), MegaphoneIcon) : null}
+        {has("/app/ai-manager") ? row("/app/ai-manager", label("/app/ai-manager", "AI manager"), SparkleIcon) : null}
+        {has("/app/my-pay") ? row("/app/my-pay", label("/app/my-pay", "My pay"), ReceiptIcon) : null}
+        {has("/app/requests") ? row("/app/requests", label("/app/requests", "Time off"), CalendarXIcon) : null}
+        {has("/app/exchange") ? row("/app/exchange", label("/app/exchange", "Shift requests"), ArrowsLeftRightIcon) : null}
+        {has("/app/availability") ? row("/app/availability", label("/app/availability", "Availability"), ClockIcon) : null}
+      </CorpRows>
+    </CorpCard>
+    {settings || has("/app/schedule/settings") ? <CorpCard as="div" ariaLabel="Business settings">
+      <CorpRows label="Business settings">
+        {settings && pathEnabled("/app/settings/locations", brand.modules) ? row("/app/settings/locations", words.locations, MapPinIcon, locations) : null}
+        {settings ? row("/app/settings/positions", "Positions", TagIcon, positions) : null}
+        {settings ? row("/app/settings/breaks", "Break types", CoffeeIcon, breakTypes) : null}
+        {settings ? row("/app/settings/clocker", "Clocker devices", DeviceTabletIcon, devices) : null}
+        {has("/app/schedule/settings") ? row("/app/schedule/settings", "Scheduling rules", CalendarCheckIcon) : null}
+        {settings && payroll?.canConfigure ? row("/app/settings/payroll", "Payroll settings", SlidersHorizontalIcon, frequency) : null}
+      </CorpRows>
+    </CorpCard> : null}
+    <CorpCard as="div" ariaLabel="Account">
+      <CorpRows label="Account">
+        {settings ? row("/app/settings/workspace", "Company profile", BuildingsIcon) : null}
+        {settings ? row("/app/settings/branding", "Branding", PaletteIcon) : null}
+        {settings ? row("/app/settings/features", "Features and words", ToggleRightIcon) : null}
+        {settings ? row("/app/settings/company-policies", "Company policies", ShieldCheckIcon) : null}
+        {row("/app/profile", "Your profile", UserCircleIcon)}
+        {has("/app/notifications") ? row("/app/notifications", "Notifications", BellIcon) : null}
+        {row("/support", "Help", InfoIcon)}
+      </CorpRows>
+    </CorpCard>
+    <PortalSignout className="c-more__signout"><button type="submit" className="c-btn c-btn--danger c-btn--full">Sign out</button></PortalSignout>
+  </CorpPage>;
 }
