@@ -241,3 +241,6 @@
 
 /* A kit block inside an older page frame (the Employee Time tab): the kit's tokens and resets, no page padding. */
 :is(#c-root, html) .c-page.c-embed { min-height: 0; padding: 0; background: none; }
+/* A small title action (Availability, Past timecards) keeps its 32px look and gets a 44px tap area. */
+:is(#c-root, html) .c-title__actions .c-btn--sm { position: relative; }
+:is(#c-root, html) .c-title__actions .c-btn--sm::after { content: ""; position: absolute; inset: -6px -2px; }

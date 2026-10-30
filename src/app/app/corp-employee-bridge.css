@@ -218,3 +218,7 @@
   /* A list straight on the page (Notifications, Updates) is one card of rows. */
   html body #employee-mobile[data-nv-corp] .em-request-body > .em-request-list { border-radius:12px !important; background:#FFFFFF !important; box-shadow:0 0 0 1px #E3E5E6 !important; overflow:hidden; }
 }
+/* Desktop and tablet: an Employee's My time is its own sidebar place, so the older view's "‹ Pay" bar goes. */
+html body .app-shell[data-nv-corp] .q-mytime > .q-nav { display:none !important; }
+html body #employee-mobile[data-nv-corp] .em-hours .em-hours-past { position:relative; }
+html body #employee-mobile[data-nv-corp] .em-hours .em-hours-past::after { content:""; position:absolute; inset:-6px -2px; }

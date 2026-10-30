@@ -44,7 +44,7 @@ function ShiftCard({snapshot}: {snapshot: HomeSnapshot}) {
     <CorpBody>
       <b className="c-big"><time dateTime={shift.startAt}>{clock(shift.startAt, zone)}</time><span aria-hidden="true"> – </span><span className="nv-sr"> to </span><time dateTime={shift.endAt}>{clock(shift.endAt, zone)}</time></b>
       <span className="c-ehome__where">{today ? where : keepWhole(`${longDay(shift, zone)} · ${where}`)}</span>
-      <CorpButtonLink href={href} kind="secondary" size="md" full>View shift</CorpButtonLink>
+      <CorpButtonLink href={href} kind="secondary" full>View shift</CorpButtonLink>
       <CorpNote center>Clock in on the {shift.locationLabel} tablet.</CorpNote>
     </CorpBody>
   </CorpCard>;
@@ -116,8 +116,8 @@ export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, 
       </> : <CorpCard id="home-shift" label="Today’s shift">
         <CorpBody>
           <p className="c-ehome__state" role="status">{waiting}</p>
-          {!loading && !paused ? denied ? <CorpButtonLink href="/login" size="md" full>Sign in</CorpButtonLink>
-            : <CorpButton kind="secondary" size="md" full data-home-refresh onClick={onRetry} disabled={refreshing} aria-busy={refreshing || undefined}>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span></CorpButton> : null}
+          {!loading && !paused ? denied ? <CorpButtonLink href="/login" full>Sign in</CorpButtonLink>
+            : <CorpButton kind="secondary" full data-home-refresh onClick={onRetry} disabled={refreshing} aria-busy={refreshing || undefined}>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span></CorpButton> : null}
         </CorpBody>
       </CorpCard>}
     </div>
