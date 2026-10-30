@@ -16,7 +16,7 @@ export type PeriodReview = {
     ruleRevision: number | null; superseded: boolean; coverageComplete: boolean; codes: string[];
   }[] };
 };
-export type WorkflowEvidence = { proposals?: CoverageProposal[]; periodReview?: PeriodReview };
+export type WorkflowEvidence = { proposals?: CoverageProposal[]; periodReview?: PeriodReview; coveragePlans?: import("./coverage-plan-contracts").CoveragePlans };
 export const issueLabels: Record<string, [string, string]> = {
   period_open: ["The period has not ended.", "El período no ha terminado."],
   open_entry: ["A recorded entry has no clock-out.", "Un registro no tiene salida marcada."],

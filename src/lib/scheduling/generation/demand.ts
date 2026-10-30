@@ -1,5 +1,5 @@
 import { addDays, weekStartFor } from "../../date-utils";
-import { selectGenerationScope } from "./scope";
+import { selectGenerationScope, generationDates, type GenerationReviewScope } from "./scope";
 import { calculateScheduleHealth } from "../schedule-health";
 import { businessDateStart, shiftPeriod } from "../periods";
 import { deriveConfiguredNeeds } from "./needs";
@@ -17,6 +17,7 @@ import type {
 export function deriveGenerationDemand(
   input: GenerationInput,
   ledger = input.ledger,
+  review?: GenerationReviewScope,
 ): GenerationDemand {
   businessDateStart(input.weekStart);
   if (weekStartFor(input.weekStart) !== input.weekStart)
@@ -27,7 +28,8 @@ export function deriveGenerationDemand(
   )
     throw new Error("Generation requires an explicit workspace timezone.");
   new Intl.DateTimeFormat("en", { timeZone: input.workspace.timeZone });
-  const { scoped, readiness, locationIds, excludedLocations, issues } = selectGenerationScope(input);
+  const dates = generationDates(input, review);
+  const { scoped, readiness, locationIds, excludedLocations, issues } = selectGenerationScope(input, review);
   const locations = scoped
     .filter((l) => locationIds.includes(l.id))
     .map((l) => ({
@@ -46,13 +48,14 @@ export function deriveGenerationDemand(
     coverageWindows: input.coverageWindows.filter((w) =>
       locationIds.includes(w.locationId),
     ),
-    weekDates: Array.from({ length: 7 }, (_, day) =>
-      addDays(input.weekStart, day),
-    ),
+    weekDates: dates,
   };
   const configured = calculateScheduleHealth({
     ...common,
     shifts: [],
+    // Reservation keys describe configured whole-week needs. Restrict measured
+    // demand, never this identity: adjacent 24h periods may be one reserved need.
+    weekDates: Array.from({ length: 7 }, (_, day) => addDays(input.weekStart, day)),
   }).coverageBlocks;
   const blocks = calculateScheduleHealth({
     ...common,

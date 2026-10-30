@@ -1,0 +1,27 @@
+# SDD ledger — plan: /workspace/work/nevora-owner-ai-implementation-20261030/docs/execution/owner-ai-validation-2026-10-30/PLAN.md
+
+Base delivered candidate: 4e6505bfccb793a7b1963baae0a72b1b9ec2ab58. Original bundle verifies and tree matches db7bedf4043633116ec23cdbb58f218d8b567183. Detached cloud worktree; no shared branch mutation. Jose's latest instruction lifts isolated functional/SQL/browser testing hold; production, paid inference and real notifications remain unauthorized.
+
+Ruling: preserve all original submissions, NOT_RUN declarations as historical evidence, active ledger and failed artifacts; record new execution separately. Skill cleanup does not override Jose's preservation instructions. Cloud helper scripts are not mounted; maintain equivalent task/result records manually.
+
+Pre-flight: unit contracts/controller -> SQL service/notebook -> actual Next UI share the same bounded notebook contract and authority. Existing API/tool/controller guards remain untouched. Whole-plan reasoning, controlled action and follow-through remain behind this quality gate.
+
+Task1: complete for baseline — 108/108 tests in 17 files passed at immutable 4e6505bf, including all new pure/controller/render cases, existing advisor units and migration classification. Actual command/log/JSON: /workspace/nevora-evidence/owner-ai-validation-20261030/4e6505bf/unit-01.
+
+Task2: baseline SQL passed — 44/44 tests in seven files on newly invocation-owned PostgreSQL 17.9 loopback cluster; canonical migration chain applied in fixture, Owner isolation/revocation/concurrent writes/request identity/changed-context rollback verified by executed tests. Cluster stopped by its owner. Evidence: /workspace/nevora-evidence/owner-ai-validation-20261030/4e6505bf/sql-01. Additional high-value replay/settlement/upgrade probes remain under review.
+
+Task3: in progress — new real-app notebook browser case authored; TypeScript and changed-file ESLint exit 0. Browser tests have not yet run. Existing role/workflow case retained. New case covers persistence, selection, explicit text, real concurrent edit/conflict, scoped read, Owner closure/reopen, 320/390/1440px targets/axe and explicit signout retirement. No provider credential/model call.
+
+Ruling: pinned Playwright WebKit wrapper replaces LD_LIBRARY_PATH, and its ldconfig-only dlopen cache test cannot recognize user-space GLES. Prepared the extracted public Debian libraries in the browser's supported sys/lib directories; native ctypes loading and WebKit 26.5 rendering probe succeeded. Use PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS only for this local false-positive cache check, preserving actual runtime failure checks and all application/ownership controls. Dependency hashes recorded in environment/browser-dependencies.json. Cost if wrong: local environment parity is weaker than CI/hosted evidence; actual browser run remains mandatory, no hosted/production readiness claimed.
+
+Task4: pending — fresh whole-change independent code/UI/QA review after actual app evidence and any fixes. Independent findings cannot be self-closed. No release GO.
+
+Task3: executed at immutable ecc247062363a8e5b93719ee0c3f26dae4710ae8 — both actual-app browser suites passed in Chromium 151.0.7922.34 and WebKit 26.5 (190.15s). Existing workflow/role suite retained all checks; notebook case verifies real goal/task persistence, A→B selection/manual draft, closure/reopen, actual concurrent API edit/conflict review and private signout retirement. Six 320/390/1440px axe/reflow/44px-target audits report no violations/overflow/short notebook targets; external requests and page errors are empty. Exact run, source hashes and closed ownership evidence: /workspace/nevora-evidence/owner-ai-validation-20261030/ecc24706/browser-01. No model configured or called.
+
+Task4: full project unit suite started at ecc24706 after targeted/unit/SQL/browser passes. Fresh independent whole-change code/UI/QA review is next. No application production file has changed since 4e6505bf; new source changes are browser test/config and validation documentation only.
+
+Full project unit baseline at ecc24706 completed: 666 files passed, 27 files skipped; 10,297 tests passed, 801 skipped, 55 todo; zero failures, exit 0, 418.67s. Actual terminal JSON/execution record preserved in all-unit-01. Existing test-only React prefetch warning recorded in run.log; no app browser page errors.
+
+Fresh independent code/UI/QA review at ecc24706: no Critical/backend defect; Important UI-R1 reproduced at 390/1440px in Chromium/WebKit. With eight ordinary tasks, Edit goal opens editor 3352–3787px below viewport without focus; next Tab goes to unrelated summary. Independent notebook rerun and SQL committed-response-loss/12 duplicate-delete/replay-after-later-revision probes passed. Original reports and failing viewport observations retained. Acceptance NO-GO pending UI-R1 correction and independent reproduction.
+
+Authoring actual-browser regression before the fix: populate eight tasks through the real scoped API, click Edit goal normally, measure focused/visible field without fill() or focus() assistance, check Tab and Discard return at mobile/desktop sizes. Run RED on the source-pinned browser candidate before changing implementation.

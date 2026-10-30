@@ -11,6 +11,12 @@ import "./advisor.css";
 import { bindAdvisorLifecycle } from "./lifecycle";
 import { AttentionSection } from "./attention";
 import { WorkflowControls, WorkflowResults } from "./workflows";
+import { SelectField } from "@/components/select-field";
+import { NotebookPanel } from "./notebook-panel";
+import { CoverageActionPanel } from "./coverage-actions";
+import { comparisonPredatesSave } from "./coverage-plans";
+import { createCoverageActionController, type CoverageActionView } from "./coverage-actions-controller";
+import type { NotebookEdit } from "@/lib/owner-advisor/notebook";
 import type { AttentionDisposition } from "@/lib/owner-advisor/briefing-contracts";
 const starters = [
   "What needs my attention today?",
@@ -36,9 +42,10 @@ function Sources({ sources }: { sources: AdvisorSource[] }) {
 }
 export function AdvisorScreen({
   view,
-  actions,
+  actions, coverage,
 }: {
   view: AdvisorView;
+  coverage?: { view: CoverageActionView; actions: Pick<ReturnType<typeof createCoverageActionController>, "acknowledge" | "save" | "recover" | "check" | "dismiss"> };
   actions: {
     editQuestion: (s: string) => void;
     editPriorities: (s: string) => void;
@@ -49,10 +56,16 @@ export function AdvisorScreen({
     reviewConflict: () => void;
     reviewItem?: (id: string, disposition: AttentionDisposition) => void;
     inspect?: (tool: Extract<import("@/lib/owner-advisor/contracts").AdvisorCommand, { op: "inspect" }>["tool"]) => void;
+    reviewCoverage?: (plans: import("@/lib/owner-advisor/coverage-plan-contracts").CoveragePlans, index: number) => void;
+    changeNotebook?: (edit: NotebookEdit) => Promise<boolean>;
+    selectTask?: (id: string | null) => void;
   };
 }) {
   const current = view.snapshot;
   const disabled = !current || !!view.busy || view.uncertain;
+  const saved = current?.notebook?.state === "ready" ? current.notebook.notebook : undefined;
+  const openTasks = saved?.tasks.filter(t => t.state === "open") ?? [];
+  const selectedUnavailable = !!view.focusedTaskId && !openTasks.some(t => t.id === view.focusedTaskId);
   return (
     <div className="nv-page oa-page" data-nv-page="">
       <PageBand
@@ -134,6 +147,7 @@ export function AdvisorScreen({
               <Sources sources={current.briefing.sources} />
             </section>
             <WorkflowControls date={current.briefing.data?.date ?? current.observedAt.slice(0, 10)} disabled={disabled} inspect={tool => actions.inspect?.(tool)} />
+            {coverage && <CoverageActionPanel view={coverage.view} actions={coverage.actions} />}
             <div className="oa-columns">
               <section className="oa-section" aria-labelledby="oa-conversation">
                 <h2 id="oa-conversation">Conversation</h2>
@@ -153,8 +167,9 @@ export function AdvisorScreen({
                 {view.answer && (
                   <article className="oa-answer" aria-label="Latest answer">
                     <h3>Answer and reasoning</h3>
-                    <p className="oa-plain">{view.answer.text}</p>
-                    <WorkflowResults answer={view.answer} />
+                    {view.answer.context?.notebookRevision !== undefined && view.answer.context.notebookRevision !== null && view.answer.context.notebookRevision !== saved?.revision && <p className="oa-notice">Your saved goals or tasks changed after this investigation. This answer uses earlier saved context; investigate again before relying on it for a new decision.</p>}
+                    <p className="oa-plain">{comparisonPredatesSave(view.answer.coveragePlans, coverage?.view.lastSavedAt) && <strong>From an earlier comparison: </strong>}{view.answer.text}</p>
+                    <WorkflowResults answer={view.answer} reviewCoverage={actions.reviewCoverage} lastSavedAt={coverage?.view.lastSavedAt} />
                     <Sources sources={view.answer.sources} />
                   </article>
                 )}
@@ -181,6 +196,12 @@ export function AdvisorScreen({
                     actions.ask();
                   }}
                 >
+                  {(saved || view.focusedTaskId) && <SelectField id="oa-investigation-task" name="investigationTask" label="Investigating" value={view.focusedTaskId ?? ""} disabled={!!view.busy} options={[
+                    { value: "", label: "General investigation" },
+                    ...openTasks.map(t => ({ value: t.id, label: t.objective })),
+                    ...(selectedUnavailable ? [{ value: view.focusedTaskId!, label: "Selected task is no longer open or available" }] : []),
+                  ]} onChange={e => actions.selectTask?.(e.target.value || null)} />}
+                  {selectedUnavailable && <p role="status" className="oa-notice">Choose an open task or select a general investigation to continue.</p>}
                   <label htmlFor="oa-question">Your question</label>
                   <textarea
                     id="oa-question"
@@ -201,6 +222,7 @@ export function AdvisorScreen({
                       disabled={
                         disabled ||
                         current.connection !== "available" ||
+                        selectedUnavailable ||
                         !view.question.trim()
                       }
                     >
@@ -267,6 +289,17 @@ export function AdvisorScreen({
                     {view.busy === "save" ? "Saving…" : "Save priorities"}
                   </button>
                 </form>
+                {saved && actions.changeNotebook ? <NotebookPanel
+                  notebook={saved}
+                  date={current.briefing.data?.date ?? current.observedAt.slice(0, 10)}
+                  disabled={disabled}
+                  change={actions.changeNotebook}
+                  selectTask={id => {
+                    actions.selectTask?.(id);
+                    document.getElementById("oa-question")?.focus();
+                  }}
+                  inspect={tool => actions.inspect?.(tool)}
+                /> : <p className="oa-muted">Saved goals and tasks are unavailable. Your priorities and existing investigation tools remain available.</p>}
               </section>
             </div>
           </>
@@ -278,11 +311,23 @@ export function AdvisorScreen({
 export function OwnerAdvisor() {
   const [view, setView] = useState<AdvisorView>(initialView);
   const ref = useRef<ReturnType<typeof createAdvisorController> | null>(null);
+  const [coverageView, setCoverageView] = useState<CoverageActionView>({stage:"idle",result:null,acknowledged:false,message:"",lastSavedAt:null});
+  const comparisonTrigger = useRef<HTMLElement | null>(null);
+  const coverageRef = useRef<ReturnType<typeof createCoverageActionController> | null>(null);
   useEffect(() => {
-    const c = createAdvisorController(setView);
+    const draft = createCoverageActionController(setCoverageView);
+    coverageRef.current = draft;
+    let priorSnapshot: AdvisorView["snapshot"] = null;
+    const c = createAdvisorController(next => {
+      setView(next);
+      if (next.snapshot !== priorSnapshot) {
+        priorSnapshot = next.snapshot;
+        if (next.snapshot) draft.access(next.snapshot.authority, next.snapshot.validForMs); else draft.pause();
+      }
+    });
     ref.current = c;
     const cleanup = bindAdvisorLifecycle(
-      c,
+      { start: c.start, pause() { draft.pause(); c.pause(); }, stop() { draft.stop(); c.stop(); } },
       window,
       document,
       () => navigator.onLine,
@@ -290,11 +335,19 @@ export function OwnerAdvisor() {
     return () => {
       cleanup();
       ref.current = null;
+      coverageRef.current = null;
     };
   }, []);
   return (
     <AdvisorScreen
       view={view}
+      coverage={{ view: coverageView, actions: {
+        acknowledge: value => coverageRef.current?.acknowledge(value),
+        save: async () => { await coverageRef.current?.save(); },
+        recover: async () => { await coverageRef.current?.recover(); },
+        check: async () => { await coverageRef.current?.check(); },
+        dismiss: () => { coverageRef.current?.dismiss(); if (comparisonTrigger.current?.isConnected) comparisonTrigger.current.focus(); },
+      } }}
       actions={{
         editQuestion: (s) => ref.current?.editQuestion(s),
         editPriorities: (s) => ref.current?.editPriorities(s),
@@ -304,7 +357,10 @@ export function OwnerAdvisor() {
         refresh: () => ref.current?.start(),
         reviewConflict: () => ref.current?.reviewConflict(),
         reviewItem: (id, disposition) => void ref.current?.reviewItem(id, disposition),
+        reviewCoverage: (plans, index) => { comparisonTrigger.current = document.activeElement as HTMLElement; void coverageRef.current?.prepare(plans, index); },
         inspect: tool => void ref.current?.inspect(tool),
+        selectTask: id => ref.current?.selectTask(id),
+        changeNotebook: edit => ref.current?.changeNotebook(edit) ?? Promise.resolve(false),
       }}
     />
   );

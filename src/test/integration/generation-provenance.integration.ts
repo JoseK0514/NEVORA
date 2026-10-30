@@ -1,5 +1,6 @@
 import { updateShift, deleteShift, insertShift, saveEmployeeSchedulingProfile } from './management-api';
 import { beforeAll, afterAll, beforeEach, expect, it } from 'vitest';
+import { setTimeout as delay } from 'node:timers/promises';
 import { createDisposableGenerationDatabase } from './local-postgres';
 import { instrumentGeneration } from './generation-instrumentation';
 import { installFixtureCompanyAccess } from './fixture-company-access';
@@ -176,39 +177,45 @@ async function heldExecutor(defer:(cleanup:()=>void|Promise<unknown>)=>void,hold
  return {executor,pid,ready,release};
 }
 async function observeBlocked(pid:number) {
- // Bound the wait by time, not attempts: a warm poll takes ~0.2 ms, so a fixed
- // count can expire before the other session even reaches its lock wait.
- // 5 s matches the held sessions' statement_timeout.
- const deadline=performance.now()+5000;
- do {
+ // Wait for the real lock condition, allowing asynchronous writer admission to
+ // advance. A fixed count of rapid SELECTs can finish before it even starts.
+ const until=performance.now()+5000;
+ while(performance.now()<until) {
    const rows=await q('SELECT cardinality(pg_blocking_pids($1))>0 AS blocked',[pid]);
    if(rows[0].blocked) return;
-   await new Promise(resolve=>setTimeout(resolve,5));
- } while(performance.now()<deadline);
+   await delay(5);
+ }
  throw new Error('Expected actual PostgreSQL lock wait was not observed.');
 }
-it.each(['profile','absent-membership','coverage-cascade','foreign-week-shift'].flatMap(kind=>['writer-first','generation-first'].map(order=>({kind,order}))))('serializes $kind with $order using actual PostgreSQL locks',async({kind,order})=>{
+it.each([
+ ...['profile','absent-membership','coverage-cascade','foreign-week-shift'].flatMap(kind=>['writer-first','generation-first'].map(order=>({kind,order,writerDelayMs:0}))),
+ {kind:'profile',order:'writer-first',writerDelayMs:200},
+])('serializes $kind with $order using actual PostgreSQL locks (writer start $writerDelayMs ms)',async({kind,order,writerDelayMs})=>{
  await generated();const a=await api();
  await q("INSERT INTO positions(id,workspace_id,name) VALUES('p','workspace-fuel','Fictional position'); INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES('w','loc-1',1,'08:00','12:00'); INSERT INTO coverage_window_position_requirements VALUES('w','p',1); INSERT INTO schedules(id,location_id,week_start,created_by) VALUES('foreign-schedule','loc-2','2030-09-30','manager')");
  await withOwnedTestResources(async defer=>{
   const generation=await heldExecutor(defer,s=>order==='generation-first'&&s.text.includes('generation_source_conflict'));
   const writer=await heldExecutor(defer,s=>order==='writer-first'&&(kind==='profile'?s.text.includes('FROM employees')&&s.text.includes('FOR UPDATE'):true));
-  const runWriter=()=>kind==='profile'?saveEmployeeSchedulingProfile({employeeId:'employee',actorEmployeeId:'manager',positionIds:['p'],eligibleLocationIds:['loc-1','loc-2']},writer.executor):writer.executor.transaction([{text:kind==='absent-membership'?"INSERT INTO employee_positions VALUES('employee','p')":kind==='coverage-cascade'?"DELETE FROM location_coverage_windows WHERE id='w'":"INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('foreign-shift','foreign-schedule','employee','2030-10-07','16:00','20:00')",values:[]}]);
+  const runWriter=async()=>{
+   if(writerDelayMs)await delay(writerDelayMs);
+   return kind==='profile'?saveEmployeeSchedulingProfile({employeeId:'employee',actorEmployeeId:'manager',positionIds:['p'],eligibleLocationIds:['loc-1','loc-2']},writer.executor):writer.executor.transaction([{text:kind==='absent-membership'?"INSERT INTO employee_positions VALUES('employee','p')":kind==='coverage-cascade'?"DELETE FROM location_coverage_windows WHERE id='w'":"INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('foreign-shift','foreign-schedule','employee','2030-10-07','16:00','20:00')",values:[]}]);
+  };
   let writing:Promise<unknown>|undefined;
+  // Register the drain before starting asynchronous work. A late registration
+  // during reverse cleanup can otherwise run before its barrier release.
+  defer(()=>writing);
   const generationExecutor:SqlExecutor={...generation.executor,query:async<T>(statement:SqlStatement)=>{
    const result=await generation.executor.query<T>(statement);
-   // Release before draining: this defer is registered after the scope's own
-   // release defer, so without it a failed scope would await a paused writer forever.
-   if(kind==='profile'&&order==='writer-first'&&!writing){writing=runWriter();defer(()=>writing);defer(()=>writer.release());await Promise.race([writer.ready,writing]);}
+   if(kind==='profile'&&order==='writer-first'&&!writing){writing=runWriter();await Promise.race([writer.ready,writing]);}
    return result;
   }};
   if(order==='writer-first') {
-    if(kind!=='profile'){writing=runWriter();defer(()=>writing);await Promise.race([writer.ready,writing]);}
+    if(kind!=='profile'){writing=runWriter();await Promise.race([writer.ready,writing]);}
     const deleting=a.deleteGeneratedDraftShift(input,generationExecutor);defer(()=>deleting);defer(()=>writer.release());
     await observeBlocked(generation.pid);writer.release();await writing;expect((await deleting).status).toBe('deleted');
   }else{
     const deleting=a.deleteGeneratedDraftShift(input,generation.executor);defer(()=>deleting);await Promise.race([generation.ready,deleting]);
-    const writing=runWriter();defer(()=>writing);defer(()=>generation.release());
+    writing=runWriter();defer(()=>generation.release());
     await observeBlocked(writer.pid);generation.release();expect((await deleting).status).toBe('deleted');await writing;
   }
  });

@@ -42,6 +42,12 @@ async function mapGenerationSnapshot(request: GenerationRequest, executor: SqlEx
     source,
     changedAt
   } = await readGenerationSource(executor);
+  return mapGenerationSource(request, source, changedAt);
+}
+
+/** Pure projection shared by guarded read-only tools; no source is read or mutated. */
+export function mapGenerationSource(request: GenerationRequest, source: GenerationSource, changedAt: string): GenerationSnapshot {
+  validateGenerationRequest(request);
   const w = source.workspaces.find(w => w.id === request.workspaceId && w.active === true);
   const actor = source.employees.find(e => e.id === request.actorEmployeeId && e.active === true && ['OWNER', 'MANAGER'].includes(String(e.role)));
   if (!w || !actor || !source.locations.some(l => l.id === actor.primary_location_id && l.workspace_id === w.id)) throw new GenerationPermissionError();

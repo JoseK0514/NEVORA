@@ -1,0 +1,85 @@
+{
+  "authoringDate": "2026-10-30",
+  "status": "Product direction recorded; design and cases drafted; no implementation or tests",
+  "directionAuthority": "Jose explicitly confirmed in this conversation an intelligent Owner-minded AI that solves problems and acts as an operations partner.",
+  "authorizationLimits": "Existing not-testing-yet, provider/data, spending, business-action approval, shared-branch and release controls remain. No blanket Owner permissions or standing automation were approved.",
+  "remoteObserved": "6c57f11052e583a3d907a54183ec142ba5a93247",
+  "localAuthoringApplicationBase": "eb11b4bfc64c95f871d908f1b4833bbdfa63312a",
+  "currentCoreAIComparison": "The six core AI files match the previous read-only inspection at a48b5b11440f5b8110a34a8e5c02bdaa7a8c966d.",
+  "sources": [
+    {
+      "key": "contracts",
+      "path": "src/lib/owner-advisor/contracts.ts",
+      "ref": "6c57f11052e583a3d907a54183ec142ba5a93247",
+      "gitBlob": "40c83eddc9ca4d0fca309f23545d95b42302b5e7",
+      "url": "https://github.com/JoseK0514/NEVORA/blob/6c57f11052e583a3d907a54183ec142ba5a93247/src/lib/owner-advisor/contracts.ts"
+    },
+    {
+      "key": "service",
+      "path": "src/lib/owner-advisor/service.server.ts",
+      "ref": "6c57f11052e583a3d907a54183ec142ba5a93247",
+      "gitBlob": "5d2e90c1cd09803baebca19f228cf61ce24344ea",
+      "url": "https://github.com/JoseK0514/NEVORA/blob/6c57f11052e583a3d907a54183ec142ba5a93247/src/lib/owner-advisor/service.server.ts"
+    },
+    {
+      "key": "tools",
+      "path": "src/lib/owner-advisor/tools.server.ts",
+      "ref": "6c57f11052e583a3d907a54183ec142ba5a93247",
+      "gitBlob": "86183cdf388f9c5a86705fce9999999e68ee9fd7",
+      "url": "https://github.com/JoseK0514/NEVORA/blob/6c57f11052e583a3d907a54183ec142ba5a93247/src/lib/owner-advisor/tools.server.ts"
+    },
+    {
+      "key": "loop",
+      "path": "src/lib/owner-advisor/loop.server.ts",
+      "ref": "6c57f11052e583a3d907a54183ec142ba5a93247",
+      "gitBlob": "c297154b5c61494363619da7e30b397214fc9e35",
+      "url": "https://github.com/JoseK0514/NEVORA/blob/6c57f11052e583a3d907a54183ec142ba5a93247/src/lib/owner-advisor/loop.server.ts"
+    },
+    {
+      "key": "config",
+      "path": "src/lib/owner-advisor/config.server.ts",
+      "ref": "6c57f11052e583a3d907a54183ec142ba5a93247",
+      "gitBlob": "1361fbdb5f713fbc24202d9f6d6541e02f5cea4c",
+      "url": "https://github.com/JoseK0514/NEVORA/blob/6c57f11052e583a3d907a54183ec142ba5a93247/src/lib/owner-advisor/config.server.ts"
+    },
+    {
+      "key": "authority",
+      "path": "src/lib/owner-advisor/authority.server.ts",
+      "ref": "6c57f11052e583a3d907a54183ec142ba5a93247",
+      "gitBlob": "fa3b02980eabbae3b66fb95592a4bf1263085fa9",
+      "url": "https://github.com/JoseK0514/NEVORA/blob/6c57f11052e583a3d907a54183ec142ba5a93247/src/lib/owner-advisor/authority.server.ts"
+    },
+    {
+      "key": "inputs",
+      "path": "docs/execution/release-1-2026-10-29/INPUTS.json",
+      "ref": "6c57f11052e583a3d907a54183ec142ba5a93247",
+      "gitBlob": "27f5e02ab2813ed1cfd2664526c3fa9f25da6e86",
+      "url": "https://github.com/JoseK0514/NEVORA/blob/6c57f11052e583a3d907a54183ec142ba5a93247/docs/execution/release-1-2026-10-29/INPUTS.json"
+    }
+  ],
+  "officialReferences": [
+    {
+      "url": "https://neon.com/docs/ai-gateway/overview",
+      "use": "Gateway, branch-scoped inference and streaming; no deployment or account access inferred."
+    },
+    {
+      "url": "https://neon.com/docs/ai-gateway/models",
+      "use": "Actual model availability is branch/region dependent; shortlist and live model selection remain unverified."
+    },
+    {
+      "url": "https://neon.com/docs/ai-gateway/openai-responses",
+      "use": "Current Responses route supports OpenAI models; other families need compatible adapters."
+    },
+    {
+      "url": "https://neon.com/docs/compute/functions/overview",
+      "use": "Functions can host request/response and triggered work; a durable queue/workflow lifecycle remains a separate responsibility."
+    }
+  ],
+  "liveEnvironmentVerified": false,
+  "modelCallsMade": 0,
+  "applicationTestsRun": [],
+  "implementationStatus": "Not implemented by this work",
+  "specPath": "docs/product/specs/owner-ai-operations-partner-2026-10-30/SPEC.md",
+  "implementationBase": "1121f24e50190172d1fa40d931fd064715f31554",
+  "implementationAuthorization": "Jose explicitly requested significant Owner AI improvements in this conversation; functional tests and paid inference remain held."
+}

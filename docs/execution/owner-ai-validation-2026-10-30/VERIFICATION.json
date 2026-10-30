@@ -1,0 +1,372 @@
+{
+  "status": "LOCAL_BOUNDED_INCREMENT_ACCEPTED",
+  "validatedSource": "c11757f6f7112f5a8a7f2c2ed73021a205bd609a",
+  "validatedTree": "41428eb4c50db23cf344d8a9b6cd910b6b849f7e",
+  "rootEvidence": "/workspace/nevora-evidence/owner-ai-validation-20261030",
+  "finalUnitAssertions": {
+    "passed": 10297,
+    "skipped": 801,
+    "pending": 55,
+    "failed": 0
+  },
+  "finalUnitFiles": {
+    "passed": 666,
+    "skipped": 27,
+    "total": 693
+  },
+  "finalSql": {
+    "passed": 44,
+    "failed": 0
+  },
+  "finalBrowserSuites": {
+    "passed": 2,
+    "failed": 0,
+    "engines": [
+      "Chromium 151.0.7922.34",
+      "WebKit 26.5"
+    ],
+    "widths": [
+      320,
+      390,
+      1440
+    ],
+    "editEntryViewports": [
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 1440,
+        "height": 844
+      }
+    ]
+  },
+  "independentReview": {
+    "reports": [
+      "independent-code-review.md",
+      "independent-ui-review.md",
+      "independent-qa-review.md",
+      "independent-focus-recheck.md",
+      "independent-editor-reveal-recheck.md"
+    ],
+    "latestDecision": "Code/UI/QA GO for bounded LOCAL increment; UI-R1 independently CLOSED at c11757f6",
+    "expandedInteractionChecks": 42,
+    "originalFindingsPreserved": true
+  },
+  "console": {
+    "pageErrors": 0,
+    "notebookConsoleErrors": 0,
+    "chromiumUnusedCssPreloadWarnings": 5,
+    "webkitUnusedCssPreloadWarnings": 6,
+    "testWarnings": "Existing Next link-prop forwarding mocks; see raw logs. No warning-free claim."
+  },
+  "failedRunsPreserved": [
+    "a8ea3286/browser-red-01 (expected RED; editor offscreen/focus BODY)",
+    "f446b8c8/browser-green-01 (WebKit partial field reveal plus separate 240000ms legacy timeout)",
+    "independent-f446b8c8/focus-01 and notebook-01 (independent WebKit clipping reproduction)"
+  ],
+  "closedScope": "Private Owner goals/tasks, continuity, scoped fresh read preparation and finite private editor lifecycle. Future joint-plan reasoning, new controlled business actions, monitoring and full AI vision are NOT completed by this validation.",
+  "notExecutedOrAuthorized": [
+    "Paid model inference/semantic quality evaluation",
+    "Production/provider configuration or hosted database migration",
+    "Real customer data/notifications",
+    "Workflow dispatch, shared push/merge or deployment/release",
+    "Independent hardware/screen-reader/all-device certification",
+    "Held legacy root/PostgreSQL18 suites represented by skipped/pending assertions"
+  ],
+  "sourceEnvironment": "Detached cloud worktree; invocation-owned local PostgreSQL17.9 and Next development mirrors with documented transport/type-reference substitutions; not hosted parity.",
+  "runs": [
+    {
+      "path": "4e6505bf/sql-01/execution.json",
+      "candidate": "4e6505bfccb793a7b1963baae0a72b1b9ec2ab58",
+      "exitCode": 0,
+      "command": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.owner-advisor-integration.config.mts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/workspace/nevora-evidence/owner-ai-validation-20261030/4e6505bf/sql-01/vitest.json"
+      ],
+      "startedAt": "2026-10-30T12:12:41.555774+00:00",
+      "endedAt": "2026-10-30T12:13:12.210638+00:00",
+      "success": true,
+      "assertions": {
+        "passed": 44
+      }
+    },
+    {
+      "path": "4e6505bf/unit-01/execution.json",
+      "candidate": "4e6505bfccb793a7b1963baae0a72b1b9ec2ab58",
+      "exitCode": 0,
+      "command": [
+        "node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "src/lib/owner-advisor/adversarial.test.ts",
+        "src/lib/owner-advisor/briefing.test.ts",
+        "src/lib/owner-advisor/citations.test.ts",
+        "src/lib/owner-advisor/http.test.ts",
+        "src/lib/owner-advisor/loop.test.ts",
+        "src/lib/owner-advisor/notebook.test.ts",
+        "src/lib/owner-advisor/workflows.test.ts",
+        "src/components/owner-advisor",
+        "src/app/api/owner/advisor",
+        "src/test/migration-order.test.ts",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/workspace/nevora-evidence/owner-ai-validation-20261030/4e6505bf/unit-01/vitest.json"
+      ],
+      "startedAt": "2026-10-30T12:10:38.908986+00:00",
+      "endedAt": "2026-10-30T12:10:42.333861+00:00",
+      "success": true,
+      "assertions": {
+        "passed": 108
+      }
+    },
+    {
+      "path": "a8ea3286/browser-red-01/execution.json",
+      "candidate": "a8ea3286b1819a18ac4ee5a12c6c7aaed056dcc1",
+      "exitCode": 1,
+      "command": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.owner-advisor-browser.config.mts",
+        "src/test/integration/owner-advisor-notebook-browser.integration.ts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/workspace/nevora-evidence/owner-ai-validation-20261030/a8ea3286/browser-red-01/vitest.json"
+      ],
+      "startedAt": "2026-10-30T12:38:52.425150+00:00",
+      "endedAt": "2026-10-30T12:39:21.119534+00:00",
+      "success": false,
+      "assertions": {
+        "failed": 1
+      }
+    },
+    {
+      "path": "c11757f6/all-unit-final-01/execution.json",
+      "candidate": "c11757f6f7112f5a8a7f2c2ed73021a205bd609a",
+      "exitCode": 0,
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/workspace/nevora-evidence/owner-ai-validation-20261030/c11757f6/all-unit-final-01/vitest.json"
+      ],
+      "startedAt": "2026-10-30T13:09:45.966363+00:00",
+      "endedAt": "2026-10-30T13:17:02.557480+00:00",
+      "success": true,
+      "assertions": {
+        "passed": 10297,
+        "skipped": 801,
+        "pending": 55
+      }
+    },
+    {
+      "path": "c11757f6/browser-serial-01/execution.json",
+      "candidate": "c11757f6f7112f5a8a7f2c2ed73021a205bd609a",
+      "exitCode": 0,
+      "command": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.owner-advisor-browser.config.mts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/workspace/nevora-evidence/owner-ai-validation-20261030/c11757f6/browser-serial-01/vitest.json"
+      ],
+      "startedAt": "2026-10-30T12:55:32.152406+00:00",
+      "endedAt": "2026-10-30T12:58:44.108042+00:00",
+      "success": true,
+      "assertions": {
+        "passed": 2
+      }
+    },
+    {
+      "path": "c11757f6/lint-final-01/execution.json",
+      "candidate": "c11757f6f7112f5a8a7f2c2ed73021a205bd609a",
+      "exitCode": 0,
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "startedAt": "2026-10-30T13:09:45.968460+00:00",
+      "endedAt": "2026-10-30T13:11:31.318526+00:00"
+    },
+    {
+      "path": "c11757f6/sql-final-01/execution.json",
+      "candidate": "c11757f6f7112f5a8a7f2c2ed73021a205bd609a",
+      "exitCode": 0,
+      "command": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.owner-advisor-integration.config.mts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/workspace/nevora-evidence/owner-ai-validation-20261030/c11757f6/sql-final-01/vitest.json"
+      ],
+      "startedAt": "2026-10-30T13:09:45.967604+00:00",
+      "endedAt": "2026-10-30T13:10:54.010062+00:00",
+      "success": true,
+      "assertions": {
+        "passed": 44
+      }
+    },
+    {
+      "path": "c11757f6/typescript-final-01/execution.json",
+      "candidate": "c11757f6f7112f5a8a7f2c2ed73021a205bd609a",
+      "exitCode": 0,
+      "command": [
+        "./node_modules/.bin/tsc",
+        "--noEmit",
+        "--incremental",
+        "false"
+      ],
+      "startedAt": "2026-10-30T13:09:45.968212+00:00",
+      "endedAt": "2026-10-30T13:10:59.030394+00:00"
+    },
+    {
+      "path": "c11757f6/whitespace-final-01/execution.json",
+      "candidate": "c11757f6f7112f5a8a7f2c2ed73021a205bd609a",
+      "exitCode": 0,
+      "command": [
+        "git",
+        "diff",
+        "1121f24e50190172d1fa40d931fd064715f31554",
+        "--check"
+      ],
+      "startedAt": "2026-10-30T13:09:45.968887+00:00",
+      "endedAt": "2026-10-30T13:09:46.011627+00:00"
+    },
+    {
+      "path": "ecc24706/all-unit-01/execution.json",
+      "candidate": "ecc247062363a8e5b93719ee0c3f26dae4710ae8",
+      "exitCode": 0,
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/workspace/nevora-evidence/owner-ai-validation-20261030/ecc24706/all-unit-01/vitest.json"
+      ],
+      "startedAt": "2026-10-30T12:27:10.201014+00:00",
+      "endedAt": "2026-10-30T12:34:09.514126+00:00",
+      "success": true,
+      "assertions": {
+        "passed": 10297,
+        "skipped": 801,
+        "pending": 55
+      }
+    },
+    {
+      "path": "ecc24706/browser-01/execution.json",
+      "candidate": "ecc247062363a8e5b93719ee0c3f26dae4710ae8",
+      "exitCode": 0,
+      "command": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.owner-advisor-browser.config.mts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/workspace/nevora-evidence/owner-ai-validation-20261030/ecc24706/browser-01/vitest.json"
+      ],
+      "startedAt": "2026-10-30T12:22:27.095200+00:00",
+      "endedAt": "2026-10-30T12:25:38.347763+00:00",
+      "success": true,
+      "assertions": {
+        "passed": 2
+      }
+    },
+    {
+      "path": "f446b8c8/all-unit-final-01/execution.json",
+      "candidate": "f446b8c896725212aafccf462236b4b5bcf0c096",
+      "exitCode": 0,
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/workspace/nevora-evidence/owner-ai-validation-20261030/f446b8c8/all-unit-final-01/vitest.json"
+      ],
+      "startedAt": "2026-10-30T12:44:25.397554+00:00",
+      "endedAt": "2026-10-30T12:52:45.766643+00:00",
+      "success": true,
+      "assertions": {
+        "passed": 10297,
+        "skipped": 801,
+        "pending": 55
+      }
+    },
+    {
+      "path": "f446b8c8/browser-green-01/execution.json",
+      "candidate": "f446b8c896725212aafccf462236b4b5bcf0c096",
+      "exitCode": 1,
+      "command": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.owner-advisor-browser.config.mts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/workspace/nevora-evidence/owner-ai-validation-20261030/f446b8c8/browser-green-01/vitest.json"
+      ],
+      "startedAt": "2026-10-30T12:44:25.395870+00:00",
+      "endedAt": "2026-10-30T12:49:42.968337+00:00",
+      "success": false,
+      "assertions": {
+        "failed": 2
+      }
+    },
+    {
+      "path": "f446b8c8/sql-final-01/execution.json",
+      "candidate": "f446b8c896725212aafccf462236b4b5bcf0c096",
+      "exitCode": 0,
+      "command": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.owner-advisor-integration.config.mts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/workspace/nevora-evidence/owner-ai-validation-20261030/f446b8c8/sql-final-01/vitest.json"
+      ],
+      "startedAt": "2026-10-30T12:44:25.396236+00:00",
+      "endedAt": "2026-10-30T12:45:09.378577+00:00",
+      "success": true,
+      "assertions": {
+        "passed": 44
+      }
+    },
+    {
+      "path": "c11757f6/pilot-guard-01/execution.json",
+      "candidate": "c11757f6f7112f5a8a7f2c2ed73021a205bd609a",
+      "command": [
+        "node",
+        "--import",
+        "tsx",
+        "--test",
+        "--test-reporter=tap",
+        "src/test/integration/owner-advisor-pilot.check.mts"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T13:30:45.595528+00:00",
+      "endedAt": "2026-10-30T13:30:46.434535+00:00",
+      "exitCode": 0,
+      "transport": "injected sentinels and invocation-owned loopback HTTP only; no real provider",
+      "log": "run.log"
+    }
+  ],
+  "activationPilotGuard": {
+    "passed": 18,
+    "failed": 0,
+    "path": "c11757f6/pilot-guard-01",
+    "transport": "fake/sentinel and owned loopback only; no paid provider"
+  }
+}

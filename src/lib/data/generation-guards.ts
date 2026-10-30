@@ -13,6 +13,7 @@ const tables = [
   'schedule_publication_revision_shifts','schedule_generation_exclusions',
   'shift_change_participation','shift_change_events','shift_change_operations',
 ] as const;
+export const generationSourceTables = ['workspaces', ...tables] as const;
 export type GenerationSourceRow = Record<string, unknown>;
 export type GenerationSource = Record<typeof tables[number] | 'workspaces', GenerationSourceRow[]>;
 const order: Partial<Record<keyof GenerationSource,string>> = {

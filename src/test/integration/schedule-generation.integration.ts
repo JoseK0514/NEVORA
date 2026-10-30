@@ -2,6 +2,7 @@ import { deleteGeneratedDraftShift, saveEmployeeSchedulingProfile } from './mana
 import { bindFixtureCallout, fixtureProof } from './shift-change-api';
 import { managementProof } from '../fixtures/management';
 import { afterAll, beforeAll, beforeEach, expect, it, vi, afterEach } from 'vitest';
+import { setTimeout as delay } from 'node:timers/promises';
 import { Client } from 'pg';
 import { Temporal } from '@js-temporal/polyfill';
 import { selectGenerationScope } from '../../lib/scheduling/generation/scope';
@@ -449,14 +450,11 @@ async function heldExecutor(defer: (cleanup: () => void | Promise<unknown>) => v
   };
 }
 async function observeBlocked(pid: number) {
-  // Bound the wait by time, not attempts: a warm poll takes ~0.2 ms, so a fixed
-  // count can expire before the other session even reaches its lock wait.
-  // 5 s matches the held sessions' statement_timeout.
-  const deadline = performance.now() + 5000;
-  do {
+  const until=performance.now()+5000;
+  while (performance.now()<until) {
     if ((await q('SELECT cardinality(pg_blocking_pids($1))>0 blocked', [pid]))[0].blocked) return;
-    await new Promise(resolve => setTimeout(resolve, 5));
-  } while (performance.now() < deadline);
+    await delay(5);
+  }
   throw Error('Expected actual PostgreSQL blocking barrier');
 }
 it.each(['profile', 'membership', 'membership-insert', 'normal-availability-insert', 'coverage-cascade', 'availability', 'leave', 'manual-insert', 'manual-edit', 'foreign-week'].flatMap(kind => ['writer-first', 'generation-first'].map(order => ({
@@ -480,14 +478,15 @@ it.each(['profile', 'membership', 'membership-insert', 'normal-availability-inse
   await withOwnedTestResources(async defer => {
     const generation = await heldExecutor(defer, s => order === 'generation-first' && s.text.includes('generation_source_conflict'));
     let writing:Promise<unknown>|undefined;
+    // Register before launching work. The release registered below must run
+    // before this drain; never append a cleanup from an asynchronous callback.
+    defer(()=>writing);
     const counted: SqlExecutor = {
       ...generation.executor,
       query: async <T,>(s: SqlStatement) => {
         reads++;
         const result=await generation.executor.query<T>(s);
-        // Release before draining: this defer is registered after the scope's own
-        // release defer, so without it a failed scope would await a paused writer forever.
-        if(kind==='profile'&&order==='writer-first'&&!writing){writing=write();defer(()=>writing);defer(()=>writer.release());await Promise.race([writer.ready,writing]);}
+        if(kind==='profile'&&order==='writer-first'&&!writing){writing=write();await Promise.race([writer.ready,writing]);}
         return result;
       }
     };
@@ -499,7 +498,7 @@ it.each(['profile', 'membership', 'membership-insert', 'normal-availability-inse
       eligibleLocationIds: ['loc-2']
     }, writer.executor) : writer.executor.transaction([statement]);
     if (order === 'writer-first') {
-      if(kind!=='profile'){writing=write();defer(()=>writing);await Promise.race([writer.ready,writing]);}
+      if(kind!=='profile'){writing=write();await Promise.race([writer.ready,writing]);}
       const generating = run(request, counted);
       defer(() => generating);
       defer(() => writer.release());
@@ -515,8 +514,7 @@ it.each(['profile', 'membership', 'membership-insert', 'normal-availability-inse
       const generating = run(request, counted);
       defer(() => generating);
       await Promise.race([generation.ready, generating]);
-      const writing = write();
-      defer(() => writing);
+      writing = write();
       defer(() => generation.release());
       await observeBlocked(writer.pid);
       generation.release();

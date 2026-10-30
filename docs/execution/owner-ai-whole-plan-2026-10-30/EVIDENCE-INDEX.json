@@ -1,0 +1,2048 @@
+{
+  "evidenceRoot": "/workspace/nevora-evidence/owner-ai-whole-plan-20261030",
+  "indexVersion": 1,
+  "description": "All eligible compact logs/JSON/reports/screenshots/probes and source/closure manifests. Complete source mirrors, dependencies, browser profiles, runtime environments/barriers are excluded. Raw traces remain external with hashes. Compact omissions only remove redundant passing screenshots. Failed evidence is preserved unchanged.",
+  "entries": [
+    {
+      "path": "29afff60/lint-final-01/run.log",
+      "bytes": 41,
+      "sha256": "45dd42c28bc5a51b907c86db4ed50cb3e1379f11c10454748a96d2528f6bb7c7",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "29afff60/source-custody/business-source-equivalence.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "29afff60/source-custody/source.json",
+      "bytes": 753,
+      "sha256": "1a08e0f4670256853fb1308be2ec7f73cb8a4c55a75912a372437b851324c6f4",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "29afff60/source-custody/whitespace.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "29afff60/types-final-01/run.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "baseline-da1dab3e/generation-focused-01/owned-generation-runner.mjs",
+      "bytes": 3776,
+      "sha256": "213b163b57580b95f7249ef2d86080ee53c713112329d0d511a2f91c49fca621",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "baseline-da1dab3e/generation-focused-01/result.json",
+      "bytes": 51660,
+      "sha256": "63dd8bfb7abbeae9d8a6fd348b8341f3b203bb8abd34201ea86e38091a5c8eae",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "baseline-da1dab3e/generation-focused-01/run.log",
+      "bytes": 1289,
+      "sha256": "19b0f50ea66567d7694760726781b0a44f7dcc0bcbb69147c48ecb2dcb795baa",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-focus-red-02/coverage-plans/chromium-discovery.json",
+      "bytes": 89,
+      "sha256": "6b96f1dad7c3b08daea20e0f0c4b90df55f319e59f4ca8032d08231ad648b336",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-focus-red-02/coverage-plans/chromium-failed.png",
+      "bytes": 407853,
+      "sha256": "d6784273e32b89827f051ab1646fc619b584663c1a09898d2759e45d60ab277a",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-focus-red-02/coverage-plans/chromium-failure.json",
+      "bytes": 128,
+      "sha256": "fecfcbbd423a38629b74ab1600f62a1f177119ad3439b4dc18481cf49b3f705b",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-focus-red-02/coverage-plans/owned-next-SQb9o8/next.log",
+      "bytes": 1540,
+      "sha256": "e3a4527ec28c0bff3d295f8538566c52d95622d1098ee162a99bd414084ca2ea",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-focus-red-02/coverage-plans/owned-next-SQb9o8/ownership.json",
+      "bytes": 882,
+      "sha256": "ff0ebe82dd0bbadb4cf8dadeacaea39042c54aec0b19ef6a1f535054796ce5d6",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-focus-red-02/coverage-plans/owned-next-SQb9o8/source-manifest.json",
+      "bytes": 266134,
+      "sha256": "03ff531b6385a9197c1c494cb8d11bbca8c60bd473732b51a5e3030657e09ebb",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-focus-red-02/coverage-plans/report.json",
+      "bytes": 268192,
+      "sha256": "2f10a00cb655e25b81ac595c257e1db8dc44fce423840ba6a67ca862c1381d84",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-focus-red-02/result.json",
+      "bytes": 1385,
+      "sha256": "a0b60232dfb682b17b906354fc99d7ce6ddbafa64d5cb71ba73ae9426530a3c6",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-focus-red-02/run.log",
+      "bytes": 1255,
+      "sha256": "e009d22ce6026f2618eb44b93ccc4fc09f1715a14db9c1d37f980c6b373e9d50",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-03/coverage-plans/chromium-1440-audit.json",
+      "bytes": 280347,
+      "sha256": "84060ed09b85ce86f3f339c500fd7ae2a551dbc4239497a3feb6be96fb782483",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-03/coverage-plans/chromium-1440.png",
+      "bytes": 473961,
+      "sha256": "5babb36f5bac49a30088ebf4dae2f2944e633c27d21e3185a248cd6ee4edd82c",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "browser-green-03/coverage-plans/chromium-320-audit.json",
+      "bytes": 273223,
+      "sha256": "c8a9837f2ceca7570f8e27e22ab7ba89202f4970963f159c2c4329b6d6b15c44",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-03/coverage-plans/chromium-320.png",
+      "bytes": 452039,
+      "sha256": "4ffc8c606e482d5af3bffef2d7b4dcc9e001e43638106fae5c52da3cd7b6ac0e",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "browser-green-03/coverage-plans/chromium-390-audit.json",
+      "bytes": 279840,
+      "sha256": "f2232c91dbc1f0457da0655135055315c1f7baac6ae39c0abffb5bc0dc46687f",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-03/coverage-plans/chromium-390.png",
+      "bytes": 434930,
+      "sha256": "4e549017659e290ea85a61d1444a8a9eec29888e80bcad30b26b6c55638d9d43",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "browser-green-03/coverage-plans/chromium-discovery.json",
+      "bytes": 85,
+      "sha256": "b946944b76b1727c3ba12bf7371fa79050b6956e2dc0443e25392be46011392c",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-03/coverage-plans/chromium-failed.png",
+      "bytes": 462208,
+      "sha256": "ee6072e83a6730365552ce4ea01236c32a384720266393f0b418c6921dedc641",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-03/coverage-plans/chromium-failure.json",
+      "bytes": 423,
+      "sha256": "659f2e82c943b1c934a4bda0f84723e0dfab5ab67307a0b93a6f0142c1116d08",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-03/coverage-plans/chromium-plan.json",
+      "bytes": 3511,
+      "sha256": "440489bfea16f2c06c6fc136bc50a2e7074f2886d997d280b53e1bb78457cd83",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-03/coverage-plans/owned-next-dRcpQR/next.log",
+      "bytes": 2007,
+      "sha256": "4a640487115129a0442363f18412aeb10bec4063643cda87a8f2aa89eca410b5",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-03/coverage-plans/owned-next-dRcpQR/ownership.json",
+      "bytes": 878,
+      "sha256": "fead597613734b7d9c95304a41630e19702af3e44b6efbd3fbf21c6fd54629e0",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-03/coverage-plans/owned-next-dRcpQR/source-manifest.json",
+      "bytes": 266134,
+      "sha256": "102028defec86320de998b398cd96e73df16c7ae8313d10bd46676ea61353a1a",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-03/coverage-plans/report.json",
+      "bytes": 274299,
+      "sha256": "6ff109761ed2284b8d8d68de49d129674738ea4cb48e62526cc1583a377afd05",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-03/result.json",
+      "bytes": 1660,
+      "sha256": "9e2a22d597e1b40da01ceb18a0e4baf658e808cc7ca0a8f9d313e4e2ca083aa2",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-03/run.log",
+      "bytes": 1958,
+      "sha256": "86528c43f11300eadb50f5488291f83e735d46b6eaebb011661ee1ce0a14c4c0",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/chromium-1440-audit.json",
+      "bytes": 280347,
+      "sha256": "78684c39d766698e36e64929a64c2ed1902d63f91e907da923b6439e78c786f7",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/chromium-1440.png",
+      "bytes": 472677,
+      "sha256": "8d65ed552c7ea74d6f5b16a985c331ed06b9dab9775e1de1dadaa6c857c78043",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/chromium-320-audit.json",
+      "bytes": 273223,
+      "sha256": "10aa34f97ee4193b3d22acc8988d789717a856b8b6f783f80593cdb76a622d71",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/chromium-320.png",
+      "bytes": 450776,
+      "sha256": "be47c3940842098792d8daabf26a6cab7a664393d0abba7aeb205d917cf0211d",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/chromium-390-audit.json",
+      "bytes": 279840,
+      "sha256": "496b77a64ca809181de6e9ab63362def137ccbc5062296d2ed1a18d31396691f",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/chromium-390.png",
+      "bytes": 434198,
+      "sha256": "1807fdd3dd570f5949b9bf94b25c2ac2a0a288fbb2dbe835558a6bd6b2071c16",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/chromium-discovery.json",
+      "bytes": 85,
+      "sha256": "b946944b76b1727c3ba12bf7371fa79050b6956e2dc0443e25392be46011392c",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/chromium-plan.json",
+      "bytes": 3511,
+      "sha256": "be10a1b515324e1f8e2d88e1554d5f7063e5ac923919e3b8ba2e275750bec95f",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/chromium-remaining.png",
+      "bytes": 464805,
+      "sha256": "43551fe87a8b220375159f6dbe5aeb253c0b7bdcae45bbc8e8d07278bfd3b151",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/chromium-retired.png",
+      "bytes": 65357,
+      "sha256": "a0cfb8401d74c83a42c44ac4be200ad11eddeb4081433fd2168ee6e32c5b4710",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/owned-next-FRYXu0/next.log",
+      "bytes": 2819,
+      "sha256": "4c96a9637f998bfe6a90a39e3dcfe4794c7e44ba03a7378ea4fe5ba71b1848df",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/owned-next-FRYXu0/ownership.json",
+      "bytes": 878,
+      "sha256": "2b3efbc4d53fdb60604b00db6e6b9ee944b8975a8f30c1a96329ca5cf97d2ec8",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/owned-next-FRYXu0/source-manifest.json",
+      "bytes": 266134,
+      "sha256": "c0cc3ea47b3710caee0a1e0e8363eca9b3a4b27ecb5a9ee090e25838b27fb7d6",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/report.json",
+      "bytes": 270441,
+      "sha256": "5626fa5193258be5749e307d455107cca112373ddd09e1d934c9c7dd124529c5",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/webkit-1440-audit.json",
+      "bytes": 279838,
+      "sha256": "5f25bd51c0f03ede73a7483b9e6826eaf38484df32d605771c7cecb7841caa0a",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/webkit-1440.png",
+      "bytes": 583095,
+      "sha256": "3e19fc811c81a2f95d4bca006ac8aea707407312b6a0341c66c81f5be5f6911d",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/webkit-320-audit.json",
+      "bytes": 273227,
+      "sha256": "a55bb614ffa63b08e36ffde89671e00864ae701c6225010302868d90cf73eac3",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/webkit-320.png",
+      "bytes": 580221,
+      "sha256": "2dd5023446652940811b681b1323318d1a04066f322564c6db3fab8e27934be2",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/webkit-390-audit.json",
+      "bytes": 279844,
+      "sha256": "a9aae7ec26ae3defd7c127d2e070bb60ecc9ba88f19b2c6a2d321c5a6a7bfd32",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/webkit-390.png",
+      "bytes": 602887,
+      "sha256": "5cd2340f3c838b4c8fb3acdb02d54fb0c9223fa7fadd5fac75cfc1aa4c4b3cff",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/webkit-discovery.json",
+      "bytes": 85,
+      "sha256": "b946944b76b1727c3ba12bf7371fa79050b6956e2dc0443e25392be46011392c",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/webkit-plan.json",
+      "bytes": 3509,
+      "sha256": "7603bd15d5cab036f3a2716b12b29c5b3eaa1e83ec8ca686ef43f83c28fe82f2",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/webkit-remaining.png",
+      "bytes": 579052,
+      "sha256": "70234f77d59ba95361bf51de60aa95cc0f795c526a9d2c2a151c8ac0598e28b1",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/webkit-retired.png",
+      "bytes": 78898,
+      "sha256": "2e082208fc73d17f472c84c292be395f5b184c0701cdc77e794b21c3ef48c180",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "browser-green-04/result.json",
+      "bytes": 1044,
+      "sha256": "5fb26463afbf66fd77bb121d598736445a05bbfe2658a0d1dbb4088e5258cdde",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-green-04/run.log",
+      "bytes": 848,
+      "sha256": "95511e5ce2b3ee3eb979614b61cddb844b3c995f4ca7d6a244a6decced1fea2f",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-red-01/coverage-plans/chromium-failed.png",
+      "bytes": 246031,
+      "sha256": "b2adf435c770f8dc16832ba3e5df4060193445689bf2c7885fe567c69e1df93a",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-red-01/coverage-plans/chromium-failure.json",
+      "bytes": 170,
+      "sha256": "0885e63bac79504b0e86dbc1502815db5d306c7f756318cdc0c3509e46d53a05",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-red-01/coverage-plans/owned-next-b6tB4X/next.log",
+      "bytes": 1471,
+      "sha256": "2da3fde1e15dfb6289a3a0d360e6a9bc8710058eab4a8e68eac953dd1a50577f",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-red-01/coverage-plans/owned-next-b6tB4X/ownership.json",
+      "bytes": 876,
+      "sha256": "434d6176f7861f0771b978ad553d1cf9b9ae1537cb1bc0d39dd5a274cf72157e",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-red-01/coverage-plans/owned-next-b6tB4X/source-manifest.json",
+      "bytes": 266134,
+      "sha256": "83c2605ed21c0dc31acc6e2ee5132a6ab646c6fb6e8dbd2ba102e3448e861f24",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-red-01/coverage-plans/report.json",
+      "bytes": 266030,
+      "sha256": "3b2112548b3565d2080ed2b41833fdd8ac6c61245f57ca5f38e3d10c8cce0d09",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-red-01/result.json",
+      "bytes": 1431,
+      "sha256": "75f69dc04c84b5f9c707478a966b1a36bbe361a825c56df97ea7d485db5c9ad0",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "browser-red-01/run.log",
+      "bytes": 1773,
+      "sha256": "4c61c5a9cd2c3976fd6df9c6bca8a77908417d82b693d74714c58d92d9f64476",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "environment/browser-dependencies-from-prior.json",
+      "bytes": 13061,
+      "sha256": "ff10c4e790f1e9042d7adf2a03af7967992425a0fed370b2af1ad5aefe1e8008",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/all-unit-final-01/result.json",
+      "bytes": 4110040,
+      "sha256": "3922f2e2b549c4bd0cb4da3947c24948aff55ffb7067bd91432af70d366e17b4",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/all-unit-final-01/run.log",
+      "bytes": 82616,
+      "sha256": "931a835525883d6bdc1b819d672958573f34e7fb3739523ffe4961046fb768c1",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/chromium-1440.png",
+      "bytes": 305218,
+      "sha256": "f2acb9b3a03f63786d945c4c2bdb7ea2b2d0fbffe868785817999a041b9cdc49",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/chromium-320.png",
+      "bytes": 277904,
+      "sha256": "d52f44fe1325fa2aead9a4c467ba895c809e4cdfa97317470e5f2e07ee303e64",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/chromium-390.png",
+      "bytes": 275468,
+      "sha256": "de8e5d0995a48eef01de39ba36bdf12cb2fe4d4dd7c382f165dc25585a60ca8f",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/chromium-OA-EMPLOYEE-diagnostics.json",
+      "bytes": 3272,
+      "sha256": "c6a7fbc1934ae6c38bc8c6f344dfec3c06aa5313201c0f13ba41b33261e76e66",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/chromium-OA-MANAGER-diagnostics.json",
+      "bytes": 7730,
+      "sha256": "910685982038056d43a7f166c41d67c77539d662adef0dafb7f0fd3166f9e3c6",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/chromium-QAOWNER-diagnostics.json",
+      "bytes": 29644,
+      "sha256": "a1ab4055d9bae61bcd3ba0d7bea1e81f462ed637ce5e4aa1bf575084117f95b3",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/chromium-fixture-answer.png",
+      "bytes": 313036,
+      "sha256": "d52f097a4b5764fc16693bd9fc5bd18eaafa70d69673466b8c60bd7ccef33642",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/chromium-period-1440.png",
+      "bytes": 404976,
+      "sha256": "ce6546f657870b5307c15da7d1b62ff61fea02751b791ca67921e892f3c21f68",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/chromium-period-320.png",
+      "bytes": 377215,
+      "sha256": "755950299da54629dbe83613c8f4b511bcd1c940a85c53a512414fcaf26b3ffd",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/chromium-period-390.png",
+      "bytes": 369635,
+      "sha256": "c0cce875375e4776c032787a80f17bba5c2bb2dfc22f6662a8a859f7e3fa3199",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/chromium-priority-review.png",
+      "bytes": 312072,
+      "sha256": "aeff95c53993ebd11df2375cde47e7639bf01badda6a3d230f519d8f609612cc",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/chromium-1440-audit.json",
+      "bytes": 280347,
+      "sha256": "37f51f5ec193bb741fcefc9291c415a373d7ef48085f0b7cae457cf8f727b25d",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/chromium-1440.png",
+      "bytes": 473350,
+      "sha256": "6673412f7f1bdf91616b4e91e14fcdc10690d5a5009adb11d5ed0201f72714d4",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/chromium-320-audit.json",
+      "bytes": 273223,
+      "sha256": "ec8d11cbd4017e5e4985eac30fce06d5534defd36a73d82857bf4a547cfc2001",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/chromium-320.png",
+      "bytes": 451475,
+      "sha256": "6aaa88de8398351327e380299a467f1cc3f4caf10729afca848b404bea1e167c",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/chromium-390-audit.json",
+      "bytes": 279840,
+      "sha256": "91ff90de03e875cca60276ce9827270a4cb3aa7e0d3c00b1ade486c7b12b3b39",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/chromium-390.png",
+      "bytes": 434669,
+      "sha256": "b2c64d1f198b4791cd09fa83e4bb1029006056516d21f63b8f1ac0425a20eea6",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/chromium-discovery.json",
+      "bytes": 85,
+      "sha256": "b946944b76b1727c3ba12bf7371fa79050b6956e2dc0443e25392be46011392c",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/chromium-plan.json",
+      "bytes": 3511,
+      "sha256": "6e88c59fba21e7064b86705f5857be66c90c89e83a6422e53a344a30230fe849",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/chromium-remaining.png",
+      "bytes": 464414,
+      "sha256": "d2ec92f8770e78c77ff746a9b21862254a5e4546b8abf7198303f9f8d52fe3b6",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/chromium-retired.png",
+      "bytes": 65357,
+      "sha256": "a0cfb8401d74c83a42c44ac4be200ad11eddeb4081433fd2168ee6e32c5b4710",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/owned-next-M2UsbP/next.log",
+      "bytes": 2823,
+      "sha256": "f7db486d8f666e0e9947580d2f5923a8c363bc4c704b27980b5e976b36a3b730",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/owned-next-M2UsbP/ownership.json",
+      "bytes": 887,
+      "sha256": "d0d0c5cc03c32d30bad4a2f383af3ffa1bd7ef51fba03140ef0c533f1fbc58d3",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/owned-next-M2UsbP/source-manifest.json",
+      "bytes": 266134,
+      "sha256": "dc72feb4ad69f919e3c334d84b1a168763200bcf76f262506ace8be88fa0fb58",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/report.json",
+      "bytes": 271577,
+      "sha256": "34b20ea2699036456d4d6a51aba4d94d5c152d69374877052d731d7258abfe99",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/webkit-1440-audit.json",
+      "bytes": 279832,
+      "sha256": "6d7a988688d465c6dd092cb4b33ca1e0ee8cdb0be4691e862814e811b1c2408f",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/webkit-1440.png",
+      "bytes": 582927,
+      "sha256": "f2678e6a0862327f43f0c91666dc529d52c8b0886cd43cad70af8b36d2165e6f",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/webkit-320-audit.json",
+      "bytes": 273221,
+      "sha256": "2da1cf886f688de57fe3120f1c8644e775bf43d032515cf86a80c35c3ea3df9c",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/webkit-320.png",
+      "bytes": 580033,
+      "sha256": "78a2ccb7c2562af5dae793ef54e58d2859c002bd0734f13164635d27821f6dc3",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/webkit-390-audit.json",
+      "bytes": 279838,
+      "sha256": "301a5f74996ed925871cd736695c25dae3780f8507c4b12274082298238aef5e",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/webkit-390.png",
+      "bytes": 602335,
+      "sha256": "b9d45cf1f790ad27b91310e18522d4b734460821387b2649cdbc0e8d27b2d8d0",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/webkit-discovery.json",
+      "bytes": 85,
+      "sha256": "b946944b76b1727c3ba12bf7371fa79050b6956e2dc0443e25392be46011392c",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/webkit-plan.json",
+      "bytes": 3509,
+      "sha256": "401d5f4709dd980102ca0069b5f5458b2b7341eb553c2bedf1186f42175d6fb1",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/webkit-remaining.png",
+      "bytes": 577864,
+      "sha256": "57dee29e7f52d4db66d50231344f8d52b17dc6791d49bc6f2e19f49dafbb14c0",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/webkit-retired.png",
+      "bytes": 78898,
+      "sha256": "2e082208fc73d17f472c84c292be395f5b184c0701cdc77e794b21c3ef48c180",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/chromium-1440-audit.json",
+      "bytes": 387018,
+      "sha256": "e5471526c72c12298db06b992c1b5cb2672c5f1516c5bbfead4d1dada7754199",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/chromium-1440-editor-entry.json",
+      "bytes": 117,
+      "sha256": "7be3632dba50f1a66571fd46b97f296061e3c3df499a68021782319470f4c135",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/chromium-1440-editor-entry.png",
+      "bytes": 87862,
+      "sha256": "fdac95a7ef5a19363ade15d1b3f8c4d42edf0ab823d5325cb76e2df698597dd6",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/chromium-1440.png",
+      "bytes": 520261,
+      "sha256": "21b7d88850d71181f1f3b9cd0dd9f3e18d2867f5abb71726e7b8f9d6d0542604",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/chromium-320-audit.json",
+      "bytes": 386976,
+      "sha256": "1b82161bcfa53d98a3edd88e2c1499a1fe20de5c462947c382e68adb321bcff3",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/chromium-320.png",
+      "bytes": 514288,
+      "sha256": "d4640f76f2d6517643d089ecd02c160e47368045ed6a5701083e86c17a9af086",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/chromium-390-audit.json",
+      "bytes": 386976,
+      "sha256": "82e12a6473ad5eb280bbfd28e55a7f94ecf06a18eea9980599087435051871a9",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/chromium-390-editor-entry.json",
+      "bytes": 131,
+      "sha256": "db28a8c17723afd5c2cdaab3b2a08e9008bb8597a9266739cd0871dc30854200",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/chromium-390-editor-entry.png",
+      "bytes": 44431,
+      "sha256": "d91a6102096691cbef7433cc4df7dc0e8b3228d7eea50ced81f1c2b8477996be",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/chromium-390.png",
+      "bytes": 510325,
+      "sha256": "223aaf1152631c88cd7ddd5baa310f4e32b6a9315eeef76f8405c8b41bc75e3c",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/chromium-retired.png",
+      "bytes": 69607,
+      "sha256": "caa2e7858e1930cc2cab7dab287265fa6779e57046465482a4741162a1d2aa36",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/owned-next-vCX9GA/next.log",
+      "bytes": 6891,
+      "sha256": "2a74f73b252d223d3c34d3b480feaebb77e870617ceca0688d87f09a3eda47c7",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/owned-next-vCX9GA/ownership.json",
+      "bytes": 881,
+      "sha256": "aeb138ca1e551e5c0041588e8379865ad7f89e41637a0ff06c508ec280b9dc16",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/owned-next-vCX9GA/source-manifest.json",
+      "bytes": 266134,
+      "sha256": "dc72feb4ad69f919e3c334d84b1a168763200bcf76f262506ace8be88fa0fb58",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/report.json",
+      "bytes": 267278,
+      "sha256": "5a808bc2b110fd59c4d35c4a689c020aa72e321b9c6d1bfdc81cebd741fa4a33",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/webkit-1440-audit.json",
+      "bytes": 387033,
+      "sha256": "012bdaf8a30755c138016fa96d977a95e2e14b2d80bcf5b1865e9be38ae50a48",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/webkit-1440-editor-entry.json",
+      "bytes": 117,
+      "sha256": "7be3632dba50f1a66571fd46b97f296061e3c3df499a68021782319470f4c135",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/webkit-1440-editor-entry.png",
+      "bytes": 104604,
+      "sha256": "fc7f598fb1342a62855848a92d9dd84e2243f828fe9115e477feae9808d68259",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/webkit-1440.png",
+      "bytes": 647190,
+      "sha256": "107691b648ae9c4fab165b52d30747e546555651839e5d91be8a8fdaf8afd422",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/webkit-320-audit.json",
+      "bytes": 386991,
+      "sha256": "5cd4dd7244b5a74995d003edcd87c6b118550cd7435cf14b9409a8c0671296bc",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/webkit-320.png",
+      "bytes": 648886,
+      "sha256": "307b8658f714e7ec5388c288830c7cfdbe300eb179c66368ed8a9d483daa38b7",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/webkit-390-audit.json",
+      "bytes": 386991,
+      "sha256": "171770860e73c94ac34a92937e92b63bacfeee258496c67d2187d8539a65bf2f",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/webkit-390-editor-entry.json",
+      "bytes": 131,
+      "sha256": "db28a8c17723afd5c2cdaab3b2a08e9008bb8597a9266739cd0871dc30854200",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/webkit-390-editor-entry.png",
+      "bytes": 53996,
+      "sha256": "0ad1a0eefd839527ce405f59bb405b350ef0da0e5f51893255e3a396a6f1d67e",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/webkit-390.png",
+      "bytes": 659824,
+      "sha256": "bb787a55061f6c9bc218b293fa04e6166dadccd8c033d8e81eb80f9aec0ce252",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/webkit-retired.png",
+      "bytes": 82978,
+      "sha256": "2c7442ffb416b04cf416ac13d02277cbe5656451c9b5c10ba90f40eff2174951",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/owned-next-19A0VN/next.log",
+      "bytes": 28995,
+      "sha256": "b90c9783eecf4d3f4fb00a69f6059c7416c2f8661a78e3d86acc87f82c0a1aea",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/owned-next-19A0VN/ownership.json",
+      "bytes": 872,
+      "sha256": "b57c6b25822009f01c6732d7068e204b6466c9b5d3ec72b045e517ba11d085d8",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/owned-next-19A0VN/source-manifest.json",
+      "bytes": 266134,
+      "sha256": "dc72feb4ad69f919e3c334d84b1a168763200bcf76f262506ace8be88fa0fb58",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/report.json",
+      "bytes": 268246,
+      "sha256": "4e96555172515ec87302f2dff0e0042d56167456cf14ff18c1c4f47003ed42dc",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/result.json",
+      "bytes": 2201,
+      "sha256": "fa8e8885a3a0120d94cb5d68c36ebc3553aeacd06dc087407e87faf0ab6dc6e8",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/run.log",
+      "bytes": 1730,
+      "sha256": "2c90b85c59ce2e6d127a2c70c49ed9fe148c3e4903f31cd54d535b6477c0b2ae",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/webkit-1440.png",
+      "bytes": 375975,
+      "sha256": "03a7d3e7fa3e40d1ae75b6743d2a3f986ae1bcb1bffca387fd8b4cec5979381b",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/webkit-320.png",
+      "bytes": 355730,
+      "sha256": "d8b6d04096fa5f7c1e8c7393769a06f8051b81e906c5f4bf0f100d788d32594f",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/webkit-390.png",
+      "bytes": 365321,
+      "sha256": "a040bf41c8b6750aee38da872a9f5b50ea26e98a9dad4a5a08cb532165c10187",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/webkit-OA-EMPLOYEE-diagnostics.json",
+      "bytes": 2159,
+      "sha256": "af4310a5748cd5673de37beae645c5c31ae82337f507036d0cf09303b3d80a72",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/webkit-OA-MANAGER-diagnostics.json",
+      "bytes": 8896,
+      "sha256": "80c8e127d9cf9aa81ce9cdca0f9571daf09777dda35eebfaa077ccb5d28f5c02",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/webkit-QAOWNER-diagnostics.json",
+      "bytes": 25109,
+      "sha256": "2fc9d745dc1430256c7320a52e4534e0a026895dbcf334ff132256accb274adf",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/webkit-fixture-answer.png",
+      "bytes": 386540,
+      "sha256": "a1e14b6d1687b37197312d1f8fb37e18cee8ae8614aaa3fc2ad2f905c04abbe9",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/webkit-period-1440.png",
+      "bytes": 500317,
+      "sha256": "5b0ca9a4050cb94c7d57d67eb91cfc153bbbe43cc180ebcf7896b9575388ffaf",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/webkit-period-320.png",
+      "bytes": 478230,
+      "sha256": "af56cf85c7047b97b59eb09bfb35d77e3b42dc61a4205c18be1b5325e52d131e",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/webkit-period-390.png",
+      "bytes": 497126,
+      "sha256": "902b38cd72bdcfb96e51afaea4bf4cf514f75d4dee07968b0185d4d614362d46",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/webkit-priority-review.png",
+      "bytes": 382067,
+      "sha256": "059ae335825135865f3442786bb9711fa60edb057110b9d0fa6919fc6097c618",
+      "inCompact": false,
+      "reason": "Redundant earlier passing screenshot; original preserved at indexed external path"
+    },
+    {
+      "path": "f2a0aac4/controlled-writer-red/owned-runner.mjs",
+      "bytes": 3789,
+      "sha256": "aa844718f2d128ac68c97e8f43d9cec7cb2efd4f7e751d9bdcd04763e8513ad4",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/controlled-writer-red/probe-provenance.json",
+      "bytes": 605,
+      "sha256": "071a8fffb9925ce6405c151f33c140bb3bbb00bea0eb97b7df5925b548a16c85",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/controlled-writer-red/probe.config.mts",
+      "bytes": 470,
+      "sha256": "96488dc6039b10fd084e74ea0dc29cc0ed71c778f4b68779f4f2926624cfc154",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/controlled-writer-red/probe.integration.ts",
+      "bytes": 34059,
+      "sha256": "e6c5ff711ee5e489f6488196ae89d8d99f8eece3443eea5d2ff13ab87d9b811a",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/controlled-writer-red/probe.patch",
+      "bytes": 8584,
+      "sha256": "d29d950b77c88407cb021063f6b5d62e1745f11a14250b5cb95920613151f45c",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/controlled-writer-red/result.json",
+      "bytes": 12009,
+      "sha256": "49b46d0a1abf0fa6a6d2d51ccba6ca9155846c2d7c8f25fcb79ac55a352b3989",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/controlled-writer-red/run.log",
+      "bytes": 7091,
+      "sha256": "8087a62a64ea7cd966283836c0ce8b37a42d078bf427e7f3c9e4eaa6892eed15",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/generation-focused-01/owned-generation-runner.mjs",
+      "bytes": 3767,
+      "sha256": "a97d927a515b9c332c2fbb0cc014e805b80c499d75967e4fe6a8fbad2372188f",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/generation-focused-01/result.json",
+      "bytes": 51626,
+      "sha256": "872af9da2d65dc2c68201c76596961a69ea17bc1e85f3c96c08a36791594801e",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/generation-focused-01/run.log",
+      "bytes": 1284,
+      "sha256": "c606d708e69d0103e81b39244516383d9c7dd377cc16396c2ff3ddceb0647663",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/generation-sql-final-01/owned-generation-runner.mjs",
+      "bytes": 3670,
+      "sha256": "5e953046f3c22f2992ce9f5965c63a35c7816cf9039ca2b648b8b744541ae4a8",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/generation-sql-final-01/result.json",
+      "bytes": 66332,
+      "sha256": "cf142d1afec625d317acde1cba8a5d51cc93e1713c7f0d042858f54de6882e23",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/generation-sql-final-01/run.log",
+      "bytes": 26464,
+      "sha256": "ee18ec036fb1523886b093414586599047c5f3f2da24f4ae24e0ff4db1a2dc18",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/generation-sql-final-01/runner-provenance.json",
+      "bytes": 464,
+      "sha256": "073025f7dce2a387bdda1ec89dbef4f06cf1d1ce060bc9f7ce1a4907208e77ce",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/generation-sql-final-01/runner.patch",
+      "bytes": 1237,
+      "sha256": "cddb3bb9f78396270f945dada0a617453cef5622ae36e18545a3d40c96d53109",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/lint-final-01/run.log",
+      "bytes": 41,
+      "sha256": "45dd42c28bc5a51b907c86db4ed50cb3e1379f11c10454748a96d2528f6bb7c7",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/pilot-final-01/run.log",
+      "bytes": 3340,
+      "sha256": "71c087dc17c11af9d094f03d4c1d8de232719d246763365bf1713b9a5c51cd16",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/sql-final-01/result.json",
+      "bytes": 17811,
+      "sha256": "0ad65ee7d73c929a037734ccda3b7d14a565b48f1045d480dca3a2063db20b56",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/sql-final-01/run.log",
+      "bytes": 5709,
+      "sha256": "7aebc7b2dadf20b0060aa86651b96931688a5c05a71afbbe13c121f789cdd7c9",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "f2a0aac4/types-final-01/run.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-fixed/generation-sql-final-02/candidate.json",
+      "bytes": 523,
+      "sha256": "1d5ca053b50d6785a4c04be92a8bf1f3763f48c5ae8601508ae16fd9416081ed",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-fixed/generation-sql-final-02/owned-runner.mjs",
+      "bytes": 3675,
+      "sha256": "fda02de29e29fff45ecfbd2c946836c9c59b8de9294322f8ea1923d0b862ff90",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-fixed/generation-sql-final-02/result.json",
+      "bytes": 57153,
+      "sha256": "443c5e65dff675c4e0650f437d98d209ad02d55673575ea46395ef49dd9a79e5",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-fixed/generation-sql-final-02/run.log",
+      "bytes": 17833,
+      "sha256": "ad77312cc831873f0822e1e0d5e51b8c04eb6e2e474dd979f793177ff85bdbd7",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-investigation/cleanup-only/owned-runner.mjs",
+      "bytes": 3797,
+      "sha256": "06266967383765f6dbb22c805eefd0a15a19896632754f7a06b8bae999d11bc7",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-investigation/cleanup-only/probe-provenance.json",
+      "bytes": 3202,
+      "sha256": "d8f6793e7c9708de7040589452baf156317555c2164f6c2e07a4d72145693eef",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-investigation/cleanup-only/probe.config.mts",
+      "bytes": 474,
+      "sha256": "924b8b3a58b16721ebbef2374750d0a6b5182a23e54b0793df4824898ccffc67",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-investigation/cleanup-only/probe.integration.ts",
+      "bytes": 34171,
+      "sha256": "30d974d33b5dccec0562fc28a116c8f42745a41db029f7fb20672e642eb92696",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-investigation/cleanup-only/probe.patch",
+      "bytes": 8573,
+      "sha256": "7392ca49001a80d01d7bf5189a131c16b318579e6214bab3f4858c16bb2290bf",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-investigation/cleanup-only/result.json",
+      "bytes": 11358,
+      "sha256": "0f4c7107f645cc26c466fb61c770c9b50ae2f28286f16e6c0b71962839ef756c",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-investigation/cleanup-only/run.log",
+      "bytes": 4800,
+      "sha256": "81ec1bbd7eae00bbfd29c1da8c4b9e1f4ed9d98f7534a2e84b2c9c8811d044fb",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-investigation/make-probe.py",
+      "bytes": 2638,
+      "sha256": "a28cb3fa33e4141d7994dd7d14025f7a2c952257c930806227ac50c6dda24edb",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-investigation/permanent-green/owned-runner.mjs",
+      "bytes": 3716,
+      "sha256": "0faafc1630b7d2f49c56b15980fc1d247d6f12cf047d2f3c49b295cddb9b29e1",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-investigation/permanent-green/result.json",
+      "bytes": 52226,
+      "sha256": "3a141387abe669aecc2b4d1a47d83991384d50105fffc12c1f3d2dad9eca6c51",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-investigation/permanent-green/run.log",
+      "bytes": 1214,
+      "sha256": "560466af1cc09ed1311b6caee9d2f865c5835639c1dfd9e5083d356d9951e965",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-investigation/permanent-red/owned-runner.mjs",
+      "bytes": 3714,
+      "sha256": "a9eeb81a19eb5e897ae4db8efd877364038ca1dd523661e1114bb67f4728c97f",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-investigation/permanent-red/result.json",
+      "bytes": 53042,
+      "sha256": "a62bb2a19b20a95d5b2fbeda990077fbe0ee3082512d17b4c837416af753933e",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "harness-investigation/permanent-red/run.log",
+      "bytes": 5498,
+      "sha256": "b7f4f8c58a7bc6325faaf6209ff42ee9fed30eca97c9be12a8968f0522efd39e",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "implementation-types-01.log",
+      "bytes": 257,
+      "sha256": "8a2b323779c925cca4270010268be208519b61c6d820f60048371951ef105b0b",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "implementation-types-02.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/INDEPENDENT-QA-SUPPLEMENT-29afff60-20261030.md",
+      "bytes": 10313,
+      "sha256": "3dc3d0b34bd1ce25b76398690be6685a1a94b6c12c6635e21cdf45eefd3bbc18",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/INDEPENDENT-REVIEW-f2a0aac4-20261030.md",
+      "bytes": 11012,
+      "sha256": "fddafb97a25936ba8bd6c75c620b79e8831b00b5a2ff00b0758759d8801f0db6",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/SQL-OBSERVATION-01.md",
+      "bytes": 3685,
+      "sha256": "32158a165a195d78a7ea68e1b872d32eff57165d150524d7b2502f0e7f695654",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/adjacent-week.json",
+      "bytes": 1926,
+      "sha256": "9271a686f2837f6ae92e7d9caa6332ae854ce1669116f10866a097cd7ec3e537",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/all-excluded.json",
+      "bytes": 1504,
+      "sha256": "78aaa15cf0a1e2e1628a2367f6ba67ef53a226d604a2bf166ba91a919bde457a",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/boundary-probe.test.ts",
+      "bytes": 2863,
+      "sha256": "fd850e361788e7bf7a8c9349da84472c95ece5b76f9b631692713873c3642f98",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/boundary-results.json",
+      "bytes": 1287,
+      "sha256": "508c7c64fdd72b68c6fda55b90fe86ebe2ece5b30a861b4ca219f48069473bdd",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/boundary.config.mjs",
+      "bytes": 463,
+      "sha256": "5ac92a1c75ed4aed7234d9f975d6645a1a8852ff50018ed36cf7b50ded0c2d2b",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/boundary.log",
+      "bytes": 696,
+      "sha256": "013dfd8801def61daf54c51604f48136527f5eef1909c61e83ee083f8666f698",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01.log",
+      "bytes": 895,
+      "sha256": "4f268d0a58a1e259042178f23532b1d3b43bcf55fb959c97b3bb600eff515f7b",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/chromium-1440-audit.json",
+      "bytes": 280341,
+      "sha256": "bb65d85af8550f1899f00315d7e39bb2ef3b3c33866906f3d59073865118282c",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/chromium-1440.png",
+      "bytes": 476925,
+      "sha256": "f734126a5853a15c5f92ecf3a4435a0c77982afca3dac7cd1dcebf97125222f7",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/chromium-320-audit.json",
+      "bytes": 273217,
+      "sha256": "ac5fe7a6a25ed15d6379c7dca2d7b3a72f3bf6f9cff7df6f2d5b91c6f0fde0ed",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/chromium-320.png",
+      "bytes": 451587,
+      "sha256": "85d58ceac5e3da6bef394645e5a5a5a43f482366844b34799128637cec66df65",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/chromium-390-audit.json",
+      "bytes": 279834,
+      "sha256": "9c5ec6c75ce5e2477bd52ac1c90cb170d59694eb697a7a514807a92960194b18",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/chromium-390.png",
+      "bytes": 434813,
+      "sha256": "75dcfd7222063d8dbc7e664d4c9749052eef9608eb46182b3d3fd822e499def0",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/chromium-discovery.json",
+      "bytes": 85,
+      "sha256": "b946944b76b1727c3ba12bf7371fa79050b6956e2dc0443e25392be46011392c",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/chromium-independent-empty.json",
+      "bytes": 1349,
+      "sha256": "948e15fffeef20dfdbca033cba98e0b6d6c83d9491e992666d9a1704696247cc",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/chromium-independent-empty.png",
+      "bytes": 389769,
+      "sha256": "6b24e16c33d491cc0eb48e222de690f54ffac79b9d82e76f60cf2131680bc782",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/chromium-independent-mixed.json",
+      "bytes": 2693,
+      "sha256": "9aa01850a160b69f4e8d0385524dc8caef2a02c091a25dd514d16bd4a0600eb7",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/chromium-independent-mixed.png",
+      "bytes": 465228,
+      "sha256": "90bee879664e7ec630013b2270c53df663fe750aa7c2c6c011a6aa358cfd2b23",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/chromium-observation-label.json",
+      "bytes": 222,
+      "sha256": "c1ffca19b1b944211336d56bedfd804744ecd16b9bb2a6902165168a3ec3bd49",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/chromium-plan.json",
+      "bytes": 3510,
+      "sha256": "55cb9a1e934836ed0fc1c329c7e0484f96c78f076f40ef9f4c4d777a05315519",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/chromium-remaining.png",
+      "bytes": 464384,
+      "sha256": "91f30e2ff6d6b7aa4fc5668260e9cf052e37af60c01267a2521ce5450e2c8d89",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/chromium-retired.png",
+      "bytes": 65357,
+      "sha256": "a0cfb8401d74c83a42c44ac4be200ad11eddeb4081433fd2168ee6e32c5b4710",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/owned-next-n9GkWr/next.log",
+      "bytes": 3833,
+      "sha256": "9e3c233c9b48586e748ba298f8640ef4e4e5c1f25138563ac5104a7c160aa1c7",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/owned-next-n9GkWr/ownership.json",
+      "bytes": 893,
+      "sha256": "6625553bb9158c7f833be6518ccb6bd05dc7c2514c9b2bc1f6d64fac17fb172c",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/owned-next-n9GkWr/source-manifest.json",
+      "bytes": 266134,
+      "sha256": "dc72feb4ad69f919e3c334d84b1a168763200bcf76f262506ace8be88fa0fb58",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/report.json",
+      "bytes": 270921,
+      "sha256": "9c0c5c88cf3efeb9c49db8e9537871139bf4021d6efa385d47a4dbc767b5499a",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/webkit-1440-audit.json",
+      "bytes": 279838,
+      "sha256": "6e4b6c9e4e44cdbac3d424057273feaddf3417814eca3645b76e41b2a4709d0e",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/webkit-1440.png",
+      "bytes": 584253,
+      "sha256": "2f9dc3fc06c7b3be83045d4e571bfe3fe01da73899e2f23554229bc1ed4ea346",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/webkit-320-audit.json",
+      "bytes": 273227,
+      "sha256": "7a3e0072d17d4b492ee89db00463906f9744431cd799b6a8477b4b4eeaa00cd2",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/webkit-320.png",
+      "bytes": 580799,
+      "sha256": "35e7a09a74928d980295ac69347f03b95bbab6339848446a39d5607b6f058d7b",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/webkit-390-audit.json",
+      "bytes": 279844,
+      "sha256": "3d3ac7a725be5f03b8096693b22d6d8fc5e6f526cf854d05db290006b3ea4838",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/webkit-390.png",
+      "bytes": 601912,
+      "sha256": "1c89b7b1026a2fb371e328fc65567d2fea3827fa63d40ae7e45f8652be583172",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/webkit-discovery.json",
+      "bytes": 85,
+      "sha256": "b946944b76b1727c3ba12bf7371fa79050b6956e2dc0443e25392be46011392c",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/webkit-independent-empty.json",
+      "bytes": 1349,
+      "sha256": "529f488e1186458e274a579e45ec34f39bc8810273566a595b56a87fe260dfb4",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/webkit-independent-empty.png",
+      "bytes": 482517,
+      "sha256": "597618d22a35380af23a09b41d4dcf49ea5a01c3dd641c042cb47f0ff2e020b8",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/webkit-independent-mixed.json",
+      "bytes": 2693,
+      "sha256": "4b43d648eceee88cc04a163c2ae1cbdf56479d23aabea5c6f7a8329d164c2e6d",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/webkit-independent-mixed.png",
+      "bytes": 574126,
+      "sha256": "59723af2bd6113006c543f0b453a66b46de2aeb86e3598d760df89dcbc21bce0",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/webkit-observation-label.json",
+      "bytes": 223,
+      "sha256": "4c649bf8f71e5b49934140371fde10b76233ab2870fd0a203b889c91c4629c06",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/webkit-plan.json",
+      "bytes": 3510,
+      "sha256": "92a0ee4acaa233d5210568cfb15662f1c99d940b7c1be1c74c3d3438393b9933",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/webkit-remaining.png",
+      "bytes": 579053,
+      "sha256": "ffd35dad5199a7c50fc283bbf8c3979d9830f6fa4fa337d78951d0574f0b1705",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/webkit-retired.png",
+      "bytes": 78898,
+      "sha256": "2e082208fc73d17f472c84c292be395f5b184c0701cdc77e794b21c3ef48c180",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-probe.integration.ts",
+      "bytes": 16262,
+      "sha256": "98ab90c80eba5e10633bd7badbfcc6242a9b50622e79d107c90528d6f7b98621",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-results-01.json",
+      "bytes": 1042,
+      "sha256": "c7b010971b104f064266277923e852dd9aae0b3df45966d3762d21fb3e2941e4",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/browser.config.mjs",
+      "bytes": 522,
+      "sha256": "65aa0d2d0bc5ea048cef5af22ac096b693ccf7a1b78234b6b90af521ad213872",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/commands.txt",
+      "bytes": 1339,
+      "sha256": "f10a7f68e5fd2a849fc0724cb045d8722ff15edd6561677653989c9905077b36",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/final-qa-supplement-manifest.json",
+      "bytes": 1646,
+      "sha256": "3a19ae33444eaf8d80f9be73346c4fe9f53d7117a55612b0ea81d4b225dfa591",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/harness-29afff60-350ms/command.txt",
+      "bytes": 804,
+      "sha256": "27baea3f70db6d026f8f5623b7fe09fddb324d925c797d516ba84f93e1f57478",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/harness-29afff60-350ms/manifest.json",
+      "bytes": 619,
+      "sha256": "b0e4aa9d04ad55dc44dd565dcce4a865c8c225480894e51d374174b783115af9",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/harness-29afff60-350ms/owned-runner.mjs",
+      "bytes": 3194,
+      "sha256": "54d5d352e431628e0d435f1c572578235111289a56a35f528b5e7de2e7f99a19",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/harness-29afff60-350ms/probe-custody.json",
+      "bytes": 650,
+      "sha256": "15672d3c7857593bca6cc01af57a7def7d0b43e1bc9598fa1c40baab8dfbd3da",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/harness-29afff60-350ms/probe.config.mjs",
+      "bytes": 536,
+      "sha256": "4cfec6274fc562e5bb48520699526e716e3c71c529e707472e2eddfe6a8da384",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/harness-29afff60-350ms/probe.integration.ts",
+      "bytes": 34694,
+      "sha256": "0075480dbcb3cc7b537af2b80ea0ce5b5693296f3c39e6aba652da303df80895",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/harness-29afff60-350ms/result.json",
+      "bytes": 11176,
+      "sha256": "3e2e606e634f94da541143851170db3de6c8d84c593d4d2b65d821452acf5788",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/harness-29afff60-350ms/run.log",
+      "bytes": 7889,
+      "sha256": "8f73995e48ceb9d4ee3530c12f6cc24e6f771a63b308ee403c235ac8303a9fc9",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/independent-manifest-01.json",
+      "bytes": 5340,
+      "sha256": "fbc9556e9cc864a1686870f5cf594e01c29789f00182bd9ca99059847305ca2a",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/owned-runner.mjs",
+      "bytes": 3169,
+      "sha256": "1d78bc8d9c89917fed1db4360d8c2ed01b11a95ffdb518aac282c2cb79cbc479",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/probe-custody.json",
+      "bytes": 573,
+      "sha256": "0cd9324891b2eb57f475ffa606e5c1cf5785194a9ce120799e4872310ea8ea3d",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "independent-f2a0aac4/sql-observation-01-manifest.json",
+      "bytes": 876,
+      "sha256": "7091c543f0769a9cf716f26d58140ee7e7ed59489b1a2db32d1d42d87470853a",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "runtime-custody-audit.json",
+      "bytes": 3634,
+      "sha256": "9738b7f82aba7aec4bc8001ce7c3811ab68563059e1d3c011193cc0aab0e74f5",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task1-generation.json",
+      "bytes": 78532,
+      "sha256": "2ec2e0be430638b9ecc66931401a9d8d46d41e4c78b0dd267690f4f03b666c6f",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task1-generation.log",
+      "bytes": 1959,
+      "sha256": "9cfadf24d9273dc40631d8e4a57b2296f6ef8f05a7b49571f97e88bef6f5603c",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task1-green-01.log",
+      "bytes": 293,
+      "sha256": "3e967995b5caa43340a68c103b3c3aa3a65f7c80e23553542ba80e2f1f76eb30",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task1-red.log",
+      "bytes": 8300,
+      "sha256": "7468aa66abcf16e1e5d7601247f2b36d912bd0d8d6c54c89115f6b3f231fed5a",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task1-reservation-green.log",
+      "bytes": 294,
+      "sha256": "575bf1383752ecf73811a53d8f46f10c320a9acf183a2380e2906b9f05ae1b65",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task1-reservation-red.log",
+      "bytes": 2978,
+      "sha256": "d6a65af5ae7a3c8df1e5cfdcd153bf123b7b8afe44a47b2658b0e1d7b5fa57f2",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task2-3-unit.log",
+      "bytes": 1771,
+      "sha256": "6eb3846859015d729990c2577fa733cd919b8df94a56bcbfc2a64c72b5abbd08",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task2-advisor-unit.json",
+      "bytes": 26951,
+      "sha256": "ef2c1f58a488c65f5955fca1560e8504849724229f5efabe0bda8d703c7d1344",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task2-advisor-unit.log",
+      "bytes": 1188,
+      "sha256": "593820863021d52c62b3231afc522f71e622c19f89deccfd3468f7bcdf0c8bd2",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task2-contract-red.log",
+      "bytes": 992,
+      "sha256": "fa2c03a197148ff9c146e7192bb37cde43f02012d1ee474c71660944f7776183",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task2-green-01.log",
+      "bytes": 2580,
+      "sha256": "4791066bf53d1e46aa7fc802a82d19878952f8c4e3e4678bcd5007f219bd374a",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task2-green-02.json",
+      "bytes": 3549,
+      "sha256": "6043ce69124e46ad4e0ceb673bb8d93bc882005cd6a3d6b02ce421105de037df",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task2-green-02.log",
+      "bytes": 560,
+      "sha256": "81031371f9ae6198ab6c429fb69d1cce5e2c14c47765670b7ebe37e21c316b8b",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task2-identity-green.log",
+      "bytes": 389,
+      "sha256": "3681a93614c2f0e4fb3d5ec88cb7875910060bf3d631fd2b32d3b0c494adef0a",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task2-identity-red.log",
+      "bytes": 1823,
+      "sha256": "7a090b104919d484be5089bc0decb502e9af5cb6501ddffb87d45f32fe3bede7",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task2-loop-red.log",
+      "bytes": 4044,
+      "sha256": "58e2dd33946be2fbeee7e03fad34ff1fa5052436801e4d19abb83be5e4804af7",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task2-red.log",
+      "bytes": 1070,
+      "sha256": "59093c86ed39ef5aaa9094d460a3bad459b3fa188e111d3b0e0eb0108651f170",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task2-sql-green-01.log",
+      "bytes": 2726,
+      "sha256": "fd31ce55c8a290e3e718d6be9a6b16eed01801516b6e1d5adb3f804aba8b5ec0",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task2-sql-green-02.json",
+      "bytes": 17802,
+      "sha256": "591151b316093479ace35c407a084001ac0f7d15d717f48cce1812133ab911b7",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task2-sql-green-02.log",
+      "bytes": 5686,
+      "sha256": "566849752177b4eb47d1d90ba1144bd8ddfe20c6dde154d54d6135d6bb4c730b",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task2-sql-red.log",
+      "bytes": 5716,
+      "sha256": "cf87788bc144ae5502774f3b3803742d8e4b6cc2cdbb20d3ec464c49406784d7",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task2-task-focus-red.log",
+      "bytes": 2109,
+      "sha256": "4cedada3407c6bbc7f25abbb55c9c94008b5eb68473e52770b330aeda37c1e88",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task3-render-parser-green-01.log",
+      "bytes": 292,
+      "sha256": "3ab5d1935abac2f209cb4e535880f32b93d5a99060e6c1b4ba8b70fa212b3f96",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task3-render-parser-red.log",
+      "bytes": 6823,
+      "sha256": "b2d6a9588fdc16d6b8b42b1a71be01a1aee338c0715ab91fb549e1a445062f35",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task3-setup-categories-red.log",
+      "bytes": 2842,
+      "sha256": "5f406539c40c8fe1696635b8c8ed8fa1e9e3ae063cc0304e7c581aa5bad0ac8b",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task3-source-boundary-green.json",
+      "bytes": 43280,
+      "sha256": "ba5ee8148250e42f7ea6a81816699fec307f108e0a6a541da20bf0379e46bf0f",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    },
+    {
+      "path": "task3-source-boundary-green.log",
+      "bytes": 2264,
+      "sha256": "cc2ee8d7dcdcdcd7f7b96d9945470af604ea90d1e2bf153a5083872872dc5208",
+      "inCompact": true,
+      "reason": "Retained compact evidence"
+    }
+  ],
+  "externalTraceArchives": [
+    {
+      "path": "browser-focus-red-02/coverage-plans/chromium-trace.zip",
+      "bytes": 2823359,
+      "sha256": "aef443a2f20c9c0db06cec0cf4a4f0b74d5dbf7e3c0f6ffdc3f91437623d5356"
+    },
+    {
+      "path": "browser-green-03/coverage-plans/chromium-trace.zip",
+      "bytes": 4419171,
+      "sha256": "58c838dc9a2c7f3143e8c645e19ff2ccb23deb2c4b6e1743c36bb7240f764fdc"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/chromium-trace.zip",
+      "bytes": 4574112,
+      "sha256": "98d7159bf6545847d16254a0d1e00e4557e0c3c1b40ba4a545f32b820a8238b3"
+    },
+    {
+      "path": "browser-green-04/coverage-plans/webkit-trace.zip",
+      "bytes": 3801170,
+      "sha256": "3f6b8904d4fd256c61d9e8db24a7784a457cc6abe465d34d3f2f2f2d3147d97b"
+    },
+    {
+      "path": "browser-red-01/coverage-plans/chromium-trace.zip",
+      "bytes": 2752749,
+      "sha256": "fac8d9d1d7df80d24747b95565faa8efbaf45220a9f2893df3f7119ed8c555a6"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/chromium-OA-EMPLOYEE-trace.zip",
+      "bytes": 1930736,
+      "sha256": "11bab7b966e6ac316703de015de1a258ea4439019db87a658bf694ad097a9f3a"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/chromium-OA-MANAGER-trace.zip",
+      "bytes": 1729574,
+      "sha256": "67e6e2b5823bd04566a2c4151cc09710a9506ab69edc3441a027be0bac8e792c"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/chromium-QAOWNER-trace.zip",
+      "bytes": 11795241,
+      "sha256": "4497de32b47d6dd96be29cd58356ae04fe535a1ab0b725d00aacf49f9e6477a1"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/chromium-trace.zip",
+      "bytes": 4539507,
+      "sha256": "bfeb446b7a2ba2ffab77dfac311a7988f44dc31ea28e94d209ad9036fabc4130"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/coverage-plans/webkit-trace.zip",
+      "bytes": 3492902,
+      "sha256": "0e4fca7b6515e0f51fdce17705b58bf6142e6db2dfa1ae4fdb21b6fa09dbf4f8"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/chromium-trace.zip",
+      "bytes": 5257015,
+      "sha256": "e2bae22f32e54a8523261cccf470933a795a45643993ac07c7f194c427324d92"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/notebook/webkit-trace.zip",
+      "bytes": 5046938,
+      "sha256": "c75f954ff70854869ed805ac4b006e3bc11ef940d15f090a10d296474b985e28"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/webkit-OA-EMPLOYEE-trace.zip",
+      "bytes": 1951996,
+      "sha256": "c7a7575c8ed3a30b7f73ee756af5e3587450a68c57e5ea095fc0083da6c73b25"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/webkit-OA-MANAGER-trace.zip",
+      "bytes": 2237845,
+      "sha256": "9eacad4aad288529458cead1c3a0f1dbb21902a47a0114154feaa64d3bf96ae4"
+    },
+    {
+      "path": "f2a0aac4/browser-final-01/webkit-QAOWNER-trace.zip",
+      "bytes": 10733009,
+      "sha256": "ee772f5eb9ee82ca84c0f6af6b81453af5339bb61a8fc9a17b6111a4bb1e6959"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/chromium-trace.zip",
+      "bytes": 5278709,
+      "sha256": "2bffda988918fea69ff02a2555021e5b1a9e5b98bc1e049db61f5ebf5ff574a9"
+    },
+    {
+      "path": "independent-f2a0aac4/browser-01/coverage-plans/webkit-trace.zip",
+      "bytes": 4264967,
+      "sha256": "73a67f2337fc969957fde1c8e29d2b214197531e8ba96dcb423089e96c83462f"
+    }
+  ],
+  "excludedDirectoryNames": [
+    "app",
+    "node_modules",
+    ".next",
+    "profiles",
+    "barriers",
+    "browser-profile",
+    "runtime"
+  ],
+  "counts": {
+    "eligible": 277,
+    "compact": 246,
+    "redundantPassingScreenshotsExternalOnly": 31,
+    "externalTraces": 17
+  }
+}

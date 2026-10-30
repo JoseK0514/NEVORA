@@ -4,15 +4,17 @@ import {
   type AdvisorCommand,
   type AdvisorSnapshot,
 } from "@/lib/owner-advisor/contracts";
-import { parseAnswer, parseSaved, parseSnapshot, parseBriefingReviewed } from "./public-response";
+import { parseAnswer, parseSaved, parseSnapshot, parseBriefingReviewed, parseNotebookSaved } from "./public-response";
 import type { AttentionDisposition } from "@/lib/owner-advisor/briefing-contracts";
+import { parseNotebookCommand, type NotebookEdit } from "@/lib/owner-advisor/notebook";
 export type AdvisorView = {
   snapshot: AdvisorSnapshot | null;
   answer: AdvisorAnswer | null;
   question: string;
   priorities: string;
+  focusedTaskId: string | null;
   dirty: boolean;
-  busy: "ask" | "save" | "review" | "inspect" | null;
+  busy: "ask" | "save" | "review" | "inspect" | "notebook" | null;
   loading: boolean;
   message: string;
   uncertain: boolean;
@@ -23,6 +25,7 @@ export const initialView: AdvisorView = {
   answer: null,
   question: "",
   priorities: "",
+  focusedTaskId: null,
   dirty: false,
   busy: null,
   loading: true,
@@ -59,7 +62,8 @@ export function createAdvisorController(
     contentVersion = 0,
     latest = -Infinity,
     authority: string | null = null,
-    draftRevision: number | null = null;
+    draftRevision: number | null = null,
+    automaticQuestion: string | null = null;
   let read: AbortController | undefined,
     operation: AbortController | undefined,
     poll: ReturnType<typeof setTimeout> | undefined,
@@ -77,6 +81,7 @@ export function createAdvisorController(
   ) {
     generation++;
     draftRevision = null;
+    automaticQuestion = null;
     read?.abort();
     operation?.abort();
     read = undefined;
@@ -144,10 +149,15 @@ export function createAdvisorController(
       if (Date.parse(result.observedAt) < minObserved)
         throw Error("Read predates operation");
       fresh(result, started);
+      const currentTask = result.notebook?.state === "ready"
+        ? result.notebook.notebook.tasks.find(t => t.id === v.focusedTaskId && t.state === "open") : undefined;
+      const refreshAutomatic = currentTask && automaticQuestion !== null && v.question === automaticQuestion;
+      if (refreshAutomatic) automaticQuestion = currentTask.objective;
       publish({
         snapshot: result,
         loading: false,
         uncertain: false,
+        ...(refreshAutomatic ? { question: currentTask.objective } : {}),
         ...(!v.dirty ? { priorities: result.profile.priorities } : {}),
         ...(v.dirty &&
         v.busy !== "save" &&
@@ -180,7 +190,7 @@ export function createAdvisorController(
     const epoch = generation,
       controller = new AbortController();
     operation = controller;
-    publish({ busy: command.op === "inspect" ? "inspect" : command.op === "ask" ? "ask" : command.op === "review_briefing" ? "review" : "save", message: "", ...(command.op === "inspect" ? { answer: null } : {}) });
+    publish({ busy: command.op === "inspect" ? "inspect" : command.op === "ask" || command.op === "ask_task" ? "ask" : command.op === "review_briefing" ? "review" : command.op === "notebook" ? "notebook" : "save", message: "", ...(command.op === "inspect" ? { answer: null } : {}) });
     const timeout = setTimeout(() => controller.abort(), 60000);
     try {
       const response = await request("/api/owner/advisor", {
@@ -207,7 +217,11 @@ export function createAdvisorController(
           record(body) && typeof body.code === "string" ? body.code : "";
         publish({
           message:
-            (command.op === "review_briefing" && code === "conflict" ? "The issue or your briefing choice changed. Review the refreshed briefing before choosing again." : errors[code]) ??
+            (command.op === "review_briefing" && code === "conflict" ? "The issue or your briefing choice changed. Review the refreshed briefing before choosing again."
+              : (command.op === "notebook" || command.op === "ask_task" || command.op === "ask") && code === "conflict" ? "Saved goals or tasks changed. Your draft is preserved. Review the current saved context before continuing."
+                : command.op === "notebook" && code === "unavailable" ? "Saved goals and tasks are unavailable. Refresh before trying again."
+                  : command.op === "notebook" && code === "limit" ? "Saved context reached its limit. Shorten the edit or remove an item you no longer need."
+                    : errors[code]) ??
             "The request failed. Refresh history before trying again.",
           conflict: code === "conflict" && command.op === "save_priorities",
           uncertain: [
@@ -221,7 +235,7 @@ export function createAdvisorController(
         return;
       }
       const result =
-        command.op === "ask" || command.op === "inspect" ? parseAnswer(body) : command.op === "review_briefing" ? parseBriefingReviewed(body) : parseSaved(body);
+        command.op === "ask" || command.op === "ask_task" || command.op === "inspect" ? parseAnswer(body) : command.op === "review_briefing" ? parseBriefingReviewed(body) : command.op === "notebook" ? parseNotebookSaved(body) : parseSaved(body);
       controller.signal.throwIfAborted();
       if (result.authority !== authority) {
         retire("Your access changed. Refresh to continue.");
@@ -236,13 +250,20 @@ export function createAdvisorController(
       controller.signal.throwIfAborted();
       if (!authorized) throw Error("Fresh access required");
       if (result.state === "saved") draftRevision = result.profile.revision;
-      if (result.state === "briefing_reviewed") publish({ message: "Briefing choice saved. Current records were checked again." });
-      else if (result.state === "answered")
+      if (result.state === "notebook_saved") {
+        const saved = v.snapshot?.notebook;
+        if (saved?.state !== "ready" || saved.notebook.revision < result.revision) throw Error("Fresh notebook required");
+        publish({ message: saved.notebook.revision === result.revision ? "Saved goals and tasks updated." : "Your edit was saved, then the saved context changed again. Review the current goals and tasks." });
+      }
+      else if (result.state === "briefing_reviewed") publish({ message: "Briefing choice saved. Current records were checked again." });
+      else if (result.state === "answered") {
+        automaticQuestion = null;
         publish({
           answer: result.answer,
           question: "",
           message: "Answer received. Review its sources before deciding.",
         });
+      }
       else if (
         v.snapshot &&
         v.snapshot.profile.revision > result.profile.revision
@@ -264,6 +285,7 @@ export function createAdvisorController(
           conflict: false,
           message: "Priorities saved.",
         });
+      return true;
     } catch {
       if (epoch === generation && !paused && !stopped) {
         publish({
@@ -298,6 +320,7 @@ export function createAdvisorController(
       retire();
     },
     editQuestion(question: string) {
+      automaticQuestion = null;
       publish({ question });
     },
     editPriorities(priorities: string) {
@@ -314,6 +337,26 @@ export function createAdvisorController(
           "Review complete. Save your edit deliberately to replace the current priorities.",
       });
     },
+    selectTask(taskId: string | null) {
+      if (!v.snapshot || v.busy || paused || stopped) return;
+      const saved = v.snapshot.notebook;
+      const task = saved?.state === "ready" ? saved.notebook.tasks.find(t => t.id === taskId && t.state === "open") : undefined;
+      if (taskId && !task) { publish({ message: "This task is no longer open or available. Review the current tasks." }); return; }
+      // Only text supplied by task selection may be replaced automatically.
+      // An explicitly typed/edited draft keeps the Owner's intent across switches.
+      const replaceAutomatic = !v.question.trim() || automaticQuestion !== null && v.question === automaticQuestion;
+      automaticQuestion = task && replaceAutomatic ? task.objective : null;
+      publish({ focusedTaskId: taskId, ...(replaceAutomatic ? { question: task?.objective ?? "" } : {}), message: task ? "Task selected. Your next question will use its saved objective and notes with current company evidence." : "General investigation selected." });
+    },
+    async changeNotebook(edit: NotebookEdit) {
+      try {
+        const command = parseNotebookCommand({ op: "notebook", requestId: crypto.randomUUID(), ...edit });
+        return (await submit(command)) === true;
+      } catch {
+        publish({ message: "Check the goal or task fields and dates before saving." });
+        return false;
+      }
+    },
     ask() {
       if (
         v.snapshot?.connection !== "available" ||
@@ -321,6 +364,14 @@ export function createAdvisorController(
         v.question.length > 2000
       )
         return Promise.resolve();
+      if (v.focusedTaskId) {
+        const saved = v.snapshot.notebook;
+        if (saved?.state !== "ready" || !saved.notebook.tasks.some(t => t.id === v.focusedTaskId && t.state === "open")) {
+          publish({ message: "The selected task was closed, removed or is unavailable. Choose an open task or explicitly select a general investigation." });
+          return Promise.resolve();
+        }
+        return submit({ op: "ask_task", requestId: crypto.randomUUID(), message: v.question, taskId: v.focusedTaskId, expectedNotebookRevision: saved.notebook.revision });
+      }
       return submit({
         op: "ask",
         requestId: crypto.randomUUID(),

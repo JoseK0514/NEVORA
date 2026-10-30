@@ -13,7 +13,7 @@ export default defineConfig({
     },
   },
   test: {
-    include: ["src/test/integration/owner-advisor-browser.integration.ts"],
+    include: ["src/test/integration/owner-advisor-browser.integration.ts", "src/test/integration/owner-advisor-notebook-browser.integration.ts", "src/test/integration/owner-advisor-coverage-plan-browser.integration.ts", "src/test/integration/owner-advisor-coverage-actions-browser.integration.ts"],
     fileParallelism: false,
     maxWorkers: 2,
     testTimeout: 240000,

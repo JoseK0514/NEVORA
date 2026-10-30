@@ -26,13 +26,13 @@ describe('migration order authority', () => {
     expect([...HELD_MIGRATIONS]).toEqual(['0026_tenant_ownership_expand.sql', '0027_tenant_ownership_validate.sql']);
     expect(BASE_MIGRATIONS.some(file => (HELD_MIGRATIONS as readonly string[]).includes(file))).toBe(false);
   });
-  it('keeps both independent PR34 files before the Clocker tail without prefix sorting', () => {
-    // 0043 (Publish changes held-edit history) depends only on base tables and follows the Clocker tail.
-    expect(BASE_MIGRATIONS.slice(-8)).toEqual([
+  it('keeps both independent PR34 files before the Clocker tail and the additive Publish changes and Owner review storage without prefix sorting', () => {
+    // 0043 (Publish changes held-edit history) depends only on base tables and follows the Clocker tail; 0044/0045 are additive Owner AI storage.
+    expect(BASE_MIGRATIONS.slice(-10)).toEqual([
       '0037_owner_briefing_reviews.sql', '0038_read_path_indexes.sql', '0039_native_payroll_setup_records.sql',
       '0038_clocker_pin_operation_reference.sql', '0039_clocker_review_requests.sql',
       '0040_clocker_photo_policy_evidence.sql', '0041_clocker_photo_platform_cleanup.sql',
-      '0043_schedule_pending_edits.sql',
+      '0043_schedule_pending_edits.sql', '0044_owner_advisor_notebook.sql', '0045_owner_coverage_actions.sql',
     ]);
   });
 
