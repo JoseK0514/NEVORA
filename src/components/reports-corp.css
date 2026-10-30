@@ -28,3 +28,5 @@
 :is(#c-root, html) .c-ins .c-ins__counted li + li { margin-top: 6px; }
 :is(#c-root, html) .c-ins .c-ins__counted p { margin: 10px 16px 14px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-ins .c-card__aside button.c-link { min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer; }
+/* Hours by person names the person whose hours these are: a long name wraps rather than being cut off (reflow). */
+:is(#c-root, html) .c-ins #ins-people .c-row__title { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }

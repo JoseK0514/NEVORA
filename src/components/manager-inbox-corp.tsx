@@ -69,7 +69,12 @@ function timecardRows(items: ActionItem[]): Row[] {
   return [...byPeriod].map(([period, list]) => {
     const names = list.map(item => itemPerson(item) ?? item.detail.split(" · ")[0]).map(name => name.split(" ")[0]);
     const title = plain(period ? spacedRanges(readableDates(period)) : "This pay period");
-    return { key: `timecards:${period}`, href: "/app/timecards", label: `Timecards to approve, ${title}: ${names.join(", ")}`, title, detail: names.join(", ") };
+    // Time opens on that pay period (the items' own review link: ?start=&end=), and on the person's card when only one
+    // is waiting. Without the period it would open the current week, where an earlier period's cards aren't shown.
+    const review = new URL(list[0].href, "https://nevora.invalid");
+    if (list.length > 1) review.hash = "";
+    const href = review.pathname === "/app/timecards" ? review.pathname + review.search + review.hash : "/app/timecards";
+    return { key: `timecards:${period}`, href, label: `Timecards to approve, ${title}: ${names.join(", ")}`, title, detail: names.join(", ") };
   });
 }
 

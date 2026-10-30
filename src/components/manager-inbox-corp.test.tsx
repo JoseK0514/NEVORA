@@ -70,6 +70,14 @@ it('reads an open shift and a pay period the way the board does', () => {
   expect(html).toContain('<span>Marco, Priya</span>');
 });
 
+it('opens Time on the waiting pay period, and on the card when only one waits', () => {
+  const card = (id: string, employee: string, name: string) => item(id, 'TIMECARD', 'timekeeping', 'REVIEW', {detail: `${name} · Sep 21 – 27 · Fix recorded-time issues before finalizing.`, href: `/app/timecards?start=2026-09-21&end=2026-09-27#timecard-${employee}`});
+  expect(page({snapshot: ready([card('c1', 'e1', 'Avery Lee')])})).toContain('href="/app/timecards?start=2026-09-21&amp;end=2026-09-27#timecard-e1"');
+  const both = page({snapshot: ready([card('c1', 'e1', 'Avery Lee'), card('c2', 'e2', 'Blair Ruiz')])});
+  expect(both).toContain('href="/app/timecards?start=2026-09-21&amp;end=2026-09-27"');
+  expect(both).not.toContain('#timecard-e1');
+});
+
 it('shows how late a running shift is, from the observation time', () => {
   const html = page({snapshot: ready([]), today: today([shift('s1', 'not_clocked_in')])});
   expect(html).toContain('Person s1');
