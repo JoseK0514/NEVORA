@@ -83,7 +83,12 @@ async function geometry(page,selector,label,engine,width){
   const rb=root.getBoundingClientRect();
   const visible=(el)=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return r.width>0&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden';};
   const controls=[...root.querySelectorAll('button,a,input,select,textarea')].filter(visible).map((el)=>{
-   const r=el.getBoundingClientRect();return {tag:el.tagName,text:el.getAttribute('aria-label')||el.textContent||'',height:r.height,left:r.left,right:r.right};
+   const r=el.getBoundingClientRect();
+   // A compact control may keep its look and carry a larger tap area as an absolutely positioned ::after (the kit's
+   // pattern for 32px segments and small title actions); the target is the larger of the two.
+   const after=getComputedStyle(el,'::after'),top=parseFloat(after.top),bottom=parseFloat(after.bottom);
+   const tap=after.content!=='none'&&after.content!=='normal'&&after.position==='absolute'&&getComputedStyle(el).position!=='static'&&Number.isFinite(top)&&Number.isFinite(bottom)?r.height-top-bottom:r.height;
+   return {tag:el.tagName,text:el.getAttribute('aria-label')||el.textContent||'',height:Math.max(r.height,tap),visualHeight:r.height,left:r.left,right:r.right};
   });
   const clipped=[...root.querySelectorAll('strong,small,p,label,span')].filter(visible).flatMap((el)=>{
    const r=el.getBoundingClientRect();return r.left<rb.left-2||r.right>rb.right+2?[{text:el.textContent,left:r.left,right:r.right}]:[];

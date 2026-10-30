@@ -105,6 +105,9 @@
   html body #employee-mobile[data-nv-corp] :is(.em-hours-tabs, .em-request-tabs) { display:flex !important; gap:2px !important; height:36px !important; margin:0 !important; padding:2px !important; border:0 !important; border-radius:8px !important; background:#EDEEEF !important; box-shadow:none !important; }
   html body #employee-mobile[data-nv-corp] :is(.em-hours-tabs, .em-request-tabs) a { flex:1 !important; display:grid !important; place-items:center !important; min-height:0 !important; height:32px !important; margin:0 !important; padding:0 8px !important; border:0 !important; border-radius:6px !important; background:transparent !important; box-shadow:none !important; color:#4A4F54 !important; font-size:13px !important; line-height:18px !important; font-weight:500 !important; text-decoration:none !important; }
   html body #employee-mobile[data-nv-corp] :is(.em-hours-tabs, .em-request-tabs) a[aria-current="page"] { background:#FFFFFF !important; box-shadow:0 1px 2px rgba(16,24,40,.08), 0 0 0 1px #E3E5E6 !important; color:#1A1C1E !important; font-weight:600 !important; }
+  /* Each segment keeps its 32px look and gets a 44px tap area (6px above and below; segments sit side by side). */
+  html body #employee-mobile[data-nv-corp] :is(.em-hours-tabs, .em-request-tabs) a { position:relative !important; }
+  html body #employee-mobile[data-nv-corp] :is(.em-hours-tabs, .em-request-tabs) a::after { content:"" !important; position:absolute !important; inset:-6px 0 !important; }
 
   /* Forms: 13/600 labels above 48px fields with a 1px ring; errors red. */
   html body #employee-mobile[data-nv-corp] :is(.em-hours-form, .em-planning-form) { gap:12px !important; }
