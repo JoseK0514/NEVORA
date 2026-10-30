@@ -114,6 +114,7 @@ Preferred rollback: rebuild with passkeys off and restore the approved app artif
 | `PUSH_VAPID_PUBLIC_KEY`, `PUSH_VAPID_PRIVATE_KEY`, `PUSH_VAPID_SUBJECT`, `PUSH_SUBSCRIPTION_ENCRYPTION_KEY`, `NOTIFICATION_WORKER_SECRET` | Approved existing production material if enabled; do not rotate implicitly during deploy/rollback. Key continuity matters for existing subscriptions |
 | `NEVORA_PAYROLL_ENABLED` | Current approved exact boolean setting; never turn payroll on to show the new topic |
 | `NEVORA_CLOCKER_PUNCH_ENABLED`, `NEVORA_CLOCKER_PIN_KEY`, `NEVORA_CLOCKER_ORIGIN` | Existing separately authorized Clocker state/key/origin; activation stays separate |
+| `NEVORA_CLOCKER_UI_V2` | `true` for Release 1: the approved light iPad presentation that matches the corporate look (presentation only; punch enablement and Owner-only Clocker administration are independent). `false` returns to the previous presentation without restoring Manager Clocker authority |
 | `NEVORA_APP_DATABASE_URL`, `NEVORA_WORKER_DATABASE_URL` | Deferred tenant-runtime principals are not a fallback for this single-company release; configure only with separate tenancy authorization |
 | `NEVORA_DEV_FORCE_ERRORS`, `NEVORA_DEV_CAPTURE_DELIVERY`, `NEVORA_DEV_CAPTURE_OUT` | **Unset** in Production build/runtime settings |
 | `NEVORA_OWNED_APP_*`, `NEVORA_PREMIUM_*`, `FUEL_TEST_DATABASE_URL`, `FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN`, `PREVIEW_OUT` | **Absent** from Production; owned test transport is never an app deployment option |
