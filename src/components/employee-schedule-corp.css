@@ -1,0 +1,45 @@
+/* An Employee's Schedule on the corporate kit (Release 1, boards G-E-Schedule, E-ShiftDetail, E-OpenShifts). */
+:is(#c-root, html) .c-esched .c-esched__state { margin: 0; color: var(--c-ink2); font-size: 15px; line-height: 20px; }
+:is(#c-root, html) .c-esched .c-esched__state + .c-btn { margin-top: 12px; }
+:is(#c-root, html) .c-esched .c-esched__lede { margin: 4px 0 0; color: var(--c-grey); font-size: 13px; line-height: 18px; }
+:is(#c-root, html) .c-esched .c-esched__aside { color: var(--c-grey); font-size: 13px; line-height: 18px; }
+/* Week card: the range and arrows on a 44px row, then the seven days. */
+:is(#c-root, html) .c-esched .c-esched__week { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 8px 0 16px; box-shadow: inset 0 -1px 0 #EDEEEF; }
+:is(#c-root, html) .c-esched .c-esched__range { flex: 1; font-size: 13px; line-height: 18px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-esched .c-esched__arrows { display: flex; gap: 4px; }
+:is(#c-root, html) .c-esched .c-esched__arrows a { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 8px; color: var(--c-ink); }
+:is(#c-root, html) .c-esched .c-esched__arrows a:hover { background: #F2F3F3; }
+:is(#c-root, html) .c-esched .c-esched__arrows .c-ic { width: 16px; height: 16px; }
+:is(#c-root, html) .c-esched .c-esched__days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); padding: 8px 4px 12px; }
+:is(#c-root, html) .c-esched .c-esched__days a { display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 60px; padding-top: 2px; border-radius: 8px; color: var(--c-grey); }
+:is(#c-root, html) .c-esched .c-esched__days small { font-size: 13px; line-height: 18px; font-weight: 500; }
+:is(#c-root, html) .c-esched .c-esched__days b { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 16px; font-size: 15px; line-height: 1; font-weight: 600; color: var(--c-ink2); }
+:is(#c-root, html) .c-esched .c-esched__days .is-work b { background: var(--c-tint); color: var(--c-teal); }
+:is(#c-root, html) .c-esched .c-esched__days .is-today small { color: var(--c-teal); font-weight: 600; }
+:is(#c-root, html) .c-esched .c-esched__days .is-today b { background: var(--c-teal); color: #FFFFFF; }
+:is(#c-root, html) .c-esched .c-esched__days .is-on b { box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--c-teal); }
+:is(#c-root, html) .c-esched .c-esched__days a:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 2px; }
+/* One-line action cards: text left, a small button right (Confirm this week, open shifts). */
+:is(#c-root, html) .c-esched .c-esched__confirm, :is(#c-root, html) .c-esched .c-esched__open { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 16px; }
+:is(#c-root, html) .c-esched .c-esched__confirm > .c-row__main, :is(#c-root, html) .c-esched .c-esched__open > .c-row__main { flex: 1; min-width: 0; }
+:is(#c-root, html) .c-esched .c-esched__confirm .employee-weekly-confirmation { flex: none; margin: 0; }
+:is(#c-root, html) .c-esched .c-esched__confirm .q-bs {
+  display: inline-flex; align-items: center; justify-content: center; height: 36px; min-width: 88px; padding: 0 14px; border: 0; border-radius: 8px;
+  background: var(--c-teal); box-shadow: none; color: #FFFFFF; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; cursor: pointer;
+}
+:is(#c-root, html) .c-esched .c-esched__confirm .q-bs[aria-disabled="true"] { opacity: .6; }
+:is(#c-root, html) .c-esched .c-esched__confirm .q-bs:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 2px; }
+:is(#c-root, html) .c-esched .c-esched__changes:empty { display: none; }
+:is(#c-root, html) .c-esched .c-esched__confirm .c-row__detail > span { white-space: normal; }
+/* What changed (a disclosure): one white card, a 48px row that opens to Before/After lines. */
+:is(#c-root, html) body .c-esched .schedule-publication-change { margin: 0; padding: 0; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; }
+:is(#c-root, html) body .c-esched .schedule-publication-change summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; margin: 0; padding: 0 16px; border: 0; background: none; color: var(--c-ink); font-size: 15px; line-height: 20px; font-weight: 600; cursor: pointer; list-style: none; }
+:is(#c-root, html) body .c-esched .schedule-publication-change summary::-webkit-details-marker { display: none; }
+:is(#c-root, html) body .c-esched .schedule-publication-change summary svg { display: block; width: 18px; height: 18px; color: var(--c-grey); transition: transform 160ms ease; }
+:is(#c-root, html) body .c-esched .schedule-publication-change[open] summary svg { transform: rotate(180deg); }
+:is(#c-root, html) body .c-esched .schedule-publication-change summary:focus-visible { outline: 2px solid var(--c-teal); outline-offset: -2px; border-radius: 12px; }
+:is(#c-root, html) body .c-esched .schedule-publication-change ul { margin: 0; padding: 0; list-style: none; box-shadow: inset 0 1px 0 #EDEEEF; }
+:is(#c-root, html) body .c-esched .schedule-publication-change li { display: flex; flex-direction: column; gap: 2px; padding: 10px 16px; box-shadow: inset 0 -1px 0 #EDEEEF; font-size: 13px; line-height: 18px; color: var(--c-ink2); }
+:is(#c-root, html) body .c-esched .schedule-publication-change li:last-child { box-shadow: none; }
+:is(#c-root, html) body .c-esched .schedule-publication-change li strong { color: var(--c-ink); font-size: 15px; line-height: 20px; font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { :is(#c-root, html) body .c-esched .schedule-publication-change summary svg { transition: none; } }

@@ -12,6 +12,7 @@ import { unpublishedNote } from '../lib/publication-note';
 import { BlockedOpenShifts } from './blocked-open-shifts';
 import { Celebration } from './celebration';
 import { ShiftSheetRow, type ShiftSheetShift } from './employee-shift-sheet';
+import { EmployeeScheduleCorp } from './employee-schedule-corp';
 import { QuietBar, QuietBarIcon, QuietHeader, QuietList, QuietPage, QuietRow, QuietSection, QuietSegments } from './quiet/quiet';
 import { addDays, formatTime, weekDates, weekStartFor } from '../lib/date-utils';
 import { shiftBoundaryInstants } from '../lib/business-time';
@@ -23,7 +24,7 @@ import type { ScheduleShiftRow } from '../lib/data/schedules';
  * the week strip, the confirmation row, the chosen day, then what is coming up. A shift opens as a sheet (E03).
  * Look only: the same reads, links, states, confirmation and privacy rules as before. */
 
-type Shift = ScheduleShiftRow & { positionName?: string | null };
+export type Shift = ScheduleShiftRow & { positionName?: string | null };
 
 export type OpenShift = { id: string; date: string; startTime: string; endTime: string; location: string; position: string | null; href: string; reasons?: string[] };
 export type EmployeeMyScheduleProps = {
@@ -56,44 +57,44 @@ export type EmployeeMyScheduleProps = {
   changes?: ReactNode;
 };
 
-function hasNotEnded(shift: Shift, observedAt: string, timeZone: string) {
+export function hasNotEnded(shift: Shift, observedAt: string, timeZone: string) {
   try { return Date.parse(shiftBoundaryInstants(shift, timeZone).endAt) > Date.parse(observedAt); }
   catch { return false; }
 }
 
-function swappable(shift: Shift, today: string, observedAt: string, timeZone: string) {
+export function swappable(shift: Shift, today: string, observedAt: string, timeZone: string) {
   return !shift.isCalloutApproved && shift.date >= today && hasNotEnded(shift, observedAt, timeZone);
 }
 
 const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
-const dayFmt = (date: string, options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', ...options }).format(utcDay(date));
+export const dayFmt = (date: string, options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', ...options }).format(utcDay(date));
 
-function shiftMinutes(shift: { startTime: string; endTime: string }) {
+export function shiftMinutes(shift: { startTime: string; endTime: string }) {
   const toMinutes = (time: string) => { const [h, m] = time.split(':').map(Number); return h * 60 + (m || 0); };
   const start = toMinutes(shift.startTime), end = toMinutes(shift.endTime);
   return end > start ? end - start : end + 1440 - start;
 }
 
 /** "40 h" or "37.5 h", one unit at the size of its number. */
-function hoursLabel(minutes: number) {
+export function hoursLabel(minutes: number) {
   const hours = Math.round(minutes / 6) / 10;
   return `${Number.isInteger(hours) ? hours : hours.toFixed(1)} h`;
 }
 
 /** "8 hours" or "7 hours 30 min" for one shift. */
-function lengthLabel(minutes: number) {
+export function lengthLabel(minutes: number) {
   const hours = Math.floor(minutes / 60), rest = minutes % 60;
   return `${hours ? `${hours} ${hours === 1 ? 'hour' : 'hours'}` : ''}${hours && rest ? ' ' : ''}${rest ? `${rest} min` : ''}`;
 }
 
 /** "Oct 19 – 25", or "Oct 26 – Nov 1" across a month. */
-function weekRange(weekStart: string) {
+export function weekRange(weekStart: string) {
   const end = addDays(weekStart, 6);
   return `${dayFmt(weekStart, { month: 'short', day: 'numeric' })} – ${end.slice(5, 7) !== weekStart.slice(5, 7) ? dayFmt(end, { month: 'short', day: 'numeric' }) : Number(end.slice(8))}`;
 }
 
-const hours = (shift: Shift) => keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`);
-const overnight = (shift: Shift) => shift.endTime < shift.startTime || shift.endTime === '24:00';
+export const hours = (shift: Shift) => keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`);
+export const overnight = (shift: Shift) => shift.endTime < shift.startTime || shift.endTime === '24:00';
 
 function OpenShiftRows({ shifts, requested = false }: { shifts: OpenShift[]; requested?: boolean }) {
   return <>{shifts.map(shift => <QuietRow key={shift.id} href={shift.href}
@@ -122,7 +123,9 @@ function OpenShifts({ open }: { open: EmployeeMyScheduleProps['openShifts'] }) {
   </>;
 }
 
-export function EmployeeMySchedule(props: EmployeeMyScheduleProps) {
+export function EmployeeMySchedule(props: EmployeeMyScheduleProps & { corporate?: boolean }) {
+  // Corporate (Release 1, board G-E-Schedule): an Employee's week on the corporate kit; a Lead keeps the v5 view.
+  if (props.corporate) return <EmployeeScheduleCorp {...props} />;
   const modules = props.modules ?? ALL_MODULES_ON;
   const view = modules.marketplace ? props.view ?? 'mine' : 'mine';
   const openCount = props.openShifts ? props.openShifts.available.length : null;

@@ -200,6 +200,7 @@ export default async function SchedulePage({
       ) : employeeAcknowledgement.acknowledged ? <span className="employee-quiet-status success">Confirmed</span> : <span className="employee-quiet-status">Confirmation unavailable — review the current schedule again.</span>
     ) : undefined;
     return <EmployeeMySchedule
+      corporate={session.role === 'EMPLOYEE'}
       modules={modules}
       view={params.view === 'open' ? 'open' : 'mine'}
       intent={params.intent === 'swap' ? 'swap' : undefined}
