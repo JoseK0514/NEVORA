@@ -86,11 +86,20 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
      try{if(kind!=='MISSING_ENTRY'){await entryRow(page).waitFor();await entryRow(page).click();}await retry.waitFor();}
      catch(error){
       const shot=join(evidence,`${engine}-${kind}-${loss}-retry-missing.png`);await page.screenshot({path:shot,fullPage:true}).catch(()=>{});report.screenshots.push(shot);
-      (report.retryMissing??=[]).push({engine,kind,loss,state:await page.evaluate(()=>({dialogOpen:!!document.querySelector('dialog[open]'),status:[...document.querySelectorAll('[role="status"]')].map(e=>e.textContent?.trim().slice(0,120)),retry:document.querySelectorAll('button.employee-time-correction-retry').length})).catch(()=>null)});
+      (report.retryMissing??=[]).push({engine,kind,loss,trace:await page.evaluate(()=>window.__d2trace??null).catch(()=>null),state:await page.evaluate(()=>({dialogOpen:!!document.querySelector('dialog[open]'),status:[...document.querySelectorAll('[role="status"]')].map(e=>e.textContent?.trim().slice(0,120)),retry:document.querySelectorAll('button.employee-time-correction-retry').length})).catch(()=>null)});
       throw error;
      }
     };
     if(kind==='ENTRY_BOUNDARY'&&loss==='after'){
+     // Trace (diagnostic): when the page heading node is replaced (a remount) and when the retry/sheet come and go.
+     await page.evaluate(()=>{const log=window.__d2trace=[],t0=performance.now();let heading=document.querySelector('main h1'),retry=0,dialog=false,loading=false;
+      const note=kind=>{if(log.length<200)log.push({kind,ms:Math.round(performance.now()-t0),w:innerWidth});};
+      new MutationObserver(()=>{const h=document.querySelector('main h1');if(h!==heading){heading=h;note(h?'heading-replaced':'heading-gone');}
+       const r=document.querySelectorAll('button.employee-time-correction-retry').length;if(r!==retry){retry=r;note('retry:'+r);}
+       const d=!!document.querySelector('dialog[open]');if(d!==dialog){dialog=d;note('dialog:'+d);}
+       const l=/Loading recorded time|Loading correction history/.test(document.querySelector('main')?.textContent??'');if(l!==loading){loading=l;note('loading:'+l);}
+      }).observe(document,{subtree:true,childList:true,characterData:true});
+      for(const type of ['focus','blur','storage','pageshow','pagehide','online','offline','resize'])window.addEventListener(type,()=>note('event:'+type),true);});
      for(const width of DESKTOP_WIDTHS){
       await page.setViewportSize({width,height:width<=430?844:1000});
       await showRetry();
