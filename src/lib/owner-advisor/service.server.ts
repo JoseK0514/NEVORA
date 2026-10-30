@@ -107,6 +107,7 @@ export async function advisorService(
     const result = await notebook.save(command);
     return { state: "notebook_saved" as const, revision: result.revision, ...(await observation()) };
   }
+  if (command.op !== "ask" && command.op !== "ask_task") throw new AdvisorError("invalid");
   if (!config) throw new AdvisorError("unavailable");
   await check();
   const receipt = await store.reserve(

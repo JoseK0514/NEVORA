@@ -59,10 +59,11 @@ export function parseCoveragePlans(value: unknown): CoveragePlans {
     let addedMinutes = 0;
     const people = new Map<string, { start: number; end: number }[]>();
     for (const assignment of plan.assignments) {
-      object(assignment, "employeeId employeeName locationId locationName date startTime endTime positionName isDesignatedLead publication");
+      object(assignment, `employeeId employeeName locationId locationName date startTime endTime positionName isDesignatedLead publication${Object.hasOwn(assignment, "positionId") ? " positionId" : ""}`);
       valid(text(assignment.employeeId, 128) && text(assignment.employeeName) && text(assignment.locationId, 128) && text(assignment.locationName) &&
         assignment.date === value.date && time(assignment.startTime) && endTime(assignment.endTime) &&
-        (assignment.positionName === null || text(assignment.positionName)) && typeof assignment.isDesignatedLead === "boolean" &&
+        (assignment.positionName === null || text(assignment.positionName)) &&
+        (!Object.hasOwn(assignment, "positionId") || assignment.positionId === null || text(assignment.positionId, 128)) && typeof assignment.isDesignatedLead === "boolean" &&
         ["DRAFT", "PUBLISHED"].includes(String(assignment.publication)) &&
         value.locations.some(l => l.id === assignment.locationId && l.state === "INCLUDED"));
       const period = shiftPeriod({ date: value.date, startTime: assignment.startTime, endTime: assignment.endTime });

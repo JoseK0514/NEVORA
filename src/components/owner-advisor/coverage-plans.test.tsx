@@ -54,3 +54,28 @@ it.each([
   const value = response(); mutate(value.answer.coveragePlans);
   expect(() => parseAnswer(value)).toThrow();
 });
+
+
+it("identifies which specific assignments affect published schedules in a mixed plan", () => {
+  const first = ownerCoveragePlan();
+  const plan = first.alternatives[0];
+  plan.assignments.push({ ...plan.assignments[0], employeeId: "ben", employeeName: "Fictional Ben", locationId: "south", locationName: "South", publication: "PUBLISHED" });
+  plan.publishedTargets = 1;
+  const second = structuredClone(first);
+  second.alternatives[0].assignments[0].publication = "PUBLISHED";
+  second.alternatives[0].assignments[1].publication = "DRAFT";
+  const render = (plans: typeof first) => renderToStaticMarkup(<WorkflowResults answer={{ text: "Review", sources: [], coveragePlans: plans }} />);
+  expect(render(first)).not.toBe(render(second));
+  expect(render(first)).toContain("Published schedule");
+  expect(render(first)).toContain("Draft schedule");
+});
+
+it("formats plan observation in the named workspace timezone rather than the host zone", () => {
+  const original = process.env.TZ;
+  try {
+    process.env.TZ = "UTC";
+    const html = renderToStaticMarkup(<WorkflowResults answer={{ text: "Review", sources: [], coveragePlans: ownerCoveragePlan() }} />);
+    expect(html).toContain("10/30/2026, 8:00:00 AM");
+    expect(html).not.toContain("10/30/2026, 12:00:00 PM");
+  } finally { if (original === undefined) delete process.env.TZ; else process.env.TZ = original; }
+});

@@ -1,5 +1,6 @@
 import { parsePeriod } from "@/lib/timecards/project";
 import { NotebookError, notebookId, notebookRevision, parseNotebookCommand } from "./notebook";
+import { parseCoverageAction } from "./coverage-actions";
 export const ADVISOR_MAX_TOOL_CALLS = 8;
 export const ADVISOR_MAX_ANSWER_SOURCES = 1 + (ADVISOR_MAX_TOOL_CALLS - 1) * 2;
 export type AdvisorMessage = { role: "user" | "assistant"; content: string };
@@ -19,6 +20,7 @@ export type AdvisorSnapshot = {
   validForMs: number;
 };
 export type AdvisorCommand =
+  | import("./coverage-actions").CoverageActionCommand
   | import("./notebook").NotebookCommand
   | { op: "ask_task"; requestId: string; taskId: string; expectedNotebookRevision: number; message: string }
   | { op: "inspect"; requestId: string; tool: Extract<ToolCall, { name: "attendance_payroll_review" | "coverage_proposals" | "coverage_plan" }> }
@@ -58,6 +60,9 @@ export function parseCommand(v: unknown): AdvisorCommand {
     )
   )
     throw new AdvisorError("invalid");
+  if (["prepare_coverage_draft", "apply_coverage_draft", "check_coverage_draft"].includes(String(v.op))) {
+    try { return parseCoverageAction(v); } catch { throw new AdvisorError("invalid"); }
+  }
   if (v.op === "notebook") {
     try { return parseNotebookCommand(v); }
     catch (error) { if (error instanceof NotebookError) throw new AdvisorError(error.code); throw error; }

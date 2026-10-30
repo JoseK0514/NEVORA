@@ -14,7 +14,7 @@ export function CoveragePlanResults({ plans }: { plans: CoveragePlans }) {
   }, [plans]);
   return <section aria-label="Day plan comparison" className="oa-plain">
     <h3 ref={heading} tabIndex={-1}>Day plan comparison · {plans.date}</h3>
-    <p>Planning ledger, including drafts · {plans.timeZone}. Observed <time dateTime={plans.observedAt}>{new Date(plans.observedAt).toLocaleString()}</time>.</p>
+    <p>Planning ledger, including drafts · {plans.timeZone}. Observed <time dateTime={plans.observedAt}>{new Date(plans.observedAt).toLocaleString("en-US", { timeZone: plans.timeZone })}</time>.</p>
     <p className="oa-notice">Each plan is a separate hypothetical allocation. Compare one plan at a time. Nothing has been saved or published; confirm availability with the people involved before making changes.</p>
     {plans.state === "unavailable" ? <p>This company is larger than this review can process. Open Scheduling to review the complete requirements.</p> : <>
       <details className="oa-follow-through"><summary>Review scope and source</summary>
@@ -33,7 +33,7 @@ export function CoveragePlanResults({ plans }: { plans: CoveragePlans }) {
         <p>{p.publishedTargets ? `${p.publishedTargets} published locations would need a separate publication decision and its existing notification consent.` : "Draft additions would need review in Scheduling and a later publishing decision."}</p>
         {p.status === "BUDGET_EXHAUSTED" && <p>The bounded search stopped. A better allocation may exist; remaining gaps have not been proved impossible.</p>}
         <ul>{p.assignments.map((a, n) => <li key={n}>
-          <strong>{a.employeeName}</strong> ({a.employeeId}) · {a.locationName} ({a.locationId}) · {a.startTime}–{a.endTime} · {a.positionName ?? "Staffing"}{a.isDesignatedLead ? " · Designated lead" : ""}
+          <strong>{a.employeeName}</strong> ({a.employeeId}) · {a.locationName} ({a.locationId}) · {a.startTime}–{a.endTime} · {a.positionName ?? "Staffing"}{a.isDesignatedLead ? " · Designated lead" : ""} · {a.publication === "PUBLISHED" ? "Published schedule" : "Draft schedule"}
         </li>)}</ul>
         {!!p.remaining.total && <details className="oa-follow-through"><summary>Remaining requirements ({p.remaining.total})</summary>
           <ul>{p.remaining.items.map((b, n) => <li key={n}>{b.locationName} · {b.startTime}–{b.endTime}: {b.missingStaff === null ? "staffing unknown" : `${b.missingStaff} staff needed`}{b.requiresLead ? " · Designated lead needed" : b.requiresLead === null ? " · Lead rule unknown" : ""}

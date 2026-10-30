@@ -40,6 +40,7 @@ function projection(input: GenerationInput, plan: GenerationPlan, search: DayPla
       locationName: text(input.locations.find(l => l.id === a.locationId)!.shortName), date: a.date,
       startTime: a.startTime, endTime: a.endTime,
       positionName: a.positionId ? text(input.positions.find(p => p.id === a.positionId)!.name) : null,
+      positionId: a.positionId ?? null,
       isDesignatedLead: !!a.isDesignatedLead,
       publication: input.schedules.some(s => s.locationId === a.locationId && s.weekStart === input.weekStart && s.status === "PUBLISHED") ? "PUBLISHED" : "DRAFT",
     })),

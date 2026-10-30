@@ -10,7 +10,7 @@ export type DayPlan = {
   status: "COMPLETE" | "PARTIAL" | "INVALID" | "BUDGET_EXHAUSTED";
   assignments: {
     employeeId: string; employeeName: string; locationId: string; locationName: string; date: string;
-    startTime: string; endTime: string; positionName: string | null;
+    startTime: string; endTime: string; positionName: string | null; positionId?: string | null;
     isDesignatedLead: boolean; publication: "DRAFT" | "PUBLISHED";
   }[];
   addedMinutes: number;
