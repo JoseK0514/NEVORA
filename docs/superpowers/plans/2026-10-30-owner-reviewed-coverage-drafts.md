@@ -56,5 +56,5 @@ Consumes Task2 public reviewed/saved/checked responses. Produces one finite acti
 
 - [x] Run full npm test -- --maxWorkers=2 plus all affected Owner/generation SQL and real browser suites, full TypeScript/lint; source-bound final evidence. Environment adapters may not weaken assertions.
 - [x] One batched visual inspection, one combined repair/confirmation. Save exact source manifests, captures and check results outside checkout.
-- [ ] Dispatch one fresh whole-slice reviewer with spec/plan/Review Focus/ledger/evidence; retain its original report. Regrade all findings/declined items; one author TDD repair/full gate. Jose's zero-error foundation permits fixing minor UI defects in that same bounded pass. No second review or invented independent PASS.
-- [ ] Record complete/blocked status, scope/risks, rulings and source/commit state; preserve worktree/evidence; no push/merge/deployment. Deliver working local source and precise next integration gate.
+- [x] Dispatch one fresh whole-slice reviewer with spec/plan/Review Focus/ledger/evidence; retain its original report. Regrade all findings/declined items; one author TDD repair/full gate. Jose's zero-error foundation permits fixing minor UI defects in that same bounded pass. No second review or invented independent PASS.
+- [x] Record complete/blocked status, scope/risks, rulings and source/commit state; preserve worktree/evidence; no push/merge/deployment. Deliver working local source and precise next integration gate.

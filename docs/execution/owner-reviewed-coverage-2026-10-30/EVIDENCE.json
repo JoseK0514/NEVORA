@@ -1,89 +1,118 @@
 {
   "base": "8d9487362d7f2295dc99f173ebe3977e049719b7",
-  "applicationCandidate": "e3497ad2967ee632f75dc9532e7cb0cd72a577db",
-  "status": "candidate gates pass; fresh review pending",
+  "implementationCandidate": "b010fdce98991186396a90fb137eafe0b8b08b24",
+  "browserHarnessCandidate": "ed91fba8e9f9ae0f68e36d759138a03554302b1a",
+  "status": "local phase verified after one fresh review and regression-driven author repair; no independent re-review or hosted/release acceptance",
+  "sourceEquivalence": {
+    "implementationCandidate": "b010fdce98991186396a90fb137eafe0b8b08b24",
+    "browserHarnessCandidate": "ed91fba8e9f9ae0f68e36d759138a03554302b1a",
+    "changesSinceImplementationGates": [
+      "docs/execution/owner-reviewed-coverage-2026-10-30/EXECUTION-LEDGER.md",
+      "src/test/integration/owner-advisor-coverage-actions-browser.integration.ts"
+    ],
+    "runtimeSourceEquivalent": true,
+    "reason": "Only collapsed-metadata wait in the new browser test and durable ledger changed; runtime, unit test files, SQL suites, fixtures, migrations and configuration are byte-identical. Complete browser suite rerun on latest harness.",
+    "originalFreshReviewSha256": "a76d0963441af5ebd3a4b01357650a8a68c9ca4d46b81f1778df469669facd28"
+  },
   "checks": [
     {
-      "name": "default-suite-validated",
-      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/default-suite-validated.json",
-      "sha256": "4a5f47ba2f4ec54caa6bf3ec3484792350ea2c220d7a5a8fc7d0f4f5ccee0405",
-      "passed": 10373,
+      "name": "post-review-default",
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/post-review-default.json",
+      "sha256": "1f9c53e8c094949b57a93428ed75557dd66763003c3c54853965ddcfcd72abd0",
+      "passed": 10375,
       "failed": 0,
-      "pending": 801,
-      "todo": 0
+      "pending": 801
     },
     {
-      "name": "owner-sql-validated",
-      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/owner-sql-validated.json",
-      "sha256": "eac479e3521f04ebdc427024204839ef26ba60895da195ef96ac6fd738782157",
-      "passed": 68,
+      "name": "post-review-owner-sql",
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/post-review-owner-sql.json",
+      "sha256": "127b06ac0e5c4f790fd3f65456d79d22de1510e9fcb370c094b657d813469445",
+      "passed": 71,
       "failed": 0,
-      "pending": 0,
-      "todo": 0
+      "pending": 0
     },
     {
-      "name": "generation-sql-validated",
-      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/generation-sql-validated.json",
-      "sha256": "b041b9b3178541cc65d43fd1137414e900f44fcb1f90dce0a43887b27f434aa0",
+      "name": "post-review-generation-sql",
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/post-review-generation-sql.json",
+      "sha256": "79c84dac51c527da3340499e4eec5f205d77153055af57ed367708fc2eab5035",
       "passed": 177,
       "failed": 0,
-      "pending": 0,
-      "todo": 0
+      "pending": 0
     },
     {
-      "name": "browser-suite-validated",
-      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-suite-validated.json",
-      "sha256": "23851dc2bc91d1fa8bfc2191b5584b881f4fc70f41f7dcfec66a1d7652becd92",
+      "name": "acceptance-browser",
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/acceptance-browser.json",
+      "sha256": "d735c35ff5e044f3b44667c7d808767337d6ea36a0bfd34f42459fd9049da9dd",
       "passed": 4,
       "failed": 0,
-      "pending": 0,
-      "todo": 0
+      "pending": 0
     },
     {
-      "name": "lint-validated",
-      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/lint-validated.log",
+      "name": "acceptance-lint",
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/acceptance-lint.log",
       "sha256": "45dd42c28bc5a51b907c86db4ed50cb3e1379f11c10454748a96d2528f6bb7c7",
-      "result": "exit0; sequential set-e command advanced to passing full default suite"
+      "result": "exit0, observed completion receipt"
     },
     {
-      "name": "typecheck-validated",
-      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/typecheck-validated.log",
+      "name": "acceptance-typecheck",
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/acceptance-typecheck.log",
       "sha256": "a12318be798fbfe982f3307107c280a32f686008ee2f55b5636d8d8ae7a769ec",
-      "result": "exit0; sequential set-e command advanced to passing full default suite"
+      "result": "exit0, observed completion receipt"
+    },
+    {
+      "name": "acceptance-static-completion",
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/acceptance-static-completion.json",
+      "sha256": "00c8892b5c7526dd1f2412c195fddf0fe57a49818a265f05924e865de1c4895b",
+      "result": "exit0, observed completion receipt"
     }
   ],
+  "browserCheckGroups": 60,
   "closedOwnedBrowserMirrors": [
     {
-      "marker": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-final-validated/owned-next-Iuc3dv/ownership.json",
-      "ownerId": "f0152907-d485-49c6-8525-bb1dc524df9f",
+      "marker": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-acceptance/owned-next-1AHIja/ownership.json",
+      "ownerId": "e90bed05-abf3-494a-ac20-f83594792f07",
       "closed": true,
       "sourceVerified": true,
-      "mirrorVerified": true
+      "mirrorVerified": true,
+      "sourceManifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-acceptance/owned-next-1AHIja/source-manifest.json",
+      "sourceManifestSha256": "0a3d6ca1101a8b5f2fcad6d5f68806e834a05afc32778a8188350972852912d0"
     },
     {
-      "marker": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-final-validated/notebook/owned-next-hOQVyp/ownership.json",
-      "ownerId": "5000f292-096c-461e-b6cc-952576e0a503",
+      "marker": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-acceptance/notebook/owned-next-jMzlBD/ownership.json",
+      "ownerId": "f924dbe0-15e7-42c3-b4c1-3a42d6d238f4",
       "closed": true,
       "sourceVerified": true,
-      "mirrorVerified": true
+      "mirrorVerified": true,
+      "sourceManifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-acceptance/notebook/owned-next-jMzlBD/source-manifest.json",
+      "sourceManifestSha256": "0a3d6ca1101a8b5f2fcad6d5f68806e834a05afc32778a8188350972852912d0"
     },
     {
-      "marker": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-final-validated/coverage-plans/owned-next-eItKEd/ownership.json",
-      "ownerId": "ea7f4ce5-ab45-4704-9f74-3609613b4f51",
+      "marker": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-acceptance/coverage-plans/owned-next-FYWm1z/ownership.json",
+      "ownerId": "fcc2632b-7bb0-4c89-930c-ca93d4d67268",
       "closed": true,
       "sourceVerified": true,
-      "mirrorVerified": true
+      "mirrorVerified": true,
+      "sourceManifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-acceptance/coverage-plans/owned-next-FYWm1z/source-manifest.json",
+      "sourceManifestSha256": "0a3d6ca1101a8b5f2fcad6d5f68806e834a05afc32778a8188350972852912d0"
     },
     {
-      "marker": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-final-validated/coverage-actions/owned-next-fjLtHM/ownership.json",
-      "ownerId": "b23ae4c8-21bc-4cb4-b197-d7c28ed3679d",
+      "marker": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-acceptance/coverage-actions/owned-next-zNEeyV/ownership.json",
+      "ownerId": "1775d307-3ce2-41b3-9d6f-547278c4b79c",
       "closed": true,
       "sourceVerified": true,
-      "mirrorVerified": true
+      "mirrorVerified": true,
+      "sourceManifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-acceptance/coverage-actions/owned-next-zNEeyV/source-manifest.json",
+      "sourceManifestSha256": "0a3d6ca1101a8b5f2fcad6d5f68806e834a05afc32778a8188350972852912d0"
     }
   ],
-  "visual": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/visual-review.json",
+  "originalReviewSha256": "a76d0963441af5ebd3a4b01357650a8a68c9ca4d46b81f1778df469669facd28",
+  "originalReviewVerdict": "Ready to merge: No \u2014 fixes required; original retained. Author repairs independently reproduce findings in SQL/render/controller tests and pass final gates.",
+  "deferredReviewMinors": [],
   "providerConfigured": false,
+  "integration": "none",
   "deployment": "none",
-  "integration": "none"
+  "visualConfirmation": {
+    "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/visual-confirmation-post-review.json",
+    "sha256": "65d9f35901ba23ea42397222634974566c49f1b0b78ad783e171fa0179e9cecb"
+  }
 }

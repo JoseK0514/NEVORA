@@ -1,10 +1,10 @@
 # Owner reviewed coverage drafts — local implementation handoff
 
-Status: fresh review found two Important and one Minor issue; one author regression-driven repair is implemented, with final post-repair gates pending. No independent re-review or hosted/release acceptance.
+Status: this bounded local phase is complete after one fresh review, one regression-driven author repair, and passing final gates. Original review verdict is preserved; no independent re-review or hosted/release acceptance is claimed.
 
 ## Identity and scope
 
-Author/executor: Codex, Jose-approved bounded continuation after the actual GitHub AI-owner review. Source base8d9487362d7f2295dc99f173ebe3977e049719b7. Application candidatee3497ad2967ee632f75dc9532e7cb0cd72a577db in detached worktree `work/owner-ai-reviewed-drafts-20261030`. No branch created, remote push, merge, deployment, shared-line integration, real provider call or operational customer action. Original standalone mobile mockup/handoffs and other worktrees remain separate.
+Author/executor: Codex, Jose-approved bounded continuation after the actual GitHub AI-owner review. Source base8d9487362d7f2295dc99f173ebe3977e049719b7. Implementation candidate `b010fdce98991186396a90fb137eafe0b8b08b24`; final browser harness `ed91fba8e9f9ae0f68e36d759138a03554302b1a` in detached worktree `work/owner-ai-reviewed-drafts-20261030`. No branch created, remote push, merge, deployment, shared-line integration, real provider call or operational customer action. Original standalone mobile mockup/handoffs and other worktrees remain separate.
 
 Remote heads rechecked October30: AI-owner8d948736; development682ecea9; collaboration08728bc5; main7ffd013e. These are observations, not permission to integrate. Preserve the existing seven-source reconciliation requirement and run the development source inventory on a freshly fetched development checkout before any later assembly.
 
@@ -31,9 +31,15 @@ External evidence root: `/Users/josek0514/Documents/Codex/2026-10-26/hi-right-no
 
 Confirmed before final gates: Owner SQL68/68; connected canonical generation177/177; focused client71/71; targeted migration/governance/client78/78; actual Chromium+WebKit complete new workflow with320/390/430/1440,200% review text,>=44px targets and zero automated accessibility violations. Lost-reply browser test forwards the real successful write then deliberately drops its actual response; it does not synthesize API data.
 
-Final candidate gates on e3497ad2: full default suite10,373 pass/0 fail/801 pending; Owner SQL68/68; canonical generationSQL177/177; four real Owner browser specs pass in both Chromium and WebKit (58 combined check groups); full lint and TypeScript exit0. All four owned browser mirrors closed with source/mirror verification. Author visual inspection of320px, desktop,200% text and saved-progress captures required no further repair. See [EVIDENCE.json](EVIDENCE.json) for original paths and hashes, and [EXECUTION-LEDGER.md](EXECUTION-LEDGER.md) for decisions, costs and failures. The801 pending default cases are unexecuted, not claimed as passes; this slice's dedicated SQL/browser gates ran explicitly.
+Final gates after the author repair: **10,375 default tests pass / 0 fail / 801 pending; Owner SQL71/71; canonical generationSQL177/177; four real Owner browser specs pass in Chromium and WebKit (60 combined check groups); full lint and TypeScript exit0.** The801 pending default cases are unexecuted and are not claimed as passes. The dedicated database/browser gates ran explicitly. All four owned browser mirrors closed with source/mirror verification.
 
-The original fresh whole-slice review is preserved in [FRESH-REVIEW-ORIGINAL.md](FRESH-REVIEW-ORIGINAL.md). Findings, author repairs and every declined judgment are recorded in [REVIEW-DISPOSITION.md](REVIEW-DISPOSITION.md). Final post-repair gates are pending. Original failed candidates, interrupted ENOSPC attempts and later verified repairs remain preserved.
+The implementation gates ran at b010fdce. The only subsequent non-document change is the new browser test's wait for an exact fingerprint inside deliberately collapsed details; the complete browser suite and static checks ran at ed91fba8. Runtime code, unit tests, SQL suites, fixtures, migrations, package/lock and configuration are byte-identical. [EVIDENCE.json](EVIDENCE.json) records each artifact hash and source equivalence; [PRE-REPAIR-EVIDENCE.json](PRE-REPAIR-EVIDENCE.json) preserves the prior reviewed gate index.
+
+The [original fresh review](FRESH-REVIEW-ORIGINAL.md) reported No—fixes required. All three findings were reproduced before repair and verified after repair: silent receipt no-op rolls the entire business save back; moved parent location/week cannot count as exact/published; comparison provenance follows the actual observation and survives another review. [REVIEW-DISPOSITION.md](REVIEW-DISPOSITION.md) preserves regrades, limits and every declined judgment. No second independent PASS is invented.
+
+Native keyboard Tab/Space/Enter exercises review acknowledgement, save, original-request recovery and progress in both engines. Fresh comparison after saving no longer inherits an old stale warning.320/390/430/1440 and200% text, long names,>=44px targets, exact current progress, zero automated accessibility violations and revoked-session private retirement are covered. Author visual inspection/confirmation uses the retained captures; no new layout repair was needed.
+
+No finding from this bounded review remains deferred. [EXECUTION-LEDGER.md](EXECUTION-LEDGER.md) records all rulings, costs and failed attempts. The implementation worktree and external evidence remain intact.
 
 ## Next integration gate
 

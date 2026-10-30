@@ -50,3 +50,15 @@ Fresh original verdict No—fixes required: I1 Important (receipt no-op), I2 Imp
 Task4: Ruling: disk now has>100GiB free; final repair gates may use three independent runners at most (default, owned browser, SQL/static), after verifying free space. Earlier ENOSPC attempts remain failed and preserved. Cost: resource contention; each uses its own owned environment and source is frozen.
 
 Post-review gate attempt: OwnerSQL71/71, generation177/177, lint/TS clean; three legacy browser specs passed. Expanded new journey stopped before actions because its new exact-fingerprint wait required visibility inside intentionally closed scope details. The exact expected hash was already attached. Correct the wait to attached; normal comparison/heading and explicit keyboard scopes remain asserted, no error filtering or product assertion weakening. Preserve failed run; one author repair pass remains in progress.
+
+## Final settlement
+
+Final: fixed I1 — silent receipt no-op real PostgreSQL regression RED→GREEN; full OwnerSQL71/71, generation177/177 and default10375/10375 executed passes.
+Final: fixed I2 — moved saved parent location and week real PostgreSQL regressions RED→GREEN; existing publication-only and episode regressions remain green.
+Final: fixed M1 under agreed quality ruling — controller/render RED2→GREEN; real native-keyboard/fresh-comparison journeys pass in both engines.
+Final source matrix: implementation b010fdce; final harness ed91fba8. Only collapsed-details test wait and ledger changed after implementation gates. Exact runtime/unit/SQL/package/config byte equivalence verified. Complete browser suite4/4,60 groups and full lint/TS exit0 on final harness; original source manifests/closure verified4/4. Original review No and all raw failures retained; no re-review claimed.
+Task4: Ruling: use the actual completed full runs plus a final acceptance validator (hashes, source equivalence, ownership/closure and counts) for completion custody, rather than rerunning unchanged unit/SQL suites for the helper's logging. Cost: correctness of the equivalence boundary matters; only the browser harness changed and its entire affected suite reran.
+Task4: complete — one fresh review, one bounded author repair and all final gates green. Deferred review minors:none. Keep detached worktree/evidence locally; no push, merge or deployment.
+
+Completion custody: Task 4: complete (commits 02f8282..ed91fba, tests: python3 ../owner-ai-reviewed-drafts-evidence-20261030/verify-acceptance.py → Acceptance: 10375 default passed / 801 pending; 248 SQL; 4 browser specs / 60 groups; lint/types exit0; source, closed mirrors and original review custody verified.)
+Author visual confirmation after repair: enlarged-text and saved-progress captures retained styling/reflow and visible keyboard focus; no additional repair needed.
