@@ -45,7 +45,7 @@ export function CoveragePlanResults({ plans, review, afterSave }: { plans: Cover
           {p.issues.total > p.issues.items.length && <p>{p.issues.total - p.issues.items.length} further diagnostic categories are omitted.</p>}
         </details>}
         {review && (p.assignments.length > 0 && p.status !== "INVALID" && p.assignments.every(a => a.publication === "DRAFT" && a.positionId !== undefined)
-          ? <button className="nv-btn" data-kind="secondary" type="button" onClick={() => review(index)}>Review draft changes</button>
+          ? <button className="nv-btn" data-kind="secondary" type="button" onClick={e => { e.currentTarget.focus(); review(index); }}>Review draft changes</button>
           : <p className="oa-muted">{p.assignments.some(a => a.publication === "PUBLISHED") ? "This allocation includes a published schedule. Review it in Scheduling; this action saves whole draft-only allocations." : "A fresh comparison with exact draft assignments is needed before saving."}</p>)}
       </article>)}
       <p>These are bounded comparisons, without a guarantee of the best allocation. Source changes require a fresh review in Scheduling. Added hours do not establish financial costs or savings.</p>
