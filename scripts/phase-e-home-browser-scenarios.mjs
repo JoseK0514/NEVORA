@@ -53,8 +53,6 @@ export async function waitForRecordedTimeReady(page, expectedState){
 export async function runScenario({app,browser,context,page,engine,width,evidenceDirectory,axeFile,runtimeErrors:cellRuntimeErrors}){
  const label=`H${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
  const scenario=await seedOwnedScenario(app.database.executor,label,index+14),actor=scenario.actors[0],q=(text,values=[])=>app.database.executor.query({text,values});
- // Release 1 Home is the corporate Employee Home (approved Oct 26); a Lead keeps the v5 view while that role is on hold.
- await q("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[actor]);
  const checks=[],runtimeErrors=[],screenshots=[],details={stage:'Task11 developer verification',engine,width,actor,checks,screenshots,runtimeErrors};let stage='seed',binding,homeResponse,managerContext,manager;
  cellRuntimeErrors.setStageReader(()=>stage);
  page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({stage,name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]')});});
@@ -163,6 +161,8 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   return {handler,get seen(){return seen.then(()=>{if(failure)throw Error('Held response operation failed; see sanitized runtimeErrors');});},get done(){return used?done:Promise.resolve();},get outcome(){return outcome;},get failure(){return failure;},release:(reason)=>{if(reason==='navigation'){assert.notEqual(page.url(),documentUrl,'Navigation release requires an actually changed document URL');navigationReleased=true;}release();},path};
  }
  try {
+ // Release 1 Home is the corporate Employee Home (approved Oct 26); a Lead keeps the v5 view while that role is on hold.
+ await q("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[actor]);
  if(engine==='chromium'&&width===320){
   const prepared=[];
   for(const path of ['/app/requests/hub','/app/schedule']){const response=await context.request.get(app.url+path,{maxRedirects:0,timeout:15000});assert.equal(response.status(),307);assert.equal(new URL(response.headers().location,app.url).pathname,'/login');prepared.push({path,status:response.status()});}
