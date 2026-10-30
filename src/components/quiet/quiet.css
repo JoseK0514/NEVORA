@@ -837,6 +837,8 @@ html[data-q-sheet] { overflow: hidden; }
 :is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar .employee-calendar-example { display: none; }
 :is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar .employee-calendar-state { display: inline-block; font-size: 15px; font-weight: 600; color: var(--q-ink); }
 :is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar .employee-calendar-privacy { display: flex; gap: 8px; font-size: 13px; line-height: 18px; color: var(--q-grey); }
+/* The calendar notice sits on the tinted notice fill: keep the panel's primary ink (the grey paragraph colour measured 4.33:1 there). */
+:is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar .employee-notice { color: var(--q-ink); }
 :is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar details { border-top: 1px solid var(--q-line); }
 :is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar details > summary { display: flex; align-items: center; gap: 12px; min-height: 52px; list-style: none; cursor: pointer; color: var(--q-ink); font-size: 17px; }
 :is(#q-root, html):is(#q-root, html) .q-profile-cal .employee-calendar details > summary::-webkit-details-marker { display: none; }
