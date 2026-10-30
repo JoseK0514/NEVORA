@@ -106,6 +106,42 @@ it("persists private goals and tasks through the real Owner app, preserves delib
         await page.getByText(/Payroll readiness is unverified/).first().waitFor();
         checks.push(`${engine}: A→B uses the selected objective, manual text survives switches, Owner closure/reopen is honest, current period uses the real read path`);
 
+        phase = "editor discovery with a populated task list";
+        const growResponse = await context.request.get(origin + "/api/owner/advisor", { headers: { "x-nevora-owner-advisor": "1" } });
+        expect(growResponse.status()).toBe(200);
+        let revision = (await growResponse.json()).notebook.notebook.revision;
+        for (let i = 1; i <= 6; i++) {
+          const saved = await context.request.post(origin + "/api/owner/advisor", {
+            headers: { "x-nevora-owner-advisor": "1", Origin: origin },
+            data: { op: "notebook", requestId: randomUUID(), expectedRevision: revision, change: { kind: "save_task", taskId: randomUUID(), objective: `Additional ordinary task ${i}`, notes: "Ordinary saved Owner notes", state: "open", focus: { kind: "general" } } },
+          });
+          expect(saved.status()).toBe(200);
+          revision = (await saved.json()).revision;
+        }
+        await page.getByRole("button", { name: "Refresh history", exact: true }).first().click();
+        await page.getByRole("heading", { name: "Additional ordinary task 6", exact: true }).waitFor();
+        for (const width of [390, 1440]) {
+          await page.setViewportSize({ width, height: 844 });
+          await page.getByRole("button", { name: "Edit goal", exact: true }).click();
+          await goalEditor.waitFor();
+          // Measure immediately after an ordinary click, before fill()/focus()
+          // could conceal a remote editor by scrolling to it automatically.
+          await page.screenshot({ path: resolve(evidence, `${engine}-${width}-editor-entry.png`) });
+          const entry = await page.evaluate(() => {
+            const field = document.getElementById("oa-goal-text");
+            const box = field?.getBoundingClientRect();
+            return { focused: document.activeElement === field, visible: !!box && box.top >= 0 && box.bottom <= innerHeight, activeTag: document.activeElement?.tagName, top: box?.top, bottom: box?.bottom, viewport: innerHeight };
+          });
+          await writeFile(resolve(evidence, `${engine}-${width}-editor-entry.json`), JSON.stringify(entry, null, 2));
+          expect(entry, `${engine}/${width} deliberate editor entry`).toMatchObject({ focused: true, visible: true });
+          await page.keyboard.press("Tab");
+          expect(await page.getByRole("button", { name: "Save goal", exact: true }).evaluate((el: HTMLElement) => document.activeElement === el)).toBe(true);
+          await goalEditor.getByRole("button", { name: "Discard edit", exact: true }).click();
+          await goalEditor.waitFor({ state: "hidden" });
+          await expect.poll(async () => page.getByRole("button", { name: "Edit goal", exact: true }).evaluate((el: HTMLElement) => document.activeElement === el)).toBe(true);
+        }
+        checks.push(`${engine}: ordinary Edit goal reveals/focuses its editor with eight tasks; Tab reaches Save; Discard restores the invoking control on mobile/desktop`);
+
         phase = "concurrent draft conflict";
         await page.getByRole("button", { name: "Edit goal", exact: true }).click();
         const draft = "Preserved explicit Owner goal draft";
