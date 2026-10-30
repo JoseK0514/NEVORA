@@ -30,6 +30,7 @@ export function CoverageActionPanel({ view, actions }: { view: CoverageActionVie
       </li>)}</ul>
       {review && <>
         <p>These {r.assignments.length} additions preserve existing assignments. They remain drafts; publishing is a separate decision.</p>
+        <p>{r.coverage.coveredMinutes} of {r.coverage.requiredMinutes} configured coverage minutes would be covered; {r.coverage.remainingBlocks} configured blocks remain.</p>
         <p className="oa-muted">Review expires {format(r.expiresAt, r.timeZone)}. Current rules are checked again when you save.</p>
         {r.partial && <p>Some locations or requirements are outside this review. Check the full schedule before publishing.</p>}
         <label className="oa-draft-consent"><input type="checkbox" checked={view.acknowledged} onChange={e => actions.acknowledge(e.target.checked)} disabled={busy}/><span>I reviewed these exact assignments and want to save them as drafts.</span></label>

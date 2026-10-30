@@ -215,7 +215,7 @@
 .oa-draft-person { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:6px 16px; }
 .oa-draft-person span { font-variant-numeric:tabular-nums; }
 .oa-draft-list li p { margin:6px 0 0; color:var(--cm-label-2); }
-.oa-page .oa-draft-consent { display:flex; align-items:flex-start; gap:12px; margin:24px 0; font-weight:400; line-height:1.5; cursor:pointer; }
+.oa-page .oa-draft-consent { min-height:44px; padding-block:10px; display:flex; align-items:flex-start; gap:12px; margin:24px 0; font-weight:400; line-height:1.5; cursor:pointer; }
 .oa-page .oa-draft-consent input { flex:none; width:22px; height:22px; min-height:22px; margin:1px 0 0; accent-color:var(--cm-tint); }
 .oa-draft-progress { border-left:2px solid var(--cm-tint); padding:4px 0 4px 16px; margin:24px 0; }
 .oa-draft-progress h3 { margin:0 0 8px; }

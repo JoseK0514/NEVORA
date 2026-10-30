@@ -8,7 +8,7 @@ const actions={acknowledge:()=>{},save:async()=>{},recover:async()=>{},check:asy
 it("shows exact review terms, one acknowledgement and a disabled save until acknowledged",()=>{
  const result=ownerCoverageAction();result.review.assignments[0].employeeName="<script>unsafe</script>";
  const html=renderToStaticMarkup(<CoverageActionPanel view={{stage:"review",result,acknowledged:false,message:""}} actions={actions}/>);
- expect(html).toContain("Review draft changes");expect(html).toContain("&lt;script&gt;unsafe&lt;/script&gt;");expect(html).toContain("08:00");expect(html).toContain("North");expect(html).toContain('type="checkbox"');expect(html).toContain("disabled");
+ expect(html).toContain("Review draft changes");expect(html).toContain("&lt;script&gt;unsafe&lt;/script&gt;");expect(html).toContain("08:00");expect(html).toContain("0 configured blocks remain");expect(html).toContain("North");expect(html).toContain('type="checkbox"');expect(html).toContain("disabled");
 });
 it("distinguishes saved drafts, current coverage and publication without declaring resolved or notifying",()=>{
  const html=renderToStaticMarkup(<CoverageActionPanel view={{stage:"saved",result:ownerCoverageAction("coverage_checked"),acknowledged:false,message:""}} actions={actions}/>);
