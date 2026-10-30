@@ -200,3 +200,25 @@
   overflow-wrap: anywhere;
   max-width: 100%;
 }
+
+/* Exact draft review uses the existing Owner surface and control vocabulary. */
+.oa-draft-panel { scroll-margin-top: 24px; overflow-wrap: anywhere; }
+.oa-draft-heading { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+.oa-draft-heading h2,.oa-draft-heading p { margin:0; }
+.oa-draft-heading h2 { margin-top:4px; }
+.oa-draft-icon { display:flex; align-items:center; justify-content:center; flex:none; width:44px; height:44px; border-radius:12px; background:var(--cm-fill-3, #f1f3f3); color:var(--cm-tint); }
+.oa-draft-context { font-weight:600; }
+.oa-draft-context span { color:var(--cm-label-2); font-weight:400; }
+.oa-draft-list { list-style:none; margin:20px 0; padding:0; border-block:1px solid var(--cm-sep); }
+.oa-draft-list li { padding:16px 0; }
+.oa-draft-list li+li { border-top:1px solid var(--cm-sep); }
+.oa-draft-person { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:6px 16px; }
+.oa-draft-person span { font-variant-numeric:tabular-nums; }
+.oa-draft-list li p { margin:6px 0 0; color:var(--cm-label-2); }
+.oa-page .oa-draft-consent { display:flex; align-items:flex-start; gap:12px; margin:24px 0; font-weight:400; line-height:1.5; cursor:pointer; }
+.oa-page .oa-draft-consent input { flex:none; width:22px; height:22px; min-height:22px; margin:1px 0 0; accent-color:var(--cm-tint); }
+.oa-draft-progress { border-left:2px solid var(--cm-tint); padding:4px 0 4px 16px; margin:24px 0; }
+.oa-draft-progress h3 { margin:0 0 8px; }
+.oa-draft-progress p:last-child { margin-bottom:0; }
+.oa-draft-panel .oa-actions { justify-content:flex-start; margin-top:24px; }
+@media(max-width:600px) { .oa-draft-panel .oa-actions { align-items:stretch; } .oa-draft-panel .oa-actions>* { width:100%; } }

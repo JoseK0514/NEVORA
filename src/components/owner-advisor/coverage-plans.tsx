@@ -4,7 +4,7 @@ import type { CoveragePlans } from "@/lib/owner-advisor/coverage-plan-contracts"
 
 const states = { COMPLETE: "Configured day requirements met", PARTIAL: "Requirements remain", INVALID: "Setup needs review", BUDGET_EXHAUSTED: "Search limit reached" };
 const locationStates = { INCLUDED: "Included in this day review", ARCHIVED: "Excluded: archived schedule", NEEDS_SETUP: "Excluded: setup needs review", INACTIVE: "Inactive location" };
-export function CoveragePlanResults({ plans }: { plans: CoveragePlans }) {
+export function CoveragePlanResults({ plans, review, afterSave }: { plans: CoveragePlans; afterSave?: boolean; review?: (index: number) => void }) {
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     // A completed comparison appears below its controls. Reveal it explicitly;
@@ -15,7 +15,7 @@ export function CoveragePlanResults({ plans }: { plans: CoveragePlans }) {
   return <section aria-label="Day plan comparison" className="oa-plain">
     <h3 ref={heading} tabIndex={-1}>Day plan comparison · {plans.date}</h3>
     <p>Planning ledger, including drafts · {plans.timeZone}. Observed <time dateTime={plans.observedAt}>{new Date(plans.observedAt).toLocaleString("en-US", { timeZone: plans.timeZone })}</time>.</p>
-    <p className="oa-notice">Each plan is a separate hypothetical allocation. Compare one plan at a time. Nothing has been saved or published; confirm availability with the people involved before making changes.</p>
+    <p className="oa-notice">{afterSave ? "This comparison predates your save. Check progress or compare day plans again for current coverage." : "Each plan is a separate hypothetical allocation. Compare one plan at a time. Nothing has been saved or published; confirm availability with the people involved before making changes."}</p>
     {plans.state === "unavailable" ? <p>This company is larger than this review can process. Open Scheduling to review the complete requirements.</p> : <>
       <details className="oa-follow-through"><summary>Review scope and source</summary>
         <p>Selected date only. Completion covers configured requirements at the included ready locations. Unconfigured or excluded locations need a separate review.</p>
@@ -44,6 +44,9 @@ export function CoveragePlanResults({ plans }: { plans: CoveragePlans }) {
           <ul>{p.issues.items.map((i, n) => <li key={n}>{i.message} ({i.code})</li>)}</ul>
           {p.issues.total > p.issues.items.length && <p>{p.issues.total - p.issues.items.length} further diagnostic categories are omitted.</p>}
         </details>}
+        {review && (p.assignments.length > 0 && p.status !== "INVALID" && p.assignments.every(a => a.publication === "DRAFT" && a.positionId !== undefined)
+          ? <button className="nv-btn" data-kind="secondary" type="button" onClick={() => review(index)}>Review draft changes</button>
+          : <p className="oa-muted">{p.assignments.some(a => a.publication === "PUBLISHED") ? "This allocation includes a published schedule. Review it in Scheduling; this action saves whole draft-only allocations." : "A fresh comparison with exact draft assignments is needed before saving."}</p>)}
       </article>)}
       <p>These are bounded comparisons, without a guarantee of the best allocation. Source changes require a fresh review in Scheduling. Added hours do not establish financial costs or savings.</p>
     </>}

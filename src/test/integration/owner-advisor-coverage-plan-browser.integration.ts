@@ -89,13 +89,14 @@ it("compares real joint day plans with discoverable keyboard review and private 
         const discovery = await heading.evaluate((el: HTMLElement) => { const b = el.getBoundingClientRect(); return { focused: document.activeElement === el, visible: b.top >= 0 && b.bottom <= innerHeight, top: b.top, bottom: b.bottom }; });
         await writeFile(resolve(evidence, `${engine}-discovery.json`), JSON.stringify(discovery, null, 2));
         expect(discovery.focused).toBe(true); expect(discovery.visible).toBe(true);
-        await page.keyboard.press("Tab");
+        await page.keyboard.press(engine === "webkit" && process.platform === "darwin" ? "Alt+Tab" : "Tab");
         expect(await result.getByText("Review scope and source", { exact: true }).evaluate((el: HTMLElement) => document.activeElement === el)).toBe(true);
         await page.keyboard.press("Enter");
         await result.getByText(`Source fingerprint: ${plans.sourceVersion}`, { exact: true }).waitFor();
         expect(await result.locator("script").count()).toBe(0);
         expect(await page.evaluate(() => Object.hasOwn(window, "nevoraJointInjected"))).toBe(false);
-        expect(await result.getByRole("button").count()).toBe(0);
+        expect(await result.getByRole("button", {name:"Review draft changes", exact:true}).count()).toBe(plans.alternatives.length);
+        expect(await result.getByRole("button", {name:/^Save .*draft/}).count()).toBe(0);
         await writeFile(resolve(evidence, `${engine}-plan.json`), JSON.stringify(plans, null, 2));
         checks.push(`${engine}: real read-only API jointly allocates both locations; normal click reveals focused result; keyboard reaches scope; source and untrusted labels are safe`);
 
