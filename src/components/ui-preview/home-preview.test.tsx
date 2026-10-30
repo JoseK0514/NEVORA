@@ -40,17 +40,19 @@ it('the preview composition replaces private readers while the native Home keeps
   expect(native).toContain('data-live-readers="today actions"');
   const preview = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome} overviewSlots={{actions: null, activity: null, snapshots: {today: previewToday, actions: previewActionCenter}}}/>);
   expect(preview).not.toContain('data-live-reader');
-  expect(preview).toContain('on shift</b>');
+  // Release 1 (corporate): the snapshots fill Today's stats.
+  expect(preview).toMatch(/Clocked in<\/dt><dd class="c-stat__value">\d+ of \d+<\/dd>/);
 });
 
 it('the clean Overview is "Today", drops the tab row, and Home\'s own views still open from their addresses', () => {
   const html = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome}/>);
-  // Clean Manager (v3): no greeting, no week summary, no team tools on Home (they live in More and the sidebar).
-  expect(html).toContain('>Today</h1>');
+  // Release 1 (corporate board C-Owner): the title is the welcome line; no week summary, no team tools on Home
+  // (they live in More and the sidebar). Today, Payday and Things to do are the cards.
+  expect(html).toContain('>Welcome back, Fictional</h1>');
   expect(html).not.toMatch(/Good (morning|afternoon|evening), /);
   expect(html).not.toContain('aria-label="Home views"');
   expect(html).not.toContain('manager-planning-summary');
-  expect(html).toContain('Needs you');
+  expect(html).toContain('Things to do');
   expect(html).not.toContain('Team tools');
   const team = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome} view="team"/>);
   expect(team).toContain('aria-label="Home views"');

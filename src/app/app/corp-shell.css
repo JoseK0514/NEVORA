@@ -5,7 +5,7 @@
 @media (max-width: 767px) {
   html:has(.app-shell[data-nv-corp]), html:is(:root, [data-theme]) body:has(.app-shell[data-nv-corp]),
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp], html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .app-main, html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame { background: #F5F6F6 !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame:has(.c-page) { padding: 0 0 calc(49px + max(4px, var(--q-safe-bottom, env(safe-area-inset-bottom, 0px)))) !important; margin: 0 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame:has(.c-page) { padding: 0 0 calc(56px + 16px + max(4px, var(--q-safe-bottom, env(safe-area-inset-bottom, 0px)))) !important; margin: 0 !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame:has(.c-page) > .section-tabs { display: none !important; }
 
   /* Header on a tab's own page. */
@@ -44,7 +44,9 @@
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .page-frame .q-bar { display: none !important; }
 
   /* Tab bar: white, one hairline, 11px labels, the current tab teal and filled. */
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav { background: #FFFFFF !important; box-shadow: 0 -1px 0 #E3E5E6 !important; }
+  /* 56px of tabs (8px top, 24px icon, 3px gap, 13px label, 8px bottom) above the safe area, so labels never clip. */
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav { height: auto !important; min-height: 0 !important; padding: 0 0 max(4px, var(--q-safe-bottom, env(safe-area-inset-bottom, 0px))) !important; background: #FFFFFF !important; box-shadow: 0 -1px 0 #E3E5E6 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav .mobile-nav-link { height: 56px !important; min-height: 56px !important; justify-content: flex-start !important; padding-bottom: 0 !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav .mobile-nav-link {
     gap: 3px !important; padding-top: 8px !important; color: #6B7075 !important;
     font: 500 11px/13px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important;

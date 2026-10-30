@@ -11,7 +11,7 @@ import {Toaster, toast} from '../toaster';
 import {ManagerDashboard} from '../manager-dashboard';
 import {TodayTilesSurface} from '../manager-today';
 import {ActionCenterSurface} from '../manager-action-center';
-import {OwnerSetupQuiet} from '../owner-setup-card';
+import {OwnerSetupCorp} from '../owner-setup-card';
 import {setupSteps, withoutSetupItems} from '@/lib/action-center/setup';
 import type {PayrollCapabilities} from '@/lib/payroll/contracts';
 import {ClockMonitorCard} from '../manager-clock-monitor';
@@ -123,7 +123,7 @@ export function HomePreview() {
         ownTimeSlot={<EmployeeTimeView compact state={{time: previewOwnTime, paused: false, refreshing: false}} onRefresh={refresh}/>}/></div>
         : <ManagerDashboard {...previewManagerHome} role={role} firstName={role === 'OWNER' ? 'Fictional' : 'Morgan'}
           overviewSlots={{snapshots: {today: previewToday, actions: previewActionCenter, monitor: previewMonitor}, today: <TodayTilesSurface snapshot={previewToday} />,
-            setup: role === 'OWNER' ? <OwnerSetupQuiet steps={setupSteps(previewActionCenter.state === 'ready' ? previewActionCenter.items : [])} locationCount={homePreviewRecords.locations.length}/> : null,
+            setup: role === 'OWNER' ? <OwnerSetupCorp steps={setupSteps(previewActionCenter.state === 'ready' ? previewActionCenter.items : [])} locationCount={homePreviewRecords.locations.length}/> : null,
             actions: <ActionCenterSurface snapshot={role === 'OWNER' ? ownerTasks.snapshot : previewActionCenter} setupListed={role === 'OWNER' ? ownerTasks.removed : 0}
             connection="ready" timeZone={homePreviewRecords.workspace.time_zone}
             category={category} onCategoryChange={setCategory} expanded={expanded} onExpand={() => setExpanded(true)} onRefresh={refresh}/>,

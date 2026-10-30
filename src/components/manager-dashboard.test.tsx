@@ -18,15 +18,15 @@ it("loads the current Action Center without exposing unverified server-provided 
     locations:[],days:[],hours:[],latestRevision:null,
   };
   const html = renderToStaticMarkup(<ManagerDashboard {...props}/>);
-  // One h1 (Quiet v4: the page header, no band), and no count until the live read confirms it (F1).
+  // One h1 (Release 1 corporate: the page title, no band), and no count until the live read confirms it (F1).
   expect(html.match(/<h1/g)).toHaveLength(1);
-  expect(html).toContain('class="q-hd"');
+  expect(html).toContain('class="c-title"');
   expect(html).toContain('Checking what needs you…');
   expect(html).not.toContain('Sam Cruz is waiting');expect(html).not.toMatch(/\b7 things need you/);expect(html).not.toContain('All caught up');
   expect(html).not.toContain("at Fuel.");
-  // Clean Manager (v3): Home is "Today": Needs you, Working now. The week's planning facts live on Schedule and the
-  // team tools in More and the sidebar (app-shell.test.tsx proves they stay reachable).
-  expect(html).toContain('>Today</h1>');
+  // Release 1 (corporate board C-Owner): Home is the welcome line over Today and Things to do. The week's planning facts
+  // live on Schedule and the team tools in More and the sidebar (app-shell.test.tsx proves they stay reachable).
+  expect(html).toContain('>Welcome back, Alex</h1>');
   expect(html).not.toContain('Schedules published');
   expect(html).not.toContain('href="/app/clocker-recovery"');
 });

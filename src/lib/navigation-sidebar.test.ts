@@ -10,7 +10,8 @@ describe("desktop sidebar (D3)", () => {
   it("gives the Owner ten destinations; the rest stay one step away", () => {
     // D-4: Requests folds into Inbox, and the people page reads "Team" as on the phone tab.
     // Clean Manager (v3): Scheduling rules stays for Owners too (shown under Plan), instead of hiding under Settings.
-    expect(labels("OWNER")).toEqual(["Home", "Inbox", "Schedule", "Updates", "Team", "Timecards", "Insights", "Payroll", "Scheduling rules", "Settings"]);
+    // Release 1 (corporate board C-Owner): Inbox reads "Things to do" and Timecards reads "Time".
+    expect(labels("OWNER")).toEqual(["Home", "Things to do", "Schedule", "Updates", "Team", "Time", "Insights", "Payroll", "Scheduling rules", "Settings"]);
     // The full list still drives phones, More menus and the finder.
     expect(navigationForRole("OWNER", payroll).map(item => item.href)).toEqual(expect.arrayContaining(["/app/availability", "/app/exchange", "/app/payroll-export", "/app/schedule/templates", "/app/schedule/settings", "/app/my-pay"]));
   });

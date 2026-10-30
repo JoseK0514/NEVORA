@@ -1,5 +1,6 @@
 'use client';
 
+import {CorpRow} from '@/components/corp/corp';
 import { QuietList, QuietRow, QuietSection } from './quiet/quiet';
 import Link from 'next/link';
 import {useId, type ReactNode} from 'react';
@@ -102,4 +103,18 @@ export function OwnerSetupQuiet({steps, locationCount}: {steps: SetupSteps | nul
 
 export function OwnerSetupQuietLive({locationCount}: {locationCount: number}) {
   return <OwnerSetupQuiet steps={useHomeSetupSteps()} locationCount={locationCount}/>;
+}
+
+/** Corporate Home (Release 1): setup is one row inside Things to do, so Home keeps three cards. */
+export function OwnerSetupCorp({steps, locationCount}: {steps: SetupSteps | null; locationCount: number}) {
+  if (!steps || !hasSetupGaps(steps)) return null;
+  const done = setupDoneCount(steps);
+  const next = steps.coverageOpen
+    ? locationCount === 0 ? {href: '/app/settings/locations', label: 'add a location'} : {href: '/app/schedule/settings#coverage-staffing', label: 'set coverage periods'}
+    : {href: '/app/schedule/settings#target-hours', label: 'set weekly hour targets'};
+  return <div id="home-setup" className="c-home__setup"><CorpRow href={next.href} title="Finish setting up" detail={`${done} of 2 steps done · Next, ${next.label}`} chevron /></div>;
+}
+
+export function OwnerSetupCorpLive({locationCount}: {locationCount: number}) {
+  return <OwnerSetupCorp steps={useHomeSetupSteps()} locationCount={locationCount}/>;
 }

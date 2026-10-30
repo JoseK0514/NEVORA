@@ -1,0 +1,17 @@
+/* Owner Home on the corporate kit (Release 1, board C-Owner). Only what the kit does not already draw. */
+:is(#c-root, html) .c-home .c-home__state { margin: 0; color: var(--c-ink2); font-size: 15px; line-height: 20px; }
+:is(#c-root, html) .c-home .c-card__body > .c-home__state + .c-btn { margin-top: 12px; }
+:is(#c-root, html) .c-home .c-home__gap { display: flex; align-items: center; gap: 12px; padding: 12px 16px; box-shadow: inset 0 1px 0 #EDEEEF; }
+:is(#c-root, html) .c-home .c-home__gap > .c-row__main { flex: 1; min-width: 0; }
+:is(#c-root, html) .c-home .c-home__gap > .c-btn { flex: none; }
+:is(#c-root, html) .c-home .c-home__setup { box-shadow: inset 0 1px 0 #EDEEEF; }
+:is(#c-root, html) .c-home .c-home__gap .c-row__detail > span { white-space: normal; overflow: visible; text-overflow: clip; }
+/* Small phones: tighter stat columns so "No clock-in" and "Open shifts" stay whole. */
+@media (max-width: 359px) { :is(#c-root, html) .c-home .c-stat { padding: 12px 10px; } }
+/* Desktop: two columns, so Home uses the width instead of a phone column. Today and Things to do on the left, Payday on the right. */
+@media (min-width: 1100px) {
+  :is(#c-root, html) .c-page.c-home { max-width: 1040px; display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; gap: 16px 16px; }
+  :is(#c-root, html) .c-page.c-home > .c-title { grid-column: 1 / -1; }
+  :is(#c-root, html) .c-page.c-home > #home-working, :is(#c-root, html) .c-page.c-home > #home-needs-you { grid-column: 1; }
+  :is(#c-root, html) .c-page.c-home > [aria-label="Payday"] { grid-column: 2; grid-row: 2; }
+}

@@ -1,7 +1,7 @@
 import { ManagerAttendanceReview } from "./manager-attendance-review";
 import { ManagerTimeCorrections } from "./manager-time-corrections";
 import {HomeActionCenterProvider} from './manager-action-center';
-import {OwnerSetupQuietLive} from './owner-setup-card';
+import {OwnerSetupCorpLive} from './owner-setup-card';
 import { formatBusinessTimestamp } from "@/lib/business-time";
 import Link from "next/link";
 import type { ManagerActionItem } from "@/lib/assistance/manager-actions";
@@ -19,13 +19,6 @@ import { CalendarBlankIcon, CalendarCheckIcon } from '@phosphor-icons/react/ssr'
 import type { Today } from '@/lib/today/project';
 import type { ActionCenter } from '@/lib/action-center/project';
 
-/** Workspace-local time of day for the Home greeting. */
-function greeting(timeZone: string) {
-  let hour = 12;
-  try { hour = Number(new Intl.DateTimeFormat('en-US', { hour: 'numeric', hourCycle: 'h23', timeZone }).format(new Date())); }
-  catch { /* An unknown zone keeps the neutral afternoon greeting. */ }
-  return hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
-}
 
 /** Home's own views. Schedule and Requests have one destination each
  * (/app/schedule, Inbox filtered to Requests); /app redirects old links (R1). */
@@ -197,13 +190,14 @@ function homeDateLabel(timeZone: string) {
 
 /** Manager and Owner Home (premium direction, phase 2): band, Today, Next up, This week. */
 function PremiumOverview(props: Props) {
-  const common = { greeting: `${greeting(props.timeZone)}, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName };
+  // Corporate (Release 1, board C-Owner): "Welcome back, Carmen".
+  const common = { greeting: `Welcome back, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName };
   const slots = props.overviewSlots;
-  if (slots?.snapshots) return <PremiumHomeSurface {...common} setup={slots.setup ?? null} setupHoldsItems={!!slots.setup}
+  if (slots?.snapshots) return <PremiumHomeSurface {...common} corporate nextPay={props.nextPay ?? null} setup={slots.setup ?? null} setupHoldsItems={!!slots.setup}
     today={slots.snapshots.today} monitor={slots.snapshots.monitor ?? null} actions={slots.snapshots.actions} actionsConnection="ready" />;
   return <SharedHomeRead key={`${props.actorId}:${props.weekStart}`} live weekStart={props.weekStart} actorId={props.actorId ?? ''}
     owner={props.role === 'OWNER'} initialItems={props.managerActions}>
-    <PremiumHomeLive {...common} nextPay={props.nextPay ?? null} setup={props.role === 'OWNER' ? <OwnerSetupQuietLive locationCount={props.totalLocations}/> : null} />
+    <PremiumHomeLive {...common} corporate nextPay={props.nextPay ?? null} setup={props.role === 'OWNER' ? <OwnerSetupCorpLive locationCount={props.totalLocations}/> : null} />
   </SharedHomeRead>;
 }
 
