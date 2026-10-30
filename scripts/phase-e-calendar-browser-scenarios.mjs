@@ -90,7 +90,7 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
   await page.goto(app.url+'/app/schedule');await currentPageReady();
   if(phone){await page.getByRole('link',{name:/^More, /}).click();await page.waitForURL(url=>url.pathname==='/app/more');const calendarEntry=page.getByRole('link',{name:/^Add shifts to your calendar\b/});assert.equal(await calendarEntry.getAttribute('href'),'/app/profile#employee-calendar-title');await calendarEntry.click();await page.waitForURL(url=>url.pathname==='/app/profile'&&url.hash==='#employee-calendar-title');}
   else{await page.getByRole('button',{name:/, account menu$/}).click();await page.getByRole('link',{name:'Your profile',exact:true}).click();await page.waitForURL(url=>url.pathname==='/app/profile');const calendarEntry=page.locator('#employee-calendar-title > summary');await calendarEntry.getByText('Add shifts to your calendar',{exact:true}).waitFor();if(await page.locator('#employee-calendar-title').getAttribute('open')===null)await calendarEntry.click();}
-  assert.notEqual(await page.locator('#employee-calendar-title').getAttribute('open'),null);await state(copy.none);await currentPageReady();
+  await page.locator('#employee-calendar-title[open]').waitFor();await state(copy.none);await currentPageReady();
  });
  await step('Deliberate create produces one transient URL and own private GET/HEAD feed',async()=>{
   await panel.getByRole('button',{name:copy.create,exact:true}).click();await panel.getByText(copy.created,{exact:true}).waitFor();firstUrl=await panel.getByLabel('Your private calendar link',{exact:true}).inputValue();assert.equal(new URL(firstUrl).origin,app.url);
