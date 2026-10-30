@@ -102,3 +102,29 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-nav--phone { displ
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp]:not([data-corp-root]) .c-nav--phone { display: grid !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp]:not([data-corp-root]) .c-page:has(> .c-nav--phone) > .c-title--wide { display: none !important; }
 }
+
+/* Bridge (Release 1): pages still built on the older kit (nv-*, Wave A forms) take the corporate tokens inside the
+ * corporate shell, so their cards, fields, buttons and type match the approved boards until each page is rebuilt:
+ * white cards with a 1px ring and radius 12, 48px fields with radius 8, 15px body, 13px labels and Inter. */
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] {
+  --nv-ink: #1A1C1E; --nv-ink-2: #4A4F54; --nv-muted: #6B7075; --nv-icon: #A7ACB1;
+  --nv-border: #E3E5E6; --nv-field-border: #D5D8DA; --nv-hairline: #EDEEEF; --nv-track: #EDEEEF; --nv-inset: #F5F6F6;
+  --nv-bg: #F5F6F6; --nv-canvas: #FFFFFF;
+  --nv-accent: #0B6E69; --nv-accent-hover: #084F4B; --nv-accent-strong: #0B6E69; --nv-accent-wash: #E6F1EF; --nv-accent-pressed: #D3EAE8;
+  --nv-neutral-ink: #4A4F54; --nv-neutral-fill: #EDEEEF; --nv-review-ink: #8A4B00; --nv-review-fill: #FEF4E6;
+  --nv-done-ink: #0B6E69; --nv-done-fill: #E6F1EF; --nv-urgent-ink: #B42318; --nv-urgent-fill: #FDECEA;
+  --nv-r-card: 12px; --nv-r-control: 8px; --nv-r-inner: 8px;
+  --nv-e1: 0 0 0 1px #E3E5E6; --nv-e2: 0 0 0 1px #E3E5E6, 0 8px 24px rgba(26, 28, 30, .10);
+  --nv-font: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif;
+  --nv-t-title-1: 600 22px/28px var(--nv-font); --nv-t-title-2: 600 17px/22px var(--nv-font); --nv-t-title-3: 600 15px/20px var(--nv-font);
+  --nv-t-headline: 600 15px/20px var(--nv-font); --nv-t-body: 400 15px/20px var(--nv-font); --nv-t-row: 600 15px/20px var(--nv-font);
+  --nv-t-callout: 400 13px/18px var(--nv-font); --nv-t-label: 600 13px/16px var(--nv-font); --nv-t-figure: 600 20px/26px var(--nv-font);
+}
+/* Fields and buttons on the older forms, at the board's sizes. */
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-page.wa-page :is(.wa-field__control > :is(input, select), .wa-select select, .nevora-select-shell select) {
+  height: 48px !important; min-height: 48px !important; border: 0 !important; border-radius: 8px !important; background: #FFFFFF !important;
+  box-shadow: inset 0 0 0 1px #D5D8DA !important; color: #1A1C1E !important; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important;
+}
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-page.wa-page :is(.wa-field__control > :is(input, select, textarea), .wa-select select):focus { box-shadow: inset 0 0 0 2px #0B6E69 !important; outline: none !important; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-page.wa-page .nv-btn { min-height: 44px !important; height: 44px !important; border-radius: 8px !important; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-page.wa-page .nv-card__title { font: 600 13px/16px Inter, "Inter Fallback", -apple-system, sans-serif !important; color: #4A4F54 !important; }

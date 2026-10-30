@@ -15,7 +15,6 @@ import { EmployeeProfileTabs } from "@/components/employee-profile-tabs";
 import { KeyIcon } from "@phosphor-icons/react/dist/ssr/Key";
 import { LockKeyIcon } from "@phosphor-icons/react/dist/ssr/LockKey";
 import { Card, Row, Rows, Tile } from "@/components/kit/kit";
-import { QuietGroup, QuietHeader, QuietNav, QuietPage, QuietRow } from "@/components/quiet/quiet";
 import { employeeInitials } from "@/lib/employee-display";
 import { FormActions, Notice } from "@/components/wave-a/parts";
 import { PendingButton } from "@/components/wave-a/pending-button";
@@ -26,6 +25,11 @@ import { readOperationalRuleProfileView } from "@/lib/data/shift-change-views";
 import { employeeRoleLabel } from "@/lib/employee-display";
 import { formatPhoneNumber } from "@/lib/phone";
 import Link from "next/link";
+import { CorpAvatar, CorpButtonLink, CorpCard, CorpNav, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
+import { TeamLivePill, TeamLiveProvider } from "@/components/team-live";
+import { ChatTextIcon } from "@phosphor-icons/react/dist/ssr/ChatText";
+import { PhoneIcon } from "@phosphor-icons/react/dist/ssr/Phone";
+import "./person-corp.css";
 import {
   saveEmployeeCoreProfileAction,
   saveEmployeeSchedulingProfileAction,
@@ -68,35 +72,47 @@ export default async function EmployeeProfilePage({
   const base = `/app/employees/${encodeURIComponent(employee.id)}`;
   const recoverable = employee.id !== actor.id && (actor.role === "OWNER" || employee.role === "EMPLOYEE" || employee.role === "LEAD");
   const dial = employee.phone ? employee.phone.replace(/(?!^\+)[^\d]/g, "") : "";
-  // Quiet (v4, approved Oct 23): who they are, Call, Message and Shifts, then Details and Access. Edit opens the editors below.
+  // Corporate (Release 1, board O-Person): who they are with Call and Message, their work, then access and sign-in.
   if (!editing) return (<ScopedReadFrame observation={source}>
-    <QuietPage className="q-member">
-      <QuietNav back={{ href: "/app/employees", label: "Team" }} right={canManageCore ? <Link className="q-nav__r" href={`${base}?edit=1`}>Edit</Link> : undefined} />
-      <div className="q-who"><span className="q-av q-av--lg" aria-hidden="true">{employeeInitials(employee.firstName, employee.lastName)}</span>
-        <div><h1>{name}</h1><p>{[positionNames || roleLabel, primaryLocation ? `${primaryLocation.shortName}${primaryLocation.active ? "" : " (inactive)"}` : null, employee.active ? null : "Inactive"].filter(Boolean).join(" · ")}</p></div></div>
-      <div className="q-qa">
-        {dial ? <a className="q-bs" href={`tel:${dial}`} aria-label={`Call ${name}`}>Call</a> : <span className="q-bs" aria-disabled="true">Call</span>}
-        {dial ? <a className="q-bs" href={`sms:${dial}`} aria-label={`Message ${name}`}>Message</a> : <span className="q-bs" aria-disabled="true">Message</span>}
-        <Link className="q-bs" href="/app/schedule" aria-label={`Shifts for ${name}`}>Shifts</Link>
-      </div>
-      <QuietGroup label="Details" id="member-details"><ul className="q-list">
-        <QuietRow title="Employee ID" value={employee.id} tone="l" />
-        <QuietRow title="Phone" value={employee.phone ? formatPhoneNumber(employee.phone) : "None"} tone={employee.phone ? "l" : "ph"} />
-        <QuietRow title="Email" value={employee.email || "None"} tone={employee.email ? "l" : "ph"} />
-        <QuietRow title="Role" value={roleLabel} tone="l" />
-      </ul></QuietGroup>
-      {canManageCore && employee.active ? <QuietGroup label="Access" id="member-access"><ul className="q-list">
-        {actor.role==='OWNER'&&employee.role!=='OWNER' ? <QuietRow href={`${base}/clocker-pin`} title="Clocker PIN" value={pin?(pin.configured?"Set":"Not set"):"Unavailable"} tone="l" /> : null}
-        {recoverable ? <QuietRow href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} title="Account" value={invitation?.state === "ready" && invitation.eligibility !== "ALREADY_ACTIVATED" ? (invitation.invitation?.state === "ISSUED" ? "Invited" : "Not activated") : "Active"} tone="l" /> : null}
-      </ul></QuietGroup> : null}
-    </QuietPage>
+    <TeamLiveProvider>
+    <CorpPage className="c-person" labelledBy="person-title">
+      <CorpNav back={{ href: "/app/employees", label: "Team" }} title={name} titleId="person-nav-title" right={canManageCore ? <Link href={`${base}?edit=1`}>Edit</Link> : undefined} phoneOnly />
+      <CorpTitle id="person-title" title={name} wide actions={canManageCore ? <CorpButtonLink href={`${base}?edit=1`} kind="secondary" size="sm">Edit</CorpButtonLink> : undefined} />
+      <CorpCard id="person-who" label={`Employee ID ${employee.id}`} aside={employee.active ? <TeamLivePill employeeId={employee.id} /> : <CorpPill tone="neutral">Inactive</CorpPill>}>
+        <div className="c-person__who">
+          <CorpAvatar initials={employeeInitials(employee.firstName, employee.lastName)} grey={!employee.active} />
+          <span className="c-row__main">
+            <span className="c-row__title c-row__title--b">{[positionNames || roleLabel, primaryLocation ? `${primaryLocation.shortName}${primaryLocation.active ? "" : " (inactive)"}` : null].filter(Boolean).join(" · ")}</span>
+            <span className="c-row__detail"><span>{employee.phone ? formatPhoneNumber(employee.phone) : "No phone number"}</span></span>
+          </span>
+          {dial ? <a className="c-person__act" href={`tel:${dial}`} aria-label={`Call ${name}`}><PhoneIcon className="c-ic" aria-hidden="true" /></a> : null}
+          {dial ? <a className="c-person__act" href={`sms:${dial}`} aria-label={`Message ${name}`}><ChatTextIcon className="c-ic" aria-hidden="true" /></a> : null}
+        </div>
+      </CorpCard>
+      <CorpCard as="div" ariaLabel="Work">
+        <CorpRows label="Work">
+          <li><CorpRow href="/app/schedule" title="Shifts" label={`Shifts for ${name}`} chevron /></li>
+          <li><CorpRow href={`/app/timecards#timecard-${encodeURIComponent(employee.id)}`} title="Timecards" chevron /></li>
+          <li><CorpRow href="/app/availability" title="Availability" chevron /></li>
+        </CorpRows>
+      </CorpCard>
+      <CorpCard id="person-access" label="Access and sign-in">
+        <CorpRows label="Access and sign-in">
+          <li><CorpRow title="Role" value={roleLabel} /></li>
+          <li><CorpRow title="Email" value={employee.email || "None"} /></li>
+          {canManageCore && employee.active && actor.role==='OWNER'&&employee.role!=='OWNER' ? <li><CorpRow href={`${base}/clocker-pin`} title="Clocker PIN" value={pin?(pin.configured?"Set":"Not set"):"Unavailable"} chevron /></li> : null}
+          {canManageCore && employee.active && recoverable ? <li><CorpRow href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} title="Account" value={invitation?.state === "ready" && invitation.eligibility !== "ALREADY_ACTIVATED" ? (invitation.invitation?.state === "ISSUED" ? "Invited" : "Not activated") : "Active"} chevron /></li> : null}
+        </CorpRows>
+      </CorpCard>
+    </CorpPage>
+    </TeamLiveProvider>
   </ScopedReadFrame>);
   // Phase 3.5 Wave A: Team member detail on the kit. Who they are in the band, contact at a glance,
   // then Details (contact, access, tablet PIN, sign-in help) and Scheduling (positions, locations, Owner rules).
   return (<ScopedReadFrame observation={source}>
-    <div className="q-page wa-page wa-member" data-nv-page="">
-      <QuietNav back={{ href: base, label: name }} />
-      <QuietHeader title={`Edit ${employee.firstName}`} />
+    <CorpPage className="c-forms wa-page wa-member" labelledBy="person-edit-title">
+      <CorpNav back={{ href: base, label: employee.firstName }} title="Edit employee" phoneOnly />
+      <CorpTitle id="person-edit-title" title={`Edit ${employee.firstName}`} wide />
       <div className="nv-content wa-narrow">
         <EmployeeProfileTabs
           details={<>
@@ -143,7 +159,7 @@ export default async function EmployeeProfilePage({
           </>}
         />
       </div>
-    </div>
+    </CorpPage>
   </ScopedReadFrame>);
 }
 
