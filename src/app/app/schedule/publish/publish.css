@@ -19,3 +19,5 @@
 :is(#c-root, html) .c-publish :is(.schedule-generation-setup, .schedule-generation-exclusions, .schedule-generation-feedback) { margin-top: 10px; font-size: 13px; line-height: 18px; color: var(--c-ink2); }
 :is(#c-root, html) .c-publish :is(.schedule-generation-setup, .schedule-generation-exclusions) summary { color: var(--c-teal); font-weight: 600; cursor: pointer; }
 :is(#c-root, html) .c-publish .c-publish__more { margin: 0; padding: 12px 16px; box-shadow: inset 0 1px 0 var(--c-line); font-size: 13px; line-height: 18px; color: var(--c-grey); }
+/* A change's detail (day, what changed, before → after) wraps instead of being cut off. */
+:is(#c-root, html) .c-publish #publish-changes .c-row__detail > span:first-child { white-space: normal; overflow: visible; text-overflow: clip; }
