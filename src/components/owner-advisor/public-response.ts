@@ -6,6 +6,7 @@ import {
   type AdvisorProfile,
 } from "@/lib/owner-advisor/contracts";
 import { notebookId, notebookRevision, parseNotebook } from "@/lib/owner-advisor/notebook";
+import { parseCoveragePlans } from "./public-coverage-plans";
 function requireValue(value: unknown): asserts value {
   if (!value) throw Error("Invalid advisor response");
 }
@@ -133,6 +134,7 @@ export function parseAnswer(value: unknown): AnswerResponse {
   stamp(value);
   sources(value.answer.sources, ADVISOR_MAX_ANSWER_SOURCES);
   const a = value.answer;
+  if (a.coveragePlans !== undefined) parseCoveragePlans(a.coveragePlans);
   if (a.context !== undefined) {
     const c = a.context;
     requireValue(record(c) && Object.keys(c).sort().join(",") === "notebookRevision,taskId" &&
