@@ -2,6 +2,7 @@ import { expect, it } from "vitest";
 import { setImmediate as yieldTurn } from "node:timers/promises";
 import { automaticWeek, realisticAutomaticWeek, automaticAssignment } from "@/test/fixtures/automatic-week";
 import * as coverage from "./coverage-plan.server";
+import { parseCoveragePlans } from "@/components/owner-advisor/public-coverage-plans";
 const metadata = { date: "2026-10-05", observedAt: "2026-10-30T12:00:00.000Z", sourceVersion: "a".repeat(64) };
 const signal = () => new AbortController().signal;
 
@@ -45,6 +46,20 @@ it("reports archived and unconfigured locations explicitly while solving the rem
   expect(result.locations.map(l => [l.name, l.state])).toEqual([["L1", "INCLUDED"], ["L2", "ARCHIVED"], ["L3", "NEEDS_SETUP"]]);
   expect(result.alternatives[0].status).toBe("COMPLETE");
   expect(result.alternatives[0].assignments.every(a => a.locationName === "L1")).toBe(true);
+});
+
+it("summarizes repeated setup failures without rejecting the other location's valid review", async () => {
+  const input = automaticWeek(2); input.staffing.forEach(s => { s.minimumStaffPerShift = 1; });
+  input.positions[0].active = false;
+  const hhmm = (minutes: number) => `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
+  input.coverageWindows = [input.coverageWindows[0], ...Array.from({ length: 21 }, (_, n) => ({
+    ...input.coverageWindows[1], id: `invalid-position-${n}`, startTime: hhmm(480 + n * 20), endTime: hhmm(500 + n * 20),
+    positionRequirements: [{ positionId: "barista", quantity: 1 }],
+  }))];
+  const result = await coverage.compareCoveragePlans(input, metadata, signal());
+  expect(result.locations.find(l => l.id === "loc-2")).toMatchObject({ state: "NEEDS_SETUP", issues: ["POSITION_REQUIREMENT_INVALID"] });
+  expect(result.alternatives[0].status).toBe("COMPLETE");
+  expect(() => parseCoveragePlans(result)).not.toThrow();
 });
 
 it("retains published commitments and distinguishes no configured demand from coverage", async () => {

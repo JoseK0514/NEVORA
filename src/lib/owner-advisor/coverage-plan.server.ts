@@ -101,7 +101,7 @@ export async function compareCoveragePlans(source: GenerationInput, metadata: Me
     locations: input.locations.slice().sort((a, b) => a.id.localeCompare(b.id)).map(l => {
       const readiness = scope.readiness.find(r => r.locationId === l.id)!;
       return { id: l.id, name: text(l.shortName), state: !l.active ? "INACTIVE" : archived.has(l.id) ? "ARCHIVED" : readiness.state === "READY" ? "INCLUDED" : "NEEDS_SETUP",
-        issues: readiness.issues.map(i => i.code) };
+        issues: [...new Set(readiness.issues.map(i => i.code))] };
     }),
     preservedAssignments: first.fixedAssignments.length, baseline: measure(baseline),
     alternatives: [projection(input, first, "STANDARD")],
@@ -112,7 +112,10 @@ export async function compareCoveragePlans(source: GenerationInput, metadata: Me
     const signature = (plan: GenerationPlan) => JSON.stringify(plan.additions.map(a => a.id).sort());
     if (signature(first) !== signature(alternative)) plans.alternatives.push(projection(input, alternative, "DIFFERENT_FIRST_ASSIGNMENT"));
   }
-  // Never truncate an allocation set. Bound only diagnostics, retaining totals.
+  await checkpoint();
+  plans.computation = { elapsedMs: Math.ceil(performance.now() - started), yields, maxSliceMs: Math.ceil(maxSliceMs) };
+  // Include the final metadata before bounding the serialized envelope. Never
+  // truncate an allocation set; bound only diagnostics, retaining their totals.
   while (JSON.stringify(plans).length > 40000) {
     const last = plans.alternatives.slice().reverse().find(p => p.remaining.items.length || p.issues.items.length);
     if (!last) throw new Error("Coverage projection exceeded its allocation bound.");
@@ -120,8 +123,6 @@ export async function compareCoveragePlans(source: GenerationInput, metadata: Me
   }
   plans.partial = plans.locations.some(l => l.state === "ARCHIVED" || l.state === "NEEDS_SETUP") ||
     !plans.baseline!.requiredMinutes || plans.alternatives.some(p => p.status !== "COMPLETE" || p.remaining.total > p.remaining.items.length || p.issues.total > p.issues.items.length || p.remaining.items.some(b => b.positionsOmitted > 0));
-  await checkpoint();
-  plans.computation = { elapsedMs: Math.ceil(performance.now() - started), yields, maxSliceMs: Math.ceil(maxSliceMs) };
   return plans;
 }
 
