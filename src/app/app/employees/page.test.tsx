@@ -32,10 +32,14 @@ vi.mock("@/lib/data/employees", () => ({
 import EmployeesPage from "./page";
 
 it("keeps inactive employees discoverable with an explicit status", async () => {
-  const html = renderToStaticMarkup(await EmployeesPage());
-  // Inactive people keep an explicit condition pill; active is the default and isn't repeated on every row.
-  // Quiet (v4): inactive people sit in their own Inactive group at the end, and their rows say so to assistive tech.
-  expect(html).toContain('<h2 id="team-inactive-title">Inactive</h2>');
+  // Release 1 (board G-O-Team): the People card lists active people; Team tools keeps "Inactive people" one tap away.
+  const first = renderToStaticMarkup(await EmployeesPage());
+  expect(first).toContain('href="/app/employees?all=1#team-inactive"');
+  expect(first).not.toContain('href="/app/employees/inactive"');
+  const html = renderToStaticMarkup(await EmployeesPage({ searchParams: Promise.resolve({ all: "1" }) }));
+  // Inactive people keep an explicit condition pill and their own card; their rows say so to assistive tech.
+  expect(html).toContain('id="team-inactive-label">Inactive (1)</h2>');
+  expect(html).toContain('class="c-pill c-pill--neutral">Inactive</span>');
   // IS-P4-15: the label also says the phone number shown in the desktop table.
   expect(html).toContain('aria-label="Inactive Person, LEAD, Main, 7875550102, inactive"');
   expect(html).toContain('href="/app/employees/inactive"');
@@ -43,11 +47,11 @@ it("keeps inactive employees discoverable with an explicit status", async () => 
 
 it("renders the retained inactive primary location truthfully in the employee directory", async () => {
   fixture.inactiveLocation = true;
-  const html = renderToStaticMarkup(await EmployeesPage());
+  const html = renderToStaticMarkup(await EmployeesPage({ searchParams: Promise.resolve({ all: "1" }) }));
   expect(html).toMatch(/Main[^<]*Inactive/);
   expect(html).not.toContain("Location not assigned");
   expect(html).toContain('href="/app/employees/inactive"');
-  expect(html).toContain('<h2 id="team-inactive-title">Inactive</h2>');
+  expect(html).toContain('id="team-inactive-label">Inactive (1)</h2>');
 });
 
 it("authorizes before loading any employee data", async () => {
@@ -78,8 +82,8 @@ it("shows inactive matches and retains the active state in segment selection", a
 it("distinguishes no matches from a genuinely empty workforce", async () => {
   const noMatch = renderToStaticMarkup(await EmployeesPage({ searchParams: Promise.resolve({ q: "nobody" }) }));
   expect(noMatch).toContain("No employees match “nobody”.");
-  expect(noMatch).toContain("<h1>Team</h1>");
-  expect(noMatch).toContain('href="/app/employees" class="q-btn q-btn--sec">Clear search</a>');
+  expect(noMatch).toContain('<h1 id="team-title">Team</h1>');
+  expect(noMatch).toContain('href="/app/employees" class="c-btn c-btn--secondary c-btn--md">Clear search</a>');
   expect(noMatch).not.toContain("No employees yet.");
   fixture.empty = true;
   const empty = renderToStaticMarkup(await EmployeesPage());

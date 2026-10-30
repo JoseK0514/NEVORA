@@ -24,13 +24,15 @@ export function readDirectoryFilters(params: DirectorySearchParams, locations: r
  * primary location, not scheduling eligibility; accent-insensitive name/ID search
  * must never be used to decide the caller's access to employee records.
  */
-export function filterDirectoryEmployees(employees: readonly Employee[], filters: DirectoryFilters): Employee[] {
+export function filterDirectoryEmployees(employees: readonly Employee[], filters: DirectoryFilters, positionNames?: ReadonlyMap<string, string>): Employee[] {
   const query = searchable(filters.query);
+  // Release 1 (board G-O-Team): "Search by name or position" also matches the names of a person's positions.
+  const positionsOf = (employee: Employee) => positionNames ? employee.positionIds.map(id => positionNames.get(id) ?? "").join(" ") : "";
   return employees.filter(employee =>
     (filters.status === "all" || employee.active === (filters.status === "active")) &&
     (!filters.role || employee.role === filters.role) &&
     (!filters.location || employee.primaryLocationId === filters.location) &&
-    (!query || searchable(`${employee.firstName} ${employee.lastName}`).includes(query) || searchable(employee.id).includes(query)),
+    (!query || searchable(`${employee.firstName} ${employee.lastName}`).includes(query) || searchable(employee.id).includes(query) || searchable(positionsOf(employee)).includes(query)),
   );
 }
 

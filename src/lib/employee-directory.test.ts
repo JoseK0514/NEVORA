@@ -45,3 +45,13 @@ describe("employee directory filters", () => {
     expect(hasDirectoryFilters(readDirectoryFilters({ status: "inactive" }, locations))).toBe(true);
   });
 });
+
+describe("search by position (Release 1, board G-O-Team)", () => {
+  it("matches a position name, accent- and case-insensitively, only when names are given", () => {
+    const withPosition = people.map(person => person.id === "E-002" ? { ...person, positionIds: ["barista"] } : person);
+    const names = new Map([["barista", "Barista Café"]]);
+    const filters = readDirectoryFilters({ q: "cafe" }, locations);
+    expect(filterDirectoryEmployees(withPosition, filters, names).map(person => person.id)).toEqual(["E-002"]);
+    expect(filterDirectoryEmployees(withPosition, filters).map(person => person.id)).toEqual([]);
+  });
+});
