@@ -8,7 +8,7 @@ const chrome=(path:string,query='',tabs=hours)=>employeeMobileChrome('EMPLOYEE',
 it.each(['/app','/app/schedule','/app/requests/hub','/app/my-time','/app/more'])('brands the actual root %s',path=>expect(chrome(path)).toBe('root'));
 it.each(['/app/profile','/app/notifications','/app/updates','/app/availability','/app/requests','/app/exchange','/app/exchange/swap','/app/delete-account'])('uses contextual navigation at %s',path=>expect(chrome(path)).toBe('detail'));
 it('follows the real Pay/Hours tab and preserves Hours sub-tabs and redirect context',()=>{
- expect(chrome('/app/my-pay','',paid)).toBe('root');expect(chrome('/app/my-time','',paid)).toBe('detail');expect(chrome('/app/timecards','',paid)).toBe('detail');expect(chrome('/app/timecards')).toBe('root');
+ expect(chrome('/app/my-pay','',paid)).toBe('root');expect(chrome('/app/my-time','',paid)).toBe('root');expect(chrome('/app/timecards','',paid)).toBe('root');expect(chrome('/app/timecards')).toBe('root');
  for(const query of ['view=cards','view=corrections','filter=decided','entry=%3Cinvalid%3E','requestId=not-a-uuid','edit='+('x'.repeat(501))])expect(chrome('/app/my-time',query)).toBe('root');
  for(const query of ['entry=own-entry','requestId=12345678-1234-4123-8123-123456789abc','edit=new','view=corrections&edit=entry%3Aown-entry'])expect(chrome('/app/my-time',query)).toBe('detail');
 });

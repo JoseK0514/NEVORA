@@ -1,0 +1,21 @@
+/* Employee Home on the corporate kit (Release 1, board C-Employee). Only what the kit does not already draw. */
+:is(#c-root, html) .c-ehome .c-ehome__body { display: contents; }
+:is(#c-root, html) .c-ehome .c-ehome__state { margin: 0; color: var(--c-ink2); font-size: 15px; line-height: 20px; }
+:is(#c-root, html) .c-ehome .c-ehome__where { display: block; margin-top: 2px; color: var(--c-ink2); font-size: 13px; line-height: 18px; }
+:is(#c-root, html) .c-ehome .c-card__body > .c-note { margin: 10px 0 0; }
+/* The first-week guide sits on Home as one more white card: a 48px row that opens to its links. */
+:is(#c-root, html) body .c-ehome .ma-onboarding { width: auto; max-width: none; margin: 0; padding: 0; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; }
+:is(#c-root, html) body .c-ehome .ma-onboarding details { margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+:is(#c-root, html) body .c-ehome .ma-onboarding summary { display: flex; align-items: center; justify-content: space-between; min-height: 48px; margin: 0; padding: 0 16px; border: 0; border-radius: 12px; background: none; box-shadow: none; color: var(--c-ink); font-size: 15px; line-height: 20px; font-weight: 600; }
+:is(#c-root, html) body .c-ehome .ma-onboarding summary svg { width: 18px; height: 18px; color: var(--c-grey); }
+:is(#c-root, html) body .c-ehome .ma-onboarding summary:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 2px; }
+:is(#c-root, html) body .c-ehome .ma-onboarding .ma-guide-list { margin: 0; padding: 0; box-shadow: inset 0 1px 0 #EDEEEF; }
+:is(#c-root, html) body .c-ehome .ma-onboarding .ma-guide-list > * { display: flex; align-items: center; gap: 12px; min-height: 56px; margin: 0; padding: 10px 16px; border: 0; border-radius: 0; background: none; box-shadow: inset 0 -1px 0 #EDEEEF; }
+:is(#c-root, html) body .c-ehome .ma-onboarding .ma-guide-list > :last-child { box-shadow: none; }
+:is(#c-root, html) body .c-ehome .ma-onboarding .ma-guide-list span { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+:is(#c-root, html) body .c-ehome .ma-onboarding .ma-guide-list > div { flex-direction: column; align-items: flex-start; gap: 2px; }
+:is(#c-root, html) body .c-ehome .ma-onboarding :is(b) { color: var(--c-ink); font-size: 15px; line-height: 20px; font-weight: 600; }
+:is(#c-root, html) body .c-ehome .ma-onboarding :is(small, p) { margin: 0; color: var(--c-grey); font-size: 13px; line-height: 18px; }
+:is(#c-root, html) body .c-ehome .ma-onboarding .ma-guide-list svg { flex: none; width: 16px; height: 16px; color: #9AA0A6; }
+:is(#c-root, html) body .c-ehome .ma-onboarding .ma-onboarding-intro { display: flex; gap: 12px; padding: 14px 16px 0; }
+:is(#c-root, html) body .c-ehome .ma-onboarding .ma-onboarding-intro h2 { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }

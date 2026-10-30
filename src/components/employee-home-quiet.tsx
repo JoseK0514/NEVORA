@@ -26,7 +26,7 @@ import {keepWhole} from '../lib/keep-whole';
  * Schedule page uses and shows only while Home's own data is released. */
 
 /** This week's own published shifts, read on the server for the glance. */
-export type HomeWeek = {weekStart: string; today: string; dates: readonly string[]; shifts: readonly {date: string; startTime: string; endTime: string}[]};
+export type HomeWeek = {weekStart: string; today: string; dates: readonly string[]; shifts: readonly {date: string; startTime: string; endTime: string; where?: string}[]};
 
 export type EmployeeHomeQuietViewProps = {
   home: EmployeeHomeRead | null;
@@ -44,20 +44,20 @@ export type EmployeeHomeQuietViewProps = {
   teamMessage?: boolean;
 };
 
-const sourceNames: Record<HomeSource, string> = {
+export const sourceNames: Record<HomeSource, string> = {
   schedule: 'Schedule', acknowledgements: 'Schedule reviews', exchanges: 'Shift requests',
   timeOff: 'Time off', ownTime: 'Recorded time and corrections', communications: 'Communications',
 };
-const sourceDestinations: Record<HomeSource, string> = {
+export const sourceDestinations: Record<HomeSource, string> = {
   schedule: '/app/schedule', acknowledgements: '/app/schedule', exchanges: '/app/exchange',
   timeOff: '/app/requests?tab=my', ownTime: '/app/my-time', communications: '/app/updates',
 };
 
 const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
-const fmt = (zone: string, options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('en-US', {timeZone: zone, ...options});
-const clock = (at: string, zone: string) => fmt(zone, {hour: 'numeric', minute: '2-digit'}).format(new Date(at));
+export const fmt = (zone: string, options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('en-US', {timeZone: zone, ...options});
+export const clock = (at: string, zone: string) => fmt(zone, {hour: 'numeric', minute: '2-digit'}).format(new Date(at));
 
-function businessDate(at: string, zone: string) {
+export function businessDate(at: string, zone: string) {
   const parts = fmt(zone, {year: 'numeric', month: '2-digit', day: '2-digit'}).formatToParts(new Date(at));
   return ['year', 'month', 'day'].map(key => parts.find(part => part.type === key)!.value).join('-');
 }
@@ -68,28 +68,28 @@ function greeting(at: string, zone: string) {
 }
 
 /** "Oct 19 – 25", or "Oct 26 – Nov 1" across a month. */
-function weekRange(weekStart: string) {
+export function weekRange(weekStart: string) {
   const start = utcDay(weekStart), end = new Date(start.getTime() + 6 * 86_400_000);
   const monthDay = (at: Date) => fmt('UTC', {month: 'short', day: 'numeric'}).format(at);
   return keepWhole(`${monthDay(start)} – ${start.getUTCMonth() === end.getUTCMonth() ? end.getUTCDate() : monthDay(end)}`);
 }
 
 /** "Today", "Tomorrow" or "Wednesday". */
-function dayWord(shift: PublishedAssignment, snapshot: HomeSnapshot) {
+export function dayWord(shift: PublishedAssignment, snapshot: HomeSnapshot) {
   const today = businessDate(snapshot.observedAt, snapshot.timeZone);
   const tomorrow = businessDate(new Date(Date.parse(snapshot.observedAt) + 86_400_000).toISOString(), snapshot.timeZone);
   return shift.date === today ? 'Today' : shift.date === tomorrow ? 'Tomorrow' : fmt('UTC', {weekday: 'long'}).format(utcDay(shift.date));
 }
 
 /** "Sunday, October 25", plus the end day when the shift runs past midnight. */
-function longDay(shift: PublishedAssignment, zone: string) {
+export function longDay(shift: PublishedAssignment, zone: string) {
   const day = (date: string) => fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(utcDay(date));
   const endDate = businessDate(shift.endAt, zone);
   return keepWhole(endDate !== shift.date ? `${day(shift.date)} · ends ${fmt('UTC', {weekday: 'short', month: 'short', day: 'numeric'}).format(utcDay(endDate))}` : day(shift.date));
 }
 
 /** "40 h" or "37.5 h" across the week's shifts (overnight and 24:00 ends included). */
-function weekHours(shifts: HomeWeek['shifts']) {
+export function weekHours(shifts: HomeWeek['shifts']) {
   const minutes = (time: string) => { const [h, m] = time.split(':').map(Number); return h * 60 + m; };
   const total = shifts.reduce((sum, shift) => {
     const start = minutes(shift.startTime), end = minutes(shift.endTime);
@@ -101,16 +101,16 @@ function weekHours(shifts: HomeWeek['shifts']) {
 
 /** The same outcome words as the Time off page (waiting, declined, withdrawn). Display only. */
 const outcomeWords: Record<string, string> = {pending: 'waiting', denied: 'declined', rejected: 'declined', cancelled: 'withdrawn'};
-function attentionLabel(item: AttentionItem) {
+export function attentionLabel(item: AttentionItem) {
   return item.label
     .replace(/^(Time off|Time correction|Shift request) (pending|denied|rejected|cancelled)\b/, (_, what: string, status: string) => `${what} ${outcomeWords[status]}`)
     .replace(/ — review required$/, item.required ? '' : ' — review required');
 }
 
-const confirmsWeek = (item: AttentionItem) => item.ref.kind === 'SCHEDULE' && !item.label.startsWith('Schedule removed');
+export const confirmsWeek = (item: AttentionItem) => item.ref.kind === 'SCHEDULE' && !item.label.startsWith('Schedule removed');
 
 /** What to do, said as an action. Display only; each row's link is the server's. */
-function todoTitle(item: AttentionItem) {
+export function todoTitle(item: AttentionItem) {
   if (confirmsWeek(item)) return 'Confirm your schedule';
   if (item.ref.kind === 'COMMUNICATION' && /^Review update: /.test(item.label)) return 'Read the team update';
   return attentionLabel(item);
@@ -123,7 +123,7 @@ function TodoIcon({item}: {item: AttentionItem}) {
 }
 
 /** Weeks to confirm share one row ("Oct 19 – 25 and Oct 26 – Nov 1"); every other item keeps its own. */
-function todoRows(items: readonly AttentionItem[]) {
+export function todoRows(items: readonly AttentionItem[]) {
   const weeks = items.filter(confirmsWeek);
   const rows: {key: string; item: AttentionItem; weeks?: AttentionItem[]}[] = [];
   for (const item of items) {
@@ -133,7 +133,7 @@ function todoRows(items: readonly AttentionItem[]) {
   return rows;
 }
 
-function weeksDetail(weeks: AttentionItem[]) {
+export function weeksDetail(weeks: AttentionItem[]) {
   const range = (week: AttentionItem) => <time key={week.ref.id} dateTime={week.ref.id}>{weekRange(week.ref.id)}</time>;
   return weeks.length <= 2 ? <>{range(weeks[0])}{weeks[1] ? <> and {range(weeks[1])}</> : null}</>
     : <>{range(weeks[0])} and {weeks.length - 1} more weeks{weeks.slice(1).map(week => <time key={week.ref.id} dateTime={week.ref.id} hidden />)}</>;
@@ -148,7 +148,7 @@ function TodoRow({row, zone}: {row: ReturnType<typeof todoRows>[number]; zone: s
 }
 
 /** Complete, or only waiting on a location to publish (a known state, said under the card). */
-const isComplete = (source: HomeSnapshot['sources'][keyof HomeSnapshot['sources']]) =>
+export const isComplete = (source: HomeSnapshot['sources'][keyof HomeSnapshot['sources']]) =>
   source.state === 'complete' || (source.state === 'partial' && source.reason === 'unpublished');
 
 function SourceRows({snapshot}: {snapshot: HomeSnapshot}) {

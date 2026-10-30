@@ -59,9 +59,40 @@ async function EmployeeMore({ firstName, lastName, role }: { firstName: string; 
   </QuietPage>;
 }
 
+/** Corporate (Release 1, board E-More): an Employee's More opens from the header avatar, with Home as its back link. The
+ * profile card, then Your work and Help and legal, then Sign out. The same places and counts as before. */
+async function EmployeeMoreCorp({ firstName, lastName, workspaceName }: { firstName: string; lastName: string; workspaceName: string }) {
+  const [proof, brand] = await Promise.all([requireSessionMutationProof(), currentBrand()]);
+  const has = new Set(navigationForRole("EMPLOYEE", undefined, { modules: brand.modules, words: wordPreset(brand.words).en }).map(entry => entry.href));
+  const name = `${firstName} ${lastName}`;
+  return <CorpPage className="c-more c-more--employee" labelledBy="more-title">
+    <CorpNav back={{ href: "/app", label: "Home" }} title="More" titleId="more-title" />
+    <CorpCard as="div" ariaLabel="Profile">
+      <CorpRows><li><CorpRow avatar={<CorpAvatar initials={initialsOf(name)} />} title={name} detail={keepWhole(`Employee · ${workspaceName}`)} bold /></li>
+        <li><CorpRow href="/app/profile" title={<span className="c-link c-link--l">Profile and settings</span>} one label={`Profile and settings, ${name}`} /></li></CorpRows>
+    </CorpCard>
+    <CorpCard as="div" label="Your work">
+      <CorpRows>
+        {has.has("/app/availability") ? <li><CorpRow href="/app/availability" title="Availability" one /></li> : null}
+        {has.has("/app/notifications") ? <li><CorpRow href="/app/notifications" title="Notifications" one value={<NotificationCount authority={employeeViewAuthority(proof, "notifications")} />} /></li> : null}
+        {has.has("/app/updates") ? <li><CorpRow href="/app/updates" title="Updates" one /></li> : null}
+        <li><CorpRow href="/app/profile#employee-calendar-title" title="Add shifts to your calendar" one /></li>
+      </CorpRows>
+    </CorpCard>
+    <CorpCard as="div" label="Help and legal">
+      <CorpRows>
+        <li><CorpRow href="/support" title="Help" one /></li>
+        <li><CorpRow href="/privacy" title="Privacy and terms" one /></li>
+      </CorpRows>
+    </CorpCard>
+    <PortalSignout className="c-more__signout"><button type="submit" className="c-btn c-btn--danger c-btn--full">Sign out</button></PortalSignout>
+  </CorpPage>;
+}
+
 export default async function MorePage() {
   const session = await requireSession();
-  if (session.role === "EMPLOYEE" || session.role === "LEAD") return <EmployeeMore firstName={session.firstName} lastName={session.lastName} role={session.role} />;
+  if (session.role === "EMPLOYEE") return <EmployeeMoreCorp firstName={session.firstName} lastName={session.lastName} workspaceName={(await getWorkspace()).name} />;
+  if (session.role === "LEAD") return <EmployeeMore firstName={session.firstName} lastName={session.lastName} role={session.role} />;
   if (!isManagerRole(session.role)) redirect("/app");
   const proof = await requireSessionMutationProof();
   const [operational, payroll, brand, workspace] = await Promise.all([

@@ -8,6 +8,7 @@ import {projectEmployeeHome,HOME_SOURCES} from '../lib/employee-home/project';
 import type {EmployeeHomeRead,HomeSnapshot,HomeSource,PublishedAssignment} from '../lib/employee-home/types';
 import {EmployeeTimePanel,EmployeeTimeView} from './employee-time-panel';
 import {EmployeeHomeQuietView,type HomeWeek} from './employee-home-quiet';
+import {EmployeeHomeCorpView} from './employee-home-corp';
 export type HomeLifetime={state:'ready';observedAt:string;validForMs:number;home:Extract<EmployeeHomeRead,{snapshot:HomeSnapshot}>}|{state:'unavailable';reason:string};
 export function createEmployeeHomeController(changed:(state:PrivatePanelState<HomeLifetime>)=>void,request:(signal:AbortSignal)=>Promise<unknown>,authority:string){
  return createPrivateSnapshotController<HomeLifetime>(changed,request,value=>{
@@ -69,16 +70,18 @@ export function EmployeeHomeView({state,timeAuthority,onRetry,authority}:{state:
  * lifetime, authority, or recorded-time behavior; the original clock panel
  * remains keyed by its independent authority and owns its existing controller.
  */
-export function EmployeeHomeReviewedRenderer({state,timeAuthority,onRetry,authority,displayName,timeZone,workspaceName,week,teamMessage,intro}:{intro?:ReactNode;state:PrivatePanelState<HomeLifetime>;timeAuthority:string;onRetry:()=>void;authority?:string;displayName?:string;timeZone?:string;workspaceName?:string;week?:HomeWeek|null;teamMessage?:boolean}){
+export function EmployeeHomeReviewedRenderer({state,timeAuthority,onRetry,authority,displayName,timeZone,workspaceName,week,teamMessage,intro,corporate=false}:{corporate?:boolean;intro?:ReactNode;state:PrivatePanelState<HomeLifetime>;timeAuthority:string;onRetry:()=>void;authority?:string;displayName?:string;timeZone?:string;workspaceName?:string;week?:HomeWeek|null;teamMessage?:boolean}){
  const replaced=state.snapshot?.state==='ready'&&authority!==undefined&&state.snapshot.home.snapshot.authority!==authority;
  const home=!replaced&&!state.paused&&state.snapshot?.state==='ready'?state.snapshot.home:null,snapshot=home?.snapshot;
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  const loading=!state.paused&&(!state.snapshot||replaced);
  const status=state.paused?'paused':snapshot?home!.state:denied?'unauthorized':loading?'loading':'unavailable';
+ // Corporate (Release 1): an Employee's Home on the corporate kit; a Lead keeps the v5 view.
+ if(corporate)return <EmployeeHomeCorpView home={home} status={status} refreshing={state.refreshing} onRetry={onRetry} displayName={displayName} timeZone={timeZone} workspaceName={workspaceName} week={week} intro={intro} ownTimeSlot={null}/>;
  return <EmployeeHomeQuietView home={home} status={status} refreshing={state.refreshing} onRetry={onRetry} displayName={displayName} timeZone={timeZone} workspaceName={workspaceName} week={week} teamMessage={teamMessage} intro={intro} ownTimeSlot={snapshot?<EmployeeTimePanel key={timeAuthority} compact authority={timeAuthority}/>:null}/>;
 }
 // TC-P3-08: the signed-in first name reaches Home's band ("Hi, Alexandra."); the view shows it only once Home is read.
-export function EmployeeHomeActions({authority,timeAuthority,displayName,timeZone,workspaceName,week,teamMessage,intro}:{intro?:ReactNode;authority:string;timeAuthority:string;displayName?:string;timeZone?:string;workspaceName?:string;week?:HomeWeek|null;teamMessage?:boolean}){
+export function EmployeeHomeActions({authority,timeAuthority,displayName,timeZone,workspaceName,week,teamMessage,intro,corporate}:{corporate?:boolean;intro?:ReactNode;authority:string;timeAuthority:string;displayName?:string;timeZone?:string;workspaceName?:string;week?:HomeWeek|null;teamMessage?:boolean}){
  const [state,setState]=useState<PrivatePanelState<HomeLifetime>>({snapshot:null,refreshing:true,paused:false});
  const control=useRef<ReturnType<typeof createEmployeeHomeController>|null>(null),pathname=usePathname();
  useEffect(()=>{
@@ -96,5 +99,5 @@ export function EmployeeHomeActions({authority,timeAuthority,displayName,timeZon
   void Promise.resolve().then(()=>{if(mounted)sync();});
   return ()=>{mounted=false;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
  },[authority,pathname]);
- return <EmployeeHomeReviewedRenderer authority={authority} state={state} timeAuthority={timeAuthority} displayName={displayName} timeZone={timeZone} workspaceName={workspaceName} week={week} teamMessage={teamMessage} intro={intro} onRetry={()=>control.current?.refresh()}/>;
+ return <EmployeeHomeReviewedRenderer authority={authority} state={state} timeAuthority={timeAuthority} displayName={displayName} timeZone={timeZone} workspaceName={workspaceName} week={week} teamMessage={teamMessage} intro={intro} corporate={corporate} onRetry={()=>control.current?.refresh()}/>;
 }

@@ -5,3 +5,8 @@
 /* Board O-More: one-line rows of 44px with 20px icons. */
 :is(#c-root, html) .c-more .c-row--one { min-height: 44px; padding-top: 4px; padding-bottom: 4px; }
 :is(#c-root, html) .c-more .c-row__icon .c-ic { width: 20px; height: 20px; }
+/* Board E-More (an Employee's More): 52px rows with 15/600 titles, the unread count a teal badge, Sign out a white card. */
+:is(#c-root, html) .c-more--employee .c-row--one { min-height: 52px; padding-top: 8px; padding-bottom: 8px; }
+:is(#c-root, html) .c-more--employee .c-row__title { font-weight: 600; }
+:is(#c-root, html) .c-more--employee .c-row__value .q-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 11px; background: var(--c-teal); color: #FFFFFF; font-size: 12px; line-height: 1; font-weight: 600; }
+:is(#c-root, html) .c-more--employee .c-more__signout .c-btn--danger { background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; }

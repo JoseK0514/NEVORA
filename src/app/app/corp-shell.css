@@ -19,6 +19,8 @@
   }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header > :is(.portal-workspace-name, .portal-location-nav, .company-logo-chip) { display: none !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .brand.compact { display: inline-flex !important; order: 0 !important; margin: 0 !important; padding: 0 !important; height: 44px !important; min-height: 44px !important; background: none !important; box-shadow: none !important; border: 0 !important; }
+  /* The lockup is as wide as the wordmark, so NEVORA starts on the 16px gutter and WORKFORCE centres under it. */
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header :is(.brand.compact, .login-brand-lockup) { width: auto !important; min-width: 0 !important; max-width: none !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .login-brand-lockup { display: inline-flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 3px !important; margin: 0 !important; color: #0E1A3A !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .login-brand-lockup .brand-wordmark { display: block !important; width: auto !important; height: 14px !important; max-width: none !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .login-brand-module {
@@ -55,6 +57,8 @@
     font: 500 11px/13px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important;
   }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav .mobile-nav-link.active, html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav .mobile-nav-link.active span { color: #0B6E69 !important; font-weight: 600 !important; }
+  /* Employees (Phase 6): the older phone layers draw a tinted pill behind the current tab; the boards show none. */
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav .mobile-nav-link { background: none !important; box-shadow: none !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav .mobile-nav-link:has(> .mobile-nav-pending), html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav .mobile-nav-link:has(> .mobile-nav-pending) span { color: #0B6E69 !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav:has(.mobile-nav-pending) .mobile-nav-link.active:not(:has(> .mobile-nav-pending)), html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav:has(.mobile-nav-pending) .mobile-nav-link.active:not(:has(> .mobile-nav-pending)) span { color: #6B7075 !important; font-weight: 500 !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav .u1-tab-badge { top: 2px !important; min-width: 18px !important; height: 18px !important; border-radius: 9px !important; background: #D92D20 !important; box-shadow: 0 0 0 2px #FFFFFF !important; font: 600 11px/18px Inter, sans-serif !important; }

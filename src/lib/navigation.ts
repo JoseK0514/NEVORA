@@ -191,12 +191,19 @@ export type MobileTab = NavigationItem & {
 export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities, context: NavContext = {}): MobileTab[] {
   const home: MobileTab = { href: "/app", label: "Home", icon: "dashboard", owns: ["/app"] };
   const schedule: MobileTab = { href: "/app/schedule", label: "Schedule", icon: "schedule", owns: ["/app/schedule", "/app/schedule/templates", "/app/schedule/settings"] };
-  if (role === "EMPLOYEE" || role === "LEAD") {
+  const requests: MobileTab = { href: "/app/requests/hub", label: "Requests", icon: "requests", owns: ["/app/requests/hub", "/app/requests", "/app/exchange", "/app/exchange/swap", "/app/exchange/callout", "/app/availability"] };
+  if (role === "EMPLOYEE") {
+    // Corporate (Release 1, approved Oct 26): Home, Schedule, Time, Pay and Requests; More opens from the header avatar.
+    const tabs: MobileTab[] = [{ ...home, owns: ["/app", "/app/notifications", "/app/more", "/app/updates", "/app/profile"] }, schedule, { href: "/app/my-time", label: "Time", icon: "clock", owns: ["/app/my-time", "/app/timecards"] }];
+    if (payroll?.enabled && (context.modules ?? ALL_MODULES_ON).payStatements) tabs.push({ href: "/app/my-pay", label: "Pay", icon: "receipt", owns: ["/app/my-pay"] });
+    return [...tabs, requests];
+  }
+  if (role === "LEAD") {
     const pay: MobileTab = payroll?.enabled && (context.modules ?? ALL_MODULES_ON).payStatements
       ? { href: "/app/my-pay", label: "Pay", icon: "receipt", owns: ["/app/my-pay", "/app/my-time", "/app/timecards"] }
       : { href: "/app/my-time", label: "Hours", icon: "clock", owns: ["/app/my-time", "/app/timecards"] };
     // v5 One look (approved Oct 24): Notifications opens from Home's bell, and every request page sits under Requests.
-    return [{ ...home, owns: ["/app", "/app/notifications"] }, schedule, { href: "/app/requests/hub", label: "Requests", icon: "requests", owns: ["/app/requests/hub", "/app/requests", "/app/exchange", "/app/exchange/swap", "/app/exchange/callout", "/app/availability"] }, pay];
+    return [{ ...home, owns: ["/app", "/app/notifications"] }, schedule, requests, pay];
   }
   const authorized = new Set(navigationForRole(role, payroll, context).map(item=>item.href));
   // Corporate (Release 1, approved Oct 26): Home, Schedule, Time, Payroll and Team; More opens from the header avatar.

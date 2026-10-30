@@ -68,7 +68,19 @@ it.each(['/app/schedule','/app/availability','/app/requests','/app/settings/loca
 });
 
 // v5 "One look" (approved Oct 24, 2026): every role uses the Quiet tab bar; an Employee's or Lead's More is a page.
-it.each(["EMPLOYEE", "LEAD"] as const)("gives %s Home, Schedule, Requests, Hours and More tabs, with More as a page", (role) => {
+// Corporate (Release 1, board C-Employee): an Employee has Home, Schedule, Time and Requests (Pay joins with payroll), no
+// More tab; the header avatar opens More. A Lead keeps the v5 tabs while that role is on hold.
+it("gives EMPLOYEE Home, Schedule, Time and Requests tabs, with More behind the avatar", () => {
+  const { html, mobile } = render("EMPLOYEE");
+  expect([...mobile.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
+    "/app", "/app/schedule", "/app/my-time", "/app/requests/hub",
+  ]);
+  expect(mobile).toContain('<span>Time</span>');
+  expect(mobile).not.toContain('<span>More</span>');
+  expect(html).toContain('href="/app/more"');
+  expect(html).toContain('class="c-top-avatar"');
+});
+it.each(["LEAD"] as const)("gives %s Home, Schedule, Requests, Hours and More tabs, with More as a page", (role) => {
   const { html, mobile } = render(role);
   expect([...mobile.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
     "/app", "/app/schedule", "/app/requests/hub", "/app/my-time", "/app/more",
@@ -217,7 +229,11 @@ it('shows no section tabs on pages outside a shared group',()=>{
  expect(render('OWNER','/app/schedule').html).not.toContain('class="section-tabs"');
 });
 
-it.each(['EMPLOYEE','LEAD'] as const)('keeps the %s Updates destination under the More tab',role=>{
+it('lights Home on an EMPLOYEE Updates page, which opens from More behind the avatar',()=>{
+ const {mobile}=render('EMPLOYEE','/app/updates/own-update');
+ expect(mobile).toContain('href="/app" class="mobile-nav-link active"');
+});
+it.each(['LEAD'] as const)('keeps the %s Updates destination under the More tab',role=>{
  const {mobile}=render(role,'/app/updates/own-update');
  // v5: Updates opens from the More page, so the More tab is the active one.
  expect(mobile).toContain('href="/app/more" class="mobile-nav-link manager-more-trigger active"');

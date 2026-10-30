@@ -46,7 +46,18 @@ it.each(['EMPLOYEE','LEAD'] as const)('Home_Schedule_MyTime_More_all_routes_reac
 });
 
 describe('phone tabs', () => {
-  it.each(['EMPLOYEE','LEAD'] as const)('gives %s Pay while payroll is on and Hours while it is off', role => {
+  // Corporate (Release 1, board C-Employee): an Employee's tabs are Home, Schedule, Time, Pay and Requests; More, Updates
+  // and Profile open from the header avatar, so Home stays lit there.
+  it('gives EMPLOYEE Home, Schedule, Time, Pay and Requests, with Pay only while payroll is on', () => {
+    expect(mobileTabsForRole('EMPLOYEE').map(tab => tab.label)).toEqual(['Home','Schedule','Time','Requests']);
+    expect(mobileTabsForRole('EMPLOYEE', payroll).map(tab => [tab.label, tab.href])).toEqual([['Home','/app'],['Schedule','/app/schedule'],['Time','/app/my-time'],['Pay','/app/my-pay'],['Requests','/app/requests/hub']]);
+    expect(activeMobileTab('EMPLOYEE', '/app/my-time', payroll)).toBe('/app/my-time');
+    expect(activeMobileTab('EMPLOYEE', '/app/timecards', payroll)).toBe('/app/my-time');
+    for (const path of ['/app/notifications', '/app/more', '/app/updates', '/app/profile']) expect(activeMobileTab('EMPLOYEE', path, payroll)).toBe('/app');
+    expect(activeMobileTab('EMPLOYEE', '/app/exchange', payroll)).toBe('/app/requests/hub');
+    expect(activeMobileTab('EMPLOYEE', '/app/availability', payroll)).toBe('/app/requests/hub');
+  });
+  it.each(['LEAD'] as const)('gives %s Pay while payroll is on and Hours while it is off', role => {
     expect(mobileTabsForRole(role).map(tab => tab.label)).toEqual(['Home','Schedule','Requests','Hours']);
     expect(mobileTabsForRole(role, payroll).map(tab => [tab.label, tab.href])).toEqual([['Home','/app'],['Schedule','/app/schedule'],['Requests','/app/requests/hub'],['Pay','/app/my-pay']]);
     expect(activeMobileTab(role, '/app/my-time', payroll)).toBe('/app/my-pay');

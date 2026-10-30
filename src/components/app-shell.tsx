@@ -280,7 +280,8 @@ function AppShellView({
       data-mobile-workforce={pathname ? "true" : undefined}
       data-employee-corporate={employee && (pathname === "/app/my-time" || pathname === "/app/timecards") ? "true" : undefined}
       // Corporate (Release 1, approved Oct 26): Owner and Manager. A tab's own page shows the white header (logo, bell, avatar).
-      data-nv-corp={employee ? undefined : ""} data-corp-root={!employee && mobileTabs.some(tab => tab.href === pathname) && !(pathname === "/app" && search?.get("view")) ? "" : undefined}>
+      // Employees joined in Phase 6; a Lead keeps the v5 look while that role is on hold.
+      data-nv-corp={user.role === "LEAD" ? undefined : ""} data-corp-root={user.role !== "LEAD" && mobileTabs.some(tab => tab.href === pathname) && !(pathname === "/app" && search?.get("view")) ? "" : undefined}>
       {/* IS-P4-14: on desktop, the sidebar and header come first; this skips them. Shown only on focus, and only on desktop. */}
       <a className="portal-skip-link" href="#main-content">Skip to content</a>
       <aside className="sidebar" data-collapsed={collapsed}>
@@ -374,13 +375,13 @@ function AppShellView({
           {notificationAuthority ? <NotificationBell key={operationalAuthority?.state==='ready'?operationalAuthority.authority:'unavailable'} authority={notificationAuthority} /> : null}
           {!employee ? accountMenu : null}
           {/* Corporate phone header: the avatar opens More (profile, settings and the rest). Desktop keeps the account menu. */}
-          {!employee ? <Link href="/app/more" prefetch className="c-top-avatar" aria-label={`More, ${user.firstName} ${user.lastName}`} aria-current={pathname === "/app/more" ? "page" : undefined}><span aria-hidden="true">{initials}</span></Link> : null}
+          {user.role !== "LEAD" ? <Link href="/app/more" prefetch className="c-top-avatar" aria-label={`More, ${user.firstName} ${user.lastName}`} aria-current={pathname === "/app/more" ? "page" : undefined}><span aria-hidden="true">{initials}</span></Link> : null}
           </div>
         </header>
 
         <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{user.role==='MANAGER'&&operational.view?.state==='unavailable'&&!operational.refreshing&&<section className="portal-route-state" role="status"><h2>Management menu unavailable</h2><p>Your current management access could not be checked. Reconnect and refresh before opening another management page.</p><button className="button secondary" type="button" disabled={operational.paused} onClick={operational.retry}>Refresh management access</button></section>}<EmployeeMessageReturn/>{children}</PresentationProvider></main>
 
-        <nav className="mobile-nav" aria-label="Mobile navigation" style={!employee?{gridTemplateColumns:`repeat(${mobileTabs.length},minmax(0,1fr))`}:undefined}>
+        <nav className="mobile-nav" aria-label="Mobile navigation" style={user.role !== "LEAD"?{gridTemplateColumns:`repeat(${mobileTabs.length},minmax(0,1fr))`}:undefined}>
           {/* v5 One look (approved Oct 24): one Quiet tab bar for every role; More is a page. */}
             <>
               {mobileTabs.map((item) => {
@@ -400,14 +401,14 @@ function AppShellView({
                     aria-label={needsYou !== null ? `${item.label}, ${needsYou} need${needsYou === 1 ? "s" : ""} you` : undefined}
                   >
                     {/* Quiet (v4): outline glyphs, filled only for the current tab; the count is spoken, not drawn. */}
-                    <NavIcon name={item.icon === "employees" ? "team" : item.icon} size={24} weight={!employeeMobile && active ? "fill" : "regular"} />
+                    <NavIcon name={item.icon === "employees" ? "team" : item.icon} size={24} weight={(user.role !== "LEAD" || !employeeMobile) && active ? "fill" : "regular"} />
                     <span>{item.label}</span>
                     <TabPending />
                   </Link>
                 );
               })}
-              {/* Employees: More is a page, as in their approved mockups. Owners and Managers open More from the header avatar. */}
-              {employee ? <Link href="/app/more" prefetch className={activeTab === "more" || pathname === "/app/more" ? "mobile-nav-link manager-more-trigger active" : "mobile-nav-link manager-more-trigger"}
+              {/* A Lead: More is a tab-bar page. Every other role opens More from the header avatar. */}
+              {user.role === "LEAD" ? <Link href="/app/more" prefetch className={activeTab === "more" || pathname === "/app/more" ? "mobile-nav-link manager-more-trigger active" : "mobile-nav-link manager-more-trigger"}
                 aria-current={pathname === "/app/more" ? "page" : undefined}>
                 <NavIcon name="moreCircle" size={24} weight={!employeeMobile && (activeTab === "more" || pathname === "/app/more") ? "fill" : "regular"} /><span>More</span>
                 <TabPending />
