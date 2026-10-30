@@ -359,6 +359,16 @@ it('captures default00:01 week N without a next-Monday card once the empty closi
     expect(c.snapshot!.native!.facts.inputs[0].closingContextEvidence).toMatchObject({ version: 'NATIVE_CLOSING_CONTEXT_V1', startAt: '2026-09-28T04:00:00Z', endAt: '2026-09-28T04:01:00Z', captureFence: c.snapshot!.native!.recordedSources![0].sourceFence });
     expect(c.snapshot!.native!.recordedSources![0].closingContext).toMatchObject({ startAt: '2026-09-28T04:00:00Z', endAt: '2026-09-28T04:01:00Z' });
 });
+it('approves default00:01 week N on closing evidence although approval observes the closed minute again later', async () => {
+    await nativeFixture({ workweek: 'DEFAULT', contextPeriod: { startDate: '2026-09-08', endDate: '2026-09-27' } });
+    const first = await preparedNative();
+    expect(first.payload.status).toBe('REVIEW_REQUIRED');
+    const r = await command(proof, { action: 'APPROVE', operationId: randomUUID(), runId: first.payload.id, expectedRevision: first.payload.revision, reviewToken: first.payload.reviewToken }, f.db.executor);
+    const approved = await readRun(proof, r.runId!, f.db.executor);
+    expect(approved.payload.status).toBe('APPROVED');
+    expect(approved.snapshot!.native!.facts.inputs[0].closingContextEvidence).toMatchObject({ version: 'NATIVE_CLOSING_CONTEXT_V1', endAt: '2026-09-28T04:01:00Z' });
+    expect(await f.q("SELECT employee_id,payload#>>'{result,row,grossMinor}' AS gross FROM native_payroll_ledger")).toEqual([{ employee_id: 'c34-a', gross: '100000' }]);
+});
 it('blocks actual time starting in the missing terminal minute instead of inventing finalized zero', async () => {
     await nativeFixture({ workweek: 'DEFAULT', contextPeriod: { startDate: '2026-09-08', endDate: '2026-09-27' }, contextEntries: [{ id: 'native-edge', locationId: 'loc-1', startAt: '2026-09-28T04:00:30Z', endAt: '2026-09-28T05:00:00Z' }] });
     const c = await nativeCapture();

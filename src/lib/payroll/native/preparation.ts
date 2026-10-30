@@ -15,6 +15,7 @@ export type NativePreparationFacts = {
     blockingIssues?: string[];
 };
 import { calculateNativePayroll } from "./calculate";
+import { fingerprintClosingEvidence } from "./workweek-policy";
 import { hash } from "../store";
 import { parseImport, totals, PayrollError } from "../model";
 /** Project captured facts into an unapproved run and review token without I/O. Any
@@ -62,5 +63,5 @@ export function buildNativeRunCandidate(run: PayrollRun, facts: NativePreparatio
     const coverage = { complete, locationIds: [...new Set(Object.values(facts.employeeLocations).flat())].sort() };
     const nativeCalculation = { version: "NATIVE_RUN_V1" as const, state: exceptions.length ? "blocked" as const : "ready" as const, ruleRevision: facts.ruleRevision, templateVersion: "NEVORA_NATIVE_PAYSTUB_PDF_V1" as const, employees: exceptions.length ? [] : employees };
     const amounts = parseImport({ schema: "NEVORA_PAYROLL_IMPORT_V1", currency: "USD", sourceName: "NEVORA actual recorded time", sourceReference: facts.sourceFingerprint, period: run.period, payday: run.payday, rows: rows.map(({ employeeName: _name, ...r }) => r) }, facts.population.map(e => e.employeeId));
-    return { ...run, sourceAuthority: "NATIVE_RECORDED_TIME", status: exceptions.length ? "BLOCKED" : "REVIEW_REQUIRED", rows: exceptions.length ? null : rows, totals: exceptions.length ? null : totals(amounts), coverage, nativeCalculation, exceptions, sourceName: amounts.sourceName, sourceReference: amounts.sourceReference, reviewToken: exceptions.length ? null : hash({ runId: run.id, period: run.period, payday: run.payday, correction: run.nativeCorrection ?? null, facts, results: employees }), approvedBy: null, approvedAt: null };
+    return { ...run, sourceAuthority: "NATIVE_RECORDED_TIME", status: exceptions.length ? "BLOCKED" : "REVIEW_REQUIRED", rows: exceptions.length ? null : rows, totals: exceptions.length ? null : totals(amounts), coverage, nativeCalculation, exceptions, sourceName: amounts.sourceName, sourceReference: amounts.sourceReference, reviewToken: exceptions.length ? null : hash({ runId: run.id, period: run.period, payday: run.payday, correction: run.nativeCorrection ?? null, facts: { ...facts, inputs: facts.inputs.map(i => i.closingContextEvidence ? { ...i, closingContextEvidence: fingerprintClosingEvidence(i.closingContextEvidence) } : i) }, results: employees }), approvedBy: null, approvedAt: null };
 }

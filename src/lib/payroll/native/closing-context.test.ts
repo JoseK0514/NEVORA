@@ -8,6 +8,7 @@ import { closingContextWindow, resolveNativeWorkweek } from './workweek-policy';
 import { nativeSourceRequest } from './source.server';
 import { projectRecordedSourceCapture } from './recorded-source.server';
 import { newRun } from '../service';
+import { buildNativeRunCandidate, type NativePreparationFacts } from './preparation';
 import type { NativeClosingContextEvidence, NativePayrollInput, NativePayrollReady } from './contracts';
 
 // Fictional week N = Monday 2026-10-05 .. Sunday 2026-10-11 under the documented
@@ -62,6 +63,21 @@ describe('Monday 00:01 closing context (calculation)', () => {
         // The same week N with a finalized Monday card yields identical money: the evidence replaces only the missing minute.
         const withCard = weekN(); withCard.timecards[0].period.endDate = '2026-10-12';
         expect(ready(withCard).row).toEqual(r.row);
+    });
+    it('approves the same week N later: when the closed window was observed is not part of the review identity', () => {
+        // Prepare and approve each capture again, so the observation time always differs.
+        const prepared = weekN(); prepared.closingContextEvidence = evidence();
+        const approving = weekN(); approving.closingContextEvidence = evidence({ observedAt: '2026-10-14T09:30:00Z' });
+        expect(ready(approving)).toEqual(ready(prepared));
+        const run = newRun('11111111-1111-4111-8111-111111111111', WEEK_N, prepared.payday);
+        const facts = (i: NativePayrollInput): NativePreparationFacts => ({ inputs: [i], population: [{ employeeId: i.employeeId, name: 'Fictional', disposition: 'INCLUDE' }], sourceFingerprint: 'a'.repeat(64), ruleRevision: 1, rulesVerified: true, employeeLocations: { [i.employeeId]: ['L1'] }, unknownCoverageEmployeeIds: [] });
+        const a = buildNativeRunCandidate(run, facts(prepared)), b = buildNativeRunCandidate(run, facts(approving));
+        expect(a.status).toBe('REVIEW_REQUIRED');
+        expect(b.reviewToken).toBe(a.reviewToken);
+        expect(b.nativeCalculation).toEqual(a.nativeCalculation);
+        // A different closed window is still a different review.
+        const moved = weekN(); moved.closingContextEvidence = evidence({ captureFence: 'd'.repeat(64) });
+        expect(buildNativeRunCandidate(run, facts(moved)).reviewToken).not.toBe(a.reviewToken);
     });
     it('refuses time that starts inside the boundary minute while its own card is missing', () => {
         const i = weekN(); i.closingContextEvidence = evidence();

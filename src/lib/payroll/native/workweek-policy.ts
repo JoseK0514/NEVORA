@@ -163,6 +163,13 @@ export function resolveNativeWorkweek(employeeId: string, wages: NativeWageProfi
         return fail('WORKWEEK_EFFECTIVE_COVERAGE_REQUIRED');
     return { ...context, policy, policySha256: createHash('sha256').update(stableExportJson({ policy, statutorySource: PR_STATUTORY_WORKWEEK_SOURCE })).digest('hex'), sourceWindow: { startAt: serialize(sourceLeft), endAt: serialize(fullRight) }, coveragePeriod: { startDate: localDate(sourceLeft).toString(), endDate: localDate(fullRight - BigInt(1)).toString() } };
 }
+/** Closing evidence as it enters a fingerprint. Each capture records when it observed the
+ * closed window, so prepare and approve differ there; only the window and fence are compared.
+ * The observation itself is still validated and kept in the stored evidence. */
+export function fingerprintClosingEvidence<T extends { observedAt: string }>(evidence: T): Omit<T, 'observedAt'> {
+    const { observedAt: _observed, ...stable } = evidence;
+    return stable;
+}
 /** The partial civil day that a recorded workweek boundary leaves after the pay window
  * (Monday 00:00-00:01 under the statutory Monday 00:01 week, for a Monday-Sunday period).
  * It is context only: it is never paid in this pay window and later minutes of the week
