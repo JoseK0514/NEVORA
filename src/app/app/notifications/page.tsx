@@ -16,6 +16,6 @@ export default async function NotificationsPage(){
  if(!manager)return <ResponsiveEmployeeMessages authority={employeeViewAuthority(proof,'communications')} view="notifications"><QuietPage><QuietNav back={{href:'/app',label:'Home'}}/><QuietHeader title={"Notifi\u00adca\u00adtions"}/>
   <EmployeeAccountPanel key={authority} kind="notifications" authority={authority} endpoint="/api/notifications" quiet/></QuietPage></ResponsiveEmployeeMessages>;
  // Quiet (v4, approved Oct 23): back to Today, the title, then the list.
- return <QuietPage><QuietNav back={{href:'/app',label:'Today'}}/><QuietHeader title={"Notifi\u00adca\u00adtions"}/>
+ return <QuietPage><QuietNav back={{href:'/app',label:'Home'}}/><QuietHeader title={"Notifi\u00adca\u00adtions"}/>
   <EmployeeAccountPanel key={authority} kind="notifications" authority={authority} endpoint="/api/notifications" markReadAllowed/></QuietPage>;
 }

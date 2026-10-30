@@ -153,7 +153,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
   const sent = (createdAt: string) => agoLabel(createdAt, now, true);
 
   return <ScopedReadFrame observation={source}><QuietPage className="q-shiftreq">
-    <QuietNav back={{ href: "/app/inbox", label: "Inbox" }} />
+    <QuietNav back={{ href: "/app/inbox", label: "Things to do" }} />
     <QuietHeader title="Shift requests" />
     <QuietSegments label="Shift request sections" items={tabs.map(item => ({ href: `/app/exchange?tab=${item.id}`, current: selected.id === item.id,
       label: item.id === "pending" && waiting ? `Waiting · ${waiting}` : item.label }))} />

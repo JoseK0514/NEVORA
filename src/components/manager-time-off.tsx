@@ -41,7 +41,7 @@ const backTo = ({ from, filter, item }: Origin) => {
   if (filter !== "all") query.set("filter", filter);
   if (item) query.set("item", item);
   const search = query.toString();
-  return { href: search ? `/app/inbox?${search}` : "/app/inbox", label: "Inbox" };
+  return { href: search ? `/app/inbox?${search}` : "/app/inbox", label: "Things to do" };
 };
 
 /** Quiet (v4): "Thu, Oct 29 – Fri, Oct 30 · 2 days", "Thu, Oct 29 · 9:00 AM – 1:00 PM" or "Thu, Oct 29 · All day". */
@@ -51,13 +51,6 @@ function whenLabel(request: { startDate: string; endDate: string; startTime?: st
   return days === 1 ? `${dayLabel(request.startDate)} · All day` : `${dayLabel(request.startDate)} – ${dayLabel(request.endDate)} · ${days} days`;
 }
 
-function Decision({ id, name }: { id: string; name: string }) {
-  return <ActionForm action={reviewTimeOffAction} className="q-acts-form" label={`Review time off for ${name}`}
-    failure={{ title: "Your decision wasn’t saved", body: "Check your connection and try again. Nothing changed." }}>
-    <input type="hidden" name="requestId" value={id} />
-    <TimeOffReviewActions name={name} quiet />
-  </ActionForm>;
-}
 
 /** F6: one request on its own page. Back names where the manager came from; the decision returns there (D-5). */
 function FocusedReview({ request, origin, error }: { request: PendingRequest; origin: Origin; error?: string }) {
@@ -130,9 +123,9 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
       {selected.id === "pending" ? (requests.length ? <ul className="q-list q-requests" aria-label="Waiting time off">{requests.map(request => {
         const sent = (request as { createdAt?: string }).createdAt;
         return <li key={request.id} id={`request-${request.id}`} tabIndex={-1} className="q-request">
+          {/* Release 1 (Jose's rule): no Approve or Decline in the list; the row opens the request, where the decision is made. */}
           <QuietRow bare avatar={initialsOf(request.employeeName)} title={request.employeeName} detail={whenLabel(request)}
-            value={sent ? agoLabel(sent, source.observedAt) : undefined} href={`/app/requests?tab=pending&requestId=${encodeURIComponent(request.id)}`} chevron={false} />
-          <Decision id={request.id} name={request.employeeName} />
+            value={sent ? agoLabel(sent, source.observedAt) : undefined} href={`/app/requests?tab=pending&requestId=${encodeURIComponent(request.id)}`} />
         </li>;
       })}</ul> : <p className="q-empty q-first">You’re all caught up.</p>)
       : requests.length ? <QuietList label={`${selected.label} time off`} style={{ marginTop: 16 }}>{requests.map(request => (

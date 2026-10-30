@@ -50,7 +50,7 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
   const deadlineDay = settings?.availabilityDeadline ? new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short", month: "short", day: "numeric" }).format(new Date(settings.availabilityDeadline)) : null;
   return (<ScopedReadFrame observation={source}>
     <QuietPage className="q-availability">
-      <QuietNav back={{ href: "/app/inbox", label: "Inbox" }} />
+      <QuietNav back={{ href: "/app/inbox", label: "Things to do" }} />
       <QuietHeader title="Availability" sub={`${keepWhole(weekLabel(selectedWeek))} · ${statuses.length - notSubmitted} of ${statuses.length} sent`} />
       {invalidWeek ? <p className="q-error q-first" role="alert">That week isn’t valid, so this is the upcoming week.</p> : null}
       <QuietList style={{ marginTop: 16 }}>

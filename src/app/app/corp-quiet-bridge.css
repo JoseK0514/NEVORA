@@ -112,3 +112,8 @@
 :is(#q-root, html) .app-shell[data-nv-corp] .clocker-steps .q-row b { font-weight: 400; }
 :is(#q-root, html) .app-shell[data-nv-corp] .clocker-steps__n { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 11px; background: #EDEEEF; color: #4A4F54; font: 600 13px/1 Inter, "Inter Fallback", -apple-system, sans-serif; }
 :is(#q-root, html) .app-shell[data-nv-corp] .clocker-steps__list { list-style: none; }
+/* Clocker recovery's review requests: inside the 16px gutter like every other block, with the kit's heading. */
+:is(#q-root, html) .app-shell[data-nv-corp] .wc-content > section[class*="__requests"] { margin: 16px 16px 0; padding: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .wc-content > section[class*="__requests"] h2 { margin: 0 0 8px; font: 600 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .wc-content > section[class*="__requests"] p { margin: 8px 0 0; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
+:is(#q-root, html) .app-shell[data-nv-corp] .wc-content > section[class*="__requests"] .q-btn { width: 100%; margin: 0; }
