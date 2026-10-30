@@ -120,7 +120,7 @@ it("compares real joint day plans with discoverable keyboard review and private 
         const fresh = await (await nextResponse).json();
         expect(fresh.answer.coveragePlans.sourceVersion).not.toBe(plans.sourceVersion);
         expect(fresh.answer.coveragePlans.alternatives[0].status).not.toBe("COMPLETE");
-        await result.getByText(/requirements|Search limit/i).first().waitFor();
+        await result.getByRole("article", { name: "Day plan 1", exact: true }).getByRole("heading", { name: /Requirements remain|Search limit reached/ }).waitFor();
         await result.getByText(/^Remaining requirements/).first().click();
         await result.getByText(/Customer Support: 1 needed/).first().waitFor();
         await page.screenshot({ path: resolve(evidence, `${engine}-remaining.png`), fullPage: true });

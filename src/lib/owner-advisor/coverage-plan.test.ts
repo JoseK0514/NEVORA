@@ -80,10 +80,11 @@ it("yields to unrelated work and discards a cancelled solve before returning pri
 it("keeps dense searches bounded, yields, and labels remaining requirements instead of claiming impossibility", async () => {
   const input = realisticAutomaticWeek(20);
   const before = structuredClone(input);
-  let otherWork = false;
-  const heartbeat = yieldTurn().then(() => { otherWork = true; });
+  let otherWork = false, completed = false;
+  const heartbeat = yieldTurn().then(() => { expect(completed, "unrelated work runs before planning completes").toBe(false); otherWork = true; });
   const start = performance.now();
   const result = await coverage.compareCoveragePlans(input, metadata, signal());
+  completed = true;
   await heartbeat;
   expect(otherWork).toBe(true);
   expect(performance.now() - start).toBeLessThan(15000);
@@ -94,4 +95,5 @@ it("keeps dense searches bounded, yields, and labels remaining requirements inst
   expect(result.alternatives[0].assignments.length).toBeLessThanOrEqual(12);
   expect(result.alternatives[0].remaining.total).toBeGreaterThan(0);
   expect(input).toEqual(before);
+  console.info("OWNER_COVERAGE_PLAN_PERFORMANCE", JSON.stringify({ ...result.computation, alternatives: result.alternatives.map(p => ({ status: p.status, assignments: p.assignments.length, remaining: p.remaining.total })) }));
 }, 20000);
