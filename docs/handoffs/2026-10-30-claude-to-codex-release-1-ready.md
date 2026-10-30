@@ -1,6 +1,6 @@
 # Claude → Codex: NEVORA Release 1 is ready for inspection, then deploy
 
-Date: 2026-10-30. Branch: `claude-codex-collab-nevora`. Release SHA: recorded in §4 after the final gate (the commit that adds this file, or the evidence commit right after it).
+Date: 2026-10-30. Branch: `claude-codex-collab-nevora`. Release SHA: the head of this branch when Codex receives it (the commit that adds this evidence). App code is identical from `d3a5c7df` onward; later commits change only a test script and this file.
 
 This hands Release 1 back for the last three steps: independent inspection (8), Jose's device test (9), and your migration and deploy (10). Nothing here authorizes a production migration or deploy. Those wait for the inspection, Jose's device test and Jose's explicit go.
 
@@ -51,14 +51,30 @@ As the runbook table, plus:
 
 ## 4. Evidence on the release SHA (owned local Postgres, fictional data, `DATABASE_URL` unset)
 
-Recorded in a follow-up commit after the final gate on this file's commit. The release gate is CI's set:
-- validate: unit, advisor pilot, typecheck, lint, release-build, audit;
-- the Clocker shards;
-- release-postgres and advisor integration;
-- Phase E SQL;
-- every browser job: Phase D, D2, attendance, advisor browser, Phase E home/communications/calendar/navigation/attention;
-- the Clocker iPad and breaks UI;
-- every owned database integration config.
+The full gate ran in one ordered pass on `d3a5c7df` (Oct 30, 13:57–15:26 AST), clean tree throughout:
+
+| Step | Result |
+|---|---|
+| Typecheck, lint, audit (prod and all), advisor pilot | pass |
+| Release build (`NEVORA_BUILD_RECEIPT`) | pass |
+| Unit | 10,350 passed, 801 skipped |
+| Migrations | 11 passed |
+| Release Postgres | 77 passed |
+| Advisor integration | 38 passed |
+| Clocker shards 1–4 | 147 + 132 + 151 + 142 = 572 passed |
+| Phase E startup and SQL | pass; 23 passed |
+| 22 owned database integration configs | all pass (native, configurable and export payroll; timecards; punches; corrections; company setup; account recovery; action center; management profile; employee schedule; reports; Phase D corrections and remediation; six findings; passkeys; employee mobile SQL; Clocker breaks, C6, owner policy, punch, recovery) |
+| Advisor browser | pass |
+| Attendance UI | 48 checks |
+| Phase D browser | 207 checks, 0 errors |
+| Phase D remediation | pass |
+| D2 corrections UI | 282 checks |
+| Phase E Home, Communications, Calendar, Attention | 14 of 14 cells each |
+| Clocker iPad UI; Clocker breaks UI | pass; 46 checks |
+
+Two steps ran again outside that pass:
+- **Home held-response check:** the gate script started it without CI's `NODE_ENV=test`. Run as CI runs it on `d3a5c7df`, it passed in Chromium and WebKit.
+- **Phase E Navigation:** it hung at the 30-minute limit three times in the phone time-off step. The cause was the test helper `actionsSettled()`, which awaited Playwright's `response.finished()` with no limit. With the same code instrumented, every action body finished within 20 ms. `199159e9` bounds that wait at 10 s (test only). On `199159e9`, Navigation passed 14 of 14 with 0 errors.
 
 **Browser suites brought up to the approved UI on Oct 30.** No check was deleted; checks were re-anchored where the approved design moved a function:
 - **Home:** clock status → Time; the full attention list → Notifications.
@@ -88,6 +104,7 @@ Recorded in a follow-up commit after the final gate on this file's commit. The r
 - **Board figures not in the employee reads:** "earned so far", pay amounts in the Pay list, scheduled hours on Time.
 - **Desktop sidebar link height:** 36px (188×36). It meets WCAG 2.5.8 (24px), but not the 44px phone rule. Desktop only.
 - **Resizing during an uncertain correction:** a desktop Employee who narrows the window below 768px while a time correction is uncertain loses that request's "Try again". The phone Time view replaces the desktop panel. It only happens when resizing during that state.
+- **Navigation helper:** Playwright sometimes misses a server action's stream close (see §4). The suite now bounds that wait, and the SQL readbacks still prove one commit.
 - **Flaky WebKit check:** `explicit-source-recovery` in the Phase D browser suite failed 1 of 3 iteration runs (stayed on "Current view needs a fresh check") and passed in the gate. No related code changed on this branch.
 - **Non-CI suites with an unmatched local harness:** `company-access-*` and `premium-*` refuse the generic owned-DB runner. They fail the same way on 001031aa, the commit before this work.
 - **Payroll drafts:** drafts prepared before 4fd3f426 must be recalculated (`NATIVE_REVIEW_STALE`).
