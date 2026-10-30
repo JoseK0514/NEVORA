@@ -1,9 +1,9 @@
 /* Approved Clocker surface only. Portal and legacy Signature tokens are untouched. */
 .page.page {
- /* Release 1: the corporate tokens (docs/product/specs/corporate-mockups DESIGN-SPEC), so the tablet matches the app. */
+ /* Release 1: the corporate colours (docs/product/specs/corporate-mockups DESIGN-SPEC); the approved iPad Clocker keeps system type. */
  --clocker-accent:#0B6E69;--clocker-accent-hover:#084F4B;--clocker-focus:#0B6E69;--clocker-soft:#E6F1EF;--clocker-on-accent:#fff;
  --ck-page:#F5F6F6;--ck-card:#fff;--ck-ink:#1A1C1E;--ck-ink2:#4A4F54;--ck-ink3:#6B7075;--ck-rule:#E3E5E6;--ck-edge:#D5D8DA;--ck-track:#EDEEEF;--ck-amber:#8A4B00;--ck-amber-wash:#FEF4E6;--ck-lift:none;
- background:var(--ck-page);font-family:'Nevora Clocker',Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:1rem;line-height:1.5;overflow-x:clip;
+ background:var(--ck-page);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:1rem;line-height:1.5;overflow-x:clip;
 }
 .page *, .page *::before,.page *::after{box-sizing:border-box;}
 .page ::selection{background:#bce7df;color:#123d34;}
