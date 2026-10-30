@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SelectField } from "@/components/select-field";
 import type { AdvisorCommand } from "@/lib/owner-advisor/contracts";
 import type { NotebookChange, NotebookEdit, OwnerNotebook, TaskFocus } from "@/lib/owner-advisor/notebook";
@@ -18,6 +18,29 @@ export function NotebookPanel({ notebook, date, disabled, change, selectTask, in
   inspect: (tool: Inspection) => void;
 }) {
   const [draft, setDraft] = useState<Draft | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<HTMLFormElement>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const editing = draft !== null;
+  useEffect(() => {
+    if (editing) {
+      // Deliberate Add/Edit must reveal its field, including after long lists.
+      // A refresh or keystroke keeps the same editing state and never steals focus.
+      editorRef.current?.querySelector<HTMLTextAreaElement>("textarea")?.focus();
+      return;
+    }
+    const trigger = triggerRef.current;
+    triggerRef.current = null;
+    if (!trigger) return;
+    const destination = trigger.isConnected && !trigger.disabled && trigger.getClientRects().length
+      ? trigger
+      : [...(panelRef.current?.querySelectorAll<HTMLElement>("button:not(:disabled),summary") ?? [])].find(el => el.getClientRects().length);
+    destination?.focus();
+  }, [editing]);
+  const openEditor = (next: Draft, trigger: HTMLButtonElement) => {
+    triggerRef.current = trigger;
+    setDraft(next);
+  };
   const stale = !!draft && draft.base !== notebook.revision;
   const goalDraft = draft?.change.kind === "save_goal" ? draft.change : null;
   const taskDraft = draft?.change.kind === "save_task" ? draft.change : null;
@@ -29,7 +52,7 @@ export function NotebookPanel({ notebook, date, disabled, change, selectTask, in
   const setFocus = (focus: TaskFocus) => {
     if (draft && taskDraft) setDraft({ ...draft, change: { ...taskDraft, focus } });
   };
-  return <div className="oa-notebook">
+  return <div className="oa-notebook" ref={panelRef}>
     <p className="oa-muted">Goals and tasks stay saved for your Owner account. Investigations use them when you ask, with current company records.</p>
     <details className="oa-follow-through" open>
       <summary>Saved goals · {notebook.goals.length}/8</summary>
@@ -39,12 +62,12 @@ export function NotebookPanel({ notebook, date, disabled, change, selectTask, in
           <p className="oa-plain">{goal.text}</p>
           <p className="oa-muted">Saved <time dateTime={goal.updatedAt}>{new Date(goal.updatedAt).toLocaleString()}</time></p>
           <div className="oa-actions">
-            <button type="button" className="nv-btn" data-kind="secondary" disabled={blocked} onClick={() => setDraft({ base: notebook.revision, change: { kind: "save_goal", goalId: goal.id, text: goal.text } })}>Edit goal</button>
+            <button type="button" className="nv-btn" data-kind="secondary" disabled={blocked} onClick={e => openEditor({ base: notebook.revision, change: { kind: "save_goal", goalId: goal.id, text: goal.text } }, e.currentTarget)}>Edit goal</button>
             <button type="button" className="nv-btn" data-kind="secondary" disabled={blocked} onClick={() => void change({ expectedRevision: notebook.revision, change: { kind: "delete_goal", goalId: goal.id } })}>Remove goal</button>
           </div>
         </li>)}
       </ul>
-      <button type="button" className="nv-btn" data-kind="secondary" disabled={blocked || notebook.goals.length >= 8} onClick={() => setDraft({ base: notebook.revision, change: { kind: "save_goal", goalId: crypto.randomUUID(), text: "" } })}>Add goal</button>
+      <button type="button" className="nv-btn" data-kind="secondary" disabled={blocked || notebook.goals.length >= 8} onClick={e => openEditor({ base: notebook.revision, change: { kind: "save_goal", goalId: crypto.randomUUID(), text: "" } }, e.currentTarget)}>Add goal</button>
     </details>
     <details className="oa-follow-through" open>
       <summary>Your tasks · {notebook.tasks.filter(t => t.state === "open").length} open</summary>
@@ -62,16 +85,16 @@ export function NotebookPanel({ notebook, date, disabled, change, selectTask, in
               if (task.focus.kind === "coverage") inspect({ name: "coverage_proposals", args: { date: task.focus.date } });
               else if (task.focus.kind === "period") inspect({ name: "attendance_payroll_review", args: { startDate: task.focus.startDate, endDate: task.focus.endDate, language: "en" } });
             }}>{task.focus.kind === "coverage" ? "Review current coverage" : "Review current period"}</button>}
-            <button type="button" className="nv-btn" data-kind="secondary" disabled={blocked} onClick={() => setDraft({ base: notebook.revision, change: { kind: "save_task", taskId: task.id, objective: task.objective, notes: task.notes, state: task.state, focus: task.focus } })}>Edit task</button>
+            <button type="button" className="nv-btn" data-kind="secondary" disabled={blocked} onClick={e => openEditor({ base: notebook.revision, change: { kind: "save_task", taskId: task.id, objective: task.objective, notes: task.notes, state: task.state, focus: task.focus } }, e.currentTarget)}>Edit task</button>
             <button type="button" className="nv-btn" data-kind="secondary" disabled={blocked} onClick={() => void change({ expectedRevision: notebook.revision, change: { kind: "save_task", taskId: task.id, objective: task.objective, notes: task.notes, state: task.state === "open" ? "closed" : "open", focus: task.focus } })}>{task.state === "open" ? "Close task" : "Reopen task"}</button>
             <button type="button" className="nv-btn" data-kind="secondary" disabled={blocked} onClick={() => void change({ expectedRevision: notebook.revision, change: { kind: "delete_task", taskId: task.id } })}>Remove task</button>
           </div>
         </li>)}
       </ul>
       <p className="oa-muted">{notebook.tasks.length}/12 saved tasks, including closed tasks.</p>
-      <button type="button" className="nv-btn" data-kind="secondary" disabled={blocked || notebook.tasks.length >= 12} onClick={() => setDraft({ base: notebook.revision, change: { kind: "save_task", taskId: crypto.randomUUID(), objective: "", notes: "", state: "open", focus: { kind: "general" } } })}>Add task</button>
+      <button type="button" className="nv-btn" data-kind="secondary" disabled={blocked || notebook.tasks.length >= 12} onClick={e => openEditor({ base: notebook.revision, change: { kind: "save_task", taskId: crypto.randomUUID(), objective: "", notes: "", state: "open", focus: { kind: "general" } } }, e.currentTarget)}>Add task</button>
     </details>
-    {draft && <form className="oa-notebook-editor" aria-label={goalDraft ? "Edit saved goal" : "Edit saved task"} onSubmit={e => { e.preventDefault(); void save(); }}>
+    {draft && <form ref={editorRef} className="oa-notebook-editor" aria-label={goalDraft ? "Edit saved goal" : "Edit saved task"} onSubmit={e => { e.preventDefault(); void save(); }}>
       <h3>{goalDraft ? "Your goal" : "Your task"}</h3>
       <p className="oa-muted">Unsaved edit</p>
       {goalDraft && <>
