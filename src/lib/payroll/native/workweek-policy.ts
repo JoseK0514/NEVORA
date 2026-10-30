@@ -162,3 +162,13 @@ export function resolveNativeWorkweek(employeeId: string, wages: NativeWageProfi
         return fail('WORKWEEK_EFFECTIVE_COVERAGE_REQUIRED');
     return { ...context, policy, policySha256: createHash('sha256').update(stableExportJson({ policy, statutorySource: PR_STATUTORY_WORKWEEK_SOURCE })).digest('hex'), sourceWindow: { startAt: serialize(sourceLeft), endAt: serialize(fullRight) }, coveragePeriod: { startDate: localDate(sourceLeft).toString(), endDate: localDate(fullRight - BigInt(1)).toString() } };
 }
+/** The partial civil day that a recorded workweek boundary leaves after the pay window
+ * (Monday 00:00-00:01 under the statutory Monday 00:01 week, for a Monday-Sunday period).
+ * It is context only: it is never paid in this pay window and later minutes of the week
+ * cannot change earlier classification, but recorded time there still belongs to the
+ * closing workweek. Null when the full weekly context ends on a civil midnight. */
+export function closingContextWindow(resolved: Pick<ResolvedNativeWorkweek, 'payWindow' | 'sourceWindow'>): WorkweekInterval | null {
+    const payRight = ns(resolved.payWindow.endAt), right = ns(resolved.sourceWindow.endAt);
+    const start = midnight(localDate(right - BigInt(1)));
+    return start >= payRight && start < right ? { startAt: serialize(start), endAt: serialize(right) } : null;
+}

@@ -347,8 +347,20 @@ it('captures actual default00:01 and complete zero terminal-date evidence with u
     expect(c.run.nativeCalculation!.employees[0].provenance.boundaryEvidence).toMatchObject({ dailyInterpretation: 'UNRESOLVED', dailyInputDisposition: 'INVARIANT_NO_FIRST_MINUTE_ENTRIES', workweekPolicy: { origin: { kind: 'STATUTORY_DEFAULT' } }, sourceWindow: { startAt: '2026-09-08T04:00:00Z', endAt: '2026-09-28T04:01:00Z' } });
     expect(c.snapshot!.native!.recordedSources![0].contexts).toEqual([{ startAt: '2026-09-08T04:00:00Z', endAt: '2026-09-28T04:01:00Z' }]);
 });
-it('blocks actual missing terminal-date coverage instead of inventing finalized zero', async () => {
+// Changed Oct 30: a missing next-Monday card alone no longer blocks week N (it made every
+// Monday 00:01 payroll wait for next week's card). The block is kept for what matters:
+// recorded time that starts in Monday 00:00-00:01 without its own finalized card.
+it('captures default00:01 week N without a next-Monday card once the empty closing minute has elapsed', async () => {
     await nativeFixture({ workweek: 'DEFAULT', contextPeriod: { startDate: '2026-09-08', endDate: '2026-09-27' } });
+    const c = await nativeCapture();
+    expect(c.run.exceptions).toEqual([]);
+    expect(c.run.status).toBe('REVIEW_REQUIRED');
+    expect(c.run.totals).toMatchObject({ grossMinor: '100000', netMinor: '82085' });
+    expect(c.snapshot!.native!.facts.inputs[0].closingContextEvidence).toMatchObject({ version: 'NATIVE_CLOSING_CONTEXT_V1', startAt: '2026-09-28T04:00:00Z', endAt: '2026-09-28T04:01:00Z', captureFence: c.snapshot!.native!.recordedSources![0].sourceFence });
+    expect(c.snapshot!.native!.recordedSources![0].closingContext).toMatchObject({ startAt: '2026-09-28T04:00:00Z', endAt: '2026-09-28T04:01:00Z' });
+});
+it('blocks actual time starting in the missing terminal minute instead of inventing finalized zero', async () => {
+    await nativeFixture({ workweek: 'DEFAULT', contextPeriod: { startDate: '2026-09-08', endDate: '2026-09-27' }, contextEntries: [{ id: 'native-edge', locationId: 'loc-1', startAt: '2026-09-28T04:00:30Z', endAt: '2026-09-28T05:00:00Z' }] });
     const c = await nativeCapture();
     expect(c.run.status).toBe('BLOCKED');
     expect(c.run.rows).toBeNull();

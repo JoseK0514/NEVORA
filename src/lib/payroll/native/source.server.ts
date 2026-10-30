@@ -2,7 +2,7 @@ import { FEDERAL_EMPLOYEE_CENT_RULE_SOURCE } from './federal-employee-tax';
 import { acceptsNativePrCentProfile, acceptsNativePrCentResult, PR_FINAL_PERIODIC_HALF_UP_GUIDANCE, PR_FINAL_PERIODIC_GUIDANCE_SHA256 } from './pr-income-cent-policy';
 import { usesOwnerPayrollPolicy, OWNER_PAYROLL_POLICY, OWNER_PAYROLL_POLICY_SHA256 } from './provisional-policy';
 import 'server-only';
-import { resolveNativeWorkweek } from './workweek-policy';
+import { closingContextWindow, resolveNativeWorkweek } from './workweek-policy';
 import type { SqlExecutor, SqlStatement } from '../../notifications/types';
 import type { PayrollRun } from '../contracts';
 import type { Source, Snapshot } from '../service';
@@ -69,9 +69,9 @@ export function nativeDatabaseFactsQuery(workspaceId: string, run: PayrollRun, i
 export function nativeSourceRequest(workspaceId: string, run: PayrollRun, employeeId: string, wages: NativePayrollInput['wages'], coverage: DatabaseFacts['coverage']): RecordedSourceRequest {
     if (!wages.length)
         throw new PayrollError('WAGE_PROFILE_REQUIRED', 409);
-    const resolved = resolveNativeWorkweek(employeeId, wages, run.period);
+    const resolved = resolveNativeWorkweek(employeeId, wages, run.period), closingContext = closingContextWindow(resolved);
     // Retain all overlapping observations; capture proves which current finalized authority covers required time.
-    return { workspaceId, employeeId, timeZone: 'America/Puerto_Rico', period: run.period, contexts: [resolved.sourceWindow], coverage: coverage.filter(c => c.employeeId === employeeId && c.startDate <= resolved.coveragePeriod.endDate && c.endDate >= resolved.coveragePeriod.startDate).map(c => ({ startDate: c.startDate, endDate: c.endDate })) };
+    return { workspaceId, employeeId, timeZone: 'America/Puerto_Rico', period: run.period, contexts: [resolved.sourceWindow], ...(closingContext ? { closingContext } : {}), coverage: coverage.filter(c => c.employeeId === employeeId && c.startDate <= resolved.coveragePeriod.endDate && c.endDate >= resolved.coveragePeriod.startDate).map(c => ({ startDate: c.startDate, endDate: c.endDate })) };
 }
 function deductionInputs(configuration: NativeConfigurationRevision | ReturnType<typeof parseConfiguration>, opening: NativeYtd, heads: NativeLedgerEntry[], run: PayrollRun) {
     return configuration.deductions.map(d => {
@@ -171,7 +171,7 @@ export async function captureNativePayroll(seed: {
                 return { id: e.logicalId, locationId: e.locationId, startAt: e.startAt, endAt: e.endAt, sourceKind: e.sourceKind, recordedVersion: e.recordedVersion, adjustmentId: e.adjustmentId, breaks: e.breaks.map(b => ({ id: b.id, typeId: b.classification?.id ?? null, startAt: b.startAt, endAt: b.endAt, recordedVersion: b.recordedVersion, classification: b.classification })) };
             });
             const tax = configuration.tax ? projectEmployerYtdCounters(configuration.tax, opening.ytd, ytd) : null;
-            inputs.push({ schema: 'NEVORA_NATIVE_PAYROLL_INPUT_V1', employeeId: member.employeeId, period: run.period, payday: run.payday, frequency: settings.preferences.schedule.frequency, timeZone: 'America/Puerto_Rico', wages: configuration.wages, tax, ytd, deductions: deductionInputs(configuration, opening.ytd, heads, run), ...(configuration.calculationPolicyReference !== undefined ? { calculationPolicyReference: configuration.calculationPolicyReference } : {}), timecards: capture.coverage.map(c => ({ employeeId: member.employeeId, period: { startDate: c.startDate, endDate: c.endDate }, revision: c.revision, state: 'FINALIZED', sourceHash: c.sourceHash, finalizedSourceHash: c.sourceHash, pendingCorrections: 0, entries, recordedSourceEvidence: { captureFence: capture.sourceFence, operationId: c.operationId, sourceHash: c.sourceHash, currentSourceHash: c.currentSourceHash } })) });
+            inputs.push({ schema: 'NEVORA_NATIVE_PAYROLL_INPUT_V1', employeeId: member.employeeId, period: run.period, payday: run.payday, frequency: settings.preferences.schedule.frequency, timeZone: 'America/Puerto_Rico', wages: configuration.wages, tax, ytd, deductions: deductionInputs(configuration, opening.ytd, heads, run), ...(configuration.calculationPolicyReference !== undefined ? { calculationPolicyReference: configuration.calculationPolicyReference } : {}), ...(capture.closingContext ? { closingContextEvidence: { version: 'NATIVE_CLOSING_CONTEXT_V1' as const, startAt: capture.closingContext.startAt, endAt: capture.closingContext.endAt, observedAt: capture.closingContext.observedAt, captureFence: capture.sourceFence } } : {}), timecards: capture.coverage.map(c => ({ employeeId: member.employeeId, period: { startDate: c.startDate, endDate: c.endDate }, revision: c.revision, state: 'FINALIZED', sourceHash: c.sourceHash, finalizedSourceHash: c.sourceHash, pendingCorrections: 0, entries, recordedSourceEvidence: { captureFence: capture.sourceFence, operationId: c.operationId, sourceHash: c.sourceHash, currentSourceHash: c.currentSourceHash } })) });
         }
         catch (error) {
             // A SQL/transport failure never becomes ready zero, nor is raw data exposed.

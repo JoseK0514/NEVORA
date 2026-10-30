@@ -10,6 +10,10 @@ export type RecordedSourceInterval = { startAt: string; endAt: string };
 export type RecordedSourceRequest = {
   workspaceId: string; employeeId: string; timeZone: string; period: Period;
   contexts: readonly RecordedSourceInterval[]; coverage: readonly Period[];
+  /** Trailing part of contexts after the pay period (the partial closing day of the last
+   * workweek). Without a finalized card it may be proven empty by the live read once it
+   * has fully elapsed; any recorded time starting there still requires its own card. */
+  closingContext?: RecordedSourceInterval;
 };
 export type RecordedSourceBlock = 'invalid_source' | 'source_limit' | 'identity_mismatch' | 'coverage_missing' |
   'not_finalized' | 'unresolved_time' | 'stale_source' | 'inconsistent_lineage';
@@ -51,6 +55,8 @@ export type RecordedSourceCapture = { state: 'blocked'; reason: RecordedSourceBl
   state: 'ready'; workspaceId: string; employeeId: string; timeZone: string; period: Period;
   contexts: RecordedSourceInterval[]; coverage: RecordedSourceCoverage[]; supersededCoverage: RecordedSourceSupersededCoverage[]; entries: RecordedSourceEntry[];
   lineage: RecordedSourceLineage; locationIds: string[]; emptyFinalizedCoverage: Period[]; sourceFence: string;
+  /** Present only when the closing context was evidenced by an elapsed empty live read. */
+  closingContext?: RecordedSourceInterval & { observedAt: string };
 };
 
 // Bounds reject overflow; SQL fetches one additional row rather than truncating silently.
@@ -102,7 +108,12 @@ function parseRequest(v: unknown): RecordedSourceRequest {
   const latest = contexts.reduce((a, b) => ns(a.endAt) > ns(b.endAt) ? a : b).endAt;
   if (ns(latest) - ns(earliest) > BigInt(124) * BigInt(86400) * BigInt(1000000000)) fail('source_limit');
   unique(coverage, p => `${p.startDate}/${p.endDate}`);
-  return { workspaceId, employeeId, timeZone, period: p, contexts, coverage };
+  let closingContext: RecordedSourceInterval | undefined;
+  if (r.closingContext !== undefined) {
+    closingContext = interval(r.closingContext);
+    if (ns(closingContext.endAt) !== ns(latest) || ns(closingContext.startAt) < ns(bounds.endAt)) fail();
+  }
+  return { workspaceId, employeeId, timeZone, period: p, contexts, coverage, ...(closingContext ? { closingContext } : {}) };
 }
 
 // Retain JSON provenance without accepting boxed primitives, cycles, functions, NaN or unbounded depth.
@@ -249,6 +260,15 @@ export function projectRecordedSourceCapture(input: RecordedSourceRequest, row: 
     }
     if (wanted.size) fail('coverage_missing');
     if (historical.length && !coverage.length) fail('not_finalized');
+    // Finalized cards stay the authority wherever they exist. Only an uncovered closing
+    // window may instead rest on this fenced live read, and only once it has elapsed.
+    let closing: RecordedSourceInterval | null = null, required: RecordedSourceInterval[] = [...req.contexts];
+    if (req.closingContext && !req.contexts.every(i => covers(coverage.map(p => periodInstants(p, req.timeZone)), i))) {
+      closing = req.closingContext;
+      const cut = ns(closing.startAt);
+      required = req.contexts.filter(i => ns(i.startAt) < cut).map(i => ns(i.endAt) > cut ? { startAt: i.startAt, endAt: closing!.startAt } : i);
+      if (ns(observedAt) < ns(closing.endAt)) fail('coverage_missing');
+    }
     for (const { card, period: p, action } of historical) {
       const occurredAt = instant(card.occurredAt), revision = integer(card.revision, action === 'REOPEN' ? 3 : 1);
       const operationId = uuid(card.operationId), sourceHash = hash(card.sourceHash, 32), currentSourceHash = hash(card.currentSourceHash, 32);
@@ -256,11 +276,15 @@ export function projectRecordedSourceCapture(input: RecordedSourceRequest, row: 
       const snapshot = source(card.snapshot, observedAt), currentSource = source(card.currentSource, observedAt);
       for (const source of [snapshot, currentSource]) if (source.employeeId !== req.employeeId || source.timeZone !== req.timeZone || !same(p, { startDate: source.startDate, endDate: source.endDate })) fail('identity_mismatch');
       const bounds = periodInstants(p, req.timeZone);
-      const requiredContexts = req.contexts.filter(i => overlaps(i, bounds)).map(i => ({
+      const requiredContexts = required.filter(i => overlaps(i, bounds)).map(i => ({
         startAt: ns(i.startAt) > ns(bounds.startAt) ? i.startAt : bounds.startAt,
         endAt: ns(i.endAt) < ns(bounds.endAt) ? i.endAt : bounds.endAt,
       }));
-      if (!requiredContexts.length) fail('invalid_source');
+      if (!requiredContexts.length) {
+        // Nonfinal custody touching only the uncovered closing window; live time there is checked below.
+        if (closing && req.contexts.some(i => overlaps(i, bounds))) continue;
+        fail('invalid_source');
+      }
       const replacedBy = coverage.map(c => {
         const raw = authority.get(c.operationId)!;
         const approvalOccurredAt = instant(raw.approvalOccurredAt), finalizedAt = instant(raw.occurredAt);
@@ -277,7 +301,7 @@ export function projectRecordedSourceCapture(input: RecordedSourceRequest, row: 
       if (currentCorrections.size !== authoritativeCorrections.length || authoritativeCorrections.some(c => !currentCorrections.has(c.id) || !same(currentCorrections.get(c.id)!, c))) fail('stale_source');
       supersededCoverage.push({ ...p, operationId, revision, action, sourceHash, currentSourceHash, occurredAt, snapshot, currentSource, requiredContexts, replacedBy });
     }
-    if (!req.contexts.every(i => covers(coverage.map(p => periodInstants(p, req.timeZone)), i))) fail('coverage_missing');
+    if (!required.every(i => covers(coverage.map(p => periodInstants(p, req.timeZone)), i))) fail('coverage_missing');
     const lineage = parseLineage(c.lineage, req), chain = validateLineage(lineage, req);
     for (const correction of [...sourceCorrections.values(), ...supersededCoverage.flatMap(c => c.currentSource.corrections)]) {
       const r = chain.requests.get(correction.id), events = lineage.events.filter(e => e.requestId === correction.id), last = events.at(-1);
@@ -292,6 +316,7 @@ export function projectRecordedSourceCapture(input: RecordedSourceRequest, row: 
       const s = source({ ...req.period, employeeId: req.employeeId, employeeName: 'Recorded source', timeZone: req.timeZone,
         pendingCorrections: 0, entries: [r], corrections: [] }, observedAt), entry = s.entries[0];
       if (!req.contexts.some(i => overlaps(i, entry as RecordedSourceInterval))) fail('invalid_source');
+      if (closing && ns(entry.startAt) >= ns(closing.startAt)) fail('coverage_missing');
       const breaks = array(r.breaks, 1000).map(raw => {
         const b = record(raw), parsed = entry.breaks.find(x => x.id === b.id); if (!parsed) fail();
         let classification: BreakTypeSnapshot | null = null;
@@ -353,7 +378,9 @@ export function projectRecordedSourceCapture(input: RecordedSourceRequest, row: 
     const captured = { workspaceId: req.workspaceId, employeeId: req.employeeId, timeZone: req.timeZone, period: req.period,
       contexts: [...req.contexts], coverage, supersededCoverage, entries, lineage, locationIds: [...locationIds].sort(),
       emptyFinalizedCoverage: coverage.filter(c => c.snapshot.entries.length === 0).map(c => ({ startDate: c.startDate, endDate: c.endDate })) };
-    return { state: 'ready', ...captured, sourceFence: createHash('sha256').update(stableExportJson(captured)).digest('hex') };
+    // The fence records that closing evidence was used; observation time stays outside it, as for every capture.
+    const sourceFence = createHash('sha256').update(stableExportJson(closing ? { ...captured, closingContext: { ...closing } } : captured)).digest('hex');
+    return { state: 'ready', ...captured, ...(closing ? { closingContext: { ...closing, observedAt } } : {}), sourceFence };
   } catch (error) { return { state: 'blocked', reason: error instanceof Block ? error.reason : 'invalid_source' }; }
 }
 

@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { resolveNativeWorkweek, type NativeBoundaryEvidence } from './workweek-policy';
+import { closingContextWindow, resolveNativeWorkweek, type NativeBoundaryEvidence } from './workweek-policy';
 import { internalWorkweekCuts, weekContainingInstant } from './workweek-boundaries';
 import { validateNativeMinimumWage } from "./minimum-wage";
 import { Temporal } from "@js-temporal/polyfill";
@@ -14,6 +14,28 @@ export const midnight = (date: string) => Temporal.PlainDate.from(date).toZonedD
 export const dateAt = (instant: bigint) => Temporal.Instant.fromEpochNanoseconds(instant).toZonedDateTimeISO(ZONE).toPlainDate().toString();
 export const dateAdd = (date: string, days: number) => Temporal.PlainDate.from(date).add({ days }).toString();
 export function fail(code: string, reference: string | null = null): never { throw Object.assign(Error(code), { reference }); }
+/** Validate optional closing-window evidence against this input's own recorded week.
+ * Any mismatch blocks rather than falling back to a weaker completeness proof. */
+function closingEvidence(input: NativePayrollInput, resolved: ReturnType<typeof resolveNativeWorkweek>): { start: bigint; end: bigint } | null {
+    const evidence = input.closingContextEvidence;
+    if (evidence === undefined)
+        return null;
+    const window = closingContextWindow(resolved);
+    const keys = ['version', 'startAt', 'endAt', 'observedAt', 'captureFence'];
+    if (!window || !evidence || typeof evidence !== 'object' || Object.keys(evidence).length !== keys.length || !keys.every(key => typeof (evidence as Record<string, unknown>)[key] === 'string') ||
+        evidence.version !== 'NATIVE_CLOSING_CONTEXT_V1' || !/^[a-f0-9]{64}$/.test(evidence.captureFence))
+        fail('CLOSING_CONTEXT_EVIDENCE_INVALID');
+    let start: bigint, finish: bigint, observed: bigint;
+    try {
+        [start, finish, observed] = [ns(evidence.startAt), ns(evidence.endAt), ns(evidence.observedAt)];
+    }
+    catch {
+        return fail('CLOSING_CONTEXT_EVIDENCE_INVALID');
+    }
+    if (start !== ns(window.startAt) || finish !== ns(window.endAt) || observed < finish)
+        fail('CLOSING_CONTEXT_EVIDENCE_INVALID');
+    return { start, end: finish };
+}
 export type WorkedPiece = {
     start: bigint;
     end: bigint;
@@ -72,9 +94,17 @@ export function classifyRecordedTime(input: NativePayrollInput) {
     }
     if (entries.size > 2048 || [...entries.values()].reduce((n, e) => n + e.breaks.length, 0) > 4096)
         fail('NATIVE_SOURCE_LIMIT');
+    const closing = closingEvidence(input, resolved);
+    let uncoveredClosing: { start: bigint; end: bigint; date: string } | null = null;
     for (let date = contextStart; date < end; date = dateAdd(date, 1)) {
-        if (!timecards.some(card => card.period.startDate <= date && card.period.endDate >= date))
-            fail("COMPLETE_CONTEXT_REQUIRED", date);
+        if (timecards.some(card => card.period.startDate <= date && card.period.endDate >= date))
+            continue;
+        // Only the partial closing day may rest on capture evidence instead of its own card.
+        if (closing && date === dateAt(closing.start)) {
+            uncoveredClosing = { ...closing, date };
+            continue;
+        }
+        fail("COMPLETE_CONTEXT_REQUIRED", date);
     }
     const dailyCuts: bigint[] = [], ambiguityMinutes: {
         start: bigint;
@@ -94,6 +124,10 @@ export function classifyRecordedTime(input: NativePayrollInput) {
     for (const e of sorted) {
         if (!e.endAt)
             fail("OPEN_RECORDED_TIME", e.id);
+        // Time continuing from a finalized day is evidenced by that day's card; time that
+        // starts in the uncovered closing window needs its own finalized card.
+        if (uncoveredClosing && ns(e.startAt) >= uncoveredClosing.start && ns(e.startAt) < uncoveredClosing.end)
+            fail("COMPLETE_CONTEXT_REQUIRED", uncoveredClosing.date);
         if ((e.sourceKind === "RECORDED" && (!Number.isSafeInteger(e.recordedVersion) || e.recordedVersion === null || e.recordedVersion < 0)) || (e.sourceKind === "ADJUSTMENT" && !e.adjustmentId) || !["RECORDED", "ADJUSTMENT"].includes(e.sourceKind))
             fail("RECORDED_PROVENANCE_REQUIRED", e.id);
         const start = ns(e.startAt), finish = ns(e.endAt);

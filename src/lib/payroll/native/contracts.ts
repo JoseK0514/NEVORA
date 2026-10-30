@@ -38,6 +38,15 @@ export type NativeTimecard = {
     entries: NativeRecordedEntry[];
     recordedSourceEvidence?: {captureFence:string;operationId:string;sourceHash:string;currentSourceHash:string};
 };
+/** The capture observed, after the closing window had fully elapsed, that no recorded
+ * time, open entry or unresolved correction starts there beyond finalized cards. */
+export type NativeClosingContextEvidence = {
+    version: 'NATIVE_CLOSING_CONTEXT_V1';
+    startAt: string;
+    endAt: string;
+    observedAt: string;
+    captureFence: string;
+};
 export type NativeWageProfile = {
     id: string;
     revision: number;
@@ -139,6 +148,9 @@ export type NativePayrollInput = {
     frequency: NativeFrequency;
     timeZone: "America/Puerto_Rico";
     timecards: NativeTimecard[];
+    /** Server capture proof for the uncovered partial closing day of the last workweek
+     * (closingContextWindow). Absent preserves the requirement for a covering card. */
+    closingContextEvidence?: NativeClosingContextEvidence;
     wages: NativeWageProfile[];
     tax: NativeTaxProfile | null;
     ytd: NativeYtd | null;
