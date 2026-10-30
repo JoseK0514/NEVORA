@@ -13,7 +13,7 @@ import { fica2026, prIncomeWithholding, sinotContribution, PR_2026_RULE_SOURCES 
 import { authorizedAmounts, employerAmounts, validateEmployerCoverage, validateEmployerYtdCounters } from "./obligations";
 import { allocatePolicyEarnings, collectPolicyAmount, recordPolicyAmount, usesOwnerPayrollPolicy, OWNER_PAYROLL_POLICY, OWNER_PAYROLL_POLICY_SHA256, type NativePolicyOperation } from './provisional-policy';
 const hash = (value: unknown) => createHash("sha256").update(stableExportJson(value)).digest("hex");
-export const NATIVE_CALCULATOR_VERSION = "NEVORA_NATIVE_WAGE_V10_OWNER_PROVISIONAL_POLICIES";
+export const NATIVE_CALCULATOR_VERSION = "NEVORA_NATIVE_WAGE_V11_SHIFT_START_DAY";
 export const NATIVE_RULES_SHA256 = hash({ calculatorVersion: NATIVE_CALCULATOR_VERSION, sources: PR_2026_RULE_SOURCES, federalEmployeeCents: FEDERAL_EMPLOYEE_CENT_RULE_SOURCE, prIncomeCents: PR_FINAL_PERIODIC_HALF_UP_GUIDANCE, ownerPolicy: OWNER_PAYROLL_POLICY, boundarySources: NATIVE_BOUNDARY_RULE_SOURCES, minimumWage: ORDINARY_PR_MINIMUM_2026 });
 /** Calculate one employee from finalized recorded time, effective wage/tax profiles
  * and attested YTD within the supported PR/2026 scope. Amounts are USD cent strings;
@@ -46,9 +46,8 @@ export function calculateNativePayroll(input: NativePayrollInput): NativePayroll
             fail("RULESET_NOT_APPLICABLE");
         if (tax.effectiveFrom > input.payday || (tax.effectiveTo !== null && tax.effectiveTo <= input.payday))
             fail("TAX_PROFILE_REQUIRED");
+        // Shift start day attribution: recorded time across or at midnight never blocks payroll.
         const classified = classifyRecordedTime(input);
-        if (!ownerPolicy && classified.boundaryEvidence.dailyInputDisposition !== "INVARIANT_NO_FIRST_MINUTE_ENTRIES")
-            fail("DAILY_BOUNDARY_SENSITIVE");
         const exactnessOperations: NativeExactnessOperation[] = [];
         const exactOnly = !ownerPolicy && (tax.prCentRounding === "UNVERIFIED" || input.wages.some(w => w.wageCentRounding === "UNVERIFIED"));
         const groups = new Map<string, {

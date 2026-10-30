@@ -3,6 +3,7 @@ import { Temporal } from '@js-temporal/polyfill';
 import { stableExportJson } from '../../payroll-export/json';
 import { PR_STATUTORY_WORKWEEK_SOURCE, weekContainingInstant, workweeksForPayPeriod } from './workweek-boundaries';
 import type { NativeWageProfile } from './contracts';
+import { SHIFT_START_DAY_EVIDENCE, SUPERSEDED_OWNER_CIVIL_MIDNIGHT_EVIDENCE, SUPERSEDED_UNRESOLVED_INVARIANT_EVIDENCE } from './daily-attribution';
 import type { RecurringWorkweekBoundary, WorkweekPayContext, WorkweekInterval, WorkweekPayPeriod } from './workweek-boundaries';
 export type NativeWorkweekPolicy = {
     version: 'PR_WORKWEEK_POLICY_V1';
@@ -34,25 +35,25 @@ export type ResolvedNativeWorkweek = WorkweekPayContext & {
     sourceWindow: WorkweekInterval;
     coveragePeriod: WorkweekPayPeriod;
 };
+type DailyEvidence<T> = { -readonly [K in keyof T]: T[K] };
+/** Daily attribution recorded with each result. New calculations always carry the shift
+ * start day triple; the superseded triples exist only in results saved before 2026-10-30. */
+export type NativeDailyEvidence = DailyEvidence<typeof SHIFT_START_DAY_EVIDENCE> | DailyEvidence<typeof SUPERSEDED_OWNER_CIVIL_MIDNIGHT_EVIDENCE> | DailyEvidence<typeof SUPERSEDED_UNRESOLVED_INVARIANT_EVIDENCE>;
 export type NativeBoundaryEvidence = {
     version: 'NATIVE_BOUNDARY_EVIDENCE_V1';
     workweekPolicy: NativeWorkweekPolicy;
     workweekPolicySha256: string;
     sourceWindow: WorkweekInterval;
     fullWeekWindow: WorkweekInterval;
-    dailyInterpretation: 'UNRESOLVED' | 'OWNER_AUTHORIZED_CIVIL_MIDNIGHT_24H';
-    dailyInputDisposition: 'INVARIANT_NO_FIRST_MINUTE_ENTRIES' | 'BOUNDARY_SENSITIVE' | 'OWNER_POLICY_APPLIED_ALL_INSTANTS';
-    dailyModels: readonly [ 'CIVIL_MIDNIGHT_24H' ] | readonly [
-        'CIVIL_MIDNIGHT_24H',
-        'CIVIL_00_01_24H'
-    ];
     sourceSha256: string;
-};
-/** Pinned primary-source facts and explicit unresolved precision, not an accepted daily election. */
+} & NativeDailyEvidence;
+/** Pinned primary-source facts. Statutory daily precision stays unresolved in the sources;
+ * the owner's shift start day election is recorded separately and applies to new results. */
 export const NATIVE_BOUNDARY_RULE_SOURCES = Object.freeze({
     workweek: { ...PR_STATUTORY_WORKWEEK_SOURCE, sha256: 'cd1d9a0600e42a03768b01d23be2379aa1dd5611cda240e25409e2b5e6ebb896' },
     regulation: { id: 'DTRH_9017_2018', article: 'VI', pdfPage: 8, sha256: '9cae76ec16e25c9de3f613e0d10c9845d9f9dfc3f46146def69a565d2a007b43' },
     dailyPrecision: { interpretation: 'UNRESOLVED', guide2019: { pdfPages: [59, 73], sha256: 'dff56a2e4467a756c76e5cc4a64533af396e310232de6e08c874b7ad079aa60d' }, consultaC15824: { date: '2017-06-28', pdfPage: 4, sha256: 'ec776fc15e7510a965b35a69f79a8840786f5b322fbfadff622626ca228915f4' }, models: ['CIVIL_MIDNIGHT_24H', 'CIVIL_00_01_24H'] },
+    dailyElection: { interpretation: SHIFT_START_DAY_EVIDENCE.dailyInterpretation, models: SHIFT_START_DAY_EVIDENCE.dailyModels, approved: '2026-10-25', confirmed: '2026-10-30', attribution: 'Whole recorded entry on the America/Puerto_Rico civil day it starts', weekly: 'Workweek, weekly overtime, FLSA overtime and pay-period cuts by instant' },
 });
 const ZONE = 'America/Puerto_Rico';
 const MINUTE = BigInt(60000000000);

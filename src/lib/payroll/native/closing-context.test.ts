@@ -58,7 +58,7 @@ describe('Monday 00:01 closing context (calculation)', () => {
         const i = weekN(); i.closingContextEvidence = evidence();
         const r = ready(i);
         expect(r.row.grossMinor).toBe('9600');
-        expect(r.provenance.boundaryEvidence).toMatchObject({ dailyInputDisposition: 'INVARIANT_NO_FIRST_MINUTE_ENTRIES', sourceWindow: { endAt: CLOSING.endAt } });
+        expect(r.provenance.boundaryEvidence).toMatchObject({ dailyInputDisposition: 'SHIFT_START_DAY_APPLIED_ALL_ENTRIES', sourceWindow: { endAt: CLOSING.endAt } });
         // The same week N with a finalized Monday card yields identical money: the evidence replaces only the missing minute.
         const withCard = weekN(); withCard.timecards[0].period.endDate = '2026-10-12';
         expect(ready(withCard).row).toEqual(r.row);
@@ -90,7 +90,8 @@ describe('Monday 00:01 closing context (calculation)', () => {
         const n = weekN(true); n.closingContextEvidence = evidence(); n.timecards[0].entries = [crossing];
         const c = classifyRecordedTime(n);
         const tail = c.pieces.filter(p => p.start >= c.payRight);
-        expect(tail.map(p => [p.week, p.date, (p.end - p.start).toString()])).toEqual([[WEEK_N_START, '2026-10-12', '30000000000']]);
+        // The tail keeps week N by instant but counts on Sunday, the day the entry started.
+        expect(tail.map(p => [p.week, p.date, (p.end - p.start).toString()])).toEqual([[WEEK_N_START, '2026-10-11', '30000000000']]);
         expect(paidNanoseconds(n)).toBe(HOUR);
         expect(ready(n).row.grossMinor).toBe('1200');
         const next = weekN(true); next.period = { startDate: '2026-10-12', endDate: '2026-10-18' }; next.payday = '2026-10-23';
@@ -103,24 +104,25 @@ describe('Monday 00:01 closing context (calculation)', () => {
         const shift = entry('S', '2026-10-11T22:00:00-04:00', '2026-10-12T06:00:00-04:00');
         const n = weekN(true); n.closingContextEvidence = evidence(); n.timecards[0].entries = [shift];
         const r = ready(n);
-        expect(r.provenance.boundaryEvidence.dailyInterpretation).toBe('OWNER_AUTHORIZED_CIVIL_MIDNIGHT_24H');
+        expect(r.provenance.boundaryEvidence.dailyInterpretation).toBe('OWNER_AUTHORIZED_SHIFT_START_DAY');
         const next = weekN(true); next.period = { startDate: '2026-10-12', endDate: '2026-10-18' }; next.payday = '2026-10-23';
         next.timecards[0].period = { startDate: '2026-09-22', endDate: '2026-10-19' }; next.timecards[0].entries = [shift];
         // Every one of the eight hours is paid exactly once across the two periods.
         expect(paidNanoseconds(n) + paidNanoseconds(next)).toBe(HOUR * BigInt(8));
         expect(BigInt(r.row.grossMinor) + BigInt(ready(next).row.grossMinor)).toBe(BigInt(9600));
     });
-    // KNOWN GAP, not fixed here: Jose's rule 1 (Oct 25) attributes an overnight shift wholly to the
-    // workday and workweek it starts in. This engine still splits at civil midnight and at the
-    // recorded weekly boundary (pinned by G04 in workweek-consumer.test.ts). Changing that is a
-    // calculation-policy change with cut-over risk and is left for Jose and labor counsel.
-    // it.fails passes only while the gap exists, so implementing rule 1 will flag this test.
-    it.fails('rule 1 gap: attributes a Sunday-night overnight shift wholly to Sunday and pays it all in week N', () => {
-        const n = weekN(true); n.closingContextEvidence = evidence();
-        n.timecards[0].entries = [entry('S1', '2026-10-11T22:00:00-04:00', '2026-10-12T06:00:00-04:00')];
+    // Jose's rule 1 (approved Oct 25, confirmed Oct 30 for Release 1): the daily part is
+    // implemented. By deliberate scoping the workweek and the pay period still split by instant.
+    it('attributes a Sunday-night overnight shift wholly to Sunday while week and pay period split by instant', () => {
+        const shift = entry('S1', '2026-10-11T22:00:00-04:00', '2026-10-12T06:00:00-04:00');
+        const n = weekN(true); n.closingContextEvidence = evidence(); n.timecards[0].entries = [shift];
         const c = classifyRecordedTime(n);
         expect(c.pieces.every(p => p.date === '2026-10-11' && p.week === WEEK_N_START)).toBe(true);
-        expect(paidNanoseconds(n)).toBe(HOUR * BigInt(8));
+        expect(paidNanoseconds(n)).toBe(HOUR * BigInt(2));
+        const next = weekN(true); next.period = { startDate: '2026-10-12', endDate: '2026-10-18' }; next.payday = '2026-10-23';
+        next.timecards[0].period = { startDate: '2026-09-22', endDate: '2026-10-19' }; next.timecards[0].entries = [shift];
+        const later = classifyRecordedTime(next).pieces.filter(p => p.start >= ns('2026-10-12T04:00:00Z'));
+        expect(later.map(p => [p.date, p.week, (p.end - p.start).toString()])).toEqual([['2026-10-11', WEEK_N_START, '60000000000'], ['2026-10-11', '2026-10-12T04:01:00Z', (HOUR * BigInt(6) - BigInt(60000000000)).toString()]]);
     });
 });
 

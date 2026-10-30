@@ -43,7 +43,7 @@ export function payrollExceptionMessage(exception: string) {
     WORKWEEK_PROFILE_CONFLICT: 'Ask the Owner to resolve conflicting legacy workweek coordinates and documented policy.',
     WORKWEEK_POLICY_TRANSITION_UNSUPPORTED: 'This recorded context spans different workweek policies. Ask your payroll administrator to review the unsupported transition.',
     WORKWEEK_EFFECTIVE_COVERAGE_REQUIRED: 'Ask the Owner to verify workweek evidence covering the entire recorded context, including prior and terminal days.',
-    DAILY_BOUNDARY_SENSITIVE: 'Recorded time intersects 00:00–00:01. Daily precision is unresolved; payroll needs rule review. Preserve the recorded entries.',
+    DAILY_BOUNDARY_SENSITIVE: 'An older rule held this draft because recorded time touched midnight. Shifts now count on the day they start. Recalculate this draft.',
     EMPLOYER_YTD_BASE_CONFLICT: 'Ask the Owner to reconcile the employer opening wage basis with the same-code documented year-to-date balance.',
     ATTESTED_YTD_REQUIRED: 'Ask the Owner to verify and attest the opening year-to-date balances.', ROUNDING_POLICY_ACCEPTANCE_REQUIRED: 'The payroll rounding rules need verification before approval.',
     RECORDED_SOURCE_COVERAGE_MISSING: 'Review and finalize the employee timecards, including confirmed zero-hour periods, before recalculating.',

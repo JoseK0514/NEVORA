@@ -35,7 +35,11 @@ describe('real provisional producer to payroll client/review consumers', () => {
     const html = renderToStaticMarkup(<NativeReview result={employee} />);
     expect(html).toContain(policy.id); expect(html.toLowerCase()).toContain('provisional');
     expect(html).not.toContain('no entries intersecting'); expect(html).not.toContain('invariant under the two retained daily models');
-    const legacy = renderToStaticMarkup(<NativeReview result={prepared(false).employee} />);
+    expect(html).toContain('counts on the day it starts'); expect(html).toContain('OWNER_AUTHORIZED_SHIFT_START_DAY');
+    const current = renderToStaticMarkup(<NativeReview result={prepared(false).employee} />);
+    expect(current).toContain('counts on the day it starts'); expect(current).not.toContain(policy.id);
+    // Only a result saved before the shift start day rule keeps the superseded explanation.
+    const legacy = renderToStaticMarkup(<NativeReview result={approvedHistory.run.nativeCalculation.employees[0] as unknown as typeof employee} />);
     expect(legacy).toContain('no entries intersecting'); expect(legacy).toContain('two retained daily models'); expect(legacy).not.toContain(policy.id);
   });
   it.each(['missing policy', 'unknown id', 'false kind', 'broken hash', 'conflicting daily assessment', 'missing boundary', 'zero denominator', 'invalid operation cash', 'missing operations'] as const)('rejects malformed/coherence-breaking evidence:%s', malformed => {

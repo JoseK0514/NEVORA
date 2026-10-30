@@ -7,6 +7,7 @@ import { stableExportJson } from "../../payroll-export/json";
 import type { NativePayrollInput, NativeRecordedEntry, NativeWageProfile } from "./contracts";
 import { hourlyRate, type Rational } from "./money";
 import { usesOwnerPayrollPolicy } from './provisional-policy';
+import { SHIFT_START_DAY_EVIDENCE } from './daily-attribution';
 export const HOUR = BigInt(3600000000000), DAY = HOUR * BigInt(24);
 const ZONE = "America/Puerto_Rico";
 export const ns = (s: string) => Temporal.Instant.from(s).epochNanoseconds;
@@ -48,10 +49,14 @@ export type WorkedPiece = {
     premiumReason: "DAILY" | "REST_DAY" | "WEEKLY" | null;
     federalOvertime: boolean;
 };
-/** Validate finalized provenance and split effective work at break, wage, civil-day,
- * pay-period and verified workweek boundaries. Returned starts/ends and unpaid time
- * are bigint nanoseconds; pieces include surrounding context for daily/rest/weekly
- * classification, so consumers must select only pieces inside payLeft/payRight. */
+/** Validate finalized provenance and split effective work at break, wage, pay-period and
+ * verified workweek boundaries. Each recorded entry belongs wholly to the civil day it
+ * starts on (piece.date), so daily overtime and consecutive-day rest use attributed days
+ * while weekly/FLSA overtime and pay-period selection stay on actual instants. Returned
+ * starts/ends and unpaid time are bigint nanoseconds; pieces include surrounding context
+ * for daily/rest/weekly classification, so consumers must select only pieces inside
+ * payLeft/payRight. Classification only looks backwards in time, so a piece paid in one
+ * run is classified identically by the adjacent run that sees the same complete context. */
 export function classifyRecordedTime(input: NativePayrollInput) {
     const ownerPolicy = usesOwnerPayrollPolicy(input);
     const { period, wages, timecards } = input;
@@ -76,7 +81,6 @@ export function classifyRecordedTime(input: NativePayrollInput) {
     const left = ns(resolved.sourceWindow.startAt), right = ns(resolved.sourceWindow.endAt), payLeft = ns(resolved.payWindow.startAt), payRight = ns(resolved.payWindow.endAt);
     if (timecards.length > 64)
         fail('NATIVE_SOURCE_LIMIT');
-    let boundarySensitive = false;
     const entries = new Map<string, NativeRecordedEntry>();
     for (const card of timecards) {
         if (card.employeeId !== input.employeeId || card.state !== "FINALIZED" || card.revision < 1)
@@ -106,17 +110,6 @@ export function classifyRecordedTime(input: NativePayrollInput) {
         }
         fail("COMPLETE_CONTEXT_REQUIRED", date);
     }
-    const dailyCuts: bigint[] = [], ambiguityMinutes: {
-        start: bigint;
-        end: bigint;
-    }[] = [];
-    for (let date = contextStart; date <= end; date = dateAdd(date, 1)) {
-        const point = midnight(date);
-        dailyCuts.push(point);
-        const minuteLeft = point > left ? point : left, minuteRight = point + BigInt(60000000000) < right ? point + BigInt(60000000000) : right;
-        if (minuteRight > minuteLeft)
-            ambiguityMinutes.push({ start: minuteLeft, end: minuteRight });
-    }
     const weeklyCuts = internalWorkweekCuts(resolved.policy.boundary, resolved.sourceWindow).map(ns);
     const rawPieces: Omit<WorkedPiece, "overtime" | "premiumReason" | "federalOvertime">[] = [];
     let previousEnd: bigint | null = null, unpaid = BigInt(0);
@@ -134,9 +127,8 @@ export function classifyRecordedTime(input: NativePayrollInput) {
         if (finish <= start || (previousEnd !== null && start < previousEnd))
             fail("OVERLAPPING_RECORDED_TIME", e.id);
         previousEnd = finish;
-        // Conservative proof examines whole effective entries before any break subtraction.
-        if (ambiguityMinutes.some(minute => start < minute.end && finish > minute.start))
-            boundarySensitive = true;
+        // Shift start day: the whole entry, including any time after civil midnight, is one workday.
+        const workday = dateAt(start);
         let lastBreak = start;
         for (const b of [...e.breaks].sort((a, b) => Temporal.Instant.compare(a.startAt, b.startAt))) {
             if (!b.endAt)
@@ -148,9 +140,6 @@ export function classifyRecordedTime(input: NativePayrollInput) {
         const cut = new Set<bigint>([start < left ? left : start, finish > right ? right : finish]);
         if (finish <= left || start >= right)
             continue;
-        for (const point of dailyCuts)
-            if (point > start && point < finish)
-                cut.add(point);
         for (const boundary of [payLeft, payRight, ...weeklyCuts])
             if (boundary > start && boundary < finish && boundary > left && boundary < right)
                 cut.add(boundary);
@@ -192,8 +181,10 @@ export function classifyRecordedTime(input: NativePayrollInput) {
                 if (treatment[0].treatment !== "PAID_REST" || duration > HOUR / BigInt(3))
                     fail("UNSUPPORTED_PAID_BREAK_BASIS", activeBreak.id);
             }
-            const date = dateAt(a);
-            rawPieces.push({ start: a, end: b, date, week: weekContainingInstant(resolved.policy.boundary, Temporal.Instant.fromEpochNanoseconds(a).toString()).startAt, locationId: e.locationId, wage, rate: hourlyRate(wage.hourlyRateMinor) });
+            // A piece of an entry that started before the context cannot be classified without that whole day.
+            if (workday < contextStart && b > firstWeek)
+                fail("COMPLETE_CONTEXT_REQUIRED", workday);
+            rawPieces.push({ start: a, end: b, date: workday, week: weekContainingInstant(resolved.policy.boundary, Temporal.Instant.fromEpochNanoseconds(a).toString()).startAt, locationId: e.locationId, wage, rate: hourlyRate(wage.hourlyRateMinor) });
         }
     }
     const pieces: WorkedPiece[] = [];
@@ -233,6 +224,6 @@ export function classifyRecordedTime(input: NativePayrollInput) {
             }
         }
     }
-    const boundaryEvidence: NativeBoundaryEvidence = { version: 'NATIVE_BOUNDARY_EVIDENCE_V1', workweekPolicy: resolved.policy, workweekPolicySha256: resolved.policySha256, sourceWindow: resolved.sourceWindow, fullWeekWindow: resolved.fullWeekWindow, dailyInterpretation: ownerPolicy ? 'OWNER_AUTHORIZED_CIVIL_MIDNIGHT_24H' : 'UNRESOLVED', dailyInputDisposition: ownerPolicy ? 'OWNER_POLICY_APPLIED_ALL_INSTANTS' : boundarySensitive ? 'BOUNDARY_SENSITIVE' : 'INVARIANT_NO_FIRST_MINUTE_ENTRIES', dailyModels: ownerPolicy ? ['CIVIL_MIDNIGHT_24H'] : ['CIVIL_MIDNIGHT_24H', 'CIVIL_00_01_24H'], sourceSha256: createHash('sha256').update(stableExportJson({ employeeId: input.employeeId, sourceWindow: resolved.sourceWindow, timecards })).digest('hex') };
+    const boundaryEvidence: NativeBoundaryEvidence = { version: 'NATIVE_BOUNDARY_EVIDENCE_V1', workweekPolicy: resolved.policy, workweekPolicySha256: resolved.policySha256, sourceWindow: resolved.sourceWindow, fullWeekWindow: resolved.fullWeekWindow, dailyInterpretation: SHIFT_START_DAY_EVIDENCE.dailyInterpretation, dailyInputDisposition: SHIFT_START_DAY_EVIDENCE.dailyInputDisposition, dailyModels: [...SHIFT_START_DAY_EVIDENCE.dailyModels] as const, sourceSha256: createHash('sha256').update(stableExportJson({ employeeId: input.employeeId, sourceWindow: resolved.sourceWindow, timecards })).digest('hex') };
     return { pieces, unpaidBreakNanoseconds: unpaid, payLeft, payRight, boundaryEvidence };
 }

@@ -339,12 +339,12 @@ it('retains the actual consistent opening employer counter and freezes the asses
     expect(approved.snapshot!.native!.facts.inputs[0].ytd!.employerWagesMinor.FUTA).toBe('0');
     expect(await f.q("SELECT payload#>>'{result,breakdown,ytdAfter,employerWagesMinor,FUTA}' AS wages FROM native_payroll_ledger")).toEqual([{ wages: '100000' }]);
 });
-it('captures actual default00:01 and complete zero terminal-date evidence with unresolved/invariant provenance', async () => {
+it('captures actual default00:01 and complete zero terminal-date evidence with shift start day provenance', async () => {
     await nativeFixture({ workweek: 'DEFAULT' });
     const c = await nativeCapture();
     expect(c.run.status).toBe('REVIEW_REQUIRED');
     expect(c.run.totals).toMatchObject({ grossMinor: '100000', netMinor: '82085' });
-    expect(c.run.nativeCalculation!.employees[0].provenance.boundaryEvidence).toMatchObject({ dailyInterpretation: 'UNRESOLVED', dailyInputDisposition: 'INVARIANT_NO_FIRST_MINUTE_ENTRIES', workweekPolicy: { origin: { kind: 'STATUTORY_DEFAULT' } }, sourceWindow: { startAt: '2026-09-08T04:00:00Z', endAt: '2026-09-28T04:01:00Z' } });
+    expect(c.run.nativeCalculation!.employees[0].provenance.boundaryEvidence).toMatchObject({ dailyInterpretation: 'OWNER_AUTHORIZED_SHIFT_START_DAY', dailyInputDisposition: 'SHIFT_START_DAY_APPLIED_ALL_ENTRIES', dailyModels: ['SHIFT_START_DAY'], workweekPolicy: { origin: { kind: 'STATUTORY_DEFAULT' } }, sourceWindow: { startAt: '2026-09-08T04:00:00Z', endAt: '2026-09-28T04:01:00Z' } });
     expect(c.snapshot!.native!.recordedSources![0].contexts).toEqual([{ startAt: '2026-09-08T04:00:00Z', endAt: '2026-09-28T04:01:00Z' }]);
 });
 // Changed Oct 30: a missing next-Monday card alone no longer blocks week N (it made every
@@ -375,13 +375,16 @@ it('saves actual unknown workweek facts without normalizing them into a company 
     expect(c.run.totals).toBeNull();
     expect(c.run.exceptions).toContain('WORKWEEK_EVIDENCE_REQUIRED:c34-a');
 });
-it('blocks an actual same-employee first-minute entry at another location in unpaid rest context', async () => {
+// Changed Oct 30: shift start day attribution. Recorded time in 00:00-00:01 counts on the day
+// it starts and no longer blocks payroll (formerly DAILY_BOUNDARY_SENSITIVE).
+it('calculates an actual same-employee first-minute entry at another location in unpaid rest context without blocking', async () => {
     await nativeFixture({ workweek: 'DEFAULT', contextEntries: [{ id: 'daily-context-l2', locationId: 'loc-2', startAt: '2026-09-09T04:00:30Z', endAt: '2026-09-09T04:00:31Z' }] });
     const c = await nativeCapture();
-    expect(c.run.status).toBe('BLOCKED');
-    expect(c.run.rows).toBeNull();
-    expect(c.run.totals).toBeNull();
-    expect(c.run.exceptions).toContain('DAILY_BOUNDARY_SENSITIVE:c34-a');
+    expect(c.run.exceptions).toEqual([]);
+    expect(c.run.status).toBe('REVIEW_REQUIRED');
+    expect(c.run.totals).toMatchObject({ grossMinor: '100000', netMinor: '82085' });
+    expect(c.run.coverage).toEqual({ complete: true, locationIds: ['loc-1', 'loc-2'] });
+    expect(c.run.nativeCalculation!.employees[0].provenance.boundaryEvidence.dailyInterpretation).toBe('OWNER_AUTHORIZED_SHIFT_START_DAY');
     expect(await f.q('SELECT count(*)::int n FROM native_payroll_ledger')).toEqual([{ n: 0 }]);
 });
 it('retains actual lookback location disclosure and denies a Manager limited to payable location only', async () => {

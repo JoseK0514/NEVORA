@@ -18,11 +18,32 @@ export const OWNER_PAYROLL_POLICY = Object.freeze({
   sinot: 'Cap taxable wages at900000 before exact rates; HALF_UP combined60bp and employee0..30bp; employer receives combined cash minus employee cash',
   employerAssessments: 'Program-specific attested rate and wage basis/cap; FUTA/PR_UI700000 annual base; per-payment HALF_UP accrual; no inferred credit/classification/agency return',
   deductions: 'Separately authorized exact percentage/fixed amount; clamp to nonnegative remaining signed cap; HALF_UP once; retain employer-match and negative-net guards',
-  daily: 'Civil midnight half-open24h days; seventh and later consecutive worked civil days premium until full civil day off; separate evidenced168h weekly boundary',
+  daily: 'Each recorded entry counts wholly on the America/Puerto_Rico civil day it starts; daily overtime beyond8h per attributed day, each instant once; seventh and later consecutive attributed workdays premium until a full attributed day off; separate evidenced168h weekly boundary and pay-period cuts by instant',
+  dailyApproval: 'Shift start day approved by the owner 2026-10-25 and confirmed for Release1 2026-10-30; supersedes civil-midnight daily cuts for new calculations only',
   reconciliation: 'Retain exact amount, recorded cash and signed cash-minus-exact difference; no hidden carry or retroactive approved cash changes',
   reviewTrigger: 'Expiry after2026; official requirement contradicts choice; independent defect; changed scope/actual facts',
 });
 export const OWNER_PAYROLL_POLICY_SHA256 = createHash('sha256').update(stableExportJson(OWNER_PAYROLL_POLICY)).digest('hex');
+/** Superseded record revision (civil-midnight daily cuts) under the same policy id. Never
+ * selected for new calculations; retained so results saved with it keep a recognized identity. */
+export const SUPERSEDED_OWNER_PAYROLL_POLICY_CIVIL_MIDNIGHT = Object.freeze({
+  id: OWNER_PROVISIONAL_POLICY_REFERENCE,
+  kind: 'OWNER_AUTHORIZED_PROVISIONAL_POLICY' as const,
+  taxYear: 2026,
+  jurisdiction: 'PR',
+  coverage: 'Existing standard hourly PR private nonexempt resident/FICA/SINOT scope with separately supported facts',
+  ownerThreadId: '01a132e3-c924-7ec3-bcdc-61eaa1f96bd3',
+  ownerMessageId: '01a13b8e-c5ec-75c1-9d5b-8f19f302a37f',
+  wages: 'Exact paid earning groups including weighted full-week overtime/true-up; HALF_UP paycheck total once; floor groups then largest remainders, binary key ties',
+  employerFica: 'Separate SS/Medicare exact accruals; per-payment HALF_UP cash; retain signed residuals for period reconciliation; no employer Additional Medicare',
+  sinot: 'Cap taxable wages at900000 before exact rates; HALF_UP combined60bp and employee0..30bp; employer receives combined cash minus employee cash',
+  employerAssessments: 'Program-specific attested rate and wage basis/cap; FUTA/PR_UI700000 annual base; per-payment HALF_UP accrual; no inferred credit/classification/agency return',
+  deductions: 'Separately authorized exact percentage/fixed amount; clamp to nonnegative remaining signed cap; HALF_UP once; retain employer-match and negative-net guards',
+  daily: 'Civil midnight half-open24h days; seventh and later consecutive worked civil days premium until full civil day off; separate evidenced168h weekly boundary',
+  reconciliation: 'Retain exact amount, recorded cash and signed cash-minus-exact difference; no hidden carry or retroactive approved cash changes',
+  reviewTrigger: 'Expiry after2026; official requirement contradicts choice; independent defect; changed scope/actual facts',
+});
+export const SUPERSEDED_OWNER_PAYROLL_POLICY_CIVIL_MIDNIGHT_SHA256 = createHash('sha256').update(stableExportJson(SUPERSEDED_OWNER_PAYROLL_POLICY_CIVIL_MIDNIGHT)).digest('hex');
 export type NativePolicyOperation = {
   operation: string;
   reference: string | null;

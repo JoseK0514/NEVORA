@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { calculateNativePayroll } from './calculate';
 import { classifyRecordedTime } from './time';
+import { OWNER_PAYROLL_POLICY, OWNER_PAYROLL_POLICY_SHA256, SUPERSEDED_OWNER_PAYROLL_POLICY_CIVIL_MIDNIGHT, SUPERSEDED_OWNER_PAYROLL_POLICY_CIVIL_MIDNIGHT_SHA256 } from './provisional-policy';
+import { OWNER_PAYROLL_POLICY_RECORD_SHA256 } from './daily-attribution';
 import { input, entry } from './fixtures.test-support';
 import { fictionalWorkweekPolicy } from './workweek-fixtures.test-support';
 import type { NativePayrollInput, NativePayrollReady } from './contracts';
@@ -77,11 +79,18 @@ describe('explicit owner-authorized provisional payroll policies', () => {
     i.deductions[0].authorizationReference = 'Fictional written election'; i.tax!.employerContributions = i.tax!.employerContributions.filter(p => p.code !== 'INSURANCE');
     expect(calculateNativePayroll(i)).toMatchObject({ state: 'blocked', issues: [{ code: 'INSURANCE_EMPLOYER_MATCH_REQUIRED' }] });
   });
-  it('assigns each midnight nanosecond once and preserves known sub-cent earnings even when cash is zero', () => {
+  it('assigns each nanosecond across midnight once to the start day and preserves known sub-cent earnings even when cash is zero', () => {
     const i = selected(); i.timecards[0].entries = [entry('NS', '2026-10-05T23:59:59.999999999-04:00', '2026-10-06T00:00:00.000000001-04:00')];
-    const c = classifyRecordedTime(i); expect(c.pieces.map(p => [p.date, (p.end - p.start).toString()])).toEqual([['2026-10-05', '1'], ['2026-10-06', '1']]);
+    const c = classifyRecordedTime(i); expect(c.pieces.map(p => [p.date, (p.end - p.start).toString()])).toEqual([['2026-10-05', '2']]);
     const r = ready(i); expect(r.breakdown.regularNanoseconds).toBe('2'); expect(r.row.grossMinor).toBe('0'); expect(r.breakdown.earnings[0].exactAmount).toEqual({ numerator: '1', denominator: '1500000000' });
-    expect(r.provenance.boundaryEvidence).toMatchObject({ dailyInterpretation: 'OWNER_AUTHORIZED_CIVIL_MIDNIGHT_24H', dailyInputDisposition: 'OWNER_POLICY_APPLIED_ALL_INSTANTS' });
+    expect(r.provenance.boundaryEvidence).toMatchObject({ dailyInterpretation: 'OWNER_AUTHORIZED_SHIFT_START_DAY', dailyInputDisposition: 'SHIFT_START_DAY_APPLIED_ALL_ENTRIES', dailyModels: ['SHIFT_START_DAY'] });
+    expect(r.provenance.calculationPolicy!.sha256).toBe(OWNER_PAYROLL_POLICY_SHA256);
+  });
+  it('pins the current and superseded owner policy record identities shared with saved-result readers', () => {
+    expect(OWNER_PAYROLL_POLICY_SHA256).toBe(OWNER_PAYROLL_POLICY_RECORD_SHA256.shiftStartDay);
+    expect(SUPERSEDED_OWNER_PAYROLL_POLICY_CIVIL_MIDNIGHT_SHA256).toBe(OWNER_PAYROLL_POLICY_RECORD_SHA256.civilMidnight);
+    expect(SUPERSEDED_OWNER_PAYROLL_POLICY_CIVIL_MIDNIGHT.id).toBe(OWNER_PAYROLL_POLICY.id);
+    expect({ ...SUPERSEDED_OWNER_PAYROLL_POLICY_CIVIL_MIDNIGHT, daily: OWNER_PAYROLL_POLICY.daily, dailyApproval: OWNER_PAYROLL_POLICY.dailyApproval }).toEqual(OWNER_PAYROLL_POLICY);
   });
   it('starts a new civil daily accumulator at midnight and includes the whole first minute', () => {
     const i = selected(); i.timecards[0].entries = [entry('DAY1', '2026-10-05T16:00:00-04:00', '2026-10-06T00:00:00-04:00'), entry('DAY2', '2026-10-06T00:00:00-04:00', '2026-10-06T00:01:00-04:00')];

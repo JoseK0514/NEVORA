@@ -1,5 +1,6 @@
 import type { PayrollReceipt, PayrollRunsResponse, PayrollSettingsResponse, PayrollStatementsResponse, PayrollImport, PayrollAmountLine, PayrollImportRow } from '@/lib/payroll/contracts';
 import { OWNER_PROVISIONAL_POLICY_REFERENCE } from '@/lib/payroll/native/contracts';
+import { acceptedDailyEvidence } from '@/lib/payroll/native/daily-attribution';
 
 export class PayrollRequestError extends Error {
   constructor(message: string, readonly status: number, readonly code = '') { super(message); }
@@ -122,8 +123,8 @@ function validNativeEvidence(p: Record<string, unknown>) {
   if (p.boundaryEvidence !== undefined) {
     const e = p.boundaryEvidence;
     const window = (v: unknown) => record(v) && typeof v.startAt === 'string' && typeof v.endAt === 'string' && Number.isFinite(Date.parse(v.startAt)) && Number.isFinite(Date.parse(v.endAt)) && Date.parse(v.startAt) < Date.parse(v.endAt);
-    if (!record(e) || e.version !== 'NATIVE_BOUNDARY_EVIDENCE_V1' || !Array.isArray(e.dailyModels) ||
-        (ownerPolicy ? e.dailyInterpretation !== 'OWNER_AUTHORIZED_CIVIL_MIDNIGHT_24H' || e.dailyInputDisposition !== 'OWNER_POLICY_APPLIED_ALL_INSTANTS' || e.dailyModels.join(',') !== 'CIVIL_MIDNIGHT_24H' : e.dailyInterpretation !== 'UNRESOLVED' || e.dailyInputDisposition !== 'INVARIANT_NO_FIRST_MINUTE_ENTRIES' || e.dailyModels.join(',') !== 'CIVIL_MIDNIGHT_24H,CIVIL_00_01_24H') ||
+    // Shift start day for new results; saved results keep the daily model and policy record they were calculated with.
+    if (!record(e) || e.version !== 'NATIVE_BOUNDARY_EVIDENCE_V1' || !acceptedDailyEvidence(e, ownerPolicy && record(p.calculationPolicy) ? String(p.calculationPolicy.sha256) : null) ||
         !window(e.sourceWindow) || !window(e.fullWeekWindow) || typeof e.workweekPolicySha256 !== 'string' || !/^[a-f0-9]{64}$/.test(e.workweekPolicySha256) || typeof e.sourceSha256 !== 'string' || !/^[a-f0-9]{64}$/.test(e.sourceSha256) || !record(e.workweekPolicy)) return false;
     const w = e.workweekPolicy;
     if (w.version !== 'PR_WORKWEEK_POLICY_V1' || typeof w.id !== 'string' || !Number.isInteger(w.revision) || Number(w.revision) < 1 || typeof w.federalEvidenceReference !== 'string' || w.federalWorkweek !== 'SAME_VERIFIED_BOUNDARY' || !record(w.origin) || !['STATUTORY_DEFAULT', 'EMPLOYER_NOTICE'].includes(String(w.origin.kind)) || !record(w.boundary) || !Number.isInteger(w.boundary.weekday) || Number(w.boundary.weekday) < 1 || Number(w.boundary.weekday) > 7 || typeof w.boundary.startTime !== 'string' || !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(w.boundary.startTime) || w.boundary.timeZone !== 'America/Puerto_Rico') return false;
