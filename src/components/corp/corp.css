@@ -62,7 +62,8 @@
 :is(#c-root, html) .c-row__lead { flex: none; width: 56px; white-space: nowrap; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
 :is(#c-root, html) .c-row__icon { flex: none; display: grid; place-items: center; width: 22px; height: 22px; color: var(--c-ink2); }
 :is(#c-root, html) .c-row__main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-:is(#c-root, html) .c-row__title { display: block; font-size: 15px; line-height: 20px; color: var(--c-ink); overflow-wrap: anywhere; }
+:is(#c-root, html) .c-row__title { display: block; font-size: 15px; line-height: 20px; color: var(--c-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Zero tolerance for wrapped labels: a row title stays on one line (the row's label carries the full text). */
 :is(#c-root, html) .c-row__title--b { font-weight: 600; }
 :is(#c-root, html) .c-row__detail { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-row__detail > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -136,7 +137,7 @@
 
 /* Segmented control */
 :is(#c-root, html) .c-seg { display: flex; height: 36px; padding: 2px; border-radius: 8px; background: var(--c-neutral-bg); }
-:is(#c-root, html) .c-seg > :is(a, button) { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; padding: 0 8px; border: 0; border-radius: 6px; background: none;
+:is(#c-root, html) .c-seg > :is(a, button) { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; height: 100%; min-height: 0; margin: 0; box-shadow: none; padding: 0 8px; border: 0; border-radius: 6px; background: none;
   color: var(--c-ink2); font-size: 13px; line-height: 18px; font-weight: 600; white-space: nowrap; cursor: pointer; }
 :is(#c-root, html) .c-seg > [aria-current="page"], :is(#c-root, html) .c-seg > [aria-pressed="true"], :is(#c-root, html) .c-seg > [aria-selected="true"] { background: #FFFFFF; color: var(--c-ink); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); }
 

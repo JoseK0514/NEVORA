@@ -6,6 +6,8 @@
   html:has(.app-shell[data-nv-corp]), html:is(:root, [data-theme]) body:has(.app-shell[data-nv-corp]),
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp], html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .app-main, html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame { background: #F5F6F6 !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame:has(.c-page) { padding: 0 0 calc(56px + 16px + max(4px, var(--q-safe-bottom, env(safe-area-inset-bottom, 0px)))) !important; margin: 0 !important; }
+  /* An older page wrapper around a corporate page adds no padding or background of its own. */
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame [data-nv-page]:has(> .c-page) { margin: 0 !important; padding: 0 !important; background: none !important; }
   /* The corporate phone design has no section-tab strip: tabs, the avatar's More and each page's own rows lead there. */
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame > .section-tabs { display: none !important; }
 

@@ -21,7 +21,7 @@ const item = (id: string, type: string, priority: "URGENT" | "REVIEW", category:
   ({ id, type, priority, category, title: `${type} title`, detail: `${type} detail`, href: `/app/go/${id}`, ...extra }) as ActionItem;
 
 const items = [
-  item("gap1", "COVERAGE_GAP", "URGENT", "scheduling", { title: "Barista needed 1 – 3 PM", detail: "Condado · 2 people free", href: "/app/schedule/coverage?shift=gap1" }),
+  item("gap1", "COVERAGE_GAP", "URGENT", "scheduling", { title: "Position not covered at Condado", detail: "2026-10-30 · 1:00 PM–3:00 PM · Barista: 1 open", dateTime: "2026-10-30T13:00", href: "/app/schedule/coverage?shift=gap1" }),
   item("off1", "TIME_OFF", "REVIEW", "requests"),
   item("swap1", "EXCHANGE", "REVIEW", "requests"),
   item("swap2", "EXCHANGE", "URGENT", "requests"),
@@ -48,8 +48,10 @@ describe("Owner Home on the corporate kit (board C-Owner)", () => {
     expect(out).toMatch(/Clocked in<\/dt><dd class="c-stat__value">1 of 3<\/dd>/);
     expect(out).toMatch(/No clock-in<\/dt><dd class="c-stat__value c-stat__value--red">1<\/dd>/);
     expect(out).toMatch(/Open shifts<\/dt><dd class="c-stat__value c-stat__value--amber">1<\/dd>/);
-    expect(out).toContain("Barista needed 1 – 3 PM");
-    expect(out).toContain('href="/app/schedule/coverage?shift=gap1"');
+    // The open shift reads as on Things to do (board O-Inbox wording) and opens its coverage review.
+    expect(out).toContain(">Barista 1:00 PM – 3:00 PM<");
+    expect(out).toContain(">Today · Condado · 1 open<");
+    expect(out).toMatch(/href="\/app\/schedule\/coverage\?shift=gap1[^"]*"/);
     expect(out.match(/>Find cover</g)).toHaveLength(1);
     expect(out.match(/class="c-btn( c-btn--md)?"/g)).toHaveLength(1);
   });

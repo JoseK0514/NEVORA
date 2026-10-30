@@ -96,3 +96,8 @@ it('says all set only for a ready, empty observation, and offers Try again or Si
   expect(page({snapshot: ready([], true)})).toContain('Some attendance comparisons are unavailable.');
   expect(page({snapshot: ready([]), today: {state: 'unavailable', reason: 'read_failed'} as Today})).toContain('Clock-ins can’t be checked right now.');
 });
+
+it('shortens "Need 1 employee" to "1 needed" even when the read keeps the count and noun together with a no-break space', () => {
+  const gap = item('gap2', 'COVERAGE_GAP', 'scheduling', 'URGENT', {title: 'Coverage gap at Old San Juan', detail: '2026-10-16 · 12:00 AM–10:00 AM · Need 1 employee', dateTime: '2026-10-16T00:00', href: '/app/schedule?shift=gap2'});
+  expect(page({snapshot: ready([gap])})).toContain('Today · Old San Juan · 1 needed');
+});

@@ -48,11 +48,12 @@ function itemRow(item: ActionItem, timeZone: string, calm = false): Row {
 }
 
 /** An open shift as the board reads it: "Barista 1:00 PM – 3:00 PM" over "Today · Condado · 1 open". */
-function gapRow(item: ActionItem, timeZone: string, day: string): Row {
+export function gapRow(item: ActionItem, timeZone: string, day: string): Row {
   const row = itemRow(item, timeZone);
   const [date, when, ...parts] = mobileActionDetail(item.detail).split(" · ");
   // "Need 1 employee" reads "1 needed", so the line fits a 320px phone whole.
-  const rest = parts.map(part => part.replace(/^Need (\d+) employees?$/, "$1 needed"));
+  // The read may keep the count with its noun using a no-break space, so any space matches.
+  const rest = parts.map(part => part.replace(/^Need\s(\d+)\semployees?$/, "$1 needed"));
   if (!when) return { ...row, title: plain(gapPlace(item)) };
   // One position short reads as that position ("Barista 1:00 PM – 3:00 PM", "1 open"); otherwise the time and the need.
   const single = rest.length === 1 && /^[^;]+: \d+ open$/.test(rest[0]) ? rest[0].split(": ") : null;

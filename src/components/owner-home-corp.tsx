@@ -9,6 +9,7 @@ import type { NeedsYou } from "@/lib/action-center/needs-you";
 import type { ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor } from "@/lib/time-clock";
+import { gapRow } from "./manager-inbox-corp";
 
 /* Owner and Manager Home in the corporate look (Release 1; approved board C-Owner, Oct 26). Presentation only: every number
  * comes from the same reads as before (Today's published shifts, the clock-in monitor, the shared needs-you count that the
@@ -65,7 +66,8 @@ function TodayCard({ today, monitor, monitorPending, todayRefreshing, onRetryTod
   const checking = monitorPending && !open && today.counts.clockedIn > 0;
   const gaps = value ? value.now.filter(item => item.type === "COVERAGE_GAP") : null;
   const noClockIn = value ? value.noClockIn.length : null;
-  const gap = gaps?.[0];
+  // The first open shift reads as on Things to do: "12:00 AM – 6:00 AM" over "Today · Condado · 1 needed".
+  const gap = gaps?.[0] ? gapRow(gaps[0], today.timeZone, today.today) : undefined;
   return card(<>
     <CorpStats items={[
       { label: "Clocked in", value: checking ? "…" : scheduled ? `${onShift} of ${scheduled}` : String(onShift) },
@@ -74,7 +76,7 @@ function TodayCard({ today, monitor, monitorPending, todayRefreshing, onRetryTod
     ]} />
     {gap ? <div className="c-home__gap">
       <span className="c-row__main"><span className="c-row__title c-row__title--b">{gap.title}</span><span className="c-row__detail"><span>{gap.detail}</span></span></span>
-      <CorpButtonLink href={gap.href} size="md" aria-label={`Find cover: ${gap.title}`}>Find cover</CorpButtonLink>
+      <CorpButtonLink href={gap.href} size="md" aria-label={`Find cover: ${gap.title}, ${gap.detail}`}>Find cover</CorpButtonLink>
     </div> : null}
   </>);
 }

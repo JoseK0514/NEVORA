@@ -5,9 +5,13 @@
 :is(#c-root, html) .c-home .c-home__gap > .c-row__main { flex: 1; min-width: 0; }
 :is(#c-root, html) .c-home .c-home__gap > .c-btn { flex: none; }
 :is(#c-root, html) .c-home .c-home__setup { box-shadow: inset 0 1px 0 #EDEEEF; }
-:is(#c-root, html) .c-home .c-home__gap .c-row__detail > span { white-space: normal; overflow: visible; text-overflow: clip; }
-/* Small phones: tighter stat columns so "No clock-in" and "Open shifts" stay whole. */
-@media (max-width: 359px) { :is(#c-root, html) .c-home .c-stat { padding: 12px 10px; } }
+/* Small phones: tighter stat columns so "No clock-in" and "Open shifts" stay whole, and Find cover moves under the
+ * open shift so its time and place stay whole. */
+@media (max-width: 359px) {
+  :is(#c-root, html) .c-home .c-stat { padding: 12px 10px; }
+  :is(#c-root, html) .c-home .c-home__gap { flex-wrap: wrap; }
+  :is(#c-root, html) .c-home .c-home__gap > .c-btn { width: 100%; }
+}
 /* Desktop: two columns, so Home uses the width instead of a phone column. Today and Things to do on the left, Payday on the right. */
 @media (min-width: 1100px) {
   :is(#c-root, html) .c-page.c-home { max-width: 1040px; display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; gap: 16px 16px; }

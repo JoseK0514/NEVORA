@@ -25,7 +25,8 @@ import {Avatar,Card,KitLink,Row,Rows,StatGrid,Status,Tile,type KitTone} from './
 import {keepWhole} from '../lib/keep-whole';
 import {timeZoneLabel} from '../lib/time-zone-label';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
-import {QuietHeader,QuietNav} from './quiet/quiet';
+import {CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpPage,CorpPill,CorpRow,CorpRows,CorpStats,CorpTitle} from './corp/corp';
+import './reports-corp.css';
 type State='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'paused'|'access_lost';
 /** IS-B1, IS-B29: a fresh snapshot is read a third of the way through the current one's life (and retried while there's time)
  * and swapped in when verified, so the report only empties if every read fails before expiry.
@@ -240,6 +241,60 @@ function QuietFigure({title,value,children,href}:{title:string;value:string;chil
  return <li><details className="q-details"><summary className="q-row q-row--one">{row}</summary><div className="q-figure__body">{children}</div></details></li>;
 }
 
+/** Corporate (Release 1, board O-Insights): labor hours against the published plan, the period's figures, hours by day
+ * and by person, then how they're counted. Overtime and coverage aren't part of this read, so they aren't shown. */
+export function CorpReportsView({report,state}:{report:PeriodReports|null;state:State}){
+ const [everyone,setEveryone]=useState(false);
+ if(!report){
+  const waiting=state==='loading'||state==='reconnecting';
+  return <CorpCard as="div" ariaLabel="Insights"><CorpBody><div role="status" aria-busy={waiting}>
+   <h2 className="c-ins__title">{({loading:'Loading…',offline:'You’re offline',reconnecting:'Reconnecting…',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Your session ended',ready:'Couldn’t load insights'})[state]}</h2>
+   {waiting?null:<p className="c-ins__state">{state==='access_lost'?'Sign in again to see insights.':state==='paused'?'Come back to this page to see the current numbers.':state==='offline'?'Connect to the internet, then try again.':'Check your connection, then try again.'}</p>}
+  </div>{state==='access_lost'?<CorpButtonLink href="/login" kind="secondary" size="md">Sign in</CorpButtonLink>:null}</CorpBody></CorpCard>;
+ }
+ const href=timecardsHref(report.period);
+ const recorded=BigInt(report.summary.recordedNanoseconds);
+ const planned=report.planCoverage.state==='complete'&&report.scheduleVsActual.every(r=>r.scheduledNanoseconds!==null)
+  ?report.scheduleVsActual.reduce((sum,r)=>sum+BigInt(r.scheduledNanoseconds??'0'),BigInt(0)):null;
+ const gap=planned!==null?planned-recorded:null;
+ const percent=planned&&planned>BigInt(0)?Math.min(100,Number(recorded*BigInt(100)/planned)):0;
+ const withTime=report.hoursByEmployee.filter(r=>BigInt(r.recordedNanoseconds)>BigInt(0)).sort((a,b)=>{const d=BigInt(b.recordedNanoseconds)-BigInt(a.recordedNanoseconds);return d>BigInt(0)?1:d<BigInt(0)?-1:a.name.localeCompare(b.name);});
+ const idle=Math.max(report.hoursByEmployee.filter(r=>BigInt(r.recordedNanoseconds)<=BigInt(0)).length,report.summary.employeeCount-withTime.length);
+ const toFinish=report.approvals.filter(card=>card.state!=='FINALIZED').length;
+ const offDays=timeOffDays(report);
+ const days=recordedByDay(report);
+ const most=days?Math.max(1,...days.map(day=>day.minutes)):1;
+ const definitions=[...new Set([...report.definitions,'Recorded time includes breaks. Breaks are shown separately; no pay or deduction rules are applied.',report.coverageReliability.definition,report.scheduleStability.definition,report.overtime.reason])];
+ return <>
+  <CorpCard id="ins-labor" label="Labor hours" aside={gap!==null&&gap!==BigInt(0)?<CorpPill tone={gap>BigInt(0)?'neutral':'amber'}>{`${quietHours((gap>BigInt(0)?gap:-gap).toString())} ${gap>BigInt(0)?'under':'over'} plan`}</CorpPill>:undefined}>
+   <div className="c-ins__labor"><b>{quietHours(recorded.toString())}</b><span>{planned!==null?`of ${quietHours(planned.toString())} planned`:'recorded · plan incomplete'}</span></div>
+   {planned!==null?<span className="c-ins__bar" aria-hidden="true"><span style={{width:`${percent}%`}}/></span>:null}
+  </CorpCard>
+  <CorpCard id="ins-period" label="This period">
+   <CorpStats items={[{label:'To finish',value:toFinish,tone:toFinish?'amber':undefined},{label:'No time',value:idle},{label:'Time off',value:offDays?`${offDays} d`:'0'}]}/>
+   <Link className="c-ins__link" href={href}>Review timecards<CaretRightIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></Link>
+  </CorpCard>
+  <CorpCard id="ins-days" label="Hours by day" aside={<span className="c-ins__aside">{`${quietHours(recorded.toString())} total`}</span>}>
+   {days&&days.some(day=>day.minutes>0)?<><div className="c-ins__chart" aria-hidden="true" data-dense={days.length>7||undefined} style={{'--c-bars':days.length} as CSSProperties}>
+    {days.map(day=><span key={day.date} className="c-ins__col">
+     {days.length<=7?<small>{Math.round(day.minutes/60)}</small>:null}
+     <i style={{height:`${Math.round(day.minutes/most*100)}%`}}/>
+     <em>{days.length<=7?dayName(day.date):''}</em>
+    </span>)}
+   </div><ul className="c-sr" aria-label="Recorded time by day">{days.map(day=><li key={day.date}>{dayLabel(day.date)}: {formatRecordedHours((BigInt(day.minutes)*MINUTE_NS).toString())}</li>)}</ul></>
+    :<CorpBody><p className="c-ins__state">No recorded time in this period.</p></CorpBody>}
+  </CorpCard>
+  {withTime.length?<CorpCard id="ins-people" label="Hours by person" aside={!everyone&&withTime.length>5?<button type="button" className="c-link" onClick={()=>setEveryone(true)}>{`Show all ${withTime.length}`}</button>:undefined}>
+   <CorpRows label="Recorded time by person">{(everyone?withTime:withTime.slice(0,5)).map(r=><li key={r.id}><CorpRow title={r.name} value={quietHours(r.recordedNanoseconds)}/></li>)}</CorpRows>
+  </CorpCard>:null}
+  <details className="c-ins__counted">
+   <summary>How these are counted<CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></summary>
+   <ul>{definitions.map(d=><li key={d}>{d}</li>)}</ul>
+   <p>As of <time dateTime={report.observedAt}>{observedLabel(report.observedAt,report.timeZone)}</time> · {timeZoneLabel(report.timeZone)}</p>
+  </details>
+ </>;
+}
+
 /** Quiet (v4, approved Oct 23): four figures for the period, each opening what's behind it, then how they're counted. */
 export function QuietReportsView({report,state}:{report:PeriodReports|null;state:State}){
  if(!report){
@@ -375,15 +430,16 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
 </>;
  // Quiet (v4, approved Oct 23): back to More, the period under the title, This week, Last week and Month, then the figures.
  // Wide screens keep Export and the period picker in the top bar.
- const phone=<div className="q-page q-insights q-insights-phone" data-nv-page="">
-  <QuietNav back={{href:'/app/more',label:'More'}}/>
-  <QuietHeader title="Insights" sub={quietRange(period)}/>
-  <div className="q-seg" role="group" aria-label="Report period" data-report-entrance="">
+ const phone=<CorpPage className="c-ins q-insights-phone" labelledBy="ins-title">
+  <CorpNav back={{href:'/app/more',label:'More'}} title="Insights" phoneOnly/>
+  <CorpTitle id="ins-title" title="Insights" sub={quietRange(period)} wide/>
+  <div className="c-seg" role="group" aria-label="Report period" data-report-entrance="">
    {MODES.filter(item=>item.mode!=='custom').map(item=><button key={item.mode} type="button" aria-pressed={mode===item.mode} disabled={!presets||busy} onClick={()=>choose(item.mode)}>{item.short}</button>)}
   </div>
-  {notice&&notice!==PERIOD_ERROR?<p className="q-error q-first" id="report-export-error" role="alert">{notice}</p>:null}
-  <div className="wb-insights" data-report-entrance=""><QuietReportsView report={report} state={state}/></div>
- </div>;
+  <p className="c-ins__range">{`${quietRange(period)}${report?` · ${timeZoneLabel(report.timeZone)}`:''}`}</p>
+  {notice&&notice!==PERIOD_ERROR?<p className="c-ins__error" id="report-export-error" role="alert">{notice}</p>:null}
+  <div className="wb-insights c-ins__body" data-report-entrance=""><CorpReportsView report={report} state={state}/></div>
+ </CorpPage>;
  // Wider screens keep the full Insights tool (period picker, Export, custom period, the whole report).
  return <>
   {phone}
