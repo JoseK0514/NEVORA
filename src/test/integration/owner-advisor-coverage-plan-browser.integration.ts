@@ -85,6 +85,7 @@ it("compares real joint day plans with discoverable keyboard review and private 
         await result.waitFor();
         const heading = result.getByRole("heading", { name: /^Day plan comparison/ });
         // waitFor/getByRole do not auto-scroll. A normal comparison must reveal its result.
+        await expect.poll(() => heading.evaluate((el: HTMLElement) => document.activeElement === el)).toBe(true);
         const discovery = await heading.evaluate((el: HTMLElement) => { const b = el.getBoundingClientRect(); return { focused: document.activeElement === el, visible: b.top >= 0 && b.bottom <= innerHeight, top: b.top, bottom: b.bottom }; });
         await writeFile(resolve(evidence, `${engine}-discovery.json`), JSON.stringify(discovery, null, 2));
         expect(discovery.focused).toBe(true); expect(discovery.visible).toBe(true);

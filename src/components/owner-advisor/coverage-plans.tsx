@@ -1,10 +1,19 @@
+"use client";
+import { useEffect, useRef } from "react";
 import type { CoveragePlans } from "@/lib/owner-advisor/coverage-plan-contracts";
 
 const states = { COMPLETE: "Configured day requirements met", PARTIAL: "Requirements remain", INVALID: "Setup needs review", BUDGET_EXHAUSTED: "Search limit reached" };
 const locationStates = { INCLUDED: "Included in this day review", ARCHIVED: "Excluded: archived schedule", NEEDS_SETUP: "Excluded: setup needs review", INACTIVE: "Inactive location" };
 export function CoveragePlanResults({ plans }: { plans: CoveragePlans }) {
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    // A completed comparison appears below its controls. Reveal it explicitly;
+    // polling retains the same evidence object and must not steal focus again.
+    heading.current?.scrollIntoView({ block: "center", inline: "nearest" });
+    heading.current?.focus({ preventScroll: true });
+  }, [plans]);
   return <section aria-label="Day plan comparison" className="oa-plain">
-    <h3>Day plan comparison · {plans.date}</h3>
+    <h3 ref={heading} tabIndex={-1}>Day plan comparison · {plans.date}</h3>
     <p>Planning ledger, including drafts · {plans.timeZone}. Observed <time dateTime={plans.observedAt}>{new Date(plans.observedAt).toLocaleString()}</time>.</p>
     <p className="oa-notice">Each plan is a separate hypothetical allocation. Compare one plan at a time. Nothing has been saved or published; confirm availability with the people involved before making changes.</p>
     {plans.state === "unavailable" ? <p>This company is larger than this review can process. Open Scheduling to review the complete requirements.</p> : <>
