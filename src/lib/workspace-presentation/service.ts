@@ -29,8 +29,7 @@ export async function readActivePresentation(workspaceId: string, executor: SqlE
     const rows = await executor.query<{ revision: number | null; settings: unknown; updatesLive?: boolean }>({
       // Release 1: the same database check that holds Updates' live activation (D04) is read with the settings, so
       // Updates counts as off wherever its reads and posts are held. The Owner's own switch still applies once it opens.
-      text: `SELECT p.revision,p.settings,${UPDATES_LIVE_SQL} AS "updatesLive" FROM (SELECT 1) one
-        LEFT JOIN LATERAL (SELECT revision,settings FROM nevora_workspace_presentation_revisions WHERE workspace_id=$1 ORDER BY revision DESC LIMIT 1) p ON true`,
+      text: activePresentationSql("$1"),
       values: [workspaceId],
     });
     const held = rows[0]?.updatesLive === false;
@@ -50,6 +49,11 @@ export const readActiveBrand = readActivePresentation;
 
 /** True while Updates' live activation is held on this database (anything but an owned local test database). */
 const UPDATES_LIVE_SQL = `COALESCE((${communicationDevelopmentAllowedSql()}),false)`;
+/** The one active-presentation read. Readers with a statement allowlist (the notification list) build theirs from this. */
+export function activePresentationSql(workspaceParam: string) {
+  return `SELECT p.revision,p.settings,${UPDATES_LIVE_SQL} AS "updatesLive" FROM (SELECT 1) one
+        LEFT JOIN LATERAL (SELECT revision,settings FROM nevora_workspace_presentation_revisions WHERE workspace_id=${workspaceParam} ORDER BY revision DESC LIMIT 1) p ON true`;
+}
 export async function updatesActivationHeld(executor: SqlExecutor = neonNotificationExecutor()): Promise<boolean> {
   try { return (await executor.query<{ live: boolean }>({ text: `SELECT ${UPDATES_LIVE_SQL} AS live`, values: [] }))[0]?.live !== true; }
   catch { return true; }

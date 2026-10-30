@@ -1,5 +1,5 @@
 import 'server-only';
-import {readActivePresentation} from '../workspace-presentation/service';
+import {activePresentationSql,readActivePresentation} from '../workspace-presentation/service';
 import {ALL_MODULES_ON,moduleForPath} from '../workspace-presentation/modules';
 import {encodeMessageCursor,parseMessageCursor,type MessagePage} from '../employee-message-page';
 import type {SessionMutationProof} from '../shift-changes/types';
@@ -61,7 +61,7 @@ type Template={name:string;args:number;sql:(args:string[])=>string;clockField?:'
  * acceptance, mutation statements, or network/executor fallback during replay. */
 const templates:Template[]=[
  {name:'presentationInstalled',args:0,sql:()=>"SELECT to_regclass('nevora_workspace_presentation_revisions') IS NOT NULL AS installed"},
- {name:'presentation',args:1,sql:p=>`SELECT revision,settings FROM nevora_workspace_presentation_revisions WHERE workspace_id=${p[0]} ORDER BY revision DESC LIMIT 1`},
+ {name:'presentation',args:1,sql:p=>activePresentationSql(p[0])},
  {name:'ownReceipt',args:5,sql:ownReceiptSql},
  {name:'ownCommunicationStatus',args:3,sql:ownCommunicationStatusSql},
  {name:'ownCommunicationStatuses',args:3,sql:ownCommunicationStatusesSql},
