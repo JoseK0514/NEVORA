@@ -41,7 +41,9 @@ it("persists private goals and tasks through the real Owner app, preserves delib
         await page.getByLabel("Password", { exact: true }).fill(TEST_PASSWORD);
         await page.getByRole("button", { name: "Sign in", exact: true }).click();
         await page.waitForURL(origin + "/app");
-        await page.goto(origin + "/app/ai-manager");
+        await page.waitForLoadState("networkidle");
+        await page.locator("main").getByRole("link", { name: "AI manager", exact: true }).click();
+        await page.waitForURL(origin + "/app/ai-manager");
         await page.getByRole("button", { name: "Add goal", exact: true }).waitFor();
         expect(await page.getByRole("button", { name: "Ask", exact: true }).isDisabled()).toBe(true);
 
@@ -134,7 +136,7 @@ it("persists private goals and tasks through the real Owner app, preserves delib
           });
           await writeFile(resolve(evidence, `${engine}-${width}-editor-entry.json`), JSON.stringify(entry, null, 2));
           expect(entry, `${engine}/${width} deliberate editor entry`).toMatchObject({ focused: true, visible: true });
-          await page.keyboard.press("Tab");
+          await page.keyboard.press(engine === "webkit" && process.platform === "darwin" ? "Alt+Tab" : "Tab");
           expect(await page.getByRole("button", { name: "Save goal", exact: true }).evaluate((el: HTMLElement) => document.activeElement === el)).toBe(true);
           await goalEditor.getByRole("button", { name: "Discard edit", exact: true }).click();
           await goalEditor.waitFor({ state: "hidden" });

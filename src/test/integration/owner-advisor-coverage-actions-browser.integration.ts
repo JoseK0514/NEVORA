@@ -37,7 +37,7 @@ it("reviews exact coverage, blocks stale saves, recovers a real lost reply and v
           await route.continue();
         });
         page.on("pageerror",(error:Error)=>errors.push(engine+":"+phase+":"+error.message));page.setDefaultTimeout(20000);
-        await page.goto(origin+"/login");await page.getByLabel("Employee ID",{exact:true}).fill("QAOWNER");await page.getByLabel("Password",{exact:true}).fill(TEST_PASSWORD);await page.getByRole("button",{name:"Sign in",exact:true}).click();await page.waitForURL(origin+"/app");await page.goto(origin+"/app/ai-manager");
+        await page.goto(origin+"/login");await page.getByLabel("Employee ID",{exact:true}).fill("QAOWNER");await page.getByLabel("Password",{exact:true}).fill(TEST_PASSWORD);await page.getByRole("button",{name:"Sign in",exact:true}).click();await page.waitForURL(origin+"/app");await page.waitForLoadState("networkidle");await page.locator("main").getByRole("link",{name:"AI manager",exact:true}).click();await page.waitForURL(origin+"/app/ai-manager");
         await page.getByRole("button",{name:"Compare day plans",exact:true}).waitFor();
         const date=index===0?"2030-10-07":"2030-10-14";
         await page.getByLabel("Coverage date",{exact:true}).fill(date);
