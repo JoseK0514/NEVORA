@@ -25,7 +25,9 @@
     "ownerLook": "Jose: Owner desktop and mobile follow the approved corporate mockups (docs/product/specs/corporate-mockups, Oct 26), without the phone clock controls they show.",
     "employeeLook": "Jose (2026-10-29): Employee mobile is restyled to the same approved corporate design as Owner (E-* boards), keeping Codex's behaviour, fixes and tests; done after the Owner phases.",
     "darkMode": "Jose (2026-10-29): Dark mode is not part of Release 1; Owner and Employee ship light.",
-    "qualityBar": "Jose (2026-10-29): his biggest concern is that the UI/UX looks extremely clean and premium; every page is checked side by side against its approved board, with an independent UI inspection at the end of each phase."
+    "qualityBar": "Jose (2026-10-29): his biggest concern is that the UI/UX looks extremely clean and premium; every page is checked side by side against its approved board, with an independent UI inspection at the end of each phase.",
+    "businessRules.4.history": "Jose (2026-10-30): keep a per-edit history while edits wait for Publish changes: a small table records who changed which shift and when (new migration; Codex runs it with the release).",
+    "businessRules.4.swaps": "Jose (2026-10-30): an approved swap or callout in a week with held edits publishes and notifies only its own change; held edits keep waiting for Publish changes."
   },
   "corporateSourceHashes": {
     "/Users/josek0514/Desktop/NEVORA-UI-READINESS/.claude/worktrees/v4-quiet/docs/product/specs/corporate-mockups/DESIGN-SPEC.md": "3af4d0afd64251833729d3a6defb1ee9685bbc88489dd3ca77556f9080cb1dbb",
