@@ -18,6 +18,10 @@ function EmployeeMessagesPage({authority,view,id}:Props){
  const origin=session?.origin,detailBack=view==='detail'&&origin?.target.split(/[?#]/)[0]==='/app/updates/'+id?origin.source+'#message-'+encodeURIComponent(origin.id):'/app/updates',back=view==='detail'?detailBack:view==='compose'?'/app/updates':view==='updates'?'/app/more':'/app',title=view==='notifications'?'Notifi\u00adca\u00adtions':view==='updates'?'Updates':view==='compose'?'Write an update':'Team update',context=view+'|'+selection;
  useEffect(()=>{if(!read||focused.current===context)return;focused.current=context;let hash='';try{hash=decodeURIComponent(window.location.hash.slice(1));}catch{}const target=hash?document.getElementById(hash):null;if(target)target.focus();else heading.current?.focus();},[read,context]);
  useEffect(()=>()=>{openAbort.current?.abort();},[context,read]);
+ // A refused stale-version action leaves the old text on screen; read the current version so "Review the current details" shows
+ // them. Acknowledging it is still a separate, explicit press (MessageDetail is keyed by revision).
+ const staleDetail=view==='detail'&&session?.state.notice==='conflict',refreshPanel=panel.refresh;
+ useEffect(()=>{if(staleDetail)refreshPanel();},[staleDetail,refreshPanel]);
  if(!session)return <p role="status">Your session needs to be refreshed. Reload this page to continue.</p>;
  const denied=panel.state.snapshot?.state==='unavailable'&&panel.state.snapshot.reason==='access_denied',moduleBlocked=read?.updates!=='on',busy=session.state.pending||session.state.hasUnknown;
  async function open(event:MouseEvent<HTMLAnchorElement>,itemId:string,href:string){
