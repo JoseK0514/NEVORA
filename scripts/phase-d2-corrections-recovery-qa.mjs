@@ -81,7 +81,15 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
     const retry=page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/});await retry.waitFor();
     // The private view re-checks when its short validity window ends (full-page screenshots take a while) and remounts its
     // content, closing the entry sheet; the uncertain command survives. Reopen the sheet so each step measures and uses it.
-    const showRetry=async()=>{if(await retry.isVisible())return;if(kind!=='MISSING_ENTRY'){await entryRow(page).waitFor();await entryRow(page).click();}await retry.waitFor();};
+    const showRetry=async()=>{
+     if(await retry.isVisible())return;
+     try{if(kind!=='MISSING_ENTRY'){await entryRow(page).waitFor();await entryRow(page).click();}await retry.waitFor();}
+     catch(error){
+      const shot=join(evidence,`${engine}-${kind}-${loss}-retry-missing.png`);await page.screenshot({path:shot,fullPage:true}).catch(()=>{});report.screenshots.push(shot);
+      (report.retryMissing??=[]).push({engine,kind,loss,state:await page.evaluate(()=>({dialogOpen:!!document.querySelector('dialog[open]'),status:[...document.querySelectorAll('[role="status"]')].map(e=>e.textContent?.trim().slice(0,120)),retry:document.querySelectorAll('button.employee-time-correction-retry').length})).catch(()=>null)});
+      throw error;
+     }
+    };
     if(kind==='ENTRY_BOUNDARY'&&loss==='after'){
      for(const width of DESKTOP_WIDTHS){
       await page.setViewportSize({width,height:width<=430?844:1000});
