@@ -3,7 +3,7 @@ import { saveWorkspaceProfile, createLocation, updateLocation, insertEmployee, c
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
-import { createDisposableFoundationDatabase } from './local-postgres';
+import { CURRENT_MIGRATIONS, createDisposableFoundationDatabase } from './local-postgres';
 
 describe('foundation SQL', () => {
   it('schema and legacy preservation', async () => {
@@ -1121,6 +1121,9 @@ it('Task 11 generic fixture replacement preserves the upgraded schema catalog', 
       await upgrade.executor.query({text:await readFile('db/migrations/'+file,'utf8'),values:[]});
     }
     for(const file of ['0031_workspace_presentation.sql','0032_workspace_words_modules.sql','0033_management_alert_preferences.sql','0034_account_deletion_requests.sql','0035_passkeys.sql','0036_owner_advisor.sql','0037_owner_briefing_reviews.sql'])await upgrade.executor.query({text:await readFile('db/migrations/'+file,'utf8'),values:[]});
+    // Every later current migration, in the official order (the list above predates 0038–0043; reason: the upgraded
+    // catalog must include the Clocker, payroll-setup and pending-edit tables the fresh database has).
+    for(const file of CURRENT_MIGRATIONS.slice(CURRENT_MIGRATIONS.indexOf('0037_owner_briefing_reviews.sql')+1))await upgrade.executor.query({text:await readFile('db/migrations/'+file,'utf8'),values:[]});
     const generic=await createGenericWorkspaceDatabase();
     defer(() => generic.dispose());
     const catalog=async(executor:SqlExecutor)=>({
