@@ -3,7 +3,7 @@ import { ModuleOff } from "@/components/module-off";
 import { getSession } from "../auth/session";
 import { getWorkspace } from "../data/workspaces";
 import { ALL_MODULES_ON, type ModuleId } from "./modules";
-import { readActivePresentation, type ActivePresentation } from "./service";
+import { readActivePresentation, updatesActivationHeld, type ActivePresentation } from "./service";
 
 type Current = ActivePresentation & { logoUrl: string | null; fallback?: true };
 const FALLBACK: Current = { style: undefined, tokens: null, logoAssetId: null, revision: 0, modules: ALL_MODULES_ON, words: "standard", logoUrl: null };
@@ -40,5 +40,7 @@ export async function moduleEnabled(id: ModuleId): Promise<boolean> {
 export async function moduleGate(id: ModuleId) {
   if (await moduleEnabled(id)) return null;
   const [session, workspace] = await Promise.all([getSession(), getWorkspace().catch(() => null)]);
-  return <ModuleOff module={id} workspaceName={workspace?.name ?? "Your company"} owner={session?.role === "OWNER"} />;
+  // Release 1: while Updates' activation is held, it isn't the company's switch that keeps it off.
+  const held = id === "updates" && await updatesActivationHeld();
+  return <ModuleOff module={id} workspaceName={workspace?.name ?? "Your company"} owner={session?.role === "OWNER"} held={held} />;
 }
