@@ -323,7 +323,8 @@ export default async function SchedulePage({
   const todayLong = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`));
   const todayShort = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`));
   const locationName = selectedLocation === "all" ? "All locations" : locations.find(location => location.id === selectedLocation)?.shortName ?? "";
-  const publishHref = `/app/schedule?week=${weekStart}${locationQuery}&plan=1#schedule-planning`;
+  // Publish opens Build and publish (board O-BuildPublish): the week's drafts and one "Publish N drafts".
+  const publishHref = `/app/schedule/publish?week=${weekStart}`;
   return (
     <CorpPage className="c-sched c-page--wide" labelledBy="schedule-title">
       <CorpTitle id="schedule-title" title="Schedule"
