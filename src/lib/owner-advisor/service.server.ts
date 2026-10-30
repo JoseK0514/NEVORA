@@ -10,6 +10,7 @@ import { investigate, type Transport } from "./loop.server";
 import { readOwnerAttention } from "./briefing.server";
 import { AdvisorNotebook } from "./notebook.server";
 import { NotebookError, notebookContext } from "./notebook";
+import { coverageAction } from "./coverage-actions.server";
 /** Owner-only orchestration for snapshots, saved priorities, review dispositions and
  * bounded provider questions. ask reserves its request ID/daily allowance before
  * provider I/O and persists answer/history together; identical completed requests
@@ -77,6 +78,9 @@ export async function advisorService(
     } satisfies AdvisorSnapshot;
   }
   const command = parseCommand(value);
+  if (command.op === "prepare_coverage_draft" || command.op === "apply_coverage_draft" || command.op === "check_coverage_draft") {
+    return { ...(await coverageAction(store, command, signal, env)), ...(await observation()) };
+  }
   if (command.op === "inspect") {
     const result = await tools.run(command.tool);
     return { state: "answered" as const, answer: {

@@ -15,7 +15,7 @@ export type CoverageDraftReview = {
 };
 export type CoverageDraftReceipt = { operationId: string; reviewId: string; savedAt: string; count: number };
 export type CoverageDraftProgress = {
-  state: "current" | "changed" | "unavailable"; observedAt: string;
+  state: "current" | "changed" | "unavailable"; observedAt: string; timeZone: string;
   assignmentsPresent: number; assignmentsTotal: number; publishedAssignments: number;
   coverage: CoverageMeasure | null; scopeComplete: boolean;
 };

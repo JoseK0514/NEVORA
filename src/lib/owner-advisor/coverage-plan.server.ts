@@ -141,6 +141,15 @@ function stable(value: unknown): string {
   if (value && typeof value === "object") return `{${Object.entries(value).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => `${JSON.stringify(k)}:${stable(v)}`).join(",")}}`;
   return JSON.stringify(value) ?? "null";
 }
+export const coverageSourceVersion = (source: GenerationSource) => createHash("sha256").update(stable(source)).digest("hex");
+export async function captureCoverageSource(store: AdvisorStore, signal: AbortSignal) {
+  signal.throwIfAborted();
+  const [row] = await store.transaction<{ source: GenerationSource | null; observedAt: string }>({
+    text: `WITH sizes AS (SELECT ${sizesSql}) SELECT CASE WHEN ${withinSql} THEN ${generationSourceSql} ELSE NULL END AS source,to_jsonb(clock_timestamp()) AS "observedAt" FROM sizes`, values: [],
+  }, signal);
+  if (!row || !row.source || JSON.stringify(row.source).length > 2_000_000) throw new AdvisorError("unavailable");
+  return { source: row.source, observedAt: row.observedAt };
+}
 
 /** One MVCC source observation, with bounded counts before constructing the complete
  * source. Limits decline the whole review; no eligibility row is silently omitted. */
@@ -160,7 +169,7 @@ export async function readCoveragePlans(store: AdvisorStore, date: string, incom
     signal.throwIfAborted();
     const snapshot = mapGenerationSource({ workspaceId: store.original.workspace.id, actorEmployeeId: store.proof.employee.id,
       weekStart: weekStartFor(date), mode: "FILL_GAPS_ONLY", locationScope: { kind: "ALL" } }, row.source, row.observedAt);
-    const sourceVersion = createHash("sha256").update(stable(row.source)).digest("hex");
+    const sourceVersion = coverageSourceVersion(row.source);
     coveragePlans = await compareCoveragePlans(snapshot.input, { ...metadata, sourceVersion }, signal);
   }
   signal.throwIfAborted();
