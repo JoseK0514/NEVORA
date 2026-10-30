@@ -79,9 +79,13 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
     await entryRow(page).waitFor();
     if(kind!=='MISSING_ENTRY')await entryRow(page).click();
     const retry=page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/});await retry.waitFor();
+    // The private view re-checks when its short validity window ends (full-page screenshots take a while) and remounts its
+    // content, closing the entry sheet; the uncertain command survives. Reopen the sheet so each step measures and uses it.
+    const showRetry=async()=>{if(await retry.isVisible())return;if(kind!=='MISSING_ENTRY'){await entryRow(page).waitFor();await entryRow(page).click();}await retry.waitFor();};
     if(kind==='ENTRY_BOUNDARY'&&loss==='after'){
      for(const width of DESKTOP_WIDTHS){
       await page.setViewportSize({width,height:width<=430?844:1000});
+      await showRetry();
       await geometry(page,'.employee-time-correction','employee uncertain request',engine,width);
       const shot=join(evidence,`${engine}-employee-recovery-${width}.png`);await page.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
      }
@@ -93,6 +97,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
       prepare:phone=>phoneUncertainCorrection(phone,'Fictional uncertain phone ENTRY_BOUNDARY command.')});
      await page.bringToFront();
     }
+    await showRetry();
     // WebKit can expose animated disclosure content before it accepts focus.
     await retry.evaluate(async e=>{await new Promise(requestAnimationFrame);await Promise.all((e.closest('details')?.getAnimations({subtree:true})??[]).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})));});
     await retry.focus();
