@@ -13,10 +13,12 @@ import {hashPassword} from '../src/lib/auth/password.ts';
 import {seedOwnedScenario,seedOwnedScenarioOwner,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
 
+// Corporate Employee Home (approved Oct 26): the shift card is the CorpCard #home-shift, labelled by its own header.
+export const HOME_SHIFT_CARD='[aria-labelledby="home-shift-label"]';
 // Shared by H06 and its controlled browser scheduling regression.
 export async function waitForFreshHome(page, freshLocation){
  await page.waitForFunction(fresh=>{
-  const root=document.querySelector('[data-home-state]'),next=document.querySelector('[aria-labelledby="employee-reviewed-next-heading"]');
+  const root=document.querySelector('[data-home-state]'),next=document.querySelector('[aria-labelledby="home-shift-label"]');
   if(!root||!next)return false;
   const text=next.textContent??'';
   const visibleFresh=[next,...next.querySelectorAll('*')].some(node=>{
@@ -27,13 +29,23 @@ export async function waitForFreshHome(page, freshLocation){
  },freshLocation,{timeout:15000});
 }
 
+// Corporate Employee: clock status lives on the Time tab, not on Home. Phones (< 768px) show the Hours records view
+// (its own private read with a footer Refresh); wider layouts show the My time view (the recorded-time read, no Refresh).
+// Ready only when the released status matches and, on phones, Refresh is usable again (not a still-loading frame).
+const TIME_PILL={OFF_CLOCK:'Off the clock',CLOCKED_IN:'On the clock',ON_BREAK:'On break'};
 export async function waitForRecordedTimeReady(page, expectedState){
- const ready=await page.waitForFunction(expected=>{
-  const root=document.querySelector('aside[aria-label="Own recorded time"]');
-  const button=root?.querySelector('button[aria-label="Refresh recorded time"]');
-  if(button&&!button.disabled&&root.querySelector('.employee-time-badge')?.getAttribute('data-state')===expected)return {state:expected,refreshEnabled:true};
+ const ready=await page.waitForFunction(({expected,pill})=>{
+  const hours=document.querySelector('.em-hours[data-hours-view="records"]');
+  if(hours){
+   if(hours.getAttribute('data-hours-state')!=='ready')return false;
+   const button=hours.querySelector('.em-request-footer button');
+   const now=[...hours.querySelectorAll('.c-card')].find(card=>card.querySelector('.c-card__label')?.textContent==='Right now');
+   if(button&&!button.disabled&&button.textContent==='Refresh'&&now?.querySelector('.c-pill')?.textContent===pill)return {state:expected,view:'hours',refreshEnabled:true};
+   return false;
+  }
+  if(document.querySelector('.q-mytime .q-mytime__state')?.getAttribute('data-state')===expected)return {state:expected,view:'my-time',refreshEnabled:null};
   return false;
- },expectedState);
+ },{expected:expectedState,pill:TIME_PILL[expectedState]});
  try{return await ready.jsonValue();}finally{await ready.dispose();}
 }
 
@@ -41,6 +53,8 @@ export async function waitForRecordedTimeReady(page, expectedState){
 export async function runScenario({app,browser,context,page,engine,width,evidenceDirectory,axeFile,runtimeErrors:cellRuntimeErrors}){
  const label=`H${engine==='chromium'?'C':'W'}${width}`,index=[320,375,390,430,768,1024,1440].indexOf(width)+(engine==='webkit'?7:0);
  const scenario=await seedOwnedScenario(app.database.executor,label,index+14),actor=scenario.actors[0],q=(text,values=[])=>app.database.executor.query({text,values});
+ // Release 1 Home is the corporate Employee Home (approved Oct 26); a Lead keeps the v5 view while that role is on hold.
+ await q("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[actor]);
  const checks=[],runtimeErrors=[],screenshots=[],details={stage:'Task11 developer verification',engine,width,actor,checks,screenshots,runtimeErrors};let stage='seed',binding,homeResponse,managerContext,manager;
  cellRuntimeErrors.setStageReader(()=>stage);
  page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({stage,name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]')});});
@@ -59,20 +73,35 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  page.on('request',notificationStart);page.on('requestfinished',notificationFinish);page.on('requestfailed',notificationFailed);page.on('pageerror',nativeError);
  page.on('request',request=>{if(new URL(request.url()).pathname==='/api/employee/home')binding=request.headers()['x-nevora-home'];});
  const shot=async name=>{const path=join(evidenceDirectory,`home-task11-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
- const next=()=>page.locator('[aria-labelledby="employee-reviewed-next-heading"]');
- const assignments=()=>next().getByRole('link',{name:'View schedule',exact:false});
- // v5 (mockup E01): Needs you rows are links; the all-set row and Show all are not items.
- const items=()=>page.locator('[data-home-group] li > a.q-row');
+ const next=()=>page.locator(HOME_SHIFT_CARD);
+ const assignments=()=>next().getByRole('link',{name:'View shift',exact:true});
+ // Corporate (board C-Employee): Things to do lists up to three rows; a "See all N" row opens Notifications.
+ const todo=()=>page.locator('#employee-home-todo');
+ const seeAll=()=>todo().getByRole('link',{name:/^See all \d+$/});
+ const items=()=>todo().locator('li > a.c-row').filter({hasNotText:/^See all \d+$/});
+ const allSet=()=>page.getByText('You’re all set. Nothing needs you right now.',{exact:true});
+ const shownHrefs=async()=>items().evaluateAll(es=>es.map(e=>e.getAttribute('href')));
+ // Clock status (Time tab). Phones show the Right now pill; wider layouts the My time status word.
+ const clockedIn=()=>page.locator('main').getByText(/^(Clocked in|On the clock)$/);
+ const offClock=()=>page.locator('main').getByText(/^(Off clock|Off the clock)$/);
+ const timePaused=()=>page.locator('.em-hours[data-hours-state="paused"]').or(page.locator('.q-mytime').getByText('Updates paused',{exact:true}));
+ const navLink=href=>page.locator(`.mobile-nav a[href="${href}"]:visible, nav[aria-label="Primary navigation"] a[href="${href}"]:visible`).first();
+ const openTime=async expected=>{await navLink('/app/my-time').click();await page.waitForURL(u=>u.pathname==='/app/my-time');const time=await waitForRecordedTimeReady(page,expected);assert.equal(await next().count(),0,'Leaving Home unmounts its private shift card');return time;};
+ const openHome=async()=>{await navLink('/app').click();await page.waitForURL(u=>u.pathname==='/app');await ready();};
+ const timeReadPath=view=>view==='hours'?'**/api/employee/hours/**':'**/api/employee/my-time';
+ // Phones: the Hours footer Refresh (keeps the shown status while it reads). My time has no Refresh; it re-reads when
+ // the app returns to the front (the same storage lifecycle sync Home uses).
+ const refreshTime=async view=>{if(view==='hours')await page.locator('.em-hours .em-request-footer').getByRole('button',{name:'Refresh',exact:true}).click();else await page.evaluate(()=>window.dispatchEvent(new Event('storage')));};
  const actionHrefs=result=>{const rows=result.snapshot.attention.filter(item=>item.required||item.actionable),weeks=rows.filter(item=>item.ref.kind==='SCHEDULE'&&!item.label.startsWith('Schedule removed'));return rows.filter(item=>!weeks.includes(item)||item===weeks[0]).map(item=>item.href);};
- const showAllRows=async()=>{const group=page.locator('[data-home-group="actions"]'),more=group.getByRole('button',{name:/^Show all \d+$/});if(await more.count()){await more.focus();await page.keyboard.press('Enter');await group.getByRole('button',{name:'Show fewer',exact:true}).waitFor();}};
  const recorded=()=>page.locator('aside[aria-label="Own recorded time"]');
+ const nativeTab=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',nativeBackTab=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
  const ready=async()=>{await page.locator('[data-home-state="partial"],[data-home-state="ready"]').waitFor();await page.waitForLoadState('networkidle');};
  const refresh=async()=>{
   await page.bringToFront();await ready();
   try {
    // v5 has no manual Refresh: Home re-reads when the app returns to the front (the same lifecycle sync).
    const [response]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/employee/home'),page.evaluate(()=>window.dispatchEvent(new Event('storage')))]);
-   await response.finished();await ready();await showAllRows();
+   await response.finished();await ready();
   } catch(error) {
    const diagnostic=await page.evaluate(()=>{
     const button=document.querySelector('[data-home-refresh]'),root=document.querySelector('[data-home-state]');
@@ -149,41 +178,41 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  await q("INSERT INTO clocker_devices(id,location_id,name) VALUES($1,'loc-1','Fictional Home device')",[label+'-device']);
  await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES($1,$2,'loc-1',$3,clock_timestamp()-interval '20 minutes','CLOCKED_IN')",[label+'-time',actor,label+'-device']);
  stage='loading';const loading=gate('**/api/employee/home');await page.route(loading.path,loading.handler);await login(page,actor,{waitForIdle:false});await loading.seen;
- assert(await page.getByText('Loading Home…',{exact:true}).isVisible());assert.equal(await assignments().count(),0);assert.equal(await items().count(),0);assert.equal(await recorded().count(),0,'v5 Home mounts the clock only with released Home data and a shift under way');assert.equal(await page.getByText('Clocked in',{exact:true}).count(),0);await shot('loading');loading.release();await ready();await page.unroute(loading.path,loading.handler);
- await page.getByText('Clocked in',{exact:true}).waitFor();
+ // Corporate Home never mounts a clock panel: clock status lives on the Time tab (checked below and in H05/H07/H11).
+ assert(await page.getByText('Loading your shift…',{exact:true}).isVisible());assert.equal(await assignments().count(),0);assert.equal(await items().count(),0);assert.equal(await todo().count(),0);assert.equal(await recorded().count(),0,'Corporate Home has no clock panel');assert.equal(await page.getByText('On shift now',{exact:true}).count(),0);assert.equal(await page.getByRole('heading',{level:1,name:/^Welcome back/}).count(),0,'The name is private and waits for released Home data');await shot('loading');loading.release();await ready();await page.unroute(loading.path,loading.handler);
+ await next().getByText('On shift now',{exact:true}).waitFor();
  assert.equal(homeResponse.state,'partial');assert.equal(homeResponse.allSet,false);assert.equal(homeResponse.snapshot.sources.communications.state,'complete');assert.equal(homeResponse.snapshot.nextShift.shiftId,scenario.sourceId);assert.equal(homeResponse.snapshot.currentShift.shiftId,label+'-ongoing');
- assert.equal(await page.getByRole('heading',{level:1}).count(),1);assert.equal(homeResponse.snapshot.publicationState,'partial');assert.equal(await page.locator('[data-home-state="ready"]').count(),1,'complete source reads are ready while the publication note explains unpublished locations');assert(await next().getByRole('status').filter({hasText:/published this week yet\. Shifts shown are published\.$/}).isVisible());assert.equal(await page.getByText("You’re all set",{exact:true}).count(),0);
+ assert.equal(await page.getByRole('heading',{level:1}).count(),1);assert.equal(await page.getByRole('heading',{level:1,name:'Welcome back, QA '+label,exact:true}).count(),1);assert.equal(homeResponse.snapshot.publicationState,'partial');assert.equal(await page.locator('[data-home-state="ready"]').count(),1,'complete source reads are ready while the publication note explains unpublished locations');
+ const publicationNote=page.locator('.c-ehome__body > .c-note').filter({hasText:/published this week yet\. Shifts shown are published\.$/});assert(await publicationNote.isVisible());assert(await next().evaluate((card,note)=>!!(card.compareDocumentPosition(note)&Node.DOCUMENT_POSITION_FOLLOWING),await publicationNote.elementHandle()),'The publication note follows the shift card');assert.equal(await allSet().count(),0);
  assert.equal(await page.getByText('Some Home sections could not be fully checked. Counts show known items. Refresh Home below to check again.',{exact:true}).count(),0,'an unpublished location is explained by publication state, not a failed read');
- assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE HOME SENTINEL'));assert(await next().getByText('Scheduled now',{exact:true}).isVisible());
- const hierarchy=await page.locator('[aria-labelledby="employee-reviewed-next-heading"],[data-home-group="actions"]').evaluateAll(es=>({tops:es.map(e=>(e.querySelector('[aria-label="Scheduled now"]')?.parentElement??e).getBoundingClientRect().top),nextBeforeActions:es.length===2&&!!(es[0].compareDocumentPosition(es[1])&Node.DOCUMENT_POSITION_FOLLOWING)}));assert.equal(hierarchy.tops.length,2);assert(hierarchy.nextBeforeActions);assert(hierarchy.tops[0]<=hierarchy.tops[1]);details.homeHierarchy=hierarchy;
+ assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE HOME SENTINEL'));assert(await next().getByText('On shift now',{exact:true}).isVisible());assert.equal(await assignments().count(),1);
+ const hierarchy=await page.locator(HOME_SHIFT_CARD+',#employee-home-todo').evaluateAll(es=>({tops:es.map(e=>e.getBoundingClientRect().top),nextBeforeActions:es.length===2&&!!(es[0].compareDocumentPosition(es[1])&Node.DOCUMENT_POSITION_FOLLOWING)}));assert.equal(hierarchy.tops.length,2);assert(hierarchy.nextBeforeActions);assert(hierarchy.tops[0]<=hierarchy.tops[1]);details.homeHierarchy=hierarchy;
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await shot('ready');
- checks.push('H01 actual loading contains no private row/success; Scheduled now leads and the persisted future Next shift follows, with actual recorded Clocked In coexisting; six-source canonical communications complete and private notes absent');
- // v5 (mockup E01): Needs you lists what to do (weeks to confirm share one row); Show all reveals the rest by keyboard.
- // Informational updates live in Notifications, not on Home. Row membership/order comes only from the canonical response.
+ // Corporate (board C-Employee): Things to do shows the first three rows (weeks to confirm share one row) in the
+ // canonical order, then "See all N", which opens Notifications. Informational updates are read in Notifications.
  details.homeDisclosures=[];
  {
-  const group=page.locator('[data-home-group="actions"]'),expected=actionHrefs(homeResponse),more=group.getByRole('button',{name:/^Show all \d+$/});
-  assert(await group.isVisible());assert.equal(await more.count(),expected.length>3?1:0);
-  const disclosure={kind:'actions',rows:expected.length,hasOverflow:expected.length>3,keyboardObserved:false};
-  if(expected.length>3){
-   assert.equal(await group.locator('li > a.q-row').count(),3);await more.focus();await page.keyboard.press('Enter');
-   const fewer=group.getByRole('button',{name:'Show fewer',exact:true});await fewer.waitFor();assert.equal(await fewer.getAttribute('aria-expanded'),'true');assert(await fewer.evaluate(e=>e===document.activeElement&&e.matches(':focus-visible')));
-   for(const link of await group.locator('li > a.q-row').all()){await link.waitFor({state:'visible'});assert(await link.isVisible());}
-   await page.keyboard.press('Enter');await group.getByRole('button',{name:/^Show all \d+$/}).waitFor();assert.equal(await group.locator('li > a.q-row').count(),3);await showAllRows();disclosure.keyboardObserved=true;
-  }
-  assert.deepEqual(await group.locator('li > a.q-row').evaluateAll(es=>es.map(e=>e.getAttribute('href'))),expected);
-  details.homeDisclosures.push(disclosure);
+  const expected=actionHrefs(homeResponse);
+  assert(await todo().isVisible());assert.equal(await todo().locator('#employee-home-todo-label').textContent(),`Things to do (${expected.length})`);
+  assert.deepEqual(await shownHrefs(),expected.slice(0,3));assert.equal(await seeAll().count(),expected.length>3?1:0);
+  if(expected.length>3){assert.equal(await seeAll().getAttribute('href'),'/app/notifications');assert.equal((await seeAll().textContent()).trim(),`See all ${expected.length}`);}
+  details.homeDisclosures.push({kind:'actions',rows:expected.length,hasOverflow:expected.length>3,seeAll:expected.length>3});
  }
- assert.equal(await page.locator('[data-home-group="updates"]').count(),0,'Informational updates are read in Notifications');
- assert.equal(await items().count(),actionHrefs(homeResponse).length);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);for(const item of homeResponse.snapshot.attention.filter(item=>item.ref.kind==='SCHEDULE'&&(item.required||item.actionable)))assert.equal(await page.locator(`[data-home-group] time[datetime="${item.ref.id}"]`).count(),1);const leave=homeResponse.snapshot.attention.filter(item=>item.ref.kind==='TIME_OFF');assert.equal(new Set(leave.map(item=>item.label)).size,7);for(const item of leave)assert.equal(await page.locator('.employee-home').getByText(item.label,{exact:true}).count(),0);await shot('show-all');
- checks.push('H02 actual Needs you membership and order follow the canonical response (weeks share one row); keyboard Show all/Show fewer exposes every row; weekly reviews carry their own week dates; informational updates stay in Notifications; no compact consent or Mark read');
+ for(const item of homeResponse.snapshot.attention.filter(item=>!item.required&&!item.actionable))assert.equal(await page.locator('.employee-home').getByText(item.label,{exact:true}).count(),0,'Informational updates are read in Notifications');
+ assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);
+ {const weeks=homeResponse.snapshot.attention.filter(item=>item.ref.kind==='SCHEDULE'&&!item.label.startsWith('Schedule removed')&&(item.required||item.actionable));if(weeks.length&&actionHrefs(homeResponse).slice(0,3).includes(weeks[0].href))for(const item of weeks)assert.equal(await todo().locator(`time[datetime="${item.ref.id}"]`).count(),1);}
+ const leave=homeResponse.snapshot.attention.filter(item=>item.ref.kind==='TIME_OFF');assert.equal(new Set(leave.map(item=>item.label)).size,7);for(const item of leave)assert.equal(await page.locator('.employee-home').getByText(item.label,{exact:true}).count(),0);await shot('show-all');
+ checks.push('H02 actual Things to do membership and order follow the canonical response (weeks share one row): the first three rows, then See all N to Notifications when more; weekly reviews carry their own week dates; informational updates stay in Notifications; no compact consent or Mark read');
+ // Re-anchored clock status: Home shows the shift under way; the actual recorded Clocked in is on the Time tab.
+ details.timeClockedIn=await openTime('CLOCKED_IN');assert(await clockedIn().first().isVisible());await shot('time-clocked-in');await openHome();await next().getByText('On shift now',{exact:true}).waitFor();
+ checks.push('H01 actual loading contains no private row/name/success; the shift under way leads (On shift now) with the persisted next shift in the canonical read; the actual recorded Clocked in shows on the Time tab while Home keeps no clock; six-source canonical communications complete and private notes absent');
  stage='canonical-communications';
  const ownerId=await seedOwnedScenarioOwner(app.database.executor,label);
  managerContext=await browser.newContext({viewport:{width,height:900}});await managerContext.route('**/*',route=>new URL(route.request().url()).origin===new URL(app.url).origin?route.continue():route.abort());manager=await managerContext.newPage();await login(manager,ownerId);
  const [ownerSession]=await q('SELECT token_hash FROM employee_sessions WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 1',[ownerId]);
  const owner={employee:{id:ownerId},sessionTokenHash:ownerSession.token_hash};
  const [session]=await q('SELECT token_hash FROM employee_sessions WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 1',[actor]);
- const self={employee:{id:actor,firstName:'Fictional',lastName:'Self',role:'LEAD',primaryLocationId:'loc-1'},sessionTokenHash:session.token_hash};
+ const self={employee:{id:actor,firstName:'Fictional',lastName:'Self',role:'EMPLOYEE',primaryLocationId:'loc-1'},sessionTokenHash:session.token_hash};
  // Public lifetime header is derived only from this fixture's actual SQL session;
  // no raw proof is sent to the browser or stored in evidence.
  const communicationAuthority=proof=>createHash('sha256').update(JSON.stringify(['nevora:communication:lifetime:v1',proof.employee.id,proof.sessionTokenHash])).digest('hex');
@@ -196,23 +225,24 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  async function publishUpdate(acknowledgement){const draft={type:'LOCATION_ANNOUNCEMENT',scope:{kind:'LOCATION',locationId:'loc-1'},title:'Operational update '+label+' — revisión 👷',body:'PRIVATE COMPLETE CONTENT '+label,acknowledgement,expiresAt:null};
  const preview=await previewCommunicationAudience(owner,draft,app.database.executor);assert.equal(preview.state,'ready');const result=await executeCommunicationCommand(owner,{kind:'PUBLISH',operationId:randomUUID(),authority:preview.authority,draft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(result.status,'committed');return {result,draft};}
  const required=await publishUpdate('REQUIRED');await refresh();
- const row=()=>page.locator('[data-home-group="actions"] a.q-row[href="/app/updates/'+required.result.id+'"]');
- assert(await row().getByText('Review needed',{exact:true}).isVisible());assert.equal(await page.getByText("You’re all set",{exact:true}).count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
+ const row=()=>todo().locator('a.c-row[href="/app/updates/'+required.result.id+'"]');
+ // Corporate: a required review carries the Review pill (v5 said "Review needed").
+ assert(await row().locator('.c-pill').getByText('Review',{exact:true}).isVisible());assert.equal(await allSet().count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
  assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);
  assert.equal((await recordCommunicationRead(self,{kind:'MARK_READ',operationId:randomUUID(),authority:communicationAuthority(self),ref:{kind:'COMMUNICATION',id:required.result.id,version:required.result.version}},app.database.executor)).status,'blocked');
- await refresh();assert(await row().getByText('Review needed',{exact:true}).isVisible());await shot('required-push-off');
+ await refresh();assert(await row().locator('.c-pill').getByText('Review',{exact:true}).isVisible());await shot('required-push-off');
  // The Task11 fixture uses the authenticated full-content API before a receipt;
  // Task10 owns the actual detail-screen acknowledgement journey.
  const detail=await readCommunication(self,required.result.id,app.database.executor);assert.equal(detail.state,'ready');assert.equal(detail.body,required.draft.body);
  assert.equal((await executeCommunicationCommand(self,{kind:'ACKNOWLEDGE',operationId:randomUUID(),authority:detail.authority,communicationId:detail.id,expectedRevisionId:detail.revisionId,contentHash:detail.contentHash},app.database.executor)).status,'committed');await refresh();assert.equal(await row().count(),0);
  const revisedDraft={...required.draft,body:'PRIVATE REVISED CONTENT '+label},preview=await previewCommunicationAudience(owner,revisedDraft,app.database.executor);assert.equal(preview.state,'ready');
- const revised=await executeCommunicationCommand(owner,{kind:'REVISE',operationId:randomUUID(),authority:preview.authority,communicationId:required.result.id,expectedRevisionId:required.result.version,draft:revisedDraft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(revised.status,'committed');await refresh();assert(await row().getByText('Review needed',{exact:true}).isVisible());await shot('new-revision');
+ const revised=await executeCommunicationCommand(owner,{kind:'REVISE',operationId:randomUUID(),authority:preview.authority,communicationId:required.result.id,expectedRevisionId:required.result.version,draft:revisedDraft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(revised.status,'committed');await refresh();assert(await row().locator('.c-pill').getByText('Review',{exact:true}).isVisible());await shot('new-revision');
  assert.equal((await executeCommunicationCommand(owner,{kind:'WITHDRAW',operationId:randomUUID(),authority:communicationAuthority(owner),communicationId:required.result.id,expectedRevisionId:revised.version},app.database.executor)).status,'committed');await refresh();assert.equal(await row().count(),0);
- // v5: Home lists what needs you; an optional update is read in Updates. The canonical Home response still carries it.
+ // Home lists what needs you; an optional update is read in Updates. The canonical Home response still carries it.
  const homeRead=()=>page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{cache:'no-store',headers:{'X-Nevora-Home':binding}});return response.json();},binding);
  const optional=await publishUpdate('OPTIONAL');await refresh();
  const optionalItem=(await homeRead()).snapshot.attention.find(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===optional.result.id);assert(optionalItem,'The canonical Home response carries the optional update');assert.equal(optionalItem.required,false);
- assert.equal(await page.locator('[data-home-group="actions"] a[href="/app/updates/'+optional.result.id+'"]').count(),optionalItem.actionable?1:0);
+ {const current=await homeRead();assert.equal(await todo().locator('a[href="/app/updates/'+optional.result.id+'"]').count(),optionalItem.actionable&&actionHrefs(current).slice(0,3).includes('/app/updates/'+optional.result.id)?1:0);}
  const optionalDetail=await readCommunication(self,optional.result.id,app.database.executor);assert.equal(optionalDetail.state,'ready');assert.equal((await recordCommunicationRead(self,{kind:'MARK_READ',operationId:randomUUID(),authority:optionalDetail.authority,ref:{kind:'COMMUNICATION',id:optional.result.id,version:optional.result.version}},app.database.executor)).status,'committed');await refresh();assert.equal(await page.locator('a[href="/app/updates/'+optional.result.id+'"]').count(),0);assert.equal((await homeRead()).snapshot.attention.some(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===optional.result.id),false,'A read optional update leaves the canonical response');
  checks.push('H14 authenticated Home follows actual canonical required receipt, push-off/Mark read denial, revision reset, withdrawal and optional version read; private body is absent and full review stays on Updates');
  // ACTIONS_OVERFLOW_BROWSER_EXTENSION_BEGIN
@@ -222,13 +252,11 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const overflowEvidence=details.actionsOverflow={fixturePublicationCount:4,phase:'baseline',publications:[],withdrawals:[],keyboard:[]};
  const overflowPublished=[];
  const overflowRefresh=async()=>{const observed=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/employee/home');await refresh();const response=await observed;assert.equal(response.status(),200);const result=await response.json();assert(['ready','partial'].includes(result.state));assert.equal(result.snapshot.sources.communications.state,'complete');return result;};
- // v5: overflow is the Needs you Show all / Show fewer button; informational rows are not on Home.
+ // Corporate: the overflow control is the "See all N" row (Show all / Show fewer was removed); every row is listed in
+ // Notifications. Informational rows are not on Home.
  const overflowRows=result=>actionHrefs(result);
- const overflowGroup=()=>page.locator('[data-home-group="actions"]');
- const overflowExpanded=async()=>{const fewer=overflowGroup().getByRole('button',{name:'Show fewer',exact:true});return await fewer.count()?true:await overflowGroup().getByRole('button',{name:/^Show all \d+$/}).count()?false:null;};
- const overflowToggle=async key=>{const control=overflowGroup().getByRole('button',{name:/^(Show all \d+|Show fewer)$/});await control.focus();await page.keyboard.press(key);const after=overflowGroup().getByRole('button',{name:/^(Show all \d+|Show fewer)$/});const observation={key,expanded:await overflowExpanded(),focus:await after.evaluate(e=>({active:e===document.activeElement,visible:e.matches(':focus-visible'),outlineStyle:getComputedStyle(e).outlineStyle,outlineWidth:getComputedStyle(e).outlineWidth}))};overflowEvidence.keyboard.push(observation);assert(observation.focus.active);assert(observation.focus.visible);assert.notEqual(observation.focus.outlineStyle,'none');assert(parseFloat(observation.focus.outlineWidth)>=2);return observation;};
  const overflowBaseline=await overflowRefresh();
- const overflowBaselineOpen={actions:await overflowExpanded()};
+ const overflowBaselineOpen={actions:await seeAll().count()?'see-all':null};
  overflowEvidence.baseline={state:overflowBaseline.state,allSet:overflowBaseline.allSet,hrefs:{actions:overflowRows(overflowBaseline)},open:overflowBaselineOpen};
  let overflowCause=null;
  try{
@@ -242,15 +270,28 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   assert.equal(actionRows.length,overflowEvidence.baseline.hrefs.actions.length+4);
   assert.deepEqual(actionRows.filter(href=>!overflowPublished.some(published=>href==='/app/updates/'+published.result.id)),overflowEvidence.baseline.hrefs.actions);
   for(const published of overflowPublished){const canonical=actual.snapshot.attention.filter(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===published.result.id);assert.equal(canonical.length,1);assert.equal(canonical[0].required,true);assert.equal(canonical[0].ref.version,published.result.version);assert.equal(canonical[0].href,'/app/updates/'+published.result.id);}
-  assert.deepEqual(await overflowGroup().locator('li > a.q-row').evaluateAll(es=>es.map(e=>e.getAttribute('href'))),actionRows);
-  assert.equal(await items().count(),actionRows.length);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);assert.equal(await page.getByText("You’re all set",{exact:true}).count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
-  overflowEvidence.phase='native-keyboard';
-  let observation=await overflowToggle('Enter');assert.equal(observation.expanded,false);assert.equal(await overflowGroup().locator('li > a.q-row').count(),3);
-  observation=await overflowToggle('Enter');assert.equal(observation.expanded,true);
-  for(const link of await overflowGroup().locator('li > a.q-row').all()){await link.waitFor({state:'visible'});assert(await link.isVisible());}
-  observation=await overflowToggle('Space');assert.equal(observation.expanded,false);
-  observation=await overflowToggle('Space');assert.equal(observation.expanded,true);assert.equal(await overflowGroup().locator('li > a.q-row').count(),actionRows.length);
+  assert.deepEqual(await shownHrefs(),actionRows.slice(0,3));assert.equal(await todo().locator('#employee-home-todo-label').textContent(),`Things to do (${actionRows.length})`);
+  assert.equal(await seeAll().count(),1);assert.equal(await seeAll().getAttribute('href'),'/app/notifications');assert.equal((await seeAll().textContent()).trim(),`See all ${actionRows.length}`);
+  assert.equal(await items().count(),3);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);assert.equal(await allSet().count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
   await shot('actions-overflow');
+  overflowEvidence.phase='native-keyboard';
+  // Native Tab reaches See all with visible focus at a 44px target; Enter opens Notifications (a link has no Space activation).
+  await page.locator('h1').click();let seeAllReached=false;
+  for(let i=0;i<60;i++){await page.keyboard.press(nativeTab);if(await seeAll().evaluate(e=>e===document.activeElement)){seeAllReached=true;break;}}
+  assert(seeAllReached,'Native keyboard reaches See all');
+  const focus=await seeAll().evaluate(e=>{const r=e.getBoundingClientRect();return {active:e===document.activeElement,visible:e.matches(':focus-visible'),outlineStyle:getComputedStyle(e).outlineStyle,outlineWidth:getComputedStyle(e).outlineWidth,boxShadow:getComputedStyle(e).boxShadow,width:r.width,height:r.height};});
+  overflowEvidence.keyboard.push({key:'Tab',focus});assert(focus.active);assert(focus.visible);assert(focus.height>=44&&focus.width>=44);
+  assert(focus.outlineStyle!=='none'&&parseFloat(focus.outlineWidth)>=2||/\b2px\b|\b3px\b/.test(focus.boxShadow),'See all shows a visible 2px focus indicator');
+  const openedNotifications=page.waitForURL(u=>u.pathname==='/app/notifications');await page.keyboard.press('Enter');await openedNotifications;overflowEvidence.keyboard.push({key:'Enter',route:'/app/notifications'});
+  overflowEvidence.phase='notifications-list';
+  await page.waitForFunction(()=>{const phone=document.querySelector('.em-messages[data-messages-view="notifications"]');if(phone)return phone.getAttribute('data-messages-state')==='ready';const inbox=document.querySelector('[data-private-view="notifications"]');return !!inbox?.querySelector('[aria-label="Filter notifications"] button:not([disabled])');});
+  const notices=[];
+  for(const published of overflowPublished){
+   const rows=await q("SELECT id FROM notifications WHERE employee_id=$1 AND source_kind='COMMUNICATION' AND source_id=$2 ORDER BY id",[actor,published.result.id]);assert.equal(rows.length,1,'One notification per overflowed update');
+   const shown=page.locator(`[data-inbox-row] > a[href="/app/notifications/open?notificationId=${rows[0].id}"], a.em-request-entry[id="message-${rows[0].id}"]`);assert.equal(await shown.count(),1,'Notifications lists every overflowed update');assert(await shown.isVisible());notices.push(rows[0].id);
+  }
+  overflowEvidence.notifications={listed:notices.length};assert(!(await page.locator('main').innerText()).includes('PRIVATE COMPLETE CONTENT'));await shot('actions-overflow-notifications');
+  await openHome();
  }catch(error){overflowCause=error;throw error;}finally{
   overflowEvidence.phase='withdraw-extra-publications';
   // Try every created publication even on a failed assertion. Never mask the
@@ -263,29 +304,35 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  overflowEvidence.restored={state:restored.state,allSet:restored.allSet,hrefs:{actions:overflowRows(restored)}};
  assert.deepEqual(overflowEvidence.restored.hrefs,overflowEvidence.baseline.hrefs);assert.equal(restored.state,overflowBaseline.state);assert.equal(restored.allSet,overflowBaseline.allSet);
  for(const published of overflowPublished)assert.equal(await page.locator('a[href="/app/updates/'+published.result.id+'"]').count(),0);
- assert.equal(await items().count(),overflowRows(restored).length);
+ assert.deepEqual(await shownHrefs(),overflowRows(restored).slice(0,3));assert.equal(await seeAll().count(),overflowRows(restored).length>3?1:0);
  overflowEvidence.phase='complete';
  // ACTIONS_OVERFLOW_BROWSER_EXTENSION_END
- stage='keyboard';await page.locator('h1').click();const link=next().getByRole('link',{name:'View schedule',exact:false}).first(),tab=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab';let reached=false;
+ stage='keyboard';await page.locator('h1').click();const link=assignments().first(),tab=nativeTab;let reached=false;
  for(let i=0;i<55;i++){await page.keyboard.press(tab);if(await link.evaluate(e=>e===document.activeElement)){reached=true;break;}}
  assert(reached);assert(await link.evaluate(e=>e.matches(':focus-visible')));const rect=await link.boundingBox();assert(rect&&rect.height>=44&&rect.width>=44);
  const measureContrast=()=>link.evaluate(measureRenderedContrast);details.linkContrast={focus:await measureContrast()};await link.evaluate(e=>e.blur());await page.mouse.move(0,0);details.linkContrast.normal=await measureContrast();await link.hover();details.linkContrast.hover=await measureContrast();await page.mouse.down();details.linkContrast.pressed=await measureContrast();await page.mouse.move(0,0);await page.mouse.up();for(const value of Object.values(details.linkContrast))assert(value.ratio>=4.5);await link.focus();
- const myTime=recorded().getByRole('link',{name:'My time',exact:true});await page.locator('h1').click();let clockFocus=false;
- for(let i=0;i<55;i++){await page.keyboard.press(tab);if(await myTime.evaluate(e=>e===document.activeElement)){clockFocus=true;break;}}
- assert(clockFocus);assert(await myTime.evaluate(e=>e.matches(':focus-visible')));details.clockRecoveryFocus=await myTime.evaluate(e=>({outlineStyle:getComputedStyle(e).outlineStyle,outlineWidth:getComputedStyle(e).outlineWidth}));assert.notEqual(details.clockRecoveryFocus.outlineStyle,'none');assert(parseFloat(details.clockRecoveryFocus.outlineWidth)>=2);await link.focus();
+ // Re-anchored clock recovery: Home has no clock panel, so its keyboard route to recorded time is the Time tab.
+ // Phones: the tab bar follows main (forward Tab). Wider layouts: the sidebar precedes main (reverse Tab).
+ const myTime=navLink('/app/my-time');const timeKey=await page.locator('.mobile-nav').isVisible()?tab:nativeBackTab;await page.locator('h1').click();let clockFocus=false;
+ for(let i=0;i<55;i++){await page.keyboard.press(timeKey);if(await myTime.evaluate(e=>e===document.activeElement)){clockFocus=true;break;}}
+ assert(clockFocus);assert(await myTime.evaluate(e=>e.matches(':focus-visible')));details.clockRecoveryFocus=await myTime.evaluate(e=>{const r=e.getBoundingClientRect();return {outlineStyle:getComputedStyle(e).outlineStyle,outlineWidth:getComputedStyle(e).outlineWidth,width:r.width,height:r.height};});assert.notEqual(details.clockRecoveryFocus.outlineStyle,'none');assert(parseFloat(details.clockRecoveryFocus.outlineWidth)>=2);assert(details.clockRecoveryFocus.height>=44&&details.clockRecoveryFocus.width>=44);await link.focus();
  await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.evaluate(()=>{document.documentElement.style.fontSize='';});await shot('focus');
- checks.push('H03 native keyboard reaches visible focus; actual 44px review link, measured normal/hover/pressed/focus contrast, 200% text/reflow and reduced-motion state');
+ checks.push('H03 native keyboard reaches visible focus; actual 44px View shift link, measured normal/hover/pressed/focus contrast, visible 44px keyboard route to the Time tab (clock status), 200% text/reflow and reduced-motion state');
  stage='api';const api=await page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{cache:'no-store',headers:{'X-Nevora-Home':binding}});return {status:response.status,cache:response.headers.get('cache-control'),vary:response.headers.get('vary'),body:await response.json()};},binding);
  assert.equal(api.status,200);assert.equal(api.cache,'no-store, private');assert(api.vary.split(',').map(value=>value.trim().toLowerCase()).includes('cookie'));assert(!JSON.stringify(api.body).match(/PRIVATE HOME SENTINEL|sessionTokenHash|managerNotes/));
  const rejected=await page.evaluate(async()=>{const r=await fetch('/api/employee/home?employeeId=other',{headers:{'X-Nevora-Home':'invalid'}});return r.status;});assert.equal(rejected,400);checks.push('H04 actual authenticated Home API is private/no-store; client identity selectors refused; no source-note/raw-proof disclosure');
- stage='offline';await context.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await page.locator('[data-home-state="paused"]').waitFor();assert.equal(await assignments().count(),0);assert.equal(await page.getByText('Clocked in',{exact:true}).count(),0);assert.equal(await items().count(),0);assert.equal(await recorded().count(),0,'Paused Home unmounts the clock with its private rows');await shot('offline');await context.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));await ready();await page.getByText('Clocked in',{exact:true}).waitFor();checks.push('H05 actual network offline clears assignment and clock rows; online re-entry performs fresh authorized reads');
+ stage='offline';await context.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await page.locator('[data-home-state="paused"]').waitFor();assert.equal(await assignments().count(),0);assert.equal(await page.getByText('On shift now',{exact:true}).count(),0);assert.equal(await items().count(),0);assert.equal(await todo().count(),0);assert.equal(await page.getByRole('heading',{level:1,name:/^Welcome back/}).count(),0,'Paused Home clears the private name');assert.equal(await recorded().count(),0);await shot('offline');await context.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));await ready();await next().getByText('On shift now',{exact:true}).waitFor();
+ // Re-anchored clock rows: the Time tab clears its recorded status offline and re-reads on reconnect.
+ await openTime('CLOCKED_IN');await context.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await timePaused().waitFor();assert.equal(await clockedIn().count(),0,'Offline Time clears the recorded clock status');await shot('time-offline');
+ await context.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));details.timeReconnected=await waitForRecordedTimeReady(page,'CLOCKED_IN');assert(await clockedIn().first().isVisible());await openHome();
+ checks.push('H05 actual network offline clears Home assignment/to-do rows and the Time tab clock status; online re-entry performs fresh authorized reads');
  stage='late-home';
  const lateEvidence={requests:[],observations:[]},requestIds=new Map();details.lateHome=lateEvidence;
  const requestEvent=(event,request)=>{if(new URL(request.url()).pathname!=='/api/employee/home')return;if(!requestIds.has(request))requestIds.set(request,requestIds.size+1);lateEvidence.requests.push({event,id:requestIds.get(request),at:Date.now()});};
  const onRequest=request=>requestEvent('request',request),onFinished=request=>requestEvent('finished',request),onFailed=request=>requestEvent('failed',request);
  page.on('request',onRequest);page.on('requestfinished',onFinished);page.on('requestfailed',onFailed);
  await page.evaluate(fresh=>{
-  const observations=[],observe=event=>{const root=document.querySelector('[data-home-state]'),next=document.querySelector('[aria-labelledby="employee-reviewed-next-heading"]'),text=next?.textContent??'';observations.push({event,at:Date.now(),state:root?.getAttribute('data-home-state'),busy:root?.getAttribute('aria-busy'),fresh:text.includes(fresh),old:text.includes('Main Office Operations and Customer Support'),visible:!!next?.getClientRects().length,visibility:document.visibilityState,focused:document.hasFocus()});};
+  const observations=[],observe=event=>{const root=document.querySelector('[data-home-state]'),next=document.querySelector('[aria-labelledby="home-shift-label"]'),text=next?.textContent??'';observations.push({event,at:Date.now(),state:root?.getAttribute('data-home-state'),busy:root?.getAttribute('aria-busy'),fresh:text.includes(fresh),old:text.includes('Main Office Operations and Customer Support'),visible:!!next?.getClientRects().length,visibility:document.visibilityState,focused:document.hasFocus()});};
   const observer=new MutationObserver(()=>observe('mutation'));observer.observe(document.querySelector('.employee-home'),{subtree:true,childList:true,attributes:true,characterData:true});
   const events=['storage','focus','blur','pageshow','pagehide','online','offline'],handlers=events.map(event=>{const handler=()=>observe(event);window.addEventListener(event,handler);return [event,handler];});
   window.__homeHeldEvidence={observations,observe,stop:()=>{observer.disconnect();for(const [event,handler] of handlers)window.removeEventListener(event,handler);}};observe('initial');
@@ -310,28 +357,30 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  }finally{late.release();await late.done;await page.unroute(late.path,late.handler);lateEvidence.observations=await page.evaluate(()=>{const evidence=window.__homeHeldEvidence;evidence.observe('final');evidence.stop();delete window.__homeHeldEvidence;return evidence.observations;});page.off('request',onRequest);page.off('requestfinished',onFinished);page.off('requestfailed',onFailed);await writeFile(join(evidenceDirectory,`home-held-${engine}-${width}.json`),JSON.stringify(lateEvidence,null,2));}
 
  stage='late-time';
- const timeEvidence={requests:[]};details.lateTime=timeEvidence;
- const timeRequest=(event,request)=>{const path=new URL(request.url()).pathname;if(['/api/employee/home','/api/employee/my-time'].includes(path))timeEvidence.requests.push({event,endpoint:path.endsWith('/home')?'home':'my-time',at:Date.now()});};
+ // Re-anchored: clock status lives on the Time tab, so its own private read is held there.
+ const timeView=(await openTime('CLOCKED_IN')).view;
+ const timeEvidence={view:timeView,requests:[]};details.lateTime=timeEvidence;
+ const timeRequest=(event,request)=>{const path=new URL(request.url()).pathname;if(path==='/api/employee/home'||path==='/api/employee/my-time'||path.startsWith('/api/employee/hours/'))timeEvidence.requests.push({event,endpoint:path.endsWith('/home')?'home':path.endsWith('/my-time')?'my-time':'hours',at:Date.now()});};
  const timeStarted=request=>timeRequest('request',request),timeFailed=request=>timeRequest('failed',request),timeFinished=request=>timeRequest('finished',request);
  page.on('request',timeStarted);page.on('requestfailed',timeFailed);page.on('requestfinished',timeFinished);
- const time=gate('**/api/employee/my-time');await page.route(time.path,time.handler);
+ const time=gate(timeReadPath(timeView));await page.route(time.path,time.handler);
  try{
-  await page.getByRole('button',{name:'Refresh recorded time',exact:true}).click();await time.seen;
+  await refreshTime(timeView);await time.seen;
   await q("UPDATE time_entries SET clock_out_at=clock_timestamp(),status='CLOCKED_OUT' WHERE id=$1",[label+'-time']);
-  timeEvidence.afterDispatch=await page.evaluate(()=>{window.dispatchEvent(new Event('pagehide'));return {at:Date.now(),state:document.querySelector('[data-home-state]')?.getAttribute('data-home-state'),clockedIn:document.querySelector('aside[aria-label="Own recorded time"]')?.textContent.includes('Clocked in')??false};});
+  timeEvidence.afterDispatch=await page.evaluate(()=>{window.dispatchEvent(new Event('pagehide'));return {at:Date.now(),hours:document.querySelector('.em-hours')?.getAttribute('data-hours-state')??null,myTime:document.querySelector('.q-mytime__state')?.getAttribute('data-state')??null};});
   // Synthetic lifecycle dispatch returns before React necessarily commits its
   // invalidated state. Keep the old response held until that commit is visible.
-  await page.locator('[data-home-state="paused"]').waitFor({timeout:15000});assert.equal(await page.getByText('Clocked in',{exact:true}).count(),0);
-  timeEvidence.pausedCommit={at:Date.now(),clockedInCount:await page.getByText('Clocked in',{exact:true}).count(),requestCount:timeEvidence.requests.filter(item=>item.event==='request').length};
-  assert.equal(timeEvidence.pausedCommit.requestCount,1,'Pagehide clearing must not require a new Home or MyTime request');
+  await timePaused().waitFor({timeout:15000});assert.equal(await clockedIn().count(),0);
+  timeEvidence.pausedCommit={at:Date.now(),clockedInCount:await clockedIn().count(),requestCount:timeEvidence.requests.filter(item=>item.event==='request').length};
+  assert.equal(timeEvidence.pausedCommit.requestCount,1,'Pagehide clearing must not require a new Home or Time request');
   time.release();await time.done;assert.equal(time.failure,undefined);timeEvidence.heldOutcome=time.outcome;
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));
-  assert.equal(await page.locator('[data-home-state="paused"]').count(),1);assert.equal(await page.getByText('Clocked in',{exact:true}).count(),0);
+  assert.equal(await timePaused().count(),1);assert.equal(await clockedIn().count(),0);
   timeEvidence.afterHeldSettled={at:Date.now(),state:'paused',clockedInCount:0};
  }finally{time.release();await time.done;await page.unroute(time.path,time.handler);page.off('request',timeStarted);page.off('requestfailed',timeFailed);page.off('requestfinished',timeFinished);await writeFile(join(evidenceDirectory,`home-held-time-${engine}-${width}.json`),JSON.stringify(timeEvidence,null,2));}
- await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));await ready();await page.getByText('Off clock',{exact:true}).waitFor();checks.push('H07 held actual MyTime response after pagehide/unmount cannot restore old Clocked In; fresh re-entry reflects persisted clock-out');
- stage='route-leave';const leaving=gate('**/api/employee/home');await page.route(leaving.path,leaving.handler);await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await leaving.seen;await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');const leavingNavigation=await page.goto(app.url+'/app/requests/hub',{waitUntil:'domcontentloaded'});assert(leavingNavigation?.ok());await page.getByRole('heading',{name:'Requests',exact:true}).waitFor();leaving.release('navigation');await leaving.done;assert.equal(leaving.failure,undefined);details.routeLeaveOutcome=leaving.outcome;await page.unroute(leaving.path,leaving.handler);await page.waitForLoadState('networkidle');assert.equal(await page.locator('[aria-labelledby="employee-reviewed-next-heading"] a[href^="/app/schedule"]').count(),0);await page.goto(app.url+'/app');await ready();checks.push('H08 hard route leave during actual Home read unmounts private Home; re-entry reads current sources');
- if(width===390){stage='sql-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE time_off_requests IN ACCESS EXCLUSIVE MODE');await refresh();const timeOffSource=()=>page.locator('[data-home-group="actions"] a.q-row[href="/app/requests?tab=my"]').filter({hasText:'Couldn’t be checked'});await timeOffSource().waitFor();assert.equal(await assignments().count(),1,'v5 shows one shift card (the shift under way)');await shot('unavailable');await blocker.query('COMMIT');await refresh();assert.equal(await timeOffSource().count(),0);checks.push('H09 actual time-off lock timeout retains independently authorized assignments, discloses unavailable and Retry restores current source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
+ await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));details.timeAfterClockOut=await waitForRecordedTimeReady(page,'OFF_CLOCK');assert(await offClock().first().isVisible());await openHome();checks.push('H07 held actual Time read after pagehide/unmount cannot restore old Clocked In on the Time tab; fresh re-entry reflects persisted clock-out');
+ stage='route-leave';const leaving=gate('**/api/employee/home');await page.route(leaving.path,leaving.handler);await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await leaving.seen;await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');const leavingNavigation=await page.goto(app.url+'/app/requests/hub',{waitUntil:'domcontentloaded'});assert(leavingNavigation?.ok());await page.getByRole('heading',{name:'Requests',exact:true}).waitFor();leaving.release('navigation');await leaving.done;assert.equal(leaving.failure,undefined);details.routeLeaveOutcome=leaving.outcome;await page.unroute(leaving.path,leaving.handler);await page.waitForLoadState('networkidle');assert.equal(await page.locator(HOME_SHIFT_CARD+' a[href^="/app/schedule"]').count(),0);await page.goto(app.url+'/app');await ready();checks.push('H08 hard route leave during actual Home read unmounts private Home; re-entry reads current sources');
+ if(width===390){stage='sql-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE time_off_requests IN ACCESS EXCLUSIVE MODE');await refresh();const timeOffSource=()=>todo().locator('a.c-row[href="/app/requests?tab=my"]').filter({hasText:'Couldn’t be checked'});await timeOffSource().waitFor();assert.equal(await assignments().count(),1,'Independently authorized assignments stay: one shift card');await shot('unavailable');await blocker.query('COMMIT');await refresh();assert.equal(await timeOffSource().count(),0);checks.push('H09 actual time-off lock timeout retains independently authorized assignments, discloses unavailable and Retry restores current source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
  stage='replaced-session';const other=await context.newPage();await login(other,scenario.actors[1]);await other.waitForLoadState('networkidle');await other.close();await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await page.locator('[data-home-state="unauthorized"]').waitFor();assert.equal(await assignments().count(),0);assert.equal(await items().count(),0);assert.equal(await recorded().count(),0);assert(await page.locator('main').getByRole('link',{name:'Sign in',exact:true}).isVisible());await shot('session-replaced');checks.push('H10 actual same-browser account cookie replacement refuses former lifetime binding and clears every Home private row');
  await page.bringToFront();await login();await ready();stage='early-my-time-route';
  const bellHold=gate('**/api/notifications');let bellReads=0;
@@ -350,17 +399,17 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');
  }finally{bellHold.release();await bellHold.done;await page.unroute(bellHold.path,bellHold.handler);page.off('request',observeBell);}
  checks.push('H11 duplicate foreground focus/pageshow retains one actual held authorized notification read; its returned current count is required');
- await page.bringToFront();await ready();await waitForRecordedTimeReady(page,'OFF_CLOCK');
- const earlyRefresh=recorded().getByRole('button',{name:'Refresh recorded time',exact:true});await earlyRefresh.focus();
+ // Re-anchored: the recorded-time read is the Time tab's, so the early departure leaves from Time.
+ await page.bringToFront();await ready();const earlyView=(await openTime('OFF_CLOCK')).view;
  details.earlyTimeBaseline=await waitForRecordedTimeReady(page,'OFF_CLOCK');
- assert.deepEqual(details.earlyTimeBaseline,{state:'OFF_CLOCK',refreshEnabled:true});
- const early=gate('**/api/employee/my-time');await page.route(early.path,early.handler);await earlyRefresh.click();await early.seen;
+ assert.deepEqual(details.earlyTimeBaseline,{state:'OFF_CLOCK',view:earlyView,refreshEnabled:earlyView==='hours'?true:null});
+ const early=gate(timeReadPath(earlyView));await page.route(early.path,early.handler);await refreshTime(earlyView);await early.seen;
  await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');
  const earlyNavigation=await page.goto(app.url+'/app/schedule?week='+scenario.week,{waitUntil:'domcontentloaded'});assert(earlyNavigation?.ok());await page.getByRole('heading',{level:1,name:'Schedule',exact:true}).waitFor();
  await page.locator('.portal-notification-bell[data-state="ready"]').waitFor({state:'attached'});
  details.earlyTimeDestination=await page.evaluate(()=>({route:location.pathname,bellState:document.querySelector('.portal-notification-bell')?.getAttribute('data-state')}));
  assert.deepEqual(details.earlyTimeDestination,{route:'/app/schedule',bellState:'ready'});
- early.release('navigation');await early.done;assert.equal(early.failure,undefined);details.earlyTimeRouteOutcome=early.outcome;await page.unroute(early.path,early.handler);await page.waitForLoadState('networkidle');await page.goto(app.url+'/app');await ready();checks.push('H11 actual MyTime read interrupted by early hard route navigation produces no stale Home rows or page runtime error; destination notification read is ready before the next departure');
+ early.release('navigation');await early.done;assert.equal(early.failure,undefined);details.earlyTimeRouteOutcome=early.outcome;await page.unroute(early.path,early.handler);await page.waitForLoadState('networkidle');await page.goto(app.url+'/app');await ready();checks.push('H11 actual Time-tab recorded-time read interrupted by early hard route navigation produces no stale Home rows or page runtime error; destination notification read is ready before the next departure');
  stage='removal-review';
  await page.goto(app.url+'/app/schedule?week='+scenario.week);
  await page.getByRole('button',{name:'Confirm schedule',exact:true}).click();
@@ -369,12 +418,18 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const [published]=await q('SELECT id FROM schedule_publication_revisions WHERE week_start=$1 ORDER BY revision_number DESC LIMIT 1',[scenario.week]);
  assert.equal(ack.publication_revision_id,published.id);
  await page.goto(app.url+'/app');await ready();
- stage='empty';await q('DELETE FROM shifts WHERE employee_id=$1',[actor]);await refresh();await next().getByText('No upcoming shift',{exact:true}).waitFor();assert.equal(await page.getByText('Scheduled now',{exact:true}).count(),0);assert.equal(await page.getByText("You’re all set",{exact:true}).count(),0);await shot('empty');checks.push('H12 actual no-future-assignment state uses precise empty copy and incomplete publication/other attention prevents all-clear');
- stage='last-shift-removal';
+ stage='empty';await q('DELETE FROM shifts WHERE employee_id=$1',[actor]);await refresh();
+ // Publish changes (5f234911, Jose Oct 29/30): an edit to a published week is held, and Home keeps the last
+ // published shift until the Owner publishes. Then both weeks are published without this person's shifts.
+ assert.equal(await assignments().count(),1,'A held, unpublished removal leaves the published next shift on Home');
+ await publishScheduleWithRevision({locationId:'loc-1',weekStart:clock.week,managerId:'QAOWNER'},app.database.executor);
  await publishScheduleWithRevision({locationId:'loc-1',weekStart:scenario.week,managerId:'QAOWNER'},app.database.executor);
+ await refresh();await next().getByText('No upcoming shift. New shifts show here once they’re published.',{exact:true}).waitFor();assert.equal(await assignments().count(),0);assert.equal(await page.getByText('On shift now',{exact:true}).count(),0);assert.equal(await allSet().count(),0);await shot('empty');checks.push('H12 actual held edit stays invisible until published; then the no-future-assignment state uses precise empty copy and incomplete publication/other attention prevents all-clear');
+ stage='last-shift-removal';
+ // The removal was published in the empty stage (held edits publish together); this is its current review.
  await refresh();
- const removed=page.locator('[data-home-group="actions"] a.q-row[href="/app/schedule?week='+scenario.week+'"]');
- await removed.getByText('Schedule removed',{exact:true}).waitFor();assert(await removed.getByText('Review needed',{exact:true}).isVisible());
+ const removed=todo().locator('a.c-row[href="/app/schedule?week='+scenario.week+'"]');
+ await removed.getByText('Schedule removed',{exact:true}).waitFor();assert(await removed.locator('.c-pill').getByText('Review',{exact:true}).isVisible());
  const removalResponse=await page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{headers:{'X-Nevora-Home':binding},cache:'no-store'});return response.json();},binding);
  details.removalSource=removalResponse.snapshot.sources.acknowledgements;
  assert.equal(details.removalSource.state,'partial');assert.equal(details.removalSource.reason,'unpublished');
@@ -388,10 +443,10 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='complete-zero';const clearActor='QA-'+label+'-CLEAR';
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,'Fictional','Clear','555-0197','EMPLOYEE','loc-1')",[clearActor]);
  await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[clearActor,await hashPassword(TEST_PASSWORD)]);
- await login(page,clearActor);await ready();await page.getByText("You’re all set",{exact:true}).waitFor();assert.equal(await page.locator('[data-home-state="ready"]').count(),1);assert.equal(await items().count(),0);await shot('all-set');
+ await login(page,clearActor);await ready();await allSet().waitFor();assert.equal(await page.locator('[data-home-state="ready"]').count(),1);assert.equal(await items().count(),0);assert.equal(await todo().count(),0);await shot('all-set');
  const clearApi=await page.evaluate(async binding=>{const r=await fetch('/api/employee/home',{cache:'no-store',headers:{'X-Nevora-Home':binding}});return r.json();},binding);assert.equal(clearApi.allSet,true);assert.equal(clearApi.snapshot.publicationState,'complete');for(const source of Object.values(clearApi.snapshot.sources))assert.equal(source.state,'complete');
  checks.push('H15 actual new eligible account has no historical communication grants; all six canonical sources/publication complete and zero items yield exact all-set copy');
- if(width===390){stage='communication-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE communications IN ACCESS EXCLUSIVE MODE');await refresh();await page.locator('[data-home-group="actions"] a.q-row[href="/app/updates"]').filter({hasText:'Couldn’t be checked'}).waitFor();assert.equal(await page.getByText("You’re all set",{exact:true}).count(),0);await shot('communications-unavailable');await blocker.query('COMMIT');await refresh();await page.getByText("You’re all set",{exact:true}).waitFor();checks.push('H16 actual communication SQL lock failure suppresses all-clear and Retry restores current complete zero source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
+ if(width===390){stage='communication-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE communications IN ACCESS EXCLUSIVE MODE');await refresh();await todo().locator('a.c-row[href="/app/updates"]').filter({hasText:'Couldn’t be checked'}).waitFor();assert.equal(await allSet().count(),0);await shot('communications-unavailable');await blocker.query('COMMIT');await refresh();await allSet().waitFor();checks.push('H16 actual communication SQL lock failure suppresses all-clear and Retry restores current complete zero source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
  stage='axe-diagnostic';await page.addScriptTag({path:axeFile});details.axe=await page.evaluate(async()=>{const result=await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}});return result.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>({target:n.target.map(t=>String(t).replace(/\[[^\]]*\]/g,'[attribute]')),contrast:n.any.filter(a=>a.id==='color-contrast').map(a=>({ratio:a.data?.contrastRatio,foreground:a.data?.fgColor,background:a.data?.bgColor}))}))}));});assert.deepEqual(details.axe,[]);
  details.runtimeErrors=runtimeErrors;assert.deepEqual(runtimeErrors,[]);details.html=await page.locator('.employee-home').innerHTML();await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-checks.json`),JSON.stringify(details,null,2));return {checks};
  }catch(error){details.failedStage=stage;details.failure={name:error.name,code:error.code??null,message:'Browser step failed; see named stage and source location',location:error.stack?.split('\n').find(line=>line.includes('phase-e-home-browser-scenarios.mjs'))};await shot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-failure.json`),JSON.stringify(details,null,2));throw error;}finally{page.off('request',notificationStart);page.off('requestfinished',notificationFinish);page.off('requestfailed',notificationFailed);page.off('pageerror',nativeError);await writeFile(join(evidenceDirectory,`home-lifecycle-${engine}-${width}-report.json`),JSON.stringify({engine,width,events:details.lifecycleTrace},null,2));await managerContext?.close();}
