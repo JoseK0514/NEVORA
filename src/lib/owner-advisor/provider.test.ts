@@ -59,6 +59,14 @@ it("uses the Chat Completions wire format without unsupported parallel or reason
   expect(init.redirect).toBe("error");
 });
 
+it("uses the native OpenAI completion-token bound instead of the legacy max_tokens field", async () => {
+  const fetch = fixtureFetch([chat()]);
+  await investigate({ ...config, endpoint: "https://api.openai.com/v1/chat/completions" }, [], "", "Ask", { ...dependencies(), fetch });
+  const body = JSON.parse(String(fetch.mock.calls[0][1].body));
+  expect(body.max_completion_tokens).toBe(4096);
+  expect(body).not.toHaveProperty("max_tokens");
+});
+
 it.each(["A short answer.", [{ type: "text", text: "One fact. " }, { type: "text", text: "A second fact." }]])("reads bounded gateway text shapes %#", async content => {
   const result = await investigate(config, [], "", "Ask", { ...dependencies(), fetch: fixtureFetch([chat(content)]) });
   expect(result.text).toBe(typeof content === "string" ? "A short answer." : "One fact. A second fact.");

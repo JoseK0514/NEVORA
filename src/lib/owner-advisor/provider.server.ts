@@ -99,7 +99,9 @@ export function providerBody(
       tools: tools.map(({ type, ...definition }) => ({ type, function: definition })),
       // Neon's unified catalog documents max_tokens. Do not send
       // parallel_tool_calls/reasoning/temperature: some models reject them.
-      max_tokens: 4096,
+      ...(config.endpoint === "https://api.openai.com/v1/chat/completions"
+        ? { max_completion_tokens: 4096 }
+        : { max_tokens: 4096 }),
     }
     : {
       model: config.model, store: false, include: ["reasoning.encrypted_content"],
