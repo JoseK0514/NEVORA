@@ -2,7 +2,7 @@ import {reviewedFixtureSource} from './shift-change-api';
 import { randomUUID } from 'node:crypto';
 import { beforeAll, afterAll, it, expect } from 'vitest';
 import { createDisposableExchangeDatabase } from './local-postgres';
-import { fixtureShift, seedShiftChanges, proof } from './shift-change-fixture';
+import { fixtureShift, seedShiftChanges, proof, publishFixtureWeek } from './shift-change-fixture';
 import { executeShiftChange } from '../../lib/data/shift-changes';
 import { runShiftChangeMaintenance } from '../../lib/data/shift-change-maintenance';
 import { loadWorkspaceNotificationConfig } from '../../lib/notifications/config';
@@ -401,6 +401,8 @@ it('R02 target-side cross-location report retains old trade location access filt
     const a = await fixtureShift(db.executor, 'cross-source', 'e1', '2035-11-09');
     await fixtureShift(db.executor, 'cross-target', 'e3', '2035-11-10');
     await q("UPDATE shifts SET schedule_id='cross-report' WHERE id='cross-target'");
+    // Publish changes: a raw move is a held edit until published; publish it so the trade binds to shown terms.
+    await publishFixtureWeek(db.executor);
     await q("INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) SELECT 'cross-window-'||d,'loc-2',d,'00:00','24:00' FROM generate_series(0,6)d");
     await q("UPDATE location_staffing_settings SET minimum_staff_per_shift=1,requires_designated_lead=false WHERE location_id='loc-2'");
     const { readShiftChangeTerms } = await import('../../lib/data/shift-change-snapshot');
@@ -443,6 +445,7 @@ it.each(['collect-after-escalation', 'queued-before-escalation', 'queued-legacy-
     const shiftId = 'attention-' + phase;
     await fixtureShift(db.executor, shiftId, 'e1', businessDate(start, zone));
     await q('UPDATE shifts SET start_time=$2,end_time=$3 WHERE id=$1', [shiftId, businessTime(start, zone), businessTime(end, zone)]);
+    await publishFixtureWeek(db.executor); // Publish changes: publish the retimed fixture so the offer binds to shown terms.
     const [row] = await q('SELECT to_jsonb(sh) AS sh FROM shifts sh WHERE id=$1', [shiftId]);
     const terms = sourceShiftTerms(row.sh as Record<string, unknown>, { id: 'schedule', locationId: 'loc-1', weekStart: '2035-10-01', status: 'PUBLISHED' }, 'workspace-fuel', zone);
     const result = await executeShiftChange(proof('e1'), { kind: 'OFFER_COVERAGE', operationId: randomUUID(), sourceShiftId: shiftId, sourceEpisodeId: terms.assignmentEpisodeId, sourceTermsFingerprint: shiftTermsFingerprint(terms) }, db.executor);

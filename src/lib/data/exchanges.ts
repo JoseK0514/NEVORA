@@ -1,4 +1,5 @@
 import { databaseDate as dateValue } from './database-date';
+import { heldShiftEditSql } from './held-edits-sql';
 import {projectShiftChangeState} from '../shift-changes/maintenance';
 import {resolveShiftChangePolicy} from '../shift-changes/policy';
 import type {ShiftTerms} from '../shift-changes/types';
@@ -233,6 +234,7 @@ export async function getPublishedShift(shiftId: string, executor?: SqlExecutor)
      JOIN locations l ON l.id = s.location_id
      WHERE sh.id = $1
        AND s.status = 'PUBLISHED'
+       AND NOT ${heldShiftEditSql('sh', 's')}
      LIMIT 1`,
     [shiftId],
     ),
@@ -275,6 +277,7 @@ export async function listEmployeePublishedShifts(
      WHERE sh.employee_id = $1
        AND sh.date >= $2
        AND s.status = 'PUBLISHED'
+       AND NOT ${heldShiftEditSql('sh', 's')}
        ${includeParticipating ? '' : `AND NOT EXISTS (
          SELECT 1
          FROM shift_exchanges x
@@ -331,6 +334,7 @@ export async function listSwapTargets(
        AND EXISTS (SELECT 1 FROM employees viewer JOIN employee_location_eligibility access ON access.employee_id=viewer.id JOIN workspaces w ON w.id=l.workspace_id AND w.active WHERE viewer.id=$1 AND viewer.active AND viewer.role IN ('EMPLOYEE','LEAD') AND access.location_id=l.id)
        AND s.week_start = $2
        AND s.status = 'PUBLISHED'
+       AND NOT ${heldShiftEditSql('sh', 's')}
        AND NOT EXISTS (
          SELECT 1
          FROM shift_exchanges x
@@ -359,6 +363,7 @@ export async function listOpenCoverage(
        AND x.requested_by_employee_id <> $1
        AND source.date >= $2
        AND source_schedule.status = 'PUBLISHED'
+       AND NOT ${heldShiftEditSql('source', 'source_schedule')}
        AND source_location.active AND requester.active
        AND EXISTS (SELECT 1 FROM employees viewer JOIN employee_location_eligibility access ON access.employee_id=viewer.id JOIN workspaces w ON w.id=source_location.workspace_id AND w.active WHERE viewer.id=$1 AND viewer.active AND viewer.role IN ('EMPLOYEE','LEAD') AND access.location_id=source_location.id)
      ORDER BY source.date, source.start_time`,

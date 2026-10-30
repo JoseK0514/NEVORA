@@ -1,5 +1,5 @@
 import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
-import {readOperationalSchedule} from '@/lib/company-access/operational-read.server';
+import {readOperationalSchedule,readSchedulePendingChanges} from '@/lib/company-access/operational-read.server';
 import {ScopedOperationalSchedule} from '@/components/company-access/scoped-operational-views';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
@@ -104,6 +104,7 @@ export default async function SchedulePage({
     view?: string;
     intent?: string;
     shift?: string;
+    changesPublished?: string;
   }>;
 }) {
   const session = await requireSession();
@@ -225,7 +226,7 @@ export default async function SchedulePage({
   // Status chips and hour targets are optional context: a failed read hides them, never shows zero.
   // The week's facts Home used to show (availability received, open shifts, the last publication) come from the
   // dashboard's existing read, which Schedule now owns (clean Manager v3). A failed read leaves those lines out.
-  const [positions, capturedPositions, generationReview, scheduleStatuses, hourTargets, weekRead, absences] = await Promise.all([
+  const [positions, capturedPositions, generationReview, scheduleStatuses, hourTargets, weekRead, absences, pendingRead] = await Promise.all([
     listPositions({ includeInactive: true }),
     listCapturedShiftPositions({
       weekStart,
@@ -239,7 +240,11 @@ export default async function SchedulePage({
     listEmployeeHourTargets().catch(() => null),
     requireSessionMutationProof().then(proof => loadManagerDashboardData(weekStart, proof)).catch(() => null),
     readWeeklyApprovedAbsences(await requireSessionMutationProof(), weekStart),
+    // Publish changes: edits to a published week wait for the Owner; a failed read hides the count, never shows zero.
+    requireSessionMutationProof().then(proof => readSchedulePendingChanges(proof, { weekStart })).catch(() => null),
   ]);
+  const pending = pendingRead?.state === "ready" && pendingRead.data.hasPendingChanges ? pendingRead.data : null;
+  const changedShiftIds = pending ? pending.changes.flatMap(change => change.kind !== "REMOVED" && change.shiftId ? [change.shiftId] : []) : [];
   const statusFor = (locationId: string) => scheduleStatuses ? scheduleStatuses.find(row => row.locationId === locationId)?.status ?? "NONE" : null;
   const targetsById = new Map((hourTargets ?? []).map(target => [target.employeeId, target]));
   const capturedByShift = new Map(capturedPositions.map(shift => [shift.sourceShiftId, shift]));
@@ -315,8 +320,11 @@ export default async function SchedulePage({
   // the availability deadline one tap away. Desktop keeps the people × days grid.
   const inView = selectedLocation === "all" ? locations : locations.filter(location => location.id === selectedLocation);
   const counts = scheduleStatuses ? { published: inView.filter(l => statusFor(l.id) === "PUBLISHED").length, drafts: inView.filter(l => statusFor(l.id) === "DRAFT").length } : null;
+  const changes = pending ? pending.locations.filter(row => selectedLocation === "all" || row.locationId === selectedLocation).reduce((sum, row) => sum + row.pendingCount, 0) : 0;
+  const changesText = changes ? ` · ${changes} ${changes === 1 ? "change" : "changes"}` : "";
   const weekState = !counts || !inView.length ? null
-    : counts.drafts ? <CorpPill tone="amber">{counts.drafts === inView.length ? "Draft" : `${counts.drafts} ${counts.drafts === 1 ? "draft" : "drafts"}`}</CorpPill>
+    : changes && !counts.drafts ? <CorpPill tone="amber">{`Published${changesText}`}</CorpPill>
+    : counts.drafts ? <CorpPill tone="amber">{`${counts.drafts === inView.length ? "Draft" : `${counts.drafts} ${counts.drafts === 1 ? "draft" : "drafts"}`}${changesText}`}</CorpPill>
     : counts.published === inView.length ? <CorpPill tone="teal">Published</CorpPill>
     : counts.published ? <CorpPill tone="neutral">{`${counts.published} of ${inView.length} published`}</CorpPill>
     : <CorpPill tone="neutral">Not started</CorpPill>;
@@ -366,7 +374,8 @@ export default async function SchedulePage({
           </CorpBody>
         </CorpCard>
       ) : null}
-      {params.updated ? <CorpNote>Shift updated.</CorpNote> : null}
+      {params.changesPublished ? <CorpNote>Changes published. Each person with a change has been notified.</CorpNote> : null}
+      {params.updated ? <CorpNote>{pending ? "Shift updated. Publish changes when you’re ready to tell your team." : "Shift updated."}</CorpNote> : null}
       {params.deleted ? <CorpNote>Shift deleted.</CorpNote> : null}
       {params.deadlineSaved ? <CorpNote>Availability deadline updated.</CorpNote> : null}
       {params.copied !== undefined ? (
@@ -382,7 +391,7 @@ export default async function SchedulePage({
       {params.plan === "1" || params.publishCheck ? <FocusOnArrival targetId="schedule-planning" /> : null}
       <ManagerWeeklyRoster key={`${weekStart}:${selectedLocation}:${reviewDay ?? "all"}`} employees={roster} dates={dates} today={today} reviewDay={reviewDay} timeZone={workspace.timeZone}
         absences={absences} locationId={selectedLocation === "all" ? undefined : selectedLocation} openShifts={openShifts}
-        corp={{ weekLabel: compactWeekRange(weekStart), previousHref: `/app/schedule?week=${previousWeek}${locationQuery}`, nextHref: `/app/schedule?week=${nextWeek}${locationQuery}`, status: weekState, addShiftHref }}
+        corp={{ weekLabel: compactWeekRange(weekStart), previousHref: `/app/schedule?week=${previousWeek}${locationQuery}`, nextHref: `/app/schedule?week=${nextWeek}${locationQuery}`, status: weekState, addShiftHref, changedShiftIds }}
         notices={<>
           {toPlan.length ? <CorpCard label="Not published yet" ariaLabel="Locations the team can’t see yet">
             <CorpRows label="Locations the team can’t see yet">{toPlan.map(location => {

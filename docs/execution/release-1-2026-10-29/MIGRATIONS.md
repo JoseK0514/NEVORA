@@ -14,6 +14,7 @@ The base sequence through0037 is unchanged. Its tail is:
 4. 0039_clocker_review_requests.sql.
 5. 0040_clocker_photo_policy_evidence.sql.
 6. 0041_clocker_photo_platform_cleanup.sql.
+7. 0043_schedule_pending_edits.sql — Publish changes held-edit history (added October 30, 2026; not yet in the rehearsal receipts above). Additive; depends only on base tables.
 
 Final files remain0031_native_payroll.sql,0032_company_access_invitations.sql,0042_company_invitation_lifetime.sql, in that order after company/Owner creation on a fresh install.0042 is required for seven-day invitations. Repeated numeric prefixes are independent filenames; never prefix-sort or rename them. Tenant files0026_tenant_ownership_expand.sql and0027_tenant_ownership_validate.sql stay held and are rejected in the reviewed upgrade-ledger input.
 

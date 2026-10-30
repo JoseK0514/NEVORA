@@ -41,7 +41,11 @@ it('coverage approval uses the common actual snapshot, preserves unaffected ackn
   const r=fixture('EXCHANGE','MANAGER_PENDING'); r.state.shifts[0].isCalloutApproved=true; r.state.shifts[0].approvedCalloutEmployeeId='E' as never;
   expect(await approveCoverageExchange({exchangeId:'request-1',managerId:'M'},r.executor)).toBe(true);
   const b=r.businessBatches[0]; expect(b.filter(s=>s.text.includes('INSERT INTO schedule_publication_revisions'))).toHaveLength(1);
-  expect(b.some(s=>s.text.includes('INSERT INTO schedule_publication_revision_shifts')&&s.text.includes('SELECT'))).toBe(true);
+  // Publish changes: an approval's revision is the latest revision plus only its own change, built from values
+  // (never copied from live shifts, which may hold unpublished manual edits).
+  const capture=b.find(s=>s.text.includes('INSERT INTO schedule_publication_revision_shifts'))!;
+  expect(capture.text).toContain('jsonb_to_recordset');expect(capture.text).not.toMatch(/FROM shifts\b/);
+  expect((JSON.parse(String(capture.values[1])) as {source_shift_id:string;employee_id:string}[]).map(x=>[x.source_shift_id,x.employee_id])).toEqual([['s1','F']]);
   expect(b.some(s=>s.text.includes('DELETE FROM schedule_acknowledgements'))).toBe(false);
   const after=JSON.parse(String(b.find(s=>s.text.includes('guarded_after'))!.values[1]));
   expect(after[0]).toMatchObject({employeeId:'F',isDesignatedLead:true,isCalloutApproved:false});
@@ -59,7 +63,9 @@ it('H01 cross-owning-week swap is rejected before any business transaction',asyn
 });
 it.each([approveCoverageExchange,approveSwapExchange])('approval fails atomically for a conditional no-op', async run=>{
   const r=fixture('EXCHANGE','MANAGER_PENDING');
-  if(run===approveSwapExchange){r.row.kind='SWAP'; Object.assign(r.row,{target_shift_id:'s2',target_schedule_id:'a',target_shift_employee_id:'F',target_location_id:'L',target_week_start:week,target_date:'2030-10-11',target_start_time:'09:00',target_end_time:'17:00'});r.state.shifts.push({...r.state.shifts[0],sourceShiftId:'s2',employeeId:'F'});}
+  if(run===approveSwapExchange){r.row.kind='SWAP'; Object.assign(r.row,{target_shift_id:'s2',target_schedule_id:'a',target_shift_employee_id:'F',target_location_id:'L',target_week_start:week,target_date:'2030-10-11',target_start_time:'09:00',target_end_time:'17:00'});r.state.shifts.push({...r.state.shifts[0],sourceShiftId:'s2',employeeId:'F'});
+   // Publish changes: the target is a published assignment, so its latest revision shows it (otherwise it is a held edit and refused).
+   r.state.revisions[0].shifts.push({...r.state.shifts[1]});}
   r.businessTransaction.mockRejectedValue(Object.assign(new Error('request_transition_conflict'),{code:'22P02'}));
   expect(await run({exchangeId:'request-1',managerId:'M'},r.executor)).toBe(false);
   expect(r.businessTransaction).toHaveBeenCalledTimes(3);
@@ -80,6 +86,8 @@ it.each(['coverage','swap'] as const)('%s creation rejects invalid ownership and
 });
 it('coverage reassignment back to an earlier approved callout owner does not revive an earlier episode release',async()=>{
  const r=fixture('EXCHANGE','MANAGER_PENDING');r.row.target_employee_id='E';r.row.requested_by_employee_id='F';r.row.source_employee_id='F';Object.assign(r.state.shifts[0],{employeeId:'F',approvedCalloutEmployeeId:'E',isCalloutApproved:false});
+ // Publish changes: F's assignment is published, not a held edit, so the latest revision shows F too.
+ Object.assign(r.state.revisions[0].shifts[0],{employeeId:'F'});
  expect(await approveCoverageExchange({exchangeId:'request-1',managerId:'M'},r.executor)).toBe(true);
  expect(JSON.parse(String(r.businessBatches[0].find(s=>s.text.includes('guarded_after'))!.values[1]))[0]).toMatchObject({employeeId:'E',isDesignatedLead:true,isCalloutApproved:false});
 });
@@ -103,6 +111,7 @@ it('decision recipients use the guarded current shift location rather than the e
 });
 it('coverage preserves its assigned position and blocks an unqualified incoming employee',async()=>{
  const r=fixture('EXCHANGE','MANAGER_PENDING');r.state.shifts[0].positionId='barista';r.row.source_position_id='barista';
+ r.state.revisions[0].shifts[0].positionId='barista'; // Published position (a live-only change would be a held edit).
  expect(await approveCoverageExchange({exchangeId:'request-1',managerId:'M'},r.executor)).toBe(true);
  expect(JSON.parse(String(r.businessBatches[0].find(s=>s.text.includes('guarded_after'))!.values[1]))[0]).toMatchObject({employeeId:'F',positionId:'barista'});
  r.state.assignmentFacts.memberships=r.state.assignmentFacts.memberships.filter(m=>m.employeeId!=='F');
@@ -130,8 +139,10 @@ function positionedSwapFixture() {
     ...r.state.shifts[0], sourceShiftId: 's2', scheduleId: 'b', employeeId: 'F',
     weekStart: week, date: '2030-10-12', isDesignatedLead: false, positionId: 'cashier',
   });
+  // Publish changes: the latest revision of a week shows every published shift
+  // in it; a shift missing from it would be a held edit and refused.
   r.state.revisions.push({
-    ...r.state.revisions[0], id: 'r2', weekStart: week, shifts: [{ ...r.state.shifts[1] }],
+    ...r.state.revisions[0], id: 'r2', revisionNumber: 2, weekStart: week, shifts: [{ ...r.state.shifts[0] }, { ...r.state.shifts[1] }],
   });
   return r;
 }

@@ -494,7 +494,8 @@ export async function executeScheduleCopy(
         config,
         schedulingSource: read.source,
         observedAt: read.observed,
-        batch: { statements: writes, afterSchedules, afterShifts },
+        // Copying into an already published week is held like any manual edit.
+        batch: { statements: writes, afterSchedules, afterShifts, deferPublication: true, pendingEditKind: "COPY" },
       });
       await executor.transaction([
         ...common,

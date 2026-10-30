@@ -429,7 +429,7 @@ it('Task 6 SQL context preserves active qualifications, target location facts an
 
 it('position publication atomicity preserves create edit clear history and rejects stale capabilities',async()=>{
  const {insertShift,updateShift}=await import('./management-api');
- const {publishScheduleWithRevision}=await import('./management-api');
+ const {publishScheduleWithRevision,publishScheduleChanges}=await import('./management-api');
  const {readNotificationWeekState,personalProjections}=await import('../../lib/data/notification-transactions');
  const db=await workspaceFixture();const q=(text:string)=>db.executor.query<Record<string,unknown>>({text,values:[]});
  try {
@@ -441,6 +441,12 @@ it('position publication atomicity preserves create edit clear history and rejec
  await publishScheduleWithRevision({locationId:'loc-1',weekStart:'2030-10-07',managerId:'owner'},db.executor);
  await q(`INSERT INTO schedule_acknowledgements(week_start,employee_id,publication_revision_id) SELECT week_start,'manager',id FROM schedule_publication_revisions`);
  await updateShift({...base,shiftId:id,positionId:'cashier'},db.executor);
+ // Publish changes (Jose, 2026-10-29): the published edit is held (one history row, no revision) until Publish changes.
+ expect((await readNotificationWeekState(['2030-10-07'],db.executor)).revisions).toHaveLength(1);
+ expect(await q("SELECT kind,shift_id,before_snapshot->>'positionId' AS before,after_snapshot->>'positionId' AS after,published_revision_id FROM schedule_pending_edits")).toEqual([{kind:'UPDATE',shift_id:id,before:'barista',after:'cashier',published_revision_id:null}]);
+ const published=await publishScheduleChanges({weekStart:'2030-10-07',managerId:'owner'},db.executor);
+ expect(published.published).toBe(true);
+ expect(await q('SELECT published_revision_id FROM schedule_pending_edits')).toEqual([{published_revision_id:published.revision!.id}]);
  const state=await readNotificationWeekState(['2030-10-07'],db.executor);
  expect(state.revisions.map(r=>r.shifts[0])).toEqual([expect.objectContaining({positionId:'barista',positionName:'Barista'}),expect.objectContaining({positionId:'cashier',positionName:'Cashier'})]);
  expect(personalProjections(state,'2030-10-07').manager.acknowledgement?.needsAcknowledgement).toBe(true);
@@ -521,8 +527,11 @@ it.each(['location','position','qualification','eligibility'].flatMap(fact=>['re
  const outcome=await writing;
  expect('error' in outcome).toBe(order==='removal-first');
  expect(await q('SELECT employee_id,position_id FROM shifts')).toEqual(order==='removal-first'?[]:[{employee_id:'manager',position_id:'barista'}]);
- expect(await q('SELECT count(*)::integer AS count FROM schedule_publication_revisions')).toEqual([{count:order==='removal-first'?0:1}]);
- expect(await q('SELECT count(*)::integer AS count FROM notifications')).toEqual([{count:order==='removal-first'?0:1}]);
+ // Publish changes (Jose, 2026-10-29): an insert into a published week is held, so it records
+ // one history row and neither a revision nor a notification until Publish changes.
+ expect(await q('SELECT count(*)::integer AS count FROM schedule_publication_revisions')).toEqual([{count:0}]);
+ expect(await q('SELECT count(*)::integer AS count FROM notifications')).toEqual([{count:0}]);
+ expect(await q('SELECT count(*)::integer AS count FROM schedule_pending_edits')).toEqual([{count:order==='removal-first'?0:1}]);
  }finally{releaseWriter();await remover.query('ROLLBACK');await writer.end();await remover.end();await db.dispose();}
 });
 

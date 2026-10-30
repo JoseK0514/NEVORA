@@ -12,6 +12,7 @@ const scheduleErrors:Record<string,string>={
  INVALID_TIME_RANGE:'Enter a valid shift date and time period.',
  INVALID_SHIFT_LEAD:'Only an Owner, Manager, or Lead can be the designated shift lead.',
  INVALID_PUBLISH:'The schedule could not be published.',
+ NO_PENDING_CHANGES:'There were no unpublished changes to publish.',
  NO_SCHEDULE:'There is no schedule to publish for that location yet.',
  SHIFT_HAS_EXCHANGE_HISTORY:'This shift has scheduling history and cannot be deleted. Edit it instead.',
 };

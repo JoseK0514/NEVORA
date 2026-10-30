@@ -10,13 +10,14 @@ import { redirect } from "next/navigation";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { isDateInWeek, isValidWeekStart } from "@/lib/date-utils";
 import { setAvailabilityDeadline } from "@/lib/data/week-settings";
-import { publishScheduleWithRevision } from "@/lib/data/publication-revisions";
+import { publishScheduleChanges, publishScheduleWithRevision } from "@/lib/data/publication-revisions";
 import {
   deleteShift,
   createCoverageRepairShift,
   getShiftForManagement,
   getShiftValidationContext,
   insertShiftAtLocation,
+  listScheduleStatuses,
   updateShift,
 } from "@/lib/data/schedules";
 import { executeScheduleCopy } from "@/lib/data/schedule-copy";
@@ -186,6 +187,39 @@ export async function publishScheduleAction(formData: FormData) {
   );
 }
 
+/**
+ * Publish changes: publishes every held edit in the week (all locations, one
+ * revision, one notification set). Keeps the publish warning review: unless the
+ * Owner confirmed, any published location with readiness warnings returns to
+ * the schedule with publishChangesCheck set. Form fields: weekStart, and
+ * confirmWarnings=yes after review. Redirects with changesPublished=1, or
+ * error=NO_PENDING_CHANGES when nothing was waiting.
+ */
+export async function publishScheduleChangesAction(formData: FormData) {
+  const session = await requireRoles(MANAGER_ROLES);
+  const proof = await requireSessionMutationProof();
+  const weekStart = String(formData.get("weekStart") ?? "");
+  const confirmWarnings = formData.get("confirmWarnings") === "yes";
+  let admission:Awaited<ReturnType<typeof assertOperationalAccess>>;
+  try{admission=await assertOperationalAccess(proof,{kind:'COMPANY'});}catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
+  if (!isValidWeekStart(weekStart)) redirect("/app/schedule?error=INVALID_PUBLISH");
+
+  if (!confirmWarnings) {
+    const published = (await listScheduleStatuses(weekStart)).filter(s => s.status === "PUBLISHED");
+    const readiness = await Promise.all(published.map(s => getSchedulePublishReadiness(weekStart, s.locationId)));
+    if(!await currentAdmission(proof,admission))redirect('/app/schedule?error=ACCESS_DENIED');
+    // Release 1: the warnings are reviewed on Build and publish, where "Publish changes anyway" confirms.
+    if (readiness.some(r => r.hasWarnings)) redirect(`/app/schedule/publish?week=${encodeURIComponent(weekStart)}&review=changes#publish-review`);
+  }
+
+  let published:boolean;
+  try{({published}=await publishScheduleChanges({weekStart,managerId:session.id,proof}));}
+  catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
+  if(!await currentAdmission(proof,admission))redirect('/app/schedule?error=ACCESS_DENIED');
+
+  revalidatePath("/app/schedule");
+  redirect(scheduleUrl(weekStart, published ? "&changesPublished=1" : "&error=NO_PENDING_CHANGES"));
+}
 
 /**
  * Edits a shift using the current operational editor projection. Company-scoped

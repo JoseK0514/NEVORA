@@ -2,7 +2,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 import SchedulePage from './page';
-const f=vi.hoisted(()=>({positions:[] as {id:string,name:string}[], shifts:[] as Record<string,unknown>[], employees:[] as Record<string,unknown>[], history:[] as Record<string,unknown>[], captured:[] as Record<string,unknown>[], managerReads:vi.fn(), dashboard:null as unknown, statuses:[] as {locationId:string,status:string}[], locations:[] as {id:string,shortName:string}[],enabled:true,active:true,role:'EMPLOYEE',reads:vi.fn(),before:[{sourceShiftId:'self-shift',employeeId:'self',locationId:'2',date:'2026-10-05',startTime:'08:00',endTime:'12:00',isDesignatedLead:false,isCalloutApproved:false}],after:[{sourceShiftId:'self-shift',employeeId:'self',locationId:'2',date:'2026-10-05',startTime:'09:00',endTime:'12:00',isDesignatedLead:false,isCalloutApproved:false}]}));
+const f=vi.hoisted(()=>({pending:null as unknown,positions:[] as {id:string,name:string}[], shifts:[] as Record<string,unknown>[], employees:[] as Record<string,unknown>[], history:[] as Record<string,unknown>[], captured:[] as Record<string,unknown>[], managerReads:vi.fn(), dashboard:null as unknown, statuses:[] as {locationId:string,status:string}[], locations:[] as {id:string,shortName:string}[],enabled:true,active:true,role:'EMPLOYEE',reads:vi.fn(),before:[{sourceShiftId:'self-shift',employeeId:'self',locationId:'2',date:'2026-10-05',startTime:'08:00',endTime:'12:00',isDesignatedLead:false,isCalloutApproved:false}],after:[{sourceShiftId:'self-shift',employeeId:'self',locationId:'2',date:'2026-10-05',startTime:'09:00',endTime:'12:00',isDesignatedLead:false,isCalloutApproved:false}]}));
 vi.mock('next/navigation',()=>({useRouter:()=>({push:vi.fn()})}));
 vi.mock('next/link',()=>({default:({children,...props}:React.ComponentProps<'a'>)=>createElement('a',props,children)}));
 vi.mock('@/lib/scheduling/validate-shift',()=>({schedulingIssueMessage:()=>''}));
@@ -145,7 +145,7 @@ beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scope
 it('company denial withholds global schedule rows and all editing controls',async()=>{f.role='MANAGER';operationalPageFixture.denied=true;const output=await html();expect(output).toContain('current company-wide management access');expect(output).not.toContain('Add shift');expect(output).not.toContain('Publish');expect(f.managerReads).not.toHaveBeenCalled();});
 it('an operational company denial does not remove the Employee self schedule',async()=>{operationalPageFixture.denied=true;const output=await html();expect(output).toContain('q-sched-e');expect(output).toContain('aria-label="Schedule views"');expect(output).not.toContain('current company-wide management access');expect(f.managerReads).not.toHaveBeenCalled();});
 
-vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalSchedule:async(_proof:unknown,query:{weekStart:string;locationId?:string})=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['loc']},data:{weekStart:query.weekStart,selectedLocationId:query.locationId??null,locations:[{id:'loc',name:'Managed location',shortName:'Managed',active:true}],shifts:[{id:'local-shift',scheduleId:'local-week',employeeId:'local',employeeName:'Local Shift',locationId:'loc',date:'2026-10-05',startTime:'08:00',endTime:'12:00',positionName:'Recorded position',isDesignatedLead:false,isCalloutApproved:false,scheduleStatus:'PUBLISHED'}],roster:[],companyControls:{state:'requires_company'}}})}));
+vi.mock('@/lib/company-access/operational-read.server',()=>({readSchedulePendingChanges:async()=>f.pending?{state:'ready',data:f.pending}:{state:'unavailable',reason:'read_failed'},readOperationalSchedule:async(_proof:unknown,query:{weekStart:string;locationId?:string})=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['loc']},data:{weekStart:query.weekStart,selectedLocationId:query.locationId??null,locations:[{id:'loc',name:'Managed location',shortName:'Managed',active:true}],shifts:[{id:'local-shift',scheduleId:'local-week',employeeId:'local',employeeName:'Local Shift',locationId:'loc',date:'2026-10-05',startTime:'08:00',endTime:'12:00',positionName:'Recorded position',isDesignatedLead:false,isCalloutApproved:false,scheduleStatus:'PUBLISHED'}],roster:[],companyControls:{state:'requires_company'}}})}));
 it('uses the actual scoped schedule DTO without loading the canonical full roster',async()=>{f.role='MANAGER';operationalPageFixture.scoped=true;const output=await html();expect(output).toContain('Local Shift');expect(output).toContain('Recorded position');expect(output).not.toContain('Build and publish');expect(output).not.toContain('Copy previous week');expect(f.managerReads).not.toHaveBeenCalled();});
 
 it.each([
@@ -210,4 +210,18 @@ it('v3: a failed dashboard read leaves availability and open shifts out instead 
  const output=await html();
  expect(output).toContain('Fictional Worker');
  expect(output).not.toContain('availability 0');expect(output).not.toContain('Availability received');expect(output).not.toContain('Open shifts');
+});
+
+// Publish changes (Jose, Oct 29): edits to a published week wait; the week card counts them and the edited shift says Changed.
+it('Corporate: the week card counts unpublished changes and the edited shift says Changed',async()=>{
+ f.role='MANAGER';f.locations=[{id:'main',shortName:'Main Office'}];f.statuses=[{locationId:'main',status:'PUBLISHED'}];
+ f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];
+ f.shifts=[{id:'s1',employeeId:'worker',locationId:'main',date:'2026-10-05',startTime:'06:00',endTime:'14:00',scheduleStatus:'PUBLISHED'}];
+ f.pending={weekStart:'2026-10-05',hasPendingChanges:true,pendingCount:1,neverCaptured:false,latestRevision:null,canPublish:true,truncated:false,
+  locations:[{locationId:'main',locationName:'Main Office',pendingCount:1}],
+  changes:[{shiftId:'s1',locationId:'main',employeeId:'worker',employeeName:'Fictional Worker',date:'2026-10-05',kind:'CHANGED',fields:['TIME'],before:null,after:null,editCount:1,lastEditedAt:null,lastEditedBy:null}]};
+ const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',day:'2026-10-05'})}));
+ expect(output).toContain('>Published · 1 change</span>');
+ f.pending=null;
+ expect(renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05'})}))).toContain('>Published</span>');
 });

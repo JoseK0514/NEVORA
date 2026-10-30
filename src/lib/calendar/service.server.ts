@@ -9,7 +9,6 @@ import {getWorkspace} from '../data/workspaces';
 import {assertManagementProof,managementSessionStatements,isManagementAuthorizationError} from '../data/management-session';
 import {calendarManagementGuards,capabilityGuards,subscriptionColumns,type SubscriptionRow} from '../data/calendar-subscriptions.server';
 import {employeeAllowedLocationsSql} from '../data/employee-schedule';
-import {currentCalloutReleaseSql} from '../data/shift-change-release';
 import {createCalendarToken,calendarDigest,validCalendarToken} from './token.server';
 import {businessDate,shiftBoundaryInstants} from '../business-time';
 import {addDays} from '../date-utils';
@@ -125,20 +124,30 @@ export async function readCalendarFeed(token:string,executor:SqlExecutor=neonNot
   const workspace=await getWorkspace(executor);if(workspace.id!==subscription.workspace_id)return unauthorized;
   const guards=capabilityGuards(workspace,subscription),signal=AbortSignal.timeout(8000);
   const source=`/* calendar_feed_observation */ WITH clock AS MATERIALIZED(SELECT clock_timestamp() at),allowed AS MATERIALIZED(${employeeAllowedLocationsSql()}),
-   active AS (SELECT sh.id AS "sourceShiftId",sh.date::text AS date,left(sh.start_time::text,5) AS "startTime",left(sh.end_time::text,5) AS "endTime",
+   -- Publish changes: active events are the latest publication revision of each
+   -- week, so held manual edits reach no calendar until the Owner publishes them.
+   latest AS (SELECT DISTINCT ON (pr.week_start) pr.* FROM schedule_publication_revisions pr
+    WHERE pr.week_start BETWEEN (((SELECT at FROM clock) AT TIME ZONE $4)::date-38) AND (((SELECT at FROM clock) AT TIME ZONE $4)::date+180)
+    ORDER BY pr.week_start,pr.revision_number DESC,pr.id),
+   active AS (SELECT rs.source_shift_id AS "sourceShiftId",rs.date::text AS date,left(rs.start_time::text,5) AS "startTime",left(rs.end_time::text,5) AS "endTime",
     CASE WHEN r.calendar_serial IS NULL THEN NULL ELSE GREATEST(r.calendar_serial,l.calendar_serial) END AS sequence,CASE WHEN r.calendar_serial>=l.calendar_serial THEN r.calendar_modified_at ELSE l.calendar_modified_at END::text AS "modifiedAt",'CONFIRMED'::text AS status,l.short_name AS location
-    FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id JOIN locations l ON l.id=s.location_id JOIN allowed a ON a.id=l.id
-    LEFT JOIN LATERAL(SELECT * FROM schedule_publication_revisions WHERE week_start=s.week_start ORDER BY revision_number DESC LIMIT 1) r ON true
-    WHERE sh.employee_id=$2 AND s.status='PUBLISHED' AND l.id=ANY($3::text[]) AND sh.date BETWEEN (((SELECT at FROM clock) AT TIME ZONE $4)::date-31) AND (((SELECT at FROM clock) AT TIME ZONE $4)::date+180)
-    AND NOT EXISTS(SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()}) ORDER BY sh.id LIMIT 501),
+    FROM latest r JOIN schedule_publication_revision_shifts rs ON rs.revision_id=r.id JOIN schedules s ON s.id=rs.schedule_id AND s.status='PUBLISHED'
+    JOIN locations l ON l.id=rs.location_id JOIN allowed a ON a.id=l.id
+    WHERE rs.employee_id=$2 AND rs.source_shift_id IS NOT NULL AND l.id=ANY($3::text[]) AND rs.date BETWEEN (((SELECT at FROM clock) AT TIME ZONE $4)::date-31) AND (((SELECT at FROM clock) AT TIME ZONE $4)::date+180)
+    AND NOT rs.is_callout_approved ORDER BY rs.source_shift_id LIMIT 501),
+   -- An own published assignment in a week that was never captured has no
+   -- canonical publication metadata: fail closed rather than omit or borrow it.
+   uncaptured AS (SELECT EXISTS(SELECT 1 FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id JOIN allowed a ON a.id=s.location_id
+    WHERE sh.employee_id=$2 AND s.status='PUBLISHED' AND s.location_id=ANY($3::text[]) AND sh.date BETWEEN (((SELECT at FROM clock) AT TIME ZONE $4)::date-31) AND (((SELECT at FROM clock) AT TIME ZONE $4)::date+180)
+    AND NOT EXISTS(SELECT 1 FROM schedule_publication_revisions pr WHERE pr.week_start=s.week_start)) AS missing),
    removed AS (SELECT DISTINCT ON(m.source_shift_id) m.source_shift_id AS "sourceShiftId",old.date::text AS date,left(old.start_time::text,5) AS "startTime",left(old.end_time::text,5) AS "endTime",m.calendar_serial AS sequence,m.removed_at::text AS "modifiedAt",'CANCELLED'::text AS status,NULL::text AS location
     FROM calendar_removals m JOIN schedule_publication_revision_shifts old ON old.id=m.previous_publication_shift_id JOIN allowed a ON a.id=old.location_id
     WHERE m.workspace_id=$1 AND m.employee_id=$2 AND m.removed_at>(SELECT at FROM clock)-interval '60 days' AND old.employee_id=$2 AND old.source_shift_id=m.source_shift_id AND old.location_id=ANY($3::text[])
     ORDER BY m.source_shift_id,m.calendar_serial DESC LIMIT 501)
-   SELECT to_jsonb(clock.at) AS "observedAt",COALESCE((SELECT jsonb_agg(active) FROM active),'[]'::jsonb) AS active,COALESCE((SELECT jsonb_agg(removed) FROM removed),'[]'::jsonb) AS removed FROM clock`;
+   SELECT to_jsonb(clock.at) AS "observedAt",(SELECT missing FROM uncaptured) AS uncaptured,COALESCE((SELECT jsonb_agg(active) FROM active),'[]'::jsonb) AS active,COALESCE((SELECT jsonb_agg(removed) FROM removed),'[]'::jsonb) AS removed FROM clock`;
   const results=await executor.transaction([...guards,{text:source,values:[workspace.id,subscription.employee_id,subscription.allowed_location_ids,workspace.timeZone]}],signal);
-  const observation=results[guards.length]?.[0] as {observedAt:string;active:FeedRow[];removed:FeedRow[]}|undefined;
-  if(!observation||!Array.isArray(observation.active)||!Array.isArray(observation.removed)||observation.active.length+observation.removed.length>500)throw Error('Calendar resource unavailable');
+  const observation=results[guards.length]?.[0] as {observedAt:string;uncaptured:boolean;active:FeedRow[];removed:FeedRow[]}|undefined;
+  if(!observation||observation.uncaptured!==false||!Array.isArray(observation.active)||!Array.isArray(observation.removed)||observation.active.length+observation.removed.length>500)throw Error('Calendar resource unavailable');
   const today=businessDate(new Date(observation.observedAt),workspace.timeZone);
   const midnight=(date:string)=>Date.parse(shiftBoundaryInstants({date,startTime:'00:00',endTime:'00:01'},workspace.timeZone).startAt);
   const from=midnight(addDays(today,-30)),until=midnight(addDays(today,181));

@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto';
 import { beforeAll, afterAll, expect, it } from 'vitest';
 import { createDisposableExchangeDatabase } from './local-postgres';
 import { executeShiftChange,findShiftChangeOperation } from '../../lib/data/shift-changes';
-import { proof,seedShiftChanges,fixtureShift } from './shift-change-fixture';
+import { proof,seedShiftChanges,fixtureShift,publishFixtureWeek } from './shift-change-fixture';
 
 import type { ShiftChangeCommand } from '../../lib/shift-changes/types';
 let db: Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
@@ -202,6 +202,7 @@ it('R1 stale linked coverage closure keeps the prior released employee separate 
  await executeShiftChange(proof('owner'),{kind:'APPROVE_CALLOUT',requestId:created.requestId,expectedRevision:1,operationId:randomUUID()},db.executor);
  const [linked]=await q('SELECT id,source_terms FROM shift_exchanges WHERE linked_callout_id=$1',[created.requestId]);
  await q("UPDATE shifts SET employee_id='e2',start_time='09:00' WHERE id=$1",[id]);
+ await publishFixtureWeek(db.executor); // Publish changes: the reassignment is published before e2 reports on it.
  expect(await executeShiftChange(proof('e2'),{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),...await reviewedFixtureSource(db.executor,id),reasonCode:'OTHER',reasonNote:'New owner reason'},db.executor)).toMatchObject({status:'pending'});
  expect((await q('SELECT status FROM shift_callouts WHERE id=$1',[created.requestId]))[0].status).toBe('APPROVED');
  const [stale]=await q("SELECT source_terms,participants FROM shift_change_events WHERE request_id=$1 AND event_kind='STALE'",[linked.id]);expect(stale).toEqual({source_terms:linked.source_terms,participants:{requesterEmployeeId:'e1',targetEmployeeId:null}});

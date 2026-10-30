@@ -8,7 +8,6 @@ import {businessDateStart,shiftPeriod} from '../scheduling/periods';
 import {neonNotificationExecutor} from './notification-transactions';
 import {assertEmployeeViewProof,employeeViewGuards,employeeReadLimits,readEmployeeWorkspace} from './employee-profile.server';
 import {employeeAllowedLocationsSql} from './employee-schedule';
-import {currentCalloutReleaseSql} from './shift-change-release';
 
 type AssignmentRow={shiftId:string;assignmentEpisodeId:string;termsRevision:number;weekStart:string;date:string;
  startTime:string;endTime:string;locationId:string;locationLabel:string;positionLabel:string|null;designatedLead:boolean;publicationRevisionId:string|null};
@@ -44,14 +43,20 @@ export function projectPublishedAssignmentRows(input:Observation):PublishedAssig
  }catch{return null;}
 }
 
-const ownColumns=`sh.id AS "shiftId",sh.assignment_episode_id::text AS "assignmentEpisodeId",sh.terms_revision AS "termsRevision",
- s.week_start::text AS "weekStart",sh.date::text AS date,left(sh.start_time::text,5) AS "startTime",left(sh.end_time::text,5) AS "endTime",
- s.location_id AS "locationId",l.short_name AS "locationLabel",p.name AS "positionLabel",sh.is_designated_lead AS "designatedLead",
- (SELECT r.id FROM schedule_publication_revisions r WHERE r.week_start=s.week_start ORDER BY r.revision_number DESC LIMIT 1) AS "publicationRevisionId"`;
-const ownSelect=(extra:string,local='')=>`SELECT ${ownColumns}
- FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id JOIN allowed l ON l.id=s.location_id
- LEFT JOIN positions p ON p.id=sh.position_id AND p.workspace_id=$1 ${local}
- WHERE sh.employee_id=$2 AND s.status='PUBLISHED' AND NOT EXISTS(SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()}) ${extra}`;
+// Publish changes (Jose, 2026-10-29): own shifts come from the latest
+// publication revision of each week, like Today, so held manual edits stay
+// invisible until the Owner publishes them. Assignment identity still comes
+// from the live row; a held removal keeps its captured row and revision id.
+const ownColumns=`rs.source_shift_id AS "shiftId",COALESCE(sh.assignment_episode_id::text,rs.id) AS "assignmentEpisodeId",COALESCE(sh.terms_revision,1) AS "termsRevision",
+ r.week_start::text AS "weekStart",rs.date::text AS date,left(rs.start_time::text,5) AS "startTime",left(rs.end_time::text,5) AS "endTime",
+ rs.location_id AS "locationId",l.short_name AS "locationLabel",rs.position_name AS "positionLabel",rs.is_designated_lead AS "designatedLead",
+ r.id AS "publicationRevisionId"`;
+const ownSelect=(extra:string,weeks:string,local='')=>`SELECT ${ownColumns}
+ FROM (SELECT DISTINCT ON (pr.week_start) pr.id,pr.week_start FROM schedule_publication_revisions pr WHERE ${weeks} ORDER BY pr.week_start,pr.revision_number DESC,pr.id) r
+ JOIN schedule_publication_revision_shifts rs ON rs.revision_id=r.id
+ JOIN schedules s ON s.id=rs.schedule_id AND s.status='PUBLISHED' JOIN allowed l ON l.id=rs.location_id
+ LEFT JOIN shifts sh ON sh.id=rs.source_shift_id ${local}
+ WHERE rs.employee_id=$2 AND rs.source_shift_id IS NOT NULL AND NOT rs.is_callout_approved ${extra}`;
 // SQL uses the employee/date index and never caps the number of future weeks.
 // Today's and yesterday's possible ongoing rows are a separate bounded query.
 const nextSql=`WITH clock AS MATERIALIZED (SELECT clock_timestamp() AS at), local AS MATERIALIZED
@@ -59,8 +64,8 @@ const nextSql=`WITH clock AS MATERIALIZED (SELECT clock_timestamp() AS at), loca
  allowed AS MATERIALIZED (${employeeAllowedLocationsSql()}),
  coverage AS (SELECT count(*)>0 AND bool_and(EXISTS(SELECT 1 FROM schedules s WHERE s.location_id=l.id
   AND s.week_start=date_trunc('week',local.day::timestamp)::date AND s.status='PUBLISHED')) AS complete FROM allowed l CROSS JOIN local),
- future AS (${ownSelect('AND (sh.date,sh.start_time)>(local.day,local.wall) ORDER BY sh.date,sh.start_time,sh.id LIMIT 1','CROSS JOIN local')}),
- current AS (${ownSelect('AND sh.date BETWEEN local.day-1 AND local.day AND (sh.date<local.day OR sh.start_time<=local.wall) ORDER BY sh.date,sh.start_time,sh.id LIMIT 501','CROSS JOIN local')})
+ future AS (${ownSelect('AND (rs.date,rs.start_time)>(local.day,local.wall) ORDER BY rs.date,rs.start_time,rs.source_shift_id LIMIT 1',`pr.week_start>=(SELECT date_trunc('week',(day-1)::timestamp)::date FROM local)`,'CROSS JOIN local')}),
+ current AS (${ownSelect('AND rs.date BETWEEN local.day-1 AND local.day AND (rs.date<local.day OR rs.start_time<=local.wall) ORDER BY rs.date,rs.start_time,rs.source_shift_id LIMIT 501',`pr.week_start>=(SELECT date_trunc('week',(day-1)::timestamp)::date FROM local) AND pr.week_start<=(SELECT day FROM local)`,'CROSS JOIN local')})
  SELECT to_jsonb(clock.at) AS "observedAt",ARRAY(SELECT id FROM allowed ORDER BY id) AS "allowedLocationIds",
  (SELECT complete FROM coverage) AS "coverageComplete",
  (SELECT COALESCE(jsonb_agg(l.short_name ORDER BY l.id),'[]'::jsonb) FROM allowed l CROSS JOIN local WHERE NOT EXISTS(SELECT 1 FROM schedules s WHERE s.location_id=l.id
@@ -113,7 +118,7 @@ export async function readEmployeePublishedAssignmentWindow(proof:SessionMutatio
  try{
   const signal=AbortSignal.timeout(8000),workspace=await readEmployeeWorkspace(executor,signal),guards=employeeViewGuards(proof,workspace);
   const windowSql=`WITH clock AS MATERIALIZED (SELECT clock_timestamp() AS at),allowed AS MATERIALIZED (${employeeAllowedLocationsSql()}),
-   own AS (${ownSelect('AND sh.date BETWEEN $3::date-1 AND $4::date ORDER BY sh.date,sh.start_time,sh.id LIMIT 501')})
+   own AS (${ownSelect('AND rs.date BETWEEN $3::date-1 AND $4::date ORDER BY rs.date,rs.start_time,rs.source_shift_id LIMIT 501',`pr.week_start BETWEEN date_trunc('week',($3::date-1)::timestamp)::date AND $4::date`)})
    SELECT to_jsonb(clock.at) AS "observedAt",ARRAY(SELECT id FROM allowed ORDER BY id) AS "allowedLocationIds",
    COALESCE((SELECT jsonb_agg(to_jsonb(own)) FROM own),'[]'::jsonb) AS assignments FROM clock`;
   const results=await executor.transaction([...employeeReadLimits,...guards,{text:windowSql,values:[workspace.id,proof.employee.id,fromDate,throughDate]}],signal);

@@ -27,10 +27,12 @@ describe('migration order authority', () => {
     expect(BASE_MIGRATIONS.some(file => (HELD_MIGRATIONS as readonly string[]).includes(file))).toBe(false);
   });
   it('keeps both independent PR34 files before the Clocker tail without prefix sorting', () => {
-    expect(BASE_MIGRATIONS.slice(-7)).toEqual([
+    // 0043 (Publish changes held-edit history) depends only on base tables and follows the Clocker tail.
+    expect(BASE_MIGRATIONS.slice(-8)).toEqual([
       '0037_owner_briefing_reviews.sql', '0038_read_path_indexes.sql', '0039_native_payroll_setup_records.sql',
       '0038_clocker_pin_operation_reference.sql', '0039_clocker_review_requests.sql',
       '0040_clocker_photo_policy_evidence.sql', '0041_clocker_photo_platform_cleanup.sql',
+      '0043_schedule_pending_edits.sql',
     ]);
   });
 

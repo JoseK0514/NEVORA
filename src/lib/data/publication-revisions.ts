@@ -21,7 +21,7 @@ export type PublicationRevision = {
   createdAt: string;
 };
 
-import { commitPublishedWeekChange } from "./notification-transactions";
+import { commitPublishedWeekChange, pendingPublicationChanges } from "./notification-transactions";
 import type { SqlExecutor } from "../notifications/types";
 import type { SessionMutationProof } from "../shift-changes/types";
 
@@ -147,6 +147,26 @@ export async function publishScheduleWithRevision(input: {
         afterSchedules:state.schedules.map(s=>s.id===schedule.id?{...s,status:'PUBLISHED'}:s),afterShifts:state.shifts,publishWeekStarts:[input.weekStart],revisionSourceId:schedule.id,affectedLocationId:input.locationId};
     }},executor);
   return {published:result.committed,...(result.revisions[0]?{revision:result.revisions[0]}:{})};
+}
+
+/**
+ * Publish changes (Jose, 2026-10-29): publish every held edit in the week at
+ * once. Writes ONE PUBLISH revision of the whole live week (all locations; the
+ * revision always covers the week, so this needs COMPANY scope like any
+ * publication), ONE diff-based notification set against the latest revision,
+ * and marks the week's held-edit history published, all in one transaction.
+ * A week with nothing pending commits nothing and returns published:false.
+ * Publishing a Draft location keeps using publishScheduleWithRevision.
+ */
+export async function publishScheduleChanges(input: {
+  weekStart: string; managerId: string; proof: SessionMutationProof;
+}, executor?: SqlExecutor): Promise<{ published: boolean; revision?: PublicationRevision }> {
+  const result = await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.managerId,proof:input.proof,sourceType:'PUBLISH',
+    build: state => {
+      if (!pendingPublicationChanges(state, input.weekStart).hasPendingChanges) return {statements:[],afterSchedules:state.schedules,afterShifts:state.shifts};
+      return {statements:[{text:'SELECT 1 AS publish_changes',values:[]}],afterSchedules:state.schedules,afterShifts:state.shifts,publishWeekStarts:[input.weekStart]};
+    }},executor);
+  return {published:result.committed&&result.revisions.length>0,...(result.revisions[0]?{revision:result.revisions[0]}:{})};
 }
 
 export type CapturedShiftPosition = {

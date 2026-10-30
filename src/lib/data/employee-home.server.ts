@@ -9,6 +9,7 @@ import {assertEmployeeViewProof,employeeReadLimits,employeeViewGuards,readEmploy
 import {employeeAllowedLocationsSql} from './employee-schedule';
 import {managementSessionStatements,isManagementAuthorizationError} from './management-session';
 import {neonNotificationExecutor} from './notification-transactions';
+import {heldShiftEditSql} from './held-edits-sql';
 import {readEmployeePublishedAssignments} from './employee-published-assignments.server';
 import {readEmployeeWeeklyReview} from './employee-weekly-review.server';
 import {attentionSourceVersion} from './employee-attention-receipts.server';
@@ -68,7 +69,7 @@ function indexStatement(source:HomeSource,workspaceId:string,employeeId:string):
    'targetRevision',target.terms_revision,'targetEpisode',target.assignment_episode_id,'legacy',x.legacy_manual) AS detail
   FROM shift_exchanges x JOIN shifts sh ON sh.id=x.source_shift_id JOIN schedules s ON s.id=sh.schedule_id JOIN allowed l ON l.id=s.location_id
   LEFT JOIN shifts target ON target.id=x.target_shift_id
-  WHERE ($2 IN(x.requested_by_employee_id,x.target_employee_id) OR (x.kind='COVERAGE' AND x.status='OPEN' AND s.status='PUBLISHED'))
+  WHERE ($2 IN(x.requested_by_employee_id,x.target_employee_id) OR (x.kind='COVERAGE' AND x.status='OPEN' AND s.status='PUBLISHED' AND NOT ${heldShiftEditSql('sh','s')}))
   ORDER BY "changedAt" DESC,x.id LIMIT ${CAP+1}`};
  throw Error('Unknown Home index');
 }

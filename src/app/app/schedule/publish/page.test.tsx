@@ -2,7 +2,7 @@ import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, expect, it, vi } from "vitest";
 
-const f = vi.hoisted(() => ({ statuses: [] as { locationId: string; status: string }[], warnings: {} as Record<string, boolean>, denied: false }));
+const f = vi.hoisted(() => ({ statuses: [] as { locationId: string; status: string }[], warnings: {} as Record<string, boolean>, denied: false, pending: null as unknown }));
 vi.mock("next/link", () => ({ default: ({ children, prefetch: _p, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", props, children) }));
 vi.mock("@/lib/auth/session", () => ({ requireSessionMutationProof: async () => ({ employee: { id: "QAOWNER", role: "OWNER" } }) }));
 vi.mock("@/lib/auth/permissions", () => ({ MANAGER_ROLES: ["OWNER", "MANAGER"], requireRoles: async () => ({ id: "QAOWNER", role: "OWNER" }) }));
@@ -17,9 +17,18 @@ vi.mock("@/lib/data/schedules", () => ({ listScheduleStatuses: async () => f.sta
 vi.mock("@/lib/data/schedule-generation-review", () => ({ getScheduleGenerationReview: async () => ({ editable: true, attempted: 0, needsSetup: 0, coverage: null, exclusions: [] }) }));
 vi.mock("@/lib/data/schedule-publication-review", () => ({ getSchedulePublishReadiness: async (_week: string, id: string) => ({ hasWarnings: !!f.warnings[id], coverageGaps: f.warnings[id] ? 2 : 0, missingLeadBlocks: 0, underTargetCount: 0, overTargetCount: 0, unconfiguredTargetCount: 0 }) }));
 vi.mock("./actions", () => ({ publishDraftsAction: async () => {} }));
+vi.mock("../actions", () => ({ publishScheduleChangesAction: async () => {} }));
+vi.mock("@/lib/company-access/operational-read.server", () => ({ readSchedulePendingChanges: async () => f.pending ? { state: "ready", data: f.pending } : { state: "unavailable", reason: "read_failed" } }));
+const value = (startTime: string, endTime: string) => ({ employeeId: "e1", employeeName: "Dana Kim", locationId: "loc-1", date: "2026-11-03", startTime, endTime, positionId: null, positionName: null, isDesignatedLead: false, notes: null });
+const pendingData = (canPublish = true) => ({ weekStart: "2026-11-02", hasPendingChanges: true, pendingCount: 2, neverCaptured: false, latestRevision: null, canPublish, truncated: false,
+  locations: [{ locationId: "loc-1", locationName: "Condado", pendingCount: 2 }],
+  changes: [
+    { shiftId: "s1", locationId: "loc-1", employeeId: "e1", employeeName: "Dana Kim", date: "2026-11-03", kind: "CHANGED", fields: ["TIME"], before: value("12:00", "20:00"), after: value("14:00", "20:00"), editCount: 1, lastEditedAt: null, lastEditedBy: null },
+    { shiftId: "s2", locationId: "loc-1", employeeId: "e2", employeeName: "Sam Ortiz", date: "2026-11-04", kind: "ADDED", fields: ["ADDED"], before: null, after: { ...value("08:00", "16:00"), employeeName: "Sam Ortiz" }, editCount: 1, lastEditedAt: null, lastEditedBy: null },
+  ] });
 const { default: Page } = await import("./page");
 const html = async (params: Record<string, string> = {}) => renderToStaticMarkup(await Page({ searchParams: Promise.resolve({ week: "2026-11-02", ...params }) }));
-beforeEach(() => { f.statuses = [{ locationId: "loc-1", status: "PUBLISHED" }, { locationId: "loc-2", status: "DRAFT" }]; f.warnings = {}; f.denied = false; });
+beforeEach(() => { f.statuses = [{ locationId: "loc-1", status: "PUBLISHED" }, { locationId: "loc-2", status: "DRAFT" }]; f.warnings = {}; f.denied = false; f.pending = null; });
 
 it("names the week, each location's state and shift count, and publishes every draft with one button", async () => {
   const out = await html();
@@ -51,4 +60,33 @@ it("says when nothing is left to publish, and stops when access is unavailable",
   expect(await html()).toContain("Everything planned this week is published.");
   f.denied = true;
   expect(await html()).toContain("Build and publish unavailable");
+});
+
+it("lists changes to the published week and publishes them once with Publish changes", async () => {
+  f.statuses = [{ locationId: "loc-1", status: "PUBLISHED" }];
+  f.pending = pendingData();
+  const out = await html();
+  expect(out).toContain(">2 changes<");
+  expect(out).toContain(">Changes not published (2)<");
+  expect(out).toContain("Tue, Nov 3 · Time changed · 12:00 PM – 8:00 PM → 2:00 PM – 8:00 PM");
+  expect(out).toMatch(/Sam Ortiz.*Wed, Nov 4 · Added · 8:00 AM – 4:00 PM.*c-pill--amber">Added/);
+  expect(out).toContain(">Publish changes<");
+  expect(out).toContain("Each person with a change is notified once when you publish.");
+  expect(out).not.toContain('name="locationId"');
+  // Warnings for the published locations are reviewed here first; Publish changes anyway confirms.
+  f.warnings["loc-1"] = true;
+  const review = await html({ review: "changes" });
+  expect(review).toContain("Review before publishing");
+  expect(review).toContain(">Publish changes anyway<");
+  expect(review).toContain('name="confirmWarnings" value="yes"');
+});
+
+it("publishes drafts and held changes together, and tells a location Manager who publishes", async () => {
+  f.pending = pendingData();
+  expect(await html()).toContain(">Publish Dorado and changes<");
+  f.statuses = [{ locationId: "loc-1", status: "PUBLISHED" }];
+  f.pending = pendingData(false);
+  const out = await html();
+  expect(out).toContain("An Owner or company-wide Manager publishes these changes.");
+  expect(out).not.toContain(">Publish changes<");
 });

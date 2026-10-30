@@ -6,7 +6,8 @@ import type {SessionMutationProof} from '@/lib/shift-changes/types';
 import {getWorkspace,workspaceReadGuard} from '@/lib/data/workspaces';
 import {getEmployeeManagementProfile} from '@/lib/data/employees';
 import type {CatalogLocation} from '@/lib/data/locations';
-import {neonNotificationExecutor} from '@/lib/data/notification-transactions';
+import {neonNotificationExecutor,pendingPublicationChanges,readNotificationWeekState} from '@/lib/data/notification-transactions';
+import {buildSchedulePendingChanges,type PendingHistoryRow,type SchedulePendingChangesData} from '@/lib/scheduling/pending-changes';
 import {currentCalloutReleaseSql} from '@/lib/data/shift-change-release';
 import {clockMonitorSnapshotStatement} from '@/lib/data/clock-monitor.server';
 import {projectClockMonitor} from '@/lib/clock-monitor';
@@ -144,6 +145,36 @@ export async function readOperationalShiftEditor(proof:SessionMutationProof,quer
   const saveAvailability=!location.active?'unavailable' as const:ctx.ids!==null&&shift&&(shift.scheduleStatus!=='DRAFT'||normalizeAssignmentOrigin(shift.assignmentOrigin)==='GENERATED')?'requires_company' as const:'available' as const;
   const data={weekStart,locationId,shift:editable,employeeOptions:employeeOptions.map(e=>({id:e.id,name:e.name,positionIds:[...e.positionIds]})),positionOptions:positionOptions.map(p=>({id:p.id,name:p.name})),saveAvailability};
   return {data:{...data,sourceVersion:createHash('sha256').update(JSON.stringify({authority:ctx.view.authority,data})).digest('hex')},coverage:{kind:'LOCATIONS',locationIds:[locationId]}};
+ },ex);
+}
+/**
+ * Publish changes (Jose, 2026-10-29): what is waiting to be published in one
+ * week. Owners/Managers only; a location-scoped Manager sees only changes that
+ * touch their locations and canPublish=false (Publish changes needs COMPANY).
+ * Returns OperationalRead<SchedulePendingChangesData>; see that type in
+ * src/lib/scheduling/pending-changes.ts for every field. Read-only: it never
+ * publishes, notifies or changes history.
+ */
+export async function readSchedulePendingChanges(proof:SessionMutationProof,query:{weekStart:string},ex:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<SchedulePendingChangesData>>{
+ return read(proof,async ctx=>{
+  if(!query||typeof query.weekStart!=='string'||!isValidWeekStart(query.weekStart)||Object.keys(query).some(k=>k!=='weekStart'))return deny();
+  const weekStart=query.weekStart,catalog=await locations(ctx);
+  const state=await readNotificationWeekState([weekStart],ctx.ex);
+  const pending=pendingPublicationChanges(state,weekStart);
+  const inScope=(locationId:string)=>ctx.ids===null||ctx.ids.includes(locationId);
+  const neverCaptured=!pending.latest&&state.schedules.some(s=>s.weekStart===weekStart&&s.status==='PUBLISHED'&&inScope(s.locationId));
+  const people=[...new Set(pending.changes.flatMap(c=>[c.before?.employeeId,c.after?.employeeId]).filter((v):v is string=>!!v))].sort();
+  const names=bounded(await ctx.ex.query<{id:string;name:string}>({text:`SELECT e.id,e.first_name||' '||e.last_name AS name FROM employees e JOIN locations home ON home.id=e.primary_location_id
+   WHERE home.workspace_id=$1 AND e.id=ANY($2::text[]) ORDER BY e.id LIMIT 5001`,values:[ctx.workspace.id,people]}));
+  const positions=bounded(await ctx.ex.query<{id:string;name:string}>({text:'SELECT id,name FROM positions WHERE workspace_id=$1 ORDER BY id LIMIT 5001',values:[ctx.workspace.id]}));
+  const history=bounded(await ctx.ex.query<PendingHistoryRow>({text:`SELECT h.shift_id AS "shiftId",h.actor_employee_id AS "actorId",e.first_name||' '||e.last_name AS "actorName",h.created_at::text AS "createdAt"
+   FROM schedule_pending_edits h JOIN employees e ON e.id=h.actor_employee_id
+   WHERE h.workspace_id=$1 AND h.week_start=$2 AND h.published_revision_id IS NULL ORDER BY h.created_at,h.id LIMIT 5001`,values:[ctx.workspace.id,weekStart]}));
+  const data=buildSchedulePendingChanges({weekStart,changes:pending.changes,neverCaptured,
+   latestRevision:pending.latest?{id:pending.latest.id,revisionNumber:pending.latest.revisionNumber,createdAt:pending.latest.createdAt}:null,
+   locationIds:ctx.ids,employeeNames:new Map(names.map(e=>[e.id,e.name])),locationNames:new Map(catalog.map(l=>[l.id,l.name])),
+   positionNames:new Map(positions.map(p=>[p.id,p.name])),history,canPublish:ctx.ids===null});
+  return {data};
  },ex);
 }
 /** Preserve the clock monitor's own observation time/expiry when projecting

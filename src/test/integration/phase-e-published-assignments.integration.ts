@@ -16,8 +16,19 @@ async function schedule(id:string,weekStart:string,locationId='loc-1',status='PU
  await q('INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES($1,$2,$3,$4,\'QAOWNER\')',[id,locationId,weekStart,status]);
  if(status==='PUBLISHED')await q("INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) VALUES($1,$2,(SELECT COALESCE(max(revision_number),0)+1 FROM schedule_publication_revisions WHERE week_start=$2::date),'PUBLISH','QAOWNER')",['rev-'+id,weekStart]);
 }
+// Publish changes (Jose, 2026-10-29): Home reads the latest publication revision,
+// so a fixture shift in a published schedule is also captured in that revision.
+const captureSql=(revision:string)=>`INSERT INTO schedule_publication_revision_shifts(id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time,notes,is_designated_lead,is_callout_approved,position_id,position_name)
+ SELECT ${revision}||':'||sh.id,${revision},sh.id,sh.schedule_id,s.location_id,sh.employee_id,sh.date,sh.start_time,sh.end_time,sh.notes,sh.is_designated_lead,false,sh.position_id,(SELECT p.name FROM positions p WHERE p.id=sh.position_id)
+ FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id`;
 async function shift(id:string,scheduleId:string,employeeId:string,date:string,start='08:00',end='16:00',notes='PRIVATE NOTE'){
  await q('INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,notes,position_id) VALUES($1,$2,$3,$4,$5,$6,$7,\'qa-pos\')',[id,scheduleId,employeeId,date,start,end,notes]);
+ await q(`${captureSql("'rev-'||s.id")} WHERE sh.id=$1 AND s.status='PUBLISHED' AND EXISTS(SELECT 1 FROM schedule_publication_revisions r WHERE r.id='rev-'||s.id)`,[id]);
+}
+/** What Publish changes writes: a new revision capturing the schedule's whole live week. */
+async function republish(scheduleId:string,revision:string){
+ await q("INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) SELECT $1,s.week_start,(SELECT max(revision_number)+1 FROM schedule_publication_revisions WHERE week_start=s.week_start),'PUBLISH','QAOWNER' FROM schedules s WHERE s.id=$2",[revision,scheduleId]);
+ await q(`${captureSql('$1::text')} WHERE s.week_start=(SELECT week_start FROM schedules WHERE id=$2) AND s.status='PUBLISHED'`,[revision,scheduleId]);
 }
 beforeEach(async()=>{
  db=await createDisposableFoundationDatabase({mode:'current-runtime'});await seedOwnedApp(db.executor);
@@ -47,6 +58,8 @@ it('partial_locations_keep_known_shift while draft_coworker_released_ineligible_
  await q(`INSERT INTO shift_callouts(id,shift_id,employee_id,reason_code,status,legacy_manual,assignment_episode_id,source_terms,reviewed_terms_fingerprint)
   SELECT 'approved-release',sh.id,sh.employee_id,'OTHER','APPROVED',false,sh.assignment_episode_id,${currentShiftTermsSql()},${currentShiftFingerprintSql()}
   FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id='released-own'`);
+ // The approval publishes the release in its own revision (Publish changes patch), shown as a captured release.
+ await q("UPDATE schedule_publication_revision_shifts SET is_callout_approved=true WHERE source_shift_id='released-own'");
  await schedule('ineligible',addDays(future,21),'loc-2');await shift('ineligible-own','ineligible','QA-E11-SELF',addDays(future,22));
  const result=await read();expect(result.nextShift?.shiftId).toBe('known-own');expect(result.publicationState).toBe('partial');
  expect(JSON.stringify(result)).not.toContain('PRIVATE NOTE');for(const hidden of ['coworker','draft-own','released-own'])expect(JSON.stringify(result)).not.toContain(hidden);
@@ -63,17 +76,27 @@ it('complete current-week coverage with no shift is distinct from unavailable an
 it('unpublished current week and no future row stays partial with no invented off state',async()=>{
  expect(await read()).toMatchObject({nextShift:null,currentShift:null,publicationState:'partial',timeZone:'America/Puerto_Rico'});
 });
-it('missing publication identity closes a known assignment without exposing its data',async()=>{
+// Publish changes (Jose, 2026-10-29): Home shows only what was published. A week
+// without any revision was never shown to anyone, so its live row is not an
+// assignment yet (it used to close the whole read as unavailable).
+it('missing publication identity shows nothing for that week without exposing its data',async()=>{
  const future=week(14);await schedule('legacy',future);await shift('legacy-own','legacy','QA-E11-SELF',addDays(future,1));
- await q("DELETE FROM schedule_publication_revisions WHERE id='rev-legacy'");
- expect(await read()).toEqual({observedAt:null,timeZone:null,nextShift:null,currentShift:null,publicationState:'unavailable'});
+ await q("DELETE FROM schedule_publication_revision_shifts WHERE revision_id='rev-legacy'");await q("DELETE FROM schedule_publication_revisions WHERE id='rev-legacy'");
+ const result=await read();expect(result).toMatchObject({nextShift:null,currentShift:null,publicationState:'partial'});
+ expect(JSON.stringify(result)).not.toContain('legacy-own');
 });
-it('a fresh read reflects changed live ownership, time and position rather than stale capture',async()=>{
+// Publish changes (Jose, 2026-10-29): this used to read the live row. Home now
+// shows the published capture until the Owner publishes held edits.
+it('a fresh read keeps the published capture for held live edits and reflects them once published',async()=>{
  const future=week(14),date=addDays(future,1);await schedule('change',future);await shift('change-own','change','QA-E11-SELF',date);
- const before=await read();expect(before.nextShift).toMatchObject({shiftId:'change-own',startAt:`${date}T12:00:00.000Z`,positionLabel:'Customer Support',termsRevision:1});
+ const before=await read();expect(before.nextShift).toMatchObject({shiftId:'change-own',startAt:`${date}T12:00:00.000Z`,positionLabel:'Customer Support',termsRevision:1,publicationRevisionId:'rev-change'});
  await q("UPDATE shifts SET start_time='09:00',position_id='qa-pos2' WHERE id='change-own'");
- const changed=await read();expect(changed.nextShift).toMatchObject({shiftId:'change-own',startAt:`${date}T13:00:00.000Z`,positionLabel:'Operations',termsRevision:2});
+ expect((await read()).nextShift).toMatchObject({shiftId:'change-own',startAt:`${date}T12:00:00.000Z`,positionLabel:'Customer Support',publicationRevisionId:'rev-change'});
+ await republish('change','rev-change-2');
+ const changed=await read();expect(changed.nextShift).toMatchObject({shiftId:'change-own',startAt:`${date}T13:00:00.000Z`,positionLabel:'Operations',termsRevision:2,publicationRevisionId:'rev-change-2'});
  await q("UPDATE shifts SET employee_id='QA-E11-COWORKER' WHERE id='change-own'");
+ expect((await read()).nextShift).toMatchObject({shiftId:'change-own'});
+ await republish('change','rev-change-3');
  expect((await read()).nextShift).toBeNull();
 });
 it('session lost before protected source read exposes no private rows',async()=>{
@@ -176,6 +199,7 @@ it('fictional small and large future sets retain bounded query count and expose 
  await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) SELECT 'perf-'||n,'loc-1',$1::date+n*7,'PUBLISHED','QAOWNER' FROM generate_series(1,299) n",[first]);
  await q("INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) SELECT 'rev-perf-'||n,$1::date+n*7,1,'PUBLISH','QAOWNER' FROM generate_series(1,299) n",[first]);
  await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id) SELECT 'shift-perf-'||n,'perf-'||n,'QA-E11-SELF',$1::date+n*7+1,'08:00','16:00','qa-pos' FROM generate_series(1,299) n",[first]);
+ await q(`${captureSql("'rev-'||s.id")} WHERE s.id LIKE 'perf-%' AND s.id<>'perf-0'`);await q('ANALYZE schedule_publication_revision_shifts');
  await q('ANALYZE shifts');batches=0;
  expect((await read(executor)).nextShift?.shiftId).toBe('shift-perf-0');expect(batches).toBe(3);await explain('300-weeks');
 });

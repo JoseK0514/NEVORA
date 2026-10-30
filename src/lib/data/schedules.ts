@@ -307,13 +307,14 @@ export async function insertShift(input: {
     if(!schedule) return unchanged(state);
     return {statements:[{text:`INSERT INTO shifts (id,schedule_id,employee_id,date,start_time,end_time,notes,is_designated_lead,position_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
       values:[id,input.scheduleId,input.employeeId,input.date,input.startTime,input.endTime,input.notes ?? null,input.isDesignatedLead ?? false,input.positionId || null]}],afterSchedules:state.schedules,
-      afterShifts:[...state.shifts,{sourceShiftId:id,scheduleId:input.scheduleId,weekStart:week,locationId:schedule.locationId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,positionId:input.positionId || undefined,isDesignatedLead:input.isDesignatedLead ?? false,isCalloutApproved:false,hasExchangeHistory:false}]};
+      afterShifts:[...state.shifts,{sourceShiftId:id,scheduleId:input.scheduleId,weekStart:week,locationId:schedule.locationId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,positionId:input.positionId || undefined,isDesignatedLead:input.isDesignatedLead ?? false,isCalloutApproved:false,hasExchangeHistory:false}],deferPublication:true};
   }},executor);
   if(!result.committed) throw new Error('Schedule no longer exists.');
   return id;
 }
 
-/** Normal manual creation owns the parent and assignment in ONE transaction. */
+/** Normal manual creation owns the parent and assignment in ONE transaction.
+ * In a published week the new assignment is held until Publish changes. */
 export async function insertShiftAtLocation(input:{
  locationId:string;weekStart:string;employeeId:string;date:string;startTime:string;endTime:string;
  notes?:string;positionId?:string|null;isDesignatedLead?:boolean;actorEmployeeId:string;proof:SessionMutationProof;
@@ -328,7 +329,7 @@ export async function insertShiftAtLocation(input:{
    ...(!existing?[{text:'INSERT INTO schedules(id,location_id,week_start,created_by) VALUES($1,$2,$3,$4)',values:[scheduleId,input.locationId,input.weekStart,input.actorEmployeeId]}]:[]),
    {text:'INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,notes,is_designated_lead,position_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',values:[id,scheduleId,input.employeeId,input.date,input.startTime,input.endTime,input.notes??null,input.isDesignatedLead??false,input.positionId||null]}],
    afterSchedules:existing?state.schedules:[...state.schedules,{id:scheduleId,locationId:input.locationId,weekStart:input.weekStart,status:'DRAFT' as const,updatedAt:''}],
-   afterShifts:[...state.shifts,{sourceShiftId:id,scheduleId,weekStart:input.weekStart,locationId:input.locationId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,positionId:input.positionId||undefined,isDesignatedLead:input.isDesignatedLead??false,isCalloutApproved:false,hasExchangeHistory:false}]};
+   afterShifts:[...state.shifts,{sourceShiftId:id,scheduleId,weekStart:input.weekStart,locationId:input.locationId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,positionId:input.positionId||undefined,isDesignatedLead:input.isDesignatedLead??false,isCalloutApproved:false,hasExchangeHistory:false}],deferPublication:true};
  }},executor);
  if(!result.committed)throw new Error('Schedule no longer exists.');
  return id;
@@ -436,8 +437,9 @@ export async function getShiftForManagement(
 /**
  * A manual edit takes ownership from generation and clears generated claims.
  * Omitted positionId retains the current position; null/empty explicitly removes
- * it. The publication protocol validates the final assignment and derives any
- * published revision/notifications atomically.
+ * it. The publication protocol validates the final assignment. In a published
+ * week the edit is held (live row + history) until the Owner taps Publish
+ * changes; nobody is notified by the edit itself.
  */
 export async function updateShift(input: {
   shiftId: string; employeeId: string; date: string; startTime: string;
@@ -454,7 +456,7 @@ export async function updateShift(input: {
     const positionId=input.positionId === undefined ? existing.positionId : input.positionId || undefined;
     return {statements:[{text:`UPDATE shifts SET assignment_origin='MANAGER',generated_claims=NULL,employee_id=$2,date=$3,start_time=$4,end_time=$5,notes=$6,is_designated_lead=$7,position_id=$8,updated_at=clock_timestamp() WHERE id=$1`,
       values:[input.shiftId,input.employeeId,input.date,input.startTime,input.endTime,input.notes ?? null,input.isDesignatedLead ?? false,positionId || null]}],afterSchedules:state.schedules,
-      afterShifts:state.shifts.map(s=>s.sourceShiftId===input.shiftId?{...s,assignmentOrigin:'MANAGER',generatedClaims:null,positionId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,isDesignatedLead:input.isDesignatedLead ?? false,isCalloutApproved:s.isCalloutApproved && s.employeeId===input.employeeId && s.date===input.date && s.startTime===input.startTime && s.endTime===input.endTime && (s.positionId||null)===(positionId||null) && s.isDesignatedLead===(input.isDesignatedLead??false)}:s)};
+      afterShifts:state.shifts.map(s=>s.sourceShiftId===input.shiftId?{...s,assignmentOrigin:'MANAGER',generatedClaims:null,positionId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,isDesignatedLead:input.isDesignatedLead ?? false,isCalloutApproved:s.isCalloutApproved && s.employeeId===input.employeeId && s.date===input.date && s.startTime===input.startTime && s.endTime===input.endTime && (s.positionId||null)===(positionId||null) && s.isDesignatedLead===(input.isDesignatedLead??false)}:s),deferPublication:true};
   }},executor);
   return result.committed;
 }
@@ -481,7 +483,7 @@ export async function deleteShift(shiftId: string, proof: SessionMutationProof, 
     if(!shift || shift.hasExchangeHistory) return unchanged(state);
     if(shift.assignmentOrigin==='GENERATED' && state.schedules.some(s=>s.id===shift.scheduleId && s.status==='DRAFT')) throw new Error('Generated assignment changed; reload and try again.');
     return {statements:[{text:`DELETE FROM shifts sh WHERE sh.id=$1 AND NOT EXISTS (SELECT 1 FROM shift_exchanges x WHERE x.source_shift_id=sh.id OR x.target_shift_id=sh.id)`,values:[shiftId]}],
-      afterSchedules:state.schedules,afterShifts:state.shifts.filter(s=>s.sourceShiftId!==shiftId)};
+      afterSchedules:state.schedules,afterShifts:state.shifts.filter(s=>s.sourceShiftId!==shiftId),deferPublication:true};
   }},executor);
   return result.committed;
 }

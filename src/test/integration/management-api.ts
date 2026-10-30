@@ -46,6 +46,9 @@ export async function deleteShift(shiftId: string, actorEmployeeId: string, exec
 export async function publishScheduleWithRevision(input: Input<typeof publications.publishScheduleWithRevision>, executor: SqlExecutor = neonNotificationExecutor()) {
   return publications.publishScheduleWithRevision({ ...input, proof: await fixtureProof(executor, input.managerId) }, executor);
 }
+export async function publishScheduleChanges(input: Input<typeof publications.publishScheduleChanges>, executor: SqlExecutor = neonNotificationExecutor()) {
+  return publications.publishScheduleChanges({ ...input, proof: await fixtureProof(executor, input.managerId) }, executor);
+}
 export async function reviewTimeOffRequest(input: Input<typeof requests.reviewTimeOffRequest>, executor: SqlExecutor = neonNotificationExecutor()) {
   return requests.reviewTimeOffRequest({ ...input, proof: await fixtureProof(executor, input.managerId) }, executor);
 }

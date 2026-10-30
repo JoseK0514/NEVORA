@@ -137,3 +137,13 @@ it("corporate (board G-O-Schedule): a week card with the week and its state, the
   expect(output).toContain('class="c-pill c-pill--amber">Draft</span>');
   expect(output).not.toContain('class="q-week"');
 });
+
+it("corporate: a shift edited since the week was published says Changed (Publish changes)", () => {
+  const roster: RosterEmployee[] = [{ id: "e", name: "Dana Kim", role: "Employee", shifts: [{ id: "edited", date: "2026-10-06", startTime: "14:00", endTime: "20:00", location: "Main Office", status: "PUBLISHED", lead: false }] }];
+  const out = renderToStaticMarkup(createElement(ManagerWeeklyRoster, { employees: roster, dates: weekDates("2026-10-05"), today: "2026-10-06", timeZone: "America/Puerto_Rico",
+    corp: { weekLabel: "Oct 5 – 11", previousHref: "/p", nextHref: "/n", addShiftHref: "/app/schedule/new?week=2026-10-05", changedShiftIds: ["edited"] } }));
+  expect(out).toContain('class="c-pill c-pill--amber">Changed</span>');
+  const plain = renderToStaticMarkup(createElement(ManagerWeeklyRoster, { employees: roster, dates: weekDates("2026-10-05"), today: "2026-10-06", timeZone: "America/Puerto_Rico",
+    corp: { weekLabel: "Oct 5 – 11", previousHref: "/p", nextHref: "/n", addShiftHref: "/app/schedule/new?week=2026-10-05" } }));
+  expect(plain).not.toContain(">Changed<");
+});

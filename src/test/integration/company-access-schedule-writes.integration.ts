@@ -76,11 +76,18 @@ it('publishing owned A requires Company because the publication protocol covers 
   expect(result.published).toBe(true);expect(await f.q('SELECT count(*)::integer AS count FROM schedule_publication_revisions')).toEqual([{count:1}]);
  }finally{await f.db.dispose();}
 });
+// Publish changes (Jose, 2026-10-29): manual edits never publish, so a location-scoped
+// draft edit can no longer emit (or be widened by) another location's unrecorded
+// publication. It used to be refused for that reason; now it saves its own draft
+// row and still records no revision, capture, intent or held history for B.
 it('a local draft edit cannot silently repair an unrecorded B publication or emit its global revision/intents',async()=>{
  const f=await fixture();try{
-  await f.q("UPDATE schedules SET status='PUBLISHED' WHERE id='write-b'");const before=await snapshot(f);
-  await denied(()=>insertShift({scheduleId:'write-a',employeeId:'target',date:week,startTime:'10:00',endTime:'11:00',actorEmployeeId:'manager',proof:f.manager},f.db.executor));
-  expect(await snapshot(f)).toEqual(before);
+  await f.q("UPDATE schedules SET status='PUBLISHED' WHERE id='write-b'");const before=(await snapshot(f))[0].state as Record<string,unknown>;
+  const id=await insertShift({scheduleId:'write-a',employeeId:'target',date:week,startTime:'10:00',endTime:'11:00',actorEmployeeId:'manager',proof:f.manager},f.db.executor);
+  const after=(await snapshot(f))[0].state as Record<string,unknown>;
+  expect({revisions:after.revisions,captures:after.captures,notifications:after.notifications}).toEqual({revisions:before.revisions,captures:before.captures,notifications:before.notifications});
+  expect((after.shifts as {id:string;schedule_id:string}[]).filter(s=>!(before.shifts as {id:string}[]).some(b=>b.id===s.id))).toEqual([expect.objectContaining({id,schedule_id:'write-a'})]);
+  expect(await f.q('SELECT count(*)::integer AS count FROM schedule_pending_edits')).toEqual([{count:0}]);
  }finally{await f.db.dispose();}
 });
 

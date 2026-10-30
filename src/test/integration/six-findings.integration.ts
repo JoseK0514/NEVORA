@@ -586,6 +586,9 @@ it("copy crash rolls back schedule, per-row ledger, publication and outbox; dupl
       values: [command.operationId],
     }),
   ).toEqual([]);
+  expect(
+    await db.executor.query({ text: "SELECT id FROM schedule_pending_edits", values: [] }),
+  ).toEqual([]);
   const winners = await Promise.all([
     executeScheduleCopy(proof, command, db.executor),
     executeScheduleCopy(proof, command, db.executor),
@@ -606,12 +609,21 @@ it("copy crash rolls back schedule, per-row ledger, publication and outbox; dupl
       values: [],
     }),
   ).toHaveLength(1);
+  // Publish changes (Jose, 2026-10-29): copying into a published week is held
+  // like any manual edit. It used to publish a revision at once; now the row
+  // waits as one COPY history entry until the Owner taps Publish changes.
   expect(
     await db.executor.query({
       text: "SELECT id FROM schedule_publication_revisions WHERE week_start='2030-10-14'",
       values: [],
     }),
-  ).toHaveLength(1);
+  ).toHaveLength(0);
+  expect(
+    await db.executor.query({
+      text: "SELECT kind,published_revision_id FROM schedule_pending_edits WHERE week_start='2030-10-14'",
+      values: [],
+    }),
+  ).toEqual([{ kind: "COPY", published_revision_id: null }]);
   expect(
     await db.executor.query({
       text: "SELECT row_number FROM schedule_copy_row_receipts WHERE operation_id=$1",

@@ -90,7 +90,8 @@ function hoursText(hours: NonNullable<RosterEmployee["hours"]>) {
 const overBy = (hours: NonNullable<RosterEmployee["hours"]>) => `${Number((hours.week - hours.maximum).toFixed(1))}h`;
 
 /** Corporate (Release 1, board G-O-Schedule): the week card's header and the day card's Add shift row. */
-export type RosterCorp = { weekLabel: string; previousHref: string; nextHref: string; status?: ReactNode; addShiftHref: string };
+export type RosterCorp = { weekLabel: string; previousHref: string; nextHref: string; status?: ReactNode; addShiftHref: string;
+  /** Shifts edited since the week was published (Publish changes): they show "Changed". */ changedShiftIds?: readonly string[] };
 
 /** Today's live state for one rostered shift, from the same Today read Home uses (matched by person and start time). */
 function liveState(shift: RosterShift, employeeId: string, today: Today | null, timeZone: string): ReactNode {
@@ -218,7 +219,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
       <span className="c-row__title c-row__title--b">{employee.name}</span>
       <span className="c-row__detail"><span>{[shift.lead ? "Shift lead" : shift.position || employee.role, !locationId ? shift.location : null].filter(Boolean).join(" · ")}</span></span>
     </span>
-    {liveState(shift, employee.id, todayRead, timeZone) ?? (shift.status === "DRAFT" ? <CorpPill tone="amber">Draft</CorpPill> : null)}
+    {liveState(shift, employee.id, todayRead, timeZone) ?? (shift.status === "DRAFT" ? <CorpPill tone="amber">Draft</CorpPill> : corp?.changedShiftIds?.includes(shift.id) ? <CorpPill tone="amber">Changed</CorpPill> : null)}
   </Link></li>;
   const corpRows = [
     ...dayShifts.map(entry => ({ start: entry.shift.startTime, node: corpShiftRow(entry) })),

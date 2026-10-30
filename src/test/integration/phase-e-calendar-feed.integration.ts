@@ -26,6 +26,14 @@ it('removal projection has canonical source references without copied schedule b
 
 const proof:SessionMutationProof={employee:{id:'calendar-self',firstName:'Fictional',lastName:'Self',role:'EMPLOYEE',primaryLocationId:'loc-1'},sessionTokenHash:'b'.repeat(64)};
 const owner:SessionMutationProof={employee:{id:'calendar-owner',firstName:'Fictional',lastName:'Owner',role:'OWNER',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
+// Publish changes (Jose, 2026-10-29): the feed reads the latest publication
+// revision, so raw fixture rows stand for published assignments only once
+// captured. This adds them to the latest capture of the fixture week.
+async function capture(ids:string[]){
+ await q(`INSERT INTO schedule_publication_revision_shifts(id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time,notes,is_designated_lead,is_callout_approved,position_id,position_name)
+  SELECT r.id||':'||sh.id,r.id,sh.id,sh.schedule_id,s.location_id,sh.employee_id,sh.date,sh.start_time,sh.end_time,sh.notes,sh.is_designated_lead,false,sh.position_id,NULL
+  FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id JOIN LATERAL(SELECT id FROM schedule_publication_revisions WHERE week_start=s.week_start ORDER BY revision_number DESC LIMIT 1) r ON true WHERE sh.id=ANY($1::text[])`,[ids]);
+}
 async function seed(requestedDate?:string,includeSecondLocation=true){
  await q("UPDATE locations SET name='Fictional main office',short_name='Main Office' WHERE id='loc-1'");
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('calendar-owner','Fictional','Owner','555-0100','OWNER','loc-1'),('calendar-self','Fictional','Self','555-0101','EMPLOYEE','loc-1'),('calendar-other','Fictional','Other','555-0102','EMPLOYEE','loc-1')");
@@ -69,10 +77,11 @@ it('missing canonical publication metadata fails closed instead of borrowing lab
 it('30 past through 180 future workspace dates retain full overlapping overnight boundaries',async()=>{
  const {token}=await seed(),today=businessDate(new Date(),'America/Puerto_Rico');await q("DELETE FROM shifts WHERE id='calendar-shift'");
  const offsets=[-32,-31,-30,180,181];for(const offset of offsets)await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES($1,'calendar-schedule','calendar-self',$2,'23:00','02:00')",['boundary-'+offset,addDays(today,offset)]);
+ await q("DELETE FROM schedule_publication_revision_shifts WHERE source_shift_id='calendar-shift'");await capture(offsets.map(offset=>'boundary-'+offset));
  const result=await readCalendarFeed(token,db.executor);expect(result.state).toBe('ready');if(result.state!=='ready')throw Error('No feed');expect(result.events).toHaveLength(3);expect(result.events.map(e=>e.startAt).sort()).toEqual([-31,-30,180].map(n=>addDays(addDays(today,n),1)+'T03:00:00.000Z').sort());expect(result.events.every(e=>Date.parse(e.endAt)-Date.parse(e.startAt)===3*3600000)).toBe(true);
 });
 it('resource overflow returns unavailable with no truncated success',async()=>{
- const {token,date}=await seed();await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) SELECT 'overflow-'||n,'calendar-schedule','calendar-self',$1,'08:00','16:00' FROM generate_series(1,500) n",[date]);expect((await readCalendarFeed(token,db.executor)).state).toBe('unavailable');
+ const {token,date}=await seed();await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) SELECT 'overflow-'||n,'calendar-schedule','calendar-self',$1,'08:00','16:00' FROM generate_series(1,500) n",[date]);await capture(Array.from({length:500},(_,n)=>'overflow-'+(n+1)));expect((await readCalendarFeed(token,db.executor)).state).toBe('unavailable');
 });
 it('own cross-week moves both directions retain UID and increase global sequence',async()=>{
  const {token,week,date}=await seed();const initial=await readCalendarFeed(token,db.executor);if(initial.state!=='ready')throw Error('No feed');const destination=addDays(week,7);
@@ -107,7 +116,9 @@ it('removal metadata is omitted after 60 days while canonical history is retaine
  const retained=await readCalendarFeed(token,at(59));expect(clockErrors).toEqual([]);if(retained.state!=='ready')throw Error('No feed');expect(retained.events).toHaveLength(1);expect(retained.events[0].status).toBe('CANCELLED');const expired=await readCalendarFeed(token,at(61));expect(clockErrors).toEqual([]);if(expired.state!=='ready')throw Error('No feed');expect(expired.events).toEqual([]);expect(await q('SELECT * FROM schedule_publication_revision_shifts ORDER BY id')).toEqual(history);expect(await q('SELECT * FROM calendar_removals')).toHaveLength(1);
 });
 it('workspace daylight saving overnight conversion emits full absolute boundaries without payroll inference',async()=>{
- const {token}=await seed('2026-10-31');await q("UPDATE workspaces SET time_zone='America/New_York';UPDATE shifts SET start_time='22:00',end_time='06:00' WHERE id='calendar-shift'");const result=await readCalendarFeed(token,db.executor);if(result.state!=='ready')throw Error('No feed');expect(result.events[0]).toMatchObject({startAt:'2026-11-01T02:00:00.000Z',endAt:'2026-11-01T11:00:00.000Z'});expect(result.events[0]).not.toHaveProperty('paidMinutes');
+ const {token,week}=await seed('2026-10-31');await q("UPDATE workspaces SET time_zone='America/New_York';UPDATE shifts SET start_time='22:00',end_time='06:00' WHERE id='calendar-shift'");
+ await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:owner.employee.id,proof:owner},db.executor); // Publish changes: the retimed shift reaches calendars once published.
+ const result=await readCalendarFeed(token,db.executor);if(result.state!=='ready')throw Error('No feed');expect(result.events[0]).toMatchObject({startAt:'2026-11-01T02:00:00.000Z',endAt:'2026-11-01T11:00:00.000Z'});expect(result.events[0]).not.toHaveProperty('paidMinutes');
 });
 
 it('move into newly added location cancels original scoped event until deliberate rotation includes the new scope',async()=>{

@@ -8,7 +8,7 @@ import {assignOperationalScope,readOwnerOperationalScope} from '../../lib/compan
 import {createTimeOffRequest} from '../../lib/data/requests';
 import {executeShiftChange} from '../../lib/data/shift-changes';
 import {executeScheduleCopy} from '../../lib/data/schedule-copy';
-import {publishScheduleWithRevision} from '../../lib/data/publication-revisions';
+import {publishScheduleChanges,publishScheduleWithRevision} from '../../lib/data/publication-revisions';
 import {runShiftChangeMaintenance} from '../../lib/data/shift-change-maintenance';
 import {notificationIntentStatements} from '../../lib/data/notifications';
 import {sqlNotificationStateRepository} from '../../lib/data/notification-state';
@@ -60,7 +60,12 @@ async function scenario(kind:Producer){
    // publication/repair operations retain it; copy creates only target's own row.
    await f.q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('producer-destination','loc-1','2035-10-08',$1,'owner')",[kind==='publication'?'DRAFT':'PUBLISHED']);await f.q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('producer-destination-shift','producer-destination','manager','2035-10-09','08:00','16:00')");
    const operationId=randomUUID();
-   return {...f,run:async(ex:SqlExecutor)=>{if(kind==='publication')expect((await publishScheduleWithRevision({locationId:'loc-1',weekStart:'2035-10-08',managerId:'owner',proof:f.owner},ex)).published).toBe(true);else expect((await executeScheduleCopy(f.owner,{operationId,kind:'PREVIOUS_WEEK',weekStart:'2035-10-08'},ex)).rows.filter(r=>r.status==='COMMITTED')).toHaveLength(1);},verify:async()=>expect(await f.q("SELECT id FROM schedule_publication_revisions WHERE week_start='2035-10-08'")).toHaveLength(1)};
+   return {...f,run:async(ex:SqlExecutor)=>{if(kind==='publication')expect((await publishScheduleWithRevision({locationId:'loc-1',weekStart:'2035-10-08',managerId:'owner',proof:f.owner},ex)).published).toBe(true);else{expect((await executeScheduleCopy(f.owner,{operationId,kind:'PREVIOUS_WEEK',weekStart:'2035-10-08'},ex)).rows.filter(r=>r.status==='COMMITTED')).toHaveLength(1);
+    // Publish changes (Jose, 2026-10-29): a copy into a published week is held and notifies nobody;
+    // its notification producer is now the Owner's Publish changes, which this scenario runs next.
+    expect((await publishScheduleChanges({weekStart:'2035-10-08',managerId:'owner',proof:f.owner},ex)).published).toBe(true);}},
+    verify:async()=>{expect(await f.q("SELECT id FROM schedule_publication_revisions WHERE week_start='2035-10-08'")).toHaveLength(1);// The copied loc-2 row lands in a new Draft schedule, so nothing was held.
+     if(kind==='schedule-copy')expect(await f.q("SELECT kind FROM schedule_pending_edits WHERE week_start='2035-10-08'")).toEqual([]);}};
   }
   const terms=await reviewedFixtureSource(f.db.executor,'producer-shift'),created=await executeShiftChange(employee,{kind:'SUBMIT_CALLOUT',operationId:randomUUID(),...terms,reasonCode:'ILLNESS'},f.db.executor);if(created.status!=='pending')throw Error('Owned callout setup');
   if(kind==='callout-approval')return {...f,run:async(ex:SqlExecutor)=>expect((await executeShiftChange(f.owner,{kind:'APPROVE_CALLOUT',operationId:randomUUID(),requestId:created.requestId,expectedRevision:1},ex)).status).toBe('completed'),verify:async()=>expect(await f.q('SELECT status FROM shift_callouts WHERE id=$1',[created.requestId])).toEqual([{status:'APPROVED'}])};

@@ -79,7 +79,83 @@ export type WeekMutationBatch = {
     publishWeekStarts?: readonly string[];
     revisionSourceId?: string;
     affectedLocationId?: string;
+    /** Publish changes (Jose, 2026-10-29): manual edits to a published week write
+     * the live rows plus held-edit history only. No revision, calendar capture,
+     * supersede or notification until the Owner taps Publish changes. Draft-only
+     * batches may set it too; they simply record no history. */
+    deferPublication?: boolean;
+    /** History kind for this batch's held rows; derived per shift when omitted. */
+    pendingEditKind?: 'COPY';
 };
+export type PendingEditKind = 'CREATE' | 'UPDATE' | 'DELETE' | 'COPY';
+/** What one week's next revision would contain. PUBLISH (an explicit
+ * publishWeekStarts entry) and a week never captured snapshot the whole live
+ * week. Every other writer patches the latest revision with only its own
+ * published change, so held manual edits keep waiting (Jose, 2026-10-29). */
+type WeekProjection = { latest?: GuardedWeekState['revisions'][number]; previous: PublishedShiftSnapshot[]; current: PublishedShiftSnapshot[]; mode: 'SNAPSHOT' | 'PATCH' };
+function weekProjection(state: GuardedWeekState, batch: WeekMutationBatch, week: string): WeekProjection {
+    const latest = state.revisions.filter(r => r.weekStart === week).at(-1);
+    const previous = latest?.shifts ?? [];
+    const live = publishedShifts(batch.afterSchedules, batch.afterShifts, week);
+    if (!latest || batch.publishWeekStarts?.includes(week)) return { latest, previous, current: live, mode: 'SNAPSHOT' };
+    return { latest, previous, current: patchPublishedProjection(previous, publishedShifts(state.schedules, state.shifts, week), live), mode: 'PATCH' };
+}
+const identity = (s: PublishedShiftSnapshot) => s.sourceShiftId ?? null;
+const canonicalKey = (s: PublishedShiftSnapshot | undefined) => s ? JSON.stringify(canonicalShifts([s])[0]) : null;
+/** Latest revision rows, with each shift this batch changed (live before vs
+ * live after) replaced by its new published value or removed. Unchanged rows
+ * keep their captured values, including a captured position name. */
+export function patchPublishedProjection(latest: readonly PublishedShiftSnapshot[], before: readonly PublishedShiftSnapshot[], after: readonly PublishedShiftSnapshot[]): PublishedShiftSnapshot[] {
+    const beforeMap = new Map(before.flatMap(s => identity(s) ? [[identity(s)!, s] as const] : []));
+    const afterMap = new Map(after.flatMap(s => identity(s) ? [[identity(s)!, s] as const] : []));
+    const changed = [...new Set([...beforeMap.keys(), ...afterMap.keys()])].filter(id => canonicalKey(beforeMap.get(id)) !== canonicalKey(afterMap.get(id))).sort();
+    const changedSet = new Set(changed);
+    return [...latest.filter(s => !identity(s) || !changedSet.has(identity(s)!)), ...changed.flatMap(id => afterMap.get(id) ? [{ ...afterMap.get(id)!, positionName: undefined }] : [])];
+}
+/** Pending Publish changes for one week: the latest revision compared with the
+ * live published rows (canonical comparison, so a notes-only edit counts). A
+ * published week never captured is entirely pending. */
+export function pendingPublicationChanges(state: Pick<GuardedWeekState, 'schedules' | 'shifts' | 'revisions'>, week: string) {
+    const latest = state.revisions.filter(r => r.weekStart === week).at(-1);
+    const previous = latest?.shifts ?? [];
+    const current = publishedShifts(state.schedules, state.shifts, week);
+    const key = (s: PublishedShiftSnapshot) => identity(s) ?? `fallback:${s.locationId}:${s.employeeId}:${s.date}:${s.startTime}:${s.endTime}`;
+    const beforeMap = new Map(previous.map(s => [key(s), s] as const)), afterMap = new Map(current.map(s => [key(s), s] as const));
+    const changes = [...new Set([...beforeMap.keys(), ...afterMap.keys()])].sort()
+        .filter(id => canonicalKey(beforeMap.get(id)) !== canonicalKey(afterMap.get(id)))
+        .map(id => ({ key: id, sourceShiftId: identity(beforeMap.get(id) ?? afterMap.get(id)!), before: beforeMap.get(id) ?? null, after: afterMap.get(id) ?? null }));
+    const published = state.schedules.some(s => s.weekStart === week && s.status === 'PUBLISHED');
+    return { latest: latest ?? null, previous, current, changes, hasPendingChanges: changes.length > 0 || (published && !latest) };
+}
+/** Fields a manual edit changes on one assignment; callout release is published
+ * by its own approval revision and is not a held edit. */
+export function heldEditDiffers(live: PublishedShiftSnapshot, captured: PublishedShiftSnapshot | undefined): boolean {
+    if (!captured) return true;
+    const facts = (s: PublishedShiftSnapshot) => { const { isCalloutApproved: _c, ...rest } = canonicalShifts([s])[0]; void _c; return JSON.stringify(rest); };
+    return facts(live) !== facts(captured);
+}
+/** History rows for a deferred batch: one per published assignment whose
+ * canonical value changed, in the SAME transaction as the live write. */
+function pendingEditStatements(state: GuardedWeekState, batch: WeekMutationBatch, weeks: readonly string[], workspaceId: string, actorEmployeeId: string): SqlStatement[] {
+    const rows: Record<string, unknown>[] = [];
+    for (const week of weeks) {
+        const before = new Map(publishedShifts(state.schedules, state.shifts, week).flatMap(s => identity(s) ? [[identity(s)!, s] as const] : []));
+        const after = new Map(publishedShifts(batch.afterSchedules, batch.afterShifts, week).flatMap(s => identity(s) ? [[identity(s)!, s] as const] : []));
+        for (const id of [...new Set([...before.keys(), ...after.keys()])].sort()) {
+            const old = before.get(id), next = after.get(id);
+            if (canonicalKey(old) === canonicalKey(next)) continue;
+            const kind: PendingEditKind = !old ? (batch.pendingEditKind ?? 'CREATE') : !next ? 'DELETE' : 'UPDATE';
+            const shown = next ?? old!;
+            rows.push({ id: randomUUID(), week_start: week, location_id: shown.locationId, schedule_id: shown.scheduleId, shift_id: id, kind,
+                before_snapshot: old ? canonicalShifts([old])[0] : null, after_snapshot: next ? canonicalShifts([next])[0] : null });
+        }
+    }
+    if (!rows.length) return [];
+    return [{ text: `INSERT INTO schedule_pending_edits(id,workspace_id,week_start,location_id,schedule_id,shift_id,kind,before_snapshot,after_snapshot,actor_employee_id,created_at)
+      SELECT x.id::uuid,$1,x.week_start,x.location_id,x.schedule_id,x.shift_id,x.kind,x.before_snapshot,x.after_snapshot,$2,clock_timestamp()
+      FROM jsonb_to_recordset($3::jsonb) AS x(id text,week_start date,location_id text,schedule_id text,shift_id text,kind text,before_snapshot jsonb,after_snapshot jsonb)`,
+        values: [workspaceId, actorEmployeeId, JSON.stringify(rows)] }];
+}
 /** Derive every old/new schedule and assignment location from the guarded
  * database snapshot. Publication repair and generated provenance are global. */
 function operationalWriteFootprint(state:GuardedWeekState,batch:WeekMutationBatch,forceCompany=false):{footprint:OperationalFootprint;scheduleIds:string[]} {
@@ -105,13 +181,14 @@ function operationalWriteFootprint(state:GuardedWeekState,batch:WeekMutationBatc
   }
  }
  if(batch.publishWeekStarts?.length)company=true;
- // Even an unrelated raw published baseline can generate revision/capture and
- // notification writes. Admission must cover those effects before validation.
- for(const week of new Set([...state.schedules,...batch.afterSchedules].map(s=>s.weekStart))){
-  const latest=state.revisions.filter(r=>r.weekStart===week).at(-1);
-  const current=publishedShifts(batch.afterSchedules,batch.afterShifts,week);
+ // A revision (capture and notification writes) needs COMPANY admission before
+ // validation. A deferred manual edit writes none, so held edits elsewhere in
+ // the week never widen a location-scoped draft edit; any other writer patches
+ // only its own change, so only that change can require COMPANY here.
+ if(!batch.deferPublication)for(const week of new Set([...state.schedules,...batch.afterSchedules].map(s=>s.weekStart))){
+  const {latest,previous,current}=weekProjection(state,batch,week);
   if((latest||batch.afterSchedules.some(s=>s.weekStart===week&&s.status==='PUBLISHED'))
-   &&JSON.stringify(canonicalShifts(latest?.shifts??[]))!==JSON.stringify(canonicalShifts(current)))company=true;
+   &&JSON.stringify(canonicalShifts(previous))!==JSON.stringify(canonicalShifts(current)))company=true;
  }
  return {footprint:company||!locations.size?{kind:'COMPANY'}:{kind:'LOCATIONS',locationIds:[...locations].sort()},scheduleIds:[...ids].sort()};
 }
@@ -391,12 +468,11 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
                 })))]
         });
         const revisions: PublicationRevision[] = [];
-        for (const week of weeks) {
+        // Held manual edits: live rows plus history, nothing published or sent.
+        if (batch.deferPublication) statements.push(...pendingEditStatements(state, batch, weeks, config.workspace!.id, input.actorEmployeeId));
+        for (const week of batch.deferPublication ? [] : weeks) {
             if(input.revisionWeekStarts && !input.revisionWeekStarts.includes(week))continue;
-            const history = state.revisions.filter(r => r.weekStart === week);
-            const latest = history.at(-1);
-            const previous = latest?.shifts ?? [];
-            const current = publishedShifts(batch.afterSchedules, batch.afterShifts, week);
+            const {latest,previous,current,mode} = weekProjection(state, batch, week);
             const changedActual = JSON.stringify(canonicalShifts(previous)) !== JSON.stringify(canonicalShifts(current));
             if (!batch.publishWeekStarts?.includes(week) && !changedActual)
                 continue;
@@ -410,12 +486,28 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
             statements.push({
                 text: `INSERT INTO schedule_publication_revisions (id,week_start,revision_number,source_type,source_id,created_by,created_at,affected_location_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`, values: [revision.id, week, revision.revisionNumber, input.sourceType, revision.sourceId ?? null, input.actorEmployeeId, revision.createdAt, revision.affectedLocationId ?? null]
             });
+            if (mode === 'SNAPSHOT') {
             statements.push({
                 text: `INSERT INTO schedule_publication_revision_shifts (id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time,notes,is_designated_lead,is_callout_approved,position_id,position_name)
         SELECT $1 || ':' || sh.id,$1,sh.id,sh.schedule_id,s.location_id,sh.employee_id,sh.date,sh.start_time,sh.end_time,sh.notes,sh.is_designated_lead,
         EXISTS(SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()}),sh.position_id,(SELECT p.name FROM positions p WHERE p.id=sh.position_id)
         FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE s.week_start=$2 AND s.status='PUBLISHED'`, values: [revision.id, week]
             });
+            // The whole live week is now published, held edits included.
+            statements.push({text:`UPDATE schedule_pending_edits SET published_revision_id=$1,published_at=$2::timestamptz WHERE week_start=$3::date AND published_revision_id IS NULL`,values:[revision.id,revision.createdAt,week]});
+            } else {
+            // Built from values: the latest captured week plus only this batch's
+            // own change, never the live week (which may hold unpublished edits).
+            statements.push({
+                text: `INSERT INTO schedule_publication_revision_shifts (id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time,notes,is_designated_lead,is_callout_approved,position_id,position_name)
+        SELECT $1 || ':' || x.row_key,$1,x.source_shift_id,x.schedule_id,x.location_id,x.employee_id,x.date,x.start_time,x.end_time,x.notes,x.is_designated_lead,x.is_callout_approved,x.position_id,
+        CASE WHEN x.captured THEN x.position_name ELSE (SELECT p.name FROM positions p WHERE p.id=x.position_id) END
+        FROM jsonb_to_recordset($2::jsonb) AS x(row_key text,source_shift_id text,schedule_id text,location_id text,employee_id text,date date,start_time time,end_time time,notes text,is_designated_lead boolean,is_callout_approved boolean,position_id text,position_name text,captured boolean)`,
+                values: [revision.id, JSON.stringify(current.map((s, index) => ({ row_key: s.sourceShiftId ?? `legacy-${index}`, source_shift_id: s.sourceShiftId ?? null, schedule_id: s.scheduleId, location_id: s.locationId,
+                    employee_id: s.employeeId, date: s.date, start_time: s.startTime, end_time: s.endTime, notes: s.notes ?? null, is_designated_lead: s.isDesignatedLead, is_callout_approved: s.isCalloutApproved,
+                    position_id: s.positionId || null, position_name: s.positionName ?? null, captured: previous.includes(s) })))]
+            });
+            }
             // Reference previous own published facts atomically, including a
             // callout release. No schedule body is copied into calendar state.
             statements.push({text:'SELECT calendar_capture_removals($1)',values:[revision.id]});
