@@ -22,7 +22,10 @@
     "ownership.2026-10-29": "Jose: Claude takes over all remaining Release 1 work on claude-codex-collab-nevora from 8f2109a9; Codex stops pushing and runs production migrations and deploy only after inspection and Jose's go.",
     "businessRules.1": "Jose: phone clock-in is not in Release 1 (tablet + PIN only); the Owner per-location option is a later update.",
     "businessRules.4": "Jose: edits to a published week collect as pending changes and notify people once, when the Owner taps Publish changes.",
-    "ownerLook": "Jose: Owner desktop and mobile follow the approved corporate mockups (docs/product/specs/corporate-mockups, Oct 26), without the phone clock controls they show."
+    "ownerLook": "Jose: Owner desktop and mobile follow the approved corporate mockups (docs/product/specs/corporate-mockups, Oct 26), without the phone clock controls they show.",
+    "employeeLook": "Jose (2026-10-29): Employee mobile is restyled to the same approved corporate design as Owner (E-* boards), keeping Codex's behaviour, fixes and tests; done after the Owner phases.",
+    "darkMode": "Jose (2026-10-29): Dark mode is not part of Release 1; Owner and Employee ship light.",
+    "qualityBar": "Jose (2026-10-29): his biggest concern is that the UI/UX looks extremely clean and premium; every page is checked side by side against its approved board, with an independent UI inspection at the end of each phase."
   },
   "corporateSourceHashes": {
     "/Users/josek0514/Desktop/NEVORA-UI-READINESS/.claude/worktrees/v4-quiet/docs/product/specs/corporate-mockups/DESIGN-SPEC.md": "3af4d0afd64251833729d3a6defb1ee9685bbc88489dd3ca77556f9080cb1dbb",
