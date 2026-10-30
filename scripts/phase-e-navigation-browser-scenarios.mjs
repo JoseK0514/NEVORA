@@ -391,8 +391,10 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   if(width<768){
    // The kit reserves tab-bar space on the page, rather than the old outer frame.
    await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
-   const clearance=await page.locator('.q-profile-e').evaluate(e=>{const nav=document.querySelector('.mobile-nav').getBoundingClientRect(),signout=e.querySelector('.profile-signout-row, .em-profile-signout').getBoundingClientRect();return {padding:parseFloat(getComputedStyle(e.closest('.page-frame')).paddingBottom)+parseFloat(getComputedStyle(e).paddingBottom),navigationHeight:nav.height,signoutBottom:signout.bottom,navigationTop:nav.top};});
-   assert(clearance.navigationHeight>0);assert(clearance.padding>=clearance.navigationHeight,'Page reserves the actual fixed navigation height');assert(clearance.signoutBottom<=clearance.navigationTop,'Final Sign out control clears fixed navigation at the document end');
+   const clearance=await page.locator('.q-profile-e').evaluate(e=>{const nav=document.querySelector('.mobile-nav').getBoundingClientRect(),signout=e.querySelector('.profile-signout-row, .em-profile-signout').getBoundingClientRect();return {padding:parseFloat(getComputedStyle(e.closest('.page-frame')).paddingBottom)+parseFloat(getComputedStyle(e).paddingBottom),reservedBelowSignout:document.documentElement.scrollHeight-(signout.bottom+scrollY),navigationHeight:nav.height,signoutBottom:signout.bottom,navigationTop:nav.top};});
+   // The v5 kit reserved the space as page padding; the phone Profile reserves it below its last section. Either way the
+   // document must end at least one tab bar below Sign out.
+   assert(clearance.navigationHeight>0);assert(clearance.reservedBelowSignout>=clearance.navigationHeight,'Page reserves the actual fixed navigation height');assert(clearance.signoutBottom<=clearance.navigationTop,'Final Sign out control clears fixed navigation at the document end');
   }
   checks.push('long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance');
   await screenshot('final');
