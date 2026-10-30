@@ -26,7 +26,7 @@ import {ExportIcon} from '@phosphor-icons/react/dist/ssr/Export';
 import {addDays,weekStartFor} from '@/lib/date-utils';
 import type {TimecardIssue} from '@/lib/timecards/project';
 import {Avatar,Card,PageBand,StatGrid} from './kit/kit';
-import {CorpAvatar,CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpPage,CorpPill,CorpTitle} from './corp/corp';
+import {CorpAvatar,CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpPage,CorpPill,CorpStats,CorpTitle} from './corp/corp';
 import './timecards-corp.css';
 import {Duration,SigBand,SigLinkRow,SigPage,SigSection} from './signature/signature';
 import sigStyles from './timecards-signature.module.css';
@@ -61,6 +61,22 @@ function Details({card}:{card:Timecard}){
     </details>:null}
   </div>;
 }
+/** The board's Days list: one row per local day with its times and hours (breaks included, as the definition says). */
+function dayRows(card:Timecard){
+  const day=(iso:string)=>new Intl.DateTimeFormat('en-CA',{timeZone:card.timeZone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(iso));
+  const time=(iso:string)=>new Intl.DateTimeFormat('en-US',{timeZone:card.timeZone,hour:'numeric',minute:'2-digit'}).format(new Date(iso));
+  const groups=new Map<string,TimecardEntryLike[]>();
+  for(const entry of card.entries){const key=day(entry.startAt);groups.set(key,[...(groups.get(key)??[]),entry]);}
+  return [...groups].sort(([a],[b])=>a.localeCompare(b)).map(([date,entries])=>{
+    const open=entries.some(entry=>!entry.endAt);
+    const minutes=entries.reduce((sum,entry)=>sum+(entry.endAt?Math.max(0,Math.round((Date.parse(entry.endAt)-Date.parse(entry.startAt))/60000)):0),0);
+    const h=Math.floor(minutes/60),m=minutes%60;
+    return {date,label:`${new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'short'}).format(new Date(`${date}T12:00:00Z`))} ${Number(date.slice(8))}`,
+      times:entries.map(entry=>`${time(entry.startAt)} – ${entry.endAt?time(entry.endAt):'now'}`).join(', '),
+      hours:open?'In progress':h?(m?`${h} h ${m} min`:`${h} h`):`${m} min`};
+  });
+}
+type TimecardEntryLike=Timecard['entries'][number];
 /** Sentence case for a timecard state: "Draft", "Approved", "Finalized". */
 const stateLabel=(state:string)=>{const text=state.replaceAll('_',' ').toLowerCase();return text.charAt(0).toUpperCase()+text.slice(1);};
 function commandMessage(result:TimecardMutation):string{
@@ -355,40 +371,55 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     };
     const status=openItem?rowStatus(openItem):null,own=openItem?.card.employeeId===actorId;
     const tone=openItem?employeeTimecardPresentation(openItem.card.issues).tone:'neutral',waiting=!!openItem&&!own&&tone==='neutral'&&openItem.card.issues.length>0;
+    // Corporate (Release 1, board O-TimecardDetail): the timecard as a sheet with the kit's cards: who and the period's
+    // figures, anything that needs attention, the days, then the one decision. Same actions, history and wording.
+    const days=openItem?dayRows(openItem.card):[];
+    const btn=(kind:'primary'|'secondary')=>`c-btn c-btn--full${kind==='secondary'?' c-btn--secondary':''}`;
     const sheetNode=<>
-      <dialog ref={sheet} className="cm-tc-sheet" aria-labelledby="cm-tc-sheet-title" onCancel={()=>{userClosedSheet.current=true;}} onClose={closeSheet}>
-        <div className="cm-tc-sheet__head">
-          {openItem?<Avatar initials={initialsOf(openItem.card.employeeName)}/>:null}
-          <div><h2 id="cm-tc-sheet-title">{openItem?openItem.card.employeeName:'Timecard'}</h2>{status?<p className="cm-tc-status" data-tone={status.tone}>{status.text}</p>:null}</div>
-          <button type="button" className="cm-tc-done" onClick={()=>{userClosedSheet.current=true;sheet.current?.close();}}>Done</button>
-        </div>
-        {openItem?<div className="cm-tc-sheet__body">
-          <dl className="cm-tc-figures">
-            <div><dt>Period</dt><dd>{keepWhole(`${periodDate(period.startDate)} – ${periodDate(period.endDate)}`)}</dd></div>
-            <div><dt>Recorded</dt><dd>{formatRecordedHours(openItem.card.recordedNanoseconds)}</dd></div>
-            <div><dt>Breaks</dt><dd>{formatRecordedHours(openItem.card.breakNanoseconds)}</dd></div>
-            <div><dt>Status</dt><dd>{stateLabel(openItem.state)}</dd></div>
-          </dl>
-          {openItem.card.issues.length?<div className={styles.issues} data-tone={tone}><NavIcon name={tone==='neutral'?'clock':'alert'} size={20}/><div><h3>{tone==='neutral'?'Period information':'Needs attention'}</h3><ul>{openItem.card.issues.map(issue=><li key={issue}>{issueNames[issue]}</li>)}</ul><p>{tone==='neutral'?`Totals can change until the period ends. Approval opens after ${shortDate(period.endDate)}.`:'Review the entries and resolve open time or corrections before approval.'}</p></div></div>:null}
-          {exclusionText(openItem)&&!openItem.card.issues.length?<p className={styles.note}>{exclusionText(openItem)}</p>:null}
-          <Details card={openItem.card}/>
-          <div className="cm-tc-actions">
-            {pending?.employeeId===openItem.card.employeeId?<button type="button" className="cm-tc-btn" data-kind="primary" disabled={busy} onClick={()=>void act(openItem,pending.action)}>Retry pending action</button>:
-              openItem.state==='FINALIZED'?<><label>Reopen reason<input value={notes[openItem.card.employeeId]??''} maxLength={500} onChange={e=>setNotes({...notes,[openItem.card.employeeId]:e.target.value})}/></label>
-                <button type="button" className="cm-tc-btn" data-kind="secondary" disabled={locked||own||!notes[openItem.card.employeeId]?.trim()} onClick={()=>void act(openItem,'REOPEN')}>Reopen period</button></>:
-              own?<p className={styles.note}>Your timecard requires a different manager.</p>:
-              waiting&&!pending&&!outcomes?<p className={styles.note}>Approve after {shortDate(period.endDate)}</p>:
-              <><button type="button" className="cm-tc-btn" data-kind="primary" disabled={locked||own||!!openItem.card.issues.length} onClick={()=>void act(openItem,'APPROVE')}>Approve timecard</button>
-                <button type="button" className="cm-tc-btn" data-kind="secondary" disabled={locked||own||openItem.state!=='APPROVED'||!!openItem.card.issues.length} onClick={()=>void act(openItem,'FINALIZE')}>Finalize period</button></>}
+      <dialog ref={sheet} className="cm-tc-sheet c-tc-sheet" aria-labelledby="cm-tc-sheet-title" onCancel={()=>{userClosedSheet.current=true;}} onClose={closeSheet}>
+        <div className="c-tc-sheet__page c-page">
+        <div className="c-tc-sheet__bar"><span aria-hidden="true"/><span className="c-tc-sheet__heading">Timecard</span>
+          <button type="button" className="cm-tc-done" onClick={()=>{userClosedSheet.current=true;sheet.current?.close();}}>Done</button></div>
+        {openItem?<>
+          <section className="c-card" aria-labelledby="cm-tc-sheet-title">
+            <div className="c-tc-sheet__who">
+              <CorpAvatar initials={initialsOf(openItem.card.employeeName)}/>
+              <span className="c-row__main"><h2 id="cm-tc-sheet-title" className="c-row__title c-row__title--b">{openItem.card.employeeName}</h2>
+                <span className="c-row__detail"><span>{keepWhole(`${roleOf(openItem.card)?`${roleOf(openItem.card)} · `:''}${rangeText(period)}`)}</span></span></span>
+              {status?<CorpPill tone={status.tone==='review'?'amber':status.tone==='done'?'teal':'neutral'}>{status.text}</CorpPill>:null}
+            </div>
+            <CorpStats items={[{label:'Recorded',value:quietHours(openItem.card.recordedNanoseconds)},{label:'Breaks',value:quietHours(openItem.card.breakNanoseconds)},{label:'Entries',value:openItem.card.entries.length}]}/>
+          </section>
+          {openItem.card.issues.length?<div className="c-tc-sheet__issue" data-tone={tone}><b>{tone==='neutral'?'Period information':'Needs attention'}</b>
+            <ul>{openItem.card.issues.map(issue=><li key={issue}>{issueNames[issue]}</li>)}</ul>
+            <p>{tone==='neutral'?`Totals can change until the period ends. Approval opens after ${shortDate(period.endDate)}.`:'Review the entries and resolve open time or corrections before approval.'}</p></div>:null}
+          {exclusionText(openItem)&&!openItem.card.issues.length?<p className="c-tc-sheet__note">{exclusionText(openItem)}</p>:null}
+          <CorpCard id="tc-days" label="Days" aside={<span className="c-tc-sheet__tz">{timeZoneLabel(openItem.card.timeZone)}</span>}>
+            {days.length?<ul className="c-rows" aria-label="Days with recorded time">{days.map(day=><li key={day.date}><div className="c-row c-tc-day">
+              <span className="c-tc-day__date">{day.label}</span>
+              <span className="c-row__main"><span className="c-row__detail"><span>{day.times}</span></span></span>
+              <span className="c-row__value">{day.hours}</span>
+            </div></li>)}</ul>:<CorpBody><p className="c-tc-sheet__note">No hours recorded in this period.</p></CorpBody>}
+            <details className="c-tc-sheet__more"><summary>Punches and corrections</summary><Details card={openItem.card}/></details>
+          </CorpCard>
+          <div className="c-tc-sheet__actions">
+            {pending?.employeeId===openItem.card.employeeId?<button type="button" className={btn('primary')} disabled={busy} onClick={()=>void act(openItem,pending.action)}>Retry pending action</button>:
+              openItem.state==='FINALIZED'?<><label className="c-field"><span className="c-field__label">Reopen reason</span><input className="c-in" value={notes[openItem.card.employeeId]??''} maxLength={500} onChange={e=>setNotes({...notes,[openItem.card.employeeId]:e.target.value})}/></label>
+                <button type="button" className={btn('secondary')} disabled={locked||own||!notes[openItem.card.employeeId]?.trim()} onClick={()=>void act(openItem,'REOPEN')}>Reopen period</button></>:
+              own?<p className="c-tc-sheet__note">Your timecard requires a different manager.</p>:
+              waiting&&!pending&&!outcomes?<p className="c-tc-sheet__note">Approve after {shortDate(period.endDate)}</p>:
+              <><button type="button" className={btn('primary')} disabled={locked||own||!!openItem.card.issues.length} onClick={()=>void act(openItem,'APPROVE')}>Approve timecard</button>
+                <button type="button" className={btn('secondary')} disabled={locked||own||openItem.state!=='APPROVED'||!!openItem.card.issues.length} onClick={()=>void act(openItem,'FINALIZE')}>Finalize period</button></>}
           </div>
-          {openItem.history.length?<details className={styles.history}><summary>Historical revisions ({openItem.history.length})</summary>
+          {openItem.history.length?<details className="c-tc-sheet__more c-tc-sheet__history"><summary>Historical revisions ({openItem.history.length})</summary>
             {openItem.history.map(h=><div key={h.operationId}><h3>Revision {h.revision} · {h.action==='APPROVE'?'Approved':h.action==='FINALIZE'?'Finalized':'Reopened'}</h3>
               <p>{stamp(h.occurredAt,openItem.card.timeZone)} · {h.actorName}{h.note?` · ${h.note}`:''}</p>
               <Details card={{...openItem.card,...h.snapshot}}/>
             </div>)}</details>:null}
-        </div>:null}
+        </>:null}
         {/* QA r3: the sheet says only what concerns this card (an action in progress or its result), not the list's count. */}
-        {openId&&(busy||pending)?<p className="cm-tc-sheet__message" aria-live="polite">{message}</p>:null}
+        {openId&&(busy||pending)?<p className="cm-tc-sheet__message c-tc-sheet__note" aria-live="polite">{message}</p>:null}
+        </div>
       </dialog>
     </>;
     // Quiet (v4, approved Oct 23): on phones, back to More, the week and how many are approved, This week and Last week,
