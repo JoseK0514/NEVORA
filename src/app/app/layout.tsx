@@ -24,6 +24,7 @@ import "./employee-style.css";
 import "./quiet-shell.css";
 // Corporate (Release 1, approved Oct 26): the Owner and Manager phone header and tab bar. Loaded last.
 import "./corp-shell.css";
+import "./corp-quiet-bridge.css";
 import "@/components/employee-mobile/mobile.css";
 import "@/components/employee-mobile/requests.css";
 import "@/components/employee-mobile/exchange.css";
