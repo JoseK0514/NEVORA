@@ -18,7 +18,8 @@ import {
 } from "./reservations";
 import { aggregateGenerationRejections } from "./explanations";
 import { compareEmployeeFairness } from "./fairness";
-import { boundedSearch } from "./search";
+import { boundedSearchSteps } from "./search";
+import { generationDates, type GenerationReviewScope } from "./scope";
 import type {
   GenerationAssignment,
   GenerationDemand,
@@ -167,11 +168,31 @@ function compareScore(a: State, b: State): number {
  * independently verify the snapshot and review before applying this plan.
  */
 export function planWeek(source: GenerationInput): GenerationPlan {
+  const steps = planWeekSteps(source);
+  let next = steps.next();
+  while (!next.done) next = steps.next();
+  return next.value;
+}
+
+export type PlannerControls = {
+  review?: GenerationReviewScope;
+  stopped?: () => boolean;
+  maxAdditions?: number;
+  excludedCandidateIds?: readonly string[];
+};
+/** Same canonical solver, with cooperative checkpoints for bounded read-only reviews.
+ * The synchronous management facade supplies no review controls. */
+export function* planWeekSteps(source: GenerationInput, controls: PlannerControls = {}): Generator<undefined, GenerationPlan, undefined> {
   const input = canonicalInput(source);
+  const dates = generationDates(input, controls.review);
+  if (controls.maxAdditions !== undefined && (!Number.isSafeInteger(controls.maxAdditions) || controls.maxAdditions < 1))
+    throw new Error("Invalid addition budget.");
+  const excluded = new Set(controls.excludedCandidateIds ?? []);
   for (const value of Object.values(input.limits))
     if (!Number.isSafeInteger(value) || value < 1)
       throw new Error("Planner budgets must be positive safe integers.");
-  const initialDemand = deriveGenerationDemand(input);
+  const initialDemand = deriveGenerationDemand(input, input.ledger, controls.review);
+  yield;
   const replaceable = new Set(
     input.ledger
       .filter(
@@ -194,7 +215,8 @@ export function planWeek(source: GenerationInput): GenerationPlan {
       .map((s) => s.id),
   );
   const fixed = input.ledger.filter((s) => !replaceable.has(s.id));
-  const baseDemand = deriveGenerationDemand(input, fixed);
+  const baseDemand = deriveGenerationDemand(input, fixed, controls.review);
+  yield;
   const employees = new Map(input.employees.map((e) => [e.id, e]));
   const locations = new Map(input.locations.map((l) => [l.id, l]));
   const positions = new Map(input.positions.map((p) => [p.id, p]));
@@ -290,11 +312,11 @@ export function planWeek(source: GenerationInput): GenerationPlan {
   const rejectionRecords = new Map<string, Map<string, Rejections>>();
   const diagnosticKey = (state: State) =>
     JSON.stringify(state.additions.map((a) => a.id).sort());
-  function optionsFor(
+  function* optionsFor(
     state: State,
     periods: GenerationPeriod[],
     gaps: Gap[],
-  ): Option[] {
+  ): Generator<undefined, Option[], undefined> {
     const ledger = ledgerFor(state.additions),
       options: Option[] = [];
     const stateKey = diagnosticKey(state);
@@ -321,6 +343,8 @@ export function planWeek(source: GenerationInput): GenerationPlan {
       for (const e of input.employees)
         for (const positionId of positionIds)
           for (const lead of leads) {
+            yield;
+            if (controls.stopped?.()) { budgetExhausted = true; return options; }
             const candidate: Candidate = {
               ...period,
               id: `auto:${JSON.stringify([e.id, period.locationId, period.date, period.startTime, period.endTime, positionId ?? null, lead])}`,
@@ -328,7 +352,7 @@ export function planWeek(source: GenerationInput): GenerationPlan {
               ...(positionId ? { positionId } : {}),
               ...(lead ? { isDesignatedLead: true } : {}),
             };
-            if (assignedIds.has(candidate.id)) continue;
+            if (assignedIds.has(candidate.id) || excluded.has(candidate.id)) continue;
             const served = local.filter((g) => serves(candidate, g));
             if (!served.length) continue;
             const result = evaluate(
@@ -375,7 +399,7 @@ export function planWeek(source: GenerationInput): GenerationPlan {
   }
   const initial: State = { additions: [], demand: baseDemand, skipped: [] };
   const search = baseDemand.ready
-    ? boundedSearch({
+    ? yield* boundedSearchSteps({
         initial,
         maxNodes: input.limits.maxNodes,
         key: (s: State) =>
@@ -396,14 +420,19 @@ export function planWeek(source: GenerationInput): GenerationPlan {
           s.demand.coverage.requiredMinutes > 0 &&
           s.demand.coverage.coveredMinutes ===
             s.demand.coverage.requiredMinutes,
-        stopped: () => false,
-        children: function* (state: State): IterableIterator<State> {
+        stopped: () => controls.stopped?.() ?? false,
+        children: function* (state: State): IterableIterator<State | undefined> {
           if (budgetExhausted) return;
+          if (controls.maxAdditions !== undefined && state.additions.length >= controls.maxAdditions) {
+            budgetExhausted = true;
+            return;
+          }
           const gaps = gapsFor(state.demand).filter(
             (g) => !state.skipped.includes(g.key),
           );
           if (!gaps.length) return;
-          const options = optionsFor(state, enumerate(state), gaps);
+          yield;
+          const options = yield* optionsFor(state, enumerate(state), gaps);
           const byGap = new Map<string, Option[]>(gaps.map((g) => [g.key, []]));
           const opportunities = new Map<string, Set<string>>();
           for (const option of options) {
@@ -470,6 +499,8 @@ export function planWeek(source: GenerationInput): GenerationPlan {
             );
           });
           for (const choice of choices) {
+            yield;
+            if (controls.stopped?.()) { budgetExhausted = true; return; }
             const additions = [...state.additions, choice.candidate];
             // The entire proposed set remains automatic, so split/superset/other-person
             // variations cannot escape reserved capacity by becoming artificial fixed work.
@@ -478,7 +509,7 @@ export function planWeek(source: GenerationInput): GenerationPlan {
                 .allowed
             )
               continue;
-            const demand = deriveGenerationDemand(input, ledgerFor(additions));
+            const demand = deriveGenerationDemand(input, ledgerFor(additions), controls.review);
             if (
               demand.score.fulfilledObligationMinutes <=
               state.demand.score.fulfilledObligationMinutes
@@ -500,6 +531,7 @@ export function planWeek(source: GenerationInput): GenerationPlan {
   // Explicitly revalidate every accepted addition against the actual final complete ledger.
   // Reserved evaluator budget ensures this is performed even when the search is exhausted.
   for (const candidate of additions) {
+    yield;
     const result = evaluate(
       candidate,
       finalLedger.filter((s) => s.id !== candidate.id),
@@ -525,7 +557,8 @@ export function planWeek(source: GenerationInput): GenerationPlan {
     : undefined;
   if (allocation && !allocation.allowed)
     throw new Error("Planner final capacity invariant failed.");
-  const demand = deriveGenerationDemand(input, finalLedger);
+  yield;
+  const demand = deriveGenerationDemand(input, finalLedger, controls.review);
   const gaps = gapsFor(demand);
   const explanations: GenerationExplanation[] = [
     ...demand.issues,
@@ -616,7 +649,7 @@ export function planWeek(source: GenerationInput): GenerationPlan {
     coverageWindows: input.coverageWindows.filter((w) =>
       demand.locationIds.includes(w.locationId),
     ),
-    weekDates: Array.from({ length: 7 }, (_, n) => addDays(input.weekStart, n)),
+    weekDates: dates,
   });
   return {
     status: !demand.ready
