@@ -1,0 +1,173 @@
+/* Corporate Employee bridge (Release 1, Phase 6). The Employee phone pages (Hours, Requests, Pay, Profile and their
+ * forms) share the em- markup and its --em-* tokens. Under the corporate shell those tokens take the kit's values
+ * (Inter, #F5F6F6 canvas, white 12px cards with a 1px #E3E5E6 ring, 22/600 titles, 15px rows, teal actions), and the
+ * shared pieces take the kit's shapes: a white nav bar on pushed pages, sections as cards, rows of 56px, kit buttons.
+ * Light only, like the approved boards. Pages rebuilt on the kit itself (c-*) are untouched. */
+@media screen and (max-width: 767px), screen and (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-nv-corp],
+  html[data-theme="dark"] body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-nv-corp] {
+    --em-on-action:#FFFFFF; --em-canvas:#F5F6F6; --em-surface:#FFFFFF; --em-ink:#1A1C1E; --em-muted:#6B7075;
+    --em-line:#E3E5E6; --em-teal:#0B6E69; --em-press:#084F4B; --em-wash:#E6F1EF;
+    --em-edge:#D5D8DA; --em-secondary:#4A4F54; --em-focus:#0B6E69;
+    --em-amber:#8A4B00; --em-amber-wash:#FEF4E6; --em-red:#B42318; --em-red-wash:#FDECEA;
+    --em-font:Inter,"Inter Fallback",-apple-system,BlinkMacSystemFont,sans-serif;
+    --em-size-title:22px; --em-size-section:13px; --em-size-body:15px; --em-size-support:13px; --em-size-nav:11px; --em-size-shift:20px;
+    --em-line-shift:1.3; --em-line-title:1.27; --em-line-heading:1.38; --em-line-label:1.33; --em-line-body:1.33;
+    --em-weight-title:600; --em-weight-section:600; --em-weight-label:600; --em-weight-action:600;
+    --em-inset:16px; --em-gap:12px; --em-card:12px; --em-control:8px; --em-small:8px; --em-action:48px; --em-target:44px;
+    color-scheme:light;
+  }
+  html body #employee-mobile[data-nv-corp] .em-requests { background:#F5F6F6 !important; font-variant-numeric:tabular-nums; -webkit-font-smoothing:antialiased; }
+
+  /* Page heading. A tab's own page: 22/600 title, 13px grey line under it. A pushed page (it has a Back link): a white
+   * 48px bar with "‹ Back" left and the title centred at 17/600, the line under it on the canvas. */
+  html body #employee-mobile[data-nv-corp] .em-request-heading { position:relative !important; padding:16px 16px 4px !important; background:transparent !important; box-shadow:none !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-heading h1 { font-size:22px !important; line-height:28px !important; font-weight:600 !important; letter-spacing:0 !important; color:#1A1C1E !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-heading p { margin:2px 0 0 !important; font-size:13px !important; line-height:18px !important; color:#6B7075 !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-heading:has(> .em-request-back) {
+    display:grid !important; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) !important; align-items:center !important; row-gap:0 !important;
+    padding:0 16px !important; background:linear-gradient(#FFFFFF,#FFFFFF) top / 100% 48px no-repeat !important;
+  }
+  html body #employee-mobile[data-nv-corp] .em-request-heading:has(> .em-request-back)::after { content:""; position:absolute; left:0; right:0; top:47px; height:1px; background:#E3E5E6; }
+  html body #employee-mobile[data-nv-corp] .em-request-heading > .em-request-back {
+    grid-column:1 !important; grid-row:1 !important; justify-self:start !important; display:inline-flex !important; align-items:center !important; gap:2px !important;
+    height:48px !important; min-height:48px !important; margin:0 !important; padding:0 !important; color:#0B6E69 !important; font-size:15px !important; line-height:20px !important; font-weight:600 !important; text-decoration:none !important;
+  }
+  html body #employee-mobile[data-nv-corp] .em-request-heading > .em-request-back svg { width:16px !important; height:16px !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-heading:has(> .em-request-back) h1 { grid-column:2 !important; grid-row:1 !important; font-size:17px !important; line-height:22px !important; text-align:center !important; white-space:nowrap; }
+  html body #employee-mobile[data-nv-corp] .em-request-heading:has(> .em-request-back) p { grid-column:1 / -1 !important; grid-row:2 !important; margin:16px 0 0 !important; }
+
+  /* Body: 16px gutters, 12px between blocks. */
+  html body #employee-mobile[data-nv-corp] .em-request-body { display:flex !important; flex-direction:column !important; gap:12px !important; padding:12px 16px 24px !important; background:transparent !important; }
+  /* A section is a white card; its heading is the card's 44px label row. */
+  html body #employee-mobile[data-nv-corp] .em-request-body > section:not(.em-request-notice):not(.em-response-status),
+  html body #employee-mobile[data-nv-corp] .em-request-body > form > section,
+  html body #employee-mobile[data-nv-corp] .em-hours-form section {
+    margin:0 !important; padding:0 0 4px !important; border:0 !important; border-radius:12px !important; background:#FFFFFF !important; box-shadow:0 0 0 1px #E3E5E6 !important; overflow:hidden;
+  }
+  html body #employee-mobile[data-nv-corp] .em-request-body section > h2 {
+    display:flex !important; align-items:center !important; min-height:44px !important; margin:0 0 4px !important; padding:0 16px !important; box-shadow:inset 0 -1px 0 #EDEEEF !important;
+    color:#4A4F54 !important; font-size:13px !important; line-height:18px !important; font-weight:600 !important; letter-spacing:0 !important;
+  }
+  html body #employee-mobile[data-nv-corp] .em-request-body section > :is(p, dl, .em-hours-help, .em-hours-own-note) { margin-left:16px !important; margin-right:16px !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-body section > p:last-child { margin-bottom:12px !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-body section > .em-request-list { margin:-4px 0 0 !important; }
+
+  /* Lists: kit rows. */
+  html body #employee-mobile[data-nv-corp] .em-request-list { display:block !important; margin:0 !important; padding:0 !important; list-style:none !important; gap:0 !important; background:transparent !important; box-shadow:none !important; border:0 !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-list > li { margin:0 !important; padding:0 !important; border:0 !important; background:none !important; box-shadow:inset 0 -1px 0 #EDEEEF !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-list > li:last-child { box-shadow:none !important; }
+  html body #employee-mobile[data-nv-corp] :is(.em-request-entry, .em-request-links > a, .em-request-list > li > a) {
+    display:flex !important; align-items:center !important; gap:12px !important; min-height:56px !important; margin:0 !important; padding:8px 16px !important;
+    border:0 !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; color:#1A1C1E !important; text-decoration:none !important;
+  }
+  html body #employee-mobile[data-nv-corp] :is(.em-request-entry, .em-request-list > li > a) > span:not(.em-request-icon) { flex:1 !important; min-width:0 !important; display:flex !important; flex-direction:column !important; gap:2px !important; }
+  html body #employee-mobile[data-nv-corp] :is(.em-request-entry, .em-request-list > li > a) strong { font-size:15px !important; line-height:20px !important; font-weight:600 !important; color:#1A1C1E !important; }
+  html body #employee-mobile[data-nv-corp] :is(.em-request-entry, .em-request-list > li > a) small { font-size:13px !important; line-height:18px !important; color:#6B7075 !important; }
+  html body #employee-mobile[data-nv-corp] :is(.em-request-entry, .em-request-list > li > a) > svg { flex:none !important; width:16px !important; height:16px !important; color:#A7ACB1 !important; }
+  html body #employee-mobile[data-nv-corp] :is(.em-request-entry, .em-request-list > li > a):active { background:#F7F8F8 !important; }
+
+  /* Facts (dl): label left, value right, on hairlines. */
+  html body #employee-mobile[data-nv-corp] .em-hours-facts { display:block !important; margin:0 !important; padding:0 !important; background:none !important; box-shadow:none !important; border:0 !important; }
+  html body #employee-mobile[data-nv-corp] section > .em-hours-facts { margin:0 !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours-facts > div { display:flex !important; align-items:baseline !important; justify-content:space-between !important; gap:12px !important; min-height:52px !important; margin:0 !important; padding:14px 16px !important; border:0 !important; box-shadow:inset 0 -1px 0 #EDEEEF !important; background:none !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours-facts > div:last-child { box-shadow:none !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours-facts dt { font-size:15px !important; line-height:20px !important; font-weight:600 !important; color:#1A1C1E !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours-facts dd { margin:0 !important; text-align:right !important; font-size:15px !important; line-height:20px !important; color:#1A1C1E !important; display:flex; flex-direction:column; align-items:flex-end; }
+  html body #employee-mobile[data-nv-corp] .em-hours-facts dd small { font-size:13px !important; line-height:18px !important; color:#6B7075 !important; }
+
+  /* Status cards (em-response-status): the state big, then its lines. */
+  html body #employee-mobile[data-nv-corp] .em-response-status { display:flex !important; flex-direction:column !important; gap:2px !important; margin:0 !important; padding:14px 16px !important; border:0 !important; border-radius:12px !important; background:#FFFFFF !important; box-shadow:0 0 0 1px #E3E5E6 !important; }
+  html body #employee-mobile[data-nv-corp] .em-response-status strong { font-size:20px !important; line-height:26px !important; font-weight:600 !important; color:#1A1C1E !important; }
+  html body #employee-mobile[data-nv-corp] .em-response-status span { font-size:13px !important; line-height:18px !important; color:#6B7075 !important; }
+
+  /* Notices: a quiet white card with grey text; never a coloured slab. */
+  html body #employee-mobile[data-nv-corp] .em-request-notice { margin:0 !important; padding:14px 16px !important; border:0 !important; border-radius:12px !important; background:#FFFFFF !important; box-shadow:0 0 0 1px #E3E5E6 !important; color:#4A4F54 !important; font-size:15px !important; line-height:20px !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-notice h2 { margin:0 0 4px !important; padding:0 !important; min-height:0 !important; box-shadow:none !important; color:#1A1C1E !important; font-size:15px !important; line-height:20px !important; font-weight:600 !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-notice :is(.em-request-secondary, .em-request-primary) { margin-top:8px !important; }
+  html body #employee-mobile[data-nv-corp] :is(.em-hours-help, .em-planning-help) { margin:0 !important; color:#6B7075 !important; font-size:13px !important; line-height:18px !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours-own-note { padding:10px 12px !important; border-radius:8px !important; background:#F5F6F6 !important; color:#1A1C1E !important; }
+
+  /* Buttons: kit primary (teal 48px), secondary (white, teal text, teal ring), text link. */
+  html body #employee-mobile[data-nv-corp] .em-request-primary, html body #employee-mobile[data-nv-corp] button.em-request-primary {
+    display:inline-flex !important; align-items:center !important; justify-content:center !important; gap:8px !important; width:100% !important; height:48px !important; min-height:48px !important; margin:0 !important; padding:0 16px !important;
+    border:0 !important; border-radius:8px !important; background:#0B6E69 !important; box-shadow:none !important; color:#FFFFFF !important; font:600 15px/20px Inter,"Inter Fallback",-apple-system,sans-serif !important; text-decoration:none !important;
+  }
+  html body #employee-mobile[data-nv-corp] .em-request-secondary, html body #employee-mobile[data-nv-corp] button.em-request-secondary {
+    display:inline-flex !important; align-items:center !important; justify-content:center !important; gap:8px !important; width:100% !important; height:44px !important; min-height:44px !important; margin:0 !important; padding:0 16px !important;
+    border:0 !important; border-radius:8px !important; background:#FFFFFF !important; box-shadow:inset 0 0 0 1px #0B6E69 !important; color:#0B6E69 !important; font:600 15px/20px Inter,"Inter Fallback",-apple-system,sans-serif !important; text-decoration:none !important;
+  }
+  html body #employee-mobile[data-nv-corp] :is(.em-request-primary, .em-request-secondary):disabled, html body #employee-mobile[data-nv-corp] :is(.em-request-primary, .em-request-secondary)[aria-disabled="true"] { opacity:.5 !important; }
+  html body #employee-mobile[data-nv-corp] :is(.em-request-primary, .em-request-secondary):focus-visible { outline:2px solid #0B6E69 !important; outline-offset:2px !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-text { display:inline-flex !important; align-items:center !important; gap:4px !important; color:#0B6E69 !important; font-size:15px !important; line-height:20px !important; font-weight:600 !important; text-decoration:none !important; }
+
+  /* Segmented tabs (Hours · Timecards · Corrections, Waiting · Decided): the kit's grey track with a white thumb. */
+  html body #employee-mobile[data-nv-corp] :is(.em-hours-tabs, .em-request-tabs) { display:flex !important; gap:2px !important; height:36px !important; margin:0 !important; padding:2px !important; border:0 !important; border-radius:8px !important; background:#EDEEEF !important; box-shadow:none !important; }
+  html body #employee-mobile[data-nv-corp] :is(.em-hours-tabs, .em-request-tabs) a { flex:1 !important; display:grid !important; place-items:center !important; min-height:0 !important; height:32px !important; margin:0 !important; padding:0 8px !important; border:0 !important; border-radius:6px !important; background:transparent !important; box-shadow:none !important; color:#4A4F54 !important; font-size:13px !important; line-height:18px !important; font-weight:500 !important; text-decoration:none !important; }
+  html body #employee-mobile[data-nv-corp] :is(.em-hours-tabs, .em-request-tabs) a[aria-current="page"] { background:#FFFFFF !important; box-shadow:0 1px 2px rgba(16,24,40,.08), 0 0 0 1px #E3E5E6 !important; color:#1A1C1E !important; font-weight:600 !important; }
+
+  /* Forms: 13/600 labels above 48px fields with a 1px ring; errors red. */
+  html body #employee-mobile[data-nv-corp] :is(.em-hours-form, .em-planning-form) { gap:12px !important; }
+  html body #employee-mobile[data-nv-corp] :is(.em-hours-form, .em-planning-form, .em-hours-field, .em-profile-field) label,
+  html body #employee-mobile[data-nv-corp] :is(.em-hours-fields, .em-planning-form) legend { color:#4A4F54 !important; font-size:13px !important; line-height:18px !important; font-weight:600 !important; }
+  html body #employee-mobile[data-nv-corp] .em-requests :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+    min-height:48px !important; border:0 !important; border-radius:8px !important; background:#FFFFFF !important; box-shadow:inset 0 0 0 1px #D5D8DA !important;
+    color:#1A1C1E !important; font:400 15px/20px Inter,"Inter Fallback",-apple-system,sans-serif !important; padding:12px !important;
+  }
+  html body #employee-mobile[data-nv-corp] .em-requests textarea { min-height:96px !important; }
+  html body #employee-mobile[data-nv-corp] .em-requests :is(input, select, textarea):focus-visible { outline:none !important; box-shadow:inset 0 0 0 2px #0B6E69 !important; }
+  html body #employee-mobile[data-nv-corp] .em-requests :is(input, select, textarea)[aria-invalid="true"] { box-shadow:inset 0 0 0 2px #B42318 !important; }
+  html body #employee-mobile[data-nv-corp] :is(.em-hours-error, .em-creation-error, .em-delete-error) { color:#B42318 !important; font-size:13px !important; line-height:18px !important; }
+
+  /* Disclosures (timecard entries, history): one white card each, 56px summary row. */
+  html body #employee-mobile[data-nv-corp] .em-hours-disclosure { margin:0 !important; border:0 !important; border-radius:12px !important; background:#FFFFFF !important; box-shadow:0 0 0 1px #E3E5E6 !important; overflow:hidden; }
+  html body #employee-mobile[data-nv-corp] .em-hours-disclosures { display:flex !important; flex-direction:column !important; gap:8px !important; padding:0 12px 12px !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours-disclosure summary { display:flex !important; align-items:center !important; gap:12px !important; min-height:56px !important; padding:8px 16px !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours-disclosure summary > span { flex:1; display:flex; flex-direction:column; gap:2px; }
+  html body #employee-mobile[data-nv-corp] .em-hours-disclosure summary strong { font-size:15px !important; line-height:20px !important; font-weight:600 !important; color:#1A1C1E !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours-disclosure summary small { font-size:13px !important; line-height:18px !important; color:#6B7075 !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours-disclosure-body { padding:4px 16px 14px !important; box-shadow:inset 0 1px 0 #EDEEEF !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours-disclosure-body h3 { margin:10px 0 2px !important; color:#6B7075 !important; font-size:13px !important; line-height:18px !important; font-weight:600 !important; }
+
+  /* The page footer ("Your information only · Refresh"): one quiet line. */
+  html body #employee-mobile[data-nv-corp] .em-request-footer { display:flex !important; align-items:center !important; justify-content:center !important; gap:8px !important; margin:4px 0 0 !important; padding:0 !important; background:none !important; box-shadow:none !important; border:0 !important; color:#6B7075 !important; font-size:13px !important; line-height:18px !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-footer button { min-height:44px !important; padding:0 8px !important; border:0 !important; background:none !important; color:#0B6E69 !important; font:600 13px/18px Inter,"Inter Fallback",-apple-system,sans-serif !important; }
+
+  /* Inside a card, a notice is plain text on the card, never a second ring. */
+  html body #employee-mobile[data-nv-corp] .em-request-body section > .em-request-notice { margin:0 !important; padding:8px 16px 14px !important; border-radius:0 !important; background:none !important; box-shadow:none !important; color:#6B7075 !important; }
+  /* A row's icon: 20px grey glyph in a 24px column. */
+  html body #employee-mobile[data-nv-corp] .em-request-icon { flex:none !important; display:grid !important; place-items:center !important; width:24px !important; height:24px !important; min-width:0 !important; margin:0 !important; padding:0 !important; border-radius:0 !important; background:none !important; color:#4A4F54 !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-icon svg { width:20px !important; height:20px !important; }
+  /* Link groups (Time-off requests, My shift requests): one card of one-line rows. */
+  html body #employee-mobile[data-nv-corp] .em-request-links { display:block !important; margin:0 !important; padding:0 !important; border:0 !important; border-radius:12px !important; background:#FFFFFF !important; box-shadow:0 0 0 1px #E3E5E6 !important; overflow:hidden; }
+  html body #employee-mobile[data-nv-corp] .em-request-links > a { min-height:52px !important; justify-content:space-between !important; font-size:15px !important; line-height:20px !important; font-weight:600 !important; box-shadow:inset 0 -1px 0 #EDEEEF !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-links > a:last-child { box-shadow:none !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-links > a > svg { width:16px !important; height:16px !important; color:#A7ACB1 !important; }
+  html body #employee-mobile[data-nv-corp] section > .em-request-links { border-radius:0 !important; box-shadow:inset 0 1px 0 #EDEEEF !important; }
+  html body #employee-mobile[data-nv-corp] section > .em-hours-facts { margin:0 !important; padding:0 !important; }
+
+  /* A section heading with a count on the right ("Eligible for you · 0 shifts"): the card's label row. */
+  html body #employee-mobile[data-nv-corp] .em-request-section-title { display:flex !important; align-items:center !important; justify-content:space-between !important; gap:12px !important; min-height:44px !important; margin:0 !important; padding:0 16px !important; box-shadow:inset 0 -1px 0 #EDEEEF !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-section-title h2 { margin:0 !important; padding:0 !important; min-height:0 !important; box-shadow:none !important; color:#4A4F54 !important; font-size:13px !important; line-height:18px !important; font-weight:600 !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-section-title span { color:#6B7075 !important; font-size:13px !important; line-height:18px !important; }
+  /* Recent requests first on the hub (board G-E-Requests), then the ways to start one. */
+  html body #employee-mobile[data-nv-corp] .em-requests[data-requests-state] .em-request-body > section[aria-labelledby="em-recent-heading"] { order:-1 !important; }
+}
+/* Time (board G-E-Time): kit cards inside the Hours frame; Past timecards on the title row. */
+@media screen and (max-width: 767px), screen and (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
+  html body #employee-mobile[data-nv-corp] .em-hours .em-request-body > .c-card, html body #employee-mobile[data-nv-corp] .em-hours .em-request-body > .c-note { margin:0 !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours .c-card { font-family:Inter,"Inter Fallback",-apple-system,sans-serif; color:#1A1C1E; }
+  html body #employee-mobile[data-nv-corp] .em-hours .em-hours-where { display:block; margin-top:2px; color:#4A4F54; font-size:13px; line-height:18px; }
+  html body #employee-mobile[data-nv-corp] .em-hours .c-card__body > .c-note { margin:10px 0 0; }
+  html body #employee-mobile[data-nv-corp] .em-hours .em-request-heading:has(.em-hours-past) { display:grid !important; grid-template-columns:minmax(0,1fr) auto !important; column-gap:12px !important; align-items:center !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours .em-request-heading:has(.em-hours-past) h1 { grid-column:1; grid-row:1; }
+  html body #employee-mobile[data-nv-corp] .em-hours .em-request-heading:has(.em-hours-past) p { grid-column:1 / -1; grid-row:2; }
+  html body #employee-mobile[data-nv-corp] .em-hours .em-hours-past { grid-column:2; grid-row:1; display:inline-flex; align-items:center; height:32px; padding:0 10px; border-radius:8px; background:#FFFFFF; box-shadow:inset 0 0 0 1px #D5D8DA; color:#1A1C1E; font:600 13px/18px Inter,"Inter Fallback",-apple-system,sans-serif; text-decoration:none; }
+  html body #employee-mobile[data-nv-corp] .em-hours .em-hours-past:focus-visible { outline:2px solid #0B6E69; outline-offset:2px; }
+}
+@media screen and (max-width: 767px), screen and (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
+  html body #employee-mobile[data-nv-corp] .em-hours .c-card__head { display:flex !important; align-items:center !important; min-height:44px !important; margin:0 !important; padding:0 16px !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours .c-card__label { margin:0 !important; padding:0 !important; color:#4A4F54 !important; font-size:13px !important; line-height:18px !important; font-weight:600 !important; letter-spacing:0 !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours .c-stats { margin:0 !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours .c-stat { margin:0 !important; }
+}
