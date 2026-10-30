@@ -11,6 +11,9 @@ import "./advisor.css";
 import { bindAdvisorLifecycle } from "./lifecycle";
 import { AttentionSection } from "./attention";
 import { WorkflowControls, WorkflowResults } from "./workflows";
+import { SelectField } from "@/components/select-field";
+import { NotebookPanel } from "./notebook-panel";
+import type { NotebookEdit } from "@/lib/owner-advisor/notebook";
 import type { AttentionDisposition } from "@/lib/owner-advisor/briefing-contracts";
 const starters = [
   "What needs my attention today?",
@@ -49,10 +52,15 @@ export function AdvisorScreen({
     reviewConflict: () => void;
     reviewItem?: (id: string, disposition: AttentionDisposition) => void;
     inspect?: (tool: Extract<import("@/lib/owner-advisor/contracts").AdvisorCommand, { op: "inspect" }>["tool"]) => void;
+    changeNotebook?: (edit: NotebookEdit) => Promise<boolean>;
+    selectTask?: (id: string | null) => void;
   };
 }) {
   const current = view.snapshot;
   const disabled = !current || !!view.busy || view.uncertain;
+  const saved = current?.notebook?.state === "ready" ? current.notebook.notebook : undefined;
+  const openTasks = saved?.tasks.filter(t => t.state === "open") ?? [];
+  const selectedUnavailable = !!view.focusedTaskId && !openTasks.some(t => t.id === view.focusedTaskId);
   return (
     <div className="nv-page oa-page" data-nv-page="">
       <PageBand
@@ -153,6 +161,7 @@ export function AdvisorScreen({
                 {view.answer && (
                   <article className="oa-answer" aria-label="Latest answer">
                     <h3>Answer and reasoning</h3>
+                    {view.answer.context?.notebookRevision !== undefined && view.answer.context.notebookRevision !== null && view.answer.context.notebookRevision !== saved?.revision && <p className="oa-notice">Your saved goals or tasks changed after this investigation. This answer uses earlier saved context; investigate again before relying on it for a new decision.</p>}
                     <p className="oa-plain">{view.answer.text}</p>
                     <WorkflowResults answer={view.answer} />
                     <Sources sources={view.answer.sources} />
@@ -181,6 +190,12 @@ export function AdvisorScreen({
                     actions.ask();
                   }}
                 >
+                  {(saved || view.focusedTaskId) && <SelectField id="oa-investigation-task" name="investigationTask" label="Investigating" value={view.focusedTaskId ?? ""} disabled={!!view.busy} options={[
+                    { value: "", label: "General investigation" },
+                    ...openTasks.map(t => ({ value: t.id, label: t.objective })),
+                    ...(selectedUnavailable ? [{ value: view.focusedTaskId!, label: "Selected task is no longer open or available" }] : []),
+                  ]} onChange={e => actions.selectTask?.(e.target.value || null)} />}
+                  {selectedUnavailable && <p role="status" className="oa-notice">Choose an open task or select a general investigation to continue.</p>}
                   <label htmlFor="oa-question">Your question</label>
                   <textarea
                     id="oa-question"
@@ -201,6 +216,7 @@ export function AdvisorScreen({
                       disabled={
                         disabled ||
                         current.connection !== "available" ||
+                        selectedUnavailable ||
                         !view.question.trim()
                       }
                     >
@@ -267,6 +283,17 @@ export function AdvisorScreen({
                     {view.busy === "save" ? "Saving…" : "Save priorities"}
                   </button>
                 </form>
+                {saved && actions.changeNotebook ? <NotebookPanel
+                  notebook={saved}
+                  date={current.briefing.data?.date ?? current.observedAt.slice(0, 10)}
+                  disabled={disabled}
+                  change={actions.changeNotebook}
+                  selectTask={id => {
+                    actions.selectTask?.(id);
+                    document.getElementById("oa-question")?.focus();
+                  }}
+                  inspect={tool => actions.inspect?.(tool)}
+                /> : <p className="oa-muted">Saved goals and tasks are unavailable. Your priorities and existing investigation tools remain available.</p>}
               </section>
             </div>
           </>
@@ -305,6 +332,8 @@ export function OwnerAdvisor() {
         reviewConflict: () => ref.current?.reviewConflict(),
         reviewItem: (id, disposition) => void ref.current?.reviewItem(id, disposition),
         inspect: tool => void ref.current?.inspect(tool),
+        selectTask: id => ref.current?.selectTask(id),
+        changeNotebook: edit => ref.current?.changeNotebook(edit) ?? Promise.resolve(false),
       }}
     />
   );

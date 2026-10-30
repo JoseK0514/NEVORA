@@ -181,3 +181,22 @@
   padding-block: 12px;
   cursor: pointer;
 }
+.oa-notebook {
+  border-top: 1px solid var(--cm-sep);
+  margin-top: 24px;
+  padding-top: 16px;
+}
+.oa-notebook-editor {
+  border-top: 1px solid var(--cm-sep);
+  margin-top: 20px;
+  padding-top: 12px;
+}
+.oa-notebook .oa-actions {
+  justify-content: flex-start;
+  margin-top: 16px;
+}
+.oa-notebook .nv-btn {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}

@@ -5,6 +5,7 @@ import {
   type AdvisorAnswer,
   type AdvisorProfile,
 } from "@/lib/owner-advisor/contracts";
+import { notebookId, notebookRevision, parseNotebook } from "@/lib/owner-advisor/notebook";
 function requireValue(value: unknown): asserts value {
   if (!value) throw Error("Invalid advisor response");
 }
@@ -49,6 +50,12 @@ export function parseSnapshot(value: unknown): AdvisorSnapshot {
   );
   stamp(value);
   profile(value.profile);
+  if (value.notebook !== undefined) {
+    const n = value.notebook;
+    requireValue(record(n) && (n.state === "ready" || n.state === "unavailable"));
+    requireValue(Object.keys(n).sort().join(",") === (n.state === "ready" ? "notebook,state" : "state"));
+    if (n.state === "ready") parseNotebook(n.notebook);
+  }
   requireValue(Array.isArray(value.history) && value.history.length <= 12);
   for (const m of value.history)
     requireValue(
@@ -126,6 +133,12 @@ export function parseAnswer(value: unknown): AnswerResponse {
   stamp(value);
   sources(value.answer.sources, ADVISOR_MAX_ANSWER_SOURCES);
   const a = value.answer;
+  if (a.context !== undefined) {
+    const c = a.context;
+    requireValue(record(c) && Object.keys(c).sort().join(",") === "notebookRevision,taskId" &&
+      (c.notebookRevision === null || notebookRevision(c.notebookRevision)) &&
+      (c.taskId === null || notebookId(c.taskId) && c.notebookRevision !== null));
+  }
   if (a.proposals !== undefined) {
     requireValue(Array.isArray(a.proposals) && a.proposals.length <= 3);
     for (const p of a.proposals) requireValue(record(p) && text(p.employeeName, 200) && text(p.locationId, 400) && text(p.locationName, 200) &&
@@ -166,4 +179,11 @@ export function parseBriefingReviewed(value: unknown): {
   requireValue(record(value) && value.state === "briefing_reviewed" && count(value.revision) && Number(value.revision) > 0);
   stamp(value);
   return value as ReturnType<typeof parseBriefingReviewed>;
+}
+export function parseNotebookSaved(value: unknown): {
+  state: "notebook_saved"; revision: number; authority: string; observedAt: string; validForMs: number;
+} {
+  requireValue(record(value) && value.state === "notebook_saved" && notebookRevision(value.revision) && value.revision > 0);
+  stamp(value);
+  return value as ReturnType<typeof parseNotebookSaved>;
 }

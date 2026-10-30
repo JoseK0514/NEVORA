@@ -8,6 +8,8 @@ import { readConfig } from "./config.server";
 import { AdvisorError, parseCommand, type AdvisorSnapshot } from "./contracts";
 import { investigate, type Transport } from "./loop.server";
 import { readOwnerAttention } from "./briefing.server";
+import { AdvisorNotebook } from "./notebook.server";
+import { NotebookError, notebookContext } from "./notebook";
 /** Owner-only orchestration for snapshots, saved priorities, review dispositions and
  * bounded provider questions. ask reserves its request ID/daily allowance before
  * provider I/O and persists answer/history together; identical completed requests
@@ -39,6 +41,7 @@ export async function advisorService(
     throw new AdvisorError("disabled");
   const store = new AdvisorStore(proof, admission, ex),
     tools = new AdvisorTools(store),
+    notebook = new AdvisorNotebook(store),
     config = readConfig(env);
   const check = async () => {
     signal.throwIfAborted();
@@ -69,6 +72,7 @@ export async function advisorService(
       ...state,
       briefing,
       attention: attention.briefing,
+      notebook: await notebook.read(),
       ...(await observation()),
     } satisfies AdvisorSnapshot;
   }
@@ -97,6 +101,10 @@ export async function advisorService(
     const profile = await store.save(command);
     return { state: "saved" as const, profile, ...(await observation()) };
   }
+  if (command.op === "notebook") {
+    const result = await notebook.save(command);
+    return { state: "notebook_saved" as const, revision: result.revision, ...(await observation()) };
+  }
   if (!config) throw new AdvisorError("unavailable");
   await check();
   const receipt = await store.reserve(
@@ -112,6 +120,9 @@ export async function advisorService(
     };
   try {
     const state = await store.read();
+    const saved = await notebook.read();
+    if (command.op === "ask_task" && (saved.state !== "ready" || saved.notebook.revision !== command.expectedNotebookRevision)) throw new AdvisorError(saved.state === "ready" ? "conflict" : "unavailable");
+    const savedContext = saved.state === "ready" ? notebookContext(saved.notebook, command.op === "ask_task" ? command.taskId : undefined) : undefined;
     const answer = await investigate(
       config,
       state.history,
@@ -121,11 +132,13 @@ export async function advisorService(
         check,
         tool: (call) => tools.run(call),
         signal,
+        ...(savedContext ? { savedContext } : {}),
         ...(testTransport ? { fetch: testTransport } : {}),
       },
     );
+    answer.context = { notebookRevision: savedContext?.revision ?? null, taskId: command.op === "ask_task" ? command.taskId : null };
     await check();
-    await store.complete(command.requestId, command.message, answer);
+    await store.complete(command.requestId, command.message, answer, savedContext?.revision);
     return { state: "answered" as const, answer, ...(await observation()) };
   } catch (error) {
     const cleanupSignal = AbortSignal.timeout(1000);
@@ -137,6 +150,7 @@ export async function advisorService(
     await new AdvisorStore(proof, admission, cleanup)
       .fail(command.requestId)
       .catch(() => {});
+    if (error instanceof NotebookError) throw new AdvisorError(error.code);
     throw error;
   }
 }

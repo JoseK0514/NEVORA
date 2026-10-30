@@ -1,0 +1,32 @@
+{
+  "kind": "STATIC_CHECK_ONLY",
+  "command": [
+    "./node_modules/.bin/eslint",
+    "db/migrations/order.ts",
+    "src/components/owner-advisor/advisor.tsx",
+    "src/components/owner-advisor/controller.ts",
+    "src/components/owner-advisor/notebook-controller.test.ts",
+    "src/components/owner-advisor/notebook-panel.test.tsx",
+    "src/components/owner-advisor/notebook-panel.tsx",
+    "src/components/owner-advisor/public-response.ts",
+    "src/lib/owner-advisor/contracts.ts",
+    "src/lib/owner-advisor/loop.server.ts",
+    "src/lib/owner-advisor/loop.test.ts",
+    "src/lib/owner-advisor/notebook.integration.ts",
+    "src/lib/owner-advisor/notebook.server.ts",
+    "src/lib/owner-advisor/notebook.test.ts",
+    "src/lib/owner-advisor/notebook.ts",
+    "src/lib/owner-advisor/service.server.ts",
+    "src/lib/owner-advisor/store.server.ts",
+    "src/test/integration/local-postgres.ts",
+    "src/test/migration-order.test.ts"
+  ],
+  "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+  "base": "1121f24e50190172d1fa40d931fd064715f31554",
+  "startedAt": "2026-10-30T10:49:32.520568+00:00",
+  "endedAt": "2026-10-30T10:49:34.732478+00:00",
+  "exitCode": 0,
+  "stdout": "",
+  "stderr": "",
+  "functionalTests": "NOT_RUN"
+}

@@ -6,6 +6,7 @@ import { ownerGuards, type OwnerAdmission } from "./authority.server";
 import type { AttentionReview, InternalAttention } from "./briefing";
 import {
   AdvisorError,
+  record,
   type AdvisorErrorCode,
   type AdvisorMessage,
   type AdvisorProfile,
@@ -116,9 +117,9 @@ export class AdvisorStore {
   }
   /** Commit bounded recent chat history and its recoverable answer while the running
    * request lease is current; retain only the six latest completed ask payloads. */
-  async complete(requestId: string, message: string, answer: AdvisorAnswer) {
+  async complete(requestId: string, message: string, answer: AdvisorAnswer, notebookRevision?: number) {
     const guards = ownerGuards(this.proof, this.original);
-    await this.ex.transaction([
+    try { await this.ex.transaction([
       ...guards,
       {
         text: "SELECT pg_advisory_xact_lock(hashtextextended('owner-advisor:'||$1,0))",
@@ -128,6 +129,12 @@ export class AdvisorStore {
         text: "SELECT(CASE WHEN EXISTS(SELECT 1 FROM owner_advisor_requests WHERE workspace_id=$1 AND owner_id=$2 AND request_id=$3 AND state='running' AND lease_until>clock_timestamp()) THEN '1' ELSE 'advisor_lease_expired' END)::integer",
         values: [...this.scope, requestId],
       },
+      // The same workspace advisory lock serializes notebook saves and answer
+      // settlement. A changed context rolls back history and the answer together.
+      ...(notebookRevision === undefined ? [] : [{
+        text: "SELECT(CASE WHEN COALESCE((SELECT revision FROM owner_advisor_notebooks WHERE workspace_id=$1 AND owner_id=$2),0)=$3 THEN '1' ELSE 'advisor_notebook_changed' END)::integer",
+        values: [...this.scope, notebookRevision],
+      }]),
       {
         text: "INSERT INTO owner_advisor_profiles(workspace_id,owner_id) VALUES($1,$2) ON CONFLICT DO NOTHING",
         values: this.scope,
@@ -151,6 +158,9 @@ export class AdvisorStore {
         values: this.scope,
       },
       ...ownerGuards(this.proof, this.original),
-    ]);
+    ]); } catch (error) {
+      if (record(error) && typeof error.message === "string" && error.message.includes('"advisor_notebook_changed"')) throw new AdvisorError("conflict");
+      throw error;
+    }
   }
 }
