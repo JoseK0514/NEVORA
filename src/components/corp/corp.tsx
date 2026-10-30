@@ -17,8 +17,9 @@ export function CorpPage({ children, label, labelledBy, className }: { children:
 }
 
 /** 22/600 page title, an optional 13px line under it and optional controls on its right. */
-export function CorpTitle({ title, sub, actions, id }: { title: ReactNode; sub?: ReactNode; actions?: ReactNode; id?: string }) {
-  return <header className="c-title">
+/** `wide`: a pushed page's title for tablets and desktop; on a phone its CorpNav (phoneOnly) shows the title instead. */
+export function CorpTitle({ title, sub, actions, id, wide }: { title: ReactNode; sub?: ReactNode; actions?: ReactNode; id?: string; wide?: boolean }) {
+  return <header className={wide ? "c-title c-title--wide" : "c-title"}>
     <div className="c-title__row"><h1 id={id}>{title}</h1>{actions ? <div className="c-title__actions">{actions}</div> : null}</div>
     {sub ? <span className="c-title__sub">{sub}</span> : null}
   </header>;
@@ -161,8 +162,9 @@ export function CorpNote({ children, center, icon }: { children: ReactNode; cent
 }
 
 /** A pushed page's white header: "‹ Back" left, the title centred, an optional action right. */
-export function CorpNav({ back, title, right, titleId }: { back?: { href: string; label: string }; title?: ReactNode; right?: ReactNode; titleId?: string }) {
-  return <div className="c-nav">
+/** `phoneOnly`: shown on a phone only (tablets and desktop have the sidebar, so the page keeps its CorpTitle there). */
+export function CorpNav({ back, title, right, titleId, phoneOnly }: { back?: { href: string; label: string }; title?: ReactNode; right?: ReactNode; titleId?: string; phoneOnly?: boolean }) {
+  return <div className={phoneOnly ? "c-nav c-nav--phone" : "c-nav"}>
     {back ? <Link className="c-nav__back" href={back.href}><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true" />{back.label}</Link> : <span />}
     {title ? <h1 className="c-nav__title" id={titleId}>{title}</h1> : <span />}
     <span className="c-nav__right">{right ?? null}</span>

@@ -1,28 +1,23 @@
 import { redirect } from "next/navigation";
-import { ManagerInbox } from "@/components/manager-inbox";
-import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
-import { readOperationalDirectory } from "@/lib/company-access/operational-read.server";
+import { ManagerInboxCorp } from "@/components/manager-inbox-corp";
+import { requireSession } from "@/lib/auth/session";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import { weekStartFor } from "@/lib/date-utils";
 import "./inbox.css";
 
-/** Managers' one place for what needs a decision: exceptions first, then
- * requests. Reads through the existing authority-checked action center. */
-export const metadata = { title: "Inbox" };
+/** Things to do (Release 1, board O-Inbox): Managers' one place for what needs a decision. Reads through the existing
+ * authority-checked action center; each row opens the full review. Call and Text live on the person's page, so this
+ * page no longer reads the company directory's phone numbers. When Things to do is a phone tab (payroll review off), the
+ * shell marks it as a tab's own page and the Back header steps aside (corp-shell.css). */
+export const metadata = { title: "Things to do" };
 
 export default async function InboxPage() {
   const session = await requireSession();
   if (!isManagerRole(session.role)) redirect("/app/requests/hub");
   const workspace = await getWorkspace();
   const weekStart = weekStartFor(businessDate(new Date(), workspace.timeZone));
-  // PD5: Call and Text on a shift with no clock-in use the phone numbers this viewer already sees on Team. Only the
-  // company-wide directory carries them; a location-scoped Manager, or a failed read, simply gets no Call or Text.
-  const directory = await readOperationalDirectory(await requireSessionMutationProof()).catch(() => null);
-  const contacts = directory?.state === "ready" && directory.data.mode === "COMPANY"
-    ? { observation: { authority: directory.authority, observedAt: directory.observedAt, validForMs: directory.validForMs },
-        phones: Object.fromEntries(directory.data.employees.filter(employee => employee.active && employee.phone).map(employee => [employee.id, employee.phone])) }
-    : undefined;
-  return <ManagerInbox weekStart={weekStart} actorId={session.id} timeZone={workspace.timeZone} contacts={contacts} coverageFirst={session.role === "OWNER"} />;
+  return <ManagerInboxCorp weekStart={weekStart} actorId={session.id} timeZone={workspace.timeZone} coverageFirst={session.role === "OWNER"} />;
 }
+

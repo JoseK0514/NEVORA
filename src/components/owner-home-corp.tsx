@@ -109,12 +109,12 @@ function ThingsToDo({ value, connection, offline, onRetryActions, setup }: Owner
   const otherUrgent = value.now.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests").length;
   const gaps = value.now.filter(item => item.type === "COVERAGE_GAP").length;
   const rows = [
-    { title: "Shifts with no clock-in", n: value.noClockIn.length, href: "/app/inbox?filter=now" },
-    { title: "Open shifts", n: gaps, href: "/app/inbox?filter=now" },
+    { title: "Shifts with no clock-in", n: value.noClockIn.length, href: "/app/inbox#todo-missed" },
+    { title: "Open shifts", n: gaps, href: "/app/inbox#todo-open" },
     { title: "Time off requests", n: of("TIME_OFF"), href: "/app/requests" },
     { title: "Shift swaps", n: of("EXCHANGE"), href: "/app/exchange" },
-    { title: "Can’t-work reports", n: of("CALLOUT"), href: "/app/inbox?filter=requests" },
-    { title: "Other urgent items", n: otherUrgent, href: "/app/inbox?filter=now" },
+    { title: "Can’t-work reports", n: of("CALLOUT"), href: "/app/inbox#todo-cant-work" },
+    { title: "Other urgent items", n: otherUrgent, href: "/app/inbox#todo-now" },
   ].filter(row => row.n > 0);
   return <CorpCard id="home-needs-you" label={`Things to do (${value.count})`} aside={<CorpLink href="/app/inbox" label="See all things to do">See all</CorpLink>}>
     {rows.length ? <CorpRows label="Things to do">

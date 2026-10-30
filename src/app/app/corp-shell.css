@@ -93,3 +93,12 @@ html:has(.app-shell[data-nv-corp]) { color-scheme: light; }
   }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-header { background: #FFFFFF !important; border: 0 !important; box-shadow: 0 1px 0 #E3E5E6 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 }
+
+/* Pushed pages (Release 1): on a phone the page draws its own white header ("‹ Home  Things to do"), so the shell's header
+ * steps aside and the page's large title gives way to it. Tablets and desktop keep the sidebar and the large title. */
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-nav--phone { display: none !important; }
+@media (max-width: 767px) {
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp]:not([data-corp-root]):has(.c-page > .c-nav) .mobile-header { display: none !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp]:not([data-corp-root]) .c-nav--phone { display: grid !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp]:not([data-corp-root]) .c-page:has(> .c-nav--phone) > .c-title--wide { display: none !important; }
+}

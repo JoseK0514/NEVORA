@@ -135,7 +135,7 @@ function requestFacts(facts: RequestFacts): [string, ReactNode][] {
   ];
 }
 
-function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, timeZone: string): InboxEntry {
+export function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, timeZone: string): InboxEntry {
   const urgent = item.priority === "URGENT" && !calm;
   const request = item.category === "requests";
   const action = actionCenterNavigation(item);
@@ -156,7 +156,7 @@ function ItemRow({ item, calm = false, filter = "all", timeZone = "UTC" }: { ite
 }
 
 /** "3h 15m" since the shift started, from the observation time (never the browser clock). */
-function lateBy(shift: TodayShift, observedAt: string | undefined) {
+export function lateBy(shift: TodayShift, observedAt: string | undefined) {
   if (!observedAt) return undefined;
   const minutes = Math.floor((Date.parse(observedAt) - Date.parse(shift.startAt)) / 60_000);
   if (!(minutes > 0)) return undefined;
@@ -204,7 +204,7 @@ function gapEntry(item: ActionItem, filter: InboxFilter, timeZone: string): Inbo
   const parts = mobileActionDetail(item.detail).split(" · ");
   return { ...entry, leading: <span className="q-av q-av--open" aria-hidden="true"><PlusIcon className="q-ic" aria-hidden="true" /></span>, title: gapPlace(item), meta: parts[1] ? keepWhole(parts[1]) : entry.meta, trailing: undefined, trailingTone: undefined, button: "Find cover" };
 }
-function gapPlace(item: ActionItem) {
+export function gapPlace(item: ActionItem) {
   return /\bat (.+)$/.exec(item.title)?.[1] ?? item.detail.split(" · ")[0] ?? item.title;
 }
 
@@ -223,7 +223,7 @@ function Disclosure({ title, meta, count, items, children }: { title: ReactNode;
 }
 
 /** Plan ahead, one row per kind (clean Manager v3). Labels say what the count counts. */
-const planLabel: Partial<Record<ActionItem["type"], string>> = {
+export const planLabel: Partial<Record<ActionItem["type"], string>> = {
   COVERAGE_GAP: "Open shifts later this week", TARGET_MISSING: "People without hour targets", DEADLINE_MISSING: "Availability deadline",
   AVAILABILITY_MISSING: "Availability not sent", ACKNOWLEDGEMENT_MISSING: "Schedule not confirmed", TIMECARD: "Timecards to review",
   HOURS_REVIEW: "Hours outside targets", COVERAGE_RULES_MISSING: "Coverage rules not set", TIME_CORRECTION: "Time corrections", ATTENDANCE: "Attendance to review",
