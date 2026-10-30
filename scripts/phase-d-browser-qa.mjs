@@ -112,10 +112,14 @@ try{
     // Refresh; desktop widths measure the desktop period form. Same four controls, same target floor, same overflow rule.
     const phoneCards='/app/my-time?view=cards&start=2026-09-21&end=2026-09-27';
     for(const width of [320,375,390,430,768,1024,1440]){
-      await ep.setViewportSize({width,height:1000});
       const phone=width<768;
+      // Resizing an open desktop timecard below 768px starts its own client hand-over (router.replace); leave the page first so
+      // the measured navigation is the only one in flight and no hand-over fetch is cancelled mid-flight.
+      if(phone)await ep.goto('about:blank');
+      await ep.setViewportSize({width,height:1000});
       if(phone){
-        await ep.goto(app.url+url);await ep.waitForURL(u=>u.pathname+u.search===phoneCards);
+        // The hand-over is a client router.replace during load; wait for commit, then the handed-over URL.
+        await ep.goto(app.url+url,{waitUntil:'commit'});await ep.waitForURL(u=>u.pathname+u.search===phoneCards);
         await ep.locator('[data-hours-view="cards"][data-hours-state="ready"]').waitFor();await ep.getByRole('heading',{name:'Past timecards',exact:true,level:1}).waitFor();
         assert.equal(await ep.getByRole('definition').filter({hasText:/^8h$/}).count(),1,'Phone period keeps the recorded total');
       }else if(new URL(ep.url()).pathname+new URL(ep.url()).search!==url){await ep.goto(app.url+url);await ep.getByRole('heading',{name:'Your timecard',exact:true}).waitFor();}
