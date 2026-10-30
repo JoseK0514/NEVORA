@@ -26,7 +26,11 @@ export function NotebookPanel({ notebook, date, disabled, change, selectTask, in
     if (editing) {
       // Deliberate Add/Edit must reveal its field, including after long lists.
       // A refresh or keystroke keeps the same editing state and never steals focus.
-      editorRef.current?.querySelector<HTMLTextAreaElement>("textarea")?.focus();
+      const field = editorRef.current?.querySelector<HTMLTextAreaElement>("textarea");
+      // WebKit may scroll only the caret into view on focus. Reveal the whole
+      // field first, then retain that placement when transferring keyboard focus.
+      field?.scrollIntoView({ block: "center", inline: "nearest" });
+      field?.focus({ preventScroll: true });
       return;
     }
     const trigger = triggerRef.current;
