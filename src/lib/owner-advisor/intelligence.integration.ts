@@ -9,7 +9,7 @@ import type { Transport } from "./loop.server";
 
 let f: Awaited<ReturnType<typeof companyAccessFixture>>;
 beforeEach(async () => { f = await companyAccessFixture(); });
-afterEach(async () => { await f?.db.dispose(); });
+afterEach(async () => { try { await f?.db.dispose(); } finally { vi.unstubAllEnvs(); } });
 const base = "https://br-fictional-intelligence-api.ai.us-east-2.aws.neon.tech";
 const env = { NEVORA_OWNER_ADVISOR_ENABLED: "true", NEVORA_OWNER_ADVISOR_DATA_APPROVED: "true", NEVORA_OWNER_ADVISOR_PROVIDER: "neon", NEVORA_OWNER_ADVISOR_API_STYLE: "chat_completions", NEVORA_OWNER_ADVISOR_MODEL: "explicit-fictional-catalog-model", NEVORA_OWNER_ADVISOR_DAILY_LIMIT: "1", NEON_AI_GATEWAY_BASE_URL: base, NEON_AI_GATEWAY_TOKEN: "fictional-no-credential" };
 const signal = () => new AbortController().signal;
@@ -124,4 +124,37 @@ it("preserves original cancellation/failure settlement for a stalled chat transp
   expect(calls).toBe(1);
   expect(await f.q("SELECT state FROM owner_advisor_requests WHERE kind='ask'")).toEqual([{ state: "failed" }]);
   expect(await f.q("SELECT history FROM owner_advisor_profiles")).toEqual([]);
+});
+
+it("resumes a period task in English, rereads changed records in Spanish and rejects the older decision evidence", async () => {
+  vi.stubEnv("NEVORA_PAYROLL_ENABLED", "false");
+  await f.q("INSERT INTO clocker_devices(id,location_id,name) VALUES('intelligence-device','loc-1','Fictional fixture device')");
+  const taskId = randomUUID();
+  await advisorService(f.owner, f.db.executor, env, signal(), { op: "notebook", requestId: randomUUID(), expectedRevision: 0,
+    change: { kind: "save_task", taskId, objective: "Review the period", notes: "Check the current entries", state: "open", focus: { kind: "period", startDate: "2026-10-01", endDate: "2026-10-02" } } });
+  const bodies: Record<string, unknown>[] = [];
+  const transport: Transport = async (_url, init) => {
+    bodies.push(JSON.parse(String(init.body)));
+    const turn = bodies.length;
+    if (turn === 1) {
+      const inputs = (bodies[0].messages as { role: string; content: string }[]).filter(m => m.role === "user").map(m => JSON.parse(m.content));
+      expect(inputs).toContainEqual(expect.objectContaining({ evidenceId: "E2", currentTaskEvidence: expect.objectContaining({ data: expect.objectContaining({ language: "en" }) }) }));
+      await f.q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES('intelligence-time','target','loc-1','intelligence-device','2026-10-02T08:00:00-04:00','CLOCKED_IN')");
+      return chat({ id: "period-es", name: "attendance_payroll_review", args: { startDate: "2026-10-01", endDate: "2026-10-02", language: "es" } });
+    }
+    const decision = ownerDecision(), id = turn === 2 ? "E2" : "E3";
+    decision.language = "es";
+    decision.summary = "Revise el registro abierto antes de decidir sobre la nómina.";
+    decision.observations = [{ statement: "El período requiere revisión del Owner.", evidenceIds: [id] }];
+    decision.options[0].evidenceIds = [id]; decision.acknowledgedPartialEvidence = [id];
+    return chat({ id: "decision-" + turn, name: "review_decision", args: decision });
+  };
+  const result = await advisorService(f.owner, f.db.executor, env, signal(), { op: "ask_task", requestId: randomUUID(), taskId, expectedNotebookRevision: 1, message: "Revisa los registros actuales en español." }, transport);
+  const answer = parseAnswer(result).answer;
+  expect(bodies).toHaveLength(3);
+  expect(JSON.stringify(bodies.at(-1)!.messages)).toContain("STALE_EVIDENCE");
+  expect(answer.periodReview).toMatchObject({ language: "es", attendance: { employees: expect.arrayContaining([expect.objectContaining({ name: "Target QA", issues: expect.arrayContaining(["open_entry"]) })]) } });
+  expect(answer.text).toContain("E3");
+  expect(await f.q("SELECT clock_out_at FROM time_entries WHERE id='intelligence-time'")).toEqual([{ clock_out_at: null }]);
+  expect(await f.q("SELECT count(*)::int n FROM timecard_revisions")).toEqual([{ n: 0 }]);
 });

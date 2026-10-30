@@ -107,9 +107,10 @@ it("keeps a private review payload out of evidence feedback and provider context
   const d = dependencies(), bodies: Record<string, unknown>[] = [];
   d.tool.mockImplementation(async call => ({ observedAt, partial: false, sources: [], data: {}, ...(call.name === "coverage_proposals" ? { proposals: [{ employeeName: "Fictional", locationId: "north", locationName: "North", date: "2026-10-30", startTime: "08:00", endTime: "12:00", positionName: null, isDesignatedLead: false, scheduledHours: 0, targetHours: null, publication: "DRAFT" as const, review: "PRIVATE_REVIEW_TOKEN" }] } : {}) }));
   const bad = ownerDecision(); bad.observations[0].evidenceIds = ["E99"];
+  const good = ownerDecision(); good.observations[0].evidenceIds = ["E2"]; good.options[0].evidenceIds = ["E2"];
   const result = await investigate(config, [], "", "Prepare a review", { ...d, fetch: async (_url, init) => {
     bodies.push(JSON.parse(String(init.body)));
-    return Response.json(bodies.length === 1 ? { output: [{ ...read, name: "coverage_proposals", arguments: '{"date":"2026-10-30"}' }] } : decisionReply(bodies.length === 2 ? bad : ownerDecision(), "private-" + bodies.length));
+    return Response.json(bodies.length === 1 ? { output: [{ ...read, name: "coverage_proposals", arguments: '{"date":"2026-10-30"}' }] } : decisionReply(bodies.length === 2 ? bad : good, "private-" + bodies.length));
   } });
   expect(JSON.stringify(bodies)).not.toContain("PRIVATE_REVIEW_TOKEN");
   expect(result.proposals?.[0].review).toBe("PRIVATE_REVIEW_TOKEN");
@@ -171,4 +172,69 @@ it("retains the source-owned financial-readiness caveat for an accepted period r
   const result = await investigate(config, [], "", "Review payroll readiness", { ...d, fetch: async () => Response.json(++turn === 1 ? { output: [{ type: "function_call", name: "attendance_payroll_review", arguments: '{"startDate":"2026-10-01","endDate":"2026-10-02","language":"en"}', call_id: "period" }] } : decisionReply(decision)) });
   expect(result.text).toContain("Payroll financial readiness remains unverified.");
   expect(result.periodReview).toEqual(periodReview);
+});
+
+function period(startDate = "2026-10-01", endDate = "2026-10-02", language: "en" | "es" = "en", issues: string[] = []) {
+  return { startDate, endDate, language, observedAt, readiness: "unverified" as const, partial: false,
+    attendance: { state: "ready" as const, total: 1, employees: [{ name: "Fictional Ana", state: "NEEDS_REVIEW", revision: issues.length, locations: ["North"], issues, historical: false }] },
+    payroll: { state: "disabled" as const, runs: [] } };
+}
+const periodCall = (id: string, startDate = "2026-10-01", endDate = "2026-10-02", language = "en") => ({ type: "function_call", call_id: id, name: "attendance_payroll_review", arguments: JSON.stringify({ startDate, endDate, language }) });
+function periodDecision(ids = ["E2"]) {
+  const d = ownerDecision();
+  d.summary = "Review the first period before making any financial decision.";
+  d.observations = [{ statement: "The recorded period needs Owner review.", evidenceIds: ids }];
+  d.options[0].evidenceIds = ids;
+  return d;
+}
+
+it.each([["en", "es"], ["es", "en"], ["en", "en"]] as const)("a new period read supersedes its old facts across %s → %s", async (firstLanguage, language) => {
+  const d = dependencies(), bodies: Record<string, unknown>[] = [];
+  let reads = 0;
+  d.tool.mockImplementation(async call => ({ observedAt, partial: false, sources: [], data: {}, ...(call.name === "attendance_payroll_review" ? { periodReview: ++reads === 1 ? period("2026-10-01", "2026-10-02", firstLanguage) : period("2026-10-01", "2026-10-02", language, ["pending_correction"]) } : {}) }));
+  const result = await investigate(config, [], "", "Review the latest period", { ...d, fetch: async (_url, init) => {
+    bodies.push(JSON.parse(String(init.body)));
+    const turn = bodies.length;
+    return Response.json(turn <= 2 ? { output: [periodCall("period-" + turn, "2026-10-01", "2026-10-02", turn === 1 ? firstLanguage : language)] } : decisionReply(periodDecision([turn === 3 ? "E2" : "E3"]), "decision-" + turn));
+  } });
+  expect(bodies).toHaveLength(4);
+  expect(JSON.stringify(bodies.at(-1)!.input)).toContain("STALE_EVIDENCE");
+  expect(result.periodReview?.attendance.employees[0].issues).toEqual(["pending_correction"]);
+});
+
+it("attaches the recommended period rather than a different period read later", async () => {
+  const d = dependencies(), first = period(), second = period("2026-10-03", "2026-10-04");
+  d.tool.mockImplementation(async call => ({ observedAt, partial: false, sources: [], data: {}, ...(call.name === "attendance_payroll_review" ? { periodReview: call.args.startDate === first.startDate ? first : second } : {}) }));
+  let turn = 0;
+  const result = await investigate(config, [], "", "Compare periods; recommend the first", { ...d, fetch: async () => Response.json(++turn <= 2 ? { output: [turn === 1 ? periodCall("first") : periodCall("second", "2026-10-03", "2026-10-04")] } : decisionReply(periodDecision())) });
+  expect(result.periodReview).toEqual(first);
+  expect(result.text).toContain("Payroll financial readiness remains unverified");
+});
+
+it.each([false, true])("does not attach an unrelated or ambiguous period to a structured recommendation: %s", async ambiguous => {
+  const d = dependencies();
+  d.tool.mockImplementation(async call => ({ observedAt, partial: false, sources: [], data: {}, ...(call.name === "attendance_payroll_review" ? { periodReview: period(call.args.startDate, call.args.endDate) } : {}) }));
+  let turn = 0;
+  const result = await investigate(config, [], "", "Compare periods", { ...d, fetch: async () => Response.json(++turn <= 2 ? { output: [turn === 1 ? periodCall("first") : periodCall("second", "2026-10-03", "2026-10-04")] } : decisionReply(periodDecision(ambiguous ? ["E2", "E3"] : ["E1"]))) });
+  expect(result.periodReview).toBeUndefined();
+  if (ambiguous) expect(result.text).toContain("Multiple periods");
+});
+
+it("attaches the proposal source referenced by the recommended option", async () => {
+  const d = dependencies();
+  const proposal = (date: string) => ({ employeeName: date === "2026-10-22" ? "Fictional Ana" : "Fictional Bob", locationId: "north", locationName: "North", date, startTime: "08:00", endTime: "12:00", positionName: null, isDesignatedLead: false, scheduledHours: 0, targetHours: null, publication: "DRAFT" as const, review: "PRIVATE_REVIEW_" + date });
+  d.tool.mockImplementation(async call => ({ observedAt, partial: false, sources: [], data: {}, ...(call.name === "coverage_proposals" ? { proposals: [proposal(call.args.date)] } : {}) }));
+  let turn = 0;
+  const result = await investigate(config, [], "", "Prepare Thursday's review", { ...d, fetch: async () => Response.json(++turn <= 2 ? { output: [{ ...read, name: "coverage_proposals", call_id: "proposal-" + turn, arguments: JSON.stringify({ date: turn === 1 ? "2026-10-22" : "2026-10-23" }) }] } : decisionReply(periodDecision())) });
+  expect(result.proposals?.map(p => [p.employeeName, p.date])).toEqual([["Fictional Ana", "2026-10-22"]]);
+});
+
+it("does not implicitly choose a workflow when the Owner decision is still blocked", async () => {
+  const d = dependencies(), decision = periodDecision();
+  decision.options = []; decision.recommendation.optionId = null;
+  d.tool.mockImplementation(async call => ({ observedAt, partial: false, sources: [], data: {}, ...(call.name === "attendance_payroll_review" ? { periodReview: period() } : {}) }));
+  let turn = 0;
+  const result = await investigate(config, [], "", "What is missing?", { ...d, fetch: async () => Response.json(++turn === 1 ? { output: [periodCall("period")] } : decisionReply(decision)) });
+  expect(result.periodReview).toBeUndefined();
+  expect(result.text).toContain("Unknowns");
 });

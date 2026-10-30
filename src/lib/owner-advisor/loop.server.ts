@@ -151,9 +151,9 @@ export async function investigate(
     sources.push(...result.sources);
     return serialized;
   };
-  const finish = async (text: string): Promise<AdvisorAnswer> => {
+  const finish = async (text: string, chosen = evidence): Promise<AdvisorAnswer> => {
     await bounded(deps.check, signal);
-    return { ...evidence, text, sources: [...new Map(sources.map(s => [JSON.stringify([s.href, s.label, s.observedAt]), s])).values()] };
+    return { ...chosen, text, sources: [...new Map(sources.map(s => [JSON.stringify([s.href, s.label, s.observedAt]), s])).values()] };
   };
   input.push({ role: "user", content: await read({ name: "company_briefing", args: {} }, "currentCompanyBriefing") });
   // A resumed task's typed scope gets real evidence even when the model would
@@ -208,8 +208,7 @@ export async function investigate(
           decisionAttempts++;
           const review = reviewDecision(item.arguments, observations);
           if (review.state === "accepted") {
-            if (review.coveragePlans) evidence.coveragePlans = review.coveragePlans;
-            return finish(review.text);
+            return finish(review.text, review.evidence);
           }
           if (decisionAttempts >= 2) throw new AdvisorError("limit");
           input.push({ type: "function_call_output", call_id: item.call_id, output: JSON.stringify({ ...review, availableEvidence: decisionEvidenceSummary(observations) }) });

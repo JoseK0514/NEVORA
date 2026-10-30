@@ -43,7 +43,7 @@ export function providerItems(config: ProviderConfig, output: unknown): Item[] {
   const identities = new Set<string>();
   let textLength = 0;
   for (const item of items) {
-    if (!record(item)) return fail();
+    if (!record(item) || (item.status !== undefined && item.status !== "completed")) return fail();
     if (item.type === "function_call") {
       if (typeof item.call_id !== "string" || !item.call_id.trim() || item.call_id.length > 200 ||
         /[\u0000-\u0020\u007f]/.test(item.call_id) || identities.has(item.call_id) ||
@@ -51,8 +51,7 @@ export function providerItems(config: ProviderConfig, output: unknown): Item[] {
         typeof item.arguments !== "string" || item.arguments.length > 20000) return fail();
       identities.add(item.call_id);
     } else if (item.type === "message") {
-      if ((item.role !== undefined && item.role !== "assistant") ||
-        (item.status !== undefined && item.status !== "completed")) return fail();
+      if (item.role !== undefined && item.role !== "assistant") return fail();
       textLength += outputText(item.content, "responses").length;
     } else if (item.type === "reasoning") {
       if (!Array.isArray(item.summary) || item.summary.length > 16 || typeof item.id !== "string" ||

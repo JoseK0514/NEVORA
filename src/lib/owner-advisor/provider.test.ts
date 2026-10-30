@@ -121,6 +121,25 @@ it("rejects repeated Responses identities before any of that turn's reads", asyn
   expect(d.tool).toHaveBeenCalledTimes(1);
 });
 
+it.each(["incomplete", "in_progress", "failed", "cancelled", null])("rejects a late explicit non-completed function status before earlier reads: %s", async status => {
+  const d = dependencies(), first = { type: "function_call", name: "company_briefing", arguments: "{}", call_id: "first", status: "completed" };
+  const fetch = fixtureFetch([{ status: "completed", output: [first, { ...first, call_id: "late", status }] }, responseText]);
+  await expect(investigate({ ...config, apiStyle: "responses" }, [], "", "Ask", { ...d, fetch })).rejects.toThrow("provider_failed");
+  expect(d.tool).toHaveBeenCalledTimes(1);
+  expect(fetch).toHaveBeenCalledTimes(1);
+});
+
+it("retains compatibility for completed and omitted function item status", async () => {
+  const d = dependencies();
+  const fetch = fixtureFetch([{ status: "completed", output: [
+    { type: "function_call", name: "published_staffing", arguments: '{"date":"2026-10-30"}', call_id: "completed", status: "completed" },
+    { type: "function_call", name: "company_briefing", arguments: "{}", call_id: "omitted" },
+  ] }, responseText]);
+  const result = await investigate({ ...config, apiStyle: "responses" }, [], "", "Ask", { ...d, fetch });
+  expect(result.text).toBe("Current evidence, not a saved action.");
+  expect(d.tool).toHaveBeenCalledTimes(3);
+});
+
 it("keeps encrypted Responses continuation and explicitly requested effort on the wire", async () => {
   const reasoning = { type: "reasoning", id: "rs-fixture", summary: [], encrypted_content: "OPAQUE_PROVIDER_CONTINUATION" };
   const fetch = fixtureFetch([{ output: [reasoning, { type: "function_call", name: "published_staffing", arguments: '{"date":"2026-10-30"}', call_id: "one" }] }, responseText]);

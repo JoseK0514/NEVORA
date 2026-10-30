@@ -1,5 +1,5 @@
 import { record, type ToolCall, type ToolResult } from "./contracts";
-import type { CoveragePlans } from "./coverage-plan-contracts";
+import type { WorkflowEvidence } from "./workflow-contracts";
 
 export type DecisionEvidence = { id: string; call: ToolCall; result: ToolResult };
 type CoverageReference = { evidenceId: string; alternativeIndex: number };
@@ -14,7 +14,7 @@ type Decision = {
 };
 type Issue = "INVALID_DECISION" | "UNKNOWN_EVIDENCE" | "INVALID_OPTION_REFERENCE" |
   "INVALID_COVERAGE_REFERENCE" | "MISSING_PARTIAL_ACKNOWLEDGEMENT" | "MISSING_UNCERTAINTY" | "MISSING_OBSERVATIONS" | "STALE_EVIDENCE";
-export type DecisionReview = { state: "accepted"; text: string; coveragePlans?: CoveragePlans } | { state: "revise"; issues: Issue[] };
+export type DecisionReview = { state: "accepted"; text: string; evidence: WorkflowEvidence } | { state: "revise"; issues: Issue[] };
 const text = (v: unknown, max: number): v is string => typeof v === "string" && !!v.trim() && v.length <= max;
 const object = (v: unknown, keys: string): v is Record<string, unknown> => record(v) && Object.keys(v).sort().join(",") === keys;
 const evidenceId = (v: unknown): v is string => typeof v === "string" && /^E[1-8]$/.test(v);
@@ -41,9 +41,14 @@ function parse(value: unknown): Decision | null {
 }
 
 const partial = (e: DecisionEvidence) => e.result.partial || e.result.coveragePlans?.partial === true || e.result.periodReview?.partial === true;
+function scope(call: ToolCall) {
+  return call.name === "attendance_payroll_review"
+    ? JSON.stringify([call.name, call.args.startDate, call.args.endDate])
+    : JSON.stringify(call);
+}
 function current(e: DecisionEvidence, evidence: readonly DecisionEvidence[]) {
   const newer = evidence.slice(evidence.indexOf(e) + 1);
-  return !newer.some(next => JSON.stringify(next.call) === JSON.stringify(e.call) ||
+  return !newer.some(next => scope(next.call) === scope(e.call) ||
     // The canonical source fingerprint spans the whole ledger, not one date.
     // A later changed/unavailable coverage source retires older plan claims.
     (e.result.coveragePlans && next.result.coveragePlans &&
@@ -83,6 +88,18 @@ export function reviewDecision(args: unknown, evidence: readonly DecisionEvidenc
       !plan.alternatives[ref.alternativeIndex] || plan.alternatives[ref.alternativeIndex].status === "INVALID") issues.push("INVALID_COVERAGE_REFERENCE");
   }
   if (issues.length) return { state: "revise", issues: [...new Set(issues)] };
+  const selected = d.options.find(o => o.id === d.recommendation.optionId);
+  const selectedReads = selected?.evidenceIds.map(id => byId.get(id)!) ?? [];
+  const distinct = <T,>(values: T[]) => [...new Map(values.map(v => [JSON.stringify(v), v])).values()];
+  const periods = distinct(selectedReads.flatMap(e => e.result.periodReview ? [e.result.periodReview] : []));
+  const proposals = distinct(selectedReads.flatMap(e => e.result.proposals ? [e.result.proposals] : []));
+  // Single-slot public cards must belong to the selected option. Ambiguous or
+  // unselected reads stay cited observations, never an implicitly chosen card.
+  const chosenEvidence: WorkflowEvidence = {
+    ...(selected?.coverage ? { coveragePlans: byId.get(selected.coverage.evidenceId)!.result.coveragePlans } : {}),
+    ...(periods.length === 1 ? { periodReview: periods[0] } : {}),
+    ...(proposals.length === 1 ? { proposals: proposals[0] } : {}),
+  };
   const es = d.language === "es";
   const lines = [d.summary];
   for (const observation of d.observations) lines.push(`${observation.statement} [${observation.evidenceIds.join(", ")}]`);
@@ -106,12 +123,12 @@ export function reviewDecision(args: unknown, evidence: readonly DecisionEvidenc
   if (d.uncertainties.length) lines.push(`${es ? "Por confirmar" : "Unknowns"}: ${d.uncertainties.join(" ")}`);
   for (const e of incomplete) lines.push(es ? `${e.id} es parcial; los datos omitidos o no disponibles siguen sin verificar.` : `${e.id} is partial; omitted or unavailable facts remain unverified.`);
   if ([...used].some(id => byId.get(id)?.result.periodReview)) lines.push(es ? "La preparación financiera de nómina sigue sin verificar." : "Payroll financial readiness remains unverified.");
+  if (periods.length > 1) lines.push(es ? "Se compararon varios períodos; no se adjunta un único período como elegido. Abra las fuentes del período que desea revisar." : "Multiple periods were compared; no single period is attached as chosen. Open the sources for the period you want to review.");
+  if (proposals.length > 1) lines.push(es ? "Se compararon varios conjuntos de propuestas; no se adjunta uno como elegido. Revise un conjunto exacto antes de cambiarlo." : "Multiple proposal sets were compared; no single set is attached as chosen. Review one exact set before making a change.");
   lines.push(`${es ? "Siguiente paso" : "Next step"}: ${d.nextStep}`, `${es ? "Comprobar resultado" : "Check outcome"}: ${d.outcomeCheck}`);
   lines.push(es ? "No se realizó ninguna acción de negocio. Los cambios requieren el flujo normal del Owner." : "No business action has been performed. Changes require the normal Owner workflow.");
   const rendered = lines.join("\n\n");
-  const chosen = d.options.find(o => o.id === d.recommendation.optionId)?.coverage;
-  const coveragePlans = chosen ? byId.get(chosen.evidenceId)!.result.coveragePlans : undefined;
-  return rendered.length <= 12000 ? { state: "accepted", text: rendered, ...(coveragePlans ? { coveragePlans } : {}) } : { state: "revise", issues: ["INVALID_DECISION"] };
+  return rendered.length <= 12000 ? { state: "accepted", text: rendered, evidence: chosenEvidence } : { state: "revise", issues: ["INVALID_DECISION"] };
 }
 
 const schemaText = (maxLength: number) => ({ type: "string", minLength: 1, maxLength });
