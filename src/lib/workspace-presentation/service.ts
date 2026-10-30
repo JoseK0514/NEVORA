@@ -11,6 +11,7 @@ import {
 } from "./model";
 import { ALL_MODULES_ON, enabledModules, type EnabledModules, type ModuleBlockers, type ModuleId } from "./modules";
 import type { WordPresetId } from "./words";
+import { communicationDevelopmentAllowedSql } from "../communications/sql";
 
 export type PresentationRevision = { operationId: string; revision: number; changedAt: string; changedKeys: string[]; settings: PresentationSettings };
 export type ActiveBrand = { style: Record<string, string> | undefined; tokens: BrandTokens | null; logoAssetId: string | null; revision: number };
@@ -25,15 +26,20 @@ const NO_PRESENTATION: ActivePresentation = { style: undefined, tokens: null, lo
  */
 export async function readActivePresentation(workspaceId: string, executor: SqlExecutor = neonNotificationExecutor(), { strict = false }: { strict?: boolean } = {}): Promise<ActivePresentation> {
   try {
-    const rows = await executor.query<{ revision: number; settings: unknown }>({
-      text: "SELECT revision,settings FROM nevora_workspace_presentation_revisions WHERE workspace_id=$1 ORDER BY revision DESC LIMIT 1",
+    const rows = await executor.query<{ revision: number | null; settings: unknown; updatesLive?: boolean }>({
+      // Release 1: the same database check that holds Updates' live activation (D04) is read with the settings, so
+      // Updates counts as off wherever its reads and posts are held. The Owner's own switch still applies once it opens.
+      text: `SELECT p.revision,p.settings,${UPDATES_LIVE_SQL} AS "updatesLive" FROM (SELECT 1) one
+        LEFT JOIN LATERAL (SELECT revision,settings FROM nevora_workspace_presentation_revisions WHERE workspace_id=$1 ORDER BY revision DESC LIMIT 1) p ON true`,
       values: [workspaceId],
     });
-    if (!rows[0]) return NO_PRESENTATION;
+    const held = rows[0]?.updatesLive === false;
+    if (!rows[0] || rows[0].revision === null || rows[0].revision === undefined) return held ? { ...NO_PRESENTATION, modules: { ...ALL_MODULES_ON, updates: false } } : NO_PRESENTATION;
     const settings = readSettings(rows[0].settings);
     const style = brandStyle(settings.brand.tokens);
+    const modules = enabledModules(settings.modules?.disabled);
     return { style, tokens: style ? settings.brand.tokens : null, logoAssetId: settings.brand.logoAssetId, revision: rows[0].revision,
-      modules: enabledModules(settings.modules?.disabled), words: settings.words?.preset ?? "standard" };
+      modules: held ? { ...modules, updates: false } : modules, words: settings.words?.preset ?? "standard" };
   } catch (error) {
     const code = error && typeof error === "object" && "code" in error ? String((error as { code: unknown }).code) : "";
     if (strict && !["42P01", "42703"].includes(code)) throw error;
@@ -41,6 +47,13 @@ export async function readActivePresentation(workspaceId: string, executor: SqlE
   }
 }
 export const readActiveBrand = readActivePresentation;
+
+/** True while Updates' live activation is held on this database (anything but an owned local test database). */
+const UPDATES_LIVE_SQL = `COALESCE((${communicationDevelopmentAllowedSql()}),false)`;
+export async function updatesActivationHeld(executor: SqlExecutor = neonNotificationExecutor()): Promise<boolean> {
+  try { return (await executor.query<{ live: boolean }>({ text: `SELECT ${UPDATES_LIVE_SQL} AS live`, values: [] }))[0]?.live !== true; }
+  catch { return true; }
+}
 
 /** Reads the latest 20 revisions with Owner/session guards before and after the query. */
 export async function readPresentationHistory(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<PresentationRevision[]> {

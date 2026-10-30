@@ -16,8 +16,10 @@ import { SwitchRow } from "@/app/app/settings/wave-c-form";
 let focusSavedOnMount = false;
 type Command = { operationId: string; expectedRevision: number } & ({ section: "words"; preset: WordPresetId } | { section: "modules"; disabled: ModuleId[] });
 
-export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEnabled }: {
+export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEnabled, updatesHeld = false }: {
   revision: number; preset: WordPresetId; disabled: ModuleId[]; blockers: ModuleBlockers; payrollEnabled: boolean;
+  /** Release 1: Updates' live activation is held on this database, so Updates is off whatever the switch says. */
+  updatesHeld?: boolean;
 }) {
   const router = useRouter();
   const [words, setWords] = useState<WordPresetId>(preset);
@@ -92,10 +94,11 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
       <ul className="q-list">
         {MODULES.map(m => {
           const on = !off.includes(m.id), waiting = blockers[m.id] ?? 0;
-          const unavailable = m.requires === "payroll" && !payrollEnabled;
+          const held = m.id === "updates" && updatesHeld;
+          const unavailable = (m.requires === "payroll" && !payrollEnabled) || held;
           const locked = on && waiting > 0 && !disabled.includes(m.id);
           const noteId = `module-${m.id}-note`;
-          const note = unavailable ? "Available when payroll is on." : locked ? blockerText(m.id, waiting) : null;
+          const note = held ? "Coming in a later release." : unavailable ? "Available when payroll is on." : locked ? blockerText(m.id, waiting) : null;
           // A note belongs to its row: the row's divider moves under the note instead of striking through it.
           return <li key={m.id} data-on={on && !unavailable} className={note ? "q-feature--note" : undefined}>
             <SwitchRow id={`module-${m.id}`} label={m.name} checked={on && !unavailable}
