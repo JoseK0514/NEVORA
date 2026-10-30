@@ -1,0 +1,61 @@
+/* Corporate shell (Jose approved Oct 26, 2026; docs/product/specs/corporate-mockups). Loaded last; scoped to data-nv-corp.
+ * Phones: a tab's own page gets the white header (NEVORA wordmark with WORKFORCE under it, the bell, the avatar that opens
+ * More); pushed pages draw their own header. One white tab bar with five tabs per role. The grey #F5F6F6 canvas behind.
+ * !important is deliberate: the older phone layers above use long selectors with !important for the same properties. */
+@media (max-width: 767px) {
+  html:has(.app-shell[data-nv-corp]), html:is(:root, [data-theme]) body:has(.app-shell[data-nv-corp]),
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp], html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .app-main, html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame { background: #F5F6F6 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame:has(.c-page) { padding: 0 0 calc(49px + max(4px, var(--q-safe-bottom, env(safe-area-inset-bottom, 0px)))) !important; margin: 0 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame:has(.c-page) > .section-tabs { display: none !important; }
+
+  /* Header on a tab's own page. */
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header {
+    position: sticky !important; top: 0 !important; z-index: 30 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important;
+    width: auto !important; height: auto !important; min-height: 0 !important; margin: 0 !important; padding: calc(var(--q-safe-top, env(safe-area-inset-top, 0px)) + 8px) 16px 12px !important;
+    border: 0 !important; border-radius: 0 !important; background: #FFFFFF !important; box-shadow: 0 1px 0 #E3E5E6 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+  }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header > :is(.portal-workspace-name, .portal-location-nav, .company-logo-chip) { display: none !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .brand.compact { display: inline-flex !important; order: 0 !important; margin: 0 !important; padding: 0 !important; height: 44px !important; min-height: 44px !important; background: none !important; box-shadow: none !important; border: 0 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .login-brand-lockup { display: inline-flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 3px !important; margin: 0 !important; color: #0E1A3A !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .login-brand-lockup .brand-wordmark { display: block !important; width: auto !important; height: 14px !important; max-width: none !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .login-brand-module {
+    display: block !important; margin: 0 -2.4px 0 0 !important; padding: 0 !important; font: 600 9px/12px Inter, "Inter Fallback", -apple-system, sans-serif !important;
+    letter-spacing: 2.4px !important; text-transform: uppercase !important; color: #6B7075 !important; opacity: 1 !important;
+  }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .mobile-header-actions { display: flex !important; align-items: center !important; gap: 4px !important; margin: 0 !important; padding: 0 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .mobile-header-actions > :is(.cm-add-shift, .command-finder-trigger, .e5-new, .portal-account-menu) { display: none !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .portal-notification-bell {
+    position: relative !important; display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; min-width: 44px !important; margin: 0 !important; padding: 0 !important;
+    border: 0 !important; border-radius: 8px !important; background: none !important; box-shadow: none !important; color: #1A1C1E !important;
+  }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .portal-notification-bell svg { position: static !important; width: 22px !important; height: 22px !important; color: #1A1C1E !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .portal-notification-bell::before, html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .portal-notification-bell::after { content: none !important; display: none !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .portal-notification-count {
+    position: absolute !important; top: 10px !important; right: 11px !important; left: auto !important; width: 8px !important; height: 8px !important; min-width: 0 !important; padding: 0 !important;
+    border: 0 !important; border-radius: 4px !important; background: #D92D20 !important; box-shadow: 0 0 0 2px #FFFFFF !important; color: transparent !important; font-size: 0 !important; line-height: 0 !important; overflow: hidden !important;
+  }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .portal-notification-unavailable { display: none !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .c-top-avatar { display: grid !important; place-items: center; width: 44px; height: 44px; border-radius: 22px; text-decoration: none; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .c-top-avatar > span {
+    display: grid; place-items: center; width: 32px; height: 32px; border-radius: 16px; background: #E6F1EF; color: #0B6E69; font: 600 13px/1 Inter, "Inter Fallback", -apple-system, sans-serif;
+  }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .c-top-avatar:focus-visible, html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .portal-notification-bell:focus-visible { outline: 2px solid #0B6E69 !important; outline-offset: 2px !important; }
+  /* A page not yet on the corporate kit draws its own Quiet bar; on a tab's own page the shell header replaces it. */
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .page-frame .q-bar { display: none !important; }
+
+  /* Tab bar: white, one hairline, 11px labels, the current tab teal and filled. */
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav { background: #FFFFFF !important; box-shadow: 0 -1px 0 #E3E5E6 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav .mobile-nav-link {
+    gap: 3px !important; padding-top: 8px !important; color: #6B7075 !important;
+    font: 500 11px/13px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav .mobile-nav-link.active, html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav .mobile-nav-link.active span { color: #0B6E69 !important; font-weight: 600 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav .mobile-nav-link:has(> .mobile-nav-pending), html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav .mobile-nav-link:has(> .mobile-nav-pending) span { color: #0B6E69 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav:has(.mobile-nav-pending) .mobile-nav-link.active:not(:has(> .mobile-nav-pending)), html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav:has(.mobile-nav-pending) .mobile-nav-link.active:not(:has(> .mobile-nav-pending)) span { color: #6B7075 !important; font-weight: 500 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav .u1-tab-badge { top: 2px !important; min-width: 18px !important; height: 18px !important; border-radius: 9px !important; background: #D92D20 !important; box-shadow: 0 0 0 2px #FFFFFF !important; font: 600 11px/18px Inter, sans-serif !important; }
+}
+/* The corporate avatar link lives in the phone header only. */
+@media (min-width: 768px) { .c-top-avatar { display: none !important; } }
+@media (max-width: 767px) { html:is(:root, [data-theme]) body .app-shell[data-nv-corp]:not([data-corp-root]) .c-top-avatar { display: none !important; } }
+/* The corporate look is light only for now (the approved boards are light). */
+html:has(.app-shell[data-nv-corp]) { color-scheme: light; }

@@ -278,7 +278,9 @@ function AppShellView({
       style={brand?.style as CSSProperties | undefined} data-company-brand={brand?.style ? "custom" : undefined}
       // One phone shell on every tab, Home included, for every role (Phase 7 WR-03; employees since Phase 3, P3-ST-01).
       data-mobile-workforce={pathname ? "true" : undefined}
-      data-employee-corporate={employee && (pathname === "/app/my-time" || pathname === "/app/timecards") ? "true" : undefined}>
+      data-employee-corporate={employee && (pathname === "/app/my-time" || pathname === "/app/timecards") ? "true" : undefined}
+      // Corporate (Release 1, approved Oct 26): Owner and Manager. A tab's own page shows the white header (logo, bell, avatar).
+      data-nv-corp={employee ? undefined : ""} data-corp-root={!employee && mobileTabs.some(tab => tab.href === pathname) ? "" : undefined}>
       {/* IS-P4-14: on desktop, the sidebar and header come first; this skips them. Shown only on focus, and only on desktop. */}
       <a className="portal-skip-link" href="#main-content">Skip to content</a>
       <aside className="sidebar" data-collapsed={collapsed}>
@@ -371,12 +373,14 @@ function AppShellView({
           {employee ? <Link href="/app/requests" className="e5-new" aria-label="New request"><PlusIcon size={20} aria-hidden="true" /></Link> : null}
           {notificationAuthority ? <NotificationBell key={operationalAuthority?.state==='ready'?operationalAuthority.authority:'unavailable'} authority={notificationAuthority} /> : null}
           {!employee ? accountMenu : null}
+          {/* Corporate phone header: the avatar opens More (profile, settings and the rest). Desktop keeps the account menu. */}
+          {!employee ? <Link href="/app/more" prefetch className="c-top-avatar" aria-label={`More, ${user.firstName} ${user.lastName}`} aria-current={pathname === "/app/more" ? "page" : undefined}><span aria-hidden="true">{initials}</span></Link> : null}
           </div>
         </header>
 
         <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{user.role==='MANAGER'&&operational.view?.state==='unavailable'&&!operational.refreshing&&<section className="portal-route-state" role="status"><h2>Management menu unavailable</h2><p>Your current management access could not be checked. Reconnect and refresh before opening another management page.</p><button className="button secondary" type="button" disabled={operational.paused} onClick={operational.retry}>Refresh management access</button></section>}<EmployeeMessageReturn/>{children}</PresentationProvider></main>
 
-        <nav className="mobile-nav" aria-label="Mobile navigation" style={!employee?{gridTemplateColumns:`repeat(${Math.min(navigation.length,5)},minmax(0,1fr))`}:undefined}>
+        <nav className="mobile-nav" aria-label="Mobile navigation" style={!employee?{gridTemplateColumns:`repeat(${mobileTabs.length},minmax(0,1fr))`}:undefined}>
           {/* v5 One look (approved Oct 24): one Quiet tab bar for every role; More is a page. */}
             <>
               {mobileTabs.map((item) => {
@@ -402,12 +406,12 @@ function AppShellView({
                   </Link>
                 );
               })}
-              {/* Quiet (v4): More is a page, as in the approved mockups. */}
-              <Link href="/app/more" prefetch className={activeTab === "more" || pathname === "/app/more" ? "mobile-nav-link manager-more-trigger active" : "mobile-nav-link manager-more-trigger"}
+              {/* Employees: More is a page, as in their approved mockups. Owners and Managers open More from the header avatar. */}
+              {employee ? <Link href="/app/more" prefetch className={activeTab === "more" || pathname === "/app/more" ? "mobile-nav-link manager-more-trigger active" : "mobile-nav-link manager-more-trigger"}
                 aria-current={pathname === "/app/more" ? "page" : undefined}>
                 <NavIcon name="moreCircle" size={24} weight={!employeeMobile && (activeTab === "more" || pathname === "/app/more") ? "fill" : "regular"} /><span>More</span>
                 <TabPending />
-              </Link>
+              </Link> : null}
             </>
         </nav>
       </div>

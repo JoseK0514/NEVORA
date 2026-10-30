@@ -22,6 +22,8 @@ import "./clean-manager/notifications.css";
 import "./employee-style.css";
 // Quiet (v4, Jose approved Oct 23): the Owner and Manager phone shell. Loaded last.
 import "./quiet-shell.css";
+// Corporate (Release 1, approved Oct 26): the Owner and Manager phone header and tab bar. Loaded last.
+import "./corp-shell.css";
 import "@/components/employee-mobile/mobile.css";
 import "@/components/employee-mobile/requests.css";
 import "@/components/employee-mobile/exchange.css";

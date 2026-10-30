@@ -57,12 +57,24 @@ describe('phone tabs', () => {
     expect(activeMobileTab(role, '/app/account-recovery', payroll)).toBeUndefined();
     expect(mobileMoreForRole(role, payroll).map(item => item.href)).toEqual(['/app/updates','/app/profile']);
   });
-  it.each(['MANAGER','OWNER'] as const)('gives %s Home, Schedule, Inbox and Team, with every other destination in More', role => {
+  // Corporate (Release 1, approved Oct 26): Owner and company-wide Manager tabs are Home, Schedule, Time, Payroll and Team.
+  // Things to do (Inbox) opens from Home, which stays lit there. Without payroll review, Inbox takes Payroll's place.
+  it.each(['MANAGER','OWNER'] as const)('gives %s Home, Schedule, Time, Payroll and Team when payroll review is on', role => {
+    const context={operational:company}, review={...payroll,canReview:true};
+    expect(mobileTabsForRole(role,review,context).map(tab => [tab.label, tab.href])).toEqual([['Home','/app'],['Schedule','/app/schedule'],['Time','/app/timecards'],['Payroll','/app/payroll'],['Team','/app/employees']]);
+    expect(activeMobileTab(role,'/app/inbox',review,context)).toBe('/app');
+    expect(activeMobileTab(role,'/app/requests',review,context)).toBe('/app');
+    expect(activeMobileTab(role,'/app/payroll-export',review,context)).toBe('/app/payroll');
+    expect(activeMobileTab(role,'/app/timecards',review,context)).toBe('/app/timecards');
+    const reachable = [...mobileTabsForRole(role,review,context).flatMap(tab => tab.owns), ...mobileMoreForRole(role,review,context).map(item => item.href)];
+    for (const item of navigationForRole(role,review,context)) expect(reachable).toContain(item.href);
+  });
+  it.each(['MANAGER','OWNER'] as const)('gives %s Home, Schedule, Time, Inbox and Team without payroll review, with every other destination in More', role => {
     const context={operational:company};
-    expect(mobileTabsForRole(role,undefined,context).map(tab => tab.href)).toEqual(['/app','/app/schedule','/app/inbox','/app/employees']);
+    expect(mobileTabsForRole(role,undefined,context).map(tab => tab.href)).toEqual(['/app','/app/schedule','/app/timecards','/app/inbox','/app/employees']);
     expect(navigationForRole(role,undefined,context).map(item => item.href).slice(0, 3)).toEqual(['/app','/app/inbox','/app/schedule']);
-    const reachable = [...mobileTabsForRole(role,undefined,context).flatMap(tab => tab.owns), ...mobileMoreForRole(role, { ...payroll, canReview: true },context).map(item => item.href)];
-    for (const item of navigationForRole(role, { ...payroll, canReview: true },context)) expect(reachable).toContain(item.href);
+    const reachable = [...mobileTabsForRole(role,undefined,context).flatMap(tab => tab.owns), ...mobileMoreForRole(role,undefined,context).map(item => item.href)];
+    for (const item of navigationForRole(role,undefined,context)) expect(reachable).toContain(item.href);
     // Quiet (v4): Templates and Scheduling rules open from Schedule, so Schedule stays lit there (approved mockups).
     expect(activeMobileTab(role, '/app/schedule/templates',undefined,context)).toBe('/app/schedule');
     expect(activeMobileTab(role, '/app/schedule/settings',undefined,context)).toBe('/app/schedule');

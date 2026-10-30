@@ -1,0 +1,211 @@
+/* NEVORA corporate kit (Jose approved Oct 26, 2026; mockups in docs/product/specs/corporate-mockups).
+ * Every value here reproduces the approved boards: page #F5F6F6, white cards (radius 12, 1px #E3E5E6 ring, no soft shadows),
+ * card header rows of 44px, 15px rows, 13px details, filled status pills, teal #0B6E69 for actions and the current tab only.
+ * Rules are prefixed :is(#c-root, html) so they carry one id of weight over the older element rules on phone pages. */
+
+:is(#c-root, html) .c-page {
+  --c-bg: #F5F6F6; --c-card: #FFFFFF; --c-ring: #E3E5E6; --c-line: #EDEEEF; --c-ink: #1A1C1E; --c-ink2: #4A4F54; --c-grey: #6B7075;
+  --c-faint: #A7ACB1; --c-field: #D5D8DA; --c-teal: #0B6E69; --c-teal-hover: #084F4B; --c-tint: #E6F1EF;
+  --c-amber-bg: #FEF4E6; --c-amber: #8A4B00; --c-blue-bg: #EAF0FD; --c-blue: #1D4ED8; --c-red-bg: #FDECEA; --c-red: #B42318; --c-neutral-bg: #EDEEEF;
+  display: flex; flex-direction: column; gap: 12px; min-height: 100%; margin: 0; padding: 16px 16px 24px; box-sizing: border-box;
+  background: var(--c-bg); color: var(--c-ink); font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 15px; line-height: 20px; font-weight: 400; letter-spacing: 0; font-optical-sizing: auto; font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased; text-align: left;
+}
+:is(#c-root, html) .c-page *, :is(#c-root, html) .c-page *::before, :is(#c-root, html) .c-page *::after { box-sizing: border-box; }
+:is(#c-root, html) .c-page :where(h1, h2, h3, p, ul, ol, li, dl, dd, dt, figure) { margin: 0; padding: 0; font: inherit; letter-spacing: inherit; color: inherit; text-wrap: initial; }
+:is(#c-root, html) .c-page :where(ul, ol) { list-style: none; }
+:is(#c-root, html) .c-page :where(a) { color: inherit; text-decoration: none; }
+:is(#c-root, html) .c-page :where(button, input, select, textarea) { font-family: inherit; letter-spacing: inherit; }
+:is(#c-root, html) .c-page :focus-visible { outline: 2px solid var(--c-teal); outline-offset: 2px; border-radius: 8px; }
+:is(#c-root, html) .c-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+:is(#c-root, html) .c-ic { flex: none; display: block; width: 22px; height: 22px; }
+:is(#c-root, html) .c-ic--s { width: 16px; height: 16px; }
+
+/* Page title: 22/28 600 with a 13px line under it, and an optional control on the right. */
+:is(#c-root, html) .c-title { display: block; }
+:is(#c-root, html) .c-title__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 28px; }
+:is(#c-root, html) .c-title h1 { min-width: 0; font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.3px; color: var(--c-ink); }
+:is(#c-root, html) .c-title__sub { display: block; margin-top: 2px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-title__actions { flex: none; display: flex; align-items: center; gap: 8px; }
+
+/* Cards */
+:is(#c-root, html) .c-card { display: block; border-radius: 12px; background: var(--c-card); box-shadow: 0 0 0 1px var(--c-ring); overflow: hidden; }
+:is(#c-root, html) .c-card--alert { box-shadow: 0 0 0 1px var(--c-red); }
+:is(#c-root, html) .c-card__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 0 16px; box-shadow: inset 0 -1px 0 var(--c-line); }
+:is(#c-root, html) .c-card__label { min-width: 0; font-size: 13px; line-height: 18px; font-weight: 600; color: var(--c-ink2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(#c-root, html) .c-card__aside { flex: none; display: flex; align-items: center; gap: 8px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-card__body { padding: 14px 16px 16px; }
+:is(#c-root, html) .c-card__body--tight { padding: 12px 16px; }
+:is(#c-root, html) .c-card__foot { display: flex; align-items: center; gap: 8px; padding: 12px 16px; box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-card__foot > .c-btn { flex: 1; }
+:is(#c-root, html) .c-big { display: block; font-size: 20px; line-height: 26px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-line2 { display: block; margin-top: 2px; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
+:is(#c-root, html) .c-line3 { display: block; margin-top: 2px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-card__body > .c-btn { margin-top: 14px; }
+
+/* Links: teal 13/600 in card headers, 15/600 as a row action. */
+:is(#c-root, html) .c-link { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; margin: -13px 0; padding: 0; border: 0; background: none; color: var(--c-teal); font-size: 13px; line-height: 18px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+:is(#c-root, html) .c-link:hover { color: var(--c-teal-hover); }
+:is(#c-root, html) .c-link--l { font-size: 15px; line-height: 20px; margin: 0; }
+
+/* Rows: 56px (two lines) or 52px (one line); a divider above every row after the first. */
+:is(#c-root, html) .c-rows > li + li > .c-row, :is(#c-root, html) .c-rows > .c-row + .c-row, :is(#c-root, html) .c-row + .c-row,
+:is(#c-root, html) .c-card__head + .c-card__note { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-row { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; margin: 0; padding: 8px 16px; border: 0; background: none; color: var(--c-ink); text-align: left; font: inherit; }
+:is(#c-root, html) .c-row--one { min-height: 52px; }
+:is(#c-root, html) .c-row--tall { min-height: 64px; }
+:is(#c-root, html) a.c-row, :is(#c-root, html) button.c-row, :is(#c-root, html) label.c-row { cursor: pointer; }
+:is(#c-root, html) a.c-row:active, :is(#c-root, html) button.c-row:active { background: #F7F8F8; }
+:is(#c-root, html) .c-row__lead { flex: none; width: 56px; white-space: nowrap; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-row__icon { flex: none; display: grid; place-items: center; width: 22px; height: 22px; color: var(--c-ink2); }
+:is(#c-root, html) .c-row__main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+:is(#c-root, html) .c-row__title { display: block; font-size: 15px; line-height: 20px; color: var(--c-ink); overflow-wrap: anywhere; }
+:is(#c-root, html) .c-row__title--b { font-weight: 600; }
+:is(#c-root, html) .c-row__detail { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-row__detail > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:is(#c-root, html) .c-row__value { flex: none; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); text-align: right; white-space: nowrap; }
+:is(#c-root, html) .c-row__value--soft { font-weight: 400; color: var(--c-grey); }
+:is(#c-root, html) .c-row__value--teal { color: var(--c-teal); }
+:is(#c-root, html) .c-row__value--red { color: var(--c-red); }
+:is(#c-root, html) .c-row__value--amber { color: var(--c-amber); }
+:is(#c-root, html) .c-row__trail { flex: none; display: flex; align-items: center; gap: 8px; }
+:is(#c-root, html) .c-chev { flex: none; width: 16px; height: 16px; color: var(--c-faint); }
+:is(#c-root, html) .c-row--danger, :is(#c-root, html) .c-row--danger .c-row__title, :is(#c-root, html) .c-row--danger .c-row__icon { color: var(--c-red); }
+:is(#c-root, html) .c-row--open { box-shadow: inset 0 0 0 1px var(--c-red) !important; border-radius: 8px; margin: 4px 8px; width: calc(100% - 16px); padding: 8px; }
+:is(#c-root, html) .c-row[aria-disabled="true"] { cursor: default; }
+
+/* Status pills (filled), count badges, avatars */
+:is(#c-root, html) .c-pill { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border-radius: 11px; font-size: 13px; line-height: 18px; font-weight: 600; white-space: nowrap; }
+:is(#c-root, html) .c-pill--teal { background: var(--c-tint); color: var(--c-teal); }
+:is(#c-root, html) .c-pill--amber { background: var(--c-amber-bg); color: var(--c-amber); }
+:is(#c-root, html) .c-pill--blue { background: var(--c-blue-bg); color: var(--c-blue); }
+:is(#c-root, html) .c-pill--red { background: var(--c-red-bg); color: var(--c-red); }
+:is(#c-root, html) .c-pill--neutral { background: var(--c-neutral-bg); color: var(--c-ink2); }
+:is(#c-root, html) .c-pill__dot { width: 6px; height: 6px; border-radius: 3px; background: currentColor; }
+:is(#c-root, html) .c-badge { flex: none; display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--c-teal); color: #FFFFFF; font-size: 13px; line-height: 18px; font-weight: 600; }
+:is(#c-root, html) .c-av { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 16px; background: var(--c-tint); color: var(--c-teal); font-size: 13px; line-height: 1; font-weight: 600; }
+:is(#c-root, html) .c-av--grey { background: var(--c-neutral-bg); color: var(--c-ink2); }
+:is(#c-root, html) .c-av--l { width: 36px; height: 36px; border-radius: 18px; }
+:is(#c-root, html) .c-av--open { background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-red); color: var(--c-red); border-radius: 16px; }
+:is(#c-root, html) .c-avs { flex: none; display: inline-flex; gap: 4px; }
+
+/* Buttons: 44px pages, 40px inside cards, 36px compact. One primary per screen. */
+:is(#c-root, html) .c-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; min-width: 0; margin: 0; padding: 0 16px; border: 0; border-radius: 8px;
+  background: var(--c-teal); color: #FFFFFF !important; font-size: 15px; line-height: 20px; font-weight: 600; text-decoration: none; white-space: nowrap; cursor: pointer; transition: background-color 120ms ease-out, transform 120ms ease-out; }
+:is(#c-root, html) .c-btn:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--c-teal-hover); }
+:is(#c-root, html) .c-btn:active:not(:disabled):not([aria-disabled="true"]) { transform: scale(.98); }
+:is(#c-root, html) .c-btn--full { display: flex; width: 100%; }
+:is(#c-root, html) .c-btn--md { height: 40px; }
+:is(#c-root, html) .c-btn--sm { height: 36px; padding: 0 14px; }
+:is(#c-root, html) .c-btn--xs { height: 32px; padding: 0 10px; font-size: 13px; line-height: 18px; }
+:is(#c-root, html) .c-btn--secondary { background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-teal); color: var(--c-teal) !important; }
+:is(#c-root, html) .c-btn--secondary:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--c-tint); }
+:is(#c-root, html) .c-btn--neutral { height: 32px; padding: 0 10px; background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-field); color: var(--c-ink) !important; font-size: 13px; line-height: 18px; }
+:is(#c-root, html) .c-btn--neutral:hover:not(:disabled) { background: #F7F8F8; }
+:is(#c-root, html) .c-btn--danger { background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-red); color: var(--c-red) !important; }
+:is(#c-root, html) .c-btn--danger:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--c-red-bg); }
+:is(#c-root, html) .c-btn:disabled, :is(#c-root, html) .c-btn[aria-disabled="true"] { background: var(--c-neutral-bg); box-shadow: none; color: var(--c-faint) !important; cursor: default; }
+:is(#c-root, html) .c-btns { display: flex; gap: 8px; }
+:is(#c-root, html) .c-btns > .c-btn { flex: 1; }
+:is(#c-root, html) .c-btns--stack { flex-direction: column; }
+
+/* Stats: 2 or 3 equal columns with a hairline between. */
+:is(#c-root, html) .c-stats { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
+:is(#c-root, html) .c-stat { min-width: 0; padding: 12px 16px; }
+:is(#c-root, html) .c-stat + .c-stat { box-shadow: inset 1px 0 0 var(--c-line); }
+:is(#c-root, html) .c-stat__label { display: block; font-size: 13px; line-height: 18px; color: var(--c-grey); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(#c-root, html) .c-stat__value { display: block; margin-top: 2px; font-size: 17px; line-height: 22px; font-weight: 600; color: var(--c-ink); white-space: nowrap; }
+:is(#c-root, html) .c-stat__value--red { color: var(--c-red); }
+:is(#c-root, html) .c-stat__value--amber { color: var(--c-amber); }
+:is(#c-root, html) .c-stat__value--teal { color: var(--c-teal); }
+
+/* Notes and empty text */
+:is(#c-root, html) .c-note { display: flex; gap: 8px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-note--center { justify-content: center; text-align: center; }
+:is(#c-root, html) .c-note .c-ic { width: 16px; height: 16px; margin-top: 1px; }
+:is(#c-root, html) .c-callout { display: flex; gap: 8px; padding: 12px; border-radius: 8px; background: var(--c-amber-bg); color: var(--c-amber); font-size: 13px; line-height: 18px; }
+:is(#c-root, html) .c-callout--teal { background: var(--c-tint); color: var(--c-teal); }
+:is(#c-root, html) .c-callout--red { background: var(--c-red-bg); color: var(--c-red); }
+:is(#c-root, html) .c-callout b { display: block; font-weight: 600; }
+:is(#c-root, html) .c-empty { padding: 20px 16px; font-size: 15px; line-height: 20px; color: var(--c-grey); text-align: center; }
+:is(#c-root, html) .c-empty b { display: block; margin-bottom: 2px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-error { font-size: 13px; line-height: 18px; color: var(--c-red); }
+
+/* Segmented control */
+:is(#c-root, html) .c-seg { display: flex; height: 36px; padding: 2px; border-radius: 8px; background: var(--c-neutral-bg); }
+:is(#c-root, html) .c-seg > :is(a, button) { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; padding: 0 8px; border: 0; border-radius: 6px; background: none;
+  color: var(--c-ink2); font-size: 13px; line-height: 18px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+:is(#c-root, html) .c-seg > [aria-current="page"], :is(#c-root, html) .c-seg > [aria-pressed="true"], :is(#c-root, html) .c-seg > [aria-selected="true"] { background: #FFFFFF; color: var(--c-ink); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); }
+
+/* Fields: label 13/600 above, 48px input with a 1px ring; focus is a 2px teal ring. */
+:is(#c-root, html) .c-form { display: flex; flex-direction: column; gap: 16px; }
+:is(#c-root, html) .c-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+:is(#c-root, html) .c-field__label { font-size: 13px; line-height: 16px; font-weight: 600; color: var(--c-ink2); }
+:is(#c-root, html) .c-field__help { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-field__row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 12px; }
+:is(#c-root, html) .c-in { display: flex; align-items: center; width: 100%; height: 48px; margin: 0; padding: 0 12px; border: 0; border-radius: 8px; background: #FFFFFF;
+  box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); font-size: 15px; line-height: 20px; outline: none; appearance: none; -webkit-appearance: none; }
+:is(#c-root, html) .c-in::placeholder { color: var(--c-grey); }
+:is(#c-root, html) .c-in:focus, :is(#c-root, html) .c-in:focus-within { box-shadow: inset 0 0 0 2px var(--c-teal); }
+:is(#c-root, html) .c-in[aria-invalid="true"] { box-shadow: inset 0 0 0 2px var(--c-red); }
+:is(#c-root, html) textarea.c-in { height: 96px; padding: 12px; resize: none; align-items: flex-start; }
+:is(#c-root, html) select.c-in { padding-right: 36px; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234A4F54' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center; }
+:is(#c-root, html) .c-in__wrap { position: relative; display: block; }
+:is(#c-root, html) .c-in__suffix { position: absolute; right: 12px; top: 14px; font-size: 15px; line-height: 20px; color: var(--c-grey); pointer-events: none; }
+:is(#c-root, html) .c-in__btn { position: absolute; right: 4px; top: 2px; height: 44px; padding: 0 10px; border: 0; background: none; color: var(--c-teal); font-size: 13px; font-weight: 600; cursor: pointer; }
+
+/* Switch 51×31 */
+:is(#c-root, html) .c-switch { flex: none; position: relative; width: 51px; height: 31px; margin: 0; border: 0; border-radius: 16px; background: var(--c-field); appearance: none; -webkit-appearance: none; cursor: pointer; transition: background-color 160ms ease-out; }
+:is(#c-root, html) .c-switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 14px; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.16); transition: transform 200ms cubic-bezier(.32, .72, 0, 1); }
+:is(#c-root, html) .c-switch:checked, :is(#c-root, html) .c-switch[aria-checked="true"] { background: var(--c-teal); }
+:is(#c-root, html) .c-switch:checked::after, :is(#c-root, html) .c-switch[aria-checked="true"]::after { transform: translateX(20px); }
+:is(#c-root, html) .c-switch:disabled { opacity: .5; cursor: default; }
+
+/* Pushed page header: white, "‹ Back" left, the title centred, an optional action right. */
+:is(#c-root, html) .c-nav { position: sticky; top: 0; z-index: 20; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px;
+  margin: -16px -16px 0; padding: calc(var(--q-safe-top, env(safe-area-inset-top, 0px)) + 8px) 16px 8px; background: #FFFFFF; box-shadow: 0 1px 0 var(--c-ring); }
+:is(#c-root, html) .c-nav__back { justify-self: start; display: inline-flex; align-items: center; gap: 2px; min-height: 44px; margin-left: -4px; padding: 0 4px; color: var(--c-teal); font-size: 15px; line-height: 20px; font-weight: 600; white-space: nowrap; }
+:is(#c-root, html) .c-nav__back .c-ic { width: 18px; height: 18px; }
+:is(#c-root, html) .c-nav__title { min-width: 0; max-width: 220px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: center; font-size: 17px; line-height: 22px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-nav__right { justify-self: end; display: flex; align-items: center; min-height: 44px; }
+:is(#c-root, html) .c-nav__right :is(a, button):not(.c-btn) { min-height: 44px; padding: 0; border: 0; background: none; color: var(--c-teal); font-size: 15px; line-height: 20px; font-weight: 600; cursor: pointer; }
+
+/* Sheet header inside the existing native sheet (QuietSheet): Cancel · title · Save over a hairline. */
+:is(#c-root, html) .c-sheet-head { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; height: 52px; padding: 0 16px; box-shadow: inset 0 -1px 0 var(--c-line); }
+:is(#c-root, html) .c-sheet-head h2 { font-size: 17px; line-height: 22px; font-weight: 600; text-align: center; }
+:is(#c-root, html) .c-sheet-head__l, :is(#c-root, html) .c-sheet-head__r { min-height: 44px; padding: 0; border: 0; background: none; color: var(--c-teal); font-size: 15px; line-height: 20px; cursor: pointer; }
+:is(#c-root, html) .c-sheet-head__l { justify-self: start; font-weight: 400; }
+:is(#c-root, html) .c-sheet-head__r { justify-self: end; font-weight: 600; }
+:is(#c-root, html) .c-sheet-head__r:disabled { color: var(--c-faint); cursor: default; }
+:is(#c-root, html) .c-sheet-body { display: flex; flex-direction: column; gap: 16px; padding: 16px 16px calc(24px + env(safe-area-inset-bottom, 0px)); }
+
+/* Logo: the NEVORA wordmark with WORKFORCE centred under it. */
+.c-lockup { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 44px; color: #0E1A3A; text-decoration: none; }
+.c-lockup .brand-wordmark { display: block; width: auto; height: 14px; }
+.c-lockup__word { display: block; font-family: Inter, "Inter Fallback", -apple-system, sans-serif; font-size: 9px; line-height: 12px; font-weight: 600; letter-spacing: 2.4px; margin-right: -2.4px; color: #6B7075; text-transform: uppercase; }
+.c-lockup--l .brand-wordmark { height: 20px; }
+.c-lockup--l .c-lockup__word { font-size: 11px; letter-spacing: 3.2px; margin-right: -3.2px; }
+
+/* Desktop: the same page as a calm column beside the sidebar until the desktop design lands. */
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-page { max-width: 640px; margin: 0 auto; padding: 24px 24px 48px; }
+  :is(#c-root, html) .c-nav { margin: -24px -24px 0; padding-top: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(#c-root, html) .c-btn, :is(#c-root, html) .c-switch, :is(#c-root, html) .c-switch::after { transition: none; }
+  :is(#c-root, html) .c-btn:active:not(:disabled) { transform: none; }
+}
+@media (prefers-contrast: more) {
+  :is(#c-root, html) .c-page { --c-grey: #4A4F54; --c-line: #A7ACB1; --c-ring: #A7ACB1; }
+}
+
+/* Home: the clock status under today's shift (the Time panel's compact row) sits in the card's footer. */
+:is(#c-root, html) .c-home-clock { display: block; padding: 0; }
+:is(#c-root, html) .c-home-clock :is(.q-list, ul) { margin: 0; padding: 0; list-style: none; }
+:is(#c-root, html) .c-home-clock .q-row { min-height: 52px; padding: 8px 16px; gap: 12px; }
+:is(#c-root, html) .c-home-clock .q-row::after { display: none; }
+:is(#c-root, html) .c-home-clock .q-rt b { font-size: 15px; line-height: 20px; font-weight: 600; color: #1A1C1E; }
+:is(#c-root, html) .c-home-clock .q-rt i { font-size: 13px; line-height: 18px; color: #6B7075; letter-spacing: 0; }
+:is(#c-root, html) .c-home-clock :is(.q-av, .q-row__ic) { width: 22px; height: 22px; background: none; color: #4A4F54; }
+:is(#c-root, html) .c-home-clock .q-chev { width: 16px; height: 16px; color: #A7ACB1; }

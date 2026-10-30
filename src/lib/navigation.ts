@@ -200,11 +200,17 @@ export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities,
     return [{ ...home, owns: ["/app", "/app/notifications"] }, schedule, { href: "/app/requests/hub", label: "Requests", icon: "requests", owns: ["/app/requests/hub", "/app/requests", "/app/exchange", "/app/exchange/swap", "/app/exchange/callout", "/app/availability"] }, pay];
   }
   const authorized = new Set(navigationForRole(role, payroll, context).map(item=>item.href));
+  // Corporate (Release 1, approved Oct 26): Home, Schedule, Time, Payroll and Team; More opens from the header avatar.
+  // Things to do (Inbox) and Notifications open from Home, so Home stays lit there. Without payroll review Inbox keeps a tab.
+  const payrollTab = authorized.has("/app/payroll");
+  const inboxPages = ["/app/inbox", "/app/requests", "/app/exchange", "/app/availability"];
   const tabs:MobileTab[] = [
-    // Quiet (v4): Notifications opens from Today's bell, so Home stays lit there.
-    { ...home, owns: ["/app", "/app/notifications"] },
+    { ...home, owns: ["/app", "/app/notifications", ...(payrollTab ? inboxPages : [])] },
     schedule,
-    { href: "/app/inbox", label: "Inbox", icon: "inbox", owns: ["/app/inbox", "/app/requests", "/app/exchange", "/app/availability"] },
+    { href: "/app/timecards", label: "Time", icon: "clock", owns: ["/app/timecards", ...(payrollTab ? [] : ["/app/payroll-export"])] },
+    payrollTab
+      ? { href: "/app/payroll", label: "Payroll", icon: "payroll", owns: ["/app/payroll", "/app/payroll-export", "/app/settings/payroll"] }
+      : { href: "/app/inbox", label: "Inbox", icon: "inbox", owns: inboxPages },
     { href: "/app/employees", label: "Team", icon: "employees", owns: ["/app/employees", "/app/account-recovery", "/app/clocker-recovery"] },
   ];
   return tabs.filter(tab=>authorized.has(tab.href));

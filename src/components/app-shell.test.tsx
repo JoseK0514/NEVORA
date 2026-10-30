@@ -78,13 +78,15 @@ it.each(["EMPLOYEE", "LEAD"] as const)("gives %s Home, Schedule, Requests, Hours
   expect(html).not.toContain('employee-more-navigation');
 });
 
-it.each(["MANAGER", "OWNER"] as const)("gives %s Home, Schedule, Inbox, Team and More tabs", (role) => {
+// Corporate (Release 1, approved Oct 26): five tabs and no More tab; More opens from the header avatar. Without payroll
+// review, Inbox takes Payroll's place.
+it.each(["MANAGER", "OWNER"] as const)("gives %s Home, Schedule, Time, Inbox and Team tabs without payroll review", (role) => {
   const { html, mobile } = render(role);
   expect([...mobile.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
-    "/app", "/app/schedule", "/app/inbox", "/app/employees", "/app/more",
+    "/app", "/app/schedule", "/app/timecards", "/app/inbox", "/app/employees",
   ]);
-  expect(mobile).toContain('<span>Inbox</span>');
-  expect(mobile).toContain('<span>More</span>');
+  expect(mobile).toContain('<span>Time</span>');
+  expect(mobile).not.toContain('<span>More</span>');
   expect(mobile).not.toContain('manager-more-navigation');
   expect(html).not.toContain("employee-shell");
   expect(html).not.toContain("employee-more-navigation");
@@ -146,11 +148,22 @@ it('groups authorized owner destinations and provides an accessible sidebar cont
  expect(html).toContain('aria-expanded="true"');
 });
 
-it.each(['MANAGER','OWNER'] as const)('links %s More to its page and keeps Profile out of the sidebar', role=>{
- const {html,mobile}=render(role);
+it.each(['MANAGER','OWNER'] as const)('gives %s Home, Schedule, Time, Payroll and Team tabs with payroll review', role=>{
+ navigationMock.pathname='/app/payroll-export';
+ const html=renderToStaticMarkup(<AppShell workspaceName="QA" operationalAuthority={company} payrollCapabilities={{enabled:true,canConfigure:true,canReview:true,canApprove:true,internalCalculatorAvailable:false,bankCompatibility:'UNVERIFIED'}} user={{id:'actor',firstName:'Sam',lastName:'Cruz',role}}>Content</AppShell>);
+ const mobile=html.split('aria-label="Mobile navigation"')[1].split('</nav>')[0];
+ expect([...mobile.matchAll(/href="([^"]+)"/g)].map(match=>match[1])).toEqual(['/app','/app/schedule','/app/timecards','/app/payroll','/app/employees']);
+ expect(mobile).toContain('href="/app/payroll" class="mobile-nav-link active" aria-current="page"');
+});
+
+it.each(['MANAGER','OWNER'] as const)('opens %s More from the header avatar and keeps Profile out of the sidebar', role=>{
+ const {html,mobile}=render(role,'/app');
  const header=html.split('<header class="mobile-header">')[1].split('</header>')[0];
- expect(header).not.toContain('href="/app/more"');
- expect(mobile.match(/href="\/app\/more"/g)).toHaveLength(1);
+ expect(header.match(/href="\/app\/more"/g)).toHaveLength(1);
+ expect(header).toMatch(/href="\/app\/more"[^>]*class="c-top-avatar"[^>]*aria-label="More, Sam Cruz"/);
+ expect(html).toContain('data-nv-corp=""');
+ expect(html).toContain('data-corp-root=""');
+ expect(mobile).not.toContain('href="/app/more"');
  // Owners and Managers reach their Profile from More and the desktop account menu, never the sidebar.
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
  expect(sidebar).not.toContain('href="/app/profile"');
@@ -161,21 +174,23 @@ it.each(['EMPLOYEE','LEAD'] as const)('push_disabled_profile_and_inbox_accessibl
  const {html}=render(role);expect(html).toContain('href="/app/profile"');expect(html).toContain('href="/app/notifications"');expect(html).not.toContain('portal-device-settings');
 });
 
-it.each(['MANAGER','OWNER'] as const)('lights %s More on Updates and its nested routes',role=>{
+it.each(['MANAGER','OWNER'] as const)('keeps %s Updates under More with no tab lit and a pushed page header',role=>{
  const {html,mobile}=render(role,'/app/updates/compose');
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
  expect(mobile).not.toContain('href="/app/updates"');
- expect(mobile).toMatch(/href="\/app\/more"[^>]*class="mobile-nav-link manager-more-trigger active"|class="mobile-nav-link manager-more-trigger active"[^>]*href="\/app\/more"/);
+ expect(mobile).not.toContain('mobile-nav-link active');
+ expect(html).not.toContain('data-corp-root=""');
  expect(sidebar).toMatch(/href="\/app\/updates"[^>]*aria-current="true"/);
  expect(sidebar.match(/href="\/app\/updates"/g)).toHaveLength(1);
 });
 
-it.each(['MANAGER','OWNER'] as const)('gives %s one More link in the tab bar and preserves the authorized notification destination',role=>{
+it.each(['MANAGER','OWNER'] as const)('gives %s one More link (the header avatar) and preserves the authorized notification destination',role=>{
  const html=renderToStaticMarkup(<AppShell workspaceName="QA" notificationAuthority="fictional-view-authority" operationalAuthority={company} user={{id:'actor',firstName:'Sam',lastName:'Cruz',role}}>Content</AppShell>);
  const header=html.split('<header class="mobile-header">')[1].split('</header>')[0];
  const mobile=html.split('aria-label="Mobile navigation"')[1].split('</nav>')[0];
  expect(header.match(/href="\/app\/notifications"/g)).toHaveLength(1);
- expect(mobile.match(/href="\/app\/more"/g)).toHaveLength(1);
+ expect(html.match(/href="\/app\/more"/g)).toHaveLength(1);
+ expect(mobile).not.toContain('href="/app/more"');
  expect(mobile).not.toContain('nevora-action-menu-chevron');
  expect(header).toContain('class="portal-account-menu"');
  expect(header).not.toContain('role-chip');
