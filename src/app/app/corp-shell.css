@@ -6,7 +6,8 @@
   html:has(.app-shell[data-nv-corp]), html:is(:root, [data-theme]) body:has(.app-shell[data-nv-corp]),
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp], html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .app-main, html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame { background: #F5F6F6 !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame:has(.c-page) { padding: 0 0 calc(56px + 16px + max(4px, var(--q-safe-bottom, env(safe-area-inset-bottom, 0px)))) !important; margin: 0 !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame:has(.c-page) > .section-tabs { display: none !important; }
+  /* The corporate phone design has no section-tab strip: tabs, the avatar's More and each page's own rows lead there. */
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame > .section-tabs { display: none !important; }
 
   /* Header on a tab's own page. */
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header {
@@ -128,3 +129,29 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-page.wa-page :is(.
 html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-page.wa-page :is(.wa-field__control > :is(input, select, textarea), .wa-select select):focus { box-shadow: inset 0 0 0 2px #0B6E69 !important; outline: none !important; }
 html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-page.wa-page .nv-btn { min-height: 44px !important; height: 44px !important; border-radius: 8px !important; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; }
 html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-page.wa-page .nv-card__title { font: 600 13px/16px Inter, "Inter Fallback", -apple-system, sans-serif !important; color: #4A4F54 !important; }
+
+/* Bridge, part 2: the older design-system (--design-*) and portal (--g-*) tokens, used by payroll, exports and other
+ * legacy pages, take the corporate values too; their page band reads as the kit's 22px title with a 13px line. */
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] {
+  --design-primary: #0B6E69; --design-primary-hover: #084F4B; --design-primary-light: #E6F1EF; --design-accent: #084F4B;
+  --design-accent-ink: #0B6E69; --design-accent-ink-hover: #084F4B; --design-secondary: #F5F6F6;
+  --design-background: #F5F6F6; --design-surface: #EDEEEF; --design-surface-elevated: #FFFFFF; --design-surface-inset: #F5F6F6;
+  --design-text-primary: #1A1C1E; --design-text-secondary: #4A4F54; --design-border: #D5D8DA;
+  --design-radius-card: 12px; --design-radius-control: 8px; --design-radius-pill: 11px;
+  --design-font-body: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif;
+  --g-accent: #0B6E69; --g-accent-hover: #084F4B; --g-accent-wash: #E6F1EF; --g-ink: #1A1C1E; --g-muted: #6B7075;
+  --g-canvas: #F5F6F6; --g-border: #E3E5E6; --g-hairline: #EDEEEF; --g-inset: #F5F6F6; --g-control-radius: 8px;
+}
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame [data-nv-page] > .nv-pageband {
+  margin: 0 !important; padding: 16px 16px 4px !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; color: #1A1C1E !important;
+}
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .nv-pageband :is(h1, .nv-masthead__title) { color: #1A1C1E !important; font: 600 22px/28px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -.3px !important; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .nv-pageband :is(.nv-masthead__summary, .nv-masthead__eyebrow) { color: #6B7075 !important; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif !important; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .nv-pageband .nv-masthead__back { color: #0B6E69 !important; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .nv-pageband svg.nv-masthead__mark, html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .nv-pageband .nv-masthead__mark { display: none !important; }
+/* Payroll's panels and buttons at the boards' sizes. */
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .payroll-workflow .pw-panel { padding: 16px !important; border: 0 !important; border-radius: 12px !important; box-shadow: 0 0 0 1px #E3E5E6 !important; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .payroll-workflow .pw-panel-heading h2 { font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .payroll-workflow .pw-button { min-height: 44px !important; padding: 0 16px !important; border-radius: 8px !important; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .payroll-workflow .pw-button.pw-secondary { background: #FFFFFF !important; color: #0B6E69 !important; border: 1px solid #0B6E69 !important; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .payroll-workflow :is(input, select) { min-height: 48px !important; border-radius: 8px !important; border: 1px solid #D5D8DA !important; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; }

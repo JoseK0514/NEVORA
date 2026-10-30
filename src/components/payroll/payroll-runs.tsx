@@ -4,7 +4,8 @@ import { PayrollStepper } from './payroll-stepper';
 import { useEffect, useState, type FormEvent } from 'react';
 import { ArrowRightIcon, CalendarDotsIcon, CaretLeftIcon, CaretRightIcon, CheckCircleIcon, FileArrowUpIcon, SlidersHorizontalIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
 import Link from 'next/link';
-import { QuietHeader, QuietNav, QuietPage } from '../quiet/quiet';
+import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle } from '../corp/corp';
+import './payroll-home-corp.css';
 import type { OpenPayPeriod } from '@/lib/payroll/pay-calendar.server';
 import type { PayrollCapabilities, PayrollRun } from '@/lib/payroll/contracts';
 import { parsePayrollImport, readRuns } from './api';
@@ -32,37 +33,56 @@ function quietRange(start: string, end: string) {
 }
 const quietDay = (date: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric' }).format(utcDay(date));
 
-/** Quiet (v4, approved Oct 23): Payroll's first screen. The open period and its payday, one Review button, then past periods.
- * Review opens the existing review for that period (or the draft form for it when none exists yet). */
+const statusTone = { BLOCKED: 'red', WAITING_FOR_AMOUNTS: 'neutral', REVIEW_REQUIRED: 'amber', APPROVED: 'teal' } as const;
+const daysBetween = (from: string, to: string) => Math.round((utcDay(to).getTime() - utcDay(from).getTime()) / 86_400_000);
+function dueText(payday: string, today: string) {
+  const days = daysBetween(today, payday);
+  return days < 0 ? 'Payday passed' : days === 0 ? 'Payday today' : days === 1 ? 'Due tomorrow' : `Due in ${days} days`;
+}
+
+/** Corporate (Release 1, board G-O-Payroll): Payroll is a tab, so no Back. Up next (the open period, its payday and one
+ * Review), recent payrolls, then Time exports. Review opens the existing review for that period (or the draft form). */
 function PayrollHome({ current, runs, today, canEditSettings, loading, error, onReload, onOpen, onPrepare }: {
   current: OpenPayPeriod | null; runs: PayrollRun[]; today: string; canEditSettings: boolean; loading: boolean; error: string | null;
   onReload: () => void; onOpen: (id: string) => void; onPrepare: () => void;
 }) {
   const open = current ? runs.find(item => item.period.startDate === current.period.startDate && item.period.endDate === current.period.endDate && !item.correctionOf) : undefined;
   const past = runs.filter(item => item.id !== open?.id).sort((a, b) => b.period.startDate.localeCompare(a.period.startDate));
-  return <QuietPage className="q-payroll q-payroll-phone">
-    <QuietNav back={{ href: '/app/more', label: 'More' }} right={canEditSettings ? <Link className="q-bar__icon q-nav__r q-nav__r--ink" href="/app/settings/payroll" aria-label="Payroll settings"><SlidersHorizontalIcon className="q-ic" aria-hidden="true" /></Link> : undefined} />
-    <QuietHeader title="Payroll" sub={current?.frequency ? FREQUENCY[current.frequency] : undefined} />
-    {loading ? <p className="q-empty q-first" role="status">Loading…</p>
-      : error ? <div className="q-emptyblock" role="alert"><p className="q-empty">{error}</p><div className="q-emptyblock__action"><button type="button" className="q-btn q-btn--sec" onClick={onReload}>Try again</button></div></div>
+  const [all, setAll] = useState(false);
+  const shown = all ? past : past.slice(0, 3);
+  const due = current ? daysBetween(today, current.payday) : null;
+  return <CorpPage className="c-payroll q-payroll-phone" labelledBy="payroll-title">
+    <CorpTitle id="payroll-title" title="Payroll" sub={current?.frequency ? FREQUENCY[current.frequency] : undefined}
+      actions={canEditSettings ? <CorpButtonLink href="/app/settings/payroll" kind="secondary" size="xs"><SlidersHorizontalIcon className="c-ic c-ic--s" aria-hidden="true" />Settings</CorpButtonLink> : undefined} />
+    {loading ? <CorpCard as="div" ariaLabel="Payroll"><CorpBody><p className="c-payroll__state" role="status">Loading…</p></CorpBody></CorpCard>
+      : error ? <CorpCard as="div" ariaLabel="Payroll"><CorpBody><p className="c-payroll__state" role="alert">{error}</p><CorpButton kind="secondary" size="md" onClick={onReload}>Try again</CorpButton></CorpBody></CorpCard>
       : <>
-        {current ? <>
-          <div className="q-lead"><b>{quietRange(current.period.startDate, current.period.endDate)}</b><i>{`Payday ${quietDay(current.payday)}${open ? ` · ${statusLabels[open.status]}` : ''}`}</i></div>
-          <button type="button" className="q-btn" onClick={() => open ? onOpen(open.id) : onPrepare()}>Review period</button>
-          {/* Time exports opens from Payroll (its back link says Payroll); the mockup shows no other way in on a phone. */}
-          <Link className="q-btn q-btn--quiet" href={`/app/payroll-export?start=${current.period.startDate}&end=${current.period.endDate}`}>Export time</Link>
-        </> : <>
-          <p className="q-empty q-first">Set your pay schedule to see the current period.</p>
-          {canEditSettings ? <Link className="q-btn q-btn--sec" href="/app/settings/payroll">Payroll settings</Link> : null}
-        </>}
-        <div className="q-grp" style={{ marginTop: 40 }}><h2>Past periods</h2></div>
-        {past.length ? <ul className="q-list" aria-label="Past periods">{past.map(item => <li key={item.id}>
-          <button type="button" className="q-row q-row--btn" onClick={() => onOpen(item.id)}>
-            <span className="q-rt"><b>{quietRange(item.period.startDate, item.period.endDate)}{item.correctionOf ? ' · Correction' : ''}</b><i>{`${item.payday < today ? 'Paid' : 'Payday'} ${quietDay(item.payday)}`}</i></span>
-            <span className="q-rv">{statusLabels[item.status]}</span><CaretRightIcon className="q-chev" aria-hidden="true" />
-          </button></li>)}</ul> : <p className="q-empty">No past periods yet</p>}
+        {current ? <CorpCard id="payroll-next" label="Up next" aside={<CorpPill tone={due !== null && due <= 1 ? 'amber' : 'neutral'}>{dueText(current.payday, today)}</CorpPill>}>
+          <div className="c-payroll__next">
+            <b>{`${current.frequency ? FREQUENCY[current.frequency] : ''} payroll`.trim()}</b>
+            <span>{`${quietRange(current.period.startDate, current.period.endDate)} · Payday ${quietDay(current.payday)}`}</span>
+          </div>
+          <div className="c-payroll__go">
+            <span>{open ? statusLabels[open.status] : 'Not prepared yet'}</span>
+            <CorpButton size="md" onClick={() => open ? onOpen(open.id) : onPrepare()}>Review</CorpButton>
+          </div>
+        </CorpCard> : <CorpCard as="div" ariaLabel="Pay schedule"><CorpBody>
+          <p className="c-payroll__state">Set your pay schedule to see the current period.</p>
+          {canEditSettings ? <CorpButtonLink href="/app/settings/payroll" kind="secondary" size="md">Payroll settings</CorpButtonLink> : null}
+        </CorpBody></CorpCard>}
+        <CorpCard id="payroll-recent" label="Recent payrolls" aside={!all && past.length > 3 ? <button type="button" className="c-link" onClick={() => setAll(true)}>See all</button> : undefined}>
+          {past.length ? <CorpRows label="Past periods">{shown.map(item => <li key={item.id}>
+            <CorpRow onClick={() => onOpen(item.id)} bold title={`${quietRange(item.period.startDate, item.period.endDate)}${item.correctionOf ? ' · Correction' : ''}`}
+              detail={`${item.payday < today ? 'Paid' : 'Payday'} ${quietDay(item.payday)}`} trail={<CorpPill tone={statusTone[item.status]}>{statusLabels[item.status]}</CorpPill>} chevron />
+          </li>)}</CorpRows> : <CorpBody><p className="c-payroll__state">No past periods yet.</p></CorpBody>}
+        </CorpCard>
+        <CorpCard as="div" ariaLabel="Payroll tools">
+          <CorpRows label="Payroll tools">
+            <li><CorpRow href={current ? `/app/payroll-export?start=${current.period.startDate}&end=${current.period.endDate}` : '/app/payroll-export'} bold title="Time exports" detail="Send hours to your payroll provider or a file" chevron /></li>
+          </CorpRows>
+        </CorpCard>
       </>}
-  </QuietPage>;
+  </CorpPage>;
 }
 
 export function PayrollRuns({ recoveryScope, current = null, canEditSettings = false }: { recoveryScope: string; current?: OpenPayPeriod | null; canEditSettings?: boolean }) {
