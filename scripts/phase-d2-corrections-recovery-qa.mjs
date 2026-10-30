@@ -104,7 +104,9 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
       await page.setViewportSize({width,height:width<=430?844:1000});
       await showRetry();
       await geometry(page,'.employee-time-correction','employee uncertain request',engine,width);
-      const shot=join(evidence,`${engine}-employee-recovery-${width}.png`);await page.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
+      // Viewport capture: a Chromium full-page capture briefly sizes the window to 1px wide (and blurs it), which crosses
+      // the phone breakpoint, swaps in the phone Time tree and unmounts the panel holding this uncertain command.
+      const shot=join(evidence,`${engine}-employee-recovery-${width}.png`);await page.screenshot({path:shot});report.screenshots.push(shot);
      }
     }
     if(kind==='ENTRY_BOUNDARY'&&loss==='before'){
