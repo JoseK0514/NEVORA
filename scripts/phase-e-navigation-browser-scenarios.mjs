@@ -85,7 +85,10 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   }
   // v5 (Lead): More is a tab-bar page. Corporate Employee (approved Oct 26): More opens from the header avatar.
   // Either way its rows reach Updates, Notifications and Profile.
-  if(mobile&&!primary){const more=corporate?page.locator('.mobile-header a.c-top-avatar[href="/app/more"]'):page.locator('.mobile-nav a[href="/app/more"]');await more.tap();await page.waitForURL(u=>u.pathname==='/app/more');await settle();}
+  if(mobile&&!primary){
+   // Corporate: a pushed page (Profile, Notifications…) shows Back instead of the avatar, so start from the Home tab.
+   if(corporate&&!await page.locator('.mobile-header a.c-top-avatar[href="/app/more"]').isVisible()){await page.locator('.mobile-nav a[href="/app"]').tap();await page.waitForURL(u=>u.pathname==='/app');await settle();}
+   const more=corporate?page.locator('.mobile-header a.c-top-avatar[href="/app/more"]'):page.locator('.mobile-nav a[href="/app/more"]');await more.tap();await page.waitForURL(u=>u.pathname==='/app/more');await settle();}
   const root=mobile?(primary?page.locator('.mobile-nav'):page.locator('main')):page.locator('nav[aria-label="Primary navigation"]');
   const destination=root.locator('a[href="'+href+'"]').first();if(mobile){const rect=await destination.boundingBox();assert(rect);await destination.evaluate(e=>e.addEventListener('touchstart',()=>{window.__employeeNavigationTouch=true;},{once:true}));await page.evaluate(()=>{window.__employeeNavigationTouch=false;});await destination.tap({position:{x:rect.width-8,y:rect.height/2}});assert(await page.evaluate(()=>window.__employeeNavigationTouch),'Native mobile navigation dispatched touchstart');}else await destination.click();await page.waitForURL(u=>u.pathname===href);await settle();
   // Corporate Employee: More, Updates, Profile and Notifications light Home (there is no More tab).
