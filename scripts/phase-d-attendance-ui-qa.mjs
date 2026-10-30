@@ -260,8 +260,12 @@ try {
     await login(employee, 'D13-A');
     assert.equal((await actualAttendance(employee)).status(), 403);
     const employeePage = await employee.newPage();
-    await employeePage.goto(app.url + '/app?view=attendance', { waitUntil: 'networkidle' });
+    await employeePage.goto(app.url + '/app?view=attendance#review', { waitUntil: 'networkidle' });
+    // Corporate UI: the review lives on Who's working behind "Clock-ins and corrections". None of it may render for
+    // an Employee, even with the deep link that opens the review.
     assert.equal(await employeePage.getByText('Today’s clock-ins', { exact: true }).count(), 0);
+    assert.equal(await employeePage.locator('.attendance-review, .c-who, #who-title').count(), 0);
+    assert.equal(await employeePage.getByText('Clock-ins and corrections', { exact: true }).count(), 0);
     checked(engine + ': Employee cannot enter Manager attendance surface');
     await employee.close();
 
@@ -302,9 +306,19 @@ try {
         release();
       }
     }
+    // Corporate UI (board O-OnShift): /app?view=attendance is "Who's working". The attendance review sits behind the
+    // "Clock-ins and corrections" row, collapsed until opened; #review is the deep link that opens it on load.
     await page.goto(app.url + '/app?view=attendance', { waitUntil: 'networkidle' });
+    await page.locator('#who-title').waitFor();
+    assert.equal(await page.locator('.attendance-review').count(), 0, 'review stays collapsed until opened');
+    assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
+    await page.getByRole('button', { name: 'Clock-ins and corrections, collapsed', exact: true }).click();
     await page.getByRole('heading', { name: 'Today’s clock-ins', exact: true }).waitFor();
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
+    checked(engine + ': attendance review opens from Who’s working');
+    // Same-document fragment change only: later reloads and remounts keep the review open through #review.
+    await page.goto(app.url + '/app?view=attendance#review');
+    assert.equal(new URL(page.url()).hash, '#review');
     const body = await page.locator('body').innerText();
     assert.match(body, /Alexandria Attendance Review Employee With A Long Name/);
     assert.match(body, /Main Office/);
@@ -402,7 +416,8 @@ try {
     checked(engine + ': access denial clears protected people');
 
     fixture = { status: 200, payload: fixtureReady() };
-    await page.goto(app.url + '/app?view=attendance', { waitUntil: 'networkidle' });
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.getByRole('heading', { name: 'Today’s clock-ins', exact: true }).waitFor();
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     await owner.setOffline(true);
     await page.getByRole('heading', { name: 'View paused', exact: true }).waitFor();
