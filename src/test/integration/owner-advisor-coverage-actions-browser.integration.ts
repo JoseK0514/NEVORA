@@ -45,7 +45,7 @@ it("reviews exact coverage, blocks stale saves, recovers a real lost reply and v
           const response=page.waitForResponse((r:{url():string;request():{method():string}})=>r.url().endsWith("/api/owner/advisor")&&r.request().method()==="POST");
           await page.getByRole("button",{name:"Compare day plans",exact:true}).click();
           const actual=await response;expect(actual.status()).toBe(200);const body=await actual.json();
-          await page.getByRole("region",{name:"Day plan comparison",exact:true}).getByText(`Source fingerprint: ${body.answer.coveragePlans.sourceVersion}`,{exact:true}).waitFor();
+          await page.getByRole("region",{name:"Day plan comparison",exact:true}).getByText(`Source fingerprint: ${body.answer.coveragePlans.sourceVersion}`,{exact:true}).waitFor({state:"attached"});
         };
         phase="review and focus return";await compare();
         const plan=page.getByRole("article",{name:"Day plan 1",exact:true}),trigger=plan.getByRole("button",{name:"Review draft changes",exact:true});
