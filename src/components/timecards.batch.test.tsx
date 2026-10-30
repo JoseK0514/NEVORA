@@ -17,7 +17,8 @@ const ready=(validForMs=45000)=>({state:'ready',observedAt:'2026-09-29T12:00:00Z
 let cleanup:void|(()=>void);let commands:TimecardCommand[]=[],actorId='OWNER',manager=true,employeeCorporate=false;
 function render(){host.cursor=0;return Timecards({initialPeriod:period,manager,actorId,employeeCorporate});}
 const html=()=>renderToStaticMarkup(render());
-function nodes(v:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(v))return v.flatMap(nodes);if(!v||typeof v!=='object'||!('props'in v))return [];const n=v as ReactElement<Record<string,unknown>>;return [n,...nodes(n.props.children as ReactNode),...nodes(n.props.right as ReactNode)];}
+function nodes(v:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(v))return v.flatMap(nodes);if(!v||typeof v!=='object'||!('props'in v))return [];const n=v as ReactElement<Record<string,unknown>>;return [n,...nodes(n.props.children as ReactNode),...nodes(n.props.right as ReactNode),...nodes(n.props.actions as ReactNode)];}
+// Release 1 (board G-O-Time): Select sits in the corporate title's actions slot, so the walk also visits `actions`.
 function control(test:(n:ReactElement<Record<string,unknown>>)=>boolean){const n=nodes(render()).find(test);if(!n)throw Error('Missing rendered control');return n.props;}
 const click=(label:string)=>(control(n=>n.type==='button'&&(n.props.children===label||n.props['aria-label']===label)).onClick as ()=>unknown)();
 const check=(label:string,value=true)=>(control(n=>n.type==='input'&&n.props['aria-label']===label).onChange as (e:unknown)=>void)({target:{checked:value}});
@@ -308,7 +309,7 @@ async function mountAll(){render();host.mounted=true;const cleanups=host.effects
 const resize=(matches:boolean)=>{media.matches=matches;media.listener?.();};
 it('phone: Select in the top bar opens eligible cards; self-review stays excluded with its reason',async()=>{
  phoneWindow();transport();await mountAll();
- expect(html()).toContain('q-timecards');expect(html()).not.toContain('Selected timecard review');
+ expect(html()).toContain('c-page c-tc');expect(html()).not.toContain('Selected timecard review');
  click('Select');const page=html();
  expect(page).toContain('Selected timecard review');expect(page).toContain('2 eligible · 1 excluded · Select up to 100 current timecards below.');
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE OWNER').disabled).toBe(true);expect(page).toContain('A different manager must review');
@@ -336,12 +337,12 @@ it('phone: a partial unknown result keeps not-submitted cards and retries only t
  const original=commands[0];click('Retry original attempted action');await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(original);
 });
 it('resizing desktop → phone mid-review keeps the reviewed set and confirmation; phone → desktop keeps the results',async()=>{
- phoneWindow(false);transport();await mountAll();expect(html()).not.toContain('q-timecards');
+ phoneWindow(false);transport();await mountAll();expect(html()).not.toContain('c-page c-tc');
  check('Select PRIVATE E1');click('Review selected timecards');check('Confirm reviewed timecards');
- resize(true);const phone=html();expect(phone).toContain('q-timecards');expect(phone).toContain('Reviewed approval set');
+ resize(true);const phone=html();expect(phone).toContain('c-page c-tc');expect(phone).toContain('Reviewed approval set');
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Confirm reviewed timecards').checked).toBe(true);
  click('Approve selected');await flush();expect(commands).toHaveLength(1);
- resize(false);const desk=html();expect(desk).not.toContain('q-timecards');expect(desk).toContain('Per-card results');expect(desk).toContain('approved');
+ resize(false);const desk=html();expect(desk).not.toContain('c-page c-tc');expect(desk).toContain('Per-card results');expect(desk).toContain('approved');
 });
 it('phone: blur clears the selection and the reviewed private rows',async()=>{
  phoneWindow();transport();await mountAll();click('Select');check('Select PRIVATE E1');click('Review selected timecards');window.dispatchEvent(new Event('blur'));

@@ -26,7 +26,8 @@ import {ExportIcon} from '@phosphor-icons/react/dist/ssr/Export';
 import {addDays,weekStartFor} from '@/lib/date-utils';
 import type {TimecardIssue} from '@/lib/timecards/project';
 import {Avatar,Card,PageBand,StatGrid} from './kit/kit';
-import {QuietHeader,QuietNav} from './quiet/quiet';
+import {CorpAvatar,CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpPage,CorpPill,CorpTitle} from './corp/corp';
+import './timecards-corp.css';
 import {Duration,SigBand,SigLinkRow,SigPage,SigSection} from './signature/signature';
 import sigStyles from './timecards-signature.module.css';
 
@@ -404,7 +405,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     if(phone){
       const seg=(label:string,value:Period)=><button type="button" aria-pressed={samePeriod(period,value)} disabled={paused||busy||!!pending} onClick={()=>goTo(value)}>{label}</button>;
       const rows=[...cards].sort(reviewFirst);
-      const bulk=ready&&showBulk?<section className="q-tc-bulk" aria-label="Selected timecard review">
+      const bulk=ready&&showBulk?<section className="q-page q-tc-bulk c-tc-bulk" aria-label="Selected timecard review">
         <div className="q-grp"><h2>{selected.length} selected</h2></div>
         <p className="q-help">{eligible.length} eligible · {cards.length-eligible.length} excluded · Select up to 100 current timecards below.</p>
         <ul className="q-list q-tc-bulk__list">
@@ -430,34 +431,52 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         {pending?<button type="button" className="q-btn q-btn--sec" disabled={busy} onClick={()=>void act()}>Retry original attempted action</button>:null}
         {outcomes?<button type="button" className="q-btn q-btn--quiet" aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}>Refresh</button>:null}
       </section>:null;
-      return <div className="q-page q-timecards" data-nv-page="">
-        <QuietNav back={{href:'/app/more',label:'More'}} right={<button type="button" className={selecting?'q-nav__r q-nav__r--b':'q-nav__r'} disabled={!ready||!cards.length} onClick={toggleSelecting}>{selecting?'Done':'Select'}</button>}/>
-        <QuietHeader title="Timecards" sub={ready?`${rangeText(period)} · ${approvedCount} of ${cards.length} approved`:rangeText(period)}/>
-        <div className="q-seg" role="group" aria-label="Week">{seg('This week',thisWeek)}{seg('Last week',lastWeek)}</div>
-        <p className="q-help q-tc-help">{open?`Approvals open after ${longDay(period.endDate)}.`:'This week has ended. Review each timecard.'}</p>
-        <HoldHeight holding={!ready} memory="timecards-manager" className="q-tc-hold">
-          {!data&&!busy?<div className="q-emptyblock" role="status"><h2 className="q-emptyblock__title">{stateTitle}</h2><p className="q-empty">{message}</p>
-            <div className="q-emptyblock__action">{signInRequired?<Link className="q-btn q-btn--sec" href="/login">Sign in</Link>:failed?<button type="button" className="q-btn q-btn--sec" onClick={()=>void refresh(period)}>Try again</button>:null}</div></div>:null}
-          {ready&&!cards.length?<p className="q-empty q-first">No one has a timecard this week.</p>:null}
+      // Corporate (Release 1, board G-O-Time): Time is a tab, so no Back. The period card says how many are approved and
+      // offers "Review N ready", which selects every eligible card for the same reviewed batch (review, confirm, results).
+      const attention=cards.filter(item=>item.state!=='FINALIZED'&&item.card.issues.some(issue=>issue!=='period_open')).length;
+      const percent=cards.length?Math.round(approvedCount/cards.length*100):0;
+      const pill=(item:TimecardItem)=>{const row=rowStatus(item);return <CorpPill tone={row.tone==='review'?'amber':row.tone==='done'?'teal':'neutral'}>{row.text}</CorpPill>;};
+      const breaksOf=(item:TimecardItem)=>/^\d+$/.test(item.card.breakNanoseconds)&&item.card.breakNanoseconds!=='0'?` · ${quietHours(item.card.breakNanoseconds)} breaks`:'';
+      return <CorpPage className="c-tc" labelledBy="tc-title">
+        <CorpTitle id="tc-title" title="Timecards" sub={ready?`${rangeText(period)} · ${cards.length} ${cards.length===1?'person':'people'}`:rangeText(period)}
+          actions={<button type="button" className="c-tc-select" aria-pressed={selecting} disabled={!ready||!cards.length} onClick={toggleSelecting}>{selecting?'Done':'Select'}</button>}/>
+        <div className="c-seg" role="group" aria-label="Week">{seg('This week',thisWeek)}{seg('Last week',lastWeek)}</div>
+        <HoldHeight holding={!ready} memory="timecards-manager" className="c-tc-hold">
+          {!data&&!busy?<CorpCard as="div" ariaLabel="Timecards"><CorpBody><div role="status"><h2 className="c-tc-state__title">{stateTitle}</h2><p className="c-tc-state">{message}</p></div>
+            {signInRequired?<CorpButtonLink href="/login" kind="secondary" size="md">Sign in</CorpButtonLink>:failed?<CorpButton kind="secondary" size="md" onClick={()=>void refresh(period)}>Try again</CorpButton>:null}</CorpBody></CorpCard>:null}
+          {ready&&!cards.length?<CorpCard as="div" ariaLabel="Timecards"><CorpBody><p className="c-tc-state">No one has a timecard this week.</p></CorpBody></CorpCard>:null}
+          {ready&&cards.length&&!showBulk?<CorpCard as="div" ariaLabel={`Period ${rangeText(period)}`}>
+            <div className="c-card__head"><span className="c-tc-period">{rangeText(period)}</span>{open?<CorpPill tone="blue">{`Open until ${longDay(period.endDate).split(',')[0]}`}</CorpPill>:<CorpPill tone={approvedCount===cards.length?'teal':'amber'}>{approvedCount===cards.length?'All approved':'Ended'}</CorpPill>}</div>
+            <div className="c-card__body">
+              <div className="c-tc-sum"><b>{`${approvedCount} of ${cards.length} approved`}</b>
+                {!open&&eligible.length?<CorpButton size="md" onClick={()=>{setSelecting(true);selectAll(true);}}>{`Review ${Math.min(eligible.length,100)} ready`}</CorpButton>:null}</div>
+              <span className="c-tc-bar" aria-hidden="true"><span style={{width:`${percent}%`}}/></span>
+              <p className="c-tc-note">{open?`Approvals open after ${longDay(period.endDate)}.`:<>{`${eligible.length} ready`}{attention?<span className="c-tc-note__warn">{` · ${attention} need${attention===1?'s':''} attention`}</span>:null}{` · ${quietHours(cards.reduce((sum,item)=>sum+(/^\d+$/.test(item.card.recordedNanoseconds)?BigInt(item.card.recordedNanoseconds):BigInt(0)),BigInt(0)).toString())} recorded`}</>}</p>
+            </div>
+          </CorpCard>:null}
           {bulk}
-          {ready&&cards.length?<ul className="q-list q-tc-list" aria-label="Timecards in this period">
-            {selecting?<li><label className="q-row q-row--one q-tc-pick"><input type="checkbox" className="q-tc-box" aria-label="Select all eligible timecards" checked={allEligible} disabled={locked||!eligible.length} onChange={e=>selectAll(e.target.checked)}/>
-              <span className="q-rt"><b>Select all eligible</b></span><span className="q-rv">{Math.min(eligible.length,100)}</span></label></li>:null}
+          {ready&&cards.length?<CorpCard id="tc-team" label={`Team (${cards.length})`}>
+            <ul className="c-rows" aria-label="Timecards in this period">
+            {selecting?<li><label className="c-row c-row--one c-tc-pick"><input type="checkbox" className="c-tc-box" aria-label="Select all eligible timecards" checked={allEligible} disabled={locked||!eligible.length} onChange={e=>selectAll(e.target.checked)}/>
+              <span className="c-row__main"><span className="c-row__title c-row__title--b">Select all eligible</span></span><span className="c-row__value">{Math.min(eligible.length,100)}</span></label></li>:null}
             {rows.map(item=>{
-            const id=item.card.employeeId,name=item.card.employeeName,row=rowStatus(item),hours=quietHours(item.card.recordedNanoseconds);
-            const excluded=selecting?exclusionShort(item):null;
-            return <li key={id} id={`timecard-${id}`} tabIndex={-1}>{selecting?<label className="q-row q-row--av q-tc-pick" data-off={pickDisabled(item)||undefined}>
-              <input type="checkbox" className="q-tc-box" aria-label={`Select ${name}`} title={exclusionText(item)} checked={selected.includes(id)} disabled={pickDisabled(item)} onChange={e=>select(id,e.target.checked)}/>
-              <span className="q-rt"><b>{name}</b><i>{excluded??row.text}</i></span><span className="q-rv q-rv--l">{hours}</span>
-            </label>:<button type="button" className="q-row q-row--av" onClick={()=>setOpenId(id)} aria-label={`${name}, ${row.text}, ${hours}`}>
-              <span className="q-av" aria-hidden="true">{initialsOf(name)}</span>
-              <span className="q-rt"><b>{name}</b><i>{row.text}</i></span><span className="q-rv q-rv--l">{hours}</span><CaretRightIcon className="q-chev" aria-hidden="true"/>
-            </button>}</li>;
-          })}</ul>:null}
+              const id=item.card.employeeId,name=item.card.employeeName,row=rowStatus(item),hours=quietHours(item.card.recordedNanoseconds);
+              const excluded=selecting?exclusionShort(item):null;
+              return <li key={id} id={`timecard-${id}`} tabIndex={-1}>{selecting?<label className="c-row c-tc-pick" data-off={pickDisabled(item)||undefined}>
+                <input type="checkbox" className="c-tc-box" aria-label={`Select ${name}`} title={exclusionText(item)} checked={selected.includes(id)} disabled={pickDisabled(item)} onChange={e=>select(id,e.target.checked)}/>
+                <span className="c-row__main"><span className="c-row__title c-row__title--b">{name}</span><span className="c-row__detail"><span>{excluded??row.text}</span></span></span><span className="c-row__value">{hours}</span>
+              </label>:<button type="button" className="c-row" onClick={()=>setOpenId(id)} aria-label={`${name}, ${row.text}, ${hours}`}>
+                <CorpAvatar initials={initialsOf(name)}/>
+                <span className="c-row__main"><span className="c-row__title c-row__title--b">{name}</span><span className="c-row__detail"><span>{`${hours}${breaksOf(item)}`}</span></span></span>
+                {pill(item)}
+              </button>}</li>;
+            })}</ul>
+            <Link className="c-tc-export" href={`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`}>Export time<CaretRightIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></Link>
+          </CorpCard>:null}
         </HoldHeight>
-        <p className="q-sr" role="status" aria-live="polite">{!data&&!busy?'':message}</p>
+        <p className="c-sr" role="status" aria-live="polite">{!data&&!busy?'':message}</p>
         {sheetNode}
-      </div>;
+      </CorpPage>;
     }
     return <>
       <div className="cm-tc-navbar">
