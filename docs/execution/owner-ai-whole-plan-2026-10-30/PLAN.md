@@ -28,9 +28,9 @@ Files: generation/{planner,search,demand,scope}.ts; new generation/coverage-revi
 
 Interfaces: export `planWeekSteps(input, controls?)` generator of checkpoints, returning GenerationPlan. Controls carry optional read-only date scope, stop predicate, maximum additions and excluded candidate IDs; default planWeek drains the same generator without review controls. Demand/scope accept the explicit review scope; default behavior is unchanged.
 
-- [ ] Write tests for selected-day joint scarcity, published review vs unchanged weekly rejection, archived/setup exclusion, fixed/adjacent capacity, reservations, cooperative stop and alternative exclusion. Run RED and retain it.
-- [ ] Implement generator/checkpoints and review-only demand scope with canonical eligibility/allocation and final validation. Run the new tests and existing generation tests; expected PASS.
-- [ ] Commit source/tests and append exact commands/results to the ledger.
+- [x] Write tests for selected-day joint scarcity, published review vs unchanged weekly rejection, archived/setup exclusion, fixed/adjacent capacity, reservations, cooperative stop and alternative exclusion. Run RED and retain it.
+- [x] Implement generator/checkpoints and review-only demand scope with canonical eligibility/allocation and final validation. Run the new tests and existing generation tests; expected PASS.
+- [x] Commit source/tests and append exact commands/results to the ledger.
 
 ### Task2: bounded advisor evidence and model integration
 
@@ -38,16 +38,18 @@ Files: new owner-advisor/coverage-plan{.server,.test,.integration}.ts and covera
 
 Interfaces: `readCoveragePlans(store, date, signal)` returns ToolResult with optional `coveragePlans`; `coverage_plan {date}` is read-only and allowed in inspect/model tools. `WorkflowEvidence.coveragePlans` retains server-produced provenance, scope, baseline and at most two legal alternatives. Coverage tasks force this tool before inference.
 
-- [ ] Write failing tests for parsing, bounded cancellation/partial search, alternative comparison and trusted evidence retention; real SQL tests cover no writes, roles, changed source, published/archived and revoked authority. Retain RED.
-- [ ] Implement source limits, cooperative runtime, exact fingerprint, strict bounded projection, model instructions and source-owned evidence retention. Retain existing proposals/actions and all allowance/replay controls. Expected focused unit and SQL PASS.
-- [ ] Commit and ledger outcomes.
+- [x] Write failing tests for parsing, bounded cancellation/partial search, alternative comparison and trusted evidence retention; real SQL tests cover no writes, roles, changed source, published/archived and revoked authority. Retain RED.
+- [x] Implement source limits, cooperative runtime, exact fingerprint, strict bounded projection, model instructions and source-owned evidence retention. Retain existing proposals/actions and all allowance/replay controls. Expected focused unit and SQL PASS.
+- [x] Commit and ledger outcomes.
 
 ### Task3: existing-style review and exact-source acceptance
 
 Files: new components/owner-advisor/coverage-plans.tsx and focused render/parser tests; workflows.tsx, public-response.ts; new/extended real Owner browser coverage in existing configuration.
 
-- [ ] Add failing render/parser/browser cases for actual explicit compare controls, baseline/alternatives/remaining needs, unsafe content/overlarge claims, 320/390/1440 reflow and private retirement. Retain RED.
-- [ ] Implement readable review-only results with existing tokens/components; no execution buttons or new reader/cache. Expected PASS.
-- [ ] Freeze source, run actual browser serially, SQL, full unit suite, whole TypeScript/ESLint/whitespace and existing activation guards. Preserve commands/status, screenshots/logs/JSON and source/runtime custody.
-- [ ] Commit source; obtain one fresh independent whole-change reviewer for code/UI/QA and independently owned issue closure. Fix material findings with RED→GREEN; rerun affected gates and required suite after changes.
+- [x] Add failing render/parser/browser cases for actual explicit compare controls, baseline/alternatives/remaining needs, unsafe content/overlarge claims, 320/390/1440 reflow and private retirement. Retain RED.
+- [x] Implement readable review-only results with existing tokens/components; no execution buttons or new reader/cache. Expected PASS.
+- [x] Freeze source, run actual browser serially, SQL, full unit suite, whole TypeScript/ESLint/whitespace and existing activation guards. Preserve commands/status, screenshots/logs/JSON and source/runtime custody.
+- [x] Commit source; obtain one fresh independent whole-change reviewer for code/UI/QA and independently owned issue closure. Fix material findings with RED→GREEN; rerun affected gates and required suite after changes.
 - [ ] Preserve ledgers, reports, failures, verification and exact Git/environment identity in a new recoverable bundle/patch/compact evidence artifact. No shared integration or release.
+
+The functional/source gates above are complete. Final artifact assembly/verification happens after the documentation commit; the compact package’s ledger-final.md and external transfer/checksum files record that completed delivery without a self-referential commit. The active ledger is authoritative when resuming.
