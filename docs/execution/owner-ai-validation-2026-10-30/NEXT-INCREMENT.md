@@ -1,0 +1,15 @@
+# Next Owner AI increment — source discovery, not implemented
+
+The agreed order is current goal/task validation, then whole-plan problem solving, controlled canonical actions and outcome follow-through. This note records useful source constraints while the current exact-source quality gate runs; it does not mark later capabilities implemented or accepted.
+
+The existing generation subsystem already supplies a complete cross-location/adjacent-week ledger and canonical eligibility, position, availability, time-off, workload, reservation and approved operational-rule validation. Source: src/lib/data/schedule-generation-snapshot.ts, src/lib/scheduling/generation/planner.ts, generation/reservations.ts and validate-shift.ts. readGenerationReviewSnapshot is read-only; generateWeekDraft is a business writer and must never be exposed as a read tool or invoked from model text. Current independent coverage proposals remain alternatives and cannot be combined as a verified full solution.
+
+Next product acceptance should require an explicit selected date/scope, jointly validated candidate assignments, remaining unmet requirements, alternatives/tradeoffs and a dated source basis. Preserve current published assignments, drafts, approved callouts and excluded capacity. Financial effects stay unverified without approved verified inputs. A single full plan cannot silently mean complete company/week coverage outside its actual scope.
+
+Compute isolation is a material design constraint: the existing deterministic 50-worker/7-day/20-location planner test took222.29s in the initial full-suite run and295.16s under heavier concurrent validation. The solver runs twice for determinism. Do not put an unbounded canonical week solve into the existing20-second read-tool deadline or block Employee/Clocker requests. Establish measured computation/cancellation budgets and honest legal partial results before integrating a whole-plan tool; keep existing management generation behavior unchanged.
+
+For controlled actions, prepare an exact bounded review backed by current authority/source identity, then use an explicit Owner confirmation through canonical guarded services. Changed rules/assignments/authority must invalidate the review. Publication, notifications, financial approval and standing autonomy are separate existing decisions; preparation never supplies that consent.
+
+For follow-through, compare a task's declared objective with fresh canonical outcome evidence and show observed/partial/unverified status separately from Closed by you. Start with deliberate on-demand checks; background monitoring and notifications remain outside current authorization. Do not treat a committed draft as published staffing or a historical payroll status as verified current financial readiness.
+
+Live model judgment/robustness still requires an authorized isolated model evaluation; prompt changes and deterministic/provider-fixture tests do not establish that the AI is extremely intelligent. No model/provider configuration or paid call is made by this discovery.
