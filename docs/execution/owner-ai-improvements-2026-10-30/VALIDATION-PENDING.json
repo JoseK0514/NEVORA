@@ -52,11 +52,12 @@
     "static-checks/followup/eslint.json",
     "static-checks/followup/whitespace.json"
   ],
-  "independentSourceReview": "See independent-source-review.md once recorded; source assurance is not independent UI/QA acceptance",
+  "independentSourceReview": "Original R1 in independent-source-review.md preserved; independent-source-recheck.md confirms corrected in source at faca0f4f. No remaining concrete defect in the correction was identified; all runtime/UI/QA acceptance remains pending.",
   "modelCalls": 0,
   "migrationsApplied": 0,
   "ciDispatches": 0,
   "deployments": 0,
   "releaseAcceptance": "PENDING",
-  "followup": "R1 source correction and three additional NOT_RUN cases; see review-resolution.md"
+  "followup": "R1 source correction and three additional NOT_RUN cases; see review-resolution.md",
+  "correctedApplicationCheckpoint": "faca0f4fefe6fb950078fe3766486f111b648be9"
 }

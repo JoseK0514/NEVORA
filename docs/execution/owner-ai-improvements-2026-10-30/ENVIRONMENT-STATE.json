@@ -1,0 +1,44 @@
+{
+  "worktree": "/workspace/work/nevora-owner-ai-implementation-20261030",
+  "branchState": "detached HEAD",
+  "base": "1121f24e50190172d1fa40d931fd064715f31554",
+  "correctedApplicationCheckpoint": "faca0f4fefe6fb950078fe3766486f111b648be9",
+  "deliveredHeadAndTree": "Pinned by external transfer metadata to avoid a self-referential Git commit hash",
+  "remoteTrackingRefsObserved": {
+    "origin/claude-codex-collab-nevora": "1121f24e50190172d1fa40d931fd064715f31554",
+    "origin/development": "682ecea9fa61548f68274c896ffa4e2d92b62989"
+  },
+  "remotePushes": 0,
+  "sharedBranchEdits": 0,
+  "sourceEnvironment": {
+    "kind": "isolated cloud source worktree",
+    "node": "v24.19.0",
+    "npm": "11.9.0",
+    "next": "16.4.2",
+    "react": "19.3.0",
+    "dependencyPreparation": "npm ci --ignore-scripts --no-audit --no-fund; exit 0; 432 packages installed; package/lock files unchanged",
+    "newAppRuntimeStarted": false,
+    "databaseStartedOrMigrated": false,
+    "modelInferenceCalls": 0
+  },
+  "preservedWorktrees": {
+    "/workspace/NEVORA": {
+      "head": "c21ac528fefac35de7534d47be196fec2866c066",
+      "branch": "codex/employee-mobile-cloud-return-20261027",
+      "statusAtCheck": "clean, untouched"
+    },
+    "/workspace/work/nevora-test-scripts-20261030": {
+      "head": "80b711f6322f36b1593ea86cc59a82114090e647",
+      "branchState": "detached",
+      "statusAtCheck": "clean, untouched"
+    }
+  },
+  "openGates": [
+    "All functional regressions NOT RUN",
+    "Additive SQL migration and concurrent/upgrade behavior unverified",
+    "Independent Owner mobile/desktop UI and QA acceptance pending",
+    "Reasoning quality and injection resistance unevaluated",
+    "Integration into the advancing shared source line pending"
+  ],
+  "releaseState": "NOT_DEPLOYED_NOT_RELEASE_ACCEPTED"
+}
