@@ -9,6 +9,7 @@ import { mapSchedulingSourceFacts } from "@/lib/data/scheduling-source-facts";
 import { calculateScheduleHealth } from "@/lib/scheduling/schedule-health";
 import { deriveCoverageRepair, createCoverageRepairReview } from "@/lib/data/coverage-repair.server";
 import { readPeriodReview } from "./period-review.server";
+import { readCoveragePlans } from "./coverage-plan.server";
 import type { CoverageProposal } from "./workflow-contracts";
 import { reportedCoverageState } from "@/lib/scheduling/coverage-repair";
 import { addDays, weekStartFor, durationMinutes } from "@/lib/date-utils";
@@ -26,7 +27,7 @@ const short = (v: string) => v.slice(0, 200);
  * alternatives with exact review payloads, requiring Scheduling to recheck/save;
  * these tools do not mutate schedules, timecards, payroll or send communications. */
 export class AdvisorTools {
-  constructor(readonly store: AdvisorStore) {}
+  constructor(readonly store: AdvisorStore, readonly signal: AbortSignal = new AbortController().signal) {}
   async briefing(captured?: Today): Promise<BriefingResult> {
     const { proof, original, ex } = this.store;
     await checkOwner(proof, original, ex);
@@ -73,6 +74,7 @@ export class AdvisorTools {
     const { proof, original, ex } = this.store;
     await checkOwner(proof, original, ex);
     if (call.name === "company_briefing") return this.briefing();
+    if (call.name === "coverage_plan") return readCoveragePlans(this.store, call.args.date, this.signal);
     if (call.name === "attendance_payroll_review") return readPeriodReview(this.store, call.args);
     const date = call.args.date,
       week = weekStartFor(date),

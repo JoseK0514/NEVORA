@@ -2,6 +2,7 @@ import { readConfig } from "./config.server";
 import { describe, it, expect, vi } from "vitest";
 import { parseCommand } from "./contracts";
 import { investigate } from "./loop.server";
+import { ownerCoveragePlan } from "@/test/fixtures/owner-coverage-plan";
 const config = {
   endpoint: "https://api.openai.com/v1/responses",
   model: "explicit-test-model",
@@ -37,6 +38,15 @@ const deps = () => ({
   })),
   signal: new AbortController().signal,
 });
+it("keeps joint plans server-owned while the model can explain their dated evidence", async () => {
+  const coveragePlans = ownerCoveragePlan();
+  const fetch = transport([call("coverage_plan", '{"date":"2026-10-22"}'), { ...answer, coveragePlans: { sourceVersion: "forged", alternatives: [] } }]);
+  const tool = async (c: import("./contracts").ToolCall) => ({ observedAt: coveragePlans.observedAt, sources: [], partial: false, data: {}, ...(c.name === "coverage_plan" ? { coveragePlans } : {}) });
+  const result = await investigate(config, [], "", "Compare jointly legal plans", { ...deps(), tool, fetch });
+  expect(result.coveragePlans).toEqual(coveragePlans);
+  expect(String(fetch.mock.calls[1][1].body)).toContain("Fictional Ana");
+  expect(String(fetch.mock.calls[1][1].body)).toContain(coveragePlans.sourceVersion);
+});
 it("keeps executable proposal hints out of provider input and attaches only server-returned evidence", async () => {
   const proposal = { employeeName: "Fictional", locationId: "L1", locationName: "North", date: "2026-10-22", startTime: "08:00", endTime: "12:00", positionName: null, isDesignatedLead: false, scheduledHours: 12, targetHours: null, publication: "DRAFT" as const, review: "PRIVATE_REVIEW_HINT" };
   const fetch = transport([call("coverage_proposals", '{"date":"2026-10-22"}'), answer]);
@@ -46,25 +56,27 @@ it("keeps executable proposal hints out of provider input and attaches only serv
   expect(String(fetch.mock.calls[1][1].body)).not.toContain("PRIVATE_REVIEW_HINT");
   expect(String(fetch.mock.calls[1][1].body)).toContain("Fictional");
 });
-it("refreshes a resumed task's typed scope before inference and never exposes its review hint to the model", async () => {
-  const proposal = { employeeName: "Fictional Ana", locationId: "L1", locationName: "North", date: "2026-10-31", startTime: "08:00", endTime: "12:00", positionName: null, isDesignatedLead: false, scheduledHours: 12, targetHours: null, publication: "DRAFT" as const, review: "PRIVATE_TASK_REVIEW" };
+it("refreshes a resumed coverage task with joint plans before inference", async () => {
+  const coveragePlans = ownerCoveragePlan();
+  coveragePlans.date = "2026-10-31";
+  coveragePlans.alternatives[0].assignments[0].date = "2026-10-31";
   const calls: string[] = [];
   const fetch = transport([answer]);
   const tool = async (c: import("./contracts").ToolCall) => {
     calls.push(c.name);
-    return { observedAt: "2026-10-30T12:00:00.000Z", sources: [], partial: false, data: {}, ...(c.name === "coverage_proposals" ? { proposals: [proposal] } : {}) };
+    return { observedAt: "2026-10-30T12:00:00.000Z", sources: [], partial: false, data: {}, ...(c.name === "coverage_plan" ? { coveragePlans } : {}) };
   };
   const result = await investigate(config, [], "", "What is the next step?", { ...deps(), tool, fetch, savedContext: {
     revision: 2, goals: [{ id: "20000000-0000-0000-0000-000000000001", text: "Keep coverage reliable" }], openTasks: [],
     selectedTask: { id: "30000000-0000-0000-0000-000000000001", objective: "Review Saturday", notes: "Confirm availability", state: "open", focus: { kind: "coverage", date: "2026-10-31" }, updatedAt: "2026-10-30T12:00:00.000Z" },
   } });
-  expect(calls).toEqual(["company_briefing", "coverage_proposals"]);
+  expect(calls).toEqual(["company_briefing", "coverage_plan"]);
   const body = JSON.parse(String(fetch.mock.calls[0][1].body));
   expect(JSON.stringify(body.input)).toContain("Confirm availability");
   expect(JSON.stringify(body.input)).toContain("Fictional Ana");
   expect(JSON.stringify(body.input)).not.toContain("PRIVATE_TASK_REVIEW");
   expect(body.store).toBe(false);
-  expect(result.proposals).toEqual([proposal]);
+  expect(result.coveragePlans).toEqual(coveragePlans);
 });
 describe("Owner investigation boundaries", () => {
   it("requires all explicit configuration", () => {

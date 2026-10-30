@@ -40,7 +40,7 @@ export async function advisorService(
   if (env.NEVORA_OWNER_ADVISOR_ENABLED !== "true")
     throw new AdvisorError("disabled");
   const store = new AdvisorStore(proof, admission, ex),
-    tools = new AdvisorTools(store),
+    tools = new AdvisorTools(store, signal),
     notebook = new AdvisorNotebook(store),
     config = readConfig(env);
   const check = async () => {
@@ -80,12 +80,14 @@ export async function advisorService(
   if (command.op === "inspect") {
     const result = await tools.run(command.tool);
     return { state: "answered" as const, answer: {
-      text: command.tool.name === "coverage_proposals"
+      text: command.tool.name === "coverage_plan"
+        ? "Compare the jointly checked day plans against the unchanged schedule. Each alternative is a separate hypothetical allocation at the observed source; do not combine them. Review remaining requirements and any excluded locations. Nothing has been saved or published."
+        : command.tool.name === "coverage_proposals"
         ? `Prepared ${result.proposals?.length ?? 0} coverage options from the current planning ledger, including drafts. Nothing has been saved. Review each exact replacement in Scheduling; other requirements may remain open.${result.partial ? " Some information or options are unavailable or omitted." : ""}`
         : command.tool.args.language === "es"
           ? "Revise las excepciones registradas del período. La preparación de nómina sigue sin verificar; abra Nómina para comprobar las reglas y los datos actuales. No se modificó ningún registro."
           : "Review the period's recorded exceptions. Payroll readiness remains unverified; open Payroll to verify current rules and inputs. No records were changed.",
-      sources: result.sources, ...(result.proposals ? { proposals: result.proposals } : {}), ...(result.periodReview ? { periodReview: result.periodReview } : {}),
+      sources: result.sources, ...(result.proposals ? { proposals: result.proposals } : {}), ...(result.periodReview ? { periodReview: result.periodReview } : {}), ...(result.coveragePlans ? { coveragePlans: result.coveragePlans } : {}),
     }, ...(await observation()) };
   }
   if (command.op === "review_briefing") {

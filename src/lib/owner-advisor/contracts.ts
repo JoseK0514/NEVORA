@@ -21,7 +21,7 @@ export type AdvisorSnapshot = {
 export type AdvisorCommand =
   | import("./notebook").NotebookCommand
   | { op: "ask_task"; requestId: string; taskId: string; expectedNotebookRevision: number; message: string }
-  | { op: "inspect"; requestId: string; tool: Extract<ToolCall, { name: "attendance_payroll_review" }> | { name: "coverage_proposals"; args: { date: string } } }
+  | { op: "inspect"; requestId: string; tool: Extract<ToolCall, { name: "attendance_payroll_review" | "coverage_proposals" | "coverage_plan" }> }
   | { op: "ask"; requestId: string; message: string }
   | { op: "review_briefing"; requestId: string; issueId: string; fingerprint: string; expectedRevision: number; disposition: import("./briefing-contracts").AttentionDisposition }
   | {
@@ -65,7 +65,7 @@ export function parseCommand(v: unknown): AdvisorCommand {
   if (v.op === "ask_task" && Object.keys(v).sort().join(",") === "expectedNotebookRevision,message,op,requestId,taskId" && typeof v.taskId === "string" && notebookId(v.taskId.toLowerCase()) && notebookRevision(v.expectedNotebookRevision) && typeof v.message === "string" && v.message.trim().length > 0 && v.message.length <= 2000) return { op: "ask_task", requestId: v.requestId.toLowerCase(), taskId: v.taskId.toLowerCase(), expectedNotebookRevision: v.expectedNotebookRevision, message: v.message };
   if (v.op === "inspect" && Object.keys(v).sort().join(",") === "op,requestId,tool" && record(v.tool) && Object.keys(v.tool).sort().join(",") === "args,name") {
     const tool = parseTool(v.tool.name, JSON.stringify(v.tool.args));
-    if (tool.name === "attendance_payroll_review" || tool.name === "coverage_proposals") return { op: "inspect", requestId: v.requestId.toLowerCase(), tool };
+    if (tool.name === "attendance_payroll_review" || tool.name === "coverage_proposals" || tool.name === "coverage_plan") return { op: "inspect", requestId: v.requestId.toLowerCase(), tool };
     throw new AdvisorError("invalid");
   }
   if (
@@ -108,6 +108,7 @@ export function parseCommand(v: unknown): AdvisorCommand {
 export type ToolCall =
   | { name: "attendance_payroll_review"; args: { startDate: string; endDate: string; language: "en" | "es" } }
   | { name: "coverage_proposals"; args: { date: string } }
+  | { name: "coverage_plan"; args: { date: string } }
   | { name: "company_briefing"; args: Record<string, never> }
   | {
       name: "published_staffing" | "coverage_investigation";
@@ -136,7 +137,7 @@ export function parseTool(name: unknown, args: unknown): ToolCall {
   if (name === "company_briefing" && Object.keys(v).length === 0)
     return { name, args: {} };
   if (
-    (name === "published_staffing" || name === "coverage_investigation" || name === "coverage_proposals") &&
+    (name === "published_staffing" || name === "coverage_investigation" || name === "coverage_proposals" || name === "coverage_plan") &&
     Object.keys(v).join(",") === "date" &&
     typeof v.date === "string" &&
     /^20\d\d-\d\d-\d\d$/.test(v.date) &&
