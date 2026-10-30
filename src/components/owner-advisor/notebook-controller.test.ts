@@ -43,6 +43,67 @@ it("does not silently send a general investigation when the selected task was cl
   c.stop();
 });
 
+it("replaces an automatically filled task question when switching tasks and clears it for general investigation", async () => {
+  vi.useFakeTimers();
+  const secondId = "30000000-0000-0000-0000-000000000002";
+  let state: AdvisorView | undefined;
+  const posts: Record<string, unknown>[] = [];
+  const c = createAdvisorController(v => { state = v; }, async (_url, init) => {
+    const current = snapshot();
+    current.notebook.notebook.tasks.push({ ...current.notebook.notebook.tasks[0], id: secondId, objective: "Review payroll inputs" });
+    if (init?.method !== "POST") return Response.json(current);
+    posts.push(JSON.parse(String(init.body)));
+    return Response.json({ ...stamp(), state: "answered", answer: { text: "Current facts", sources: [] } });
+  });
+  c.start(); await vi.advanceTimersByTimeAsync(0);
+  c.selectTask(taskId); c.selectTask(secondId);
+  expect(state?.question).toBe("Review payroll inputs");
+  await c.ask();
+  expect(posts[0]).toMatchObject({ op: "ask_task", taskId: secondId, message: "Review payroll inputs" });
+  c.selectTask(taskId); c.selectTask(null);
+  expect(state?.question).toBe("");
+  c.stop();
+});
+
+it("preserves an explicitly edited question across task and general selections", async () => {
+  vi.useFakeTimers();
+  const secondId = "30000000-0000-0000-0000-000000000002";
+  let state: AdvisorView | undefined;
+  const c = createAdvisorController(v => { state = v; }, async () => {
+    const current = snapshot();
+    current.notebook.notebook.tasks.push({ ...current.notebook.notebook.tasks[0], id: secondId, objective: "Review payroll inputs" });
+    return Response.json(current);
+  });
+  c.start(); await vi.advanceTimersByTimeAsync(0);
+  c.selectTask(taskId);
+  c.editQuestion("Compare this with our Owner priorities");
+  c.selectTask(secondId);
+  expect(state?.question).toBe("Compare this with our Owner priorities");
+  c.selectTask(null);
+  expect(state?.question).toBe("Compare this with our Owner priorities");
+  c.stop();
+});
+
+it("refreshes an automatic task objective after a saved edit while preserving a manually edited question", async () => {
+  vi.useFakeTimers();
+  let state: AdvisorView | undefined;
+  let objective = "Investigate weekend coverage";
+  const c = createAdvisorController(v => { state = v; }, async () => {
+    const current = snapshot();
+    current.notebook.notebook.tasks[0].objective = objective;
+    return Response.json(current);
+  });
+  c.start(); await vi.advanceTimersByTimeAsync(0); c.selectTask(taskId);
+  objective = "Investigate the revised coverage requirement";
+  await c.refresh();
+  expect(state?.question).toBe("Investigate the revised coverage requirement");
+  c.editQuestion("Keep my specific Owner question");
+  objective = "Another saved objective";
+  await c.refresh();
+  expect(state?.question).toBe("Keep my specific Owner question");
+  c.stop();
+});
+
 it("preserves an explicit stale draft base and requires a fresh read before reporting a notebook save", async () => {
   vi.useFakeTimers();
   let state: AdvisorView | undefined;

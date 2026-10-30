@@ -1,0 +1,13 @@
+# Owner AI first increment — source handoff
+
+Implementation started at Jose's request on October 30. The durable goals/task workbench is application code, not just a prototype or a test plan. Functionality and model quality are **unverified** because Jose's earlier instruction to create tests without running them is still active.
+
+The isolated worktree is `/workspace/work/nevora-owner-ai-implementation-20261030`, detached from the existing shared branch. Base: `1121f24e50190172d1fa40d931fd064715f31554`; application checkpoint: `67fbd50d3154e7e36e2abd9652ac9f847ed83d25`. The final transfer metadata outside this tree pins the delivered HEAD, resulting Git tree, bundle/patch hashes and prerequisite base. Preserve all checkpoint commits and reports, including any findings corrected in follow-ups.
+
+Read `IMPLEMENTATION.md` for scope and source mapping, `PLAN.md`/`SPEC.md` for the bounded increment versus the broader direction, `VALIDATION-PENDING.json` for authored cases and held acceptance, `static-checks/*.json` for commands actually run and `independent-source-review.md` for source findings. The active `.superpowers/sdd/owner-ai-improvements-2026-10-30/progress.md` is retained locally; committed ledger snapshots preserve it in transfer.
+
+No shared branch was pushed or merged. The shared `claude-codex-collab-nevora` branch was observed at the base during the initial fetch and may have advanced independently. Do not overwrite it. The repository permits only `development`, `main` and `claude-codex-collab-nevora`; use detached worktrees to inspect/import the transfer. The older Employee mobile checkout and the prior test-script/spec submission remain untouched.
+
+The bundle names `HEAD` and requires the exact base. In a repository that has that base, run `git bundle verify /path/to/transfer.bundle`, then `git fetch /path/to/transfer.bundle HEAD` and create a detached worktree from the delivered exact SHA. Compare its tree to transfer metadata before editing. These are import instructions, not an instruction to merge or dispatch CI. No dependency folders, source mirrors, runtime files, credentials or real customer data belong in the transfer.
+
+Next gate: preserve this source checkpoint while testing remains held. When Jose requests testing, run the authored and existing regressions in an isolated disposable environment, resolve failures, then obtain fresh independent UI/QA acceptance. Do not treat static/source review as real-app completion. Apply no production migration, provider configuration, real notification, deployment or release action from this package. Existing activation, authorization, recovery and canonical business confirmations remain in force.

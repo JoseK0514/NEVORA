@@ -62,7 +62,8 @@ export function createAdvisorController(
     contentVersion = 0,
     latest = -Infinity,
     authority: string | null = null,
-    draftRevision: number | null = null;
+    draftRevision: number | null = null,
+    automaticQuestion: string | null = null;
   let read: AbortController | undefined,
     operation: AbortController | undefined,
     poll: ReturnType<typeof setTimeout> | undefined,
@@ -80,6 +81,7 @@ export function createAdvisorController(
   ) {
     generation++;
     draftRevision = null;
+    automaticQuestion = null;
     read?.abort();
     operation?.abort();
     read = undefined;
@@ -147,10 +149,15 @@ export function createAdvisorController(
       if (Date.parse(result.observedAt) < minObserved)
         throw Error("Read predates operation");
       fresh(result, started);
+      const currentTask = result.notebook?.state === "ready"
+        ? result.notebook.notebook.tasks.find(t => t.id === v.focusedTaskId && t.state === "open") : undefined;
+      const refreshAutomatic = currentTask && automaticQuestion !== null && v.question === automaticQuestion;
+      if (refreshAutomatic) automaticQuestion = currentTask.objective;
       publish({
         snapshot: result,
         loading: false,
         uncertain: false,
+        ...(refreshAutomatic ? { question: currentTask.objective } : {}),
         ...(!v.dirty ? { priorities: result.profile.priorities } : {}),
         ...(v.dirty &&
         v.busy !== "save" &&
@@ -249,12 +256,14 @@ export function createAdvisorController(
         publish({ message: saved.notebook.revision === result.revision ? "Saved goals and tasks updated." : "Your edit was saved, then the saved context changed again. Review the current goals and tasks." });
       }
       else if (result.state === "briefing_reviewed") publish({ message: "Briefing choice saved. Current records were checked again." });
-      else if (result.state === "answered")
+      else if (result.state === "answered") {
+        automaticQuestion = null;
         publish({
           answer: result.answer,
           question: "",
           message: "Answer received. Review its sources before deciding.",
         });
+      }
       else if (
         v.snapshot &&
         v.snapshot.profile.revision > result.profile.revision
@@ -311,6 +320,7 @@ export function createAdvisorController(
       retire();
     },
     editQuestion(question: string) {
+      automaticQuestion = null;
       publish({ question });
     },
     editPriorities(priorities: string) {
@@ -332,7 +342,11 @@ export function createAdvisorController(
       const saved = v.snapshot.notebook;
       const task = saved?.state === "ready" ? saved.notebook.tasks.find(t => t.id === taskId && t.state === "open") : undefined;
       if (taskId && !task) { publish({ message: "This task is no longer open or available. Review the current tasks." }); return; }
-      publish({ focusedTaskId: taskId, ...(!v.question.trim() && task ? { question: task.objective } : {}), message: task ? "Task selected. Your next question will use its saved objective and notes with current company evidence." : "General investigation selected. Your question draft is preserved." });
+      // Only text supplied by task selection may be replaced automatically.
+      // An explicitly typed/edited draft keeps the Owner's intent across switches.
+      const replaceAutomatic = !v.question.trim() || automaticQuestion !== null && v.question === automaticQuestion;
+      automaticQuestion = task && replaceAutomatic ? task.objective : null;
+      publish({ focusedTaskId: taskId, ...(replaceAutomatic ? { question: task?.objective ?? "" } : {}), message: task ? "Task selected. Your next question will use its saved objective and notes with current company evidence." : "General investigation selected." });
     },
     async changeNotebook(edit: NotebookEdit) {
       try {
