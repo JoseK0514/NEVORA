@@ -133,17 +133,21 @@ try{
     const card=mp.getByRole('dialog');
     const openCard=async()=>{await mp.locator('#timecard-D3-E').getByRole('button').click();await card.getByRole('heading',{name:/^(Avery|Renamed) Period QA$/}).waitFor();};
     const refreshCards=async()=>{await card.getByRole('button',{name:'Done',exact:true}).click();await mp.getByRole('button',{name:'Refresh timecards',exact:true}).click();await openCard();};
+    // Corporate timecard detail (board O-TimecardDetail): the state is the pill beside the name (Approved reads "Ready to
+    // finalize"; a reopened card reads "Needs review"), and every transition is a revision in Historical revisions.
+    const pillText={Approved:'Ready to finalize',Finalized:'Finalized',Reopened:'Needs review'};
+    const cardState=async state=>{await card.locator('.c-tc-sheet__who').getByText(pillText[state],{exact:true}).waitFor();if(state==='Reopened')await card.locator('.c-tc-sheet__history h3').filter({hasText:/· Reopened$/}).last().waitFor({state:'attached'});};
     await openCard();
-    await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Approved$/}).waitFor();
-    await card.getByRole('button',{name:'Finalize period',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Finalized$/}).waitFor();
+    await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await cardState('Approved');
+    await card.getByRole('button',{name:'Finalize period',exact:true}).click();await cardState('Finalized');
     const frozenRevisions=await q("SELECT to_jsonb(t) AS row FROM timecard_revisions t WHERE employee_id='D3-E' ORDER BY revision");
     const labels=await q("SELECT name,short_name FROM locations WHERE id='loc-1'");
     await q("UPDATE employees SET first_name='Renamed' WHERE id='D3-E'");await q("UPDATE locations SET name='Renamed historical location',short_name='Renamed' WHERE id='loc-1'");
-    await refreshCards();await card.getByRole('definition').filter({hasText:/^Finalized$/}).waitFor();
-    await card.getByLabel('Reopen reason').fill('Fictional correction review needs a new revision.');await card.getByRole('button',{name:'Reopen period',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Reopened$/}).waitFor();
+    await refreshCards();await cardState('Finalized');
+    await card.getByLabel('Reopen reason').fill('Fictional correction review needs a new revision.');await card.getByRole('button',{name:'Reopen period',exact:true}).click();await cardState('Reopened');
     assert.deepEqual(await q("SELECT to_jsonb(t) AS row FROM timecard_revisions t WHERE employee_id='D3-E' AND revision<=(SELECT max(revision)-1 FROM timecard_revisions WHERE employee_id='D3-E') ORDER BY revision"),frozenRevisions);
     await q("UPDATE employees SET first_name='Avery' WHERE id='D3-E'");await q("UPDATE locations SET name=$1,short_name=$2 WHERE id='loc-1'",[labels[0].name,labels[0].short_name]);
-    await refreshCards();await card.getByRole('definition').filter({hasText:/^Reopened$/}).waitFor();checked(engine+': D-AUD-001 actual reopen after employee/location labels change preserves finalized history');
+    await refreshCards();await cardState('Reopened');checked(engine+': D-AUD-001 actual reopen after employee/location labels change preserves finalized history');
     assert.match(await card.textContent(),/Historical revisions \(3\)/);checked(engine+': actual Manager approve-finalize-reopen with history');
     for(const width of [320,375,390,430,768,1024,1440]){
       await mp.setViewportSize({width,height:1000});
@@ -187,7 +191,7 @@ try{
       (report.managerReturn??=[]).push({engine,lifecycle:'explicit blur/focus',responseStatus:response.status(),bodyFinished:true,observedAt:current.observedAt,validForMs:current.validForMs,period:current.period,elapsedMs:15000-(returnDeadline-performance.now())});
     },returnDeadline);
     checked(engine+': controlled Manager return hides retired cards and completes a fresh exact-period read within the original deadline');
-    await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Approved$/}).waitFor();await card.getByRole('button',{name:'Finalize period',exact:true}).click();await card.getByRole('definition').filter({hasText:/^Finalized$/}).waitFor();
+    await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await cardState('Approved');await card.getByRole('button',{name:'Finalize period',exact:true}).click();await cardState('Finalized');
     await mp.goto(app.url+'/app/payroll-export?start=2026-09-21&end=2026-09-27');await mp.getByRole('button',{name:'Export finalized time',exact:true}).click();await mp.locator('.q-export-phone').getByRole('button',{name:/^Time file/}).waitFor();checked(engine+': Quiet phone finalized export produces current files');await mp.setViewportSize({width:1440,height:1000});await mp.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
     await mp.getByRole('checkbox',{name:/Avery Period QA/}).check();await mp.getByRole('button',{name:'Generate reviewed export',exact:true}).click();await mp.getByRole('button',{name:'Download mapped CSV',exact:true}).waitFor();checked(engine+': finalized neutral export receipt verified');
     for(const [name,extension] of [['Download mapped CSV','csv'],['Download canonical time record','json']]){const waiting=mp.waitForEvent('download');await mp.getByRole('button',{name,exact:true}).click();const file=await waiting;await file.saveAs(join(evidence,`${engine}-payroll-neutral.${extension}`));}checked(engine+': canonical and mapped export downloads');await settled(mp);

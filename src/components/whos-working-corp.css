@@ -6,3 +6,8 @@
 :is(#c-root, html) .c-who .c-who__caret { width: 16px; height: 16px; transition: transform 160ms ease-out; }
 :is(#c-root, html) .c-who .c-who__caret--open { transform: rotate(180deg); }
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-who .c-who__caret { transition: none; } }
+/* While the attendance review's first read is in flight and nothing in it has focus, its footer, "What we compare", time
+ * corrections and what follows wait, so they don't jump down when the review arrives, and a linked correction is revealed
+ * and focused in its final place (IS-RC-ATTENDANCE-RECOVERY-01, carried over from the earlier attendance view). A failed or
+ * focused review keeps its recovery visible. */
+:is(#c-root, html) .c-who .c-who__review:has(.attendance-review[data-attendance-state="loading"]):not(:focus-within) :is(.attendance-review-footer, .attendance-review > details, .manager-corrections, .manager-corrections ~ *) { display: none; }
