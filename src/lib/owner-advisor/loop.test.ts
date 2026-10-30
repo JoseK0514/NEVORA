@@ -229,7 +229,7 @@ it("bounds the entire provider response stream", async () => {
     }),
   ).rejects.toThrow("limit");
 });
-it("bounds total tool calls including mandatory briefing", async () => {
+it("declines an over-budget tool batch before any reads beyond mandatory briefing", async () => {
   const d = deps();
   const calls = Array.from({ length: 8 }, (_, i) => ({
     ...call().output[0],
@@ -241,7 +241,7 @@ it("bounds total tool calls including mandatory briefing", async () => {
       fetch: transport([{ output: calls }]),
     }),
   ).rejects.toThrow("limit");
-  expect(d.tool).toHaveBeenCalledTimes(8);
+  expect(d.tool).toHaveBeenCalledTimes(1);
 });
 it("propagates cancellation during a provider wait", async () => {
   const c = new AbortController();

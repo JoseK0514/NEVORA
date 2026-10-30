@@ -1,5 +1,6 @@
 import type { ProviderConfig } from "./config.server";
 import type { NotebookContext } from "./notebook";
+import { providerBody, providerItems } from "./provider.server";
 import "server-only";
 import {
   AdvisorError,
@@ -172,16 +173,7 @@ export async function investigate(
               "Content-Type": "application/json",
               Authorization: `Bearer ${config.key}`,
             },
-            body: JSON.stringify({
-              model: config.model,
-              store: false,
-              include: ["reasoning.encrypted_content"],
-              instructions,
-              input,
-              tools,
-              parallel_tool_calls: false,
-              max_output_tokens: 4096,
-            }),
+            body: providerBody(config, instructions, input, tools),
             signal: callSignal,
           }),
           callSignal,
@@ -189,25 +181,20 @@ export async function investigate(
       callSignal,
     );
     await bounded(deps.check, signal);
-    if (
-      !record(output) ||
-      !Array.isArray(output.output) ||
-      output.output.length > 16 ||
-      ("status" in output && output.status !== "completed")
-    )
-      throw new AdvisorError("provider_failed");
+    const items = providerItems(config, output);
+    // Parse every named capability before the first tool effect, even if a
+    // provider returns parallel calls despite our Responses preference.
+    const parsed = new Map(items.filter(item => item.type === "function_call")
+      .map(item => [item, parseTool(item.name, item.arguments)]));
+    if (count + parsed.size > ADVISOR_MAX_TOOL_CALLS) throw new AdvisorError("limit");
+    count += parsed.size;
+    input.push(...items);
     let text = "",
       calls = 0;
-    for (const item of output.output) {
+    for (const item of items) {
       if (!record(item)) throw new AdvisorError("provider_failed");
       if (item.type === "function_call") {
-        if (
-          ++count > ADVISOR_MAX_TOOL_CALLS ||
-          typeof item.call_id !== "string" ||
-          item.call_id.length > 200
-        )
-          throw new AdvisorError("limit");
-        const call = parseTool(item.name, item.arguments);
+        const call = parsed.get(item)!;
         await bounded(deps.check, signal);
         const result = await bounded(() => deps.tool(call), signal);
         await bounded(deps.check, signal);
@@ -218,14 +205,13 @@ export async function investigate(
         const serialized = JSON.stringify({ ...readResult, ...(proposals ? { proposals: proposals.map(({ review: _review, ...p }) => p) } : {}) });
         if (serialized.length > 48000) throw new AdvisorError("limit");
         sources.push(...result.sources);
-        input.push(item, {
+        input.push({
           type: "function_call_output",
           call_id: item.call_id,
           output: serialized,
         });
         calls++;
       } else if (item.type === "message") {
-        input.push(item);
         if (!Array.isArray(item.content))
           throw new AdvisorError("provider_failed");
         for (const part of item.content) {
@@ -245,7 +231,6 @@ export async function investigate(
             typeof item.encrypted_content !== "string")
         )
           throw new AdvisorError("provider_failed");
-        input.push(item);
       } else throw new AdvisorError("provider_failed");
     }
     if (text.length > 12000) throw new AdvisorError("limit");
