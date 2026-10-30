@@ -163,3 +163,20 @@ it("fails closed when the additive review schema is unavailable",async()=>{
   const selected=await selection(); await f.q("DROP TABLE owner_advisor_coverage_reviews");
   await expect(action(selected)).rejects.toMatchObject({code:"unavailable"});
 });
+it("rolls back every business insert after a silent receipt no-op",async()=>{
+  const review=await prepare();
+  await f.q("CREATE FUNCTION skip_draft_receipt() RETURNS trigger LANGUAGE plpgsql AS $$BEGIN RETURN NULL; END$$; CREATE TRIGGER skip_draft_receipt BEFORE UPDATE ON owner_advisor_coverage_reviews FOR EACH ROW EXECUTE FUNCTION skip_draft_receipt()");
+  await expect(apply(review.review.id)).rejects.toThrow();
+  expect(await f.q("SELECT (SELECT count(*)::int FROM shifts) shifts,(SELECT count(*)::int FROM schedules) schedules,(SELECT count(*)::int FROM owner_advisor_coverage_reviews WHERE receipt IS NOT NULL) receipts")).toEqual([{shifts:0,schedules:0,receipts:0}]);
+});
+it.each(["location","week"])("does not count a saved parent moved to another %s as exact or published",async(kind)=>{
+  const review=await prepare();await apply(review.review.id);
+  const before=await f.q("SELECT id,assignment_episode_id::text FROM shifts ORDER BY id");
+  const [parent]=await f.q<{id:string}>("SELECT id FROM schedules ORDER BY id LIMIT 1");
+  if(kind==="location"){
+    await f.q("INSERT INTO locations(id,name,short_name,clocker_key,workspace_id) VALUES('moved-location','Moved','Moved','moved-qa','workspace-fuel')");
+    await f.q("UPDATE schedules SET location_id='moved-location',status='PUBLISHED' WHERE id=$1",[parent.id]);
+  }else await f.q("UPDATE schedules SET week_start='2026-10-26',status='PUBLISHED' WHERE id=$1",[parent.id]);
+  expect(await f.q("SELECT id,assignment_episode_id::text FROM shifts ORDER BY id")).toEqual(before);
+  expect((await check(review.review.id)).progress).toMatchObject({state:"changed",assignmentsPresent:1,assignmentsTotal:2,publishedAssignments:0});
+});

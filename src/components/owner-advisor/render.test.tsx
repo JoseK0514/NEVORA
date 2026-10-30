@@ -96,3 +96,19 @@ it("renders busy cancellation and answer sources separately from historical cont
   expect(html).toContain('dateTime="2026-10-22T12:00:00Z"');
   expect(html).toContain('href="/app/schedule?week=2026-10-19"');
 });
+
+it("dates comparison staleness by its observation instead of the currently visible receipt",async()=>{
+  const {ownerCoveragePlan}=await import("@/test/fixtures/owner-coverage-plan");
+  const {ownerCoverageAction}=await import("@/test/fixtures/owner-coverage-action");
+  const receipt=ownerCoverageAction("coverage_saved");receipt.receipt!.savedAt="2026-10-30T12:01:00Z";
+  const coverageActions={acknowledge:()=>{},save:async()=>{},recover:async()=>{},check:async()=>{},dismiss:()=>{}};
+  const coverage={view:{stage:"saved" as const,result:receipt,acknowledged:false,message:"",lastSavedAt:receipt.receipt!.savedAt},actions:coverageActions};
+  const plans=ownerCoveragePlan();plans.observedAt="2026-10-30T12:02:00Z";
+  const answer={text:"Compare current plans",sources:[],coveragePlans:plans};
+  const fresh=renderToStaticMarkup(<AdvisorScreen view={{...initialView,snapshot,answer}} actions={actions} coverage={coverage}/>);
+  expect(fresh).not.toContain("This comparison predates your save");
+  plans.observedAt="2026-10-30T12:00:00Z";
+  const earlier=renderToStaticMarkup(<AdvisorScreen view={{...initialView,snapshot,answer}} actions={actions} coverage={{...coverage,view:{...coverage.view,stage:"review",result:ownerCoverageAction()}}}/>);
+  expect(earlier).toContain("This comparison predates your save");
+  expect(earlier).toContain("From an earlier comparison");
+});

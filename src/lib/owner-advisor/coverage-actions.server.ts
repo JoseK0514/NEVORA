@@ -47,7 +47,17 @@ export async function coverageAction(store: AdvisorStore, command: CoverageActio
       const { source, observedAt } = await captureCoverageSource(store, signal);
       const input = coverageDraftInput(source, scope[0], scope[1], initial!.payload.date, observedAt);
       const keys = ["id", "assignment_episode_id", "schedule_id", "employee_id", "date", "start_time", "end_time", "position_id", "is_designated_lead"];
-      const present = initial!.created_assignments!.filter(old => source.shifts.some(current => keys.every(k => (current[k] ?? null) === (old[k] ?? null)) && input.ledger.some(s => s.id === current.id && !s.isCalloutApproved)));
+      const present = initial!.created_assignments!.filter(old => {
+        // Raw shift custody lacks parent location/week. Reconstruct those exact
+        // terms from the immutable reviewed assignment, not the current parent.
+        const reviewed = initial!.payload.assignments.find(a => a.employeeId === old.employee_id &&
+          a.startTime === String(old.start_time).slice(0, 5) && a.endTime === String(old.end_time).slice(0, 5) &&
+          a.positionId === (old.position_id ?? null) && a.isDesignatedLead === old.is_designated_lead);
+        const parent = input.schedules.find(s => s.id === old.schedule_id);
+        if (!reviewed || !parent || parent.locationId !== reviewed.locationId || parent.weekStart !== weekStartFor(initial!.payload.date) || parent.status === "ARCHIVED") return false;
+        return source.shifts.some(current => keys.every(k => (current[k] ?? null) === (old[k] ?? null)) &&
+          input.ledger.some(s => s.id === current.id && s.locationId === reviewed.locationId && !s.isCalloutApproved));
+      });
       const measure = coverageMeasure(input, initial!.payload.date);
       progress = { state: present.length === initial!.created_assignments!.length && input.workspace.timeZone === initial!.payload.timeZone ? "current" : "changed", observedAt, timeZone: input.workspace.timeZone,
         assignmentsPresent: present.length, assignmentsTotal: initial!.created_assignments!.length,
@@ -99,6 +109,13 @@ export async function coverageAction(store: AdvisorStore, command: CoverageActio
       { text: "SELECT(CASE WHEN EXISTS(SELECT 1 FROM owner_advisor_coverage_reviews WHERE workspace_id=$1 AND owner_id=$2 AND review_id=$3 AND authority=$4 AND session_hash=$5 AND applied_operation IS NULL AND expires_at>clock_timestamp()) THEN '1' ELSE 'coverage_review_conflict' END)::integer", values: [...scope, reviewId, store.original.authority, store.proof.sessionTokenHash] },
       ...prepared.statements,
       { text: `UPDATE owner_advisor_coverage_reviews SET applied_operation=$4::uuid,apply_hash=$5,receipt=jsonb_build_object('operationId',($4::uuid)::text,'reviewId',($3::uuid)::text,'savedAt',to_jsonb(clock_timestamp()),'count',cardinality($6::text[])),created_assignments=(SELECT jsonb_agg(to_jsonb(sh) ORDER BY sh.id) FROM shifts sh WHERE sh.id=ANY($6::text[])) WHERE workspace_id=$1 AND owner_id=$2 AND review_id=$3 AND applied_operation IS NULL`, values: [...scope, reviewId, command.requestId, hash, prepared.insertedIds] },
+      // A successful statement can still affect zero rows (e.g. a suppressing
+      // trigger). Assert receipt custody before commit, alongside business rows.
+      { text: `SELECT(CASE WHEN EXISTS(SELECT 1 FROM owner_advisor_coverage_reviews WHERE workspace_id=$1 AND owner_id=$2 AND review_id=$3::uuid AND applied_operation=$4::uuid AND apply_hash=$5
+        AND receipt->>'operationId'=($4::uuid)::text AND receipt->>'reviewId'=($3::uuid)::text
+        AND receipt->>'savedAt' IS NOT NULL AND receipt->>'count'=cardinality($6::text[])::text
+        AND jsonb_array_length(created_assignments)=cardinality($6::text[])
+        AND created_assignments=(SELECT jsonb_agg(to_jsonb(sh) ORDER BY sh.id) FROM shifts sh WHERE sh.id=ANY($6::text[]))) THEN '1' ELSE 'coverage_receipt_conflict' END)::integer`, values: [...scope, reviewId, command.requestId, hash, prepared.insertedIds] },
       ...ownerGuards(store.proof, store.original),
     ], signal);
     const row = await read(); if (!row) throw new AdvisorError("unavailable");

@@ -41,7 +41,12 @@ it("reviews exact coverage, blocks stale saves, recovers a real lost reply and v
         await page.getByRole("button",{name:"Compare day plans",exact:true}).waitFor();
         const date=index===0?"2030-10-07":"2030-10-14";
         await page.getByLabel("Coverage date",{exact:true}).fill(date);
-        const compare=async()=>{await page.getByRole("button",{name:"Compare day plans",exact:true}).click();await page.getByRole("region",{name:"Day plan comparison",exact:true}).waitFor();};
+        const compare=async()=>{
+          const response=page.waitForResponse((r:{url():string;request():{method():string}})=>r.url().endsWith("/api/owner/advisor")&&r.request().method()==="POST");
+          await page.getByRole("button",{name:"Compare day plans",exact:true}).click();
+          const actual=await response;expect(actual.status()).toBe(200);const body=await actual.json();
+          await page.getByRole("region",{name:"Day plan comparison",exact:true}).getByText(`Source fingerprint: ${body.answer.coveragePlans.sourceVersion}`,{exact:true}).waitFor();
+        };
         phase="review and focus return";await compare();
         const plan=page.getByRole("article",{name:"Day plan 1",exact:true}),trigger=plan.getByRole("button",{name:"Review draft changes",exact:true});
         await trigger.click();const panel=page.getByRole("region",{name:"Reviewed coverage draft",exact:true});await panel.getByRole("heading",{name:"Review draft changes",exact:true}).waitFor();
@@ -49,8 +54,23 @@ it("reviews exact coverage, blocks stale saves, recovers a real lost reply and v
         expect(await q("SELECT count(*)::int n FROM shifts WHERE date=$1",[date])).toEqual([{n:0}]);
         await panel.getByRole("button",{name:"Back to comparison",exact:true}).click();await expect.poll(()=>trigger.evaluate((el:HTMLElement)=>document.activeElement===el)).toBe(true);
         await trigger.click();await panel.getByRole("heading",{name:"Review draft changes",exact:true}).waitFor();
+        const nativeTab=engine==="webkit"&&process.platform==="darwin"?"Alt+Tab":"Tab";
+        const confirmWithKeyboard=async()=>{
+          const h=panel.getByRole("heading",{name:"Review draft changes",exact:true});
+          await expect.poll(()=>h.evaluate((el:HTMLElement)=>document.activeElement===el)).toBe(true);
+          await page.keyboard.press(nativeTab);
+          await expect.poll(()=>panel.getByRole("checkbox").evaluate((el:HTMLElement)=>document.activeElement===el)).toBe(true);
+          await page.keyboard.press("Space");
+          const save=panel.getByRole("button",{name:/^Save 2 draft assignments$/});
+          await expect.poll(()=>save.isEnabled()).toBe(true);await page.keyboard.press(nativeTab);
+          expect(await save.evaluate((el:HTMLElement)=>document.activeElement===el)).toBe(true);await page.keyboard.press("Enter");
+        };
+        const activateFirstActionWithKeyboard=async(name:string)=>{
+          const h=panel.getByRole("heading",{level:2});await expect.poll(()=>h.evaluate((el:HTMLElement)=>document.activeElement===el)).toBe(true);
+          await page.keyboard.press(nativeTab);expect(await panel.getByRole("button",{name,exact:true}).evaluate((el:HTMLElement)=>document.activeElement===el)).toBe(true);await page.keyboard.press("Enter");
+        };
         phase="stale source rejected";await q("UPDATE locations SET short_name=short_name||' QA' WHERE id='loc-1'");
-        await panel.getByRole("checkbox").check();await panel.getByRole("button",{name:/^Save 2 draft assignments$/}).click();await panel.getByText(/review changed or expired/).waitFor();
+        await confirmWithKeyboard();await panel.getByText(/review changed or expired/).waitFor();
         expect(await q("SELECT count(*)::int n FROM shifts WHERE date=$1",[date])).toEqual([{n:0}]);checks.push(engine+": prepare has no business writes; explicit acknowledgement; Back restores trigger focus; changed source blocks whole allocation");
         await panel.getByRole("button",{name:"Back to comparison",exact:true}).click();await compare();await trigger.click();await panel.getByRole("heading",{name:"Review draft changes",exact:true}).waitFor();
         phase="mobile enlarged-text review";
@@ -67,15 +87,25 @@ it("reviews exact coverage, blocks stale saves, recovers a real lost reply and v
         expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);await panel.screenshot({path:resolve(evidence,`${engine}-390-text200.png`)});
         await page.evaluate(()=>document.querySelectorAll<HTMLElement>(".oa-draft-panel,.oa-draft-panel *").forEach(el=>{el.setAttribute("style",el.dataset.originalStyle??"");delete el.dataset.originalStyle;}));
         checks.push(engine+": 320/390/430/1440 and 200% review text; real long/untrusted names safely escaped; targets >=44px; zero automated accessibility violations");
-        phase="real commit and dropped response";dropNextSave=true;await panel.getByRole("checkbox").check();await panel.getByRole("button",{name:/^Save 2 draft assignments$/}).click();await panel.getByRole("button",{name:"Check original request",exact:true}).waitFor();expect(committedBeforeLoss).toBe(true);
+        phase="real commit and dropped response";dropNextSave=true;await confirmWithKeyboard();await panel.getByRole("button",{name:"Check original request",exact:true}).waitFor();expect(committedBeforeLoss).toBe(true);
         expect(await q("SELECT count(*)::int n FROM shifts WHERE date=$1",[date])).toEqual([{n:2}]);
         await q("UPDATE employee_scheduling_settings SET maximum_weekly_hours=39 WHERE employee_id LIKE 'COVER-%'");
-        await panel.getByRole("button",{name:"Check original request",exact:true}).click();await panel.getByRole("heading",{name:"Draft saved",exact:true}).waitFor();
+        await activateFirstActionWithKeyboard("Check original request");await panel.getByRole("heading",{name:"Draft saved",exact:true}).waitFor();
         expect(await q("SELECT count(*)::int n FROM shifts WHERE date=$1",[date])).toEqual([{n:2}]);
         expect(await q("SELECT (SELECT count(*)::int FROM notifications) notifications,(SELECT count(*)::int FROM schedule_publication_revisions) publications")).toEqual([{notifications:0,publications:0}]);
         expect(await q("SELECT DISTINCT status FROM schedules WHERE week_start=$1",[date])).toEqual([{status:"DRAFT"}]);
-        phase="positive current progress";await panel.getByRole("button",{name:"Check progress",exact:true}).click();await panel.getByText("2 of 2 exact assignments present · 0 of 2 published",{exact:true}).waitFor();
+        phase="positive current progress";await activateFirstActionWithKeyboard("Check progress");await panel.getByText("2 of 2 exact assignments present · 0 of 2 published",{exact:true}).waitFor();
         expect(await panel.getByRole("link",{name:"Open this schedule",exact:true}).getAttribute("href")).toBe(`/app/schedule?week=${date}`);await panel.screenshot({path:resolve(evidence,`${engine}-saved-progress.png`)});
+        phase="saved comparison provenance";
+        const comparison=page.getByRole("region",{name:"Day plan comparison",exact:true});
+        await comparison.getByText(/This comparison predates your save/).waitFor();
+        await page.getByText("From an earlier comparison:",{exact:true}).waitFor();
+        await compare();
+        expect(await comparison.getByText(/This comparison predates your save/).count()).toBe(0);
+        expect(await page.getByText("From an earlier comparison:",{exact:true}).count()).toBe(0);
+        expect(await page.getByText(/Nothing has been saved or published/).count()).toBe(0);
+        checks.push(engine+": native keyboard review/Space acknowledgement/Enter save, original recovery and progress; fresh comparison is not mislabeled stale while receipt stays visible");
+        phase="removed assignment progress";
         await q("DELETE FROM shifts WHERE id=(SELECT id FROM shifts WHERE date=$1 ORDER BY id LIMIT 1)",[date]);await panel.getByRole("button",{name:"Check progress",exact:true}).click();await panel.getByText("1 of 2 exact assignments present · 0 of 2 published",{exact:true}).waitFor();
         checks.push(engine+": actual commit followed by deliberately dropped network reply recovers original receipt after source change with no duplicate; draft-only rows/no outbox; fresh checks detect removed assignment");
         phase="private retirement";await q("DELETE FROM employee_sessions WHERE employee_id='QAOWNER'");await page.getByRole("button",{name:"Refresh history",exact:true}).first().click();await panel.waitFor({state:"hidden"});expect(await page.getByText("Fictional Alexandria <script>unsafe</script> Long surname example",{exact:true}).count()).toBe(0);checks.push(engine+": revoked session retires private review and receipt DOM");

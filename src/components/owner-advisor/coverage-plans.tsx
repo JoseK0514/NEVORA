@@ -4,7 +4,10 @@ import type { CoveragePlans } from "@/lib/owner-advisor/coverage-plan-contracts"
 
 const states = { COMPLETE: "Configured day requirements met", PARTIAL: "Requirements remain", INVALID: "Setup needs review", BUDGET_EXHAUSTED: "Search limit reached" };
 const locationStates = { INCLUDED: "Included in this day review", ARCHIVED: "Excluded: archived schedule", NEEDS_SETUP: "Excluded: setup needs review", INACTIVE: "Inactive location" };
-export function CoveragePlanResults({ plans, review, afterSave }: { plans: CoveragePlans; afterSave?: boolean; review?: (index: number) => void }) {
+export function comparisonPredatesSave(plans: CoveragePlans | undefined, savedAt?: string | null) {
+  return !!plans && !!savedAt && Date.parse(plans.observedAt) <= Date.parse(savedAt);
+}
+export function CoveragePlanResults({ plans, review, lastSavedAt }: { plans: CoveragePlans; lastSavedAt?: string | null; review?: (index: number) => void }) {
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     // A completed comparison appears below its controls. Reveal it explicitly;
@@ -15,7 +18,7 @@ export function CoveragePlanResults({ plans, review, afterSave }: { plans: Cover
   return <section aria-label="Day plan comparison" className="oa-plain">
     <h3 ref={heading} tabIndex={-1}>Day plan comparison · {plans.date}</h3>
     <p>Planning ledger, including drafts · {plans.timeZone}. Observed <time dateTime={plans.observedAt}>{new Date(plans.observedAt).toLocaleString("en-US", { timeZone: plans.timeZone })}</time>.</p>
-    <p className="oa-notice">{afterSave ? "This comparison predates your save. Check progress or compare day plans again for current coverage." : "Each plan is a separate hypothetical allocation. Compare one plan at a time. Nothing has been saved or published; confirm availability with the people involved before making changes."}</p>
+    <p className="oa-notice">{comparisonPredatesSave(plans, lastSavedAt) ? "This comparison predates your save. Check progress or compare day plans again for current coverage." : "Each plan is a separate hypothetical allocation. Compare one plan at a time. This comparison does not save or publish changes; confirm availability with the people involved before making changes."}</p>
     {plans.state === "unavailable" ? <p>This company is larger than this review can process. Open Scheduling to review the complete requirements.</p> : <>
       <details className="oa-follow-through"><summary>Review scope and source</summary>
         <p>Selected date only. Completion covers configured requirements at the included ready locations. Unconfigured or excluded locations need a separate review.</p>

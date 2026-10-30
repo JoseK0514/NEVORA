@@ -42,3 +42,9 @@ No agreed feature is silently deferred. The existing broad AI-owner lineage, sev
 Application candidate e3497ad2: default10373 pass/0 fail/801 pending; OwnerSQL68/68; generationSQL177/177; browser4/4 specs with both engines and58 check groups; lint/typecheck exit0. Browser closure/source/mirror custody verified4/4. Author batched visual inspection4 captures: no new repair required. See EVIDENCE.json hashes.
 
 Task4: Ruling: its text includes the final review/handoff while the generic helper orders task completion before review. Perform the one fresh review after all candidate gates but before recording Task4 complete, avoiding a false completion claim. Cost: documentation-only settlement follows review; no functional change may bypass the bounded repair gates.
+
+## Fresh review and one author repair
+
+Fresh original verdict No—fixes required: I1 Important (receipt no-op), I2 Important (parent identity), M1 Minor (comparison provenance). Original report copied byte-identically to FRESH-REVIEW-ORIGINAL.md. Regrades retained; M1 fixed under recorded quality ruling. All four declined judgments are ruled with costs in REVIEW-DISPOSITION.md. SQL RED3/3 and UI RED2/2 observed before source changes; focused GREEN168/168 and targeted real SQL GREEN5/5. Full post-repair gates pending; no independent re-review/PASS invented.
+
+Task4: Ruling: disk now has>100GiB free; final repair gates may use three independent runners at most (default, owned browser, SQL/static), after verifying free space. Earlier ENOSPC attempts remain failed and preserved. Cost: resource contention; each uses its own owned environment and source is frozen.

@@ -14,6 +14,7 @@ import { WorkflowControls, WorkflowResults } from "./workflows";
 import { SelectField } from "@/components/select-field";
 import { NotebookPanel } from "./notebook-panel";
 import { CoverageActionPanel } from "./coverage-actions";
+import { comparisonPredatesSave } from "./coverage-plans";
 import { createCoverageActionController, type CoverageActionView } from "./coverage-actions-controller";
 import type { NotebookEdit } from "@/lib/owner-advisor/notebook";
 import type { AttentionDisposition } from "@/lib/owner-advisor/briefing-contracts";
@@ -167,8 +168,8 @@ export function AdvisorScreen({
                   <article className="oa-answer" aria-label="Latest answer">
                     <h3>Answer and reasoning</h3>
                     {view.answer.context?.notebookRevision !== undefined && view.answer.context.notebookRevision !== null && view.answer.context.notebookRevision !== saved?.revision && <p className="oa-notice">Your saved goals or tasks changed after this investigation. This answer uses earlier saved context; investigate again before relying on it for a new decision.</p>}
-                    <p className="oa-plain">{view.answer.text}</p>
-                    <WorkflowResults answer={view.answer} reviewCoverage={actions.reviewCoverage} afterSave={!!coverage?.view.result?.receipt} />
+                    <p className="oa-plain">{comparisonPredatesSave(view.answer.coveragePlans, coverage?.view.lastSavedAt) && <strong>From an earlier comparison: </strong>}{view.answer.text}</p>
+                    <WorkflowResults answer={view.answer} reviewCoverage={actions.reviewCoverage} lastSavedAt={coverage?.view.lastSavedAt} />
                     <Sources sources={view.answer.sources} />
                   </article>
                 )}
@@ -310,7 +311,7 @@ export function AdvisorScreen({
 export function OwnerAdvisor() {
   const [view, setView] = useState<AdvisorView>(initialView);
   const ref = useRef<ReturnType<typeof createAdvisorController> | null>(null);
-  const [coverageView, setCoverageView] = useState<CoverageActionView>({stage:"idle",result:null,acknowledged:false,message:""});
+  const [coverageView, setCoverageView] = useState<CoverageActionView>({stage:"idle",result:null,acknowledged:false,message:"",lastSavedAt:null});
   const comparisonTrigger = useRef<HTMLElement | null>(null);
   const coverageRef = useRef<ReturnType<typeof createCoverageActionController> | null>(null);
   useEffect(() => {

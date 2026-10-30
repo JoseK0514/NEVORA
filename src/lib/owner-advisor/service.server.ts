@@ -85,7 +85,7 @@ export async function advisorService(
     const result = await tools.run(command.tool);
     return { state: "answered" as const, answer: {
       text: command.tool.name === "coverage_plan"
-        ? "Compare the jointly checked day plans against the unchanged schedule. Each alternative is a separate hypothetical allocation at the observed source; do not combine them. Review remaining requirements and any excluded locations. Nothing has been saved or published."
+        ? "Compare the jointly checked day plans against the observed schedule. Each alternative is a separate hypothetical allocation at that source; do not combine them. Review remaining requirements and any excluded locations. This comparison does not save or publish changes."
         : command.tool.name === "coverage_proposals"
         ? `Prepared ${result.proposals?.length ?? 0} coverage options from the current planning ledger, including drafts. Nothing has been saved. Review each exact replacement in Scheduling; other requirements may remain open.${result.partial ? " Some information or options are unavailable or omitted." : ""}`
         : command.tool.args.language === "es"

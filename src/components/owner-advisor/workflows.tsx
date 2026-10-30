@@ -30,10 +30,10 @@ export function WorkflowControls({ date, disabled, inspect }: { date: string; di
     </div>
   </section>;
 }
-export function WorkflowResults({ answer, reviewCoverage, afterSave }: { answer: AdvisorAnswer; afterSave?: boolean; reviewCoverage?: (plans: NonNullable<AdvisorAnswer["coveragePlans"]>, index: number) => void }) {
+export function WorkflowResults({ answer, reviewCoverage, lastSavedAt }: { answer: AdvisorAnswer; lastSavedAt?: string | null; reviewCoverage?: (plans: NonNullable<AdvisorAnswer["coveragePlans"]>, index: number) => void }) {
   const p = answer.periodReview, es = p?.language === "es";
   return <>
-    {answer.coveragePlans && <CoveragePlanResults plans={answer.coveragePlans} afterSave={afterSave} review={reviewCoverage ? index => reviewCoverage(answer.coveragePlans!, index) : undefined} />}
+    {answer.coveragePlans && <CoveragePlanResults plans={answer.coveragePlans} lastSavedAt={lastSavedAt} review={reviewCoverage ? index => reviewCoverage(answer.coveragePlans!, index) : undefined} />}
     {answer.proposals && <section aria-label="Coverage proposals">
       <h3>Coverage proposals</h3>
       <p>These add one assignment. Existing assignments stay in place; other staffing or position requirements may remain open. Eligibility is checked again on opening and saving. Confirm availability with the person when needed.</p>

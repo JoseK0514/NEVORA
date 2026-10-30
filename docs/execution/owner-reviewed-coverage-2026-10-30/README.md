@@ -1,6 +1,6 @@
 # Owner reviewed coverage drafts — local implementation handoff
 
-Status: implementation and local candidate gates pass; fresh whole-slice review pending. No hosted/release acceptance.
+Status: fresh review found two Important and one Minor issue; one author regression-driven repair is implemented, with final post-repair gates pending. No independent re-review or hosted/release acceptance.
 
 ## Identity and scope
 
@@ -33,7 +33,7 @@ Confirmed before final gates: Owner SQL68/68; connected canonical generation177/
 
 Final candidate gates on e3497ad2: full default suite10,373 pass/0 fail/801 pending; Owner SQL68/68; canonical generationSQL177/177; four real Owner browser specs pass in both Chromium and WebKit (58 combined check groups); full lint and TypeScript exit0. All four owned browser mirrors closed with source/mirror verification. Author visual inspection of320px, desktop,200% text and saved-progress captures required no further repair. See [EVIDENCE.json](EVIDENCE.json) for original paths and hashes, and [EXECUTION-LEDGER.md](EXECUTION-LEDGER.md) for decisions, costs and failures. The801 pending default cases are unexecuted, not claimed as passes; this slice's dedicated SQL/browser gates ran explicitly.
 
-Fresh independent whole-slice review is pending. Original failed candidates, interrupted ENOSPC attempts and later verified repairs remain preserved.
+The original fresh whole-slice review is preserved in [FRESH-REVIEW-ORIGINAL.md](FRESH-REVIEW-ORIGINAL.md). Findings, author repairs and every declined judgment are recorded in [REVIEW-DISPOSITION.md](REVIEW-DISPOSITION.md). Final post-repair gates are pending. Original failed candidates, interrupted ENOSPC attempts and later verified repairs remain preserved.
 
 ## Next integration gate
 

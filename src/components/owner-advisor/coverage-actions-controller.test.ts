@@ -42,3 +42,12 @@ it("blocks expired review confirmation and preserves a lost prepare for explicit
  responses.push(Error("lost prepare"));await c.prepare(plan(),0);expect(v.stage).toBe("uncertain");
  const r=ownerCoverageAction();r.review.preparedAt=new Date(Date.now()-300001).toISOString();r.review.expiresAt=new Date(Date.now()-1).toISOString();responses.push(new Response(JSON.stringify(r)));await c.recover();c.acknowledge(true);await c.save();expect(calls).toHaveLength(2);
 });
+it("retains the save observation through another review or dismissal but retires it on pause",async()=>{
+ responses.push(reply("coverage_review"));await c.prepare(plan(),0);c.acknowledge(true);
+ const saved=ownerCoverageAction("coverage_saved");responses.push(new Response(JSON.stringify(saved)));await c.save();
+ expect(v.lastSavedAt).toBe(saved.receipt!.savedAt);c.dismiss();expect(v.lastSavedAt).toBe(saved.receipt!.savedAt);
+ const next=ownerCoverageAction();next.review.id="22222222-2222-4222-8222-222222222222";next.review.sourceVersion="b".repeat(64);
+ const selected=plan();selected.sourceVersion="b".repeat(64);responses.push(new Response(JSON.stringify(next)));await c.prepare(selected,0);
+ expect(v.stage).toBe("review");expect(v.result?.receipt).toBeNull();expect(v.lastSavedAt).toBe(saved.receipt!.savedAt);
+ c.pause();expect(v.lastSavedAt).toBeNull();
+});
