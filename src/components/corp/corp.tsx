@@ -18,10 +18,11 @@ export function CorpPage({ children, label, labelledBy, className }: { children:
 
 /** 22/600 page title, an optional 13px line under it and optional controls on its right. */
 /** `wide`: a pushed page's title for tablets and desktop; on a phone its CorpNav (phoneOnly) shows the title instead. */
-export function CorpTitle({ title, sub, actions, id, wide }: { title: ReactNode; sub?: ReactNode; actions?: ReactNode; id?: string; wide?: boolean }) {
+/** `subAside`: a control on the subtitle's line, right ("All locations ▾"). */
+export function CorpTitle({ title, sub, actions, id, wide, subAside }: { title: ReactNode; sub?: ReactNode; actions?: ReactNode; id?: string; wide?: boolean; subAside?: ReactNode }) {
   return <header className={wide ? "c-title c-title--wide" : "c-title"}>
     <div className="c-title__row"><h1 id={id}>{title}</h1>{actions ? <div className="c-title__actions">{actions}</div> : null}</div>
-    {sub ? <span className="c-title__sub">{sub}</span> : null}
+    {subAside ? <div className="c-title__subrow"><span className="c-title__sub">{sub}</span>{subAside}</div> : sub ? <span className="c-title__sub">{sub}</span> : null}
   </header>;
 }
 

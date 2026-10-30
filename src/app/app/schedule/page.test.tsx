@@ -126,8 +126,11 @@ it('publication review exposes measured warnings before an explicit location-bou
 });
 it('Add shift preserves the selected second-location destination',async()=>{
  f.role='MANAGER';f.locations=[{id:'loc-1',shortName:'Main Office'},{id:'loc-2',shortName:'West Office'}];
+ // The day card (and its Add shift) needs someone on the team; with nobody, the page offers Go to Team instead.
+ f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];
  const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',location:'loc-2'})}));
- expect(output).toContain('href="/app/schedule/new?week=2026-10-05&amp;locationId=loc-2"');
+ // Release 1 (board G-O-Schedule): Add shift sits at the foot of the day card and opens on the chosen day.
+ expect(output).toMatch(/href="\/app\/schedule\/new\?week=2026-10-05&amp;locationId=loc-2&amp;date=2026-10-\d\d"/);
 });
 
 it('forged acknowledged query does not manufacture success without canonical receipt',async()=>{const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',acknowledged:'1'})}));expect(output).not.toContain('Schedule confirmed.');});
@@ -176,7 +179,7 @@ it('preserves the existing Company error and warning messages',async()=>{
  expect(output).toContain('The shift information is incomplete or outside this week.');expect(output).toContain("Shift saved, but it is outside the employee&#x27;s submitted availability.");
  expect(output).toContain('role="alert"');expect(output).toContain('role="status"');
 });
-it('Quiet: the week facts sit under the title, open shifts offer Find cover, and an unplanned location offers Plan',async()=>{
+it('Corporate: the week card names the week and its state, open shifts offer Find cover, and an unplanned location offers Plan',async()=>{
  f.role='MANAGER';f.locations=[{id:'main',shortName:'Main Office'},{id:'west',shortName:'West Office'}];
  f.statuses=[{locationId:'main',status:'PUBLISHED'}];
  f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];
@@ -186,16 +189,18 @@ it('Quiet: the week facts sit under the title, open shifts offer Find cover, and
   managerActions:[{id:'COVERAGE:a',type:'COVERAGE_GAP',priority:'URGENT',title:'Coverage gap at Main Office',detail:'',href:repair,locationId:'main'},
    {id:'COVERAGE:setup',type:'COVERAGE_GAP',priority:'REVIEW',title:'Staffing setup needed at West Office',detail:'',href:'/app/schedule/settings',locationId:'west'}]};
  const output=(await html()).replace(/ /g,' ');
- expect(output).toContain('Oct 5 – 11 · Main Office published');
+ // Release 1 (board G-O-Schedule): the week card says the week and how much of it the team can see.
+ expect(output).toContain('class="c-sched-week__label">Oct 5 – 11<');
+ expect(output).toContain('>1 of 2 published</span>');
  expect(output).toContain('West Office isn’t planned');
- expect(output).toContain('aria-label="Plan West Office">Plan</a>');
+ expect(output).toContain('aria-label="Plan West Office"');
  expect(output).toContain('href="/app/schedule?week=2026-10-05&amp;location=west&amp;plan=1#schedule-planning"');
  expect(output).toContain(`href="${repair.replaceAll('&','&amp;')}"`);
  expect(output).toContain('>Find cover</a>');
  expect(output).toContain('1 this week');
  // The planning panel (through Build and publish), copy week, templates and add shift stay reachable.
  expect(output).toContain('plan=1#schedule-planning');expect(output).toContain('Copy previous week');
- expect(output).toContain('/app/schedule/templates?week=2026-10-05');expect(output).toContain('href="/app/schedule/new?week=2026-10-05"');
+ expect(output).toContain('/app/schedule/templates?week=2026-10-05');expect(output).toMatch(/href="\/app\/schedule\/new\?week=2026-10-05&amp;date=2026-10-\d\d"/);
 });
 it('v3: a failed dashboard read leaves availability and open shifts out instead of showing zero',async()=>{
  f.role='MANAGER';f.locations=[{id:'main',shortName:'Main Office'}];f.dashboard=null;

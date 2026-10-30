@@ -28,6 +28,8 @@
 :is(#c-root, html) .c-title h1 { min-width: 0; font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.3px; color: var(--c-ink); }
 :is(#c-root, html) .c-title__sub { display: block; margin-top: 2px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-title__actions { flex: none; display: flex; align-items: center; gap: 8px; }
+:is(#c-root, html) .c-title__subrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; }
+:is(#c-root, html) .c-title__subrow > .c-title__sub { margin-top: 0; min-width: 0; }
 
 /* Cards */
 :is(#c-root, html) .c-card { display: block; border-radius: 12px; background: var(--c-card); box-shadow: 0 0 0 1px var(--c-ring); overflow: hidden; }
@@ -87,7 +89,7 @@
 :is(#c-root, html) .c-av { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 16px; background: var(--c-tint); color: var(--c-teal); font-size: 13px; line-height: 1; font-weight: 600; }
 :is(#c-root, html) .c-av--grey { background: var(--c-neutral-bg); color: var(--c-ink2); }
 :is(#c-root, html) .c-av--l { width: 36px; height: 36px; border-radius: 18px; }
-:is(#c-root, html) .c-av--open { background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-red); color: var(--c-red); border-radius: 16px; }
+:is(#c-root, html) .c-av--open { background: #FFFFFF; border: 1.5px dashed var(--c-red); color: var(--c-red); border-radius: 16px; }
 :is(#c-root, html) .c-avs { flex: none; display: inline-flex; gap: 4px; }
 
 /* Buttons: 44px pages, 40px inside cards, 36px compact. One primary per screen. */
@@ -190,6 +192,7 @@
 /* Desktop: the same page as a calm column beside the sidebar until the desktop design lands. */
 @media (min-width: 768px) {
   :is(#c-root, html) .c-page { max-width: 640px; margin: 0 auto; padding: 24px 24px 48px; }
+  :is(#c-root, html) .c-page.c-page--wide { max-width: 1240px; }
   :is(#c-root, html) .c-nav { margin: -24px -24px 0; padding-top: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -209,3 +212,10 @@
 :is(#c-root, html) .c-home-clock .q-rt i { font-size: 13px; line-height: 18px; color: #6B7075; letter-spacing: 0; }
 :is(#c-root, html) .c-home-clock :is(.q-av, .q-row__ic) { width: 22px; height: 22px; background: none; color: #4A4F54; }
 :is(#c-root, html) .c-home-clock .q-chev { width: 16px; height: 16px; color: #A7ACB1; }
+
+/* Controls in a title row: a 44px icon button ("…") and the neutral select-like control ("All locations ▾"). */
+:is(#c-root, html) .c-page .c-icon-btn { display: grid; place-items: center; width: 44px; height: 44px; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 8px; background: none; box-shadow: none; color: var(--c-ink2); cursor: pointer; }
+:is(#c-root, html) .c-page .c-icon-btn:hover { background: var(--c-neutral-bg); }
+:is(#c-root, html) .c-page .c-select-btn { display: inline-flex; align-items: center; gap: 4px; height: 32px; min-height: 0; margin: 0; padding: 0 10px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-field); color: var(--c-ink); font-size: 13px; line-height: 18px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+:is(#c-root, html) .c-page .c-select-btn .c-ic { width: 14px; height: 14px; }
+:is(#c-root, html) .c-note--warn { color: var(--c-amber); }

@@ -117,3 +117,23 @@ it("keeps the people × days grid desktop-only with its own styling hook, and th
   expect(css).toContain("@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) { :is(#q-root, html) .q-schedule .cm-sched-desk { display: none; }");
   expect(css).toMatch(/@media \(min-width: 761px\) \{ :is\(#q-root, html\) \.q-schedule \.cm-sched-phone \{ display: none; \}/);
 });
+
+it("corporate (board G-O-Schedule): a week card with the week and its state, then the chosen day as a card", () => {
+  const output = renderToStaticMarkup(createElement(ManagerWeeklyRoster, { employees, dates: weekDates("2026-10-05"), today: "2026-10-06", timeZone: "America/Puerto_Rico",
+    absences: { state: "ready", employeeIds: ["fictional", "unassigned"], rows: [] } as never,
+    openShifts: [{ id: "gap", date: "2026-10-06", startTime: "13:00", endTime: "15:00", location: "Main Office", href: "/app/schedule/coverage?repair=x" }],
+    corp: { weekLabel: "Oct 5 – 11", previousHref: "/app/schedule?week=2026-09-28", nextHref: "/app/schedule?week=2026-10-12", status: createElement("span", { className: "c-pill c-pill--amber" }, "Draft"), addShiftHref: "/app/schedule/new?week=2026-10-05" } }));
+  expect(output).toContain('aria-label="Previous week"');
+  expect(output).toContain('class="c-sched-week__label">Oct 5 – 11<');
+  expect(output).toContain(">Draft</span>");
+  // Today's card: the shift with its time column, the open shift with Find cover, the count with hours, and Add shift on this day.
+  expect(output).toContain("Today · Tue, Oct 6");
+  expect(output).toContain("2 shifts · 4 h");
+  expect(output).toMatch(/c-sched-row__time" aria-hidden="true"><b>8:00\sPM<\/b><span>midnight<\/span>/);
+  expect(output).toContain('href="/app/schedule/coverage?repair=x"');
+  expect(output).toContain(">Find cover</a>");
+  expect(output).toContain('href="/app/schedule/new?week=2026-10-05&amp;date=2026-10-06"');
+  // A draft shift says so; the Quiet strip is gone.
+  expect(output).toContain('class="c-pill c-pill--amber">Draft</span>');
+  expect(output).not.toContain('class="q-week"');
+});
