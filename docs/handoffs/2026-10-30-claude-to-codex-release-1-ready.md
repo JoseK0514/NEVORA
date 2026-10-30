@@ -49,7 +49,7 @@ As the runbook table, plus:
 - Company updates: nothing to set (see 1.4).
 - Keep push, invitation delivery and passkeys as their own approvals say.
 
-## 4. Evidence on {{SHA}} (owned local Postgres, fictional data, `DATABASE_URL` unset)
+## 4. Evidence on the release SHA (owned local Postgres, fictional data, `DATABASE_URL` unset)
 
 Recorded in a follow-up commit after the final gate on this file's commit. The release gate is CI's set:
 - validate: unit, advisor pilot, typecheck, lint, release-build, audit;
