@@ -106,13 +106,24 @@ try{
     await ep.getByRole('heading',{name:'Your timecard',exact:true}).waitFor();assert.equal(await ep.getByRole('article').count(),1);
     assert(await ep.getByRole('article').getByText('8h',{exact:true}).first().isVisible());assert(await ep.getByRole('article').getByText('30m',{exact:true}).first().isVisible());checked(engine+': employee self period and break totals');
     await ep.getByRole('link',{name:/Request a correction/}).waitFor();
+    // Approved phone design (employee-mobile, Oct 27; corporate Time Oct 30): below 768px the Employee's period
+    // timecard is the pushed "Past timecards" page of Time (/app/my-time?view=cards), and /app/timecards hands the
+    // same period over to it. Phone widths measure that page's period form (Start date, End date, View period) and its
+    // Refresh; desktop widths measure the desktop period form. Same four controls, same target floor, same overflow rule.
+    const phoneCards='/app/my-time?view=cards&start=2026-09-21&end=2026-09-27';
     for(const width of [320,375,390,430,768,1024,1440]){
       await ep.setViewportSize({width,height:1000});
-      const geometry=await ep.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,
-        controls:[...document.querySelectorAll('section[aria-label="Your period timecard"] button,section[aria-label="Your period timecard"] input,form[aria-label="Choose a period"] input,form[aria-label="Choose a period"] button,button[aria-label="Refresh timecards"]')].map(e=>{const box=e.getBoundingClientRect(),style=getComputedStyle(e);return {tag:e.tagName,type:e.getAttribute('type'),label:e.getAttribute('aria-label')??(e.tagName==='BUTTON'?e.textContent?.trim():e.closest('label')?.textContent?.trim()),className:e.className,height:box.height,width:box.width,display:style.display,visibility:style.visibility,minimum:style.minHeight,rendered:e.getClientRects().length>0&&style.visibility!=='hidden'&&style.visibility!=='collapse'};})}));
+      const phone=width<768;
+      if(phone){
+        await ep.goto(app.url+url);await ep.waitForURL(u=>u.pathname+u.search===phoneCards);
+        await ep.locator('[data-hours-view="cards"][data-hours-state="ready"]').waitFor();await ep.getByRole('heading',{name:'Past timecards',exact:true,level:1}).waitFor();
+        assert.equal(await ep.getByRole('definition').filter({hasText:/^8h$/}).count(),1,'Phone period keeps the recorded total');
+      }else if(new URL(ep.url()).pathname+new URL(ep.url()).search!==url){await ep.goto(app.url+url);await ep.getByRole('heading',{name:'Your timecard',exact:true}).waitFor();}
+      const geometry=await ep.evaluate(phone=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,
+        controls:[...document.querySelectorAll(phone?'.em-hours[data-hours-view="cards"] form.em-hours-form input,.em-hours[data-hours-view="cards"] form.em-hours-form button,.em-hours[data-hours-view="cards"] .em-request-footer button':'section[aria-label="Your period timecard"] button,section[aria-label="Your period timecard"] input,form[aria-label="Choose a period"] input,form[aria-label="Choose a period"] button,button[aria-label="Refresh timecards"]')].map(e=>{const box=e.getBoundingClientRect(),style=getComputedStyle(e);return {tag:e.tagName,type:e.getAttribute('type'),label:e.getAttribute('aria-label')??(e.tagName==='BUTTON'?e.textContent?.trim():e.closest('label')?.textContent?.trim()),className:e.className,height:box.height,width:box.width,display:style.display,visibility:style.visibility,minimum:style.minHeight,rendered:e.getClientRects().length>0&&style.visibility!=='hidden'&&style.visibility!=='collapse'};})}),phone);
       // A phone-only disclosure stays in the shared tree but is display:none on desktop.
       // Preserve every raw node; the same target threshold applies to actual rendered controls.
-      (report.employeeControlGeometry??=[]).push({engine,viewport:width,...geometry});
+      (report.employeeControlGeometry??=[]).push({engine,viewport:width,surface:phone?'phone-past-timecards':'desktop-timecards',...geometry});
       await writeFile(join(evidence,'employee-control-geometry-report.json'),JSON.stringify({checkpoint:report.checkpoint,tree:report.tree,measurements:report.employeeControlGeometry},null,2));
       const rendered=geometry.controls.filter(control=>control.rendered);
       assert(geometry.scroll<=geometry.width+2,`${engine} ${width} page overflow`);assert(rendered.length>=4,'Both period inputs and both form actions are rendered');assert(rendered.every(control=>control.height>=43.5),`${engine} ${width} rendered period controls keep the existing target floor`);checked(`${engine}: employee geometry ${width}`);
@@ -202,7 +213,8 @@ try{
     await mp.route('**/api/reports',route=>route.fulfill({status:403,contentType:'application/json',body:'{"state":"unavailable"}'}));await mp.getByRole('button',{name:'Refresh',exact:true}).click();await mp.getByRole('heading',{name:'Your session ended',exact:true}).waitFor();assert.equal(await mp.getByRole('heading',{name:'Hours by person',exact:true}).count(),0);checked(engine+': report authorization-loss clearing');
     await lp.goto(app.url+'/app/reports');await lp.waitForURL(u=>u.pathname==='/app');checked(engine+': Lead denied reports');
     await mp.bringToFront();currentPage=mp;const corrections=mp.locator('main .manager-corrections');let releaseQueue;await mp.route('**/api/manager/time-corrections',route=>new Promise(resolve=>{releaseQueue=()=>route.continue().then(resolve);}));
-    await mp.goto(app.url+'/app?view=attendance');await corrections.getByText('Loading correction requests',{exact:true}).waitFor();assert.equal(await corrections.getByText('No correction requests',{exact:true}).count(),0);checked(engine+': UX-04 loading never claims empty');
+    // Corporate Who's working (board O-OnShift): time corrections sit behind "Clock-ins and corrections"; #review opens it.
+    await mp.goto(app.url+'/app?view=attendance#review');await corrections.getByText('Loading correction requests',{exact:true}).waitFor();assert.equal(await corrections.getByText('No correction requests',{exact:true}).count(),0);checked(engine+': UX-04 loading never claims empty');
     await waitUntil(()=>releaseQueue);assert(releaseQueue);await releaseQueue();await mp.unroute('**/api/manager/time-corrections');await corrections.getByText('No correction requests',{exact:true}).waitFor();checked(engine+': UX-04 verified empty');
     const requestId=crypto.randomUUID(),submitted=await boundCorrectionPost(ep.request,app.url+'/api/employee/time-corrections',{headers:{origin:app.url,'x-nevora-time-correction':'1'},data:{operationId:requestId,kind:'MISSING_ENTRY',locationId:'loc-1',proposedStartAt:'2026-09-28T12:00:00Z',proposedEndAt:'2026-09-28T13:00:00Z',reason:'Fictional completed work for queue verification'}});assert(submitted.ok());const submittedBody=await submitted.json();
     await mp.evaluate(()=>window.dispatchEvent(new Event('nevora:time-correction-changed')));await corrections.locator('.manager-correction-row').filter({hasText:'Avery Period QA'}).waitFor();checked(engine+': UX-04 actual pending queue');

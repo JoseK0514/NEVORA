@@ -5,6 +5,7 @@ import {join} from 'node:path';
 // v5 My time: each entry is a row that opens its punches and its correction as a sheet.
 const entryRow=page=>page.locator('ul[aria-labelledby^="employee-time-"] > li > button[aria-haspopup="dialog"]').first();
 import {Temporal} from '@js-temporal/polyfill';
+import {DESKTOP_WIDTHS,EMPLOYEE_DESKTOP_VIEWPORT,phoneHoursGeometry,phoneUncertainCorrection} from './phase-d2-phone-hours-geometry.mjs';
 
 /** Real authenticated commands with deliberately lost delivery; owned fictional data only. */
 export async function verifyCorrectionRecovery({browser,engine,app,q,context,login,checked,report,evidence,geometry}){
@@ -21,7 +22,8 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
  const owner=await context(browser);await login(owner,'QAOWNER');
  try{
   for(const kind of ['ENTRY_BOUNDARY','BREAK_BOUNDARY','MISSING_ENTRY'])for(const loss of ['before','after']){
-   const c=await context(browser,{width:390,height:844});await login(c,'D2-E',{reuseSession:true});
+   // The entry sheet and correction center this case drives ship at 768px and wider (phones use the Time page).
+   const c=await context(browser,EMPLOYEE_DESKTOP_VIEWPORT);await login(c,'D2-E',{reuseSession:true});
    let releaseDelivery=()=>{};
    try{
     const page=await c.newPage();page.setDefaultTimeout(15000);watch(page);
@@ -78,11 +80,18 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
     if(kind!=='MISSING_ENTRY')await entryRow(page).click();
     const retry=page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/});await retry.waitFor();
     if(kind==='ENTRY_BOUNDARY'&&loss==='after'){
-     for(const width of [320,375,390,430,768,1024,1440]){
+     for(const width of DESKTOP_WIDTHS){
       await page.setViewportSize({width,height:width<=430?844:1000});
       await geometry(page,'.employee-time-correction','employee uncertain request',engine,width);
       const shot=join(evidence,`${engine}-employee-recovery-${width}.png`);await page.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
      }
+    }
+    if(kind==='ENTRY_BOUNDARY'&&loss==='before'){
+     // Phone widths: the same uncertain correction on the Time page (its server action never answers; nothing commits).
+     await phoneHoursGeometry({app,browser,context,login,geometry,engine,evidence,report,actor:'D2-E',label:'employee uncertain request',
+      path:'/app/my-time?view=corrections&edit='+encodeURIComponent('entry:d2-browser-entry'),selector:'.em-hours section[aria-label="Submission status"]',
+      prepare:phone=>phoneUncertainCorrection(phone,'Fictional uncertain phone ENTRY_BOUNDARY command.')});
+     await page.bringToFront();
     }
     // WebKit can expose animated disclosure content before it accepts focus.
     await retry.evaluate(async e=>{await new Promise(requestAnimationFrame);await Promise.all((e.closest('details')?.getAnimations({subtree:true})??[]).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})));});
@@ -107,7 +116,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    const c=await context(browser,{width:390,height:844});await login(c,'QAOWNER',{reuseSession:true});
    try{
     const page=await c.newPage();page.setDefaultTimeout(15000);watch(page);
-    const attendanceNavigation=await page.goto(app.url+'/app?view=attendance',{waitUntil:'domcontentloaded'});assert(attendanceNavigation?.ok());await page.bringToFront();
+    const attendanceNavigation=await page.goto(app.url+'/app?view=attendance#review',{waitUntil:'domcontentloaded'});assert(attendanceNavigation?.ok());await page.bringToFront();
     const commands=[];
     await page.route('**/api/manager/time-corrections',async route=>{
      if(route.request().method()!=='POST')return route.continue();
@@ -151,7 +160,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
   const manager=await context(browser);await login(manager,'QAOWNER');
   try{
    const page=await manager.newPage();page.setDefaultTimeout(15000);watch(page);
-   await page.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});await page.bringToFront();
+   await page.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});await page.bringToFront();
    await page.route('**/api/manager/time-corrections',route=>route.request().method()==='POST'?route.abort('failed'):route.continue());
    await page.getByRole('button',{name:'Approve correction for Avery Correction QA',exact:true}).click();
    await page.getByRole('button',{name:'Retry same decision',exact:true}).waitFor();
@@ -167,7 +176,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
   }
 
   // Real sign-out/sign-in unmounts the page-scoped command memory.
-  const c=await context(browser,{width:390,height:844});await login(c,'D2-E');
+  const c=await context(browser,EMPLOYEE_DESKTOP_VIEWPORT);await login(c,'D2-E');
   try{
    const page=await c.newPage();page.setDefaultTimeout(15000);watch(page);
    await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});await page.bringToFront();
@@ -179,7 +188,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).waitFor();
    await page.goto(app.url+'/app/profile',{waitUntil:'networkidle'});
    await Promise.all([page.waitForURL(url=>url.pathname==='/login',{waitUntil:'commit'}),page.getByRole('region',{name:'Session',exact:true}).getByRole('button',{name:'Sign out',exact:true}).click()]);
-   await login(c,'QAOWNER');await page.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
+   await login(c,'QAOWNER');await page.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});
    assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
    await login(c,'D2-E');await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
    await entryRow(page).waitFor();
@@ -187,7 +196,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
    checked(`${engine}: sign-out/account-switch/sign-in clears uncertain Employee command memory`);
   }finally{await c.close();}
 
-  const denied=await context(browser,{width:390,height:844});await login(denied,'D2-E');
+  const denied=await context(browser,EMPLOYEE_DESKTOP_VIEWPORT);await login(denied,'D2-E');
   try{
    const page=await denied.newPage();page.setDefaultTimeout(15000);watch(page);
    await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});await page.bringToFront();

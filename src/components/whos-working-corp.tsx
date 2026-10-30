@@ -1,6 +1,6 @@
 "use client";
 import "./whos-working-corp.css";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { CaretDownIcon } from "@phosphor-icons/react/ssr";
 import { CorpAvatar, CorpBody, CorpButton, CorpCard, CorpNav, CorpPage, CorpPill, CorpRow, CorpTitle } from "./corp/corp";
 import { useClockMonitor } from "./clean/use-clock-monitor";
@@ -19,6 +19,7 @@ const lateBy = (start: string, observedAt: string) => {
   return minutes >= 60 ? `${Math.floor(minutes / 60)} h ${minutes % 60 ? `${minutes % 60} min ` : ""}late` : `${Math.max(minutes, 1)} min late`;
 };
 const SHOWN = 5;
+const REVIEW_FRAGMENT = /^#(?:review$|attendance-.|correction-.)/;
 
 export function WhosWorkingCorp({ children, homeHref = "/app" }: { children?: ReactNode; homeHref?: string }) {
   const { monitor, refreshing } = useClockMonitor();
@@ -30,8 +31,16 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
   monitor: ClockMonitor | null; today: Today | null; refreshing?: boolean; onRetry?: () => void; homeHref?: string; children?: ReactNode;
 }) {
   const [all, setAll] = useState(false);
-  // The attendance review and time corrections sit behind one row, open when a link points at them (#review).
-  const [reviewOpen, setReviewOpen] = useState(() => typeof window !== "undefined" && window.location.hash === "#review");
+  // The attendance review and time corrections sit behind one row, open when a link points at them: #review, or an
+  // Inbox link to one flagged clock-in (#attendance-…) or one correction request (#correction-…), which the review
+  // then focuses. Read after mount: the server render has no fragment, and a client navigation sets it at commit.
+  const [reviewOpen, setReviewOpen] = useState(false);
+  useEffect(() => {
+    const sync = () => { if (REVIEW_FRAGMENT.test(window.location.hash)) setReviewOpen(true); };
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
   const ready = monitor?.state === "ready" ? monitor : null;
   const timeZone = ready?.timeZone ?? (today?.state === "ready" ? today.timeZone : "UTC");
   const people = ready ? [...ready.employees].sort((a, b) => a.clockInAt.localeCompare(b.clockInAt)) : [];

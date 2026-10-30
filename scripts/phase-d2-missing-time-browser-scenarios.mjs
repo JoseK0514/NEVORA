@@ -2,6 +2,7 @@ import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { join } from 'node:path';
+import {DESKTOP_WIDTHS,phoneHoursGeometry} from './phase-d2-phone-hours-geometry.mjs';
 
 // Real authenticated HTTP and rendered UI on the caller's newly owned loopback app.
 export async function missingTimeBrowserScenarios({app,browser,engine,employee,page,context,login,geometry,checked,localValue,evidence,report}) {
@@ -40,10 +41,16 @@ export async function missingTimeBrowserScenarios({app,browser,engine,employee,p
     const correct=center.locator('.employee-correction-history-row').first().getByRole('button',{name:'Correct missing time',exact:true});
     await correct.waitFor();
     assert.equal(await correct.count(),1);
-    for(const width of [320,375,390,430,768,1024,1440]) {
+    // The correction center ships at 768px and wider. On a phone the same supersession action is "Request another
+    // correction" on the approved request's page in Time.
+    for(const width of DESKTOP_WIDTHS) {
       await page.setViewportSize({width,height:width<=430?844:1000});
       await geometry(page,'.employee-correction-center','missing-time history action',engine,width);
     }
+    await phoneHoursGeometry({app,browser,context,login,geometry,engine,evidence,report,actor:'D2-E',label:'missing-time history action',
+      path:'/app/my-time?view=corrections&filter=decided&requestId='+aRequest.requestId,selector:'.em-hours[data-hours-view="corrections"] .em-request-body',
+      prepare:async phone=>{await phone.getByRole('link',{name:'Request another correction',exact:true}).waitFor();}});
+    await page.bringToFront();
     const replacement={...rootCommand,operationId:randomUUID(),targetAdjustmentId:a.adjustmentId,expectedBaseRevision:a.revision,proposedStartAt:`2026-01-${day}T08:05:00Z`};
     const stale=await post(employee,employeePath,{...replacement,expectedBaseRevision:1});
     assert.equal(stale.status(),409);assert.deepEqual(await stale.json(),{state:'blocked',reason:'stale_source'});
@@ -67,11 +74,16 @@ export async function missingTimeBrowserScenarios({app,browser,engine,employee,p
     report.missingTimeLocationLabels.push({engine,label:await locationControl.evaluate(el=>el.closest('label').textContent.trim())});
     await form.getByLabel('Start',{exact:true}).fill(localValue(replacement.proposedStartAt));
     await form.getByLabel('Reason',{exact:true}).fill('Fictional approved interval replacement.');
-    for(const width of [320,375,390,430,768,1024,1440]) {
+    for(const width of DESKTOP_WIDTHS) {
       await page.setViewportSize({width,height:width<=430?844:1000});
       await geometry(page,'.employee-time-correction-form.missing','missing-time replacement form',engine,width);
     }
-    await page.setViewportSize({width:375,height:844});
+    await phoneHoursGeometry({app,browser,context,login,geometry,engine,evidence,report,actor:'D2-E',label:'missing-time replacement form',
+      path:'/app/my-time?view=corrections&requestId='+aRequest.requestId+'&edit='+encodeURIComponent('missing:'+aRequest.requestId),selector:'.em-hours form.em-hours-form',
+      prepare:async phone=>{const phoneForm=phone.locator('.em-hours form.em-hours-form');assert.equal(await phoneForm.locator('select[name="locationId"]').isDisabled(),true,'Phone replacement keeps the approved location');await phoneForm.getByLabel('Reason').fill('Fictional approved interval replacement.');}});
+    await page.bringToFront();
+    // The smallest width where this form ships (phones use the Time page measured above).
+    await page.setViewportSize({width:768,height:1024});
     const shot=join(evidence,engine+'-missing-time-replacement.png');
     await page.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
     const requestPromise=page.waitForRequest(request=>request.url().endsWith(employeePath)&&request.method()==='POST');
@@ -87,7 +99,7 @@ export async function missingTimeBrowserScenarios({app,browser,engine,employee,p
 
     const managerPage=await manager.newPage();managerPage.setDefaultTimeout(15000);
     managerPage.on('pageerror',error=>errors.push(String(error)));
-    await managerPage.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
+    await managerPage.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});
     await managerPage.getByText('Approved missing time',{exact:true}).waitFor();
     const approvalRequest=managerPage.waitForRequest(request=>request.url().endsWith(managerPath)&&request.method()==='POST');
     await managerPage.getByRole('button',{name:'Approve correction for Avery Correction QA'}).click();

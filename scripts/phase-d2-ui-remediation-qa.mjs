@@ -7,6 +7,7 @@ import {hashPassword} from '../src/lib/auth/password.ts';
 import {TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {safeD2Error,safeD2Text,unexpectedD2Runtime} from './d2-runtime-failures.mjs';
 import {finishD2ForegroundRecovery,waitForD2RscQuiescence} from './d2-foreground-recovery.mjs';
+import {DESKTOP_WIDTHS,phoneHoursGeometry} from './phase-d2-phone-hours-geometry.mjs';
 
 // Runs only inside the existing owned PostgreSQL / exact-clean-SHA D2 gate.
 export async function verifyD2UiRemediation({app,browser,engine,evidence,report,checked,context,login,geometry,widths}){
@@ -63,14 +64,25 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   const response=await boundCorrectionPost(owner.request,app.url+'/api/manager/time-corrections',{headers,data:{operationId:randomUUID(),requestId,expectedRevision:1,decision,note:'Compared against fictional recorded time.'}});
   assert.equal(response.status(),200);
  };
- const shots=async(page,selector,state)=>{
-  for(const width of widths){
+ const shots=async(page,selector,state,stateWidths=widths)=>{
+  for(const width of stateWidths){
    await page.setViewportSize({width,height:width<=430?844:1000});
    await geometry(page,selector,state,engine,width);
    const file=join(evidence,`${engine}-ui-${state}-${width}.png`);
    await page.screenshot({path:file,fullPage:true});report.screenshots.push(file);
   }
   observations.states.push(state);
+ };
+ // Employee surfaces: the desktop correction sheet/center ships at 768px and wider; phones use the Time page.
+ const employeeShots=async(selector,state,phone)=>{
+  await shots(ep,selector,state,widths.filter(width=>DESKTOP_WIDTHS.includes(width)));
+  await phoneHoursGeometry({app,browser,context,login,geometry,engine,evidence,report,actor:employeeId,label:state,...phone});
+  await ep.bringToFront();
+ };
+ const phoneDefaults=(expected)=>async phone=>{
+  const form=phone.locator('.em-hours form.em-hours-form');await form.waitFor();
+  const [startDate,startTime]=local(expected.start).split('T'),[endDate,endTime]=local(expected.finish).split('T');
+  assert.deepEqual(await form.evaluate(f=>Object.fromEntries(['startDate','startTime','endDate','endTime'].map(name=>[name,f.querySelector(`[name="${name}"]`).value]))),{startDate,startTime,endDate,endTime},'Phone defaults are the current effective time');
  };
  const safePause=async(label,selector='.manager-corrections')=>{
   const text=await mp.locator(selector).innerText();
@@ -97,7 +109,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
    assert(item.context.decisions.every(d=>d.status==='APPROVED'));
   }
   observations.comparison={raw,rawBreak,canonical,canonicalBreak,requests:snapshot.requests.filter(r=>[pendingEntry,pendingBreak].includes(r.id))};
-  stage='manager-initial';await mp.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
+  stage='manager-initial';await mp.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   assert.equal(await mp.locator('.manager-correction-row').filter({hasText:name}).getByText('Current effective',{exact:true}).count(),2);
   await shots(mp,'.manager-corrections','multiple-supersessions');
@@ -130,12 +142,12 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   await ep.waitForFunction(()=>document.querySelector('.employee-time-correction-form input[type="datetime-local"]')?.value);
   assert.equal(await form.getByLabel('Start',{exact:true}).inputValue(),local(canonical.start));
   assert.equal(await form.getByLabel('End',{exact:true}).inputValue(),local(canonical.finish));
-  await shots(ep,'.employee-time-correction-form','employee-effective-defaults');
+  await employeeShots('.employee-time-correction-form','employee-effective-defaults',{path:'/app/my-time?view=corrections&edit='+encodeURIComponent('entry:'+entryId),selector:'.em-hours form.em-hours-form',prepare:phoneDefaults(canonical)});
   await form.getByLabel('What needs correction?').selectOption(`break:${breakId}`);
   await ep.waitForFunction(()=>document.querySelector('.employee-time-correction-form input[type="datetime-local"]')?.value);
   assert.equal(await form.getByLabel('Start',{exact:true}).inputValue(),local(canonicalBreak.start));
   assert.equal(await form.getByLabel('End',{exact:true}).inputValue(),local(canonicalBreak.finish));
-  await shots(ep,'.employee-time-correction-form','break-effective-defaults');
+  await employeeShots('.employee-time-correction-form','break-effective-defaults',{path:'/app/my-time?view=corrections&edit='+encodeURIComponent('break:'+entryId+':'+breakId),selector:'.em-hours form.em-hours-form',prepare:phoneDefaults(canonicalBreak)});
   // WebKit's native date control can keep DOM focus on the select after Tab.
   // Check an actual keyboard transition and direct focus separately, preserving both.
   const select=form.getByLabel('What needs correction?');await select.focus();await select.press('Tab');
@@ -166,7 +178,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   assert.equal(managerRscRequests.size,0,'Foreground RSC must remain drained after console extraction');
   assert.equal(managerRscVersion,quiescent.version,'A new foreground recovery cannot cross the reload boundary');
   record({role:'manager',event:'foreground-recovery-ready',pendingRscRequests:managerRscRequests.size,rscVersion:quiescent.version,quietMs:500,freshRscRequestId:requests.get(foregroundResponse.request()),freshCorrectionRequestId:requests.get(correctionResponse.request())});
-  await mp.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
+  await mp.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});
   const approve=mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first();await approve.waitFor();await approve.focus();
   const managerFocus=await approve.evaluate(el=>({active:document.activeElement===el,outlineStyle:getComputedStyle(el).outlineStyle,outlineWidth:getComputedStyle(el).outlineWidth}));
   assert(managerFocus.active);assert.equal(managerFocus.outlineStyle,'solid');assert(parseFloat(managerFocus.outlineWidth)>=2);observations.keyboard.push({role:'manager',focus:managerFocus});
@@ -211,7 +223,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   await mp.getByText('No correction requests',{exact:true}).waitFor();await shots(mp,'.manager-corrections','confirmed-empty');
   assert.equal((await q('SELECT count(*)::int AS count FROM nevora_pending_time_corrections WHERE employee_id=$1',[employeeId]))[0].count,0);
   observations.keyboard.push({decisions:'two declines activated with Enter'});
-  stage='completed-history';await ep.reload({waitUntil:'networkidle'});await ep.getByText('Declined',{exact:true}).first().waitFor();await shots(ep,'.employee-correction-center','completed-history');
+  stage='completed-history';await ep.reload({waitUntil:'networkidle'});await ep.getByText('Declined',{exact:true}).first().waitFor();await employeeShots('.employee-correction-center','completed-history',{path:'/app/my-time?view=corrections&filter=decided',selector:'.em-hours[data-hours-view="corrections"] .em-request-body',prepare:async phone=>{await phone.locator('.em-request-list').getByText(/Declined$/).first().waitFor();}});
   // Restore only this disposable version mutation to compare untouched raw evidence.
   await q('UPDATE time_entries SET version=version-1 WHERE id=$1',[entryId]);
   assert.deepEqual((await q('SELECT clock_in_at::text AS start,clock_out_at::text AS finish,device_id,schedule_context,version FROM time_entries WHERE id=$1',[entryId]))[0],raw);

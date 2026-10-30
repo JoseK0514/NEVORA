@@ -11,6 +11,7 @@ import {Temporal} from '@js-temporal/polyfill';
 import {createOwnedNextApp} from '../src//test/integration/owned-next-app.ts';
 import {seedOwnedApp,assignOwnedManagerCompanyAccess,TEST_PASSWORD} from '../src//test/integration/owned-app-fixture.ts';
 import {hashPassword} from '../src//lib/auth/password.ts';
+import {EMPLOYEE_DESKTOP_VIEWPORT} from './phase-d2-phone-hours-geometry.mjs';
 const pw=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'))('playwright');
 const checkpoint=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim(),sourceClean=execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim()==='';
 if(process.env.PHASE_D_EXPECTED_SHA){assert.equal(checkpoint,process.env.PHASE_D_EXPECTED_SHA);assert(sourceClean);}
@@ -20,7 +21,9 @@ const q=(text,values=[])=>app.database.executor.query({text,values});
 const headers=()=>({'X-Nevora-Time-Correction':'1',Origin:app.url,'Content-Type':'application/json'});
 const local=instant=>Temporal.Instant.from(instant).toZonedDateTimeISO('America/Puerto_Rico').toPlainDateTime().toString().slice(0,16);
 async function record(name,fn){activeCase=name;let observations={};try{await fn(v=>Object.assign(observations,v));results.push({name,result:'PASS',observations});}catch(e){results.push({name,result:'FAIL',observations,error:String(e.stack??e)});}await writeFile(dir+'/report.json',JSON.stringify({checkpoint,tree,sourceClean,results,consoleErrors,runtimeErrors},null,2));console.log(name+': '+results.at(-1).result);}
-async function context(){const c=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});await c.route('**/*',route=>{const u=new URL(route.request().url());return ['http:','https:'].includes(u.protocol)&&u.origin!==app.url?route.abort('blockedbyclient'):route.continue();});return c;}
+// Managers stay on the 390px phone. The Employee correction center these cases drive (EmployeeTimeCorrections and its
+// /api/employee/time-corrections recovery) ships at 768px and wider; a phone shows the Time page instead.
+async function context(viewport={width:390,height:844}){const c=await browser.newContext({viewport,serviceWorkers:'block'});await c.route('**/*',route=>{const u=new URL(route.request().url());return ['http:','https:'].includes(u.protocol)&&u.origin!==app.url?route.abort('blockedbyclient'):route.continue();});return c;}
 async function login(c,id){const p=await c.newPage();p.setDefaultTimeout(12000);await p.goto(app.url+'/login');await p.getByLabel('Employee ID',{exact:true}).fill(id);await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign in',exact:true}).click()]);await p.waitForLoadState('networkidle');await p.close();}
 async function page(c,path){const p=await c.newPage();p.setDefaultTimeout(12000);p.on('pageerror',e=>runtimeErrors.push({case:activeCase,message:String(e).replaceAll(app.url,'[owned-origin]'),stack:e.stack?.replaceAll(app.url,'[owned-origin]')}));p.on('console',m=>{if(m.type()==='error')consoleErrors.push({case:activeCase,message:m.text().replaceAll(app.url,'[owned-origin]')});});const response=await p.goto(app.url+path,{waitUntil:'domcontentloaded'});assert(response?.ok());await p.bringToFront();return p;}
 async function settleReply(release,done){release();let timer;try{await Promise.race([done,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Held committed reply did not settle')),12000);})]);}finally{clearTimeout(timer);}}
@@ -31,7 +34,7 @@ try{
  for(const id of ['RV-M1','RV-M2'])await assignOwnedManagerCompanyAccess(app.database.executor,id);
   browser=await pw[engine].launch({headless:true});const dates=engine==='chromium'?['07','08','09']:['17','18','19'];
   await record(engine+' employee cross-tab account switch clears uncertain missing command',async o=>{
-   const c=await context();try{
+   const c=await context(EMPLOYEE_DESKTOP_VIEWPORT);try{
     await login(c,'RV-E1');const p=await page(c,'/app/my-time');
     await p.locator('main .employee-correction-center').getByRole('button',{name:'Request a correction',exact:true}).click();const form=p.locator('#employee-missing-time-correction');
     await form.getByLabel('Start',{exact:true}).fill(`2020-10-${dates[0]}T02:00`);await form.getByLabel('End',{exact:true}).fill(`2020-10-${dates[0]}T03:00`);await form.getByLabel('Reason',{exact:true}).fill('RV-E1 private fictional reason '+engine);
@@ -50,7 +53,7 @@ try{
   await record(engine+' Manager cross-tab account switch clears uncertain review command',async o=>{
    const e=await context();await login(e,'RV-E1');const create=await e.request.post(app.url+'/api/employee/time-corrections',{headers:{...headers(),'X-Nevora-Correction-Authority':(await (await e.request.get(app.url+'/api/employee/time-corrections',{headers:headers()})).json()).authority},data:{operationId:randomUUID(),kind:'MISSING_ENTRY',locationId:'loc-1',proposedStartAt:`2020-10-${dates[1]}T08:00:00Z`,proposedEndAt:`2020-10-${dates[1]}T09:00:00Z`,reason:'Manager account-switch fictional fixture '+engine}});assert.equal(create.status(),202);const created=await create.json();await e.close();
    const c=await context();try{
-    await login(c,'RV-M1');const p=await page(c,'/app?view=attendance');const commands=[];
+    await login(c,'RV-M1');const p=await page(c,'/app?view=attendance#review');const commands=[];
     await p.route('**/api/manager/time-corrections',route=>{if(route.request().method()!=='POST')return route.continue();commands.push(route.request().postDataJSON());return commands.length===1?route.abort('failed'):route.continue();});
     const row=p.locator('.manager-correction-row').filter({hasText:'Manager account-switch fictional fixture '+engine});await row.getByRole('button',{name:'Approve correction for RV-E1 Fictional',exact:true}).click();await p.getByRole('button',{name:'Retry same decision',exact:true}).waitFor();
     await login(c,'RV-M2');await p.bringToFront();await p.evaluate(()=>window.dispatchEvent(new Event('focus')));await row.waitFor({state:'detached'});await p.waitForLoadState('networkidle');o({afterSwitchText:await p.locator('body').innerText()});
@@ -61,7 +64,7 @@ try{
    }finally{await c.close();}
   });
   await record(engine+' Employee malformed committed body retains exact-operation recovery',async o=>{
-   const c=await context();try{
+   const c=await context(EMPLOYEE_DESKTOP_VIEWPORT);try{
     await login(c,'RV-E1');const p=await page(c,'/app/my-time');await p.locator('main .employee-correction-center').getByRole('button',{name:'Request a correction',exact:true}).click();const form=p.locator('#employee-missing-time-correction');await form.getByLabel('Start',{exact:true}).fill(`2020-10-${dates[2]}T02:00`);await form.getByLabel('End',{exact:true}).fill(`2020-10-${dates[2]}T03:00`);await form.getByLabel('Reason',{exact:true}).fill('Malformed body fictional '+engine);
     const commands=[];await p.route('**/api/employee/time-corrections',async route=>{if(route.request().method()!=='POST')return route.continue();commands.push(route.request().postDataJSON());if(commands.length!==1)return route.continue();const result=await route.fetch();assert.equal(result.status(),202);return route.fulfill({status:202,contentType:'application/json',body:'{'});});
     await form.getByRole('button',{name:'Send request',exact:true}).click();await p.locator('main .employee-correction-center').getByRole('button',{name:'Try again',exact:true}).waitFor();await p.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await p.getByText('Updates paused',{exact:true}).waitFor();await p.evaluate(()=>window.dispatchEvent(new Event('pageshow')));await p.locator('main .employee-correction-center').getByRole('button',{name:'Try again',exact:true}).waitFor();await p.locator('main .employee-correction-center').getByRole('button',{name:'Try again',exact:true}).click();await p.getByText('Correction request sent for manager review.',{exact:true}).waitFor();assert.deepEqual(commands[1],commands[0]);assert.equal(commands.length,2);assert.equal((await q('SELECT count(*)::int AS n FROM time_correction_requests WHERE id=$1',[commands[0].operationId]))[0].n,1);o({commandsIdentical:true,postCalls:2,logicalMutations:1});
@@ -70,7 +73,7 @@ try{
 
   for(const [scenario,currentAccount] of [['committed account switch','RV-E2'],['same-account new login session','RV-E1']]){
    await record(engine+' '+scenario+' rejects stale intent and clears late committed responses',async o=>{
-    const c=await context();let release;
+    const c=await context(EMPLOYEE_DESKTOP_VIEWPORT);let release;
     try{
      await login(c,'RV-E1');const p=await page(c,'/app/my-time');await p.locator('main .employee-correction-center').getByRole('button',{name:'Request a correction',exact:true}).click();const form=p.locator('#employee-missing-time-correction');
      const day=scenario==='committed account switch'?(engine==='chromium'?'03':'13'):(engine==='chromium'?'04':'14');
@@ -94,7 +97,7 @@ try{
    });
   }
   await record(engine+' expired employee session refuses uncommitted recovery',async o=>{
-   const c=await context();try{
+   const c=await context(EMPLOYEE_DESKTOP_VIEWPORT);try{
     await login(c,'RV-E1');const p=await page(c,'/app/my-time');await p.locator('main .employee-correction-center').getByRole('button',{name:'Request a correction',exact:true}).click();const form=p.locator('#employee-missing-time-correction');const day=engine==='chromium'?'05':'15';
     await form.getByLabel('Start',{exact:true}).fill(`2020-11-${day}T02:00`);await form.getByLabel('End',{exact:true}).fill(`2020-11-${day}T03:00`);await form.getByLabel('Reason',{exact:true}).fill('Expired fictional intent '+engine);let command,authority;
     await p.route('**/api/employee/time-corrections',route=>{if(route.request().method()!=='POST')return route.continue();command=route.request().postDataJSON();authority=route.request().headers()['x-nevora-correction-authority'];return route.abort('failed');});
@@ -109,7 +112,7 @@ try{
    const e=await context();await login(e,'RV-E1');const day=engine==='chromium'?'03':'13';
    const createdResponse=await boundCorrectionPost(e.request,app.url+'/api/employee/time-corrections',{headers:headers(),data:{operationId:randomUUID(),kind:'MISSING_ENTRY',locationId:'loc-1',proposedStartAt:`2020-12-${day}T08:00:00Z`,proposedEndAt:`2020-12-${day}T09:00:00Z`,reason:'Late manager commit '+engine}});assert.equal(createdResponse.status(),202);const created=await createdResponse.json();await e.close();
    const c=await context();let release;try{
-    await login(c,'RV-M1');const p=await page(c,'/app?view=attendance');let command,authority,committed=false,originalRequest,replyOutcome,replyFailure=false,documentReplaced=false,finishReply;const barrier=new Promise(resolve=>{release=resolve;}),replyDone=new Promise(resolve=>{finishReply=resolve;});
+    await login(c,'RV-M1');const p=await page(c,'/app?view=attendance#review');let command,authority,committed=false,originalRequest,replyOutcome,replyFailure=false,documentReplaced=false,finishReply;const barrier=new Promise(resolve=>{release=resolve;}),replyDone=new Promise(resolve=>{finishReply=resolve;});
     await p.route('**/api/manager/time-corrections',async route=>{if(route.request().method()!=='POST')return route.continue();try{originalRequest=route.request();command=originalRequest.postDataJSON();authority=originalRequest.headers()['x-nevora-correction-authority'];const r=await route.fetch();assert.equal(r.status(),200);committed=true;await barrier;replyOutcome=await fulfillHeldResponse(route,{status:200,contentType:'application/json',body:'{'},documentReplaced);}catch{replyFailure=true;}finally{finishReply();}});
     const originalRow=p.locator('.manager-correction-row').filter({hasText:'Late manager commit '+engine});
     const sourceDocument=await p.evaluate(()=>performance.timeOrigin);

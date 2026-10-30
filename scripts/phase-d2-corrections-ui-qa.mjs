@@ -11,6 +11,7 @@ import { hashPassword } from '../src/lib/auth/password.ts';
 import { verifyCorrectionRecovery } from './phase-d2-corrections-recovery-qa.mjs';
 import {verifyD2UiRemediation} from './phase-d2-ui-remediation-qa.mjs';
 import { missingTimeBrowserScenarios } from './phase-d2-missing-time-browser-scenarios.mjs';
+import {DESKTOP_WIDTHS,phoneHoursGeometry} from './phase-d2-phone-hours-geometry.mjs';
 
 const WIDTHS=[320,375,390,430,768,1024,1440];
 const ENGINES=['chromium','webkit'];
@@ -150,12 +151,18 @@ try{
   await correctionForm.getByLabel('Reason',{exact:true}).fill('Fictional D2 browser correction review.');
   checked(engine+': employee correction form expands with labeled controls');
 
-  for(const width of WIDTHS){
+  // The entry sheet's correction form ships at 768px and wider; phones correct the same entry on the Time page.
+  for(const width of DESKTOP_WIDTHS){
    await ep.setViewportSize({width,height:width<=430?844:1000});
    await geometry(ep,'.employee-time-correction-form','employee correction form',engine,width);
    const shot=join(evidence,`${engine}-employee-correction-${width}.png`);
    await ep.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
   }
+  await phoneHoursGeometry({app,browser,context,login,geometry,engine,evidence,report,actor:'D2-E',label:'employee correction form',
+   path:'/app/my-time?view=corrections&edit='+encodeURIComponent('entry:d2-browser-entry'),selector:'.em-hours form.em-hours-form',
+   prepare:async page=>{await page.locator('.em-hours form.em-hours-form').getByLabel('Reason').fill('Fictional D2 browser correction review.');}});
+  await ep.bringToFront();await ep.setViewportSize({width:1440,height:1000});
+  await correctionForm.waitFor({state:'visible'});
   await ep.getByRole('button',{name:'Send request',exact:true}).click();
   await ep.getByText('Correction request sent for manager review.',{exact:true}).waitFor();
   await ep.getByText('Pending',{exact:true}).waitFor();
@@ -174,7 +181,8 @@ try{
   checked(engine+': Owner can read correction review inbox');
 
   const mp=await owner.newPage();mp.setDefaultTimeout(15000);
-  await mp.goto(app.url+'/app?view=attendance',{waitUntil:'networkidle'});
+  // Corporate Who's working (board O-OnShift): the correction review opens behind "Clock-ins and corrections"; #review opens it.
+  await mp.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});
   await mp.getByRole('heading',{name:'Correction requests',exact:true}).waitFor();
   await mp.getByText('Avery Correction QA',{exact:true}).waitFor();
   await mp.getByText('Original recorded punches stay unchanged. Approval creates an auditable effective adjustment.',{exact:true}).waitFor();
