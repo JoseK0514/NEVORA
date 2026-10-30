@@ -28,9 +28,9 @@ Files: `config.server.ts`, new `provider.server.ts` and `provider.test.ts`, `loo
 
 Interfaces: `ProviderConfig` adds optional `apiStyle: "responses"|"chat_completions"` and optional `reasoningEffort: "low"|"medium"|"high"`; omitted style remains Responses for existing internal callers. `providerBody(config,instructions,input,tools): string` builds a bounded wire payload. `providerItems(config,output): Record<string,unknown>[]` validates a complete turn and normalizes calls/text. Keep `investigate`/`Transport` signatures.
 
-- [ ] Author failing configuration, chat content/tool continuation, refusal/incomplete/malformed/duplicate call, encrypted Responses, effort and aggregate-cap regressions. Observe and preserve RED.
-- [ ] Implement adapter/configuration and integrate into existing loop. Check full turns before tool effects, preserve no-redirect/cancellation and existing per-call budgets. Focused protocol/Owner tests expected PASS.
-- [ ] Commit code/tests and ledger actual results.
+- [x] Author failing configuration, chat content/tool continuation, refusal/incomplete/malformed/duplicate call, encrypted Responses, effort and aggregate-cap regressions. Observe and preserve RED.
+- [x] Implement adapter/configuration and integrate into existing loop. Check full turns before tool effects, preserve no-redirect/cancellation and existing per-call budgets. Focused protocol/Owner tests expected PASS.
+- [x] Commit code/tests and ledger actual results.
 
 ### Task2: evidence-based decision tool
 
@@ -38,15 +38,17 @@ Files: new `decision.ts`, `decision.test.ts`, `intelligence.test.ts`; `loop.serv
 
 Interfaces: `DecisionEvidence {id,call,result}` is investigation-local. `reviewDecision(arguments,evidence)` returns bounded correction codes or accepted rendered text. `decisionTool` is a strict provider function definition; it is never added to `AdvisorTools`, `inspect` or a business writer. Local review attempts consume the existing eight-slot budget and are capped at two.
 
-- [ ] Author failing real-loop scenarios for option comparison, canonical plan choice, missing/partial evidence, Spanish, blind malicious source text, rejected-review correction/bypass and review/cancellation budgets. Observe RED.
-- [ ] Implement strict parsing/reference/scope checks and clear model operating instructions. Preserve existing prose for simple answers, exact public contract, current task evidence and server-owned plans. Focused intelligence/legacy Owner tests expected PASS.
-- [ ] Commit code/tests and ledger results.
+- [x] Author failing real-loop scenarios for option comparison, canonical plan choice, missing/partial evidence, Spanish, blind malicious source text, rejected-review correction/bypass and review/cancellation budgets. Observe RED.
+- [x] Implement strict parsing/reference/scope checks and clear model operating instructions. Preserve existing prose for simple answers, exact public contract, current task evidence and server-owned plans. Focused intelligence/legacy Owner tests expected PASS.
+- [x] Commit code/tests and ledger results.
 
 ### Task3: real service regression, independent review and delivery
 
 Files: new `intelligence.integration.ts` alongside all existing Owner suites; this handoff directory only for final documentation/interface contract/evidence indexes.
 
-- [ ] Write real PostgreSQL service tests before changes they require: fictional Neon Chat Completions tool/decision continuation, exact replay without inference, malformed decision failure, stale/revoked authority, private notebook context and no business mutation. Run tests and preserve results.
-- [ ] Freeze application source; run focused and full default unit suite, complete Owner SQL, three original browser suites, activation sentinels, whole TypeScript/ESLint/whitespace. Read actual results, retain failures and diagnose first causes before reruns.
-- [ ] One fresh whole-change code/security/QA reviewer checks spec/plan/diff and boundaries. Remediate material findings with RED→GREEN and affected gates; do not self-close independent findings or UI-M1.
+- [x] Write real PostgreSQL service tests before changes they require: fictional Neon Chat Completions tool/decision continuation, exact replay without inference, malformed decision failure, stale/revoked authority, private notebook context and no business mutation. Run tests and preserve results.
+- [x] Freeze application source; run focused and full default unit suite, complete Owner SQL, three original browser suites, activation sentinels, whole TypeScript/ESLint/whitespace. Read actual results, retain failures and diagnose first causes before reruns.
+- [x] One fresh whole-change code/security/QA reviewer checks spec/plan/diff and boundaries. Remediate material findings with RED→GREEN and affected gates; do not self-close independent findings or UI-M1.
 - [ ] Commit docs with backend interface guidance for Claude, truthful verification, remaining live-model/hosted conditions and exact state. Preserve ledger/evidence in a new artifact. Publish to `AI-owner` only with an exact expected-head check and verify GitHub tree/head. No merge/deploy.
+
+The final source/runtime gates and independent acceptance are complete at8731362f. The last documentation/transfer/publication step is completed after this docs commit and recorded by the append-only active ledger and external delivery/publication/import/archive receipts; this historical plan snapshot does not self-reference its future delivery SHA.

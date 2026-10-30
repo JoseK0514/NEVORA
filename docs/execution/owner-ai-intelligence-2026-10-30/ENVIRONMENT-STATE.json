@@ -1,0 +1,104 @@
+{
+  "recordedAt": "2026-10-30T22:29:57.540282+00:00",
+  "workspace": "/workspace/work/nevora-owner-ai-implementation-20261030",
+  "sourceHead": "8731362fcc05871db23fd303c311aa04d3a4dded",
+  "sourceTree": "d4b96d16e669b6c346cc8ad6483812fe82cd6203",
+  "branch": "detached",
+  "publicationTarget": "AI-owner",
+  "versions": {
+    "next": "16.4.2",
+    "react": "19.3.0",
+    "typescript": "5.9.3",
+    "vitest": "5.0.5",
+    "node": "v24.19.0",
+    "npm": "11.9.0",
+    "postgres": "postgres (PostgreSQL) 17.9"
+  },
+  "chatComponentsStylesRoutesSchemaPackagesWorkflowsChanged": false,
+  "databaseScope": "invocation-owned fresh marked loopback PostgreSQL only",
+  "runtimeConfigurationChanges": false,
+  "paidProviderCalls": 0,
+  "sourceDesignOwner": "Claude",
+  "remainingModelValidation": "live model/catalog/dialect/judgment not exercised; no activation authorization inferred",
+  "cloudObservation": {
+    "environment_id": "ccarenv_b64_Y2NhcmVudl8wOWY0MjVlNWI5Mjg4MTkxYWRhNzk0MDU3MTkwMTc0OA",
+    "source_config_id": null,
+    "source_config_version_id": null,
+    "spec_revision": "4",
+    "observed_spec_revision": "4",
+    "observations_current": true,
+    "provider": "cloud",
+    "desired_phase": "running",
+    "observed_phase": "running",
+    "failure": null,
+    "connectivity": "connected",
+    "network_policy": {
+      "mode": "unrestricted",
+      "state": "enforced"
+    },
+    "capabilities": [],
+    "secrets": [],
+    "runtime_variables": [],
+    "outbound_identities": [],
+    "network_diagnostics": null
+  },
+  "browserRuntime": {
+    "checkedAt": "2026-10-30T22:39:01.817022+00:00",
+    "ownedNextRuntimes": [
+      {
+        "ownership": "browser-final-01/browser/owned-next-FNQVB2/ownership.json",
+        "checkpoint": "8731362fcc05871db23fd303c311aa04d3a4dded",
+        "closed": true,
+        "sourceVerified": true,
+        "mirrorVerified": true,
+        "derivedArtifactsReleased": {
+          "directories": [
+            "app/node_modules",
+            "app/.next"
+          ],
+          "availableBytesBefore": 18484162560,
+          "availableBytesAfter": 19568857088
+        }
+      },
+      {
+        "ownership": "browser-final-01/browser/coverage-plans/owned-next-k1uhE6/ownership.json",
+        "checkpoint": "8731362fcc05871db23fd303c311aa04d3a4dded",
+        "closed": true,
+        "sourceVerified": true,
+        "mirrorVerified": true,
+        "derivedArtifactsReleased": {
+          "directories": [
+            "app/node_modules",
+            "app/.next"
+          ],
+          "availableBytesBefore": 18446958592,
+          "availableBytesAfter": 19432689664
+        }
+      },
+      {
+        "ownership": "browser-final-01/browser/notebook/owned-next-hKVrtu/ownership.json",
+        "checkpoint": "8731362fcc05871db23fd303c311aa04d3a4dded",
+        "closed": true,
+        "sourceVerified": true,
+        "mirrorVerified": true,
+        "derivedArtifactsReleased": {
+          "directories": [
+            "app/node_modules",
+            "app/.next"
+          ],
+          "availableBytesBefore": 18513346560,
+          "availableBytesAfter": 19499077632
+        }
+      }
+    ],
+    "ownedPostgres": "Every SQL/browser invocation output records fresh marked loopback startup and stopped cluster. No hosted/production DB.",
+    "noLiveProvider": true
+  },
+  "nativeBrowserPrerequisite": {
+    "all_prepared_native_library_hashes_match": true,
+    "count": 40,
+    "new_downloads_or_edits": false,
+    "scope": "native user-library preparation from previous owned-browser run; fresh rendering still required"
+  },
+  "deliveryState": "Final docs HEAD/tree and exact GitHub state are pinned externally after this commit; only docs differ from accepted873."
+}
