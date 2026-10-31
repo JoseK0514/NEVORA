@@ -60,7 +60,7 @@ it('integrates employee mobile messages with current audience, explicit receipts
     for(const theme of ['light','dark'])for(const width of [320,390,430]){
      await page.setViewportSize({width,height:844});await page.evaluate((theme:string)=>document.documentElement.dataset.theme=theme,theme);
      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
-     const action=panel().getByRole('button',{name:actionName,exact:true});expect(await action.evaluate((el:HTMLElement)=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(name==='notifications'?44:48);
+     const action=panel().getByRole('button',{name:actionName,exact:true});expect(await action.evaluate((el:HTMLElement)=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);// Release 1 kit: 44px targets everywhere (the earlier phone buttons were 48px tall).
      const contrast=await action.evaluate(measureRenderedContrast);expect(contrast.ratio).toBeGreaterThanOrEqual(4.5);contrasts.push({engine,theme,width,name,ratio:contrast.ratio});await shot(name+'-'+theme+'-'+width);
     }
     await page.setViewportSize({width:320,height:844});await page.evaluate(()=>document.documentElement.style.fontSize='200%');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
