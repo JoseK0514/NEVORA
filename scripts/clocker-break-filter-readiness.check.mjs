@@ -24,7 +24,7 @@ const bundle=await project('esbuild').build({
   const result=await new Promise(resolve=>{window.resolveFictionalAction=resolve;});window.fictionalActionSettled=true;return result;
  }
  createRoot(document.getElementById('root')).render(<ClockerBreakTypes initialTypes={[type,other]} action={action}/>);`,resolveDir:source,loader:'tsx'},
- bundle:true,write:false,platform:'browser',format:'iife',jsx:'automatic',loader:{'.css':'empty'},
+ bundle:true,write:false,outdir:join(source,'.break-filter-fixture'),platform:'browser',format:'iife',jsx:'automatic',loader:{'.css':'empty','.module.css':'local-css'},
  define:{'process.env.NODE_ENV':'"development"','process.env':'{}'},
  plugins:[{name:'fictional-framework-boundaries',setup(build){
   build.onResolve({filter:/^next\/(link|image|navigation)$/},args=>({path:args.path,namespace:'fixture'}));
@@ -33,11 +33,15 @@ const bundle=await project('esbuild').build({
    :'import React from "react";export default function Element({children,...props}){return React.createElement('+JSON.stringify(args.path==='next/link'?'a':'img')+',props,children);}',loader:'js',resolveDir:source}));
  }}],
 });
+// The component's CSS module ships with it; serve the scoped stylesheet next to the script (nothing is written to disk).
+const bundled=extension=>bundle.outputFiles.find(file=>file.path.endsWith(extension));
+assert(bundled('.js')&&bundled('.css'),'Expected the fixture script and its CSS module output');
 const server=createServer((request,response)=>{
  response.setHeader('Cache-Control','no-store');
- if(request.url==='/bundle.js'){response.setHeader('Content-Type','text/javascript');response.end(bundle.outputFiles[0].contents);return;}
+ if(request.url==='/bundle.js'){response.setHeader('Content-Type','text/javascript');response.end(bundled('.js').contents);return;}
+ if(request.url==='/bundle.css'){response.setHeader('Content-Type','text/css; charset=utf-8');response.end(bundled('.css').contents);return;}
  if(request.url==='/form.css'){response.setHeader('Content-Type','text/css; charset=utf-8');response.end(formStyles);return;}
- response.setHeader('Content-Type','text/html; charset=utf-8');response.end('<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Fictional break filter rendering control</title><link rel="stylesheet" href="/form.css"><script>'+schedulerControl+'</script></head><body><div class="app-shell nevora-portal"><main class="page-frame" id="root"></main></div><script src="/bundle.js"></script></body></html>');
+ response.setHeader('Content-Type','text/html; charset=utf-8');response.end('<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Fictional break filter rendering control</title><link rel="stylesheet" href="/form.css"><link rel="stylesheet" href="/bundle.css"><script>'+schedulerControl+'</script></head><body><div class="app-shell nevora-portal"><main class="page-frame" id="root"></main></div><script src="/bundle.js"></script></body></html>');
 });
 await new Promise(ready=>server.listen(0,'127.0.0.1',ready));
 const origin=`http://127.0.0.1:${server.address().port}`,results=[];
