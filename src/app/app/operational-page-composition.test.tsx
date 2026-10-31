@@ -5,7 +5,7 @@ vi.mock('@/lib/auth/session',()=>({requireSession:async()=>({id:'actor',role:fix
 vi.mock('@/lib/auth/permissions',()=>({isManagerRole:(role:string)=>role==='MANAGER'||role==='OWNER',requireRoles:async()=>({id:'actor',role:fixture.role})}));
 vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>{fixture.company();return fixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000};}}));
 vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
-vi.mock('next/navigation',()=>({redirect:(href:string)=>{throw Error(href);}}));
+vi.mock('next/navigation',()=>({redirect:(href:string)=>{throw Error(href);},useRouter:()=>({replace:()=>undefined,push:()=>undefined,refresh:()=>undefined})}));
 vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({id:'fixture',timeZone:'America/Puerto_Rico'})}));
 vi.mock('@/lib/communications/service.server',()=>({communicationAuthority:()=> 'fictional-authority'}));
 vi.mock('@/components/employee-updates',()=>({EmployeeUpdates:({mode}:{mode:string})=><p>Updates: {mode}</p>}));
@@ -30,7 +30,9 @@ it('current company denial withholds management communication, attendance, expor
 });
 it.each(['EMPLOYEE','LEAD'])('retains %s self timecards and recipient communications without company management authority',async role=>{
  fixture.role=role;fixture.denied=true;
- expect(renderToStaticMarkup(await Timecards(query))).toContain('Own timecards');
+ // Release 1: an Employee's timecards open Time's Past timecards; a Lead keeps the own Timecards view.
+ const own=renderToStaticMarkup(await Timecards(query));
+ expect(own).toContain(role==='EMPLOYEE'?'Opening your timecards':'Own timecards');expect(own).not.toContain('Team timecards');
  expect(renderToStaticMarkup(await Updates())).toContain('Updates: employee');
  expect(renderToStaticMarkup(await Detail({params:Promise.resolve({id:'fictional'})}))).toContain('Detail: employee');
  expect(renderToStaticMarkup(await Compose(query))).toContain('Compose: employee');

@@ -24,8 +24,8 @@ it('uses generic customer copy in the directory and unconnected timekeeping page
 it('keeps recorded timekeeping guidance independent of customer identity', async () => {
   const time=renderToStaticMarkup(await MyTimePage());
   expect(time).not.toContain('Fuel kiosk');
-  expect(time).toContain('Clocker');
-  expect(time).toContain('Loading recorded time');
+  // Release 1 (board G-E-Time): plain words, no product names; the loading state names what is being checked.
+  expect(time).toContain('Checking your current time records');
   expect(time).not.toContain('connected yet');
 });
 it('keeps the employee dashboard kiosk guidance independent of customer identity', () => {

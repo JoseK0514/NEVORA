@@ -14,9 +14,9 @@ it('the preview sidebar is sidebarNavigation() for Owner, Manager and Employee, 
     expect(items).toEqual(sidebarNavigation(role, navigationForRole(role, previewPayroll(role))));
     expect(active).toBe('/app');
   }
-  // Clean Manager (v3): Scheduling rules stays in the Owner's sidebar (under Plan) instead of hiding under Settings.
-  // Release 1 (corporate board C-Owner): Inbox reads "Things to do" and Timecards reads "Time".
-  expect(previewSidebar('OWNER').items.map(item => item.label)).toEqual(['Home', 'Things to do', 'Schedule', 'Updates', 'Team', 'Time', 'Insights', 'Payroll', 'Scheduling rules', 'Settings']);
+  // Release 1 (corporate board C-Owner): Inbox reads "Things to do", Timecards reads "Time", and Scheduling rules is
+  // reached from Schedule and the Settings hub, not the sidebar (Phase 8: don't overwhelm).
+  expect(previewSidebar('OWNER').items.map(item => item.label)).toEqual(['Home', 'Things to do', 'Schedule', 'Updates', 'Team', 'Time', 'Insights', 'Payroll', 'Settings']);
   const employee = previewSidebar('EMPLOYEE').items.map(item => item.label);
   expect(employee).not.toContain('Availability');
   expect(employee).not.toContain('Profile');
@@ -28,7 +28,7 @@ it('the Owner preview renders the D3 sidebar, the search button and the setup ca
   for (const label of ['Home', 'Things to do', 'Schedule', 'Team', 'Updates', 'Time', 'Payroll', 'Insights', 'Settings']) expect(sidebar).toContain(`>${label}<`);
   // D-4: Requests folds into Inbox on desktop.
   for (const gone of ['Requests', 'Employees', 'Availability', 'Shift requests', 'Templates', 'Payroll export']) expect(sidebar).not.toContain(`>${gone}<`);
-  expect(sidebar).toContain('>Scheduling rules<');
+  expect(sidebar).not.toContain('>Scheduling rules<');
   expect(html).toContain('aria-label="Search"');
   // Release 1 (corporate): setup is one row inside Things to do, "N of 2 steps done", naming the next step.
   expect(html).toContain('id="home-setup" class="c-home__setup"');
