@@ -23,12 +23,13 @@ export function EmployeeMobileCalendarView({status,url,paused,busy,notice,pendin
  const [open,setOpen]=useState<string|null>(null);
  const priorNotice=useRef('');
  const recoveryReady=Boolean(pendingKind&&!paused&&!busy&&status&&'authority'in status);
- const feedback=useRef<HTMLDivElement>(null),confirm=useRef<HTMLDivElement>(null),trigger=useRef<HTMLButtonElement|null>(null),link=useRef<HTMLTextAreaElement>(null);
+ const feedback=useRef<HTMLDivElement>(null),confirm=useRef<HTMLDivElement>(null),trigger=useRef<HTMLButtonElement|null>(null),link=useRef<HTMLTextAreaElement>(null),resetButton=useRef<HTMLButtonElement>(null),revokeButton=useRef<HTMLButtonElement>(null);
  useEffect(()=>{const changed=notice!==priorNotice.current;priorNotice.current=notice;if(notice&&(changed||recoveryReady)&&feedback.current)revealFeedback(feedback.current);},[notice,recoveryReady]);
  const available=!paused&&status&&'authority'in status,active=available&&status.state==='active',unknown=!!pendingKind;
  const currentUrl=active?url:null,confirmationCurrent=active&&!busy&&!unknown&&confirmation&&confirmation.generation===status.generation;
  function ask(kind:'ROTATE'|'REVOKE',button:HTMLButtonElement){if(!active||busy||unknown)return;trigger.current=button;setConfirmation({kind,generation:status.generation});requestAnimationFrame(()=>{if(confirm.current)revealFeedback(confirm.current);});}
- function cancel(){setConfirmation(null);requestAnimationFrame(()=>trigger.current?.isConnected&&trigger.current.focus());}
+ // The review replaces Reset link and Revoke link, so Keep returns focus to the button that was drawn again in its place.
+ function cancel(){const kind=confirmation?.kind;setConfirmation(null);requestAnimationFrame(()=>{const target=trigger.current?.isConnected?trigger.current:kind==='REVOKE'?revokeButton.current:resetButton.current;target?.focus();});}
  const pill=!available?null:active?<CorpPill tone="teal">Active</CorpPill>:<CorpPill>{status.state==='revoked'?'Revoked':'Off'}</CorpPill>;
  return <section className="em-account-stack em-calendar" aria-labelledby="employee-calendar-heading" data-calendar-setting data-calendar-state={paused?'paused':busy?'working':status?.state??'loading'}>
   <div className="c-card" aria-busy={busy}>
@@ -76,9 +77,9 @@ export function EmployeeMobileCalendarView({status,url,paused,busy,notice,pendin
      <div className="c-btns em-calendar-confirm-actions"><button type="button" className="c-btn c-btn--secondary" onClick={cancel}>Keep current link</button><button type="button" className="c-btn c-btn--danger" onClick={()=>{if(confirmation.kind==='ROTATE'&&!status.canIssue)return;const kind=confirmation.kind;setConfirmation(null);onCommand(kind);}}>{confirmation.kind==='ROTATE'?'Reset link':'Revoke link'}</button></div>
     </div>
    </div>:active&&!unknown?<div className="em-calendar-manage">
-    {status.canIssue?<button type="button" className="em-account-textbtn em-account-textbtn--danger" aria-controls="calendar-link-confirmation" aria-expanded={false} onClick={event=>ask('ROTATE',event.currentTarget)}>Reset link</button>:null}
+    {status.canIssue?<button ref={resetButton} type="button" className="em-account-textbtn em-account-textbtn--danger" aria-controls="calendar-link-confirmation" aria-expanded={false} onClick={event=>ask('ROTATE',event.currentTarget)}>Reset link</button>:null}
     {status.canIssue?<p className="c-note c-note--center">The old link stops working right away.</p>:null}
-    <button type="button" className="em-account-textbtn em-account-textbtn--quiet" aria-controls="calendar-link-confirmation" aria-expanded={false} onClick={event=>ask('REVOKE',event.currentTarget)}>Revoke link</button>
+    <button ref={revokeButton} type="button" className="em-account-textbtn em-account-textbtn--quiet" aria-controls="calendar-link-confirmation" aria-expanded={false} onClick={event=>ask('REVOKE',event.currentTarget)}>Revoke link</button>
    </div>:null}
   </>:null}
  </section>;
