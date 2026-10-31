@@ -122,6 +122,8 @@ try{
   await startBreak(t);await success(t,'Break Start');
   await t2.getByRole('button',{name:'Clock Out',exact:true}).click();await t2.getByRole('button',{name:'Confirm Clock Out',exact:true}).click();
   await t2.getByRole('button',{name:'Check Action Status',exact:true}).waitFor();await t2.getByRole('button',{name:'Check Action Status',exact:true}).click();
+  // Since 37b8c20c an obsolete action asks for an explicit review of the current status before any new action.
+  await t2.getByRole('button',{name:'Review current status',exact:true}).waitFor();assert.equal(await count(),before+6);await t2.getByRole('button',{name:'Review current status',exact:true}).click();
   await t2.getByRole('button',{name:'End Break',exact:true}).waitFor();assert.equal(await count(),before+6);checked(engine+': stale second-tablet action refreshes without silently clocking out');
   await t2.getByRole('button',{name:'Clock Out',exact:true}).click();await t2.getByText('This will also end your current break.',{exact:true}).waitFor();
   await t2.getByRole('button',{name:'Confirm Clock Out',exact:true}).click();await success(t2,'Clock Out');
