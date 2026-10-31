@@ -39,19 +39,20 @@ it("keeps native selects and role options (presentation smoke)", async () => {
   const manager = renderToStaticMarkup(
     await NewEmployeePage({ searchParams: Promise.resolve({}) }),
   );
-  // Quiet (v4): Role and Location are picker rows (native selects); the sheet's Save submits the form.
-  expect(manager.match(/class="q-select-row__control"/g)).toHaveLength(2);
+  // Release 1 (O-AddEmployee): Role and Location are native selects side by side; step 1 ends with Next.
+  expect(manager.match(/<select[^>]*class="c-in"/g)).toHaveLength(2);
+  expect(manager).toContain("Step 1 of 2");
   expect(manager).not.toContain('value="OWNER"');
   expect(manager).toMatch(/name="id"[^>]*maxLength="128"|maxLength="128"[^>]*name="id"/);
   expect(manager.match(/maxLength="160"/g)).toHaveLength(2);
   expect(manager).toMatch(/type="email"[^>]*maxLength="254"|maxLength="254"[^>]*type="email"/);
-  expect(manager).toContain('form="new-employee-form"');
+  expect(manager).toContain('id="new-employee-form"');
 
   m.role = "OWNER";
   const owner = renderToStaticMarkup(
     await NewEmployeePage({ searchParams: Promise.resolve({}) }),
   );
-  expect(owner.match(/class="q-select-row__control"/g)).toHaveLength(2);
+  expect(owner.match(/<select[^>]*class="c-in"/g)).toHaveLength(2);
   expect(owner).toContain('value="OWNER"');
 });
 
@@ -64,9 +65,9 @@ it("preserves submitted field names, required contact fields and optional email"
   expect(fields.filter(field => /name="(?:id|firstName|lastName|phone)"/.test(field)).every(field => field.includes('required=""'))).toBe(true);
   expect(fields.find(field => field.includes('name="email"'))).not.toContain('required=""');
   expect(html).toContain('value="EMPLOYEE" selected=""');
-  // Quiet (v4): a sheet, so Cancel (to Team) is the one way back.
+  // A sheet, so Cancel (to Team) is the one way back.
   expect(html.match(/href="\/app\/employees"/g)).toHaveLength(1);
-  expect(html).toContain('aria-label="Email, optional"');
+  expect(html).toContain("Email (optional)");
 });
 
 it("blocks creation when no active location exists and supplies the Owner setup route", async () => {
@@ -74,12 +75,12 @@ it("blocks creation when no active location exists and supplies the Owner setup 
   m.role = "OWNER";
   const owner = renderToStaticMarkup(await NewEmployeePage({ searchParams: Promise.resolve({}) }));
   expect(owner).not.toContain('value="loc"');
-  expect(owner).toMatch(/<button[^>]*type="submit"[^>]*disabled=""/);
+  expect(owner).toMatch(/<button[^>]*type="button"[^>]*disabled=""[^>]*>Next</);
   expect(owner).toContain('href="/app/settings/locations"');
   m.role = "MANAGER";
   const manager = renderToStaticMarkup(await NewEmployeePage({ searchParams: Promise.resolve({}) }));
   expect(manager).not.toContain('href="/app/settings/locations"');
-  expect(manager).toMatch(/<button[^>]*type="submit"[^>]*disabled=""/);
+  expect(manager).toMatch(/<button[^>]*type="button"[^>]*disabled=""[^>]*>Next</);
 });
 
 it("announces a server validation error without rendering untrusted error codes", async () => {

@@ -20,7 +20,7 @@ it.each(['MANAGER','OWNER'])('keeps the clean current-week %s view inside the cu
  expect(page.type).toBe(ScopedReadFrame);
  expect((page as ReactElement<{observation:unknown}>).props.observation).toBe(fixture.observation);
  const html=renderToStaticMarkup(page);
- expect(html).toContain('cm-page cm-timecards');
+ expect(html).toContain('class="cm-timecards"');
  expect(html).toContain('2026-10-19 / 2026-10-25');
  expect(html).toContain('data-today="2026-10-20"');
  expect(fixture.company).toHaveBeenCalledOnce();

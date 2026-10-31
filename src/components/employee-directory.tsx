@@ -73,7 +73,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
       {inactive.length && (all || !active.length) ? <CorpCard id="team-inactive" label={`Inactive (${inactive.length})`}><CorpRows label={`Inactive ${people}`}>{inactive.map(row)}</CorpRows></CorpCard> : null}
       <CorpCard as="div" ariaLabel="Team tools">
         <CorpRows label="Team tools">
-          <li><CorpRow href="/app?view=team" bold title="Hours this week" detail="Planned and worked, person by person" chevron /></li>
+          <li><CorpRow href="/app?view=team" bold title="Hours this week" detail="Scheduled hours, person by person" chevron /></li>
           {recovery ? <li><CorpRow href="/app/account-recovery" bold title="Help someone sign in" detail="Reset a password or recover an account" chevron /></li> : null}
           {recovery && clockerRecovery ? <li><CorpRow href="/app/clocker-recovery" bold title="Clocker PIN" detail="Reset someone’s PIN for the Clocker" chevron /></li> : null}
           {!all && employees.some(employee => !employee.active) ? <li><CorpRow href="/app/employees?all=1#team-inactive" bold title="Inactive people" detail={`${employees.filter(employee => !employee.active).length} no longer active`} chevron /></li> : null}

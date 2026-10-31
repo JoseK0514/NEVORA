@@ -309,7 +309,7 @@ async function mountAll(){render();host.mounted=true;const cleanups=host.effects
 const resize=(matches:boolean)=>{media.matches=matches;media.listener?.();};
 it('phone: Select in the top bar opens eligible cards; self-review stays excluded with its reason',async()=>{
  phoneWindow();transport();await mountAll();
- expect(html()).toContain('c-page c-tc');expect(html()).not.toContain('Selected timecard review');
+ expect(html()).toContain('c-page c-tc"');expect(html()).not.toContain('Selected timecard review');
  click('Select');const page=html();
  expect(page).toContain('Selected timecard review');expect(page).toContain('2 eligible · 1 excluded · Select up to 100 current timecards below.');
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE OWNER').disabled).toBe(true);expect(page).toContain('A different manager must review');
@@ -337,12 +337,12 @@ it('phone: a partial unknown result keeps not-submitted cards and retries only t
  const original=commands[0];click('Retry original attempted action');await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(original);
 });
 it('resizing desktop → phone mid-review keeps the reviewed set and confirmation; phone → desktop keeps the results',async()=>{
- phoneWindow(false);transport();await mountAll();expect(html()).not.toContain('c-page c-tc');
+ phoneWindow(false);transport();await mountAll();expect(html()).toContain('c-page c-tc c-tc-desk');
  check('Select PRIVATE E1');click('Review selected timecards');check('Confirm reviewed timecards');
- resize(true);const phone=html();expect(phone).toContain('c-page c-tc');expect(phone).toContain('Reviewed approval set');
+ resize(true);const phone=html();expect(phone).toContain('c-page c-tc"');expect(phone).toContain('Reviewed approval set');
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Confirm reviewed timecards').checked).toBe(true);
  click('Approve selected');await flush();expect(commands).toHaveLength(1);
- resize(false);const desk=html();expect(desk).not.toContain('c-page c-tc');expect(desk).toContain('Per-card results');expect(desk).toContain('approved');
+ resize(false);const desk=html();expect(desk).toContain('c-page c-tc c-tc-desk');expect(desk).toContain('Per-card results');expect(desk).toContain('approved');
 });
 it('phone: blur clears the selection and the reviewed private rows',async()=>{
  phoneWindow();transport();await mountAll();click('Select');check('Select PRIVATE E1');click('Review selected timecards');window.dispatchEvent(new Event('blur'));

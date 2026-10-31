@@ -1,0 +1,78 @@
+/* Team forms (boards O-AddEmployee, O-AddEmployeePay, O-EditEmployee, O-Person, O-PersonAccess). Kit tokens only. */
+
+/* Sheet header: Cancel (400) left, the title with "Step 1 of 2" under it, Save / Next / Add (600) right. */
+:is(#c-root, html) .c-formhead { min-height: 60px; }
+:is(#c-root, html) .c-formhead__l { justify-self: start; display: flex; align-items: center; min-width: 0; }
+:is(#c-root, html) .c-formhead__t { display: flex; flex-direction: column; align-items: center; min-width: 0; }
+:is(#c-root, html) .c-formhead__step { font-size: 13px; line-height: 16px; color: var(--c-grey); white-space: nowrap; }
+:is(#c-root, html) .c-formhead__link { display: inline-flex; align-items: center; gap: 2px; min-height: 44px; margin: 0 0 0 -4px; padding: 0 4px; border: 0; background: none; color: var(--c-teal); font-size: 15px; line-height: 20px; font-weight: 400; white-space: nowrap; cursor: pointer; }
+:is(#c-root, html) .c-formhead__back { font-weight: 400; }
+:is(#c-root, html) .c-formhead__back .c-ic { width: 18px; height: 18px; }
+:is(#c-root, html) .c-formhead .c-nav__right :is(a, button):disabled { color: var(--c-faint); cursor: default; }
+
+/* The form under the header: fields stacked 16px apart, pairs side by side. */
+:is(#c-root, html) .c-teamform { display: flex; flex-direction: column; gap: 16px; padding-top: 4px; }
+:is(#c-root, html) .c-teamform fieldset.configuration-fields { display: contents; margin: 0; padding: 0; border: 0; min-width: 0; }
+:is(#c-root, html) .c-teamform .c-step { display: flex; flex-direction: column; gap: 16px; }
+:is(#c-root, html) .c-teamform .c-step[hidden] { display: none; }
+:is(#c-root, html) .c-teamform .c-field__row { gap: 12px; }
+:is(#c-root, html) .c-teamform :is(.form-error, .form-success) { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-red); }
+:is(#c-root, html) .c-teamform .form-success { color: var(--c-teal); }
+:is(#c-root, html) .c-teamform p[role="status"]:not([class]) { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-teamform > div:last-child:empty { display: none; }
+:is(#c-root, html) .c-teamform :is(.button.secondary) { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 16px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-teal); color: var(--c-teal); font-size: 15px; font-weight: 600; text-decoration: none; cursor: pointer; }
+:is(#c-root, html) .c-teamform select.c-in { cursor: pointer; }
+:is(#c-root, html) .c-teamform .c-in--static { color: var(--c-grey); }
+
+/* A picker field ("Positions › Barista") and its checklist. */
+:is(#c-root, html) .c-pick { justify-content: space-between; gap: 8px; text-align: left; cursor: pointer; }
+:is(#c-root, html) .c-pick__value { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+:is(#c-root, html) .c-pick__value--none { color: var(--c-grey); }
+:is(#c-root, html) .c-pick__caret { color: var(--c-ink2); transition: transform 160ms ease-out; }
+:is(#c-root, html) .c-pick[aria-expanded="true"] .c-pick__caret { transform: rotate(180deg); }
+:is(#c-root, html) .c-checks { display: block; margin: 0; padding: 0; border: 0; min-width: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); }
+:is(#c-root, html) .c-checks[hidden] { display: none; }
+:is(#c-root, html) .c-check { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 6px 12px; cursor: pointer; }
+:is(#c-root, html) .c-check + .c-check { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-check__box { flex: none; position: relative; width: 22px; height: 22px; margin: 0; border: 0; border-radius: 6px; background: #FFFFFF; box-shadow: inset 0 0 0 1.5px var(--c-field); appearance: none; -webkit-appearance: none; cursor: pointer; }
+:is(#c-root, html) .c-check__box:checked { background: var(--c-teal); box-shadow: none; }
+:is(#c-root, html) .c-check__box:checked::after { content: ""; position: absolute; left: 8px; top: 4px; width: 5px; height: 10px; border: solid #FFFFFF; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+:is(#c-root, html) .c-check__box:disabled { opacity: .55; cursor: default; }
+:is(#c-root, html) .c-check__box:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 2px; }
+:is(#c-root, html) .c-check__text { display: flex; flex-direction: column; min-width: 0; font-size: 15px; line-height: 20px; color: var(--c-ink); }
+:is(#c-root, html) .c-check__text small { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+
+/* Person (O-Person) and Access (O-PersonAccess). */
+:is(#c-root, html) .c-person .c-person__who { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 12px 16px; }
+:is(#c-root, html) .c-person .c-person__act { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--c-teal); color: var(--c-teal); }
+:is(#c-root, html) .c-person .c-person__act .c-ic { width: 20px; height: 20px; }
+:is(#c-root, html) .c-person .c-person__act + .c-person__act { margin-left: -4px; }
+:is(#c-root, html) .c-person .c-row__value--soft { font-weight: 400; color: var(--c-ink2); }
+:is(#c-root, html) .c-access__foot { display: flex; flex-direction: column; gap: 8px; margin-top: auto; padding-top: 12px; }
+:is(#c-root, html) .c-access__foot .c-note { justify-content: center; text-align: center; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
+:is(#c-root, html) .c-access__foot .configuration-fields { display: contents; margin: 0; padding: 0; border: 0; }
+:is(#c-root, html) .c-access__foot :is(.form-error, .form-success) { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-red); text-align: center; }
+:is(#c-root, html) .c-access__foot .form-success { color: var(--c-teal); }
+:is(#c-root, html) .c-access__foot form { display: flex; flex-direction: column; gap: 8px; }
+:is(#c-root, html) .c-access__foot form > div:last-child:empty { display: none; }
+:is(#c-root, html) .c-access__foot .button.secondary { display: inline-flex; align-items: center; justify-content: center; height: 44px; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-teal); color: var(--c-teal); font-size: 15px; font-weight: 600; border: 0; cursor: pointer; }
+:is(#c-root, html) .c-access__panels { display: flex; flex-direction: column; gap: 12px; }
+
+@media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-pick__caret { transition: none; } }
+
+/* A sheet page is white, as the boards' sheets are; its header actions keep a 44px target. */
+:is(#c-root, html) .c-page.c-sheetpage { background: #FFFFFF; }
+:is(#c-root, html) .c-formhead .c-nav__right :is(a, button) { min-width: 44px; justify-content: flex-end; }
+:is(#c-root, html) .c-formhead .c-formhead__link { min-width: 44px; }
+@media (max-width: 767px) { :is(#c-root, html) .c-page.c-sheetpage { min-height: 100dvh; } }
+:is(#c-root, html) .c-page.c-access { min-height: 100%; }
+/* Narrow phones: a long back label ("‹ Alexandra") and the title share the row instead of overlapping. */
+@media (max-width: 374px) {
+  :is(#c-root, html) .c-access .c-nav { grid-template-columns: auto minmax(0, 1fr) auto; }
+  :is(#c-root, html) .c-access .c-nav__title { max-width: none; }
+  :is(#c-root, html) .c-person .c-person__who :is(.c-row__title, .c-row__detail > span:first-child) { white-space: normal; overflow: visible; }
+}
+/* Wide screens: a sheet is a white panel in the desktop content column, on the grey canvas. */
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-page.c-sheetpage { min-height: 0; border-radius: 12px; box-shadow: 0 0 0 1px var(--c-ring); }
+}

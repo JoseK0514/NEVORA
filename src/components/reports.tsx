@@ -241,10 +241,21 @@ function QuietFigure({title,value,children,href}:{title:string;value:string;chil
  return <li><details className="q-details"><summary className="q-row q-row--one">{row}</summary><div className="q-figure__body">{children}</div></details></li>;
 }
 
-/** Corporate (Release 1, board O-Insights): labor hours against the published plan, the period's figures, hours by day
- * and by person, then how they're counted. Overtime and coverage aren't part of this read, so they aren't shown. */
+/** Monday to Sunday of a week-long period, so "This week so far" shows the whole week (days still to come are empty). */
+function wholeWeek(days:{date:string;minutes:number}[]|null,period:Period):{date:string;minutes:number|null}[]|null{
+ if(!days)return null;
+ try{
+  const start=Temporal.PlainDate.from(period.startDate);
+  if(start.dayOfWeek!==1||days.length>=7||start.until(Temporal.PlainDate.from(period.endDate)).days>6)return days;
+  const rest=Array.from({length:7-days.length},(_,index)=>({date:start.add({days:days.length+index}).toString(),minutes:null}));
+  return [...days,...rest];
+ }catch{return days;}
+}
+
+/** Corporate (Release 1, board O-Insights): labor hours against the published plan, attendance, hours by day and how
+ * they're counted. Overtime needs pay rules this read doesn't have, so attendance shows late clock-ins, filled cover
+ * requests and time off taken instead. Every hour reads one way: "24.1 h". */
 export function CorpReportsView({report,state}:{report:PeriodReports|null;state:State}){
- const [everyone,setEveryone]=useState(false);
  if(!report){
   const waiting=state==='loading'||state==='reconnecting';
   return <CorpCard as="div" ariaLabel="Insights"><CorpBody><div role="status" aria-busy={waiting}>
@@ -252,46 +263,44 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
    {waiting?null:<p className="c-ins__state">{state==='access_lost'?'Sign in again to see insights.':state==='paused'?'Come back to this page to see the current numbers.':state==='offline'?'Connect to the internet, then try again.':'Check your connection, then try again.'}</p>}
   </div>{state==='access_lost'?<CorpButtonLink href="/login" kind="secondary" size="md">Sign in</CorpButtonLink>:null}</CorpBody></CorpCard>;
  }
- const href=timecardsHref(report.period);
  const recorded=BigInt(report.summary.recordedNanoseconds);
  const planned=report.planCoverage.state==='complete'&&report.scheduleVsActual.every(r=>r.scheduledNanoseconds!==null)
   ?report.scheduleVsActual.reduce((sum,r)=>sum+BigInt(r.scheduledNanoseconds??'0'),BigInt(0)):null;
  const gap=planned!==null?planned-recorded:null;
  const percent=planned&&planned>BigInt(0)?Math.min(100,Number(recorded*BigInt(100)/planned)):0;
- const withTime=report.hoursByEmployee.filter(r=>BigInt(r.recordedNanoseconds)>BigInt(0)).sort((a,b)=>{const d=BigInt(b.recordedNanoseconds)-BigInt(a.recordedNanoseconds);return d>BigInt(0)?1:d<BigInt(0)?-1:a.name.localeCompare(b.name);});
- const idle=Math.max(report.hoursByEmployee.filter(r=>BigInt(r.recordedNanoseconds)<=BigInt(0)).length,report.summary.employeeCount-withTime.length);
- const toFinish=report.approvals.filter(card=>card.state!=='FINALIZED').length;
  const offDays=timeOffDays(report);
- const days=recordedByDay(report);
- const most=days?Math.max(1,...days.map(day=>day.minutes)):1;
- const definitions=[...new Set([...report.definitions,'Recorded time includes breaks. Breaks are shown separately; no pay or deduction rules are applied.',report.coverageReliability.definition,report.scheduleStability.definition,report.overtime.reason])];
+ const late=report.attendance.groups.reduce((total,group)=>total+group.observations.filter(o=>o.kind==='CLOCK_IN_AFTER_SCHEDULE_START').length,0);
+ const cover=report.coverageReliability;
+ const days=wholeWeek(recordedByDay(report),report.period);
+ const most=days?Math.max(1,...days.map(day=>day.minutes??0)):1;
+ const definitions=[...new Set([...report.definitions,'Recorded time includes breaks. Breaks are shown separately; no pay or deduction rules are applied.','Late clock-ins are clock-ins after the scheduled start. They don’t decide lateness, discipline or pay.',report.coverageReliability.definition,report.scheduleStability.definition,report.overtime.reason])];
  return <>
   <CorpCard id="ins-labor" label="Labor hours" aside={gap!==null&&gap!==BigInt(0)?<CorpPill tone={gap>BigInt(0)?'neutral':'amber'}>{`${quietHours((gap>BigInt(0)?gap:-gap).toString())} ${gap>BigInt(0)?'under':'over'} plan`}</CorpPill>:undefined}>
-   <div className="c-ins__labor"><b>{quietHours(recorded.toString())}</b><span>{planned!==null?`of ${quietHours(planned.toString())} planned`:'recorded · plan incomplete'}</span></div>
+   <div className="c-ins__labor"><b>{quietHours(recorded.toString())}</b><span>{planned!==null?`of ${quietHours(planned.toString())} planned`:'recorded'}</span></div>
    {planned!==null?<span className="c-ins__bar" aria-hidden="true"><span style={{width:`${percent}%`}}/></span>:null}
   </CorpCard>
-  <CorpCard id="ins-period" label="This period">
-   <CorpStats items={[{label:'To finish',value:toFinish,tone:toFinish?'amber':undefined},{label:'No time',value:idle},{label:'Time off',value:offDays?`${offDays} d`:'0'}]}/>
-   <Link className="c-ins__link" href={href}>Review timecards<CaretRightIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></Link>
+  <CorpCard id="ins-attendance" label="Attendance">
+   <CorpStats items={[
+    {label:'Late clock-ins',value:report.attendance.state==='ready'||late?late:'—',tone:late?'red':undefined},
+    {label:'Cover filled',value:cover.observedCoverageRequests?`${cover.completedCoverageRequests} of ${cover.observedCoverageRequests}`:'—'},
+    {label:'Time off',value:offDays?`${offDays} d`:'0'},
+   ]}/>
   </CorpCard>
   <CorpCard id="ins-days" label="Hours by day" aside={<span className="c-ins__aside">{`${quietHours(recorded.toString())} total`}</span>}>
-   {days&&days.some(day=>day.minutes>0)?<><div className="c-ins__chart" aria-hidden="true" data-dense={days.length>7||undefined} style={{'--c-bars':days.length} as CSSProperties}>
+   {days&&days.some(day=>(day.minutes??0)>0)?<><div className="c-ins__chart" aria-hidden="true" data-dense={days.length>7||undefined} style={{'--c-bars':days.length} as CSSProperties}>
     {days.map(day=><span key={day.date} className="c-ins__col">
-     {days.length<=7?<small>{Math.round(day.minutes/60)}</small>:null}
-     <i style={{height:`${Math.round(day.minutes/most*100)}%`}}/>
+     {days.length<=7?<small>{day.minutes===null?'':Math.round(day.minutes/60)}</small>:null}
+     {day.minutes===null?null:<i style={{height:`${Math.round(day.minutes/most*100)}%`}}/>}
      <em>{days.length<=7?dayName(day.date):''}</em>
     </span>)}
-   </div><ul className="c-sr" aria-label="Recorded time by day">{days.map(day=><li key={day.date}>{dayLabel(day.date)}: {formatRecordedHours((BigInt(day.minutes)*MINUTE_NS).toString())}</li>)}</ul></>
+   </div><ul className="c-sr" aria-label="Recorded time by day">{days.filter(day=>day.minutes!==null).map(day=><li key={day.date}>{dayLabel(day.date)}: {formatRecordedHours((BigInt(day.minutes!)*MINUTE_NS).toString())}</li>)}</ul></>
     :<CorpBody><p className="c-ins__state">No recorded time in this period.</p></CorpBody>}
+   <details className="c-ins__counted">
+    <summary>How these are counted<CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></summary>
+    <ul>{definitions.map(d=><li key={d}>{d}</li>)}</ul>
+    <p>As of <time dateTime={report.observedAt}>{observedLabel(report.observedAt,report.timeZone)}</time> · {timeZoneLabel(report.timeZone)}</p>
+   </details>
   </CorpCard>
-  {withTime.length?<CorpCard id="ins-people" label="Hours by person" aside={!everyone&&withTime.length>5?<button type="button" className="c-link" onClick={()=>setEveryone(true)}>{`Show all ${withTime.length}`}</button>:undefined}>
-   <CorpRows label="Recorded time by person">{(everyone?withTime:withTime.slice(0,5)).map(r=><li key={r.id}><CorpRow title={r.name} value={quietHours(r.recordedNanoseconds)}/></li>)}</CorpRows>
-  </CorpCard>:null}
-  <details className="c-ins__counted">
-   <summary>How these are counted<CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></summary>
-   <ul>{definitions.map(d=><li key={d}>{d}</li>)}</ul>
-   <p>As of <time dateTime={report.observedAt}>{observedLabel(report.observedAt,report.timeZone)}</time> · {timeZoneLabel(report.timeZone)}</p>
-  </details>
  </>;
 }
 
@@ -428,52 +437,38 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
     </div>
    </div>
 </>;
- // Quiet (v4, approved Oct 23): back to More, the period under the title, This week, Last week and Month, then the figures.
- // Wide screens keep Export and the period picker in the top bar.
- const phone=<CorpPage className="c-ins q-insights-phone" labelledBy="ins-title">
+ // Release 1 (board O-Insights), every width: back to More, the period, This week / Last week / Month, then the cards in the
+ // kit's column. Wide screens add the period picker (with Custom) and Export, in the top bar from 1300px. The full report
+ // stays rendered for Print / Save PDF only (print shows it; the screen shows the board's cards).
+ const custom_=mode==='custom'?<CorpCard id="ins-custom" label="Custom period" aside="1 to 31 days">
+  <form className="c-ins__custom" onSubmit={e=>{e.preventDefault();try{setPeriod(parsePeriod(draft.startDate,draft.endDate));setNotice('');}catch{setNotice(PERIOD_ERROR);document.getElementById?.('report-first-day')?.focus();}}}>
+   <div className="c-field__row">
+    <div className="c-field"><label className="c-field__label" htmlFor="report-first-day">First day</label><input id="report-first-day" className="c-in" type="date" value={draft.startDate} required aria-invalid={notice===PERIOD_ERROR||undefined} aria-describedby={notice===PERIOD_ERROR?"report-period-error report-period-context":"report-period-context"} onChange={e=>setDraft({...draft,startDate:e.target.value})}/></div>
+    <div className="c-field"><label className="c-field__label" htmlFor="report-last-day">Last day</label><input id="report-last-day" className="c-in" type="date" value={draft.endDate} required aria-invalid={notice===PERIOD_ERROR||undefined} aria-describedby={notice===PERIOD_ERROR?"report-period-error report-period-context":"report-period-context"} onChange={e=>setDraft({...draft,endDate:e.target.value})}/></div>
+   </div>
+   {notice===PERIOD_ERROR&&<p className="c-error" id="report-period-error" role="alert">{notice}</p>}
+   <p className="c-ins__applied" id="report-period-context"><span>Applied period</span>{keepWhole(periodLabel(period))}{changed&&<strong>Dates changed. Select View period to apply.</strong>}</p>
+   <button className="c-btn c-btn--full c-btn--md" type="submit" aria-busy={busy||undefined}>{busy?'Loading…':'View period'}</button>
+  </form>
+ </CorpCard>:null;
+ const page=<CorpPage className="c-ins" labelledBy="ins-title">
   <CorpNav back={{href:'/app/more',label:'More'}} title="Insights" phoneOnly/>
-  <CorpTitle id="ins-title" title="Insights" sub={quietRange(period)} wide/>
+  <CorpTitle id="ins-title" title="Insights" wide/>
+  {slot?null:<div className="c-ins__tools">{tools}</div>}
   <div className="c-seg" role="group" aria-label="Report period" data-report-entrance="">
    {MODES.filter(item=>item.mode!=='custom').map(item=><button key={item.mode} type="button" aria-pressed={mode===item.mode} disabled={!presets||busy} onClick={()=>choose(item.mode)}>{item.short}</button>)}
   </div>
-  <p className="c-ins__range">{`${quietRange(period)}${report?` · ${timeZoneLabel(report.timeZone)}`:''}`}</p>
+  <p className="c-ins__range">{`${quietRange(period)} · All locations`}</p>
+  {custom_}
   {notice&&notice!==PERIOD_ERROR?<p className="c-ins__error" id="report-export-error" role="alert">{notice}</p>:null}
   <div className="wb-insights c-ins__body" data-report-entrance=""><CorpReportsView report={report} state={state}/></div>
+  {/* Print only. The report refreshes itself; its old Refresh footer stays with the printable report, out of view. */}
+  <div className="c-ins-print"><ReportsView report={report} state={state} onThisWeek={presets&&mode!=='now'?()=>choose('now'):undefined}/>
+   <p className="cm-page-foot"><span>{keepWhole(rangeText(period))}{report?<> · {timeZoneLabel(report.timeZone)}</>:null}</span><button type="button" className="cm-refresh" aria-label="Refresh" aria-busy={busy||undefined} onClick={()=>reloadRef.current()}><ArrowsClockwiseIcon size={16} aria-hidden="true"/>Refresh</button></p>
+  </div>
  </CorpPage>;
- // Wider screens keep the full Insights tool (period picker, Export, custom period, the whole report).
  return <>
-  {phone}
-  <div className="q-insights-desk">
-  {/* Phones: the navigation bar (back to More, Export). Desktop: the period picker and Export in the top bar or beside the title. */}
-  <div className="cm-insights__nav">
-   <button type="button" className="cm-insights__back" popoverTarget="manager-more-navigation"><CaretLeftIcon size={20} weight="bold" aria-hidden="true"/>More</button>
-   {slot?null:tools}
-  </div>
+  {page}
   {slot?createPortal(tools,slot):null}
-  <div className="cm-insights__seg" role="group" aria-label="Report period" data-report-entrance="">
-   {MODES.map(item=><button key={item.mode} type="button" className="cm-insights__seg-item" aria-pressed={mode===item.mode} disabled={item.mode!=='custom'&&!presets} onClick={()=>choose(item.mode)}>{item.short}</button>)}
-  </div>
-  <div className="nv-content">
-   <div className="wb-insights" data-report-entrance="">
-    {mode==='custom'?<section className="nv-card cm-insights__custom" aria-label="Custom period">
-     <Heading title="Custom period" meta="1 to 31 days"/>
-     <div className="wb-body">
-      <form className="wb-form" onSubmit={e=>{e.preventDefault();try{setPeriod(parsePeriod(draft.startDate,draft.endDate));setNotice('');}catch{setNotice(PERIOD_ERROR);document.getElementById?.('report-first-day')?.focus();}}}>
-       <div className="wb-period-fields">
-        <div className="wb-field"><label htmlFor="report-first-day">First day</label><input id="report-first-day" className="wb-control" type="date" value={draft.startDate} required aria-invalid={notice===PERIOD_ERROR||undefined} aria-describedby={notice===PERIOD_ERROR?"report-period-error report-period-context":"report-period-context"} onChange={e=>setDraft({...draft,startDate:e.target.value})}/></div>
-        <div className="wb-field"><label htmlFor="report-last-day">Last day</label><input id="report-last-day" className="wb-control" type="date" value={draft.endDate} required aria-invalid={notice===PERIOD_ERROR||undefined} aria-describedby={notice===PERIOD_ERROR?"report-period-error report-period-context":"report-period-context"} onChange={e=>setDraft({...draft,endDate:e.target.value})}/></div>
-       </div>
-       {notice===PERIOD_ERROR&&<p className="wb-error" id="report-period-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true"/><span>{notice}</span></p>}
-       <p className="wb-applied" id="report-period-context"><span>Applied period</span>{keepWhole(periodLabel(period))}{changed&&<strong><InfoIcon size={16} weight="bold" aria-hidden="true"/>Dates changed. Select View period to apply.</strong>}</p>
-       <div className="wb-actions wb-actions--fill"><button className="nv-btn" data-kind="primary" type="submit" aria-busy={busy||undefined}>{busy?'Loading…':'View period'}{busy?null:<ArrowRightIcon size={20} aria-hidden="true"/>}</button></div>
-      </form>
-     </div>
-    </section>:null}
-    {notice&&notice!==PERIOD_ERROR&&<p className="wb-error" id="report-export-error" role="alert"><WarningCircleIcon size={18} aria-hidden="true"/><span>{notice}</span></p>}
-    <ReportsView report={report} state={state} onThisWeek={presets&&mode!=='now'?()=>choose('now'):undefined}/>
-    <p className="cm-page-foot"><span>{keepWhole(rangeText(period))}{report?<> · {timeZoneLabel(report.timeZone)}</>:null}</span><button type="button" className="cm-refresh" aria-label="Refresh" aria-busy={busy||undefined} onClick={()=>reloadRef.current()}><ArrowsClockwiseIcon size={16} aria-hidden="true"/>Refresh</button></p>
-   </div>
-  </div>
-   </div>
  </>;
 }
