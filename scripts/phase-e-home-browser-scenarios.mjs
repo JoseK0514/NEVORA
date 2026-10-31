@@ -260,6 +260,9 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   overflowEvidence.phase='publish';
   for(let i=0;i<4;i++){const published=await publishUpdate('REQUIRED');overflowPublished.push(published);overflowEvidence.publications.push({id:published.result.id,version:published.result.version,status:published.result.status});}
   assert.equal(new Set(overflowPublished.map(published=>published.result.id)).size,4);
+  // Notifications lists a notice once it is due; a publication made in the workplace's quiet hours (early morning in
+  // Puerto Rico) is due later. These fixture notices are made due now so the Notifications check holds at any hour.
+  overflowEvidence.madeDue=(await q("UPDATE notifications SET due_at=clock_timestamp()-interval '1 second' WHERE employee_id=$1 AND source_kind='COMMUNICATION' AND source_id=ANY($2::text[]) AND due_at>clock_timestamp()-interval '1 second' RETURNING id",[actor,overflowPublished.map(published=>published.result.id)])).length;
   overflowEvidence.phase='refreshed-membership';const actual=await overflowRefresh();
   const actionRows=overflowRows(actual);
   overflowEvidence.refreshed={state:actual.state,allSet:actual.allSet,communicationsState:actual.snapshot.sources.communications.state,attentionCount:actual.snapshot.attention.length,hrefs:{actions:actionRows}};
