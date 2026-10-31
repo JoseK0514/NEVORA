@@ -315,6 +315,9 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await q("UPDATE notifications SET expires_at=clock_timestamp()+interval '3 seconds' WHERE id=$1",[noticeId]);
    const expiring=nextInbox();await refreshNotifications();const shortResponse=await expiring,shortView=await shortResponse.json();assert.equal(shortResponse.status(),200);assert.equal(shortView.state,'ready');assert(shortView.validForMs>0&&shortView.validForMs<=3000);assert.equal(inboxItems(shortView).length,1);await ready('notifications');
    await inboxUnavailable().waitFor();assert.equal(await page.locator(inboxRows).count(),0);assert.equal(await inboxDenied().count(),0);assert(await inboxTryAgain().isEnabled());await screenshot('source-expired-retry');
+   // The page drops the rows at its own lease end, which can precede the database clock by a few milliseconds; Retry
+   // checks the source after it has actually expired there.
+   await q("SELECT pg_sleep(GREATEST(0,EXTRACT(EPOCH FROM (expires_at-clock_timestamp())))+0.05) FROM notifications WHERE id=$1",[noticeId]);
    const refreshed=nextInbox();await inboxTryAgain().click();const currentResponse=await refreshed,currentView=await currentResponse.json();assert.equal(currentResponse.status(),200);assert.equal(currentView.state,'ready');assert.deepEqual(inboxItems(currentView),[]);await inboxEmpty().waitFor();assert.equal(await inboxDenied().count(),0);
    expiryRecovery.push({sessionLongLived:session[0].long_lived,sourceLifetimeMs:shortView.validForMs,expiredRowsCleared:true,retryEnabled:true,falseSignIn:false,revalidationStatus:currentResponse.status(),currentItems:inboxItems(currentView).length});
    await q("UPDATE notifications SET expires_at=clock_timestamp()+interval '1 day' WHERE id=$1",[noticeId]);await refreshInboxAndWaitForRows(page,refreshNotifications,[noticeId],undefined,inboxOptions);await ready('notifications');
