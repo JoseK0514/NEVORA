@@ -1,0 +1,207 @@
+/* Owner Payroll on the corporate kit (Release 1; boards G-O-Payroll, O-PayrollReview, O-PayrollFix, O-PayrollSettings,
+ * O-TimeExports). Only what the kit does not already draw; every value is a kit token. */
+
+/* Title actions: "Settings" as a quiet underlined link, "Pay history" as the neutral control, both 44px to tap. */
+:is(#c-root, html) .c-pay .c-pay__textlink { display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; color: var(--c-ink2); font-size: 13px; line-height: 18px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+:is(#c-root, html) .c-pay .c-pay__tap { position: relative; }
+:is(#c-root, html) .c-pay .c-pay__tap::after { content: ""; position: absolute; inset: -6px -2px; }
+
+/* A pushed page's back link on tablets and desktop (phones have the white header instead). */
+:is(#c-root, html) .c-pay .c-pay__deskback { display: none; align-items: center; gap: 4px; align-self: flex-start; min-height: 44px; margin: -12px 0 -14px; color: var(--c-teal); font-size: 15px; line-height: 20px; font-weight: 600; }
+@media (min-width: 768px) { :is(#c-root, html) .c-pay .c-pay__deskback { display: inline-flex; } }
+
+:is(#c-root, html) .c-pay .c-pay__feedback { display: flex; flex-direction: column; gap: 12px; }
+:is(#c-root, html) .c-pay .c-pay__feedback:empty { display: none; }
+:is(#c-root, html) .c-pay .c-pay__strong { display: block; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-pay .c-pay__detail { display: block; margin-top: 2px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-pay .c-pay__detail .c-pay__strong { margin-bottom: 2px; }
+:is(#c-root, html) .c-pay .c-pay__amber { color: var(--c-amber); }
+:is(#c-root, html) .c-pay .c-pay__aside { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:is(#c-root, html) .c-pay .c-pay__code { display: block; margin: 8px 0 0; font: 13px/18px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--c-ink2); overflow-wrap: anywhere; }
+:is(#c-root, html) .c-pay .c-pay__gap { margin-top: 12px; }
+:is(#c-root, html) .c-pay .c-pay__fieldset { display: flex; flex-direction: column; gap: 16px; min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#c-root, html) .c-pay .c-pay__fieldset:disabled { opacity: .65; }
+
+/* Up next: up to three avatars, overlapping, then "and 23 more". */
+:is(#c-root, html) .c-pay .c-pay__people { display: flex; align-items: center; gap: 12px; min-width: 0; }
+:is(#c-root, html) .c-pay .c-pay__avs { gap: 0; }
+:is(#c-root, html) .c-pay .c-pay__avs .c-av + .c-av { margin-left: -4px; box-shadow: 0 0 0 2px #FFFFFF; }
+
+/* Review totals: Gross and deductions as 15px rows, Net pay large over a hairline. */
+:is(#c-root, html) .c-pay .c-pay__totals { display: flex; flex-direction: column; gap: 4px; padding: 12px 16px; }
+:is(#c-root, html) .c-pay .c-pay__totals > div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; min-height: 32px; align-items: center; }
+:is(#c-root, html) .c-pay .c-pay__totals dt { min-width: 0; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
+:is(#c-root, html) .c-pay .c-pay__totals dd { flex: none; font-size: 15px; line-height: 20px; color: var(--c-ink); white-space: nowrap; }
+:is(#c-root, html) .c-pay .c-pay__totals > .c-pay__net { min-height: 52px; margin: 8px -16px -12px; padding: 0 16px; box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-pay .c-pay__net dt { font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-pay .c-pay__net dd { font-size: 20px; line-height: 26px; font-weight: 600; }
+:is(#c-root, html) .c-pay .c-card__head + .c-pay__totals { padding-top: 12px; }
+:is(#c-root, html) .c-pay .c-pay__totals + .c-rows > li > .c-row { box-shadow: inset 0 1px 0 var(--c-line); }
+
+/* The detail line can hold a pill ("Stops payroll") under a bold title. */
+:is(#c-root, html) .c-pay .c-row__detail > span:first-child:has(> .c-pill) { overflow: visible; margin-top: 4px; }
+
+/* Approve and Publish: a checkbox row, the full-width primary and a centred 13px note. */
+:is(#c-root, html) .c-pay .c-pay__approve { display: flex; flex-direction: column; gap: 8px; }
+:is(#c-root, html) .c-pay .c-pay__check { display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 12px 0 4px; font-size: 15px; line-height: 20px; color: var(--c-ink); cursor: pointer; }
+:is(#c-root, html) .c-pay .c-pay__check input { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--c-teal); cursor: pointer; }
+:is(#c-root, html) .c-pay .c-card__body .c-pay__check { padding-top: 0; }
+
+/* Fix list: one card per problem, the fix as a secondary button under a hairline. */
+:is(#c-root, html) .c-pay .c-pay__fix { padding: 14px 16px; }
+:is(#c-root, html) .c-pay .c-card__foot > .c-btn { flex: 1; }
+
+/* Documents: name and status, then View and Download links. */
+:is(#c-root, html) .c-pay .c-pay__doc .c-row__trail { gap: 16px; }
+:is(#c-root, html) .c-pay .c-pay__doc .c-link { justify-content: flex-start; min-width: 44px; margin: 0; }
+:is(#c-root, html) .c-pay .c-pay__statement { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-pay .c-pay__statement:first-child { box-shadow: none; }
+:is(#c-root, html) .c-pay .c-pay__statement-head { padding: 12px 16px 0; }
+:is(#c-root, html) .c-pay .c-pay__statement .c-pay__doc { min-height: 52px; }
+
+/* Disclosures inside cards: a teal 13/600 summary, 44px to tap. */
+:is(#c-root, html) .c-pay details.c-pay__more > summary { display: flex; align-items: center; min-height: 44px; color: var(--c-teal); font-size: 13px; line-height: 18px; font-weight: 600; cursor: pointer; list-style: none; }
+:is(#c-root, html) .c-pay details.c-pay__more > summary::-webkit-details-marker { display: none; }
+:is(#c-root, html) .c-pay details.c-pay__more[open] > summary { margin-bottom: 8px; }
+:is(#c-root, html) .c-pay details.c-pay__more > :not(summary) + * { margin-top: 12px; }
+:is(#c-root, html) .c-pay .c-pay__file { height: auto; min-height: 48px; padding: 10px 12px; font-size: 15px; }
+:is(#c-root, html) .c-pay .c-pay__file::file-selector-button { margin-right: 12px; padding: 6px 10px; border: 0; border-radius: 6px; background: var(--c-neutral-bg); color: var(--c-ink); font: 600 13px/18px inherit; cursor: pointer; }
+
+/* Backlog: a row opens its confirmation under it. */
+:is(#c-root, html) .c-pay .c-pay__expand { display: flex; flex-direction: column; gap: 12px; padding: 4px 16px 16px; }
+:is(#c-root, html) .c-pay .c-row .c-link { margin: 0; min-height: 0; }
+
+/* People: a search field, then one row per person that opens their lines. */
+:is(#c-root, html) .c-pay .c-pay__search { padding: 12px 16px; box-shadow: inset 0 -1px 0 var(--c-line); }
+:is(#c-root, html) .c-pay .c-pay__person > summary { list-style: none; cursor: pointer; }
+:is(#c-root, html) .c-pay .c-pay__person > summary::-webkit-details-marker { display: none; }
+:is(#c-root, html) .c-pay .c-rows > li + li > .c-pay__person > summary { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-pay .c-pay__lines { padding: 0 16px 16px; }
+:is(#c-root, html) .c-pay .c-pay__lines dl { padding: 8px 12px; border-radius: 8px; background: var(--c-bg); }
+:is(#c-root, html) .c-pay .c-pay__lines dl > div { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; font-size: 13px; line-height: 18px; }
+:is(#c-root, html) .c-pay .c-pay__lines dt { color: var(--c-grey); }
+:is(#c-root, html) .c-pay .c-pay__lines dd { color: var(--c-ink); white-space: nowrap; }
+:is(#c-root, html) .c-pay .c-pay__lines .c-pay__linehead dt { padding-top: 6px; font-weight: 600; color: var(--c-ink2); }
+:is(#c-root, html) .c-pay .c-pay__native { margin-top: 12px; font-size: 13px; line-height: 18px; }
+
+/* Date field: the kit field with a formatted date; the native input is invisible over it and opens the picker. */
+:is(#c-root, html) .c-pay .c-pay__date, :is(#c-root, html) .c-pset .c-pay__date, :is(#c-root, html) .c-exp .c-pay__date { position: relative; justify-content: space-between; gap: 8px; cursor: pointer; }
+:is(#c-root, html) .c-pay__date[data-empty] > span { color: var(--c-grey); }
+:is(#c-root, html) .c-pay__date .c-ic { color: var(--c-ink2); }
+:is(#c-root, html) .c-pay__date input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; opacity: 0; cursor: pointer; font-size: 16px; }
+:is(#c-root, html) .c-pay__date input::-webkit-calendar-picker-indicator { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+:is(#c-root, html) .c-pay__date:focus-within { box-shadow: inset 0 0 0 2px var(--c-teal); }
+:is(#c-root, html) .c-pay__date:has(input:disabled) { opacity: .5; cursor: default; }
+
+/* Desktop: Payroll uses the width like Home: Up next and Recent payrolls on the left, the tools on the right. */
+@media (min-width: 1100px) {
+  :is(#c-root, html) .c-page.c-pay--home { max-width: 1040px; display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; gap: 16px; }
+  :is(#c-root, html) .c-page.c-pay--home > :is(.c-title, .c-pay__feedback) { grid-column: 1 / -1; }
+  :is(#c-root, html) .c-page.c-pay--home > :is(#payroll-next, #payroll-recent, [aria-label="Pay schedule"]) { grid-column: 1; }
+  :is(#c-root, html) .c-page.c-pay--home > [aria-label="Payroll tools"] { grid-column: 2; grid-row: 2 / span 2; }
+  :is(#c-root, html) .c-page.c-pay--home:has(> .c-pay__feedback:not(:empty)) > [aria-label="Payroll tools"] { grid-row: 3 / span 2; }
+}
+@media (max-width: 359px) {
+  :is(#c-root, html) .c-pay .c-field__row { grid-auto-flow: row; }
+}
+
+/* Pushed header: the back label keeps its full width ("‹ Review payroll"), the title centres in what is left (board O-PayrollFix). */
+:is(#c-root, html) .c-pay > .c-nav { grid-template-columns: minmax(max-content, 1fr) auto minmax(0, 1fr); }
+
+/* Payroll settings (board O-PayrollSettings): grouped rows in cards; a row opens its fields under it. */
+:is(#c-root, html) .c-pset .c-pset__form, :is(#c-root, html) .c-pset .c-pset__fields { display: flex; flex-direction: column; gap: 12px; min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#c-root, html) .c-pset .c-pset__state { margin: 0 0 12px; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
+:is(#c-root, html) .c-pset .c-pset__item + .c-pset__item > summary { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-pset .c-pset__item > summary { list-style: none; cursor: pointer; }
+:is(#c-root, html) .c-pset .c-pset__item > summary::-webkit-details-marker { display: none; }
+:is(#c-root, html) .c-pset .c-pset__item > summary .c-chev { transition: transform 160ms ease-out; }
+:is(#c-root, html) .c-pset .c-pset__item[open] > summary .c-chev { transform: rotate(90deg); }
+:is(#c-root, html) .c-pset .c-pset__body.c-pset__body { display: flex; flex-direction: column; gap: 16px; padding: 4px 16px 16px; }
+/* The effective date, reason and Save appear while any setting is open (as before). */
+:is(#c-root, html) .c-pset .c-pset__save.c-pset__save { display: none; flex-direction: column; gap: 16px; }
+:is(#c-root, html) .c-pset .c-pset__fields:has(details[open]) > .c-pset__save.c-pset__save { display: flex; }
+/* Fields inside the rows: 13/600 labels over 48px kit inputs; notes 13px grey. */
+:is(#c-root, html) .c-pset :is(.c-pset__body, .c-pset__save, .c-pset__group) label:not(.wb-check):not(.pw-check):not(.c-field__label) { display: flex; flex-direction: column; gap: 6px; min-width: 0; font-size: 13px; line-height: 16px; font-weight: 600; color: var(--c-ink2); }
+:is(#c-root, html) .c-pset :is(.c-pset__body, .c-pset__save, .c-pset__group) :is(input:not([type=checkbox]):not([type=radio]):not([type=date]), select, textarea) { display: block; width: 100%; min-width: 0; height: 48px; margin: 0; padding: 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); font: 400 15px/20px inherit; outline: none; }
+:is(#c-root, html) .c-pset :is(.c-pset__body, .c-pset__save, .c-pset__group) textarea { height: 96px; padding: 12px; resize: vertical; }
+:is(#c-root, html) .c-pset :is(.c-pset__body, .c-pset__save, .c-pset__group) select { appearance: none; -webkit-appearance: none; padding-right: 36px; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234A4F54' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center; }
+:is(#c-root, html) .c-pset :is(.c-pset__body, .c-pset__save, .c-pset__group) :is(input, select, textarea):focus { box-shadow: inset 0 0 0 2px var(--c-teal); }
+:is(#c-root, html) .c-pset :is(.c-pset__body, .c-pset__save, .c-pset__group) input[type=date]:not(.c-pay__date input) { height: 48px; padding: 0 12px; border: 0; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--c-field); font: 400 15px/20px inherit; }
+:is(#c-root, html) .c-pset .wb-check { display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding-top: 12px; font-size: 15px; line-height: 20px; font-weight: 400; color: var(--c-ink); cursor: pointer; }
+:is(#c-root, html) .c-pset .wb-check input { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--c-teal); }
+:is(#c-root, html) .c-pset :is(.wb-note, .wb-help) { margin: 0; font-size: 13px; line-height: 18px; font-weight: 400; color: var(--c-grey); }
+:is(#c-root, html) .c-pset .wb-box { display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 8px; background: var(--c-bg); font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-pset .wb-box strong { font-weight: 600; color: var(--c-ink2); }
+:is(#c-root, html) .c-pset .wb-box :is(p, ul) { margin: 0; padding: 0; list-style: none; }
+:is(#c-root, html) .c-pset .wb-error { display: flex; gap: 8px; margin: 0; font-size: 13px; line-height: 18px; color: var(--c-red); }
+:is(#c-root, html) .c-pset .c-pset__group { display: flex; flex-direction: column; gap: 16px; }
+:is(#c-root, html) .c-pset .wb-form { display: flex; flex-direction: column; gap: 16px; min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#c-root, html) .c-pset .wb-rule { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 12px; border: 0; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--c-line); }
+:is(#c-root, html) .c-pset .wb-rule legend { font-size: 13px; font-weight: 600; color: var(--c-ink2); }
+:is(#c-root, html) .c-pset .wb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: 12px; }
+:is(#c-root, html) .c-pset .c-pset__history { display: flex; flex-direction: column; gap: 12px; }
+:is(#c-root, html) .c-pset .c-pset__history strong { display: block; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-pset .c-pset__history :is(p, small) { display: block; margin: 2px 0 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-pset .c-pset__body.c-pset__body.payroll-workflow { padding-top: 0; }
+:is(#c-root, html) .c-pset .c-pset__body.payroll-workflow .pw-panel { margin: 0; padding: 16px 0 0; border: 0; border-radius: 0; background: none; box-shadow: inset 0 1px 0 var(--c-line); }
+
+/* Time exports (board O-TimeExports): the period as a kit select, "Send to" as radio rows, the ready count and one
+ * Create export; people, other dates, the provider file setup and the handoff record open as rows. */
+:is(#c-root, html) .c-exp select.c-in { font-size: 15px; }
+:is(#c-root, html) .c-exp .c-exp__choice { cursor: pointer; }
+:is(#c-root, html) .c-exp .c-exp__choice input[type=radio] { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--c-teal); cursor: pointer; }
+:is(#c-root, html) .c-exp .c-exp__ready { display: flex; flex-direction: column; gap: 2px; padding: 12px 16px 16px; box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-exp .c-exp__ready > .c-btn { margin-top: 12px; }
+:is(#c-root, html) .c-exp .c-exp__ready > .c-note { margin-top: 8px; display: block; }
+:is(#c-root, html) .c-exp .c-exp__waiting { font-size: 13px; line-height: 18px; color: var(--c-amber); }
+:is(#c-root, html) .c-exp .c-exp__inline { display: inline; padding: 13px 0; margin: -13px 0; color: var(--c-teal); font: inherit; font-weight: 600; white-space: nowrap; }
+:is(#c-root, html) .c-exp .c-exp__dl { width: 18px; height: 18px; color: var(--c-teal); }
+:is(#c-root, html) .c-exp details.c-exp__more { padding: 0 16px 4px; box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-exp details.c-exp__more > summary { display: flex; align-items: center; min-height: 44px; color: var(--c-teal); font-size: 13px; line-height: 18px; font-weight: 600; cursor: pointer; list-style: none; }
+:is(#c-root, html) .c-exp details.c-exp__more > summary::-webkit-details-marker { display: none; }
+:is(#c-root, html) .c-exp .c-exp__receipt { display: flex; flex-direction: column; gap: 8px; padding-bottom: 12px; font-size: 13px; line-height: 18px; }
+:is(#c-root, html) .c-exp .c-exp__receipt dt { color: var(--c-grey); }
+:is(#c-root, html) .c-exp .c-exp__receipt dd { color: var(--c-ink2); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; overflow-wrap: anywhere; }
+:is(#c-root, html) .c-exp .c-exp__item + .c-exp__item > summary, :is(#c-root, html) .c-exp .c-exp__item + .c-exp__mapping > summary { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-exp .c-exp__item > summary { list-style: none; cursor: pointer; }
+:is(#c-root, html) .c-exp .c-exp__item > summary::-webkit-details-marker { display: none; }
+:is(#c-root, html) .c-exp .c-exp__item > summary .c-chev { transition: transform 160ms ease-out; }
+:is(#c-root, html) .c-exp .c-exp__item[open] > summary .c-chev { transform: rotate(90deg); }
+:is(#c-root, html) .c-exp .c-exp__body { display: flex; flex-direction: column; gap: 12px; padding: 4px 16px 16px; }
+:is(#c-root, html) .c-exp .c-exp__bar { display: flex; gap: 20px; }
+:is(#c-root, html) .c-exp .c-exp__bar .c-link { min-height: 44px; margin: -8px 0; }
+:is(#c-root, html) .c-exp .c-exp__bar .c-link:disabled { color: var(--c-faint); cursor: default; }
+:is(#c-root, html) .c-exp .c-exp__people { margin: 0 -16px; }
+:is(#c-root, html) .c-exp .c-exp__person { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 16px; cursor: pointer; }
+:is(#c-root, html) .c-exp .c-exp__people > li + li > .c-exp__person { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-exp .c-exp__person[data-off] { cursor: default; }
+:is(#c-root, html) .c-exp .c-exp__person[data-off] .c-row__title { color: var(--c-grey); }
+:is(#c-root, html) .c-exp .c-exp__person input { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--c-teal); }
+:is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy { padding: 0 16px 16px; font-size: 13px; line-height: 18px; color: var(--c-ink2); }
+:is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy > section.panel { margin: 0; padding: 0; border: 0; box-shadow: none; background: none; }
+:is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy :is(h2, h3, h4) { margin: 12px 0 4px; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy > section.panel > h2 { display: none; }
+:is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy p { margin: 4px 0; }
+/* The provider file setup keeps its own fields; the kit draws its row and frame. */
+:is(#c-root, html) .c-exp .c-exp__mapping > fieldset { margin: 0; padding: 4px 16px 16px; border: 0; min-width: 0; }
+:is(#c-root, html) .c-exp .c-exp__mapping :is(input:not([type=checkbox]), select, textarea) { width: 100%; min-width: 0; min-height: 48px; padding: 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); font: 400 15px/20px inherit; }
+:is(#c-root, html) .c-exp .c-exp__mapping textarea { padding: 12px; min-height: 96px; }
+:is(#c-root, html) .c-exp .c-exp__mapping label > span:first-child { display: block; margin-bottom: 6px; font-size: 13px; line-height: 16px; font-weight: 600; color: var(--c-ink2); }
+:is(#c-root, html) .c-exp .c-exp__mapping h3 { margin: 12px 0 6px; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-exp .c-exp__mapping p { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-exp .c-exp__mapping select { appearance: none; -webkit-appearance: none; padding-right: 36px; }
+/* Saving a provider file layout is a secondary action here: Create export stays the page's one primary. */
+:is(#c-root, html) .c-exp .c-exp__mapping button[class*="__primary"] { height: 44px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-teal); color: var(--c-teal); font: 600 15px/20px inherit; opacity: 1; }
+:is(#c-root, html) .c-exp .c-exp__mapping button[class*="__primary"]:disabled { box-shadow: none; background: var(--c-neutral-bg); color: var(--c-faint); }
+:is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy :is(button, .button) { min-height: 44px; }
+
+/* File names wrap instead of hiding their ending; on small phones a row's 13px detail wraps rather than clipping. */
+:is(#c-root, html) .c-pay .c-pay__doc .c-row__title { white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 359px) {
+  :is(#c-root, html) .c-pay .c-row__detail > span:first-child { white-space: normal; }
+}
+
+:is(#c-root, html) .c-pset .c-pset__save .wb-box { background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-ring); }
+/* A long file name keeps the line; View and Download move under it when the row is narrow. */
+:is(#c-root, html) .c-pay .c-pay__doc { flex-wrap: wrap; row-gap: 0; }
+:is(#c-root, html) .c-pay .c-pay__doc .c-row__main { flex: 1 1 200px; }

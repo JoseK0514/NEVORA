@@ -1,7 +1,11 @@
 'use client';
 import {PayrollPeriodClose} from './payroll-period-close';
 import {useEffect,useRef,useState} from 'react';
-import {ArrowClockwiseIcon, DownloadSimpleIcon, ArrowRightIcon, CalendarDotsIcon, CheckCircleIcon, ClockIcon, FileCsvIcon, FileCodeIcon, InfoIcon, UsersThreeIcon} from '@phosphor-icons/react/ssr';
+import {DownloadSimpleIcon} from '@phosphor-icons/react/dist/ssr/DownloadSimple';
+import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
+import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
+import {CorpNav,CorpTitle} from './corp/corp';
+import './payroll/payroll-corp.css';
 import {neutralProfile,parseExportProfile,type ExportProfile} from '@/lib/payroll-export/model';
 import {type TimecardItem} from '@/lib/timecards/read-model';
 import {parseCurrentTimecards} from '@/lib/timecards/client';
@@ -11,9 +15,6 @@ import {verifyExportReply} from '@/lib/payroll-export/client';
 import {stableExportJson} from '@/lib/payroll-export/json';
 import {selectVisibleFinalized,changeExportSelection} from '@/lib/payroll-export/selection';
 import {PayrollExportMapping} from './payroll-export-mapping';
-import styles from './payroll-export.module.css';
-import {QuietHeader,QuietNav} from './quiet/quiet';
-const dateLabel=(value:string)=>new Intl.DateTimeFormat('en',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'}).format(new Date(`${value}T00:00:00Z`));
 function download(text:string,type:string,name:string){const url=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 type ProfileCommand={operationId:string;id:string;expectedRevision:number;profile:ExportProfile};
 function payrollSourceKey(cards:readonly TimecardItem[],profiles:readonly SavedExportProfile[]){
@@ -23,12 +24,17 @@ function payrollSourceKey(cards:readonly TimecardItem[],profiles:readonly SavedE
  return stableExportJson({cards:comparableCards,profiles});
 }
 const dayText=(value:string)=>{try{return new Intl.DateTimeFormat('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(`${value}T12:00:00Z`));}catch{return '';}};
-/** Quiet (v4): a date row; the value reads in teal on the right and the picker opens on tap. */
-function DateRow({label,value,onChange,disabled}:{label:string;value:string;onChange:(value:string)=>void;disabled?:boolean}){
- return <li><label className="q-row q-row--one q-picker-row"><span className="q-rt"><b>{label}</b></span>
-  <span className="q-rv q-rv--go" aria-hidden="true">{dayText(value)}</span>
-  <input className="q-picker-row__input" type="date" value={value} required disabled={disabled} aria-label={label} onChange={event=>event.target.value&&onChange(event.target.value)}
-   onClick={event=>{try{event.currentTarget.showPicker?.();}catch{/* Focus is enough where pickers can't open. */}}}/></label></li>;
+const utcDay=(value:string)=>new Date(`${value}T12:00:00Z`);
+const isoDay=(date:Date)=>date.toISOString().slice(0,10);
+/** "Oct 19 – 25", or "Sep 28 – Oct 4". */
+function rangeText(start:string,end:string){const month=(v:string)=>new Intl.DateTimeFormat('en-US',{month:'short',timeZone:'UTC'}).format(utcDay(v));return start.slice(0,7)===end.slice(0,7)?`${month(start)} ${Number(start.slice(8))} – ${Number(end.slice(8))}`:`${month(start)} ${Number(start.slice(8))} – ${month(end)} ${Number(end.slice(8))}`;}
+/** This week and the five before it, Monday to Sunday, counted from the page's default week. */
+function weekChoices(){
+ const today=new Date();const base=utcDay(isoDay(new Date(Date.UTC(today.getFullYear(),today.getMonth(),today.getDate()))));
+ const monday=new Date(base.getTime()-((base.getUTCDay()+6)%7)*86_400_000);
+ const names=['This week','Last week'];
+ const weeks=Array.from({length:6},(_,i)=>{const start=new Date(monday.getTime()-i*7*86_400_000),end=new Date(start.getTime()+6*86_400_000);const s=isoDay(start),e=isoDay(end);return {value:`${s}|${e}`,label:`${rangeText(s,e)}${names[i]?` · ${names[i]}`:''}`};});
+ return weeks;
 }
 export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;actorId:string}){
  const [period,setPeriod]=useState(initialPeriod),[draftPeriod,setDraftPeriod]=useState(initialPeriod),[cards,setCards]=useState<TimecardItem[]|null>(null),[profiles,setProfiles]=useState<SavedExportProfile[]>([]),[profileId,setProfileId]=useState('neutral'),[draft,setDraft]=useState<ExportProfile>(neutralProfile),[reviewed,setReviewed]=useState(false),[selected,setSelected]=useState<string[]>([]),[state,setState]=useState('Loading finalized time'),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[result,setResult]=useState<PayrollExportPayload|null>(null);
@@ -116,8 +122,8 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
  const recorded=chosen.reduce((sum,c)=>sum+BigInt(c.card.recordedNanoseconds),BigInt(0)).toString();
  const breaks=chosen.reduce((sum,c)=>sum+BigInt(c.card.breakNanoseconds),BigInt(0)).toString();
  const locked=busy||retry!==null||!currentActor;
- // Quiet (v4, approved Oct 23): on phones, the pay period (Start, End), how many timecards are finalized, and one Export.
- // Export sends every finalized timecard (up to 100) with the chosen mapping. Wider screens keep the full tool below.
+ // Corporate (Release 1, board O-TimeExports): the pay period, where the hours go, how many people and hours are ready,
+ // and one Create export. The people list, other dates and the provider file setup stay one tap away.
  const choosePeriod=(next:Period)=>{
   setDraftPeriod(next);
   let parsed:Period;try{parsed=parsePeriod(next.startDate,next.endDate);}catch{setNotice('Choose a period of 1 to 31 days.');return;}
@@ -127,70 +133,83 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
  };
  const ready=state==='ready'&&currentActor;
  const exportAll=()=>{const ids=visibleSelection.selected;setSelected(ids);setResult(null);generate(ids);};
- const phone=<div className="q-page q-export-phone" data-nv-page="">
-  <QuietNav back={{href:'/app/payroll',label:'Payroll'}}/>
-  <QuietHeader title="Time exports"/>
-  <div className="q-grp"><h2>Pay period</h2></div>
-  <ul className="q-list">
-   <DateRow label="Start" value={draftPeriod.startDate} disabled={busy} onChange={value=>choosePeriod({...draftPeriod,startDate:value})}/>
-   <DateRow label="End" value={draftPeriod.endDate} disabled={busy} onChange={value=>choosePeriod({...draftPeriod,endDate:value})}/>
-  </ul>
-  <div className="q-grp"><h2>Timecards</h2></div>
-  <ul className="q-list"><li><div className="q-row q-row--one"><span className="q-rt"><b>Finalized</b></span><span className="q-rv q-rv--l">{ready&&cards?`${finalized.length} of ${cards.length}`:'—'}</span></div></li></ul>
-  {notice?<p className="q-help q-first" role="status">{notice}</p>:null}
-  {retry?<button type="button" className="q-btn" disabled={busy} onClick={()=>retry&&void send(retry)}>Try again</button>
-   :<button type="button" className={ready&&finalized.length&&!locked?'q-btn':'q-btn q-btn--off'} disabled={!ready||!finalized.length||locked} onClick={exportAll}>Export finalized time</button>}
-  <p className="q-help q-export-hint">{!ready?(state==='ready'?'Checking export access…':state):busy?'Preparing your files…':retry?'Try again to confirm this export.':!finalized.length?'Finalize timecards to export them.':`Exports ${finalized.length} finalized ${finalized.length===1?'timecard':'timecards'}${visibleSelection.overLimit?' (the first 100)':''}.`}</p>
-  {result?<><div className="q-grp"><h2>Files</h2></div><ul className="q-list">
-   <li><button type="button" className="q-row q-row--btn" onClick={()=>downloadCurrent(result.csv,'text/csv;charset=utf-8',`nevora-mapped-${result.model.period.startDate}-${result.operationId}.csv`)}><span className="q-rt"><b>Time file</b><i>{`CSV · ${result.profile.name}`}</i></span><DownloadSimpleIcon className="q-chev" aria-hidden="true"/></button></li>
-   <li><button type="button" className="q-row q-row--btn" onClick={()=>downloadCurrent(stableExportJson(result.model),'application/json',`nevora-canonical-${result.model.period.startDate}-${result.operationId}.json`)}><span className="q-rt"><b>Time record</b><i>JSON · exact durations</i></span><DownloadSimpleIcon className="q-chev" aria-hidden="true"/></button></li>
-  </ul></>:null}
- </div>;
- return <>{phone}<div className={`${styles.root} q-export-desk`}>
-  <section className={styles.card} aria-labelledby="payroll-period-title">
-   <div className={styles.sectionHeading}><span className={styles.sectionIcon}><CalendarDotsIcon size={21} aria-hidden="true" /></span><div><h2 id="payroll-period-title">Pay period</h2><p>Choose up to 31 days of finalized time.</p></div></div>
-   <form className={styles.toolbar} onSubmit={e=>{e.preventDefault();try{const nextPeriod=parsePeriod(draftPeriod.startDate,draftPeriod.endDate);if(nextPeriod.startDate===period.startDate&&nextPeriod.endDate===period.endDate){if(mutating.current){setNotice('Finish the current operation before refreshing export data.');return;}reload.current();}else{if(mutating.current||retry!==null||saveRetry.current!==null){setNotice('Finish or retry the current export or mapping save before changing the period.');return;}clearProtected.current('Loading finalized time');setPeriod(nextPeriod);}setNotice('');}catch{setNotice('Choose a period of 1 to 31 days.');}}}>
-    <label><span>Period start</span><input type="date" required value={draftPeriod.startDate} disabled={busy} onChange={e=>setDraftPeriod({...draftPeriod,startDate:e.target.value})} /></label>
-    <label><span>Period end</span><input type="date" required value={draftPeriod.endDate} disabled={busy} onChange={e=>setDraftPeriod({...draftPeriod,endDate:e.target.value})} /></label>
-    <button type="submit" className={`${styles.button} ${styles.primary}`} disabled={busy}>View finalized time<ArrowRightIcon size={18} aria-hidden="true" /></button>
-    <button type="button" className={styles.button} disabled={busy} onClick={()=>reload.current()}><ArrowClockwiseIcon size={18} aria-hidden="true" />Refresh export data</button>
-   </form>
-   {periodChanged&&<p className={styles.periodHint}>Dates changed. View finalized time to review this period before generating an export.</p>}
+ const stateText=state==='Loading finalized time'?'Loading timecards…':state==='ready'?'Checking export access…':state;
+ const approvedOnly=cards?.filter(c=>c.state==='APPROVED').length??0;
+ const unapproved=cards?.filter(c=>c.state!=='FINALIZED'&&c.state!=='APPROVED'&&(c.card.entries.length>0||c.history.length>0||c.card.recordedNanoseconds!=='0')).length??0;
+ const readyHours=finalized.reduce((sum,c)=>sum+BigInt(c.card.recordedNanoseconds),BigInt(0)).toString();
+ const waiting=unapproved?`${unapproved} ${unapproved===1?'timecard still needs':'timecards still need'} approval${approvedOnly?` · ${approvedOnly} to finalize`:''}`:approvedOnly?`${approvedOnly} approved ${approvedOnly===1?'timecard still needs':'timecards still need'} finalizing`:'';
+ const weeks=weekChoices();
+ const periodKey=`${period.startDate}|${period.endDate}`;
+ const listed=weeks.some(w=>w.value===periodKey);
+ const create=()=>{if(selected.length){setResult(null);generate();}else exportAll();};
+ const chooseProfile=(id:string)=>{setProfileId(id);const p=profiles.find(p=>p.id===id)?.profile??neutralProfile();setDraft(p);setReviewed(false);setResult(null);};
+ const timecardsHref=`/app/timecards?start=${period.startDate}&end=${period.endDate}`;
+ return <div className="c-page c-payroll c-pay c-exp" data-nv-page="" data-corp="" aria-labelledby="time-exports-title">
+  <CorpNav back={{href:'/app/payroll',label:'Payroll'}} title="Time exports" phoneOnly/>
+  <CorpTitle id="time-exports-title" title="Time exports" wide/>
+  <div className="c-field">
+   <label className="c-field__label" htmlFor="time-export-period">Pay period</label>
+   <select id="time-export-period" className="c-in" aria-label="Pay period" value={listed?periodKey:'current'} disabled={busy} onChange={e=>{const [startDate,endDate]=e.target.value.split('|');if(startDate&&endDate)choosePeriod({startDate,endDate});}}>
+    {!listed?<option value="current">{rangeText(period.startDate,period.endDate)}</option>:null}
+    {weeks.map(w=><option key={w.value} value={w.value}>{w.label}</option>)}
+   </select>
+  </div>
+  {notice?<p className="c-callout c-callout--teal" role="status">{notice}</p>:null}
+  <section className="c-card" aria-labelledby="time-export-send">
+   <div className="c-card__head"><h2 className="c-card__label" id="time-export-send">Send to</h2></div>
+   {ready?<>
+    <ul className="c-rows" aria-label="Send to">
+     {profiles.map(p=><li key={p.id}><label className="c-row c-exp__choice"><span className="c-row__main"><span className="c-row__title c-row__title--b">{p.profile.name}</span><span className="c-row__detail"><span>{`${p.profile.product||'Saved file layout'} · revision ${p.revision}`}</span></span></span><input type="radio" name="time-export-profile" value={p.id} checked={profileId===p.id} disabled={locked} onChange={e=>chooseProfile(e.target.value)}/></label></li>)}
+     <li><label className="c-row c-exp__choice"><span className="c-row__main"><span className="c-row__title c-row__title--b">CSV file</span><span className="c-row__detail"><span>Opens in Excel or Numbers</span></span></span><input type="radio" name="time-export-profile" value="neutral" checked={profileId==='neutral'} disabled={locked} onChange={e=>chooseProfile(e.target.value)}/></label></li>
+    </ul>
+    <div className="c-exp__ready">
+     <b className="c-pay__strong">{`${finalized.length} ${finalized.length===1?'person':'people'} · ${formatRecordedHours(readyHours)}`}</b>
+     {waiting?<span className="c-exp__waiting">{waiting}</span>:null}
+     {retry?<button type="button" className="c-btn c-btn--full" disabled={busy} onClick={()=>retry&&void send(retry)}>Retry same export</button>
+      :<button type="button" className="c-btn c-btn--full" disabled={locked||!finalized.length||periodChanged} onClick={create}>Create export</button>}
+     <p className="c-note">{busy?'Preparing your files…':retry?'Retry to confirm the outcome of this export.':periodChanged?'Show the dates you chose before exporting.':!finalized.length?<>Finalize approved timecards to export them. <a className="c-exp__inline" href={timecardsHref}>Review timecards</a></>:selected.length?`Exports the ${selected.length} ${selected.length===1?'person':'people'} you chose.`:`Exports every finalized timecard${visibleSelection.overLimit?' (the first 100)':''}. Hours include breaks; your payroll system decides pay types.`}</p>
+    </div>
+   </>:<div className="c-card__body"><p className="c-payroll__state" role="status" data-export-loading={state==='Loading finalized time'||undefined}>{stateText}</p>{state!=='Loading finalized time'?<button type="button" className="c-btn c-btn--secondary c-btn--md c-pay__gap" disabled={busy} onClick={()=>reload.current()}>Try again</button>:null}</div>}
   </section>
-  {notice&&<div className={styles.notice} role="status"><InfoIcon size={20} aria-hidden="true" /><p>{notice}</p></div>}
-  {state!=='ready'||!currentActor?<section className={`${styles.card} ${styles.stateCard}`} role="status" data-export-loading={state==='Loading finalized time'||undefined}><span className={styles.stateIcon}><ClockIcon size={30} weight="duotone" aria-hidden="true" /></span><h2>{state==='ready'?'Checking export access':state}</h2><p>{state==='Loading finalized time'?'Loading the current timecards and saved mapping profiles.':'Refresh export data when access and your connection are available.'}</p></section>:<>
-   <div className={styles.workspace}>
-    <section className={`${styles.card} ${styles.employeeCard}`} aria-labelledby="payroll-employees-title">
-     <div className={styles.sectionHeading}><span className={styles.sectionIcon}><UsersThreeIcon size={22} aria-hidden="true" /></span><div><h2 id="payroll-employees-title">Choose finalized employees</h2><p>{dateLabel(period.startDate).replace(/ /g, "\u00a0")}{"\u00a0– "}{dateLabel(period.endDate).replace(/ /g, "\u00a0")}</p></div><span className={styles.count}>{finalized.length} ready</span></div>
-     <div className={styles.selectionBar}><span>{selected.length} selected · {visibleSelection.excluded} not finalized.{visibleSelection.overLimit ? " Select up to 100 people at a time." : null}</span><div><button type="button" className={styles.textButton} aria-label="Select visible finalized timecards" disabled={locked||finalized.length===0} onClick={()=>{setSelected(visibleSelection.selected);setResult(null);}}>Select finalized</button><button type="button" className={styles.textButton} aria-label="Clear employee selection" disabled={locked||selected.length===0} onClick={()=>{setSelected([]);setResult(null);}}>Clear</button></div></div>
-     {cards?.length===0?<div className={styles.empty}><UsersThreeIcon size={32} weight="duotone" aria-hidden="true" /><h3>No employees in this period</h3><p>Choose another period and view finalized time, or review this period in Timecards.</p></div>:<div className={styles.employeeList}>
-      <div className={styles.tableHeading} aria-hidden="true"><span>Employee</span><span>Recorded</span><span>Breaks</span></div>
-      {cards?.map(c=><label className={`${styles.employee} ${c.state!=='FINALIZED'?styles.unavailable:''}`} key={c.card.employeeId}>
-       <input type="checkbox" aria-label={`Export ${c.card.employeeName}`} disabled={c.state!=='FINALIZED'||locked||(!selected.includes(c.card.employeeId)&&selected.length>=100)} checked={selected.includes(c.card.employeeId)} onChange={e=>{setSelected(ids=>changeExportSelection(cards??[],ids,c.card.employeeId,e.target.checked));setResult(null);}} />
-       <span className={styles.employeeIdentity}><strong>{c.card.employeeName}</strong><small><span className={c.state==='FINALIZED'?styles.finalized:styles.status}>{c.state==='FINALIZED'&&<CheckCircleIcon size={12} weight="fill" aria-hidden="true" />}{c.state==='FINALIZED'?'Finalized':c.state==='DRAFT'?'Draft':c.state.charAt(0)+c.state.slice(1).toLowerCase().replaceAll('_',' ')}</span></small></span>
-       <span className={styles.hours}><small>Recorded</small>{formatRecordedHours(c.card.recordedNanoseconds)}</span><span className={styles.hours}><small>Breaks</small>{formatRecordedHours(c.card.breakNanoseconds)}</span>
-      </label>)}
-     </div>}
-     {cards&&cards.length>0&&finalized.length<cards.length&&<p className={styles.employeeFootnote}>{finalized.length===0?'No finalized timecards are ready to export. Review and finalize the period in':'Only finalized timecards can be selected. Review other timecards in'} <a href="/app/timecards">Timecards</a>.</p>}
-    </section>
-    <section className={`${styles.card} ${styles.exportCard}`} aria-labelledby="payroll-export-title">
-     <div className={styles.sectionHeading}><span className={`${styles.sectionIcon} ${styles.exportIcon}`}><FileCsvIcon size={23} weight="duotone" aria-hidden="true" /></span><div><h2 id="payroll-export-title">Export summary</h2><p>Review your selection and file mapping.</p></div></div>
-     <dl className={styles.totals}><div><dt>Selected employees</dt><dd>{selected.length}<span> / {finalized.length} ready</span></dd></div><div><dt>Recorded time</dt><dd>{formatRecordedHours(recorded)}</dd></div><div><dt>Separate break total</dt><dd>{formatRecordedHours(breaks)}</dd></div></dl>
-     <p className={styles.timeBasis}><InfoIcon size={17} aria-hidden="true" /><span>Hours include breaks. Your payroll system decides pay types and runs payroll.</span></p>
-     <label><span>Mapping profile</span><span className={styles.selectFrame}><select aria-label="Mapping profile" value={profileId} disabled={locked} onChange={e=>{setProfileId(e.target.value);const p=profiles.find(p=>p.id===e.target.value)?.profile??neutralProfile();setDraft(p);setReviewed(false);setResult(null);}}><option value="neutral">NEVORA normalized time CSV</option>{profiles.map(p=><option key={p.id} value={p.id}>{p.profile.name} · revision {p.revision}</option>)}</select></span></label>
-     {saved?<details className={styles.mappingInfo}><summary>Mapping details</summary><p className={styles.note}>{saved.profile.product} · {saved.profile.precision==='HALF_UP'?'Explicit half-up rounding':'Reject precision loss'} · {saved.profile.verifiedRequirements}</p></details>:<p className={styles.note}>Exact hours, each linked to its finalized timecard. Check the format with your payroll provider before importing.</p>}
-     <button type="button" className={`${styles.button} ${styles.primary} ${styles.generate}`} disabled={locked||selected.length===0||periodChanged} onClick={()=>generate()}>Generate reviewed export<ArrowRightIcon size={18} aria-hidden="true" /></button>
-     <p className={styles.actionHint}>{busy?'Preparing your request…':retry?'Retry to confirm the outcome of this export.':periodChanged?'View finalized time for your updated dates.':selected.length===0?'Select finalized employees to prepare your files.':'Creates a mapped CSV and canonical time record.'}</p>
-     {retry&&<button type="button" className={`${styles.button} ${styles.generate}`} disabled={busy} onClick={()=>retry&&void send(retry)}><ArrowClockwiseIcon size={18} aria-hidden="true" />Retry same export</button>}
-    </section>
-   </div>
-   {result&&<section className={`${styles.card} ${styles.files}`} aria-labelledby="payroll-files-title">
-    <div className={styles.sectionHeading}><span className={styles.verifiedIcon}><CheckCircleIcon size={24} weight="duotone" aria-hidden="true" /></span><div><h2 id="payroll-files-title">Your files are ready</h2><p>Verified export for {result.model.rows.length} employees. Download both files for your records.</p></div></div>
-    <div className={styles.fileGrid}><button type="button" className={styles.download} aria-label="Download mapped CSV" onClick={()=>downloadCurrent(result.csv,'text/csv;charset=utf-8',`nevora-mapped-${result.model.period.startDate}-${result.operationId}.csv`)}><FileCsvIcon size={28} weight="duotone" aria-hidden="true" /><span><strong>Download mapped CSV</strong><small>{result.profile.name}{result.profileRevision>0?` · Rev. ${result.profileRevision}`:''}</small></span><DownloadSimpleIcon size={20} aria-hidden="true" /></button><button type="button" className={styles.download} aria-label="Download canonical time record" onClick={()=>downloadCurrent(stableExportJson(result.model),'application/json',`nevora-canonical-${result.model.period.startDate}-${result.operationId}.json`)}><FileCodeIcon size={28} weight="duotone" aria-hidden="true" /><span><strong>Download canonical time record</strong><small>Exact durations and source references · JSON</small></span><DownloadSimpleIcon size={20} aria-hidden="true" /></button></div>
-    <details className={styles.receipt}><summary>Export receipt &amp; verification</summary><dl><div><dt>Receipt</dt><dd>{result.operationId}</dd></div><div><dt>CSV SHA-256</dt><dd>{result.csvSha256}</dd></div></dl></details>
-   </section>}
+  {ready&&result?<section className="c-card" aria-labelledby="time-export-files">
+   <div className="c-card__head"><h2 className="c-card__label" id="time-export-files">Your files</h2><span className="c-card__aside">{`${result.model.rows.length} ${result.model.rows.length===1?'person':'people'}`}</span></div>
+   <ul className="c-rows" aria-label="Your files">
+    <li><button type="button" className="c-row" aria-label="Download mapped CSV" onClick={()=>downloadCurrent(result.csv,'text/csv;charset=utf-8',`nevora-mapped-${result.model.period.startDate}-${result.operationId}.csv`)}><span className="c-row__main"><span className="c-row__title c-row__title--b">Time file</span><span className="c-row__detail"><span>{`CSV · ${result.profile.name}${result.profileRevision>0?` · Rev. ${result.profileRevision}`:''}`}</span></span></span><DownloadSimpleIcon className="c-ic c-exp__dl" aria-hidden="true"/></button></li>
+    <li><button type="button" className="c-row" aria-label="Download canonical time record" onClick={()=>downloadCurrent(stableExportJson(result.model),'application/json',`nevora-canonical-${result.model.period.startDate}-${result.operationId}.json`)}><span className="c-row__main"><span className="c-row__title c-row__title--b">Time record</span><span className="c-row__detail"><span>JSON · exact durations and sources</span></span></span><DownloadSimpleIcon className="c-ic c-exp__dl" aria-hidden="true"/></button></li>
+   </ul>
+   <details className="c-exp__more"><summary>Receipt and checksum</summary><dl className="c-exp__receipt"><div><dt>Receipt</dt><dd>{result.operationId}</dd></div><div><dt>CSV SHA-256</dt><dd>{result.csvSha256}</dd></div></dl></details>
+  </section>:null}
+  {ready?<section className="c-card" aria-labelledby="time-export-options">
+   <div className="c-card__head"><h2 className="c-card__label" id="time-export-options">Options</h2></div>
+   <details className="c-exp__item" open={selected.length>0||undefined}>
+    <summary className="c-row"><span className="c-row__main"><span className="c-row__title">People in this export</span><span className="c-row__detail"><span>{`${selected.length} selected · ${visibleSelection.excluded} not finalized.${visibleSelection.overLimit?' Select up to 100 people at a time.':''}`}</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></summary>
+    <div className="c-exp__body">
+     <div className="c-exp__bar"><button type="button" className="c-link c-link--l" aria-label="Select visible finalized timecards" disabled={locked||finalized.length===0} onClick={()=>{setSelected(visibleSelection.selected);setResult(null);}}>Select all finalized</button><button type="button" className="c-link c-link--l" aria-label="Clear employee selection" disabled={locked||selected.length===0} onClick={()=>{setSelected([]);setResult(null);}}>Clear</button></div>
+     {cards?.length===0?<p className="c-note">No one has time in this period.</p>:<ul className="c-exp__people">{cards?.map(c=><li key={c.card.employeeId}><label className="c-exp__person" data-off={c.state!=='FINALIZED'||undefined}>
+      <input type="checkbox" aria-label={`Export ${c.card.employeeName}`} disabled={c.state!=='FINALIZED'||locked||(!selected.includes(c.card.employeeId)&&selected.length>=100)} checked={selected.includes(c.card.employeeId)} onChange={e=>{setSelected(ids=>changeExportSelection(cards??[],ids,c.card.employeeId,e.target.checked));setResult(null);}}/>
+      <span className="c-row__main"><span className="c-row__title">{c.card.employeeName}</span><span className="c-row__detail"><span>{c.state==='FINALIZED'?'Finalized':c.state==='APPROVED'?'Approved · not finalized':c.state==='DRAFT'?'Draft':c.state.charAt(0)+c.state.slice(1).toLowerCase().replaceAll('_',' ')}</span></span></span>
+      <span className="c-row__value c-row__value--soft">{formatRecordedHours(c.card.recordedNanoseconds)}</span>
+     </label></li>)}</ul>}
+     {selected.length?<p className="c-note">{`Selected: ${formatRecordedHours(recorded)} recorded · ${formatRecordedHours(breaks)} breaks (separate).`}</p>:null}
+    </div>
+   </details>
+   <details className="c-exp__item">
+    <summary className="c-row"><span className="c-row__main"><span className="c-row__title">Other dates</span><span className="c-row__detail"><span>Up to 31 days of finalized time</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></summary>
+    <form className="c-exp__body" onSubmit={e=>{e.preventDefault();try{const nextPeriod=parsePeriod(draftPeriod.startDate,draftPeriod.endDate);if(nextPeriod.startDate===period.startDate&&nextPeriod.endDate===period.endDate){if(mutating.current){setNotice('Finish the current operation before refreshing export data.');return;}reload.current();}else{if(mutating.current||retry!==null||saveRetry.current!==null){setNotice('Finish or retry the current export or mapping save before changing the period.');return;}clearProtected.current('Loading finalized time');setPeriod(nextPeriod);}setNotice('');}catch{setNotice('Choose a period of 1 to 31 days.');}}}>
+     <div className="c-field__row">
+      <div className="c-field"><label className="c-field__label" htmlFor="time-export-start">Start</label><span className="c-in c-pay__date"><span aria-hidden="true">{dayText(draftPeriod.startDate)||'Choose a date'}</span><CalendarBlankIcon className="c-ic c-ic--s" aria-hidden="true"/><input id="time-export-start" type="date" required value={draftPeriod.startDate} disabled={busy} onChange={e=>setDraftPeriod({...draftPeriod,startDate:e.target.value})}/></span></div>
+      <div className="c-field"><label className="c-field__label" htmlFor="time-export-end">End</label><span className="c-in c-pay__date"><span aria-hidden="true">{dayText(draftPeriod.endDate)||'Choose a date'}</span><CalendarBlankIcon className="c-ic c-ic--s" aria-hidden="true"/><input id="time-export-end" type="date" required value={draftPeriod.endDate} disabled={busy} onChange={e=>setDraftPeriod({...draftPeriod,endDate:e.target.value})}/></span></div>
+     </div>
+     {periodChanged?<p className="c-note">Dates changed. Show them to review this period before exporting.</p>:null}
+     <button type="submit" className="c-btn c-btn--secondary c-btn--md c-btn--full" disabled={busy}>Show these dates</button>
+    </form>
+   </details>
    <PayrollExportMapping draft={draft} setDraft={setDraft} cards={cards??[]} reviewed={reviewed} setReviewed={setReviewed} disabled={locked} save={()=>void save()} />
-  </>}
-  <PayrollPeriodClose period={period} actorId={actorId}/>
- </div></>;
+  </section>:null}
+  <section className="c-card" aria-label="Payroll population and handoff">
+   <details className="c-exp__item c-exp__close"><summary className="c-row"><span className="c-row__main"><span className="c-row__title">Payroll population and handoff</span><span className="c-row__detail"><span>Who is paid this period, and where the files went</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></summary>
+    <div className="c-exp__legacy"><PayrollPeriodClose period={period} actorId={actorId}/></div>
+   </details>
+  </section>
+ </div>;
 }

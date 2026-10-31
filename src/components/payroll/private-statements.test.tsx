@@ -10,7 +10,7 @@ vi.mock('./use-payroll', () => ({ PAYROLL_SIGNED_OUT: 'Your session ended. Sign 
   usePayrollResource: (path: string) => ({ data: path === '/api/payroll/runs' ? { version: 'PAYROLL_API_V1', capabilities: { enabled: true, canConfigure: true, canReview: true, canApprove: true, internalCalculatorAvailable: true }, runs: boundary.runs, jobs: [] } : { statements: boundary.statements }, loading: boundary.loading, error: boundary.error, reload: async () => {} }),
   usePayrollOperation: () => ({ busy: false, pending: null, resuming: false, message: '', error: '', revisionConflict: false, submit: async () => {}, receipt: null }),
 }));
-vi.mock('next/navigation', () => ({ usePathname: () => '/app/payroll' }));
+vi.mock('next/navigation', () => ({ usePathname: () => '/app/payroll/history', useRouter: () => ({ push: () => {}, replace: () => {} }) }));
 beforeEach(() => { boundary.loading = false; boundary.error = ''; boundary.statements = [statement]; boundary.runs = [nativeRun({ status: 'APPROVED', documents: [statement], correctionOf: 'fictional-original', nativeCorrection: { rootRunId: 'fictional-original', reason: 'Fictional payroll correction' } })]; });
 
 describe('private employee statement presentation', () => {
@@ -41,7 +41,7 @@ describe('private employee statement presentation', () => {
     expect(html).not.toContain(statement.id);
   });
   it('shows current scoped employee history and preserves the linked correction context', () => {
-    const html = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional-owner" />);
+    const html = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional-owner" view="history" />);
     expect(html).toContain('Private employee statements');
     expect(html).toContain('Fictional payroll correction');
     expect(html).toContain(statement.viewUrl);

@@ -10,7 +10,7 @@ import { payrollRecoveryScope } from '@/components/payroll/recovery-scope';
 import '../../payroll-export/payroll-page.css';
 import '../../payroll/payroll-workflow.css';
 
-export default async function PayrollSettingsPage() {
+export default async function PayrollSettingsPage({ searchParams }: { searchParams: Promise<{ open?: string | string[] }> }) {
   if (!payrollFeatureEnabled()) notFound();
   const proof = await requireSessionMutationProof();
   const capabilities = await readPayrollCapabilities(proof);
@@ -25,5 +25,6 @@ export default async function PayrollSettingsPage() {
     } catch { nativeSources = null; }
   }
   if (nativeSources && !(await readPayrollCapabilities(proof)).canConfigure) redirect('/app');
-  return <PayrollSettings nativeSources={nativeSources} key={recoveryScope} recoveryScope={recoveryScope} timeZone={workspace.timeZone} />;
+  const openSetup = (await searchParams).open === 'setup';
+  return <PayrollSettings nativeSources={nativeSources} key={recoveryScope} recoveryScope={recoveryScope} timeZone={workspace.timeZone} openSetup={openSetup} />;
 }
