@@ -14,7 +14,8 @@ import type {MessageView} from '@/lib/employee-messages';
 import {safeMessageDestination} from '@/lib/employee-message-navigation';
 type Props={authority:string;view:MessageView;id?:string;settingsHref?:string};
 /** Employee Notifications and Updates on a phone. The "Your information only · Refresh" footer is gone (Release 1):
- * reads refresh on focus and reconnect, and a failed read offers Try again. */
+ * reads refresh on focus and reconnect, and a failed read offers Try again. The page is aria-busy while a read is in
+ * flight (the footer's "Refreshing…" used to say so). */
 export function ResponsiveEmployeeMessages({children,...props}:Props&{children:ReactNode}){const mobile=useEmployeeMobile();return mobile?<div className="em-requests-mobile"><EmployeeMessagesPage {...props}/></div>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">Loading your {props.view==='notifications'?'notifications':'updates'}…</p></div></>;}
 function EmployeeMessagesPage({authority,view,id,settingsHref}:Props){
  const session=useMessageSession(),router=useRouter(),memory=view==='notifications'||view==='updates'?session?.lists[view]:null,selection=view==='detail'?id??'invalid':view==='compose'?'new':memory?.cursors.at(-1)??'first',panel=useMessages(authority,view,selection),read=panel.read,heading=useRef<HTMLHeadingElement>(null),focused=useRef<string|null>(null),[opening,setOpening]=useState<string|null>(null),[openError,setOpenError]=useState(false),openAbort=useRef<AbortController|null>(null);
@@ -55,7 +56,7 @@ function EmployeeMessagesPage({authority,view,id,settingsHref}:Props){
   // Board E-Notifications: the corporate page; the read, paging, recovery and open flow are the same as before.
   const pager=read&&memory&&(memory.cursors.length||nextCursor)?<nav className="c-btns em-message-paging" aria-label="Message pages">{memory.cursors.length?<><button className="c-btn c-btn--secondary" type="button" onClick={()=>session.setList(view,{cursors:memory.cursors.slice(0,-1)})}>Newer page</button><button className="c-btn c-btn--secondary" type="button" onClick={()=>session.setList(view,{cursors:[]})}>Newest items</button></>:null}{nextCursor?<button className="c-btn c-btn--secondary" type="button" onClick={()=>session.setList(view,{cursors:[...memory.cursors,nextCursor!]})}>Older page</button>:null}</nav>:null;
   return <EmployeeAccountFrame title="Notifications" back={{href:'/app',label:'Home'}} right={settingsHref?<Link className="c-link c-link--l" href={settingsHref}>Settings</Link>:undefined}>
-   <div className="em-account-stack em-messages" data-messages-view={view} data-messages-context={context} data-messages-state={state}>
+   <div className="em-account-stack em-messages" data-messages-view={view} data-messages-context={context} data-messages-state={state} aria-busy={panel.state.refreshing}>
     {read&&(!moduleBlocked||session.state.hasUnknown)?<MessageRecovery state={session.state} allowed={!moduleBlocked&&panel.allowed()} onLookup={session.lookup} onRetry={session.retry}/>:null}
     {read&&busy&&session.operationHref&&session.operationHref!==window.location.pathname?<div className="c-card"><div className="c-card__body em-account-status"><p className="c-note">An earlier submission still needs to be checked before starting another.</p><Link href={session.operationHref} className="c-link c-link--l">Return to my submission</Link></div></div>:null}
     {!read?<div className="c-card"><div className="c-card__body em-account-status"><p className="c-note" role="status">{panel.state.paused?'Your notifications are paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':panel.state.refreshing?'Checking your current notifications…':'Your notifications couldn’t be checked.'}</p>{denied?<Link className="c-link c-link--l" href="/login">Sign in</Link>:panel.state.refreshing||panel.state.paused?null:<button className="em-account-textbtn" type="button" onClick={panel.refresh}>Try again</button>}</div></div>:content}
@@ -65,7 +66,7 @@ function EmployeeMessagesPage({authority,view,id,settingsHref}:Props){
    </div>
   </EmployeeAccountFrame>;
  }
- return <div className="q-page em-requests em-messages" data-messages-view={view} data-messages-context={context} data-messages-state={state}>
+ return <div className="q-page em-requests em-messages" data-messages-view={view} data-messages-context={context} data-messages-state={state} aria-busy={panel.state.refreshing}>
   <header className="em-request-heading"><Link className="em-request-back" href={back}><CaretLeftIcon size={18} aria-hidden="true"/>{view==='detail'?detailBack.startsWith('/app/notifications')?'Notifications':'Updates':view==='compose'?'Updates':view==='updates'?'More':'Home'}</Link><h1 ref={heading} tabIndex={-1}>{title}</h1><p>{view==='updates'?'Current messages shared with you':view==='compose'?'A message for today’s team':'Read, review and respond'}</p></header>
   <div className="em-request-body">
    {read&&(!moduleBlocked||session.state.hasUnknown)?<MessageRecovery state={session.state} allowed={!moduleBlocked&&panel.allowed()} onLookup={session.lookup} onRetry={session.retry}/>:null}
