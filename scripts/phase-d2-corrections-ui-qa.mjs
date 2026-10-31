@@ -11,7 +11,7 @@ import { hashPassword } from '../src/lib/auth/password.ts';
 import { verifyCorrectionRecovery } from './phase-d2-corrections-recovery-qa.mjs';
 import {verifyD2UiRemediation} from './phase-d2-ui-remediation-qa.mjs';
 import { missingTimeBrowserScenarios } from './phase-d2-missing-time-browser-scenarios.mjs';
-import {DESKTOP_WIDTHS,phoneHoursGeometry} from './phase-d2-phone-hours-geometry.mjs';
+import {clockText,fixForm,fixValues,hoursPage,recordedReceipt,sendFix} from './employee-fix-time-browser.mjs';
 
 const WIDTHS=[320,375,390,430,768,1024,1440];
 const ENGINES=['chromium','webkit'];
@@ -88,7 +88,9 @@ async function geometry(page,selector,label,engine,width){
    // pattern for 32px segments and small title actions); the target is the larger of the two.
    const after=getComputedStyle(el,'::after'),top=parseFloat(after.top),bottom=parseFloat(after.bottom);
    const tap=after.content!=='none'&&after.content!=='normal'&&after.position==='absolute'&&getComputedStyle(el).position!=='static'&&Number.isFinite(top)&&Number.isFinite(bottom)?r.height-top-bottom:r.height;
-   return {tag:el.tagName,text:el.getAttribute('aria-label')||el.textContent||'',height:Math.max(r.height,tap),visualHeight:r.height,left:r.left,right:r.right};
+   // A radio or checkbox wrapped in its label (the Fix my time "What to fix" rows) is activated by the whole label row.
+   const wrapping=['radio','checkbox'].includes(el.getAttribute('type'))?el.closest('label'):null,row=wrapping?wrapping.getBoundingClientRect().height:0;
+   return {tag:el.tagName,text:el.getAttribute('aria-label')||el.textContent||'',height:Math.max(r.height,tap,row),visualHeight:r.height,left:r.left,right:r.right};
   });
   const clipped=[...root.querySelectorAll('strong,small,p,label,span')].filter(visible).flatMap((el)=>{
    const r=el.getBoundingClientRect();return r.left<rb.left-2||r.right>rb.right+2?[{text:el.textContent,left:r.left,right:r.right}]:[];
@@ -138,39 +140,39 @@ try{
   const ep=await employee.newPage();ep.setDefaultTimeout(15000);
   await ep.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
   await ep.bringToFront();
-  await ep.waitForTimeout(1200);
-  // v5 My time: each entry is a row that opens its punches and its correction as a sheet.
-  const entryRow=ep.locator('ul[aria-labelledby^="employee-time-"] > li > button[aria-haspopup="dialog"]').first();
+  // Corporate Time (Release 1): "This week" lists each day; a day opens its punches, where "Request a correction" opens the
+  // Fix my time sheet for that entry (Day, Start, End and a required Note; Send in the sheet's header).
+  const entryRow=hoursPage(ep,'records').locator('a.c-row#hours-entry-d2-browser-entry');
   await entryRow.waitFor();
   await entryRow.click();
-  const sheet=ep.locator('dialog[open]');
-  const trigger=sheet.locator('.employee-time-correction-trigger').first();
-  await trigger.waitFor({state:'visible'});
-  assert.equal(await trigger.getAttribute('aria-expanded'),'false');
+  await ep.waitForURL(url=>url.searchParams.get('entry')==='d2-browser-entry');
+  await ep.getByRole('heading',{name:'Punches',exact:true}).waitFor();
+  const trigger=ep.getByRole('link',{name:'Request a correction',exact:true});
   await trigger.click();
-  const correctionForm=sheet.locator('.employee-time-correction-form').first();
+  await ep.waitForURL(url=>url.searchParams.get('edit')==='entry:d2-browser-entry');
+  const correctionForm=fixForm(ep);
   await correctionForm.waitFor({state:'visible'});
-  assert.equal(await trigger.getAttribute('aria-expanded'),'true');
-  await correctionForm.getByLabel('Start',{exact:true}).fill(proposedStart);
-  await correctionForm.getByLabel('End',{exact:true}).fill(proposedEnd);
-  await correctionForm.getByLabel('Reason',{exact:true}).fill('Fictional D2 browser correction review.');
+  assert.equal(await correctionForm.getByRole('radio',{checked:true}).count(),1,'The day being fixed is chosen under What to fix');
+  for(const label of ['Day','Start','End','Note (required)'])await correctionForm.getByLabel(label,{exact:true}).waitFor();
+  assert.equal((await fixValues(ep)).startTime,clockText(proposedStart),'Start defaults to the recorded time');
+  await correctionForm.getByLabel('End',{exact:true}).fill(clockText(proposedEnd));
+  await correctionForm.getByLabel('Note (required)',{exact:true}).fill('Fictional D2 browser correction review.');
   checked(engine+': employee correction form expands with labeled controls');
 
-  // The entry sheet's correction form ships at 768px and wider; phones correct the same entry on the Time page.
-  for(const width of DESKTOP_WIDTHS){
+  // The sheet is the same page at every width.
+  for(const width of WIDTHS){
    await ep.setViewportSize({width,height:width<=430?844:1000});
-   await geometry(ep,'.employee-time-correction-form','employee correction form',engine,width);
+   await geometry(ep,'.c-hours','employee correction form',engine,width);
    const shot=join(evidence,`${engine}-employee-correction-${width}.png`);
    await ep.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
   }
-  await phoneHoursGeometry({app,browser,context,login,geometry,engine,evidence,report,actor:'D2-E',label:'employee correction form',
-   path:'/app/my-time?view=corrections&edit='+encodeURIComponent('entry:d2-browser-entry'),selector:'.em-hours form.em-hours-form',
-   prepare:async page=>{await page.locator('.em-hours form.em-hours-form').getByLabel('Reason').fill('Fictional D2 browser correction review.');}});
-  await ep.bringToFront();await ep.setViewportSize({width:1440,height:1000});
+  await ep.setViewportSize({width:1440,height:1000});
   await correctionForm.waitFor({state:'visible'});
-  await ep.getByRole('button',{name:'Send request',exact:true}).click();
-  await ep.getByText('Correction request sent for manager review.',{exact:true}).waitFor();
-  await ep.getByText('Pending',{exact:true}).waitFor();
+  assert.equal((await fixValues(ep)).endTime,clockText(proposedEnd),'The typed proposal survives every width');
+  await sendFix(ep).click();
+  await recordedReceipt(ep).waitFor();
+  await ep.getByRole('link',{name:'View my correction',exact:true}).click();
+  await hoursPage(ep,'corrections').locator('#hours-correction').getByText('Waiting',{exact:true}).waitFor();
   checked(engine+': employee submits correction through real D2 API');
 
   const employeeState=await employee.request.get(app.url+'/api/employee/time-corrections',{headers:{'X-Nevora-Time-Correction':'1'}});
@@ -216,8 +218,8 @@ try{
   const employeeAfter=await context(browser);
   await login(employeeAfter,'D2-E');
   const hp=await employeeAfter.newPage();hp.setDefaultTimeout(15000);
-  await hp.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
-  await hp.getByText('Approved',{exact:true}).first().waitFor();
+  await hp.goto(app.url+'/app/my-time?view=corrections&filter=decided',{waitUntil:'networkidle'});
+  await hoursPage(hp,'corrections').getByRole('list',{name:'Decisions',exact:true}).getByText('Approved',{exact:true}).first().waitFor();
   checked(engine+': employee correction history reflects approved terminal state');
   await missingTimeBrowserScenarios({app,browser,engine,employee:employeeAfter,page:hp,context,login,geometry,checked,localValue,evidence,report});
   await employeeAfter.close();

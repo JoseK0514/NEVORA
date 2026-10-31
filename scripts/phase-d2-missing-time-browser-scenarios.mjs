@@ -2,7 +2,9 @@ import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { join } from 'node:path';
-import {DESKTOP_WIDTHS,phoneHoursGeometry} from './phase-d2-phone-hours-geometry.mjs';
+import {clockText,correctionPayload,fixForm,hoursPage,isCorrectionAction,recordedReceipt,sendFix} from './employee-fix-time-browser.mjs';
+
+const WIDTHS=[320,375,390,430,768,1024,1440];
 
 // Real authenticated HTTP and rendered UI on the caller's newly owned loopback app.
 export async function missingTimeBrowserScenarios({app,browser,engine,employee,page,context,login,geometry,checked,localValue,evidence,report}) {
@@ -35,21 +37,17 @@ export async function missingTimeBrowserScenarios({app,browser,engine,employee,p
     const a=await aResponse.json();
     checked(engine+': missing A approved through authenticated HTTP');
 
-    await page.reload({waitUntil:'networkidle'});
-    const center=page.locator('.employee-correction-center');
-    // Each engine owns a distinct missing-time chain; unrelated current roots also stay selectable.
-    const correct=center.locator('.employee-correction-history-row').first().getByRole('button',{name:'Correct missing time',exact:true});
+    // Corporate Your corrections (Release 1): an approved missed shift's own page offers "Request another correction", which
+    // opens Fix my time for that approved time (edit=missing:<request>). The page is the same at every width.
+    const requestPage=id=>app.url+'/app/my-time?view=corrections&filter=decided&requestId='+id;
+    await page.goto(requestPage(aRequest.requestId),{waitUntil:'networkidle'});
+    const correct=hoursPage(page,'corrections').getByRole('link',{name:'Request another correction',exact:true});
     await correct.waitFor();
     assert.equal(await correct.count(),1);
-    // The correction center ships at 768px and wider. On a phone the same supersession action is "Request another
-    // correction" on the approved request's page in Time.
-    for(const width of DESKTOP_WIDTHS) {
+    for(const width of WIDTHS) {
       await page.setViewportSize({width,height:width<=430?844:1000});
-      await geometry(page,'.employee-correction-center','missing-time history action',engine,width);
+      await geometry(page,'.c-hours','missing-time history action',engine,width);
     }
-    await phoneHoursGeometry({app,browser,context,login,geometry,engine,evidence,report,actor:'D2-E',label:'missing-time history action',
-      path:'/app/my-time?view=corrections&filter=decided&requestId='+aRequest.requestId,selector:'.em-hours[data-hours-view="corrections"] .em-request-body',
-      prepare:async phone=>{await phone.getByRole('link',{name:'Request another correction',exact:true}).waitFor();}});
     await page.bringToFront();
     const replacement={...rootCommand,operationId:randomUUID(),targetAdjustmentId:a.adjustmentId,expectedBaseRevision:a.revision,proposedStartAt:`2026-01-${day}T08:05:00Z`};
     const stale=await post(employee,employeePath,{...replacement,expectedBaseRevision:1});
@@ -62,35 +60,32 @@ export async function missingTimeBrowserScenarios({app,browser,engine,employee,p
     try {assert.equal((await post(anonymous,employeePath,replacement)).status(),401);}finally{await anonymous.close();}
     checked(engine+': supersession input/origin/session/role and stale HTTP boundaries');
 
-    await correct.focus();
+    await page.setViewportSize({width:1440,height:1000});await correct.focus();
     assert.equal(await correct.evaluate(el=>document.activeElement===el),true);
     await correct.press('Enter');
-    const form=center.locator('form');
+    await page.waitForURL(url=>url.searchParams.get('edit')==='missing:'+aRequest.requestId);
+    const form=fixForm(page);
     await form.waitFor();
-    const locationControl=form.locator('select');
+    const locationControl=form.getByLabel('Location',{exact:true});
     assert.equal(await locationControl.count(),1);
     assert.equal(await locationControl.isDisabled(),true);
     report.missingTimeLocationLabels??=[];
-    report.missingTimeLocationLabels.push({engine,label:await locationControl.evaluate(el=>el.closest('label').textContent.trim())});
-    await form.getByLabel('Start',{exact:true}).fill(localValue(replacement.proposedStartAt));
-    await form.getByLabel('Reason',{exact:true}).fill('Fictional approved interval replacement.');
-    for(const width of DESKTOP_WIDTHS) {
+    report.missingTimeLocationLabels.push({engine,label:await locationControl.evaluate(el=>el.labels?.[0]?.textContent.trim())});
+    await form.getByLabel('Start',{exact:true}).fill(clockText(localValue(replacement.proposedStartAt)));
+    await form.getByLabel('Note (required)',{exact:true}).fill('Fictional approved interval replacement.');
+    for(const width of WIDTHS) {
       await page.setViewportSize({width,height:width<=430?844:1000});
-      await geometry(page,'.employee-time-correction-form.missing','missing-time replacement form',engine,width);
+      await geometry(page,'.c-hours','missing-time replacement form',engine,width);
     }
-    await phoneHoursGeometry({app,browser,context,login,geometry,engine,evidence,report,actor:'D2-E',label:'missing-time replacement form',
-      path:'/app/my-time?view=corrections&requestId='+aRequest.requestId+'&edit='+encodeURIComponent('missing:'+aRequest.requestId),selector:'.em-hours form.em-hours-form',
-      prepare:async phone=>{const phoneForm=phone.locator('.em-hours form.em-hours-form');assert.equal(await phoneForm.locator('select[name="locationId"]').isDisabled(),true,'Phone replacement keeps the approved location');await phoneForm.getByLabel('Reason').fill('Fictional approved interval replacement.');}});
-    await page.bringToFront();
-    // The smallest width where this form ships (phones use the Time page measured above).
     await page.setViewportSize({width:768,height:1024});
     const shot=join(evidence,engine+'-missing-time-replacement.png');
     await page.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
-    const requestPromise=page.waitForRequest(request=>request.url().endsWith(employeePath)&&request.method()==='POST');
-    await form.getByRole('button',{name:'Send request',exact:true}).click();
-    const submitted=(await requestPromise).postDataJSON();
+    const requestPromise=page.waitForRequest(isCorrectionAction);
+    await sendFix(page).click();
+    const submitted=correctionPayload(await requestPromise).command;
     assert.equal(submitted.targetAdjustmentId,a.adjustmentId);assert.equal(submitted.expectedBaseRevision,2);
-    await center.getByText('Correction request sent for manager review.',{exact:true}).waitFor();
+    assert.equal(submitted.proposedStartAt,replacement.proposedStartAt);
+    await recordedReceipt(page).waitFor();
     checked(engine+': keyboard-driven B submission carries exact effective A identity');
     const bReplay=await post(employee,employeePath,submitted);
     assert.equal(bReplay.status(),202);
@@ -113,13 +108,14 @@ export async function missingTimeBrowserScenarios({app,browser,engine,employee,p
     assert.equal(staleAfter.status(),409);assert.equal((await staleAfter.json()).reason,'stale_source');
     checked(engine+': B approved by independent Owner; receipt replay and changed/stale operations protected');
 
-    await page.reload({waitUntil:'networkidle'});
-    assert.equal(await correct.count(),1);
     const history=await (await employee.request.get(app.url+employeePath,{headers:{'X-Nevora-Time-Correction':'1'}})).json();
     assert.equal(history.requests.find(item=>item.id===aRequest.requestId).currentAdjustmentId,null);
     assert.equal(history.requests.find(item=>item.id===b.requestId).currentAdjustmentId,accepted.adjustmentId);
-    assert.equal(await center.getByRole('button',{name:'Correct missing time',exact:true}).count(),
-      history.requests.slice(0,5).filter(item=>item.currentAdjustmentId).length);
+    // One current action: the replaced A no longer offers it; B, now the current approved time, does.
+    await page.goto(requestPage(aRequest.requestId),{waitUntil:'networkidle'});await hoursPage(page,'corrections').locator('#hours-correction').waitFor();
+    assert.equal(await correct.count(),0);
+    await page.goto(requestPage(b.requestId),{waitUntil:'networkidle'});await correct.waitFor();
+    assert.equal(await correct.count(),1);
     assert.deepEqual(await q('SELECT id,supersedes_adjustment_id FROM time_correction_adjustments WHERE id=ANY($1::uuid[]) ORDER BY created_at',[[a.adjustmentId,accepted.adjustmentId]]),[
       {id:a.adjustmentId,supersedes_adjustment_id:null},{id:accepted.adjustmentId,supersedes_adjustment_id:a.adjustmentId},
     ]);
@@ -128,11 +124,12 @@ export async function missingTimeBrowserScenarios({app,browser,engine,employee,p
     checked(engine+': immutable A/B history, one current action/leaf and identical raw attendance/device/schedule history');
 
     // The new action uses the existing loading and unavailable history states.
-    await page.route('**/api/employee/time-corrections',route=>route.fulfill({status:503,contentType:'application/json',body:'{"state":"unavailable"}'}));
+    const historyRead='**/api/employee/hours/corrections/**';
+    await page.route(historyRead,route=>route.fulfill({status:503,contentType:'application/json',body:'{"state":"unavailable"}'}));
     await page.reload({waitUntil:'networkidle'});
-    await center.getByText('Correction history is unavailable right now.',{exact:true}).waitFor();
+    await page.locator('.c-hours[data-hours-view="corrections"]').getByRole('status').filter({hasText:'Your records couldn’t be checked.'}).waitFor();
     assert.equal(await correct.count(),0);
-    await page.unroute('**/api/employee/time-corrections');
+    await page.unroute(historyRead);
     await page.reload({waitUntil:'networkidle'});await correct.waitFor();
     assert.deepEqual(errors,[]);
     checked(engine+': unavailable history offers no supersession action; reload recovers without runtime errors');
