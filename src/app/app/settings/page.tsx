@@ -43,11 +43,21 @@ export default async function SettingsPage() {
       <QuietGroup label="Scheduling" id="settings-scheduling"><ul className="q-list">
         {row("/app/settings/positions", "Positions", positions?.length)}
         {row("/app/settings/breaks", "Break types", breakTypes?.length)}
+        {row("/app/schedule/settings", "Scheduling rules")}
+      </ul></QuietGroup>
+      <QuietGroup label="Clocker" id="settings-clocker"><ul className="q-list">
         {row("/app/settings/clocker", "Clocker devices", devices)}
+        {row("/app/settings/clocker/pins", "Employee PINs")}
+        {row("/app/settings/clocker/photos", "Punch photos")}
       </ul></QuietGroup>
       {payroll?.canConfigure ? <QuietGroup label="Pay" id="settings-pay"><ul className="q-list">
         {row("/app/settings/payroll", "Payroll settings", frequency)}
       </ul></QuietGroup> : null}
+      {/* Release 1: the More page lists the everyday settings; your own profile (and My pay from it) lives here. */}
+      <QuietGroup label="Account" id="settings-account"><ul className="q-list">
+        {row("/app/profile", "Your profile")}
+        {row("/app/notifications", "Notifications")}
+      </ul></QuietGroup>
     </SettingsFrame>
   );
 }

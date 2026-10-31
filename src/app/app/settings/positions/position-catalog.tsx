@@ -17,7 +17,6 @@ import { EmptyState, SettingsFrame } from "../wave-c-kit";
 import { Field, SettingsForm, SwitchRow } from "../wave-c-form";
 
 type PositionAction = (data: FormData) => Promise<ConfigurationResult>;
-type Filter = "all" | "active" | "inactive";
 const subscribe = () => () => {};
 const clientSnapshot = () => true;
 const serverSnapshot = () => false;
@@ -37,8 +36,9 @@ function PositionRow({ position, hidden, ready, action, people }: {
   return (
     <li hidden={hidden}>
       <details className="wc-editable" ref={details}>
-        <summary className={people === undefined ? "q-row q-row--one" : "q-row"} aria-label={`Edit ${position.name}, ${position.active ? "active" : "retired"}`}>
-          <span className="q-rt"><b>{position.name}</b>{people === undefined ? null : <i>{`${people} ${people === 1 ? "person" : "people"}`}</i>}</span>
+        <summary className="q-row q-row--one" aria-label={`Edit ${position.name}, ${position.active ? "active" : "archived"}`}>
+          <span className="q-rt"><b>{position.name}</b></span>
+          {people === undefined ? null : <span className="wc-meta">{`${people} ${people === 1 ? "person" : "people"}`}</span>}
           <CaretRightIcon className="q-chev" aria-hidden="true" />
         </summary>
         <div className="wc-editable__body">
@@ -50,7 +50,7 @@ function PositionRow({ position, hidden, ready, action, people }: {
             <input type="hidden" name="expectedUpdatedAt" value={position.updatedAt ?? ""} />
             <Field label="Name" id={`${id}-name`} name="name" defaultValue={position.name} required maxLength={80} autoComplete="off" />
             <ul className="q-list" style={{ marginTop: 16 }}><li><SwitchRow id={`${id}-active`} name="active" defaultChecked={position.active} label="Active" describedBy={`${id}-active-help`} /></li></ul>
-            <p id={`${id}-active-help`} className="q-help">Retired positions can’t be newly assigned. People keep their history.</p>
+            <p id={`${id}-active-help`} className="q-help">Archived positions can’t be newly assigned. They stay on past shifts and timecards.</p>
           </SettingsForm>
         </div>
       </details>
@@ -65,56 +65,42 @@ export function PositionCatalog({ positions, available, createAction, updateActi
 }) {
   const ready = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
   const addCard = useRef<HTMLElement>(null);
-  const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<Filter>("active");
   const [addKey, setAddKey] = useState(0);
   const activeCount = positions.filter(position => position.active).length;
-  const normalizedQuery = query.trim().toLocaleLowerCase();
-  const matches = (position: Position) => position.name.toLocaleLowerCase().includes(normalizedQuery) && (filter === "all" || position.active === (filter === "active"));
-  const shown = positions.filter(matches).length;
-  const counts: Record<Filter, number> = { all: positions.length, active: activeCount, inactive: positions.length - activeCount };
-  const filtered = Boolean(normalizedQuery) || filter !== "all";
+  const counts = { active: activeCount, inactive: positions.length - activeCount };
   // After an add, the fresh form keeps the cursor in its field for the next one.
   useEffect(() => { if (addKey) addCard.current?.querySelector<HTMLInputElement>('input[name="name"]')?.focus({ preventScroll: true }); }, [addKey]);
-  function revealAdd() {
-    addCard.current?.scrollIntoView({ block: "center" });
-    addCard.current?.querySelector<HTMLInputElement>('input[name="name"]')?.focus({ preventScroll: true });
-  }
-  function clearFilters() { setQuery(""); setFilter("all"); }
-  function clearAndFocus() { clearFilters(); requestAnimationFrame(() => document.getElementById("position-search")?.focus()); }
   async function create(data: FormData) {
     const result = await createAction(data);
     if (result.success && !result.error) {
-      clearFilters();
       toast(result.success);
       setAddKey(key => key + 1);
     }
     return result;
   }
-  async function update(data: FormData) {
-    const result = await updateAction(data);
-    if (result.success && !result.error) clearFilters();
-    return result;
-  }
-  // Quiet (v4, approved Oct 23): "+" in the bar opens Add; Active and Retired; one row per position with how many people hold it.
+  // Release 1 (board O-Positions): a card of active positions with how many people hold each and an inline "+ Add position"
+  // row, then an Archived card when there are any, then one grey line. Opening a row edits it (rename, or archive with
+  // Active off). Positions have no colour yet, so the rows carry no colour dot.
   const [adding, setAdding] = useState(false);
   const addDialog = useRef<HTMLDialogElement>(null);
   useEffect(() => { const dialog = addDialog.current; if (adding && dialog && !dialog.open) dialog.showModal(); if (!adding && dialog?.open) dialog.close(); }, [adding]);
-  const tab: Filter = filter === "inactive" ? "inactive" : "active";
+  const archived = positions.filter(position => !position.active);
   return (
-    <SettingsFrame title="Positions"
-      bandAside={available ? <button type="button" className="q-nav__r q-nav__r--ink" aria-label="Add position" disabled={!ready} onClick={() => setAdding(true)}><PlusIcon className="q-ic" aria-hidden="true" /></button> : undefined}>
+    <SettingsFrame title="Positions">
       {!available ? <EmptyState icon={null} titleId="positions-unavailable-title" title="Couldn’t load positions."
           action={<a className="q-btn q-btn--sec" href="/app/settings/positions">Try again</a>}>Nothing was changed.</EmptyState> : <>
         <noscript><p className="q-help">JavaScript is required to add or edit positions.</p></noscript>
-        {positions.length ? <div className="q-seg" role="group" aria-label="Filter positions by status">
-          <button type="button" aria-pressed={tab === "active"} onClick={() => setFilter("active")} aria-label={`Active, ${counts.active}`}>{`Active · ${counts.active}`}</button>
-          <button type="button" aria-pressed={tab === "inactive"} onClick={() => setFilter("inactive")} aria-label={`Retired, ${counts.inactive}`}>Retired</button>
-        </div> : null}
-        <p className="q-sr" role="status" aria-live="polite">{positions.length ? `Showing ${positions.filter(position => position.active === (tab === "active")).length} of ${positions.length} positions` : ""}</p>
-        {positions.length ? <ul className="q-list wc-editables" aria-label="Positions" style={{ marginTop: 16 }}>{positions.map(position => <PositionRow key={position.id} position={position}
-          hidden={position.active !== (tab === "active")} ready={ready} action={update} people={people?.[position.id]} />)}</ul> : null}
-        {positions.length && !positions.some(position => position.active === (tab === "active")) ? <p className="q-empty" style={{ marginTop: 16 }}>{tab === "active" ? "No active positions." : "No retired positions."}</p> : null}
+        <p className="q-sr" role="status" aria-live="polite">{positions.length ? `${counts.active} active and ${counts.inactive} archived positions` : ""}</p>
+        {positions.length ? <ul className="q-list wc-editables" aria-label="Positions">
+          <li className="wc-cardhead" aria-hidden="true"><span>{`${counts.active} ${counts.active === 1 ? "position" : "positions"}`}</span></li>
+          {positions.filter(position => position.active).map(position => <PositionRow key={position.id} position={position} hidden={false} ready={ready} action={updateAction} people={people?.[position.id]} />)}
+          <li><button type="button" className="wc-addrow" disabled={!ready} onClick={() => setAdding(true)}><PlusIcon aria-hidden="true" weight="bold" />Add position</button></li>
+        </ul> : null}
+        {archived.length ? <ul className="q-list wc-editables" aria-label="Archived positions">
+          <li className="wc-cardhead" aria-hidden="true"><span>{`Archived (${archived.length})`}</span></li>
+          {archived.map(position => <PositionRow key={position.id} position={position} hidden={false} ready={ready} action={updateAction} people={people?.[position.id]} />)}
+        </ul> : null}
+        {positions.length ? <p className="wc-foot">Open a position to rename it or archive it. Archived positions stay on past shifts and timecards. Some people work more than one position.</p> : null}
         {!positions.length ? <EmptyState icon={null} title="No positions yet" action={<button type="button" className="q-btn" onClick={() => setAdding(true)} disabled={!ready}>Add position</button>}>
           Shifts can still be added without a position.</EmptyState> : null}
         <dialog ref={addDialog} className="wc-dialog" aria-labelledby="new-position-title" onClose={() => setAdding(false)} onCancel={() => setAdding(false)}>

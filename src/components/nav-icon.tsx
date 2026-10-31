@@ -33,8 +33,13 @@ import { ExportIcon } from "@phosphor-icons/react/dist/ssr/Export";
 import { SidebarSimpleIcon } from "@phosphor-icons/react/dist/ssr/SidebarSimple";
 import { UsersThreeIcon } from "@phosphor-icons/react/dist/ssr/UsersThree";
 import { DotsThreeCircleIcon } from "@phosphor-icons/react/dist/ssr/DotsThreeCircle";
+import { CreditCardIcon } from "@phosphor-icons/react/dist/ssr/CreditCard";
+import { ArticleIcon } from "@phosphor-icons/react/dist/ssr/Article";
 
 const icons = {
+  /* Corporate tab bar (boards C-Owner, C-Employee): a card for Pay and Payroll, a page with two lines for Requests. */
+  tabPay: CreditCardIcon,
+  tabRequests: ArticleIcon,
   payroll: WalletIcon,
   statement: FileTextIcon,
   receipt: ReceiptIcon,
@@ -87,7 +92,7 @@ export function NavIcon({
   employee?: boolean;
   className?: string;
   /** Defaults to regular everywhere; the clean Manager tab bar passes "fill". */
-  weight?: "regular" | "fill";
+  weight?: "regular" | "fill" | "bold";
 }) {
   const Icon = icons[name];
   return <Icon size={size} weight={weight} color="currentColor" className={className} aria-hidden="true" focusable="false" />;

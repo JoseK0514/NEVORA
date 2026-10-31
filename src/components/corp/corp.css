@@ -139,7 +139,13 @@
 :is(#c-root, html) .c-seg { display: flex; height: 36px; padding: 2px; border-radius: 8px; background: var(--c-neutral-bg); }
 :is(#c-root, html) .c-seg > :is(a, button) { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; height: 100%; min-height: 0; margin: 0; box-shadow: none; padding: 0 8px; border: 0; border-radius: 6px; background: none;
   color: var(--c-ink2); font-size: 13px; line-height: 18px; font-weight: 600; white-space: nowrap; cursor: pointer; }
-:is(#c-root, html) .c-seg > [aria-current="page"], :is(#c-root, html) .c-seg > [aria-pressed="true"], :is(#c-root, html) .c-seg > [aria-selected="true"] { background: #FFFFFF; color: var(--c-ink); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); }
+/* Each segment is a 44px tap target (it overhangs the 36px track by 6px above and below); the white selected shape is
+ * drawn 32px tall inside it, so the board's look is unchanged. */
+:is(#c-root, html) .c-seg > :is(a, button) { position: relative; isolation: isolate; height: 44px; margin: -6px 0; background: none !important; box-shadow: none !important; }
+:is(#c-root, html) .c-seg > :is(a, button)::before { content: ""; position: absolute; inset: 6px 0; z-index: -1; border-radius: 6px; pointer-events: none; }
+:is(#c-root, html) .c-seg > :is([aria-current="page"], [aria-pressed="true"], [aria-selected="true"]) { color: var(--c-ink); }
+:is(#c-root, html) .c-seg > :is([aria-current="page"], [aria-pressed="true"], [aria-selected="true"])::before { background: #FFFFFF; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); }
+:is(#c-root, html) .c-page .c-seg > :is(a, button):focus-visible { outline-offset: -4px; }
 
 /* Fields: label 13/600 above, 48px input with a 1px ring; focus is a 2px teal ring. */
 :is(#c-root, html) .c-form { display: flex; flex-direction: column; gap: 16px; }
@@ -166,7 +172,7 @@
 :is(#c-root, html) .c-switch:disabled { opacity: .5; cursor: default; }
 
 /* Pushed page header: white, "‹ Back" left, the title centred, an optional action right. */
-:is(#c-root, html) .c-nav { position: sticky; top: 0; z-index: 20; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px;
+:is(#c-root, html) .c-nav { position: sticky; top: 0; z-index: 20; display: grid; grid-template-columns: minmax(max-content, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px;
   margin: -16px -16px 0; padding: calc(var(--q-safe-top, env(safe-area-inset-top, 0px)) + 8px) 16px 8px; background: #FFFFFF; box-shadow: 0 1px 0 var(--c-ring); }
 :is(#c-root, html) .c-nav__back { justify-self: start; display: inline-flex; align-items: center; gap: 2px; min-height: 44px; margin-left: -4px; padding: 0 4px; color: var(--c-teal); font-size: 15px; line-height: 20px; font-weight: 600; white-space: nowrap; }
 :is(#c-root, html) .c-nav__back .c-ic { width: 18px; height: 18px; }
@@ -192,9 +198,15 @@
 
 /* Desktop: the same page as a calm column beside the sidebar until the desktop design lands. */
 @media (min-width: 768px) {
-  :is(#c-root, html) .c-page { max-width: 640px; margin: 0 auto; padding: 24px 24px 48px; }
-  :is(#c-root, html) .c-page.c-page--wide { max-width: 1240px; }
-  :is(#c-root, html) .c-nav { margin: -24px -24px 0; padding-top: 12px; }
+  /* One desktop content frame for every page (Release 1 fix B4): a 992px column (1040 with its 24px padding), centred
+   * beside the sidebar, so a page's left edge, width and title top are the same on Home, Schedule and every sub-page. */
+  :is(#c-root, html) .c-page, :is(#c-root, html) .c-page.c-page--wide { width: 100%; max-width: 1040px; margin: 0 auto; padding: 24px 24px 48px; }
+  /* A pushed page's header on desktop is a title row: no white strip and no Back (the sidebar and the top bar's trail
+   * lead back); the title on the left at the page-title size, its action on the right. */
+  :is(#c-root, html) .c-nav { position: static; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 28px; margin: 0; padding: 0; background: none; box-shadow: none; }
+  :is(#c-root, html) .c-nav > .c-nav__back, :is(#c-root, html) .c-nav > span:first-child:empty { display: none; }
+  :is(#c-root, html) .c-nav__title { max-width: none; text-align: left; font-size: 22px; line-height: 28px; letter-spacing: -0.3px; }
+  :is(#c-root, html) .c-nav__right { min-height: 28px; margin-left: auto; }
 }
 @media (prefers-reduced-motion: reduce) {
   :is(#c-root, html) .c-btn, :is(#c-root, html) .c-switch, :is(#c-root, html) .c-switch::after { transition: none; }
@@ -244,3 +256,30 @@
 /* A small title action (Availability, Past timecards) keeps its 32px look and gets a 44px tap area. */
 :is(#c-root, html) .c-title__actions .c-btn--sm { position: relative; }
 :is(#c-root, html) .c-title__actions .c-btn--sm::after { content: ""; position: absolute; inset: -6px -2px; }
+
+/* Release 1 fix (B4): 44px tap targets everywhere, with the boards' smaller visuals. A compact button keeps its look
+ * (40, 36 or 32px) and gets a transparent border up to 44px; the fill is clipped to the padding box and the negative
+ * margin keeps the layout where it was. Rings are inset shadows, which are drawn inside the border. */
+:is(#c-root, html) .c-btn { --c-hit: 0px; box-sizing: border-box; min-width: 44px; border: var(--c-hit) solid transparent; background-clip: padding-box;
+  border-radius: calc(8px + var(--c-hit)); margin-top: calc(var(--c-hit) * -1); margin-bottom: calc(var(--c-hit) * -1); }
+:is(#c-root, html) .c-btn.c-btn--md { --c-hit: 2px; height: 44px; }
+:is(#c-root, html) .c-btn.c-btn--sm { --c-hit: 4px; height: 44px; }
+:is(#c-root, html) .c-btn.c-btn--xs, :is(#c-root, html) .c-btn.c-btn--neutral { --c-hit: 6px; height: 44px; }
+:is(#c-root, html) .c-btn.c-btn--neutral { box-shadow: inset 0 0 0 1px var(--c-field); }
+:is(#c-root, html) .c-card__body > .c-btn { margin-top: calc(14px - var(--c-hit)); }
+:is(#c-root, html) .c-btn:focus-visible { outline: 2px solid var(--c-teal); outline-offset: calc(2px - var(--c-hit)); border-radius: calc(8px + var(--c-hit)); }
+/* The neutral select-like control ("All locations ▾") the same way. */
+:is(#c-root, html) .c-page .c-select-btn { box-sizing: border-box; height: 44px; margin-top: -6px; margin-bottom: -6px; border: 6px solid transparent; border-radius: 14px; background-clip: padding-box; box-shadow: inset 0 0 0 1px var(--c-field); }
+:is(#c-root, html) .c-page .c-select-btn:focus-visible { outline-offset: -4px; border-radius: 14px; }
+/* Text links are at least 44px wide: 8px of padding each side, taken back with a negative margin so the words stay put. */
+:is(#c-root, html) :is(a, button).c-link { justify-content: center; min-width: 44px; padding: 0 8px; margin: -13px -8px; }
+:is(#c-root, html) :is(a, button).c-link--l { margin: 0 -8px; }
+/* Header actions ("Done", "Save", "Add", "+") and the sheet's Done: 44 by 44 at least, the word still on the right edge. */
+:is(#c-root, html) .c-nav__right :is(a, button):not(.c-btn), :is(#c-root, html) .c-sheet .c-sheet__done, :is(#c-root, html) :is(.c-sheet-head__l, .c-sheet-head__r) {
+  display: inline-flex; align-items: center; justify-content: flex-end; min-width: 44px; min-height: 44px; }
+:is(#c-root, html) :is(.c-sheet-head__l) { justify-content: flex-start; }
+/* Keyboard focus inside a card (which clips to its rounded corners) is drawn inside the control, so a grouped row shows
+ * the whole ring instead of a thin line. */
+:is(#c-root, html) .c-page .c-card :focus-visible, :is(#c-root, html) .c-sheet .c-card :focus-visible { outline-offset: -2px; }
+:is(#c-root, html) .c-page .c-row:focus-visible, :is(#c-root, html) .c-sheet .c-row:focus-visible { outline: 2px solid var(--c-teal); outline-offset: -2px; border-radius: 12px; position: relative; z-index: 1; }
+:is(#c-root, html) .c-page .c-card .c-btn:focus-visible { outline-offset: calc(2px - var(--c-hit)); }

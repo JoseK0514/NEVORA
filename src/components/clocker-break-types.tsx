@@ -1,7 +1,6 @@
 'use client';
 
 import ownerStyles from './clocker-owner.module.css';
-import {ClockerOwnerNav} from './clocker-owner-nav';
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react';
 import { ArchiveIcon } from '@phosphor-icons/react/dist/ssr/Archive';
 import { ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
@@ -21,7 +20,6 @@ import { EmptyState, Notice, SettingsFrame } from '../app/app/settings/wave-c-ki
 import { ButtonLabel, Field, FieldErrors, FormActions, lockPageScroll, useFieldErrors } from '../app/app/settings/wave-c-form';
 
 type Selection = { operation: 'CREATE' | 'EDIT' | 'ARCHIVE' | 'REACTIVATE'; type?: BreakType };
-type Filter = 'All' | 'Active' | 'Archived';
 const categoryIcons = { REST: CoffeeIcon, MEAL: ForkKnifeIcon, OTHER: TimerIcon };
 const categoryLabel = (value: BreakType['category']) => breakCategories.find(category => category.value === value)?.label ?? 'Other';
 
@@ -33,9 +31,6 @@ export function ClockerBreakTypes({ initialTypes, action }: {
 }) {
   const [types, setTypes] = useState(initialTypes);
   const [selection, setSelection] = useState<Selection | null>(null);
-  // Quiet (v4): open on Archived when nothing is active, so archived breaks aren't hidden behind an empty tab.
-  const [filter, setFilter] = useState<Filter>(() => initialTypes.some(type => type.active) || !initialTypes.length ? 'Active' : 'Archived');
-  const [query, setQuery] = useState('');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<{ message: string; refresh: boolean } | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -115,36 +110,35 @@ export function ClockerBreakTypes({ initialTypes, action }: {
   }
 
   const activeCount = types.filter(type => type.active).length;
-  const counts = { All: types.length, Active: activeCount, Archived: types.length - activeCount };
-  const search = query.trim().toLocaleLowerCase();
-  const visibleTypes = types.filter(type =>
-    (filter === 'All' || type.active === (filter === 'Active')) &&
-    (!search || type.name.toLocaleLowerCase().includes(search) || type.category.toLowerCase().includes(search)));
   const editing = selection?.operation === 'CREATE' || selection?.operation === 'EDIT';
   const title = selection?.operation === 'CREATE' ? 'Add break type' : selection?.operation === 'EDIT' ? 'Edit break type'
     : selection?.operation === 'ARCHIVE' ? 'Archive this break type?' : 'Reactivate this break type?';
   const saveLabel = selection?.operation === 'CREATE' ? 'Create break type' : selection?.operation === 'EDIT' ? 'Save changes'
     : selection?.operation === 'ARCHIVE' ? 'Archive break type' : 'Reactivate break type';
 
-  // Quiet (v4, approved Oct 23): Active and Archived, one row per break (name, kind, reference time). A row opens its editor.
-  return <SettingsFrame className={ownerStyles.owner} title="Break types"
-    bandAside={<button ref={addButton} type="button" className="q-nav__r q-nav__r--ink" aria-label="Add break type" onClick={event => open({ operation: 'CREATE' }, event)}><PlusIcon className="q-ic" aria-hidden="true" /></button>}>
-    <ClockerOwnerNav current="breaks"/>
-    {types.length ? <div className="q-seg" role="group" aria-label="Filter break types">
-      {(['Active', 'Archived'] as const).map(item => <button key={item} type="button" aria-pressed={filter === item} aria-label={`${item}, ${counts[item]}`} onClick={() => setFilter(item)}>
-        {item === 'Active' ? `Active · ${counts.Active}` : 'Archived'}</button>)}
-    </div> : null}
-    <p className="q-sr" role="status">Showing {visibleTypes.length} of {types.length} {types.length === 1 ? 'break type' : 'break types'}</p>
-    {visibleTypes.length ? <ul className="q-list" aria-label="Configured break types" style={{ marginTop: 16 }}>{visibleTypes.map(type => <li key={type.id}>
-      <button type="button" className="q-row" data-break-type={type.id} aria-label={`Edit ${type.name}`} onClick={event => open({ operation: 'EDIT', type }, event)}>
-        <span className="q-rt"><b>{type.name}</b><i>{categoryLabel(type.category)}{type.active ? '' : ' · Archived'}</i></span>
-        {type.targetMinutes === null ? null : <span className="q-rv q-rv--l">{`${type.targetMinutes}\u00a0min`}</span>}
-        <CaretRightIcon className="q-chev" aria-hidden="true" />
-      </button>
-    </li>)}</ul> : <EmptyState headingLevel={3} icon={null} title={types.length ? (filter === 'Archived' ? 'No archived break types' : 'No active break types') : 'No break types yet'}
-      action={types.length ? null : <button className="q-btn" type="button" onClick={event => open({ operation: 'CREATE' }, event)}>Add break type</button>}>
-      {types.length ? '' : 'Add the breaks your team takes.'}
-    </EmptyState>}
+  const row = (type: BreakType) => <li key={type.id}>
+    <button type="button" className={type.targetMinutes === null ? 'q-row q-row--one' : 'q-row'} data-break-type={type.id} aria-label={`Edit ${type.name}`} onClick={event => open({ operation: 'EDIT', type }, event)}>
+      <span className="q-rt"><b>{type.name}</b>{type.targetMinutes === null ? null : <i>{`${type.targetMinutes}\u00a0min`}</i>}</span>
+      <span className="q-pill-cat">{categoryLabel(type.category)}</span>
+      <CaretRightIcon className="q-chev" aria-hidden="true" />
+    </button>
+  </li>;
+  const archived = types.filter(type => !type.active);
+  // Release 1 (board O-Breaks): one card with its count, a row per break (name, reference time, kind) and an inline
+  // "+ Add break type" row; archived breaks in their own card. A row opens its editor. No Clocker tab row (the board has none).
+  return <SettingsFrame className={ownerStyles.owner} title="Break types">
+    <p className="q-sr" role="status">Showing {activeCount} of {types.length} {types.length === 1 ? 'break type' : 'break types'}</p>
+    <ul className="q-list" aria-label="Configured break types">
+      <li className="wc-cardhead" aria-hidden="true"><span>{`${activeCount} ${activeCount === 1 ? 'break type' : 'break types'}`}</span></li>
+      {types.filter(type => type.active).map(row)}
+      {!activeCount ? <li className="wc-emptyrow"><b>{types.length ? 'No active break types' : 'No break types yet'}</b>{types.length ? null : <span>Add the breaks your team takes.</span>}</li> : null}
+      <li><button ref={addButton} type="button" className="wc-addrow" onClick={event => open({ operation: 'CREATE' }, event)}><PlusIcon aria-hidden="true" weight="bold" />Add break type</button></li>
+    </ul>
+    {archived.length ? <ul className="q-list" aria-label="Archived break types">
+      <li className="wc-cardhead" aria-hidden="true"><span>{`Archived (${archived.length})`}</span></li>
+      {archived.map(row)}
+    </ul> : null}
+    <p className="wc-foot">Changes apply to future breaks only. Earlier breaks keep their recorded settings.</p>
     <dialog ref={dialog} className="wc-dialog" aria-labelledby="break-editor-title" aria-describedby="break-editor-description" onCancel={event => { event.preventDefault(); close(); }}>
       {selection ? <form noValidate key={selection.operation + '-' + (selection.type?.id ?? 'new')} onSubmit={submit} aria-busy={pending} className="wc-dialog__form" {...handlers}>
         <div className="wc-dialog__head">

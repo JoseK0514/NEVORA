@@ -1,7 +1,7 @@
-import Link from 'next/link';
-import styles from './clocker-owner.module.css';
-const items=[['devices','Tablets','/app/settings/clocker'],['pins','Employee PINs','/app/settings/clocker/pins'],['breaks','Breaks','/app/settings/breaks'],['photos','Photos','/app/settings/clocker/photos'],['recovery','Recovery','/app/clocker-recovery']] as const;
-/** Presentation only; each destination enforces current Owner authority. */
-export function ClockerOwnerNav({current}:{current:typeof items[number][0]}){
- return <nav className={styles.navigation} aria-label="Clocker controls">{items.map(([key,label,href])=><Link key={key} href={href} aria-current={key===current?'page':undefined}>{label}</Link>)}</nav>;
+/** Release 1 (boards O-ClockerDevices, O-Breaks): the Clocker pages have no tab row. Each page opens from Settings
+ * (Clocker tablets, Employee PINs, Punch photos, Break types) or from Team (Clocker PIN recovery); this stays so the
+ * pages that placed it compile, and draws nothing. */
+export function ClockerOwnerNav(props:{current:'devices'|'pins'|'breaks'|'photos'|'recovery'}){
+ void props;
+ return null;
 }

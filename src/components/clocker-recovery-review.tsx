@@ -1,7 +1,6 @@
 'use client';
 
 import {ClockerOwnerRequests} from './clocker-owner-requests';
-import {ClockerOwnerNav} from './clocker-owner-nav';
 import {useEffect, useId, useRef, useState, useSyncExternalStore} from 'react';
 import Link from 'next/link';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
@@ -113,11 +112,10 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
 
   const errorId = `${inputId}-error`;
   // Quiet (v4, approved Oct 23): the reference, Check, the receipt when there is one, and one row to Timecards.
-  const content = <SettingsFrame back={back} settingsCrumb={false} title="Clocker recovery" summary="Look up a saved clock action.">
-    <ClockerOwnerNav current="recovery"/>
+  const content = <SettingsFrame back={back} settingsCrumb={false} title="Clocker recovery" summary="Check a clock-in or clock-out someone made on a tablet.">
     <ClockerOwnerRequests actorId={actorId} timeZone={timeZone} onSelect={value=>{setReference(value);setHasSelection(true);setInvalid('');selected.current=value;submitted.current=true;controller.current?.refresh();}}/>
     <form noValidate className="wc-form" aria-label="Check a saved action" data-guard={hydrated ? undefined : ''}
-      onInvalidCapture={event => { event.preventDefault(); setInvalid((event.target as HTMLInputElement).validity.valueMissing ? 'Enter the saved reference.' : 'Use the full reference: 32 letters and numbers in five groups, with dashes.'); (event.target as HTMLInputElement).focus(); }}
+      onInvalidCapture={event => { event.preventDefault(); setInvalid((event.target as HTMLInputElement).validity.valueMissing ? 'Enter the code from the tablet.' : 'Enter the whole code: 32 letters and numbers in five groups, with dashes.'); (event.target as HTMLInputElement).focus(); }}
       onSubmit={event => {
         event.preventDefault();
         if (!hydrated || pending) return;
@@ -135,11 +133,11 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
       <h2 className="q-sr" id="recovery-lookup-heading">Check a saved action</h2>
       <fieldset disabled={!hydrated || pending} className="q-fieldset">
         <div className="q-fl" data-invalid={invalid ? 'true' : undefined}>
-          <label className="q-fl__label" htmlFor={inputId}>Saved reference</label>
+          <label className="q-fl__label" htmlFor={inputId}>Code from the tablet</label>
           <input id={inputId} className="q-in" style={{ marginTop: 8 }} required value={reference} onChange={event => changeReference(event.target.value)}
             pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
             maxLength={36} autoComplete="off" autoCapitalize="none" spellCheck={false} aria-describedby={invalid ? `${errorId} ${helpId}` : helpId} aria-invalid={invalid ? true : undefined}
-            placeholder="e.g. 12345678-1234…"/>
+            placeholder="The code shown on the tablet"/>
           {invalid ? <p className="q-fl__error" id={errorId}>{invalid}</p> : null}
           <p id={helpId} className="q-sr">Shown on the employee’s tablet, like 12345678-1234-1234-1234-123456789abc.</p>
         </div>
@@ -163,7 +161,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
         : unavailable ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role="alert">
           <Notice tone="urgent" title={denied ? 'Your session ended' : 'Couldn’t check the receipt.'}
             action={denied ? <Link className="q-btn q-btn--quiet" href="/login">Sign in</Link> : undefined}>
-            {denied ? 'Sign in again before checking this action.' : 'Keep the saved reference and check again when you’re back online.'}</Notice>
+            {denied ? 'Sign in again before checking this action.' : 'Keep the code and check again when you’re back online.'}</Notice>
         </div> : null}
     </section>
 

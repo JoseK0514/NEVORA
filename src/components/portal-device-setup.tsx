@@ -25,15 +25,16 @@ export function DeviceSetupContent(props: ContentProps) {
     <AuthBrand />
     {/* Signature (phase 4): an example alert, shown only in the employee app's sheet. Decorative. */}
     <figure className="portal-device-example" aria-hidden="true"><span>N</span><span><b>NEVORA · Example</b><span><b>Your shift moved</b> Thursday is now 12:00 – 8:00 PM.</span></span><small>now</small></figure>
-    <h2 id="portal-device-title">Keep NEVORA Handy</h2>
-    <p>Add NEVORA to your Home Screen for quick access to your schedule.</p>
-    {props.standalone === true ? <p>Opened as a standalone app.</p> : <>
-      {props.standalone === 'unknown' ? <p>We cannot confirm whether this window is standalone.</p> : null}
-      <div className="portal-device-actions">
+    {/* Release 1: Home Screen setup is for phones; the corporate shell hides these (.portal-device-install) on tablets and desktop. */}
+    <h2 id="portal-device-title" className="portal-device-install">Keep NEVORA Handy</h2>
+    <p className="portal-device-install">Add NEVORA to your Home Screen for quick access to your schedule.</p>
+    {props.standalone === true ? <p className="portal-device-install">Opened as a standalone app.</p> : <>
+      {props.standalone === 'unknown' ? <p className="portal-device-install">We cannot confirm whether this window is standalone.</p> : null}
+      <div className="portal-device-actions portal-device-install">
         <button type="button" className="portal-device-button secondary" onClick={props.installPrompt ? props.onInstall : props.onInstructions}>{props.installPrompt ? 'Add to Home Screen' : 'Show install instructions'}</button>
       </div>
     </>}
-    {props.instructions ? <p className="portal-device-instructions">{props.ios ? 'In Safari, use Share → Add to Home Screen. Enable “Open as Web App” if offered, then open NEVORA from the new icon.' : 'Open your browser menu and choose Install app or Add to Home Screen if available, then open NEVORA from the new icon.'} Reading these instructions does not install the app.</p> : null}
+    {props.instructions ? <p className="portal-device-instructions portal-device-install">{props.ios ? 'In Safari, use Share → Add to Home Screen. Enable “Open as Web App” if offered, then open NEVORA from the new icon.' : 'Open your browser menu and choose Install app or Add to Home Screen if available, then open NEVORA from the new icon.'} Reading these instructions does not install the app.</p> : null}
     <h3>Stay updated</h3>
     <p>Receive important schedule changes and reminders.</p>
     <p role="status">{descriptions[props.state]}</p>
@@ -123,6 +124,9 @@ export function PortalDeviceSetup({ role }: { role: UserRole }) {
   useEffect(() => {
     if (offered.current || !snapshot || !['ready', 'install'].includes(snapshot.state)) return;
     offered.current = true;
+    // Release 1: on a tablet or desktop the offer never opens by itself over the page (it opens from the sidebar's profile);
+    // a desktop has no Home Screen to add to.
+    if (window.matchMedia?.('(min-width: 768px)').matches) return;
     // A nonmodal offer uses the profile surface, without stealing active form focus.
     if (document.activeElement === document.body) popover.current?.showPopover();
   }, [snapshot]);
