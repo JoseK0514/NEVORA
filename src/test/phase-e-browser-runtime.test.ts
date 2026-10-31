@@ -13,6 +13,7 @@ it.each([
  ['/api/manager/communications/PRIVATE_ACTOR_TOKEN','manager-read'],
  ['/api/employee/communications','employee-read'],
  ['/api/employee/my-time','recorded-time-read'],
+ ['/api/employee/requests','requests-read'],
  ['/api/notifications','notification-read'],
  ['/api/employee/profile','profile-read'],
  ['/api/employee/calendar-subscriptions','calendar-read'],
