@@ -1,0 +1,13 @@
+/* An Employee's Pay on the corporate kit (Release 1; boards G-E-Pay, E-PayHistory, E-Paycheck). Only the pieces the kit has
+ * no class for. Kit request: the shell marks /app/my-pay as a tab root even with ?view=/?paycheck=, so a pushed Pay page
+ * hides the shell's brand header itself (one bar, like other pushed pages). */
+@media (max-width: 767px) {
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp]:has(.c-pay--sub) .mobile-header { display: none !important; }
+}
+:is(#c-root, html) .c-pay .c-card__body + .c-rows > li:first-child > .c-row { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-pay .c-pay-action { color: var(--c-teal); font-weight: 600; }
+:is(#c-root, html) .c-pay .c-pay-icon { flex: none; width: 20px; height: 20px; color: var(--c-teal); }
+:is(#c-root, html) .c-pay .c-pay-gap { margin-top: 8px; }
+:is(#c-root, html) .c-pay .c-pay-notice { flex-direction: column; gap: 2px; }
+/* A heading that takes focus when a page opens doesn't draw a focus ring (it isn't a control). */
+:is(#c-root, html) .c-pay :is(h1, h2)[tabindex="-1"]:focus-visible { outline: none; }
