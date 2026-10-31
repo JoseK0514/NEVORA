@@ -1,35 +1,27 @@
-import {createElement,type ComponentProps,type ReactNode} from 'react';
+import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {afterEach,expect,it,vi} from 'vitest';
-const viewport=vi.hoisted(()=>({mobile:true}));
+const flags=vi.hoisted(()=>({passkeys:true}));
 vi.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
-vi.mock('@/app/login/actions',()=>({logout:async()=>{}}));
-vi.mock('./use-mobile',()=>({useEmployeeMobile:()=>viewport.mobile}));
-vi.mock('../portal-signout',()=>({PortalSignout:({children}: {children:ReactNode})=><form>{children}</form>}));
+vi.mock('next/navigation',()=>({useRouter:()=>({replace:()=>{}})}));
+vi.mock('../../lib/passkeys/client',()=>({passkeysFlagOn:()=>flags.passkeys}));
 import {EmployeeProfilePreferences,EmployeeProfilePage} from './profile';
-afterEach(()=>{viewport.mobile=true;});
-it('native preferences name the actual sign-in language and device-only appearance scopes',()=>{
+afterEach(()=>{flags.passkeys=true;});
+const page=(policies=true)=>renderToStaticMarkup(<EmployeeProfilePage authority={'a'.repeat(64)} lang="en" policies={policies}/>);
+it('Display offers the sign-in language as a segmented choice and no appearance choice (Release 1 is light only)',()=>{
  const html=renderToStaticMarkup(<EmployeeProfilePreferences lang="es"/>);
- expect(html).toContain('for="em-profile-language"');expect(html).toContain('aria-describedby="em-profile-language-hint"');expect(html).toContain('value="es" selected=""');expect(html).toContain('Used on the sign-in pages. Changing it reloads this page.');
- expect(html).toContain('for="em-profile-theme"');expect(html).toContain('aria-describedby="em-profile-theme-hint"');for(const choice of ['system','light','dark'])expect(html).toContain('value="'+choice+'"');expect(html).toContain('For this device.');
- expect(html).not.toContain('Company language');expect(html).not.toContain('Workspace appearance');
+ expect(html).toContain('Display');expect(html).toContain('Language');expect(html).toContain('For the sign-in pages');
+ expect(html).toMatch(/lang="es" aria-pressed="true"[^>]*>Español/);expect(html).toMatch(/lang="en" aria-pressed="false"[^>]*>English/);
+ expect(html).not.toContain('Appearance');expect(html).not.toContain('<select');
 });
-it('mobile profile never renders the static legacy identity while its real own read is loading',()=>{
- const html=renderToStaticMarkup(<EmployeeProfilePage authority={'a'.repeat(64)} lang="en" notificationsEnabled={false} policies legacyHeader={<h1>LEGACY PRIVATE NAME</h1>} calendar={<div>Existing calendar owner</div>} passkeys={null}/>);
- expect(html).not.toContain('LEGACY PRIVATE NAME');expect(html).toContain('Checking your current work details');expect(html).toContain('Sign-in language');expect(html).toContain('Existing calendar owner');expect(html).toContain('href="/app/profile/support"');expect(html).toContain('Sign out');
- expect(html).not.toContain('Edit profile');
+it('board E-Profile: Personal info, Display and Security under "More · Profile and settings", nothing else',()=>{
+ const html=page();
+ expect(html).toContain('Profile and settings');expect(html).toContain('href="/app/more"');expect(html).toContain('Personal info');expect(html).toContain('Checking your current work details');
+ expect(html.indexOf('Personal info')).toBeLessThan(html.indexOf('Display'));expect(html.indexOf('Display')).toBeLessThan(html.indexOf('Security'));
+ expect(html).toContain('href="/app/profile/passkeys"');expect(html).toContain('href="/app/account/delete"');expect(html).toContain('Delete my account');
+ for(const gone of ['Sign out','Refresh details','Your information only','Add shifts to your calendar','Create private link','Alerts on this device','Privacy Policy','Terms of Use','Edit profile'])expect(html).not.toContain(gone);
 });
-it('keeps mobile work details before settings and Calendar in reading and keyboard order',()=>{
- const html=renderToStaticMarkup(<EmployeeProfilePage authority={'a'.repeat(64)} lang="en" notificationsEnabled={false} policies legacyHeader={null} calendar={<div>Existing calendar owner</div>} passkeys={null}/>);
- expect(html.indexOf('em-profile-private')).toBeLessThan(html.indexOf('id="profile-settings-title"'));
- expect(html.indexOf('id="profile-settings-title"')).toBeLessThan(html.indexOf('Existing calendar owner'));
-});
-it('does not server-render the static desktop identity before responsive hydration',()=>{
- viewport.mobile=false;
- const html=renderToStaticMarkup(<EmployeeProfilePage authority={'a'.repeat(64)} lang="en" notificationsEnabled={false} policies legacyHeader={<h1>LEGACY PRIVATE NAME</h1>} calendar={null} passkeys={null}/>);
- expect(html).not.toContain('LEGACY PRIVATE NAME');expect(html).toContain('Profile');expect(html).toContain('Sign out');
-});
-it('unpublished policy visibility keeps canonical help facts/links out of the mobile account section',()=>{
- const html=renderToStaticMarkup(<EmployeeProfilePage authority={'a'.repeat(64)} lang="en" notificationsEnabled={false} policies={false} legacyHeader={null} calendar={null} passkeys={null}/>);
- expect(html).not.toContain('href="/app/profile/privacy"');expect(html).not.toContain('href="/app/profile/support"');expect(html).not.toContain('Delete my account');expect(html).toContain('Help and policy information isn’t available right now.');expect(html).toContain('Sign out');expect(html).toContain('Sign-in language');
+it('Security shows only what exists: no passkey row when passkeys are off, no delete row when policies are unpublished',()=>{
+ flags.passkeys=false;expect(page()).not.toContain('/app/profile/passkeys');expect(page()).toContain('Delete my account');
+ expect(page(false)).not.toContain('Security');expect(page(false)).not.toContain('Delete my account');
 });

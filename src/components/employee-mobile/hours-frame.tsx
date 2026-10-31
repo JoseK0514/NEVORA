@@ -13,7 +13,6 @@ export function HoursFrame({title,sub,back,backLabel,contextKey,view,editing=fal
   <div className="em-request-body">
    {!editing&&!corporate?<nav className="em-hours-tabs" aria-label="Your time"><Link href="/app/my-time" aria-current={view==='records'?'page':undefined}>Hours</Link><Link href="/app/my-time?view=cards" aria-current={view==='cards'?'page':undefined}>Timecards</Link><Link href="/app/my-time?view=corrections" aria-current={view==='corrections'?'page':undefined}>Corrections</Link></nav>:null}
    {ready?children:<section className="em-request-notice" aria-label="Time access"><p role="status">{state.paused?'Your time records are paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current time records…':'Your records couldn’t be checked.'}</p>{denied?<Link className="em-request-secondary" href="/login">Sign in</Link>:<button className="em-request-secondary" type="button" disabled={state.paused||state.refreshing} onClick={refresh}>{state.refreshing?'Checking…':'Try again'}</button>}</section>}
-   {ready?<footer className="em-request-footer"><span>Your information only</span><button type="button" disabled={state.refreshing} onClick={refresh}>{state.refreshing?'Refreshing…':'Refresh'}</button></footer>:null}
   </div>
  </div>;
 }

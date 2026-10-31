@@ -2,72 +2,75 @@
 
 import {useEffect,useState,useSyncExternalStore,type ReactNode} from 'react';
 import Link from 'next/link';
+import {useRouter} from 'next/navigation';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
-import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
-import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {EmployeeAccountPanel} from '../employee-account-panel';
-import {PortalSignout} from '../portal-signout';
-import {ProfileSettingRows} from '../employee-profile-rows';
-import {QuietHeader,QuietNav,QuietPage,QuietRow} from '../quiet/quiet';
-import {useThemeChoice,setThemeChoice} from '../theme-switch';
+import {QuietHeader,QuietNav,QuietPage} from '../quiet/quiet';
+import {CorpCard,CorpNav,CorpPage,CorpRow,CorpRows,CorpTitle} from '../corp/corp';
 import {switchTo} from '../auth-premium/lang-switch';
+import {passkeysFlagOn} from '../../lib/passkeys/client';
 import type {AuthLang} from '../../lib/auth-copy';
 import {useEmployeeMobile} from './use-mobile';
 import './requests.css';
 import './profile.css';
+import './account-corp.css';
 
+/** Board E-Profile, "Display": the sign-in language as a segmented control. Release 1 is light only, so there is no
+ * Appearance choice; a stored theme choice is left untouched. Changing the language reloads the page (sign-in pages). */
 export function EmployeeProfilePreferences({lang}:{lang:AuthLang}){
- const theme=useThemeChoice();
- return <div className="em-profile-preferences">
-  <div className="em-profile-field"><label htmlFor="em-profile-language">Sign-in language</label><span className="em-profile-select"><select id="em-profile-language" value={lang} aria-describedby="em-profile-language-hint" onChange={event=>{const next=event.currentTarget.value;if((next==='en'||next==='es')&&next!==lang)switchTo(next);}}><option value="en">English</option><option value="es">Español</option></select><CaretDownIcon size={20} aria-hidden="true"/></span><p id="em-profile-language-hint">Used on the sign-in pages. Changing it reloads this page.</p></div>
-  <div className="em-profile-field"><label htmlFor="em-profile-theme">Appearance</label><span className="em-profile-select"><select id="em-profile-theme" value={theme} aria-describedby="em-profile-theme-hint" onChange={event=>{const next=event.currentTarget.value;if(next==='system'||next==='light'||next==='dark')setThemeChoice(next);}}><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select><CaretDownIcon size={20} aria-hidden="true"/></span><p id="em-profile-theme-hint">For this device. System follows its appearance setting.</p></div>
- </div>;
+ return <CorpCard id="profile-display" label="Display">
+  <CorpRows>
+   <li><div className="c-row c-row--one em-account-pref">
+    <span className="c-row__main"><span className="c-row__title c-row__title--b" id="em-profile-language">Language</span><span className="c-row__detail"><span id="em-profile-language-hint">For the sign-in pages</span></span></span>
+    <div className="c-seg em-account-seg" role="group" aria-labelledby="em-profile-language" aria-describedby="em-profile-language-hint">
+     {([['en','English'],['es','Español']] as const).map(([value,name])=><button key={value} type="button" lang={value} aria-pressed={lang===value} onClick={()=>{if(value!==lang)switchTo(value);}}>{name}</button>)}
+    </div>
+   </div></li>
+  </CorpRows>
+ </CorpCard>;
 }
 
-const subscribeHydration=()=>()=>{};
+const subscribeNothing=()=>()=>{};
 
-type Props={authority:string;lang:AuthLang;notificationsEnabled:boolean;policies:boolean;legacyHeader:ReactNode;calendar:ReactNode;passkeys:ReactNode};
-/** Stable common service slots: changing viewport never replaces their owners. */
-export function EmployeeProfilePage({authority,lang,notificationsEnabled,policies,legacyHeader,calendar,passkeys}:Props){
- const mobile=useEmployeeMobile(),hydrated=useSyncExternalStore(subscribeHydration,()=>true,()=>false),[ending,setEnding]=useState(false);
+type Props={authority:string;lang:AuthLang;policies:boolean};
+/** Board E-Profile: Personal info, Display and Security cards under "‹ More · Profile and settings", on every width.
+ * Calendar, passkeys and device alerts are their own pages; Help, Privacy and Sign out live on More. */
+export function EmployeeProfilePage({authority,lang,policies}:Props){
+ const router=useRouter(),[ending,setEnding]=useState(false);
+ const passkeys=useSyncExternalStore(subscribeNothing,passkeysFlagOn,passkeysFlagOn);
  useEffect(()=>{const end=()=>setEnding(true);window.addEventListener('nevora:signout',end);return()=>window.removeEventListener('nevora:signout',end);},[]);
  useEffect(()=>{
-  if(!mobile||!/^#profile-(privacy|terms|support|account-deletion|device-alerts)$/.test(location.hash))return;
-  const frame=requestAnimationFrame(()=>{const row=document.getElementById(location.hash.slice(1));row?.querySelector<HTMLAnchorElement>('a')?.focus();});
+  // Older links (Schedule's "Add shifts to your calendar") point at Profile's calendar section, now its own page.
+  if(location.hash==='#employee-calendar-title'){router.replace('/app/profile/calendar');return;}
+  if(!/^#profile-(account-deletion|passkeys)$/.test(location.hash))return;
+  const frame=requestAnimationFrame(()=>document.getElementById(location.hash.slice(1))?.focus());
   return()=>cancelAnimationFrame(frame);
- },[mobile]);
- const workDetails=<EmployeeAccountPanel key={authority} kind="profile" authority={authority} quiet employeeMobile={mobile}/>;
- const calendarPanel=<div key="calendar" className="q-profile-cal em-profile-calendar">{calendar}</div>;
- const settings=<section key="settings" aria-labelledby="profile-settings-title" className="em-profile-settings">
-   <div className="q-grp"><h2 id="profile-settings-title">Settings</h2></div>
-   {mobile?<EmployeeProfilePreferences lang={lang}/>:null}
-   <ul className="q-list">
-    {!mobile?<ProfileSettingRows lang={lang}/>:null}
-    <QuietRow one href="/app/notifications" title="Notifications"/>
-    {notificationsEnabled?mobile?<QuietRow id="profile-device-alerts" one href="/app/profile/device-alerts" title="Alerts on this device"/>:<li><button type="button" className="q-row q-row--one q-row--btn" popoverTarget="portal-device-settings"><span className="q-rt"><b>Alerts on this device</b></span><CaretRightIcon className="q-chev" aria-hidden="true"/></button></li>:null}
-   </ul>
-   {notificationsEnabled?null:<p className="q-help">Alerts on this device aren’t turned on for your workplace yet.</p>}
-  </section>;
- return <QuietPage className={`q-profile-e${mobile?' em-requests em-profile':''}`}>
-  {mobile?<header className="em-request-heading">{!ending?<Link className="em-request-back" href="/app/more"><CaretLeftIcon size={18} aria-hidden="true"/>More</Link>:null}<h1>Profile</h1><p>Settings and your work details</p></header>:ending?<QuietNav/>:hydrated?legacyHeader:<><QuietNav back={{href:'/app/more',label:'More'}}/><QuietHeader title="Profile" sub="Settings and your work details"/></>}
-  <noscript><p className="q-help">Enable JavaScript to view your profile and account settings.</p></noscript>
-  {ending?<p className="em-profile-notice" role="status">Signing out…</p>:null}
-  {!ending?(mobile?[workDetails,settings,calendarPanel]:[settings,calendarPanel,workDetails]):null}
-  {!ending?<div className="q-profile-security">{passkeys}</div>:null}
-  {!ending?<section aria-labelledby="profile-account-title" className="em-profile-account">
-   <div className="q-grp"><h2 id="profile-account-title">Your account</h2></div>
-   <ul className="q-list">
-    {policies?<>
-     <QuietRow id="profile-privacy" one href={mobile?'/app/profile/privacy':'/privacy'} title="Privacy Policy"/>
-     <QuietRow id="profile-terms" one href={mobile?'/app/profile/terms':'/terms'} title="Terms of Use"/>
-     <QuietRow id="profile-support" one href={mobile?'/app/profile/support':'/support'} title="Support"/>
-     <QuietRow id="profile-account-deletion" one href="/app/account/delete" title="Delete my account" variant="danger"/>
-    </>:!mobile?<QuietRow one href="/support" title="Support"/>:null}
-   </ul>
-   {!policies&&mobile?<p className="q-help" role="status">Help and policy information isn’t available right now.</p>:null}
-  </section>:null}
-  <section aria-label="Session" className="em-profile-session"><PortalSignout><button type="submit" className={mobile?'em-request-secondary em-profile-signout':'q-btn q-btn--sec q-btn--danger profile-signout-row'} disabled={ending}>{ending?'Signing out…':'Sign out'}</button></PortalSignout></section>
- </QuietPage>;
+ },[router]);
+ const security=passkeys||policies;
+ return <CorpPage className="em-account" labelledBy="profile-title">
+  <CorpNav phoneOnly back={{href:'/app/more',label:'More'}} title="Profile and settings" titleId="profile-title"/>
+  <CorpTitle wide title="Profile and settings"/>
+  <noscript><p className="c-note">Enable JavaScript to view your profile and account settings.</p></noscript>
+  {ending?<p className="c-note" role="status">Signing out…</p>:<>
+   <EmployeeAccountPanel key={authority} kind="profile" authority={authority} quiet employeeMobile/>
+   <EmployeeProfilePreferences lang={lang}/>
+   {security?<CorpCard id="profile-security" label="Security">
+    <CorpRows>
+     {passkeys?<li><CorpRow id="profile-passkeys" href="/app/profile/passkeys" title="Passkeys" bold one/></li>:null}
+     {policies?<li><CorpRow id="profile-account-deletion" href="/app/account/delete" title="Delete my account" bold one danger/></li>:null}
+    </CorpRows>
+   </CorpCard>:null}
+  </>}
+ </CorpPage>;
+}
+
+/** A pushed account page (calendar, passkeys, alerts): the phone header and the desktop title, then its cards. */
+export function EmployeeAccountFrame({title,back,right,children,className}:{title:string;back:{href:string;label:string};right?:ReactNode;children:ReactNode;className?:string}){
+ return <CorpPage className={className?`em-account ${className}`:'em-account'} labelledBy="account-page-title">
+  <CorpNav phoneOnly back={back} title={title} titleId="account-page-title" right={right}/>
+  <CorpTitle wide title={title} actions={right}/>
+  {children}
+ </CorpPage>;
 }
 
 export function EmployeeProfileDocumentFrame({title,sub,back,children}:{title:string;sub:string;back:string;children:ReactNode}){

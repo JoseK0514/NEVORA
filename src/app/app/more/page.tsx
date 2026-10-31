@@ -29,6 +29,10 @@ import { currentPayPeriod } from "@/lib/payroll/pay-calendar.server";
 import { pathEnabled } from "@/lib/workspace-presentation/modules";
 import { lower } from "@/lib/workspace-presentation/words";
 import "./more-corp.css";
+import "@/components/employee-mobile/account-corp.css";
+import { readEmployeeProfile } from "@/lib/data/employee-profile.server";
+import { listAvailability } from "@/lib/data/availability";
+import { availabilitySummary } from "@/components/employee-mobile/availability-summary";
 
 export const metadata = { title: "More" };
 
@@ -60,23 +64,30 @@ async function EmployeeMore({ firstName, lastName, role }: { firstName: string; 
 }
 
 /** Corporate (Release 1, board E-More): an Employee's More opens from the header avatar, with Home as its back link. The
- * profile card, then Your work and Help and legal, then Sign out. The same places and counts as before. */
+ * profile card (name; work locations and company under it), Your work with the availability summary, Help and legal,
+ * then Sign out (the one Sign out for an Employee). Each value is a fact the person's own reads already hold; a failed
+ * read leaves the value out. */
 async function EmployeeMoreCorp({ firstName, lastName, workspaceName }: { firstName: string; lastName: string; workspaceName: string }) {
   const [proof, brand] = await Promise.all([requireSessionMutationProof(), currentBrand()]);
   const has = new Set(navigationForRole("EMPLOYEE", undefined, { modules: brand.modules, words: wordPreset(brand.words).en }).map(entry => entry.href));
+  const [profile, availability] = await Promise.all([
+    readEmployeeProfile(proof).catch(() => null),
+    has.has("/app/availability") ? listAvailability(proof.employee.id).then(availabilitySummary).catch(() => null) : Promise.resolve(null),
+  ]);
+  const locations = profile?.state === "ready" && profile.kind === "profile" ? profile.profile.locations : [];
   const name = `${firstName} ${lastName}`;
   return <CorpPage className="c-more c-more--employee" labelledBy="more-title">
     <CorpNav back={{ href: "/app", label: "Home" }} title="More" titleId="more-title" />
     <CorpCard as="div" ariaLabel="Profile">
-      <CorpRows><li><CorpRow avatar={<CorpAvatar initials={initialsOf(name)} />} title={name} detail={keepWhole(`Employee · ${workspaceName}`)} bold /></li>
+      <CorpRows><li><CorpRow avatar={<CorpAvatar initials={initialsOf(name)} />} title={name} detail={[...locations, workspaceName].join(" · ")} bold /></li>
         <li><CorpRow href="/app/profile" title={<span className="c-link c-link--l">Profile and settings</span>} one label={`Profile and settings, ${name}`} /></li></CorpRows>
     </CorpCard>
     <CorpCard as="div" label="Your work">
       <CorpRows>
-        {has.has("/app/availability") ? <li><CorpRow href="/app/availability" title="Availability" one /></li> : null}
+        {has.has("/app/availability") ? <li><CorpRow href="/app/availability" title="Availability" one value={availability ?? undefined} valueTone="soft" chevron /></li> : null}
         {has.has("/app/notifications") ? <li><CorpRow href="/app/notifications" title="Notifications" one value={<NotificationCount authority={employeeViewAuthority(proof, "notifications")} />} /></li> : null}
         {has.has("/app/updates") ? <li><CorpRow href="/app/updates" title="Updates" one /></li> : null}
-        <li><CorpRow href="/app/profile#employee-calendar-title" title="Add shifts to your calendar" one /></li>
+        <li><CorpRow href="/app/profile/calendar" title="Add shifts to your calendar" one /></li>
       </CorpRows>
     </CorpCard>
     <CorpCard as="div" label="Help and legal">

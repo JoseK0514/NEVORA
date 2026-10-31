@@ -12,7 +12,6 @@ import {LockKeyIcon} from '@phosphor-icons/react/dist/ssr/LockKey';
 import {NavIcon} from './nav-icon';
 import './calendar-subscription-panel.css';
 import {createCalendarClient,type CalendarClientState} from '@/lib/calendar/client';
-import {useEmployeeMobile} from './employee-mobile/use-mobile';
 import {EmployeeMobileCalendarView} from './employee-mobile/calendar';
 import {PendingLabel} from './employee-submit-button';
 type ViewProps={mobile?:boolean;pendingKind?:CalendarClientState['pendingKind'];status:CalendarSubscriptionStatus|null;url:string|null;paused:boolean;busy:boolean;notice:string;onCommand:(kind:'ISSUE'|'ROTATE'|'REVOKE')=>void;onCopy:()=>void;onRetry:()=>void};
@@ -65,8 +64,8 @@ export function CalendarSubscriptionView({status,url,paused,busy,notice,onComman
   </>}
  </section>;
 }
+/** Board E-Calendar on every width: the panel always draws the corporate view (the older desktop view stays exported). */
 export function CalendarSubscriptionPanel({authority}:{authority:string}){
- const mobile=useEmployeeMobile();
  const [state,setState]=useState<CalendarClientState>({status:null,url:null,paused:true,busy:false,notice:'',pendingKind:null});
  const owner=useRef<ReturnType<typeof createCalendarClient>|null>(null);
  useEffect(()=>{
@@ -82,5 +81,5 @@ export function CalendarSubscriptionPanel({authority}:{authority:string}){
   resume();
   return()=>{client.stop();owner.current=null;for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online'])window.removeEventListener(event,resume);window.removeEventListener('nevora:signout',end);window.removeEventListener('storage',storage);document.removeEventListener('visibilitychange',visibility);};
  },[authority]);
- return <CalendarSubscriptionView {...state} mobile={mobile} onCommand={kind=>owner.current?.command(kind)} onCopy={()=>void owner.current?.copy()} onRetry={()=>owner.current?.retry()}/>;
+ return <CalendarSubscriptionView {...state} mobile onCommand={kind=>owner.current?.command(kind)} onCopy={()=>void owner.current?.copy()} onRetry={()=>owner.current?.retry()}/>;
 }

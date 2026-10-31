@@ -14,7 +14,6 @@ import { EyeIcon } from "@phosphor-icons/react/dist/ssr/Eye";
 import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
-import { useEmployeeMobile } from "./employee-mobile/use-mobile";
 import { EmployeeDeletionView, type DeletionView } from "./employee-mobile/deletion";
 
 type Account = { name: string; role: string; employeeId: string; roleKey?: "OWNER" | "MANAGER" | "LEAD" | "EMPLOYEE" };
@@ -30,8 +29,8 @@ const unresolved = (token: string) => <mark className="legal-unresolved">[CONFIR
  * A rejected action call (lost reply, server error) is unknown, not a failure: the page keeps the form and asks
  * the same question again, which returns the saved request if there is one.
  * Quiet (v4, inspection Oct 24): grouped rows on the white page for every role; the wording is unchanged. */
-export function AccountDeletionForm({ account, period, retention, existing, owner = false }: {
-  account: Account; period: string | null; retention: string | null; existing: Done | null; owner?: boolean;
+export function AccountDeletionForm({ account, period, retention, existing, owner = false, workplaceName = null }: {
+  account: Account; period: string | null; retention: string | null; existing: Done | null; owner?: boolean; workplaceName?: string | null;
 }) {
   const [confirmed, setConfirmed] = useState(false);
   const [shown, setShown] = useState(false);
@@ -53,7 +52,8 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
     if (next.kind !== "idle") setShown(false);
     return next;
   }, existing ?? { kind: "idle" });
-  const phone = useEmployeeMobile() && (account.roleKey === "EMPLOYEE" || account.roleKey === "LEAD");
+  // Board E-DeleteAccount: Employees and Leads get the corporate page on every width; other roles keep Quiet.
+  const phone = account.roleKey === "EMPLOYEE" || account.roleKey === "LEAD";
   const outcome = useRef<HTMLDivElement>(null);
   const { errors, handlers } = useFieldErrors({ password: { missing: "Enter your password to confirm it’s you." } });
   const receipt = RECEIPT.has(state.kind);
@@ -67,7 +67,7 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
   if (phone) {
     const view: DeletionView = { state, pending, retry, confirmed, shown, period, retention };
     return <EmployeeDeletionView account={account} view={view} action={action} outcomeRef={outcome} passwordRef={bindPassword}
-      onPassword={value => { typed.current = value; }} onShown={() => setShown(value => !value)} onConfirmed={setConfirmed} />;
+      onPassword={value => { typed.current = value; }} onShown={() => setShown(value => !value)} onConfirmed={setConfirmed} workplace={workplaceName} />;
   }
 
   const header = <><QuietNav back={receipt ? undefined : { href: "/app/profile", label: "Profile" }} /><QuietHeader title="Delete your NEVORA account" sub="Read what happens before you confirm." /></>;
