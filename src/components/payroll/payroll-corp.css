@@ -65,7 +65,7 @@
 :is(#c-root, html) .c-pay details.c-pay__more[open] > summary { margin-bottom: 8px; }
 :is(#c-root, html) .c-pay details.c-pay__more > :not(summary) + * { margin-top: 12px; }
 :is(#c-root, html) .c-pay .c-pay__file { height: auto; min-height: 48px; padding: 10px 12px; font-size: 15px; }
-:is(#c-root, html) .c-pay .c-pay__file::file-selector-button { margin-right: 12px; padding: 6px 10px; border: 0; border-radius: 6px; background: var(--c-neutral-bg); color: var(--c-ink); font: 600 13px/18px inherit; cursor: pointer; }
+:is(#c-root, html) .c-pay .c-pay__file::file-selector-button { margin-right: 12px; padding: 6px 10px; border: 0; border-radius: 6px; background: var(--c-neutral-bg); color: var(--c-ink); font-family: inherit; font-weight: 600; font-size: 13px; line-height: 18px; cursor: pointer; }
 
 /* Backlog: a row opens its confirmation under it. */
 :is(#c-root, html) .c-pay .c-pay__expand { display: flex; flex-direction: column; gap: 12px; padding: 4px 16px 16px; }
@@ -122,11 +122,11 @@
 :is(#c-root, html) .c-pset .c-pset__fields:has(details[open]) > .c-pset__save.c-pset__save { display: flex; }
 /* Fields inside the rows: 13/600 labels over 48px kit inputs; notes 13px grey. */
 :is(#c-root, html) .c-pset :is(.c-pset__body, .c-pset__save, .c-pset__group) label:not(.wb-check):not(.pw-check):not(.c-field__label) { display: flex; flex-direction: column; gap: 6px; min-width: 0; font-size: 13px; line-height: 16px; font-weight: 600; color: var(--c-ink2); }
-:is(#c-root, html) .c-pset :is(.c-pset__body, .c-pset__save, .c-pset__group) :is(input:not([type=checkbox]):not([type=radio]):not([type=date]), select, textarea) { display: block; width: 100%; min-width: 0; height: 48px; margin: 0; padding: 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); font: 400 15px/20px inherit; outline: none; }
+:is(#c-root, html) .c-pset :is(.c-pset__body, .c-pset__save, .c-pset__group) :is(input:not([type=checkbox]):not([type=radio]):not([type=date]), select, textarea) { display: block; width: 100%; min-width: 0; height: 48px; margin: 0; padding: 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); font-family: inherit; font-weight: 400; font-size: 15px; line-height: 20px; outline: none; }
 :is(#c-root, html) .c-pset :is(.c-pset__body, .c-pset__save, .c-pset__group) textarea { height: 96px; padding: 12px; resize: vertical; }
 :is(#c-root, html) .c-pset :is(.c-pset__body, .c-pset__save, .c-pset__group) select { appearance: none; -webkit-appearance: none; padding-right: 36px; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234A4F54' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center; }
 :is(#c-root, html) .c-pset :is(.c-pset__body, .c-pset__save, .c-pset__group) :is(input, select, textarea):focus { box-shadow: inset 0 0 0 2px var(--c-teal); }
-:is(#c-root, html) .c-pset :is(.c-pset__body, .c-pset__save, .c-pset__group) input[type=date]:not(.c-pay__date input) { height: 48px; padding: 0 12px; border: 0; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--c-field); font: 400 15px/20px inherit; }
+:is(#c-root, html) .c-pset :is(.c-pset__body, .c-pset__save, .c-pset__group) input[type=date]:not(.c-pay__date input) { height: 48px; padding: 0 12px; border: 0; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--c-field); font-family: inherit; font-weight: 400; font-size: 15px; line-height: 20px; }
 :is(#c-root, html) .c-pset .wb-check { display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding-top: 12px; font-size: 15px; line-height: 20px; font-weight: 400; color: var(--c-ink); cursor: pointer; }
 :is(#c-root, html) .c-pset .wb-check input { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--c-teal); }
 :is(#c-root, html) .c-pset :is(.wb-note, .wb-help) { margin: 0; font-size: 13px; line-height: 18px; font-weight: 400; color: var(--c-grey); }
@@ -184,14 +184,14 @@
 :is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy p { margin: 4px 0; }
 /* The provider file setup keeps its own fields; the kit draws its row and frame. */
 :is(#c-root, html) .c-exp .c-exp__mapping > fieldset { margin: 0; padding: 4px 16px 16px; border: 0; min-width: 0; }
-:is(#c-root, html) .c-exp .c-exp__mapping :is(input:not([type=checkbox]), select, textarea) { width: 100%; min-width: 0; min-height: 48px; padding: 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); font: 400 15px/20px inherit; }
+:is(#c-root, html) .c-exp .c-exp__mapping :is(input:not([type=checkbox]), select, textarea) { width: 100%; min-width: 0; min-height: 48px; padding: 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); font-family: inherit; font-weight: 400; font-size: 15px; line-height: 20px; }
 :is(#c-root, html) .c-exp .c-exp__mapping textarea { padding: 12px; min-height: 96px; }
 :is(#c-root, html) .c-exp .c-exp__mapping label > span:first-child { display: block; margin-bottom: 6px; font-size: 13px; line-height: 16px; font-weight: 600; color: var(--c-ink2); }
 :is(#c-root, html) .c-exp .c-exp__mapping h3 { margin: 12px 0 6px; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
 :is(#c-root, html) .c-exp .c-exp__mapping p { font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-exp .c-exp__mapping select { appearance: none; -webkit-appearance: none; padding-right: 36px; }
 /* Saving a provider file layout is a secondary action here: Create export stays the page's one primary. */
-:is(#c-root, html) .c-exp .c-exp__mapping button[class*="__primary"] { height: 44px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-teal); color: var(--c-teal); font: 600 15px/20px inherit; opacity: 1; }
+:is(#c-root, html) .c-exp .c-exp__mapping button[class*="__primary"] { height: 44px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-teal); color: var(--c-teal); font-family: inherit; font-weight: 600; font-size: 15px; line-height: 20px; opacity: 1; }
 :is(#c-root, html) .c-exp .c-exp__mapping button[class*="__primary"]:disabled { box-shadow: none; background: var(--c-neutral-bg); color: var(--c-faint); }
 :is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy :is(button, .button) { min-height: 44px; }
 
