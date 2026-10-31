@@ -48,6 +48,8 @@ async function startBreak(p){await p.getByRole('button',{name:'Start Break',exac
 async function journalPending(p){return p.evaluate(()=>new Promise((resolve,reject)=>{const r=indexedDB.open('nevora.clocker.recovery');r.onupgradeneeded=()=>r.transaction.abort();r.onerror=()=>resolve(null);
  r.onsuccess=()=>{const db=r.result;if(!db.objectStoreNames.contains('pending')){db.close();resolve(null);return;}const all=db.transaction('pending','readonly').objectStore('pending').getAll();
   all.onsuccess=()=>{db.close();const slots=all.result.filter(slot=>slot.location==='2');slots.length>1?reject(Error('More than one pending slot')):resolve(slots.length?JSON.stringify(slots[0].pending):null);};all.onerror=()=>{db.close();reject(Error('Journal read failed'));};};}));}
+// Since 37b8c20c an obsolete pending action asks for an explicit review of the current status, recording nothing, before any new action.
+async function reviewObsolete(p,expected){const review=p.getByRole('button',{name:'Review current status',exact:true});await review.waitFor();assert.equal(await count(),expected);await review.click();await review.waitFor({state:'detached'});assert.equal(await count(),expected);}
 async function done(p){await p.getByRole('button',{name:'Done',exact:true}).click();await idle(p);}
 async function success(p,action){await p.getByRole('heading',{name:action+' Recorded',exact:true}).waitFor();}
 async function count(){return Number((await q('SELECT count(*)::int AS n FROM clocker_command_ledger'))[0].n);}
@@ -122,8 +124,7 @@ try{
   await startBreak(t);await success(t,'Break Start');
   await t2.getByRole('button',{name:'Clock Out',exact:true}).click();await t2.getByRole('button',{name:'Confirm Clock Out',exact:true}).click();
   await t2.getByRole('button',{name:'Check Action Status',exact:true}).waitFor();await t2.getByRole('button',{name:'Check Action Status',exact:true}).click();
-  // Since 37b8c20c an obsolete action asks for an explicit review of the current status before any new action.
-  await t2.getByRole('button',{name:'Review current status',exact:true}).waitFor();assert.equal(await count(),before+6);await t2.getByRole('button',{name:'Review current status',exact:true}).click();
+  await reviewObsolete(t2,before+6);
   await t2.getByRole('button',{name:'End Break',exact:true}).waitFor();assert.equal(await count(),before+6);checked(engine+': stale second-tablet action refreshes without silently clocking out');
   await t2.getByRole('button',{name:'Clock Out',exact:true}).click();await t2.getByText('This will also end your current break.',{exact:true}).waitFor();
   await t2.getByRole('button',{name:'Confirm Clock Out',exact:true}).click();await success(t2,'Clock Out');
@@ -142,7 +143,7 @@ try{
   await q("UPDATE clocker_pin_sessions SET expires_at=clock_timestamp()-interval '1 second'");
   await startBreak(t);await t.getByRole('heading',{name:'Verify Your PIN Again',exact:true}).waitFor();
   assert.equal(await count(),before+8);checked(engine+': expired verification never creates a time record');
-  await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await verify(t);await t.getByRole('button',{name:'Check Action Status',exact:true}).click();await t.getByRole('button',{name:'Start Break',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Retry Same Action',exact:true}).count(),0);await startBreak(t);await success(t,'Break Start');await done(t);
+  await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await verify(t);await t.getByRole('button',{name:'Check Action Status',exact:true}).click();await reviewObsolete(t,before+8);await t.getByRole('button',{name:'Start Break',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Retry Same Action',exact:true}).count(),0);await startBreak(t);await success(t,'Break Start');await done(t);
   // Responsive controls, keyboard confirmation and clear identity on Escape.
   for(const width of [320,375,390,430,768,1024,1440]){
    await t.setViewportSize({width,height:width<500?844:width===768?1024:900});await verify(t);await t.getByRole('button',{name:'End Break',exact:true}).waitFor();
@@ -164,7 +165,7 @@ try{
   const tab=await tablet.newPage();await goto(tab,'/clocker/2');await verify(tab,'3579');await tab.getByRole('button',{name:'Clock In',exact:true}).waitFor();
   await t.getByRole('button',{name:'Clock In',exact:true}).click();await t.getByRole('heading',{name:'Verify Your PIN Again',exact:true}).waitFor();assert.equal(await count(),guardStart);
   await done(tab);await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await verify(t);
-  await t.getByRole('button',{name:'Check Action Status',exact:true}).click();await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Retry Same Action',exact:true}).count(),0);await t.getByRole('button',{name:'Clock In',exact:true}).click();await success(t,'Clock In');await done(t);
+  await t.getByRole('button',{name:'Check Action Status',exact:true}).click();await reviewObsolete(t,guardStart);await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Retry Same Action',exact:true}).count(),0);await t.getByRole('button',{name:'Clock In',exact:true}).click();await success(t,'Clock In');await done(t);
   assert.equal((await q("SELECT count(*)::int AS n FROM time_entries WHERE employee_id='PUNCH-B'"))[0].n,0);
   await verify(t);await t.getByRole('button',{name:'Clock Out',exact:true}).click();await t.getByRole('button',{name:'Confirm Clock Out',exact:true}).click();await success(t,'Clock Out');await done(t);
   await tab.close();checked(engine+': a stale tab cannot clock a newly verified different employee');
@@ -186,7 +187,7 @@ try{
   await editBreak(ownerPage,'Meal reference','MEAL',30);
   await t.getByRole('button',{name:'Start Fixture rest',exact:true}).click();await t.getByRole('button',{name:'Check Action Status',exact:true}).waitFor();
   assert.equal(await count(),typedStart+1,'A changed type cannot record from a stale choice');
-  await t.getByRole('button',{name:'Check Action Status',exact:true}).click();await t.getByRole('button',{name:'Start Break',exact:true}).click();
+  await t.getByRole('button',{name:'Check Action Status',exact:true}).click();await reviewObsolete(t,typedStart+1);await t.getByRole('button',{name:'Start Break',exact:true}).click();
   assert.equal(await t.getByRole('button',{name:'Start Fixture rest',exact:true}).count(),0);
   await t.getByRole('button',{name:'Start Meal reference',exact:true}).click();await success(t,'Break Start');await done(t);
   checked(engine+': stale break selection rejects safely, then requires an explicit current type');
