@@ -67,6 +67,9 @@
 :is(#c-root, html) .c-page .em-passkeys .c-row .em-account-textbtn { flex: none; margin-right: -8px; }
 :is(#c-root, html) .c-page .em-passkeys-confirmation .c-card__body { display: flex; flex-direction: column; gap: 8px; color: var(--c-ink2); }
 :is(#c-root, html) .c-page .em-passkeys-confirmation .c-btns { margin-top: 4px; }
+/* A removal or turn-off review takes focus when it opens. Firefox doesn't treat that programmatic focus as :focus-visible,
+ * so the review shows the kit's focus ring on :focus. */
+:is(#c-root, html) .c-page :is(.em-passkeys-confirmation, .em-device-confirmation, #calendar-link-confirmation):focus { outline: 2px solid var(--c-teal); outline-offset: 2px; }
 
 /* Delete account */
 :is(#c-root, html) .c-page .em-delete-detail { display: block; font-size: 13px; line-height: 18px; color: var(--c-grey); }
