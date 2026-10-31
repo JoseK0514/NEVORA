@@ -39,12 +39,64 @@ This hands Release 1 back for the last steps: independent inspection (8), Jose's
    - **No deploy setting.** Opening D04 later needs its own review; the Owner's switch then decides again.
 5. **Clocker tablet**: `NEVORA_CLOCKER_UI_V2=true` for Release 1 (approved iPad look, corporate colours, system type). Punch enablement stays separately authorized.
 
+## 1a. Phase 8 changes (Oct 31, after the independent inspection)
+
+The independent inspection (code, release audit, Owner UI and Employee UI reviewers) ran on 8e29c478. Everything below is on the release line after it.
+
+**Pages rebuilt to the boards (Jose: "Fix all before release", "don't overcomplicate").** Every second-level Owner and Employee page that was still an older form is now built from the corporate kit, matched side by side with its board at 390 and checked at 320 and 1440:
+- **Owner:**
+  - Payroll: review, fix, people, prepare, history, settings and exports.
+  - Schedule: the Edit/Add shift sheet, Build and publish, Find cover and Activity.
+  - Team: Add/Edit employee (two steps), Person and Access.
+  - Things to do, with "More to review" (`/app/inbox?view=more`) and request detail.
+  - Insights, Team overview and Owner Timecards.
+  - More, Settings and Clocker devices.
+- **Employee:**
+  - Time: Fix my time, Past timecards.
+  - Pay: Pay history and Paycheck.
+  - Requests: time off, availability and their sheets.
+  - Account: Profile, Notifications and Alerts.
+  - Calendar (`/app/profile/calendar`) and Passkeys (`/app/profile/passkeys`) now have their own pages, and Delete account was rebuilt.
+- **Shell:** kit hit boxes are 44px; the desktop frame is 1040px; the sidebar has 9 links. The Employee availability, swap, callout and Open shifts pages light Schedule.
+
+**"I can't work" on a shift with unpublished edits (Jose, Oct 31).**
+- An employee can always send the report, and it is recorded against the published shift terms. Employees keep seeing those published terms.
+- A manager's approval waits for Publish changes. It returns `PUBLISH_CHANGES_FIRST` with a link to `/app/schedule/publish?week=…#publish-changes`.
+- The phone and desktop forms offer the board's four reasons: Sick, Family emergency, Transportation and Other. The server still accepts the earlier codes, so older reports stay readable.
+
+**Payroll approval fix (f1a854b1). Please review.**
+- The cause: closing-context evidence carried its `observedAt` capture time inside the review token and source fingerprint, so approving the same week later always read `NATIVE_REVIEW_STALE`.
+- The fix: `fingerprintClosingEvidence()` (`src/lib/payroll/native/workweek-policy.ts`) drops `observedAt` from the canonical calculation (`calculate.ts`), the review-token facts (`preparation.ts`) and the source fingerprint (`source.server.ts`).
+- Two new tests fail without the fix: `closing-context.test.ts` and `payroll-native.integration.ts`, which approves a `default00:01` week N later on closing evidence.
+
+**Desktop time corrections. Please review.**
+- The desktop Employee correction form now posts through the existing Server Action `saveEmployeeHoursCorrection`, the same path the phone already used.
+- The action itself is unchanged.
+
+**Other app fixes found by the inspection and the browser suites:**
+- Calendar: the reset/revoke review no longer pulls focus back from Keep (a Chromium race).
+- Schedule: "Confirm this week" has a 44px tap area; it is still drawn 36px.
+- The desktop account menu has the calendar entry.
+- The calendar copy falls back to plain text when the clipboard API is missing.
+- Messages: Try again; aria-busy.
+- Lead: Sign out is on More; availability is in the sidebar.
+- Firefox focus ring; text wraps at 320.
+- An access denial clears Fix my time's recovery state.
+- The invitation panel uses kit buttons.
+
+**Jose's decisions (Oct 31):**
+- `NEVORA_PAYROLL_ENABLED=true` in production.
+- Mobile Access is off.
+- On 320px phones the week strip's days are about 40px wide (still 44px tall). Accepted.
+- Making the kit respect the browser's text-size setting is the first item of Release 1.1. Page zoom already scales everything.
+
 ## 2. Migrations
 
-- **Release 1 is the first production release of this line.** Production's applied set is not verified: the last records (Oct 20 runbook, Oct 21 report) put it at about `0002`–`0004`, with no migration ledger. Reconcile the live schema against `db/migrations/order.ts` first (runbook §4), by **object presence, not filename prefix** (prefixes repeat, and other lines have used `0043`/`0044` for different files: check `SELECT to_regclass('public.schedule_pending_edits')` for this release's 0043).
-- Then apply every `BASE_MIGRATIONS` entry from the first missing one through `0043_schedule_pending_edits`, then `0031_native_payroll`, `0032_company_access_invitations`, `0042_company_invitation_lifetime`. 52 files, each listed exactly once. `0043` is the only file added since the Oct 29 manifest.
+- **Release 1 is the first production release of this line.** Codex's read-only preflight (Oct 31, `docs/handoffs/2026-10-31-codex-to-claude-release-1-preflight.md` in Codex's workspace) found production's catalog (Neon `rough-fire-63258908`, main branch, us-east-1) structurally identical to an owned local database built from `0001`–`0004`, with no migration ledger. Reconcile again at cutover, by **object presence, not filename prefix** (prefixes repeat, and other lines have used `0043`/`0044` for different files: check `SELECT to_regclass('public.schedule_pending_edits')` for this release's 0043).
+- **The applied chain is 50 files** (corrected Oct 31, Codex PRE-01): `BASE_MIGRATIONS` (47, `0001` through `0043_schedule_pending_edits`) then `FINAL_MIGRATIONS` (3: `0031_native_payroll`, `0032_company_access_invitations`, `0042_company_invitation_lifetime`), by exact full filename from `db/migrations/order.ts`. The directory holds 52 because it also has the two `HELD_MIGRATIONS` (`0026_tenant_ownership_expand`, `0027_tenant_ownership_validate`): never apply those, nor development's `0044`/`0045`. From production's `0001`–`0004` baseline, **46 files remain**: start at `0005_time_clock`. `0043` is the only file added since the Oct 29 manifest. Never run fresh setup against the existing database.
 - `0032_company_access_invitations` is irreversible after COMMIT (`LEGACY_ADOPTION`, no inverse SQL) and takes `SHARE ROW EXCLUSIVE` locks on `workspaces` and `employees`.
-- Three files have no transaction of their own (`0038_read_path_indexes`, `0038_clocker_pin_operation_reference`, `0039_clocker_review_requests`); `0038_read_path_indexes` builds plain indexes that block writes, including tablet punches. Runbook §5 now has the steps.
+- **Five files have no outer transaction** (corrected Oct 31, Codex PRE-02): `0019_payroll_export_mappings`, `0033_management_alert_preferences`, `0038_read_path_indexes`, `0038_clocker_pin_operation_reference`, `0039_clocker_review_requests`. Wrap each in `BEGIN … COMMIT` with bounded timeouts and stop-on-error (runbook §5); never run one bare. `0038_read_path_indexes` builds plain indexes that block writes, including tablet punches: run it as its own step.
+- Before `0008`, confirm its seeded workspace identity and the Clocker-key backfill are the intended company metadata (Codex preflight).
 - **Migrate before deploying the app.** If the app runs before `0031_workspace_presentation`, menus briefly show Updates (posting stays blocked); without `0043`, held edits fail.
 - Open gates carried from `docs/execution/release-1-2026-10-29/MIGRATIONS.md`: a hosted isolated restore rehearsal of the full chain, a verified operator ledger and schema, and a large-table lock assessment.
 - **Preflight data check (read-only):** Employee Home, next shift and the calendar feed now read the latest publication capture. Every PUBLISHED schedule with `week_start` on or after the current week must have a latest `schedule_publication_revisions` capture whose rows cover its live shifts with a non-null `source_shift_id`; any gap shows that week as empty to employees until an Owner publishes it. Resolve gaps (an Owner publish) before cutover.
@@ -69,7 +121,7 @@ As the runbook table, plus the values below. No env read was added since 9fe8968
 | Push, passkeys | as their own approvals say |
 | Company updates | nothing to set (see 1.4) |
 
-- **Region:** the privacy policy says servers are in Northern Virginia (`src/lib/legal/policies.ts:21`); the fictional Preview ran in us-west-2 / pdx1. Confirm the production Vercel and Neon regions match the policy, or have the policy updated first.
+- **Region:** the privacy policy says servers are in Northern Virginia (`src/lib/legal/policies.ts:21`). Codex's preflight found production Neon main in us-east-1 (matches) and only a cancelled historical Vercel Production deployment in iad1; the final deployment's function region and `DATABASE_URL` binding are still to verify. Don't carry over the fictional Preview's pdx1/us-west-2 setting. Production env values are hidden from the connector and remain unverified against the table above.
 
 ## 4. Evidence on the release SHA (owned local Postgres, fictional data, `DATABASE_URL` unset)
 
@@ -132,8 +184,9 @@ Two steps ran again outside that pass:
 - **Payroll drafts:** drafts prepared before 4fd3f426 must be recalculated (`NATIVE_REVIEW_STALE`).
 - **Updates (D04):** held, see 1.4.
 
-- **CI coverage:** `ci.yml` runs only on development/main pushes and PRs, so it has not run on the release SHA; the only collab workflow, Mobile Access, has been red since Oct 30 12:11 UTC (`mobile-access-browser.integration.ts:150` waits for the old Owner Home). The final candidate must run `ci.yml` through an authorized PR, with Mobile Access re-anchored. CI-only steps the local gate did not run: inspection-evidence checks, `test:notifications:qa`, `test:foundation:qa`, `test:release-engineering`, `browser-render-readiness`, `attention-intent-readiness`, Clocker `--punch-ui` and break-filter readiness, Phase D whole-phase evidence, Phase E leaf/aggregate evidence and `verify-ci`. Local-only (not in CI): the release1 migrations config and the 22 owned integration configs.
-- **Suites not run on the release SHA:** company-access (31 files, 532 tests, including `schedule_pending_edits` assertions), premium-*, `phase-e-integration`, `owned-app-cancellation`, mobile-access browser. The generic owned runner fails company-access the same way on 001031aa (488 failed / 44 passed on both); another runner on 08728bc5 gave 496 passed / 36 failed, all 36 in `company-access-shift-changes.integration.ts` refusing a non-disposable target.
+- **CI coverage (Codex PRE-03):** `ci.yml` runs on development/main pushes and on PRs to development, main, `phase-c/**` and `release/**`, so it has not run on the release SHA. On a PR, `github.sha` is GitHub's synthetic merge commit, not the head. The release SHA therefore includes a CI-only change: every checkout, `*_EXPECTED_SHA` and artifact name in `ci.yml` uses `github.event.pull_request.head.sha || github.sha`, so a PR run checks out and records the exact frozen head (push runs are unchanged). The contract checks (`scripts/release-ci-contract.check.mjs`, `phase-c-release-ci.test.ts`, `phase-e-runner.test.ts`) pin the new expression, and one more assertion fails if a bare `github.sha` returns. No assertion was removed; no `pull_request_target`. **Exact-head CI needs Jose's OK for a draft PR from `claude-codex-collab-nevora` to `main`** (never merged by Claude; Codex fast-forwards `main` after Jose's go). Its runs must record the frozen SHA. CI-only steps the local gate did not run: inspection-evidence checks, `test:notifications:qa`, `test:foundation:qa`, `test:release-engineering`, `browser-render-readiness`, `attention-intent-readiness`, Clocker `--punch-ui` and break-filter readiness, Phase D whole-phase evidence, Phase E leaf/aggregate evidence and `verify-ci`. Local-only (not in CI): the release1 migrations config, the 22 owned integration configs and the employee-mobile browser configs.
+- **Suites not run on the release SHA:** company-access (31 files, 532 tests, including `schedule_pending_edits` assertions), premium-*, `phase-e-integration`, `owned-app-cancellation`. The generic owned runner fails company-access the same way on 001031aa (488 failed / 44 passed on both); another runner on 08728bc5 gave 496 passed / 36 failed, all 36 in `company-access-shift-changes.integration.ts` refusing a non-disposable target. Mobile Access (re-anchored to the corporate Home) and every employee-mobile browser config now run in the gate (§4).
+- **UI gaps Jose accepted or deferred (Oct 31):** on 320px phones the week strip's days are about 40px wide (44px tall); the kit sets type in px, so the browser text-size setting doesn't enlarge it (page zoom does), first item of Release 1.1; Lead pages (on hold) show two `h1`s; More keeps the name visible during a held sign-out.
 - **Clocker browser suites:** only the iPad UI suite runs with `NEVORA_CLOCKER_UI_V2=true`; `--punch-ui` and `--breaks-ui` run the old tablet look.
 - **Pre-release payroll drafts:** reading as `NATIVE_REVIEW_STALE` rests on the hash compare at approval and the calculator version in `NATIVE_RULES_SHA256`; no test approves a pre-V11 draft. Drafts held under the old `DAILY_BOUNDARY_SENSITIVE` status show "Recalculate this draft".
 - Gate logs live outside the repo (`.../scratchpad/final-gate/summary.txt` on Jose's Mac); the final candidate's summary will be committed next to this file.
