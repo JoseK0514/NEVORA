@@ -134,7 +134,9 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  async function contrastStates(){
   // Board E-Profile has no Sign out: a phone signs out from More (its last control); a computer from the sidebar, or from
   // the account menu where the compact sidebar hides it (768). Measure that Sign out, then walk back through what precedes it.
-  let target,menu=false;const accountTrigger=()=>page.getByRole('button',{name:/, account menu$/});
+  let target,menu=false;const accountTrigger=()=>page.getByRole('button',{name:/, account menu$/}),accountMenu=page.locator('#portal-account-menu');
+  // Escape closes the menu from one of its rows; otherwise its trigger toggles it.
+  const closeMenu=async()=>{await page.keyboard.press('Escape');if(await accountMenu.isVisible())await accountTrigger().click();await accountMenu.waitFor({state:'hidden'});};
   if(phone){await page.goto(app.url+'/app/more');await settle();target=page.locator('main').getByRole('button',{name:'Sign out',exact:true});}
   else{const sidebar=page.locator('aside.sidebar').getByRole('button',{name:'Sign out',exact:true});if(await sidebar.isVisible())target=sidebar;else{menu=true;await accountTrigger().click();await page.locator('#portal-account-menu').waitFor();target=page.locator('#portal-account-menu').getByRole('button',{name:'Sign out',exact:true});}}
   focusTrace.push({stage:'Sign out location',location:phone?'More':menu?'account menu':'sidebar'});
@@ -154,7 +156,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    if(state==='pressed')await page.mouse.down();
    if(state==='focus'){await page.mouse.move(0,0);await page.mouse.up();
     // The account menu's items are reached from its trigger: Enter opens it with focus on its first item.
-    if(menu){if(await page.locator('#portal-account-menu').isVisible()){await accountTrigger().click();await page.locator('#portal-account-menu').waitFor({state:'hidden'});}await page.bringToFront();await accountTrigger().focus();await page.keyboard.press('Enter');await page.locator('#portal-account-menu').waitFor();await page.waitForFunction(()=>document.querySelector('#portal-account-menu')?.contains(document.activeElement));}
+    if(menu){if(await accountMenu.isVisible())await closeMenu();await page.bringToFront();await accountTrigger().focus();await page.keyboard.press('Enter');await page.locator('#portal-account-menu').waitFor();await page.waitForFunction(()=>document.querySelector('#portal-account-menu')?.contains(document.activeElement));}
     else await page.evaluate(()=>window.scrollTo(0,0));let reached=false;for(let n=0;n<40;n++){await page.keyboard.press(tabKey);const now=await target.evaluate(e=>({stage:'native Tab',active:e===document.activeElement,disabled:e.disabled,focusVisible:e.matches(':focus-visible')}));if(now.active){focusTrace.push(now);reached=true;break;}}assert(reached,'Native keyboard reaches Sign out');}
    const measured=await sample();contrast.push({state,...measured});
    assert(measured.textRatio>=4.5,state+' actual composited button text contrast');
@@ -165,7 +167,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   await clear(target,'Sign out');let walked=0;const rows=menu?2:4;
   for(let n=0;n<rows;n++){await page.keyboard.press(backTabKey);const current=page.locator(':focus');assert.equal(await current.count(),1);await clear(current,'Account control');walked++;}
   assert.equal(walked,rows,'Native reverse traversal walks the rows above Sign out');
-  await page.mouse.move(0,0);await page.mouse.up();if(menu){/* Focus is on a menu row: Escape closes the menu. */await page.keyboard.press('Escape');await page.locator('#portal-account-menu').waitFor({state:'hidden'});}checks.push('Native '+tabKey+' traversal and scroll keeps Sign out (More on phones, the sidebar or account menu on computers) and the rows above it unobscured above mobile navigation');checks.push('Actual composited normal/hover/pressed/focus text and focus-outline contrast measured');
+  await page.mouse.move(0,0);await page.mouse.up();if(menu)await closeMenu();checks.push('Native '+tabKey+' traversal and scroll keeps Sign out (More on phones, the sidebar or account menu on computers) and the rows above it unobscured above mobile navigation');checks.push('Actual composited normal/hover/pressed/focus text and focus-outline contrast measured');
  }
  async function bounds(){assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'document horizontal overflow');const bad=await page.locator('main .q-list a.q-row,main .q-list button.q-row,main .q-btn,main .c-rows a.c-row,main .c-rows button.c-row,main .c-btn,main a.em-request-entry,.profile-signout-row,.em-profile-signout,[data-inbox-row] > a').evaluateAll(elements=>elements.filter(e=>{const r=e.getBoundingClientRect();return r.width&& (r.left< -1||r.right>innerWidth+1||r.height<43);}).map(e=>e.textContent));assert.deepEqual(bad,[]);}
  try{
