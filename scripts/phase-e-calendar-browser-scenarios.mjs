@@ -19,7 +19,7 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
   unavailable:'Calendar settings could not be checked. Try again to see the current status.',
   copyFailed:'Copy was unavailable. Select the link above, then copy it manually.',
   revokeCaveat:'Your calendar app will no longer receive shifts through this link. Events already copied may remain in the app.',
-  privacy:'It updates when your schedule changes. Anyone with the link can see your shift times and locations, so keep it to yourself.',
+  privacy:'Your calendar app picks up schedule changes the next time it refreshes, which can take a while. Anyone with the link can see your shift times and locations, so keep it to yourself.',
  };
  const checks=[],runtimeErrors=[],receipt=join(evidenceDirectory,`calendar-case-${engine}-${width}-report.json`);let stage='seed';
  const started=performance.now(),diagnostics={events:[]},navigation=observeDocumentNavigation(page,()=>app.url);let diagnosticActor;
