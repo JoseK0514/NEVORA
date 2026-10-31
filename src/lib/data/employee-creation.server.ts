@@ -11,9 +11,9 @@ import {neonNotificationExecutor} from './notification-transactions';
 import {isManagementAuthorizationError} from './management-session';
 import {notificationReadSql,sqlNotificationStateRepository} from './notification-state';
 import {readActivePresentation} from '../workspace-presentation/service';
-import {getPublishedShift,listSwapTargets} from './exchanges';
+import {getCalloutShift,getPublishedShift,listSwapTargets} from './exchanges';
 import {readShiftChangeTerms} from './shift-change-snapshot';
-import {matchesDisplayedShift} from '../shift-changes/displayed-terms';
+import {matchesCalloutShift,matchesDisplayedShift} from '../shift-changes/displayed-terms';
 import {readShiftChangeAvailability} from './shift-changes';
 const unavailable:CreationCheck={allowed:false,notice:'This action couldn’t be checked. Refresh before continuing.'};
 /** Own reviewed creation view. Existing candidate, terms and command readers retain all business decisions. */
@@ -33,9 +33,12 @@ export async function readEmployeeCreation(proof:SessionMutationProof,executor:S
   scope=[...access.allowedLocationIds];const allowed=new Set(scope);
   let source:CreationSource|null=null,targets:CreationTarget[]|null=[],partial=false,check:CreationCheck={allowed:false,notice:'This shift isn’t available to your current account.'},coverage:CreationCheck={...unavailable};
   if(enabled){
-   const shift=await getPublishedShift(selection,guarded),reviewed=shift?.employeeId===proof.employee.id&&allowed.has(shift.locationId)?await readShiftChangeTerms(proof,selection,undefined,guarded):null;
+   // "I can't work" also opens a shift with held edits, showing its published
+   // version (Jose, 2026-10-31); swaps and cover offers keep refusing it.
+   const callout=mode==='callout'?await getCalloutShift(selection,guarded):null;
+   const shift=mode==='callout'?callout:await getPublishedShift(selection,guarded),reviewed=shift?.employeeId===proof.employee.id&&allowed.has(shift.locationId)?await readShiftChangeTerms(proof,selection,undefined,guarded):null;
    const slot=shift?exchangeSlot(shift):null;
-   if(shift&&slot&&reviewed&&matchesDisplayedShift(shift,reviewed.source)){
+   if(shift&&slot&&reviewed&&(callout?matchesCalloutShift(callout,reviewed.source):matchesDisplayedShift(shift,reviewed.source))){
     const fields={sourceShiftId:selection,sourceEpisodeId:reviewed.source.assignmentEpisodeId,sourceTermsFingerprint:reviewed.sourceTermsFingerprint};
     source={...slot,id:selection,weekStart:shift.weekStart,fields};
     if(mode!=='callout'){

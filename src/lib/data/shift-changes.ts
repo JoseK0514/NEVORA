@@ -20,6 +20,8 @@ import { shiftChangeEvent,decisionVersionReferences } from './shift-change-histo
 import { cancelNotificationStatements } from './notifications';
 import { eligibilityReasons, REASON_TEXT, type EligibilityReason } from '../shift-changes/eligibility-reasons';
 const conflict:ShiftChangeResult={status:'conflict'};
+/** Owner/Manager refusal while a reported shift still has held edits (Jose, 2026-10-31). */
+export const PUBLISH_CHANGES_FIRST='Publish the schedule changes for this shift first, then approve.';
 const unavailable:ShiftChangeResult={status:'unavailable'};
 const blocked=(code:'STALE_TERMS'|'DEADLINE_PASSED'|'POLICY_UNKNOWN'|'CONSENT_REQUIRED',message:string):ShiftChangeResult=>({status:'blocked',issues:[{code,message}]});
 const fingerprint=(command:ShiftChangeCommand)=>createHash('sha256').update(JSON.stringify(Object.fromEntries(Object.entries(command).sort(([a],[b])=>a.localeCompare(b))))).digest('hex');
@@ -53,6 +55,13 @@ function planCommand(s:CommandSnapshot,c:ShiftChangeCommand):Plan|ShiftChangeRes
   return heldEditDiffers(live,latest.shifts.find(x=>x.sourceShiftId===t.shiftId));
  };
  const heldRefusal=()=>blocked('STALE_TERMS','This shift has schedule changes that are not published yet. Try again after they are published.');
+ // "I can't work" on a held shift (Jose, 2026-10-31): the latest publication
+ // must show this assignment to the reporting employee, who saw that version.
+ const shownTo=(t:ShiftTerms,employeeId:string)=>{
+  const live=s.weekState.shifts.find(x=>x.sourceShiftId===t.shiftId);
+  const captured=live?s.weekState.revisions.filter(x=>x.weekStart===live.weekStart).at(-1)?.shifts.find(x=>x.sourceShiftId===t.shiftId):undefined;
+  return !!captured&&captured.employeeId===employeeId&&!captured.isCalloutApproved;
+ };
  const scope=s.policy?.[(c.kind==='PROPOSE_SWAP'||r?.kind==='SWAP')?'swap':'coverage'];
  // Only transfer/approval paths require an absolute trading boundary. An inability
  // report preserves the exact reviewed civil terms even when configuration needs
@@ -97,7 +106,10 @@ function planCommand(s:CommandSnapshot,c:ShiftChangeCommand):Plan|ShiftChangeRes
  const event=(eventKind:string,kind:'EXCHANGE'|'CALLOUT'=callout?'CALLOUT':'EXCHANGE',eventId=id,eventRevision=revision)=>shiftChangeEvent({workspaceId:w.id,requestId:eventId,revision:eventRevision,kind,event:eventKind,actorId:actor.id,source:requestSource,target:requestTarget,participants:callout?{employeeId:String(r?.employee_id??source.employeeId)}:{requesterEmployeeId:String(r?.requested_by_employee_id??source.employeeId),targetEmployeeId:r?(c.kind==='ACCEPT'?actor.id:r.target_employee_id??null):target?.employeeId??null,...(decisionVersions?{decisionVersions}:{})},mode,reasonCode:callout?String(c.kind==='SUBMIT_CALLOUT'?c.reasonCode:r?.reason_code):undefined,reasonNote:callout?(c.kind==='SUBMIT_CALLOUT'?c.reasonNote:r?.reason_note?String(r.reason_note):undefined):undefined});
  if(c.kind==='SUBMIT_CALLOUT') {
   if(source.employeeId!==actor.id || !published(source)) return unavailable;
-  if(held(source))return heldRefusal();
+  // The employee can always report inability for the shift they were shown.
+  // A held edit no longer refuses the report; approval waits for Publish
+  // changes. The stored terms stay the live terms, published by that step.
+  if(held(source)&&!shownTo(source,actor.id))return unavailable;
   if(source.assignmentEpisodeId!==c.sourceEpisodeId||shiftTermsFingerprint(source)!==c.sourceTermsFingerprint)return blocked('STALE_TERMS','The assignment changed. Your reason is preserved. Refresh and review the current assignment before submitting your inability report.');
   // Absence reporting remains available after trade cutoff and shift start.
   // Reporting inability atomically retires incompatible voluntary participation,
@@ -137,7 +149,7 @@ function planCommand(s:CommandSnapshot,c:ShiftChangeCommand):Plan|ShiftChangeRes
   if(c.kind==='CANCEL_CALLOUT'?actor.id!==r.employee_id:!manager) return unavailable;
   const approved=c.kind==='APPROVE_CALLOUT';
   if(approved&&(!fresh()||r.assignment_episode_id!==source.assignmentEpisodeId))return blocked('STALE_TERMS','Review the current assignment before approving absence.');
-  if(approved&&held(source))return heldRefusal();
+  if(approved&&held(source))return blocked('STALE_TERMS',PUBLISH_CHANGES_FIRST);
   status=approved?'completed':'closed';mode=c.kind==='CANCEL_CALLOUT'?undefined:'MANAGER';
   const linked=approved?randomUUID():null;
   statements.push(guardedRequestMutation({text:`UPDATE shift_callouts SET status=$2,reviewed_by=$3,reviewed_at=clock_timestamp(),reviewed_terms_fingerprint=$4,linked_coverage_request_id=$5 WHERE id=$1 AND request_revision=$6 RETURNING id`,values:[id,approved?'APPROVED':c.kind==='CANCEL_CALLOUT'?'CANCELLED':'DENIED',manager?actor.id:null,approved?shiftTermsFingerprint(source):null,linked,c.expectedRevision]}));
@@ -266,6 +278,8 @@ export async function readShiftChangeAvailability(proof:SessionMutationProof,com
    return {allowed:true,notice:reasons.length?reasons.join(' '):null,
     ...(command.kind==='ACCEPT'&&['EMPLOYEE','LEAD'].includes(snapshot.actor.employee.role)?{outcome:result.status as 'completed'|'pending'|'closed'}:{})};
   }
+  // Reloading cannot clear a held edit; the Owner is told the step that does.
+  if(result.status==='blocked'&&result.issues.some(i=>i.message===PUBLISH_CHANGES_FIRST))return {allowed:false,notice:PUBLISH_CHANGES_FIRST,refusal:'other'};
   const scope=snapshot.policy?.[snapshot.request?.kind==='SWAP'||command.kind==='PROPOSE_SWAP'?'swap':'coverage'];
   const unknown=!scope?.mode||scope.submissionAdvanceMinutes===null||scope.completionAdvanceMinutes===null||result.status==='blocked'&&result.issues.some(i=>['RULE_UNVERIFIABLE','POLICY_UNKNOWN'].includes(i.code));
   const stale=result.status==='conflict'||result.status==='blocked'&&result.issues.some(i=>i.code==='STALE_TERMS');

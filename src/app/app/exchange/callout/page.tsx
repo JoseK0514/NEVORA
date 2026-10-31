@@ -7,9 +7,9 @@ import { redirect } from "next/navigation";
 import { CalloutView } from "@/components/callout-view";
 import {requireSessionMutationProof} from "@/lib/auth/session";
 import {readShiftChangeTerms} from "@/lib/data/shift-change-snapshot";
-import {matchesDisplayedShift} from "@/lib/shift-changes/displayed-terms";
+import {matchesCalloutShift} from "@/lib/shift-changes/displayed-terms";
 import { requireSelfService } from "@/lib/auth/permissions";
-import { getPublishedShift } from "@/lib/data/exchanges";
+import { getCalloutShift } from "@/lib/data/exchanges";
 
 
 export default async function CalloutPage({
@@ -29,7 +29,9 @@ export default async function CalloutPage({
     redirect("/app/exchange?tab=my");
   }
 
-  const shift = await getPublishedShift(params.shiftId);
+  // A shift with held edits still opens and shows its published version
+  // (Jose, 2026-10-31); the report binds to the live assignment below.
+  const shift = await getCalloutShift(params.shiftId);
 
   if (!shift || shift.employeeId !== session.id) {
     redirect("/app/exchange?tab=my&error=INVALID_SHIFT");
@@ -43,6 +45,8 @@ export default async function CalloutPage({
   catch { /* Keep inability reporting available; never guess an invalid instant. */ }
   if(ended)redirect("/app/exchange?tab=my&error=INVALID_SHIFT");
 
-  const fields=reviewed&&matchesDisplayedShift(shift,reviewed.source)?{kind:"SUBMIT_CALLOUT",sourceShiftId:shift.id,sourceEpisodeId:reviewed.source.assignmentEpisodeId,sourceTermsFingerprint:reviewed.sourceTermsFingerprint}:null;
-  return <ResponsiveEmployeeCreation authority={employeeViewAuthority(proof,'creation')} mode="callout" sourceId={shift.id}><CalloutView shift={shift} fields={fields} error={params.error} /></ResponsiveEmployeeCreation>;
+  const fields=reviewed&&matchesCalloutShift(shift,reviewed.source)?{kind:"SUBMIT_CALLOUT",sourceShiftId:shift.id,sourceEpisodeId:reviewed.source.assignmentEpisodeId,sourceTermsFingerprint:reviewed.sourceTermsFingerprint}:null;
+  // The employee never learns a held edit exists: only the displayed shift goes to the client.
+  const {held:_held,...display}=shift;void _held;
+  return <ResponsiveEmployeeCreation authority={employeeViewAuthority(proof,'creation')} mode="callout" sourceId={shift.id}><CalloutView shift={display} fields={fields} error={params.error} /></ResponsiveEmployeeCreation>;
 }
