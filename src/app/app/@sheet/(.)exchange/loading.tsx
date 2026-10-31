@@ -1,7 +1,9 @@
-/** While the shift change loads: the sheet's bar and rows, static. */
+'use client';
+import {usePathname} from 'next/navigation';
+import {CreationSheetSkeleton} from '@/components/employee-mobile/creation-view';
+
+/** While the shift change loads: the sheet's own frame (bar, shift, choices, button) at about its final height, static. */
 export default function ShiftChangeSheetLoading() {
-  return <div className="q-sheet-skel" aria-busy="true" aria-label="Loading">
-    <div className="q-nav"><span /><span className="q-nav__t" /><span /></div>
-    <div className="q-sheet-skel__rows"><i /><i /><i /><i /></div>
-  </div>;
+  const pathname = usePathname();
+  return <CreationSheetSkeleton mode={pathname.endsWith('/callout') ? 'callout' : 'swap'} />;
 }

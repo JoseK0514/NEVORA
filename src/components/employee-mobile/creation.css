@@ -21,8 +21,4 @@
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-creation-error { margin:0; color:var(--em-red); font-size:var(--em-size-support); line-height:var(--em-line-body); }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-creation-receipt { display:flex; flex-direction:column; gap:var(--em-space-5); }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-creation-receipt h2 { margin:0; }
- html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .q-sheet:has(.em-creation) { inset:0; width:100%; max-width:none !important; height:100dvh; max-height:100dvh !important; margin:0; padding:0; border:0; border-radius:0; background:var(--em-canvas) !important; color:var(--em-ink); }
- html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .q-sheet:has(.em-creation)>.q-sheet__in { height:100%; max-height:none; padding:0; }
- html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .q-sheet:has(.em-creation) .q-sheet__top { display:none; }
- html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .q-sheet .em-creation .em-request-body { padding-bottom:max(var(--em-space-8),env(safe-area-inset-bottom)); }
 }

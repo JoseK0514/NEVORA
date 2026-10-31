@@ -1,53 +1,86 @@
 'use client';
 import Link from 'next/link';
 import {useEffect,useId,useRef,useState} from 'react';
-import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {PlanningFrame} from './planning-frame';
 import {usePlanning} from './use-planning';
 import {PlanningOperation,PlanningOperations} from './planning-operation';
 import {PlanningFeedback,usePlanningOperation} from './planning-feedback';
-import {timeOffStatus} from './request-status';
+import {TimeOffListRow,TimeOffRequestCard,timeOffDates,timeOffDay} from './timeoff-parts';
 import {parsePlanningCommand,type PlanningRequest,type PlanningCommand} from '@/lib/employee-planning';
 import {saveEmployeePlanningAction,checkEmployeePlanningAction} from '@/app/app/employee-planning/actions';
-import {formatTimeRange,isValidIsoDate} from '@/lib/date-utils';
-const date=(value:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'short',month:'short',day:'numeric',year:'numeric'}).format(new Date(value+'T12:00:00Z'));
-const range=(r:PlanningRequest)=>r.startDate===r.endDate?date(r.startDate):date(r.startDate)+' – '+date(r.endDate);
-const length=(r:PlanningRequest)=>r.startTime&&r.endTime?'Part of a day · '+formatTimeRange(r.startTime,r.endTime):r.startDate===r.endDate?'Full day':(Math.round((Date.parse(r.endDate)-Date.parse(r.startDate))/86400000)+1)+' full days';
-const status=timeOffStatus;
+import {formatTime,isValidIsoDate} from '@/lib/date-utils';
+
+/* Employee Time off on the phone, on the corporate kit (Release 1, boards E-TimeOffDetail and E-TimeOffSheet): the list
+ * (Waiting / Decided), one request, and the request form. Same planning read, commands, validation and receipts. */
+
+type Draft={startDate:string;endDate:string;partial:boolean;startTime:string;endTime:string;note:string};
+const empty:Draft={startDate:'',endDate:'',partial:false,startTime:'09:00',endTime:'12:00',note:''};
+
+/** A date or time field that looks like the board's field ("Thu, Nov 12"), with the real input laid over it. */
+export function PickField({id,name,type,label,value,min,onChange,invalid,describedBy,help}:{id:string;name:string;type:'date'|'time';label:string;value:string;min?:string;onChange:(value:string)=>void;invalid?:boolean;describedBy?:string;help?:string}){
+ const shown=!value?type==='date'?'Choose date':'Choose time':type==='date'?(isValidIsoDate(value)?timeOffDay(value):value):formatTime(value==='24:00'?'00:00':value);
+ return <div className="c-field"><label className="c-field__label" htmlFor={id}>{label}</label>
+  <span className="c-in tof-pick"><span className={value?undefined:'tof-pick__ph'} aria-hidden="true">{shown}</span>
+   <input id={id} name={name} type={type} required min={min} value={value} aria-invalid={invalid||undefined} aria-describedby={describedBy}
+    onClick={event=>{try{event.currentTarget.showPicker();}catch{/* Browsers without showPicker open their own picker. */}}}
+    onChange={event=>onChange(event.target.value)}/></span>
+  {help?<span className="c-field__help">{help}</span>:null}
+ </div>;
+}
+
 export function EmployeeTimeOff({authority,selection,filter}:{authority:string;selection:string;filter:string}){
  const panel=usePlanning(authority,'timeoff',selection),read=panel.read?.view==='timeoff'?panel.read:null;
- const [draft,setDraft]=useState({startDate:'',endDate:'',partial:false,startTime:'09:00',endTime:'12:00',note:''}),[operation,setOperation]=useState(()=>new PlanningOperation()),id=useRef<string|null>(null),[withdrawals]=useState(()=>new PlanningOperations());
+ const [draft,setDraft]=useState<Draft>(empty),[operation,setOperation]=useState(()=>new PlanningOperation()),id=useRef<string|null>(null),[withdrawals]=useState(()=>new PlanningOperations());
  const [error,setError]=useState<{message:string;field:string}|null>(null),errorId=useId(),form=useRef<HTMLFormElement>(null),receipt=useRef<HTMLHeadingElement>(null);
  const {pending,uncertain,complete}=usePlanningOperation(operation),locked=pending||uncertain||complete;
- const fieldError=(name:string)=>({'aria-invalid':error?.field===name||undefined,'aria-describedby':error?.field===name?errorId:undefined});
+ const fieldError=(name:string)=>({invalid:error?.field===name,describedBy:error?.field===name?errorId:undefined});
  const listHref='/app/requests'+(filter==='decided'?'?filter=decided':''),isNew=selection==='new',isList=selection==='list';
- const row=read?.data.requests[0],detailList=row&&row.status!=='PENDING'?'/app/requests?filter=decided':listHref;
+ const row=read?.data.requests[0];
  useEffect(()=>{if(complete&&isNew&&read?.enabled)receipt.current?.focus();},[complete,isNew,read?.enabled]);
  const send=async(command:PlanningCommand)=>{const result=await saveEmployeePlanningAction(command);panel.accept(result);return result;};
  const check=async(command:PlanningCommand)=>{const result=await checkEmployeePlanningAction(command);panel.accept(result);return result;};
  const retry=()=>{void operation.retry(check,send,panel.allowed);};
- const title=isNew?'Request time off':isList?'Time off':'Your time-off request';
- return <PlanningFrame title={title} sub={isNew?'Choose the time you need away':isList?'Your requests and decisions':'Dates, status and your request timeline'} back={isList?'/app/requests/hub':detailList+(row?'#timeoff-'+row.id:'')} backLabel={isList?'Requests':'Time off'} selection={selection} state={panel.state} ready={!!read} refresh={panel.refresh}>
-  {read&&!read.enabled?<p className="em-request-notice" role="status">Time off is turned off for your company.</p>:read?<>
-   {!isNew&&(pending||uncertain)?<section className="em-request-notice"><p>An earlier time-off submission still needs to be checked.</p><Link className="em-request-text" href="/app/requests?tab=new">Return to my submission</Link></section>:null}
-   {isNew?complete?<section className="em-planning-success" aria-label="Submission result"><h2 ref={receipt} tabIndex={-1}>Request recorded</h2><p>Your time-off request was recorded. Open it to see its current approval status.</p><Link className="em-request-primary" href={'/app/requests?requestId='+operation.result?.requestId}>View my request</Link><button className="em-request-secondary" type="button" onClick={()=>{setOperation(new PlanningOperation());id.current=null;setDraft({startDate:'',endDate:'',partial:false,startTime:'09:00',endTime:'12:00',note:''});}}>Make another request</button></section>:<form ref={form} className="em-planning-form" noValidate aria-busy={pending} onSubmit={event=>{
-    event.preventDefault();if(locked||!panel.allowed())return;
-    id.current??=crypto.randomUUID();const command=parsePlanningCommand({kind:'request',requestId:id.current,startDate:draft.startDate,endDate:draft.partial?draft.startDate:draft.endDate,startTime:draft.partial?draft.startTime:null,endTime:draft.partial?draft.endTime:null,note:draft.note.trim()});
-    if(!command){const field=!isValidIsoDate(draft.startDate)?'startDate':!draft.partial&&(!isValidIsoDate(draft.endDate)||draft.endDate<draft.startDate)?'endDate':draft.partial&&!draft.startTime?'startTime':draft.partial?'endTime':'note';const message=field==='startDate'?'Choose a valid start date.':field==='endDate'?'Choose an end date on or after the start date.':field==='startTime'?'Choose a start time.':field==='endTime'?'Choose an end time after the start time.':'Keep your note within 250 characters.';setError({message,field});form.current?.querySelector<HTMLElement>('[name="'+field+'"]')?.focus();return;}
-    setError(null);void operation.submit(command,send,panel.allowed);
-   }}><fieldset disabled={locked} className="em-planning-fields"><fieldset className="em-planning-choices"><legend>Time away</legend><label><input type="radio" name="timeAway" checked={!draft.partial} onChange={()=>setDraft(d=>({...d,partial:false}))}/>Full days</label><label><input type="radio" name="timeAway" checked={draft.partial} onChange={()=>setDraft(d=>({...d,partial:true}))}/>Part of a day</label></fieldset>
-    <div className="em-planning-dates"><label className={draft.partial?'em-planning-date':undefined}>{draft.partial?'Date':'Start date'}<input name="startDate" {...fieldError('startDate')} type="date" required value={draft.startDate} onChange={e=>{const v=e.target.value;setDraft(d=>({...d,startDate:v,endDate:!d.endDate||d.endDate< v?v:d.endDate}));setError(null);}}/></label>{!draft.partial?<label>End date<input name="endDate" {...fieldError('endDate')} type="date" required value={draft.endDate} min={draft.startDate||undefined} onChange={e=>{setDraft(d=>({...d,endDate:e.target.value}));setError(null);}}/></label>:<><label>Start time<input name="startTime" {...fieldError('startTime')} type="time" required value={draft.startTime} onChange={e=>{setDraft(d=>({...d,startTime:e.target.value}));setError(null);}}/></label><label>End time<input name="endTime" {...fieldError('endTime')} type="time" required value={draft.endTime==='24:00'?'00:00':draft.endTime} onChange={e=>{setDraft(d=>({...d,endTime:e.target.value==='00:00'?'24:00':e.target.value}));setError(null);}}/></label></>}</div>
-    {draft.partial?<p className="em-planning-help">An end time of 12:00 AM means midnight at the end of this day.</p>:null}
-    <label className="em-planning-note">Note <span>Optional</span><textarea name="note" {...fieldError('note')} rows={3} maxLength={250} value={draft.note} onChange={e=>setDraft(d=>({...d,note:e.target.value}))}/><small>{draft.note.length}/250 characters · Visible to your manager</small></label>
-   </fieldset>{error?<p id={errorId} className="em-creation-error" role="alert">{error.message}</p>:null}<p className="em-planning-help">Your manager needs to approve this request. Keep your scheduled shifts until it is approved.</p><PlanningFeedback operation={operation} onRetry={retry}/><button className="em-request-primary" type="submit" disabled={locked||!read.enabled}>{pending?'Sending…':'Send request'}</button></form>:isList?<>
-    <nav className="em-request-tabs" aria-label="Time-off requests"><Link href="/app/requests" aria-current={filter!=='decided'?'page':undefined}>Waiting</Link><Link href="/app/requests?filter=decided" aria-current={filter==='decided'?'page':undefined}>Decided</Link></nav>
-    <section aria-label={filter==='decided'?'Decided requests':'Waiting requests'}>{read.data.requests.some(r=>filter==='decided'?r.status!=='PENDING':r.status==='PENDING')?<ul className="em-request-list">{read.data.requests.filter(r=>filter==='decided'?r.status!=='PENDING':r.status==='PENDING').map(r=><li key={r.id}><Link id={'timeoff-'+r.id} className="em-request-entry" href={'/app/requests?requestId='+encodeURIComponent(r.id)+(filter==='decided'?'&filter=decided':'')}><span><strong>{range(r)}</strong><small>{length(r)}</small><small>{status[r.status]}</small></span><CaretRightIcon size={20} aria-hidden="true"/></Link></li>)}</ul>:<div className="em-request-notice"><h2>{filter==='decided'?'No decisions yet':'Nothing waiting'}</h2><p>{filter==='decided'?'Approved, declined and withdrawn requests will appear here.':'When you send a request, you can follow its status here.'}</p></div>}</section><Link className="em-request-primary" href="/app/requests?tab=new">Request time off</Link>
+ const title=isNew?'Request time off':'Time off';
+ const shown=read?read.data.requests.filter(r=>filter==='decided'?r.status!=='PENDING':r.status==='PENDING'):[];
+ return <PlanningFrame title={title} sub="" sheet={isNew} back={isList?'/app/requests/hub':isNew?listHref:'/app/requests/hub'} backLabel="Requests" selection={selection} state={panel.state} ready={!!read} refresh={panel.refresh}>
+  {read&&!read.enabled?<p className="c-note" role="status">Time off is turned off for your company.</p>:read?<>
+   {!isNew&&(pending||uncertain)?<section className="c-card"><div className="c-card__body tof-feedback"><p>An earlier time-off submission still needs to be checked.</p><Link href="/app/requests?tab=new">Return to my submission</Link></div></section>:null}
+   {isNew?complete?<section className="c-card tof-done" aria-label="Submission result"><h2 ref={receipt} tabIndex={-1}>Request recorded</h2><p>Your time-off request was recorded. Open it to see its current approval status.</p>
+     <Link className="c-btn c-btn--full" href={'/app/requests?requestId='+operation.result?.requestId}>View my request</Link>
+     <button className="c-btn c-btn--secondary c-btn--full" type="button" onClick={()=>{setOperation(new PlanningOperation());id.current=null;setDraft(empty);}}>Make another request</button></section>
+    :<form ref={form} className="tof-form" noValidate aria-busy={pending} onSubmit={event=>{
+     event.preventDefault();if(locked||!panel.allowed())return;
+     id.current??=crypto.randomUUID();const command=parsePlanningCommand({kind:'request',requestId:id.current,startDate:draft.startDate,endDate:draft.partial?draft.startDate:draft.endDate,startTime:draft.partial?draft.startTime:null,endTime:draft.partial?draft.endTime:null,note:draft.note.trim()});
+     if(!command){const field=!isValidIsoDate(draft.startDate)?'startDate':!draft.partial&&(!isValidIsoDate(draft.endDate)||draft.endDate<draft.startDate)?'endDate':draft.partial&&!draft.startTime?'startTime':draft.partial?'endTime':'note';const message=field==='startDate'?'Choose a valid start date.':field==='endDate'?'Choose an end date on or after the start date.':field==='startTime'?'Choose a start time.':field==='endTime'?'Choose an end time after the start time.':'Keep your note within 250 characters.';setError({message,field});form.current?.querySelector<HTMLElement>('[name="'+field+'"]')?.focus();return;}
+     setError(null);void operation.submit(command,send,panel.allowed);
+    }}><fieldset disabled={locked} className="tof-fields"><legend className="nv-sr">Time away</legend>
+     <div className="c-seg tof-seg" role="group" aria-label="How long"><button type="button" aria-pressed={!draft.partial} onClick={()=>setDraft(d=>({...d,partial:false}))}>All day</button><button type="button" aria-pressed={draft.partial} onClick={()=>setDraft(d=>({...d,partial:true}))}>Part of day</button></div>
+     {draft.partial?<>
+      <PickField id="tof-date" name="startDate" type="date" label="Date" value={draft.startDate} {...fieldError('startDate')} onChange={v=>{setDraft(d=>({...d,startDate:v,endDate:!d.endDate||d.endDate<v?v:d.endDate}));setError(null);}}/>
+      <div className="tof-row">
+       <PickField id="tof-start" name="startTime" type="time" label="Start" value={draft.startTime} {...fieldError('startTime')} onChange={v=>{setDraft(d=>({...d,startTime:v}));setError(null);}}/>
+       <PickField id="tof-end" name="endTime" type="time" label="End" value={draft.endTime==='24:00'?'00:00':draft.endTime} {...fieldError('endTime')} onChange={v=>{setDraft(d=>({...d,endTime:v==='00:00'?'24:00':v}));setError(null);}}/>
+      </div>
+      <p className="c-field__help">An end time of 12:00 AM means midnight at the end of this day.</p>
+     </>:<div className="tof-row">
+      <PickField id="tof-from" name="startDate" type="date" label="From" value={draft.startDate} {...fieldError('startDate')} onChange={v=>{setDraft(d=>({...d,startDate:v,endDate:!d.endDate||d.endDate<v?v:d.endDate}));setError(null);}}/>
+      <PickField id="tof-to" name="endDate" type="date" label="To" value={draft.endDate} min={draft.startDate||undefined} {...fieldError('endDate')} onChange={v=>{setDraft(d=>({...d,endDate:v}));setError(null);}}/>
+     </div>}
+     <div className="c-field"><label className="c-field__label" htmlFor="tof-note">Reason (optional)</label><input id="tof-note" className="c-in" name="note" type="text" maxLength={250} autoComplete="off" aria-invalid={error?.field==='note'||undefined} aria-describedby={error?.field==='note'?errorId:undefined} value={draft.note} onChange={e=>setDraft(d=>({...d,note:e.target.value}))}/></div>
+    </fieldset>
+    {error?<p id={errorId} className="c-error" role="alert">{error.message}</p>:null}
+    <p className="c-note">Your manager needs to approve this request. Keep your scheduled shifts until it is approved.</p>
+    <PlanningFeedback operation={operation} onRetry={retry}/>
+    <button className="c-btn c-btn--full" type="submit" disabled={locked||!read.enabled}>{pending?'Sending…':'Send request'}</button></form>
+   :isList?<>
+    <nav className="c-seg" aria-label="Time-off requests"><Link href="/app/requests" aria-current={filter!=='decided'?'page':undefined}>Waiting</Link><Link href="/app/requests?filter=decided" aria-current={filter==='decided'?'page':undefined}>Decided</Link></nav>
+    <section className="c-card" aria-label={filter==='decided'?'Decided requests':'Waiting requests'}>{shown.length?<ul className="c-rows">{shown.map(r=><TimeOffListRow key={r.id} id={'timeoff-'+r.id} request={r} href={'/app/requests?requestId='+encodeURIComponent(r.id)+(filter==='decided'?'&filter=decided':'')}/>)}</ul>
+     :<p className="c-empty"><b>{filter==='decided'?'No decisions yet':'Nothing waiting'}</b>{filter==='decided'?'Approved, declined and withdrawn requests will appear here.':'When you send a request, you can follow its status here.'}</p>}</section>
+    <Link className="c-btn c-btn--full" href="/app/requests?tab=new">Request time off</Link>
    </>:row?<>
-    <section className="em-response-status" aria-label="Request status"><strong>{status[row.status]}</strong><span>{range(row)}</span><span>{length(row)}</span></section>
-    <section><h2>Timeline</h2><ol className="em-planning-timeline"><li><strong>Request sent</strong><time>{new Intl.DateTimeFormat('en-US',{timeZone:read.timeZone,dateStyle:'medium',timeStyle:'short'}).format(new Date(row.createdAt))}</time></li><li><strong>{status[row.status]}{row.reviewer&&row.status!=='CANCELLED'?' by '+row.reviewer:''}</strong>{row.reviewedAt?<time>{new Intl.DateTimeFormat('en-US',{timeZone:read.timeZone,dateStyle:'medium',timeStyle:'short'}).format(new Date(row.reviewedAt))}</time>:<span>Your manager will review your request.</span>}</li></ol></section>
-    {row.note?<section><h2>Your note</h2><p className="em-planning-own-note">{row.note}</p></section>:null}
+    <TimeOffRequestCard request={row} zone={read.timeZone} headingId={'timeoff-'+row.id+'-dates'}/>
     {row.status==='PENDING'?<Withdrawal key={row.id} request={row} getOperation={()=>withdrawals.for(row.id)} allowed={panel.allowed} send={send} check={check}/>:withdrawals.peek(row.id)?<WithdrawalReceipt key={row.id} operation={withdrawals.peek(row.id)!}/>:null}
-   </>:<p className="em-request-notice" role="status">This request isn’t available to your current account. Return to Time off to review your requests.</p>}
+   </>:<p className="c-note" role="status">This request isn’t available to your current account. Return to Time off to review your requests.</p>}
   </>:null}
  </PlanningFrame>;
 }
@@ -55,11 +88,24 @@ export function EmployeeTimeOff({authority,selection,filter}:{authority:string;s
 function WithdrawalReceipt({operation}:{operation:PlanningOperation}){
  const {complete}=usePlanningOperation(operation),receipt=useRef<HTMLParagraphElement>(null);
  useEffect(()=>{if(complete)receipt.current?.focus();},[complete]);
- return complete?<p ref={receipt} tabIndex={-1} className="em-request-notice" role="status">Request withdrawn. Your scheduled shifts stay the same.</p>:null;
+ return complete?<p ref={receipt} tabIndex={-1} className="c-note" role="status">Request withdrawn. Your scheduled shifts stay the same.</p>:null;
 }
+/** Withdraw (board): a red-outline button, then one confirm step that sends the same withdraw command. An older request
+ * without a withdraw identity says only how to change it. */
 function Withdrawal({request,getOperation,allowed,send,check}:{request:PlanningRequest;getOperation:()=>PlanningOperation;allowed:()=>boolean;send:(command:PlanningCommand)=>Promise<import('@/lib/employee-planning').PlanningResult>;check:(command:PlanningCommand)=>Promise<import('@/lib/employee-planning').PlanningResult>}){
- const [operation]=useState(getOperation),[confirmed,setConfirmed]=useState(false),{pending,uncertain,complete}=usePlanningOperation(operation);
+ const [operation]=useState(getOperation),{pending,uncertain,complete}=usePlanningOperation(operation),[asking,setAsking]=useState(()=>pending||uncertain);
  // Historical non-UUID records remain readable; withdrawal follows the existing command owner's UUID contract.
  const command=parsePlanningCommand({kind:'withdraw',requestId:request.id,confirmed:true});
- return <section className="em-planning-form" aria-label="Withdraw request"><h2>Changed your plans?</h2><p className="em-planning-help">You can withdraw this request while it is waiting. Your scheduled shifts stay the same.</p>{command?<><label className="em-planning-check"><input type="checkbox" checked={confirmed} disabled={pending||uncertain||complete} onChange={e=>setConfirmed(e.target.checked)}/>I want to withdraw this time-off request.</label><PlanningFeedback operation={operation} onRetry={()=>{void operation.retry(check,send,allowed);}}/>{complete?<p className="em-request-notice" role="status">Request withdrawn.</p>:<button className="em-request-secondary" type="button" disabled={!confirmed||pending||uncertain} onClick={()=>{if(confirmed)void operation.submit(command,send,allowed);}}>{pending?'Withdrawing…':'Withdraw request'}</button>}</>:<p className="em-planning-help">Contact your manager about changing this older request.</p>}</section>;
+ if(!command)return <p className="c-note">To change this request, contact your manager.</p>;
+ return <section className="c-card tof-withdraw" aria-label="Withdraw request">
+  {complete?<p className="tof-feedback" role="status">Request withdrawn.</p>:asking||pending||uncertain?<>
+   <p className="tof-ask">{'Withdraw your request for '+timeOffDates(request)+'?'}</p>
+   <p className="c-note">Your scheduled shifts stay the same.</p>
+   <PlanningFeedback operation={operation} onRetry={()=>{void operation.retry(check,send,allowed);}}/>
+   {!uncertain?<div className="c-btns"><button className="c-btn c-btn--secondary" type="button" disabled={pending} onClick={()=>setAsking(false)}>Keep request</button><button className="c-btn c-btn--danger" type="button" disabled={pending} onClick={()=>{void operation.submit(command,send,allowed);}}>{pending?'Withdrawing…':'Withdraw'}</button></div>:null}
+  </>:<>
+   <button className="c-btn c-btn--danger c-btn--full" type="button" onClick={()=>setAsking(true)}>Withdraw request</button>
+   <p className="c-note">We’ll ask you to confirm first. Your manager will see that you withdrew it.</p>
+  </>}
+ </section>;
 }
