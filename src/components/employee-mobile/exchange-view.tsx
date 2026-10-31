@@ -75,7 +75,7 @@ export function EmployeeExchangeView({state,authority,mode,selection,operation,o
     {recoveries}
     {selection?detail?<Detail detail={detail} timeZone={read.timeZone} operation={operation} onRespond={onRespond} onRetry={onRetry} onRefresh={onRefresh}/>:<p className="em-request-notice" role="status">This request isn’t available to your current account. Return to your requests to see what is available.</p>:rows===null?<p className="em-request-notice" role="status">{mode==='incoming'?'Incoming swaps':'Your request activity'} couldn’t be checked. Refresh to try again.</p>:rows?.length?<section aria-labelledby="em-response-list-title"><h2 id="em-response-list-title">{mode==='incoming'?'Needs your answer':'Recent activity'}</h2><List rows={rows} mode={mode}/></section>:<p className="em-request-notice">{mode==='incoming'?'No swaps need your answer right now. A request addressed to you will appear here.':'No recent shift requests. Start a swap or cover offer from your own schedule.'}</p>}
     <div className="em-request-links"><Link href={requestListHref(mode==='incoming'?'mine':'incoming')}>{mode==='incoming'?'My shift requests':'Swaps for you'}</Link><Link href="/app/schedule">My schedule</Link></div>
-    <footer className="em-request-footer"><span>Checked {stamp(read.observedAt,read.timeZone)}</span><button type="button" disabled={state.refreshing} onClick={onRefresh}>{state.refreshing?'Refreshing…':'Refresh'}</button></footer>
+
    </>}
   </div>
  </div>;

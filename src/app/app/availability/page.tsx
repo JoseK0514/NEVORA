@@ -5,8 +5,13 @@ import { getWorkspace } from "@/lib/data/workspaces";
 import { keepWhole } from "@/lib/keep-whole";
 import { businessDate, formatBusinessDateTime } from "@/lib/business-time";
 import { ManagerAvailability } from "@/components/manager-availability";
-import { AvailabilitySignatureEditor, type AvailabilityStatus } from "@/components/availability-signature";
-import { QuietPage, QuietSegments } from "@/components/quiet/quiet";
+import Link from "next/link";
+import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
+import { AvailabilitySignatureEditor } from "@/components/availability-signature";
+import { CorpLink, CorpNav, CorpPage, CorpPill, CorpTitle } from "@/components/corp/corp";
+import "@/components/availability-corp.css";
+import { availabilityWeekLabel } from "@/components/availability-week-label";
 import { requireSession } from "@/lib/auth/session";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { listAvailability } from "@/lib/data/availability";
@@ -148,20 +153,27 @@ export default async function AvailabilityPage({
     ? submissionStatusCopy(submissionStatus, Boolean(settings?.availabilityDeadline))
     : null;
 
-  // v5 (mockup E10): the usual week or one schedule week, chosen with the segments; the deadline is said under the days.
+  // Release 1 (board E-Availability): one card of seven day rows, a line under it, then Save. The usual week links to
+  // one schedule week; a week shows its state and arrows to the weeks around it.
   const deadline = selectedWeek && settings?.availabilityDeadline ? new Date(settings.availabilityDeadline) : null;
   const inZone = (date: Date, options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("en-US", { timeZone: workspace.timeZone, ...options }).format(date);
   const nextWeek = upcomingWeek?.weekStart ?? addDays(currentWeek, 7);
   const weekLabel = (week: string) => `Week of ${keepWhole(formatWeekRange(week).split(/\s+[–-]\s+/)[0])}`;
-  const status: AvailabilityStatus = submissionStatus && submissionCopy
-    ? { label: locked ? (submissionStatus.submitted ? "Locked · submitted" : "Locked") : submissionStatus.submitted ? "Submitted" : "Not submitted", tone: submissionStatus.submitted ? "teal" : locked ? "gray" : "amber" } : null;
+  const pill = !selectedWeek ? null : locked ? <CorpPill tone="neutral">Closed</CorpPill>
+    : submissionStatus?.submitted ? <CorpPill tone="teal">{submissionStatus.windowCount === 0 ? "Unavailable all week" : "Submitted"}</CorpPill>
+    : <CorpPill tone="amber">{deadline ? `Due ${inZone(deadline, { weekday: "short", month: "short", day: "numeric" })}` : "Not submitted"}</CorpPill>;
+  const card = selectedWeek
+    ? { label: availabilityWeekLabel(selectedWeek), aside: <>{pill}<span className="c-avail__arrows">
+      <Link href={`/app/availability?week=${addDays(selectedWeek, -7)}`} aria-label="Previous week"><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true" /></Link>
+      <Link href={`/app/availability?week=${addDays(selectedWeek, 7)}`} aria-label="Next week"><CaretRightIcon className="c-ic" weight="bold" aria-hidden="true" /></Link></span></> }
+    : { label: "Your usual week", aside: <CorpLink href={`/app/availability?week=${nextWeek}`}>Change one week</CorpLink> };
   const upcomingDue = !selectedWeek && upcomingWeek?.availabilityDeadline ? `Send ${weekLabel(upcomingWeek.weekStart).toLowerCase()} by ${formatBusinessDateTime(upcomingWeek.availabilityDeadline, workspace.timeZone)}.` : null;
+  const note = selectedWeek
+    ? <span>{locked ? (submissionCopy?.detail ?? "The deadline passed. Your submitted hours are kept.") : deadline ? `Send it by ${inZone(deadline, { weekday: "long", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}. Hours for this week only; your usual week stays the same.` : "Hours for this week only; your usual week stays the same."} <Link className="c-link" href="/app/availability">Usual week</Link></span>
+    : <span>Your manager uses this to build the schedule. One-off days off go in Requests.</span>;
+  const sub = selectedWeek ? `Used for the week of ${keepWhole(formatWeekRange(selectedWeek))}` : upcomingDue ?? "Used to build your future schedules";
   const notices = <>
-    <QuietSegments label="Which week" items={[
-      { href: "/app/availability", label: "Usual week", current: !selectedWeek },
-      { href: `/app/availability?week=${selectedWeek ?? nextWeek}`, label: weekLabel(selectedWeek ?? nextWeek), current: !!selectedWeek },
-    ]} />
-    {params.error ? <p className="q-help q-help--alert" role="alert">
+    {params.error ? <p className="c-error" role="alert">
       {params.error === "locked"
         ? "The availability deadline for this week has passed."
         : params.error === "concurrent"
@@ -170,24 +182,16 @@ export default async function AvailabilityPage({
           ? "That schedule week is not valid."
           : "Every available day needs a valid start and end time."}
     </p> : null}
-    {params.saved ? <p className="q-help" role="status">{selectedWeek ? "Your availability for this schedule week has been updated." : "Your usual week has been updated."}</p> : null}
+    {params.saved ? <p className="c-note" role="status">{selectedWeek ? "Your availability for this schedule week has been updated." : "Your usual week has been updated."}</p> : null}
   </>;
 
   const proof=await requireSessionMutationProof();
   return (
-    <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="availability" selection={selectedWeek??'normal'}><QuietPage className="q-avail">
-      <AvailabilitySignatureEditor
-        key={selectedWeek ?? "normal"}
-        initialAvailability={initialAvailability}
-        weekStart={selectedWeek}
-        locked={locked}
-        status={status}
-        header={{ title: "Availability", sub: selectedWeek ? keepWhole(formatWeekRange(selectedWeek)) : "Your usual week" }}
-        notices={notices}
-        after={selectedWeek
-          ? (locked ? "The deadline passed. Your submitted hours are kept." : deadline ? `Send it by ${inZone(deadline, { weekday: "long", month: "short", day: "numeric" })}. Your usual week stays the same.` : "Hours for this week only. Your usual week stays the same.")
-          : upcomingDue ?? "Your saved usual week."}
-      />
-    </QuietPage></ResponsiveEmployeePlanning>
+    <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="availability" selection={selectedWeek??'normal'}><CorpPage className="c-avail">
+      <CorpNav back={{ href: "/app/schedule", label: "Schedule" }} title="Availability" phoneOnly />
+      <CorpTitle wide title="Availability" sub={sub} />
+      {notices}
+      <AvailabilitySignatureEditor key={selectedWeek ?? "normal"} initialAvailability={initialAvailability} weekStart={selectedWeek} locked={locked} card={card} note={note} />
+    </CorpPage></ResponsiveEmployeePlanning>
   );
 }

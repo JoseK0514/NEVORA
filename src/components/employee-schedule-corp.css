@@ -43,3 +43,39 @@
 :is(#c-root, html) body .c-esched .schedule-publication-change li:last-child { box-shadow: none; }
 :is(#c-root, html) body .c-esched .schedule-publication-change li strong { color: var(--c-ink); font-size: 15px; line-height: 20px; font-weight: 600; }
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) body .c-esched .schedule-publication-change summary svg { transition: none; } }
+/* Release 1 board pass (G-E-Schedule): teal week arrows, grey numbers on days without a shift, 36px day circles; the
+ * requested confirmation and "What changed" live inside the week card (three cards on the page). */
+:is(#c-root, html) .c-esched .c-esched__arrows a { color: var(--c-teal); }
+:is(#c-root, html) .c-esched .c-esched__range + .c-pill { margin-right: 4px; }
+:is(#c-root, html) .c-esched .c-esched__days small { color: var(--c-grey); font-weight: 400; }
+:is(#c-root, html) .c-esched .c-esched__days b { width: 36px; height: 36px; border-radius: 18px; color: var(--c-grey); font-weight: 400; }
+:is(#c-root, html) .c-esched .c-esched__days .is-work b { font-weight: 600; }
+:is(#c-root, html) .c-esched .c-esched__days .is-today b { font-weight: 600; }
+:is(#c-root, html) .c-esched .c-esched__confirm--in { min-height: 60px; box-shadow: inset 0 1px 0 #EDEEEF; }
+:is(#c-root, html) .c-esched .c-esched__confirm--in .q-bs { background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-teal); color: var(--c-teal); min-width: 0; padding: 0 14px; }
+:is(#c-root, html) .c-esched .c-esched__confirm--in .q-bs:hover:not([aria-disabled="true"]) { background: var(--c-tint); }
+:is(#c-root, html) .c-esched .c-esched__confirm--in .employee-weekly-confirmation p { margin: 6px 0 0; font-size: 13px; line-height: 18px; color: var(--c-red); max-width: 160px; }
+:is(#c-root, html) .c-esched .c-esched__confirm--in .employee-quiet-status { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-esched .c-esched__confirm--in .employee-quiet-status.success { color: var(--c-teal); font-weight: 600; }
+:is(#c-root, html) body .c-esched .c-card .schedule-publication-change { border-radius: 0; box-shadow: inset 0 1px 0 #EDEEEF; }
+:is(#c-root, html) body .c-esched .c-card .schedule-publication-change summary { min-height: 44px; color: var(--c-teal); font-size: 13px; line-height: 18px; }
+:is(#c-root, html) body .c-esched .c-card .schedule-publication-change summary svg { color: var(--c-teal); width: 16px; height: 16px; }
+:is(#c-root, html) body .c-esched .c-card .schedule-publication-change summary:focus-visible { border-radius: 8px; }
+:is(#c-root, html) body .c-esched .c-card .schedule-publication-change li strong { font-size: 13px; line-height: 18px; }
+/* Open shifts you can't pick up: one white card, a divider above every row. */
+:is(#c-root, html) body .c-esched .c-esched__blocked .blocked-open-shifts { border: 0; border-radius: 12px; box-shadow: 0 0 0 1px #E3E5E6; }
+:is(#c-root, html) body .c-esched .c-esched__blocked .blocked-open-shifts > summary { min-height: 44px; font-size: 13px; line-height: 18px; color: var(--c-ink2); }
+:is(#c-root, html) body .c-esched .c-esched__blocked .blocked-open-list { padding: 0; }
+:is(#c-root, html) body .c-esched .c-esched__blocked .blocked-open-shift { grid-template-columns: 52px minmax(0, 1fr); padding: 12px 16px; border-top: 0; box-shadow: inset 0 1px 0 #EDEEEF; }
+:is(#c-root, html) body .c-esched .c-esched__blocked .blocked-open-date { padding: 0; background: none; justify-items: start; color: var(--c-ink); }
+:is(#c-root, html) body .c-esched .c-esched__blocked .blocked-open-date span { font-size: 13px; color: var(--c-grey); }
+:is(#c-root, html) body .c-esched .c-esched__blocked .blocked-open-date strong { font-size: 15px; line-height: 20px; }
+:is(#c-root, html) body .c-esched .c-esched__blocked .blocked-open-copy > strong { font-size: 15px; line-height: 20px; }
+:is(#c-root, html) body .c-esched .c-esched__blocked :is(.blocked-open-place, .blocked-open-reasons li, .blocked-open-note) { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) body .c-esched .c-esched__blocked .blocked-open-note { padding: 4px 16px 4px; border-top: 0; box-shadow: inset 0 1px 0 #EDEEEF; }
+/* The week card's Confirm is the kit's secondary (outline) button: Schedule has no filled primary on the board. Older
+ * phone and bridge rules fill .q-bs--go with !important, so this one answers in kind. */
+:is(#c-root, html) body .app-shell .c-esched .c-esched__confirm--in .employee-weekly-confirmation .q-bs.q-bs--go { height: 36px; min-height: 0; padding: 0 14px; border: 0 !important; background: #FFFFFF !important; box-shadow: inset 0 0 0 1px #0B6E69 !important; color: #0B6E69 !important; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; white-space: nowrap; }
+:is(#c-root, html) body .app-shell .c-esched .c-esched__confirm--in .employee-weekly-confirmation .q-bs.q-bs--go:hover:not([aria-disabled="true"]) { background: #E6F1EF !important; }
+/* The open-shifts card's title may take two lines on a 320px phone rather than cut off its count. */
+:is(#c-root, html) .c-esched .c-esched__confirm .c-row__title--b { white-space: normal; }

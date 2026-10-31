@@ -22,14 +22,13 @@ beforeEach(() => {
   auth.proof.mockImplementation(async () => ({ employee: { id: 'fictional', firstName: 'Fictional', lastName: 'Employee', role: auth.role, primaryLocationId: 'loc-1' }, sessionTokenHash: 'a'.repeat(64) }));
 });
 
-it.each(["EMPLOYEE", "LEAD"])("retains both request destinations for %s", async (role) => {
+it.each(["EMPLOYEE", "LEAD"])("retains the request destinations for %s", async (role) => {
   auth.role = role;
   const html = renderToStaticMarkup(await RequestsHubPage());
-  // v5 (mockup E06): Ask for Time off, Swap or cover a shift and Availability; Plus starts a time-off request.
-  expect(html).toContain('href="/app/requests"');
-  expect(html).toContain('href="/app/exchange"');
-  expect(html).toContain('href="/app/availability"');
+  // Board G-E-Requests: New request starts time off; decided time off is a See all away; shift requests keep their row.
   expect(html).toContain('href="/app/requests?tab=new"');
+  expect(html).toContain('>New request<');
+  expect(html).toContain('href="/app/exchange"');
   expect(auth.proof).toHaveBeenCalledOnce();
 });
 
@@ -51,9 +50,11 @@ it("lists the person's own time off, waiting first, and never turns a failed rea
   ];
   const html = renderToStaticMarkup(await RequestsHubPage());
   expect(html).toContain("1 waiting for approval");
-  // v5: Requests lists what is waiting; decided requests are on Time off.
-  expect(html).toContain("request-w"); expect(html).not.toContain("request-a");
-  expect(html).toContain("2 full days");
+  // Board G-E-Requests: Waiting, then Decided, each with its status pill; rows open the request's own page.
+  expect(html).toContain("requestId=w"); expect(html).toContain("requestId=a");
+  expect(html.indexOf("requestId=w")).toBeLessThan(html.indexOf("requestId=a"));
+  expect(html).toContain(">Waiting<"); expect(html).toContain(">Approved<");
+  expect(html).toContain("2 days");
   data.requests = new Error("read failed");
   const failed = renderToStaticMarkup(await RequestsHubPage());
   expect(failed).toContain("Couldn’t load your requests");

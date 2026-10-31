@@ -10,13 +10,13 @@ const read:Extract<EmployeeCreationSnapshot,{state:'ready'}>={state:'ready',kind
 const draft:CreationDraft={sourceKey:creationKey(fields),targetKey:null,reason:'OTHER',note:'Unsaved private note'};
 const render=(snapshot:EmployeeCreationSnapshot|null=read,paused=false,d=draft)=>renderToStaticMarkup(<CreationView state={{snapshot,paused,refreshing:false}} authority={read.authority} mode="callout" sourceId="own" draft={d} operation={new EmployeeCreationOperation()} onDraft={()=>{}} onReview={()=>{}} onRefresh={()=>{}} onSubmit={()=>{}} onRetry={()=>{}}/>);
 it('renders native own-report choices, required Other details and original overnight shift without management actions',()=>{
- const html=render();expect(html).toContain('Ends Wed, Nov 4');expect(html).toContain('type="radio"');expect(html).toContain('needed for Other');expect(html).toContain('Send report');expect(html).not.toContain('Approve');
+ const html=render();expect(html).toContain('Ends Wed, Nov 4');expect(html).toContain('type="radio"');expect(html).toContain('needed for Other');expect(html).toContain('Send to manager');expect(html).not.toContain('Approve');
 });
 it('releases private draft and shift UI on pause, denial, changed binding or module-off',()=>{
- for(const [snapshot,paused]of [[read,true],[{state:'unavailable',reason:'access_denied'},false],[{...read,authority:'b'.repeat(64)},false],[{...read,enabled:false,source:null},false]] as const){const html=render(snapshot as EmployeeCreationSnapshot,paused);expect(html).not.toContain('Unsaved private note');expect(html).not.toContain('Main');expect(html).not.toContain('Send report');}
+ for(const [snapshot,paused]of [[read,true],[{state:'unavailable',reason:'access_denied'},false],[{...read,authority:'b'.repeat(64)},false],[{...read,enabled:false,source:null},false]] as const){const html=render(snapshot as EmployeeCreationSnapshot,paused);expect(html).not.toContain('Unsaved private note');expect(html).not.toContain('Main');expect(html).not.toContain('Send to manager');}
 });
 it('requires a deliberate source review after new terms without discarding the unsent note',()=>{
- const html=render(read,false,{...draft,sourceKey:'old-reviewed-terms'});expect(html).toContain('Review updated shift');expect(html).toContain('Unsaved private note');expect(html).toMatch(/disabled[^>]*>Send report/);
+ const html=render(read,false,{...draft,sourceKey:'old-reviewed-terms'});expect(html).toContain('Review updated shift');expect(html).toContain('Unsaved private note');expect(html).toMatch(/disabled[^>]*>Send to manager/);
 });
 it('keeps failed swap discovery distinct from empty and preserves the separately checked cover destination',()=>{
  const snapshot={...read,mode:'swap' as const,targets:null,partial:true,check:{allowed:false,notice:'Some checks unavailable'},coverage:{allowed:true,notice:null}};
