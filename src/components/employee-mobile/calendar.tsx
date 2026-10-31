@@ -27,7 +27,9 @@ export function EmployeeMobileCalendarView({status,url,paused,busy,notice,pendin
  useEffect(()=>{const changed=notice!==priorNotice.current;priorNotice.current=notice;if(notice&&(changed||recoveryReady)&&feedback.current)revealFeedback(feedback.current);},[notice,recoveryReady]);
  const available=!paused&&status&&'authority'in status,active=available&&status.state==='active',unknown=!!pendingKind;
  const currentUrl=active?url:null,confirmationCurrent=active&&!busy&&!unknown&&confirmation&&confirmation.generation===status.generation;
- function ask(kind:'ROTATE'|'REVOKE',button:HTMLButtonElement){if(!active||busy||unknown)return;trigger.current=button;setConfirmation({kind,generation:status.generation});requestAnimationFrame(()=>{if(confirm.current)revealFeedback(confirm.current);});}
+ // The review takes focus on the next frame, unless focus already moved into it (a quick Tab or a screen reader), so a
+ // control the person reached first is never pulled back to the group.
+ function ask(kind:'ROTATE'|'REVOKE',button:HTMLButtonElement){if(!active||busy||unknown)return;trigger.current=button;setConfirmation({kind,generation:status.generation});requestAnimationFrame(()=>{const review=confirm.current;if(review&&!review.contains(document.activeElement))revealFeedback(review);});}
  // The review replaces Reset link and Revoke link, so Keep returns focus to the button that was drawn again in its place.
  function cancel(){const kind=confirmation?.kind;setConfirmation(null);requestAnimationFrame(()=>{const target=trigger.current?.isConnected?trigger.current:kind==='REVOKE'?revokeButton.current:resetButton.current;target?.focus();});}
  const pill=!available?null:active?<CorpPill tone="teal">Active</CorpPill>:<CorpPill>{status.state==='revoked'?'Revoked':'Off'}</CorpPill>;
