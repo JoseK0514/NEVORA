@@ -16,7 +16,7 @@ vi.mock('@/lib/date-utils',()=>import('../../../lib/date-utils'));
 vi.mock('@/lib/exchange-marketplace',()=>import('../../../lib/exchange-marketplace'));
 vi.mock('@/lib/notifications/destinations',()=>import('../../../lib/notifications/destinations'));
 vi.mock('@/lib/data/notification-state',()=>({sqlNotificationStateRepository:()=>({recipientAccess:async()=>({employeeId:'self',role:'EMPLOYEE',active:true,allowedLocationIds:f.allowed})})}));
-vi.mock('@/lib/data/callouts',()=>({listEmployeeCallouts:async()=>f.callouts,getCallout:async()=>f.selectedCallout}));
+vi.mock('@/lib/data/callouts',()=>({listEmployeeCallouts:async()=>f.callouts,getCallout:async()=>f.selectedCallout,shownCalloutTerms:(_callout:unknown,terms:unknown)=>terms}));
 vi.mock('@/lib/data/exchanges',()=>({listEmployeeExchangeActivity:async()=>f.activity,listEmployeePublishedShifts:async()=>f.assigned,listIncomingSwaps:async()=>[],listOpenCoverage:async()=>[],getExchange:async()=>f.selected}));
 vi.mock('@/app/app/exchange/actions',()=>({shiftChangeAction:vi.fn(),reconcileShiftChangeAction:vi.fn(async()=>{throw new Error('Action cache invalidation is forbidden during render');}),cancelExchangeAction:vi.fn(),claimCoverageAction:vi.fn(),offerCoverageAction:vi.fn(),respondSwapAction:vi.fn()}));
 vi.mock('@/app/app/exchange/callout/actions',()=>({cancelCalloutAction:vi.fn()}));

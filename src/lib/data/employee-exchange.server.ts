@@ -10,7 +10,7 @@ import {isManagementAuthorizationError} from './management-session';
 import {sqlNotificationStateRepository,notificationReadSql} from './notification-state';
 import {readActivePresentation} from '../workspace-presentation/service';
 import {getExchange,listIncomingSwaps,listEmployeeExchangeActivity,type ExchangeRecord} from './exchanges';
-import {getCallout,listEmployeeCallouts,type CalloutRecord} from './callouts';
+import {getCallout,listEmployeeCallouts,shownCalloutTerms,type CalloutRecord} from './callouts';
 import {readShiftChangeHistory} from './shift-change-history';
 import {readShiftChangeAvailability} from './shift-changes';
 const active=['OPEN','EMPLOYEE_PENDING','MANAGER_PENDING'];
@@ -45,9 +45,12 @@ export async function readEmployeeExchange(proof:SessionMutationProof,executor:S
     ...reports.filter(permittedCallout).map(row=>calloutSummary(row,own)!),
    ].sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt));
   }else if(enabled&&selection){
-   const [exchange,report]=await Promise.all([getExchange(selection,guarded),getCallout(selection,guarded)]);
+   const [exchange,report]=await Promise.all([getExchange(selection,guarded),getCallout(selection,guarded,{employeeView:true})]);
    const ownExchange=exchange&&permitted(exchange)?exchange:null,ownReport=report&&permittedCallout(report)?report:null;
-   const raw=await readShiftChangeHistory(proof,selection,guarded).catch(()=>null);
+   // Jose, 2026-10-31: while the reported shift has held edits, history recorded
+   // from its live terms is shown as the published version (display only).
+   const recorded=await readShiftChangeHistory(proof,selection,guarded).catch(()=>null);
+   const raw=recorded&&ownReport?recorded.map(value=>{const row=value as Record<string,unknown>;return {...row,source_terms:shownCalloutTerms(ownReport,row.source_terms)};}):recorded;
    const historyScoped=raw?.every(value=>{
     const row=value as Record<string,unknown>;
     return [row.source_terms,row.target_terms].every(terms=>terms===null||!!terms&&typeof terms==='object'&&allowed.has(String((terms as Record<string,unknown>).locationId??(terms as Record<string,unknown>).location_id)));

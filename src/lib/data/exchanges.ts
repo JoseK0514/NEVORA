@@ -244,6 +244,87 @@ export async function getPublishedShift(shiftId: string, executor?: SqlExecutor)
   return row ? mapShift(row, "source") : null;
 }
 
+/**
+ * "I can't work" on a shift with held edits (Jose, 2026-10-31): the employee
+ * can always report inability for the shift they were shown. The row keeps
+ * the live assignment identity (id, episode, terms revision, employee, time
+ * zone) the reviewed command binds to, and while the shift is held its
+ * displayed date, times, location, position and Lead come from the latest
+ * publication capture, never from the unpublished edit. A held shift whose
+ * capture does not show it to the same employee (added or reassigned and not
+ * yet published) was never shown to them, so it is not offered.
+ */
+export function calloutShiftFromRow(row: Record<string, unknown>): (ExchangeShift & {held: boolean}) | null {
+  const live = mapShift(row, 'source');
+  if (row.held !== true) return {...live, held: false};
+  if (row.published_employee_id == null || String(row.published_employee_id) !== live.employeeId || row.published_is_callout_approved === true) return null;
+  return {
+    ...live,
+    held: true,
+    locationId: String(row.published_location_id),
+    locationName: String(row.published_location_name),
+    date: dateValue(row.published_date),
+    startTime: timeValue(row.published_start_time),
+    endTime: timeValue(row.published_end_time),
+    positionId: row.published_position_id ? String(row.published_position_id) : undefined,
+    positionName: row.published_position_name ? String(row.published_position_name) : undefined,
+    isDesignatedLead: Boolean(row.published_is_designated_lead),
+  };
+}
+
+export async function getCalloutShift(shiftId: string, executor?: SqlExecutor): Promise<(ExchangeShift & {held: boolean}) | null> {
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
+  const rows = queryRows(
+    await sql.query(
+    `SELECT
+       sh.id AS source_shift_id,
+       (SELECT time_zone FROM workspaces WHERE singleton) AS source_time_zone,
+       sh.assignment_episode_id AS source_assignment_episode_id,
+       sh.terms_revision AS source_terms_revision,
+       sh.schedule_id AS source_schedule_id,
+       sh.employee_id AS source_employee_id,
+       e.first_name || ' ' || e.last_name AS source_employee_name,
+       s.location_id AS source_location_id,
+       l.short_name AS source_location_name,
+       s.week_start AS source_week_start,
+       sh.date AS source_date,
+       sh.start_time AS source_start_time,
+       sh.end_time AS source_end_time,
+       sh.position_id AS source_position_id,
+       (SELECT name FROM positions WHERE id=sh.position_id) AS source_position_name,
+       sh.is_designated_lead AS source_is_designated_lead,
+       ${heldShiftEditSql('sh', 's')} AS held,
+       pub.employee_id AS published_employee_id,
+       pub.location_id AS published_location_id,
+       (SELECT short_name FROM locations WHERE id=pub.location_id) AS published_location_name,
+       pub.date AS published_date,
+       pub.start_time AS published_start_time,
+       pub.end_time AS published_end_time,
+       pub.position_id AS published_position_id,
+       COALESCE(pub.position_name,(SELECT name FROM positions WHERE id=pub.position_id)) AS published_position_name,
+       pub.is_designated_lead AS published_is_designated_lead,
+       pub.is_callout_approved AS published_is_callout_approved
+     FROM shifts sh
+     JOIN schedules s ON s.id = sh.schedule_id
+     JOIN employees e ON e.id = sh.employee_id
+     JOIN locations l ON l.id = s.location_id
+     LEFT JOIN LATERAL (
+       SELECT rs.* FROM schedule_publication_revision_shifts rs
+       WHERE rs.revision_id=(SELECT pr.id FROM schedule_publication_revisions pr WHERE pr.week_start=s.week_start ORDER BY pr.revision_number DESC LIMIT 1)
+         AND rs.source_shift_id=sh.id
+       LIMIT 1
+     ) pub ON true
+     WHERE sh.id = $1
+       AND s.status = 'PUBLISHED'
+     LIMIT 1`,
+    [shiftId],
+    ),
+  );
+
+  const row = rows[0] as Record<string, unknown> | undefined;
+  return row ? calloutShiftFromRow(row) : null;
+}
+
 export async function listEmployeePublishedShifts(
   employeeId: string,
   fromDate: string,

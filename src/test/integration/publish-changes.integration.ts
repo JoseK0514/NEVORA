@@ -5,7 +5,14 @@ import { fixtureProof } from './shift-change-api';
 import { insertShift, updateShift, deleteShift, publishScheduleWithRevision, publishScheduleChanges } from './management-api';
 import { readSchedulePendingChanges } from '../../lib/company-access/operational-read.server';
 import { readEmployeePublishedAssignments } from '../../lib/data/employee-published-assignments.server';
-import { getPublishedShift, listEmployeePublishedShifts, listSwapTargets } from '../../lib/data/exchanges';
+import { getCalloutShift, getPublishedShift, listEmployeePublishedShifts, listSwapTargets } from '../../lib/data/exchanges';
+import { randomUUID } from 'node:crypto';
+import { executeShiftChange, readShiftChangeAvailability, PUBLISH_CHANGES_FIRST } from '../../lib/data/shift-changes';
+import { readShiftChangeTerms } from '../../lib/data/shift-change-snapshot';
+import { matchesCalloutShift } from '../../lib/shift-changes/displayed-terms';
+import { getCallout, listEmployeeCallouts, shownCalloutTerms } from '../../lib/data/callouts';
+import { readShiftChangeHistoryView } from '../../lib/data/shift-change-views';
+import { readEmployeeExchange } from '../../lib/data/employee-exchange.server';
 import { readNotificationWeekState } from '../../lib/data/notification-transactions';
 import { shiftBoundaryInstants } from '../../lib/business-time';
 
@@ -89,4 +96,62 @@ it('history rows are append-only except the single publish mark, and a held dele
   expect(published.published).toBe(true);
   expect((await readEmployeePublishedAssignments(ana, db.executor)).nextShift).toBeNull();
   await expect(q('UPDATE schedule_pending_edits SET published_revision_id=NULL,published_at=NULL')).rejects.toThrow('schedule_pending_edit_immutable');
+});
+
+// Jose, 2026-10-31: the employee can always report "I can't work" for the
+// shift they were shown; the Owner's approval waits for Publish changes.
+it('a report on a held shift is accepted, its approval waits for Publish changes, then completes', async () => {
+  const base = { scheduleId: 'pc-week', date: '2030-10-08', startTime: '09:00', endTime: '17:00', actorEmployeeId: 'owner' };
+  const anaShift = await insertShift({ ...base, employeeId: 'ana' }, db.executor);
+  await publishScheduleWithRevision({ locationId: 'loc-1', weekStart: week, managerId: 'owner' }, db.executor);
+  await updateShift({ ...base, shiftId: anaShift, employeeId: 'ana', startTime: '10:00' }, db.executor);
+  const notificationsBefore = await count('notifications');
+
+  // Ana's page opens the held shift with the published 09:00 start, bound to the live assignment.
+  const ana = await fixtureProof(db.executor, 'ana'), owner = await fixtureProof(db.executor, 'owner');
+  const shown = (await getCalloutShift(anaShift, db.executor))!;
+  expect(shown).toMatchObject({ id: anaShift, employeeId: 'ana', held: true, date: '2030-10-08', startTime: '09:00', endTime: '17:00' });
+  const reviewed = (await readShiftChangeTerms(ana, anaShift, undefined, db.executor))!;
+  expect(reviewed.source.startTime).toBe('10:00');
+  expect(matchesCalloutShift(shown, reviewed.source)).toBe(true);
+  // Swaps and cover offers keep refusing the held shift.
+  expect(await getPublishedShift(anaShift, db.executor)).toBeNull();
+  const fields = { sourceShiftId: anaShift, sourceEpisodeId: reviewed.source.assignmentEpisodeId, sourceTermsFingerprint: reviewed.sourceTermsFingerprint };
+  expect((await executeShiftChange(ana, { kind: 'OFFER_COVERAGE', operationId: randomUUID(), ...fields }, db.executor)).status).toBe('blocked');
+
+  const submitted = await executeShiftChange(ana, { kind: 'SUBMIT_CALLOUT', operationId: randomUUID(), ...fields, reasonCode: 'ILLNESS' }, db.executor);
+  expect(submitted.status).toBe('pending');
+  const [callout] = await q("SELECT id,request_revision,status,source_terms->>'startTime' AS start FROM shift_callouts WHERE shift_id=$1", [anaShift]);
+  expect(callout).toMatchObject({ status: 'PENDING', start: '10:00' });
+  // Reviewers are told as for any report; Ben and the other employees hear nothing.
+  const told = await q('SELECT DISTINCT employee_id FROM notifications ORDER BY employee_id OFFSET 0');
+  expect(await count('notifications')).toBeGreaterThan(notificationsBefore);
+  expect(told.map(row => row.employee_id).filter(id => id === 'ben')).toEqual([]);
+
+  // Ana's own views show the published 09:00 start while held; the Owner's read keeps the live 10:00.
+  const [mine] = await listEmployeeCallouts('ana', db.executor);
+  expect(mine).toMatchObject({ id: callout.id, startTime: '09:00', endTime: '17:00' });
+  expect(await getCallout(String(callout.id), db.executor, { employeeView: true })).toMatchObject({ startTime: '09:00' });
+  expect(await getCallout(String(callout.id), db.executor)).toMatchObject({ startTime: '10:00' });
+  const history = await readShiftChangeHistoryView(ana, String(callout.id), db.executor, terms => shownCalloutTerms(mine, terms));
+  expect(history.map(event => event.source)).toEqual([expect.stringContaining('09:00 – 17:00')]);
+  expect(history.map(event => event.source).join(' ')).not.toContain('10:00');
+  const mobile = await readEmployeeExchange(ana, db.executor, String(callout.id));
+  expect(mobile).toMatchObject({ state: 'ready', detail: { offered: { date: '2030-10-08', startTime: '09:00', endTime: '17:00' }, history: [{ offered: { startTime: '09:00' } }] } });
+  const detail = mobile.state === 'ready' && mobile.kind === 'exchange' ? mobile.detail : null;
+  expect(JSON.stringify([detail?.offered, detail?.history?.map(event => [event.offered, event.requested])])).not.toContain('10:00');
+
+  const approve = () => ({ kind: 'APPROVE_CALLOUT' as const, operationId: randomUUID(), requestId: String(callout.id), expectedRevision: Number(callout.request_revision) });
+  expect(await readShiftChangeAvailability(owner, approve(), db.executor)).toEqual({ allowed: false, notice: PUBLISH_CHANGES_FIRST, refusal: 'other' });
+  expect(await executeShiftChange(owner, approve(), db.executor)).toEqual({ status: 'blocked', issues: [{ code: 'STALE_TERMS', message: PUBLISH_CHANGES_FIRST }] });
+
+  expect((await publishScheduleChanges({ weekStart: week, managerId: 'owner' }, db.executor)).published).toBe(true);
+  expect((await getCalloutShift(anaShift, db.executor))).toMatchObject({ held: false, startTime: '10:00' });
+  // Published: live equals published, so Ana's report now shows 10:00 with nothing overlaid.
+  const [after] = await listEmployeeCallouts('ana', db.executor);
+  expect(after).toMatchObject({ startTime: '10:00' });
+  expect(after.heldDisplay).toBeUndefined();
+  expect((await readShiftChangeAvailability(owner, approve(), db.executor)).allowed).toBe(true);
+  expect((await executeShiftChange(owner, approve(), db.executor)).status).toBe('completed');
+  expect(await q('SELECT status FROM shift_callouts WHERE id=$1', [callout.id])).toEqual([{ status: 'APPROVED' }]);
 });
