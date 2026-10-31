@@ -43,6 +43,11 @@ async function editBreak(owner,name,category,minutes){
 async function idle(p){await p.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await p.waitForFunction(()=>{const i=document.querySelector('input[name=pin]');return i&&!i.matches(':disabled');});}
 async function verify(p,pin='2468'){await idle(p);for(const n of pin)await p.getByRole('button',{name:'Number '+n,exact:true}).click();await p.getByRole('button',{name:'Continue',exact:true}).click();}
 async function startBreak(p){await p.getByRole('button',{name:'Start Break',exact:true}).click();await p.getByRole('heading',{name:'Choose a Break',exact:true}).waitFor();await p.getByRole('button',{name:'Start Fixture rest',exact:true}).click();}
+// Since 57a04195 a pending action lives in the tablet's IndexedDB journal (one slot per location and employee), not sessionStorage.
+// Read location 2's only slot without ever creating the database (an aborted upgrade leaves it absent).
+async function journalPending(p){return p.evaluate(()=>new Promise((resolve,reject)=>{const r=indexedDB.open('nevora.clocker.recovery');r.onupgradeneeded=()=>r.transaction.abort();r.onerror=()=>resolve(null);
+ r.onsuccess=()=>{const db=r.result;if(!db.objectStoreNames.contains('pending')){db.close();resolve(null);return;}const all=db.transaction('pending','readonly').objectStore('pending').getAll();
+  all.onsuccess=()=>{db.close();const slots=all.result.filter(slot=>slot.location==='2');slots.length>1?reject(Error('More than one pending slot')):resolve(slots.length?JSON.stringify(slots[0].pending):null);};all.onerror=()=>{db.close();reject(Error('Journal read failed'));};};}));}
 async function done(p){await p.getByRole('button',{name:'Done',exact:true}).click();await idle(p);}
 async function success(p,action){await p.getByRole('heading',{name:action+' Recorded',exact:true}).waitFor();}
 async function count(){return Number((await q('SELECT count(*)::int AS n FROM clocker_command_ledger'))[0].n);}
@@ -103,9 +108,9 @@ try{
   });
   await t.getByRole('button',{name:'Clock In',exact:true}).click();await t.getByRole('button',{name:'Check Action Status',exact:true}).waitFor();assert(dropped);
   assert.equal(await t.getByRole('button',{name:'Clock In',exact:true}).count(),0);
-  const stored=await t.evaluate(()=>sessionStorage.getItem(Object.keys(sessionStorage).find(key=>key.startsWith('nevora.clocker.pending.v2:2:'))??'nevora.clocker.pending.v1:2'));assert(stored);assertPrivateClockInRecovery(stored,lostCommand);
+  const stored=await journalPending(t);assert(stored);assertPrivateClockInRecovery(stored,lostCommand);
   await t.unroute('**/api/clocker/2/punch');await t.reload();await idle(t);await verify(t,'3579');
-  await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Check Action Status',exact:true}).count(),0);assert.equal(await t.evaluate(()=>sessionStorage.getItem(Object.keys(sessionStorage).find(key=>key.startsWith('nevora.clocker.pending.v2:2:'))??'nevora.clocker.pending.v1:2')),stored);
+  await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Check Action Status',exact:true}).count(),0);assert.equal(await journalPending(t),stored);
   checked(engine+': another employee has their own clock path while the prior intent remains intact');
   await t.getByRole('button',{name:'Done',exact:true}).click();await verify(t);
   await t.getByRole('button',{name:'Check Action Status',exact:true}).click();await success(t,'Clock In');assert.equal(await count(),before+5);await done(t);
@@ -126,9 +131,9 @@ try{
   await verify(t);await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();let blocked=false;
   await t.route('**/api/clocker/2/punch',async route=>{if(!blocked&&route.request().postDataJSON()?.operation==='execute'){blocked=true;await route.abort('failed');}else await route.continue();});
   await t.getByRole('button',{name:'Clock In',exact:true}).click();await t.getByRole('button',{name:'Check Action Status',exact:true}).waitFor();
-  const pending=await t.evaluate(()=>sessionStorage.getItem(Object.keys(sessionStorage).find(key=>key.startsWith('nevora.clocker.pending.v2:2:'))??'nevora.clocker.pending.v1:2'));await t.unroute('**/api/clocker/2/punch');
+  const pending=await journalPending(t);assert(pending);await t.unroute('**/api/clocker/2/punch');
   await t.getByRole('button',{name:'Check Action Status',exact:true}).click();await t.getByRole('button',{name:'Retry Same Action',exact:true}).waitFor();
-  assert.equal(await t.evaluate(()=>sessionStorage.getItem(Object.keys(sessionStorage).find(key=>key.startsWith('nevora.clocker.pending.v2:2:'))??'nevora.clocker.pending.v1:2')),pending);
+  assert.equal(await journalPending(t),pending);
   await t.getByRole('button',{name:'Retry Same Action',exact:true}).click();await success(t,'Clock In');assert.equal(await count(),before+8);checked(engine+': explicit same-command retry after a failed connection');await done(t);
   // Current verification expiry must block the visible action, not record time.
   await verify(t);await t.getByRole('button',{name:'Start Break',exact:true}).waitFor();
@@ -148,9 +153,9 @@ try{
   assert.equal((await q('SELECT count(*)::int AS n FROM clocker_pin_sessions'))[0].n,0);checked(engine+': confirmation auto-resets and clears server identity');
   const guardStart=await count();
   await verify(t);await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();
-  await t.evaluate(()=>{window.__restoreStorage=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){if(key.startsWith('nevora.clocker.pending.'))throw new DOMException('Test storage denial','SecurityError');return window.__restoreStorage.call(this,key,value);};});
+  await t.evaluate(()=>{window.__restoreStorage=IDBObjectStore.prototype.put;IDBObjectStore.prototype.put=function(){throw new DOMException('Test storage denial','QuotaExceededError');};});
   await t.getByRole('button',{name:'Clock In',exact:true}).click();await t.getByRole('heading',{name:'Browser Storage Needed',exact:true}).waitFor();assert.equal(await count(),guardStart);
-  await t.evaluate(()=>{Storage.prototype.setItem=window.__restoreStorage;delete window.__restoreStorage;});
+  await t.evaluate(()=>{IDBObjectStore.prototype.put=window.__restoreStorage;delete window.__restoreStorage;});
   await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await idle(t);checked(engine+': blocked browser recovery storage prevents the request entirely');
   // A second tab changes the shared HttpOnly cookie. The old screen must not act as that employee.
   await verify(t);await t.getByRole('button',{name:'Clock In',exact:true}).waitFor();
