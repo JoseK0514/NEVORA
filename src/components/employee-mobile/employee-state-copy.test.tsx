@@ -16,7 +16,8 @@ describe('Employee message read states and contextual return',()=>{
  it('names Notifications while checking and offers a correctly labelled disabled action',()=>{
   fixture.state.refreshing=true;const html=message('notifications'),text=plain(html);
   expect(text).toContain('Checking your current notifications…');
-  expect(html).toMatch(/<button[^>]*disabled=""[^>]*>Checking…<\/button>/);
+  // Release 1 (board E-Notifications): while checking there is nothing to press; Try again shows only after a failure.
+  expect(html).not.toContain('<button');
   expect(text).not.toContain('Try again');expect(text).not.toContain('unsent draft');
  });
  it('uses the right read-failure noun without promising an unentered draft',()=>{
@@ -28,7 +29,7 @@ describe('Employee message read states and contextual return',()=>{
  });
  it('returns Updates to More while retaining Notifications Home and detail origin anchors',()=>{
   const updates=message('updates');expect(updates).toMatch(/class="em-request-back" href="\/app\/more"/);expect(plain(updates)).toContain('More');
-  expect(message('notifications')).toMatch(/class="em-request-back" href="\/app"/);
+  expect(message('notifications')).toMatch(/class="c-nav__back" href="\/app"/);
   expect(message('compose')).toMatch(/class="em-request-back" href="\/app\/updates"/);
   fixture.origin={source:'/app/notifications',id:'own-notice',target:'/app/updates/own-update'};
   expect(message('detail','own-update')).toContain('href="/app/notifications#message-own-notice"');
