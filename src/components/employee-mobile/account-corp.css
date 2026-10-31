@@ -73,7 +73,8 @@
 :is(#c-root, html) .c-page .em-delete .c-row__title { white-space: normal; }
 :is(#c-root, html) .c-page .em-delete-kept { color: var(--c-teal); }
 :is(#c-root, html) .c-page .em-delete-small { font-size: 13px; line-height: 18px; color: var(--c-grey); }
-:is(#c-root, html) .c-page .em-delete-small a, :is(#c-root, html) .c-page .em-delete-outcome a { color: inherit; font-weight: 600; text-decoration: underline; overflow-wrap: anywhere; }
+/* The support address may wrap anywhere but never gains a hyphen (as on the v5 page). */
+:is(#c-root, html) .c-page .em-delete-small a, :is(#c-root, html) .c-page .em-delete-outcome a { color: inherit; font-weight: 600; text-decoration: underline; overflow-wrap: anywhere; hyphens: none; }
 :is(#c-root, html) .c-page .em-delete-outcome { flex-direction: column; }
 :is(#c-root, html) .c-page .em-delete-outcome p + p { margin-top: 6px; }
 :is(#c-root, html) .c-page .em-delete-outcome:focus { outline: none; }
@@ -103,3 +104,7 @@
 }
 /* A row under card copy ("What may be kept") keeps the board's hairline above it. */
 :is(#c-root, html) .c-page .c-card__body + .c-rows > li:first-child > .c-row { box-shadow: inset 0 1px 0 var(--c-line); }
+/* Once a deletion request is received (or the session ended or may have ended), every session is over: the tab bar would
+ * only lead to sign-in, so it hides and the page keeps its own way forward (as on the v5 page, DEL-UI review). It outranks corp-shell.css's !important grid. */
+html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:has(.em-delete :is([data-deletion-state="received"],[data-deletion-state="duplicate"],[data-deletion-state="signed_out"],[data-deletion-state="uncertain"])) .mobile-nav { display: none !important; }
+html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:has(.em-delete :is([data-deletion-state="received"],[data-deletion-state="duplicate"],[data-deletion-state="signed_out"],[data-deletion-state="uncertain"])) .app-main { padding-bottom: env(safe-area-inset-bottom, 0px) !important; }
