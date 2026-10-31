@@ -11,7 +11,7 @@ vi.mock("@/components/phone-input", () => ({
 }));
 vi.mock("@/components/select-field", () => import("./select-field"));
 
-import { EmployeeCoreProfileForm } from "./employee-core-profile-form";
+import { EmployeeCoreProfileForm, EmployeeStatusForm } from "./employee-core-profile-form";
 
 const employee = {
   id: "worker",
@@ -46,13 +46,20 @@ it("renders stable identity and account lifecycle guidance (presentation smoke)"
   // Version custody now travels in one command JSON field; mounted command tests
   // verify the opened employee/scope revisions through actual submission.
   expect(html).not.toContain('name="id"');
-  expect(html).toContain("Employee ID");
-  expect(html).toContain("worker");
+  expect(html).toContain("Edit employee");
   expect(html.match(/maxLength="160"/g)).toHaveLength(2);
   expect(html).toMatch(/type="email"[^>]*maxLength="254"|maxLength="254"[^>]*type="email"/);
-  expect(html).toContain("Deactivation signs this employee out");
-  expect(html).toContain("Reactivation requires a fresh sign-in");
-  expect(html).toContain("History is preserved");
+  // Release 1 (O-PersonAccess): the account status changes on Access and sign-in; the edit sheet keeps it as it is.
+  expect(html).toContain('name="active" value="false"');
+  const status = renderToStaticMarkup(<EmployeeStatusForm employee={{ ...employee, active: true }} locations={locations} actorId="OWNER1" actorRole="OWNER" action={vi.fn()} />);
+  expect(status).toContain("Deactivate Sam");
+  expect(status).toContain('name="active" value="false"');
+  expect(status).toContain("Deactivation signs them out right away");
+  expect(status).toContain("history is preserved");
+  const reactivate = renderToStaticMarkup(<EmployeeStatusForm employee={employee} locations={locations} actorId="OWNER1" actorRole="OWNER" action={vi.fn()} />);
+  expect(reactivate).toContain("Reactivate Sam");
+  expect(reactivate).toContain('name="active" value="true"');
+  expect(reactivate).toContain("Reactivating needs a fresh sign-in");
 });
 
 it("keeps the current inactive primary location visible without offering unrelated inactive locations", () => {
@@ -68,8 +75,7 @@ it("keeps the current inactive primary location visible without offering unrelat
   expect(html).toContain("Active");
   expect(html).not.toContain("Other Old");
   expect(html).toContain('name="active"');
-  expect(html).toContain('value="true"');
-  expect(html).toContain('value="false"');
+  expect(html).toContain("Choose an active location before reactivating");
 });
 
 it("only offers Owner authority to an Owner actor", () => {

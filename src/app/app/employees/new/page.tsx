@@ -3,8 +3,8 @@ import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {requireSessionMutationProof} from '@/lib/auth/session';
-import { QuietNav } from "@/components/quiet/quiet";
-import { Notice } from "@/components/wave-a/parts";
+import { CorpPage } from "@/components/corp/corp";
+import { SheetMarker } from "@/components/team/team-forms";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listLocations } from "@/lib/data/employees";
 import { listPositions } from "@/lib/data/positions";
@@ -32,15 +32,14 @@ export default async function NewEmployeePage({
   const [locations,positions]=source.data;
   const activeLocations = locations.filter((location) => location.active);
 
-  // Phase 3.5 Wave A: New employee on the kit. Three cards (person, access, scheduling), then what happens next.
+  // Release 1 (boards O-AddEmployee, O-AddEmployeePay): a sheet in two steps; the form carries its own header.
   return (
-    <ScopedReadFrame observation={source}><div className="q-page wa-newmember" data-nv-page="" data-q-sheet="">
-      <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href="/app/employees">Cancel</Link>} title="New employee"
-        right={<button type="submit" form="new-employee-form" className="q-nav__r q-nav__r--b" disabled={!activeLocations.length}>Save</button>} />
-      <h1 className="q-sr">New employee</h1>
-      {params.error ? <p className="q-error" role="alert">{errors[params.error] ?? "Complete all required employee fields."}</p> : null}
-      {!activeLocations.length ? <p className="q-help" role="status">{session.role === "OWNER" ? <>Add a location first. <Link href="/app/settings/locations" style={{ color: "#0B6E69" }}>Locations</Link></> : "Ask an Owner to add a location first."}</p> : null}
-      <NewEmployeeForm actorRole={session.role} locations={activeLocations} positions={positions} action={createEmployeeFormAction}/>
-    </div></ScopedReadFrame>
+    <ScopedReadFrame observation={source}><CorpPage className="c-addemp c-sheetpage" labelledBy="new-employee-title">
+      <SheetMarker />
+      <NewEmployeeForm actorRole={session.role} locations={activeLocations} positions={positions} action={createEmployeeFormAction} notice={<>
+        {params.error ? <p className="c-error" role="alert">{errors[params.error] ?? "Complete all required employee fields."}</p> : null}
+        {!activeLocations.length ? <p className="c-note" role="status">{session.role === "OWNER" ? <span>Add a location first.{" "}<Link className="c-link c-link--l" href="/app/settings/locations">Locations</Link></span> : "Ask an Owner to add a location first."}</p> : null}
+      </>}/>
+    </CorpPage></ScopedReadFrame>
   );
 }
