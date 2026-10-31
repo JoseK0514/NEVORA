@@ -116,8 +116,8 @@ export function groupThingsToDo(snapshot: Extract<ActionCenter, { state: "ready"
   const groups: Group[] = [
     ...(coverageFirst ? [gaps, missed] : [missed, gaps]),
     { id: "now", title: "Needs attention now", rows: urgent.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests" && !timeKinds.includes(item.type)).map(item => itemRow(item, timeZone)) },
-    { id: "time-off", title: "Time off", rows: of(["TIME_OFF"], requests).map(item => itemRow(item, timeZone)), aside: { href: "/app/requests", label: "See all time off requests", text: "See all" } },
-    { id: "swaps", title: "Shift swaps", rows: of(["EXCHANGE"], requests).map(item => itemRow(item, timeZone)), aside: { href: "/app/exchange", label: "See all shift requests", text: "See all" } },
+    { id: "time-off", title: "Time off", rows: of(["TIME_OFF"], requests).map(item => itemRow(item, timeZone)) },
+    { id: "swaps", title: "Shift swaps", rows: of(["EXCHANGE"], requests).map(item => itemRow(item, timeZone)) },
     { id: "cant-work", title: "Can’t work", rows: of(["CALLOUT"], requests).map(item => itemRow(item, timeZone)) },
     { id: "requests", title: "Other requests", rows: requests.filter(item => !known.includes(item.type)).map(item => itemRow(item, timeZone)) },
     { id: "corrections", title: "Time corrections", rows: of(["TIME_CORRECTION"], urgent).map(item => itemRow(item, timeZone)) },
@@ -191,9 +191,14 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
       <CorpButton kind="secondary" size="md" onClick={onRefresh}>Try again</CorpButton>
     </CorpBody></CorpCard> : null}
     {body}
-    {ready && !moreView && moreCount ? <CorpCard as="div" ariaLabel="More to review">
-      <CorpRow href="/app/inbox?view=more" bold title="More to review" detail={moreDetail(more)} value={String(moreCount)} valueTone="soft"
-        label={`More to review, ${moreCount}: ${moreDetail(more)}. Not counted in today’s total.`} chevron />
+    {/* Every request list stays one tap away, with or without waiting items (the menus no longer carry them). */}
+    {!moreView ? <CorpCard as="div" ariaLabel="Requests and more">
+      <CorpRows label="Requests and more">
+        {ready && moreCount ? <li><CorpRow href="/app/inbox?view=more" bold title="More to review" detail={moreDetail(more)} value={String(moreCount)} valueTone="soft"
+          label={`More to review, ${moreCount}: ${moreDetail(more)}. Not counted in today’s total.`} chevron /></li> : null}
+        <li><CorpRow href="/app/requests" bold title="Time off requests" detail="Waiting, approved and declined" label="All time off requests" chevron /></li>
+        <li><CorpRow href="/app/exchange" bold title="Shift requests" detail="Swaps and cover requests" label="All shift requests" chevron /></li>
+      </CorpRows>
     </CorpCard> : null}
     {ready?.limitedAttendance ? <CorpNote>Some attendance comparisons are unavailable.</CorpNote> : null}
   </CorpPage>;

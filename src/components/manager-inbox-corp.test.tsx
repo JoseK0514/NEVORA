@@ -67,7 +67,7 @@ it('names the person and the dates on a request, and every row opens its full re
   expect(html).toMatch(/href="\/app\/schedule\?shift=gap[^"]*"/);
   for (const banned of ['Approve', 'Decline', '<form', 'name="decision"']) expect(html).not.toContain(banned);
   expect(html).not.toContain('class="c-btn');
-  // See all keeps the full request lists one step away.
+  // The full request lists stay one tap away, with or without waiting items.
   expect(html).toContain('href="/app/requests"');
   expect(html).toContain('href="/app/exchange"');
 });
@@ -106,6 +106,9 @@ it('has a phone Back to Home, one live summary, and the same count as Home', () 
 
 it('says all set only for a ready, empty observation, and offers Try again or Sign in otherwise', () => {
   expect(page({snapshot: ready([])})).toContain('You’re all set. Nothing needs you right now.');
+  // Time off and shift requests stay reachable when nothing waits.
+  expect(page({snapshot: ready([])})).toContain('href="/app/requests"');
+  expect(page({snapshot: ready([])})).toContain('href="/app/exchange"');
   for (const connection of ['loading', 'offline', 'unavailable', 'access_lost'] as const) expect(page({connection})).not.toContain('You’re all set');
   expect(page({connection: 'loading'})).toContain('aria-busy="true"');
   expect(page({connection: 'unavailable'})).toContain('>Try again<');
