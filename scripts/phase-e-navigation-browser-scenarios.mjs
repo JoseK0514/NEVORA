@@ -132,10 +132,12 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   assert.deepEqual(violations,[],name+' accessibility');checks.push(name+' axe WCAG A/AA');
  }
  async function contrastStates(){
-  // Board E-Profile has no Sign out: a phone signs out from More (its last control), a computer from the sidebar. Measure
-  // that Sign out, then walk back through the rows above it.
-  if(phone){await page.goto(app.url+'/app/more');await settle();}
-  const target=phone?page.locator('main').getByRole('button',{name:'Sign out',exact:true}):page.locator('aside.sidebar').getByRole('button',{name:'Sign out',exact:true});
+  // Board E-Profile has no Sign out: a phone signs out from More (its last control); a computer from the sidebar, or from
+  // the account menu where the compact sidebar hides it (768). Measure that Sign out, then walk back through what precedes it.
+  let target,menu=false;const accountTrigger=()=>page.getByRole('button',{name:/, account menu$/});
+  if(phone){await page.goto(app.url+'/app/more');await settle();target=page.locator('main').getByRole('button',{name:'Sign out',exact:true});}
+  else{const sidebar=page.locator('aside.sidebar').getByRole('button',{name:'Sign out',exact:true});if(await sidebar.isVisible())target=sidebar;else{menu=true;await accountTrigger().click();await page.locator('#portal-account-menu').waitFor();target=page.locator('#portal-account-menu').getByRole('button',{name:'Sign out',exact:true});}}
+  focusTrace.push({stage:'Sign out location',location:phone?'More':menu?'account menu':'sidebar'});
   const sample=()=>target.evaluate(element=>{
    const rgba=value=>{const parts=value.match(/[\d.]+/g).map(Number);return [parts[0],parts[1],parts[2],parts[3]??1];};
    const blend=(front,back)=>front.slice(0,3).map((v,i)=>v*front[3]+back[i]*(1-front[3]));
@@ -150,16 +152,20 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    if(state==='normal'){await target.scrollIntoViewIfNeeded();await page.mouse.move(0,0);}
    if(state==='hover')await target.hover();
    if(state==='pressed')await page.mouse.down();
-   if(state==='focus'){await page.mouse.move(0,0);await page.mouse.up();await page.evaluate(()=>window.scrollTo(0,0));let reached=false;for(let n=0;n<40;n++){await page.keyboard.press(tabKey);const now=await target.evaluate(e=>({stage:'native Tab',active:e===document.activeElement,disabled:e.disabled,focusVisible:e.matches(':focus-visible')}));if(now.active){focusTrace.push(now);reached=true;break;}}assert(reached,'Native keyboard reaches Sign out');}
+   if(state==='focus'){await page.mouse.move(0,0);await page.mouse.up();
+    // The account menu's items are reached from its trigger: Enter opens it with focus on its first item.
+    if(menu){if(await page.locator('#portal-account-menu').isVisible()){await accountTrigger().click();await page.locator('#portal-account-menu').waitFor({state:'hidden'});}await page.bringToFront();await accountTrigger().focus();await page.keyboard.press('Enter');await page.locator('#portal-account-menu').waitFor();await page.waitForFunction(()=>document.querySelector('#portal-account-menu')?.contains(document.activeElement));}
+    else await page.evaluate(()=>window.scrollTo(0,0));let reached=false;for(let n=0;n<40;n++){await page.keyboard.press(tabKey);const now=await target.evaluate(e=>({stage:'native Tab',active:e===document.activeElement,disabled:e.disabled,focusVisible:e.matches(':focus-visible')}));if(now.active){focusTrace.push(now);reached=true;break;}}assert(reached,'Native keyboard reaches Sign out');}
    const measured=await sample();contrast.push({state,...measured});
    assert(measured.textRatio>=4.5,state+' actual composited button text contrast');
    if(state==='focus'){assert(measured.active&&measured.focusVisible&&!measured.disabled,'Actual native keyboard focus is visible');assert.notEqual(measured.outline,'none');assert(measured.outlineRatio>=3,'focus outline contrast');}
   }
   const clear=async(control,name)=>{const sample=await control.evaluate(e=>{const r=e.getBoundingClientRect(),nav=document.querySelector('.mobile-nav')?.getBoundingClientRect(),header=document.querySelector('.mobile-header')?.getBoundingClientRect();return {top:r.top,bottom:r.bottom,minimum:header?.height?header.bottom:0,maximum:nav?.height?nav.top:innerHeight,active:e===document.activeElement,focusVisible:e.matches(':focus-visible')};});focusTrace.push({stage:name,...sample});assert(sample.active&&sample.focusVisible,name+' has native visible focus');assert(sample.top>=sample.minimum&&sample.bottom<=sample.maximum,name+' is unobscured above fixed navigation');};
-  await clear(target,'Sign out');let walked=0;
-  for(let n=0;n<4;n++){await page.keyboard.press(backTabKey);const current=page.locator(':focus');assert.equal(await current.count(),1);await clear(current,'Account control');walked++;}
-  assert.equal(walked,4,'Native reverse traversal walks the rows above Sign out');
-  await page.mouse.move(0,0);await page.mouse.up();checks.push('Native '+tabKey+' traversal and scroll keeps Sign out (More on phones, the sidebar on computers) and the rows above it unobscured above mobile navigation');checks.push('Actual composited normal/hover/pressed/focus text and focus-outline contrast measured');
+  // The account menu holds two rows above Sign out (Your profile, Add shifts to your calendar); More and the sidebar hold more.
+  await clear(target,'Sign out');let walked=0;const rows=menu?2:4;
+  for(let n=0;n<rows;n++){await page.keyboard.press(backTabKey);const current=page.locator(':focus');assert.equal(await current.count(),1);await clear(current,'Account control');walked++;}
+  assert.equal(walked,rows,'Native reverse traversal walks the rows above Sign out');
+  await page.mouse.move(0,0);await page.mouse.up();if(menu){await accountTrigger().click();await page.locator('#portal-account-menu').waitFor({state:'hidden'});}checks.push('Native '+tabKey+' traversal and scroll keeps Sign out (More on phones, the sidebar or account menu on computers) and the rows above it unobscured above mobile navigation');checks.push('Actual composited normal/hover/pressed/focus text and focus-outline contrast measured');
  }
  async function bounds(){assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'document horizontal overflow');const bad=await page.locator('main .q-list a.q-row,main .q-list button.q-row,main .q-btn,main .c-rows a.c-row,main .c-rows button.c-row,main .c-btn,main a.em-request-entry,.profile-signout-row,.em-profile-signout,[data-inbox-row] > a').evaluateAll(elements=>elements.filter(e=>{const r=e.getBoundingClientRect();return r.width&& (r.left< -1||r.right>innerWidth+1||r.height<43);}).map(e=>e.textContent));assert.deepEqual(bad,[]);}
  try{
