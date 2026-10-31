@@ -59,7 +59,7 @@ const SIDEBAR_HOLDERS: Record<string, string> = {
   "/app/schedule/settings": "/app/schedule",
 };
 const EMPLOYEE_SIDEBAR_HOLDERS: Record<string, string> = {
-  "/app/availability": "/app/requests/hub",
+  "/app/availability": "/app/schedule",
 };
 /** Entries reached from the desktop account menu instead; their pages light no sidebar entry. */
 const ACCOUNT_MENU_ENTRIES = new Set(["/app/my-pay", "/app/profile"]);
@@ -166,8 +166,16 @@ export function moreNavigationGroups(items: NavigationItem[], tools: NavigationI
 export function activeNavigationHref(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext | OperationalAuthorityView = {}): string | undefined {
   const pathname = path.split(/[?#]/, 1)[0];
   const matches = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  // Release 1 (boards E-Availability, E-SwapSheet, E-CoverSheet, E-CantWorkSheet, E-OpenShifts): an Employee opens these
+  // from Schedule, so Schedule stays current on them. A Lead keeps Requests (Lead is on hold).
+  const query = new URLSearchParams(path.split("?")[1]?.split("#")[0] ?? "");
+  if (role === "EMPLOYEE" && (matches("/app/availability") || matches("/app/exchange/swap") || matches("/app/exchange/callout") ||
+      (pathname === "/app/exchange" && query.get("tab") === "available"))) return "/app/schedule";
   if ((role === "EMPLOYEE" || role === "LEAD") &&
       (matches("/app/requests") || matches("/app/exchange"))) return "/app/requests/hub";
+  // Release 1 (board O-Activity): Schedule activity is a view of Home's data opened from Schedule.
+  if (role !== "EMPLOYEE" && role !== "LEAD" && pathname === "/app" && query.get("view") === "activity" &&
+      navigationForRole(role, payroll, context).some(item => item.href === "/app/schedule")) return "/app/schedule";
   // IS-67: an employee's Timecards belongs to the Hours family, so the Pay or Hours tab stays current on it.
   if ((role === "EMPLOYEE" || role === "LEAD") && matches("/app/timecards")) return "/app/my-time";
   // Account deletion opens from Profile, so Profile's place (More) stays current on it.

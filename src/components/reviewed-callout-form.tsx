@@ -12,18 +12,18 @@ import { QuietList } from "./quiet/quiet";
 import { SwapShiftRow } from "./reviewed-swap-form";
 import type { ExchangeShift } from "../lib/data/exchanges";
 
+// Release 1 (board E-CantWorkSheet): the board's four reasons, as on the phone sheet. The server still accepts the
+// earlier codes, so reports made with them stay readable.
 const reasons = [
-  ["ILLNESS", "Illness / sick"],
+  ["ILLNESS", "Sick"],
   ["FAMILY_EMERGENCY", "Family emergency"],
-  ["TRANSPORTATION", "Transportation issue"],
-  ["SCHOOL", "School conflict"],
-  ["PERSONAL_EMERGENCY", "Personal emergency"],
+  ["TRANSPORTATION", "Transportation"],
   ["OTHER", "Other"],
 ] as const;
 
 /** Keep the employee's unsent reason in this mounted form during RSC refresh.
  * New terms require another deliberate submit; refresh never sends a report.
- * v5 sheet (mockup E05): the six reasons as choice rows; same field names, validation and actions. */
+ * v5 sheet (mockup E05): the reasons as choice rows; same field names, validation and actions. */
 export function ReviewedCalloutForm({
   fields,
   shift,

@@ -114,13 +114,15 @@ function AppShellView({
   const context:NavContext = {...presentation, operational:operational.view??undefined};
   const navigation = navigationForRole(user.role, payrollCapabilities, context);
   const mobileTabs = mobileTabsForRole(user.role, payrollCapabilities, context);
-  const activeTab = activeMobileTab(user.role, pathname ?? "", payrollCapabilities, context);
+  // Release 1: a few pages are views of another page (Schedule activity, Open shifts), so the query takes part.
+  const location = `${pathname ?? ""}${search?.toString() ? `?${search.toString()}` : ""}`;
+  const activeTab = activeMobileTab(user.role, location, payrollCapabilities, context);
   // P3-ST-22: a single request's review is one task with no section tabs. Deciding it from the URL means the tabs are
   // absent from the first frame, placeholder included, instead of disappearing once the review renders.
   const focusedReview = pathname === "/app/requests" && !!search?.get("requestId");
   const sectionTabs = pathname && !focusedReview ? sectionTabsFor(user.role, pathname, payrollCapabilities, context) : null;
   const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
-  const activeHref = activeNavigationHref(user.role, pathname, payrollCapabilities, context);
+  const activeHref = activeNavigationHref(user.role, location, payrollCapabilities, context);
   const sidebarItems = sidebarNavigation(user.role, navigation);
   // Clean Manager (v3): Home's occasional tools (its views and the two recovery pages) have their own group.
   const teamTools = teamToolsForRole(user.role, context);

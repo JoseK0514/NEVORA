@@ -86,7 +86,7 @@ it("uses the canonical select language for operational and shift-change policies
 });
 
 // Phase 3 Signature (approved Oct 20, 2026): the reasons are one required choice among six tiles, not a select.
-it("offers the six canonical reasons as one required choice for reviewed inability reporting", () => {
+it("offers the board's four reasons as one required choice for reviewed inability reporting", () => {
   const html = renderToStaticMarkup(
     <ReviewedCalloutForm
       fields={{
@@ -97,7 +97,8 @@ it("offers the six canonical reasons as one required choice for reviewed inabili
       }}
     />,
   );
-  for (const reason of ["ILLNESS", "FAMILY_EMERGENCY", "TRANSPORTATION", "SCHOOL", "PERSONAL_EMERGENCY", "OTHER"]) expect(html).toMatch(new RegExp(`<input type="radio"[^>]*required=""[^>]*name="reasonCode" value="${reason}"`));
+  for (const reason of ["ILLNESS", "FAMILY_EMERGENCY", "TRANSPORTATION", "OTHER"]) expect(html).toMatch(new RegExp(`<input type="radio"[^>]*required=""[^>]*name="reasonCode" value="${reason}"`));
+  for (const retired of ["SCHOOL", "PERSONAL_EMERGENCY"]) expect(html).not.toContain(`value="${retired}"`);
   expect(html).not.toContain('checked=""');
 });
 
