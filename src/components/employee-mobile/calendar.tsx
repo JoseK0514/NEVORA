@@ -39,7 +39,7 @@ export function EmployeeMobileCalendarView({status,url,paused,busy,notice,pendin
      {status.state==='unauthorized'?<Link className="c-btn c-btn--secondary c-btn--full" href="/login">Sign in</Link>:<button type="button" className="c-btn c-btn--secondary c-btn--full" onClick={onRetry}>Try again</button>}
     </>:<>
      <h3 className="em-calendar-lead">Your shifts, in your calendar</h3>
-     <p>It updates when your schedule changes. Anyone with the link can see your shift times and locations, so keep it to yourself.</p>
+     <p>Your calendar app picks up schedule changes the next time it refreshes, which can take a while. Anyone with the link can see your shift times and locations, so keep it to yourself.</p>
      {unknown?<p className="em-calendar-extra">Your previous request still needs to be checked before you can change this link.</p>
       :active?currentUrl?<div className="em-calendar-secret">
        <label className="c-field__label" htmlFor="employee-calendar-link">Your private calendar link</label>
