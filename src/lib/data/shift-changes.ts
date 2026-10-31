@@ -19,9 +19,9 @@ import { requestNotificationStatements,requestSnapshot,guardedRequestMutation } 
 import { shiftChangeEvent,decisionVersionReferences } from './shift-change-history';
 import { cancelNotificationStatements } from './notifications';
 import { eligibilityReasons, REASON_TEXT, type EligibilityReason } from '../shift-changes/eligibility-reasons';
+import { PUBLISH_CHANGES_FIRST } from '../shift-changes/publish-first';
 const conflict:ShiftChangeResult={status:'conflict'};
-/** Owner/Manager refusal while a reported shift still has held edits (Jose, 2026-10-31). */
-export const PUBLISH_CHANGES_FIRST='Publish the schedule changes for this shift first, then approve.';
+export { PUBLISH_CHANGES_FIRST };
 const unavailable:ShiftChangeResult={status:'unavailable'};
 const blocked=(code:'STALE_TERMS'|'DEADLINE_PASSED'|'POLICY_UNKNOWN'|'CONSENT_REQUIRED',message:string):ShiftChangeResult=>({status:'blocked',issues:[{code,message}]});
 const fingerprint=(command:ShiftChangeCommand)=>createHash('sha256').update(JSON.stringify(Object.fromEntries(Object.entries(command).sort(([a],[b])=>a.localeCompare(b))))).digest('hex');

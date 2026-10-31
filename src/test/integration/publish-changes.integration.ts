@@ -10,6 +10,9 @@ import { randomUUID } from 'node:crypto';
 import { executeShiftChange, readShiftChangeAvailability, PUBLISH_CHANGES_FIRST } from '../../lib/data/shift-changes';
 import { readShiftChangeTerms } from '../../lib/data/shift-change-snapshot';
 import { matchesCalloutShift } from '../../lib/shift-changes/displayed-terms';
+import { getCallout, listEmployeeCallouts, shownCalloutTerms } from '../../lib/data/callouts';
+import { readShiftChangeHistoryView } from '../../lib/data/shift-change-views';
+import { readEmployeeExchange } from '../../lib/data/employee-exchange.server';
 import { readNotificationWeekState } from '../../lib/data/notification-transactions';
 import { shiftBoundaryInstants } from '../../lib/business-time';
 
@@ -125,12 +128,29 @@ it('a report on a held shift is accepted, its approval waits for Publish changes
   expect(await count('notifications')).toBeGreaterThan(notificationsBefore);
   expect(told.map(row => row.employee_id).filter(id => id === 'ben')).toEqual([]);
 
+  // Ana's own views show the published 09:00 start while held; the Owner's read keeps the live 10:00.
+  const [mine] = await listEmployeeCallouts('ana', db.executor);
+  expect(mine).toMatchObject({ id: callout.id, startTime: '09:00', endTime: '17:00' });
+  expect(await getCallout(String(callout.id), db.executor, { employeeView: true })).toMatchObject({ startTime: '09:00' });
+  expect(await getCallout(String(callout.id), db.executor)).toMatchObject({ startTime: '10:00' });
+  const history = await readShiftChangeHistoryView(ana, String(callout.id), db.executor, terms => shownCalloutTerms(mine, terms));
+  expect(history.map(event => event.source)).toEqual([expect.stringContaining('09:00 – 17:00')]);
+  expect(history.map(event => event.source).join(' ')).not.toContain('10:00');
+  const mobile = await readEmployeeExchange(ana, db.executor, String(callout.id));
+  expect(mobile).toMatchObject({ state: 'ready', detail: { offered: { date: '2030-10-08', startTime: '09:00', endTime: '17:00' }, history: [{ offered: { startTime: '09:00' } }] } });
+  const detail = mobile.state === 'ready' && mobile.kind === 'exchange' ? mobile.detail : null;
+  expect(JSON.stringify([detail?.offered, detail?.history?.map(event => [event.offered, event.requested])])).not.toContain('10:00');
+
   const approve = () => ({ kind: 'APPROVE_CALLOUT' as const, operationId: randomUUID(), requestId: String(callout.id), expectedRevision: Number(callout.request_revision) });
   expect(await readShiftChangeAvailability(owner, approve(), db.executor)).toEqual({ allowed: false, notice: PUBLISH_CHANGES_FIRST, refusal: 'other' });
   expect(await executeShiftChange(owner, approve(), db.executor)).toEqual({ status: 'blocked', issues: [{ code: 'STALE_TERMS', message: PUBLISH_CHANGES_FIRST }] });
 
   expect((await publishScheduleChanges({ weekStart: week, managerId: 'owner' }, db.executor)).published).toBe(true);
   expect((await getCalloutShift(anaShift, db.executor))).toMatchObject({ held: false, startTime: '10:00' });
+  // Published: live equals published, so Ana's report now shows 10:00 with nothing overlaid.
+  const [after] = await listEmployeeCallouts('ana', db.executor);
+  expect(after).toMatchObject({ startTime: '10:00' });
+  expect(after.heldDisplay).toBeUndefined();
   expect((await readShiftChangeAvailability(owner, approve(), db.executor)).allowed).toBe(true);
   expect((await executeShiftChange(owner, approve(), db.executor)).status).toBe('completed');
   expect(await q('SELECT status FROM shift_callouts WHERE id=$1', [callout.id])).toEqual([{ status: 'APPROVED' }]);

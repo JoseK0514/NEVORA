@@ -32,7 +32,7 @@ import {
 } from "@/lib/exchange-marketplace";
 import { safeReturnTo } from "@/lib/notifications/destinations";
 import { sqlNotificationStateRepository } from "@/lib/data/notification-state";
-import { getCallout, listEmployeeCallouts } from "@/lib/data/callouts";
+import { getCallout, listEmployeeCallouts, shownCalloutTerms } from "@/lib/data/callouts";
 import {
   getExchange,
   listEmployeeExchangeActivity,
@@ -154,7 +154,7 @@ export default async function ExchangePage({
       if (selectedExchange && selectedExchange.id === params.requestId && access.allowedLocationIds.includes(selectedExchange.sourceShift.locationId)
         && (selectedExchange.requestedByEmployeeId === session.id || (selectedExchange.targetEmployeeId === session.id && ['APPROVED', 'DENIED', 'CANCELLED', 'EXPIRED'].includes(selectedExchange.status)))
         && !visibleActivity.some(row => row.id === selectedExchange.id)) visibleActivity.push(selectedExchange);
-      const selectedCallout = myCallouts.find(row => row.id === params.requestId) ?? await getCallout(params.requestId).catch(() => null);
+      const selectedCallout = myCallouts.find(row => row.id === params.requestId) ?? await getCallout(params.requestId, undefined, { employeeView: true }).catch(() => null);
       if (selectedCallout && selectedCallout.id === params.requestId && selectedCallout.employeeId === session.id && access.allowedLocationIds.includes(selectedCallout.locationId)
         && !visibleCallouts.some(row => row.id === selectedCallout.id)) visibleCallouts.push(selectedCallout);
     }
@@ -171,7 +171,8 @@ export default async function ExchangePage({
   const blocked=available.flatMap(e=>{const view=refused(e.id);return view?[{id:e.id,date:e.sourceShift.date,startTime:e.sourceShift.startTime,endTime:e.sourceShift.endTime,location:e.sourceShift.locationName,position:e.sourceShift.positionName??null,reasons:refusalLines(view)}]:[];});
   const assignedShifts=assigned.filter(s=>{try{return Date.parse(shiftBoundaryInstants(s,workspace.timeZone).endAt)>new Date().getTime();}catch{return true;}});
   const selectedHistory=params.requestId?await readShiftChangeHistoryView(proof!,params.requestId).catch(()=>null):[];
-  const histories=new Map(await Promise.all([...visibleActivity,...incoming,...visibleCallouts].map(async row=>[row.id,await readShiftChangeHistoryView(proof!,row.id).catch(()=>null)] as const)));
+  // An own report on a shift with held edits shows its published version in history too.
+  const histories=new Map(await Promise.all([...visibleActivity.map(row=>[row,undefined] as const),...incoming.map(row=>[row,undefined] as const),...visibleCallouts.map(row=>[row,(terms:unknown)=>shownCalloutTerms(row,terms)] as const)].map(async ([row,shown])=>[row.id,await readShiftChangeHistoryView(proof!,row.id,undefined,shown).catch(()=>null)] as const)));
 
   if (!manager) {
     // v5 "One look" (approved Oct 24, 2026; mockup E09). Same reads, forms and authority as before: Open shifts, the swaps
