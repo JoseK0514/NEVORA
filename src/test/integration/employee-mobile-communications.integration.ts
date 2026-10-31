@@ -54,7 +54,8 @@ it('integrates employee mobile messages with current audience, explicit receipts
    const ready=async(view:string)=>{await page.locator('.em-messages:visible[data-messages-state="ready"][data-messages-view="'+view+'"][aria-busy="false"]').waitFor();};
    // Release 1 removed the Refresh footer: a fresh read happens when the window regains focus (or on pageshow/online).
    const refresh=async()=>{await page.evaluate(()=>window.dispatchEvent(new Event('focus')));};
-   const heading=()=>page.locator('h1:visible').first();
+   // The corporate Notifications page titles itself in the phone header; the other messages pages keep their own heading.
+   const heading=()=>page.locator('.em-messages:visible[data-messages-view="notifications"]').count().then(n=>n?page.locator('h1.c-nav__title:visible'):panel().locator('h1'));
    const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file.replace('.png','-viewport.png'),fullPage:false,caret:'initial',style:'nextjs-portal {visibility:hidden;}'});captures.push(file.replace('.png','-viewport.png'));await page.screenshot({path:evidence+'/'+file,fullPage:false,caret:'initial',style:'nextjs-portal {visibility:hidden;}'});captures.push(file);};
    const matrix=async(name:string,actionName:string)=>{
     for(const theme of ['light','dark'])for(const width of [320,390,430]){
@@ -64,7 +65,7 @@ it('integrates employee mobile messages with current audience, explicit receipts
      const contrast=await action.evaluate(measureRenderedContrast);expect(contrast.ratio).toBeGreaterThanOrEqual(4.5);contrasts.push({engine,theme,width,name,ratio:contrast.ratio});await shot(name+'-'+theme+'-'+width);
     }
     await page.setViewportSize({width:320,height:844});await page.evaluate(()=>document.documentElement.style.fontSize='200%');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
-    expect(await heading().evaluate((el:HTMLElement)=>{const c=document.createElement('canvas').getContext('2d')!,s=getComputedStyle(el);c.font=s.font;return Math.max(...el.innerText.split(/[\s\u00ad]+/).map(w=>c.measureText(w+'-').width))<=el.clientWidth+1;})).toBe(true);
+    const fit=await (await heading()).evaluate((el:HTMLElement)=>{const c=document.createElement('canvas').getContext('2d')!,s=getComputedStyle(el);c.font=s.font;return {words:el.innerText.split(/[\s\u00ad]+/).map(w=>c.measureText(w+'-').width),clientWidth:el.clientWidth,font:s.font,text:el.innerText};});await writeFile(evidence+'/'+engine+'-'+name+'-title-fit.json',JSON.stringify(fit,null,2));expect(Math.max(...fit.words)<=fit.clientWidth+1).toBe(true);
     await panel().getByRole('button',{name:actionName,exact:true}).scrollIntoViewIfNeeded();const clearance=await panel().getByRole('button',{name:actionName,exact:true}).evaluate((el:HTMLElement)=>({button:el.getBoundingClientRect().toJSON(),nav:document.querySelector('.mobile-nav')!.getBoundingClientRect().toJSON(),scroll:document.scrollingElement?.scrollTop,viewport:window.innerHeight}));await writeFile(evidence+'/'+engine+'-'+name+'-clearance.json',JSON.stringify(clearance,null,2));expect(clearance.button.bottom<=clearance.nav.top+1).toBe(true);await shot(name+'-text-200');
     await page.evaluate(()=>{document.documentElement.style.fontSize='100%';document.documentElement.dataset.theme='light';});await page.setViewportSize({width:390,height:844});record(name+' Light/Dark320390430 and200%text/contrast/targets/nav clearance');
    };
