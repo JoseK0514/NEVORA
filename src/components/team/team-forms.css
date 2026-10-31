@@ -57,6 +57,13 @@
 :is(#c-root, html) .c-access__foot form > div:last-child:empty { display: none; }
 :is(#c-root, html) .c-access__foot .button.secondary { display: inline-flex; align-items: center; justify-content: center; height: 44px; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-teal); color: var(--c-teal); font-size: 15px; font-weight: 600; border: 0; cursor: pointer; }
 :is(#c-root, html) .c-access__panels { display: flex; flex-direction: column; gap: 12px; }
+/* The invitation and management-access panels are shared components with the earlier .button classes: on the
+   corporate Access page they take the kit's 40px buttons (secondary outline; the one primary stays teal). */
+:is(#c-root, html) .c-access__panels :is(button, a).button { display: inline-flex; align-items: center; justify-content: center; height: 40px; min-height: 44px; padding: 0 16px;
+  border: 2px solid transparent; background-clip: padding-box; border-radius: 10px; font-size: 15px; line-height: 20px; font-weight: 600; text-decoration: none; cursor: pointer; }
+:is(#c-root, html) .c-access__panels :is(button, a).button.secondary { background-color: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-teal); color: var(--c-teal); }
+:is(#c-root, html) .c-access__panels :is(button, a).button.primary { background-color: var(--c-teal); box-shadow: none; color: #FFFFFF; }
+:is(#c-root, html) .c-access__panels button.button:disabled { background-color: var(--c-neutral-bg); box-shadow: none; color: var(--c-faint); cursor: default; }
 
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-pick__caret { transition: none; } }
 
