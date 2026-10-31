@@ -219,9 +219,77 @@ it('Corporate: the week card counts unpublished changes and the edited shift say
  f.shifts=[{id:'s1',employeeId:'worker',locationId:'main',date:'2026-10-05',startTime:'06:00',endTime:'14:00',scheduleStatus:'PUBLISHED'}];
  f.pending={weekStart:'2026-10-05',hasPendingChanges:true,pendingCount:1,neverCaptured:false,latestRevision:null,canPublish:true,truncated:false,
   locations:[{locationId:'main',locationName:'Main Office',pendingCount:1}],
-  changes:[{shiftId:'s1',locationId:'main',employeeId:'worker',employeeName:'Fictional Worker',date:'2026-10-05',kind:'CHANGED',fields:['TIME'],before:null,after:null,editCount:1,lastEditedAt:null,lastEditedBy:null}]};
+  changes:[{shiftId:'s1',locationId:'main',employeeId:'worker',employeeName:'Fictional Worker',date:'2026-10-05',kind:'CHANGED',fields:['TIME'],before:null,after:null,editCount:1,lastEditedAt:null,lastEditedBy:null}],changedShiftIds:['s1']};
  const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',day:'2026-10-05'})}));
- expect(output).toContain('>Published · 1 change</span>');
+ expect(output).toContain('>Published · </span>1 change</span>');
  f.pending=null;
  expect(renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05'})}))).toContain('>Published</span>');
+});
+
+// Release 1 fixes (review of Oct 31): distinct change counts, every held shift marked, Send an update only with Updates on,
+// and the per-location panel never publishes held changes it hasn't listed.
+const presentation=vi.hoisted(()=>({updates:true}));
+vi.mock('@/lib/workspace-presentation/current.server',()=>({currentPresentation:async()=>({modules:{timeOff:true,marketplace:true,updates:presentation.updates,payStatements:true,breaks:true}})}));
+beforeEach(()=>{presentation.updates=true;});
+const twoPublished=()=>{
+ f.role='OWNER';f.locations=[{id:'main',shortName:'Main Office'},{id:'west',shortName:'West Office'}];
+ f.statuses=[{locationId:'main',status:'PUBLISHED'},{locationId:'west',status:'PUBLISHED'}];
+ f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];
+ f.shifts=Array.from({length:60},(_,i)=>({id:`s${i}`,employeeId:'worker',locationId:i%2?'west':'main',date:'2026-10-05',startTime:'06:00',endTime:'07:00',scheduleStatus:'PUBLISHED'}));
+};
+// One shift moved from Main Office to West Office: one change, counted under both locations.
+const moved=(extra:Record<string,unknown>={})=>({weekStart:'2026-10-05',hasPendingChanges:true,pendingCount:1,neverCaptured:false,latestRevision:null,canPublish:true,truncated:false,
+ locations:[{locationId:'main',locationName:'Main Office',pendingCount:1},{locationId:'west',locationName:'West Office',pendingCount:1}],
+ changes:[{shiftId:'s1',locationId:'west',employeeId:'worker',employeeName:'Fictional Worker',date:'2026-10-05',kind:'CHANGED',fields:['LOCATION'],before:null,after:null,editCount:1,lastEditedAt:null,lastEditedBy:null}],changedShiftIds:['s1'],...extra});
+const page=(params:Record<string,string>)=>SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',...params})}).then(renderToStaticMarkup);
+
+it('7a: All locations counts a change once even when it touches two locations; one location counts its own',async()=>{
+ twoPublished();f.pending=moved();
+ expect(await page({})).toContain('>Published · </span>1 change</span>');
+ expect(await page({location:'west'})).toContain('>Published · </span>1 change</span>');
+ f.pending=moved({pendingCount:3,locations:[{locationId:'main',locationName:'Main Office',pendingCount:2},{locationId:'west',locationName:'West Office',pendingCount:2}]});
+ expect(await page({})).toContain('>Published · </span>3 changes</span>');
+ expect(await page({location:'main'})).toContain('>Published · </span>2 changes</span>');
+});
+it('7b: every held shift says Changed, past the 50-row change list',async()=>{
+ twoPublished();
+ const ids=f.shifts.map(shift=>shift.id as string);
+ // The short list stops at 50 (here s10–s59); the id list has all 60, so s0–s9 are marked too.
+ f.pending=moved({pendingCount:60,truncated:true,changes:ids.slice(10).map(shiftId=>({shiftId,locationId:'main',employeeId:'worker',employeeName:'Fictional Worker',date:'2026-10-05',kind:'CHANGED',fields:['TIME'],before:null,after:null,editCount:1,lastEditedAt:null,lastEditedBy:null})),changedShiftIds:ids});
+ const output=await page({day:'2026-10-05'});
+ // The day card shows the first five rows (s0–s4), none of them in the short list.
+ const rows=output.match(/<li><a class="c-row c-sched-row"[\s\S]*?<\/a><\/li>/g)??[];
+ expect(rows).toHaveLength(5);
+ for(const row of rows)expect(row).toContain('>Changed</span>');
+ f.pending=moved({changedShiftIds:['s2']});
+ const one=(await page({day:'2026-10-05'})).match(/<li><a class="c-row c-sched-row"[\s\S]*?<\/a><\/li>/g)!;
+ expect(one.filter(row=>row.includes('>Changed</span>'))).toHaveLength(1);
+});
+it('7c: Send an update shows on the published receipt only while Company updates are on',async()=>{
+ twoPublished();
+ expect(await page({published:'main'})).toContain('href="/app/updates/compose"');
+ presentation.updates=false;
+ const held=await page({published:'main'});
+ expect(held).toContain('Main Office published.');expect(held).not.toContain('/app/updates/compose');expect(held).not.toContain('Send an update');
+});
+it('7d: with held changes the per-location panel sends the Owner to Build and publish instead of publishing them unseen',async()=>{
+ twoPublished();f.statuses=[{locationId:'main',status:'DRAFT'},{locationId:'west',status:'PUBLISHED'}];f.pending=moved();
+ const output=await page({plan:'1'});
+ expect(output).toContain('1 change not published');expect(output).toContain('href="/app/schedule/publish?week=2026-10-05">Review changes</a>');
+ expect(output).not.toContain('Publish Main Office');expect(output).not.toContain('Publish West Office');
+ f.pending=null;
+ expect(await page({plan:'1'})).toContain('Publish Main Office');
+});
+it('Publish is the primary action while something waits, and steps back once everything is published',async()=>{
+ twoPublished();f.pending={...moved(),hasPendingChanges:false,pendingCount:0,locations:[],changes:[],changedShiftIds:[]};
+ // A ready read with nothing held: hasPendingChanges false.
+ expect(await page({})).toMatch(/aria-label="Build and publish [^"]*" class="c-btn c-btn--secondary c-btn--sm">Publish</);
+ f.pending=moved();
+ expect(await page({})).toMatch(/aria-label="Build and publish [^"]*" class="c-btn c-btn--sm">Publish</);
+ f.pending=null; // a failed read: unknown, so Publish stays primary
+ expect(await page({})).toMatch(/aria-label="Build and publish [^"]*" class="c-btn c-btn--sm">Publish</);
+});
+it('the "…" menu opens Schedule activity for the week shown',async()=>{
+ f.role='OWNER';f.locations=[{id:'main',shortName:'Main Office'}];
+ expect(await html()).toContain('href="/app?week=2026-10-05&amp;view=activity"><strong>Activity</strong>');
 });

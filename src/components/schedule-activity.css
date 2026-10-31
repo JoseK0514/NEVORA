@@ -1,0 +1,12 @@
+/* Schedule activity (board O-Activity). */
+:is(#c-root, html) .c-act .c-act__sub { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 32px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-act .c-act__weeks { display: flex; align-items: center; margin-right: -10px; }
+:is(#c-root, html) .c-act .c-act__arrow { display: grid; place-items: center; width: 44px; height: 44px; margin: -6px 0; border-radius: 8px; color: var(--c-teal); }
+:is(#c-root, html) .c-act .c-act__row { min-height: 64px; }
+:is(#c-root, html) .c-act .c-act__row .c-row__title, :is(#c-root, html) .c-act .c-act__row .c-row__detail > span:first-child { white-space: normal; overflow: visible; text-overflow: clip; }
+/* A 36px round icon: grey for changes and requests, the teal tint for a publication. */
+:is(#c-root, html) .c-act .c-act__icon { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; background: var(--c-neutral-bg); color: var(--c-ink2); }
+:is(#c-root, html) .c-act .c-act__icon--tint { background: var(--c-tint); color: var(--c-teal); }
+:is(#c-root, html) .c-act .c-act__icon .c-ic { width: 18px; height: 18px; }
+:is(#c-root, html) .c-act .c-act__empty { font-size: 15px; line-height: 20px; color: var(--c-ink2); }
+:is(#c-root, html) .c-act .c-card__foot { justify-content: center; padding: 0 16px; }

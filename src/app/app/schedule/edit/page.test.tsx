@@ -31,12 +31,22 @@ it("retains the editable assignment, notes, lead, and shift identity and restric
   const html = renderToStaticMarkup(await Page({ searchParams: Promise.resolve({ shiftId: "test-shift" }) }));
   for (const name of ["employeeId", "positionId", "date", "startTime", "endTime", "isDesignatedLead", "notes"]) expect(html).toContain(`name="${name}"`);
   expect(html.match(/name="shiftId" value="test-shift"/g)).toHaveLength(2);
-  expect(html).toContain('min="2026-10-12" max="2026-10-18"');
+  // The date is chosen from the shift's own week (seven days, no browser date picker).
+  expect(html).toContain('<option value="2026-10-12">Mon, Oct 12</option>');expect(html).toContain('<option value="2026-10-18">Sun, Oct 18</option>');
+  expect(html).not.toContain('value="2026-10-19"');expect(html).not.toContain('type="date"');expect(html).not.toContain('type="time"');
+  expect(html).toContain('<option value="08:00" selected="">8:00 AM</option>');expect(html).toContain('<option value="16:00" selected="">4:00 PM</option>');
   expect(html).toContain('value="support" selected=""');
   expect(html).toContain("Opening team</textarea>");
-  // Delete is its own form, behind a disclosure, after the edit form (never nested in it).
+  // Board O-EditShift: Cancel · Edit shift · Save; the lead is a switch; the location is shown as it is (it can't change).
+  expect(html).toContain('>Cancel</a><h1 class="c-shift__title">Edit shift</h1><button type="submit" form="edit-shift-form"');
+  expect(html).toMatch(/<input type="checkbox" role="switch" class="c-switch" name="isDesignatedLead" checked=""/);
+  const location=html.match(/<input id="edit-shift-form-location"[^>]*>/)![0];
+  expect(location).toContain('class="c-in c-shift__fixed"');expect(location).toContain('value="main"');expect(location).toMatch(/readonly=""/i);expect(location).not.toContain('name=');
+  expect(html).not.toContain('name="locationId"');
+  // Delete is its own form after the edit form (never nested in it): a red-outline Delete shift that asks before deleting.
   expect(html.match(/<form/g)).toHaveLength(2);
-  expect(html.indexOf('<details class="wa-disclosure">')).toBeGreaterThan(html.indexOf('Save changes'));
+  expect(html.indexOf('>Delete shift</button>')).toBeGreaterThan(html.indexOf('Save changes'));
+  expect(html).toContain('class="c-btn c-btn--danger c-btn--full" aria-expanded="false">Delete shift</button>');
   expect(html).toContain('/app/schedule?week=2026-10-12');
   // W2: Cancel returns to this shift's location, day and person.
   expect(html).toContain('href="/app/schedule?week=2026-10-12&amp;location=main&amp;day=2026-10-14#schedule-employee-AVERY"');
@@ -81,7 +91,8 @@ vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employ
 
 it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({searchParams:Promise.resolve({shiftId:'test-shift'})}));expect(html).toContain('current company-wide management access');expect(mocks.shift).not.toHaveBeenCalled();expect(mocks.employees).not.toHaveBeenCalled();expect(html).not.toContain('name="shiftId"');});
 
-vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['main']},data:{weekStart:'2026-10-12',locationId:'main',shift:{id:'test-shift',scheduleId:'week',employeeId:'AVERY',employeeName:'Avery Rivera',locationId:'main',weekStart:'2026-10-12',date:'2026-10-14',startTime:'16:00',endTime:'24:00',positionId:'support',notes:'Scoped note',isDesignatedLead:false,isCalloutApproved:false,scheduleStatus:operationalPageFixture.saveAvailability==='requires_company'?'PUBLISHED':'DRAFT'},employeeOptions:[{id:'AVERY',name:'Avery Rivera',positionIds:['support']}],positionOptions:[{id:'support',name:'Support'}],sourceVersion:'fixture',saveAvailability:operationalPageFixture.saveAvailability}})}));
+const held=vi.hoisted(()=>({read:vi.fn()}));
+vi.mock('@/lib/company-access/operational-read.server',()=>({readSchedulePendingChanges:held.read,readOperationalShiftEditor:async()=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['main']},data:{weekStart:'2026-10-12',locationId:'main',shift:{id:'test-shift',scheduleId:'week',employeeId:'AVERY',employeeName:'Avery Rivera',locationId:'main',weekStart:'2026-10-12',date:'2026-10-14',startTime:'16:00',endTime:'24:00',positionId:'support',notes:'Scoped note',isDesignatedLead:false,isCalloutApproved:false,scheduleStatus:operationalPageFixture.saveAvailability==='requires_company'?'PUBLISHED':'DRAFT'},employeeOptions:[{id:'AVERY',name:'Avery Rivera',positionIds:['support']}],positionOptions:[{id:'support',name:'Support'}],sourceVersion:'fixture',saveAvailability:operationalPageFixture.saveAvailability}})}));
 it('uses the actual minimal manual editor for scoped drafts without global employee catalogs',async()=>{
  operationalPageFixture.scoped=true;const {default:Page}=await import('./page');const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})}));expect(html).toContain('Edit draft shift');expect(html).toContain('name="endTime" value="24:00"');expect(html).toContain('Review deletion');expect(html).not.toContain('Delete this draft shift');expect(mocks.shift).not.toHaveBeenCalled();expect(mocks.employees).not.toHaveBeenCalled();expect(mocks.locations).not.toHaveBeenCalled();
 });
@@ -98,4 +109,19 @@ it.each(['available','requires_company','unavailable'])('announces a real scoped
 it.each(['UNTRUSTED_QUERY_TEXT','constructor'])('scoped edit uses safe generic feedback for unknown redirect code %s',async error=>{
  operationalPageFixture.scoped=true;const {default:Page}=await import('./page');const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift',error})}));
  expect(html).toContain('role="alert"');expect(html).toContain('The shift could not be updated.');expect(html).not.toContain(error);
+});
+
+it('says a published shift with a held edit is Not published and what it was; a published shift without one says Published',async()=>{
+ mocks.shift.mockResolvedValue({id:'test-shift',employeeId:'AVERY',employeeName:'Avery Rivera',locationId:'main',weekStart:'2026-10-12',date:'2026-10-14',startTime:'14:00',endTime:'20:00',isDesignatedLead:false,scheduleStatus:'PUBLISHED'});
+ const value=(startTime:string)=>({employeeId:'AVERY',employeeName:'Avery Rivera',locationId:'main',date:'2026-10-14',startTime,endTime:'20:00',positionId:null,positionName:null,isDesignatedLead:false,notes:null});
+ held.read.mockResolvedValue({state:'ready',data:{changedShiftIds:['test-shift'],changes:[{shiftId:'test-shift',kind:'CHANGED',before:value('12:00'),after:value('14:00')}]}});
+ const {default:Page}=await import('./page');
+ const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})})).replace(/\u00a0/g,' ');
+ expect(held.read).toHaveBeenCalledWith(expect.anything(),{weekStart:'2026-10-12'});
+ expect(html).toContain('>Not published</span><span class="c-shift__was">Was 12:00 PM – 8:00 PM</span>');
+ held.read.mockResolvedValue({state:'ready',data:{changedShiftIds:[],changes:[]}});
+ expect(renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})}))).toContain('c-pill--neutral">Published</span>');
+ held.read.mockResolvedValue({state:'unavailable',reason:'read_failed'});
+ const failed=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})}));
+ expect(failed).not.toContain('Not published');expect(failed).not.toContain('c-shift__state');
 });

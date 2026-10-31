@@ -1,0 +1,62 @@
+/* Add shift and Edit shift (Release 1, boards O-AddShift and O-EditShift). Phones: a white sheet page, the 52px
+ * Cancel · title · Save header pinned on top, fields stacked 16px apart. Tablets and desktop: the same sheet as one
+ * white card in the reading column. */
+:is(#c-root, html) .c-page.c-shift-page { min-height: 100dvh; padding-top: 0; background: #FFFFFF; }
+:is(#c-root, html) .c-shift-page .c-shift { display: flex; flex-direction: column; min-width: 0; }
+:is(#c-root, html) .c-shift-page .c-shift__head { position: sticky; top: 0; z-index: 20; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px;
+  min-height: 52px; margin: 0 -16px; padding: var(--q-safe-top, env(safe-area-inset-top, 0px)) 16px 0; background: #FFFFFF; box-shadow: inset 0 -1px 0 var(--c-line); }
+:is(#c-root, html) .c-shift-page .c-shift__cancel, :is(#c-root, html) .c-shift-page .c-shift__save { display: inline-flex; align-items: center; min-height: 44px; margin: 0; padding: 0; border: 0; background: none; color: var(--c-teal); font-size: 15px; line-height: 20px; cursor: pointer; }
+:is(#c-root, html) .c-shift-page .c-shift__cancel { justify-self: start; font-weight: 500; }
+:is(#c-root, html) .c-shift-page .c-shift__save { justify-self: end; justify-content: flex-end; min-width: 44px; font-weight: 600; }
+:is(#c-root, html) .c-shift-page .c-shift__save:disabled { color: var(--c-faint); cursor: default; }
+:is(#c-root, html) .c-shift-page .c-shift__title { font-size: 17px; line-height: 22px; font-weight: 600; text-align: center; white-space: nowrap; }
+
+/* The form: ConfigurationForm's fieldset holds the fields; its Saving… and error lines sit under the save. */
+:is(#c-root, html) .c-shift-page .c-shift__form { margin: 0; }
+:is(#c-root, html) .c-shift-page .c-shift__form > fieldset { display: flex; flex-direction: column; gap: 16px; min-width: 0; margin: 0; padding: 16px 0 0; border: 0; }
+:is(#c-root, html) .c-shift-page .c-shift__form > p { margin: 12px 0 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-shift-page .c-shift__form > p.form-error { color: var(--c-red); }
+:is(#c-root, html) .c-shift-page .c-shift__pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+:is(#c-root, html) .c-shift-page .c-shift__control { position: relative; display: block; }
+:is(#c-root, html) .c-shift-page .c-shift__person > .c-av { position: absolute; left: 8px; top: 8px; pointer-events: none; }
+:is(#c-root, html) .c-shift-page .c-shift__person > select.c-in { padding-left: 52px; }
+:is(#c-root, html) .c-shift-page .c-shift select.c-in { text-overflow: ellipsis; cursor: pointer; }
+/* Date and times read as plain fields (board): no select arrow; the date carries a calendar glyph. */
+:is(#c-root, html) .c-shift-page .c-shift :is(.c-shift__time, .c-shift__date > select.c-in) { padding-right: 12px; background-image: none; }
+:is(#c-root, html) .c-shift-page .c-shift .c-shift__date > select.c-in { padding-right: 44px; }
+:is(#c-root, html) .c-shift-page .c-shift__glyph { position: absolute; right: 12px; top: 14px; width: 20px; height: 20px; color: var(--c-grey); pointer-events: none; }
+:is(#c-root, html) .c-shift-page .c-shift .c-shift__empty { color: var(--c-grey); }
+:is(#c-root, html) .c-shift-page .c-shift .c-shift__fixed { color: var(--c-ink2); cursor: default; }
+:is(#c-root, html) .c-shift-page .c-shift .c-shift__fixed:focus { box-shadow: inset 0 0 0 1px var(--c-field); }
+:is(#c-root, html) .c-shift-page .c-shift .c-shift__fixed:focus-visible { box-shadow: inset 0 0 0 2px var(--c-teal); }
+:is(#c-root, html) .c-shift-page .c-shift__next { margin-top: -10px; }
+:is(#c-root, html) .c-shift-page .c-shift textarea.c-shift__note { display: block; height: auto; min-height: 48px; max-height: 144px; padding: 13px 12px; field-sizing: content; }
+
+/* Shift lead: the label and its line on the left, the switch on the right; the whole row toggles it. */
+:is(#c-root, html) .c-shift-page .c-shift__lead { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; cursor: pointer; }
+:is(#c-root, html) .c-shift-page .c-shift__lead-text { display: flex; flex-direction: column; min-width: 0; }
+:is(#c-root, html) .c-shift-page .c-shift__lead-text b { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-shift-page .c-shift__lead-text span { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-shift-page .c-shift__submit { margin-top: 8px; }
+
+/* The shift's state ("Not published · Was 12:00 PM – 8:00 PM") and a save that came back with a problem. */
+:is(#c-root, html) .c-shift-page .c-shift__state { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-height: 22px; }
+:is(#c-root, html) .c-shift-page .c-shift__was { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-shift-page .c-shift__alert { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 12px 14px; border-radius: 8px; background: var(--c-red-bg); color: var(--c-red); font-size: 13px; line-height: 18px; }
+:is(#c-root, html) .c-shift-page .c-shift__alert b { font-weight: 600; }
+
+/* Delete shift: a red outline under the save; a second tap confirms. */
+:is(#c-root, html) .c-shift-page .c-shift__delete { display: flex; flex-direction: column; gap: 10px; margin: 10px 0 0; }
+:is(#c-root, html) .c-shift-page .c-shift__warn { font-size: 13px; line-height: 18px; color: var(--c-ink2); }
+
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-page.c-shift-page { min-height: 100%; padding-top: 24px; background: var(--c-bg); }
+  :is(#c-root, html) .c-shift-page .c-shift { width: 100%; max-width: 720px; margin: 0 auto; padding: 0 24px 24px; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-ring); }
+  :is(#c-root, html) .c-shift-page .c-shift__head { position: static; margin: 0 -24px; padding: 0 24px; border-radius: 12px 12px 0 0; }
+  :is(#c-root, html) .c-shift-page .c-shift__form > fieldset { padding-top: 20px; }
+}
+@media (max-width: 359px) {
+  :is(#c-root, html) .c-shift-page .c-shift__pair { gap: 8px; }
+}
+/* A sheet page (Add/Edit shift, Build and publish) is white to the bottom on phones. */
+@media (max-width: 767px) { html body .app-shell[data-nv-corp] .page-frame:has(.c-shift-page) { background: #FFFFFF !important; } }

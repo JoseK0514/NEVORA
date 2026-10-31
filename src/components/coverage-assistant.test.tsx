@@ -16,21 +16,30 @@ const props: CoverageAssistantProps = {
 };
 const render = (patch: Partial<CoverageAssistantProps> = {}) => renderToStaticMarkup(createElement(CoverageAssistant, { ...props, ...patch }));
 
-it("preserves source order and each employee's review destination in native disclosures", () => {
+it("keeps the suggested order, picks the best fit first and Assign opens that person's review", () => {
   const html = render();
   expect(html.indexOf("Avery Cruz")).toBeLessThan(html.indexOf("Blair Rivera"));
-  expect(html).toContain('href="/app/schedule/new?employeeId=E1&amp;start=08:00"');
-  expect(html).toContain('href="/app/schedule/new?employeeId=E2&amp;start=08:00"');
-  expect(html.match(/<li class="wa-candidate"[\s\S]*?<details class="wa-disclosure"/g)).toHaveLength(2);
+  // Board O-FindCover: "Best fit first" as radios, the first chosen and marked Best fit; Assign is the one action.
+  expect(html).toContain(">Best fit first<"); expect(html).toContain("2\u00a0people free");
+  expect(html).toContain('name="coverPerson" checked="" value="E1"'); expect(html).toContain('name="coverPerson" value="E2"/>');
+  expect(html.indexOf(">Best fit<")).toBeLessThan(html.indexOf("Blair Rivera"));
+  expect(html).toContain('href="/app/schedule/new?employeeId=E1&amp;start=08:00" class="c-btn c-btn--full" aria-label="Review shift for Avery Cruz"');
+  expect(html).toContain(">Assign<");
   expect(html).not.toContain("<form");
 });
 
-it("keeps missing targets distinct from zero targets and exposes historical context", () => {
+it("shows the three best fits first and the rest on request", () => {
+  const many = Array.from({ length: 5 }, (_, i) => ({ ...props.candidates[0], employeeId: `P${i}`, employeeName: `Person ${i}`, href: `/app/schedule/new?employeeId=P${i}` }));
+  const html = render({ candidates: many });
+  expect(html).toContain("Person 2"); expect(html).not.toContain("Person 3"); expect(html).toContain(">Show 2 more</button>");
+  expect(html).toContain("5\u00a0people free");
+});
+
+it("keeps missing targets distinct from zero targets", () => {
   const html = render();
-  expect(html).toContain("No target set"); expect(html).toContain("20h under");
-  expect(html).toContain("Earlier weeks under target"); expect(html).toContain("context only");
+  expect(html).toContain("12h of 32h this week"); expect(html).toContain("18h this week · No target set");
   const zero = render({ candidates: [{ ...props.candidates[1], targetHours: 0 }] });
-  expect(zero).not.toContain("No target set"); expect(zero).toContain("At or above");
+  expect(zero).not.toContain("No target set"); expect(zero).toContain("18h this week");
 });
 
 it.each(["STALE", "RESOLVED", "CHOOSE"] as const)("%s never exposes retained candidate review links", status => {
@@ -43,17 +52,21 @@ it.each(["STALE", "RESOLVED", "CHOOSE"] as const)("%s never exposes retained can
 it("keeps signed replacement review links and selected requirements intact", () => {
   const html = render({ repair: true, positionName: "Operations", designatedLead: true,
     candidates: [{ ...props.candidates[0], href: "/app/schedule/new?review=signed-review-token" }],
-    requirements: [{ label: "Operations: 1 missing", href: "/app/schedule/coverage?repair=current-position", selected: true }],
+    requirements: [{ label: "Operations: 1 missing", href: "/app/schedule/coverage?repair=current-position", selected: true },
+      { label: "Shift lead needed", href: "/app/schedule/coverage?repair=lead", selected: false }],
   });
   expect(html).toContain('href="/app/schedule/new?review=signed-review-token"');
-  expect(html).toContain('aria-current="true"'); expect(html).toContain("<dt>Shift lead</dt><dd>Needed</dd>");
-  expect(html).toContain("Review replacement");
+  expect(html).toContain('href="/app/schedule/coverage?repair=current-position" class="c-row c-row--one" aria-current="true"');
+  expect(html).toContain(">Open shift<"); expect(html).toContain(">Not filled<"); expect(html).toContain("Operations · Mon, Oct 12 · Main Office · Shift lead needed");
+  expect(html).toContain("Review replacement for Avery Cruz");
+  // One need only: no chooser.
+  expect(render({ repair: true, requirements: [{ label: "1 more person needed", href: "/app/schedule/coverage?repair=one", selected: true }] })).not.toContain("repair=one");
 });
 
 it("labels overnight context and empty results without an assignment action", () => {
   // Dates and times are kept whole with no-break spaces; compare the words.
   const html = render({ startTime: "22:00", endTime: "06:00", candidates: [] }).replace(/\u00a0/g, " ");
-  expect(html).toContain("Ends Tue, Oct 13"); expect(html.replace(/<[^>]*>/g, "")).toContain("· 8h");
+  expect(html).toContain("Ends Tue, Oct 13"); expect(html).toContain("10:00 PM – 6:00 AM");
   expect(html).toContain("0 people"); expect(html).not.toContain("/app/schedule/new?");
   expect(html).toContain(props.backHref.replaceAll("&", "&amp;"));
 });

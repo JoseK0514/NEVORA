@@ -32,7 +32,7 @@ function compactTime(time: string) {
   if (time.startsWith("00:00") || time.startsWith("24:00")) return "midnight";
   return formatTime(time).replace(" ", " ");
 }
-/** The phone list's clock: "6:00 AM", and 12:00 AM at midnight as in the mockup. */
+/** The Quiet list's clock: "6:00 AM". The corporate day card uses compactTime for both ends, so midnight always reads "midnight". */
 const clock = (time: string) => formatTime(time).replace(" ", " ");
 /** Quiet (v4): "12:30 – 4:00 PM", one AM/PM when both ends share it. */
 const span = (start: string, end: string) => { const a = clock(start), b = clock(end); const ma = a.slice(-2), mb = b.slice(-2); return /[AP]M/.test(ma) && ma === mb ? `${a.slice(0, -3)} – ${b}` : `${a} – ${b}`; };
@@ -92,6 +92,12 @@ const overBy = (hours: NonNullable<RosterEmployee["hours"]>) => `${Number((hours
 /** Corporate (Release 1, board G-O-Schedule): the week card's header and the day card's Add shift row. */
 export type RosterCorp = { weekLabel: string; previousHref: string; nextHref: string; status?: ReactNode; addShiftHref: string;
   /** Shifts edited since the week was published (Publish changes): they show "Changed". */ changedShiftIds?: readonly string[] };
+
+/** The day card's time column: start over end, both in the one time style ("midnight" at either end); a block that
+ * covers the whole day reads "All day". */
+function DayTime({ start, end }: { start: string; end: string }) {
+  return <span className="c-sched-row__time" aria-hidden="true">{range(start, end) === "All day" ? <b>All day</b> : <><b>{compactTime(start)}</b><span>{compactTime(end)}</span></>}</span>;
+}
 
 /** Today's live state for one rostered shift, from the same Today read Home uses (matched by person and start time). */
 function liveState(shift: RosterShift, employeeId: string, today: Today | null, timeZone: string): ReactNode {
@@ -213,7 +219,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   </CorpCard> : null;
   const corpHours = assignedHours(dayShifts.map(entry => entry.shift));
   const corpShiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <li key={shift.id}><Link className="c-row c-sched-row" href={editHref(shift)} aria-label={shiftLabel(shift, employee.name)}>
-    <span className="c-sched-row__time" aria-hidden="true"><b>{clock(shift.startTime)}</b><span>{compactTime(shift.endTime)}</span></span>
+    <DayTime start={shift.startTime} end={shift.endTime} />
     <CorpAvatar initials={initials(employee.name).toUpperCase()} />
     <span className="c-row__main">
       <span className="c-row__title c-row__title--b">{employee.name}</span>
@@ -224,7 +230,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   const corpRows = [
     ...dayShifts.map(entry => ({ start: entry.shift.startTime, node: corpShiftRow(entry) })),
     ...dayOpen.map(open => ({ start: open.startTime, node: <li key={open.id}><div className="c-row c-row--open c-sched-row">
-      <span className="c-sched-row__time" aria-hidden="true"><b>{clock(open.startTime)}</b><span>{compactTime(open.endTime)}</span></span>
+      <DayTime start={open.startTime} end={open.endTime} />
       <span className="c-av c-av--open" aria-hidden="true"><PlusIcon className="c-ic c-ic--s" weight="bold" /></span>
       <span className="c-row__main">
         <span className="c-row__title c-row__title--b c-sched-row__open">Open shift</span>
