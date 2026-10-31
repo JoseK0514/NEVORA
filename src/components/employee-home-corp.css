@@ -19,3 +19,4 @@
 :is(#c-root, html) body .c-ehome .ma-onboarding .ma-guide-list svg { flex: none; width: 16px; height: 16px; color: #9AA0A6; }
 :is(#c-root, html) body .c-ehome .ma-onboarding .ma-onboarding-intro { display: flex; gap: 12px; padding: 14px 16px 0; }
 :is(#c-root, html) body .c-ehome .ma-onboarding .ma-onboarding-intro h2 { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-ehome .c-ehome__act { color: var(--c-teal); font-size: 15px; line-height: 20px; font-weight: 600; white-space: nowrap; }

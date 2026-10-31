@@ -20,7 +20,7 @@ it('a retired or refused pickup result offers recovery without a fresh submit fr
  const operation=new PickupOperation('old-request',1);
  operation.state.result={status:'conflict'};
  const html=renderToStaticMarkup(<Pickup operation={operation} onRefresh={()=>{}} canSubmit={false}/>);
- expect(html).not.toContain('>Pick up shift<');expect(html).toContain('Refresh shift options');
+ expect(html).not.toContain('>Pick up<');expect(html).toContain('Refresh shift options');
  const eligible=renderToStaticMarkup(<Pickup operation={new PickupOperation('current',2)} onRefresh={()=>{}} canSubmit/>);
- expect(eligible).toContain('>Pick up shift<');
+ expect(eligible).toContain('>Pick up<');
 });
