@@ -2,7 +2,7 @@
 
 Date: 2026-10-30, corrected 2026-10-31 after the independent inspection (Phase 8). Branch: `claude-codex-collab-nevora`.
 
-**Release SHA: the head of `claude-codex-collab-nevora` when Codex receives this, which is the commit that adds this line.** Claude sends its full SHA with the handoff, and it is the head of the draft PR to `main` (CI only, never merged by Claude). App code is identical from `95f9b79dda64f4e4f50d6ac383720e97f117af61` onward: that commit is the CI change, and later commits change `docs/` only. Check it with `git diff --quiet 95f9b79d HEAD -- . ':(exclude)docs'`. The full local gate (§4) ran on `f486a96fed567c760a81a29934b7b1129301562d`; the only non-docs change after it is the CI change, re-checked on `03e18d7c62ff6b3cb118b72c1cfd4b04a48fdc8c`. Any later commit makes a new candidate.
+**Release SHA: the head of `claude-codex-collab-nevora` when Codex receives this, which is the commit that adds this line.** Claude sends its full SHA with the handoff, and it is the head of the draft PR to `main` (CI only, never merged by Claude). App code is identical from `95f9b79dda64f4e4f50d6ac383720e97f117af61` onward: that commit is the CI change, and later commits change `docs/` and one browser test (`src/test/integration/mobile-access-browser.integration.ts`) only. Check it with `git diff --stat 95f9b79d HEAD -- . ':(exclude)docs'`, which must list only that test. The full local gate (§4) ran on `f486a96fed567c760a81a29934b7b1129301562d`; the only non-docs change after it is the CI change, re-checked on `03e18d7c62ff6b3cb118b72c1cfd4b04a48fdc8c`. Any later commit makes a new candidate.
 
 **Deploy from that SHA only. Do not deploy from `development`:** since Oct 30 it also carries Codex's Owner AI work (migrations `0044_owner_advisor_notebook`, `0045_owner_coverage_actions`), which is not in Release 1. Git deployment is disabled (`vercel.json`); use the explicit Vercel deployment workflow from the frozen SHA (runbook §7). Whether collab is first merged to `main` is Jose's call; the deployed artifact must be built from the frozen SHA either way.
 
@@ -153,6 +153,8 @@ The full gate ran in one ordered pass on `f486a96fed567c760a81a29934b7b112930156
 **After the gate.** Two commits sit on top of `f486a96f`:
 - `95f9b79d` changes CI only: `.github/workflows/ci.yml` and the three files that pin it (`scripts/release-ci-contract.check.mjs`, `src/test/phase-c-release-ci.test.ts`, `src/test/phase-e-runner.test.ts`). See §5, CI coverage.
 - `03e18d7c` and the commit that adds this section change `docs/` only.
+- `1c17209b` changes one test: the Mobile Access browser suite now waits for the Support page before pressing Back. In Firefox the Back click could land on the Access help page's own back link first. CI's push run on `dc30ce9b` failed there while its PR run on the same commit passed. The suite passed 3 of 3 twice locally on `1c17209b`. No check removed.
+- The commit that records this changes `docs/` only.
 
 On `03e18d7c`, typecheck, lint, `test:release-engineering` and unit were re-run: typecheck and lint pass, `test:release-engineering` 168 passed, unit 10,405 passed and 801 skipped, clean tree.
 
