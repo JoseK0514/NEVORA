@@ -5,6 +5,7 @@ import {OperationalUnavailable} from '@/components/company-access/operational-un
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {ScheduleCopyForm} from '@/components/schedule-copy-form';
 import { currentPresentation } from '@/lib/workspace-presentation/current.server';
+import { pathEnabled } from '@/lib/workspace-presentation/modules';
 import { randomUUID } from "node:crypto";
 import { ActionMenu } from "@/components/action-menu";
 import {ManagerIssueFocus} from '@/components/manager-issue-focus';
@@ -245,7 +246,8 @@ export default async function SchedulePage({
     requireSessionMutationProof().then(proof => readSchedulePendingChanges(proof, { weekStart })).catch(() => null),
   ]);
   const pending = pendingRead?.state === "ready" && pendingRead.data.hasPendingChanges ? pendingRead.data : null;
-  const changedShiftIds = pending ? pending.changes.flatMap(change => change.kind !== "REMOVED" && change.shiftId ? [change.shiftId] : []) : [];
+  // Every held shift (no list cap), so each edited row says Changed however many there are.
+  const changedShiftIds = pending ? pending.changedShiftIds : [];
   const statusFor = (locationId: string) => scheduleStatuses ? scheduleStatuses.find(row => row.locationId === locationId)?.status ?? "NONE" : null;
   const targetsById = new Map((hourTargets ?? []).map(target => [target.employeeId, target]));
   const capturedByShift = new Map(capturedPositions.map(shift => [shift.sourceShiftId, shift]));
@@ -321,10 +323,11 @@ export default async function SchedulePage({
   // the availability deadline one tap away. Desktop keeps the people × days grid.
   const inView = selectedLocation === "all" ? locations : locations.filter(location => location.id === selectedLocation);
   const counts = scheduleStatuses ? { published: inView.filter(l => statusFor(l.id) === "PUBLISHED").length, drafts: inView.filter(l => statusFor(l.id) === "DRAFT").length } : null;
-  const changes = pending ? pending.locations.filter(row => selectedLocation === "all" || row.locationId === selectedLocation).reduce((sum, row) => sum + row.pendingCount, 0) : 0;
+  // All locations: each held change once (a shift moved between locations is one change, not one per location).
+  const changes = !pending ? 0 : selectedLocation === "all" ? pending.pendingCount : pending.locations.find(row => row.locationId === selectedLocation)?.pendingCount ?? 0;
   const changesText = changes ? ` · ${changes} ${changes === 1 ? "change" : "changes"}` : "";
   const weekState = !counts || !inView.length ? null
-    : changes && !counts.drafts ? <CorpPill tone="amber">{`Published${changesText}`}</CorpPill>
+    : changes && !counts.drafts ? <CorpPill tone="amber"><span className="c-sched-state__lead">Published · </span>{`${changes} ${changes === 1 ? "change" : "changes"}`}</CorpPill>
     : counts.drafts ? <CorpPill tone="amber">{`${counts.drafts === inView.length ? "Draft" : `${counts.drafts} ${counts.drafts === 1 ? "draft" : "drafts"}`}${changesText}`}</CorpPill>
     : counts.published === inView.length ? <CorpPill tone="teal">Published</CorpPill>
     : counts.published ? <CorpPill tone="neutral">{`${counts.published} of ${inView.length} published`}</CorpPill>
@@ -334,11 +337,16 @@ export default async function SchedulePage({
   const locationName = selectedLocation === "all" ? "All locations" : locations.find(location => location.id === selectedLocation)?.shortName ?? "";
   // Publish opens Build and publish (board O-BuildPublish): the week's drafts and one "Publish N drafts".
   const publishHref = `/app/schedule/publish?week=${weekStart}`;
+  // Publish is the page's main action while something is waiting; once every location is published with nothing held, it steps back.
+  const nothingToPublish = !!scheduleStatuses && locations.length > 0 && locations.every(location => statusFor(location.id) === "PUBLISHED") && pendingRead?.state === "ready" && !pending;
+  // Send an update only where Company updates are on (the same module check More uses).
+  const updatesOn = params.published ? pathEnabled("/app/updates", (await currentPresentation()).modules) : false;
   return (
     <CorpPage className="c-sched c-page--wide" labelledBy="schedule-title">
       <CorpTitle id="schedule-title" title="Schedule"
         actions={<>
-          <ActionMenu id="schedule-more-actions" label="More" ariaLabel="More schedule actions" triggerClassName="c-icon-btn" triggerContent={<DotsThreeCircleIcon className="c-ic" aria-hidden="true" />}>
+          <ActionMenu id="schedule-more-actions" label="More" ariaLabel="More schedule actions" triggerClassName="c-icon-btn c-sched-more" triggerContent={<DotsThreeCircleIcon className="c-ic" aria-hidden="true" />}>
+            <Link className="nevora-action-menu-item" href={`/app?week=${encodeURIComponent(weekStart)}&view=activity`}><strong>Activity</strong><span>Publications and changes</span></Link>
             <Link className="nevora-action-menu-item" href={`/app/schedule?week=${currentWeek}${locationQuery}`} aria-current={weekStart === currentWeek ? "date" : undefined}><strong>This week</strong><span>{formatWeekRange(currentWeek)}</span></Link>
             <ScheduleCopyForm actorId={session.id} command={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}} />
             <Link className="nevora-action-menu-item" href={`/app/schedule/templates?week=${weekStart}`}><strong>Templates</strong><span>Reusable weeks</span></Link>
@@ -351,7 +359,7 @@ export default async function SchedulePage({
               <button className="button secondary" type="submit">{weekSettings?.availabilityDeadline ? "Update" : "Set deadline"}</button>
             </form>
           </ActionMenu>
-          <CorpButtonLink href={publishHref} size="sm" aria-label={`Build and publish ${formatWeekRange(weekStart)}`}>Publish</CorpButtonLink>
+          <CorpButtonLink href={publishHref} size="sm" kind={nothingToPublish ? "secondary" : undefined} aria-label={`Build and publish ${formatWeekRange(weekStart)}`}>Publish</CorpButtonLink>
         </>}
         sub={<><span className="c-sched-sub__long">{todayLong}</span><span className="c-sched-sub__short">{todayShort}</span>{` · ${selectedLocation === "all" ? `${locations.length} ${locations.length === 1 ? "location" : "locations"}` : locationName}`}</>}
         subAside={<ActionMenu id="schedule-location-menu" label="Location" ariaLabel={`Location: ${locationName}`} align="end"
@@ -369,7 +377,7 @@ export default async function SchedulePage({
               <p>Your team can now see their {formatWeekRange(weekStart)} shifts.</p>
             </div>
             <div className="c-sched-done__actions">
-              <CorpButtonLink href="/app/updates/compose" kind="secondary" size="md">Send an update</CorpButtonLink>
+              {updatesOn ? <CorpButtonLink href="/app/updates/compose" kind="secondary" size="md">Send an update</CorpButtonLink> : null}
               <CorpLink href={`/app?week=${encodeURIComponent(weekStart)}`} large>Back to Home</CorpLink>
             </div>
           </CorpBody>
@@ -405,7 +413,7 @@ export default async function SchedulePage({
             <div className="c-card__head"><h2 className="c-card__label" id="schedule-planning-title">Build and publish</h2></div>
             <div className="c-card__body mws-planning-body"><p className="c-sched-plan__intro">Build or fill your draft, review the assignments, then publish so your team can see it.</p>
               <ScheduleGenerationControls key={`${weekStart}:${selectedLocation}`} weekStart={weekStart} selectedLocation={selectedLocation} review={generationReview} />
-              <SchedulePublicationControls weekStart={weekStart} locations={inView} review={publicationReview}/>
+              <SchedulePublicationControls weekStart={weekStart} locations={inView} review={publicationReview} held={pending ? { count: pending.pendingCount } : undefined}/>
             </div>
           </section> : null}
           {reviewDay?<div className="c-note manager-schedule-context manager-issue-target" id="schedule-review" tabIndex={-1}><span>Opened for review: {formatDayLabel(reviewDay).weekday} {formatDayLabel(reviewDay).day} · {locationName}</span> <Link className="c-link" href={`/app/schedule?week=${weekStart}${locationQuery}`}>Show full week</Link></div>:null}

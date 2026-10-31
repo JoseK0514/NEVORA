@@ -1,4 +1,10 @@
-import { CorpBody, CorpCard, CorpNav, CorpNote, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
+import Link from "next/link";
+import { randomUUID } from "node:crypto";
+import { BellIcon } from "@phosphor-icons/react/dist/ssr/Bell";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
+import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { CorpBody, CorpButtonLink, CorpCard, CorpNote, CorpPage, CorpPill, CorpRow, CorpRows } from "@/components/corp/corp";
+import { ScheduleCopyForm } from "@/components/schedule-copy-form";
 import { OperationalUnavailable } from "@/components/company-access/operational-unavailable";
 import { ScopedReadFrame } from "@/components/company-access/scoped-read-frame";
 import { EmployeeSubmitButton } from "@/components/employee-submit-button";
@@ -17,6 +23,7 @@ import { publishDraftsAction } from "./actions";
 import { publishScheduleChangesAction } from "../actions";
 import { readSchedulePendingChanges } from "@/lib/company-access/operational-read.server";
 import type { SchedulePendingChange } from "@/lib/scheduling/pending-changes";
+import "@/components/schedule-shift-form.css";
 import "./publish.css";
 
 export const metadata = { title: "Build and publish" };
@@ -76,66 +83,89 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
     return value === "PUBLISHED" ? <CorpPill tone="neutral">Published</CorpPill> : value === "DRAFT" ? <CorpPill tone="amber">Draft</CorpPill> : value === null ? null : <CorpPill tone="neutral">Not started</CorpPill>;
   };
   const scheduleHref = `/app/schedule?week=${encodeURIComponent(weekStart)}`;
+  const pill = drafts.length || pending?.hasPendingChanges ? <CorpPill tone="amber">{[drafts.length ? plural(drafts.length, "draft", "drafts") : "", pending?.hasPendingChanges ? plural(pending.pendingCount, "change", "changes") : ""].filter(Boolean).join(" · ")}</CorpPill> : null;
+  const notified = <CorpNote icon={<BellIcon className="c-ic c-ic--s" aria-hidden="true" />}>{pending?.hasPendingChanges && drafts.length ? "Your team is notified when you publish. Changes to published days go out too." : "Your team is notified when you publish."}</CorpNote>;
+  // Release 1 (board O-BuildPublish): a sheet. The week and its state, Start from (build from availability, copy last
+  // week or use a template), each location's state, then the one Publish. Changes held on published days and readiness
+  // warnings are listed before the button that publishes them.
   return <ScopedReadFrame observation={{ authority: source.authority, observedAt: source.observedAt, validForMs: source.validForMs }}>
-    <CorpPage className="c-publish" labelledBy="publish-title">
-      <CorpNav back={{ href: scheduleHref, label: "Schedule" }} title="Build and publish" phoneOnly />
-      <CorpTitle id="publish-title" title="Build and publish" wide />
-      <CorpCard as="div" ariaLabel={`${when}, ${range(weekStart)}`}>
-        <div className="c-publish__week">
-          <span><small>{when}</small><b>{range(weekStart)}</b></span>
-          {drafts.length || pending?.hasPendingChanges ? <CorpPill tone="amber">{[drafts.length ? plural(drafts.length, "draft", "drafts") : "", pending?.hasPendingChanges ? plural(pending.pendingCount, "change", "changes") : ""].filter(Boolean).join(" · ")}</CorpPill> : null}
+    <CorpPage className="c-shift-page c-pub" label="Build and publish">
+      <div className="c-shift">
+        <span className="q-page" data-q-sheet="" hidden />
+        <header className="c-shift__head">
+          <Link className="c-shift__cancel" href={scheduleHref}>Cancel</Link>
+          <h1 className="c-shift__title" id="publish-title">Build and publish</h1>
+          <span />
+        </header>
+        <div className="c-pub__body">
+          <div className="c-publish__week" aria-label={`${when}, ${range(weekStart)}`}>
+            <span><small>{when}</small><b>{range(weekStart)}</b></span>
+            {pill}
+          </div>
+          <details className="c-card c-pub__start" open={!shifts.length || undefined}>
+            <summary className="c-row c-row--one">
+              <span className="c-row__main"><span className="c-row__title">Start from</span></span>
+              <span className="c-row__value">Availability</span>
+              <CaretRightIcon className="c-chev c-pub__caret" weight="bold" aria-hidden="true" />
+            </summary>
+            <div className="c-pub__how">
+              <p className="c-pub__lead">Fill the draft from who can work and your scheduling rules.</p>
+              <ScheduleGenerationControls key={weekStart} weekStart={weekStart} selectedLocation="all" review={generation} />
+            </div>
+            <div className="c-pub__how c-pub__other">
+              <p className="c-pub__lead">Or start from last week or a saved week.</p>
+              <ScheduleCopyForm actorId={session.id} label="Copy last week" className="c-btn c-btn--secondary c-btn--full" command={{ operationId: randomUUID(), kind: "PREVIOUS_WEEK", weekStart }} />
+              <CorpButtonLink href={`/app/schedule/templates?week=${encodeURIComponent(weekStart)}`} kind="secondary" full>Use a template</CorpButtonLink>
+            </div>
+          </details>
+          <CorpCard as="div" id="publish-locations" ariaLabel="Locations this week">
+            <CorpRows label="Locations this week">{locations.map(location => {
+              const count = shifts.filter(shift => shift.locationId === location.id && !shift.isCalloutApproved).length;
+              return <li key={location.id}><CorpRow href={`${scheduleHref}&location=${encodeURIComponent(location.id)}`} bold title={location.shortName}
+                detail={count ? plural(count, "shift", "shifts") : "Nothing scheduled"} trail={statePill(location.id)} chevron={false} /></li>;
+            })}</CorpRows>
+          </CorpCard>
+          {pending?.hasPendingChanges ? <CorpCard id="publish-changes" label={`Changes not published (${pending.pendingCount})`}>
+            <CorpRows label="Changes not published">{pending.changes.map((change, index) => <li key={`${change.shiftId ?? "row"}-${index}`}>
+              <CorpRow bold title={change.employeeName} detail={changeDetail(change)} trail={<CorpPill tone="amber">{change.kind === "ADDED" ? "Added" : change.kind === "REMOVED" ? "Removed" : "Changed"}</CorpPill>} />
+            </li>)}</CorpRows>
+            {pending.truncated ? <p className="c-publish__more">{`And ${pending.pendingCount - pending.changes.length} more`}</p> : null}
+          </CorpCard> : null}
+          {review.length ? <CorpCard id="publish-review" label="Review before publishing" alert>
+            <CorpBody>
+              {review.map(({ location, readiness }) => <div key={location.id} className="c-publish__warn">
+                <b>{location.shortName}</b>
+                <ul>
+                  {readiness.coverageGaps > 0 ? <li>{plural(readiness.coverageGaps, "uncovered coverage block", "uncovered coverage blocks")}</li> : null}
+                  {readiness.missingLeadBlocks > 0 ? <li>{plural(readiness.missingLeadBlocks, "block missing a designated lead", "blocks missing a designated lead")}</li> : null}
+                  {readiness.positionNeedsSetup ? <li>Position requirements need setup</li> : null}
+                  {readiness.staffingNeedsSetup ? <li>Staffing requirements need setup</li> : null}
+                  {readiness.coverageNeedsSetup ? <li>Coverage windows need setup</li> : null}
+                  {readiness.underTargetCount > 0 ? <li>{plural(readiness.underTargetCount, "employee below their weekly hour target", "employees below their weekly hour target")}</li> : null}
+                  {readiness.overTargetCount > 0 ? <li>{plural(readiness.overTargetCount, "employee above their weekly hour target", "employees above their weekly hour target")}</li> : null}
+                  {readiness.unconfiguredTargetCount > 0 ? <li>{plural(readiness.unconfiguredTargetCount, "employee without a weekly hour target", "employees without a weekly hour target")}</li> : null}
+                </ul>
+              </div>)}
+              <p className="c-publish__lead">Hour counts cover the business week across locations. Publishing makes these schedules visible to your team.</p>
+            </CorpBody>
+          </CorpCard> : null}
+          {!drafts.length && pending?.hasPendingChanges ? pending.canPublish ? <form action={publishScheduleChangesAction} className="c-publish__go">
+            <input type="hidden" name="weekStart" value={weekStart} />
+            {params.review === "changes" && review.length ? <input type="hidden" name="confirmWarnings" value="yes" /> : null}
+            <CorpNote icon={<BellIcon className="c-ic c-ic--s" aria-hidden="true" />}>Each person with a change is notified once when you publish.</CorpNote>
+            <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Publishing…">{`Publish changes${params.review === "changes" && review.length ? " anyway" : ""}`}</EmployeeSubmitButton>
+          </form> : <CorpNote>An Owner or company-wide Manager publishes these changes.</CorpNote>
+          : drafts.length ? <form action={publishDraftsAction} className="c-publish__go">
+            <input type="hidden" name="weekStart" value={weekStart} />
+            {drafts.map(location => <input key={location.id} type="hidden" name="locationId" value={location.id} />)}
+            {review.length ? <input type="hidden" name="confirmWarnings" value="yes" /> : null}
+            {notified}
+            <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Publishing…">
+              {`Publish ${drafts.length === 1 ? drafts[0].shortName : plural(drafts.length, "draft", "drafts")}${pending?.hasPendingChanges ? " and changes" : ""}${review.length ? " anyway" : ""}`}
+            </EmployeeSubmitButton>
+          </form> : <CorpNote icon={<CheckCircleIcon className="c-ic c-ic--s" aria-hidden="true" />}>{locations.some(location => status(location.id) === "PUBLISHED") ? "Everything planned this week is published." : "Nothing is planned yet. Build the week to start a draft."}</CorpNote>}
         </div>
-        <div className="c-publish__build">
-          <p className="c-publish__lead">Start from availability: fill the draft from who can work and your scheduling rules.</p>
-          <ScheduleGenerationControls key={weekStart} weekStart={weekStart} selectedLocation="all" review={generation} />
-        </div>
-      </CorpCard>
-      <CorpCard id="publish-locations" label="Locations">
-        <CorpRows label="Locations this week">{locations.map(location => {
-          const count = shifts.filter(shift => shift.locationId === location.id && !shift.isCalloutApproved).length;
-          return <li key={location.id}><CorpRow href={`${scheduleHref}&location=${encodeURIComponent(location.id)}`} bold title={location.shortName}
-            detail={count ? plural(count, "shift", "shifts") : "Nothing scheduled"} trail={statePill(location.id)} chevron={false} /></li>;
-        })}</CorpRows>
-      </CorpCard>
-      {pending?.hasPendingChanges ? <CorpCard id="publish-changes" label={`Changes not published (${pending.pendingCount})`}>
-        <CorpRows label="Changes not published">{pending.changes.map((change, index) => <li key={`${change.shiftId ?? "row"}-${index}`}>
-          <CorpRow bold title={change.employeeName} detail={changeDetail(change)} trail={<CorpPill tone="amber">{change.kind === "ADDED" ? "Added" : change.kind === "REMOVED" ? "Removed" : "Changed"}</CorpPill>} />
-        </li>)}</CorpRows>
-        {pending.truncated ? <p className="c-publish__more">{`And ${pending.pendingCount - pending.changes.length} more`}</p> : null}
-      </CorpCard> : null}
-      {review.length ? <CorpCard id="publish-review" label="Review before publishing" alert>
-        <CorpBody>
-          {review.map(({ location, readiness }) => <div key={location.id} className="c-publish__warn">
-            <b>{location.shortName}</b>
-            <ul>
-              {readiness.coverageGaps > 0 ? <li>{plural(readiness.coverageGaps, "uncovered coverage block", "uncovered coverage blocks")}</li> : null}
-              {readiness.missingLeadBlocks > 0 ? <li>{plural(readiness.missingLeadBlocks, "block missing a designated lead", "blocks missing a designated lead")}</li> : null}
-              {readiness.positionNeedsSetup ? <li>Position requirements need setup</li> : null}
-              {readiness.staffingNeedsSetup ? <li>Staffing requirements need setup</li> : null}
-              {readiness.coverageNeedsSetup ? <li>Coverage windows need setup</li> : null}
-              {readiness.underTargetCount > 0 ? <li>{plural(readiness.underTargetCount, "employee below their weekly hour target", "employees below their weekly hour target")}</li> : null}
-              {readiness.overTargetCount > 0 ? <li>{plural(readiness.overTargetCount, "employee above their weekly hour target", "employees above their weekly hour target")}</li> : null}
-              {readiness.unconfiguredTargetCount > 0 ? <li>{plural(readiness.unconfiguredTargetCount, "employee without a weekly hour target", "employees without a weekly hour target")}</li> : null}
-            </ul>
-          </div>)}
-          <p className="c-publish__lead">Hour counts cover the business week across locations. Publishing makes these schedules visible to your team.</p>
-        </CorpBody>
-      </CorpCard> : null}
-      {!drafts.length && pending?.hasPendingChanges ? pending.canPublish ? <form action={publishScheduleChangesAction} className="c-publish__go">
-        <input type="hidden" name="weekStart" value={weekStart} />
-        {params.review === "changes" && review.length ? <input type="hidden" name="confirmWarnings" value="yes" /> : null}
-        <CorpNote center>Each person with a change is notified once when you publish.</CorpNote>
-        <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Publishing…">{`Publish changes${params.review === "changes" && review.length ? " anyway" : ""}`}</EmployeeSubmitButton>
-      </form> : <CorpNote center>An Owner or company-wide Manager publishes these changes.</CorpNote>
-      : drafts.length ? <form action={publishDraftsAction} className="c-publish__go">
-        <input type="hidden" name="weekStart" value={weekStart} />
-        {drafts.map(location => <input key={location.id} type="hidden" name="locationId" value={location.id} />)}
-        {review.length ? <input type="hidden" name="confirmWarnings" value="yes" /> : null}
-        <CorpNote center>{pending?.hasPendingChanges ? "Your team is notified when you publish. Changes to published days go out too." : "Your team is notified when you publish."}</CorpNote>
-        <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Publishing…">
-          {`Publish ${drafts.length === 1 ? drafts[0].shortName : plural(drafts.length, "draft", "drafts")}${pending?.hasPendingChanges ? " and changes" : ""}${review.length ? " anyway" : ""}`}
-        </EmployeeSubmitButton>
-      </form> : <CorpNote center>{locations.some(location => status(location.id) === "PUBLISHED") ? "Everything planned this week is published." : "Nothing is planned yet. Build the week to start a draft."}</CorpNote>}
+      </div>
     </CorpPage>
   </ScopedReadFrame>;
 }

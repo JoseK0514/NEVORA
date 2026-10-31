@@ -61,6 +61,8 @@ export type SchedulePendingChangesData = {
   /** Short list ordered by date, start time and person; at most `limit`. */
   changes: SchedulePendingChange[];
   truncated: boolean;
+  /** Every held shift still on the schedule (added or changed, not removed), with no limit: the "Changed" marks. */
+  changedShiftIds: string[];
   /** Publish changes needs COMPANY scope; location-scoped Managers only see. */
   canPublish: boolean;
 };
@@ -117,6 +119,7 @@ export function buildSchedulePendingChanges(input: {
     .sort((a, b) => a.locationName.localeCompare(b.locationName) || a.locationId.localeCompare(b.locationId));
   return {
     weekStart: input.weekStart, hasPendingChanges: rows.length > 0 || input.neverCaptured, pendingCount: rows.length, neverCaptured: input.neverCaptured,
-    latestRevision: input.latestRevision, locations, changes: rows.slice(0, limit), truncated: rows.length > limit, canPublish: input.canPublish,
+    latestRevision: input.latestRevision, locations, changes: rows.slice(0, limit), truncated: rows.length > limit,
+    changedShiftIds: [...new Set(rows.flatMap(row => row.kind !== 'REMOVED' && row.shiftId ? [row.shiftId] : []))], canPublish: input.canPublish,
   };
 }

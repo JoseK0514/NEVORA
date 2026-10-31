@@ -12,6 +12,7 @@ vi.mock("@/lib/company-access/operational-scope.server", () => ({ withOperationa
 vi.mock("@/components/company-access/scoped-read-frame", () => ({ ScopedReadFrame: ({ children }: { children: React.ReactNode }) => children }));
 vi.mock("@/components/company-access/operational-unavailable", () => ({ OperationalUnavailable: ({ title }: { title: string }) => createElement("p", null, title) }));
 vi.mock("@/components/schedule-generation-controls", () => ({ ScheduleGenerationControls: () => createElement("div", null, "Build week") }));
+vi.mock("@/components/schedule-copy-form", () => ({ ScheduleCopyForm: ({ label, command }: { label: string; command: { kind: string; weekStart: string } }) => createElement("button", { "data-kind": command.kind, "data-week": command.weekStart }, label) }));
 vi.mock("@/lib/data/employees", () => ({ listLocations: async () => [{ id: "loc-1", shortName: "Condado" }, { id: "loc-2", shortName: "Dorado" }, { id: "loc-3", shortName: "Hato Rey" }] }));
 vi.mock("@/lib/data/schedules", () => ({ listScheduleStatuses: async () => f.statuses, listWeekShifts: async () => [{ locationId: "loc-1", isCalloutApproved: false }, { locationId: "loc-1", isCalloutApproved: false }, { locationId: "loc-2", isCalloutApproved: false }] }));
 vi.mock("@/lib/data/schedule-generation-review", () => ({ getScheduleGenerationReview: async () => ({ editable: true, attempted: 0, needsSetup: 0, coverage: null, exclusions: [] }) }));
@@ -42,6 +43,12 @@ it("names the week, each location's state and shift count, and publishes every d
   expect(out).toContain("Your team is notified when you publish.");
   expect(out).toContain(">Publish Dorado<");
   expect(out).toContain('href="/app/schedule?week=2026-11-02"');
+  // Board O-BuildPublish: a sheet with Cancel; Start from holds building, copying last week and templates.
+  expect(out).toContain('class="c-shift__cancel" href="/app/schedule?week=2026-11-02">Cancel</a>');
+  expect(out).toMatch(/<summary[^>]*>.*Start from.*Availability/);
+  expect(out).toContain('data-kind="PREVIOUS_WEEK" data-week="2026-11-02">Copy last week</button>');
+  expect(out).toContain('href="/app/schedule/templates?week=2026-11-02"');
+  expect(out.match(/class="c-btn c-btn--full"/g)).toHaveLength(1);
 });
 
 it("lists readiness warnings per location before Publish anyway confirms", async () => {

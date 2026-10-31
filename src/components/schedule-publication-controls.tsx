@@ -5,11 +5,22 @@ import type { getSchedulePublishReadiness } from "@/lib/data/schedule-publicatio
 
 type Readiness = Awaited<ReturnType<typeof getSchedulePublishReadiness>>;
 
-export function SchedulePublicationControls({weekStart,locations,review}:{
+/** Per-location publishing (the planning panel). Publishing a location also sends the week's held edits to published
+ * days, so while any are held the panel sends the Owner to Build and publish, which lists them first. */
+export function SchedulePublicationControls({weekStart,locations,review,held}:{
   weekStart:string;
   locations:{id:string;shortName:string}[];
   review?:{locationId:string;readiness:Readiness};
+  /** Edits to published days waiting to be published (from the pending-changes read). */
+  held?:{count:number};
 }) {
+  if(held) return <section className="schedule-publication-controls" aria-label="Publish weekly schedule">
+    <div className="schedule-publication-held" role="status">
+      <p><strong>{held.count ? `${held.count} ${held.count === 1 ? "change" : "changes"} not published` : "Changes not published"}</strong></p>
+      <p>Publishing also sends the changes to published days. Review them in Build and publish first.</p>
+    </div>
+    <Link className="button secondary compact-button" href={`/app/schedule/publish?week=${encodeURIComponent(weekStart)}`}>Review changes</Link>
+  </section>;
   return <section className="schedule-publication-controls" aria-label="Publish weekly schedule">
     {locations.map(location=>{
       const readiness=review?.locationId===location.id ? review.readiness : undefined;
