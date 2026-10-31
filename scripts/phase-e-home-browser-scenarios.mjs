@@ -279,11 +279,13 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   const focus=await seeAll().evaluate(e=>{const r=e.getBoundingClientRect();return {active:e===document.activeElement,visible:e.matches(':focus-visible'),outlineStyle:getComputedStyle(e).outlineStyle,outlineWidth:getComputedStyle(e).outlineWidth,boxShadow:getComputedStyle(e).boxShadow,width:r.width,height:r.height};});
   overflowEvidence.keyboard.push({key:'Tab',focus});assert(focus.active);assert(focus.visible);assert(focus.height>=44&&focus.width>=44);
   assert(focus.outlineStyle!=='none'&&parseFloat(focus.outlineWidth)>=2||/\b2px\b|\b3px\b/.test(focus.boxShadow),'See all shows a visible 2px focus indicator');
+  overflowEvidence.notificationReads=[];const notificationRead=async response=>{const path=new URL(response.url()).pathname;if(path!=='/api/notifications'&&!path.startsWith('/api/employee/messages/notifications/'))return;try{const view=await response.json();overflowEvidence.notificationReads.push({path,status:response.status(),state:view.state,dataState:view.data?.value?.state??null,coverage:view.data?.value?.coverage??view.coverage??null,ids:(view.data?.value?.items??view.items??[]).map(item=>item.id)});}catch{overflowEvidence.notificationReads.push({path,status:response.status(),parsed:false});}};page.on('response',notificationRead);
   const openedNotifications=page.waitForURL(u=>u.pathname==='/app/notifications');await page.keyboard.press('Enter');await openedNotifications;overflowEvidence.keyboard.push({key:'Enter',route:'/app/notifications'});
   overflowEvidence.phase='notifications-list';
   // Phones draw the messages view; wider layouts the account panel. Both list the same rows once their own read is ready.
   await page.waitForFunction(phone=>phone?document.querySelector('.em-messages[data-messages-view="notifications"]')?.getAttribute('data-messages-state')==='ready':!!document.querySelector('[data-private-view="notifications"] [aria-label="Show notifications"]'),width<768);
-  overflowEvidence.notificationRows=await page.locator('main a.em-notif-row').evaluateAll(rows=>rows.map(row=>row.id));
+  overflowEvidence.notificationRows=await page.locator('main a.em-notif-row').evaluateAll(rows=>rows.map(row=>row.id));page.off('response',notificationRead);
+  overflowEvidence.notificationRowsSql=await q("SELECT id,source_kind,due_at<=clock_timestamp() AS due,expires_at>clock_timestamp() AS current,environment,cancelled_at IS NULL AS active FROM notifications WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 30",[actor]);
   const notices=[];
   for(const published of overflowPublished){
    const rows=await q("SELECT id FROM notifications WHERE employee_id=$1 AND source_kind='COMMUNICATION' AND source_id=$2 ORDER BY id",[actor,published.result.id]);assert.equal(rows.length,1,'One notification per overflowed update');
