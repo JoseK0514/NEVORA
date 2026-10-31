@@ -48,6 +48,19 @@ Verified by Claude: fields are 15px (`corp.css:156`, iOS zooms below 16px); the 
 | P11 | Offline page and banner in the corporate look | S |
 1.1+: slide transitions, swipe between days, pull-to-refresh, offline for all installed users, shorter/QR Clocker recovery code.
 
+## Codex review (`codex-owner-employee-review.md`) folded in
+Agrees with Waves A and A-phone; overlaps: payroll next-step action (A2), Home count scopes and quiet Off pills (A5),
+shared tokens (A1/A4). New Owner items added to Wave A:
+| # | Upgrade | Effort |
+|---|---|---|
+| A11 | Pay history: employee name first, then period, payday and correction link; filename quiet; actions aligned (only from authoritative data, never parsed from filenames) | M |
+| A12 | Schedule action named by state: "Publish changes" only when edits are pending; "Publication details" when published; "Build draft" for generation | S |
+Employee items (corrections context with Recorded/Proposed, next-actor wording, Pay history polish) go to the Employee pass.
+Claude checked Codex's "Payroll history stuck on Loading payroll…": with a fresh share link the hosted page loads data in
+about 2s at 1440 and 390. The likely cause is an expired share session blocking the data reads with no error shown,
+which is P3 (failures must say so).
+Payroll trust rules from Codex apply to every item: Approved never implies Paid; missing amounts never show as zero.
+
 ## Wave B — Release 1.1 (needs logic or new data)
 - Find cover as a decision: Post as open shift, Assign, Not-available list with reasons (board O-FindCover).
 - Person page worth opening: hours, next shift, pay rate, availability; "get ready" checklist after Add employee.
