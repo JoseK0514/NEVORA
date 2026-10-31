@@ -237,7 +237,7 @@ it.each(['write-first','edit-first'])('timezone edit race serializes first dated
  const secondPid=(await second.query('SELECT pg_backend_pid() AS pid')).rows[0].pid;
  const competing=(order==='write-first'?saveWorkspaceProfile({name:'Edited',timeZone:'Asia/Tokyo',actorEmployeeId:'owner'},executor):executor.transaction([...workspaceReadGuard(workspace),{text:"INSERT INTO time_off_requests(id,employee_id,start_date,end_date) VALUES('race','owner','2030-10-07','2030-10-08')",values:[]}])).then(value=>({value}),error=>({error})).finally(()=>{settled=true;});
  // Wait for the second backend to be blocked by the first, rather than timing alone.
- for(let tries=0;tries<100;tries++){ const [row]=await db.executor.query<{blocked:boolean}>({text:'SELECT cardinality(pg_blocking_pids($1))>0 AS blocked',values:[secondPid]}); if(row.blocked)break; if(tries===99)throw new Error('Expected workspace lock barrier'); await new Promise(resolve=>setTimeout(resolve,10)); }
+ for(let tries=0;tries<500;tries++){ const [row]=await db.executor.query<{blocked:boolean}>({text:'SELECT cardinality(pg_blocking_pids($1))>0 AS blocked',values:[secondPid]}); if(row.blocked)break; if(tries===499)throw new Error('Expected workspace lock barrier'); await new Promise(resolve=>setTimeout(resolve,10)); }
  if(order==='write-first')await first.query("INSERT INTO time_off_requests(id,employee_id,start_date,end_date) VALUES('race','owner','2030-10-07','2030-10-08')");
  else await first.query("UPDATE workspaces SET time_zone='Asia/Tokyo',updated_at=updated_at+interval '1 microsecond'");
  expect(settled).toBe(false);await first.query('COMMIT');const outcome=await competing;
@@ -292,7 +292,7 @@ it.each(['write-first','deactivate-first'])('location identity access race reaut
   await first.query(`SELECT id FROM employees WHERE id='owner' FOR ${order==='write-first'?'SHARE':'UPDATE'}`);
   const pid=(await second.query('SELECT pg_backend_pid() AS pid')).rows[0].pid;
   const competing=(order==='deactivate-first'?createLocation({name:'Racing',shortName:'Race',clockerKey:'race-created',actorEmployeeId:'owner'},executor):second.query("UPDATE employees SET active=false WHERE id='owner'")).then(value=>({value}),error=>({error}));
-  for(let tries=0;tries<100;tries++){const [row]=await db.executor.query<{blocked:boolean}>({text:'SELECT cardinality(pg_blocking_pids($1))>0 AS blocked',values:[pid]});if(row.blocked)break;if(tries===99)throw new Error('Expected employee lock barrier');await new Promise(resolve=>setTimeout(resolve,10));}
+  for(let tries=0;tries<500;tries++){const [row]=await db.executor.query<{blocked:boolean}>({text:'SELECT cardinality(pg_blocking_pids($1))>0 AS blocked',values:[pid]});if(row.blocked)break;if(tries===499)throw new Error('Expected employee lock barrier');await new Promise(resolve=>setTimeout(resolve,10));}
   if(order==='deactivate-first')await first.query("UPDATE employees SET active=false WHERE id='owner'");
   else await first.query("INSERT INTO locations(id,workspace_id,clocker_key,name,short_name) VALUES('race-created','workspace-fuel','race-created','Racing','Race')");
   await first.query('COMMIT');const outcome=await competing;
@@ -353,7 +353,7 @@ it('position membership concurrent replacements serialize complete sets',async()
  await first.query("DELETE FROM employee_positions WHERE employee_id='manager'");
  const pid=(await second.query('SELECT pg_backend_pid() AS pid')).rows[0].pid;
  const competing=replaceEmployeePositions({employeeId:'manager',positionIds:[b.id,c.id],actorEmployeeId:'owner'},executor);
- for(let tries=0;tries<100;tries++){const [row]=await db.executor.query<{blocked:boolean}>({text:'SELECT cardinality(pg_blocking_pids($1))>0 AS blocked',values:[pid]});if(row.blocked)break;if(tries===99)throw Error('Expected membership employee lock barrier');await new Promise(resolve=>setTimeout(resolve,10));}
+ for(let tries=0;tries<500;tries++){const [row]=await db.executor.query<{blocked:boolean}>({text:'SELECT cardinality(pg_blocking_pids($1))>0 AS blocked',values:[pid]});if(row.blocked)break;if(tries===499)throw Error('Expected membership employee lock barrier');await new Promise(resolve=>setTimeout(resolve,10));}
  for(const s of employeePositionMembershipStatements({employeeId:'manager',positionIds:[a.id,b.id]}))await first.query(s.text,[...s.values]);
  await first.query('COMMIT');await competing;
  expect(await db.executor.query({text:"SELECT position_id FROM employee_positions WHERE employee_id='manager' ORDER BY position_id",values:[]})).toEqual([b.id,c.id].sort().map(position_id=>({position_id})));
@@ -394,7 +394,7 @@ it.each(['assignment-first','deactivate-first'])('position membership catalog ra
  await first.query('BEGIN');await first.query(`SELECT id FROM positions WHERE id=$1 FOR ${order==='assignment-first'?'SHARE':'UPDATE'}`,[position.id]);
  const pid=(await second.query('SELECT pg_backend_pid() AS pid')).rows[0].pid;
  const competing=(order==='deactivate-first'?replaceEmployeePositions({employeeId:'manager',positionIds:[position.id],actorEmployeeId:'owner'},executor):updatePosition({id:position.id,name:'Race',active:false,actorEmployeeId:'owner'},executor)).then(value=>({value}),error=>({error}));
- for(let tries=0;tries<100;tries++){const [row]=await db.executor.query<{blocked:boolean}>({text:'SELECT cardinality(pg_blocking_pids($1))>0 AS blocked',values:[pid]});if(row.blocked)break;if(tries===99)throw Error('Expected catalog lock barrier');await new Promise(resolve=>setTimeout(resolve,10));}
+ for(let tries=0;tries<500;tries++){const [row]=await db.executor.query<{blocked:boolean}>({text:'SELECT cardinality(pg_blocking_pids($1))>0 AS blocked',values:[pid]});if(row.blocked)break;if(tries===499)throw Error('Expected catalog lock barrier');await new Promise(resolve=>setTimeout(resolve,10));}
  if(order==='deactivate-first')await first.query('UPDATE positions SET active=false WHERE id=$1',[position.id]);
  else await first.query("INSERT INTO employee_positions(employee_id,position_id) VALUES('manager',$1)",[position.id]);
  await first.query('COMMIT');const outcome=await competing;
@@ -507,7 +507,7 @@ it.each(['location','position','qualification','eligibility'].flatMap(fact=>['re
  const executor:SqlExecutor={query:async<T>(s:SqlStatement)=>(await writer.query(s.text,[...s.values])).rows as T[],transaction:async statements=>{
   await writer.query('BEGIN');try{const result=[];for(const s of statements){result.push((await writer.query(s.text,[...s.values])).rows);if(order==='assignment-first'&&!held&&s.text.includes('generation_source_conflict')){held=true;writerLocked();await release;}}await writer.query('COMMIT');return result;}catch(e){await writer.query('ROLLBACK');throw e;}
  }};
- const waitBlocked=async(pid:number)=>{for(let tries=0;tries<150;tries++){const [row]=await db.executor.query<{blocked:boolean}>({text:'SELECT cardinality(pg_blocking_pids($1))>0 AS blocked',values:[pid]});if(row.blocked)return;await new Promise(resolve=>setTimeout(resolve,10));}throw Error('Expected real PostgreSQL assignment lock barrier');};
+ const waitBlocked=async(pid:number)=>{for(let tries=0;tries<500;tries++){const [row]=await db.executor.query<{blocked:boolean}>({text:'SELECT cardinality(pg_blocking_pids($1))>0 AS blocked',values:[pid]});if(row.blocked)return;await new Promise(resolve=>setTimeout(resolve,10));}throw Error('Expected real PostgreSQL assignment lock barrier');};
  const lockRemoval=async()=>{await remover.query('BEGIN');await remover.query('SELECT id FROM workspaces ORDER BY id FOR SHARE');await remover.query(fact==='location'||fact==='position'?"SELECT id FROM employees WHERE id='owner' FOR SHARE":"SELECT id FROM employees WHERE id IN ('manager','owner') ORDER BY id FOR UPDATE");if(fact==='location')await remover.query("SELECT id FROM locations WHERE id='loc-1' FOR UPDATE");if(fact==='position')await remover.query("SELECT id FROM positions WHERE id='barista' FOR UPDATE");};
  const remove=()=>remover.query(fact==='location'?"UPDATE locations SET active=false WHERE id='loc-1'":fact==='position'?"UPDATE positions SET active=false WHERE id='barista'":fact==='qualification'?"DELETE FROM employee_positions WHERE employee_id='manager'":"DELETE FROM employee_location_eligibility WHERE employee_id='manager'");
  try{
@@ -976,7 +976,7 @@ it.each(['deactivation','demotion'])('Task 11 actual createLocation commits befo
     pendingEdit=editor.query(change==='deactivation'?"UPDATE employees SET active=false WHERE id='cedar-owner'":"UPDATE employees SET role='EMPLOYEE' WHERE id='cedar-owner'");
     // Observe real lock contention, never use elapsed sleep as the race assertion.
     let blocked=false;
-    for(let tries=0;tries<100&&!blocked;tries++) blocked=(await db.executor.query<{blocked:boolean}>({text:'SELECT cardinality(pg_blocking_pids($1))>0 AS blocked',values:[pid]}))[0].blocked;
+    for(const deadline=Date.now()+10_000;!blocked&&Date.now()<deadline;){blocked=(await db.executor.query<{blocked:boolean}>({text:'SELECT cardinality(pg_blocking_pids($1))>0 AS blocked',values:[pid]}))[0].blocked;if(!blocked)await new Promise(resolve=>setTimeout(resolve,20));}
     expect(blocked).toBe(true);
     expect(await findActiveLocationByClockerKey('race-atelier',db.executor)).toBeNull();
     release();await pendingWrite;await pendingEdit;

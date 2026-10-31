@@ -97,7 +97,7 @@ for (const scenario of scenarios) for (const expires of [false, true]) {
       };
       pending = action().then(value => ({ value }), error => ({ error }));
       let observed = false;
-      for (let n = 0; n < 250; n++) {
+      for (let n = 0; n < 500; n++) {
         const [row] = await q<{ blocked: boolean; statement: string }>('SELECT cardinality(pg_blocking_pids(pid))>0 AS blocked,query AS statement FROM pg_stat_activity WHERE pid=$1', [pid]);
         // Poll for matching activity AND live blocking; a cross-statement statistics sample is not yet proof.
         if (row?.blocked && row.statement.toLowerCase().includes(table) && !row.statement.includes('LOCK TABLE')) { observed = true; break; }

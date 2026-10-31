@@ -162,7 +162,8 @@ async function controlled(defer: (cleanup: () => void | Promise<unknown>) => voi
   return { client, executor, pid, ready, release };
 }
 async function blocked(pid: number, blocker: number) {
-  for (let attempt = 0; attempt < 150; attempt++) {
+  // A bounded wall-clock wait: a slow runner can take longer than a fixed burst of polls to reach the lock.
+  for (const deadline = Date.now() + 10_000; Date.now() < deadline; await new Promise(resolve => setTimeout(resolve, 20))) {
     if ((await q('SELECT $2::integer=ANY(pg_blocking_pids($1)) blocked', [pid, blocker]))[0].blocked) return;
   }
   throw new Error('Expected actual PostgreSQL settings/session lock wait');
