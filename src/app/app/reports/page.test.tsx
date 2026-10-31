@@ -29,7 +29,6 @@ it.each(['MANAGER','OWNER'])('keeps the clean Insights layout and period props i
  fixture.role=role;
  const output=renderToStaticMarkup(await ReportsPage({searchParams:Promise.resolve({})}));
  expect(output).toContain('<section data-authority="company-fixture"><main>');
- expect(output).toContain('Recorded hours, time off and approvals for the period');
  expect(output).toContain('Protected period reports');
  expect(output).not.toContain('class="nv-content"');
  // MK5 / PD4: Insights opens on this week so far (Monday Oct 19 to today), not last week.

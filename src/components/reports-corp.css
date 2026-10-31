@@ -1,5 +1,21 @@
-/* Insights on phones (board O-Insights). Wider screens keep the full Insights tool. */
-@media (min-width: 761px) { :is(#c-root, html) .c-page.q-insights-phone { display: none; } }
+/* Insights (board O-Insights) at every width, in the kit's column. The full report is rendered for print only. */
+:is(#c-root, html) .c-ins .c-ins-print { display: none; }
+@media print {
+  :is(#c-root, html) .c-page.c-ins { display: block; max-width: none; padding: 0; background: #FFFFFF; }
+  :is(#c-root, html) .c-page.c-ins > :not(.c-ins-print) { display: none !important; }
+  :is(#c-root, html) .c-ins .c-ins-print { display: block; }
+}
+/* Wide screens: the period picker (with Custom) and Export on the title's row; phones keep the segments only. */
+:is(#c-root, html) .c-ins .c-ins__tools { display: none; }
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-ins .c-ins__tools { display: flex; justify-content: flex-end; min-height: 36px; margin-top: -48px; pointer-events: none; }
+  :is(#c-root, html) .c-ins .c-ins__tools > * { pointer-events: auto; }
+}
+:is(#c-root, html) .c-ins .c-ins__custom { display: flex; flex-direction: column; gap: 12px; padding: 14px 16px 16px; }
+:is(#c-root, html) .c-ins .c-ins__applied { display: flex; flex-wrap: wrap; gap: 4px 8px; margin: 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-ins .c-ins__applied > span { font-weight: 600; color: var(--c-ink2); }
+:is(#c-root, html) .c-ins .c-ins__applied > strong { flex-basis: 100%; font-weight: 600; color: var(--c-amber); }
+:is(#c-root, html) .c-ins #ins-days .c-ins__counted { border-radius: 0; box-shadow: inset 0 1px 0 var(--c-line); }
 :is(#c-root, html) .c-ins .c-ins__range { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-ins .c-ins__error { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-red); }
 :is(#c-root, html) .c-ins .c-ins__body { display: flex; flex-direction: column; gap: 12px; }
@@ -30,3 +46,5 @@
 :is(#c-root, html) .c-ins .c-card__aside button.c-link { min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer; }
 /* Hours by person names the person whose hours these are: a long name wraps rather than being cut off (reflow). */
 :is(#c-root, html) .c-ins #ins-people .c-row__title { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+/* Desktop: the kit's column, as Team and the other pushed pages. */
+@media (min-width: 768px) { :is(#c-root, html) .c-page.c-ins { width: 100%; max-width: 640px; margin: 0 auto; } }
