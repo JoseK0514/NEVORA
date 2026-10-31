@@ -4,7 +4,7 @@ export async function waitForCalendarCopyReady(page, noticeText) {
   const ready = await page.waitForFunction(text => {
     const root = document.querySelector('[data-calendar-setting]');
     const notice = [...(root?.querySelectorAll('[role="status"]') ?? [])].find(element => element.textContent === text);
-    const copy = [...(root?.querySelectorAll('button') ?? [])].find(element => element.textContent === 'Copy link');
+    const copy = [...(root?.querySelectorAll('button') ?? [])].find(element => element.textContent === 'Copy calendar link');
     return notice?.parentElement === document.activeElement && copy && !copy.disabled &&
       copy.getAnimations().every(animation => !Number.isFinite(animation.effect?.getComputedTiming().endTime) ||
         (!animation.pending && animation.playState === 'finished'));

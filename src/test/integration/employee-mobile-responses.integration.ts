@@ -79,13 +79,15 @@ it('integrates Employee swap/cover responses and own detail with current permiss
    failure=async()=>{await page.screenshot({path:evidence+'/'+engine+'-failure.png',fullPage:false,caret:'initial'});await writeFile(evidence+'/'+engine+'-failure.html',await page.locator('body').innerHTML());};
    await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==new URL(app.url).origin){await route.abort();return;}await route.continue();});
    const ready=()=>page.locator('.em-exchange:visible[data-exchange-state="ready"]').waitFor();
-   const settled=async()=>{await page.locator('.em-exchange:visible .em-response-actions[aria-busy="false"]').waitFor({state:'attached'});await page.getByRole('button',{name:'Check response status',exact:true}).waitFor({state:'hidden'});await page.locator('.em-exchange:visible .em-request-footer button:not(:disabled)').waitFor();expect(await page.locator('.em-exchange:visible').innerText()).not.toMatch(/Outcome uncertain|Checking the original response|Refreshing…/);};
+   // Release 1 removed the request pages' footer Refresh; a private read is renewed when the person returns to the app (window focus), the real refresh path that remains.
+   const reread=async()=>{const read=page.waitForResponse((response:{url():string})=>new URL(response.url()).pathname.startsWith('/api/employee/exchange'));await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await read;};
+   const settled=async()=>{await page.locator('.em-exchange:visible .em-response-actions[aria-busy="false"]').waitFor({state:'attached'});await page.getByRole('button',{name:'Check response status',exact:true}).waitFor({state:'hidden'});await ready();expect(await page.locator('.em-exchange:visible').innerText()).not.toMatch(/Outcome uncertain|Checking the original response|Refreshing…/);};
    const url=(tab:string,id?:string)=>app.url+'/app/exchange?tab='+tab+(id?'&requestId='+encodeURIComponent(id):'');
    const load=async(tab:string,id?:string)=>{await page.goto(url(tab,id));await ready();};
    // Keep capture tooling from mutating input styles while streamed desktop children hydrate.
    const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:false,caret:'initial',style:'nextjs-portal {visibility:hidden;}'});captures.push(file);const viewport=engine+'-'+name+'-viewport.png';await page.screenshot({path:evidence+'/'+viewport,fullPage:false,caret:'initial',style:'nextjs-portal {visibility:hidden;}'});captures.push(viewport);};
    await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
-   await page.locator('[data-home-state="ready"]:visible,[data-home-state="partial"]:visible').waitFor();await page.locator('.employee-time-badge:visible').waitFor();
+   await page.locator('[data-home-state="ready"]:visible,[data-home-state="partial"]:visible').waitFor();await page.locator('#home-shift:visible').waitFor();
    stage='incoming';await load('foryou');expect(await page.getByRole('link',{name:/Swap with Blair C/}).count()).toBe(1);await shot('incoming');
    await page.getByRole('link',{name:/Swap with Blair C/}).click();await page.waitForURL(url('foryou',requestId));await ready();
    expect(await page.getByRole('heading',{name:'Your current shift',exact:true}).count()).toBe(1);expect(await page.getByRole('heading',{name:'You would work',exact:true}).count()).toBe(1);
@@ -100,19 +102,20 @@ it('integrates Employee swap/cover responses and own detail with current permiss
     expect(await page.locator('.mobile-nav').evaluate((el:HTMLElement)=>getComputedStyle(el).backgroundColor===getComputedStyle(document.querySelector('.em-response-comparison')!).backgroundColor)).toBe(true);
     for(const name of ['Accept swap','Decline swap']){
      const button=page.getByRole('button',{name,exact:true});await button.waitFor();
-     expect(await button.evaluate((el:HTMLElement)=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(48);
+     /* Release 1 corporate kit: 44px buttons, the minimum touch target (v5 used 48px). */expect(await button.evaluate((el:HTMLElement)=>el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
      const measured=await button.evaluate(measureRenderedContrast);expect(measured.ratio).toBeGreaterThanOrEqual(4.5);contrasts.push({engine,theme,width,control:name,ratio:measured.ratio});
     }
     await shot('detail-'+theme+'-'+width);
    }
    await page.setViewportSize({width:320,height:844});await page.evaluate(()=>{document.documentElement.style.fontSize='200%';document.documentElement.dataset.textStep='200';});
    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
-   await page.getByRole('button',{name:'Refresh',exact:true}).scrollIntoViewIfNeeded();
-   expect(await page.getByRole('button',{name:'Refresh',exact:true}).evaluate((el:HTMLElement)=>el.getBoundingClientRect().bottom<=document.querySelector('.mobile-nav')!.getBoundingClientRect().top+1)).toBe(true);
+   // 200% text: the page's last control (the related links that followed the removed footer) clears the tab bar.
+   const lastControl=page.locator('.em-exchange:visible .em-request-links a').last();/* Centre it as a person scrolling would: a fixed tab bar can cover an in-view control. */await lastControl.evaluate((el:HTMLElement)=>el.scrollIntoView({block:'center'}));
+   expect(await lastControl.evaluate((el:HTMLElement)=>el.getBoundingClientRect().bottom<=document.querySelector('.mobile-nav')!.getBoundingClientRect().top+1)).toBe(true);
    await shot('detail-text-200');
    await page.evaluate(()=>{document.documentElement.style.fontSize='100%';delete document.documentElement.dataset.textStep;document.documentElement.setAttribute('data-theme','light');});await page.setViewportSize({width:390,height:844});
    await page.getByRole('link',{name:'Swaps for you',exact:true}).first().focus();
-   let focused=false;for(let i=0;i<20;i++){await page.keyboard.press(engine==='webkit'?'Alt+Tab':'Tab');focused=await page.getByRole('button',{name:'Accept swap',exact:true}).evaluate((el:HTMLElement)=>el===document.activeElement&&el.matches(':focus-visible')&&parseFloat(getComputedStyle(el).outlineWidth)>=3);if(focused)break;}expect(focused).toBe(true);
+   let focused=false;for(let i=0;i<20;i++){await page.keyboard.press(engine==='webkit'?'Alt+Tab':'Tab');focused=await page.getByRole('button',{name:'Accept swap',exact:true}).evaluate((el:HTMLElement)=>el===document.activeElement&&el.matches(':focus-visible')&&/* Release 1 kit focus ring: 2px teal outline (corp-employee-bridge.css; v5 used 3px), the WCAG 2.4.13 minimum. */parseFloat(getComputedStyle(el).outlineWidth)>=2);if(focused)break;}expect(focused).toBe(true);
    await shot('real-tab-focus');record('Light/dark320390430, response-control contrast,200%text, measured nav clearance and native keyboard focus (WebKit Option-Tab)');
    await page.getByRole('link',{name:'Swaps for you',exact:true}).first().click();await page.waitForURL(url('foryou')+'#exchange-request-'+requestId);await ready();
    await page.waitForFunction((id:string)=>document.activeElement?.id==='exchange-request-'+id,requestId);
@@ -168,7 +171,7 @@ it('integrates Employee swap/cover responses and own detail with current permiss
     await q("INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,status,legacy_manual,source_terms,created_at) SELECT 'rsp-older-window-'||n,'COVERAGE',$1,$2,'CANCELLED',false,source_terms,clock_timestamp()+n*interval '1 second' FROM shift_exchanges CROSS JOIN generate_series(1,21)n WHERE id=$3",[coverShift,actor,ownCover.requestId]);
     const recent=await readEmployeeExchange(await fixtureProof(app.database.executor,actor),app.database.executor);if(recent.state!=='ready')throw Error('Recent view');expect(recent.activity?.some(row=>row.id===ownCover.requestId)).toBe(false);
     await load('requests',ownCover.requestId);expect(await page.locator('.em-response-status:visible').innerText()).toContain('Cancelled');
-    await q('DELETE FROM shift_exchanges WHERE id=$1',[ownCover.requestId]);await page.getByRole('button',{name:'Refresh',exact:true}).click();await page.locator('.em-response-status:visible strong').filter({hasText:'Recorded history'}).waitFor();expect(await page.getByRole('button',{name:'Cancel request',exact:true}).count()).toBe(0);
+    await q('DELETE FROM shift_exchanges WHERE id=$1',[ownCover.requestId]);await reread();await page.locator('.em-response-status:visible strong').filter({hasText:'Recorded history'}).waitFor();expect(await page.getByRole('button',{name:'Cancel request',exact:true}).count()).toBe(0);
     await page.locator('.em-response-history:visible summary').click();expect(await page.locator('.em-response-history:visible').innerText()).toContain('Request cancelled');await shot('history-after-deletion');record('Exact own link survives the recent window and live-row deletion through protected immutable history without actions');
    }
    await page.setViewportSize({width:1440,height:1000});await page.goto(url('requests'));await page.locator('.q-shiftreq:visible').waitFor();expect(await page.locator('.em-exchange:visible').count()).toBe(0);await shot('desktop-preserved');record('Desktop retains existing own-request presentation and does not mount mobile response controls');
@@ -176,7 +179,7 @@ it('integrates Employee swap/cover responses and own detail with current permiss
    stage='authority-loss';expected=true;await q('UPDATE employees SET active=false WHERE id=$1',[actor]);
    let refusal:unknown=null;
    await page.route('**/api/employee/exchange/**',async(route:{fetch(options:{timeout:number}):Promise<{json():Promise<unknown>}>;fulfill(options:{response:unknown}):Promise<void>})=>{const response=await route.fetch({timeout:10000});refusal=await response.json();await route.fulfill({response});});
-   await page.getByRole('button',{name:'Refresh',exact:true}).click();await page.locator('.em-exchange:visible[data-exchange-state="denied"]').waitFor();expect(refusal).toEqual({state:'unavailable',reason:'access_denied'});expect(await page.locator('.em-exchange:visible').innerText()).not.toContain('Blair');await shot('authority-denied');record('Current authority loss clears detail/history and refuses private reads/actions');
+   await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.locator('.em-exchange:visible[data-exchange-state="denied"]').waitFor();expect(refusal).toEqual({state:'unavailable',reason:'access_denied'});expect(await page.locator('.em-exchange:visible').innerText()).not.toContain('Blair');await shot('authority-denied');record('Current authority loss clears detail/history and refuses private reads/actions');
    await context.close();await activeBrowser.close();browser=undefined;failure=undefined;
   }
   const unmatched=messages.filter(row=>row.type==='pageerror'||row.type==='error'&&(!row.expected||!/Failed to (fetch|load resource)|Load failed|NetworkError|status of (401|403|503)/.test(row.text)));expect(unmatched).toEqual([]);

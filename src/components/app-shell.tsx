@@ -12,7 +12,7 @@ import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { AuthBrand } from "./auth-brand";
 import { PlusIcon } from "@phosphor-icons/react/ssr";
-import { NavIcon } from "@/components/nav-icon";
+import { NavIcon, type NavIconName } from "@/components/nav-icon";
 import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
 import { PortalDeviceSetup } from "./portal-device-setup";
@@ -22,7 +22,7 @@ import { SheetGestures } from "./sheet-gestures";
 import { Toaster } from "./toaster";
 import { FormValidation } from "./form-validation";
 import type { UserRole } from "@/lib/domain";
-import { teamToolsForRole, activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
+import { employeeNavigationGroups, teamToolHolder, teamToolsForRole, activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
 import { SectionTabs } from "./section-tabs";
 import { isPopoverOpen, hidePopover } from "./kit/popover-open";
 import { CommandFinder } from "./command-finder";
@@ -58,6 +58,11 @@ type AppShellProps = {
   };
 };
 
+
+/** The corporate tab bar's glyphs (boards C-Owner, C-Employee); the sidebar keeps its own. */
+function tabIcon(icon: NavIconName): NavIconName {
+  return icon === "payroll" || icon === "receipt" ? "tabPay" : icon === "requests" ? "tabRequests" : icon;
+}
 
 /** Phase 1: the tapped tab lights up at once, before its page arrives (the Quiet shell styles the mark). */
 function TabPending() {
@@ -109,26 +114,30 @@ function AppShellView({
   const context:NavContext = {...presentation, operational:operational.view??undefined};
   const navigation = navigationForRole(user.role, payrollCapabilities, context);
   const mobileTabs = mobileTabsForRole(user.role, payrollCapabilities, context);
-  const activeTab = activeMobileTab(user.role, pathname ?? "", payrollCapabilities, context);
+  // Release 1: a few pages are views of another page (Schedule activity, Open shifts), so the query takes part.
+  const location = `${pathname ?? ""}${search?.toString() ? `?${search.toString()}` : ""}`;
+  const activeTab = activeMobileTab(user.role, location, payrollCapabilities, context);
   // P3-ST-22: a single request's review is one task with no section tabs. Deciding it from the URL means the tabs are
   // absent from the first frame, placeholder included, instead of disappearing once the review renders.
   const focusedReview = pathname === "/app/requests" && !!search?.get("requestId");
   const sectionTabs = pathname && !focusedReview ? sectionTabsFor(user.role, pathname, payrollCapabilities, context) : null;
   const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
-  const activeHref = activeNavigationHref(user.role, pathname, payrollCapabilities, context);
+  const activeHref = activeNavigationHref(user.role, location, payrollCapabilities, context);
   const sidebarItems = sidebarNavigation(user.role, navigation);
   // Clean Manager (v3): Home's occasional tools (its views and the two recovery pages) have their own group.
   const teamTools = teamToolsForRole(user.role, context);
   const toolView = pathname === "/app" ? search?.get("view") : null;
   const activeTool = teamTools.find(tool => tool.href === pathname || (toolView && tool.href === `/app?view=${toolView}`));
-  const sidebarActive = activeTool?.href ?? sidebarActiveHref(user.role, pathname, sidebarItems, payrollCapabilities, context);
-  const navGroups = employee ? [{ label: "", items: sidebarItems }] : managementNavigationGroups(sidebarItems, teamTools);
+  // Release 1 ("don't overwhelm"): the team tools have no sidebar group; the entry that holds each one lights instead.
+  const toolHolder = activeTool ? teamToolHolder(activeTool.href) : undefined;
+  const sidebarActive = toolHolder ?? sidebarActiveHref(user.role, pathname, sidebarItems, payrollCapabilities, context);
+  const navGroups = employee ? user.role === "EMPLOYEE" ? employeeNavigationGroups(sidebarItems) : [{ label: "", items: sidebarItems }] : managementNavigationGroups(sidebarItems);
   // Top-bar location (D1): section, then page. The page links back when you are deeper in it.
   const activeGroup = navGroups.find(group => group.items.some(item => item.href === sidebarActive));
   // A page reached from the account menu (Profile, My pay) has no sidebar entry; the trail still names it.
   const activeItem = activeGroup?.items.find(item => item.href === sidebarActive) ?? navigation.find(item => item.href === activeHref);
   // A team tool is its own page in the trail ("Team tools › Attendance"), never "Attendance › Attendance".
-  const deeper = !!activeItem && !activeTool && pathname !== activeItem.href;
+  const deeper = !!activeItem && (!!toolHolder || !activeTool && pathname !== activeItem.href);
   // A page whose own entry left the sidebar (Time off under Inbox, Time exports under Timecards) still ends the trail with its own name,
   // and so do Home's views (IS-P4-09), which share Home's address.
   const searchParams = useSearchParams();
@@ -136,7 +145,7 @@ function AppShellView({
   const homeView = !employee && pathname === "/app" && view && view in HOME_VIEWS ? { href: `/app?view=${view}`, label: HOME_VIEWS[view as keyof typeof HOME_VIEWS] } : undefined;
   // WR4-07: a section tab with no navigation entry of its own (Payroll settings) also ends the trail with its name.
   const currentTab = sectionTabs?.items.find(item => item.href === pathname);
-  const pageItem = activeTool ? undefined : homeView ?? (activeItem && activeHref && activeHref !== activeItem.href ? navigation.find(item => item.href === activeHref) : undefined)
+  const pageItem = activeTool ? (toolHolder ? activeTool : undefined) : homeView ?? (activeItem && activeHref && activeHref !== activeItem.href ? navigation.find(item => item.href === activeHref) : undefined)
     ?? (activeItem && currentTab && currentTab.href !== activeItem.href ? currentTab : undefined);
 
   // Keep the current page visible in a sidebar that scrolls on short screens,
@@ -255,6 +264,9 @@ function AppShellView({
     <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
       {employee || navigation.some(item => item.href === "/app/profile") ? <Link href="/app/profile" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your profile</Link> : null}
+      {/* Desktop Employee: the calendar link page has no other way in at this width (phones reach it from More). */}
+      {employee ? <Link href="/app/profile/calendar" className="nevora-action-menu-item"
+        onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Add shifts to your calendar</Link> : null}
       {!employee && navigation.some(item => item.href === "/app/my-pay") ? <Link href="/app/my-pay" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>My pay</Link> : null}
       {notificationsEnabled ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings">Profile and device settings</button> : null}
@@ -291,7 +303,7 @@ function AppShellView({
         </Link>
         {companyLogo}
         {/* v3: the workspace at the top of the sidebar (Owner and Manager; desktop only). */}
-        {!employee ? <p className="cm-org"><span className="cm-org__mark" aria-hidden="true">{workspaceName.trim()[0]?.toUpperCase() ?? ""}</span><span className="cm-org__name">{workspaceName}</span></p> : null}
+        {!employee ? <p className="cm-org"><span className="cm-org__mark" aria-hidden="true">{workspaceName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()}</span><span className="cm-org__name">{workspaceName}</span></p> : null}
 
         <button className="sidebar-toggle" type="button" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!collapsed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={22} /></button>
         </div>
@@ -400,8 +412,10 @@ function AppShellView({
                     aria-current={active ? "page" : undefined}
                     aria-label={needsYou !== null ? `${item.label}, ${needsYou} need${needsYou === 1 ? "s" : ""} you` : undefined}
                   >
-                    {/* Quiet (v4): outline glyphs, filled only for the current tab; the count is spoken, not drawn. */}
-                    <NavIcon name={item.icon === "employees" ? "team" : item.icon} size={24} weight={(user.role !== "LEAD" || !employeeMobile) && active ? "fill" : "regular"} />
+                    {/* Corporate (boards C-Owner, C-Employee): outline glyphs; the current tab is teal, with Home filled and the
+                      others drawn bolder. Team is two people, Pay and Payroll a card, Requests a page. A Lead keeps the v5 tab bar. */}
+                    <NavIcon name={user.role === "LEAD" ? (item.icon === "employees" ? "team" : item.icon) : tabIcon(item.icon)} size={24}
+                      weight={user.role === "LEAD" ? (!employeeMobile && active ? "fill" : "regular") : active ? (item.icon === "dashboard" ? "fill" : "bold") : "regular"} />
                     <span>{item.label}</span>
                     <TabPending />
                   </Link>

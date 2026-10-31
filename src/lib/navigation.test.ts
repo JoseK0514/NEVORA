@@ -55,7 +55,12 @@ describe('phone tabs', () => {
     expect(activeMobileTab('EMPLOYEE', '/app/timecards', payroll)).toBe('/app/my-time');
     for (const path of ['/app/notifications', '/app/more', '/app/updates', '/app/profile']) expect(activeMobileTab('EMPLOYEE', path, payroll)).toBe('/app');
     expect(activeMobileTab('EMPLOYEE', '/app/exchange', payroll)).toBe('/app/requests/hub');
-    expect(activeMobileTab('EMPLOYEE', '/app/availability', payroll)).toBe('/app/requests/hub');
+    // Release 1: opened from Schedule, these stay on Schedule; the rest of Requests stays on Requests.
+    for (const path of ['/app/availability', '/app/exchange/swap?shiftId=s1', '/app/exchange/callout?shiftId=s1', '/app/exchange?tab=available']) expect(activeMobileTab('EMPLOYEE', path, payroll)).toBe('/app/schedule');
+    expect(activeMobileTab('EMPLOYEE', '/app/exchange?tab=my', payroll)).toBe('/app/requests/hub');
+    expect(activeMobileTab('LEAD', '/app/availability', payroll)).toBe('/app/requests/hub');
+    expect(activeMobileTab('OWNER', '/app?view=activity', payroll)).toBe('/app/schedule');
+    expect(activeMobileTab('OWNER', '/app', payroll)).toBe('/app');
   });
   it.each(['LEAD'] as const)('gives %s Pay while payroll is on and Hours while it is off', role => {
     expect(mobileTabsForRole(role).map(tab => tab.label)).toEqual(['Home','Schedule','Requests','Hours']);

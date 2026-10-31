@@ -1,0 +1,15 @@
+/* The Employee shift sheet on the corporate kit (Release 1, board E-ShiftDetail): one white sheet, the shift inline under
+ * the "Day · Done" bar (no grey band, no inset block), then the ways to change it as one bordered list. */
+:is(#c-root, html) dialog.q-sheet:has(.c-esheet) { background: #FFFFFF; }
+:is(#c-root, html) dialog.q-sheet:has(.c-esheet) .q-sheet__top { background: #FFFFFF; }
+:is(#c-root, html) .c-sheet.c-esheet { gap: 16px; padding-bottom: max(24px, env(safe-area-inset-bottom, 0px)); }
+:is(#c-root, html) .c-sheet.c-esheet .c-sheet__nav { min-height: 52px; }
+:is(#c-root, html) .c-sheet.c-esheet .c-sheet__shift { margin: 0; padding: 0; background: none; box-shadow: none; gap: 2px; }
+:is(#c-root, html) .c-sheet.c-esheet .c-sheet__time .c-big { font-size: 22px; line-height: 28px; letter-spacing: -0.3px; }
+:is(#c-root, html) .c-sheet.c-esheet .c-sheet__actions .c-row { min-height: 52px; }
+:is(#c-root, html) .c-sheet.c-esheet .c-sheet__actions .c-row:not(.c-row--one) { min-height: 60px; }
+:is(#c-root, html) .c-sheet.c-esheet .c-sheet__actions .c-row__detail { color: var(--c-grey); font-weight: 400; }
+:is(#c-root, html) .c-sheet.c-esheet .c-sheet__actions .c-row--danger .c-row__detail span { color: var(--c-grey); }
+@media (min-width: 768px) {
+  :is(#c-root, html) dialog.q-sheet:has(.c-esheet) { top: 50%; bottom: auto; height: auto; max-height: min(86dvh, 820px); margin: 0 auto; translate: 0 -50%; }
+}

@@ -112,7 +112,7 @@ const roleOf=(card:Timecard)=>card.entries.find(entry=>entry.positionName)?.posi
 const noTime=(item:TimecardItem)=>!needsReview(item)&&!isApproved(item)&&!item.card.entries.length&&!item.history.length&&item.card.recordedNanoseconds==='0';
 const byName=(a:TimecardItem,b:TimecardItem)=>a.card.employeeName.localeCompare(b.card.employeeName);
 const reviewFirst=(a:TimecardItem,b:TimecardItem)=>Number(needsReview(b))-Number(needsReview(a))||byName(a,b);
-const totalRecorded=(items:TimecardItem[])=>formatRecordedHours(items.reduce((sum,item)=>sum+BigInt(item.card.recordedNanoseconds),BigInt(0)).toString());
+const totalRecorded=(items:TimecardItem[])=>quietHours(items.reduce((sum,item)=>sum+BigInt(item.card.recordedNanoseconds),BigInt(0)).toString());
 const monthDay=(value:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short',day:'numeric'}).format(new Date(`${value}T12:00:00Z`));
 const longDay=(value:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'long',month:'short',day:'numeric'}).format(new Date(`${value}T12:00:00Z`));
 /** "Oct 19 – 25" in one month, "Sep 28 – Oct 4" across two. */
@@ -121,7 +121,8 @@ const periodDays=(period:Period)=>Math.round((Date.parse(`${period.endDate}T12:0
 const shiftPeriod=(period:Period,direction:1|-1):Period=>{const days=periodDays(period)*direction;return {startDate:addDays(period.startDate,days),endDate:addDays(period.endDate,days)};};
 const samePeriod=(a:Period,b:Period)=>a.startDate===b.startDate&&a.endDate===b.endDate;
 /** Quiet (v4): "32 h", "23.5 h". */
-const quietHours=(nanoseconds:string)=>{if(!/^\d+$/.test(nanoseconds))return '—';const minutes=Number(BigInt(nanoseconds)/BigInt(60_000_000_000));return `${Math.round(minutes/6)/10} h`;};
+/** Board G-O-Time: "31 h 32 min", "32 h" or "45 min". */
+const quietHours=(nanoseconds:string)=>{if(!/^\d+$/.test(nanoseconds))return '—';const minutes=Number(BigInt(nanoseconds)/BigInt(60_000_000_000)),h=Math.floor(minutes/60),m=minutes%60;return h&&m?`${h} h ${m} min`:h?`${h} h`:`${m} min`;};
 const PHONE_QUERY='(max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse)';
 const PHONE_ROWS=4;
 
@@ -289,6 +290,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     openedFragment.current=fragment;setOpenId(id);
   },[manager,currentActor,data]);
   const [showNoTime,setShowNoTime]=useState(false);
+  const [teamAll,setTeamAll]=useState(false);
   useEffect(()=>{
     if(!manager||typeof window.matchMedia!=='function')return;
     const query=window.matchMedia(PHONE_QUERY),sync=()=>setPhone(query.matches);
@@ -486,11 +488,12 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             </div>
           </CorpCard>:null}
           {bulk}
-          {ready&&cards.length?<CorpCard id="tc-team" label={`Team (${cards.length})`}>
+          {ready&&cards.length?<CorpCard id="tc-team" label={`Team (${cards.length})`} aside={!selecting&&!teamAll&&rows.length>PHONE_ROWS?<button type="button" className="c-link" onClick={()=>setTeamAll(true)}>See all</button>:undefined}>
             <ul className="c-rows" aria-label="Timecards in this period">
             {selecting?<li><label className="c-row c-row--one c-tc-pick"><input type="checkbox" className="c-tc-box" aria-label="Select all eligible timecards" checked={allEligible} disabled={locked||!eligible.length} onChange={e=>selectAll(e.target.checked)}/>
               <span className="c-row__main"><span className="c-row__title c-row__title--b">Select all eligible</span></span><span className="c-row__value">{Math.min(eligible.length,100)}</span></label></li>:null}
-            {rows.map(item=>{
+            {/* Board G-O-Team/G-O-Time: the first four (those needing review first), then See all. A deep link or a selection shows everyone. */}
+            {(selecting||teamAll||(!!openId&&!rows.slice(0,PHONE_ROWS).some(item=>item.card.employeeId===openId))?rows:rows.slice(0,PHONE_ROWS)).map(item=>{
               const id=item.card.employeeId,name=item.card.employeeName,row=rowStatus(item),hours=quietHours(item.card.recordedNanoseconds);
               const excluded=selecting?exclusionShort(item):null;
               return <li key={id} id={`timecard-${id}`} tabIndex={-1}>{selecting?<label className="c-row c-tc-pick" data-off={pickDisabled(item)||undefined}>
@@ -509,17 +512,15 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         {sheetNode}
       </CorpPage>;
     }
-    return <>
-      <div className="cm-tc-navbar">
-        <button type="button" className="cm-tc-back" popoverTarget="manager-more-navigation"><CaretLeftIcon size={20} weight="bold" aria-hidden="true"/>More</button>
-        <button type="button" className="cm-tc-select" data-on={selecting||undefined} disabled={!ready||!cards.length} onClick={toggleSelecting}>{selecting?'Done':'Select'}</button>
+    // Release 1 (board G-O-Time, wide screens): the kit's title in the desktop frame (Select on its right), This week and
+    // Last week, then the period's table as before.
+    return <CorpPage className="c-tc c-tc-desk" labelledBy="tc-title">
+      <CorpTitle id="tc-title" title="Timecards" sub={open?`${rangeText(period)} · Approvals open after ${longDay(period.endDate)}`:`${rangeText(period)} · This period has ended. Review and approve each timecard.`}
+        actions={<button type="button" className="c-tc-select" aria-pressed={selecting} disabled={!ready||!cards.length} onClick={toggleSelecting}>{selecting?'Done':'Select'}</button>}/>
+      <div className="c-seg" role="group" aria-label="Week">
+        <button type="button" aria-pressed={periodName==='This week'} disabled={paused||busy||!!pending} onClick={()=>goTo(thisWeek)}>This week</button>
+        <button type="button" aria-pressed={periodName==='Last week'} disabled={paused||busy||!!pending} onClick={()=>goTo(lastWeek)}>Last week</button>
       </div>
-      <PageBand title="Timecards" overlap={false}
-        summary={<><span className="cm-tc-phone">{periodText}</span><span className="cm-tc-desk">{open?`Approvals open after ${longDay(period.endDate)}`:'This period has ended. Review and approve each timecard.'}</span></>}
-        extra={<div className="cm-tc-seg" role="group" aria-label="Week">
-          <button type="button" aria-pressed={periodName==='Last week'} disabled={paused||busy||!!pending} onClick={()=>goTo(lastWeek)}>Last week</button>
-          <button type="button" aria-pressed={periodName==='This week'} disabled={paused||busy||!!pending} onClick={()=>goTo(thisWeek)}>This week</button>
-        </div>}/>
       <div className="nv-content premium-legacy-content cm-tc-content">
         {!phone&&bar?createPortal(tools,bar):null}
         {!phone&&bar===null?tools:null}
@@ -559,18 +560,18 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               <th scope="col">Person</th>{showRole?<th scope="col">Role</th>:null}<th scope="col" className="cm-num">Recorded</th><th scope="col" className="cm-num">Breaks</th><th scope="col">Status</th>
             </tr></thead>
             <tbody>{tableItems.length||fold?tableItems.map(item=>{
-              const id=item.card.employeeId,name=item.card.employeeName,row=rowStatus(item),breaks=formatRecordedHours(item.card.breakNanoseconds);
+              const id=item.card.employeeId,name=item.card.employeeName,row=rowStatus(item),breaks=item.card.breakNanoseconds==='0'?'0h':quietHours(item.card.breakNanoseconds);
               return <tr key={id} id={`timecard-${id}`} tabIndex={-1} data-review={needsReview(item)||undefined}>
                 <td className="cm-tc-check"><label className="cm-tc-hit"><input type="checkbox" aria-label={`Select ${name}`} title={exclusionText(item)} checked={selected.includes(id)} disabled={pickDisabled(item)} onChange={e=>select(id,e.target.checked)}/></label></td>
                 <td><button type="button" className="cm-tc-person" onClick={()=>setOpenId(id)}><Avatar initials={initialsOf(name)}/><span>{name}</span></button></td>
                 {showRole?<td className="cm-tc-role">{roleOf(item.card)??'—'}</td>:null}
-                <td className="cm-num">{formatRecordedHours(item.card.recordedNanoseconds)}</td>
+                <td className="cm-num">{quietHours(item.card.recordedNanoseconds)}</td>
                 <td className="cm-num cm-tc-breaks">{breaks==='0h'?<><span aria-hidden="true">—</span><span className="nv-sr">None</span></>:breaks}</td>
                 <td><span className="cm-tc-status" data-tone={row.tone}>{row.text}</span></td>
               </tr>;
             }):<tr><td colSpan={showRole?6:5} className="cm-tc-none">{tab==='review'?'No timecards need review.':'No approved timecards yet.'}</td></tr>}
             {fold?<tr className="cm-tc-idle"><td className="cm-tc-check" aria-hidden="true"/><td colSpan={showRole?5:4}>
-              <button type="button" className="cm-tc-idle__open" aria-expanded="false" onClick={()=>{setShowNoTime(true);const first=idle[0].card.employeeId;if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>document.getElementById(`timecard-${first}`)?.querySelector<HTMLElement>('.cm-tc-person')?.focus());}}>{`${idle.length} people with no time yet`}<span className="cm-tc-idle__hours" aria-hidden="true">0h</span><CaretDownIcon size={13} weight="bold" aria-hidden="true"/></button>
+              <button type="button" className="cm-tc-idle__open" aria-expanded="false" onClick={()=>{setShowNoTime(true);const first=idle[0].card.employeeId;if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>document.getElementById(`timecard-${first}`)?.querySelector<HTMLElement>('.cm-tc-person')?.focus());}}>{`${idle.length} people with no time yet`}<span className="cm-tc-idle__hours" aria-hidden="true">0 h</span><CaretDownIcon size={13} weight="bold" aria-hidden="true"/></button>
             </td></tr>:null}</tbody>
           </table></div>
         </>:null}
@@ -587,7 +588,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
                 <ul className="nv-rows">{hidden.map(item=>phoneRow(item,false))}</ul>
               </details></li>:null}
               {phoneFold?<li className="cm-tc-more cm-tc-idle"><details open={phoneIdle.some(item=>target===`timecard-${item.card.employeeId}`)||undefined}>
-                <summary className="nv-row"><span className="nv-row__text"><span className="nv-row__title">{`${phoneIdle.length} people with no time yet`}</span></span><span className="nv-row__trail">0h</span><CaretDownIcon className="nv-row__chev" size={16} weight="bold" aria-hidden="true"/></summary>
+                <summary className="nv-row"><span className="nv-row__text"><span className="nv-row__title">{`${phoneIdle.length} people with no time yet`}</span></span><span className="nv-row__trail">0 h</span><CaretDownIcon className="nv-row__chev" size={16} weight="bold" aria-hidden="true"/></summary>
                 <ul className="nv-rows">{phoneIdle.map(item=>phoneRow(item,false))}</ul>
               </details></li>:null}
             </ul>
@@ -602,7 +603,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         </p>
       </div>
       {sheetNode}
-    </>;
+    </CorpPage>;
   }
   if(signature&&!manager){
     // Signature: the band carries the period and its worked total; the sheet holds the period form, this card and the

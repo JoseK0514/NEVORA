@@ -10,6 +10,8 @@ import { formatTime, weekStartFor } from "@/lib/date-utils";
 import { ActionForm } from "@/components/wave-a/action-form";
 import { agoLabel, dayLabel, initialsOf, QuietHeader, QuietList, QuietNav, QuietPage, QuietRow, QuietSegments } from "@/components/quiet/quiet";
 import { ManagerIssueFocus } from './manager-issue-focus';
+import { CorpAvatar, CorpCard, CorpNav, CorpNote, CorpPage, CorpPill, CorpRow, CorpTitle } from "@/components/corp/corp";
+import "./manager-time-off.css";
 import { inboxFilter } from "@/lib/action-center/inbox";
 import { getWorkspace } from "@/lib/data/workspaces";
 
@@ -52,24 +54,68 @@ function whenLabel(request: { startDate: string; endDate: string; startTime?: st
 }
 
 
-/** F6: one request on its own page. Back names where the manager came from; the decision returns there (D-5). */
-function FocusedReview({ request, origin, error }: { request: PendingRequest; origin: Origin; error?: string }) {
+type DecidedRequest = Awaited<ReturnType<typeof listTeamTimeOffRequests>>[number];
+
+/** "Thu, Nov 12" or "Thu, Nov 12 – Fri, Nov 13", and "All day", "9:00 AM – 1:00 PM" or "2 days" under it. */
+function requestDates(request: { startDate: string; endDate: string; startTime?: string | null; endTime?: string | null }) {
+  const days = Math.round((Date.parse(`${request.endDate}T12:00:00Z`) - Date.parse(`${request.startDate}T12:00:00Z`)) / 86_400_000) + 1;
+  const title = request.startDate === request.endDate ? dayLabel(request.startDate) : `${dayLabel(request.startDate)} – ${dayLabel(request.endDate)}`;
+  const length = request.startTime && request.endTime ? `${formatTime(request.startTime)} – ${formatTime(request.endTime)}` : days === 1 ? "All day" : `${days} days`;
+  return { title, length };
+}
+
+/** "Sent Mon, Oct 26 at 7:40 PM", in the company's time zone. */
+function sentLabel(createdAt: string | undefined, timeZone: string) {
+  if (!createdAt) return null;
+  try {
+    const at = new Date(createdAt);
+    const day = new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short", month: "short", day: "numeric" }).format(at);
+    const time = new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(at);
+    return `Sent ${day} at ${time}`;
+  } catch { return null; }
+}
+
+/** F6 / Release 1 (board O-RequestDetail): one request on its own page. Who asked (Waiting), the dates and their note, that
+ * week's schedule, who else is off then, and Decline / Approve. Back names where the manager came from; the decision
+ * returns there (D-5). */
+function FocusedReview({ request, origin, error, others, timeZone }: { request: PendingRequest; origin: Origin; error?: string; others: DecidedRequest[] | null; timeZone: string }) {
   const week = weekStartFor(request.startDate);
-  return <QuietPage>
-    <QuietNav back={backTo(origin)} />
-    <QuietHeader title={request.employeeName} sub={whenLabel(request)} />
-    {error ? <p className="q-error q-first" role="alert">The request may have changed. Check it and decide again.</p> : null}
-    <QuietList style={{ marginTop: 16 }}>
-      <QuietRow title="Note" detail={request.reason ? request.reason : "No note"} />
-      <QuietRow title="That week’s schedule" href={`/app/schedule?week=${encodeURIComponent(week)}`} />
-    </QuietList>
-    <form action={reviewTimeOffAction} className="q-acts-form q-acts-form--page" aria-label={`Review time off for ${request.employeeName}`}>
+  const dates = requestDates(request);
+  const first = request.employeeName.split(/\s+/)[0] || request.employeeName;
+  const sent = sentLabel((request as { createdAt?: string }).createdAt, timeZone);
+  const offNames = others ? [...new Set(others.filter(other => other.employeeId !== request.employeeId && other.startDate <= request.endDate && other.endDate >= request.startDate).map(other => other.employeeName))] : null;
+  const offLabel = request.startDate === request.endDate ? `Others off ${dayLabel(request.startDate)}` : "Others off these days";
+  return <CorpPage className="c-request" labelledBy="request-title">
+    <CorpNav back={backTo(origin)} title="Time off request" titleId="request-nav-title" phoneOnly />
+    <CorpTitle id="request-title" title="Time off request" sub={request.employeeName} wide />
+    {error ? <p className="c-error" role="alert">The request may have changed. Check it and decide again.</p> : null}
+    <CorpCard ariaLabel={`Time off for ${request.employeeName}`}>
+      <div className="c-request__who">
+        <CorpAvatar initials={initialsOf(request.employeeName)} large />
+        <span className="c-row__main"><span className="c-row__title c-row__title--b">{request.employeeName}</span></span>
+        <CorpPill tone="amber">Waiting</CorpPill>
+      </div>
+      <div className="c-request__body">
+        <span className="c-big">{dates.title}</span>
+        <span className="c-line2">{dates.length}</span>
+        {request.reason ? <p className="c-request__note">{`“${request.reason}”`}</p> : <p className="c-line3">No note</p>}
+        {sent ? <span className="c-line3">{sent}</span> : null}
+      </div>
+    </CorpCard>
+    <CorpCard as="div" ariaLabel="That week">
+      <CorpRow href={`/app/schedule?week=${encodeURIComponent(week)}`} bold title="That week’s schedule" detail="See who’s working that week" chevron />
+    </CorpCard>
+    {offNames ? <CorpCard as="div" ariaLabel={offLabel}>
+      <CorpRow title={offLabel} value={offNames.length ? offNames.join(", ") : "None"} valueTone="soft" />
+    </CorpCard> : null}
+    <form action={reviewTimeOffAction} className="c-request__decide" aria-label={`Review time off for ${request.employeeName}`}>
       <input type="hidden" name="requestId" value={request.id} />
       <input type="hidden" name="returnTo" value={origin.from} />
       <input type="hidden" name="returnFilter" value={origin.filter} />
-      <TimeOffReviewActions name={request.employeeName} quiet />
+      <TimeOffReviewActions name={request.employeeName} corp />
     </form>
-  </QuietPage>;
+    <CorpNote center>{`${first} gets a notification either way.`}</CorpNote>
+  </CorpPage>;
 }
 
 /** IS-10: a link to a request that is no longer waiting says so, instead of opening the list. */
@@ -96,7 +142,13 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
 
   const focused = selected.status === "PENDING" && requestId ? requests.find(request => request.id === requestId) : undefined;
   const origin: Origin = { from: from === "home" ? "home" : "inbox", filter: inboxFilter(filter ?? "requests"), item: inboxItem(item) };
-  if (focused) return <ScopedReadFrame observation={source}><FocusedReview request={focused as PendingRequest} origin={origin} error={error} /></ScopedReadFrame>;
+  if (focused) {
+    // Who else is off then: the approved time off this page already reads for its Approved tab, under the same access.
+    const approved = await withOperationalCompany(proof, () => listTeamTimeOffRequests("APPROVED")).catch(() => null);
+    const zone = await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
+    return <ScopedReadFrame observation={source}><FocusedReview request={focused as PendingRequest} origin={origin} error={error}
+      others={approved?.state === "ready" ? approved.data : null} timeZone={zone} /></ScopedReadFrame>;
+  }
   if (selected.status === "PENDING" && requestId && !error) return <ScopedReadFrame observation={source}><DecidedReview origin={origin} /></ScopedReadFrame>;
 
   // Quiet (v4, approved Oct 23): the segments carry the waiting count on every tab.

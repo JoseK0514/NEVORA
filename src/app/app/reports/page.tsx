@@ -9,7 +9,6 @@ import {getWorkspace} from '@/lib/data/workspaces';
 import {parsePeriod} from '@/lib/timecards/project';
 import {Reports} from '@/components/reports';
 import {ReportsEntrance} from '@/components/reports-entrance';
-import {PageBand} from '@/components/kit/kit';
 import {redirect} from 'next/navigation';
 export const metadata = { title: "Insights" };
 
@@ -23,7 +22,7 @@ export default async function ReportsPage({searchParams}:{searchParams:Promise<{
   const monday=today.subtract({days:today.dayOfWeek-1});
   let period={startDate:monday.toString(),endDate:today.toString()};
   try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current period. */}
-  // v3: Reports renders the navigation bar (More, period, Export), the segmented periods and the content after the title.
-  return <ScopedReadFrame observation={access}><ReportsEntrance><div className="q-insights-desk"><PageBand title="Insights" summary="Recorded hours, time off and approvals for the period"/></div>
+  // Release 1 (board O-Insights): Reports renders the whole page (title, periods, Export on wide screens and the cards).
+  return <ScopedReadFrame observation={access}><ReportsEntrance>
     <Reports key={session.id} initialPeriod={period} today={today.toString()}/></ReportsEntrance></ScopedReadFrame>;
 }

@@ -15,7 +15,7 @@ const fields = [
 /** Quiet (v4): the switch rows' names, from the approved mockup ("Alert me about"). */
 const rowNames: Record<(typeof fields)[number][0], string> = {
   lateness: "Late arrivals", earlyDeparture: "Early departures", missingClockIn: "Missed clock-ins",
-  missingClockOut: "Missed clock-outs", overtimeRisk: "Overtime risk", longEntry: "Long entries",
+  missingClockOut: "Missed clock-outs", overtimeRisk: "Overtime risk", longEntry: "Very long shifts",
 };
 type ValidRevision=Extract<PolicyHistoryRevision,{state:"valid"}>;
 type Draft={settings:CompanyPolicySettings;expectedRevision:number;recoveryFrom:ValidRevision|null};
@@ -51,13 +51,14 @@ function PrivateLaborReview({settings,scope,timeZone,open=false}:{settings:Compa
   const labor=settings.labor;
   const absent=(value:unknown)=>value===undefined?(scope?"Inherit company default":"Not set"):value===null?"Explicitly not configured":null;
   const location=(id:string|null)=>id?`Location ${id}`:"Whole company";
-  return <details className="policy-private-review" open={open}>
-    <summary>Private labor settings <span>Owner only · preserved in this draft</span></summary>
-    <p>Review the private labor values in this snapshot. Attendance edits preserve them; a replacement draft includes them in full.</p>
+  // Release 1: a row like its siblings ("Policy history"); the values open under it. Editing alerts never changes them.
+  return <details className="policy-private-review q-details" open={open}>
+    <summary className="q-row q-row--one"><span className="q-rt"><b>Private labor settings</b></span><span className="q-rv q-rv--l">Owner only</span><CaretRightIcon className="q-chev" aria-hidden="true"/></summary>
+    <div className="q-rule__body"><p>Pay rates, budgets and pay rules saved with these policies. Changing an alert keeps them as they are.</p>
     <dl><div><dt>Compensation reference</dt><dd>{absent(labor?.compensation)??<>{labor!.compensation!.ruleReference}<br/>{labor!.compensation!.breakTreatment==="INCLUDE_ALL_RECORDED_BREAKS"?"Include all recorded breaks":`Exclude break types: ${labor!.compensation!.excludedBreakTypeIds.join(", ")||"None"}`}<br/>Effective {formatBusinessTimestamp(labor!.compensation!.effectiveFrom,timeZone)}</>}</dd></div>
     <div><dt>Employee rates</dt><dd>{absent(labor?.rates)??(labor!.rates!.length?<ul>{labor!.rates!.map(rate=><li key={rate.id}><strong>{rate.rate} {rate.currency}</strong> · {rate.rateUnit==="HOUR"?"per hour":rate.rateUnit==="SHIFT"?"per shift":"per salary period"}<br/>Employee {rate.employeeId} · {location(rate.locationId)} · Reference {rate.id}<br/>{formatBusinessTimestamp(rate.validFrom,timeZone)} — {rate.validUntil?formatBusinessTimestamp(rate.validUntil,timeZone):"No end date"}</li>)}</ul>:"Empty rate override — no explicit rates")}</dd></div>
     <div><dt>Labor budgets</dt><dd>{absent(labor?.budgets)??(labor!.budgets!.length?<ul>{labor!.budgets!.map(budget=><li key={budget.id}><strong>{budget.amount} {budget.currency}</strong> · {location(budget.locationId)} · Reference {budget.id}<br/>{formatBusinessTimestamp(budget.startAt,timeZone)} — {formatBusinessTimestamp(budget.endAt,timeZone)}</li>)}</ul>:"Empty budget override — no explicit budgets")}</dd></div>
-    <div><dt>Calculation method reference</dt><dd>{absent(labor?.calculationMethod)??<>{labor!.calculationMethod!.id} · revision {labor!.calculationMethod!.revision}</>}</dd></div></dl>
+    <div><dt>Calculation method reference</dt><dd>{absent(labor?.calculationMethod)??<>{labor!.calculationMethod!.id} · revision {labor!.calculationMethod!.revision}</>}</dd></div></dl></div>
   </details>;
 }
 export function CurrentPolicyRules({settings,scope,timeZone}: {settings:CompanyPolicySettings;scope:string;timeZone:string}) {
@@ -159,7 +160,7 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
   // Quiet (v4): at a location, a rule that follows the company is on when the company's rule is on.
   const inheritedOn=(key:(typeof fields)[number][0])=>{const settings=company.state==="valid"?company.selected.settings:null;const rule=key==="overtimeRisk"?settings?.labor?.overtimeRisk:settings?.attendance?.[key];return rule!==undefined&&rule!==null;};
   return <div className="company-policy-editor q-page q-policies" data-nv-page="">
-    <QuietNav back={{href:"/app/settings",label:"Settings"}} right={draft?<button type="submit" form="policy-form" className="q-nav__r q-nav__r--b" aria-label="Save policies"
+    <QuietNav back={{href:"/app/settings",label:"Settings"}} title="Company policies" right={draft?<button type="submit" form="policy-form" className="q-nav__r q-nav__r--b" aria-label="Save policies"
       disabled={!draft||busy||conflict||!writable||readState!=="ready"||pending!==null||draft.recoveryFrom!==null}>{busy?"Saving…":"Save"}</button>:undefined}/>
     <QuietHeader title="Company policies"/>
     <ul className="q-list" style={{marginTop:16}}><li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b id="company-policy-scope-label">Applies to</b></span>
@@ -347,8 +348,7 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
           {pending||draft.recoveryFrom?<div className="policy-actions"><button className="q-btn" disabled={busy||conflict||!writable||(!pending&&draft.recoveryFrom!==null&&!reviewed)} type="submit">{busy?"Saving…":pending?"Retry retained save":"Save replacement revision"}</button></div>:null}
         </form>
       </>:null}
-      <p className="q-help q-policy-legal">These rules do not determine pay, discipline, or legal entitlements.</p>
-      <p className="q-help q-policy-legal">They decide which recorded times are flagged for review, from each rule’s effective date. A location can follow the company default or set its own.</p>
+      <p className="q-help q-policy-legal">Alerts only flag recorded times for review, from each rule’s start date. They don’t change pay, discipline or legal entitlements.</p>
       <div className="q-grp"><h2>Records</h2></div>
       <ul className="q-list">{draft?<li className="q-policy-private"><PrivateLaborReview settings={draft.settings} scope={scope} timeZone={timeZone} open={draft.recoveryFrom!==null}/></li>:null}<li><details className="q-details"><summary className="q-row q-row--one"><span className="q-rt"><b>Policy history</b></span><span className="q-rv q-rv--l">{current.state==="not_configured"?"None":`Revision ${current.expectedRevision}`}</span><CaretRightIcon className="q-chev" aria-hidden="true"/></summary><div className="q-rule__body"><section className="policy-history"><h2>Policy history</h2><p>Saved evidence for this scope. An unavailable revision is retained and cannot be used as a trusted policy.</p><ul>{history.revisions.filter(item=>item.locationId===(scope||null)).sort((a,b)=>b.revision-a.revision).map(item=><li key={item.operationId}><strong>Revision {item.revision}</strong> · {formatBusinessTimestamp(item.changedAt,timeZone)}<br/>{item.state==="unavailable"?<span className="policy-history-unavailable">Revision unavailable — original history retained</span>:item.revision===current.expectedRevision?"Current saved revision":"Earlier valid revision"}<br/>{item.changedKeys===null?"Change details unavailable":item.changedKeys.map(key=>fields.find(([name])=>key.includes(name))?.[1]??({"labor.compensation":"Compensation reference","labor.rates":"Employee rates","labor.budgets":"Labor budgets","labor.calculationMethod":"Calculation method reference"}[key]??"Policy setting")).join(", ")||"No rule changes"}</li>)}</ul>{!history.revisions.some(item=>item.locationId===(scope||null))?<p>No saved policy changes for this scope yet.</p>:null}</section>
         <button className="q-btn q-btn--sec" type="button" disabled={busy} onClick={()=>void refresh()}>Refresh policy history</button></div></details></li></ul>

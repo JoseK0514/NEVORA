@@ -82,7 +82,8 @@ export async function openPeriodReports(page,origin,engine,report,control='perio
   assert.equal(await insights.getAttribute('href'),'/app/reports');
   await Promise.all([page.waitForURL(url=>url.pathname==='/app/reports'),insights.click()]);
   mark('destination-readiness');
-  await page.getByRole('heading',{name:'Hours by person',exact:true}).waitFor();
+  // Insights (board O-Insights): the period's Labor hours card is the ready protected report on screen.
+  await page.locator('#ins-labor').waitFor();
   mark('period-entry');
   await page.getByRole('button',{name:/^Report period:/}).click();
   await page.getByRole('button',{name:'Custom period…',exact:true}).click();
@@ -100,7 +101,7 @@ export async function openPeriodReports(page,origin,engine,report,control='perio
   },{timeout:15000});
   const [response]=await runBeforeRecoveryDeadline(()=>Promise.all([incoming,page.getByRole('button',{name:'View period',exact:true}).click()]),deadline);
   trace.protectedRead=await finishPeriodReportResponse(response,period,deadline);
-  await runBeforeRecoveryDeadline(()=>page.locator('main').getByText('8h',{exact:true}).first().waitFor(),deadline);
+  await runBeforeRecoveryDeadline(()=>page.locator('#ins-labor .c-ins__labor b').filter({hasText:/^8\s*h$/}).waitFor(),deadline);
   mark('complete');
   trace.status='passed';
  }catch(error){trace.status='failed';throw error;}

@@ -164,3 +164,85 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .payroll-workflow .pw
 html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .payroll-workflow .pw-button { min-height: 44px !important; padding: 0 16px !important; border-radius: 8px !important; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; }
 html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .payroll-workflow .pw-button.pw-secondary { background: #FFFFFF !important; color: #0B6E69 !important; border: 1px solid #0B6E69 !important; }
 html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .payroll-workflow :is(input, select) { min-height: 48px !important; border-radius: 8px !important; border: 1px solid #D5D8DA !important; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; }
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Release 1 fixes (B4, Oct 31): global rules every page gets.
+ * ------------------------------------------------------------------------------------------------------------------- */
+
+/* Phone tab bar: equal columns for every role (an Employee's tabs were sized by their labels). */
+@media (max-width: 767px) {
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav { display: grid !important; grid-auto-flow: column !important; grid-auto-columns: minmax(0, 1fr) !important; gap: 0 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-nav .mobile-nav-link { width: auto !important; min-width: 0 !important; max-width: none !important; flex: none !important; margin: 0 !important; }
+}
+
+/* Quiet segmented controls inside the corporate shell: 44px tap targets with the board's 32px selected shape. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-seg > :is(a, button) { position: relative; isolation: isolate; height: 44px; min-height: 44px; margin: -6px 0; background: none !important; box-shadow: none !important; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-seg > :is(a, button)::before { content: ""; position: absolute; inset: 6px 0; z-index: -1; border-radius: 6px; pointer-events: none; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-seg > :is([aria-current="page"], [aria-pressed="true"], [aria-selected="true"])::before { background: #FFFFFF; box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-seg > :is(a, button):focus-visible { outline: 2px solid #0B6E69; outline-offset: -4px; border-radius: 8px; }
+/* Quiet header actions ("+", "Save"): 44 by 44 at least, the glyph or word on the right edge. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-nav__r { min-width: 44px; justify-content: flex-end; }
+/* Grouped Quiet rows (a white card that clips its corners): the focus ring is drawn inside the row. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-list :is(a, button):focus-visible { outline: 2px solid #0B6E69; outline-offset: -2px; border-radius: 12px; }
+
+/* Pushed pages on a phone (boards: "‹ More   Locations"): when a Quiet page names itself in its bar, the bar is the
+ * header; the large title stays for screen readers only and its summary line steps aside (tablets and desktop keep both). */
+@media (max-width: 767px) {
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page:not([data-q-sheet]):has(> .q-nav .q-nav__t) > .q-hd { height: 0; padding: 0; overflow: hidden; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page:not([data-q-sheet]):has(> .q-nav .q-nav__t) > .q-hd > p { display: none; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page:not([data-q-sheet]):has(> .q-nav .q-nav__t) > .q-hd h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page > .q-nav .q-nav__t { max-width: 200px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #1A1C1E; }
+}
+
+/* One desktop content frame (tablet and desktop): every page is a 992px column (1040 with padding) centred beside the
+ * sidebar, its title at the same top. The kit's .c-page carries the frame itself (corp.css); Quiet pages and the older
+ * wrappers around a page get it here. A pushed page's white "‹ Back" strip becomes the title row's right-hand action. */
+@media (min-width: 768px) {
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame > :not(.c-page):not(.q-page):has(> :is(.c-page, .q-page)) { width: auto !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page:not(.q-sheet) { position: relative; width: 100%; max-width: 1040px; margin: 0 auto; padding: 24px 8px 48px; box-sizing: border-box; font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page:not(.q-sheet) :is(h1, h2, h3) { font-family: inherit; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page:not(.q-sheet) > .q-hd { padding: 0 16px; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page:not(.q-sheet):not([data-q-sheet]):has(> .q-hd) > .q-nav {
+    position: absolute; top: 16px; right: 24px; z-index: 2; display: flex; align-items: center; justify-content: flex-end; gap: 8px; height: 44px; padding: 0; background: none; box-shadow: none; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page:not(.q-sheet):not([data-q-sheet]):has(> .q-hd) > .q-nav > :is(a.q-nav__l, .q-nav__t, span:empty) { display: none; }
+  /* The kit's page title on Quiet pages at the board's size. */
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page .q-hd h1 { font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -.3px; }
+  /* The workspace badge at the top of the sidebar: the same teal circle with two initials as More's company row. */
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .cm-org__mark { display: grid !important; place-items: center !important; width: 32px !important; height: 32px !important; border-radius: 16px !important;
+    background: #E6F1EF !important; color: #0B6E69 !important; font: 600 13px/1 Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: 0 !important; box-shadow: none !important; }
+}
+
+/* Device settings (Owner and Manager, desktop sidebar profile): an on-brand white card with outline buttons only (the
+ * page keeps its one primary), no second logo, and no Home Screen setup on a tablet or desktop. */
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settings { padding: 16px; border: 0; border-radius: 12px; background: #FFFFFF; color: #1A1C1E;
+  box-shadow: 0 0 0 1px #E3E5E6, 0 8px 24px rgba(26, 28, 30, .10); font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settings .portal-device-heading > strong { font: 600 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settings .portal-device-close { border-radius: 8px; background: none; color: #4A4F54; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settings .portal-device-content > .login-brand-lockup { display: none; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settings .portal-device-content :is(h2, h3) { margin: 0; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; color: #1A1C1E; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settings .portal-device-content p { font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settings .portal-device-button,
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settings .portal-device-button:is(.primary, .secondary) {
+  min-height: 44px; border-radius: 8px; background: #FFFFFF !important; box-shadow: inset 0 0 0 1px #0B6E69; color: #0B6E69 !important; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settings .portal-device-button:hover:not(:disabled) { background: #E6F1EF !important; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settings :is(button, a):focus-visible { outline: 2px solid #0B6E69; outline-offset: 2px; }
+@media (min-width: 768px) {
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settings .portal-device-install { display: none !important; }
+}
+/* Quiet page titles and group labels in Inter at every width (an older layer set the system font on headings). */
+:is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page :is(h1, h2, h3) { font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; }
+/* The frame wins over a page's own narrower column (a page that set 640px for its phone-first layout): every page,
+ * Home to a sub-page, starts at the same left edge with the same width on tablet and desktop. */
+@media (min-width: 768px) {
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame .c-page:not(.c-embed) { width: 100% !important; max-width: 1040px !important; margin-left: auto !important; margin-right: auto !important; padding: 24px 24px 48px !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame .q-page:not(.q-sheet):not([data-q-sheet]) { width: 100% !important; max-width: 1040px !important; margin-left: auto !important; margin-right: auto !important; padding: 24px 8px 48px !important; }
+}
+/* A section's tab row (Timecards · Payroll runs · Time exports · Payroll settings) on tablet and desktop starts on the
+ * content frame's left edge, like the page under it. */
+@media (min-width: 768px) {
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame > .section-tabs { box-sizing: border-box !important; width: 100% !important; max-width: 1040px !important; margin-left: auto !important; margin-right: auto !important; padding-left: 24px !important; padding-right: 24px !important; }
+}
+/* Focus inside a card that clips its corners (More, Employee Home's Things to do): drawn inside the row, over the older
+ * layers that offset it outward (where only a thin line showed). */
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-card :is(a, button).c-row:focus-visible { outline: 2px solid #0B6E69 !important; outline-offset: -2px !important; border-radius: 12px !important; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-card :is(a, button):not(.c-row):not(.c-btn):focus-visible { outline-offset: -2px !important; }

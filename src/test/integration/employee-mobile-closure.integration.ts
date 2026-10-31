@@ -15,7 +15,7 @@ import {businessDate} from '../../lib/business-time';
 import {lastVisibleEmployeeAction} from './employee-layout-observation';
 import {measureRenderedContrast} from '../../../scripts/browser-contrast.mjs';
 
-it('keeps authorized Employee tasks usable in actual coarse landscape, both themes and enlarged text',async()=>{
+it('keeps authorized Employee tasks usable in actual coarse landscape, light under a dark request, and enlarged text',async()=>{
  const evidence=process.env.NEVORA_EMPLOYEE_CLOSURE_EVIDENCE;if(!evidence)throw Error('Choose external Employee closure evidence');await mkdir(evidence,{recursive:true});
  const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
  const app=await createOwnedNextApp(evidence,{payrollEnabled:true,passkeysEnabled:true,deviceAlertsEnabled:true});
@@ -55,8 +55,8 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
    await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
    const cases:[string,string,string][]=[
     ['home','/app','[data-home-state="ready"],[data-home-state="partial"]'],
-    ['schedule','/app/schedule?week='+f.week,'.q-sched-e'],
-    ['requests','/app/requests/hub','.em-requests[data-requests-state="ready"]'],
+    ['schedule','/app/schedule?week='+f.week,'.c-esched'],
+    ['requests','/app/requests/hub','.em-requests-corp:has([data-requests-state="ready"])'],
     ['incoming-response','/app/exchange?tab=foryou&requestId='+incoming.requestId,'.em-exchange[data-exchange-state="ready"]'],
     ['own-request','/app/exchange?tab=requests&requestId='+own.requestId,'.em-exchange[data-exchange-state="ready"]'],
     ['swap-create','/app/exchange/swap?sourceShiftId='+creation,'.em-creation[data-creation-state="ready"]'],
@@ -64,17 +64,17 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
     ['unable-to-work','/app/exchange/callout?shiftId='+report,'.em-creation[data-creation-state="ready"]'],
     ['time-off-form','/app/requests?tab=new','.em-planning[data-planning-state="ready"]'],
     ['availability','/app/availability','.em-planning[data-planning-state="ready"]'],
-    ['hours','/app/my-time','.em-hours[data-hours-state="ready"]'],
-    ['timecards','/app/my-time?view=cards','.em-hours[data-hours-state="ready"]'],
-    ['correction-form','/app/my-time?view=corrections&edit='+encodeURIComponent('entry:'+records.entryId),'.em-hours[data-hours-state="ready"]'],
-    ['missing-time','/app/my-time?view=corrections&edit=new','.em-hours[data-hours-state="ready"]'],
-    ['pay','/app/my-pay','.em-pay'],
+    ['hours','/app/my-time','.c-hours[data-hours-state="ready"]'],
+    ['timecards','/app/my-time?view=cards','.c-hours[data-hours-state="ready"]'],
+    ['correction-form','/app/my-time?view=corrections&edit='+encodeURIComponent('entry:'+records.entryId),'.c-hours[data-hours-state="ready"]'],
+    ['missing-time','/app/my-time?view=corrections&edit=new','.c-hours[data-hours-state="ready"]'],
+    ['pay','/app/my-pay','.c-pay[data-pay-state]:not([data-pay-state="loading"])'],
     ['notifications','/app/notifications','.em-messages[data-messages-state="ready"]'],
     ['updates-compose','/app/updates/compose','.em-messages[data-messages-state="ready"]'],
-    ['more','/app/more','.em-more'],
-    ['profile','/app/profile','.em-profile-private[data-profile-state="ready"]'],
-    ['calendar','/app/profile#employee-calendar-title','.em-calendar'],
-    ['passkeys','/app/profile#passkeys-title','.em-passkeys'],
+    ['more','/app/more','.c-more'],
+    ['profile','/app/profile','.em-account-personal[data-profile-state="ready"]'],
+    ['calendar','/app/profile/calendar','.em-calendar[data-calendar-state]:not([data-calendar-state="loading"])'],
+    ['passkeys','/app/profile/passkeys','.em-passkeys[data-passkey-state]:not([data-passkey-state="loading"])'],
     ['alerts','/app/profile/device-alerts','.em-device:not([data-device-state="loading"]):not([data-device-state="pending"])'],
     ['deletion','/app/account/delete','.em-delete'],
     ['support','/app/profile/support','main h1'],
@@ -87,11 +87,12 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
     try{if(page.url()!==app.url+path)await page.goto(app.url+path);await page.locator(ready+':visible').first().waitFor();}catch(error){failures.push({engine,name,path,stage:'ready',error:String(error)});continue;}
     for(const size of [{width:667,height:375},{width:844,height:390},{width:932,height:430}])for(const theme of ['light','dark'])for(const scale of [100,200]){
      let clearance:unknown;try{
-     await page.setViewportSize(size);await page.evaluate(({theme,scale}:any)=>{localStorage.setItem('nv-theme',theme);document.documentElement.dataset.theme=theme;document.documentElement.style.fontSize=scale+'%';document.documentElement.dataset.textStep=String(scale);}, {theme,scale});
+     // Release 1 is light only (Jose): a dark request (stored choice and device preference) must still render the light corporate look.
+     await page.setViewportSize(size);await page.emulateMedia({colorScheme:theme as 'light'|'dark'});await page.evaluate(({theme,scale}:any)=>{localStorage.setItem('nv-theme',theme);document.documentElement.dataset.theme=theme;document.documentElement.style.fontSize=scale+'%';document.documentElement.dataset.textStep=String(scale);}, {theme,scale});
      await page.waitForFunction(()=>matchMedia('(pointer: coarse)').matches&&document.querySelector('#employee-mobile')?.getAttribute('data-employee-mobile-active')==='true');
      await page.evaluate(()=>new Promise<void>(ready=>requestAnimationFrame(()=>requestAnimationFrame(()=>ready()))));
-     const metrics=await page.evaluate(()=>({coarse:matchMedia('(pointer:coarse)').matches,overflow:Math.max(0,document.documentElement.scrollWidth-innerWidth),teal:getComputedStyle(document.querySelector('#employee-mobile')!).getPropertyValue('--em-teal').trim()}));
-     expect(metrics.overflow,name+engine+JSON.stringify(size)+theme+scale).toBeLessThanOrEqual(1);expect(metrics.teal).toBe(theme==='dark'?'#a9e2da':'#0b6e69');
+     const metrics=await page.evaluate(()=>({coarse:matchMedia('(pointer:coarse)').matches,overflow:Math.max(0,document.documentElement.scrollWidth-innerWidth),teal:getComputedStyle(document.querySelector('#employee-mobile')!).getPropertyValue('--em-teal').trim().toLowerCase(),canvas:getComputedStyle(document.querySelector('#employee-mobile')!).getPropertyValue('--em-canvas').trim().toLowerCase(),colorScheme:getComputedStyle(document.querySelector('#employee-mobile')!).colorScheme}));
+     expect(metrics.overflow,name+engine+JSON.stringify(size)+theme+scale).toBeLessThanOrEqual(1);expect(metrics.teal,name+' light teal '+theme).toBe('#0b6e69');expect(['#f5f6f6','#f4f7f6'],name+' light canvas '+theme).toContain(metrics.canvas);expect(metrics.colorScheme,name+' light color-scheme '+theme).toBe('light');
      const actions=page.locator('main :is(button,a,input,select,textarea,summary):visible');
      const small=await actions.evaluateAll((elements:HTMLElement[])=>elements.flatMap(el=>{
       if(el.closest('nextjs-portal')||(el.matches('a')&&getComputedStyle(el).display==='inline'&&el.closest('p,li')))return [];
@@ -110,8 +111,9 @@ it('keeps authorized Employee tasks usable in actual coarse landscape, both them
       const handle=await page.locator('main').evaluateHandle(lastVisibleEmployeeAction),last=handle.asElement();
       expect(last,name+' visual-end control').not.toBeNull();if(!last)throw Error('No connected visual-end control');
       await last.scrollIntoViewIfNeeded();
-      await last.evaluate((el:HTMLElement)=>{const nav=document.querySelector('.mobile-nav');if(nav)window.scrollBy(0,Math.max(0,el.getBoundingClientRect().bottom-nav.getBoundingClientRect().top+16));});
-      clearance=await last.evaluate((el:HTMLElement)=>{const bar=document.querySelector('.mobile-nav'),shell=document.querySelector('#employee-mobile')!;return {connected:el.isConnected,text:el.textContent?.slice(0,80),targetBottom:el.getBoundingClientRect().bottom,navTop:bar?.getBoundingClientRect().top,navHeight:bar?.getBoundingClientRect().height,padding:getComputedStyle(shell).paddingBottom,reserved:getComputedStyle(shell).getPropertyValue('--em-nav-height'),scrollY,scrollHeight:document.documentElement.scrollHeight,innerHeight,clear:el.isConnected&&el.getBoundingClientRect().width>0&&el.getBoundingClientRect().height>0&&(!bar||el.getBoundingClientRect().bottom<=bar.getBoundingClientRect().top+1)};});expect((clearance as {clear:boolean}).clear,name+' last action '+engine+scale).toBe(true);await handle.dispose();
+      // Only a rendered tab bar can cover content: a pushed form (Fix my time at 667x375) hides it and has no bar to clear.
+      await last.evaluate((el:HTMLElement)=>{const nav=[...document.querySelectorAll('.mobile-nav')].find(bar=>bar.getBoundingClientRect().height>0&&getComputedStyle(bar).visibility!=='hidden');if(nav)window.scrollBy(0,Math.max(0,el.getBoundingClientRect().bottom-nav.getBoundingClientRect().top+16));});
+      clearance=await last.evaluate((el:HTMLElement)=>{const bar=[...document.querySelectorAll('.mobile-nav')].find(nav=>nav.getBoundingClientRect().height>0&&getComputedStyle(nav).visibility!=='hidden'),shell=document.querySelector('#employee-mobile')!;return {connected:el.isConnected,text:el.textContent?.slice(0,80),targetBottom:el.getBoundingClientRect().bottom,navTop:bar?.getBoundingClientRect().top,navHeight:bar?.getBoundingClientRect().height,padding:getComputedStyle(shell).paddingBottom,reserved:getComputedStyle(shell).getPropertyValue('--em-nav-height'),scrollY,scrollHeight:document.documentElement.scrollHeight,innerHeight,clear:el.isConnected&&el.getBoundingClientRect().width>0&&el.getBoundingClientRect().height>0&&(!bar||el.getBoundingClientRect().bottom<=bar.getBoundingClientRect().top+1)};});expect((clearance as {clear:boolean}).clear,name+' last action '+engine+scale).toBe(true);await handle.dispose();
      }
      results.push({engine,name,path,size,theme,scale,contrastSamples:samples,...metrics});
      if(size.width===844&&scale===200)await page.screenshot({path:evidence+'/'+engine+'-'+name+'-'+theme+'-text200.png',fullPage:false,style:'nextjs-portal{visibility:hidden;}'});

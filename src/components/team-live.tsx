@@ -2,21 +2,30 @@
 import { createContext, useContext, type ReactNode } from "react";
 import { CorpPill } from "./corp/corp";
 import { useToday } from "./manager-today";
+import { useClockMonitor } from "./clean/use-clock-monitor";
 
-/* Team (Release 1, board G-O-Team): who is working now, from the same Today read Home uses. One read for the page;
- * every row and the subtitle consume it. When the read isn't ready, nothing is shown (never a false "Off"). */
+/* Team (Release 1, board G-O-Team): who is working now. Two existing reads, the ones Home uses: Today (published shifts
+ * and their clock-ins) and the clock monitor (every open clock-in, so someone clocked in without a scheduled shift reads
+ * "Working", never "Off"). One read of each for the page; every row and the subtitle consume them. Nothing is shown until
+ * the reads are in (never a false "Off"). When the clock monitor isn't available, Today alone decides, as before. */
 type Live = { ready: boolean; working: Set<string>; onBreak: Set<string> };
 const TeamLiveContext = createContext<Live>({ ready: false, working: new Set(), onBreak: new Set() });
 
 export function TeamLiveProvider({ children }: { children: ReactNode }) {
   const { snapshot } = useToday();
-  const ready = snapshot?.state === "ready";
+  const { monitor } = useClockMonitor();
+  const monitorSettled = monitor !== null;
+  const ready = snapshot?.state === "ready" && monitorSettled;
   const shifts = ready ? snapshot.shifts : [];
-  const value: Live = { ready, working: new Set(shifts.filter(shift => shift.status === "clocked_in").map(shift => shift.employeeId)), onBreak: new Set(shifts.filter(shift => shift.status === "on_break").map(shift => shift.employeeId)) };
-  return <TeamLiveContext.Provider value={value}>{children}</TeamLiveContext.Provider>;
+  const open = ready && monitor?.state === "ready" ? monitor.employees : [];
+  const onBreak = new Set([...shifts.filter(shift => shift.status === "on_break").map(shift => shift.employeeId),
+    ...open.filter(entry => entry.state === "ON_BREAK").map(entry => entry.employeeId)]);
+  const working = new Set([...shifts.filter(shift => shift.status === "clocked_in").map(shift => shift.employeeId),
+    ...open.filter(entry => entry.state === "ON_FLOOR").map(entry => entry.employeeId)].filter(id => !onBreak.has(id)));
+  return <TeamLiveContext.Provider value={{ ready, working, onBreak }}>{children}</TeamLiveContext.Provider>;
 }
 
-/** "Working", "On break" or "Off" for one person; nothing until the read is ready. */
+/** "Working", "On break" or "Off" for one person; nothing until the reads are ready. */
 export function TeamLivePill({ employeeId }: { employeeId: string }) {
   const live = useContext(TeamLiveContext);
   if (!live.ready) return null;
@@ -25,9 +34,10 @@ export function TeamLivePill({ employeeId }: { employeeId: string }) {
   return <CorpPill tone="neutral">Off</CorpPill>;
 }
 
-/** " · 7 working now" for the subtitle, once the read is ready. */
+/** " · 7 working now" for the subtitle, once the reads are ready. */
 export function TeamWorkingNow() {
   const live = useContext(TeamLiveContext);
   if (!live.ready) return null;
   return <>{` · ${live.working.size + live.onBreak.size} working now`}</>;
 }
+

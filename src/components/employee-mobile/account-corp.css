@@ -1,0 +1,117 @@
+/* Employee account pages on the corporate kit (Release 1, boards E-Profile, E-Notifications, E-NotificationSettings,
+ * E-Calendar, E-DeleteAccount, E-More). Only what the kit (src/components/corp) doesn't already draw. */
+
+/* A group of cards inside a page column keeps the page's 12px rhythm. */
+:is(#c-root, html) .c-page .em-account-stack { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+:is(#c-root, html) .c-page .em-account-stack:empty { display: none; }
+:is(#c-root, html) .c-page .em-account-stack > .em-calendar-feedback--empty { display: none; }
+:is(#c-root, html) .c-page .em-account-status { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+
+/* Board segmented control (the kit draws the 36px track and the 44px tap targets). */
+:is(#c-root, html) .c-page .em-account-pref .c-row__main { flex: 1 1 auto; min-width: 0; }
+:is(#c-root, html) .c-page .em-account-pref .c-row__detail > span:first-child { white-space: normal; }
+:is(#c-root, html) .c-page .em-account-pref .em-account-seg { flex: 0 1 220px; min-width: 150px; }
+
+/* A text action (Not now, Reset link, Try again): 44px tall, teal 15/600; red for destructive, grey for quiet. */
+:is(#c-root, html) .c-page .em-account-textbtn { display: inline-flex; align-items: center; justify-content: center; align-self: center; min-height: 44px; margin: 0; padding: 0 8px; border: 0; background: none; color: var(--c-teal); font-family: inherit; font-weight: 600; font-size: 15px; line-height: 20px; cursor: pointer; }
+:is(#c-root, html) .c-page .em-account-textbtn:disabled { color: var(--c-faint); cursor: default; }
+:is(#c-root, html) .c-page .em-account-textbtn--danger { color: var(--c-red); }
+:is(#c-root, html) .c-page .em-account-textbtn--quiet { color: var(--c-grey); font-weight: 400; font-size: 13px; line-height: 18px; }
+:is(#c-root, html) .c-page .c-card__body .em-account-textbtn { align-self: flex-start; margin-left: -8px; }
+:is(#c-root, html) .c-page .c-card__body > .em-account-textbtn:last-child { align-self: center; margin-left: 0; }
+
+/* Profile: values on the right shrink before the labels do. */
+:is(#c-root, html) .c-page .em-account-personal .c-row__main { flex: none; }
+:is(#c-root, html) .c-page .em-account-personal .c-row__value { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+:is(#c-root, html) .c-page .em-account-personal-status .c-link { min-height: 44px; display: inline-flex; align-items: center; padding: 0; border: 0; background: none; cursor: pointer; }
+
+/* Notifications: 32px icon circles (tinted when unread), a teal unread dot. */
+:is(#c-root, html) .c-page .em-notif-tabs { flex: none; }
+:is(#c-root, html) .c-page .em-notif-row { min-height: 64px; }
+:is(#c-root, html) .c-page .em-notif-icon { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 16px; background: var(--c-neutral-bg); color: var(--c-ink2); }
+:is(#c-root, html) .c-page .em-notif-icon .c-ic { width: 18px; height: 18px; }
+:is(#c-root, html) .c-page .em-notif-row--unread .em-notif-icon { background: var(--c-tint); color: var(--c-teal); }
+:is(#c-root, html) .c-page .em-notif-dot { flex: none; width: 8px; height: 8px; border-radius: 4px; background: var(--c-teal); }
+:is(#c-root, html) .c-page .em-message-paging { flex-wrap: wrap; }
+
+/* Shared body copy inside a card: 15px secondary text, a 15/600 lead line. */
+:is(#c-root, html) .c-page :is(.em-calendar-body, .em-device-body, .em-delete-copy, .em-passkeys-body) { display: flex; flex-direction: column; gap: 8px; color: var(--c-ink2); }
+:is(#c-root, html) .c-page :is(.em-calendar-lead, .em-device-title, .em-delete-lead) { margin: 0; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-page :is(.em-calendar-body, .em-device-body, .em-passkeys-body) > .c-btn { margin-top: 8px; }
+:is(#c-root, html) .c-page :is(.em-calendar-body, .em-device-body, .em-passkeys-body) > .c-btns { margin-top: 0; }
+
+/* Calendar */
+:is(#c-root, html) .c-page .em-calendar-extra { color: var(--c-grey); font-size: 13px; line-height: 18px; }
+:is(#c-root, html) .c-page .em-calendar-secret { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+:is(#c-root, html) .c-page .em-calendar-secret textarea.c-in { height: auto; min-height: 72px; font-size: 13px; line-height: 18px; word-break: break-all; }
+:is(#c-root, html) .c-page .em-calendar-provider .c-row__title { white-space: normal; }
+:is(#c-root, html) .c-page .em-calendar-caret { transition: transform 160ms ease-out; }
+:is(#c-root, html) .c-page .em-calendar-provider[aria-expanded="true"] .em-calendar-caret { transform: rotate(180deg); }
+:is(#c-root, html) .c-page .em-calendar-steps { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 14px; color: var(--c-ink2); }
+:is(#c-root, html) .c-page .em-calendar-steps ol { margin: 0; padding-left: 20px; list-style: decimal; display: flex; flex-direction: column; gap: 4px; }
+:is(#c-root, html) .c-page .em-calendar-steps .c-link { display: inline-flex; align-items: center; min-height: 44px; align-self: flex-start; }
+:is(#c-root, html) .c-page .em-calendar-manage { display: flex; flex-direction: column; align-items: center; gap: 0; padding-top: 4px; }
+:is(#c-root, html) .c-page .em-calendar-manage .c-note { margin: -6px 0 4px; }
+:is(#c-root, html) .c-page .em-calendar-feedback:focus { outline: none; }
+
+/* Alerts on this device */
+:is(#c-root, html) .c-page .em-device-steps { color: var(--c-ink); }
+:is(#c-root, html) .c-page :is(.em-device-feedback, .em-passkeys-feedback):empty { display: none; }
+:is(#c-root, html) .c-page .em-device-feedback { display: flex; flex-direction: column; gap: 8px; }
+:is(#c-root, html) .c-page .em-device-feedback:focus { outline: none; }
+:is(#c-root, html) .c-page .em-device-confirmation .c-card__body { display: flex; flex-direction: column; gap: 8px; color: var(--c-ink2); }
+:is(#c-root, html) .c-page .em-device-note { padding: 0 4px; }
+
+/* Passkeys */
+:is(#c-root, html) .c-page .em-passkeys-empty b { display: block; color: var(--c-ink); font-weight: 600; }
+:is(#c-root, html) .c-page .em-passkeys .c-row .em-account-textbtn { flex: none; margin-right: -8px; }
+:is(#c-root, html) .c-page .em-passkeys-confirmation .c-card__body { display: flex; flex-direction: column; gap: 8px; color: var(--c-ink2); }
+:is(#c-root, html) .c-page .em-passkeys-confirmation .c-btns { margin-top: 4px; }
+/* Keep and Remove (or Turn off, Reset, Revoke) share a row while both fit; on a narrow phone or with larger text they wrap
+ * instead of squeezing a label past its button's edges. */
+:is(#c-root, html) .c-page :is(.em-passkeys-confirmation, .em-device-confirmation, #calendar-link-confirmation) .c-btns { flex-wrap: wrap; }
+:is(#c-root, html) .c-page :is(.em-passkeys-confirmation, .em-device-confirmation, #calendar-link-confirmation) .c-btns > .c-btn { flex: 1 1 auto; white-space: nowrap; }
+/* A removal or turn-off review takes focus when it opens. Firefox doesn't treat that programmatic focus as :focus-visible,
+ * so the review shows the kit's focus ring on :focus. */
+:is(#c-root, html) .c-page :is(.em-passkeys-confirmation, .em-device-confirmation, #calendar-link-confirmation):focus { outline: 2px solid var(--c-teal); outline-offset: 2px; }
+
+/* Delete account */
+:is(#c-root, html) .c-page .em-delete-detail { display: block; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-page .em-delete .c-row__title { white-space: normal; }
+:is(#c-root, html) .c-page .em-delete-kept { color: var(--c-teal); }
+:is(#c-root, html) .c-page .em-delete-small { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+/* The support address may wrap anywhere but never gains a hyphen (as on the v5 page). */
+:is(#c-root, html) .c-page .em-delete-small a, :is(#c-root, html) .c-page .em-delete-outcome a { color: inherit; font-weight: 600; text-decoration: underline; overflow-wrap: anywhere; hyphens: none; }
+:is(#c-root, html) .c-page .em-delete-outcome { flex-direction: column; }
+:is(#c-root, html) .c-page .em-delete-outcome p + p { margin-top: 6px; }
+:is(#c-root, html) .c-page .em-delete-outcome:focus { outline: none; }
+:is(#c-root, html) .c-page .em-delete-password { padding-right: 52px; }
+:is(#c-root, html) .c-page .em-delete-eye { display: grid; place-items: center; width: 44px; padding: 0; color: var(--c-grey); }
+:is(#c-root, html) .c-page .em-delete-check { display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 2px 0; font-size: 15px; line-height: 20px; color: var(--c-ink); cursor: pointer; }
+:is(#c-root, html) .c-page .em-delete-check input { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--c-teal); }
+:is(#c-root, html) .c-page .em-delete-reference { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+:is(#c-root, html) .c-page .em-delete-reference-label { font-size: 13px; line-height: 18px; font-weight: 600; color: var(--c-ink2); }
+:is(#c-root, html) .c-page .em-delete-reference-value { font-size: 20px; line-height: 26px; font-weight: 600; color: var(--c-ink); overflow-wrap: anywhere; }
+:is(#c-root, html) .c-page .em-delete-reference-time { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-page .em-delete-reference .c-btn { margin-top: 8px; }
+:is(#c-root, html) .c-page .em-delete-copied:empty { display: none; }
+
+/* More (Employee): the availability summary gives way before the row title. */
+:is(#c-root, html) .c-more--employee .c-row:has(> .c-row__value) .c-row__main { flex: 0 0 auto; }
+:is(#c-root, html) .c-more--employee .c-row__value { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+:is(#c-root, html) .c-more--employee .c-row__detail > span:first-child { white-space: normal; }
+
+@media (prefers-reduced-motion: reduce) {
+  :is(#c-root, html) .c-page .em-calendar-caret { transition: none; }
+}
+
+/* Desktop: the tabs keep a tab-sized width instead of spanning the column. */
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-page .em-notif-tabs { width: 100%; max-width: 360px; }
+}
+/* A row under card copy ("What may be kept") keeps the board's hairline above it. */
+:is(#c-root, html) .c-page .c-card__body + .c-rows > li:first-child > .c-row { box-shadow: inset 0 1px 0 var(--c-line); }
+/* Once a deletion request is received (or the session ended or may have ended), every session is over: the tab bar would
+ * only lead to sign-in, so it hides and the page keeps its own way forward (as on the v5 page, DEL-UI review). It outranks corp-shell.css's !important grid. */
+html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:has(.em-delete :is([data-deletion-state="received"],[data-deletion-state="duplicate"],[data-deletion-state="signed_out"],[data-deletion-state="uncertain"])) .mobile-nav { display: none !important; }
+html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:has(.em-delete :is([data-deletion-state="received"],[data-deletion-state="duplicate"],[data-deletion-state="signed_out"],[data-deletion-state="uncertain"])) .app-main { padding-bottom: env(safe-area-inset-bottom, 0px) !important; }

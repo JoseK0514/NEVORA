@@ -16,7 +16,7 @@ import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
 import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
 import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
-import { ArrowsLeftRightIcon, BuildingsIcon, CalendarXIcon, ChartBarIcon, CoffeeIcon, DeviceTabletIcon, MapPinIcon, PaletteIcon, ReceiptIcon, SlidersHorizontalIcon, SparkleIcon, TagIcon, ToggleRightIcon, UserCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { BuildingsIcon, ChartBarIcon, CoffeeIcon, DeviceTabletIcon, MapPinIcon, PaletteIcon, SlidersHorizontalIcon, SparkleIcon, TagIcon, UserCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { CorpAvatar, CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
 import { PortalSignout } from "@/components/portal-signout";
@@ -29,6 +29,10 @@ import { currentPayPeriod } from "@/lib/payroll/pay-calendar.server";
 import { pathEnabled } from "@/lib/workspace-presentation/modules";
 import { lower } from "@/lib/workspace-presentation/words";
 import "./more-corp.css";
+import "@/components/employee-mobile/account-corp.css";
+import { readEmployeeProfile } from "@/lib/data/employee-profile.server";
+import { listAvailability } from "@/lib/data/availability";
+import { availabilitySummary } from "@/components/employee-mobile/availability-summary";
 
 export const metadata = { title: "More" };
 
@@ -56,27 +60,36 @@ async function EmployeeMore({ firstName, lastName, role }: { firstName: string; 
       <QuietRow href="/support" icon={ic(InfoIcon)} title="Support" />
       <QuietRow href="/privacy" icon={ic(ShieldCheckIcon)} title="Privacy and terms" />
     </QuietList>
+    {/* Profile's Session section moved off Profile (board E-Profile); on a phone a Lead signs out here. */}
+    <PortalSignout><button type="submit" className="q-btn q-btn--sec q-btn--danger" style={{ marginTop: 24 }}>Sign out</button></PortalSignout>
   </QuietPage>;
 }
 
 /** Corporate (Release 1, board E-More): an Employee's More opens from the header avatar, with Home as its back link. The
- * profile card, then Your work and Help and legal, then Sign out. The same places and counts as before. */
+ * profile card (name; work locations and company under it), Your work with the availability summary, Help and legal,
+ * then Sign out (the one Sign out for an Employee). Each value is a fact the person's own reads already hold; a failed
+ * read leaves the value out. */
 async function EmployeeMoreCorp({ firstName, lastName, workspaceName }: { firstName: string; lastName: string; workspaceName: string }) {
   const [proof, brand] = await Promise.all([requireSessionMutationProof(), currentBrand()]);
   const has = new Set(navigationForRole("EMPLOYEE", undefined, { modules: brand.modules, words: wordPreset(brand.words).en }).map(entry => entry.href));
+  const [profile, availability] = await Promise.all([
+    readEmployeeProfile(proof).catch(() => null),
+    has.has("/app/availability") ? listAvailability(proof.employee.id).then(availabilitySummary).catch(() => null) : Promise.resolve(null),
+  ]);
+  const locations = profile?.state === "ready" && profile.kind === "profile" ? profile.profile.locations : [];
   const name = `${firstName} ${lastName}`;
   return <CorpPage className="c-more c-more--employee" labelledBy="more-title">
     <CorpNav back={{ href: "/app", label: "Home" }} title="More" titleId="more-title" />
     <CorpCard as="div" ariaLabel="Profile">
-      <CorpRows><li><CorpRow avatar={<CorpAvatar initials={initialsOf(name)} />} title={name} detail={keepWhole(`Employee · ${workspaceName}`)} bold /></li>
+      <CorpRows><li><CorpRow avatar={<CorpAvatar initials={initialsOf(name)} />} title={name} detail={[...locations, workspaceName].join(" · ")} bold /></li>
         <li><CorpRow href="/app/profile" title={<span className="c-link c-link--l">Profile and settings</span>} one label={`Profile and settings, ${name}`} /></li></CorpRows>
     </CorpCard>
     <CorpCard as="div" label="Your work">
       <CorpRows>
-        {has.has("/app/availability") ? <li><CorpRow href="/app/availability" title="Availability" one /></li> : null}
+        {has.has("/app/availability") ? <li><CorpRow href="/app/availability" title="Availability" one value={availability ?? undefined} valueTone="soft" chevron /></li> : null}
         {has.has("/app/notifications") ? <li><CorpRow href="/app/notifications" title="Notifications" one value={<NotificationCount authority={employeeViewAuthority(proof, "notifications")} />} /></li> : null}
         {has.has("/app/updates") ? <li><CorpRow href="/app/updates" title="Updates" one /></li> : null}
-        <li><CorpRow href="/app/profile#employee-calendar-title" title="Add shifts to your calendar" one /></li>
+        <li><CorpRow href="/app/profile/calendar" title="Add shifts to your calendar" one /></li>
       </CorpRows>
     </CorpCard>
     <CorpCard as="div" label="Help and legal">
@@ -122,26 +135,25 @@ export default async function MorePage() {
   const settings = owner && pathEnabled("/app/settings", brand.modules);
   const company = workspace.name;
   // Corporate (Release 1, board O-More): opened from the header avatar. The company, Insights and Updates, the
-  // business's settings with their counts, the company and the account, then Sign out. Only destinations the role has.
+  // business's settings with their counts, then the account, then Sign out. Only destinations the role has.
+  // Everything else keeps an entry where the boards put it: the company row opens Settings (Features and words, Company
+  // policies, Your profile and My pay), Things to do holds Time off and Shift requests, a person's page holds Availability.
   return <CorpPage className="c-more" labelledBy="more-title">
     <CorpNav title="More" right={<Link href="/app">Done</Link>} phoneOnly />
     <CorpTitle id="more-title" title="More" wide />
     <CorpCard as="div" ariaLabel="Company">
-      <CorpRows label="Company"><li><CorpRow href={owner ? "/app/settings/workspace" : "/app/profile"} bold title={company}
+      <CorpRows label="Company"><li><CorpRow href={settings ? "/app/settings" : "/app/profile"} bold title={company}
         detail={[locations !== null ? `${locations} ${locations === 1 ? lower(words.location) : lower(words.locations)}` : null, `${session.firstName} ${session.lastName}, ${owner ? "owner" : "manager"}`].filter(Boolean).join(" · ")}
+        label={`${company}, ${settings ? "settings" : "your profile"}`}
         avatar={<CorpAvatar initials={initialsOf(company)} />} chevron /></li></CorpRows>
     </CorpCard>
-    <CorpCard as="div" ariaLabel="Work">
+    {has("/app/reports") || has("/app/updates") || has("/app/ai-manager") ? <CorpCard as="div" ariaLabel="Work">
       <CorpRows label="Work">
         {has("/app/reports") ? row("/app/reports", label("/app/reports", "Insights"), ChartBarIcon) : null}
         {has("/app/updates") ? row("/app/updates", label("/app/updates", "Updates"), MegaphoneIcon) : null}
         {has("/app/ai-manager") ? row("/app/ai-manager", label("/app/ai-manager", "AI manager"), SparkleIcon) : null}
-        {has("/app/my-pay") ? row("/app/my-pay", label("/app/my-pay", "My pay"), ReceiptIcon) : null}
-        {has("/app/requests") ? row("/app/requests", label("/app/requests", "Time off"), CalendarXIcon) : null}
-        {has("/app/exchange") ? row("/app/exchange", label("/app/exchange", "Shift requests"), ArrowsLeftRightIcon) : null}
-        {has("/app/availability") ? row("/app/availability", label("/app/availability", "Availability"), ClockIcon) : null}
       </CorpRows>
-    </CorpCard>
+    </CorpCard> : null}
     {settings || has("/app/schedule/settings") ? <CorpCard as="div" ariaLabel="Business settings">
       <CorpRows label="Business settings">
         {settings && pathEnabled("/app/settings/locations", brand.modules) ? row("/app/settings/locations", words.locations, MapPinIcon, locations) : null}
@@ -156,10 +168,8 @@ export default async function MorePage() {
       <CorpRows label="Account">
         {settings ? row("/app/settings/workspace", "Company profile", BuildingsIcon) : null}
         {settings ? row("/app/settings/branding", "Branding", PaletteIcon) : null}
-        {settings ? row("/app/settings/features", "Features and words", ToggleRightIcon) : null}
-        {settings ? row("/app/settings/company-policies", "Company policies", ShieldCheckIcon) : null}
-        {row("/app/profile", "Your profile", UserCircleIcon)}
-        {has("/app/notifications") ? row("/app/notifications", "Notifications", BellIcon) : null}
+        {!settings ? row("/app/profile", "Your profile", UserCircleIcon) : null}
+        {row("/app/notifications", "Notifications", BellIcon)}
         {row("/support", "Help", InfoIcon)}
       </CorpRows>
     </CorpCard>

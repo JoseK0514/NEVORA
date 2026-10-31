@@ -13,11 +13,13 @@ import "./inbox.css";
  * shell marks it as a tab's own page and the Back header steps aside (corp-shell.css). */
 export const metadata = { title: "Things to do" };
 
-export default async function InboxPage() {
+export default async function InboxPage({ searchParams }: { searchParams?: Promise<{ view?: string }> } = {}) {
   const session = await requireSession();
   if (!isManagerRole(session.role)) redirect("/app/requests/hub");
   const workspace = await getWorkspace();
   const weekStart = weekStartFor(businessDate(new Date(), workspace.timeZone));
-  return <ManagerInboxCorp weekStart={weekStart} actorId={session.id} timeZone={workspace.timeZone} coverageFirst={session.role === "OWNER"} />;
+  // ?view=more: More to review, the items Things to do lists but doesn't count (Home and the sidebar count the rest).
+  const view = (await searchParams)?.view === "more" ? "more" : "today";
+  return <ManagerInboxCorp weekStart={weekStart} actorId={session.id} timeZone={workspace.timeZone} coverageFirst={session.role === "OWNER"} view={view} />;
 }
 

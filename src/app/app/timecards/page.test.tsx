@@ -20,7 +20,7 @@ it.each(['MANAGER','OWNER'])('keeps the clean current-week %s view inside the cu
  expect(page.type).toBe(ScopedReadFrame);
  expect((page as ReactElement<{observation:unknown}>).props.observation).toBe(fixture.observation);
  const html=renderToStaticMarkup(page);
- expect(html).toContain('cm-page cm-timecards');
+ expect(html).toContain('class="cm-timecards"');
  expect(html).toContain('2026-10-19 / 2026-10-25');
  expect(html).toContain('data-today="2026-10-20"');
  expect(fixture.company).toHaveBeenCalledOnce();
@@ -37,11 +37,19 @@ it('withholds the clean team view when Company authority is denied',async()=>{
  expect(html).not.toContain('cm-timecards');
  expect(html).not.toContain('data-manager');
 });
-it('retains the employee rolling period without requesting Company management authority',async()=>{
- fixture.role='EMPLOYEE';
+it('retains the Lead rolling period without requesting Company management authority',async()=>{
+ fixture.role='LEAD';
  const html=renderToStaticMarkup(await TimecardsPage({searchParams:Promise.resolve({})}));
  expect(html).toContain('2026-10-14 / 2026-10-20');
  expect(html).toContain('data-manager="false"');
  expect(html).not.toContain('data-company-frame');
+ expect(fixture.company).not.toHaveBeenCalled();
+});
+it('opens an Employee’s timecards as Time’s Past timecards on every screen (Release 1)',async()=>{
+ fixture.role='EMPLOYEE';
+ const page=await TimecardsPage({searchParams:Promise.resolve({})}) as ReactElement<{corporate:boolean;explicit:boolean;children:unknown}>;
+ expect(page.props.corporate).toBe(true);expect(page.props.explicit).toBe(false);expect(page.props.children).toBeNull();
+ const chosen=await TimecardsPage({searchParams:Promise.resolve({start:'2026-09-21',end:'2026-09-27'})}) as ReactElement<{explicit:boolean;period:{startDate:string}}>;
+ expect(chosen.props.explicit).toBe(true);expect(chosen.props.period.startDate).toBe('2026-09-21');
  expect(fixture.company).not.toHaveBeenCalled();
 });

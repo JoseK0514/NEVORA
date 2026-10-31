@@ -23,7 +23,7 @@ it('loads the Owner inventory with live server authority and includes inactive l
   expect(mocks.role).toHaveBeenCalledWith(['OWNER']);
   expect(mocks.devices).toHaveBeenCalledWith({ employeeId: 'owner', sessionTokenHash: 'fixture-proof' });
   expect(mocks.locations).toHaveBeenCalledWith({ includeInactive: true });
-  expect(html).toContain('href="/app/settings"');
+  expect(html).toContain('href="/app/more"');
   expect(html).toContain('data-nv-page=""');
 });
 

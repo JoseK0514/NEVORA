@@ -58,7 +58,7 @@ export function createCalendarClient(authority:string,changed:(state:CalendarCli
    else{
     pending=null;
     if(result.status==='created')created=result;
-    publish({notice:result.status==='created'?'Checking the new link…':result.status==='revoked'?'Link revoked. Future access through this link has stopped.':result.status==='active_url_unavailable'?'The original request finished. Its private URL cannot be retrieved. Replace the link if you still need to copy it.':'The link or your access changed. Review the current status before continuing.'});
+    publish({notice:result.status==='created'?'Checking the new link…':result.status==='revoked'?'Link revoked. Future access through this link has stopped.':result.status==='active_url_unavailable'?'The original request finished. Its private URL cannot be retrieved. Reset the link if you still need to copy it.':'The link or your access changed. Review the current status before continuing.'});
    }
   }catch(error){if(!current(at))return;if(error instanceof AccessDenied){publish({status:{state:'unauthorized',reason:'access_denied'},notice:'Your access could not be confirmed. Sign in again to check your calendar settings.',busy:false});return;}publish({notice:unknown});}
   if(!current(at))return;publish({busy:false});await refresh(created);
@@ -68,7 +68,7 @@ export function createCalendarClient(authority:string,changed:(state:CalendarCli
   refresh:()=>void refresh(),
   command:(kind:CalendarCommand['kind'])=>void submit(kind),
   retry:()=>{if(pending&&state.status&&'authority'in state.status)void submit(pending.kind,true);else void refresh();},
-  async copy(){const url=state.url,at=sequence;if(!url||state.paused||ended||!hasCurrentLease())return;try{await navigator.clipboard.writeText(url);if(current(at)&&state.url===url&&hasCurrentLease())publish({notice:'Link copied.'});}catch{if(current(at)&&state.url===url&&hasCurrentLease())publish({notice:'Copy was unavailable. Use Select link, then copy it manually.'});}},
+  async copy(){const url=state.url,at=sequence;if(!url||state.paused||ended||!hasCurrentLease())return;try{await navigator.clipboard.writeText(url);if(current(at)&&state.url===url&&hasCurrentLease())publish({notice:'Link copied.'});}catch{if(current(at)&&state.url===url&&hasCurrentLease())publish({notice:'Copy was unavailable. Select the link above, then copy it manually.'});}},
   pause(){if(stopped)return;cancel();publish({status:null,url:null,paused:true,busy:false,notice:''});},
   end(){ended=true;pending=null;cancel();publish({status:null,url:null,paused:true,busy:false,notice:''});},
   stop(){stopped=true;pending=null;cancel();state={...state,status:null,url:null,paused:true,busy:false};},

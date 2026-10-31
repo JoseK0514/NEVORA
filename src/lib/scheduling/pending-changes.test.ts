@@ -47,3 +47,12 @@ it('caps the list but keeps the full count, and reports an empty week as nothing
   expect(buildSchedulePendingChanges({ ...input, changes: [] })).toMatchObject({ hasPendingChanges: false, pendingCount: 0, locations: [], changes: [] });
   expect(buildSchedulePendingChanges({ ...input, changes: [], neverCaptured: true, latestRevision: null }).hasPendingChanges).toBe(true);
 });
+
+it('lists every held shift still on the schedule for the Changed marks, past the list cap and without removed ones', () => {
+  const capped = buildSchedulePendingChanges({ ...input, limit: 1 });
+  expect(capped.changes).toHaveLength(1);
+  expect([...capped.changedShiftIds].sort()).toEqual(['s1', 's2', 's4']);
+  // A location-scoped reader gets only its own locations' ids.
+  expect(buildSchedulePendingChanges({ ...input, locationIds: ['loc-2'], canPublish: false }).changedShiftIds).toEqual([]);
+  expect(buildSchedulePendingChanges({ ...input, changes: [] }).changedShiftIds).toEqual([]);
+});

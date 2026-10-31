@@ -1,5 +1,6 @@
 import { ManagerAttendanceReview } from "./manager-attendance-review";
 import { WhosWorkingCorp } from "./whos-working-corp";
+import { TeamOverviewCorp } from "./team/team-overview";
 import { ManagerTimeCorrections } from "./manager-time-corrections";
 import {HomeActionCenterProvider} from './manager-action-center';
 import {OwnerSetupCorpLive} from './owner-setup-card';
@@ -14,9 +15,11 @@ import type { ReactNode } from 'react';
 import type { ClockMonitor } from '@/lib/time-clock';
 import { PremiumHomeLive, PremiumHomeSurface, type PremiumHomeWeek } from './premium-home';
 import type { NextPay } from './payroll/my-pay';
-import { Avatar, Card, CardBody, FilterPills, KitLink, MetaParts, PageBand, Row, Rows, StatGrid, Status, Tile } from './kit/kit';
+import { Avatar, Card, CardBody, FilterPills, KitLink, MetaParts, PageBand, Row, Rows, StatGrid, Status } from './kit/kit';
 import { presentItem } from '@/lib/action-center/present';
-import { CalendarBlankIcon, CalendarCheckIcon } from '@phosphor-icons/react/ssr';
+import { ArrowsLeftRightIcon, CalendarBlankIcon, CalendarXIcon, PaperPlaneTiltIcon, PhoneXIcon } from '@phosphor-icons/react/ssr';
+import { CorpBody, CorpCard, CorpLink, CorpNav, CorpPage, CorpRows, CorpTitle } from './corp/corp';
+import './schedule-activity.css';
 import type { Today } from '@/lib/today/project';
 import type { ActionCenter } from '@/lib/action-center/project';
 
@@ -149,23 +152,51 @@ function TeamTab(props: Props) {
   </>;
 }
 
-/** Schedule activity (Phase 7 rebuild): publications and dated events as kit rows. */
-function ActivityTab(props: Props) {
-  const datedActions = props.managerActions.filter(item => Boolean(item.dateTime)).slice(0, 8);
-  const hasActivity = Boolean(props.latestRevision) || datedActions.length > 0;
-  return <Card id="activity-list" title="Recent activity">
-    {hasActivity ? <Rows label="Recent activity">
-      {props.latestRevision ? <Row leading={<Tile tone="done"><CalendarCheckIcon size={20} weight="bold" /></Tile>}
-        title={revisionSourceLabel(props.latestRevision.sourceType)}
-        meta={`Revision ${props.latestRevision.revisionNumber} · ${formatBusinessTimestamp(props.latestRevision.createdAt, props.timeZone)}`} /> : null}
-      {datedActions.map(item => {
-        const shown = presentItem({ ...item, category: item.type === "TIME_OFF" || item.type === "EXCHANGE" || item.type === "CALLOUT" ? "requests" : "scheduling" }, "Open");
-        return <Row key={item.id} href={item.href} label={`${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`}
-          leading={<Tile tone={item.priority === "URGENT" ? "urgent" : "neutral"}><CalendarBlankIcon size={20} weight="bold" /></Tile>}
-          title={shown.title} meta={<MetaParts text={shown.detail} />} />;
-      })}
-    </Rows> : <CardBody><p className="premium-note">Schedule publications and requests show up here.</p></CardBody>}
-  </Card>;
+/** Schedule activity (Release 1, board O-Activity): "‹ Schedule", Activity, the week and its locations, then one card per
+ * day with the week's publication and dated items as rows (a grey round icon, the title, a 13px line). Same read as before. */
+const ACTIVITY_ICON: Partial<Record<ManagerActionItem["type"], typeof CalendarBlankIcon>> = {
+  COVERAGE_GAP: CalendarBlankIcon, TIME_OFF: CalendarXIcon, EXCHANGE: ArrowsLeftRightIcon, CALLOUT: PhoneXIcon,
+};
+const ACTIVITY_SHOWN = 8;
+function ActivityCorp(props: Props) {
+  const dated = props.managerActions.filter(item => Boolean(item.dateTime));
+  const dayKey = (iso: string) => { try { return new Intl.DateTimeFormat("en-CA", { timeZone: props.timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(iso)); } catch { return iso.slice(0, 10); } };
+  const clock = (iso: string) => { try { return new Intl.DateTimeFormat("en-US", { timeZone: props.timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso)); } catch { return ""; } };
+  const today = dayKey(new Date().toISOString());
+  type Event = { key: string; at: string; title: string; detail: ReactNode; href?: string; label?: string; Icon: typeof CalendarBlankIcon; tint?: boolean };
+  const events: Event[] = [
+    ...(props.latestRevision ? [{ key: "revision", at: props.latestRevision.createdAt, title: revisionSourceLabel(props.latestRevision.sourceType),
+      detail: `${props.weekLabel} · ${clock(props.latestRevision.createdAt)}`, Icon: PaperPlaneTiltIcon, tint: true }] : []),
+    ...dated.slice(0, ACTIVITY_SHOWN).map((item): Event => {
+      const shown = presentItem({ ...item, category: item.type === "TIME_OFF" || item.type === "EXCHANGE" || item.type === "CALLOUT" ? "requests" : "scheduling" }, "Open");
+      return { key: item.id, at: item.dateTime!, title: shown.title, detail: <MetaParts text={shown.detail} />, href: item.href,
+        label: `${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, Icon: ACTIVITY_ICON[item.type] ?? CalendarBlankIcon };
+    }),
+  ];
+  const days = [...new Set(events.map(event => dayKey(event.at)))].sort().reverse();
+  const dayLabel = (key: string) => { const text = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${key}T12:00:00Z`)); return key === today ? `Today · ${text}` : text; };
+  const row = (event: Event) => {
+    const body = <>
+      <span className={event.tint ? "c-act__icon c-act__icon--tint" : "c-act__icon"} aria-hidden="true"><event.Icon className="c-ic c-ic--s" /></span>
+      <span className="c-row__main"><span className="c-row__title c-row__title--b">{event.title}</span><span className="c-row__detail"><span>{event.detail}</span></span></span>
+    </>;
+    return <li key={event.key}>{event.href ? <Link className="c-row c-act__row" href={event.href} aria-label={event.label}>{body}</Link> : <div className="c-row c-act__row">{body}</div>}</li>;
+  };
+  return <CorpPage className="c-act" labelledBy="activity-title">
+    <CorpNav back={{ href: `/app/schedule?week=${encodeURIComponent(props.weekStart)}`, label: "Schedule" }} title="Activity" titleId="activity-title" phoneOnly />
+    <CorpTitle title="Activity" wide />
+    <div className="c-act__sub">
+      <span>{`${props.weekLabel} · All locations`}</span>
+      <span className="c-act__weeks">
+        <Link className="c-act__arrow" href={dashboardHref(props.previousWeek, "activity")} aria-label="Previous week"><CaretLeftIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" /></Link>
+        <Link className="c-act__arrow" href={dashboardHref(props.nextWeek, "activity")} aria-label="Next week"><CaretRightIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" /></Link>
+      </span>
+    </div>
+    {days.length ? days.map((key, index) => <CorpCard key={key} id={`activity-${key}`} label={dayLabel(key)}
+      footer={index === days.length - 1 && dated.length > ACTIVITY_SHOWN ? <CorpLink href="/app/inbox" large>{`Show ${dated.length - ACTIVITY_SHOWN} more in Things to do`}</CorpLink> : undefined}>
+      <CorpRows label={dayLabel(key)}>{events.filter(event => dayKey(event.at) === key).sort((a, b) => b.at.localeCompare(a.at)).map(row)}</CorpRows>
+    </CorpCard>) : <CorpCard id="activity-list"><CorpBody><p className="c-act__empty">Schedule publications and requests show up here.</p></CorpBody></CorpCard>}
+  </CorpPage>;
 }
 
 /** The shared read runs only on live Home; the preview mounts no private reader. */
@@ -224,7 +255,7 @@ function PremiumHomeView(props: Props & { view: Exclude<ManagerDashboardView, 'o
         <ManagerAttendanceReview />
         <ManagerTimeCorrections key={props.correctionAuthority??props.actorId} actorId={props.actorId} authority={props.correctionAuthority}/>
         {props.role==='OWNER' ? <Link className="nv-link" href="/app/clocker-recovery">Clocker recovery</Link> : null}
-      </div> : props.view === 'team' ? <TeamTab {...props} /> : <ActivityTab {...props} />}
+      </div> : props.view === 'team' ? <TeamTab {...props} /> : <ActivityCorp {...props} />}
     </div>
   </div>;
 }
@@ -232,11 +263,16 @@ function PremiumHomeView(props: Props & { view: Exclude<ManagerDashboardView, 'o
 export function ManagerDashboard(props: Props) {
   // Clean Manager (v3): Home is "Today"; its views keep their addresses. The old Home layout is gone (deleted, not restyled).
   if (props.view === 'overview') return <PremiumOverview {...props} />;
+  // Release 1 (Team → Hours this week): the kit page, from the same read.
+  if (props.view === 'team' && !props.overviewSlots) return <TeamOverviewCorp weekStart={props.weekStart} weekLabel={props.weekLabel} previousWeek={props.previousWeek}
+    nextWeek={props.nextWeek} hours={props.hours} activeEmployees={props.activeEmployees} availabilitySubmitted={props.availabilitySubmitted} availabilityEligible={props.availabilityEligible} />;
   // Release 1 (board O-OnShift): Who's working, then the attendance review and time corrections as before.
   if (props.view === 'attendance' && !props.overviewSlots) return <WhosWorkingCorp homeHref={`/app?week=${encodeURIComponent(props.weekStart)}`}>
     <ManagerAttendanceReview />
     <ManagerTimeCorrections key={props.correctionAuthority??props.actorId} actorId={props.actorId} authority={props.correctionAuthority}/>
     {props.role==='OWNER' ? <Link className="c-link c-link--l" href="/app/clocker-recovery">Clocker recovery</Link> : null}
   </WhosWorkingCorp>;
+  // Release 1 (board O-Activity): Schedule activity is its own page under Schedule.
+  if (props.view === 'activity') return <ActivityCorp {...props} />;
   return <PremiumHomeView {...props} view={props.view} />;
 }

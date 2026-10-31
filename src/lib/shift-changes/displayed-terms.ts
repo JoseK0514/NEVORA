@@ -22,3 +22,18 @@ export function matchesDisplayedShift(shift: ExchangeShift, terms: ShiftTerms): 
     && (shift.positionId ?? null) === terms.positionId
     && (shift.isDesignatedLead ?? false) === terms.isDesignatedLead;
 }
+
+/**
+ * "I can't work" on a shift with held edits (Jose, 2026-10-31): the employee
+ * is shown the published version while the reviewed command binds to the live
+ * assignment, so their material fields can differ by design. Only the
+ * assignment identity must agree; a shift that is not held keeps the full
+ * comparison above.
+ */
+export function matchesCalloutShift(shift: ExchangeShift & {held: boolean}, terms: ShiftTerms): boolean {
+  if (!shift.held) return matchesDisplayedShift(shift, terms);
+  return shift.timeZone === terms.timeZone
+    && shift.assignmentEpisodeId === terms.assignmentEpisodeId
+    && shift.id === terms.shiftId
+    && shift.employeeId === terms.employeeId;
+}

@@ -2,10 +2,16 @@ import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {join} from 'node:path';
-// v5 My time: each entry is a row that opens its punches and its correction as a sheet.
-const entryRow=page=>page.locator('ul[aria-labelledby^="employee-time-"] > li > button[aria-haspopup="dialog"]').first();
 import {Temporal} from '@js-temporal/polyfill';
-import {DESKTOP_WIDTHS,EMPLOYEE_DESKTOP_VIEWPORT,phoneHoursGeometry,phoneUncertainCorrection} from './phase-d2-phone-hours-geometry.mjs';
+import {EMPLOYEE_DESKTOP_VIEWPORT} from './phase-d2-phone-hours-geometry.mjs';
+import {MISSED_SHIFT_PATH,accessChanged,checkSubmission,clockText,correctionPayload,fillMissedShiftForm,fixForm,hoursPage,hoursPaused,isCorrectionAction,recordedReceipt,sendFix,whatToFix} from './employee-fix-time-browser.mjs';
+
+const WIDTHS=[320,375,390,430,768,1024,1440];
+// Corporate Time (Release 1): a recorded day is fixed on its Fix my time sheet (edit=entry:<id>); its breaks are choices
+// under "What to fix"; a missed shift is "Fix a missed punch" (edit=new). The sheet sends through the
+// saveEmployeeHoursCorrection Server Action and, while an original outcome is unconfirmed, offers only "Check submission
+// status", which resends that exact operation.
+const ENTRY_FIX='/app/my-time?view=corrections&edit='+encodeURIComponent('entry:d2-browser-entry');
 
 /** Real authenticated commands with deliberately lost delivery; owned fictional data only. */
 export async function verifyCorrectionRecovery({browser,engine,app,q,context,login,checked,report,evidence,geometry}){
@@ -22,113 +28,74 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
  const owner=await context(browser);await login(owner,'QAOWNER');
  try{
   for(const kind of ['ENTRY_BOUNDARY','BREAK_BOUNDARY','MISSING_ENTRY'])for(const loss of ['before','after']){
-   // The entry sheet and correction center this case drives ship at 768px and wider (phones use the Time page).
    const c=await context(browser,EMPLOYEE_DESKTOP_VIEWPORT);await login(c,'D2-E',{reuseSession:true});
    let releaseDelivery=()=>{};
    try{
     const page=await c.newPage();page.setDefaultTimeout(15000);watch(page);
-    await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});await page.bringToFront();
-    let form;
+    const note='Fictional uncertain '+kind+' '+loss+' command.';
     if(kind==='MISSING_ENTRY'){
-     await page.locator('main .employee-correction-center').getByRole('button',{name:'Request a correction',exact:true}).click();
-     form=page.locator('#employee-missing-time-correction');
-     await form.getByLabel('Start',{exact:true}).fill(local(Temporal.Instant.from(entry.start).subtract({hours:3}).toString()));
-     await form.getByLabel('End',{exact:true}).fill(local(Temporal.Instant.from(entry.start).subtract({hours:2}).toString()));
+     await page.goto(app.url+MISSED_SHIFT_PATH,{waitUntil:'networkidle'});await page.bringToFront();
+     const start=local(Temporal.Instant.from(entry.start).subtract({hours:3}).toString()),end=local(Temporal.Instant.from(entry.start).subtract({hours:2}).toString());
+     await fillMissedShiftForm(page,{date:start.slice(0,10),start:clockText(start),end:clockText(end),note});
     }else{
-     await entryRow(page).click();const details=page.locator('dialog[open]');
-     await details.getByRole('button',{name:'Request a correction',exact:true}).click();
-     form=details.locator('.employee-time-correction-form');
-     if(kind==='BREAK_BOUNDARY')await form.getByLabel('What needs correction?').selectOption({index:1});
+     await page.goto(app.url+ENTRY_FIX,{waitUntil:'networkidle'});await page.bringToFront();await fixForm(page).waitFor();
+     if(kind==='BREAK_BOUNDARY'){await whatToFix(page,'Break').click();await page.waitForURL(url=>url.searchParams.get('edit')?.startsWith('break:d2-browser-entry:'));await fixForm(page).waitFor();}
+     await fixForm(page).getByLabel('Note (required)',{exact:true}).fill(note);
     }
-    await form.getByLabel('Reason',{exact:true}).fill('Fictional uncertain '+kind+' '+loss+' command.');
     const commands=[];
     let confirmCommit;
     const committedBeforeDelivery=new Promise(resolve=>{confirmCommit=resolve;});
     const deliveryHeld=new Promise(resolve=>{releaseDelivery=resolve;});
-    await page.route('**/api/employee/time-corrections',async route=>{
-     if(route.request().method()!=='POST')return route.continue();
-     commands.push(route.request().postDataJSON());
+    await page.route('**/app/my-time**',async route=>{
+     if(!isCorrectionAction(route.request()))return route.continue();
+     commands.push({body:route.request().postData(),payload:correctionPayload(route.request())});
      if(commands.length!==1)return route.continue();
      if(loss==='after'){
-      const committed=await route.fetch();assert.equal(committed.status(),202);
+      const committed=await route.fetch();assert.equal(committed.status(),200);
       confirmCommit();await deliveryHeld;
      }
      await route.abort('failed');
     });
-    await form.getByRole('button',{name:'Send request',exact:true}).click();
+    await sendFix(page).click();
     if(loss==='after'){
      await committedBeforeDelivery;
-     // Clear the real private reader while the first POST is still unresolved.
+     // Clear the real private reader while the first send is still unresolved.
      await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));
-     await page.getByText('Updates paused',{exact:true}).waitFor();
+     await hoursPaused(page).waitFor();assert.equal(await fixForm(page).count(),0);
      await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
-     await entryRow(page).waitFor();
-     if(kind!=='MISSING_ENTRY')await entryRow(page).click();
-     await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).waitFor();
-     await page.locator(kind==='MISSING_ENTRY'?'main .employee-correction-center':'dialog[open]').first().getByRole('button',{name:'Request a correction',exact:true}).click();
+     await page.getByRole('heading',{name:'Checking your proposal',exact:true}).waitFor();
      releaseDelivery();
      checked(`${engine}: ${kind} in-flight private pause preserves the command before response classification`);
     }
-    await page.getByText('The server outcome could not be confirmed. Retry the same request safely.',{exact:true}).waitFor();
-    assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),1);
-    assert.equal(await form.getByRole('button',{name:'Send request',exact:true}).isDisabled(),true);
+    await page.getByRole('heading',{name:'Check your original submission',exact:true}).waitFor();
+    assert.equal(await checkSubmission(page).count(),1);
+    assert.equal(await sendFix(page).count(),0,'No new send while the original outcome is unconfirmed');
     // The inherited private reader really clears/unmounts its children on pause.
-    await c.setOffline(true);await page.getByText('Updates paused',{exact:true}).waitFor();
-    assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
-    await c.setOffline(false);await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
-    await entryRow(page).waitFor();
-    if(kind!=='MISSING_ENTRY')await entryRow(page).click();
-    const retry=page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/});await retry.waitFor();
-    // The private view re-checks when its short validity window ends (full-page screenshots take a while) and remounts its
-    // content, closing the entry sheet; the uncertain command survives. Reopen the sheet so each step measures and uses it.
-    const showRetry=async()=>{
-     if(await retry.isVisible())return;
-     try{if(kind!=='MISSING_ENTRY'){await entryRow(page).waitFor();await entryRow(page).click();}await retry.waitFor();}
-     catch(error){
-      const shot=join(evidence,`${engine}-${kind}-${loss}-retry-missing.png`);await page.screenshot({path:shot,fullPage:true}).catch(()=>{});report.screenshots.push(shot);
-      (report.retryMissing??=[]).push({engine,kind,loss,trace:await page.evaluate(()=>window.__d2trace??null).catch(()=>null),state:await page.evaluate(()=>({dialogOpen:!!document.querySelector('dialog[open]'),status:[...document.querySelectorAll('[role="status"]')].map(e=>e.textContent?.trim().slice(0,120)),retry:document.querySelectorAll('button.employee-time-correction-retry').length})).catch(()=>null)});
-      throw error;
-     }
-    };
+    await c.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));await hoursPaused(page).waitFor();
+    assert.equal(await checkSubmission(page).count(),0);
+    await c.setOffline(false);await page.evaluate(()=>{window.dispatchEvent(new Event('online'));window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
+    const retry=checkSubmission(page);await retry.waitFor();
     if(kind==='ENTRY_BOUNDARY'&&loss==='after'){
-     // Trace (diagnostic): when the page heading node is replaced (a remount) and when the retry/sheet come and go.
-     await page.evaluate(()=>{const log=window.__d2trace=[],t0=performance.now();let heading=document.querySelector('main h1'),retry=0,dialog=false,loading=false;
-      const note=kind=>{if(log.length<200)log.push({kind,ms:Math.round(performance.now()-t0),w:innerWidth});};
-      new MutationObserver(()=>{const h=document.querySelector('main h1');if(h!==heading){heading=h;note(h?'heading-replaced':'heading-gone');}
-       const r=document.querySelectorAll('button.employee-time-correction-retry').length;if(r!==retry){retry=r;note('retry:'+r);}
-       const d=!!document.querySelector('dialog[open]');if(d!==dialog){dialog=d;note('dialog:'+d);}
-       const l=/Loading recorded time|Loading correction history/.test(document.querySelector('main')?.textContent??'');if(l!==loading){loading=l;note('loading:'+l);}
-      }).observe(document,{subtree:true,childList:true,characterData:true});
-      for(const type of ['focus','blur','storage','pageshow','pagehide','online','offline','resize'])window.addEventListener(type,()=>note('event:'+type),true);});
-     for(const width of DESKTOP_WIDTHS){
+     // The private view re-checks when its short validity window ends and remounts; the uncertain command survives it.
+     for(const width of WIDTHS){
       await page.setViewportSize({width,height:width<=430?844:1000});
-      await showRetry();
-      await geometry(page,'.employee-time-correction','employee uncertain request',engine,width);
-      // Viewport capture: a Chromium full-page capture briefly sizes the window to 1px wide (and blurs it), which crosses
-      // the phone breakpoint, swaps in the phone Time tree and unmounts the panel holding this uncertain command.
+      await retry.waitFor();
+      await geometry(page,'.c-hours','employee uncertain request',engine,width);
       const shot=join(evidence,`${engine}-employee-recovery-${width}.png`);await page.screenshot({path:shot});report.screenshots.push(shot);
      }
+     await page.setViewportSize(EMPLOYEE_DESKTOP_VIEWPORT);
     }
-    if(kind==='ENTRY_BOUNDARY'&&loss==='before'){
-     // Phone widths: the same uncertain correction on the Time page (its server action never answers; nothing commits).
-     await phoneHoursGeometry({app,browser,context,login,geometry,engine,evidence,report,actor:'D2-E',label:'employee uncertain request',
-      path:'/app/my-time?view=corrections&edit='+encodeURIComponent('entry:d2-browser-entry'),selector:'.em-hours section[aria-label="Submission status"]',
-      prepare:phone=>phoneUncertainCorrection(phone,'Fictional uncertain phone ENTRY_BOUNDARY command.')});
-     await page.bringToFront();
-    }
-    await showRetry();
-    // WebKit can expose animated disclosure content before it accepts focus.
-    await retry.evaluate(async e=>{await new Promise(requestAnimationFrame);await Promise.all((e.closest('details')?.getAnimations({subtree:true})??[]).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})));});
-    await retry.focus();
-    const native=await retry.evaluate(e=>({documentFocused:document.hasFocus(),buttonFocused:document.activeElement===e,enabled:!e.disabled&&e.getAttribute('aria-disabled')!=='true',disclosureOpen:e.closest('details')?.open??null,runningAnimations:(e.closest('details')?.getAnimations({subtree:true})??[]).filter(a=>a.playState==='running').length}));
+    await retry.waitFor();await retry.focus();
+    const native=await retry.evaluate(e=>({documentFocused:document.hasFocus(),buttonFocused:document.activeElement===e,enabled:!e.disabled&&e.getAttribute('aria-disabled')!=='true'}));
     observations.nativeRetries??=[];const receipt={engine,kind,loss,...native,postCallsBefore:commands.length};observations.nativeRetries.push(receipt);
     assert(native.documentFocused&&native.buttonFocused&&native.enabled,'Native retry must have foreground focus and be enabled');
     await page.keyboard.press('Enter');
-    await page.getByText('Correction request sent for manager review.',{exact:true}).waitFor();receipt.postCallsAfter=commands.length;
-    assert.equal(commands.length,2);assert.deepEqual(commands[1],commands[0]);
-    assert.deepEqual(await q('SELECT count(*)::int AS count FROM time_correction_requests WHERE id=$1',[commands[0].operationId]),[{count:1}]);
-    await decide(owner,commands[0].operationId);
-    observations.cases.push({engine,role:'Employee',kind,loss,operationId:commands[0].operationId,postCalls:commands.length,sameCommand:true,pausedSnapshotCleared:true,pausedBeforeDeliverySettled:loss==='after'});
+    await recordedReceipt(page).waitFor();receipt.postCallsAfter=commands.length;
+    const operationId=commands[0].payload.command.operationId;
+    assert.equal(commands.length,2);assert.equal(commands[1].body,commands[0].body);
+    assert.deepEqual(await q('SELECT count(*)::int AS count FROM time_correction_requests WHERE id=$1',[operationId]),[{count:1}]);
+    await decide(owner,operationId);
+    observations.cases.push({engine,role:'Employee',kind,loss,operationId,postCalls:commands.length,sameCommand:true,pausedSnapshotCleared:true,pausedBeforeDeliverySettled:loss==='after'});
     checked(`${engine}: ${kind} ${loss}-commit response loss recovers same operation after private pause`);
    }finally{releaseDelivery();await c.close();}
   }
@@ -203,42 +170,38 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
   const c=await context(browser,EMPLOYEE_DESKTOP_VIEWPORT);await login(c,'D2-E');
   try{
    const page=await c.newPage();page.setDefaultTimeout(15000);watch(page);
-   await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});await page.bringToFront();
-   await entryRow(page).click();const details=page.locator('dialog[open]');
-   await details.getByRole('button',{name:'Request a correction',exact:true}).click();
-   await details.getByLabel('Reason',{exact:true}).fill('Fictional logout recovery boundary.');
-   await page.route('**/api/employee/time-corrections',route=>route.request().method()==='POST'?route.abort('failed'):route.continue());
-   await details.getByRole('button',{name:'Send request',exact:true}).click();
-   await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).waitFor();
-   await page.goto(app.url+'/app/profile',{waitUntil:'networkidle'});
-   await Promise.all([page.waitForURL(url=>url.pathname==='/login',{waitUntil:'commit'}),page.getByRole('region',{name:'Session',exact:true}).getByRole('button',{name:'Sign out',exact:true}).click()]);
+   await page.goto(app.url+ENTRY_FIX,{waitUntil:'networkidle'});await page.bringToFront();
+   await fixForm(page).getByLabel('Note (required)',{exact:true}).fill('Fictional logout recovery boundary.');
+   await page.route('**/app/my-time**',route=>isCorrectionAction(route.request())?route.abort('failed'):route.continue());
+   await sendFix(page).click();
+   await checkSubmission(page).waitFor();
+   // An Employee signs out from More (Release 1).
+   await page.goto(app.url+'/app/more',{waitUntil:'networkidle'});
+   await Promise.all([page.waitForURL(url=>url.pathname==='/login',{waitUntil:'commit'}),page.locator('main').getByRole('button',{name:'Sign out',exact:true}).click()]);
    await login(c,'QAOWNER');await page.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});
-   assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
-   await login(c,'D2-E');await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
-   await entryRow(page).waitFor();
-   assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
+   assert.equal(await checkSubmission(page).count(),0);
+   await login(c,'D2-E');await page.goto(app.url+ENTRY_FIX,{waitUntil:'networkidle'});
+   await fixForm(page).waitFor();
+   assert.equal(await checkSubmission(page).count(),0);
    checked(`${engine}: sign-out/account-switch/sign-in clears uncertain Employee command memory`);
   }finally{await c.close();}
 
   const denied=await context(browser,EMPLOYEE_DESKTOP_VIEWPORT);await login(denied,'D2-E');
   try{
    const page=await denied.newPage();page.setDefaultTimeout(15000);watch(page);
-   await page.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});await page.bringToFront();
-   await entryRow(page).click();const details=page.locator('dialog[open]');
-   await details.getByRole('button',{name:'Request a correction',exact:true}).click();
-   await details.getByLabel('Reason',{exact:true}).fill('Fictional current authority-loss regression.');
-   await page.route('**/api/employee/time-corrections',route=>route.request().method()==='POST'?route.abort('failed'):route.continue());
-   await details.getByRole('button',{name:'Send request',exact:true}).click();
-   await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).waitFor();
+   await page.goto(app.url+ENTRY_FIX,{waitUntil:'networkidle'});await page.bringToFront();
+   await fixForm(page).getByLabel('Note (required)',{exact:true}).fill('Fictional current authority-loss regression.');
+   await page.route('**/app/my-time**',route=>isCorrectionAction(route.request())?route.abort('failed'):route.continue());
+   await sendFix(page).click();
+   await checkSubmission(page).waitFor();
    await q("UPDATE employees SET active=false WHERE id='D2-E'");
    await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
-   await page.locator('main').getByText('Your session ended',{exact:true}).waitFor();
-   assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
+   await accessChanged(page).waitFor();
+   assert.equal(await checkSubmission(page).count(),0);
    await q("UPDATE employees SET active=true WHERE id='D2-E'");
    await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
-   await entryRow(page).waitFor();
-   await entryRow(page).click();
-   assert.equal(await page.locator('button.employee-time-correction-retry').filter({hasText:/^Try again$/}).count(),0);
+   await hoursPage(page,'corrections').waitFor();
+   assert.equal(await checkSubmission(page).count(),0);
    checked(`${engine}: current Employee authority denial clears uncertain recovery before re-entry`);
   }finally{await q("UPDATE employees SET active=true WHERE id='D2-E'");await denied.close();}
   assert.deepEqual(observations.runtimeErrors,[]);

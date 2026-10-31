@@ -14,8 +14,8 @@ describe('Assisted recovery workflow presentation',()=>{
   expect(html).toMatch(/<select[^>]*name="attestation"/);
   expect(html).toContain('value="Verified in person with a photo ID."');
   expect(html).toMatch(/type="checkbox" role="switch"[^>]*required=""/);
-  expect(html).toContain('Do not substitute a newly supplied email or phone number.');
-  expect(html).toContain('Omit sensitive documents, codes and personal details.');
+  expect(html).toContain('Check against details you already have, not a new email or phone number they give you.');
+  expect(html).toContain('You don’t need documents, codes or other personal details.');
   expect(html).toContain('independently confirmed');
   expect(html).not.toContain('name="email"');
   expect(html).not.toContain('name="password"');

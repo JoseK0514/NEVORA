@@ -5,8 +5,8 @@
 
 /* Week card: "‹ Oct 26 – Nov 1 ›" and the week's state, then the seven days. */
 :is(#c-root, html) .c-sched .c-sched-week__head { padding: 0 16px; }
-:is(#c-root, html) .c-sched .c-sched-week__nav { display: flex; align-items: center; margin-left: -14px; }
-:is(#c-root, html) .c-sched .c-sched-week__arrow { display: grid; place-items: center; width: 36px; height: 40px; border-radius: 8px; color: var(--c-teal); }
+:is(#c-root, html) .c-sched .c-sched-week__nav { display: flex; align-items: center; margin-left: -18px; }
+:is(#c-root, html) .c-sched .c-sched-week__arrow { display: grid; place-items: center; width: 44px; height: 44px; margin: 0 -4px; border-radius: 8px; color: var(--c-teal); }
 :is(#c-root, html) .c-sched .c-sched-week__arrow .c-ic { width: 18px; height: 18px; }
 :is(#c-root, html) .c-sched .c-sched-week__label { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); white-space: nowrap; }
 :is(#c-root, html) .c-sched .c-sched-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); padding: 8px 8px 10px; }
@@ -60,6 +60,9 @@
 /* The shortest phones (320–359px): the date shortens, the avatar steps aside so names and Find cover stay whole. */
 :is(#c-root, html) .c-sched .c-sched-sub__short { display: none; }
 :is(#c-root, html) .c-sched .c-row__title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* A day row's name and role wrap instead of being cut ("Alexandra R…") when a state pill sits beside them. */
+:is(#c-root, html) .c-sched .c-sched-row .c-row__title, :is(#c-root, html) .c-sched .c-sched-row .c-row__detail > span:first-child { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+:is(#c-root, html) .c-sched .c-sched-row > .c-pill { flex: none; }
 @media (max-width: 359px) {
   :is(#c-root, html) .c-sched .c-sched-sub__long { display: none; }
   :is(#c-root, html) .c-sched .c-sched-sub__short { display: inline; }
@@ -68,3 +71,11 @@
 }
 /* Tablets and small laptops show the phone layout in the reading column. */
 @media (min-width: 768px) and (max-width: 1199px) { :is(#c-root, html) .c-page.c-sched { max-width: 640px; } }
+
+/* Desktop grid: people's initials on the teal tint, as on Team. */
+html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: var(--c-tint) !important; color: var(--c-teal) !important; }
+/* A day opened from Things to do: one quiet line with Show full week (no old panel padding). */
+:is(#c-root, html) .c-sched .c-note.manager-schedule-context { display: flex; flex-wrap: wrap; align-items: center; gap: 0 12px; margin: 0; padding: 0 2px; background: none; box-shadow: none; }
+:is(#c-root, html) .c-sched .c-note.manager-schedule-context .c-link { margin: -12px 0; }
+/* The shortest phones: the week state drops its "Published ·" so the count stays whole. */
+@media (max-width: 359px) { :is(#c-root, html) .c-sched .c-sched-week__head .c-sched-state__lead { display: none; } }

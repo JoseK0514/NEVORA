@@ -4,6 +4,7 @@ import {randomUUID} from 'node:crypto';
 import {expect,vi} from 'vitest';
 import * as exchanges from './exchanges';
 import * as callouts from './callouts';
+import {executeShiftChange} from './shift-changes';
 import {fixture as previousFixture} from './request-notification-fixtures.test-support';
 export {intents,week} from './request-notification-fixtures.test-support';
 import {fictionalProfile} from '../../test/fixtures/shift-changes';
@@ -69,7 +70,7 @@ function build(r:ReturnType<typeof previousFixture>,kind:'EXCHANGE'|'CALLOUT') {
  if(kind==='EXCHANGE')source.shift_exchanges=[row];else source.shift_callouts=[row];
  return source;
 }
-async function run(name:keyof typeof exchanges|keyof typeof callouts,input:Record<string,unknown>,executor:SqlExecutor) {
+async function run(name:keyof typeof exchanges|keyof typeof callouts,input:Record<string,unknown>,executor:SqlExecutor,raw=false) {
  const r=registry.get(executor)!;const actorId=String(name==='cancelPendingCallout'?input.employeeId:input.managerId??input.employeeId??input.requestedByEmployeeId);
  input={...input};if(name==='cancelPendingCallout')delete input.managerId;else if(input.managerId)delete input.employeeId;const actor=r.state.recipients.find(e=>e.employeeId===actorId)!;
  const proof:SessionMutationProof={employee:{id:actorId,role:actor.role,firstName:'Test',lastName:actorId,primaryLocationId:'L'},sessionTokenHash:'a'.repeat(64)};
@@ -80,6 +81,7 @@ async function run(name:keyof typeof exchanges|keyof typeof callouts,input:Recor
   command={kind,operationId:randomUUID(),sourceShiftId:a.shiftId,sourceEpisodeId:a.assignmentEpisodeId,sourceTermsFingerprint:shiftTermsFingerprint(a),...(b?{targetShiftId:b.shiftId,targetEpisodeId:b.assignmentEpisodeId,targetTermsFingerprint:shiftTermsFingerprint(b)}:{})} as ShiftChangeCommand;
  }else if(kind==='SUBMIT_CALLOUT') {const source=build(r,'CALLOUT'),sh=source.shifts.find(s=>s.id===input.shiftId)!;const terms=sourceShiftTerms(sh,r.state.schedules.find(s=>s.id===sh.schedule_id)!,'northside','America/New_York');command={kind,operationId:randomUUID(),sourceShiftId:terms.shiftId,sourceEpisodeId:terms.assignmentEpisodeId,sourceTermsFingerprint:shiftTermsFingerprint(terms),reasonCode:input.reasonCode as 'ILLNESS',reasonNote:input.reasonNote as string|undefined};}
  else command={kind,operationId:randomUUID(),requestId:String(input.exchangeId??input.calloutId),expectedRevision:1};
+ if(raw)return executeShiftChange(proof,command,executor);
  const fn=(name in exchanges?exchanges[name as keyof typeof exchanges]:callouts[name as keyof typeof callouts]) as (input:unknown,executor:SqlExecutor)=>Promise<unknown>;
  return fn({...input,proof,command},executor);
 }
@@ -96,3 +98,5 @@ export const createCallout=(input:Record<string,unknown>,executor:SqlExecutor)=>
 export const approveCalloutAndOpenCoverage=(input:Record<string,unknown>,executor:SqlExecutor)=>run('approveCalloutAndOpenCoverage',input,executor);
 export const denyCallout=(input:Record<string,unknown>,executor:SqlExecutor)=>run('denyCallout',input,executor);
 export const cancelPendingCallout=(input:Record<string,unknown>,executor:SqlExecutor)=>run('cancelPendingCallout',input,executor);
+/** The full command result (status and issue text) for the same reviewed command. */
+export const shiftChangeResult=(name:keyof typeof exchanges|keyof typeof callouts,input:Record<string,unknown>,executor:SqlExecutor)=>run(name,input,executor,true) as Promise<Awaited<ReturnType<typeof executeShiftChange>>>;

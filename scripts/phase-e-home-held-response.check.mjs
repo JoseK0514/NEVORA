@@ -35,26 +35,19 @@ for(const engine of ['chromium','webkit']){
   assert.equal(result.observations[0].settled,false,'Prior ready snapshot must not release the fresh-generation wait');
   assert.equal(result.observations[1].settled,false,'Loading must not release the fresh-generation wait');
   assert.deepEqual(result.resolved,{state:'ready',busy:'false',fresh:true,old:false});
-  // Corporate Employee: recorded time is on the Time tab. Phones: the Hours records view (Right now pill, footer Refresh).
-  await page.setContent('<main><div class="em-hours" data-hours-view="records" data-hours-state="loading"><div class="c-card"><div class="c-card__head"><h2 class="c-card__label">Right now</h2><span class="c-pill">On the clock</span></div></div><footer class="em-request-footer"><span>Your information only</span><button type="button" disabled>Refreshing…</button></footer></div></main>');
+  // Corporate Employee: recorded time is on the Time tab, the same kit page at every width (Right now pill; no Refresh,
+  // aria-busy while a read is in flight).
+  await page.setContent('<main><div class="c-page c-hours" data-hours-view="records" data-hours-state="loading" aria-busy="true"><section class="c-card" id="hours-now"><div class="c-card__head"><h2 class="c-card__label">Right now</h2><div class="c-card__aside"><span class="c-pill">On the clock</span></div></div></section></div></main>');
   let recordedSettled=false;result.recordedReadiness=[];
   const recordedWaiting=waitForRecordedTimeReady(page,'OFF_CLOCK').then(value=>{recordedSettled=true;result.recordedResolved=value;});
   const render=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
   await render();result.recordedReadiness.push({phase:'Time tab still loading',settled:recordedSettled});assert.equal(recordedSettled,false);
-  await page.evaluate(()=>{document.querySelector('.em-hours').setAttribute('data-hours-state','ready');const button=document.querySelector('button');button.disabled=false;button.textContent='Refresh';});
+  await page.evaluate(()=>{const time=document.querySelector('.c-hours');time.setAttribute('data-hours-state','ready');time.setAttribute('aria-busy','false');});
   await render();result.recordedReadiness.push({phase:'Ready, but an older Clocked-in status',settled:recordedSettled});assert.equal(recordedSettled,false);
-  await page.evaluate(()=>{document.querySelector('.c-pill').textContent='Off the clock';const button=document.querySelector('button');button.disabled=true;button.textContent='Refreshing…';});
-  await render();result.recordedReadiness.push({phase:'Recorded state arrived, refresh still disabled',settled:recordedSettled});assert.equal(recordedSettled,false);
-  await page.evaluate(()=>{const button=document.querySelector('button');button.disabled=false;button.textContent='Refresh';});
-  await recordedWaiting;assert.deepEqual(result.recordedResolved,{state:'OFF_CLOCK',view:'hours',refreshEnabled:true});
-  // Wider layouts: the My time view (its status carries data-state only once the read is released).
-  await page.setContent('<main><div class="q-mytime"><p role="status"><span class="q-mytime__state">Friday · <span>Loading recorded time</span></span></p></div></main>');
-  let wideSettled=false;const wideWaiting=waitForRecordedTimeReady(page,'OFF_CLOCK').then(value=>{wideSettled=true;result.wideResolved=value;});
-  await render();result.recordedReadiness.push({phase:'My time still loading',settled:wideSettled});assert.equal(wideSettled,false);
-  await page.evaluate(()=>{const state=document.querySelector('.q-mytime__state');state.setAttribute('data-state','CLOCKED_IN');state.lastElementChild.textContent='Clocked in';});
-  await render();result.recordedReadiness.push({phase:'My time released with an older Clocked-in status',settled:wideSettled});assert.equal(wideSettled,false);
-  await page.evaluate(()=>{const state=document.querySelector('.q-mytime__state');state.setAttribute('data-state','OFF_CLOCK');state.lastElementChild.textContent='Off clock';});
-  await wideWaiting;assert.deepEqual(result.wideResolved,{state:'OFF_CLOCK',view:'my-time',refreshEnabled:null});result.status='passed';
+  await page.evaluate(()=>{document.querySelector('.c-pill').textContent='Off the clock';document.querySelector('.c-hours').setAttribute('aria-busy','true');});
+  await render();result.recordedReadiness.push({phase:'Recorded state arrived, a read still in flight',settled:recordedSettled});assert.equal(recordedSettled,false);
+  await page.evaluate(()=>{document.querySelector('.c-hours').setAttribute('aria-busy','false');});
+  await recordedWaiting;assert.deepEqual(result.recordedResolved,{state:'OFF_CLOCK',view:'time',settled:true});result.status='passed';
  }catch(error){result.failure={name:error.name,message:error instanceof assert.AssertionError?error.message:'Controlled readiness fixture failed'};process.exitCode=1;}
  finally{await context?.close();await browser.close();result.browserClosed=!browser.isConnected();await writeFile(join(evidence,'readiness-report.json'),JSON.stringify(results,null,2));}
 }

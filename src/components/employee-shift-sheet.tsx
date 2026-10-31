@@ -6,6 +6,9 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
 import {HandCoinsIcon} from '@phosphor-icons/react/dist/ssr/HandCoins';
 import {CalendarXIcon} from '@phosphor-icons/react/dist/ssr/CalendarX';
+import {UserPlusIcon} from '@phosphor-icons/react/dist/ssr/UserPlus';
+import {ProhibitIcon} from '@phosphor-icons/react/dist/ssr/Prohibit';
+import './employee-shift-sheet.css';
 import {QuietSheet, SheetCancel} from './quiet/quiet-sheet';
 
 /* v5 Schedule (mockup E03): tapping a shift opens it as a sheet over the week: the shift in full, then the ways to
@@ -73,7 +76,7 @@ export function ShiftSheetRow({shift, href, closeHref, title, detail, initiallyO
 export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, trail, when, initiallyOpen = false}: {shift: ShiftSheetShift; href: string; closeHref: string; lead?: string; title: string; detail: string; trail?: ReactNode; when?: string | null; initiallyOpen?: boolean}) {
   const [open, setOpen] = useState(initiallyOpen);
   const id = encodeURIComponent(shift.id);
-  const facts = [shift.length, shift.ends ? `ends ${shift.ends}` : null, shift.lead ? 'Shift lead' : null].filter(Boolean).join(' · ');
+  const facts = [shift.length, shift.ends ? `ends ${shift.ends}` : null, shift.lead ? 'You’re the shift lead' : null].filter(Boolean).join(' · ');
   return <li>
     <Link className="c-row" href={href} scroll={false} aria-haspopup="dialog" onClick={event => {
       if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
@@ -82,13 +85,14 @@ export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, 
     }}>
       {lead ? <span className="c-row__lead">{lead}</span> : null}
       <span className="c-row__main"><span className="c-row__title">{title}</span><span className="c-row__detail"><span>{detail}</span>{trail ?? null}</span></span>
-      <CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/>
+      {/* Board G-E-Schedule: a row with a status pill has no chevron. */}
+      {trail ? null : <CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/>}
     </Link>
     <QuietSheet open={open} labelledBy={`shift-${shift.id}-title`} onClose={() => {
       setOpen(false);
       if (initiallyOpen && window.location.search.includes('shift=')) window.history.replaceState(window.history.state, '', closeHref);
     }}>
-      <div className="c-sheet" data-corp="">
+      <div className="c-sheet c-esheet" data-corp="">
         <div className="c-sheet__nav"><span/><h1 className="c-sheet__title" id={`shift-${shift.id}-title`}>{shift.day}</h1><SheetCancel href={closeHref} className="c-sheet__done">Done</SheetCancel></div>
         <div className="c-sheet__shift">
           <div className="c-sheet__time"><b className="c-big">{shift.hours}</b>{when ? <span className="c-pill c-pill--teal">{when}</span> : null}</div>
@@ -98,10 +102,9 @@ export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, 
         {shift.canSwap || shift.canReport ? <>
           <ul className="c-card c-rows c-sheet__actions" aria-label="Change this shift" onClick={event => { if ((event.target as HTMLElement).closest('a')) setOpen(false); }}>
             {shift.canSwap ? <li><Link className="c-row c-row--one" href={`/app/exchange/swap?sourceShiftId=${id}`}><span className="c-row__icon" aria-hidden="true"><ArrowsLeftRightIcon className="c-ic"/></span><span className="c-row__main"><span className="c-row__title">Swap with someone</span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></Link></li> : null}
-            {shift.canSwap ? <li><Link className="c-row c-row--one" href={`/app/exchange/swap?sourceShiftId=${id}&mode=cover`}><span className="c-row__icon" aria-hidden="true"><HandCoinsIcon className="c-ic"/></span><span className="c-row__main"><span className="c-row__title">Offer for cover</span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></Link></li> : null}
-            {shift.canReport ? <li><Link className="c-row c-row--danger" href={`/app/exchange/callout?shiftId=${id}`}><span className="c-row__icon" aria-hidden="true"><CalendarXIcon className="c-ic"/></span><span className="c-row__main"><span className="c-row__title">I can’t work this shift</span><span className="c-row__detail"><span>Tells your manager right away</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></Link></li> : null}
+            {shift.canSwap ? <li><Link className="c-row c-row--one" href={`/app/exchange/swap?sourceShiftId=${id}&mode=cover`}><span className="c-row__icon" aria-hidden="true"><UserPlusIcon className="c-ic"/></span><span className="c-row__main"><span className="c-row__title">Offer for cover</span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></Link></li> : null}
+            {shift.canReport ? <li><Link className="c-row c-row--danger" href={`/app/exchange/callout?shiftId=${id}`}><span className="c-row__icon" aria-hidden="true"><ProhibitIcon className="c-ic"/></span><span className="c-row__main"><span className="c-row__title">I can’t work this shift</span><span className="c-row__detail"><span>Tells your manager right away</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></Link></li> : null}
           </ul>
-          <p className="c-note c-note--center c-sheet__note"><span>It stays your shift until a swap completes or your manager approves.</span></p>
         </> : null}
       </div>
     </QuietSheet>

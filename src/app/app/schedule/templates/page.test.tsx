@@ -74,7 +74,7 @@ describe("schedule template workflow presentation", () => {
     const output = await html();
     expect(output).not.toContain("<script>alert");
     expect(output).toContain("&lt;script&gt;");
-    expect(output).toContain("1 shift</i>");
+    expect(output).toContain(">1 shift</b>");
     expect(output).toContain("Use for Oct 12 – 18");
     expect(output).toContain("Archive");
   });

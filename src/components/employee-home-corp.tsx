@@ -11,13 +11,27 @@ import {clock, dayWord, fmt, isComplete, longDay, sourceDestinations, sourceName
 
 /* Employee Home on the corporate kit (Release 1, board C-Employee). Look only: the Home read, its states, links, authority
  * checks and private-data clearing are the original controller's, exactly as in the v5 view. Clock-in happens on the
- * location's tablet (phone clock-in is off), so the shift card points there instead of offering a phone button. */
+ * location's tablet (phone clock-in is off), so the shift card points there instead of offering a phone button. The
+ * first-week Quick guide (`intro`) shows only while Employee Access is on (off in Release 1 production). */
 
 const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
 /** "08:00" → "8:00 AM". */
 function wall(time: string) {
   const [h, m] = time.split(':').map(Number);
   return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h < 12 || h === 24 ? 'AM' : 'PM'}`;
+}
+
+/** "2026-10-30 19:45": the read's moment as wall time in the workspace zone, comparable with "<date> <HH:mm>". */
+function wallNow(at: string, zone: string) {
+  const parts = fmt(zone, {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23'}).formatToParts(new Date(at));
+  const part = (type: string) => parts.find(item => item.type === type)?.value ?? '00';
+  return `${part('year')}-${part('month')}-${part('day')} ${part('hour')}:${part('minute')}`;
+}
+const nextDay = (date: string) => new Date(Date.parse(`${date}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10);
+/** Whether a week shift (wall times in the workspace zone) is still ahead or under way at `at`; overnight shifts end the next day. */
+export function weekShiftAhead(shift: {date: string; startTime: string; endTime: string}, at: string, zone: string) {
+  const end = `${shift.endTime <= shift.startTime && shift.endTime !== '24:00' ? nextDay(shift.date) : shift.date} ${shift.endTime === '24:00' ? '24:00' : shift.endTime}`;
+  return end > wallNow(at, zone);
 }
 
 /** "Starts in 2 h" or "Starts in 45 min" for today's next shift; otherwise "Tomorrow" or the weekday. */
@@ -40,7 +54,7 @@ function ShiftCard({snapshot}: {snapshot: HomeSnapshot}) {
   const where = [shift.positionLabel, shift.locationLabel, shift.designatedLead ? 'Shift lead' : null].filter(Boolean).join(' · ');
   const href = `/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}&shift=${encodeURIComponent(shift.shiftId)}`;
   return <CorpCard id="home-shift" label={now ? 'On shift now' : today ? 'Today’s shift' : 'Next shift'}
-    aside={now ? <CorpPill tone="teal">Until {clock(now.endAt, zone)}</CorpPill> : <CorpPill tone={today ? 'teal' : 'neutral'}>{startsIn(shift, snapshot)}</CorpPill>}>
+    aside={now ? <CorpPill tone="teal">Until {clock(now.endAt, zone)}</CorpPill> : <CorpPill tone="teal">{startsIn(shift, snapshot)}</CorpPill>}>
     <CorpBody>
       <b className="c-big"><time dateTime={shift.startAt}>{clock(shift.startAt, zone)}</time><span aria-hidden="true"> – </span><span className="nv-sr"> to </span><time dateTime={shift.endAt}>{clock(shift.endAt, zone)}</time></b>
       <span className="c-ehome__where">{today ? where : keepWhole(`${longDay(shift, zone)} · ${where}`)}</span>
@@ -54,7 +68,9 @@ function ShiftCard({snapshot}: {snapshot: HomeSnapshot}) {
 function Upcoming({week, snapshot}: {week: HomeWeek; snapshot: HomeSnapshot}) {
   const shown = snapshot.currentShift ?? snapshot.nextShift;
   const shownDay = shown?.date, shownStart = shown ? fmt(snapshot.timeZone, {hour: '2-digit', minute: '2-digit', hourCycle: 'h23'}).format(new Date(shown.startAt)) : null;
-  const rows = week.shifts.filter(shift => shift.date >= week.today && !(shift.date === shownDay && shift.startTime === shownStart))
+  // A shift that has already ended is not upcoming: compare its end (wall time in the workspace zone, next day when it
+  // runs past midnight) with the moment Home was read, not just its date.
+  const rows = week.shifts.filter(shift => shift.date >= week.today && weekShiftAhead(shift, snapshot.observedAt, snapshot.timeZone) && !(shift.date === shownDay && shift.startTime === shownStart))
     .sort((a, b) => a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime));
   if (!rows.length) return null;
   return <CorpCard id="home-upcoming" label="Upcoming shifts" aside={<CorpLink href="/app/schedule" label="See all shifts">See all</CorpLink>}>
@@ -93,16 +109,28 @@ export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, 
   return <CorpPage className="c-ehome">
     <div data-home-state={viewState} aria-busy={refreshing || loading} className="c-ehome__body">
       <CorpTitle title={name ? `Welcome back, ${name}` : 'Home'} sub={<>{date}{workspaceName ? <> · {workspaceName}</> : null}</>}/>
-      {intro}
       {snapshot ? <>
         <ShiftCard snapshot={snapshot}/>
         {snapshot.publicationState === 'partial' ? <CorpNote>{unpublishedNote(snapshot.unpublishedLocations ?? [])}</CorpNote> : null}
+      </> : <CorpCard id="home-shift" label="Today’s shift">
+        <CorpBody>
+          <p className="c-ehome__state" role="status">{waiting}</p>
+          {!loading && !paused ? denied ? <CorpButtonLink href="/login" full>Sign in</CorpButtonLink>
+            : <CorpButton kind="secondary" full data-home-refresh onClick={onRetry} disabled={refreshing} aria-busy={refreshing || undefined}>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span></CorpButton> : null}
+        </CorpBody>
+      </CorpCard>}
+      {/* The first-week Quick guide sits below the shift card, as anchored on the v5 Home (a048a86b). It keeps one place in
+        * the tree whether or not Home is read, so a refresh never remounts it (or closes it). */}
+      {intro}
+      {snapshot ? <>
         {weekShown ? <Upcoming week={weekShown} snapshot={snapshot}/> : null}
-        {todos.length || partial ? <CorpCard id="employee-home-todo" label={todos.length ? `Things to do (${todos.length})` : 'Things to do'}>
+        {/* Board C-Employee: one thing to do is its own card ("Confirm next week's schedule … Review"); several share a
+          * "Things to do" header. The action reads as a teal text link, not a pill. */}
+        {todos.length || partial ? <CorpCard id="employee-home-todo" label={todos.length === 1 && !partial ? undefined : 'Things to do'} ariaLabel={todos.length === 1 && !partial ? 'Things to do' : undefined}>
           <CorpRows>
-            {todos.slice(0, 3).map(({key, item, weeks}) => <li key={key}><CorpRow href={item.href} title={keepWhole(todoTitle(item))}
+            {todos.slice(0, 3).map(({key, item, weeks}) => <li key={key}><CorpRow href={item.href} title={keepWhole(todoTitle(item))} bold={todos.length === 1 && !partial}
               detail={weeks ? weeksDetail(weeks) : item.deadlineAt ? `Respond by ${keepWhole(fmt(snapshot.timeZone, {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}).format(new Date(item.deadlineAt)))}` : undefined}
-              trail={item.required ? <CorpPill tone="amber">Review</CorpPill> : undefined}/></li>)}
+              trail={item.required ? <span className="c-ehome__act">Review</span> : undefined}/></li>)}
             {todos.length > 3 ? <li><CorpRow href="/app/notifications" title={`See all ${todos.length}`} one/></li> : null}
             {partial ? HOME_SOURCES.filter(key => !isComplete(snapshot.sources[key])).map(key => {
               const source = snapshot.sources[key];
@@ -113,13 +141,7 @@ export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, 
           </CorpRows>
         </CorpCard> : <CorpNote center>You’re all set. Nothing needs you right now.</CorpNote>}
         <p className="nv-sr" data-home-updated="true">Updated <time dateTime={snapshot.observedAt}>{clock(snapshot.observedAt, snapshot.timeZone)}</time>, times in {snapshot.timeZone.split('/').pop()!.replace(/_/g, ' ')} time</p>
-      </> : <CorpCard id="home-shift" label="Today’s shift">
-        <CorpBody>
-          <p className="c-ehome__state" role="status">{waiting}</p>
-          {!loading && !paused ? denied ? <CorpButtonLink href="/login" full>Sign in</CorpButtonLink>
-            : <CorpButton kind="secondary" full data-home-refresh onClick={onRetry} disabled={refreshing} aria-busy={refreshing || undefined}>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span></CorpButton> : null}
-        </CorpBody>
-      </CorpCard>}
+      </> : null}
     </div>
   </CorpPage>;
 }

@@ -59,7 +59,8 @@ export function EmployeeHomeView({state,timeAuthority,onRetry,authority}:{state:
      <Link href={destinations[key]}>Open {names[key].toLowerCase()}</Link>
     </li>)}</ul>
    </section>:null}
-   <footer className="employee-home-refresh">{denied?<Link className="button secondary" href="/login">Sign in</Link>:<button className="button secondary" type="button" onClick={onRetry} disabled={state.paused||state.refreshing}>{state.refreshing?'Checking…':'Retry home'}</button>}{snapshot?<small>Checked <time dateTime={snapshot.observedAt}>{stamp(snapshot.observedAt,snapshot.timeZone)}</time></small>:null}</footer>
+   {/* Only a Home that isn't showing offers Retry or Sign in; a shown Home has no Checked/Refresh footer. */}
+   {!snapshot&&!loading&&!state.paused?<footer className="employee-home-refresh">{denied?<Link className="button secondary" href="/login">Sign in</Link>:<button className="button secondary" type="button" onClick={onRetry} disabled={state.refreshing}>{state.refreshing?'Checking…':'Retry home'}</button>}</footer>:null}
   </div>
   <aside className="employee-home-surface employee-home-recorded" aria-label="Own recorded time">
    {snapshot?<EmployeeTimePanel key={timeAuthority} compact authority={timeAuthority}/>:<EmployeeTimeView compact state={{time:state.snapshot?.state==='unavailable'?{state:'unavailable',reason:denied?'access_denied':'read_failed'}:null,refreshing:loading,paused:state.paused}} onRefresh={onRetry}/>}

@@ -52,23 +52,44 @@ const SIDEBAR_HOLDERS: Record<string, string> = {
   "/app/requests": "/app/inbox",
   "/app/availability": "/app/inbox",
   "/app/exchange": "/app/inbox",
-  "/app/payroll-export": "/app/timecards",
+  // Release 1: Time exports belongs to Payroll (its phone tab); without payroll review it stays with Time.
+  "/app/payroll-export": "/app/payroll",
   "/app/schedule/templates": "/app/schedule",
-  // Clean Manager (v3): Scheduling rules sits in Plan for Owners too; Settings no longer holds it.
+  // Release 1 (board O-ScheduleRules, back "Schedule"): Scheduling rules opens from Schedule's menu, More and Settings.
+  "/app/schedule/settings": "/app/schedule",
 };
 const EMPLOYEE_SIDEBAR_HOLDERS: Record<string, string> = {
-  "/app/availability": "/app/requests/hub",
+  "/app/availability": "/app/schedule",
 };
 /** Entries reached from the desktop account menu instead; their pages light no sidebar entry. */
 const ACCOUNT_MENU_ENTRIES = new Set(["/app/my-pay", "/app/profile"]);
 const EMPLOYEE_ACCOUNT_MENU_ENTRIES = new Set(["/app/profile"]);
+const LEAD_ACCOUNT_MENU_ENTRIES = new Set(["/app/profile"]);
+/** Release 1 (board C-Employee): an Employee's desktop sidebar uses the phone tabs' names and order. */
+const EMPLOYEE_SIDEBAR_LABELS: Record<string, string> = { "/app/schedule": "Schedule", "/app/my-time": "Time", "/app/my-pay": "Pay" };
+const EMPLOYEE_SIDEBAR_ORDER = ["/app", "/app/schedule", "/app/my-time", "/app/my-pay", "/app/requests/hub"];
 
-function sidebarHolders(role: UserRole) { return role === "EMPLOYEE" || role === "LEAD" ? EMPLOYEE_SIDEBAR_HOLDERS : SIDEBAR_HOLDERS; }
+// An Employee's Schedule holds Availability (its title action). A Lead's Schedule and Requests pages have no Availability
+// link, so a Lead keeps the sidebar entry.
+function sidebarHolders(role: UserRole) { return role === "EMPLOYEE" ? EMPLOYEE_SIDEBAR_HOLDERS : role === "LEAD" ? {} as Record<string, string> : SIDEBAR_HOLDERS; }
+
+/** The holder that is present: Time exports falls back to Time when there is no Payroll entry. */
+function holderFor(role: UserRole, href: string, present: Set<string>): string | undefined {
+  const holder = sidebarHolders(role)[href];
+  if (holder && present.has(holder)) return holder;
+  return href === "/app/payroll-export" && present.has("/app/timecards") ? "/app/timecards" : undefined;
+}
 
 export function sidebarNavigation(role: UserRole, items: NavigationItem[]): NavigationItem[] {
-  const present = new Set(items.map(item => item.href)), holders = sidebarHolders(role), management = role !== "EMPLOYEE" && role !== "LEAD";
-  return items
-    .filter(item => !(holders[item.href] && present.has(holders[item.href])) && !(management ? ACCOUNT_MENU_ENTRIES : EMPLOYEE_ACCOUNT_MENU_ENTRIES).has(item.href))
+  const present = new Set(items.map(item => item.href)), management = role !== "EMPLOYEE" && role !== "LEAD";
+  const rank = (href: string) => { const index = EMPLOYEE_SIDEBAR_ORDER.indexOf(href); return index < 0 ? EMPLOYEE_SIDEBAR_ORDER.length : index; };
+  // A Lead (on hold) keeps the earlier sidebar.
+  const employee = role === "EMPLOYEE";
+  const ordered = employee ? [...items].sort((a, b) => rank(a.href) - rank(b.href)) : items;
+  const accountMenu = management ? ACCOUNT_MENU_ENTRIES : employee ? EMPLOYEE_ACCOUNT_MENU_ENTRIES : LEAD_ACCOUNT_MENU_ENTRIES;
+  return ordered
+    .filter(item => !holderFor(role, item.href, present) && !accountMenu.has(item.href))
+    .map(item => !employee || !EMPLOYEE_SIDEBAR_LABELS[item.href] ? item : { ...item, label: EMPLOYEE_SIDEBAR_LABELS[item.href] })
     // D-4: the people page is "Team" in the sidebar, as on the phone tab.
     // Corporate (Release 1): the desktop sidebar uses the phone's names for Timecards (Time) and Inbox (Things to do).
     .map(item => !management ? item : item.href === "/app/employees" ? { ...item, label: "Team" } : item.href === "/app/timecards" ? { ...item, label: "Time" } : item.href === "/app/inbox" ? { ...item, label: "Things to do" } : item);
@@ -79,8 +100,7 @@ export function sidebarActiveHref(role: UserRole, path: string | null | undefine
   const active = activeNavigationHref(role, path ?? "", payroll, context);
   const shown = new Set(items.map(item => item.href));
   if (!active || shown.has(active)) return active;
-  const holder = sidebarHolders(role)[active];
-  return holder && shown.has(holder) ? holder : undefined;
+  return holderFor(role, active, shown);
 }
 
 /** Clean Manager (v3): the occasional tools that used to sit on Home. They keep their addresses (Home's views and the two
@@ -92,6 +112,25 @@ const TEAM_TOOLS: NavigationItem[] = [
   { href: "/app/clocker-recovery", label: "Clocker recovery", icon: "refresh" },
   { href: "/app/account-recovery", label: "Account recovery", icon: "employee" },
 ];
+/** Release 1 ("don't overwhelm"): the team tools left the desktop sidebar. Each opens from the place the boards put it
+ * (Who's working on Home, Hours this week and Help someone sign in on Team, Activity from Schedule), and that place's
+ * sidebar entry lights while it is open. */
+const TEAM_TOOL_HOLDERS: Record<string, string> = {
+  "/app?view=attendance": "/app",
+  "/app?view=team": "/app/employees",
+  "/app?view=activity": "/app/schedule",
+  "/app/clocker-recovery": "/app/employees",
+  "/app/account-recovery": "/app/employees",
+};
+export function teamToolHolder(href: string): string | undefined { return TEAM_TOOL_HOLDERS[href]; }
+
+/** Employees (Release 1, boards C-Employee and E-More): the five phone tabs first, then what More lists (Updates,
+ * Notifications) under "More". */
+export function employeeNavigationGroups(items: NavigationItem[]) {
+  const main = new Set(EMPLOYEE_SIDEBAR_ORDER);
+  return [{ label: "", items: items.filter(item => main.has(item.href)) }, { label: "More", items: items.filter(item => !main.has(item.href)) }].filter(group => group.items.length);
+}
+
 export function teamToolsForRole(role: UserRole, context: NavContext = {}): NavigationItem[] {
   const current = context.operational;
   return role === "OWNER" || role === "MANAGER" && current?.state === "ready" && current.role === "MANAGER" && current.scope?.mode === "COMPANY" ? TEAM_TOOLS.filter(item=>role==='OWNER'||item.href!=='/app/clocker-recovery') : [];
@@ -129,12 +168,22 @@ export function moreNavigationGroups(items: NavigationItem[], tools: NavigationI
 export function activeNavigationHref(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext | OperationalAuthorityView = {}): string | undefined {
   const pathname = path.split(/[?#]/, 1)[0];
   const matches = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  // Release 1 (boards E-Availability, E-SwapSheet, E-CoverSheet, E-CantWorkSheet, E-OpenShifts): an Employee opens these
+  // from Schedule, so Schedule stays current on them. A Lead keeps Requests (Lead is on hold).
+  const query = new URLSearchParams(path.split("?")[1]?.split("#")[0] ?? "");
+  if (role === "EMPLOYEE" && (matches("/app/availability") || matches("/app/exchange/swap") || matches("/app/exchange/callout") ||
+      (pathname === "/app/exchange" && query.get("tab") === "available"))) return "/app/schedule";
   if ((role === "EMPLOYEE" || role === "LEAD") &&
       (matches("/app/requests") || matches("/app/exchange"))) return "/app/requests/hub";
+  // Release 1 (board O-Activity): Schedule activity is a view of Home's data opened from Schedule.
+  if (role !== "EMPLOYEE" && role !== "LEAD" && pathname === "/app" && query.get("view") === "activity" &&
+      navigationForRole(role, payroll, context).some(item => item.href === "/app/schedule")) return "/app/schedule";
   // IS-67: an employee's Timecards belongs to the Hours family, so the Pay or Hours tab stays current on it.
   if ((role === "EMPLOYEE" || role === "LEAD") && matches("/app/timecards")) return "/app/my-time";
   // Account deletion opens from Profile, so Profile's place (More) stays current on it.
   if ((role === "EMPLOYEE" || role === "LEAD") && matches("/app/account")) return "/app/profile";
+  // Release 1: Payroll settings belongs to Payroll (its phone tab and the sidebar), not to the Settings hub.
+  if (matches("/app/settings/payroll") && navigationForRole(role, payroll, context).some(item => item.href === "/app/payroll")) return "/app/payroll";
   return navigationForRole(role, payroll, context)
     .filter(item => item.href === "/app" ? pathname === "/app" : matches(item.href))
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;

@@ -4,6 +4,8 @@ import {OperationalUnavailable} from '@/components/company-access/operational-un
 import {randomUUID} from 'node:crypto';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
+import Link from 'next/link';
+import {publishFirstHref} from '@/lib/shift-changes/publish-first';
 import {ShiftChangeForm} from './shift-change-form';
 import {ShiftChangeHistory} from './shift-change-history';
 import {readShiftChangeHistoryView} from '@/lib/data/shift-change-views';
@@ -107,10 +109,10 @@ function RequestDetails({ name, line, sent, label, open, children }: { name: str
   </details>;
 }
 
-function Decision({ id, revision, decline, approve, allowed, notice, what }: { id: string; revision?: number; decline: string; approve: string; allowed: boolean; notice?: string; what: string }) {
+function Decision({ id, revision, decline, approve, allowed, notice, noticeHref, what }: { id: string; revision?: number; decline: string; approve: string; allowed: boolean; notice?: string; noticeHref?: string | null; what: string }) {
   if (!revision) return <p className="q-help q-acts-note">This request changed. Reload to see the latest.</p>;
   return <ShiftChangeForm fields={{ requestId: id, expectedRevision: revision }} className="q-acts-form">
-    {notice ? <p className="q-help q-acts-note">{notice}</p> : null}
+    {notice ? <p className="q-help q-acts-note">{notice}{noticeHref ? <> <Link href={noticeHref}>Publish changes</Link></> : null}</p> : null}
     <div className="q-acts">
       <PendingButton className="q-bs" name="kind" value={decline} pending="Declining…" label={`Decline ${what}`}>Decline</PendingButton>
       {allowed ? <PendingButton className="q-bs q-bs--go" name="kind" value={approve} pending="Approving…" label={`Approve ${what}`}>Approve</PendingButton> : null}
@@ -173,7 +175,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
         return <li className="q-request" id={`request-${callout.id}`} tabIndex={-1} key={callout.id} data-selected={requestId === callout.id ? "true" : undefined}>
           <RequestDetails name={callout.employeeName} line={`Can’t work ${at(callout)} · ${reason}`} sent={sent(callout.createdAt)} open={requestId === callout.id}
             label={`${callout.employeeName} can’t work ${at(callout)}, ${reason}. Show the shift.`}><CalloutFacts callout={callout} reason={reasons[callout.reasonCode] ?? callout.reasonCode} /></RequestDetails>
-          <Decision id={callout.id} revision={callout.requestRevision} decline="DECLINE_CALLOUT" approve="APPROVE_CALLOUT" allowed={!!approvals.get(callout.id)?.allowed} notice={approvals.get(callout.id)?.notice ?? undefined} what={`the report from ${callout.employeeName}`} />
+          <Decision id={callout.id} revision={callout.requestRevision} decline="DECLINE_CALLOUT" approve="APPROVE_CALLOUT" allowed={!!approvals.get(callout.id)?.allowed} notice={approvals.get(callout.id)?.notice ?? undefined} noticeHref={publishFirstHref(approvals.get(callout.id)?.notice, callout.weekStart)} what={`the report from ${callout.employeeName}`} />
         </li>;
       })}
     </ul> : <p className="q-empty q-first">You’re all caught up.</p>) : null}

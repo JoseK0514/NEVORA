@@ -38,26 +38,26 @@ const render = (devices: ClockerDeviceView[], available = locations) => renderTo
   initialDevices: devices, locations: available, timeZone: 'America/Puerto_Rico', action: vi.fn(),
 }));
 
-// Quiet (v4, approved Oct 23): Active, Needs setup and Removed with their counts; each device is one row that opens
-// its sheet (Rename, a new setup code, Replace or Reconnect, Revoke access). Wider search and overview cards are gone.
-it('counts each state in its segment for assistive technology', () => {
+// Release 1 (board O-ClockerDevices): one Tablets card (every tablet that isn't removed, with a status pill), the setup
+// steps, then Removed when there are any; each device is one row that opens its sheet. No segments, search or "+".
+it('counts each state for assistive technology', () => {
   const html = render([device('active', 'ACTIVE'), device('pending', 'PENDING'), device('expired', 'EXPIRED'), device('revoked', 'REVOKED')]);
-  expect(html).toContain('aria-label="Active, 1"');
-  expect(html).toContain('aria-label="Needs setup, 2"');
-  expect(html).toContain('aria-label="Removed, 1"');
-  expect(html.match(/aria-pressed="true"/g)).toHaveLength(1);
+  expect(html).toContain('1 registered, 2 waiting for setup, 1 removed');
+  expect(html).not.toContain('aria-pressed');
+  expect(html).toContain('Tablets (3)');
+  expect(html).toContain('Removed (1)');
 });
 
 it('shows the selected state as rows that open their device options', () => {
   const html = render([device('active', 'ACTIVE'), device('pending', 'PENDING'), device('expired', 'EXPIRED'), device('revoked', 'REVOKED')]);
   expect(html).toMatch(/<button type="button" class="q-row" data-clocker-device="active" aria-label="active, options"/);
-  for (const id of ['pending', 'expired', 'revoked']) expect(html).not.toContain(`data-clocker-device="${id}"`);
+  for (const id of ['pending', 'expired', 'revoked']) expect(html).toContain(`data-clocker-device="${id}"`);
   expect(html).not.toContain('type="search"');
 });
 
 it('disables registration when no active location exists and points to Locations', () => {
   const html = render([device('inactive', 'ACTIVE', 'old')], [locations[1]]);
-  expect(html).toMatch(/<button(?=[^>]*disabled="")[^>]*aria-label="Add device"/);
+  expect(html).toMatch(/<button class="q-btn" type="button" disabled="">Set up a new tablet<\/button>/);
   expect(html).toContain('data-clocker-device="inactive"');
   expect(html).toContain('href="/app/settings/locations"');
 });
@@ -89,12 +89,12 @@ function expectDisabled(html: string, label: string) {
 
 it('withholds device actions until their handlers are hydrated', () => {
   const html = render([device('fictional-tablet', 'ACTIVE')]);
-  for (const label of ['Add device', 'fictional-tablet, options']) expectDisabled(html, label);
+  for (const label of ['Set up a new tablet', 'fictional-tablet, options']) expectDisabled(html, label);
 });
 
 it('withholds the empty-list registration action until hydration', () => {
   const html = render([]);
-  expectDisabled(html, 'Add device');
+  expectDisabled(html, 'Set up a new tablet');
 });
 
 // Codex review (Oct 23): open each device's options from Active, Needs setup and Removed and check the controls,
@@ -167,9 +167,8 @@ describe('device options, driven through the component’s handlers', () => {
   });
 
   it('Needs setup: every waiting tablet offers New setup code and Revoke access', () => {
-    button('Needs setup, 3').onClick({});
     const shown = draw().filter(node => node.props['data-clocker-device']).map(node => node.props['data-clocker-device']);
-    expect(shown).toEqual(['new', 'waiting', 'lapsed']);
+    expect(shown).toEqual(['front', 'new', 'waiting', 'lapsed', 'gone']);
     for (const name of ['Fictional new tablet', 'Fictional waiting tablet', 'Fictional lapsed tablet']) {
       press(`${name}, options`);
       expect(has('New setup code'), name).toBe(true);
@@ -180,7 +179,6 @@ describe('device options, driven through the component’s handlers', () => {
   });
 
   it('Removed: options offer Reconnect tablet and no Revoke access', () => {
-    button('Removed, 1').onClick({});
     press('Fictional removed tablet, options');
     expect(button('Reconnect tablet').disabled).toBeFalsy();
     expect(has('Revoke access')).toBe(false);
@@ -218,7 +216,7 @@ describe('device options, driven through the component’s handlers', () => {
     devices = [{ ...device('old-tablet', 'ACTIVE', 'old'), name: 'Fictional old tablet' }]; available = [locations[1]];
     const nodes = draw();
     expect(text(nodes.find(node => node.props['data-clocker-device'] === 'old-tablet'))).toContain('Location inactive');
-    expect(button('Add device').disabled).toBe(true);
+    expect(button('Set up a new tablet').disabled).toBe(true);
     press('Fictional old tablet, options');
     expect(button('Replace tablet').disabled).toBe(true);
     expect(button('Save name').disabled).toBeFalsy();
@@ -228,7 +226,7 @@ describe('device options, driven through the component’s handlers', () => {
   it('before hydration no device row or Add device can be pressed, so no options can open', () => {
     hooks.server = true;
     expect(button('Fictional front desk tablet, options').disabled).toBe(true);
-    expect(button('Add device').disabled).toBe(true);
+    expect(button('Set up a new tablet').disabled).toBe(true);
     expect(draw().some(node => node.type === 'form')).toBe(false);
   });
 });

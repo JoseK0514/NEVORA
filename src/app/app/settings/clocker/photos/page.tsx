@@ -16,7 +16,7 @@ export default async function ClockerPhotosPage(){
  const source=await withOperationalCompany(proof,()=>Promise.all([readClockerPhotoPolicyAction(),readClockerPhotoNoticeAction()]));
  if(source.state==='unavailable')return <OperationalUnavailable title="Photo settings unavailable" reason={source.reason}/>;
  const [result,noticeResult]=source.data;
- return <ScopedReadFrame observation={source}><SettingsFrame title="Punch photos" summary="Company preferences for your shared Clocker tablets."><ClockerOwnerNav current="photos"/>
+ return <ScopedReadFrame observation={source}><SettingsFrame back={{href:"/app/settings",label:"Settings"}} title="Punch photos" summary="Company preferences for your shared Clocker tablets."><ClockerOwnerNav current="photos"/>
   <div className={styles.form}><section className={styles.notice} aria-label="Photo capture availability"><strong>Photo capture is unavailable</strong><p>You can save your preferences. Photo collection is not active on your tablets.</p></section>
   <Link className={styles.secondary} href="/app/settings/clocker/photos/review">Review punch photos</Link>
   {result.state==='available'?<ClockerPhotoSettings initialPolicy={result.policy} saveAction={saveClockerPhotoPolicyAction} readAction={readClockerPhotoPolicyAction}/>:<section role="alert"><h2>Photo settings are unavailable</h2><p>{result.message}</p><Link className="q-btn q-btn--sec" href="/app/settings/clocker/photos">Reload settings</Link></section>}

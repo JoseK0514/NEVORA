@@ -33,6 +33,6 @@ it('selects at most 100 visible finalized cards and explicitly reports overflow'
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Export PRIVATE E100').disabled).toBe(true);
 });
 it('refresh and expiry remove the convenience selection with protected private data',async()=>{
- await mount(undefined,1000);click('Select visible finalized timecards');click('Refresh export data');await flush();expect(html()).toContain('0 selected');
+ await mount(undefined,1000);click('Select visible finalized timecards');window.dispatchEvent(new Event('pageshow'));await flush();expect(html()).toContain('0 selected');
  click('Select visible finalized timecards');vi.stubGlobal('fetch',()=>new Promise<Response>(()=>{}));await vi.advanceTimersByTimeAsync(1001);expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Select visible finalized timecards');
 });

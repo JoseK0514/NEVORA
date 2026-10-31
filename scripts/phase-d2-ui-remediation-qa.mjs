@@ -7,7 +7,7 @@ import {hashPassword} from '../src/lib/auth/password.ts';
 import {TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {safeD2Error,safeD2Text,unexpectedD2Runtime} from './d2-runtime-failures.mjs';
 import {finishD2ForegroundRecovery,waitForD2RscQuiescence} from './d2-foreground-recovery.mjs';
-import {DESKTOP_WIDTHS,phoneHoursGeometry} from './phase-d2-phone-hours-geometry.mjs';
+import {clockText,fixForm,fixValues,hoursPage,whatToFix} from './employee-fix-time-browser.mjs';
 
 // Runs only inside the existing owned PostgreSQL / exact-clean-SHA D2 gate.
 export async function verifyD2UiRemediation({app,browser,engine,evidence,report,checked,context,login,geometry,widths}){
@@ -73,16 +73,13 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   }
   observations.states.push(state);
  };
- // Employee surfaces: the desktop correction sheet/center ships at 768px and wider; phones use the Time page.
- const employeeShots=async(selector,state,phone)=>{
-  await shots(ep,selector,state,widths.filter(width=>DESKTOP_WIDTHS.includes(width)));
-  await phoneHoursGeometry({app,browser,context,login,geometry,engine,evidence,report,actor:employeeId,label:state,...phone});
-  await ep.bringToFront();
- };
- const phoneDefaults=(expected)=>async phone=>{
-  const form=phone.locator('.em-hours form.em-hours-form');await form.waitFor();
-  const [startDate,startTime]=local(expected.start).split('T'),[endDate,endTime]=local(expected.finish).split('T');
-  assert.deepEqual(await form.evaluate(f=>Object.fromEntries(['startDate','startTime','endDate','endTime'].map(name=>[name,f.querySelector(`[name="${name}"]`).value]))),{startDate,startTime,endDate,endTime},'Phone defaults are the current effective time');
+ // Employee surfaces: corporate Time (Release 1) is the same kit page at every width.
+ const employeeShots=async(selector,state)=>{await shots(ep,selector,state);await ep.setViewportSize({width:1440,height:1000});};
+ // Fix my time defaults: one Day (the start's date) and the start and end times; an end before the start is the next morning.
+ const assertDefaults=async(expected,label)=>{
+  const [startDate,startTime]=local(expected.start).split('T'),[,endTime]=local(expected.finish).split('T');
+  const values=await fixValues(ep);
+  assert.deepEqual({startDate:values.startDate,startTime:values.startTime,endTime:values.endTime},{startDate,startTime:clockText(startTime),endTime:clockText(endTime)},label+' defaults are the current effective time');
  };
  const safePause=async(label,selector='.manager-corrections')=>{
   const text=await mp.locator(selector).innerText();
@@ -129,35 +126,27 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   stage='employee-foreground';await ep.bringToFront();assert(await ep.evaluate(()=>document.hasFocus()),'Employee native keyboard page must be foreground');
   observations.keyboard.push({stage:'employee-after-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus())});
   await ep.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
-  // v5 My time: each entry is a row that opens its punches and its correction as a sheet.
-  const entryRow=ep.locator('ul[aria-labelledby^="employee-time-"] > li > button[aria-haspopup="dialog"]').first();
+  // Corporate Time (Release 1): the day's row opens its punches; "Request a correction" opens Fix my time for that entry.
+  const entryRow=hoursPage(ep,'records').locator('a.c-row#hours-entry-'+entryId);
   await entryRow.focus();await entryRow.press('Enter');
-  const details=ep.locator('dialog[open]');
-  const trigger=details.getByRole('button',{name:'Request a correction',exact:true});
-  observations.keyboard.push({stage:'disclosure-before-settle',state:await details.evaluate(e=>({open:e.open,contentVisibility:getComputedStyle(e,'::details-content').contentVisibility,blockSize:getComputedStyle(e,'::details-content').blockSize,animations:e.getAnimations({subtree:true}).map(a=>a.playState)}))});
-  await details.evaluate(async e=>{e.getBoundingClientRect();await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));await Promise.all(e.getAnimations({subtree:true}).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})));});
-  observations.keyboard.push({stage:'disclosure-after-settle',state:await details.evaluate(e=>({open:e.open,contentVisibility:getComputedStyle(e,'::details-content').contentVisibility,blockSize:getComputedStyle(e,'::details-content').blockSize,animations:e.getAnimations({subtree:true}).map(a=>a.playState)}))});
-  await trigger.focus();observations.keyboard.push({stage:'trigger-focus',state:await trigger.evaluate(e=>({documentFocused:document.hasFocus(),buttonFocused:document.activeElement===e,activeTag:document.activeElement?.tagName,enabled:!e.disabled}))});assert(await trigger.evaluate(e=>document.hasFocus()&&document.activeElement===e),'Correction trigger must have native foreground focus');await trigger.press('Enter');
-  const form=details.locator('.employee-time-correction-form');await form.waitFor();
-  await ep.waitForFunction(()=>document.querySelector('.employee-time-correction-form input[type="datetime-local"]')?.value);
-  assert.equal(await form.getByLabel('Start',{exact:true}).inputValue(),local(canonical.start));
-  assert.equal(await form.getByLabel('End',{exact:true}).inputValue(),local(canonical.finish));
-  await employeeShots('.employee-time-correction-form','employee-effective-defaults',{path:'/app/my-time?view=corrections&edit='+encodeURIComponent('entry:'+entryId),selector:'.em-hours form.em-hours-form',prepare:phoneDefaults(canonical)});
-  await form.getByLabel('What needs correction?').selectOption(`break:${breakId}`);
-  await ep.waitForFunction(()=>document.querySelector('.employee-time-correction-form input[type="datetime-local"]')?.value);
-  assert.equal(await form.getByLabel('Start',{exact:true}).inputValue(),local(canonicalBreak.start));
-  assert.equal(await form.getByLabel('End',{exact:true}).inputValue(),local(canonicalBreak.finish));
-  await employeeShots('.employee-time-correction-form','break-effective-defaults',{path:'/app/my-time?view=corrections&edit='+encodeURIComponent('break:'+entryId+':'+breakId),selector:'.em-hours form.em-hours-form',prepare:phoneDefaults(canonicalBreak)});
-  // WebKit's native date control can keep DOM focus on the select after Tab.
-  // Check an actual keyboard transition and direct focus separately, preserving both.
-  const select=form.getByLabel('What needs correction?');await select.focus();await select.press('Tab');
-  const focusDetails=()=>ep.evaluate(()=>{const el=document.activeElement,s=getComputedStyle(el);return {tag:el.tagName,type:el.getAttribute('type'),label:el.labels?.[0]?.textContent,outlineStyle:s.outlineStyle,outlineWidth:s.outlineWidth,focusVisible:el.matches(':focus-visible')};});
-  let focus=await focusDetails();observations.keyboard.push({transition:'select → Tab',focus});
-  if(focus.type!=='datetime-local'){await select.press('Alt+Tab');focus=await focusDetails();observations.keyboard.push({transition:'select → Alt+Tab',focus});}
+  await ep.waitForURL(url=>url.searchParams.get('entry')===entryId);
+  const trigger=ep.getByRole('link',{name:'Request a correction',exact:true});await trigger.waitFor();
+  await trigger.focus();observations.keyboard.push({stage:'trigger-focus',state:await trigger.evaluate(e=>({documentFocused:document.hasFocus(),linkFocused:document.activeElement===e,activeTag:document.activeElement?.tagName}))});assert(await trigger.evaluate(e=>document.hasFocus()&&document.activeElement===e),'Correction trigger must have native foreground focus');await trigger.press('Enter');
+  await ep.waitForURL(url=>url.searchParams.get('edit')==='entry:'+entryId);
+  const form=fixForm(ep);await form.waitFor();
+  await assertDefaults(canonical,'Entry');
+  await employeeShots('.c-hours','employee-effective-defaults');
+  await whatToFix(ep,'Break').click();await ep.waitForURL(url=>url.searchParams.get('edit')===`break:${entryId}:${breakId}`);await form.waitFor();
+  await assertDefaults(canonicalBreak,'Break');
+  await employeeShots('.c-hours','break-effective-defaults');
+  // Keyboard: from the chosen "What to fix" option, Tab reaches the Day field with a visible focus ring.
+  const chosen=form.getByRole('radio',{checked:true});await chosen.focus();await chosen.press('Tab');
+  const focusDetails=()=>ep.evaluate(()=>{const el=document.activeElement,s=getComputedStyle(el);return {tag:el.tagName,name:el.getAttribute('name'),label:el.labels?.[0]?.textContent,outlineStyle:s.outlineStyle,outlineWidth:s.outlineWidth,focusVisible:el.matches(':focus-visible')};});
+  let focus=await focusDetails();observations.keyboard.push({transition:'What to fix → Tab',focus});
+  if(focus.name!=='startDate'){await chosen.focus();await chosen.press('Alt+Tab');focus=await focusDetails();observations.keyboard.push({transition:'What to fix → Alt+Tab',focus});}
   const focusShot=join(evidence,`${engine}-ui-native-date-focus.png`);await ep.screenshot({path:focusShot,fullPage:true});report.screenshots.push(focusShot);
-  assert.equal(focus.type,'datetime-local',`${engine} native date input keyboard reachability`);
-  // Actual visible focus is the contract; WebKit's recorded pseudo-class flag
-  // remains false for its native date control despite a real Tab transition.
+  assert.equal(focus.name,'startDate',`${engine} Day field keyboard reachability`);
+  // Actual visible focus is the contract.
   assert.equal(focus.outlineStyle,'solid');assert(parseFloat(focus.outlineWidth)>=2);
   observations.keyboard.push({stage:'manager-before-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus()),managerFocused:await mp.evaluate(()=>document.hasFocus())});
   stage='manager-return';const priorRequest=requestSequence,refreshDeadline=performance.now()+15000;
@@ -223,7 +212,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   await mp.getByText('No correction requests',{exact:true}).waitFor();await shots(mp,'.manager-corrections','confirmed-empty');
   assert.equal((await q('SELECT count(*)::int AS count FROM nevora_pending_time_corrections WHERE employee_id=$1',[employeeId]))[0].count,0);
   observations.keyboard.push({decisions:'two declines activated with Enter'});
-  stage='completed-history';await ep.reload({waitUntil:'networkidle'});await ep.getByText('Declined',{exact:true}).first().waitFor();await employeeShots('.employee-correction-center','completed-history',{path:'/app/my-time?view=corrections&filter=decided',selector:'.em-hours[data-hours-view="corrections"] .em-request-body',prepare:async phone=>{await phone.locator('.em-request-list').getByText(/Declined$/).first().waitFor();}});
+  stage='completed-history';await ep.goto(app.url+'/app/my-time?view=corrections&filter=decided',{waitUntil:'networkidle'});await hoursPage(ep,'corrections').getByRole('list',{name:'Decisions',exact:true}).getByText('Declined',{exact:true}).first().waitFor();await employeeShots('.c-hours','completed-history');
   // Restore only this disposable version mutation to compare untouched raw evidence.
   await q('UPDATE time_entries SET version=version-1 WHERE id=$1',[entryId]);
   assert.deepEqual((await q('SELECT clock_in_at::text AS start,clock_out_at::text AS finish,device_id,schedule_context,version FROM time_entries WHERE id=$1',[entryId]))[0],raw);

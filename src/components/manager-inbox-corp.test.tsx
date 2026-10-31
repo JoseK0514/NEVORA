@@ -33,18 +33,28 @@ const items = [
 
 it('shows one card per kind with its count, in the board order, and the Owner sees open shifts first', () => {
   const html = page({snapshot: ready(items), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true});
-  const order = ['todo-open', 'todo-missed', 'todo-time-off', 'todo-swaps', 'todo-corrections', 'todo-timecards', 'todo-plan'].map(id => html.indexOf(`id="${id}"`));
+  const order = ['todo-open', 'todo-missed', 'todo-time-off', 'todo-swaps'].map(id => html.indexOf(`id="${id}"`));
   expect(order.every(index => index > 0)).toBe(true);
   expect([...order].sort((a, b) => a - b)).toEqual(order);
   expect(html).toContain('>Time off (1)<');
   expect(html).toContain('>Shift swaps (1)<');
   expect(html).toContain('>Open shifts (1)<');
   expect(html).toContain('>Not clocked in (1)<');
-  expect(html).toContain('>Time corrections (1)<');
-  expect(html).toContain('>Timecards to approve (2)<');
+  // The page lists exactly what Home counts (4); the rest is one row away, under More to review.
+  for (const id of ['todo-corrections', 'todo-timecards', 'todo-plan', 'todo-earlier']) expect(html).not.toContain(`id="${id}"`);
+  expect(html).toContain('href="/app/inbox?view=more"');
+  expect(html).toMatch(/More to review<\/span><span class="c-row__detail"><span>Corrections, timecards and planning<\/span><\/span><\/span><span class="c-row__value c-row__value--soft">5</);
+  const more = page({snapshot: ready(items), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true, view: 'more'});
+  const moreOrder = ['todo-corrections', 'todo-timecards', 'todo-plan'].map(id => more.indexOf(`id="${id}"`));
+  expect(moreOrder.every(index => index > 0)).toBe(true);
+  expect([...moreOrder].sort((a, b) => a - b)).toEqual(moreOrder);
+  expect(more).not.toContain('id="todo-time-off"');
+  expect(more).toMatch(/<a class="c-nav__back" href="\/app\/inbox">.*Things to do<\/a>/);
+  expect(more).toContain('>Time corrections (1)<');
+  expect(more).toContain('>Timecards to approve (2)<');
   // Plan ahead: one row per kind; two missing hour targets are one row with a count.
-  expect(html).toContain('>Plan ahead (2)<');
-  expect(html).toMatch(/People without hour targets<\/span><\/span><span class="c-row__trail"><span class="c-badge"[^>]*>2</);
+  expect(more).toContain('>Plan ahead (2)<');
+  expect(more).toMatch(/People without hour targets<\/span><\/span><span class="c-row__trail"><span class="c-badge"[^>]*>2</);
   // A Manager sees who is not clocked in first.
   const manager = page({snapshot: ready(items), today: today([shift('s1', 'not_clocked_in')])});
   expect(manager.indexOf('id="todo-missed"')).toBeLessThan(manager.indexOf('id="todo-open"'));
@@ -57,14 +67,14 @@ it('names the person and the dates on a request, and every row opens its full re
   expect(html).toMatch(/href="\/app\/schedule\?shift=gap[^"]*"/);
   for (const banned of ['Approve', 'Decline', '<form', 'name="decision"']) expect(html).not.toContain(banned);
   expect(html).not.toContain('class="c-btn');
-  // See all keeps the full request lists one step away.
+  // The full request lists stay one tap away, with or without waiting items.
   expect(html).toContain('href="/app/requests"');
   expect(html).toContain('href="/app/exchange"');
 });
 
 it('reads an open shift and a pay period the way the board does', () => {
-  const html = page({snapshot: ready(items)});
-  expect(html).toMatch(/c-row__title c-row__title--b">Barista 1:00 PM – 3:00 PM<\/span><span class="c-row__detail"><span>Today · Condado · 1 open</);
+  expect(page({snapshot: ready(items)})).toMatch(/c-row__title c-row__title--b">Barista 1:00 PM – 3:00 PM<\/span><span class="c-row__detail"><span>Today · Condado · 1 open</);
+  const html = page({snapshot: ready(items), view: 'more'});
   // Timecards: one row per period, naming whose cards wait; it opens Time.
   expect(html).toMatch(/<a class="c-row" href="\/app\/timecards" aria-label="Timecards to approve, Oct 12 – 18: Marco, Priya">/);
   expect(html).toContain('<span>Marco, Priya</span>');
@@ -72,8 +82,8 @@ it('reads an open shift and a pay period the way the board does', () => {
 
 it('opens Time on the waiting pay period, and on the card when only one waits', () => {
   const card = (id: string, employee: string, name: string) => item(id, 'TIMECARD', 'timekeeping', 'REVIEW', {detail: `${name} · Sep 21 – 27 · Fix recorded-time issues before finalizing.`, href: `/app/timecards?start=2026-09-21&end=2026-09-27#timecard-${employee}`});
-  expect(page({snapshot: ready([card('c1', 'e1', 'Avery Lee')])})).toContain('href="/app/timecards?start=2026-09-21&amp;end=2026-09-27#timecard-e1"');
-  const both = page({snapshot: ready([card('c1', 'e1', 'Avery Lee'), card('c2', 'e2', 'Blair Ruiz')])});
+  expect(page({snapshot: ready([card('c1', 'e1', 'Avery Lee')]), view: 'more'})).toContain('href="/app/timecards?start=2026-09-21&amp;end=2026-09-27#timecard-e1"');
+  const both = page({snapshot: ready([card('c1', 'e1', 'Avery Lee'), card('c2', 'e2', 'Blair Ruiz')]), view: 'more'});
   expect(both).toContain('href="/app/timecards?start=2026-09-21&amp;end=2026-09-27"');
   expect(both).not.toContain('#timecard-e1');
 });
@@ -96,6 +106,9 @@ it('has a phone Back to Home, one live summary, and the same count as Home', () 
 
 it('says all set only for a ready, empty observation, and offers Try again or Sign in otherwise', () => {
   expect(page({snapshot: ready([])})).toContain('You’re all set. Nothing needs you right now.');
+  // Time off and shift requests stay reachable when nothing waits.
+  expect(page({snapshot: ready([])})).toContain('href="/app/requests"');
+  expect(page({snapshot: ready([])})).toContain('href="/app/exchange"');
   for (const connection of ['loading', 'offline', 'unavailable', 'access_lost'] as const) expect(page({connection})).not.toContain('You’re all set');
   expect(page({connection: 'loading'})).toContain('aria-busy="true"');
   expect(page({connection: 'unavailable'})).toContain('>Try again<');
@@ -108,4 +121,12 @@ it('says all set only for a ready, empty observation, and offers Try again or Si
 it('shortens "Need 1 employee" to "1 needed" even when the read keeps the count and noun together with a no-break space', () => {
   const gap = item('gap2', 'COVERAGE_GAP', 'scheduling', 'URGENT', {title: 'Coverage gap at Old San Juan', detail: '2026-10-16 · 12:00 AM–10:00 AM · Need 1 employee', dateTime: '2026-10-16T00:00', href: '/app/schedule?shift=gap2'});
   expect(page({snapshot: ready([gap])})).toContain('Today · Old San Juan · 1 needed');
+});
+
+it('groups a week of earlier coverage gaps into one row with its count', () => {
+  const past = (id: string) => item(id, 'COVERAGE_GAP', 'scheduling', 'URGENT', {title: 'Coverage gap at Condado', detail: '2026-10-13 · midnight–6:00 AM · Need 1 employee', dateTime: '2026-10-13T00:00', href: `/app/schedule?shift=${id}`});
+  const html = page({snapshot: ready([past('p1'), past('p2'), past('p3')]), view: 'more'});
+  expect(html).toContain('>Earlier this week (3)<');
+  expect(html).toMatch(/Coverage gaps<\/span><\/span><span class="c-row__trail"><span class="c-badge"[^>]*>3</);
+  expect(page({snapshot: ready([past('p1'), past('p2'), past('p3')])})).toContain('You’re all set');
 });

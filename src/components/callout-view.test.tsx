@@ -18,9 +18,9 @@ const shift: ExchangeShift = {
 };
 const fields = { kind: "SUBMIT_CALLOUT", sourceShiftId: shift.id, sourceEpisodeId: "fixture-episode", sourceTermsFingerprint: "v1:reviewed" };
 
-it("retains the six canonical reasons and submits the reviewed assignment identifiers", () => {
+it("offers the board's four reasons and submits the reviewed assignment identifiers", () => {
   const html = renderToStaticMarkup(<CalloutView shift={shift} fields={fields} />);
-  for (const reason of ["ILLNESS", "FAMILY_EMERGENCY", "TRANSPORTATION", "SCHOOL", "PERSONAL_EMERGENCY", "OTHER"]) {
+  for (const reason of ["ILLNESS", "FAMILY_EMERGENCY", "TRANSPORTATION", "OTHER"]) {
     expect(html).toContain(`value="${reason}"`);
   }
   for (const [name, value] of Object.entries(fields)) expect(html).toContain(`name="${name}" value="${value}"`);

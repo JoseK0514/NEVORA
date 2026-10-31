@@ -2,7 +2,7 @@ import { FEDERAL_EMPLOYEE_CENT_RULE_SOURCE } from './federal-employee-tax';
 import { acceptsNativePrCentProfile, acceptsNativePrCentResult, PR_FINAL_PERIODIC_HALF_UP_GUIDANCE, PR_FINAL_PERIODIC_GUIDANCE_SHA256 } from './pr-income-cent-policy';
 import { usesOwnerPayrollPolicy, OWNER_PAYROLL_POLICY, OWNER_PAYROLL_POLICY_SHA256 } from './provisional-policy';
 import 'server-only';
-import { closingContextWindow, resolveNativeWorkweek } from './workweek-policy';
+import { closingContextWindow, fingerprintClosingEvidence, resolveNativeWorkweek } from './workweek-policy';
 import type { SqlExecutor, SqlStatement } from '../../notifications/types';
 import type { PayrollRun } from '../contracts';
 import type { Source, Snapshot } from '../service';
@@ -184,7 +184,7 @@ export async function captureNativePayroll(seed: {
     }
     if (captures.reduce((n, c) => n + c.entries.length, 0) > 10000)
         issues.push('NATIVE_SOURCE_LIMIT');
-    const facts: NativePreparationFacts = { inputs, population: population.members.map(m => ({ employeeId: m.employeeId, name: seed.source.roster.find(e => e.employeeId === m.employeeId)!.name, disposition: m.disposition })), sourceFingerprint: hash({ source: seed.source, database, captures }), ruleRevision: 1, rulesVerified: true, employeeLocations, unknownCoverageEmployeeIds, blockingIssues: issues };
+    const facts: NativePreparationFacts = { inputs, population: population.members.map(m => ({ employeeId: m.employeeId, name: seed.source.roster.find(e => e.employeeId === m.employeeId)!.name, disposition: m.disposition })), sourceFingerprint: hash({ source: seed.source, database, captures: captures.map(c => c.closingContext ? { ...c, closingContext: fingerprintClosingEvidence(c.closingContext) } : c) }), ruleRevision: 1, rulesVerified: true, employeeLocations, unknownCoverageEmployeeIds, blockingIssues: issues };
     const next = { ...buildNativeRunCandidate(run, facts), settingsRevision: settings.revision, populationRevision: population.revision, exceptionRevisions: exceptions.map(e => ({ employeeId: e.exception.employeeId, revision: e.revision })) };
     if (run.correctionOf && next.nativeCalculation?.state === 'ready' && hash(database.ledger.filter(e => e.runId === run.correctionOf).map(e => e.employeeId).sort()) !== hash(next.nativeCalculation.employees.map(e => e.employeeId).sort()))
         return { run: blocked(next, ['CORRECTION_POPULATION_CONFLICT']), snapshot: null, guards };

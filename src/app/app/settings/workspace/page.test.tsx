@@ -32,7 +32,7 @@ it("keeps Owner authorization and both editable fields with clear scheduling con
   expect(html).toContain('<span class="q-rv q-rv--l">Monday</span>');
   expect(html).toContain('type="submit" form="company-profile-form"');
   expect(html).toContain(">Save</button>");
-  expect(html).toContain('href="/app/settings"');
+  expect(html).toContain('href="/app/more"');
 });
 
 it("explains a protected timezone without locking the workspace name", async () => {

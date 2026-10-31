@@ -49,6 +49,7 @@ beforeAll(async()=>{
 },180000);
 afterAll(async()=>{try{await app?.close();}finally{if(evidence)await writeFile(evidence+'/results.json',JSON.stringify({checks,messages,captures},null,2));}});
 
+const refresh=(page:any)=>page.evaluate(()=>window.dispatchEvent(new Event('focus')));
 async function withPage(engine:typeof engines[number],scenario:string,run:(page:any,ready:(view:string)=>Promise<void>,shot:(name:string)=>Promise<void>,fault:(value:boolean)=>void)=>Promise<void>){
  const browser=await runtime[engine].launch({headless:true}),context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'}),page=await context.newPage();
  page.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(30000);let expected=false;
@@ -56,12 +57,13 @@ async function withPage(engine:typeof engines[number],scenario:string,run:(page:
  page.on('pageerror',(error:Error)=>messages.push({engine,scenario,type:'pageerror',text:error.stack??error.message,expected:false}));
  page.on('console',(message:{type():string;text():string})=>{if(['error','warning'].includes(message.type()))messages.push({engine,scenario,type:message.type(),text:message.text(),expected});});
  await context.route('**/*',async(route:any)=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==new URL(app.url).origin){await route.abort();throw Error('External request blocked: '+url.origin);}await route.continue();});
- const ready=async(view:string)=>{await page.locator('.em-messages:visible[data-messages-state="ready"][data-messages-view="'+view+'"]').waitFor();await page.locator('.em-messages:visible .em-request-footer button:not(:disabled)').waitFor();};
+ // Release 1 removed the Refresh footer: a settled read is state ready and not aria-busy.
+ const ready=async(view:string)=>{await page.locator('.em-messages:visible[data-messages-state="ready"][data-messages-view="'+view+'"][aria-busy="false"]').waitFor();};
  const shot=async(name:string)=>{const file=engine+'-'+scenario+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:true,caret:'initial',style:'nextjs-portal {visibility:hidden;}'});captures.push(file);};
  try{
-  await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actors[engines.indexOf(engine)]);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await page.locator('[data-home-state="ready"]:visible,[data-home-state="partial"]:visible').waitFor();await page.locator('.employee-time-badge:visible').waitFor();
+  await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actors[engines.indexOf(engine)]);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await page.locator('[data-home-state="ready"]:visible,[data-home-state="partial"]:visible').waitFor();await page.locator('[data-home-state="ready"][aria-busy="false"]:visible,[data-home-state="partial"][aria-busy="false"]:visible').waitFor();
   await run(page,ready,shot,value=>{expected=value;});
-  await page.locator('.em-messages:visible .em-request-footer button:not(:disabled)').waitFor();await expect.poll(()=>inFlight.size,{timeout:15000}).toBe(0);
+  await page.locator('.em-messages:visible[aria-busy="false"]').waitFor();await expect.poll(()=>inFlight.size,{timeout:15000}).toBe(0);
   expect(messages.filter(row=>row.engine===engine&&row.scenario===scenario&&(row.type==='pageerror'||row.type==='error'&&!(row.expected&&/Failed to (fetch|load resource)|Load failed|NetworkError|status of (401|403)/.test(row.text))))).toEqual([]);
  }catch(error){await shot('failure').catch(()=>{});throw error;}finally{await context.close();await browser.close();}
 }
@@ -75,16 +77,17 @@ it('CR-2 bounds held notification opens and fences stale results across private 
    await page.route('**/api/employee/messages/open/*',async(route:any)=>{if(!first){await route.continue();return;}first=false;try{const response=await route.fetch();await gate;await route.fulfill({response});}finally{handled();}});
    fault(true);
    try{
-    await panel().locator('.em-message-list a').first().click();await panel().getByText('Opening current details…',{exact:true}).waitFor();await expect.poll(()=>first).toBe(false);
+    await panel().locator('a.em-notif-row').first().click();await panel().getByText('Opening current details…',{exact:true}).waitFor();await expect.poll(()=>first).toBe(false);
     if(mode==='deadline'){
      await panel().getByText('This notice couldn’t be opened with your current access.',{exact:false}).waitFor();
      expect(await panel().getByText('Opening current details…',{exact:true}).count()).toBe(0);
      release();await done;expect(new URL(page.url()).pathname).toBe('/app/notifications');await shot('deadline');
     }else{
      if(mode==='pause'){await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await page.locator('.em-messages[data-messages-state="paused"]').waitFor();await page.evaluate(()=>window.dispatchEvent(new Event('focus')));}
-     else await panel().getByRole('button',{name:'Refresh',exact:true}).click();
-     await ready('notifications');await panel().getByText('Your information only',{exact:true}).waitFor();expect(await panel().getByText('Opening current details…',{exact:true}).count()).toBe(0);
-     await panel().locator('.em-message-list a').nth(1).click();await ready('detail');const target=page.url();
+     // Release 1 has no Refresh button: the fresh read comes from the window regaining focus.
+     else await refresh(page);
+     await ready('notifications');expect(await panel().getByText('Opening current details…',{exact:true}).count()).toBe(0);
+     await panel().locator('a.em-notif-row').nth(1).click();await ready('detail');const target=page.url();
      release();await done;expect(page.url()).toBe(target);await shot(mode+'-new-open');
      await panel().getByRole('link',{name:'Notifications',exact:true}).click();await ready('notifications');
     }
@@ -134,7 +137,7 @@ it('CR-3/CR-1 preserve optional read facts and recover a refused original lookup
    await saveWorkspacePresentation(owner,{operationId:randomUUID(),expectedRevision:revision,section:'modules',disabled:['updates']},app.database.executor);disabled=true;await writeFile(join(app.barriers,gateId+'.release'),'release');expect((await response).status()).toBe(403);
    await panel().getByText('Updates are turned off for your workspace.',{exact:false}).waitFor();await panel().getByText('The result hasn’t been confirmed.',{exact:false}).waitFor();expect(await panel().getByRole('button',{name:'Check submission status',exact:true}).isDisabled()).toBe(true);await shot('refused-original-lookup');
   }finally{await writeFile(join(app.barriers,gateId+'.release'),'release');if(disabled)await saveWorkspacePresentation(owner,{operationId:randomUUID(),expectedRevision:revision+1,section:'modules',disabled:[]},app.database.executor);}
-  await panel().getByRole('button',{name:'Refresh',exact:true}).click();await ready('compose');await panel().locator('button:enabled').filter({hasText:/^Check submission status$/}).waitFor();await panel().getByRole('button',{name:'Check submission status',exact:true}).click();await panel().getByRole('heading',{name:'Update published',exact:true}).waitFor();expect(sent).toBe(1);
+  await refresh(page);await ready('compose');await panel().locator('button:enabled').filter({hasText:/^Check submission status$/}).waitFor();await panel().getByRole('button',{name:'Check submission status',exact:true}).click();await panel().getByRole('heading',{name:'Update published',exact:true}).waitFor();expect(sent).toBe(1);
   expect((await q<{n:number}>('SELECT count(*)::integer AS n FROM communication_operations WHERE operation_id=$1 AND actor_employee_id=$2',[operationId,actors[engines.indexOf(engine)]]))[0].n).toBe(1);await shot('original-recovered');fault(false);checks.push({engine,name:'CR-1 real module-refused lookup retains exact committed original for deliberate recovery without another publication'});
  });
 });
@@ -149,9 +152,9 @@ it('UI-COM-R1 immediately fences an actual committed late publication reply whil
   const revision=(await q<{revision:number}>('SELECT revision FROM nevora_workspace_presentation_revisions ORDER BY revision DESC LIMIT 1'))[0]?.revision??0;let disabled=false;fault(true);
   try{
    await panel().getByRole('button',{name:'Send update',exact:true}).click();await panel().getByText('Checking your submission…',{exact:true}).waitFor();await saved;
-   await saveWorkspacePresentation(owner,{operationId:randomUUID(),expectedRevision:revision,section:'modules',disabled:['updates']},app.database.executor);disabled=true;await panel().getByRole('button',{name:'Refresh',exact:true}).click();await panel().getByText('Updates are turned off for your workspace.',{exact:false}).waitFor();await panel().getByText('The result hasn’t been confirmed.',{exact:false}).waitFor();
+   await saveWorkspacePresentation(owner,{operationId:randomUUID(),expectedRevision:revision,section:'modules',disabled:['updates']},app.database.executor);disabled=true;await refresh(page);await panel().getByText('Updates are turned off for your workspace.',{exact:false}).waitFor();await panel().getByText('The result hasn’t been confirmed.',{exact:false}).waitFor();
    release();await done;await panel().getByText('The result hasn’t been confirmed.',{exact:false}).waitFor();expect(await panel().getByRole('heading',{name:'Update published',exact:true}).count()).toBe(0);expect(await page.getByLabel('Title',{exact:true}).count()).toBe(0);expect(await panel().getByRole('button',{name:'Check submission status',exact:true}).isDisabled()).toBe(true);await shot('after-release');await writeFile(evidence+'/'+engine+'-late-committed-after-release.html',await panel().innerHTML());
   }finally{release();await done;await page.unroute('**/api/employee/communications');if(disabled)await saveWorkspacePresentation(owner,{operationId:randomUUID(),expectedRevision:revision+1,section:'modules',disabled:[]},app.database.executor);}
-  await panel().getByRole('button',{name:'Refresh',exact:true}).click();await ready('compose');await panel().locator('button:enabled').filter({hasText:/^Check submission status$/}).waitFor();await panel().getByRole('button',{name:'Check submission status',exact:true}).click();await panel().getByRole('heading',{name:'Update published',exact:true}).waitFor();expect((await q<{n:number}>('SELECT count(*)::integer AS n FROM communication_operations WHERE operation_id=$1 AND actor_employee_id=$2',[operationId,actors[engines.indexOf(engine)]]))[0].n).toBe(1);fault(false);checks.push({engine,name:'UI-COM-R1 late actual committed reply stays fenced; deliberate restored original lookup succeeds'});
+  await refresh(page);await ready('compose');await panel().locator('button:enabled').filter({hasText:/^Check submission status$/}).waitFor();await panel().getByRole('button',{name:'Check submission status',exact:true}).click();await panel().getByRole('heading',{name:'Update published',exact:true}).waitFor();expect((await q<{n:number}>('SELECT count(*)::integer AS n FROM communication_operations WHERE operation_id=$1 AND actor_employee_id=$2',[operationId,actors[engines.indexOf(engine)]]))[0].n).toBe(1);fault(false);checks.push({engine,name:'UI-COM-R1 late actual committed reply stays fenced; deliberate restored original lookup succeeds'});
  });
 });

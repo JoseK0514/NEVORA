@@ -17,22 +17,16 @@ vi.mock('@/lib/data/requests', () => ({ listEmployeeTimeOffRequests: async () =>
   { id:'cancelled',employeeId:'fictional',status:'CANCELLED',startDate:'2030-10-09',endDate:'2030-10-10'},
 ] }));
 
-it('marks a waiting request amber and an approval green, with a timeline', async () => {
-  const html = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ tab: 'my' }) }));
-  // v5 (mockup E07): Waiting lists the waiting request; each request's sheet carries its status and timeline.
-  expect(html).toContain('data-employee-status="PENDING"');expect(html).toContain('>Waiting<');
-  const decided = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ filter: 'decided' }) }));
-  expect(decided).toContain('>Approved<');expect(decided).toContain('data-employee-status="APPROVED"');
-  expect(html).toContain('aria-label="Request timeline"');
-  expect(html).toContain('Waiting for approval');
-  expect(html).toContain('Fictional pending request');
-});
-
-it('offers a confirmed withdrawal only for the current employee pending request',async()=>{
- const html=renderToStaticMarkup(await RequestsPage({searchParams:Promise.resolve({tab:'my'})}));
- expect(html).toContain('Withdraw request');expect(html.match(/>Withdraw request<\/span>/g)).toHaveLength(1);
- expect(html).toContain('TIME_OFF_WITHDRAW:dc6b44c9-6e3f-4f0e-890c-328067ebfe9e');
- expect(html).toContain('name="confirmed"');expect(html).toContain('required=""');
+it('offers withdrawal only on the current employee pending request page, as one red-outline button',async()=>{
+ const id='dc6b44c9-6e3f-4f0e-890c-328067ebfe9e';
+ const html=renderToStaticMarkup(await RequestsPage({searchParams:Promise.resolve({requestId:id})}));
+ expect(html).toContain('c-pill--amber">Waiting<');
+ expect(html.match(/>Withdraw request<\/button>/g)).toHaveLength(1);expect(html).toContain('c-btn c-btn--danger c-btn--full');
+ expect(html).toContain(`TIME_OFF_WITHDRAW:${id}`);expect(html).toContain('We’ll ask you to confirm first.');
+ expect(html).not.toContain('contact your manager');
+ const foreign=renderToStaticMarkup(await RequestsPage({searchParams:Promise.resolve({requestId:'foreign'})}));
+ expect(foreign).not.toContain('Withdraw request');expect(foreign).not.toContain('TIME_OFF_WITHDRAW');
+ for(const decided of ['approved','denied','cancelled'])expect(renderToStaticMarkup(await RequestsPage({searchParams:Promise.resolve({requestId:decided})}))).not.toContain('Withdraw request');
 });
 
 import {isValidElement,type ReactElement,type ReactNode} from 'react';
@@ -42,11 +36,9 @@ function pageNodes(value:ReactNode):ReactElement<Record<string,unknown>>[]{
  if(!isValidElement<Record<string,unknown>>(value))return [];
  return [value,...pageNodes(value.props.children as ReactNode)];
 }
-it('keeps withdrawal inside its own request row, next to the facts and the waiting status',async()=>{
- const page=await RequestsPage({searchParams:Promise.resolve({tab:'my'})});
- // v5: the request is a row whose sheet holds its facts, status, timeline and the withdrawal.
- const row=pageNodes(page).find(node=>node.props.anchor==='request-dc6b44c9-6e3f-4f0e-890c-328067ebfe9e')!;
- expect(pageNodes(row.props.children as ReactNode).some(node=>node.type===TimeOffWithdrawal)).toBe(true);
- expect(renderToStaticMarkup(<>{row.props.children as ReactNode}</>)).toContain('>Waiting<');
- expect(row.props.status).toBe('PENDING');
+it('keeps withdrawal on its own request page, next to the facts and the waiting status',async()=>{
+ const page=await RequestsPage({searchParams:Promise.resolve({requestId:'dc6b44c9-6e3f-4f0e-890c-328067ebfe9e'})});
+ const withdrawal=pageNodes(page).filter(node=>node.type===TimeOffWithdrawal);
+ expect(withdrawal).toHaveLength(1);expect(withdrawal[0].props.requestId).toBe('dc6b44c9-6e3f-4f0e-890c-328067ebfe9e');
+ expect(renderToStaticMarkup(page)).toContain('>Waiting<');
 });

@@ -1,7 +1,6 @@
 "use client";
 
 import ownerStyles from './clocker-owner.module.css';
-import {ClockerOwnerNav} from './clocker-owner-nav';
 import Link from 'next/link';
 import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type MouseEvent } from 'react';
 import { ArrowClockwise } from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
@@ -38,12 +37,9 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
   const [notice, setNotice] = useState('');
   const [setup, setSetup] = useState<{ code: string; expiresAt: string; device: ClockerDeviceView } | null>(null);
   const [copyMessage, setCopyMessage] = useState('');
-  const [query, setQuery] = useState('');
-  const [filter, setFilter] = useState<'ALL' | 'SETUP' | 'REVOKED'>('ALL'); // Quiet (v4): ALL is the Active tab (registered).
   const dialog = useRef<HTMLDialogElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const codeField = useRef<HTMLTextAreaElement>(null);
-  const searchField = useRef<HTMLInputElement>(null);
   const setupCard = useRef<HTMLElement>(null);
   const errorBox = useRef<HTMLDivElement>(null);
   const busy = useRef(false);
@@ -52,11 +48,6 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
   const registered = devices.filter(device => device.state === 'ACTIVE').length;
   const waiting = devices.filter(needsSetup).length;
   const revoked = devices.filter(device => device.state === 'REVOKED').length;
-  const visibleDevices = devices.filter(device => {
-    const location = locations.find(item => item.id === device.locationId);
-    const matches = `${device.name} ${location?.name ?? ''}`.toLowerCase().includes(query.trim().toLowerCase());
-    return matches && (filter === 'ALL' ? device.state === 'ACTIVE' : filter === 'SETUP' ? needsSetup(device) : device.state === 'REVOKED');
-  });
   const { errors, handlers, clear } = useFieldErrors({ name: { missing: 'Enter a device name.' }, locationId: { missing: 'Choose a location.' } });
   const date = (value: string) => {
     // ICU versions disagree on joining literals (", " versus " at ").
@@ -121,7 +112,6 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
       busy.current = false;
       if (result.setup) { returnFocus.current = null; dialog.current?.close(); setSelection(null); setError(null); }
       else close();
-      setFilter('ALL'); setQuery('');
     } catch { setError({ message: 'It may not have saved. Refresh devices before you try again.', refresh: true }); }
     finally { busy.current = false; setPending(false); }
   }
@@ -135,10 +125,11 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     : selection?.operation === 'REVOKE' ? 'Revoke this device’s access?' : 'Create a new setup code?';
   const submitLabel = selection?.operation === 'REGISTER' ? 'Create setup code' : selection?.operation === 'RENAME' ? 'Save name' : selection?.operation === 'REVOKE' ? 'Revoke access' : 'Create new code';
 
-  // Quiet (v4, approved Oct 23): "+" adds a device; Active, Needs setup and Removed; one row per tablet. A row opens its sheet.
-  return <SettingsFrame className={ownerStyles.owner} title="Clocker devices"
-    bandAside={<button className="q-nav__r q-nav__r--ink" type="button" aria-label="Add device" disabled={!hydrated || !activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}><Plus className="q-ic" aria-hidden="true" /></button>}>
-    <ClockerOwnerNav current="devices"/>
+  // Release 1 (board O-ClockerDevices, "Clocker tablets"): the tablets in one card (name, location and last use, a status
+  // pill), then "Add a tablet in 3 steps" with Set up a new tablet. No "+" in the bar and no tab rows. A row opens its sheet.
+  const current = devices.filter(device => device.state !== 'REVOKED');
+  const removed = devices.filter(device => device.state === 'REVOKED');
+  return <SettingsFrame className={ownerStyles.owner} title="Clocker tablets">
     {!activeLocations.length ? <Notice tone="info" title="No active location"
       action={<Link className="q-btn q-btn--quiet" href="/app/settings/locations">Go to Locations</Link>}>Add or reactivate a location before registering a tablet.</Notice> : null}
     {notice ? <div role="status"><Notice tone="info">{notice}</Notice></div> : null}
@@ -154,32 +145,50 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
       <button className="q-btn q-btn--quiet" type="button" onClick={() => setSetup(null)}>Hide code</button>
       <p role="status" className="q-sr">{copyMessage}</p>
     </section> : null}
-    {devices.length ? <div className="q-seg" role="group" aria-label="Filter devices">
-      {([['ALL', 'Active', registered], ['SETUP', 'Needs setup', waiting], ['REVOKED', 'Removed', revoked]] as const).map(([value, label, count]) =>
-        <button key={value} type="button" aria-pressed={filter === value} aria-label={`${label}, ${count}`} onClick={() => setFilter(value)}>{value === 'ALL' ? `${label} · ${count}` : label}</button>)}
-    </div> : null}
-    <p className="q-sr" role="status">Showing {visibleDevices.length} of {devices.length} {devices.length === 1 ? 'device' : 'devices'}</p>
-    {visibleDevices.length ? <ul className="q-list" style={{ marginTop: 16 }} aria-label="Your devices">{visibleDevices.map(device => {
+    <p className="q-sr" role="status">{`${registered} registered, ${waiting} waiting for setup, ${revoked} removed`}</p>
+    {([['Tablets', current, 'Your devices']] as const).map(([label, list, aria]) => list.length ? <ul key={label} className="q-list" aria-label={aria}>
+    <li className="wc-cardhead" aria-hidden="true"><span>{`${label} (${list.length})`}</span></li>
+    {list.map(device => {
       const location = locations.find(item => item.id === device.locationId);
-      const state = location?.active === false && device.state !== 'REVOKED' ? 'Location inactive' : device.state === 'ACTIVE' ? null : statuses[device.state];
+      const inactive = location?.active === false && device.state !== 'REVOKED';
       const seen = device.lastSeenAt ? `Used ${date(device.lastSeenAt)}` : device.state === 'ACTIVE' ? 'Not used yet' : null;
+      const pill = inactive ? ['neutral', 'Location inactive'] : device.state === 'ACTIVE' ? ['teal', 'Active'] : device.state === 'REVOKED' ? ['neutral', 'Removed'] : ['amber', statuses[device.state]];
       return <li key={device.id}>
         <button type="button" className="q-row" data-clocker-device={device.id} aria-label={`${device.name}, options`} disabled={!hydrated} onClick={event => open({ operation: 'RENAME', device }, event)}>
-          <span className="q-rt"><b>{device.name}</b><i>{[location?.name ?? 'Location unavailable', state ?? seen].filter(Boolean).join(' · ')}</i></span>
-          <CaretRight className="q-chev" aria-hidden="true" />
+          <DeviceTablet className="q-row__ic" aria-hidden="true" />
+          <span className="q-rt"><b>{device.name}</b><i>{[location?.name ?? 'Location unavailable', seen].filter(Boolean).join(' · ')}</i></span>
+          <span className={`wc-pill wc-pill--${pill[0]}`}>{pill[1]}</span>
         </button>
       </li>;
-    })}</ul> : filter === 'ALL' ? <section className="clocker-steps" aria-labelledby="clocker-steps-title">
-      {/* Corporate (Release 1, board O-ClockerDevices): with no active tablet, the three setup steps and one way to start. */}
-      <div className="q-grp"><h2 id="clocker-steps-title">{devices.length ? 'No active tablets · add one in 3 steps' : 'Add a tablet in 3 steps'}</h2></div>
+    })}
+  </ul> : null)}
+    {/* Corporate (Release 1, board O-ClockerDevices): the three setup steps and the one way to start, in one card. */}
+    <section className="clocker-steps" aria-labelledby="clocker-steps-title">
       <ol className="q-list clocker-steps__list">
-        <li><div className="q-row q-row--one"><span className="clocker-steps__n" aria-hidden="true">1</span><span className="q-rt"><b>On the tablet, open the Clocker page.</b></span></div></li>
-        <li><div className="q-row q-row--one"><span className="clocker-steps__n" aria-hidden="true">2</span><span className="q-rt"><b>Tap below to get a setup code.</b></span></div></li>
-        <li><div className="q-row q-row--one"><span className="clocker-steps__n" aria-hidden="true">3</span><span className="q-rt"><b>Pick the location. People use their PIN.</b></span></div></li>
+        <li className="wc-cardhead"><h2 id="clocker-steps-title">Add a tablet in 3 steps</h2></li>
+        <li><div className="q-row q-row--one"><span className="wc-step" aria-hidden="true">1</span><span className="q-rt"><b>On the tablet, open the Clocker page.</b></span></div></li>
+        <li><div className="q-row q-row--one"><span className="wc-step" aria-hidden="true">2</span><span className="q-rt"><b>Tap below to get a setup code.</b></span></div></li>
+        <li><div className="q-row q-row--one"><span className="wc-step" aria-hidden="true">3</span><span className="q-rt"><b>Pick the location. People use their PIN.</b></span></div></li>
+        <li className="wc-cardfoot"><button className="q-btn" type="button" disabled={!hydrated || !activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}>Set up a new tablet</button></li>
       </ol>
-      <button className="q-btn" type="button" disabled={!hydrated || !activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}>Set up a new tablet</button>
-      <p className="q-help">One tablet per location works best.</p>
-    </section> : <EmptyState headingLevel={3} icon={null} title={filter === 'SETUP' ? 'Nothing needs setup' : 'No removed devices'}>{''}</EmptyState>}
+      <p className="wc-foot">One tablet per location works best.</p>
+    </section>
+    {([['Removed', removed, 'Removed devices']] as const).map(([label, list, aria]) => list.length ? <ul key={label} className="q-list" aria-label={aria}>
+    <li className="wc-cardhead" aria-hidden="true"><span>{`${label} (${list.length})`}</span></li>
+    {list.map(device => {
+      const location = locations.find(item => item.id === device.locationId);
+      const inactive = location?.active === false && device.state !== 'REVOKED';
+      const seen = device.lastSeenAt ? `Used ${date(device.lastSeenAt)}` : device.state === 'ACTIVE' ? 'Not used yet' : null;
+      const pill = inactive ? ['neutral', 'Location inactive'] : device.state === 'ACTIVE' ? ['teal', 'Active'] : device.state === 'REVOKED' ? ['neutral', 'Removed'] : ['amber', statuses[device.state]];
+      return <li key={device.id}>
+        <button type="button" className="q-row" data-clocker-device={device.id} aria-label={`${device.name}, options`} disabled={!hydrated} onClick={event => open({ operation: 'RENAME', device }, event)}>
+          <DeviceTablet className="q-row__ic" aria-hidden="true" />
+          <span className="q-rt"><b>{device.name}</b><i>{[location?.name ?? 'Location unavailable', seen].filter(Boolean).join(' · ')}</i></span>
+          <span className={`wc-pill wc-pill--${pill[0]}`}>{pill[1]}</span>
+        </button>
+      </li>;
+    })}
+  </ul> : null)}
     <dialog ref={dialog} className="wc-dialog" aria-labelledby="clocker-dialog-title" aria-describedby="clocker-dialog-text" onCancel={event => { event.preventDefault(); close(); }}>
       {selection ? <form noValidate onSubmit={submit} key={`${selection.operation}-${selection.device?.id ?? 'new'}`} aria-busy={pending} className="wc-dialog__form" {...handlers}>
         <div className="wc-dialog__head">

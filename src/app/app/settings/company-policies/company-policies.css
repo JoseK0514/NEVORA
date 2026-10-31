@@ -47,3 +47,7 @@
 .policy-current-rules dt { color:var(--design-text-secondary); font-size:14px; }
 .policy-current-rules dd { margin:0; overflow-wrap:anywhere; font-size:14px; }
 @media(max-width:520px) { .policy-current-rules dl > div { grid-template-columns:minmax(0,1fr); gap:2px; } }
+/* Release 1: Private labor settings is a row like Policy history inside the Records card. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-policy-private .policy-private-review { padding: 0; border: 0; border-radius: 0; background: none; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-policy-private .policy-private-review > summary { min-height: 52px; padding: 8px 16px; font: inherit; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-policy-private .policy-private-review > summary .q-rt b { font-size: 15px; line-height: 20px; }
