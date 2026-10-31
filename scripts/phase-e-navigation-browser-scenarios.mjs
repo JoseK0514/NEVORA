@@ -136,7 +136,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   // the account menu where the compact sidebar hides it (768). Measure that Sign out, then walk back through what precedes it.
   let target,menu=false;const accountTrigger=()=>page.getByRole('button',{name:/, account menu$/}),accountMenu=page.locator('#portal-account-menu');
   // Escape closes the menu from one of its rows; otherwise its trigger toggles it.
-  const closeMenu=async()=>{await page.keyboard.press('Escape');if(await accountMenu.isVisible())await accountTrigger().click();await accountMenu.waitFor({state:'hidden'});};
+  const closeMenu=async()=>{await page.keyboard.press('Escape');if(await accountMenu.waitFor({state:'hidden',timeout:2000}).then(()=>false,()=>true))await accountTrigger().click();await accountMenu.waitFor({state:'hidden'});};
   if(phone){await page.goto(app.url+'/app/more');await settle();target=page.locator('main').getByRole('button',{name:'Sign out',exact:true});}
   else{const sidebar=page.locator('aside.sidebar').getByRole('button',{name:'Sign out',exact:true});if(await sidebar.isVisible())target=sidebar;else{menu=true;await accountTrigger().click();await page.locator('#portal-account-menu').waitFor();target=page.locator('#portal-account-menu').getByRole('button',{name:'Sign out',exact:true});}}
   focusTrace.push({stage:'Sign out location',location:phone?'More':menu?'account menu':'sidebar'});
