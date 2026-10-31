@@ -80,7 +80,8 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
    async function login(id:string,password=TEST_PASSWORD,target=page){
     step=engine+': sign-in for '+id;await target.goto(origin+'/login');await target.locator('#login-employee-id').fill(id);await target.locator('#login-password').fill(password);await target.locator('button[type="submit"]').click();await target.waitForURL('**/app',{timeout:45000});
     // Both fixtures predate the owned adoption migration, which grants the existing Manager company scope.
-    step=engine+': authorized management Home for '+id;await target.locator('.premium-home').waitFor();
+    // Owner Home is the corporate page (.c-home) since Oct 30; a Manager keeps the earlier management Home.
+    step=engine+': authorized management Home for '+id;await target.locator('.c-home, .premium-home').first().waitFor();
    }
    step=engine+': invitation and activation';await login('QAOWNER');
    const headers={'Origin':origin,'x-nevora-company-access':'1','x-nevora-actor':'QAOWNER'};
