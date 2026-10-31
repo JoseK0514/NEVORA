@@ -32,6 +32,10 @@ export function ResponsiveEmployeeTimecards({children,period,corporate=false,exp
 function EmployeeHours({authority,view,period,entryId,requestId,edit,filter,fromCards,parent,tabTitle='Hours',corporate=false,today}:Props){
  const router=useRouter(),targetEntry=editEntry(edit),selection=view==='records'?'overview':view==='cards'?period.startDate+'_'+period.endDate:requestId??(targetEntry?'target:'+targetEntry:'list'),panel=useHours(authority,view,selection,edit),[drafts,setDrafts]=useState<Record<string,HoursDraft>>({}),[operation,setOperation]=useState(()=>new HoursCorrectionOperation()),[activeEdit,setActiveEdit]=useState<string|null>(null),[recoveryHref,setRecoveryHref]=useState<string|null>(null);
  useSyncExternalStore(operation.subscribe,operation.snapshot,operation.snapshot);
+ // An access denial ends this page's correction recovery, as the earlier desktop correction panel did: after re-entry the
+ // page never offers to resend a command from before the denial, and a late reply to it is not shown.
+ const denied=panel.state.snapshot?.state==='unavailable'&&panel.state.snapshot.reason==='access_denied',[deniedSeen,setDeniedSeen]=useState(denied);
+ if(denied!==deniedSeen){setDeniedSeen(denied);if(denied){setOperation(new HoursCorrectionOperation());setActiveEdit(null);setRecoveryHref(null);}}
  const read=panel.read,corrections=read?.view==='corrections'?read.data:null,snapshot=corrections?.snapshot.state==='ready'?corrections.snapshot:null;
  const detail=snapshot?.requests.find(r=>r.id===requestId),record=read?.view==='records'&&read.data.state==='ready'?[...read.data.today.entries,...read.data.recent.entries].find(e=>e.id===entryId):null;
  const editHref=edit?'/app/my-time?view=corrections&edit='+encodeURIComponent(edit)+(requestId?'&requestId='+requestId:'')+(fromCards?'&from=cards&start='+period.startDate+'&end='+period.endDate:''):null;

@@ -3,6 +3,9 @@ import {markReportNavigationStage,observeReportNavigation,openPeriodReports} fro
 import {runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 import {assignOwnedManagerCompanyAccess} from '../src/test/integration/owned-app-fixture.ts';
 
+// Time exports' private ready content (board O-TimeExports): the "Send to" list exists only with a current finalized-time read.
+const exportSendTo=page=>page.getByRole('list',{name:'Send to',exact:true});
+
 /** Real destination RSC timing control, using the original single-click/15s
  * Reports acceptance. Each case starts a separate source document; none rescues
  * an already failed navigation. Only the response timing/lifecycle event vary. */
@@ -12,7 +15,7 @@ export async function verifyReportRecoveryNavigation(page,app,engine,report,mana
   const control=recover?'held-destination-with-recovery':'held-destination-without-recovery';
   markReportNavigationStage(page,engine,control,'source-entry');
   await page.goto(origin+'/app/payroll-export?start=2026-09-21&end=2026-09-27');
-  await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
+  await exportSendTo(page).waitFor();
   const row={engine,recover,status:'pending',holdMs:1500,held:false,sourceRequests:0};
   (report.scopedNavigation??=[]).push(row);
   let holdTask;
@@ -25,7 +28,7 @@ export async function verifyReportRecoveryNavigation(page,app,engine,report,mana
     const start=performance.now(),release=new Promise(ready=>setTimeout(ready,1500));
     if(recover)await page.evaluate(()=>window.dispatchEvent(new Event('storage')));
     await release;
-    row.privateRetiredBeforeRelease=await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).count()===0;
+    row.privateRetiredBeforeRelease=await exportSendTo(page).count()===0;
     row.actualHoldMs=Math.round(performance.now()-start);
     await route.continue();
    })();
@@ -52,7 +55,7 @@ export async function verifyReportRecoveryNavigation(page,app,engine,report,mana
  await verifyRoleRedirect(page,app,engine,report,managerId);
  markReportNavigationStage(page,engine,'restored-period-report','source-entry');
  await page.goto(origin+'/app/payroll-export?start=2026-09-21&end=2026-09-27');
- await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
+ await exportSendTo(page).waitFor();
  await openPeriodReports(page,origin,engine,report,'restored-period-report');
 }
 
@@ -80,7 +83,7 @@ async function verifyExplicitRecovery(page,origin,engine,report){
   return gate.then(()=>route.continue()).catch(error=>{if(!/already handled/i.test(String(error?.message)))throw error;});
  };
  await page.route('**/app/reports?*',handler);
- mark('source-entry');await page.goto(origin+source);await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
+ mark('source-entry');await page.goto(origin+source);await exportSendTo(page).waitFor();
  const sourceDocument=await page.evaluate(()=>performance.timeOrigin),deadline=performance.now()+15000;
  try{
   await runBeforeRecoveryDeadline(async()=>{
@@ -93,13 +96,13 @@ async function verifyExplicitRecovery(page,origin,engine,report){
    await page.evaluate(()=>window.dispatchEvent(new Event('storage')));
    await page.locator('main').getByRole('button',{name:'Refresh current view',exact:true}).click({noWaitAfter:true});
    mark('source-refresh-clicked');
-   await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
+   await exportSendTo(page).waitFor();
    assert.equal(await page.evaluate(()=>performance.timeOrigin),sourceDocument,'Recovery must preserve the document and avoid aborting its pending RSC');
    mark('release-discarded-destination');
    release();row.destinationTerminals=await Promise.all(terminal);
    await page.evaluate(()=>new Promise(ready=>requestAnimationFrame(()=>requestAnimationFrame(ready))));
    assert.equal(new URL(page.url()).pathname+new URL(page.url()).search,source,'Late destination responses must not replace explicit fresh source recovery');
-   assert(await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).isVisible());
+   assert(await exportSendTo(page).isVisible());
    mark('complete');row.status='passed';
   },deadline);
  }catch(error){row.status='failed';throw error;}
@@ -121,7 +124,7 @@ async function verifyRoleRedirect(page,app,engine,report,managerId){
   return route.continue();
  };
  mark('source-entry');await page.goto(app.url+'/app/payroll-export?start=2026-09-21&end=2026-09-27');
- await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).waitFor();
+ await exportSendTo(page).waitFor();
  row.documentTimeOrigin=await page.evaluate(()=>performance.timeOrigin);
  await page.route('**/app/reports?*',handler);
  try{
@@ -133,7 +136,7 @@ async function verifyRoleRedirect(page,app,engine,report,managerId){
   await page.locator('.app-shell.employee-shell[data-employee-mobile="true"][data-nv-corp]').waitFor();
   assert.equal(await page.locator('[data-nv-clean]').count(),0,'The server must replace the old management shell after the role change');
   row.identityShellVerified=true;
-  assert.equal(await page.getByRole('heading',{name:'Choose finalized employees',exact:true}).count(),0);
+  assert.equal(await exportSendTo(page).count(),0);
   row.sourcePrivateAbsent=true;row.destinationVerified=true;
   mark('complete');
   row.status='passed';
