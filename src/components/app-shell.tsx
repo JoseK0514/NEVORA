@@ -264,6 +264,9 @@ function AppShellView({
     <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
       {employee || navigation.some(item => item.href === "/app/profile") ? <Link href="/app/profile" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your profile</Link> : null}
+      {/* Desktop Employee: the calendar link page has no other way in at this width (phones reach it from More). */}
+      {employee ? <Link href="/app/profile/calendar" className="nevora-action-menu-item"
+        onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Add shifts to your calendar</Link> : null}
       {!employee && navigation.some(item => item.href === "/app/my-pay") ? <Link href="/app/my-pay" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>My pay</Link> : null}
       {notificationsEnabled ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings">Profile and device settings</button> : null}

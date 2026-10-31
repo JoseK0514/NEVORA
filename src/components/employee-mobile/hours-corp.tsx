@@ -60,7 +60,7 @@ export function CorpHoursFrame({contextKey,view,state,ready,refresh,head,headIns
   if(target&&document.getElementById(target))document.getElementById(target)?.focus();else if(!first||sub)document.getElementById('hours-title')?.focus();},[ready,contextKey,sub]);
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  return <div className={sub?'c-page c-hours c-hours--sub':'c-page c-hours'} data-nv-page="" data-corp="" data-hours-context={contextKey} data-hours-view={view}
-  data-hours-state={state.paused?'paused':ready?'ready':denied?'denied':state.refreshing?'loading':'unavailable'}>
+  data-hours-state={state.paused?'paused':ready?'ready':denied?'denied':state.refreshing?'loading':'unavailable'} aria-busy={state.refreshing}>
   {ready&&headInside?null:head}
   {ready?children:<CorpCard ariaLabel="Time access"><CorpBody>
    <p className="c-line2" role="status">{state.paused?'Your time records are paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current time records…':'Your records couldn’t be checked.'}</p>

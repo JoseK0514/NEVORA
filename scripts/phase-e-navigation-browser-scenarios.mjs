@@ -11,22 +11,24 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  const tabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',backTabKey=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
  const checks=[],contrast=[],focusTrace=[],expiryRecovery=[],runtimeErrors=[],loginAttempts=[],navigationAttempts=[],prefix=`navigation-${engine}-${width}`,headers={};
  let badgeBounds=null,retainedOverflowFailure=false,corporate=false;
- // Phones (< 768px, useEmployeeMobile) render the employee mobile pages: Requests hub, Notifications (messages view),
- // Profile, Time off and Availability. Each check below targets the page that width actually shows; the reads,
- // bindings and private-row rules they verify are the same own reads.
+ // Phones (< 768px, useEmployeeMobile) render the employee mobile pages: Notifications (messages view) and Time off.
+ // Release 1 (Phase 8 boards) draws Requests, Profile, Notifications, Time off and Availability on the corporate kit at
+ // every width; Notifications keeps its two reads (phones: the messages view; wider: the account panel), which now draw
+ // the same list (All / Unread, rows grouped by day). Each check targets what that width shows; the reads, bindings and
+ // private-row rules they verify are the same own reads.
  const phone=width<768;
- const inboxRows=phone?'.em-messages[data-messages-view="notifications"] .em-message-list > li':'[data-private-view="notifications"] [data-inbox-row]';
- const inboxLinks=phone?'.em-messages[data-messages-view="notifications"] .em-message-list a.em-request-entry':'[data-inbox-row] > a';
  const inboxRoot=phone?'.em-messages[data-messages-view="notifications"]':'[data-private-view="notifications"]';
+ const inboxRows=inboxRoot+' ul.c-rows > li';
+ const inboxLinks=inboxRoot+' a.em-notif-row';
  const inboxGlob=phone?'**/api/employee/messages/notifications/**':'**/api/notifications';
  const isInboxRead=path=>phone?path.startsWith('/api/employee/messages/notifications/'):path==='/api/notifications';
  const inboxItems=view=>phone?view.data?.value?.items:view.items;
- const inboxEmpty=()=>phone?page.getByRole('heading',{name:'No current notifications',exact:true}):page.getByText('No notifications yet.',{exact:true});
- const inboxUnavailable=()=>phone?page.locator(inboxRoot).getByText(/^(Your notifications couldn’t be checked\. Try again\.|Your current notices couldn’t be checked\. Refresh before continuing\.)$/):page.getByRole('heading',{name:'Couldn’t load notifications',exact:true});
- const inboxDenied=()=>phone?page.locator(inboxRoot).getByText('Your access changed. Sign in again to continue.',{exact:true}):page.getByRole('heading',{name:'Your session ended',exact:true});
- const inboxPaused=()=>phone?page.locator(inboxRoot+'[data-messages-state="paused"]'):page.getByRole('heading',{name:'Updates paused',exact:true});
- const inboxPartial=()=>phone?page.getByText('Some current notices couldn’t be checked. Refresh before relying on this list.',{exact:true}):page.getByText('Some notifications couldn’t be checked.',{exact:true});
- const inboxTryAgain=()=>phone?page.locator(inboxRoot).getByRole('button',{name:/^(Try again|Refresh)$/}).first():page.getByRole('button',{name:'Try again',exact:true});
+ const inboxEmpty=()=>page.locator(inboxRoot).getByText('No current notifications',{exact:true});
+ const inboxUnavailable=()=>page.locator(inboxRoot).getByText(/^(Your notifications couldn’t be checked\.|Your current notices couldn’t be checked\. Refresh before continuing\.)$/);
+ const inboxDenied=()=>page.locator(inboxRoot).getByText('Your access changed. Sign in again to continue.',{exact:true});
+ const inboxPaused=()=>phone?page.locator(inboxRoot+'[data-messages-state="paused"]'):page.locator(inboxRoot).getByText('Your notifications are paused. Return to this page or reconnect to refresh.',{exact:true});
+ const inboxPartial=()=>page.locator(inboxRoot).getByText('Some current notices couldn’t be checked. Refresh before relying on this list.',{exact:true});
+ const inboxTryAgain=()=>page.locator(inboxRoot).getByRole('button',{name:'Try again',exact:true});
  const inboxOptions={glob:inboxGlob,items:inboxItems,rows:inboxRows};
  const q=(text,values=[])=>app.database.executor.query({text,values});
  page.on('pageerror',error=>{if(!cellRuntimeErrors.isNavigationDiagnostic(error))runtimeErrors.push({name:error.name,message:error.message.replace(/https?:[^\s]+/g,'[URL]').replace(/[A-Za-z0-9_-]{40,}/g,'[long value]'),path:new URL(page.url()).pathname.replace(/\/api\/calendar\/[^/]+/g,'/api/calendar/[redacted]'),lastCompleted:checks.at(-1),stack:error.stack?.replace(/https?:[^\s)]+/g,'[URL]').replace(/[A-Za-z0-9_-]{40,}/g,'[long value]')});});
@@ -76,12 +78,13 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  async function navigate(href,keyboard=false){
   const mobile=await page.locator('.mobile-nav').isVisible();
   const primary=['/app','/app/schedule','/app/requests/hub','/app/my-time'].includes(href);
-  // Availability belongs to Requests on both layouts; desktop Profile is an account action.
-  const sectionOwner={'/app/availability':'/app/requests/hub'}[href];
+  // Corporate Employee (board G-E-Schedule): Availability is Schedule's title action on both layouts, and Schedule stays
+  // the current section. A Lead reaches it from More on a phone (Requests lights) and from the sidebar on a computer.
+  // Desktop Profile is an account action.
+  const sectionOwner=corporate?{'/app/availability':'/app/schedule'}[href]:undefined;
   if(sectionOwner){
-   // v5: Requests lists Availability as a row (segments and Back replace the old section tabs).
    await nav(sectionOwner);const row=page.locator('main a[href="'+href+'"]').first();if(mobile)await row.tap();else await row.click();await page.waitForURL(u=>u.pathname===href);await settle();
-   await page.waitForFunction(({mobile,sectionOwner})=>!document.querySelector('.section-tabs')&&(mobile?document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===sectionOwner:true),{mobile,sectionOwner});return;
+   await page.waitForFunction(({mobile,sectionOwner})=>!document.querySelector('.section-tabs')&&(mobile?document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===sectionOwner:document.querySelector('nav[aria-label="Primary navigation"] a[aria-current]')?.getAttribute('href')===sectionOwner),{mobile,sectionOwner});return;
   }
   if(!mobile&&href==='/app/profile'){
    const trigger=page.getByRole('button',{name:/, account menu$/}),menu=page.locator('#portal-account-menu');
@@ -100,15 +103,19 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    const more=corporate?page.locator('.mobile-header a.c-top-avatar[href="/app/more"]'):page.locator('.mobile-nav a[href="/app/more"]');await more.tap();await page.waitForURL(u=>u.pathname==='/app/more');await settle();}
   const root=mobile?(primary?page.locator('.mobile-nav'):page.locator('main')):page.locator('nav[aria-label="Primary navigation"]');
   const destination=root.locator('a[href="'+href+'"]').first();if(mobile){const rect=await destination.boundingBox();assert(rect);await destination.evaluate(e=>e.addEventListener('touchstart',()=>{window.__employeeNavigationTouch=true;},{once:true}));await page.evaluate(()=>{window.__employeeNavigationTouch=false;});await destination.tap({position:{x:rect.width-8,y:rect.height/2}});assert(await page.evaluate(()=>window.__employeeNavigationTouch),'Native mobile navigation dispatched touchstart');}else await destination.click();await page.waitForURL(u=>u.pathname===href);await settle();
-  // Corporate Employee: More, Updates, Profile and Notifications light Home (there is no More tab).
-  await page.waitForFunction(({mobile,primary,href,corporate})=>mobile?(primary?document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===href:document.querySelector('.mobile-nav a[href="'+(corporate||href==='/app/notifications'?'/app':'/app/more')+'"]')?.classList.contains('active')):document.querySelector('nav[aria-label="Primary navigation"] a[aria-current="page"]')?.getAttribute('href')===href,{mobile,primary,href,corporate});
+  // Corporate Employee: More, Updates, Profile and Notifications light Home (there is no More tab). A Lead's Availability
+  // belongs to the Requests tab; its other More pages light More.
+  const lit=corporate||href==='/app/notifications'?'/app':href==='/app/availability'?'/app/requests/hub':'/app/more';
+  await page.waitForFunction(({mobile,primary,href,lit})=>mobile?(primary?document.querySelector('.mobile-nav a[aria-current="page"]')?.getAttribute('href')===href:document.querySelector('.mobile-nav a[href="'+lit+'"]')?.classList.contains('active')):document.querySelector('nav[aria-label="Primary navigation"] a[aria-current="page"]')?.getAttribute('href')===href,{mobile,primary,href,lit});
   assert.equal(await page.locator('#employee-more-navigation').count(),0,'v5 has no More pop-up');
  }
  // Profile keeps aria-hidden placeholder rows; inbox controls exist even in a ready empty view.
  async function ready(kind){await page.waitForFunction(({k,phone})=>{
   // Phones: the mobile profile view and messages view publish their own released state.
-  if(phone)return k==='profile'?document.querySelector('[data-private-view="profile"]')?.getAttribute('data-profile-state')==='ready':document.querySelector('.em-messages[data-messages-view="notifications"]')?.getAttribute('data-messages-state')==='ready';
-  const e=document.querySelector(`[data-private-view="${k}"]`);return e&&(k==='profile'?[...e.querySelectorAll('.q-rv--l')].some(value=>value.textContent!=='–'):!!e.querySelector('[aria-label="Filter notifications"] button:not([disabled])'));},{k:kind,phone});}
+  // Profile (board E-Profile) publishes its released state at every width.
+  if(k==='profile')return document.querySelector('[data-private-view="profile"]')?.getAttribute('data-profile-state')==='ready';
+  if(phone)return document.querySelector('.em-messages[data-messages-view="notifications"]')?.getAttribute('data-messages-state')==='ready';
+  return !!document.querySelector('[data-private-view="notifications"] [aria-label="Show notifications"]');},{k:kind,phone});}
  const notifications=()=>page.locator('[data-private-view="notifications"]');
  // v5 has no manual Refresh: the inbox re-reads when the app returns to the front. A storage event reaches only the
  // inbox panel (the bell ignores it), so each refresh is exactly one inbox read, as the old Refresh button was.
@@ -116,14 +123,23 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  const refreshProfile=()=>page.evaluate(()=>window.dispatchEvent(new Event('storage')));
  async function screenshot(name){await page.screenshot({path:join(evidenceDirectory,`${prefix}-${name}.png`),fullPage:true});}
  async function accessibility(name){
-  const expectedTitle={'Requests hub':'NEVORA',Profile:'Profile · NEVORA',Notifications:'Notifications · NEVORA'}[name];assert(expectedTitle,'Known page title contract');await page.waitForFunction(title=>document.title===title,expectedTitle);if(name==='Requests hub'&&phone)await page.locator('.em-requests[data-requests-state="ready"]').waitFor();const entrance=name==='Requests hub'?await waitForSheetEntrance(page):undefined;await page.addScriptTag({path:axeFile});
+  const expectedTitle={'Requests hub':'NEVORA',Profile:'Profile · NEVORA',Notifications:'Notifications · NEVORA'}[name];assert(expectedTitle,'Known page title contract');await page.waitForFunction(title=>document.title===title,expectedTitle);if(name==='Requests hub'&&phone)await page.locator('.em-requests-corp [data-requests-state="ready"]').waitFor();const entrance=name==='Requests hub'?await waitForSheetEntrance(page):undefined;
+  // Audit the settled tab bar: a tab's pressed/pending opacity transition is a frame of motion, not its colour.
+  await page.waitForFunction(()=>!document.querySelector('.mobile-nav .mobile-nav-pending')&&[...document.querySelectorAll('.mobile-nav, .mobile-nav *')].every(element=>element.getAnimations().every(animation=>!Number.isFinite(animation.effect?.getComputedTiming().endTime)||(!animation.pending&&animation.playState==='finished'))));
+  await page.addScriptTag({path:axeFile});
   const violations=await page.evaluate(async()=> (await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}})).violations.map(v=>({id:v.id,nodes:v.nodes.slice(0,20).map(node=>({target:node.target.map(selector=>String(selector).replace(/https?:[^\s)]+/g,'[URL]').replace(/[A-Za-z0-9_-]{32,}/g,'[OPAQUE]')),contrast:[...node.any,...node.all,...node.none].filter(check=>check.id==='color-contrast').map(check=>({foreground:check.data?.fgColor,background:check.data?.bgColor,ratio:check.data?.contrastRatio,expected:check.data?.expectedContrastRatio}))}))})));
   await writeFile(join(evidenceDirectory,`navigation-${engine}-${width}-${name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}-axe-report.json`),JSON.stringify({engine,width,page:name,entrance,violations},null,2));
   assert.deepEqual(violations,[],name+' accessibility');checks.push(name+' axe WCAG A/AA');
  }
  async function contrastStates(){
-  // v5 Profile has no Refresh; measure the page's own Sign out button, then walk back through the account rows.
-  const target=page.getByRole('region',{name:'Session',exact:true}).getByRole('button',{name:'Sign out',exact:true});
+  // Board E-Profile has no Sign out: a phone signs out from More (its last control); a computer from the sidebar, or from
+  // the account menu where the compact sidebar hides it (768). Measure that Sign out, then walk back through what precedes it.
+  let target,menu=false;const accountTrigger=()=>page.getByRole('button',{name:/, account menu$/}),accountMenu=page.locator('#portal-account-menu');
+  // Escape closes the menu from one of its rows; otherwise its trigger toggles it.
+  const closeMenu=async()=>{await page.keyboard.press('Escape');if(await accountMenu.waitFor({state:'hidden',timeout:2000}).then(()=>false,()=>true))await accountTrigger().click();await accountMenu.waitFor({state:'hidden'});};
+  if(phone){await page.goto(app.url+'/app/more');await settle();target=page.locator('main').getByRole('button',{name:'Sign out',exact:true});}
+  else{const sidebar=page.locator('aside.sidebar').getByRole('button',{name:'Sign out',exact:true});if(await sidebar.isVisible())target=sidebar;else{menu=true;await accountTrigger().click();await page.locator('#portal-account-menu').waitFor();target=page.locator('#portal-account-menu').getByRole('button',{name:'Sign out',exact:true});}}
+  focusTrace.push({stage:'Sign out location',location:phone?'More':menu?'account menu':'sidebar'});
   const sample=()=>target.evaluate(element=>{
    const rgba=value=>{const parts=value.match(/[\d.]+/g).map(Number);return [parts[0],parts[1],parts[2],parts[3]??1];};
    const blend=(front,back)=>front.slice(0,3).map((v,i)=>v*front[3]+back[i]*(1-front[3]));
@@ -138,16 +154,20 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    if(state==='normal'){await target.scrollIntoViewIfNeeded();await page.mouse.move(0,0);}
    if(state==='hover')await target.hover();
    if(state==='pressed')await page.mouse.down();
-   if(state==='focus'){await page.mouse.move(0,0);await page.mouse.up();await page.evaluate(()=>window.scrollTo(0,0));let reached=false;for(let n=0;n<40;n++){await page.keyboard.press(tabKey);const now=await target.evaluate(e=>({stage:'native Tab',active:e===document.activeElement,disabled:e.disabled,focusVisible:e.matches(':focus-visible')}));if(now.active){focusTrace.push(now);reached=true;break;}}assert(reached,'Native keyboard reaches Sign out');}
+   if(state==='focus'){await page.mouse.move(0,0);await page.mouse.up();
+    // The account menu's items are reached from its trigger: Enter opens it with focus on its first item.
+    if(menu){if(await accountMenu.isVisible())await closeMenu();await page.bringToFront();await accountTrigger().focus();await page.keyboard.press('Enter');await page.locator('#portal-account-menu').waitFor();await page.waitForFunction(()=>document.querySelector('#portal-account-menu')?.contains(document.activeElement));}
+    else await page.evaluate(()=>window.scrollTo(0,0));let reached=false;for(let n=0;n<40;n++){await page.keyboard.press(tabKey);const now=await target.evaluate(e=>({stage:'native Tab',active:e===document.activeElement,disabled:e.disabled,focusVisible:e.matches(':focus-visible')}));if(now.active){focusTrace.push(now);reached=true;break;}}assert(reached,'Native keyboard reaches Sign out');}
    const measured=await sample();contrast.push({state,...measured});
    assert(measured.textRatio>=4.5,state+' actual composited button text contrast');
    if(state==='focus'){assert(measured.active&&measured.focusVisible&&!measured.disabled,'Actual native keyboard focus is visible');assert.notEqual(measured.outline,'none');assert(measured.outlineRatio>=3,'focus outline contrast');}
   }
   const clear=async(control,name)=>{const sample=await control.evaluate(e=>{const r=e.getBoundingClientRect(),nav=document.querySelector('.mobile-nav')?.getBoundingClientRect(),header=document.querySelector('.mobile-header')?.getBoundingClientRect();return {top:r.top,bottom:r.bottom,minimum:header?.height?header.bottom:0,maximum:nav?.height?nav.top:innerHeight,active:e===document.activeElement,focusVisible:e.matches(':focus-visible')};});focusTrace.push({stage:name,...sample});assert(sample.active&&sample.focusVisible,name+' has native visible focus');assert(sample.top>=sample.minimum&&sample.bottom<=sample.maximum,name+' is unobscured above fixed navigation');};
-  await clear(target,'Sign out');let walked=0;
-  for(let n=0;n<4;n++){await page.keyboard.press(backTabKey);const current=page.locator(':focus');assert.equal(await current.count(),1);await clear(current,'Account control');walked++;}
-  assert.equal(walked,4,'Native reverse traversal walks the account rows above Sign out');
-  await page.mouse.move(0,0);await page.mouse.up();checks.push('Native '+tabKey+' traversal and scroll keeps Sign out and the account rows unobscured above mobile navigation');checks.push('Actual composited normal/hover/pressed/focus text and focus-outline contrast measured');
+  // The account menu holds two rows above Sign out (Your profile, Add shifts to your calendar); More and the sidebar hold more.
+  await clear(target,'Sign out');let walked=0;const rows=menu?2:4;
+  for(let n=0;n<rows;n++){await page.keyboard.press(backTabKey);const current=page.locator(':focus');assert.equal(await current.count(),1);await clear(current,'Account control');walked++;}
+  assert.equal(walked,rows,'Native reverse traversal walks the rows above Sign out');
+  await page.mouse.move(0,0);await page.mouse.up();if(menu)await closeMenu();checks.push('Native '+tabKey+' traversal and scroll keeps Sign out (More on phones, the sidebar or account menu on computers) and the rows above it unobscured above mobile navigation');checks.push('Actual composited normal/hover/pressed/focus text and focus-outline contrast measured');
  }
  async function bounds(){assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'document horizontal overflow');const bad=await page.locator('main .q-list a.q-row,main .q-list button.q-row,main .q-btn,main .c-rows a.c-row,main .c-rows button.c-row,main .c-btn,main a.em-request-entry,.profile-signout-row,.em-profile-signout,[data-inbox-row] > a').evaluateAll(elements=>elements.filter(e=>{const r=e.getBoundingClientRect();return r.width&& (r.left< -1||r.right>innerWidth+1||r.height<43);}).map(e=>e.textContent));assert.deepEqual(bad,[]);}
  try{
@@ -173,19 +193,24 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   for(const href of ['/app/schedule','/app/my-time','/app']){await nav(href);const current=await page.locator('.mobile-nav').isVisible()?page.locator('.mobile-nav a[aria-current="page"]'):page.locator('nav[aria-label="Primary navigation"] a[aria-current="page"]');assert.equal(await current.getAttribute('href'),href);}
   checks.push('Home_Schedule_MyTime_More_all_routes_reachable through authenticated navigation');
   await nav('/app/requests/hub');await bounds();await screenshot('requests');await accessibility('Requests hub');
-  // v5 (mockup E06): Ask for Time off and Swap or cover a shift. Phones (mobile hub, board G-E-Requests): the
-  // Time-off requests and My shift requests links. Each page goes Back to Requests.
-  const timeOff=page.locator('main').getByRole('link',{name:phone?'Time-off requests':'Time off',exact:true}),shifts=page.locator('main').getByRole('link',{name:phone?'My shift requests':'Swap or cover a shift',exact:true});assert.equal(await timeOff.getAttribute('href'),'/app/requests');assert.equal(await shifts.getAttribute('href'),phone?'/app/exchange?tab=requests':'/app/exchange');
-  const backToRequests='main :is(a.q-nav__l,a.em-request-back)[href="/app/requests/hub"]';
-  for(const [link,path] of [[timeOff,'/app/requests'],[shifts,'/app/exchange']]){
-   await link.click();await page.waitForURL(u=>u.pathname===path);await settle();
-   await page.locator(backToRequests).waitFor();assert.equal(await page.locator(backToRequests).count(),1,'Back to Requests');assert.equal(await page.locator('.section-tabs').count(),0);
+  // Board G-E-Requests (Release 1, every width): New request opens the time-off form and the Decided card's See all opens
+  // the decided time-off list; wider layouts add a Shift requests row. Phones have no fixed shift-requests link (each
+  // request row opens its own page), so that canonical page is opened directly to verify its ownership and Back.
+  const newRequest=page.locator('main').getByRole('link',{name:'New request',exact:true});assert.equal(await newRequest.getAttribute('href'),'/app/requests?tab=new');
+  const decided=page.locator('main').getByRole('link',{name:'See all decided requests',exact:true});assert.equal(await decided.getAttribute('href'),'/app/requests?filter=decided');
+  const shifts=phone?null:page.locator('main').getByRole('link',{name:/^Swaps, cover and can’t work\b/});if(shifts)assert.equal(await shifts.getAttribute('href'),'/app/exchange');
+  // Phones go Back to Requests from each page; a computer keeps Requests current in the sidebar (its hub one click away).
+  const backToRequests='main a:is(.c-nav__back,.q-nav__l,.em-request-back)[href="/app/requests/hub"]:visible';
+  for(const [link,path] of [[decided,'/app/requests'],[shifts??'/app/exchange?tab=requests','/app/exchange']]){
+   if(typeof link==='string')await page.goto(app.url+link);else await link.click();await page.waitForURL(u=>u.pathname===path);await settle();
+   assert.equal(await page.locator('.section-tabs').count(),0);
    if(await page.locator('.mobile-nav').isVisible()){
+    await page.locator(backToRequests).waitFor();assert.equal(await page.locator(backToRequests).count(),1,'Back to Requests');
     assert.equal(await page.locator('.mobile-nav a[aria-current="page"]').getAttribute('href'),'/app/requests/hub');
     // Lead: the More tab stays unselected. Corporate Employee: no More tab, and the header avatar (More) is not current.
     if(corporate){assert.equal(await page.locator('.mobile-nav a[href="/app/more"]').count(),0,'Corporate Employee has no More tab');assert.equal(await page.locator('.mobile-header a.c-top-avatar[href="/app/more"]').getAttribute('aria-current'),null);}
     else assert.equal(await page.locator('.mobile-nav a[href="/app/more"]').evaluate(e=>e.classList.contains('active')),false);
-   }
+   }else assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[aria-current]').getAttribute('href'),'/app/requests/hub','Requests stays the current section');
    await page.goBack();await settle();
   }
   checks.push('Requests_hub_preserves_TimeOff_ShiftRequests canonical URLs and selected ownership');
@@ -207,10 +232,15 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await page.goBack();await page.waitForURL(u=>u.pathname===moreFrom);await settle();
    checks.push('More page reached by native Enter with explicit row order; Back returns');
   }else{await nav('/app/profile',true);checks.push('Native keyboard desktop account-menu Profile navigation and focus handoff');}
-  stage='layout';await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);assert(await page.getByText('Alerts on this device aren’t turned on for your workplace yet.',{exact:true}).isVisible());await bounds();await screenshot('profile');await accessibility('Profile');await contrastStates();
+  stage='layout';await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);assert.equal(await page.locator('main a[href="/app/profile/device-alerts"]').count(),0,'Profile offers no device alerts while the workplace has none');await bounds();await screenshot('profile');await accessibility('Profile');
+  // Board E-Profile: device alerts are their own page (opened from Notifications' Settings when the workplace has alerts).
+  // With push off it says so and keeps notifications in NEVORA.
+  await page.goto(app.url+'/app/profile/device-alerts');await settle();await page.locator('[data-device-state="disabled"]').getByText('Workplace alerts are unavailable',{exact:true}).waitFor();assert(await page.getByText('Your workplace has not made device alerts available. Your notifications remain in NEVORA.',{exact:true}).isVisible());
+  await nav('/app/profile');await ready('profile');await contrastStates();
   await nav('/app/notifications');await ready('notifications');assert.equal(await page.locator(inboxLinks).count(),1);
+  assert.equal(await page.locator('main').getByRole('link',{name:'Settings',exact:true}).count(),0,'No alert Settings while the workplace has no device alerts');
   // Desktop opens through the guarded open route; the phone messages view opens through its own guarded open read.
-  if(phone)assert.equal(await page.locator(inboxLinks).getAttribute('id'),'message-'+noticeId);else assert.equal(await page.locator(inboxLinks).getAttribute('href'),'/app/notifications/open?notificationId='+noticeId);
+  assert.equal(await page.locator(inboxLinks).getAttribute('id'),'message-'+noticeId);if(!phone)assert.equal(await page.locator(inboxLinks).getAttribute('href'),'/app/notifications/open?notificationId='+noticeId);
   assert(!await page.locator(inboxRoot).innerText().then(t=>t.includes('STORED PRIVATE')));await bounds();await screenshot('inbox');await accessibility('Notifications');
   const before=await q('SELECT read_at FROM notifications WHERE id=$1',[noticeId]);await page.locator(inboxLinks).click();await page.waitForURL(u=>u.pathname==='/app/requests');
   // The guarded open loads a new document. Wait for its current bell read before Back;
@@ -226,7 +256,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   await page.evaluate(({phone,inboxRoot,inboxRows})=>{
    const observations=[],signals=[],originalFetch=window.fetch;
    const isRead=path=>phone?path.startsWith('/api/employee/messages/notifications/'):path==='/api/notifications';
-   const observe=event=>{const root=document.querySelector(inboxRoot);const entry={event,at:performance.now(),hidden:document.visibilityState==='hidden',paused:(phone?root?.getAttribute('data-messages-state')==='paused':root?.textContent.includes('Updates paused'))??false,rows:document.querySelectorAll(inboxRows).length,requests:signals.length,aborted:signals.filter(signal=>signal.aborted).length};observations.push(entry);return entry;};
+   const observe=event=>{const root=document.querySelector(inboxRoot);const entry={event,at:performance.now(),hidden:document.visibilityState==='hidden',paused:(phone?root?.getAttribute('data-messages-state')==='paused':root?.textContent.includes('Your notifications are paused.'))??false,rows:document.querySelectorAll(inboxRows).length,requests:signals.length,aborted:signals.filter(signal=>signal.aborted).length};observations.push(entry);return entry;};
    window.fetch=function(input,options){if(isRead(new URL(typeof input==='string'?input:input.url??String(input),location.href).pathname)&&options?.signal){signals.push(options.signal);options.signal.addEventListener('abort',()=>observe('abort'),{once:true});observe('request');}return originalFetch.apply(this,arguments);};
    const observer=new MutationObserver(()=>observe('commit'));observer.observe(document.querySelector(inboxRoot),{childList:true,subtree:true,attributes:true,characterData:true});
    window.__navigationVisibility={observe,observations,stop:()=>{observer.disconnect();window.fetch=originalFetch;}};observe('initial');
@@ -285,6 +315,9 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await q("UPDATE notifications SET expires_at=clock_timestamp()+interval '3 seconds' WHERE id=$1",[noticeId]);
    const expiring=nextInbox();await refreshNotifications();const shortResponse=await expiring,shortView=await shortResponse.json();assert.equal(shortResponse.status(),200);assert.equal(shortView.state,'ready');assert(shortView.validForMs>0&&shortView.validForMs<=3000);assert.equal(inboxItems(shortView).length,1);await ready('notifications');
    await inboxUnavailable().waitFor();assert.equal(await page.locator(inboxRows).count(),0);assert.equal(await inboxDenied().count(),0);assert(await inboxTryAgain().isEnabled());await screenshot('source-expired-retry');
+   // The page drops the rows at its own lease end, which can precede the database clock by a few milliseconds; Retry
+   // checks the source after it has actually expired there.
+   await q("SELECT pg_sleep(GREATEST(0,EXTRACT(EPOCH FROM (expires_at-clock_timestamp())))+0.05) FROM notifications WHERE id=$1",[noticeId]);
    const refreshed=nextInbox();await inboxTryAgain().click();const currentResponse=await refreshed,currentView=await currentResponse.json();assert.equal(currentResponse.status(),200);assert.equal(currentView.state,'ready');assert.deepEqual(inboxItems(currentView),[]);await inboxEmpty().waitFor();assert.equal(await inboxDenied().count(),0);
    expiryRecovery.push({sessionLongLived:session[0].long_lived,sourceLifetimeMs:shortView.validForMs,expiredRowsCleared:true,retryEnabled:true,falseSignIn:false,revalidationStatus:currentResponse.status(),currentItems:inboxItems(currentView).length});
    await q("UPDATE notifications SET expires_at=clock_timestamp()+interval '1 day' WHERE id=$1",[noticeId]);await refreshInboxAndWaitForRows(page,refreshNotifications,[noticeId],undefined,inboxOptions);await ready('notifications');
@@ -326,8 +359,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    let release,reached;const gate=new Promise(r=>release=r),seen=new Promise(r=>reached=r);let held=false;
    await context.route('**/api/employee/profile',async route=>{if(held)return route.continue();held=true;const response=await route.fetch();assert.equal(response.status(),200);reached();await gate;await route.fulfill({response});});
    await refreshProfile();await seen;await page.evaluate(()=>window.dispatchEvent(new Event('blur')));release();await page.waitForTimeout(100);
-   if(phone){assert.equal(await page.locator('[data-private-view="profile"]').getAttribute('data-profile-state'),'paused');assert.equal(await page.locator('[data-private-view="profile"] .em-profile-identity, [data-private-view="profile"] .em-profile-facts').count(),0,'Paused phone profile shows no private details');}
-   else assert.deepEqual(await page.locator('[data-private-view="profile"] .q-rv--l').allTextContents(),['–','–'],'Paused profile retains only static placeholders');await context.unroute('**/api/employee/profile');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('profile');
+   assert.equal(await page.locator('[data-private-view="profile"]').getAttribute('data-profile-state'),'paused');assert.deepEqual(await page.locator('[data-private-view="profile"] .c-row__value').allTextContents(),['–','–','–'],'Paused profile retains only static placeholders');await context.unroute('**/api/employee/profile');await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await ready('profile');
    checks.push('Delayed real authenticated GET cannot repaint after blur (transport held; no fixture response content)');
    // Actual session replacement through login binds the old mounted view out.
    stage='replacement';await login(scenario.actors[1]);assert.equal((await get(endpoint,binding)).status(),403);await login(actor);await nav('/app/profile');await ready('profile');checks.push('Actual account/session replacement rejects former mounted-view binding');
@@ -336,12 +368,12 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    // v5 (mockup E08): the request form is a sheet over Time off, with Full days / Part of a day and From / Until rows.
    stage='timeoff-form';let created;
    if(phone){
-    // Phones (board G-E-Requests): the mobile Time off form. It keeps the native end-date minimum but validates in the
-    // page (noValidate) so the error is announced; its request ID is stable for the whole attempt and its retry
-    // checks that same ID before sending again.
-    const form=()=>page.locator('form.em-planning-form');
+    // Phones (board E-TimeOffSheet): the Request time off sheet (All day / Part of day, From and To). It keeps the native
+    // end-date minimum but validates in the page (noValidate) so the error is announced; its request ID is stable for the
+    // whole attempt and its retry checks that same ID before sending again.
+    const form=()=>page.locator('form.tof-form');
     const isAction=request=>request.method()==='POST'&&new URL(request.url()).pathname==='/app/requests'&&typeof request.headers()['next-action']==='string';
-    const openTimeOffForm=async()=>{await page.goto(app.url+'/app/requests?tab=new');await settle();await form().waitFor();await form().getByLabel('Part of a day',{exact:true}).check();await form().getByLabel('Start time',{exact:true}).waitFor();await form().getByLabel('Full days',{exact:true}).check();await form().getByLabel('End date',{exact:true}).waitFor();assert(await form().getByLabel('Full days',{exact:true}).isChecked());};
+    const openTimeOffForm=async()=>{await page.goto(app.url+'/app/requests?tab=new');await settle();await form().waitFor();const length=form().getByRole('group',{name:'How long',exact:true});await length.getByRole('button',{name:'Part of day',exact:true}).click();await form().getByLabel('Start',{exact:true}).waitFor();await length.getByRole('button',{name:'All day',exact:true}).click();await form().getByLabel('To',{exact:true}).waitFor();assert.equal(await length.getByRole('button',{name:'All day',exact:true}).getAttribute('aria-pressed'),'true');};
     await openTimeOffForm();await form().locator('[name="startDate"]').fill(scenario.targetDate);await form().locator('[name="endDate"]').fill(scenario.sourceDate);
     assert.equal(await form().locator('[name="endDate"]').evaluate(field=>field.validity.rangeUnderflow),true);
     let invalidPosts=0;const observeInvalid=request=>{if(isAction(request))invalidPosts++;};page.on('request',observeInvalid);await form().getByRole('button',{name:'Send request',exact:true}).click();
@@ -373,13 +405,14 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    }
    stage='owner-login';await login(await seedOwnedScenarioOwner(app.database.executor,label));stage='owner-timeoff-review';await page.goto(app.url+'/app/requests?tab=pending');await settle();/* f66c6f67: the Waiting list has no Approve; its row opens the focused review where the Owner decides, and the decision returns to Things to do with a one-time confirmation. */const reviewRow=page.locator('[id="request-'+created+'"]');assert.equal(await reviewRow.getByRole('button').count(),0,'Waiting time-off rows carry no decision buttons');await reviewRow.getByRole('link').click();await page.waitForURL(u=>u.pathname==='/app/requests'&&u.searchParams.get('requestId')===created);await settle();const reviewForm=page.locator('form[aria-label^="Review time off for "]');assert.equal(await reviewForm.locator('input[name="requestId"]').inputValue(),created);await reviewForm.getByRole('button',{name:/^Approve time off for /}).click();await page.waitForURL(u=>u.pathname==='/app/inbox');await page.locator('.nevora-toast').filter({hasText:'Time off approved. The employee will be told.'}).waitFor({state:'visible'});await settle();await page.goto(app.url+'/app/requests?tab=pending');await settle();await page.locator('.q-timeoff').waitFor();assert.equal(await page.locator('[id="request-'+created+'"]').count(),0);assert.deepEqual(await q('SELECT status FROM time_off_requests WHERE id=$1',[created]),[{status:'APPROVED'}]);stage='employee-decision';await login(actor);await page.goto(app.url+'/app/requests?filter=decided');await settle();assert(await page.locator('[id="request-'+created+'"], [id="timeoff-'+created+'"]').innerText().then(t=>t.includes('Approved')));checks.push(phone?'Phone time-off form: native end-date minimum plus announced validation blocks invalid submissions without a server call or persistence; submit and a lost-response stable-ID replay preserve one request/outbox; actual Owner approval and employee decision readback':'Native time-off date constraint blocks invalid submissions without persistence; native submit and explicit stable-ID replay preserve one request/outbox; actual Owner approval and employee decision readback');
    if(phone){
-    // Phones: the mobile Availability editor. Each day is a disclosure (Available, Start time, End time); Save usual
-    // hours or Submit this week; a passed deadline closes the week read only.
-    const monday=()=>page.locator('details.em-planning-day').filter({has:page.locator('summary strong',{hasText:/^Monday$/})});
-    const editMonday=async(start,end)=>{await page.locator('form.em-planning-form').waitFor();if(!await monday().evaluate(e=>e.open))await monday().locator('summary').click();const on=monday().locator('input[type="checkbox"]').first();if(!await on.isChecked())await on.check();await monday().getByLabel('Monday start time 1',{exact:true}).fill(start);await monday().getByLabel('Monday end time 1',{exact:true}).fill(end);};
-    await page.goto(app.url+'/app/availability');await settle();await editMonday('08:00','13:00');await page.getByRole('button',{name:'Save usual hours',exact:true}).click();await page.getByRole('heading',{name:'Usual hours saved',exact:true}).waitFor();await actionsSettled();assert.deepEqual(await q("SELECT left(start_time::text,5) start,left(end_time::text,5) end FROM availability_windows WHERE employee_id=$1 AND day_of_week=1",[actor]),[{start:'08:00',end:'13:00'}]);
+    // Phones (board E-Availability): one "Your usual week" card; each day opens a sheet (Available switch, From, Until,
+    // Done); Save, or Submit this week for one week; a passed deadline closes the week read only.
+    const editMonday=async(start,end)=>{await page.locator('form.c-avail__form').waitFor();await page.locator('main').getByRole('button',{name:/^Monday, /}).click();const sheet=page.locator('dialog[open]');await sheet.waitFor();const on=sheet.getByRole('switch',{name:'Available on Monday',exact:true});if(!await on.isChecked())await on.check();await sheet.getByLabel('Monday start time 1',{exact:true}).fill(start);await sheet.getByLabel('Monday end time 1',{exact:true}).fill(end);await sheet.getByRole('button',{name:'Done',exact:true}).click();await page.locator('dialog[open]').waitFor({state:'hidden'});};
+    await page.goto(app.url+'/app/availability');await settle();await editMonday('08:00','13:00');await page.getByRole('button',{name:'Save',exact:true}).click();await page.getByRole('heading',{name:'Usual hours saved',exact:true}).waitFor();await actionsSettled();assert.deepEqual(await q("SELECT left(start_time::text,5) start,left(end_time::text,5) end FROM availability_windows WHERE employee_id=$1 AND day_of_week=1",[actor]),[{start:'08:00',end:'13:00'}]);
     await q("INSERT INTO schedule_week_settings(week_start,availability_deadline,updated_by) VALUES($1,clock_timestamp()+interval '1 day','QAOWNER') ON CONFLICT(week_start) DO UPDATE SET availability_deadline=excluded.availability_deadline",[scenario.week]);await page.goto(app.url+'/app/availability?week='+scenario.week);await settle();await editMonday('09:00','14:00');await page.getByRole('button',{name:'Submit this week',exact:true}).click();await page.getByRole('heading',{name:'Weekly availability submitted',exact:true}).waitFor();await actionsSettled();assert.deepEqual(await q("SELECT left(start_time::text,5) start,left(end_time::text,5) end FROM weekly_availability_windows WHERE employee_id=$1 AND week_start=$2 AND day_of_week=1",[actor,scenario.week]),[{start:'09:00',end:'14:00'}]);const submitted=await q('SELECT * FROM weekly_availability_windows WHERE employee_id=$1 AND week_start=$2 ORDER BY day_of_week,start_time',[actor,scenario.week]);
-    await q("UPDATE schedule_week_settings SET availability_deadline=clock_timestamp()-interval '1 second' WHERE week_start=$1",[scenario.week]);await page.reload();await settle();await page.locator('[aria-label="Availability status"] strong').filter({hasText:/^Closed · submitted$/}).waitFor();await page.getByText('This week is closed. Contact your manager if your availability changed.',{exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Submit this week',exact:true}).count(),0);if(!await monday().evaluate(e=>e.open))await monday().locator('summary').click();assert(await monday().getByLabel('Monday start time 1',{exact:true}).isDisabled());assert(await monday().locator('input[type="checkbox"]').first().isDisabled());assert.deepEqual(await q('SELECT * FROM weekly_availability_windows WHERE employee_id=$1 AND week_start=$2 ORDER BY day_of_week,start_time',[actor,scenario.week]),submitted);checks.push('Actual normal/weekly availability save persists reviewed hours; past canonical deadline disables native controls and retains submitted records');
+    await q("UPDATE schedule_week_settings SET availability_deadline=clock_timestamp()-interval '1 second' WHERE week_start=$1",[scenario.week]);await page.reload();await settle();await page.locator('main [data-availability-status="Closed · submitted"]').waitFor();await page.locator('main').locator('.c-pill').getByText('Closed',{exact:true}).waitFor();await page.getByText(/^This week is closed\. Contact your manager if your availability changed\./).waitFor();assert.equal(await page.getByRole('button',{name:'Submit this week',exact:true}).count(),0);
+    await page.locator('main').getByRole('button',{name:/^Monday, /}).click();const closedSheet=page.locator('dialog[open]');await closedSheet.waitFor();assert(await closedSheet.getByLabel('Monday start time 1',{exact:true}).isDisabled());assert(await closedSheet.getByRole('switch',{name:'Available on Monday',exact:true}).isDisabled());await closedSheet.getByRole('button',{name:'Done',exact:true}).click();await page.locator('dialog[open]').waitFor({state:'hidden'});
+    assert.deepEqual(await q('SELECT * FROM weekly_availability_windows WHERE employee_id=$1 AND week_start=$2 ORDER BY day_of_week,start_time',[actor,scenario.week]),submitted);checks.push('Actual normal/weekly availability save persists reviewed hours; past canonical deadline disables native controls and retains submitted records');
    }else{
    // v5 (mockup E10): each day opens as a sheet (switch, From, Until); Save or Submit sits in the bar.
    const editMonday=async(start,end)=>{await page.locator('main button.q-row--btn').filter({hasText:'Monday'}).click();const sheet=page.locator('dialog[open]');await sheet.waitFor();const on=sheet.getByLabel('Monday availability',{exact:true});if(!await on.isChecked())await on.check();await sheet.getByLabel('Monday start time',{exact:true}).fill(start);await sheet.getByLabel('Monday end time',{exact:true}).fill(end);await sheet.getByRole('button',{name:'Done',exact:true}).click();await sheet.waitFor({state:'detached'}).catch(()=>{});await page.locator('dialog[open]').waitFor({state:'hidden'});};
@@ -390,7 +423,8 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await page.goto(app.url+'/app/profile');await ready('profile');
   }
   stage='keyboard';if(width<768){
-   await page.goto(app.url+'/app/requests?tab=new');await settle();const field=page.locator(phone?'form.em-planning-form textarea[name="note"]':'dialog[open] textarea').first();await field.fill('Fictional long keyboard text '.repeat(20));await field.focus();assert(await field.evaluate(e=>e===document.activeElement));await page.keyboard.press(tabKey);assert(await page.evaluate(()=>document.activeElement instanceof HTMLElement&&getComputedStyle(document.activeElement).visibility!=='hidden'));await page.keyboard.press(backTabKey);await page.goto(app.url+'/app/profile');await ready('profile');
+   // The Request time off sheet's Reason is one line of at most 250 characters.
+   await page.goto(app.url+'/app/requests?tab=new');await settle();const field=page.locator('form.tof-form input[name="note"]').first();await field.fill('Fictional long keyboard text '.repeat(8));await field.focus();assert(await field.evaluate(e=>e===document.activeElement));await page.keyboard.press(tabKey);assert(await page.evaluate(()=>document.activeElement instanceof HTMLElement&&getComputedStyle(document.activeElement).visibility!=='hidden'));await page.keyboard.press(backTabKey);await page.goto(app.url+'/app/profile');await ready('profile');
    checks.push(`Native focus, text entry and ${tabKey}/${backTabKey} on existing request form; no submission; physical keyboard occlusion remains unverified`);
   }
   assert(await page.evaluate(()=>[...Object.values(localStorage),...Object.values(sessionStorage)].every(v=>!v.includes('STORED PRIVATE')&&!v.includes('QA E'))));
@@ -398,11 +432,11 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   // Match scripts/ui-checks/checks.mjs: text zoom scales the rem-based kit, not the whole page box.
   await page.emulateMedia({reducedMotion:'reduce'});const normalFont=await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize));await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});await page.waitForTimeout(600);assert.equal(await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize)),normalFont*2,'200% root-font text scale is applied');await bounds();await screenshot('text-200-long-content');await page.evaluate(()=>{document.documentElement.style.fontSize='';});await restoreSheetMotion(page);
   if(width<768){
-   // The kit reserves tab-bar space on the page, rather than the old outer frame.
-   await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
-   const clearance=await page.locator('.q-profile-e').evaluate(e=>{const nav=document.querySelector('.mobile-nav').getBoundingClientRect(),signout=e.querySelector('.profile-signout-row, .em-profile-signout').getBoundingClientRect();return {padding:parseFloat(getComputedStyle(e.closest('.page-frame')).paddingBottom)+parseFloat(getComputedStyle(e).paddingBottom),reservedBelowSignout:document.documentElement.scrollHeight-(signout.bottom+scrollY),navigationHeight:nav.height,signoutBottom:signout.bottom,navigationTop:nav.top};});
-   // The v5 kit reserved the space as page padding; the phone Profile reserves it below its last section. Either way the
-   // document must end at least one tab bar below Sign out.
+   // Board E-Profile has no Sign out; a phone signs out from More, whose last control must clear the fixed tab bar at the
+   // document end (the kit reserves tab-bar space on the page). More also shows the long name.
+   await page.goto(app.url+'/app/more');await settle();await bounds();await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
+   const clearance=await page.locator('main').getByRole('button',{name:'Sign out',exact:true}).evaluate(button=>{const nav=document.querySelector('.mobile-nav').getBoundingClientRect(),signout=button.getBoundingClientRect();return {reservedBelowSignout:document.documentElement.scrollHeight-(signout.bottom+scrollY),navigationHeight:nav.height,signoutBottom:signout.bottom,navigationTop:nav.top};});
+   // The document must end at least one tab bar below Sign out.
    assert(clearance.navigationHeight>0);assert(clearance.reservedBelowSignout>=clearance.navigationHeight,'Page reserves the actual fixed navigation height');assert(clearance.signoutBottom<=clearance.navigationTop,'Final Sign out control clears fixed navigation at the document end');
   }
   checks.push('long_content_safe_area_keyboard: real long identity, 200% root-font text reflow, bounds, reduced-motion and mobile bottom clearance');

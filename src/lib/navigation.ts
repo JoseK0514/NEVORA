@@ -69,7 +69,9 @@ const LEAD_ACCOUNT_MENU_ENTRIES = new Set(["/app/profile"]);
 const EMPLOYEE_SIDEBAR_LABELS: Record<string, string> = { "/app/schedule": "Schedule", "/app/my-time": "Time", "/app/my-pay": "Pay" };
 const EMPLOYEE_SIDEBAR_ORDER = ["/app", "/app/schedule", "/app/my-time", "/app/my-pay", "/app/requests/hub"];
 
-function sidebarHolders(role: UserRole) { return role === "EMPLOYEE" || role === "LEAD" ? EMPLOYEE_SIDEBAR_HOLDERS : SIDEBAR_HOLDERS; }
+// An Employee's Schedule holds Availability (its title action). A Lead's Schedule and Requests pages have no Availability
+// link, so a Lead keeps the sidebar entry.
+function sidebarHolders(role: UserRole) { return role === "EMPLOYEE" ? EMPLOYEE_SIDEBAR_HOLDERS : role === "LEAD" ? {} as Record<string, string> : SIDEBAR_HOLDERS; }
 
 /** The holder that is present: Time exports falls back to Time when there is no Payroll entry. */
 function holderFor(role: UserRole, href: string, present: Set<string>): string | undefined {
