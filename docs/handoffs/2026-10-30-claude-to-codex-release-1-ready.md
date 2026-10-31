@@ -2,7 +2,7 @@
 
 Date: 2026-10-30, corrected 2026-10-31 after the independent inspection (Phase 8). Branch: `claude-codex-collab-nevora`.
 
-**Release SHA: frozen and written here when the final candidate is handed over** (§4 is re-run on that exact commit; any later commit makes a new candidate). Inspection fixes are in progress; until this line names a full SHA, nothing here is ready to deploy.
+**Release SHA: the head of `claude-codex-collab-nevora` when Codex receives this, which is the commit that adds this line.** Claude sends its full SHA with the handoff, and it is the head of the draft PR to `main` (CI only, never merged by Claude). App code is identical from `95f9b79dda64f4e4f50d6ac383720e97f117af61` onward: that commit is the CI change, and later commits change `docs/` only. Check it with `git diff --quiet 95f9b79d HEAD -- . ':(exclude)docs'`. The full local gate (§4) ran on `f486a96fed567c760a81a29934b7b1129301562d`; the only non-docs change after it is the CI change, re-checked on `03e18d7c62ff6b3cb118b72c1cfd4b04a48fdc8c`. Any later commit makes a new candidate.
 
 **Deploy from that SHA only. Do not deploy from `development`:** since Oct 30 it also carries Codex's Owner AI work (migrations `0044_owner_advisor_notebook`, `0045_owner_coverage_actions`), which is not in Release 1. Git deployment is disabled (`vercel.json`); use the explicit Vercel deployment workflow from the frozen SHA (runbook §7). Whether collab is first merged to `main` is Jose's call; the deployed artifact must be built from the frozen SHA either way.
 
@@ -125,50 +125,52 @@ As the runbook table, plus the values below. No env read was added since 9fe8968
 
 ## 4. Evidence on the release SHA (owned local Postgres, fictional data, `DATABASE_URL` unset)
 
-The full gate ran in one ordered pass on `d3a5c7df` (Oct 30, 13:57–15:26 AST), clean tree throughout:
+The full gate ran in one ordered pass on `f486a96fed567c760a81a29934b7b1129301562d` (Oct 31, 10:31–12:43 AST), clean tree throughout. Script and logs: Claude's scratchpad `gate5/` (summary below is complete).
 
 | Step | Result |
 |---|---|
 | Typecheck, lint, audit (prod and all), advisor pilot | pass |
 | Release build (`NEVORA_BUILD_RECEIPT`) | pass |
-| Unit | 10,350 passed, 801 skipped |
+| Unit | 10,405 passed, 801 skipped |
 | Migrations | 11 passed |
-| Release Postgres | 745 passed (foundation 283, Phase B authority 46, generation 176, exchanges 163, notifications 77) |
+| Release Postgres | 746 passed (foundation 284, Phase B authority 46, generation 176, exchanges 163, notifications 77) |
 | Advisor integration | 38 passed |
 | Clocker shards 1–4 | 147 + 132 + 151 + 142 = 572 passed |
 | Phase E startup and SQL | pass; 23 passed |
-| 22 owned database integration configs | all pass (native, configurable and export payroll; timecards; punches; corrections; company setup; account recovery; action center; management profile; employee schedule; reports; Phase D corrections and remediation; six findings; passkeys; employee mobile SQL; Clocker breaks, C6, owner policy, punch, recovery) |
+| 22 owned database integration configs | all pass (native 44, configurable 37 and export 8 payroll; timecards 14; punches 72; corrections 36; company setup 3; account recovery 13; action center 5; management profile 14; employee schedule 6; reports 6; Phase D corrections 53 and remediation 13; six findings 15; passkeys 36; employee mobile SQL 65; Clocker breaks 31, C6 29, owner policy 65, punch 72, recovery 50) |
 | Advisor browser | pass |
 | Attendance UI | 48 checks |
 | Phase D browser | 207 checks, 0 errors |
-| Phase D remediation | pass |
+| Phase D remediation | 6 checks |
 | D2 corrections UI | 282 checks |
-| Phase E Home, Communications, Calendar, Attention | 14 of 14 cells each |
+| Home held-response check (`NODE_ENV=test`) | pass |
+| Phase E Home, Communications, Calendar, Navigation, Attention | 14 of 14 cells each, 0 errors |
 | Clocker iPad UI; Clocker breaks UI | pass; 46 checks |
+| Mobile Access browser | 3 passed |
+| Employee phone browser configs (cumulative; each run includes the earlier files) | phase 1: 1; requests 39; planning 58; creation 48; responses 44; communications 178; hours 71; profile 185; calendar 256; pay 1; closure 1; deletion 15; device alerts 373; passkeys 294 — all passed |
+| Owner Things to do browser | 1 passed |
 
-Two steps ran again outside that pass:
-- **Home held-response check:** the gate script started it without CI's `NODE_ENV=test`. Run as CI runs it on `d3a5c7df`, it passed in Chromium and WebKit.
-- **Phase E Navigation:** it hung at the 30-minute limit three times in the phone time-off step. The cause was the test helper `actionsSettled()`, which awaited Playwright's `response.finished()` with no limit. With the same code instrumented, every action body finished within 20 ms. `199159e9` bounds that wait at 10 s (test only). On `199159e9`, Navigation passed 14 of 14 with 0 errors.
+**After the gate.** Two commits sit on top of `f486a96f`:
+- `95f9b79d` changes CI only: `.github/workflows/ci.yml` and the three files that pin it (`scripts/release-ci-contract.check.mjs`, `src/test/phase-c-release-ci.test.ts`, `src/test/phase-e-runner.test.ts`). See §5, CI coverage.
+- `03e18d7c` and the commit that adds this section change `docs/` only.
 
-**Browser suites brought up to the approved UI on Oct 30.** No check was deleted; checks were re-anchored where the approved design moved a function:
-- **Home:** clock status → Time; the full attention list → Notifications.
-- **Navigation:** More from the avatar; phone pages are the mobile ports.
-- **Calendar:** the entry is More → Add shifts to your calendar.
-- **Communications:** the phone messages view.
-- **Phase D/D2:** Who's working `#review`, corporate timecard detail, Things to do.
+On `03e18d7c`, typecheck, lint, `test:release-engineering` and unit were re-run: typecheck and lint pass, `test:release-engineering` 168 passed, unit 10,405 passed and 801 skipped, clean tree.
 
-**App fixes found by those suites:**
-- Who's working opens its review for Inbox links (`#review`, `#attendance-…`, `#correction-…`) and keeps a loading correction in place.
-- Things to do opens a waiting timecard's own period.
-- The phone Insights "Hours by person" lets a long name wrap. This is the one exception to the kit's one-line rows; Jose confirmed it.
-- The phone update page re-reads after a stale acknowledge is refused.
-- The Profile calendar notice has 4.5:1 contrast.
-- The phone Time and Requests segments have 44px tap areas.
+**How the gate reached green (Oct 31).** No check was deleted or loosened:
+- Gate 3 (`89377112`): a test file had an implicit-`any` callback that broke typecheck and the build; fixed in `463178fd`.
+- Gate 4 (`463178fd`):
+  - Phase E Navigation sampled axe while the Lead More tab was still pressed. The test now waits for the press to release (`c6c9207e`).
+  - The employee phase 1 and closure suites were re-anchored to the boards. A dark-mode request now asserts the light look (light only in Release 1).
+  - Calendar: the reset/revoke review pulled focus back from Keep in Chromium. Fixed in the app (`aefba58a`).
+  - Schedule "Confirm this week" now has a 44px tap area (`01bf26aa`).
+  - The passkey network config needed its evidence variable.
+  - Phase E SQL failed once on "Owned resource observation failed"; it passed 10 of 10 on re-run and passed in gate 5.
+
+**Oct 30 history.** The Oct 30 gate on `d3a5c7df` and its fixes (Navigation `actionsSettled()` bound at 10 s in `199159e9`; browser suites re-anchored to the approved UI; Who's working, Things to do, Insights, update page, calendar notice contrast and segment tap-area fixes) remain in the branch and are covered by the gate above.
 
 **Hosted fictional Preview:**
 - Neon `nevora-release1-preview-20261030` (us-west-2), Vercel Preview on this branch only, region pdx1.
-- Signed in as the fictional Owner and an Employee. Home, Schedule, Things to do, Team, Payroll, Time, Pay, Requests and More load from the hosted database.
-- A tablet registered and showed the PIN screen. Updates is hidden as in 1.4.
+- Claude redeploys it from the release head right after this commit and reports the result with the handoff message. It was last verified on `8e29c478` (Oct 30).
 - Link: https://nevora-git-claude-codex-collab-nevora-josekarlo-5933s-projects.vercel.app (Vercel sign-in or a share link).
 - The Preview deploys from a local clone with a local-only marker commit and `regions:["pdx1"]`. Neither is in the branch.
 
@@ -184,7 +186,7 @@ Two steps ran again outside that pass:
 - **Payroll drafts:** drafts prepared before 4fd3f426 must be recalculated (`NATIVE_REVIEW_STALE`).
 - **Updates (D04):** held, see 1.4.
 
-- **CI coverage (Codex PRE-03):** `ci.yml` runs on development/main pushes and on PRs to development, main, `phase-c/**` and `release/**`, so it has not run on the release SHA. On a PR, `github.sha` is GitHub's synthetic merge commit, not the head. The release SHA therefore includes a CI-only change: every checkout, `*_EXPECTED_SHA` and artifact name in `ci.yml` uses `github.event.pull_request.head.sha || github.sha`, so a PR run checks out and records the exact frozen head (push runs are unchanged). The contract checks (`scripts/release-ci-contract.check.mjs`, `phase-c-release-ci.test.ts`, `phase-e-runner.test.ts`) pin the new expression, and one more assertion fails if a bare `github.sha` returns. No assertion was removed; no `pull_request_target`. **Exact-head CI needs Jose's OK for a draft PR from `claude-codex-collab-nevora` to `main`** (never merged by Claude; Codex fast-forwards `main` after Jose's go). Its runs must record the frozen SHA. CI-only steps the local gate did not run: inspection-evidence checks, `test:notifications:qa`, `test:foundation:qa`, `test:release-engineering`, `browser-render-readiness`, `attention-intent-readiness`, Clocker `--punch-ui` and break-filter readiness, Phase D whole-phase evidence, Phase E leaf/aggregate evidence and `verify-ci`. Local-only (not in CI): the release1 migrations config, the 22 owned integration configs and the employee-mobile browser configs.
+- **CI coverage (Codex PRE-03):** `ci.yml` runs on development/main pushes and on PRs to development, main, `phase-c/**` and `release/**`, so it has not run on the release SHA. On a PR, `github.sha` is GitHub's synthetic merge commit, not the head. The release SHA therefore includes a CI-only change: every checkout, `*_EXPECTED_SHA` and artifact name in `ci.yml` uses `github.event.pull_request.head.sha || github.sha`, so a PR run checks out and records the exact frozen head (push runs are unchanged). The contract checks (`scripts/release-ci-contract.check.mjs`, `phase-c-release-ci.test.ts`, `phase-e-runner.test.ts`) pin the new expression, and one more assertion fails if a bare `github.sha` returns. No assertion was removed; no `pull_request_target`. **Exact-head CI runs on a draft PR from `claude-codex-collab-nevora` to `main`** (Jose approved Oct 31; never merged by Claude; Codex fast-forwards `main` after Jose's go). Its runs must record the frozen SHA. CI-only steps the local gate did not run: inspection-evidence checks, `test:notifications:qa`, `test:foundation:qa`, `browser-render-readiness`, `attention-intent-readiness`, Clocker `--punch-ui` and break-filter readiness, Phase D whole-phase evidence, Phase E leaf/aggregate evidence and `verify-ci`. `test:release-engineering` ran locally on `03e18d7c` (168 passed). Local-only (not in CI): the release1 migrations config, the 22 owned integration configs and the employee-mobile browser configs.
 - **Suites not run on the release SHA:** company-access (31 files, 532 tests, including `schedule_pending_edits` assertions), premium-*, `phase-e-integration`, `owned-app-cancellation`. The generic owned runner fails company-access the same way on 001031aa (488 failed / 44 passed on both); another runner on 08728bc5 gave 496 passed / 36 failed, all 36 in `company-access-shift-changes.integration.ts` refusing a non-disposable target. Mobile Access (re-anchored to the corporate Home) and every employee-mobile browser config now run in the gate (§4).
 - **UI gaps Jose accepted or deferred (Oct 31):** on 320px phones the week strip's days are about 40px wide (44px tall); the kit sets type in px, so the browser text-size setting doesn't enlarge it (page zoom does), first item of Release 1.1; Lead pages (on hold) show two `h1`s; More keeps the name visible during a held sign-out.
 - **Clocker browser suites:** only the iPad UI suite runs with `NEVORA_CLOCKER_UI_V2=true`; `--punch-ui` and `--breaks-ui` run the old tablet look.
