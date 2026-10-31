@@ -56,8 +56,8 @@ it('integrates current own Profile, preferences, contextual help and native sign
    const reread=()=>page.evaluate(()=>window.dispatchEvent(new Event('focus')));
    const homeSettled=()=>page.locator('[data-home-state="ready"][aria-busy="false"]:visible,[data-home-state="partial"][aria-busy="false"]:visible').waitFor();
    const login=async(id:string,lang:AuthLang)=>{const copy=AUTH_COPY[lang];await page.getByLabel(copy.employeeId,{exact:true}).fill(id);await page.getByLabel(copy.password,{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:copy.signIn,exact:true}).click();await page.waitForURL(app.url+'/app');await homeSettled();};
-   // An Employee opens More from the header avatar (board E-More); a Lead from the More tab.
-   const openMore=async()=>{await page.locator('a.c-top-avatar:visible,.mobile-nav-link[href="/app/more"]:visible').first().click();await page.waitForURL(app.url+'/app/more');};
+   // An Employee opens More from the header avatar (board E-More), or Profile's ‹ More; a Lead from the More tab.
+   const openMore=async()=>{await page.locator('a.c-top-avatar:visible,.mobile-nav-link[href="/app/more"]:visible,.c-nav__back[href="/app/more"]:visible').first().click();await page.waitForURL(app.url+'/app/more');};
    const openProfile=async()=>{await openMore();await page.locator('a[href="/app/profile"]:visible').first().click();await page.waitForURL(app.url+'/app/profile');};
    const signOutButton=()=>page.locator('form button[type="submit"]:visible').filter({hasText:/^Sign out$/}).first();
    await page.goto(app.url+'/login');await login(actor,'en');
