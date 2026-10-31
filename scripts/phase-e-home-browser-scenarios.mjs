@@ -281,7 +281,9 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   assert(focus.outlineStyle!=='none'&&parseFloat(focus.outlineWidth)>=2||/\b2px\b|\b3px\b/.test(focus.boxShadow),'See all shows a visible 2px focus indicator');
   const openedNotifications=page.waitForURL(u=>u.pathname==='/app/notifications');await page.keyboard.press('Enter');await openedNotifications;overflowEvidence.keyboard.push({key:'Enter',route:'/app/notifications'});
   overflowEvidence.phase='notifications-list';
-  await page.waitForFunction(()=>{const phone=document.querySelector('.em-messages[data-messages-view="notifications"]');if(phone)return phone.getAttribute('data-messages-state')==='ready';const inbox=document.querySelector('[data-private-view="notifications"]');return !!inbox?.querySelector('[aria-label="Show notifications"]');});
+  // Phones draw the messages view; wider layouts the account panel. Both list the same rows once their own read is ready.
+  await page.waitForFunction(phone=>phone?document.querySelector('.em-messages[data-messages-view="notifications"]')?.getAttribute('data-messages-state')==='ready':!!document.querySelector('[data-private-view="notifications"] [aria-label="Show notifications"]'),width<768);
+  overflowEvidence.notificationRows=await page.locator('main a.em-notif-row').evaluateAll(rows=>rows.map(row=>row.id));
   const notices=[];
   for(const published of overflowPublished){
    const rows=await q("SELECT id FROM notifications WHERE employee_id=$1 AND source_kind='COMMUNICATION' AND source_id=$2 ORDER BY id",[actor,published.result.id]);assert.equal(rows.length,1,'One notification per overflowed update');

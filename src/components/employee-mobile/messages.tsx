@@ -36,7 +36,9 @@ function EmployeeMessagesPage({authority,view,id,settingsHref}:Props){
   const controller=new AbortController();openAbort.current?.abort();openAbort.current=controller;setOpening(itemId);let expired=false;const deadline=setTimeout(()=>{expired=true;controller.abort();},10000);
   try{const response=await fetch('/api/employee/messages/open/'+encodeURIComponent(itemId),{credentials:'same-origin',cache:'no-store',redirect:'error',signal:controller.signal,headers:{Accept:'application/json','X-Nevora-Employee-View':authority}});const result=await response.json() as {state?:string;href?:unknown};if(!panel.allowed()||captured!==panel.current()||controller.signal.aborted)return;if(!response.ok||result.state!=='ready'||!safeMessageDestination(result.href)){setOpenError(true);return;}session.setOrigin({source,id:itemId,target:result.href});router.push(result.href);}catch{if(panel.allowed()&&captured===panel.current()&&(!controller.signal.aborted||expired))setOpenError(true);}finally{clearTimeout(deadline);if(openAbort.current===controller){openAbort.current=null;setOpening(null);}}
  }
- const notice=(copy:string)=><section className="em-request-notice"><p role="status">{copy}</p></section>;
+ // The footer Refresh is gone (Release 1), so a notice that asks for a fresh read carries its own Try again.
+ const retry=<button className={view==='notifications'?'em-account-textbtn':'em-request-secondary'} type="button" disabled={panel.state.paused||panel.state.refreshing} onClick={panel.refresh}>{panel.state.refreshing?'Checking…':'Try again'}</button>;
+ const notice=(copy:string)=>view==='notifications'?<div className="c-card"><div className="c-card__body em-account-status"><p className="c-note" role="status">{copy}</p>{retry}</div></div>:<section className="em-request-notice"><p role="status">{copy}</p>{retry}</section>;
  let content:ReactNode=null,nextCursor:string|null=null;
  if(read){
   if(view!=='notifications'&&read.updates!=='on')content=notice(read.updates==='off'?'Updates are turned off for your workspace. Your other employee tools remain available.':'Updates access couldn’t be checked. Refresh to continue.');

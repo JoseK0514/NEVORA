@@ -60,6 +60,8 @@ async function EmployeeMore({ firstName, lastName, role }: { firstName: string; 
       <QuietRow href="/support" icon={ic(InfoIcon)} title="Support" />
       <QuietRow href="/privacy" icon={ic(ShieldCheckIcon)} title="Privacy and terms" />
     </QuietList>
+    {/* Profile's Session section moved off Profile (board E-Profile); on a phone a Lead signs out here. */}
+    <PortalSignout><button type="submit" className="q-btn q-btn--sec q-btn--danger" style={{ marginTop: 24 }}>Sign out</button></PortalSignout>
   </QuietPage>;
 }
 

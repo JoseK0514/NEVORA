@@ -43,7 +43,9 @@ export function EmployeeMobileCalendarView({status,url,paused,busy,notice,pendin
      {unknown?<p className="em-calendar-extra">Your previous request still needs to be checked before you can change this link.</p>
       :active?currentUrl?<div className="em-calendar-secret">
        <label className="c-field__label" htmlFor="employee-calendar-link">Your private calendar link</label>
-       <textarea className="c-in" id="employee-calendar-link" ref={link} readOnly spellCheck={false} autoComplete="off" value={currentUrl} rows={3} aria-describedby="employee-calendar-link-hint" onFocus={event=>event.currentTarget.select()}/>
+       <textarea className="c-in" id="employee-calendar-link" ref={link} readOnly spellCheck={false} autoComplete="off" value={currentUrl} rows={3} aria-describedby="employee-calendar-link-hint" onFocus={event=>{const field=event.currentTarget;field.select();
+        // WebKit places the caret after a keyboard focus lands, which undoes select(); select again once it has settled.
+        requestAnimationFrame(()=>{if(document.activeElement===field)field.select();});}}/>
        <p className="c-field__help" id="employee-calendar-link-hint">Shown once. Copy it now, or reset it later to get a new link.</p>
       </div>:<p className="em-calendar-extra">For your privacy the link is shown only once. Reset it to get a new link to copy.</p>
       :status.state==='revoked'?<p className="em-calendar-extra">Future access through the previous link has stopped.</p>:null}
