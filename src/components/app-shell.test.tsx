@@ -145,6 +145,9 @@ it.each(["EMPLOYEE", "MANAGER"] as const)("offers a top-right account menu with 
   expect(html).toContain('Signed in as ');
   expect(html).toContain('portal-account-signout');
   if (role === "EMPLOYEE") expect(html).toContain('>Your profile</a>');
+  // Desktop has no More page; the account menu is the Employee's way to the calendar link page.
+  if (role === "EMPLOYEE") expect(html.split('id="portal-account-menu"')[1]).toContain('href="/app/profile/calendar" class="nevora-action-menu-item">Add shifts to your calendar</a>');
+  else expect(html).not.toContain('href="/app/profile/calendar"');
 });
 
 it("preserves configured Fuel customer identity in the sidebar", () => {

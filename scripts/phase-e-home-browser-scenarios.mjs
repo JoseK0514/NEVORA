@@ -29,22 +29,16 @@ export async function waitForFreshHome(page, freshLocation){
  },freshLocation,{timeout:15000});
 }
 
-// Corporate Employee: clock status lives on the Time tab, not on Home. Phones (< 768px) show the Hours records view
-// (its own private read with a footer Refresh); wider layouts show the My time view (the recorded-time read, no Refresh).
-// Ready only when the released status matches and, on phones, Refresh is usable again (not a still-loading frame).
+// Corporate Employee: clock status lives on the Time tab, not on Home. Release 1 draws the same kit Time page at every
+// width (board G-E-Time): the Right now / Current shift card's pill carries the recorded status. The page has no Refresh;
+// it re-reads when the app returns to the front and marks itself aria-busy while a read is in flight.
+// Ready only when the released status matches and no read is in flight (not a still-loading or still-refreshing frame).
 const TIME_PILL={OFF_CLOCK:'Off the clock',CLOCKED_IN:'On the clock',ON_BREAK:'On break'};
 export async function waitForRecordedTimeReady(page, expectedState){
  const ready=await page.waitForFunction(({expected,pill})=>{
-  const hours=document.querySelector('.em-hours[data-hours-view="records"]');
-  if(hours){
-   if(hours.getAttribute('data-hours-state')!=='ready')return false;
-   const button=hours.querySelector('.em-request-footer button');
-   const now=[...hours.querySelectorAll('.c-card')].find(card=>card.querySelector('.c-card__label')?.textContent==='Right now');
-   if(button&&!button.disabled&&button.textContent==='Refresh'&&now?.querySelector('.c-pill')?.textContent===pill)return {state:expected,view:'hours',refreshEnabled:true};
-   return false;
-  }
-  if(document.querySelector('.q-mytime .q-mytime__state')?.getAttribute('data-state')===expected)return {state:expected,view:'my-time',refreshEnabled:null};
-  return false;
+  const time=document.querySelector('.c-hours[data-hours-view="records"]');
+  if(!time||time.getAttribute('data-hours-state')!=='ready'||time.getAttribute('aria-busy')!=='false')return false;
+  return time.querySelector('#hours-now .c-card__aside .c-pill')?.textContent===pill?{state:expected,view:'time',settled:true}:false;
  },{expected:expectedState,pill:TIME_PILL[expectedState]});
  try{return await ready.jsonValue();}finally{await ready.dispose();}
 }
@@ -75,6 +69,9 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const assignments=()=>next().getByRole('link',{name:'View shift',exact:true});
  // Corporate (board C-Employee): Things to do lists up to three rows; a "See all N" row opens Notifications.
  const todo=()=>page.locator('#employee-home-todo');
+ // Board C-Employee: the card is named Things to do (its header, or aria-label when one row stands alone); the count
+ // is carried by the rows and the See all N row, not by the header.
+ const todoName=()=>todo().evaluate(card=>card.getAttribute('aria-label')??document.getElementById(card.getAttribute('aria-labelledby')??'')?.textContent??null);
  const seeAll=()=>todo().getByRole('link',{name:/^See all \d+$/});
  const items=()=>todo().locator('li > a.c-row').filter({hasNotText:/^See all \d+$/});
  const allSet=()=>page.getByText('You’re all set. Nothing needs you right now.',{exact:true});
@@ -82,14 +79,14 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  // Clock status (Time tab). Phones show the Right now pill; wider layouts the My time status word.
  const clockedIn=()=>page.locator('main').getByText(/^(Clocked in|On the clock)$/);
  const offClock=()=>page.locator('main').getByText(/^(Off clock|Off the clock)$/);
- const timePaused=()=>page.locator('.em-hours[data-hours-state="paused"]').or(page.locator('.q-mytime').getByText('Updates paused',{exact:true}));
+ const timePaused=()=>page.locator('.c-hours[data-hours-view="records"][data-hours-state="paused"]');
  const navLink=href=>page.locator(`.mobile-nav a[href="${href}"]:visible, nav[aria-label="Primary navigation"] a[href="${href}"]:visible`).first();
  const openTime=async expected=>{await navLink('/app/my-time').click();await page.waitForURL(u=>u.pathname==='/app/my-time');const time=await waitForRecordedTimeReady(page,expected);assert.equal(await next().count(),0,'Leaving Home unmounts its private shift card');return time;};
  const openHome=async()=>{await navLink('/app').click();await page.waitForURL(u=>u.pathname==='/app');await ready();};
- const timeReadPath=view=>view==='hours'?'**/api/employee/hours/**':'**/api/employee/my-time';
- // Phones: the Hours footer Refresh (keeps the shown status while it reads). My time has no Refresh; it re-reads when
- // the app returns to the front (the same storage lifecycle sync Home uses).
- const refreshTime=async view=>{if(view==='hours')await page.locator('.em-hours .em-request-footer').getByRole('button',{name:'Refresh',exact:true}).click();else await page.evaluate(()=>window.dispatchEvent(new Event('storage')));};
+ // The Time page's own private read; it has no Refresh and re-reads when the app returns to the front (the same storage
+ // lifecycle sync Home uses), keeping the shown status while it reads.
+ const timeReadPath=()=>'**/api/employee/hours/**';
+ const refreshTime=()=>page.evaluate(()=>window.dispatchEvent(new Event('storage')));
  const actionHrefs=result=>{const rows=result.snapshot.attention.filter(item=>item.required||item.actionable),weeks=rows.filter(item=>item.ref.kind==='SCHEDULE'&&!item.label.startsWith('Schedule removed'));return rows.filter(item=>!weeks.includes(item)||item===weeks[0]).map(item=>item.href);};
  const recorded=()=>page.locator('aside[aria-label="Own recorded time"]');
  const nativeTab=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',nativeBackTab=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
@@ -193,7 +190,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  details.homeDisclosures=[];
  {
   const expected=actionHrefs(homeResponse);
-  assert(await todo().isVisible());assert.equal(await todo().locator('#employee-home-todo-label').textContent(),`Things to do (${expected.length})`);
+  assert(await todo().isVisible());assert.equal(await todoName(),'Things to do');assert.equal(await todo().locator('#employee-home-todo-label').count(),expected.length===1&&await page.locator('[data-home-state="partial"]').count()===0?0:1,'One thing to do is its own card; several share the Things to do header');
   assert.deepEqual(await shownHrefs(),expected.slice(0,3));assert.equal(await seeAll().count(),expected.length>3?1:0);
   if(expected.length>3){assert.equal(await seeAll().getAttribute('href'),'/app/notifications');assert.equal((await seeAll().textContent()).trim(),`See all ${expected.length}`);}
   details.homeDisclosures.push({kind:'actions',rows:expected.length,hasOverflow:expected.length>3,seeAll:expected.length>3});
@@ -226,17 +223,17 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const preview=await previewCommunicationAudience(owner,draft,app.database.executor);assert.equal(preview.state,'ready');const result=await executeCommunicationCommand(owner,{kind:'PUBLISH',operationId:randomUUID(),authority:preview.authority,draft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(result.status,'committed');return {result,draft};}
  const required=await publishUpdate('REQUIRED');await refresh();
  const row=()=>todo().locator('a.c-row[href="/app/updates/'+required.result.id+'"]');
- // Corporate: a required review carries the Review pill (v5 said "Review needed").
- assert(await row().locator('.c-pill').getByText('Review',{exact:true}).isVisible());assert.equal(await allSet().count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
+ // Corporate (board C-Employee): a required review carries the teal Review action text (v5 said "Review needed").
+ assert(await row().locator('.c-row__trail').getByText('Review',{exact:true}).isVisible());assert.equal(await allSet().count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
  assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);
  assert.equal((await recordCommunicationRead(self,{kind:'MARK_READ',operationId:randomUUID(),authority:communicationAuthority(self),ref:{kind:'COMMUNICATION',id:required.result.id,version:required.result.version}},app.database.executor)).status,'blocked');
- await refresh();assert(await row().locator('.c-pill').getByText('Review',{exact:true}).isVisible());await shot('required-push-off');
+ await refresh();assert(await row().locator('.c-row__trail').getByText('Review',{exact:true}).isVisible());await shot('required-push-off');
  // The Task11 fixture uses the authenticated full-content API before a receipt;
  // Task10 owns the actual detail-screen acknowledgement journey.
  const detail=await readCommunication(self,required.result.id,app.database.executor);assert.equal(detail.state,'ready');assert.equal(detail.body,required.draft.body);
  assert.equal((await executeCommunicationCommand(self,{kind:'ACKNOWLEDGE',operationId:randomUUID(),authority:detail.authority,communicationId:detail.id,expectedRevisionId:detail.revisionId,contentHash:detail.contentHash},app.database.executor)).status,'committed');await refresh();assert.equal(await row().count(),0);
  const revisedDraft={...required.draft,body:'PRIVATE REVISED CONTENT '+label},preview=await previewCommunicationAudience(owner,revisedDraft,app.database.executor);assert.equal(preview.state,'ready');
- const revised=await executeCommunicationCommand(owner,{kind:'REVISE',operationId:randomUUID(),authority:preview.authority,communicationId:required.result.id,expectedRevisionId:required.result.version,draft:revisedDraft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(revised.status,'committed');await refresh();assert(await row().locator('.c-pill').getByText('Review',{exact:true}).isVisible());await shot('new-revision');
+ const revised=await executeCommunicationCommand(owner,{kind:'REVISE',operationId:randomUUID(),authority:preview.authority,communicationId:required.result.id,expectedRevisionId:required.result.version,draft:revisedDraft,audienceFingerprint:preview.fingerprint},app.database.executor);assert.equal(revised.status,'committed');await refresh();assert(await row().locator('.c-row__trail').getByText('Review',{exact:true}).isVisible());await shot('new-revision');
  assert.equal((await executeCommunicationCommand(owner,{kind:'WITHDRAW',operationId:randomUUID(),authority:communicationAuthority(owner),communicationId:required.result.id,expectedRevisionId:revised.version},app.database.executor)).status,'committed');await refresh();assert.equal(await row().count(),0);
  // Home lists what needs you; an optional update is read in Updates. The canonical Home response still carries it.
  const homeRead=()=>page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{cache:'no-store',headers:{'X-Nevora-Home':binding}});return response.json();},binding);
@@ -270,7 +267,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   assert.equal(actionRows.length,overflowEvidence.baseline.hrefs.actions.length+4);
   assert.deepEqual(actionRows.filter(href=>!overflowPublished.some(published=>href==='/app/updates/'+published.result.id)),overflowEvidence.baseline.hrefs.actions);
   for(const published of overflowPublished){const canonical=actual.snapshot.attention.filter(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===published.result.id);assert.equal(canonical.length,1);assert.equal(canonical[0].required,true);assert.equal(canonical[0].ref.version,published.result.version);assert.equal(canonical[0].href,'/app/updates/'+published.result.id);}
-  assert.deepEqual(await shownHrefs(),actionRows.slice(0,3));assert.equal(await todo().locator('#employee-home-todo-label').textContent(),`Things to do (${actionRows.length})`);
+  assert.deepEqual(await shownHrefs(),actionRows.slice(0,3));assert.equal(await todoName(),'Things to do');assert.equal(await todo().locator('#employee-home-todo-label').textContent(),'Things to do');
   assert.equal(await seeAll().count(),1);assert.equal(await seeAll().getAttribute('href'),'/app/notifications');assert.equal((await seeAll().textContent()).trim(),`See all ${actionRows.length}`);
   assert.equal(await items().count(),3);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);assert.equal(await allSet().count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
   await shot('actions-overflow');
@@ -284,11 +281,12 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   assert(focus.outlineStyle!=='none'&&parseFloat(focus.outlineWidth)>=2||/\b2px\b|\b3px\b/.test(focus.boxShadow),'See all shows a visible 2px focus indicator');
   const openedNotifications=page.waitForURL(u=>u.pathname==='/app/notifications');await page.keyboard.press('Enter');await openedNotifications;overflowEvidence.keyboard.push({key:'Enter',route:'/app/notifications'});
   overflowEvidence.phase='notifications-list';
-  await page.waitForFunction(()=>{const phone=document.querySelector('.em-messages[data-messages-view="notifications"]');if(phone)return phone.getAttribute('data-messages-state')==='ready';const inbox=document.querySelector('[data-private-view="notifications"]');return !!inbox?.querySelector('[aria-label="Filter notifications"] button:not([disabled])');});
+  await page.waitForFunction(()=>{const phone=document.querySelector('.em-messages[data-messages-view="notifications"]');if(phone)return phone.getAttribute('data-messages-state')==='ready';const inbox=document.querySelector('[data-private-view="notifications"]');return !!inbox?.querySelector('[aria-label="Show notifications"]');});
   const notices=[];
   for(const published of overflowPublished){
    const rows=await q("SELECT id FROM notifications WHERE employee_id=$1 AND source_kind='COMMUNICATION' AND source_id=$2 ORDER BY id",[actor,published.result.id]);assert.equal(rows.length,1,'One notification per overflowed update');
-   const shown=page.locator(`[data-inbox-row] > a[href="/app/notifications/open?notificationId=${rows[0].id}"], a.em-request-entry[id="message-${rows[0].id}"]`);assert.equal(await shown.count(),1,'Notifications lists every overflowed update');assert(await shown.isVisible());notices.push(rows[0].id);
+   // Board E-Notifications: phone and desktop draw the same rows (All / Unread, grouped by day).
+   const shown=page.locator(`main a.em-notif-row[id="message-${rows[0].id}"]`);assert.equal(await shown.count(),1,'Notifications lists every overflowed update');assert(await shown.isVisible());notices.push(rows[0].id);
   }
   overflowEvidence.notifications={listed:notices.length};assert(!(await page.locator('main').innerText()).includes('PRIVATE COMPLETE CONTENT'));await shot('actions-overflow-notifications');
   await openHome();
@@ -367,7 +365,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  try{
   await refreshTime(timeView);await time.seen;
   await q("UPDATE time_entries SET clock_out_at=clock_timestamp(),status='CLOCKED_OUT' WHERE id=$1",[label+'-time']);
-  timeEvidence.afterDispatch=await page.evaluate(()=>{window.dispatchEvent(new Event('pagehide'));return {at:Date.now(),hours:document.querySelector('.em-hours')?.getAttribute('data-hours-state')??null,myTime:document.querySelector('.q-mytime__state')?.getAttribute('data-state')??null};});
+  timeEvidence.afterDispatch=await page.evaluate(()=>{window.dispatchEvent(new Event('pagehide'));return {at:Date.now(),time:document.querySelector('.c-hours')?.getAttribute('data-hours-state')??null};});
   // Synthetic lifecycle dispatch returns before React necessarily commits its
   // invalidated state. Keep the old response held until that commit is visible.
   await timePaused().waitFor({timeout:15000});assert.equal(await clockedIn().count(),0);
@@ -402,7 +400,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  // Re-anchored: the recorded-time read is the Time tab's, so the early departure leaves from Time.
  await page.bringToFront();await ready();const earlyView=(await openTime('OFF_CLOCK')).view;
  details.earlyTimeBaseline=await waitForRecordedTimeReady(page,'OFF_CLOCK');
- assert.deepEqual(details.earlyTimeBaseline,{state:'OFF_CLOCK',view:earlyView,refreshEnabled:earlyView==='hours'?true:null});
+ assert.deepEqual(details.earlyTimeBaseline,{state:'OFF_CLOCK',view:'time',settled:true});
  const early=gate(timeReadPath(earlyView));await page.route(early.path,early.handler);await refreshTime(earlyView);await early.seen;
  await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');
  const earlyNavigation=await page.goto(app.url+'/app/schedule?week='+scenario.week,{waitUntil:'domcontentloaded'});assert(earlyNavigation?.ok());await page.getByRole('heading',{level:1,name:'Schedule',exact:true}).waitFor();
@@ -412,8 +410,9 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  early.release('navigation');await early.done;assert.equal(early.failure,undefined);details.earlyTimeRouteOutcome=early.outcome;await page.unroute(early.path,early.handler);await page.waitForLoadState('networkidle');await page.goto(app.url+'/app');await ready();checks.push('H11 actual Time-tab recorded-time read interrupted by early hard route navigation produces no stale Home rows or page runtime error; destination notification read is ready before the next departure');
  stage='removal-review';
  await page.goto(app.url+'/app/schedule?week='+scenario.week);
- await page.getByRole('button',{name:'Confirm schedule',exact:true}).click();
- await page.getByRole('heading',{name:'You’re up to date',exact:true}).waitFor();
+ // Board G-E-Schedule: Confirm this week sits in the week card; a confirmed week shows the Confirmed pill there.
+ await page.getByRole('group',{name:'Confirm this week',exact:true}).getByRole('button',{name:'Confirm schedule',exact:true}).click();
+ await page.locator('main [aria-label="Week"]').locator('.c-pill').getByText('Confirmed',{exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);
  const [ack]=await q('SELECT publication_revision_id FROM schedule_acknowledgements WHERE employee_id=$1 AND week_start=$2',[actor,scenario.week]);
  const [published]=await q('SELECT id FROM schedule_publication_revisions WHERE week_start=$1 ORDER BY revision_number DESC LIMIT 1',[scenario.week]);
  assert.equal(ack.publication_revision_id,published.id);
@@ -429,7 +428,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  // The removal was published in the empty stage (held edits publish together); this is its current review.
  await refresh();
  const removed=todo().locator('a.c-row[href="/app/schedule?week='+scenario.week+'"]');
- await removed.getByText('Schedule removed',{exact:true}).waitFor();assert(await removed.locator('.c-pill').getByText('Review',{exact:true}).isVisible());
+ await removed.getByText('Schedule removed',{exact:true}).waitFor();assert(await removed.locator('.c-row__trail').getByText('Review',{exact:true}).isVisible());
  const removalResponse=await page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{headers:{'X-Nevora-Home':binding},cache:'no-store'});return response.json();},binding);
  details.removalSource=removalResponse.snapshot.sources.acknowledgements;
  assert.equal(details.removalSource.state,'partial');assert.equal(details.removalSource.reason,'unpublished');

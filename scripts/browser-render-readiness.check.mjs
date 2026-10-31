@@ -18,7 +18,7 @@ for(const engine of ['chromium','webkit']){
   const result={engine,reducedMotion,status:'failed',observations:[]};results.push(result);let context;
   try{
    context=await browser.newContext({viewport:{width:320,height:1000},reducedMotion});const page=await context.newPage();page.setDefaultTimeout(15000);
-   await page.setContent('<style>@keyframes moving{from{transform:translateY(24px)}to{transform:translateY(0)}}button{animation:moving 1s linear both paused}@media(prefers-reduced-motion:reduce){button{animation-duration:1ms}}</style><section data-calendar-setting><button>Copy link</button><div tabindex="-1"><p role="status">Link copied.</p></div></section>');
+   await page.setContent('<style>@keyframes moving{from{transform:translateY(24px)}to{transform:translateY(0)}}button{animation:moving 1s linear both paused}@media(prefers-reduced-motion:reduce){button{animation-duration:1ms}}</style><section data-calendar-setting><button>Copy calendar link</button><div tabindex="-1"><p role="status">Link copied.</p></div></section>');
    await page.evaluate(()=>{window.fixtureClicks=0;document.querySelector('button').addEventListener('click',()=>window.fixtureClicks++);});
    let settled=false;const waiting=waitForCalendarCopyReady(page,'Link copied.').then(()=>{settled=true;});
    const render=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
@@ -27,7 +27,7 @@ for(const engine of ['chromium','webkit']){
    await page.locator('div').focus();await render();
    result.observations.push({phase:'Feedback focused, real CSS animation paused',settled});assert.equal(settled,false);
    await page.evaluate(()=>{const animations=document.querySelector('button').getAnimations();if(animations.length!==1)throw Error('Expected controlled CSS animation');animations[0].finish();});
-   await waiting;await page.getByRole('button',{name:'Copy link',exact:true}).click();
+   await waiting;await page.getByRole('button',{name:'Copy calendar link',exact:true}).click();
    assert.equal(await page.evaluate(()=>window.fixtureClicks),1);result.observations.push({phase:'Animation completed, native click received',settled,clicks:1});
    await page.setContent('<main class="q-timeoff"><article id="request-fictional-review">Waiting</article></main>');
    let reviewSettled=false;const reviewed=waitForReviewedTimeOff(page,'fictional-review').then(()=>{reviewSettled=true;});
