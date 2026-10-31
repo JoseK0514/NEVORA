@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { QuietBar, QuietHeader, QuietNav } from "@/components/quiet/quiet";
 import { FocusClear, PillTracks } from "./wave-c-focus";
+import "./settings-corp.css";
 
 /* Wave C (Phase 3.5): the one frame and form pieces every Settings page, Account recovery and
  * Clocker recovery share. Presentation only; each page keeps its own data, actions and checks.
@@ -11,7 +12,7 @@ export type SettingsFrameProps = {
   title: ReactNode;
   summary?: ReactNode;
   eyebrow?: ReactNode;
-  /** Back names where it goes. Settings pages return to Settings. */
+  /** Back names where it goes. Settings pages return to More, where the phone opens them (boards O-Locations, O-Positions). */
   back?: { href: string; label: string } | null;
   /** A small control at the top right of the band (an Add link). */
   bandAside?: ReactNode;
@@ -25,19 +26,21 @@ export type SettingsFrameProps = {
   children: ReactNode;
 };
 
-export function SettingsFrame({ title, summary, eyebrow: _eyebrow, back = { href: "/app/settings", label: "Settings" }, bandAside, aside: _aside, width = "wide", settingsCrumb = true, className, save, modal, children }: SettingsFrameProps & {
+export function SettingsFrame({ title, summary, eyebrow: _eyebrow, back = { href: "/app/more", label: "More" }, bandAside, aside: _aside, width = "wide", settingsCrumb = true, className, save, modal, children }: SettingsFrameProps & {
   /** Quiet (v4): the page's Save sits at the top right and submits this form id. */
   save?: { form: string; label?: string; disabled?: boolean };
   /** Quiet (v4): a create page is a sheet: Cancel, the title in the bar, and the submit at the top right. */
   modal?: { cancelHref: string; form: string; submitLabel: string; disabled?: boolean };
 }) {
   // Quiet (v4, approved Oct 23): back and Save in the bar, the title, then the page. No band, no guidance column.
+  // Release 1 (boards O-Locations, O-Breaks): on a phone the bar names the page ("‹ More   Locations") and the large
+  // title is for screen readers only; tablets and desktop show the large title with the bar's action beside it.
   void _eyebrow; void _aside;
   return (
     <div className={className ? `q-page wc-page ${className}` : "q-page wc-page"} data-nv-page="" data-q-sheet={modal ? "" : undefined} data-wc-width={width} data-wc-crumb={settingsCrumb ? "settings" : undefined}>
       {modal ? <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href={modal.cancelHref}>Cancel</Link>} title={title}
           right={<button type="submit" form={modal.form} className="q-nav__r q-nav__r--b" disabled={modal.disabled}>{modal.submitLabel}</button>} />
-        : back ? <QuietNav back={back} right={save ? <button type="submit" form={save.form} className="q-nav__r q-nav__r--b" disabled={save.disabled}>{save.label ?? "Save"}</button> : bandAside} />
+        : back ? <QuietNav back={back} title={title} right={save ? <button type="submit" form={save.form} className="q-nav__r q-nav__r--b" disabled={save.disabled}>{save.label ?? "Save"}</button> : bandAside} />
         : <QuietBar>{save ? <button type="submit" form={save.form} className="q-nav__r q-nav__r--b" disabled={save.disabled}>{save.label ?? "Save"}</button> : bandAside}</QuietBar>}
       {modal ? <h1 className="q-sr">{title}</h1> : <QuietHeader title={title} sub={summary} />}
       <FocusClear />

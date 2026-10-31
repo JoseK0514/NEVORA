@@ -36,9 +36,11 @@ it("lists every location with its people and status", async () => {
   expect(data.locations).toHaveBeenCalledWith({ includeInactive: true });
   expect(html).toContain("2 active of 3 locations");
   expect(html.match(/data-location="/g)).toHaveLength(3);
-  expect(html).toContain("0 employees · Needs setup");
-  expect(html).toContain("1 employee</i>");
-  expect(html).toContain("0 employees · Inactive");
+  // Release 1 (board O-Locations): the full name and state under the short name; how many people on the right.
+  expect(html).toContain("East Office · Needs setup");
+  expect(html).toContain('<span class="wc-meta">1 employee</span>');
+  expect(html).toContain("Old Office · Inactive");
+  expect(html).toContain("2 locations · 1 employee");
   for (const path of ["/app/settings/locations/east", "/app/settings/locations/west", "/app/settings/locations/old", "/app/settings/locations/new"]) expect(html).toContain(`href="${path}"`);
 });
 it("matches a short name without case sensitivity", async () => {

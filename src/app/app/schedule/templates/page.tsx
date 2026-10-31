@@ -8,7 +8,8 @@ import Link from "next/link";
 import { keepWhole } from "@/lib/keep-whole";
 import { TemplateFeedback } from "@/components/schedule-template-controls";
 import { ActionForm } from "@/components/wave-b-forms";
-import { QuietGroup, QuietHeader, QuietList, QuietNav, QuietPage, weekLabel as compactWeek } from "@/components/quiet/quiet";
+import { QuietHeader, QuietNav, QuietPage, weekLabel as compactWeek } from "@/components/quiet/quiet";
+import "../../settings/settings-corp.css";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
@@ -44,12 +45,13 @@ export default async function ScheduleTemplatesPage({
   const templates=source.data;
   const hasFeedback = Boolean(params.error || params.saved || params.archived || params.applied !== undefined);
 
-  // Quiet (v4, approved Oct 23): back to Schedule, the title, Save this week (the week, a name, one button), then Saved.
+  // Release 1 (board O-Templates): "‹ Schedule  Week templates", how many weeks are saved, then a card per template (its
+  // name, how many shifts, Archive and Apply to this week), then Save this week. The first Apply is the page's one primary.
   const shortWeek = compactWeek(weekStart);
   return (<ScopedReadFrame observation={source}>
     <QuietPage className="q-templates">
-      <QuietNav back={{ href: `/app/schedule?week=${weekStart}`, label: "Schedule" }} />
-      <QuietHeader title="Templates" />
+      <QuietNav back={{ href: `/app/schedule?week=${weekStart}`, label: "Schedule" }} title="Week templates" />
+      <QuietHeader title="Week templates" />
 
       {hasFeedback ? <TemplateFeedback key={JSON.stringify(params)}>
         {params.error ? <p className="q-error q-first form-error" role="alert">{params.error === "save"
@@ -64,35 +66,31 @@ export default async function ScheduleTemplatesPage({
           {" "}<Link className="q-link" href={`/app/schedule?week=${weekStart}`}>Review schedule</Link></p> : null}
       </TemplateFeedback> : null}
 
-      <QuietGroup label="Save this week" id="st-save">
-        <QuietList>
-          <li><div className="q-row q-row--one" aria-label={`Week of ${keepWhole(`${weekLabel}, ${weekStart.slice(0, 4)}`)}`}>
-            <span className="q-rt"><b>Week</b></span><span className="q-rv q-rv--l">{shortWeek}</span></div></li>
-        </QuietList>
-        <ActionForm action={saveTemplateAction} className="q-template-form" failure="Template not saved. Check your connection and try again; your name is kept." submit={{ label: "Save as template", pendingLabel: "Saving…", className: "q-btn" }}>
+      <p className="wc-intro" id="st-library">{templates.length ? `${templates.length} saved ${templates.length === 1 ? "week" : "weeks"}` : "No saved weeks yet"}</p>
+      {templates.length ? <ul className="wc-cards" aria-labelledby="st-library">
+        {templates.map((template, index) => <li className="q-list wc-tcard" key={template.id}>
+          <div className="wc-cardhead"><span>{template.name}</span></div>
+          <div className="wc-tcard__body"><b className="wc-tcard__big">{`${template.shiftCount} shift${template.shiftCount === 1 ? "" : "s"}`}</b></div>
+          <div className="wc-tcard__foot">
+            <ActionForm action={archiveTemplateAction} className="q-acts__form" failure="Template not archived. Check your connection and try again." confirm={{ prompt: `Archive ${template.name}? Shifts already in your schedule stay.`, keepLabel: "Keep" }} submit={{ label: "Archive", pendingLabel: "Archiving…", ariaLabel: `Archive ${template.name}`, className: "wc-textbtn" }}>
+              <input type="hidden" name="weekStart" value={weekStart} />
+              <input type="hidden" name="templateId" value={template.id} />
+            </ActionForm>
+            <ScheduleCopyForm actorId={session.id} label={`Use for ${shortWeek}`} ariaLabel={`Apply ${template.name} to ${weekLabel}`} className={index === 0 ? "wc-btn" : "wc-btn wc-btn--sec"} command={{operationId:randomUUID(),kind:"TEMPLATE",weekStart,templateId:template.id}} />
+          </div>
+        </li>)}
+      </ul> : null}
+
+      <section className="q-list wc-tcard" aria-labelledby="st-save-title" id="st-save">
+        <div className="wc-cardhead"><h2 id="st-save-title">Save this week</h2><span className="wc-meta" aria-label={`Week of ${keepWhole(`${weekLabel}, ${weekStart.slice(0, 4)}`)}`}>{shortWeek}</span></div>
+        <ActionForm action={saveTemplateAction} className="q-template-form wc-tcard__body" failure="Template not saved. Check your connection and try again; your name is kept." submit={{ label: "Save this week", pendingLabel: "Saving…", className: "wc-btn wc-btn--sec wc-btn--full" }}>
           <input type="hidden" name="weekStart" value={weekStart} />
-          <div className="q-fl" style={{ marginTop: 16 }}>
+          <div className="q-fl">
             <label htmlFor="st-template-name">Name</label>
             <input id="st-template-name" className="q-in" name="name" placeholder="e.g. Regular week" minLength={3} maxLength={50} required />
           </div>
         </ActionForm>
-      </QuietGroup>
-
-      <div className="q-gap-40" />
-      <QuietGroup label="Saved" id="st-library">
-        {templates.length ? <ul className="q-list q-requests q-template-list">
-          {templates.map(template => <li className="q-request" key={template.id}>
-            <div className="q-row"><span className="q-rt"><b>{template.name}</b><i>{`${template.shiftCount} shift${template.shiftCount === 1 ? "" : "s"}`}</i></span></div>
-            <div className="q-acts q-acts--flush">
-              <ActionForm action={archiveTemplateAction} className="q-acts__form" failure="Template not archived. Check your connection and try again." confirm={{ prompt: `Archive ${template.name}? Shifts already in your schedule stay.`, keepLabel: "Keep" }} submit={{ label: "Archive", pendingLabel: "Archiving…", ariaLabel: `Archive ${template.name}`, className: "q-bs" }}>
-                <input type="hidden" name="weekStart" value={weekStart} />
-                <input type="hidden" name="templateId" value={template.id} />
-              </ActionForm>
-              <ScheduleCopyForm actorId={session.id} label={`Use for ${shortWeek}`} ariaLabel={`Apply ${template.name} to ${weekLabel}`} className="q-bs q-bs--go" command={{operationId:randomUUID(),kind:"TEMPLATE",weekStart,templateId:template.id}} />
-            </div>
-          </li>)}
-        </ul> : <p className="q-empty">No templates yet</p>}
-      </QuietGroup>
+      </section>
     </QuietPage>
   </ScopedReadFrame>);
 }

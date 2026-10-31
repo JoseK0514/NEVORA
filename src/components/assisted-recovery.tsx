@@ -84,7 +84,7 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
      </ul>
      <p className="q-sr" id="assisted-confirm-hint">I independently confirmed this employee’s identity and can transfer this code securely.</p>
      {/* Security guidance (kept from the approved recovery flow): check against records you already hold. */}
-     <p className="q-help">Do not substitute a newly supplied email or phone number. Omit sensitive documents, codes and personal details.</p>
+     <p className="q-help">Check against details you already have, not a new email or phone number they give you. You don’t need documents, codes or other personal details.</p>
      {method === "other" ? <Field kind="textarea" label="How you checked" id="assisted-attestation" name="attestation" required minLength={10} maxLength={500} rows={3}
       placeholder="For example: in person, with their workplace badge"/> : null}
      {errors.confirm?<p className="q-error" id="assisted-confirm-error">{errors.confirm}</p>:null}

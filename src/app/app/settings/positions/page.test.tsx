@@ -22,13 +22,13 @@ it("authorizes the Owner before reading the full catalog", async () => {
   expect(html).toContain('name="id" value="support"');
   expect(html).toContain('name="id" value="retired"');
   expect(html).toContain("Retired qualification");
-  // Quiet (v4): Active and Retired segments; each position is a row that opens its editor.
-  expect(html).toContain('aria-label="Edit Retired qualification, retired"');
-  expect(html).toContain('aria-label="Retired, 1"');
+  // Release 1 (board O-Positions): active positions, then an Archived card; each position is a row that opens its editor.
+  expect(html).toContain('aria-label="Edit Retired qualification, archived"');
+  expect(html).toContain('Archived (1)');
   expect(html).toContain('maxLength="80"');
   expect(html).toContain('aria-labelledby="position-support-active-label"');
   expect(html).toContain('id="position-support-active-label">Active');
-  expect(html).toContain("Retired positions can’t be newly assigned. People keep their history.");
+  expect(html).toContain("Archived positions can’t be newly assigned. They stay on past shifts and timecards.");
 });
 it("does not read or render private configuration when authorization fails", async () => {
   mocks.requireRoles.mockRejectedValue(new Error("Access denied"));

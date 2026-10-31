@@ -63,23 +63,30 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
 
   const activeCount = locations.filter(location => location.active).length;
   const place = lower(words.location), places = lower(words.locations);
-  // Quiet (v4, approved Oct 23): one row per place: its name, how many people can work there, and its state when it isn't ready.
+  const team = employees.filter(employee => employee.active).length;
+  const peopleWord = (count: number) => count === 1 ? lower(words.person) : lower(words.people);
+  // Release 1 (board O-Locations): one card with its count line, a row per place (name, its state, how many people can
+  // work there) and an inline "+ Add location" row, then one grey line. Places carry no address or hours yet, so the rows
+  // show what the app holds.
   return (
-    <SettingsFrame title={words.locations}
-      bandAside={<Link className="q-nav__r q-nav__r--ink" href={`${directoryPath}/new`} aria-label={`Add ${place}`}><Plus className="q-ic" aria-hidden="true" /></Link>}>
+    <SettingsFrame title={words.locations}>
       <p className="q-sr" role="status">{activeCount} active of {locations.length} {locations.length === 1 ? place : places}</p>
-      {visible.length ? <ul className="q-list" aria-label={words.locations} style={{ marginTop: 16 }}>
+      {visible.length ? <ul className="q-list" aria-label={words.locations}>
+        <li className="wc-cardhead" aria-hidden="true"><span>{`${activeCount} ${activeCount === 1 ? place : places} · ${team} ${peopleWord(team)}`}</span></li>
         {visible.map(({ location, readiness, eligibleCount }) => <li key={location.id} data-location={location.id}>
-          <Link className="q-row" href={`${directoryPath}/${encodeURIComponent(location.id)}`} aria-label={`Edit ${location.name}`}>
-            <span className="q-rt"><b>{location.shortName}</b><i>{[`${eligibleCount} ${eligibleCount === 1 ? lower(words.person) : lower(words.people)}`,
-              readiness.state === "INACTIVE" ? "Inactive" : readiness.state === "NEEDS_SETUP" ? "Needs setup" : null].filter(Boolean).join(" · ")}</i></span>
+          <Link className={location.name !== location.shortName || readiness.state !== "READY" ? "q-row" : "q-row q-row--one"} href={`${directoryPath}/${encodeURIComponent(location.id)}`} aria-label={`Edit ${location.name}`}>
+            <span className="q-rt"><b>{location.shortName}</b>{location.name !== location.shortName || readiness.state !== "READY" ? <i>{[location.name !== location.shortName ? location.name : null,
+              readiness.state === "INACTIVE" ? "Inactive" : readiness.state === "NEEDS_SETUP" ? "Needs setup" : null].filter(Boolean).join(" · ")}</i> : null}</span>
+            <span className="wc-meta">{`${eligibleCount} ${peopleWord(eligibleCount)}`}</span>
             <CaretRight className="q-chev" aria-hidden="true" />
           </Link>
         </li>)}
+        <li><Link className="wc-addrow" href={`${directoryPath}/new`}><Plus aria-hidden="true" weight="bold" />{`Add ${place}`}</Link></li>
       </ul> : <EmptyState icon={null} titleId="locations-empty-title" title={locations.length ? `No matching ${places}` : `No ${places} yet`}
         action={<Link className={locations.length ? "q-btn q-btn--sec" : "q-btn"} href={locations.length ? directoryPath : `${directoryPath}/new`}>{locations.length ? "Show all" : `Add ${place}`}</Link>}>
         {locations.length ? "" : `Add the places your team works.`}
       </EmptyState>}
+      {visible.length ? <p className="wc-foot">{`Each ${place} keeps its own schedule.`}</p> : null}
     </SettingsFrame>
   );
 }

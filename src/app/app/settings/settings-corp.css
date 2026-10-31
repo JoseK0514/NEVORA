@@ -1,0 +1,79 @@
+/* Release 1 (B4): Settings pages on the boards (O-Locations, O-Positions, O-Breaks, O-ClockerDevices, O-ScheduleRules,
+ * O-Templates). The Quiet lists are already white cards in the corporate shell (corp-quiet-bridge.css); these add the
+ * boards' card header row, the inline "+ Add …" row, a 13px value on the right, and the grey note under a card. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-cardhead { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 0 16px;
+  font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #4A4F54; list-style: none; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-cardhead > :first-child { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-addrow { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 52px; margin: 0; padding: 0 16px; border: 0; background: none;
+  color: #0B6E69; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; text-align: left; text-decoration: none; cursor: pointer; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-addrow svg { flex: none; width: 18px; height: 18px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-addrow:disabled { color: #A7ACB1; cursor: default; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .q-list > li + li > :is(.wc-addrow, .q-row, details > summary) { box-shadow: inset 0 1px 0 #EDEEEF; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .q-list > li.wc-cardhead + li > :is(.wc-addrow, .q-row, details > summary) { box-shadow: inset 0 1px 0 #EDEEEF; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-meta { flex: none; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; white-space: nowrap; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-foot { margin: 8px 16px 0; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-content > .q-list + :is(.q-list, section, form), :is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-content > .wc-foot + :is(.q-list, section, form) { margin-top: 12px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-content > .q-list:first-child, :is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-content > .q-sr:first-child + .q-list { margin-top: 12px; }
+/* A step number in a grey circle (Add a tablet in 3 steps). */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-step { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 11px; background: #EDEEEF; color: #4A4F54; font: 600 13px/1 Inter, "Inter Fallback", -apple-system, sans-serif; }
+/* A card's action row (Set up a new tablet). */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-cardfoot { padding: 12px 16px 16px; box-shadow: inset 0 1px 0 #EDEEEF; list-style: none; }
+@media (min-width: 768px) {
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-content > .q-list:first-child, :is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-content > .q-sr:first-child + .q-list { margin-top: 16px; }
+}
+/* A kind label on the right of a row (Meal, Rest): the neutral filled pill. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .q-pill-cat { flex: none; display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 11px; background: #EDEEEF; color: #4A4F54;
+  font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; white-space: nowrap; }
+/* An empty card's line ("No break types yet"), inside the card. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-emptyrow { display: flex; flex-direction: column; gap: 2px; padding: 14px 16px; list-style: none; box-shadow: inset 0 1px 0 #EDEEEF;
+  font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-emptyrow b { font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; color: #1A1C1E; }
+/* Status pills on a row (Active, Awaiting setup): the kit's filled pills. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-pill { flex: none; display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 11px; font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; white-space: nowrap; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-pill--teal { background: #E6F1EF; color: #0B6E69; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-pill--amber { background: #FEF4E6; color: #8A4B00; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-pill--neutral { background: #EDEEEF; color: #4A4F54; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .q-row__ic { flex: none; width: 22px; height: 22px; color: #4A4F54; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-cardhead h2 { margin: 0; font: inherit; color: inherit; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-cardfoot .q-btn { width: 100%; margin: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .clocker-steps .q-list .q-row { min-height: 44px; }
+/* One grey line under the header that says when a page's settings apply (board O-ScheduleRules). */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-intro { margin: 12px 16px 0; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-intro + .q-list { margin-top: 12px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .q-list > .wc-cardhead + :is(details, form) > :is(summary, details:first-child > summary) { box-shadow: inset 0 1px 0 #EDEEEF; }
+/* Week templates (board O-Templates): a card per template, its shift count large, Archive and Apply in its footer. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-cards { display: flex; flex-direction: column; gap: 12px; margin: 12px 0 0; padding: 0; list-style: none; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-cards + .wc-tcard, :is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-intro + .wc-tcard { margin-top: 12px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-tcard { display: block; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-tcard > .wc-cardhead { box-shadow: inset 0 -1px 0 #EDEEEF; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-tcard__body { display: block; padding: 14px 16px 16px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-tcard__big { display: block; font: 600 20px/26px Inter, "Inter Fallback", -apple-system, sans-serif; color: #1A1C1E; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-tcard__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; box-shadow: inset 0 1px 0 #EDEEEF; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-tcard__foot form { margin: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-textbtn { display: inline-flex; align-items: center; min-width: 44px; min-height: 44px; margin: 0 0 0 -8px; padding: 0 8px; border: 0; background: none; color: #0B6E69; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; cursor: pointer; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-btn { display: inline-flex; align-items: center; justify-content: center; height: 44px; min-width: 44px; margin: -2px 0; padding: 0 16px; border: 2px solid transparent; border-radius: 10px; background: #0B6E69; background-clip: padding-box;
+  color: #FFFFFF; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; white-space: nowrap; cursor: pointer; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-btn--sec { background-color: #FFFFFF; box-shadow: inset 0 0 0 1px #0B6E69; color: #0B6E69; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-btn--full { display: flex; width: 100%; margin-top: 14px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-btn:disabled { background-color: #EDEEEF; box-shadow: none; color: #A7ACB1; cursor: default; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-tcard .q-fl { margin: 0; padding: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-tcard .q-fl label { display: block; margin-bottom: 6px; font: 600 13px/16px Inter, "Inter Fallback", -apple-system, sans-serif; color: #4A4F54; }
+/* Clocker recovery's help requests: a card with a teal Refresh in its header. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-help { margin-top: 12px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-help ul { margin: 0; padding: 0; list-style: none; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-help .wc-cardhead .wc-textbtn { margin: 0 -8px 0 0; font-size: 13px; line-height: 18px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-help .wc-emptyrow { margin: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-meta--teal { color: #0B6E69; font-weight: 600; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-help .q-row { width: 100%; border: 0; background: none; text-align: left; box-shadow: inset 0 1px 0 #EDEEEF; cursor: pointer; }
+/* Branding's preview (What your team sees): a card like the employee's Today's shift. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-preview { pointer-events: none; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-preview > .wc-cardhead { box-shadow: inset 0 -1px 0 #EDEEEF; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-preview__detail { display: block; margin-top: 2px; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; font-style: normal; color: #6B7075; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-preview__btn { display: flex; align-items: center; justify-content: center; height: 44px; margin-top: 14px; border-radius: 8px; color: #FFFFFF;
+  font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 12px; }
+/* Zero wrapped labels in list rows (a 320px phone): the name and its line each stay on one line and end in "…";
+ * the row's aria-label carries the whole text. Setup steps keep wrapping, they are sentences. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page :is(.wc-content, .q-rule-list, .wc-help) .q-list:not(.clocker-steps__list) .q-rt,
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .q-rule-list .q-rt { flex: 1 1 auto; min-width: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-content .q-list:not(.clocker-steps__list) .q-rt > :is(b, i),
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page :is(.q-rule-list, .wc-help) .q-rt > :is(b, i) { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }

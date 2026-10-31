@@ -27,13 +27,14 @@ import { getWeekSettings } from "@/lib/data/week-settings";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate, formatBusinessDateTimeInput } from "@/lib/business-time";
 import { formatWeekRange, isValidWeekStart, weekStartFor } from "@/lib/date-utils";
+import "../../settings/settings-corp.css";
 
 const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 /** Quiet (v4): a rule's row; it opens the rule's settings under it. */
-function Summary({ title, value }: { title: string; value: string }) {
-  return <summary className="q-row q-row--one">
-    <span className="q-rt"><b>{title}</b></span><span className="q-rv q-rv--l">{value}</span><CaretRightIcon className="q-chev" aria-hidden="true" />
+function Summary({ title, value, detail }: { title: string; value: string; detail?: string }) {
+  return <summary className={detail ? "q-row" : "q-row q-row--one"}>
+    <span className="q-rt"><b>{title}</b>{detail ? <i>{detail}</i> : null}</span><span className="q-rv q-rv--l">{value}</span><CaretRightIcon className="q-chev" aria-hidden="true" />
   </summary>;
 }
 
@@ -76,8 +77,8 @@ export default async function ScheduleSettingsPage({ searchParams }: {
   const staffingValue = !staffing.length ? "No locations" : staffing.some(location => location.minimumStaffPerShift === null || location.requiresDesignatedLead === null) ? "Needs setup"
     : staffValues.length === 1 ? `${staffValues[0]} per shift` : "Varies";
   const targets = employees.filter(employee => employee.targetWeeklyHours !== null && employee.targetWeeklyHours !== undefined).length;
-  const hoursValue = targets ? `${targets} ${targets === 1 ? "target" : "targets"}` : "No targets";
-  const coverageValue = coverageWindows.length ? `${coverageWindows.length} ${coverageWindows.length === 1 ? "period" : "periods"}` : "Off";
+  const hoursValue = targets ? `${targets} ${targets === 1 ? "person" : "people"}` : "No targets";
+  const coverageValue = coverageWindows.length ? `${coverageWindows.length} ${coverageWindows.length === 1 ? "shift" : "shifts"}` : "Off";
   const modes = policy ? [...new Set([policy.swap.mode, policy.coverage.mode])] : [];
   const policyValue = policyUnavailable ? "Unavailable" : !policy || modes.includes(null) ? "Not set" : modes.length > 1 ? "Mixed"
     : modes[0] === "MANAGER_REVIEW" ? "Manager approves" : "Automatic";
@@ -90,8 +91,11 @@ export default async function ScheduleSettingsPage({ searchParams }: {
 
   return (<ScopedReadFrame observation={source}>
     <QuietPage className="q-rules">
-      <QuietNav back={{ href: `/app/schedule?week=${weekStart}`, label: "Schedule" }} />
-      <QuietHeader title={"Sched\u00aduling rules"} />
+      {/* Release 1 (board O-ScheduleRules): "‹ Schedule  Scheduling rules", one line about when the rules apply, then the
+        rules in one card, each with what it means and its current value. A row opens its settings in place. */}
+      <QuietNav back={{ href: `/app/schedule?week=${weekStart}`, label: "Schedule" }} title="Scheduling rules" />
+      <QuietHeader title="Scheduling rules" />
+      <p className="wc-intro">Used when you build a draft and before you publish.</p>
       <ManagerIssueFocus prefix="target-" /><ManagerIssueFocus prefix="staffing-" /><ManagerIssueFocus prefix="coverage-" /><KeepFocusClear />
       {params.error ? <p className="q-error q-first form-error" role="alert">{
         params.error === "INVALID_DEADLINE" ? "Enter a valid availability deadline."
@@ -106,22 +110,22 @@ export default async function ScheduleSettingsPage({ searchParams }: {
       {params.windowSaved ? <p className="q-help q-first form-success" role="status">Coverage period added.</p> : null}
       {params.windowDeleted ? <p className="q-help q-first form-success" role="status">Coverage period removed.</p> : null}
 
-      <div className="q-list q-rule-list" style={{ marginTop: 16 }}>
-        <details className="q-details q-rule" open={open.deadline || undefined}>
-          <Summary title="Availability deadline" value={deadlineValue} />
-          <div className="q-rule__body" id="rules-deadline">
-            <ActionForm action={setAvailabilityDeadlineAction} className="q-rule-form" failure="The availability deadline could not be saved. Try again." submit={{label: weekSettings?.availabilityDeadline ? "Update deadline" : "Set deadline", pendingLabel: "Saving…", className: "q-btn"}}>
-              <input type="hidden" name="returnTo" value="/app/schedule/settings" />
-              <input type="hidden" name="weekStart" value={weekStart} />
-              <div className="q-fl"><label htmlFor="rules-deadline-input">{`Deadline for ${formatWeekRange(weekStart)}`}</label>
-                <input id="rules-deadline-input" className="q-in" type="datetime-local" name="availabilityDeadline" aria-describedby="deadline-help" defaultValue={params.availabilityDeadline ?? formatBusinessDateTimeInput(weekSettings?.availabilityDeadline, workspace.timeZone)} /></div>
-              <p className="q-help" id="deadline-help">{`${workspace.timeZone.replaceAll("_", " ")} time. Leave it blank to clear it.`}</p>
-            </ActionForm>
-          </div>
-        </details>
+      <div className="q-list q-rule-list">
+        <div className="wc-cardhead" aria-hidden="true"><span>Rules</span></div>
         <RulesSaveForm action={saveScheduleHealthSettingsFormAction} bar={staffing.length > 0 || employees.length > 0}>
+          <details className="q-details q-rule" open={open.hours || undefined}>
+            <Summary title="Weekly hours targets" detail="Hours each person aims for" value={hoursValue} />
+            <div className="q-rule__body manager-issue-target" id="target-hours" tabIndex={-1}>
+              <p className="q-help">Targets keep schedules balanced. Maximums flag extra hours. Leave a target blank to skip it.</p>
+              {employees.length ? <RulesHoursList rows={employees.map(employee => ({
+                employeeId: employee.employeeId, employeeName: employee.employeeName,
+                detail: `${employee.role[0]}${employee.role.slice(1).toLowerCase()} · ${locationLabel(employee.primaryLocationId, "—")}`,
+                targetWeeklyHours: employee.targetWeeklyHours ?? null, maximumWeeklyHours: employee.maximumWeeklyHours ?? null,
+              }))} /> : <p className="q-empty">Add people first. <Link className="q-link" href="/app/employees">Team</Link></p>}
+            </div>
+          </details>
           <details className="q-details q-rule" open={open.staffing || undefined}>
-            <Summary title="Staffing per location" value={staffingValue} />
+            <Summary title="Staffing per location" detail="Fewest people on each shift" value={staffingValue} />
             <div className="q-rule__body manager-issue-target" id="coverage-staffing" tabIndex={-1}>
               <p className="q-help">The fewest people working at once, and whether a shift lead must be there.</p>
               <ul className="wb-setting-list">
@@ -146,20 +150,9 @@ export default async function ScheduleSettingsPage({ searchParams }: {
               {!staffing.length ? <p className="q-empty">Add a location first. <Link className="q-link" href="/app/settings/locations">Locations</Link></p> : null}
             </div>
           </details>
-          <details className="q-details q-rule" open={open.hours || undefined}>
-            <Summary title="Weekly hours" value={hoursValue} />
-            <div className="q-rule__body manager-issue-target" id="target-hours" tabIndex={-1}>
-              <p className="q-help">Targets keep schedules balanced. Maximums flag extra hours. Leave a target blank to skip it.</p>
-              {employees.length ? <RulesHoursList rows={employees.map(employee => ({
-                employeeId: employee.employeeId, employeeName: employee.employeeName,
-                detail: `${employee.role[0]}${employee.role.slice(1).toLowerCase()} · ${locationLabel(employee.primaryLocationId, "—")}`,
-                targetWeeklyHours: employee.targetWeeklyHours ?? null, maximumWeeklyHours: employee.maximumWeeklyHours ?? null,
-              }))} /> : <p className="q-empty">Add people first. <Link className="q-link" href="/app/employees">Team</Link></p>}
-            </div>
-          </details>
         </RulesSaveForm>
         <details className="q-details q-rule" open={open.coverage || undefined}>
-          <Summary title="Recurring coverage" value={coverageValue} />
+          <Summary title="Recurring coverage" detail="Shifts that repeat every week" value={coverageValue} />
           <div className="q-rule__body manager-issue-target" id="coverage-windows" tabIndex={-1}>
             <p className="q-help">Periods you expect every week. The schedule flags open coverage even before shifts are added.</p>
             {locations.length ? <details className="wb-disclosure wb-disclosure--ruled wb-add-period" open={!coverageWindows.length}>
@@ -197,8 +190,20 @@ export default async function ScheduleSettingsPage({ searchParams }: {
             ))}
           </div>
         </details>
+        <details className="q-details q-rule" open={open.deadline || undefined}>
+          <Summary title="Availability deadline" detail="Team updates availability by" value={deadlineValue} />
+          <div className="q-rule__body" id="rules-deadline">
+            <ActionForm action={setAvailabilityDeadlineAction} className="q-rule-form" failure="The availability deadline could not be saved. Try again." submit={{label: weekSettings?.availabilityDeadline ? "Update deadline" : "Set deadline", pendingLabel: "Saving…", className: "q-btn"}}>
+              <input type="hidden" name="returnTo" value="/app/schedule/settings" />
+              <input type="hidden" name="weekStart" value={weekStart} />
+              <div className="q-fl"><label htmlFor="rules-deadline-input">{`Deadline for ${formatWeekRange(weekStart)}`}</label>
+                <input id="rules-deadline-input" className="q-in" type="datetime-local" name="availabilityDeadline" aria-describedby="deadline-help" defaultValue={params.availabilityDeadline ?? formatBusinessDateTimeInput(weekSettings?.availabilityDeadline, workspace.timeZone)} /></div>
+              <p className="q-help" id="deadline-help">{`${workspace.timeZone.replaceAll("_", " ")} time. Leave it blank to clear it.`}</p>
+            </ActionForm>
+          </div>
+        </details>
         <details className="q-details q-rule">
-          <Summary title="Trades and coverage" value={policyValue} />
+          <Summary title="Trades and coverage" detail="How swaps and cover are approved" value={policyValue} />
           <div className="q-rule__body" id="rules-policy" tabIndex={-1}>
             <p className="q-help">How trades and cover are approved, and how far ahead they must be sent.</p>
             {policyUnavailable ? <p className="q-error" role="alert">Couldn’t load this policy. Reload the page to try again.</p> : <ShiftChangePolicyFields policy={policy} canEdit={session.role === "OWNER"} />}

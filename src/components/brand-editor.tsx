@@ -125,8 +125,11 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
       {logo ? <li><button type="button" className="q-row q-row--one" onClick={() => { retry.current = null; setLogo(null); }} disabled={busy !== null}><span className="q-rt"><b style={{ color: "#C42B1C" }}>Remove logo</b></span></button></li> : null}
     </ul>
     <div className="q-grp"><h2>What your team sees</h2></div>
-    <div className="q-preview" style={previewStyle} aria-hidden="true" inert>
-      <b>Next shift · Tomorrow</b><i>{keepWhole("8:00 AM – 4:00 PM")} · Front desk</i><span style={{ background: brand.tokens.accent }}>Clock in</span>
+    {/* Release 1: the preview is a card like the employee's Today's shift; clocking in happens on the location's tablet. */}
+    <div className="q-list wc-preview" style={previewStyle} aria-hidden="true" inert>
+      <div className="wc-cardhead"><span>Today’s shift</span></div>
+      <div className="wc-tcard__body"><b className="wc-tcard__big">{keepWhole("8:00 AM – 4:00 PM")}</b><i className="wc-preview__detail">Front desk · Main Street</i>
+        <span className="wc-preview__btn" style={{ background: brand.tokens.accent }}>Clock in on the Main Street tablet</span></div>
     </div>
     <p className="q-sr">{`Buttons in ${brand.tokens.accent}.`}</p>
     {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"}

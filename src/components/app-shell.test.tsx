@@ -153,13 +153,15 @@ it("preserves configured Fuel customer identity in the sidebar", () => {
 });
 
 // Corporate (Release 1): the desktop sidebar mirrors the phone. Home, Schedule, Time, Payroll and Team, then Things to do,
-// then Team tools and More; Time and Things to do carry the phone's names.
+// then More; Time and Things to do carry the phone's names.
 it('groups authorized owner destinations like the phone and provides an accessible sidebar control', () => {
  const {html}=render('OWNER','/app/schedule');
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
  expect([...sidebar.matchAll(/class="nav-label">([^<]+)</g)].map(match=>match[1]).slice(0,4)).toEqual(['Home','Schedule','Time','Team']);
  expect(sidebar).toContain('<span class="nav-label">Things to do</span>');
- for(const label of ['Team tools','More']) expect(sidebar).toContain(`<h2 class="sidebar-group-label">${label}</h2>`);
+ // Release 1 ("don't overwhelm"): no Team tools group; each tool opens from Home, Team or Schedule.
+ expect(sidebar).toContain('<h2 class="sidebar-group-label">More</h2>');
+ expect(sidebar).not.toContain('>Team tools</h2>');
  for(const label of ['Plan','People','Time and pay','Workspace']) expect(sidebar).not.toContain(`>${label}</h2>`);
  expect(html).toContain('aria-label="Collapse sidebar"');
  expect(html).toContain('aria-expanded="true"');
