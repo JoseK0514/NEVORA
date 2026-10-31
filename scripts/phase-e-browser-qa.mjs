@@ -27,6 +27,7 @@ function nativeFetchResourceKind(message,page) {
     if(path==='/api/manager/communications'||path.startsWith('/api/manager/communications/'))return 'manager-read';
     if(path==='/api/employee/communications'||path.startsWith('/api/employee/communications/'))return 'employee-read';
     if(path==='/api/employee/my-time')return 'recorded-time-read';
+    if(path==='/api/employee/requests')return 'requests-read';
     if(path==='/api/manager/today')return 'manager-today-read';
     if(path==='/api/manager/action-center')return 'action-center-read';
     if(path==='/api/manager/clock-monitor')return 'clock-monitor-read';

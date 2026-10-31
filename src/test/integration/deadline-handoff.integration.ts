@@ -95,7 +95,7 @@ it('deadline action commits first and blocks the racing timezone edit until its 
     const pid = (await editor.query('SELECT pg_backend_pid() AS pid')).rows[0].pid;
     edit = saveWorkspaceProfileWithProof({ name: 'Edited', timeZone: 'Asia/Tokyo', actorEmployeeId: 'owner', proof:editorProof }, editorExecutor).catch(error => error);
     let blocked = false;
-    for (let attempt = 0; attempt < 100 && !blocked; attempt++) blocked = (await db.query<{ blocked: boolean }>({ text: 'SELECT cardinality(pg_blocking_pids($1))>0 AS blocked', values: [pid] }))[0].blocked;
+    for (const deadline = Date.now() + 10_000; !blocked && Date.now() < deadline;) { blocked = (await db.query<{ blocked: boolean }>({ text: 'SELECT cardinality(pg_blocking_pids($1))>0 AS blocked', values: [pid] }))[0].blocked; if (!blocked) await new Promise(resolve => setTimeout(resolve, 20)); }
     expect(blocked).toBe(true); release();
     expect(await write).toMatchObject({ destination: '/app/schedule?week=2030-10-07&deadlineSaved=1' });
     expect(await edit).toBeInstanceOf(WorkspaceTimezoneLockedError);

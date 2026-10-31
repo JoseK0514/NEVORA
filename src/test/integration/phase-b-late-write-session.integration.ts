@@ -50,7 +50,7 @@ for (const kind of ['position', 'location'] as const) {
           : createLocation({ name: 'Review late insert', shortName: 'Review', clockerKey: 'review-late-insert', actorEmployeeId: proof.employee.id, proof }, executor))
           .then(value => ({ value }), error => ({ error }));
         let observed = false;
-        for (let attempt = 0; attempt < 200; attempt++) {
+        for (let attempt = 0; attempt < 500; attempt++) {
           const [row] = await q<{ blocked: boolean; statement: string }>('SELECT cardinality(pg_blocking_pids(pid))>0 AS blocked,query AS statement FROM pg_stat_activity WHERE pid=$1', [pid]);
           // Poll for matching activity AND live blocking; a cross-statement statistics sample is not yet proof.
         if (row?.blocked && row.statement.toLowerCase().includes(`insert into ${table}`)) {

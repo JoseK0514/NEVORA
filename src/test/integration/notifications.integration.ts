@@ -433,8 +433,9 @@ describe('deadline writers and persistent grouping', () => {
     const config = { ...readNotificationConfig({ PUSH_ENVIRONMENT: 'test' }), featureEnabled: true };
     const now = new Date(new Date(Date.now() - 4 * 3600000).toISOString().slice(0, 10) + `T${String(localHour+4).padStart(2,'0')}:00:00Z`);
     await sql(`UPDATE notifications SET due_at=$1::timestamptz-interval '1 second'`,[now.toISOString()]);
+    // Hold both runners at QA-M's group write (matched by its conflict check: environment, employee, items) so they really race.
     let waiting=0,groupConflicts=0;let release!:()=>void;const barrier=new Promise<void>(resolve=>{release=resolve;});
-    const synchronized:SqlExecutor={query:db.query,transaction:async statements=>{if(statements.some(s=>s.text.includes('notification_group_conflict'))&&statements[0].values[1]==='QA-M'&&waiting<2){waiting++;if(waiting===2)release();await barrier;}try{return await db.transaction(statements);}catch(error){if((error as {code:string}).code==='22P02'&&(error as Error).message.includes('notification_group_conflict'))groupConflicts++;throw error;}}};
+    const synchronized:SqlExecutor={query:db.query,transaction:async statements=>{if(statements.some(s=>s.text.includes('notification_group_conflict')&&s.values[1]==='QA-M')&&waiting<2){waiting++;if(waiting===2)release();await barrier;}try{return await db.transaction(statements);}catch(error){if((error as {code:string}).code==='22P02'&&(error as Error).message.includes('notification_group_conflict'))groupConflicts++;throw error;}}};
     const state = sqlNotificationStateRepository(db); const deps = { executor: synchronized, state, config, clock: () => now };
     await Promise.all([runReminders(deps), runReminders(deps)]); expect(groupConflicts).toBeGreaterThan(0);
     const groups = await sql<{ id: string; employee_id: string; item_keys: string[] }>(`SELECT id,employee_id,item_keys FROM notifications WHERE source_kind='MANAGER_SUMMARY'`);

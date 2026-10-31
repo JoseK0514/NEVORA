@@ -4,7 +4,7 @@ import {createServer} from 'node:http';
 import {createRequire} from 'node:module';
 import {readFile,writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
-import {archiveBreak} from './clocker-break-editor.mjs';
+import {archiveBreak,breakLists} from './clocker-break-editor.mjs';
 import {schedulerControl} from './attention-intent-readiness.check.mjs';
 import {captureSource,assertSourceUnchanged,externalEvidence} from './phase-e-owned.mjs';
 
@@ -24,7 +24,7 @@ const bundle=await project('esbuild').build({
   const result=await new Promise(resolve=>{window.resolveFictionalAction=resolve;});window.fictionalActionSettled=true;return result;
  }
  createRoot(document.getElementById('root')).render(<ClockerBreakTypes initialTypes={[type,other]} action={action}/>);`,resolveDir:source,loader:'tsx'},
- bundle:true,write:false,platform:'browser',format:'iife',jsx:'automatic',loader:{'.css':'empty'},
+ bundle:true,write:false,outdir:join(source,'.break-filter-fixture'),platform:'browser',format:'iife',jsx:'automatic',loader:{'.css':'empty','.module.css':'local-css'},
  define:{'process.env.NODE_ENV':'"development"','process.env':'{}'},
  plugins:[{name:'fictional-framework-boundaries',setup(build){
   build.onResolve({filter:/^next\/(link|image|navigation)$/},args=>({path:args.path,namespace:'fixture'}));
@@ -33,11 +33,15 @@ const bundle=await project('esbuild').build({
    :'import React from "react";export default function Element({children,...props}){return React.createElement('+JSON.stringify(args.path==='next/link'?'a':'img')+',props,children);}',loader:'js',resolveDir:source}));
  }}],
 });
+// The component's CSS module ships with it; serve the scoped stylesheet next to the script (nothing is written to disk).
+const bundled=extension=>bundle.outputFiles.find(file=>file.path.endsWith(extension));
+assert(bundled('.js')&&bundled('.css'),'Expected the fixture script and its CSS module output');
 const server=createServer((request,response)=>{
  response.setHeader('Cache-Control','no-store');
- if(request.url==='/bundle.js'){response.setHeader('Content-Type','text/javascript');response.end(bundle.outputFiles[0].contents);return;}
+ if(request.url==='/bundle.js'){response.setHeader('Content-Type','text/javascript');response.end(bundled('.js').contents);return;}
+ if(request.url==='/bundle.css'){response.setHeader('Content-Type','text/css; charset=utf-8');response.end(bundled('.css').contents);return;}
  if(request.url==='/form.css'){response.setHeader('Content-Type','text/css; charset=utf-8');response.end(formStyles);return;}
- response.setHeader('Content-Type','text/html; charset=utf-8');response.end('<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Fictional break filter rendering control</title><link rel="stylesheet" href="/form.css"><script>'+schedulerControl+'</script></head><body><div class="app-shell nevora-portal"><main class="page-frame" id="root"></main></div><script src="/bundle.js"></script></body></html>');
+ response.setHeader('Content-Type','text/html; charset=utf-8');response.end('<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Fictional break filter rendering control</title><link rel="stylesheet" href="/form.css"><link rel="stylesheet" href="/bundle.css"><script>'+schedulerControl+'</script></head><body><div class="app-shell nevora-portal"><main class="page-frame" id="root"></main></div><script src="/bundle.js"></script></body></html>');
 });
 await new Promise(ready=>server.listen(0,'127.0.0.1',ready));
 const origin=`http://127.0.0.1:${server.address().port}`,results=[];
@@ -67,7 +71,8 @@ try{for(const engine of ['chromium','webkit']){
    await page.waitForFunction(()=>window.fictionalActionSettled&&window.heldReactTasks.length>0&&!document.querySelector('dialog').open);
    assert(await page.evaluate(()=>window.reactChannels>0));
    await frames();
-   const rows=await page.locator('button[data-break-type="ui-rest"]').count();
+   const [priorList,nextList]=breakLists(operation).map(name=>page.getByRole('list',{name,exact:true}));
+   const rows=await priorList.locator('button[data-break-type="ui-rest"]').count();
    assert.equal(rows,1,'The actual component closes its dialog before React commits the new filtered rows');
    result.observations.push({phase:'Action returned, native dialog closed, real React rendering held',rows,settled,outcome});
    assert.deepEqual(await page.evaluate(()=>window.fixtureInput),{id:'ui-rest',expectedVersion:'1',name:'Fixture rest',category:'REST',targetMinutes:'15',active:String(nextActive)});
@@ -75,7 +80,7 @@ try{for(const engine of ['chromium','webkit']){
    if(holdUntilTimeout){
     await change;
     assert.equal(outcome?.ok,false);assert.equal(outcome?.name,'TimeoutError');assert.match(outcome.message,/detached/);
-    assert.equal(await page.locator('button[data-break-type="ui-rest"]').count(),1,'A permanently uncommitted row remains a fatal failure');
+    assert.equal(await priorList.locator('button[data-break-type="ui-rest"]').count(),1,'A permanently uncommitted row remains a fatal failure');
     const elapsedMs=Math.round(performance.now()-started);assert(elapsedMs>=200&&elapsedMs<5000);
     assert.equal(externalRequests,0);assert.deepEqual(errors,[]);
     result.observations.push({phase:'A closed dialog with no filtered-row commit fails within its deadline',rowRemovalTimeoutMs:200,elapsedMs,outcome});
@@ -83,14 +88,12 @@ try{for(const engine of ['chromium','webkit']){
    }
    assert.equal(settled,false,'The driver must wait for the real filtered-row commit after native dialog closure');
    await page.evaluate(()=>window.releaseReactTasks());await change;
-   assert.deepEqual(outcome,{ok:true});assert.equal(await page.locator('button[data-break-type="ui-rest"]').count(),0);
-   assert.equal(await page.locator('button[data-break-type="other-break"]').count(),1,'Another row in the prior filter stays present');
-   const nextFilter=nextActive?'Active':'Archived';
-   await page.getByRole('button',{name:nextFilter+', 1',exact:true}).click();
-   await page.locator('button[data-break-type="ui-rest"]').waitFor();
-   assert.equal(await page.locator('button[data-break-type="ui-rest"]').count(),1);
+   assert.deepEqual(outcome,{ok:true});assert.equal(await priorList.locator('button[data-break-type="ui-rest"]').count(),0);
+   assert.equal(await priorList.locator('button[data-break-type="other-break"]').count(),1,'Another row in the prior list stays present');
+   assert.equal(await nextList.locator('button[data-break-type="ui-rest"]').count(),1);
+   assert.equal(await nextList.locator('button[data-break-type="other-break"]').count(),0,'Only the changed row moves');
    assert.equal(externalRequests,0);assert.deepEqual(errors,[]);
-   result.observations.push({phase:'Actual React commit moves only the changed row to its new filter',rowsInPriorFilter:0,rowsInNewFilter:1,actionCalls:1});
+   result.observations.push({phase:'Actual React commit moves only the changed row to its new list',rowsInPriorList:0,rowsInNewList:1,actionCalls:1});
    result.status='passed';
   }catch(error){result.failure={name:error.name,message:error.message};result.diagnostic={settled,outcome,errors,state:page&&!page.isClosed()?await page.evaluate(()=>({actionCalls:window.fixtureCalls,actionSettled:window.fictionalActionSettled,channels:window.reactChannels,held:window.heldReactTasks?.length,dialogOpen:document.querySelector('dialog')?.open,text:document.body.innerText})).catch(()=>null):null};}
   finally{
