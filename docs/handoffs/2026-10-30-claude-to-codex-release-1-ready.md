@@ -160,7 +160,8 @@ The full gate ran in one ordered pass on `f486a96fed567c760a81a29934b7b112930156
   - `25ce87b6` Clocker break-filter readiness: the check now bundles the component's CSS module (it failed to build).
   - `355d1408` Clocker Owner pages: setup starts from "Set up a new tablet" (dialog "Add device"). Break types are two lists ("Configured break types" and "Archived break types"), not a filter. Archiving now requires the row to leave one list and appear in the other.
   - `4ee6ec51`, `b398bd21`, `3ffed43c` Clocker punch UI: the pending action is read from the tablet's IndexedDB journal (since `57a04195`, Oct 27), and the storage-denied case denies the journal write. Every obsolete action now passes through the explicit "Review current status" step (since `37b8c20c`), with no record written before or after it.
-  - Local re-runs on these commits: release Postgres 746 passed; Phase E Home 14 of 14; break-filter readiness 6 of 6; Clocker punch UI 90 checks in Chromium and WebKit; typecheck and lint pass.
+  - `614b552d` Release Postgres (`schedule-settings-session`, CI on `4d166b1c`): the same tight lock-barrier poll. Every lock-barrier poll in the release Postgres suites now has room: back-to-back loops wait up to 10 s polling every 20 ms (`schedule-settings-session`, `deadline-handoff`, one `foundation` case), and loops that already sleep 10 ms poll up to 500 times. Each still requires PostgreSQL to report the actual block.
+  - Local re-runs on these commits: release Postgres 746 passed (again on `614b552d`); Phase E Home 14 of 14; break-filter readiness 6 of 6; Clocker punch UI 90 checks in Chromium and WebKit; typecheck and lint pass.
 - The commit that records this changes `docs/` only.
 
 On `03e18d7c`, typecheck, lint, `test:release-engineering` and unit were re-run: typecheck and lint pass, `test:release-engineering` 168 passed, unit 10,405 passed and 801 skipped, clean tree.
