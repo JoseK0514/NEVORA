@@ -46,5 +46,5 @@
 :is(#c-root, html) .c-ins .c-card__aside button.c-link { min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer; }
 /* Hours by person names the person whose hours these are: a long name wraps rather than being cut off (reflow). */
 :is(#c-root, html) .c-ins #ins-people .c-row__title { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
-/* Desktop: the kit's column, as Team and the other pushed pages. */
-@media (min-width: 768px) { :is(#c-root, html) .c-page.c-ins { width: 100%; max-width: 640px; margin: 0 auto; } }
+/* A stat's label wraps on a narrow phone rather than being cut off. */
+:is(#c-root, html) .c-ins #ins-attendance .c-stat__label { white-space: normal; overflow: visible; }

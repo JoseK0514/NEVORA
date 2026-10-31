@@ -233,14 +233,14 @@ function PremiumHomeView(props: Props & { view: Exclude<ManagerDashboardView, 'o
 export function ManagerDashboard(props: Props) {
   // Clean Manager (v3): Home is "Today"; its views keep their addresses. The old Home layout is gone (deleted, not restyled).
   if (props.view === 'overview') return <PremiumOverview {...props} />;
+  // Release 1 (Team → Hours this week): the kit page, from the same read.
+  if (props.view === 'team' && !props.overviewSlots) return <TeamOverviewCorp weekStart={props.weekStart} weekLabel={props.weekLabel} previousWeek={props.previousWeek}
+    nextWeek={props.nextWeek} hours={props.hours} activeEmployees={props.activeEmployees} availabilitySubmitted={props.availabilitySubmitted} availabilityEligible={props.availabilityEligible} />;
   // Release 1 (board O-OnShift): Who's working, then the attendance review and time corrections as before.
   if (props.view === 'attendance' && !props.overviewSlots) return <WhosWorkingCorp homeHref={`/app?week=${encodeURIComponent(props.weekStart)}`}>
     <ManagerAttendanceReview />
     <ManagerTimeCorrections key={props.correctionAuthority??props.actorId} actorId={props.actorId} authority={props.correctionAuthority}/>
     {props.role==='OWNER' ? <Link className="c-link c-link--l" href="/app/clocker-recovery">Clocker recovery</Link> : null}
   </WhosWorkingCorp>;
-  // Release 1 (Team → Hours this week): the kit page, from the same read.
-  if (props.view === 'team' && !props.overviewSlots) return <TeamOverviewCorp weekStart={props.weekStart} weekLabel={props.weekLabel} previousWeek={props.previousWeek}
-    nextWeek={props.nextWeek} hours={props.hours} activeEmployees={props.activeEmployees} availabilitySubmitted={props.availabilitySubmitted} availabilityEligible={props.availabilityEligible} />;
   return <PremiumHomeView {...props} view={props.view} />;
 }

@@ -13,7 +13,7 @@ import { phoneTyping } from "./phone";
 export function FormHead({ left, title, step, right, titleId }: { left: ReactNode; title: ReactNode; step?: ReactNode; right?: ReactNode; titleId?: string }) {
   return <div className="c-nav c-formhead">
     <span className="c-formhead__l">{left}</span>
-    <span className="c-formhead__t"><h1 className="c-nav__title" id={titleId}>{title}</h1>{step ? <span className="c-formhead__step">{step}</span> : null}</span>
+    <span className="c-formhead__t"><h1 className="c-nav__title" id={titleId} tabIndex={-1}>{title}</h1>{step ? <span className="c-formhead__step">{step}</span> : null}</span>
     <span className="c-nav__right">{right ?? null}</span>
   </div>;
 }

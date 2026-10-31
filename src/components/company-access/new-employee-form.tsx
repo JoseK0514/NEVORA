@@ -19,7 +19,7 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
  function next(){
   // Step 1 must be complete before step 2: each field says what's missing, in order.
   for(const field of stepOne.current?.querySelectorAll<HTMLInputElement|HTMLSelectElement>('input,select')??[])if(!field.checkValidity()){field.reportValidity();return;}
-  setStep(2);requestAnimationFrame(()=>document.getElementById('new-id')?.focus());
+  setStep(2);requestAnimationFrame(()=>document.getElementById('new-employee-title')?.focus());
  }
  const activePositions=positions.filter(position=>position.active);
  return <>

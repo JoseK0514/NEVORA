@@ -66,3 +66,13 @@
 :is(#c-root, html) .c-formhead .c-formhead__link { min-width: 44px; }
 @media (max-width: 767px) { :is(#c-root, html) .c-page.c-sheetpage { min-height: 100dvh; } }
 :is(#c-root, html) .c-page.c-access { min-height: 100%; }
+/* Narrow phones: a long back label ("‹ Alexandra") and the title share the row instead of overlapping. */
+@media (max-width: 374px) {
+  :is(#c-root, html) .c-access .c-nav { grid-template-columns: auto minmax(0, 1fr) auto; }
+  :is(#c-root, html) .c-access .c-nav__title { max-width: none; }
+  :is(#c-root, html) .c-person .c-person__who :is(.c-row__title, .c-row__detail > span:first-child) { white-space: normal; overflow: visible; }
+}
+/* Wide screens: a sheet is a white panel in the desktop content column, on the grey canvas. */
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-page.c-sheetpage { min-height: 0; border-radius: 12px; box-shadow: 0 0 0 1px var(--c-ring); }
+}

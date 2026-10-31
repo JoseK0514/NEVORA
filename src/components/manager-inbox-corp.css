@@ -1,3 +1,8 @@
 /* Things to do (board O-Inbox): the kit's cards and rows; only the status line is local. */
 :is(#c-root, html) .c-todo .c-todo__state { margin: 0; color: var(--c-ink2); font-size: 15px; line-height: 20px; }
 :is(#c-root, html) .c-todo .c-card__body > .c-todo__state + .c-btn { margin-top: 12px; }
+/* Narrow phones: "‹ Things to do" and "More to review" share the header row instead of overlapping. */
+@media (max-width: 374px) {
+  :is(#c-root, html) .c-todo .c-nav { grid-template-columns: auto minmax(0, 1fr) auto; }
+  :is(#c-root, html) .c-todo .c-nav__title { max-width: none; }
+}

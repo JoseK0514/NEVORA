@@ -36,14 +36,15 @@ export function TeamOverviewCorp({ weekStart, weekLabel, previousWeek, nextWeek,
       <CorpStats items={[
         { label: "Active", value: activeEmployees },
         { label: "Availability", value: `${availabilitySubmitted} of ${availabilityEligible}` },
-        { label: "Outside target", value: outside, tone: outside ? "amber" : undefined },
+        { label: "Off target", value: outside, tone: outside ? "amber" : undefined },
       ]} />
     </CorpCard>
     <CorpCard id="team-hours" label="Scheduled hours" aside={<CorpLink href="/app/schedule/settings">Manage targets</CorpLink>}>
       {shown.length ? <CorpRows label="Scheduled hours by person">{shown.map(item => <li key={item.employeeId}>
         <CorpRow bold title={item.employeeName}
           avatar={<CorpAvatar initials={initials(item.employeeName)} />}
-          detail={item.targetHours === undefined ? `${item.scheduledHours} h scheduled · no weekly target` : `${item.scheduledHours} h scheduled · ${item.targetHours} h target`}
+          detail={item.targetHours === undefined ? `${item.scheduledHours} h scheduled` : `${item.scheduledHours} h of ${item.targetHours} h`}
+          label={`${item.employeeName}, ${item.scheduledHours} hours scheduled${item.targetHours === undefined ? ", no weekly target" : ` of a ${item.targetHours} hour target`}`}
           trail={pill(item.status)} chevron={false} />
       </li>)}</CorpRows> : <p className="c-empty">Hours appear here as shifts are added.</p>}
       {hours.length > SHOWN ? <p className="c-teamweek__more">{`Showing ${SHOWN} of ${hours.length} people`}</p> : null}

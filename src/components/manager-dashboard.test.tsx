@@ -59,7 +59,8 @@ it("summarizes the selected planning week and counts only explicitly published s
 });
 
 it("offers Home's own views only; Schedule and Requests live in one place each (R1)", () => {
-  const html = renderToStaticMarkup(<ManagerDashboard {...dashboardProps} view="activity"/>);
+  // The views' pills are on the display-only composition (Team overview and Schedule activity are kit pages when live).
+  const html = renderToStaticMarkup(<ManagerDashboard {...dashboardProps} view="team" overviewSlots={{ actions: null, activity: null }}/>);
   const tabs = html.split('aria-label="Home views"')[1]?.split('</nav>')[0] ?? '';
   expect(tabs).toContain('>Team overview<');
   expect(tabs).not.toContain('view=schedule');
