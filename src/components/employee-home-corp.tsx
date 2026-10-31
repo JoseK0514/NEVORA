@@ -109,10 +109,20 @@ export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, 
   return <CorpPage className="c-ehome">
     <div data-home-state={viewState} aria-busy={refreshing || loading} className="c-ehome__body">
       <CorpTitle title={name ? `Welcome back, ${name}` : 'Home'} sub={<>{date}{workspaceName ? <> · {workspaceName}</> : null}</>}/>
-      {intro}
       {snapshot ? <>
         <ShiftCard snapshot={snapshot}/>
         {snapshot.publicationState === 'partial' ? <CorpNote>{unpublishedNote(snapshot.unpublishedLocations ?? [])}</CorpNote> : null}
+      </> : <CorpCard id="home-shift" label="Today’s shift">
+        <CorpBody>
+          <p className="c-ehome__state" role="status">{waiting}</p>
+          {!loading && !paused ? denied ? <CorpButtonLink href="/login" full>Sign in</CorpButtonLink>
+            : <CorpButton kind="secondary" full data-home-refresh onClick={onRetry} disabled={refreshing} aria-busy={refreshing || undefined}>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span></CorpButton> : null}
+        </CorpBody>
+      </CorpCard>}
+      {/* The first-week Quick guide sits below the shift card, as anchored on the v5 Home (a048a86b). It keeps one place in
+        * the tree whether or not Home is read, so a refresh never remounts it (or closes it). */}
+      {intro}
+      {snapshot ? <>
         {weekShown ? <Upcoming week={weekShown} snapshot={snapshot}/> : null}
         {/* Board C-Employee: one thing to do is its own card ("Confirm next week's schedule … Review"); several share a
           * "Things to do" header. The action reads as a teal text link, not a pill. */}
@@ -131,13 +141,7 @@ export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, 
           </CorpRows>
         </CorpCard> : <CorpNote center>You’re all set. Nothing needs you right now.</CorpNote>}
         <p className="nv-sr" data-home-updated="true">Updated <time dateTime={snapshot.observedAt}>{clock(snapshot.observedAt, snapshot.timeZone)}</time>, times in {snapshot.timeZone.split('/').pop()!.replace(/_/g, ' ')} time</p>
-      </> : <CorpCard id="home-shift" label="Today’s shift">
-        <CorpBody>
-          <p className="c-ehome__state" role="status">{waiting}</p>
-          {!loading && !paused ? denied ? <CorpButtonLink href="/login" full>Sign in</CorpButtonLink>
-            : <CorpButton kind="secondary" full data-home-refresh onClick={onRetry} disabled={refreshing} aria-busy={refreshing || undefined}>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span></CorpButton> : null}
-        </CorpBody>
-      </CorpCard>}
+      </> : null}
     </div>
   </CorpPage>;
 }
