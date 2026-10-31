@@ -55,7 +55,7 @@ it('integrates employee mobile messages with current audience, explicit receipts
    // Release 1 removed the Refresh footer: a fresh read happens when the window regains focus (or on pageshow/online).
    const refresh=async()=>{await page.evaluate(()=>window.dispatchEvent(new Event('focus')));};
    // The corporate Notifications page titles itself in the phone header; the other messages pages keep their own heading.
-   const heading=()=>page.locator('.em-messages:visible[data-messages-view="notifications"]').count().then(n=>n?page.locator('h1.c-nav__title:visible'):panel().locator('h1'));
+   const heading=()=>page.locator('.em-messages:visible[data-messages-view="notifications"]').count().then((n:number)=>n?page.locator('h1.c-nav__title:visible'):panel().locator('h1'));
    const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file.replace('.png','-viewport.png'),fullPage:false,caret:'initial',style:'nextjs-portal {visibility:hidden;}'});captures.push(file.replace('.png','-viewport.png'));await page.screenshot({path:evidence+'/'+file,fullPage:false,caret:'initial',style:'nextjs-portal {visibility:hidden;}'});captures.push(file);};
    const matrix=async(name:string,actionName:string)=>{
     for(const theme of ['light','dark'])for(const width of [320,390,430]){
