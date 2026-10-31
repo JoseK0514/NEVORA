@@ -1,7 +1,8 @@
 'use client';
 
 import type {Dispatch, SetStateAction} from 'react';
-import {CaretDownIcon, FloppyDiskIcon, PlusIcon, SlidersHorizontalIcon, TrashIcon} from '@phosphor-icons/react/ssr';
+import {FloppyDiskIcon, PlusIcon, TrashIcon} from '@phosphor-icons/react/ssr';
+import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {adpRunColumns, mappingSources, neutralProfile, type ExportProfile} from '@/lib/payroll-export/model';
 import type {TimecardItem} from '@/lib/timecards/read-model';
 import styles from './payroll-export.module.css';
@@ -20,12 +21,8 @@ type Props = {
 };
 
 export function PayrollExportMapping({draft, setDraft, cards, reviewed, setReviewed, disabled, save}: Props) {
-  return <details className={`${styles.card} ${styles.mapping}`} id="payroll-mapping">
-    <summary className={styles.mappingSummary}>
-      <span className={styles.sectionIcon}><SlidersHorizontalIcon size={21} aria-hidden="true" /></span>
-      <span><strong>Import mapping</strong><small>Configure columns and employee identifiers for your payroll system.</small></span>
-      <CaretDownIcon size={18} className={styles.disclosure} aria-hidden="true" />
-    </summary>
+  return <details className="c-exp__item c-exp__mapping" id="payroll-mapping">
+    <summary className="c-row"><span className="c-row__main"><span className="c-row__title">Provider file setup</span><span className="c-row__detail"><span>Columns and IDs for your payroll system</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true" /></summary>
     <fieldset disabled={disabled} className={styles.mappingBody}>
       <div className={styles.mappingSection}>
         <h3>Product &amp; template</h3>
