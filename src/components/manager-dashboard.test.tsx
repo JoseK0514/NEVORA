@@ -59,9 +59,17 @@ it("summarizes the selected planning week and counts only explicitly published s
 });
 
 it("offers Home's own views only; Schedule and Requests live in one place each (R1)", () => {
-  const html = renderToStaticMarkup(<ManagerDashboard {...dashboardProps} view="team"/>);
+  const html = renderToStaticMarkup(<ManagerDashboard {...dashboardProps} view="activity"/>);
   const tabs = html.split('aria-label="Home views"')[1]?.split('</nav>')[0] ?? '';
   expect(tabs).toContain('>Team overview<');
   expect(tabs).not.toContain('view=schedule');
   expect(tabs).not.toContain('view=requests');
+});
+
+it("shows Team overview (Hours this week) on the kit with each person's hours against their target", () => {
+  const html = renderToStaticMarkup(<ManagerDashboard {...dashboardProps} view="team"/>).replace(/\u00a0/g, ' ');
+  expect(html).toContain('class="c-page c-teamweek"');
+  expect(html).toContain('Hours this week');
+  expect(html).toContain('href="/app/schedule/settings"');
+  expect(html).not.toContain('class="nv-avatar');
 });

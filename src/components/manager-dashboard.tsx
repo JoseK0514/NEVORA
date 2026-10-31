@@ -1,5 +1,6 @@
 import { ManagerAttendanceReview } from "./manager-attendance-review";
 import { WhosWorkingCorp } from "./whos-working-corp";
+import { TeamOverviewCorp } from "./team/team-overview";
 import { ManagerTimeCorrections } from "./manager-time-corrections";
 import {HomeActionCenterProvider} from './manager-action-center';
 import {OwnerSetupCorpLive} from './owner-setup-card';
@@ -238,5 +239,8 @@ export function ManagerDashboard(props: Props) {
     <ManagerTimeCorrections key={props.correctionAuthority??props.actorId} actorId={props.actorId} authority={props.correctionAuthority}/>
     {props.role==='OWNER' ? <Link className="c-link c-link--l" href="/app/clocker-recovery">Clocker recovery</Link> : null}
   </WhosWorkingCorp>;
+  // Release 1 (Team → Hours this week): the kit page, from the same read.
+  if (props.view === 'team' && !props.overviewSlots) return <TeamOverviewCorp weekStart={props.weekStart} weekLabel={props.weekLabel} previousWeek={props.previousWeek}
+    nextWeek={props.nextWeek} hours={props.hours} activeEmployees={props.activeEmployees} availabilitySubmitted={props.availabilitySubmitted} availabilityEligible={props.availabilityEligible} />;
   return <PremiumHomeView {...props} view={props.view} />;
 }
