@@ -72,18 +72,18 @@ test('Clocker SQL retains the full original file selectors and bounded four-grou
  assert(leaf,'Clocker SQL shard leaves missing');
  assert.equal(leaf['timeout-minutes'],30);assert.equal(leaf.if,undefined);
  assert.deepEqual(leaf.strategy,{'fail-fast':false,'max-parallel':2,matrix:{shard:[1,2,3,4]}});
- assert.deepEqual(leaf.env,{CLOCKER_SQL_EXPECTED_SHA:expr('github.sha')});
+ assert.deepEqual(leaf.env,{CLOCKER_SQL_EXPECTED_SHA:expr('github.event.pull_request.head.sha || github.sha')});
  const execute=leaf.steps.find(step=>step.run==='npm run test:clocker:owned -- --shard='+expr('matrix.shard')+'/4');
  assert(execute);assert.equal(execute.if,undefined);
  assert.deepEqual(execute.env,{CLOCKER_SQL_EVIDENCE_DIR:expr('runner.temp')+'/clocker-sql-evidence'});
  const upload=leaf.steps.find(step=>step.uses?.startsWith('actions/upload-artifact@'));
- assert.equal(upload.if,'always()');assert.equal(upload.with.name,'clocker-sql-'+expr('github.sha')+'-'+expr('matrix.shard')+'-of-4');
+ assert.equal(upload.if,'always()');assert.equal(upload.with.name,'clocker-sql-'+expr('github.event.pull_request.head.sha || github.sha')+'-'+expr('matrix.shard')+'-of-4');
  assert.equal(upload.with['if-no-files-found'],'error');assert.equal(upload.with['retention-days'],14);
  assert.deepEqual(gate.needs,['clocker-postgres-suite']);assert.equal(gate.if,expr('always()'));
  const download=gate.steps.find(step=>step.uses?.startsWith('actions/download-artifact@'));
  assert.deepEqual(download.with,{pattern:'clocker-sql-*',path:expr('runner.temp')+'/clocker-sql-artifacts','merge-multiple':false});
  const verify=gate.steps.find(step=>step.run==='node scripts/clocker-sql-shards.mjs aggregate');assert(verify);assert.equal(verify.if,undefined);
- assert.deepEqual(verify.env,{CLOCKER_SQL_EXPECTED_SHA:expr('github.sha'),CLOCKER_SQL_EVIDENCE_DIR:expr('runner.temp')+'/clocker-sql-aggregate',CLOCKER_SQL_ARTIFACTS_DIR:expr('runner.temp')+'/clocker-sql-artifacts',CLOCKER_SQL_CI_NEEDS_JSON:expr('toJSON(needs)')});
+ assert.deepEqual(verify.env,{CLOCKER_SQL_EXPECTED_SHA:expr('github.event.pull_request.head.sha || github.sha'),CLOCKER_SQL_EVIDENCE_DIR:expr('runner.temp')+'/clocker-sql-aggregate',CLOCKER_SQL_ARTIFACTS_DIR:expr('runner.temp')+'/clocker-sql-artifacts',CLOCKER_SQL_CI_NEEDS_JSON:expr('toJSON(needs)')});
  for(const job of [leaf,gate]){assert.equal(job['continue-on-error'],undefined);for(const step of job.steps)assert.equal(step['continue-on-error'],undefined);}
  const config=readFileSync('vitest.clocker-integration.config.mts','utf8');
  assert(config.includes("include: ['src/test/integration/clocker-*.integration.ts', 'src/test/integration/phase-c-release-migrations.integration.ts']"));
@@ -138,7 +138,7 @@ test('Clocker rendering controls run before the unchanged authenticated regressi
   'node scripts/clocker-break-filter-readiness.check.mjs',
   'node scripts/phase-c-clocker-postgres.mjs --punch-ui',
  ]);
- assert.equal(step.env.PHASE_C_EXPECTED_SHA,'${{ github.sha }}');
+ assert.equal(step.env.PHASE_C_EXPECTED_SHA,'${{ github.event.pull_request.head.sha || github.sha }}');
  assert.equal(step.env.PHASE_C_EVIDENCE_DIR,'${{ runner.temp }}/nevora-clocker-browser-evidence');
  assert.equal(step['continue-on-error'],undefined);
  const upload=steps.find(value=>value.name==='Upload whole Phase D browser evidence');
@@ -197,7 +197,7 @@ test('five bounded leaves retain strict current-source aggregation and unique ra
  const leaf=workflow.jobs['phase-e-ui-suite'], aggregate=workflow.jobs['phase-e-ui'];
  assert.equal(leaf.if,undefined);
  assert.deepEqual(leaf.strategy,{ 'fail-fast':false, 'max-parallel':2, matrix:{suite:['home','communications','calendar','navigation','attention']} });
- assert.equal(leaf.env.PHASE_E_EXPECTED_SHA,'${{ github.sha }}');
+ assert.equal(leaf.env.PHASE_E_EXPECTED_SHA,'${{ github.event.pull_request.head.sha || github.sha }}');
  assert.equal(leaf.env.PHASE_E_BROWSER_SUITE,'${{ matrix.suite }}');
  assert.deepEqual(aggregate.needs,['phase-e-ui-suite']);
  assert.equal(aggregate.if,'${{ always() }}');
@@ -215,7 +215,7 @@ test('five bounded leaves retain strict current-source aggregation and unique ra
  assert.equal(home.length,1);assert.equal(home[0].if,"${{ matrix.suite == 'home' }}");
  const upload=leaf.steps.find(step=>step.uses?.startsWith('actions/upload-artifact@'));
  assert.equal(upload.if,'always()');
- assert.equal(upload.with.name,'phase-e-browser-${{ github.sha }}-${{ matrix.suite }}');
+ assert.equal(upload.with.name,'phase-e-browser-${{ github.event.pull_request.head.sha || github.sha }}-${{ matrix.suite }}');
  assert.equal(upload.with['if-no-files-found'],'error');assert.equal(upload.with['retention-days'],14);
  for(const path of ['/*-report.json','/source-manifest.json','/owned-postgres-*/ownership.json','/owned-next-*/ownership.json','/owned-next-*/source-manifest.json']) assert(upload.with.path.includes('nevora-phase-e-browser-evidence'+path));
  assert(upload.with.path.includes('nevora-phase-e-home-readiness-evidence/*.json'));
@@ -226,7 +226,7 @@ test('five bounded leaves retain strict current-source aggregation and unique ra
  const gate=aggregate.steps.find(step=>step.run==='node scripts/phase-e-browser-evidence.mjs aggregate');
  assert(gate);assert.equal(gate.if,undefined);
  assert.deepEqual(gate.env,{
-  PHASE_E_EXPECTED_SHA:'${{ github.sha }}',
+  PHASE_E_EXPECTED_SHA:'${{ github.event.pull_request.head.sha || github.sha }}',
   PHASE_E_EVIDENCE_DIR:'${{ runner.temp }}/nevora-phase-e-browser-aggregate',
   PHASE_E_ARTIFACTS_DIR:'${{ runner.temp }}/nevora-phase-e-suite-artifacts',
   PHASE_E_CI_NEEDS_JSON:'${{ toJSON(needs) }}',

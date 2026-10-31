@@ -343,10 +343,10 @@ it.each([
     expect(jobMatches(name, ref, head, base), name).toBe(true);
   }
 });
-it('all jobs checkout github.sha and acceptance depends on every required E/D job', () => {
+it('all jobs checkout the exact candidate (the PR head, else github.sha) and acceptance depends on every required E/D job', () => {
   for (const name of Object.keys(workflow.jobs)) {
     const checkout = workflow.jobs[name].steps.find(step => step.uses?.startsWith('actions/checkout@'));
-    expect(checkout?.with?.ref, name).toBe('${{ github.sha }}');
+    expect(checkout?.with?.ref, name).toBe('${{ github.event.pull_request.head.sha || github.sha }}');
     expect(checkout?.with?.['persist-credentials'], name).toBe(false);
   }
   expect(workflow.jobs['phase-e-evidence'].if).toBe('${{ always() }}');
@@ -366,7 +366,7 @@ it.each(['omitted-suite', 'budget', 'skip-aggregate', 'missing-verifier', 'dupli
   if (mutation === 'budget') leaf['timeout-minutes'] = 60;
   if (mutation === 'skip-aggregate') aggregate.if = "${{ github.ref == 'refs/heads/main' }}";
   if (mutation === 'missing-verifier') leaf.steps = leaf.steps.filter((step: { run?: string }) => !step.run?.includes('phase-e-browser-evidence.mjs leaf'));
-  if (mutation === 'duplicate-artifact') leaf.steps.find((step: { uses?: string }) => step.uses?.startsWith('actions/upload-artifact@')).with.name = 'phase-e-browser-${{ github.sha }}';
+  if (mutation === 'duplicate-artifact') leaf.steps.find((step: { uses?: string }) => step.uses?.startsWith('actions/upload-artifact@')).with.name = 'phase-e-browser-${{ github.event.pull_request.head.sha || github.sha }}';
   if (mutation === 'merge-artifacts') aggregate.steps.find((step: { uses?: string }) => step.uses?.startsWith('actions/download-artifact@')).with['merge-multiple'] = true;
   if (mutation === 'ignore-failure') leaf['continue-on-error'] = true;
   const root = directory();

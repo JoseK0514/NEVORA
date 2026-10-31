@@ -12,7 +12,9 @@ it('defines an exact release PostgreSQL gate for non-Clocker integration suites'
   // branch prefixes that can silently omit the next feature or fix branch.
   const gate = workflow.split('  release-postgres:')[1].split('  phase-e-postgres:')[0];
   expect(gate).not.toMatch(/^    if:/m);
-  expect(gate).toContain('ref: ${{ github.sha }}');
+  expect(gate).toContain('ref: ${{ github.event.pull_request.head.sha || github.sha }}');
+  // On pull_request, github.sha is GitHub's synthetic merge commit; every checkout and receipt must name the PR head.
+  expect(workflow).not.toContain('${{ github.sha }}');
   expect(workflow).toContain('branches: [development, main, "phase-c/**", "release/**", "codex/verify-preview-33"]');
 });
 
