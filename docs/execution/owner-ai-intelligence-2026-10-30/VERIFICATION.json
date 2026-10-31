@@ -1,0 +1,1057 @@
+{
+  "recordedAt": "2026-10-30T22:41:15.017019+00:00",
+  "applicationHead": "8731362fcc05871db23fd303c311aa04d3a4dded",
+  "applicationTree": "d4b96d16e669b6c346cc8ad6483812fe82cd6203",
+  "incrementBase": "8d9487362d7f2295dc99f173ebe3977e049719b7",
+  "scope": "LOCAL backend contract/guard/functional acceptance. Live model intelligence/catalog/retention/billing/hosted/production are not certified. No chat design change.",
+  "finalGates": [
+    {
+      "gate": "all-unit-final-01",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/all-unit-final-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:28:16.394332+00:00",
+      "head": "8731362fcc05871db23fd303c311aa04d3a4dded",
+      "tree": "d4b96d16e669b6c346cc8ad6483812fe82cd6203",
+      "worktreeStatus": "",
+      "exitCode": 0,
+      "elapsedSeconds": 352.073,
+      "finishedAt": "2026-10-30T22:34:08.499048+00:00",
+      "results": {
+        "success": true,
+        "assertionStatuses": {
+          "passed": 10403,
+          "skipped": 801,
+          "pending": 55
+        },
+        "rawReportedFileStatuses": {
+          "passed": 700
+        },
+        "filesWithPassedAssertions": 673,
+        "filesWithoutPassedAssertions": 27,
+        "resultSha256": "ffe3d5c64f6fe279259898374c453e69e1342d736e4ac35d69839ee20ebc658d"
+      }
+    },
+    {
+      "gate": "sql-final-02",
+      "command": [
+        "env",
+        "-u",
+        "DATABASE_URL",
+        "NEVORA_TEST_PG_BIN=/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin",
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.owner-advisor-integration.config.mts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/sql-final-02/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:26:46.137625+00:00",
+      "head": "8731362fcc05871db23fd303c311aa04d3a4dded",
+      "tree": "d4b96d16e669b6c346cc8ad6483812fe82cd6203",
+      "worktreeStatus": "",
+      "exitCode": 0,
+      "elapsedSeconds": 46.455,
+      "finishedAt": "2026-10-30T22:27:32.679120+00:00",
+      "results": {
+        "success": true,
+        "assertionStatuses": {
+          "passed": 59
+        },
+        "rawReportedFileStatuses": {
+          "passed": 9
+        },
+        "filesWithPassedAssertions": 9,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "8bcddd220cb5323bccc2d24c1eac633d3d1f9dcea3e4fea72ddb0930ea181bbf"
+      }
+    },
+    {
+      "gate": "browser-final-01",
+      "command": [
+        "env",
+        "-u",
+        "DATABASE_URL",
+        "NEVORA_TEST_PG_BIN=/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin",
+        "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1",
+        "NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE=/workspace/nevora-evidence/owner-ai-intelligence-20261030/browser-final-01/browser",
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.owner-advisor-browser.config.mts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/browser-final-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:34:47.257920+00:00",
+      "head": "8731362fcc05871db23fd303c311aa04d3a4dded",
+      "tree": "d4b96d16e669b6c346cc8ad6483812fe82cd6203",
+      "worktreeStatus": "",
+      "exitCode": 0,
+      "elapsedSeconds": 218.062,
+      "finishedAt": "2026-10-30T22:38:25.371616+00:00",
+      "results": {
+        "success": true,
+        "assertionStatuses": {
+          "passed": 3
+        },
+        "rawReportedFileStatuses": {
+          "passed": 3
+        },
+        "filesWithPassedAssertions": 3,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "442b387136ab1797d10ad8991e303c23e5ceca98fb81a4a4a366be6a05f9c91c"
+      }
+    },
+    {
+      "gate": "types-final-02",
+      "command": [
+        "npx",
+        "tsc",
+        "--noEmit",
+        "--incremental",
+        "false"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:26:46.143194+00:00",
+      "head": "8731362fcc05871db23fd303c311aa04d3a4dded",
+      "tree": "d4b96d16e669b6c346cc8ad6483812fe82cd6203",
+      "worktreeStatus": "",
+      "exitCode": 0,
+      "elapsedSeconds": 43.556,
+      "finishedAt": "2026-10-30T22:27:29.752515+00:00"
+    },
+    {
+      "gate": "lint-final-02",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:26:46.119490+00:00",
+      "head": "8731362fcc05871db23fd303c311aa04d3a4dded",
+      "tree": "d4b96d16e669b6c346cc8ad6483812fe82cd6203",
+      "worktreeStatus": "",
+      "exitCode": 0,
+      "elapsedSeconds": 64.798,
+      "finishedAt": "2026-10-30T22:27:50.996280+00:00"
+    },
+    {
+      "gate": "pilot-final-01",
+      "command": [
+        "node",
+        "--test",
+        "src/test/integration/owner-advisor-pilot.check.mts"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:26:46.164045+00:00",
+      "head": "8731362fcc05871db23fd303c311aa04d3a4dded",
+      "tree": "d4b96d16e669b6c346cc8ad6483812fe82cd6203",
+      "worktreeStatus": "",
+      "exitCode": 0,
+      "elapsedSeconds": 1.083,
+      "finishedAt": "2026-10-30T22:26:47.305095+00:00"
+    }
+  ],
+  "retainedRuns": [
+    {
+      "directory": "all-unit-final-01",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/all-unit-final-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:28:16.394332+00:00",
+      "head": "8731362fcc05871db23fd303c311aa04d3a4dded",
+      "tree": "d4b96d16e669b6c346cc8ad6483812fe82cd6203",
+      "worktreeStatus": "",
+      "exitCode": 0,
+      "elapsedSeconds": 352.073,
+      "finishedAt": "2026-10-30T22:34:08.499048+00:00",
+      "results": {
+        "success": true,
+        "assertionStatuses": {
+          "passed": 10403,
+          "skipped": 801,
+          "pending": 55
+        },
+        "rawReportedFileStatuses": {
+          "passed": 700
+        },
+        "filesWithPassedAssertions": 673,
+        "filesWithoutPassedAssertions": 27,
+        "resultSha256": "ffe3d5c64f6fe279259898374c453e69e1342d736e4ac35d69839ee20ebc658d"
+      }
+    },
+    {
+      "directory": "browser-final-01",
+      "command": [
+        "env",
+        "-u",
+        "DATABASE_URL",
+        "NEVORA_TEST_PG_BIN=/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin",
+        "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1",
+        "NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE=/workspace/nevora-evidence/owner-ai-intelligence-20261030/browser-final-01/browser",
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.owner-advisor-browser.config.mts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/browser-final-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:34:47.257920+00:00",
+      "head": "8731362fcc05871db23fd303c311aa04d3a4dded",
+      "tree": "d4b96d16e669b6c346cc8ad6483812fe82cd6203",
+      "worktreeStatus": "",
+      "exitCode": 0,
+      "elapsedSeconds": 218.062,
+      "finishedAt": "2026-10-30T22:38:25.371616+00:00",
+      "results": {
+        "success": true,
+        "assertionStatuses": {
+          "passed": 3
+        },
+        "rawReportedFileStatuses": {
+          "passed": 3
+        },
+        "filesWithPassedAssertions": 3,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "442b387136ab1797d10ad8991e303c23e5ceca98fb81a4a4a366be6a05f9c91c"
+      }
+    },
+    {
+      "directory": "decision-freshness-green-01",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/lib/owner-advisor",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/decision-freshness-green-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:16:15.945855+00:00",
+      "head": "5fef0ff476305842797fd8f1a5610dcef800d019",
+      "tree": "f7f993e0de6c8aee719da6e679c555e0c52b7f4d",
+      "worktreeStatus": "M src/lib/owner-advisor/adversarial.test.ts\n M src/lib/owner-advisor/loop.server.ts\n?? src/lib/owner-advisor/decision.test.ts\n?? src/lib/owner-advisor/decision.ts\n?? src/lib/owner-advisor/intelligence.test.ts\n?? src/test/fixtures/owner-decision.ts",
+      "exitCode": 1,
+      "elapsedSeconds": 5.81,
+      "finishedAt": "2026-10-30T22:16:21.785766+00:00",
+      "results": {
+        "success": false,
+        "assertionStatuses": {
+          "passed": 138,
+          "failed": 1
+        },
+        "rawReportedFileStatuses": {
+          "passed": 11,
+          "failed": 1
+        },
+        "filesWithPassedAssertions": 12,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "c2e31cadc8f1c34a2a657a5b769271dd536fd06d226fb09b994f3ad3abb86187"
+      }
+    },
+    {
+      "directory": "decision-freshness-red-01",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/lib/owner-advisor/intelligence.test.ts",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/decision-freshness-red-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:15:24.445237+00:00",
+      "head": "5fef0ff476305842797fd8f1a5610dcef800d019",
+      "tree": "f7f993e0de6c8aee719da6e679c555e0c52b7f4d",
+      "worktreeStatus": "M src/lib/owner-advisor/adversarial.test.ts\n M src/lib/owner-advisor/loop.server.ts\n?? src/lib/owner-advisor/decision.test.ts\n?? src/lib/owner-advisor/decision.ts\n?? src/lib/owner-advisor/intelligence.test.ts\n?? src/test/fixtures/owner-decision.ts",
+      "exitCode": 1,
+      "elapsedSeconds": 0.827,
+      "finishedAt": "2026-10-30T22:15:25.310259+00:00",
+      "results": {
+        "success": false,
+        "assertionStatuses": {
+          "passed": 12,
+          "failed": 2
+        },
+        "rawReportedFileStatuses": {
+          "failed": 1
+        },
+        "filesWithPassedAssertions": 1,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "ebb8266106a60609761960ae52bc0288e7093ca68b491fee9732d3f2fde6a751"
+      }
+    },
+    {
+      "directory": "decision-freshness-red-02",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/lib/owner-advisor/intelligence.test.ts",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/decision-freshness-red-02/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:15:46.014751+00:00",
+      "head": "5fef0ff476305842797fd8f1a5610dcef800d019",
+      "tree": "f7f993e0de6c8aee719da6e679c555e0c52b7f4d",
+      "worktreeStatus": "M src/lib/owner-advisor/adversarial.test.ts\n M src/lib/owner-advisor/loop.server.ts\n?? src/lib/owner-advisor/decision.test.ts\n?? src/lib/owner-advisor/decision.ts\n?? src/lib/owner-advisor/intelligence.test.ts\n?? src/test/fixtures/owner-decision.ts",
+      "exitCode": 1,
+      "elapsedSeconds": 0.815,
+      "finishedAt": "2026-10-30T22:15:46.863623+00:00",
+      "results": {
+        "success": false,
+        "assertionStatuses": {
+          "passed": 12,
+          "failed": 2
+        },
+        "rawReportedFileStatuses": {
+          "failed": 1
+        },
+        "filesWithPassedAssertions": 1,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "11852037f6a34a46a5bd7c13c22ec19ef40227fc11a91d4e9a696d8b3f993a85"
+      }
+    },
+    {
+      "directory": "decision-green-01",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/lib/owner-advisor",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/decision-green-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:14:43.150139+00:00",
+      "head": "5fef0ff476305842797fd8f1a5610dcef800d019",
+      "tree": "f7f993e0de6c8aee719da6e679c555e0c52b7f4d",
+      "worktreeStatus": "M src/lib/owner-advisor/adversarial.test.ts\n M src/lib/owner-advisor/loop.server.ts\n?? src/lib/owner-advisor/decision.test.ts\n?? src/lib/owner-advisor/decision.ts\n?? src/lib/owner-advisor/intelligence.test.ts\n?? src/test/fixtures/owner-decision.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 6.034,
+      "finishedAt": "2026-10-30T22:14:49.218966+00:00",
+      "results": {
+        "success": true,
+        "assertionStatuses": {
+          "passed": 134
+        },
+        "rawReportedFileStatuses": {
+          "passed": 12
+        },
+        "filesWithPassedAssertions": 12,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "ae0753aad2732122ef0baad3c810aedf6a86ad9e7e0370d1c2da6ed34c05fe42"
+      }
+    },
+    {
+      "directory": "decision-green-02",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/lib/owner-advisor",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/decision-green-02/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:16:45.712875+00:00",
+      "head": "5fef0ff476305842797fd8f1a5610dcef800d019",
+      "tree": "f7f993e0de6c8aee719da6e679c555e0c52b7f4d",
+      "worktreeStatus": "M src/lib/owner-advisor/adversarial.test.ts\n M src/lib/owner-advisor/loop.server.ts\n?? src/lib/owner-advisor/decision.test.ts\n?? src/lib/owner-advisor/decision.ts\n?? src/lib/owner-advisor/intelligence.test.ts\n?? src/test/fixtures/owner-decision.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 5.83,
+      "finishedAt": "2026-10-30T22:16:51.574302+00:00",
+      "results": {
+        "success": true,
+        "assertionStatuses": {
+          "passed": 140
+        },
+        "rawReportedFileStatuses": {
+          "passed": 12
+        },
+        "filesWithPassedAssertions": 12,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "e9bc1931ad94f078dca1ec23708c6d140f5612ea5b232dcf39bd30807f28d80a"
+      }
+    },
+    {
+      "directory": "decision-red-01",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/lib/owner-advisor/decision.test.ts",
+        "src/lib/owner-advisor/intelligence.test.ts",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/decision-red-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:13:23.060602+00:00",
+      "head": "5fef0ff476305842797fd8f1a5610dcef800d019",
+      "tree": "f7f993e0de6c8aee719da6e679c555e0c52b7f4d",
+      "worktreeStatus": "?? src/lib/owner-advisor/decision.test.ts\n?? src/lib/owner-advisor/intelligence.test.ts\n?? src/test/fixtures/owner-decision.ts",
+      "exitCode": 1,
+      "elapsedSeconds": 0.801,
+      "finishedAt": "2026-10-30T22:13:23.893106+00:00",
+      "results": {
+        "success": false,
+        "assertionStatuses": {
+          "failed": 23,
+          "passed": 3
+        },
+        "rawReportedFileStatuses": {
+          "failed": 2
+        },
+        "filesWithPassedAssertions": 1,
+        "filesWithoutPassedAssertions": 1,
+        "resultSha256": "03c23100970d0856c6a90c66d509ba606ffdf4e8f3d51838884762b963e17cf2"
+      }
+    },
+    {
+      "directory": "decision-source-change-red-01",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/lib/owner-advisor/intelligence.test.ts",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/decision-source-change-red-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:16:03.162213+00:00",
+      "head": "5fef0ff476305842797fd8f1a5610dcef800d019",
+      "tree": "f7f993e0de6c8aee719da6e679c555e0c52b7f4d",
+      "worktreeStatus": "M src/lib/owner-advisor/adversarial.test.ts\n M src/lib/owner-advisor/loop.server.ts\n?? src/lib/owner-advisor/decision.test.ts\n?? src/lib/owner-advisor/decision.ts\n?? src/lib/owner-advisor/intelligence.test.ts\n?? src/test/fixtures/owner-decision.ts",
+      "exitCode": 1,
+      "elapsedSeconds": 0.696,
+      "finishedAt": "2026-10-30T22:16:03.893641+00:00",
+      "results": {
+        "success": false,
+        "assertionStatuses": {
+          "passed": 12,
+          "failed": 3
+        },
+        "rawReportedFileStatuses": {
+          "failed": 1
+        },
+        "filesWithPassedAssertions": 1,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "03f9e6058f68fe7792ca6878fa63756a10b6879595fd5f0eeee583e67684aa74"
+      }
+    },
+    {
+      "directory": "independent-findings-green-01",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/lib/owner-advisor",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/independent-findings-green-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:25:39.576296+00:00",
+      "head": "a85b68ece0c2de090c4f9ef4c22eba8de8e12268",
+      "tree": "16bf1ef4542a0f6be424c53438773c328ab8de86",
+      "worktreeStatus": "M src/lib/owner-advisor/decision.ts\n M src/lib/owner-advisor/intelligence.integration.ts\n M src/lib/owner-advisor/intelligence.test.ts\n M src/lib/owner-advisor/loop.server.ts\n M src/lib/owner-advisor/provider.server.ts\n M src/lib/owner-advisor/provider.test.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 6.098,
+      "finishedAt": "2026-10-30T22:25:45.705834+00:00",
+      "results": {
+        "success": true,
+        "assertionStatuses": {
+          "passed": 155
+        },
+        "rawReportedFileStatuses": {
+          "passed": 12
+        },
+        "filesWithPassedAssertions": 12,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "f2a081f47afcb735ae70b27c3feb8f2188811766672ebfb92dbe48781961c423"
+      }
+    },
+    {
+      "directory": "independent-findings-red-01",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/lib/owner-advisor/provider.test.ts",
+        "src/lib/owner-advisor/intelligence.test.ts",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/independent-findings-red-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:23:52.045630+00:00",
+      "head": "a85b68ece0c2de090c4f9ef4c22eba8de8e12268",
+      "tree": "16bf1ef4542a0f6be424c53438773c328ab8de86",
+      "worktreeStatus": "M src/lib/owner-advisor/intelligence.test.ts\n M src/lib/owner-advisor/provider.test.ts",
+      "exitCode": 1,
+      "elapsedSeconds": 0.734,
+      "finishedAt": "2026-10-30T22:23:52.807428+00:00",
+      "results": {
+        "success": false,
+        "assertionStatuses": {
+          "passed": 43,
+          "failed": 10
+        },
+        "rawReportedFileStatuses": {
+          "failed": 2
+        },
+        "filesWithPassedAssertions": 2,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "eda985de3327be081b20a40357fafa5cff67a8c3c3ef2db674bf6ec0533f69bc"
+      }
+    },
+    {
+      "directory": "independent-findings-red-02",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/lib/owner-advisor/provider.test.ts",
+        "src/lib/owner-advisor/intelligence.test.ts",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/independent-findings-red-02/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:25:24.940634+00:00",
+      "head": "a85b68ece0c2de090c4f9ef4c22eba8de8e12268",
+      "tree": "16bf1ef4542a0f6be424c53438773c328ab8de86",
+      "worktreeStatus": "M src/lib/owner-advisor/intelligence.integration.ts\n M src/lib/owner-advisor/intelligence.test.ts\n M src/lib/owner-advisor/provider.test.ts",
+      "exitCode": 1,
+      "elapsedSeconds": 0.974,
+      "finishedAt": "2026-10-30T22:25:25.961777+00:00",
+      "results": {
+        "success": false,
+        "assertionStatuses": {
+          "passed": 43,
+          "failed": 12
+        },
+        "rawReportedFileStatuses": {
+          "failed": 2
+        },
+        "filesWithPassedAssertions": 2,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "a9faea730640161315725bc7f00f7e308b0f6ae9485c9dcd2ee1979561989c08"
+      }
+    },
+    {
+      "directory": "lint-final-01",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:20:15.333421+00:00",
+      "head": "a85b68ece0c2de090c4f9ef4c22eba8de8e12268",
+      "tree": "16bf1ef4542a0f6be424c53438773c328ab8de86",
+      "worktreeStatus": "",
+      "exitCode": 0,
+      "elapsedSeconds": 67.385,
+      "finishedAt": "2026-10-30T22:21:22.760902+00:00"
+    },
+    {
+      "directory": "lint-final-02",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:26:46.119490+00:00",
+      "head": "8731362fcc05871db23fd303c311aa04d3a4dded",
+      "tree": "d4b96d16e669b6c346cc8ad6483812fe82cd6203",
+      "worktreeStatus": "",
+      "exitCode": 0,
+      "elapsedSeconds": 64.798,
+      "finishedAt": "2026-10-30T22:27:50.996280+00:00"
+    },
+    {
+      "directory": "lint-working-01",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:18:19.161654+00:00",
+      "head": "6377878b87e6fa0f70c2fe1602f0d3ab7b4cecd1",
+      "tree": "231c3e0bc39447e42ee999adcc9b2159501961b8",
+      "worktreeStatus": "?? src/lib/owner-advisor/intelligence.integration.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 61.464,
+      "finishedAt": "2026-10-30T22:19:20.660703+00:00"
+    },
+    {
+      "directory": "native-chat-token-green-01",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/lib/owner-advisor/provider.test.ts",
+        "src/lib/owner-advisor/intelligence.test.ts",
+        "src/lib/owner-advisor/decision.test.ts",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/native-chat-token-green-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:20:00.036658+00:00",
+      "head": "b3073808bf0b0d11c7dce96c657d8fd6b7e2f36c",
+      "tree": "bfa99532502b530be78ca68a422eadff189fb6b9",
+      "worktreeStatus": "M src/lib/owner-advisor/provider.server.ts\n M src/lib/owner-advisor/provider.test.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 0.921,
+      "finishedAt": "2026-10-30T22:20:00.989885+00:00",
+      "results": {
+        "success": true,
+        "assertionStatuses": {
+          "passed": 58
+        },
+        "rawReportedFileStatuses": {
+          "passed": 3
+        },
+        "filesWithPassedAssertions": 3,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "228d05a5dc5a614823bf8ab43e337b76680a569bb9978191e324359e3d0ccf9c"
+      }
+    },
+    {
+      "directory": "native-chat-token-red-01",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/lib/owner-advisor/provider.test.ts",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/native-chat-token-red-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:19:56.320530+00:00",
+      "head": "b3073808bf0b0d11c7dce96c657d8fd6b7e2f36c",
+      "tree": "bfa99532502b530be78ca68a422eadff189fb6b9",
+      "worktreeStatus": "M src/lib/owner-advisor/provider.test.ts",
+      "exitCode": 1,
+      "elapsedSeconds": 0.697,
+      "finishedAt": "2026-10-30T22:19:57.045691+00:00",
+      "results": {
+        "success": false,
+        "assertionStatuses": {
+          "passed": 25,
+          "failed": 1
+        },
+        "rawReportedFileStatuses": {
+          "failed": 1
+        },
+        "filesWithPassedAssertions": 1,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "6f6855fa66f4e2512389c649e012e5ecac55e34838c5e713b9ef6d122ebc9d0c"
+      }
+    },
+    {
+      "directory": "pilot-final-01",
+      "command": [
+        "node",
+        "--test",
+        "src/test/integration/owner-advisor-pilot.check.mts"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:26:46.164045+00:00",
+      "head": "8731362fcc05871db23fd303c311aa04d3a4dded",
+      "tree": "d4b96d16e669b6c346cc8ad6483812fe82cd6203",
+      "worktreeStatus": "",
+      "exitCode": 0,
+      "elapsedSeconds": 1.083,
+      "finishedAt": "2026-10-30T22:26:47.305095+00:00"
+    },
+    {
+      "directory": "provider-green-01",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/lib/owner-advisor",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/provider-green-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:11:21.379973+00:00",
+      "head": "985e67db2b4aaa7a1605fa3f2e2946ae307defd0",
+      "tree": "8b898049d165232e310aa6c87169d9285a2d6c19",
+      "worktreeStatus": "M src/lib/owner-advisor/config.server.ts\n M src/lib/owner-advisor/loop.server.ts\n M src/lib/owner-advisor/loop.test.ts\n?? src/lib/owner-advisor/provider.server.ts\n?? src/lib/owner-advisor/provider.test.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 5.957,
+      "finishedAt": "2026-10-30T22:11:27.370812+00:00",
+      "results": {
+        "success": true,
+        "assertionStatuses": {
+          "passed": 108
+        },
+        "rawReportedFileStatuses": {
+          "passed": 10
+        },
+        "filesWithPassedAssertions": 10,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "a956c673cdb00510464e4dee54f2d970102375545e9c72ee11e298f45b63edbc"
+      }
+    },
+    {
+      "directory": "provider-red-01",
+      "command": [
+        "npm",
+        "test",
+        "--",
+        "src/lib/owner-advisor/provider.test.ts",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/provider-red-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:10:20.366221+00:00",
+      "head": "985e67db2b4aaa7a1605fa3f2e2946ae307defd0",
+      "tree": "8b898049d165232e310aa6c87169d9285a2d6c19",
+      "worktreeStatus": "?? src/lib/owner-advisor/provider.test.ts",
+      "exitCode": 1,
+      "elapsedSeconds": 0.897,
+      "finishedAt": "2026-10-30T22:10:21.301005+00:00",
+      "results": {
+        "success": false,
+        "assertionStatuses": {
+          "failed": 14,
+          "passed": 11
+        },
+        "rawReportedFileStatuses": {
+          "failed": 1
+        },
+        "filesWithPassedAssertions": 1,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "650f928f2d15bf03bcf4d4bdbc06e703ee2beb3289ce39d22509fa93ac702925"
+      }
+    },
+    {
+      "directory": "resumed-period-green-01",
+      "command": [
+        "env",
+        "-u",
+        "DATABASE_URL",
+        "NEVORA_TEST_PG_BIN=/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin",
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.owner-advisor-integration.config.mts",
+        "intelligence.integration",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/resumed-period-green-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:25:54.741406+00:00",
+      "head": "a85b68ece0c2de090c4f9ef4c22eba8de8e12268",
+      "tree": "16bf1ef4542a0f6be424c53438773c328ab8de86",
+      "worktreeStatus": "M src/lib/owner-advisor/decision.ts\n M src/lib/owner-advisor/intelligence.integration.ts\n M src/lib/owner-advisor/intelligence.test.ts\n M src/lib/owner-advisor/loop.server.ts\n M src/lib/owner-advisor/provider.server.ts\n M src/lib/owner-advisor/provider.test.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 6.182,
+      "finishedAt": "2026-10-30T22:26:00.957259+00:00",
+      "results": {
+        "success": true,
+        "assertionStatuses": {
+          "passed": 8
+        },
+        "rawReportedFileStatuses": {
+          "passed": 1
+        },
+        "filesWithPassedAssertions": 1,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "712ef9f309395d25c773af401110b09aebe517049f5a9a0c174cab5ec6848ad2"
+      }
+    },
+    {
+      "directory": "resumed-period-red-01",
+      "command": [
+        "env",
+        "-u",
+        "DATABASE_URL",
+        "NEVORA_TEST_PG_BIN=/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin",
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.owner-advisor-integration.config.mts",
+        "intelligence.integration",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/resumed-period-red-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:24:49.808345+00:00",
+      "head": "a85b68ece0c2de090c4f9ef4c22eba8de8e12268",
+      "tree": "16bf1ef4542a0f6be424c53438773c328ab8de86",
+      "worktreeStatus": "M src/lib/owner-advisor/intelligence.integration.ts\n M src/lib/owner-advisor/intelligence.test.ts\n M src/lib/owner-advisor/provider.test.ts",
+      "exitCode": 1,
+      "elapsedSeconds": 6.172,
+      "finishedAt": "2026-10-30T22:24:56.010559+00:00",
+      "results": {
+        "success": false,
+        "assertionStatuses": {
+          "passed": 7,
+          "failed": 1
+        },
+        "rawReportedFileStatuses": {
+          "failed": 1
+        },
+        "filesWithPassedAssertions": 1,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "99557d4dab65278a63c3ca716ce2815e8139ae5d72736869b9c62cf7053393cf"
+      }
+    },
+    {
+      "directory": "source-custody-final-01",
+      "command": [
+        "python3",
+        "-c",
+        "import subprocess,json; g=lambda *a: subprocess.check_output([\"git\",*a],text=True).strip(); base=\"8d9487362d7f2295dc99f173ebe3977e049719b7\"; assert not g(\"status\",\"--porcelain\"); assert not g(\"diff\",base,\"HEAD\",\"--name-only\",\"--\",\"src/components\",\"src/app\",\"db\",\"package.json\",\"package-lock.json\",\".github\",\"src/lib/scheduling\",\"src/lib/data\"); subprocess.run([\"git\",\"diff\",\"--check\",base,\"HEAD\"],check=True); print(json.dumps({\"head\":g(\"rev-parse\",\"HEAD\"),\"tree\":g(\"rev-parse\",\"HEAD^{tree}\"),\"chatRoutesSchemaDependenciesWorkflowAndCanonicalManagementSourceUnchanged\":True,\"changedFiles\":g(\"diff\",base,\"HEAD\",\"--name-only\").splitlines()},indent=2))"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:38:08.327183+00:00",
+      "head": "8731362fcc05871db23fd303c311aa04d3a4dded",
+      "tree": "d4b96d16e669b6c346cc8ad6483812fe82cd6203",
+      "worktreeStatus": "",
+      "exitCode": 0,
+      "elapsedSeconds": 0.097,
+      "finishedAt": "2026-10-30T22:38:08.483470+00:00"
+    },
+    {
+      "directory": "sql-final-01",
+      "command": [
+        "env",
+        "-u",
+        "DATABASE_URL",
+        "NEVORA_TEST_PG_BIN=/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin",
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.owner-advisor-integration.config.mts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/sql-final-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:20:15.335372+00:00",
+      "head": "a85b68ece0c2de090c4f9ef4c22eba8de8e12268",
+      "tree": "16bf1ef4542a0f6be424c53438773c328ab8de86",
+      "worktreeStatus": "",
+      "exitCode": 0,
+      "elapsedSeconds": 45.473,
+      "finishedAt": "2026-10-30T22:21:00.854422+00:00",
+      "results": {
+        "success": true,
+        "assertionStatuses": {
+          "passed": 58
+        },
+        "rawReportedFileStatuses": {
+          "passed": 9
+        },
+        "filesWithPassedAssertions": 9,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "9885efaaa4aa61e538d488b187999852ef4a8872306bd2bc363a9dd15584cd5f"
+      }
+    },
+    {
+      "directory": "sql-final-02",
+      "command": [
+        "env",
+        "-u",
+        "DATABASE_URL",
+        "NEVORA_TEST_PG_BIN=/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin",
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.owner-advisor-integration.config.mts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/sql-final-02/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:26:46.137625+00:00",
+      "head": "8731362fcc05871db23fd303c311aa04d3a4dded",
+      "tree": "d4b96d16e669b6c346cc8ad6483812fe82cd6203",
+      "worktreeStatus": "",
+      "exitCode": 0,
+      "elapsedSeconds": 46.455,
+      "finishedAt": "2026-10-30T22:27:32.679120+00:00",
+      "results": {
+        "success": true,
+        "assertionStatuses": {
+          "passed": 59
+        },
+        "rawReportedFileStatuses": {
+          "passed": 9
+        },
+        "filesWithPassedAssertions": 9,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "8bcddd220cb5323bccc2d24c1eac633d3d1f9dcea3e4fea72ddb0930ea181bbf"
+      }
+    },
+    {
+      "directory": "sql-working-01",
+      "command": [
+        "env",
+        "-u",
+        "DATABASE_URL",
+        "NEVORA_TEST_PG_BIN=/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin",
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.owner-advisor-integration.config.mts",
+        "intelligence.integration",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/workspace/nevora-evidence/owner-ai-intelligence-20261030/sql-working-01/results.json"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:18:11.204128+00:00",
+      "head": "6377878b87e6fa0f70c2fe1602f0d3ab7b4cecd1",
+      "tree": "231c3e0bc39447e42ee999adcc9b2159501961b8",
+      "worktreeStatus": "?? src/lib/owner-advisor/intelligence.integration.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 4.715,
+      "finishedAt": "2026-10-30T22:18:15.951711+00:00",
+      "results": {
+        "success": true,
+        "assertionStatuses": {
+          "passed": 7
+        },
+        "rawReportedFileStatuses": {
+          "passed": 1
+        },
+        "filesWithPassedAssertions": 1,
+        "filesWithoutPassedAssertions": 0,
+        "resultSha256": "bd3c61cfae2f79126094a0922d7956673d69dbe1008be72f0ffaa61961c7a995"
+      }
+    },
+    {
+      "directory": "types-final-01",
+      "command": [
+        "npx",
+        "tsc",
+        "--noEmit",
+        "--incremental",
+        "false"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:20:15.332090+00:00",
+      "head": "a85b68ece0c2de090c4f9ef4c22eba8de8e12268",
+      "tree": "16bf1ef4542a0f6be424c53438773c328ab8de86",
+      "worktreeStatus": "",
+      "exitCode": 0,
+      "elapsedSeconds": 41.466,
+      "finishedAt": "2026-10-30T22:20:56.841706+00:00"
+    },
+    {
+      "directory": "types-final-02",
+      "command": [
+        "npx",
+        "tsc",
+        "--noEmit",
+        "--incremental",
+        "false"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:26:46.143194+00:00",
+      "head": "8731362fcc05871db23fd303c311aa04d3a4dded",
+      "tree": "d4b96d16e669b6c346cc8ad6483812fe82cd6203",
+      "worktreeStatus": "",
+      "exitCode": 0,
+      "elapsedSeconds": 43.556,
+      "finishedAt": "2026-10-30T22:27:29.752515+00:00"
+    },
+    {
+      "directory": "types-working-01",
+      "command": [
+        "npx",
+        "tsc",
+        "--noEmit",
+        "--incremental",
+        "false"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:15:13.400471+00:00",
+      "head": "5fef0ff476305842797fd8f1a5610dcef800d019",
+      "tree": "f7f993e0de6c8aee719da6e679c555e0c52b7f4d",
+      "worktreeStatus": "M src/lib/owner-advisor/adversarial.test.ts\n M src/lib/owner-advisor/loop.server.ts\n?? src/lib/owner-advisor/decision.test.ts\n?? src/lib/owner-advisor/decision.ts\n?? src/lib/owner-advisor/intelligence.test.ts\n?? src/test/fixtures/owner-decision.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 36.961,
+      "finishedAt": "2026-10-30T22:15:50.391649+00:00"
+    },
+    {
+      "directory": "types-working-02",
+      "command": [
+        "npx",
+        "tsc",
+        "--noEmit",
+        "--incremental",
+        "false"
+      ],
+      "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+      "startedAt": "2026-10-30T22:18:19.146666+00:00",
+      "head": "6377878b87e6fa0f70c2fe1602f0d3ab7b4cecd1",
+      "tree": "231c3e0bc39447e42ee999adcc9b2159501961b8",
+      "worktreeStatus": "?? src/lib/owner-advisor/intelligence.integration.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 38.626,
+      "finishedAt": "2026-10-30T22:18:57.811263+00:00"
+    }
+  ],
+  "independentReview": {
+    "original": "independent-a85b68ec/REPORT.md",
+    "originalStatus": "NO-GO at original a85b68ec; three Important findings, preserved unchanged",
+    "closure": "independent-closure-8731362f/CLOSURE.md",
+    "closurePassed": 24,
+    "closureFilteredSkipped": 3,
+    "findings": "INT-I1/I2/I3 independently CLOSED at873; final gate reconciliation is a separate report"
+  },
+  "pendingAndSkipped": "Not passed. Counts come from actual assertion statuses; the full-unit CLI omits55 pending assertions from its passed/skipped sum, and raw JSON marks all700 files passed even though27 contain no passed assertion. CLI:673 executed passed /27 skipped.",
+  "browserLimits": "Original suites use actual Chromium/WebKit with owned Next/SQL. Legacy provider-answer/error/cancel UI transcripts remain interception fixtures, not live inference; no new UI design/closure of UI-M1.",
+  "unchangedGenerationSQL": "The prior177-case management SQL gate remains original exact-source evidence, not rerun here; no scheduling/generation/store/harness file changed."
+}
