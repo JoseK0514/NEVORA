@@ -59,7 +59,7 @@ As the runbook table, plus the values below. No env read was added since 9fe8968
 |---|---|
 | `NEVORA_CLOCKER_UI_V2` | `true` (approved iPad look) |
 | `NEVORA_MOBILE_ACCESS_ENABLED`, `NEVORA_MOBILE_ACCESS_SUPPORT_ENABLED` | unset/off (Jose, Oct 31; same as the Preview). Welcome, Access help and the Home first-day guide stay off |
-| `NEVORA_PAYROLL_ENABLED` | Jose to confirm (the Preview ran with `true`) |
+| `NEVORA_PAYROLL_ENABLED` | `true` (Jose, Oct 31; same as the Preview) |
 | `NEVORA_INVITATION_DELIVERY_ENABLED` | as its own approval says (fails closed when unset) |
 | `NEVORA_OWNER_ADVISOR_ENABLED`, `_DATA_APPROVED`, `_PROVIDER`, `_MODEL`, `_DAILY_LIMIT`, `OPENAI_API_KEY`, `NEON_AI_GATEWAY_*` | unset (the development preview sets the advisor on; Release 1 does not) |
 | `NEVORA_UI_PREVIEW_ENABLED` | **must be absent**: `1` exposes `/ui-preview/*` |
