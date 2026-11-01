@@ -261,7 +261,8 @@ try{
     // once; the private request note only on the review; the correction and timecard links keep their exact targets.
     await mp.bringToFront();currentPage=mp;const centerUrl=app.url+'/app/inbox',center=mp.locator('main .c-todo');let releaseActions;
     const readyInbox=()=>mp.waitForFunction(()=>['ready','clear'].includes(document.querySelector('main .c-todo [data-todo-state]')?.getAttribute('data-todo-state')));
-    const todoCards=center.locator('section.c-card[id^="todo-"]'),todoRows=todoCards.locator('.c-rows a.c-row'),todoRow=href=>todoCards.locator('a.c-row[href="'+href+'"]');
+    const todoCards=center.locator(':is(section.c-card, section.c-todo__kind)[id^="todo-"]:not(#todo-more)'),todoRows=todoCards.locator('.c-rows a.c-row'),todoRow=href=>todoCards.locator('a.c-row[href="'+href+'"]');
+    // Round 2: each kind (a section inside a Things to do card, or a card on Older items) shows its count in a chip.
     // Things to do lists only what Home counts; the rest sits behind one uncounted "Older items" row (/app/inbox?view=more).
     // The "Time off requests" and "Shift requests" rows are always-present links to the full lists, with no private data or count.
     const moreRow=center.locator('a.c-row[href="/app/inbox?view=more"]'),requestLists=['/app/requests','/app/exchange','/app/inbox?view=more'];
@@ -274,7 +275,7 @@ try{
     const todayReply=await mp.request.get(app.url+'/api/manager/today',{headers:{'x-nevora-today':'1'}}),todaySource=await todayReply.json();assert(['ready','unavailable'].includes(todaySource.state));if(todaySource.state==='ready')assert.equal(todayReply.status(),200);
     // Every canonical action and current missed shift is counted exactly once across the cards (the card counts are the items).
     await mp.bringToFront();await readyInbox();
-    const readCards=()=>todoCards.evaluateAll(cards=>cards.map(card=>{const label=card.querySelector('.c-card__label')?.textContent??'';return {id:card.id,label,count:Number(label.match(/\((\d+)\)$/)?.[1]??NaN),hrefs:[...card.querySelectorAll('a.c-row')].map(row=>row.getAttribute('href'))};}));
+    const readCards=()=>todoCards.evaluateAll(cards=>cards.map(card=>{const label=card.querySelector('.c-card__label')?.textContent??'';return {id:card.id,label,count:Number(card.querySelector('.c-card__label .c-count')?.textContent??NaN),hrefs:[...card.querySelectorAll('a.c-row')].map(row=>row.getAttribute('href'))};}));
     const sum=cards=>cards.reduce((total,card)=>total+card.count,0);
     const cardCounts=await readCards();
     assert(cardCounts.every(card=>Number.isInteger(card.count)&&card.count>0));
