@@ -45,7 +45,7 @@ function EmployeeMessagesPage({authority,view,id,settingsHref}:Props){
   if(view!=='notifications'&&read.updates!=='on')content=notice(read.updates==='off'?'Updates are turned off for your workspace. Your other employee tools remain available.':'Updates access couldn’t be checked. Refresh to continue.');
   else if(read.view==='notifications'){
    const data=read.data.value;nextCursor=read.data.nextCursor;
-   content=data.state==='ready'&&data.kind==='notifications'?<EmployeeNotificationList items={data.items} partial={data.coverage==='partial'} tab={memory?.filter==='unread'?'unread':'all'} timeZone={read.timeZone} onTab={filter=>session.setList('notifications',{filter})} onOpen={open} more={Boolean(nextCursor)}/>:notice('Your current notices couldn’t be checked. Refresh before continuing.');
+   content=data.state==='ready'&&data.kind==='notifications'?<EmployeeNotificationList items={data.items} partial={data.coverage==='partial'} tab={memory?.filter==='unread'?'unread':'all'} timeZone={read.timeZone} onTab={filter=>session.setList('notifications',{filter})} onOpen={open} opening={opening} more={Boolean(nextCursor)}/>:notice('Your current notices couldn’t be checked. Refresh before continuing.');
   }else if(read.view==='updates'){
    const data=read.data?.value;nextCursor=read.data?.nextCursor??null;
    content=data&&(data.state==='complete'||data.state==='partial')?<><Link className="em-request-primary" href="/app/updates/compose" onClick={()=>session.setOrigin(null)}>Write an update</Link><MessageInbox kind="updates" items={data.items.filter((item):item is ReadyUpdate=>item.state==='ready')} partial={data.state==='partial'} search={memory?.search??''} filter={memory?.filter??'all'} timeZone={read.timeZone} onSearch={search=>session.setList('updates',{search})} onFilter={filter=>session.setList('updates',{filter})} onOpen={open} more={Boolean(nextCursor)}/></>:notice('Your updates couldn’t be checked. Access may have changed, or Updates may not be available yet. Refresh to continue.');
@@ -63,7 +63,8 @@ function EmployeeMessagesPage({authority,view,id,settingsHref}:Props){
     {read&&busy&&session.operationHref&&session.operationHref!==window.location.pathname?<div className="c-card"><div className="c-card__body em-account-status"><p className="c-note">An earlier submission still needs to be checked before starting another.</p><Link href={session.operationHref} className="c-link c-link--l">Return to my submission</Link></div></div>:null}
     {!read?<div className="c-card"><div className="c-card__body em-account-status"><p className="c-note" role="status">{panel.state.paused?'Your notifications are paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':panel.state.refreshing?'Checking your current notifications…':'Your notifications couldn’t be checked.'}</p>{denied?<Link className="c-link c-link--l" href="/login">Sign in</Link>:panel.state.refreshing||panel.state.paused?null:<button className="em-account-textbtn" type="button" onClick={panel.refresh}>Try again</button>}</div></div>:content}
     {pager}
-    {read&&opening?<p className="c-note" role="status">Opening current details…</p>:null}
+    {/* Upscale B7: the tapped row shows its own spinner; this line only tells assistive tech. */}
+    {read&&opening?<p className="nv-sr" role="status">Opening current details…</p>:null}
     {read&&openError?<p className="c-note c-note--warn" role="status">This notice couldn’t be opened with your current access. Refresh and try again.</p>:null}
    </div>
   </EmployeeAccountFrame>;

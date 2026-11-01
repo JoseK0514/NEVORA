@@ -1,9 +1,9 @@
 import type {ReactNode} from 'react';
-import {CorpButtonLink, CorpCard, CorpLink, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle} from './corp/corp';
+import {CorpButtonLink, CorpCard, CorpLink, CorpPage, CorpRow, CorpRows, CorpTitle} from './corp/corp';
 import './employee-requests-corp.css';
 
-/* An Employee's Requests on the corporate kit (Release 1, board G-E-Requests): "Requests" with the one primary, New
- * request, then what is Waiting and what was Decided, each row with its status pill. Presentation only: callers pass rows
+/* An Employee's Requests on the corporate kit (Release 1, board G-E-Requests; Nov 1 upscale S4, S7): "Requests" with the
+ * one primary, Request time off, then what is Waiting (for your manager) and what was Decided, each state in grey text. Presentation only: callers pass rows
  * from their own authorized reads (the phone's private snapshot or the desktop page's server read) and keep their states. */
 
 type Tone = 'teal' | 'amber' | 'blue' | 'red' | 'neutral';
@@ -44,11 +44,23 @@ export function shiftPill(status: string, callout: boolean): {tone: Tone; text: 
 /** Statuses that still wait on someone. */
 export const waitingStatus = (status: string) => ['PENDING', 'EMPLOYEE_PENDING', 'MANAGER_PENDING', 'OPEN'].includes(status);
 
-function Rows({rows}: {rows: CorpRequestRow[]}) {
-  return <CorpRows>{rows.map(row => <li key={row.key} id={row.id}>
-    <CorpRow href={row.href} title={row.title} detail={row.detail} bold label={row.label ?? `${row.title}, ${row.detail}, ${row.pill.text}`}
-      trail={<CorpPill tone={row.pill.tone}>{row.pill.text}</CorpPill>} chevron/>
-  </li>)}</CorpRows>;
+/** Statuses that wait on the manager (said once, by the Waiting card's label). */
+const managerWaits = new Set(['Waiting', 'Needs approval']);
+
+/** Upscale S4: a row's state is grey text, never a pill, and is left out where the card's label already says it. */
+function Rows({rows, said}: {rows: CorpRequestRow[]; said?: (row: CorpRequestRow) => boolean}) {
+  return <CorpRows>{rows.map(row => {
+    const quiet = said?.(row) ?? false;
+    return <li key={row.key} id={row.id}>
+      <CorpRow href={row.href} title={row.title} detail={row.detail} bold label={row.label ?? (quiet ? `${row.title}, ${row.detail}` : `${row.title}, ${row.detail}, ${row.pill.text}`)}
+        trail={quiet ? undefined : <span className="c-meta">{row.pill.text}</span>} chevron/>
+    </li>;
+  })}</CorpRows>;
+}
+
+/** The subtitle: what the page lists. */
+export function requestsSubtitle(modules: {timeOff: boolean; marketplace: boolean} | null | undefined) {
+  return !modules || modules.timeOff && modules.marketplace ? 'Time off and shift changes you’ve sent' : modules.timeOff ? 'Time off you’ve asked for' : 'Shift changes you’ve sent';
 }
 
 export function EmployeeRequestsCorp({sub, newHref, waiting, decided, decidedHref, waitingExtra, notice, after, state, className}: {
@@ -67,13 +79,16 @@ export function EmployeeRequestsCorp({sub, newHref, waiting, decided, decidedHre
   state?: string;
   className?: string;
 }) {
-  return <CorpPage className={className ? `c-ereq ${className}` : 'c-ereq'} label="Requests">
+  // Upscale S7: the button names what it opens. The Waiting card says who it waits on once, when every row waits on the
+  // manager; a row waiting on someone else (a teammate, cover) says so in grey.
+  const forManager = !!waiting && waiting.every(row => managerWaits.has(row.pill.text));
+  return <CorpPage className={className ? `c-ereq c-page--narrow ${className}` : 'c-ereq c-page--narrow'} label="Requests">
     <div className="c-ereq__body" data-requests-state={state}>
-      <CorpTitle title="Requests" sub={sub} actions={newHref ? <CorpButtonLink href={newHref}>New request</CorpButtonLink> : undefined}/>
+      <CorpTitle title="Requests" sub={sub} actions={newHref ? <CorpButtonLink href={newHref}>Request time off</CorpButtonLink> : undefined}/>
       {notice ?? null}
-      {waiting ? <CorpCard id="requests-waiting" label="Waiting">
+      {waiting ? <CorpCard id="requests-waiting" label={forManager && waiting.length ? 'Waiting for your manager' : 'Waiting'}>
         {waitingExtra ?? null}
-        {waiting.length ? <Rows rows={waiting}/> : waitingExtra ? null : <p className="c-ereq__empty">Nothing waiting right now.</p>}
+        {waiting.length ? <Rows rows={waiting} said={row => managerWaits.has(row.pill.text)}/> : waitingExtra ? null : <p className="c-ereq__empty">Nothing waiting right now.</p>}
       </CorpCard> : null}
       {decided && decided.length ? <CorpCard id="requests-decided" label="Decided" aside={decidedHref ? <CorpLink href={decidedHref} label="See all decided requests">See all</CorpLink> : undefined}>
         <Rows rows={decided}/>

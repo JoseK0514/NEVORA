@@ -2,7 +2,7 @@ import { keepWhole } from "@/lib/keep-whole";
 import { ALL_MODULES_ON, type EnabledModules } from "@/lib/workspace-presentation/modules";
 import { ArrowsLeftRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowsLeftRight";
 import { CorpButtonLink, CorpCard, CorpRow, CorpRows } from "@/components/corp/corp";
-import { EmployeeRequestsCorp, timeOffDetail, timeOffPill, type CorpRequestRow } from "@/components/employee-requests-corp";
+import { EmployeeRequestsCorp, requestsSubtitle, timeOffDetail, timeOffPill, type CorpRequestRow } from "@/components/employee-requests-corp";
 
 /* Requests on the corporate kit (Release 1, board G-E-Requests), the desktop page: "Requests" with New request, then the
  * person's time off Waiting and Decided. The same own-request read the Time off page uses; a failed read says so and
@@ -25,8 +25,7 @@ export function RequestHub({ modules = ALL_MODULES_ON, requests }: {
   });
   const list = requests ?? [];
   const waiting = list.filter(request => request.status === "PENDING");
-  const sub = modules.timeOff && requests ? (waiting.length ? `${waiting.length} waiting for approval` : "Nothing waiting")
-    : modules.timeOff && requests === null ? "Couldn’t load your requests" : modules.marketplace ? "Swaps and shift changes" : "Time off and shift changes";
+  const sub = modules.timeOff && requests === null ? "Couldn’t load your requests" : requestsSubtitle(modules);
   const shiftRequests = modules.marketplace ? <CorpCard id="requests-shifts" label="Shift requests">
     <CorpRows><li><CorpRow href="/app/exchange" icon={<ArrowsLeftRightIcon className="c-ic" />} bold title="Swaps, cover and can’t work" detail="Start one from a shift on your schedule" /></li></CorpRows>
   </CorpCard> : null;

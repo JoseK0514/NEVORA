@@ -4,8 +4,8 @@ import {useCallback,useEffect,useRef,useState,useSyncExternalStore,type ReactNod
 import {usePathname} from 'next/navigation';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
-import {CorpButton,CorpButtonLink,CorpCard,CorpNav,CorpNote,CorpPage,CorpPill,CorpRow,CorpRows,CorpTitle} from '../corp/corp';
-import {EmployeeRequestsCorp,requestDay,shiftPill,timeOffDetail,timeOffPill,waitingStatus,type CorpRequestRow} from '../employee-requests-corp';
+import {CorpButton,CorpButtonLink,CorpCard,CorpNav,CorpNote,CorpPage,CorpRow,CorpRows} from '../corp/corp';
+import {EmployeeRequestsCorp,requestDay,requestsSubtitle,shiftPill,timeOffDetail,timeOffPill,waitingStatus,type CorpRequestRow} from '../employee-requests-corp';
 import {keepWhole} from '@/lib/keep-whole';
 import {createPrivateSnapshotController,type PrivatePanelState} from '@/lib/private-snapshot-client';
 import {parseEmployeeRequests,type EmployeeRequestsSnapshot,type OpenEmployeeShift,type OwnRequest} from '@/lib/employee-requests';
@@ -28,7 +28,7 @@ const requestRow=(row:OwnRequest):CorpRequestRow=>{
 /** Swaps addressed to you, inside the Waiting card: a row when some need your answer, a retry when they couldn't be checked. */
 export function IncomingRequestSection({count,onRetry}:{count:number|null;onRetry:()=>void}){
  if(count===null)return <div className="c-ereq__inline"><span role="status">Swaps for you couldn’t be checked. <Link className="c-link" href="/app/exchange?tab=foryou">Open swaps for you</Link></span><button className="c-ereq__retry" type="button" onClick={onRetry}>Try again</button></div>;
- return count?<CorpRows label="Needs your answer"><li><CorpRow href="/app/exchange?tab=foryou" bold title={count===1?'A teammate requested a swap':`${count} swaps need your answer`} detail="Review the shifts before responding" trail={<CorpPill tone="amber">Needs your answer</CorpPill>} chevron/></li></CorpRows>:null;
+ return count?<CorpRows label="Needs your answer"><li><CorpRow href="/app/exchange?tab=foryou" bold title={count===1?'A teammate requested a swap':`${count} swaps need your answer`} detail="Review the shifts before responding" chevron/></li></CorpRows>:null;
 }
 /** One pickup: its button ("action"), its outcome ("status"), or both stacked. */
 export function Pickup({operation,onRefresh,canSubmit=false,isCurrent=()=>false,canRecover=()=>false,part='all',label}:{operation:PickupOperation;onRefresh:()=>void;canSubmit?:boolean;isCurrent?:(operation:PickupOperation)=>boolean;canRecover?:()=>boolean;part?:'all'|'action'|'status';label?:string}){
@@ -118,7 +118,7 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
   const incoming=modules?.marketplace&&snapshot!.incoming!==0?<IncomingRequestSection count={snapshot!.incoming} onRetry={refresh}/>:null;
   const historyFailed=snapshot&&recent===null?<div className="c-ereq__inline"><span role="status">Your request history couldn’t be checked.</span><button className="c-ereq__retry" type="button" disabled={state.refreshing} onClick={refresh}>Try again</button></div>:null;
   return <EmployeeRequestsCorp className="em-requests-corp" state={viewState}
-   sub={modules?modules.timeOff&&modules.marketplace?'Time off, swaps and shift changes':modules.timeOff?'Time off':'Swaps and shift changes':'Time off and shift changes'}
+   sub={requestsSubtitle(modules)}
    newHref={modules?.timeOff?'/app/requests?tab=new':null}
    waiting={snapshot?waiting:null} decided={snapshot?decided:null}
    decidedHref={modules?.timeOff?'/app/requests?filter=decided':modules?.marketplace?'/app/exchange?tab=requests':null}

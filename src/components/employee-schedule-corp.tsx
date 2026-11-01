@@ -4,11 +4,12 @@ import { keepWhole } from '@/lib/keep-whole';
 import { ALL_MODULES_ON } from '@/lib/workspace-presentation/modules';
 import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
+import { InfoIcon } from '@phosphor-icons/react/dist/ssr/Info';
 import { unpublishedNote } from '../lib/publication-note';
 import { BlockedOpenShifts } from './blocked-open-shifts';
 import { Celebration } from './celebration';
 import { ShiftSheetCorpRow, type ShiftSheetShift } from './employee-shift-sheet';
-import { CorpBody, CorpButtonLink, CorpCard, CorpLink, CorpNav, CorpNote, CorpPage, CorpPill, CorpRows, CorpTitle } from './corp/corp';
+import { CorpBody, CorpButtonLink, CorpCard, CorpLink, CorpNav, CorpNote, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle } from './corp/corp';
 import { addDays, formatTime, weekDates, weekStartFor } from '../lib/date-utils';
 import { shiftBoundaryInstants } from '../lib/business-time';
 import { emptyScheduleLabel } from '../lib/data/employee-schedule';
@@ -38,20 +39,33 @@ function OpenShiftCards({ open, weekStart }: { open: EmployeeMyScheduleProps['op
   if (!open) return <CorpCard label="Open shifts"><CorpBody><p className="c-esched__state">We couldn’t check open shifts right now.</p>
     <CorpButtonLink href="/app/exchange?tab=available" kind="secondary" size="md" full>Open shift requests</CorpButtonLink></CorpBody></CorpCard>;
   const card = (shift: OpenShift, requested: boolean) => <CorpCard key={shift.id} label={keepWhole(dayFmt(shift.date, { weekday: 'short', month: 'short', day: 'numeric' }))}
-    aside={requested ? <CorpPill tone="amber">Waiting</CorpPill> : shift.date >= addDays(weekStart, 7) ? <span className="c-esched__aside">Next week</span> : undefined}>
+    aside={requested ? <span className="c-meta">Waiting for your manager</span> : shift.date >= addDays(weekStart, 7) ? <span className="c-esched__aside">Next week</span> : undefined}>
     <div className="c-esched__open">
       <span className="c-row__main"><span className="c-row__title">{keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`)}</span>
         <span className="c-row__detail"><span>{[shift.position, shift.location, `${Math.round(shiftMinutes(shift) / 6) / 10} h`].filter(Boolean).join(' · ')}</span></span></span>
       <CorpButtonLink href={shift.href} kind="secondary" size="sm" aria-label={`${requested ? 'View request' : 'Pick up'}, ${dayFmt(shift.date, { weekday: 'long', month: 'long', day: 'numeric' })}, ${formatTime(shift.startTime)}`}>{requested ? 'View' : 'Pick up'}</CorpButtonLink>
     </div>
   </CorpCard>;
+  // Upscale M5: the one empty-state pattern, a left-aligned card with a title, one sentence and one next step.
+  const empty = !open.available.length && !open.requested.length;
   return <>
-    <p className="c-esched__lede">{open.available.length ? 'Shifts at your locations you can pick up' : 'No open shifts right now. When a teammate offers a shift you can work, it shows here.'}</p>
+    {empty ? <section className="c-card" aria-labelledby="open-empty-title"><div className="c-esched__empty">
+      <h2 className="c-esched__empty-title" id="open-empty-title">No open shifts right now</h2>
+      <p className="c-esched__empty-body">When a teammate offers a shift you can work, it shows here.</p>
+      <Link className="c-link" href="/app/profile/device-alerts">Get alerts on this phone<CaretRightIcon className="c-esched__caret" weight="bold" aria-hidden="true" /></Link>
+    </div></section>
+      : <p className="c-esched__lede">{open.available.length ? 'Shifts at your locations you can pick up' : 'Your requests for open shifts'}</p>}
     {open.requested.map(shift => card(shift, true))}
     {open.available.map(shift => card(shift, false))}
     {open.unavailable?.length ? <div className="c-esched__blocked"><BlockedOpenShifts shifts={open.unavailable} /></div> : null}
-    <CorpNote>Your manager confirms before the shift is yours. You’ll get a notification either way.</CorpNote>
+    <CorpNote icon={<InfoIcon className="c-ic" aria-hidden="true" />}>Your manager confirms before the shift is yours. You’ll get a notification either way.</CorpNote>
   </>;
+}
+
+/** "Tomorrow, Nov 2" or "Thu, Nov 5": the shift panel's title. */
+function sheetDay(shift: Shift, today: string) {
+  const near = when(shift, today);
+  return near === 'Today' || near === 'Tomorrow' ? `${near}, ${dayFmt(shift.date, { month: 'short', day: 'numeric' })}` : dayFmt(shift.date, { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
 export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
@@ -81,7 +95,7 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
   const sheetShift = (shift: Shift): ShiftSheetShift => {
     const ends = overnight(shift) ? addDays(shift.date, 1) : null;
     return {
-      id: shift.id, day: dayFmt(shift.date, { weekday: 'short', month: 'short', day: 'numeric' }), hours: hours(shift), length: hoursLabel(shiftMinutes(shift)),
+      id: shift.id, day: sheetDay(shift, today), hours: hours(shift), length: hoursLabel(shiftMinutes(shift)),
       ends: ends ? dayFmt(ends, { weekday: 'short', month: 'short', day: 'numeric' }) : null,
       location: nameOf(shift.locationId) || 'Location unavailable', position: shift.positionName ?? null,
       lead: shift.isDesignatedLead, calloutApproved: shift.isCalloutApproved,
@@ -114,7 +128,10 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
       <nav className="c-esched__days" aria-label="Days in this week">
         {dates.map(date => {
           const assigned = shifts.some(shift => shift.date === date);
-          const cls = [date === today ? 'is-today' : '', assigned ? 'is-work' : '', date === chosen ? 'is-on' : ''].filter(Boolean).join(' ') || undefined;
+          // Upscale S12: past days go quiet, today keeps a ring, the selected day (the chosen day, else today) is solid
+          // teal, and only shift days still ahead keep the tint.
+          const selected = chosen ? date === chosen : date === today;
+          const cls = [date < today ? 'is-past' : '', date === today ? 'is-today' : '', assigned ? 'is-work' : '', selected ? 'is-on' : ''].filter(Boolean).join(' ') || undefined;
           return <Link key={date} href={date === chosen ? `/app/schedule?week=${weekStart}${keep}` : dayHref(date)} scroll={false} className={cls} aria-current={date === today ? 'date' : undefined}
             aria-label={`${dayFmt(date, { weekday: 'long', month: 'long', day: 'numeric' })}${date === today ? ', today' : ''}${assigned ? ', assigned shift' : ''}${date === chosen ? ', selected day, show the whole week' : ''}`}>
             <small aria-hidden="true">{dayFmt(date, { weekday: 'short' })}</small><b aria-hidden="true">{Number(date.slice(8))}</b>
@@ -146,24 +163,24 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
     </CorpCard> : <CorpCard id="my-agenda" label={listLabel} aside={chosen ? <CorpLink href={`/app/schedule?week=${weekStart}${keep}`}>Whole week</CorpLink> : undefined}>
       {listed.length ? <CorpRows>{listed.map(shift => {
         const soon = startsIn(shift, today, observedAt, timeZone);
-        const pill = shift.isCalloutApproved ? <CorpPill tone="neutral">Can’t work · approved</CorpPill> : soon ? <CorpPill tone="teal">{soon}</CorpPill> : shift.isDesignatedLead ? <CorpPill tone="blue">Shift lead</CorpPill> : undefined;
+        // Upscale S4: only "Starts in …" stays a pill; other states are grey text.
+        const pill = shift.isCalloutApproved ? <span className="c-meta">Can’t work · approved</span> : soon ? <CorpPill tone="teal">{soon}</CorpPill> : shift.isDesignatedLead ? <span className="c-meta">Shift lead</span> : undefined;
         return <ShiftSheetCorpRow key={shift.id} shift={sheetShift(shift)} lead={keepWhole(`${dayFmt(shift.date, { weekday: 'short' })} ${Number(shift.date.slice(8))}`)}
           title={hours(shift)} detail={[shift.positionName, nameOf(shift.locationId) || 'Location unavailable', overnight(shift) ? `Ends ${dayFmt(addDays(shift.date, 1), { weekday: 'short', month: 'short', day: 'numeric' })}` : null].filter(Boolean).join(' · ')}
-          trail={pill} when={when(shift, today)} href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} closeHref={listHref} initiallyOpen={props.selectedShift === shift.id} />;
+          trail={pill} href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} closeHref={listHref} initiallyOpen={props.selectedShift === shift.id} />;
       })}</CorpRows>
         : <CorpBody><p className="c-esched__state">{state === 'published' ? (chosen ? (chosen === today ? 'Day off today.' : 'Day off.') : weekStart === currentWeek && shifts.length ? 'No more shifts this week.' : 'Day off all week.') : emptyScheduleLabel(state)}</p></CorpBody>}
     </CorpCard>}
     {/* A partly published week says what is final and who hasn't published yet, beside the week itself (Jose, 2026-10-18). */}
     {state === 'unpublished' ? <CorpNote>{shifts.length ? unpublishedNote(unpublishedNames, publishedNames) : `${unpublishedNote(unpublishedNames)} An empty day isn’t a day off yet.`}</CorpNote> : null}
 
+    {/* Upscale S13: open shifts are one row to the Open shifts page (no View button, even when there are none). */}
     {modules.marketplace && view === 'mine' ? <CorpCard as="div" ariaLabel="Open shifts">
-      <div className="c-esched__confirm">
-        <span className="c-row__main"><span className="c-row__title c-row__title--b">{openCount === null ? 'Open shifts' : openCount ? `${openCount} open ${openCount === 1 ? 'shift' : 'shifts'} you can pick up` : 'No open shifts right now'}</span>
-          <span className="c-row__detail"><span>{openCount === null ? 'We couldn’t check open shifts right now'
-            : openCount ? keepWhole(`${[...new Set(props.openShifts!.available.slice(0, 2).map(shift => dayFmt(shift.date, { weekday: 'short', month: 'short', day: 'numeric' })))].join(' and ')}${(() => { const places = [...new Set(props.openShifts!.available.map(shift => shift.location))]; return places.length === 1 ? ` · ${places[0]}` : ''; })()}`)
-            : 'New ones show here when a teammate offers a shift'}</span></span></span>
-        <CorpButtonLink href={`/app/schedule?week=${weekStart}&view=open`} kind="secondary" size="sm" aria-label="View open shifts">View</CorpButtonLink>
-      </div>
+      <CorpRows><li><CorpRow href={`/app/schedule?week=${weekStart}&view=open`} label={openCount === null ? 'Open shifts, couldn’t be checked' : openCount ? `${openCount} open ${openCount === 1 ? 'shift' : 'shifts'} you can pick up` : 'Open shifts, none right now'}
+        title={openCount === null ? 'Open shifts' : openCount ? `${openCount} open ${openCount === 1 ? 'shift' : 'shifts'} you can pick up` : 'Open shifts'}
+        detail={openCount === null ? 'We couldn’t check open shifts right now'
+          : openCount ? keepWhole(`${[...new Set(props.openShifts!.available.slice(0, 2).map(shift => dayFmt(shift.date, { weekday: 'short', month: 'short', day: 'numeric' })))].join(' and ')}${(() => { const places = [...new Set(props.openShifts!.available.map(shift => shift.location))]; return places.length === 1 ? ` · ${places[0]}` : ''; })()}`)
+          : 'None right now. New ones show here when a teammate offers a shift'} /></li></CorpRows>
     </CorpCard> : null}
   </CorpPage>;
 }
