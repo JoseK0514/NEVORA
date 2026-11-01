@@ -126,7 +126,7 @@ export default async function MorePage() {
     <CorpTitle id="more-title" title="More" wide />
     <CorpCard as="div" ariaLabel="You">
       <CorpRows label="You"><li><CorpRow href="/app/profile" bold title={name} detail={`${owner ? "Owner" : "Manager"} · ${company}`}
-        label={`Your profile, ${name}`} avatar={<CorpAvatar initials={initialsOf(name)} grey />} chevron /></li></CorpRows>
+        label={`Your profile, ${name}`} avatar={<CorpAvatar initials={initialsOf(name)} />} chevron /></li></CorpRows>
     </CorpCard>
     {has("/app/reports") || has("/app/updates") || has("/app/ai-manager") ? <CorpCard as="div" ariaLabel="Work">
       <CorpRows label="Work">

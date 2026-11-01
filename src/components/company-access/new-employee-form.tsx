@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {useRef,useState,type ReactNode} from 'react';
 import type {Location,Position,UserRole} from '@/lib/domain';
 import type {ScopeSelection} from '@/lib/company-access/model';
-import {CorpField} from '@/components/corp/corp';
+import {CorpField,CorpFormFooter} from '@/components/corp/corp';
 import {ChoiceField,FormHead,FormHeadBack,FormHeadLink,PhoneField} from '@/components/team/team-forms';
 import {ReturnToNext} from '@/components/team/return-to-next';
 import {EmployeeAccessForm} from './employee-access-form';
@@ -62,10 +62,10 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
    </div>
    {/* Tablets and desktop (kit form grammar): the actions sit in the card's footer, Cancel or Back then Next or Add, auto
     width on the right. Phones keep them in the header. The same handlers and the same submit as the header. */}
-   <div className="c-form-foot">
+   <CorpFormFooter>
     {step===1?<Link className="c-btn c-btn--secondary" href="/app/employees">Cancel</Link>:<button type="button" className="c-btn c-btn--secondary" onClick={()=>setStep(1)}>Back</button>}
     {step===1?<button type="button" className="c-btn" onClick={next} disabled={blocked}>Next</button>:<button type="submit" className="c-btn" disabled={blocked}>Add</button>}
-   </div>
+   </CorpFormFooter>
   </EmployeeAccessForm>
  </>;
 }

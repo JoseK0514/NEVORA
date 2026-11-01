@@ -24,7 +24,7 @@ export function ClockerPinInventory({statuses}:{statuses:OwnerPinStatus[]}){
   <CorpCard as="div" label={filter==='Inactive'?'Inactive people':'People'} aside={summary}>
    {visible.length?<CorpRows label="Employee PINs">{visible.map(p=><li key={p.employeeId}>
     <CorpRow href={`/app/employees/${encodeURIComponent(p.employeeId)}${p.active?'/clocker-pin':''}`} bold title={`${p.firstName} ${p.lastName}`} detail={p.employeeId}
-     avatar={<CorpAvatar initials={`${p.firstName[0]??''}${p.lastName[0]??''}`.toUpperCase()} grey/>}
+     avatar={<CorpAvatar initials={`${p.firstName[0]??''}${p.lastName[0]??''}`.toUpperCase()} grey={!p.active}/>}
      value={mixed&&!p.configured?'Not set':undefined} valueTone="soft"
      label={`${p.firstName} ${p.lastName}, ${p.employeeId}, ${p.active?'':'inactive, '}${p.configured?'PIN set':'PIN not set'}`} chevron/>
    </li>)}</CorpRows>:<CorpBody><p className="c-pins__empty" role="status">No employees match this view. Try another name or filter.</p></CorpBody>}

@@ -5,7 +5,6 @@
 :is(#c-root, html) .c-photos .c-photos__fields { display: flex; flex-direction: column; gap: 12px; min-width: 0; margin: 0; padding: 0; border: 0; }
 :is(#c-root, html) .c-photos .c-photos__switch { cursor: pointer; }
 :is(#c-root, html) .c-photos .c-photos__switch .c-row__detail > span:first-child { white-space: normal; }
-:is(#c-root, html) .c-photos .c-photos__state { padding: 14px 16px; }
 :is(#c-root, html) .c-photos .c-field__help { display: block; font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-photos .c-field__help strong { font-weight: 600; color: var(--c-ink2); }
 :is(#c-root, html) .c-photos input[type="number"].c-in { max-width: 160px; }
