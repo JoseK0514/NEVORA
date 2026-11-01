@@ -42,7 +42,7 @@ const SETTINGS_PAGES: { href: string; label: string; keywords: string }[] = [
   { href: '/app/settings/company-policies', label: 'Company policies', keywords: 'policies attendance thresholds rules' },
   { href: '/app/settings/breaks', label: 'Break types', keywords: 'breaks lunch meal rest' },
   { href: '/app/settings/positions', label: 'Positions', keywords: 'positions jobs roles qualifications' },
-  { href: '/app/settings/clocker', label: 'Clocker devices', keywords: 'clocker tablets devices kiosk' },
+  { href: '/app/settings/clocker', label: 'Clocker tablets', keywords: 'clocker tablets devices kiosk' },
 ];
 
 export function finderItems(role: UserRole, payroll: PayrollCapabilities | undefined, data: FinderData | null, context: NavContext = {}): FinderItem[] {

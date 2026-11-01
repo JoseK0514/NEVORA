@@ -94,7 +94,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
         <div data-clocker-setup-icon className={styles.kioskIcon}><ClockerIcon name="lock" size={44} weight={v2?'regular':'duotone'}/></div>
         <p data-clocker-eyebrow className={styles.kioskEyebrow}>{t("One-time setup")}</p>
         <h1>{t("Set up this tablet")}</h1>
-        <p className={styles.kioskLead}>{t("Ask your Owner to add this device in Settings → Clocker devices. Then paste the one-use setup code.")}</p>
+        <p className={styles.kioskLead}>{t("Ask your Owner to add this device in Settings → Clocker tablets. Then paste the one-use setup code.")}</p>
         <form onSubmit={connect} className={styles.tabletForm}>
           <fieldset disabled={pending || Boolean(feedback?.uncertain)}>
             <label data-clocker-setup-field className={styles.field}>{t("Setup code")}<textarea ref={input} name="enrollmentToken" rows={3} required maxLength={72} autoComplete="off" autoCapitalize="none" spellCheck={false} aria-describedby="clocker-setup-help" /></label>

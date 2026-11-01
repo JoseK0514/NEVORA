@@ -113,7 +113,7 @@ const TEAM_TOOLS: NavigationItem[] = [
   { href: "/app?view=team", label: "Hours this week", icon: "employees" },
   { href: "/app?view=activity", label: "Activity", icon: "calendar" },
   { href: "/app/clocker-recovery", label: "Clocker recovery", icon: "refresh" },
-  { href: "/app/account-recovery", label: "Account recovery", icon: "employee" },
+  { href: "/app/account-recovery", label: "Help someone sign in", icon: "employee" },
 ];
 /** Release 1 ("don't overwhelm"): the team tools left the desktop sidebar. Each opens from the place the boards put it
  * (Who's working on Home, Hours this week and Help someone sign in on Team, Activity from Schedule), and that place's

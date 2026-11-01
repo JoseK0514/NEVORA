@@ -127,7 +127,7 @@ export const CLOCKER_COPY:Record<string,string>={
  "Owner access has been signed out on this tablet.": "La sesión del dueño se cerró en esta tableta.",
  "Check Connection": "Revisar conexión",
  "One-time setup": "Configuración inicial",
- "Ask your Owner to add this device in Settings → Clocker devices. Then paste the one-use setup code.": "Pide al dueño que añada esta tableta en Ajustes → Dispositivos Clocker. Luego pega el código de un solo uso.",
+ "Ask your Owner to add this device in Settings → Clocker tablets. Then paste the one-use setup code.": "Pide al dueño que añada esta tableta en Ajustes → Tabletas Clocker. Luego pega el código de un solo uso.",
  "This is the tablet setup code, not an employee PIN. Cookies must be allowed.": "Este es el código de configuración de la tableta, distinto del PIN de empleado. Debes permitir las cookies.",
  "Checking setup...": "Revisando configuración…",
  "Checking this tablet...": "Revisando esta tableta…",
