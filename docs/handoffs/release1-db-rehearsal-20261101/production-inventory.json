@@ -1,0 +1,201 @@
+{
+  "project": "rough-fire-63258908",
+  "branch": "br-green-night-b87vx3ud",
+  "branchName": "main",
+  "database": "fuel_scheduler",
+  "region": "aws-us-east-1",
+  "access": "REPEATABLE READ READ ONLY, statement_timeout=20s",
+  "tables": [
+    {
+      "table_name": "availability_exceptions",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "16384"
+    },
+    {
+      "table_name": "availability_windows",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "24576"
+    },
+    {
+      "table_name": "employee_credentials",
+      "row_count": "2",
+      "newest_created_at": null,
+      "newest_updated_at": "2026-09-30T19:24:32.965Z",
+      "total_bytes": "32768"
+    },
+    {
+      "table_name": "employee_location_eligibility",
+      "row_count": "5",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "32768"
+    },
+    {
+      "table_name": "employee_scheduling_settings",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "16384"
+    },
+    {
+      "table_name": "employee_sessions",
+      "row_count": "5",
+      "newest_created_at": "2026-09-30T19:24:41.330Z",
+      "newest_updated_at": null,
+      "total_bytes": "65536"
+    },
+    {
+      "table_name": "employees",
+      "row_count": "3",
+      "newest_created_at": "2026-09-30T19:16:20.165Z",
+      "newest_updated_at": "2026-09-30T19:16:20.165Z",
+      "total_bytes": "49152"
+    },
+    {
+      "table_name": "location_coverage_windows",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "24576"
+    },
+    {
+      "table_name": "location_staffing_settings",
+      "row_count": "2",
+      "newest_created_at": null,
+      "newest_updated_at": "2026-09-28T00:44:31.273Z",
+      "total_bytes": "32768"
+    },
+    {
+      "table_name": "locations",
+      "row_count": "2",
+      "newest_created_at": "2026-09-27T23:47:07.741Z",
+      "newest_updated_at": "2026-09-28T00:19:20.820Z",
+      "total_bytes": "32768"
+    },
+    {
+      "table_name": "notifications",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "32768"
+    },
+    {
+      "table_name": "schedule_acknowledgements",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "16384"
+    },
+    {
+      "table_name": "schedule_publication_revision_shifts",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "32768"
+    },
+    {
+      "table_name": "schedule_publication_revisions",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "32768"
+    },
+    {
+      "table_name": "schedule_template_shifts",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "24576"
+    },
+    {
+      "table_name": "schedule_templates",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "24576"
+    },
+    {
+      "table_name": "schedule_week_settings",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "16384"
+    },
+    {
+      "table_name": "schedules",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "24576"
+    },
+    {
+      "table_name": "shift_callouts",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "32768"
+    },
+    {
+      "table_name": "shift_exchanges",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "40960"
+    },
+    {
+      "table_name": "shifts",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "32768"
+    },
+    {
+      "table_name": "time_off_requests",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "24576"
+    },
+    {
+      "table_name": "weekly_availability_submissions",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "16384"
+    },
+    {
+      "table_name": "weekly_availability_windows",
+      "row_count": "0",
+      "newest_created_at": null,
+      "newest_updated_at": null,
+      "total_bytes": "24576"
+    }
+  ],
+  "presence": [
+    {
+      "time_clock_entries": null,
+      "clocker_punches": null,
+      "payroll_runs": null,
+      "workspaces": null,
+      "schedule_pending_edits": null
+    }
+  ],
+  "roles": [
+    {
+      "role": "MANAGER",
+      "active": true,
+      "count": "1"
+    },
+    {
+      "role": "OWNER",
+      "active": true,
+      "count": "2"
+    }
+  ],
+  "classification": "Jose confirmed in this conversation on 2026-11-01: everything is mockup; app has not been released to real production. No real people, punches or payroll; setup/test rows only.",
+  "inventoryStartedAt": "2026-11-01T19:53:39.371Z"
+}

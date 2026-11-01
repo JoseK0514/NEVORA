@@ -1,0 +1,12 @@
+{
+  "sha": "83397510a83d82420a3b6526c787f43a3092a839",
+  "project": "frosty-frog-31490398",
+  "branch": "br-falling-morning-b8lkw1f9",
+  "startedAt": "2026-11-01T20:03:12.899Z",
+  "status": "FAILED",
+  "targets": {},
+  "error": {
+    "name": "Error",
+    "sqlstate": "ERR_MODULE_NOT_FOUND"
+  }
+}

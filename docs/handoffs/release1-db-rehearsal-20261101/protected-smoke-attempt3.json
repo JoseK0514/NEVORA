@@ -1,0 +1,13 @@
+{
+  "sha": "83397510a83d82420a3b6526c787f43a3092a839",
+  "project": "frosty-frog-31490398",
+  "branch": "br-falling-morning-b8lkw1f9",
+  "startedAt": "2026-11-01T20:03:51.811Z",
+  "status": "FAILED",
+  "targets": {},
+  "error": {
+    "name": "Error",
+    "sqlstate": "ERR_MODULE_NOT_FOUND",
+    "moduleError": "Cannot find module '/Users/josek0514/.codex/worktrees/nevora-release1-db-frozen-20261101/src/lib/workspace-presentation/current.server.ts' imported from /Users/josek0514/Desktop/NEVORA Development DB Rehearsal/docs/handoffs/release1-db-rehearsal-20261101/smoke-protected-reads.mts"
+  }
+}

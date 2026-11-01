@@ -1,0 +1,757 @@
+{
+  "sha": "83397510a83d82420a3b6526c787f43a3092a839",
+  "project": "frosty-frog-31490398",
+  "branch": "br-falling-morning-b8lkw1f9",
+  "database": "nevora_release1_rehearsal",
+  "region": "aws-us-east-1",
+  "startedAt": "2026-11-01T19:59:21.666Z",
+  "ownedRuntime": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-release1-rehearsal-UAg7r4",
+  "targets": {
+    "hosted": {
+      "steps": [
+        {
+          "ordinal": 1,
+          "filename": "0001_initial.sql",
+          "executionMs": 150,
+          "elapsedMs": 337,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 2,
+          "filename": "0002_schedule_health.sql",
+          "executionMs": 89,
+          "elapsedMs": 247,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 3,
+          "filename": "0003_schedule_assistance.sql",
+          "executionMs": 115,
+          "elapsedMs": 269,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 4,
+          "filename": "0004_assistance_layer.sql",
+          "executionMs": 112,
+          "elapsedMs": 294,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 5,
+          "filename": "0005_time_clock.sql",
+          "executionMs": 89,
+          "elapsedMs": 266,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 6,
+          "filename": "0006_scheduling_rule_inputs.sql",
+          "executionMs": 77,
+          "elapsedMs": 247,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 7,
+          "filename": "0007_portal_web_push.sql",
+          "executionMs": 90,
+          "elapsedMs": 246,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 8,
+          "filename": "0008_workspace_positions.sql",
+          "executionMs": 97,
+          "elapsedMs": 279,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 9,
+          "filename": "0009_schedule_generation.sql",
+          "executionMs": 84,
+          "elapsedMs": 240,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 10,
+          "filename": "0010_shift_coverage_automation.sql",
+          "executionMs": 115,
+          "elapsedMs": 278,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 11,
+          "filename": "0011_clocker_devices.sql",
+          "executionMs": 86,
+          "elapsedMs": 231,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 12,
+          "filename": "0012_clocker_pins.sql",
+          "executionMs": 100,
+          "elapsedMs": 306,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 13,
+          "filename": "0013_clocker_punches.sql",
+          "executionMs": 87,
+          "elapsedMs": 248,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 14,
+          "filename": "0014_clocker_breaks.sql",
+          "executionMs": 99,
+          "elapsedMs": 247,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 15,
+          "filename": "0015_clocker_schedule_context.sql",
+          "executionMs": 92,
+          "elapsedMs": 257,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 16,
+          "filename": "0016_time_corrections.sql",
+          "executionMs": 135,
+          "elapsedMs": 310,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 17,
+          "filename": "0017_missing_time_supersession.sql",
+          "executionMs": 95,
+          "elapsedMs": 285,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 18,
+          "filename": "0018_timecards.sql",
+          "executionMs": 92,
+          "elapsedMs": 271,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 19,
+          "filename": "0019_payroll_export_mappings.sql",
+          "executionMs": 193,
+          "elapsedMs": 366,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 20,
+          "filename": "0020_account_recovery.sql",
+          "executionMs": 95,
+          "elapsedMs": 311,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 21,
+          "filename": "0021_timecard_reassignment_interlock.sql",
+          "executionMs": 89,
+          "elapsedMs": 248,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 22,
+          "filename": "0022_timecard_reopen_revision_authority.sql",
+          "executionMs": 79,
+          "elapsedMs": 233,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 23,
+          "filename": "0023_employee_attention_receipts.sql",
+          "executionMs": 87,
+          "elapsedMs": 242,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 24,
+          "filename": "0024_contextual_communications.sql",
+          "executionMs": 130,
+          "elapsedMs": 315,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 25,
+          "filename": "0025_calendar_subscriptions.sql",
+          "executionMs": 109,
+          "elapsedMs": 279,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 26,
+          "filename": "0023_template_ownership.sql",
+          "executionMs": 89,
+          "elapsedMs": 243,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 27,
+          "filename": "0024_schedule_copy_receipts.sql",
+          "executionMs": 90,
+          "elapsedMs": 286,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 28,
+          "filename": "0025_company_policies.sql",
+          "executionMs": 86,
+          "elapsedMs": 269,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 29,
+          "filename": "0026_attendance_observations.sql",
+          "executionMs": 89,
+          "elapsedMs": 275,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 30,
+          "filename": "0027_payroll_period_custody.sql",
+          "executionMs": 87,
+          "elapsedMs": 248,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 31,
+          "filename": "0028_configurable_payroll.sql",
+          "executionMs": 126,
+          "elapsedMs": 316,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 32,
+          "filename": "0029_payroll_private_notices.sql",
+          "executionMs": 87,
+          "elapsedMs": 237,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 33,
+          "filename": "0030_notification_source_kinds.sql",
+          "executionMs": 91,
+          "elapsedMs": 246,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 34,
+          "filename": "0031_workspace_presentation.sql",
+          "executionMs": 98,
+          "elapsedMs": 272,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 35,
+          "filename": "0032_workspace_words_modules.sql",
+          "executionMs": 89,
+          "elapsedMs": 235,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 36,
+          "filename": "0033_management_alert_preferences.sql",
+          "executionMs": 171,
+          "elapsedMs": 335,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 37,
+          "filename": "0034_account_deletion_requests.sql",
+          "executionMs": 84,
+          "elapsedMs": 253,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 38,
+          "filename": "0035_passkeys.sql",
+          "executionMs": 128,
+          "elapsedMs": 286,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 39,
+          "filename": "0036_owner_advisor.sql",
+          "executionMs": 105,
+          "elapsedMs": 285,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 40,
+          "filename": "0037_owner_briefing_reviews.sql",
+          "executionMs": 94,
+          "elapsedMs": 247,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 41,
+          "filename": "0038_read_path_indexes.sql",
+          "executionMs": 161,
+          "elapsedMs": 322,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 42,
+          "filename": "0039_native_payroll_setup_records.sql",
+          "executionMs": 83,
+          "elapsedMs": 243,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 43,
+          "filename": "0038_clocker_pin_operation_reference.sql",
+          "executionMs": 160,
+          "elapsedMs": 344,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 44,
+          "filename": "0039_clocker_review_requests.sql",
+          "executionMs": 187,
+          "elapsedMs": 376,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 45,
+          "filename": "0040_clocker_photo_policy_evidence.sql",
+          "executionMs": 121,
+          "elapsedMs": 309,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 46,
+          "filename": "0041_clocker_photo_platform_cleanup.sql",
+          "executionMs": 105,
+          "elapsedMs": 286,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 47,
+          "filename": "0043_schedule_pending_edits.sql",
+          "executionMs": 88,
+          "elapsedMs": 238,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 48,
+          "filename": "0031_native_payroll.sql",
+          "executionMs": 105,
+          "elapsedMs": 263,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 49,
+          "filename": "0032_company_access_invitations.sql",
+          "executionMs": 137,
+          "elapsedMs": 320,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 50,
+          "filename": "0042_company_invitation_lifetime.sql",
+          "executionMs": 78,
+          "elapsedMs": 239,
+          "status": "COMMITTED"
+        }
+      ],
+      "verification": {
+        "adoptions": "1",
+        "synthetic_users": "1",
+        "schedules": "0",
+        "time_entries": "0",
+        "payroll_runs": "0",
+        "invalid_indexes": "0",
+        "held_edits": "schedule_pending_edits",
+        "excluded_0044": null,
+        "excluded_0045": null
+      },
+      "schemaHash": "d593eb3cb5559bb0e1a22277b983841e1885db477d73245d641203db9f941dee",
+      "schemaObjects": 2518
+    },
+    "local": {
+      "steps": [
+        {
+          "ordinal": 1,
+          "filename": "0001_initial.sql",
+          "executionMs": 10,
+          "elapsedMs": 11,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 2,
+          "filename": "0002_schedule_health.sql",
+          "executionMs": 2,
+          "elapsedMs": 3,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 3,
+          "filename": "0003_schedule_assistance.sql",
+          "executionMs": 5,
+          "elapsedMs": 5,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 4,
+          "filename": "0004_assistance_layer.sql",
+          "executionMs": 3,
+          "elapsedMs": 5,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 5,
+          "filename": "0005_time_clock.sql",
+          "executionMs": 3,
+          "elapsedMs": 3,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 6,
+          "filename": "0006_scheduling_rule_inputs.sql",
+          "executionMs": 1,
+          "elapsedMs": 1,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 7,
+          "filename": "0007_portal_web_push.sql",
+          "executionMs": 4,
+          "elapsedMs": 5,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 8,
+          "filename": "0008_workspace_positions.sql",
+          "executionMs": 3,
+          "elapsedMs": 4,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 9,
+          "filename": "0009_schedule_generation.sql",
+          "executionMs": 3,
+          "elapsedMs": 3,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 10,
+          "filename": "0010_shift_coverage_automation.sql",
+          "executionMs": 8,
+          "elapsedMs": 9,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 11,
+          "filename": "0011_clocker_devices.sql",
+          "executionMs": 3,
+          "elapsedMs": 3,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 12,
+          "filename": "0012_clocker_pins.sql",
+          "executionMs": 4,
+          "elapsedMs": 4,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 13,
+          "filename": "0013_clocker_punches.sql",
+          "executionMs": 3,
+          "elapsedMs": 3,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 14,
+          "filename": "0014_clocker_breaks.sql",
+          "executionMs": 2,
+          "elapsedMs": 3,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 15,
+          "filename": "0015_clocker_schedule_context.sql",
+          "executionMs": 1,
+          "elapsedMs": 1,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 16,
+          "filename": "0016_time_corrections.sql",
+          "executionMs": 7,
+          "elapsedMs": 8,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 17,
+          "filename": "0017_missing_time_supersession.sql",
+          "executionMs": 1,
+          "elapsedMs": 2,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 18,
+          "filename": "0018_timecards.sql",
+          "executionMs": 2,
+          "elapsedMs": 3,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 19,
+          "filename": "0019_payroll_export_mappings.sql",
+          "executionMs": 2,
+          "elapsedMs": 2,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 20,
+          "filename": "0020_account_recovery.sql",
+          "executionMs": 2,
+          "elapsedMs": 2,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 21,
+          "filename": "0021_timecard_reassignment_interlock.sql",
+          "executionMs": 0,
+          "elapsedMs": 0,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 22,
+          "filename": "0022_timecard_reopen_revision_authority.sql",
+          "executionMs": 0,
+          "elapsedMs": 0,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 23,
+          "filename": "0023_employee_attention_receipts.sql",
+          "executionMs": 1,
+          "elapsedMs": 2,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 24,
+          "filename": "0024_contextual_communications.sql",
+          "executionMs": 7,
+          "elapsedMs": 7,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 25,
+          "filename": "0025_calendar_subscriptions.sql",
+          "executionMs": 5,
+          "elapsedMs": 5,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 26,
+          "filename": "0023_template_ownership.sql",
+          "executionMs": 2,
+          "elapsedMs": 3,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 27,
+          "filename": "0024_schedule_copy_receipts.sql",
+          "executionMs": 2,
+          "elapsedMs": 2,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 28,
+          "filename": "0025_company_policies.sql",
+          "executionMs": 1,
+          "elapsedMs": 1,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 29,
+          "filename": "0026_attendance_observations.sql",
+          "executionMs": 1,
+          "elapsedMs": 1,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 30,
+          "filename": "0027_payroll_period_custody.sql",
+          "executionMs": 2,
+          "elapsedMs": 2,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 31,
+          "filename": "0028_configurable_payroll.sql",
+          "executionMs": 6,
+          "elapsedMs": 7,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 32,
+          "filename": "0029_payroll_private_notices.sql",
+          "executionMs": 1,
+          "elapsedMs": 1,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 33,
+          "filename": "0030_notification_source_kinds.sql",
+          "executionMs": 0,
+          "elapsedMs": 0,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 34,
+          "filename": "0031_workspace_presentation.sql",
+          "executionMs": 2,
+          "elapsedMs": 2,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 35,
+          "filename": "0032_workspace_words_modules.sql",
+          "executionMs": 0,
+          "elapsedMs": 0,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 36,
+          "filename": "0033_management_alert_preferences.sql",
+          "executionMs": 1,
+          "elapsedMs": 1,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 37,
+          "filename": "0034_account_deletion_requests.sql",
+          "executionMs": 1,
+          "elapsedMs": 1,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 38,
+          "filename": "0035_passkeys.sql",
+          "executionMs": 4,
+          "elapsedMs": 4,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 39,
+          "filename": "0036_owner_advisor.sql",
+          "executionMs": 2,
+          "elapsedMs": 2,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 40,
+          "filename": "0037_owner_briefing_reviews.sql",
+          "executionMs": 1,
+          "elapsedMs": 2,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 41,
+          "filename": "0038_read_path_indexes.sql",
+          "executionMs": 2,
+          "elapsedMs": 2,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 42,
+          "filename": "0039_native_payroll_setup_records.sql",
+          "executionMs": 1,
+          "elapsedMs": 2,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 43,
+          "filename": "0038_clocker_pin_operation_reference.sql",
+          "executionMs": 1,
+          "elapsedMs": 1,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 44,
+          "filename": "0039_clocker_review_requests.sql",
+          "executionMs": 1,
+          "elapsedMs": 1,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 45,
+          "filename": "0040_clocker_photo_policy_evidence.sql",
+          "executionMs": 7,
+          "elapsedMs": 7,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 46,
+          "filename": "0041_clocker_photo_platform_cleanup.sql",
+          "executionMs": 1,
+          "elapsedMs": 1,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 47,
+          "filename": "0043_schedule_pending_edits.sql",
+          "executionMs": 1,
+          "elapsedMs": 1,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 48,
+          "filename": "0031_native_payroll.sql",
+          "executionMs": 5,
+          "elapsedMs": 5,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 49,
+          "filename": "0032_company_access_invitations.sql",
+          "executionMs": 9,
+          "elapsedMs": 10,
+          "status": "COMMITTED"
+        },
+        {
+          "ordinal": 50,
+          "filename": "0042_company_invitation_lifetime.sql",
+          "executionMs": 2,
+          "elapsedMs": 2,
+          "status": "COMMITTED"
+        }
+      ],
+      "verification": {
+        "adoptions": "1",
+        "synthetic_users": "1",
+        "schedules": "0",
+        "time_entries": "0",
+        "payroll_runs": "0",
+        "invalid_indexes": "0",
+        "held_edits": "schedule_pending_edits",
+        "excluded_0044": null,
+        "excluded_0045": null
+      },
+      "schemaHash": "d593eb3cb5559bb0e1a22277b983841e1885db477d73245d641203db9f941dee",
+      "schemaObjects": 2518
+    }
+  },
+  "status": "PASS",
+  "versions": {
+    "local": "17.10",
+    "hosted": "17.11 (0bfbbeb)"
+  },
+  "schemaDiff": 0,
+  "smoke": {
+    "local": "6 source application reads passed in READ ONLY transaction",
+    "hosted": "6 source application reads passed via actual Neon HTTP transport",
+    "notifications": "No dispatch/reminder/payroll worker invoked; no real users or delivery credentials"
+  },
+  "completedAt": "2026-11-01T19:59:41.304Z"
+}

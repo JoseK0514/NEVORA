@@ -1,0 +1,11 @@
+▲ Next.js 16.4.2 (Turbopack)
+- Local:         http://127.0.0.1:64519
+- Network:       http://127.0.0.1:64519
+✓ Ready in 324ms
+✓ Running next.config.ts took 898ms
+- Experiments (use with caution):
+  ⨯ turbopackFileSystemCacheForBuild
+
+ GET /login 200 in 763ms (next.js: 196ms, application-code: 567ms)
+ GET /clocker/rehearsal 200 in 878ms (next.js: 301ms, application-code: 577ms)
+[?25h

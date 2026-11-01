@@ -1,0 +1,502 @@
+[
+  {
+    "ordinal": 1,
+    "filename": "0001_initial.sql",
+    "sha256": "330e125060422506f92403307224b739b73f5fc8697ed43039b22e56bcba61a1",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 10,
+    "applied_at": "2026-11-01T19:59:38.555Z"
+  },
+  {
+    "ordinal": 2,
+    "filename": "0002_schedule_health.sql",
+    "sha256": "0dd019d1658c22763d11531ef72b39db9e5a106bb418b1a4fc63f5caaff7f9f0",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 2,
+    "applied_at": "2026-11-01T19:59:38.558Z"
+  },
+  {
+    "ordinal": 3,
+    "filename": "0003_schedule_assistance.sql",
+    "sha256": "d82513ab58c0e8a84f976a05c2be0e342309467c586ded8347cce4ef9001900a",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 5,
+    "applied_at": "2026-11-01T19:59:38.563Z"
+  },
+  {
+    "ordinal": 4,
+    "filename": "0004_assistance_layer.sql",
+    "sha256": "c0263d1e40bbfe3aa646a4740b0fe345728783eac39dfda916495ccf7a1ab7e5",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 3,
+    "applied_at": "2026-11-01T19:59:38.567Z"
+  },
+  {
+    "ordinal": 5,
+    "filename": "0005_time_clock.sql",
+    "sha256": "fc4afbdf4770bd7a3a718cd54fd204bc8df1b96296c04cb676dab3f4f6d0c4e5",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 3,
+    "applied_at": "2026-11-01T19:59:38.572Z"
+  },
+  {
+    "ordinal": 6,
+    "filename": "0006_scheduling_rule_inputs.sql",
+    "sha256": "4a0eb437395a5f4d1873c9b06b3c1104da5a23319e968d422a5a14f3c310483a",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 1,
+    "applied_at": "2026-11-01T19:59:38.573Z"
+  },
+  {
+    "ordinal": 7,
+    "filename": "0007_portal_web_push.sql",
+    "sha256": "020c45cbeb1c5000be22b3ce240f94225fc0c88471e540a67246dd54085440d2",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 4,
+    "applied_at": "2026-11-01T19:59:38.578Z"
+  },
+  {
+    "ordinal": 8,
+    "filename": "0008_workspace_positions.sql",
+    "sha256": "f517e18d468556c25814141a959427c969f620fa4ac6e98cc709b31ee1d88756",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 3,
+    "applied_at": "2026-11-01T19:59:38.582Z"
+  },
+  {
+    "ordinal": 9,
+    "filename": "0009_schedule_generation.sql",
+    "sha256": "aadde6a1f5d3167ed4f346817d1feeb0c9f99f28d50adcf904a989b86120f007",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 3,
+    "applied_at": "2026-11-01T19:59:38.585Z"
+  },
+  {
+    "ordinal": 10,
+    "filename": "0010_shift_coverage_automation.sql",
+    "sha256": "0d8b55abe49995204bda9e63492026158b91b8dc4ca414d05c77b595a6474d8e",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 8,
+    "applied_at": "2026-11-01T19:59:38.593Z"
+  },
+  {
+    "ordinal": 11,
+    "filename": "0011_clocker_devices.sql",
+    "sha256": "788b748bbbd995c44f40d130ea079296aa3e6affcad86c78cbb3857e866c0cd0",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 3,
+    "applied_at": "2026-11-01T19:59:38.597Z"
+  },
+  {
+    "ordinal": 12,
+    "filename": "0012_clocker_pins.sql",
+    "sha256": "9b607ca2e9e111953695ba5cf1a1dbc87f65ae483caeccc3d8056f19aab8c90f",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 4,
+    "applied_at": "2026-11-01T19:59:38.601Z"
+  },
+  {
+    "ordinal": 13,
+    "filename": "0013_clocker_punches.sql",
+    "sha256": "f222d8b52e5cace6698f22b8d4a10fa5ffcd93db1d8c7d5cfd551a02b74216e5",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 3,
+    "applied_at": "2026-11-01T19:59:38.604Z"
+  },
+  {
+    "ordinal": 14,
+    "filename": "0014_clocker_breaks.sql",
+    "sha256": "c20cd86b16fe2f82c05b69687402c52f37a648eb1d79c8f1418436ed8e4c5508",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 2,
+    "applied_at": "2026-11-01T19:59:38.607Z"
+  },
+  {
+    "ordinal": 15,
+    "filename": "0015_clocker_schedule_context.sql",
+    "sha256": "5b5160bff760e17d4e235c35e4936271fba0b8124f5da8a8989e01478fff6796",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 1,
+    "applied_at": "2026-11-01T19:59:38.608Z"
+  },
+  {
+    "ordinal": 16,
+    "filename": "0016_time_corrections.sql",
+    "sha256": "36532a3efc7c641a96b447f5caf2efbd3c4184cbfae2c6e080b548fa3fac4b35",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 7,
+    "applied_at": "2026-11-01T19:59:38.615Z"
+  },
+  {
+    "ordinal": 17,
+    "filename": "0017_missing_time_supersession.sql",
+    "sha256": "2a35c4e3180c3294c7197af56415b231bf66a0b30417000e08de17d161ef8fea",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 1,
+    "applied_at": "2026-11-01T19:59:38.617Z"
+  },
+  {
+    "ordinal": 18,
+    "filename": "0018_timecards.sql",
+    "sha256": "0221827d5faa0670a85661b6a15e59882382703a42bb9800576c30a1f66c1a81",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 2,
+    "applied_at": "2026-11-01T19:59:38.620Z"
+  },
+  {
+    "ordinal": 19,
+    "filename": "0019_payroll_export_mappings.sql",
+    "sha256": "1610d1018824ec84ba9cdbe2f42f3ae36c12ba509a735ea10dce3ee21b594262",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": true,
+    "execution_ms": 2,
+    "applied_at": "2026-11-01T19:59:38.623Z"
+  },
+  {
+    "ordinal": 20,
+    "filename": "0020_account_recovery.sql",
+    "sha256": "26bc594863f1950588250be50a1ae66ba2191f90e8a908aea6a41a6ac76c61db",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 2,
+    "applied_at": "2026-11-01T19:59:38.625Z"
+  },
+  {
+    "ordinal": 21,
+    "filename": "0021_timecard_reassignment_interlock.sql",
+    "sha256": "c5e9f1df923c67d4764427cca9f005fed93a4cb148c4a469866d15d4253b4918",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 0,
+    "applied_at": "2026-11-01T19:59:38.626Z"
+  },
+  {
+    "ordinal": 22,
+    "filename": "0022_timecard_reopen_revision_authority.sql",
+    "sha256": "616dc741d8b48679b05958cfbd9dcf3ece018a356892034f2f1ad6a644ba584b",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 0,
+    "applied_at": "2026-11-01T19:59:38.626Z"
+  },
+  {
+    "ordinal": 23,
+    "filename": "0023_employee_attention_receipts.sql",
+    "sha256": "2758fd0dd5567839537483bb49eba8f4e5618b67a9a77c1deccf0e550cefcef1",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 1,
+    "applied_at": "2026-11-01T19:59:38.628Z"
+  },
+  {
+    "ordinal": 24,
+    "filename": "0024_contextual_communications.sql",
+    "sha256": "f130df4238379aa50347decbc863c51f37b108a9f5975b49ca8696b49fc08277",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 7,
+    "applied_at": "2026-11-01T19:59:38.635Z"
+  },
+  {
+    "ordinal": 25,
+    "filename": "0025_calendar_subscriptions.sql",
+    "sha256": "357bce5c806af4f3f0d9ff8a5b48e09a90b1342e8168206efce4f949072d824b",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 5,
+    "applied_at": "2026-11-01T19:59:38.641Z"
+  },
+  {
+    "ordinal": 26,
+    "filename": "0023_template_ownership.sql",
+    "sha256": "0352f4db63cb5ede8f47aec1178b8cf9cbdfb010d678c412fc1c127abca7439c",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 2,
+    "applied_at": "2026-11-01T19:59:38.643Z"
+  },
+  {
+    "ordinal": 27,
+    "filename": "0024_schedule_copy_receipts.sql",
+    "sha256": "fc13bcef690b30f6c3eb932581f19947835efbb0c8d523e54ca4c89331e4f3ee",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 2,
+    "applied_at": "2026-11-01T19:59:38.645Z"
+  },
+  {
+    "ordinal": 28,
+    "filename": "0025_company_policies.sql",
+    "sha256": "247139b09eb20e587061ddb925367dea9176b0c8acb0c062f0d517b4ad9a427a",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 1,
+    "applied_at": "2026-11-01T19:59:38.647Z"
+  },
+  {
+    "ordinal": 29,
+    "filename": "0026_attendance_observations.sql",
+    "sha256": "470cca7063764347d3bf0cde4163b1dc6629fc3aed08d2daaa57e6f97b2715db",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 1,
+    "applied_at": "2026-11-01T19:59:38.648Z"
+  },
+  {
+    "ordinal": 30,
+    "filename": "0027_payroll_period_custody.sql",
+    "sha256": "1b2999603afe74c8d36d8643386b2944d82ae6c83ccd395669b46a774695c826",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 2,
+    "applied_at": "2026-11-01T19:59:38.650Z"
+  },
+  {
+    "ordinal": 31,
+    "filename": "0028_configurable_payroll.sql",
+    "sha256": "6e6da74c87fb76b49af1beea70e9bef71a6d3e0fb3924c4b24896a6eb499a839",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 6,
+    "applied_at": "2026-11-01T19:59:38.657Z"
+  },
+  {
+    "ordinal": 32,
+    "filename": "0029_payroll_private_notices.sql",
+    "sha256": "42fc345790410582084db999b7069a242f14efb5deb91dfa4b75e084a0290576",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 1,
+    "applied_at": "2026-11-01T19:59:38.659Z"
+  },
+  {
+    "ordinal": 33,
+    "filename": "0030_notification_source_kinds.sql",
+    "sha256": "32cc7ee9d071c40e0f79b78918ba2cf7d46be6b0a69ef1d0d2eff5f321eea6b0",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 0,
+    "applied_at": "2026-11-01T19:59:38.659Z"
+  },
+  {
+    "ordinal": 34,
+    "filename": "0031_workspace_presentation.sql",
+    "sha256": "cb684bdfd7b3457048eb39f7b144e8c1e561a220682e9d3a346c8ae9937cab7e",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 2,
+    "applied_at": "2026-11-01T19:59:38.661Z"
+  },
+  {
+    "ordinal": 35,
+    "filename": "0032_workspace_words_modules.sql",
+    "sha256": "978301c0e13541471aa7a42835eae36bd0efbcee51fa1972e41363dc5273163e",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 0,
+    "applied_at": "2026-11-01T19:59:38.662Z"
+  },
+  {
+    "ordinal": 36,
+    "filename": "0033_management_alert_preferences.sql",
+    "sha256": "ba1e1e117c1c04be5359318d056bc2d4b6dbe33c29bcde78bf38f97f9345cccc",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": true,
+    "execution_ms": 1,
+    "applied_at": "2026-11-01T19:59:38.663Z"
+  },
+  {
+    "ordinal": 37,
+    "filename": "0034_account_deletion_requests.sql",
+    "sha256": "43c750a764e6e6e77c10126469beee7d805bbeed7a5f50b0262ff9558c26f8da",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 1,
+    "applied_at": "2026-11-01T19:59:38.664Z"
+  },
+  {
+    "ordinal": 38,
+    "filename": "0035_passkeys.sql",
+    "sha256": "ca7d8071ff3a7e9d34b06b7a51818e7709c669296c60e3da96c1c29273c9a98d",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 4,
+    "applied_at": "2026-11-01T19:59:38.668Z"
+  },
+  {
+    "ordinal": 39,
+    "filename": "0036_owner_advisor.sql",
+    "sha256": "fb5bd778da67f4e6d4b803e34fa663a6d74d78a345dd3e566005e25a796c30c7",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 2,
+    "applied_at": "2026-11-01T19:59:38.670Z"
+  },
+  {
+    "ordinal": 40,
+    "filename": "0037_owner_briefing_reviews.sql",
+    "sha256": "51ed917185d10de4b7a5add636707ce76a6bdb832d7161521c0769b33cbd2986",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 1,
+    "applied_at": "2026-11-01T19:59:38.672Z"
+  },
+  {
+    "ordinal": 41,
+    "filename": "0038_read_path_indexes.sql",
+    "sha256": "16f733bdf74e4e4edbf4995ea93d1b652bf5ff3d92655faf2f4a717cad251325",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": true,
+    "execution_ms": 2,
+    "applied_at": "2026-11-01T19:59:38.674Z"
+  },
+  {
+    "ordinal": 42,
+    "filename": "0039_native_payroll_setup_records.sql",
+    "sha256": "38e0b4de2e04ecf4dbc247a80ea9230b24358bec1ffa38289cb1baf71106adea",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 1,
+    "applied_at": "2026-11-01T19:59:38.675Z"
+  },
+  {
+    "ordinal": 43,
+    "filename": "0038_clocker_pin_operation_reference.sql",
+    "sha256": "a6962bdf12631eb3225d19b71811e4e56f4120788a1d89ae6fd931336736a8e2",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": true,
+    "execution_ms": 1,
+    "applied_at": "2026-11-01T19:59:38.676Z"
+  },
+  {
+    "ordinal": 44,
+    "filename": "0039_clocker_review_requests.sql",
+    "sha256": "0ceb6b870596a14ad1254a83e18033e08b8501e0817e34369967cb85c4e305fe",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": true,
+    "execution_ms": 1,
+    "applied_at": "2026-11-01T19:59:38.678Z"
+  },
+  {
+    "ordinal": 45,
+    "filename": "0040_clocker_photo_policy_evidence.sql",
+    "sha256": "476ef1887bf0c16688783736941454e8d209d93f5f31f05826a74de953836787",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 7,
+    "applied_at": "2026-11-01T19:59:38.685Z"
+  },
+  {
+    "ordinal": 46,
+    "filename": "0041_clocker_photo_platform_cleanup.sql",
+    "sha256": "335291af02ac2ba5beba2194c0dc1e316397502388ddcd1aa6497dd61ab7118c",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 1,
+    "applied_at": "2026-11-01T19:59:38.687Z"
+  },
+  {
+    "ordinal": 47,
+    "filename": "0043_schedule_pending_edits.sql",
+    "sha256": "c001c728c55d7b1253896c1c0ac83d106af22bf1e3b935aff0a835112f8f336a",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 1,
+    "applied_at": "2026-11-01T19:59:38.688Z"
+  },
+  {
+    "ordinal": 48,
+    "filename": "0031_native_payroll.sql",
+    "sha256": "bbe2857612e5ee1fc359f93e695a28c61f95b02846b1b3eb9aaae1e990b338bf",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 5,
+    "applied_at": "2026-11-01T19:59:38.701Z"
+  },
+  {
+    "ordinal": 49,
+    "filename": "0032_company_access_invitations.sql",
+    "sha256": "361edcc14081de6c196d3fe157a8e5bda91da942eec5db5fb1f9c6279e0b2612",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 9,
+    "applied_at": "2026-11-01T19:59:38.711Z"
+  },
+  {
+    "ordinal": 50,
+    "filename": "0042_company_invitation_lifetime.sql",
+    "sha256": "2392d691cd079688ee9b496b9f3dd493e8f963feb3859c724d2ea153414bfa1c",
+    "frozen_sha": "83397510a83d82420a3b6526c787f43a3092a839",
+    "operator": "Codex / Jose-authorized Phase 2",
+    "explicit_wrapper": false,
+    "execution_ms": 2,
+    "applied_at": "2026-11-01T19:59:38.713Z"
+  }
+]

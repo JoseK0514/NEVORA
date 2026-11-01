@@ -1,0 +1,24 @@
+{
+  "sha": "83397510a83d82420a3b6526c787f43a3092a839",
+  "startedAt": "2026-11-01T20:05:58.186Z",
+  "database": "isolated Phase 2 rehearsal",
+  "mode": "Next development server, actual Neon HTTP reads, no login or mutation",
+  "checks": [
+    {
+      "path": "/login",
+      "status": 200,
+      "marker": "login-employee-id",
+      "passed": true,
+      "elapsedMs": 3539
+    },
+    {
+      "path": "/clocker/rehearsal",
+      "status": 200,
+      "marker": "Rehearsal location",
+      "passed": true,
+      "elapsedMs": 1346
+    }
+  ],
+  "status": "PASS",
+  "completedAt": "2026-11-01T20:06:03.677Z"
+}

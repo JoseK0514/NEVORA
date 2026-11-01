@@ -1,0 +1,30 @@
+{
+  "sha": "83397510a83d82420a3b6526c787f43a3092a839",
+  "project": "frosty-frog-31490398",
+  "branch": "br-falling-morning-b8lkw1f9",
+  "startedAt": "2026-11-01T20:05:52.839Z",
+  "status": "PASS",
+  "targets": {
+    "local": {
+      "clockerDevices": 0,
+      "payrollCapabilities": "PASS",
+      "payrollSettings": "PASS",
+      "payrollRuns": "PASS",
+      "employeeStatements": 0,
+      "managementStatements": 0,
+      "reads": 6
+    },
+    "hosted": {
+      "clockerDevices": 0,
+      "payrollCapabilities": "PASS",
+      "payrollSettings": "PASS",
+      "payrollRuns": "PASS",
+      "employeeStatements": 0,
+      "managementStatements": 0,
+      "reads": 6
+    }
+  },
+  "operatorSchemaDiff": 0,
+  "operatorSchemaObjects": 14,
+  "completedAt": "2026-11-01T20:05:56.134Z"
+}

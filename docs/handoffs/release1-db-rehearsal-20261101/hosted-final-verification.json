@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "[\n  [],\n  [],\n  [\n    {\n      \"checked_at\": \"2026-11-01T20:10:48.568Z\",\n      \"database\": \"nevora_release1_rehearsal\",\n      \"read_only\": \"on\",\n      \"ledger_rows\": \"50\",\n      \"wrapped_files\": \"5\",\n      \"source_revisions\": \"1\",\n      \"frozen_sha\": \"83397510a83d82420a3b6526c787f43a3092a839\",\n      \"forbidden_files\": \"0\",\n      \"synthetic_accounts\": \"1\",\n      \"schedules\": \"0\",\n      \"time_entries\": \"0\",\n      \"payroll_runs\": \"0\"\n    }\n  ]\n]"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

@@ -1,0 +1,19 @@
+{
+  "verifiedAt": "2026-11-01T20:12:34.866407+00:00",
+  "source": "83397510a83d82420a3b6526c787f43a3092a839",
+  "status": "PASS",
+  "checks": [
+    "24 production tables / 19 mockup setup rows",
+    "50 source hashes match original frozen git objects and both database ledgers",
+    "2518 application objects equal / schema diff 0 / canonical hash verified",
+    "14 operator ledger schema objects equal",
+    "24 application reads and 2 Next page reads passed",
+    "5 explicit wrappers / no excluded migration filenames",
+    "relative handoff links resolve",
+    "no PostgreSQL connection URL in evidence",
+    "frozen tracked worktree clean",
+    "local Gitleaks dir scan: exit 0, no leaks found",
+    "node --check smoke-pages.mjs: exit 0"
+  ],
+  "scope": "Evidence validation; not full application tests, independent certification, production verification or restore proof"
+}

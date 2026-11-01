@@ -1,0 +1,4 @@
+{
+  "capturedDiff": "diff --git a/next-env.d.ts b/next-env.d.ts\nindex ce4e94a6..a419cbe4 100644\n--- a/next-env.d.ts\n+++ b/next-env.d.ts\n@@ -1,7 +1,7 @@\n /// <reference types=\"next\" />\n /// <reference types=\"next/image-types/global\" />\n-import \"./.next/types/routes.d.ts\";\n-import \"./.next/types/root-params.d.ts\";\n+import \"./.next/dev/types/routes.d.ts\";\n+import \"./.next/dev/types/root-params.d.ts\";\n \n // NOTE: This file should not be edited\n // see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n",
+  "disposition": "Next-generated dev route type references restored to frozen bytes after stopping the server"
+}
