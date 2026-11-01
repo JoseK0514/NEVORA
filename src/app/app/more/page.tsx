@@ -17,7 +17,7 @@ import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck"
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
 import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
 import { ChartBarIcon, GearSixIcon, SparkleIcon } from "@phosphor-icons/react/dist/ssr";
-import { CorpAvatar, CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
+import { CorpAvatar, CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
 import { PortalSignout } from "@/components/portal-signout";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { pathEnabled } from "@/lib/workspace-presentation/modules";
@@ -124,27 +124,28 @@ export default async function MorePage() {
   return <CorpPage className="c-more c-page--narrow" labelledBy="more-title">
     <CorpNav back={{ href: "/app", label: "Home" }} title="More" titleId="more-nav-title" phoneOnly />
     <CorpTitle id="more-title" title="More" wide />
-    <CorpCard as="div" ariaLabel="You">
+    <CorpSection ariaLabel="You"><CorpCard as="div">
       <CorpRows label="You"><li><CorpRow href="/app/profile" bold title={name} detail={`${owner ? "Owner" : "Manager"} · ${company}`}
         label={`Your profile, ${name}`} avatar={<CorpAvatar initials={initialsOf(name)} />} chevron /></li></CorpRows>
-    </CorpCard>
-    {has("/app/reports") || has("/app/updates") || has("/app/ai-manager") ? <CorpCard as="div" ariaLabel="Work">
+    </CorpCard></CorpSection>
+    {/* Owner premium R5: each group is a section, 32px from the next (12px inside one); More's groups need no visible label. */}
+    {has("/app/reports") || has("/app/updates") || has("/app/ai-manager") ? <CorpSection ariaLabel="Work"><CorpCard as="div">
       <CorpRows label="Work">
         {has("/app/reports") ? row("/app/reports", label("/app/reports", "Insights"), ChartBarIcon) : null}
         {has("/app/updates") ? row("/app/updates", label("/app/updates", "Updates"), MegaphoneIcon) : null}
         {has("/app/ai-manager") ? row("/app/ai-manager", label("/app/ai-manager", "AI manager"), SparkleIcon) : null}
       </CorpRows>
-    </CorpCard> : null}
-    <CorpCard as="div" ariaLabel="Settings and help">
+    </CorpCard></CorpSection> : null}
+    <CorpSection ariaLabel="Settings and help"><CorpCard as="div">
       <CorpRows label="Settings and help">
         {settings ? row("/app/settings", "Settings", GearSixIcon) : null}
         {/* A Manager has no Settings; Scheduling rules is theirs to open (it also opens from Schedule). */}
         {!settings && has("/app/schedule/settings") ? row("/app/schedule/settings", "Scheduling rules", CalendarCheckIcon) : null}
         {row("/support", "Help", InfoIcon)}
       </CorpRows>
-    </CorpCard>
-    <CorpCard as="div" ariaLabel="Sign out">
+    </CorpCard></CorpSection>
+    <CorpSection ariaLabel="Sign out"><CorpCard as="div">
       <PortalSignout className="c-more__signout"><button type="submit" className="c-row c-row--one c-row--danger c-more__signout-row"><span className="c-row__main"><span className="c-row__title">Sign out</span></span></button></PortalSignout>
-    </CorpCard>
+    </CorpCard></CorpSection>
   </CorpPage>;
 }

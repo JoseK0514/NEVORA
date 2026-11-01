@@ -47,15 +47,15 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
       {actorRole==="OWNER"?<option value="OWNER">Owner</option>:null}
      </select></CorpField>
      <CorpField label="Location" htmlFor="new-location"><select id="new-location" className="c-in" name="primaryLocationId" required value={primary} onChange={event=>setPrimary(event.target.value)}>
-      <option value="" disabled>Choose</option>
+      <option value="" disabled>Choose one</option>
       {activeLocations.map(location=><option key={location.id} value={location.id}>{location.shortName}</option>)}
      </select></CorpField>
     </div>
     {role==='MANAGER'&&actorRole!=='OWNER'?<p className="c-note">An Owner assigns management access after this.</p>:null}
    </div>
    <div className="c-step" hidden={step!==2}>
-    <CorpField label="Employee ID" htmlFor="new-id" help="It stays the same after it’s created."><input id="new-id" className="c-in" name="id" placeholder="e.g. 10482" autoComplete="off" autoCapitalize="characters" autoCorrect="off" spellCheck={false} enterKeyHint="done" required maxLength={128}/></CorpField>
-    <ChoiceField label="Positions" name="positionIds" none="None yet" empty="No positions yet" choices={activePositions.map(position=>({value:position.id,label:position.name}))}/>
+    <CorpField label="Employee ID" htmlFor="new-id" help="You can’t change this later."><input id="new-id" className="c-in" name="id" placeholder="e.g. 10482" autoComplete="off" autoCapitalize="characters" autoCorrect="off" spellCheck={false} enterKeyHint="done" required maxLength={128}/></CorpField>
+    <ChoiceField label="Positions" name="positionIds" none="Choose positions" empty="No positions yet" choices={activePositions.map(position=>({value:position.id,label:position.name}))}/>
     <ChoiceField key={primary} label="Locations they can work at" name="eligibleLocationIds" choices={activeLocations.map(location=>({value:location.id,label:location.shortName,checked:location.id===primary,
      help:location.id===primary?'Their location, always included':undefined}))}/>
     {role==='MANAGER'&&actorRole==='OWNER'?<OperationalScopeSelectionFields locations={activeLocations.map(l=>({id:l.id,name:l.name}))} value={scope} onChange={setScope} error={null}/>:null}

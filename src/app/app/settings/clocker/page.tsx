@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
 export default async function ClockerDevicesPage() {
   await requireRoles(['OWNER']);
   const session = await requireSessionMutationProof();
-  let data: { devices: ClockerDeviceView[]; locations: ClockerLocationView[]; timeZone: string } | null;
+  let data: { devices: ClockerDeviceView[]; locations: ClockerLocationView[]; timeZone: string; shortNames: Record<string, string> } | null;
   try {
     const [devices, locations, workspace] = await Promise.all([
       listClockerDevices({ employeeId: session.employee.id, sessionTokenHash: session.sessionTokenHash }),
@@ -22,10 +22,12 @@ export default async function ClockerDevicesPage() {
     data = {
       devices: devices.map(clockerDeviceView), timeZone: workspace.timeZone,
       locations: locations.map(({ id, name, clockerKey, active }) => ({ id, name, clockerKey, active })),
+      // Rows and the location menu say "Condado", as every other page does (Owner premium R7).
+      shortNames: Object.fromEntries(locations.filter(location => location.shortName).map(location => [location.id, location.shortName])),
     };
   } catch { data = null; }
-  if (data) return <ClockerDeviceManager initialDevices={data.devices} timeZone={data.timeZone} locations={data.locations} action={manageClockerDeviceAction} />;
-  return <SettingsFrame title="Clocker tablets" summary="A shared tablet at each location, with access you control.">
+  if (data) return <ClockerDeviceManager initialDevices={data.devices} timeZone={data.timeZone} locations={data.locations} shortNames={data.shortNames} action={manageClockerDeviceAction} />;
+  return <SettingsFrame title="Clocker tablets">
     <section className="nv-card" role="alert" aria-labelledby="clocker-unavailable-title">
       <EmptyState tone="urgent" icon={<WarningCircleIcon size={22} weight="bold" />} titleId="clocker-unavailable-title" title="Couldn’t load Clocker tablets."
         action={<a className="nv-btn" data-kind="primary" href="/app/settings/clocker">Try again</a>}>

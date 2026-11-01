@@ -34,8 +34,10 @@ const changeLabel = (keys: string[]) => {
   return colour && logo ? "Color and logo changed" : colour ? "Color changed" : logo ? "Logo changed" : "Saved";
 };
 
-export function BrandEditor({ workspaceName, revision, seed, logoAssetId, history, timeZone }: {
+export function BrandEditor({ workspaceName, revision, seed, logoAssetId, history, timeZone, sample }: {
   workspaceName: string; revision: number; seed: string | null; logoAssetId: string | null; history: History[]; timeZone: string;
+  /** The preview's position and location, from the company's own lists ("Barista", "Condado"); sample words when missing. */
+  sample?: { position?: string; place?: string };
 }) {
   const router = useRouter();
   const hydrated = useSyncExternalStore(subscribe, () => true, () => false);
@@ -128,15 +130,14 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
     {/* Release 1: the preview is a card like the employee's Today's shift; clocking in happens on the location's tablet. */}
     <div className="q-list wc-preview" style={previewStyle} aria-hidden="true" inert>
       <div className="wc-cardhead"><span>Today’s shift</span></div>
-      <div className="wc-tcard__body"><b className="wc-tcard__big">{keepWhole("8:00 AM – 4:00 PM")}</b><i className="wc-preview__detail">Front desk · Main Street</i>
-        <span className="wc-preview__btn" style={{ background: brand.tokens.accent }}>Clock in on the Main Street tablet</span></div>
+      <div className="wc-tcard__body"><b className="wc-tcard__big">{keepWhole("8:00 AM – 4:00 PM")}</b><i className="wc-preview__detail">{`${sample?.position ?? "Front desk"} · ${sample?.place ?? "Main Street"}`}</i>
+        <span className="wc-preview__btn" style={{ background: brand.tokens.accent }}>{`Clock in on the ${sample?.place ?? "Main Street"} tablet`}</span></div>
     </div>
-    <p className="q-sr">{`Buttons in ${brand.tokens.accent}.`}</p>
     {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"}
       title={notice.tone === "error" ? (notice.text.startsWith("Sign in again") ? "Your session ended" : notice.text.startsWith("It may not have saved") ? "Not saved yet" : "Not saved") : notice.tone === "success" ? "Brand saved" : undefined}
       action={notice.text.startsWith("Sign in again") ? <Link className="q-btn q-btn--quiet" href="/login">Sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
     <p className="q-sr" role="status">{busy === "save" ? "Saving…" : dirty ? "Unsaved changes" : ""}</p>
-    <button type="submit" className="q-sr" tabIndex={-1} disabled={!valid || !dirty || busy !== null}>Save brand</button>
+    <button type="submit" className="q-sr" tabIndex={-1} disabled={!valid || !dirty || busy !== null}>Save</button>
     <dialog ref={picker} className="wc-dialog" aria-labelledby="brand-colour-title" onClose={() => setPicking(false)} onCancel={() => setPicking(false)}>
       <div className="wc-dialog__head"><div><h2 className="wc-dialog__title" id="brand-colour-title">Color</h2></div>
         <button type="button" className="wc-dialog__close" aria-label="Close" onClick={() => setPicking(false)}><XIcon aria-hidden="true" /></button></div>

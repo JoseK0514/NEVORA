@@ -92,8 +92,9 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
        <CaretRightIcon className="q-chev" aria-hidden="true" />
       </Link></li>)}</ul>
      : <div className="c-page c-embed updates-empty" role="status"><CorpEmpty title={filter === 'all' ? 'No updates yet' : 'Nothing needs a reply'}
-      body={filter === 'all' ? 'Tell your team about hours, menus or events. Updates you send show up here.' : 'Updates that must be read show up here.'}
-      action={filter !== 'all' ? <button type="button" className="c-btn c-btn--secondary c-btn--md" onClick={() => setFilter('all')}>View all updates</button> : undefined} /></div>}
+      body={filter === 'all' ? 'Tell your team about hours, menus or events.' : 'Updates that must be read show up here.'}
+      action={filter !== 'all' ? <button type="button" className="c-btn c-btn--secondary c-btn--md" onClick={() => setFilter('all')}>View all updates</button>
+       : <Link className="c-btn c-btn--secondary c-btn--md" href="/app/updates/compose">New update</Link>} /></div>}
     </HoldHeight>
    </section>
    <span className="q-sr" role="status">{userRefreshing ? 'Refreshing updates…' : ''}</span>

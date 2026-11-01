@@ -22,6 +22,6 @@ export function ClockerOwnerRequests({actorId,timeZone,onSelect}:{actorId:string
   {loading?<p className="wc-emptyrow" role="status">Checking requests…</p>:ready?ready.requests.length?<ul>{ready.requests.map(r=><li key={r.requestId}>{r.commandId
    ?<button type="button" className="q-row" onClick={()=>onSelect(r.commandId!)} aria-label={`Check ${r.requesterName}'s clock action`}><span className="q-rt"><b>{r.requesterName}</b><i>{`${r.locationName} · ${r.deviceName} · `}<time dateTime={r.requestedAt}>{when(r.requestedAt)}</time></i></span><span className="wc-meta wc-meta--teal">Check</span></button>
    :<Link className="q-row" href="/app/timecards"><span className="q-rt"><b>{r.requesterName}</b><i>{`${r.locationName} · `}<time dateTime={r.requestedAt}>{when(r.requestedAt)}</time>{' · Fix it in Timecards'}</i></span><span className="q-sr">{`Request ${r.requestId}`}</span></Link>}</li>)}</ul>
-  :<p className="wc-emptyrow" role="status">No one has asked for help.</p>:<p className="wc-emptyrow" role="status">Couldn’t load requests. Refresh to try again.</p>}
+  :<p className="wc-emptyrow" role="status">No one needs help right now</p>:<p className="wc-emptyrow" role="status">Couldn’t load requests. Refresh to try again.</p>}
   {ready?.nextCursor?<button className="wc-addrow" type="button" disabled={loading} onClick={()=>{cursor.current=ready.nextCursor!;controller.current?.refresh();}}>Show more requests</button>:null}</section>;
 }

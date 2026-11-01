@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, type ReactNode } from "react";
-import { CorpPill } from "./corp/corp";
+import { CorpMeta } from "./corp/corp";
 import { useToday } from "./manager-today";
 import { useClockMonitor } from "./clean/use-clock-monitor";
 
@@ -30,15 +30,17 @@ export function TeamLiveProvider({ children }: { children: ReactNode }) {
 export function TeamLivePill({ employeeId }: { employeeId: string }) {
   const live = useContext(TeamLiveContext);
   if (!live.ready) return null;
-  if (live.working.has(employeeId)) return <CorpPill tone="teal">Working</CorpPill>;
-  if (live.onBreak.has(employeeId)) return <CorpPill tone="neutral">On break</CorpPill>;
+  // Owner premium R3: being at work is a state, not an exception, so it is grey text (the kit's CorpMeta), never a pill.
+  if (live.working.has(employeeId)) return <CorpMeta>Working</CorpMeta>;
+  if (live.onBreak.has(employeeId)) return <CorpMeta>On break</CorpMeta>;
   return null;
 }
 
-/** " · 7 working now" for the subtitle, once the reads are ready. */
+/** " · 7 working now" (" · No one working now") for the subtitle, once the reads are ready. */
 export function TeamWorkingNow() {
   const live = useContext(TeamLiveContext);
   if (!live.ready) return null;
-  return <>{` · ${live.working.size + live.onBreak.size} working now`}</>;
+  const count = live.working.size + live.onBreak.size;
+  return <>{count ? ` · ${count} working now` : " · No one working now"}</>;
 }
 

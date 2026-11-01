@@ -101,3 +101,10 @@
 @media (min-width: 768px) {
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.wc-page > :is(.wc-content, .q-hd) { max-width: 752px; }
 }
+/* Round 2 (R7): a long page name ("Features and team terms") never runs under "‹ Settings" on a phone. The bar keeps its
+ * three columns and centres the name; when it doesn't fit between the two sides it ends in "…" (the
+ * page's large title, read first by screen readers, keeps the whole name). */
+@media (max-width: 767px) {
+  /* The back link ("‹ Settings") is at most ~88px; the centred name gets what is left on both sides of it. */
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.wc-page:not(.q-sheet) > .q-nav > .q-nav__t { justify-self: center; min-width: 0; max-width: calc(100vw - 32px - 2 * 92px); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+}

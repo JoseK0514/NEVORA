@@ -116,8 +116,8 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
   // Quiet (v4, approved Oct 23): the reference, Check, the receipt when there is one, and one row to Timecards.
   const content = <SettingsFrame back={back} settingsCrumb={false} className="wc-recovery" title="Clocker recovery" summary="Check a clock-in or clock-out someone made on a tablet.">
     <ClockerOwnerRequests actorId={actorId} timeZone={timeZone} onSelect={value=>{setReference(value);setHasSelection(true);setInvalid('');selected.current=value;submitted.current=true;controller.current?.refresh();}}/>
-    <form noValidate className="wc-form" aria-label="Check a saved action" data-guard={hydrated ? undefined : ''}
-      onInvalidCapture={event => { event.preventDefault(); setInvalid((event.target as HTMLInputElement).validity.valueMissing ? 'Enter the code from the tablet.' : 'Enter the whole code: 32 letters and numbers in five groups, with dashes.'); (event.target as HTMLInputElement).focus(); }}
+    <form noValidate className="wc-form" aria-label="Check a tablet code" data-guard={hydrated ? undefined : ''}
+      onInvalidCapture={event => { event.preventDefault(); setInvalid((event.target as HTMLInputElement).validity.valueMissing ? 'Enter the code from the tablet.' : 'Enter the whole code from the tablet, with its dashes.'); (event.target as HTMLInputElement).focus(); }}
       onSubmit={event => {
         event.preventDefault();
         if (!hydrated || pending) return;
@@ -132,7 +132,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
         }
         controller.current?.refresh();
       }}>
-      <h2 className="q-sr" id="recovery-lookup-heading">Check a saved action</h2>
+      <h2 className="q-sr" id="recovery-lookup-heading">Check a tablet code</h2>
       <fieldset disabled={!hydrated || pending} className="q-fieldset">
         <div className="q-fl" data-invalid={invalid ? 'true' : undefined}>
           <label className="q-fl__label" htmlFor={inputId}>Code from the tablet</label>
@@ -141,27 +141,27 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
             maxLength={36} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="go" aria-describedby={invalid ? `${errorId} ${helpId}` : helpId} aria-invalid={invalid ? true : undefined}
             placeholder="The code shown on the tablet"/>
           {invalid ? <p className="q-fl__error" id={errorId}>{invalid}</p> : null}
-          <p id={helpId} className="q-sr">Shown on the employee’s tablet, like 12345678-1234-1234-1234-123456789abc.</p>
+          <p id={helpId} className="q-sr">The code on the tablet screen.</p>
         </div>
       </fieldset>
-      <button className="q-btn" type="submit" disabled={!hydrated || pending}><ButtonLabel pending={pending} idle="Check" busy="Checking…"/></button>
-      <noscript><Notice tone="info">Enable JavaScript to check a receipt.</Notice></noscript>
+      <button className="q-btn" type="submit" disabled={!hydrated || pending}><ButtonLabel pending={pending} idle="Check code" busy="Checking…"/></button>
+      <noscript><Notice tone="info">Turn on JavaScript to check a code.</Notice></noscript>
     </form>
 
     <section aria-labelledby="recovery-result-heading" aria-busy={pending}>
-      <h2 className="q-sr" id="recovery-result-heading">Receipt</h2>
-      {pending ? <p className="q-empty" role="status" style={{ marginTop: 24 }}>Checking the saved receipt…</p>
+      <h2 className="q-sr" id="recovery-result-heading">What was saved</h2>
+      {pending ? <p className="q-empty" role="status" style={{ marginTop: 24 }}>Checking the code…</p>
         : ready ? <div ref={feedback} tabIndex={-1} className="wc-feedback">
-          <div role="status" className="q-lead" style={{ marginTop: 32 }}><b>{ready.receipts.length ? 'Recorded action found' : 'No saved receipt found'}</b>
+          <div role="status" className="q-lead" style={{ marginTop: 32 }}><b>{ready.receipts.length ? 'Recorded action found' : 'Nothing saved for this code'}</b>
             <i>{ready.receipts.length ? 'Check it with the employee, then they finish on the same tablet.' : 'It may still be in progress. They check again on the same tablet.'}</i></div>
           {ready.receipts.length ? <ul className="q-list" style={{ marginTop: 12 }}>{ready.receipts.map((receipt, index) => <li key={[receipt.employeeId, receipt.performedAt, index].join('-')}>
             <div className="q-row q-row--av"><span className="q-av" aria-hidden="true">{receipt.employeeName.split(' ').filter(Boolean).slice(0, 2).map(part => part[0]).join('')}</span>
               <span className="q-rt"><b>{`${receipt.employeeName} · ${actionNames[receipt.action] ?? 'Recorded action'}`}</b><i><time dateTime={receipt.performedAt}>{formattedTime(receipt.performedAt)}</time>{` · ${receipt.deviceName}, ${receipt.locationName}`}</i></span></div>
           </li>)}</ul> : null}
-          <p className="q-sr">Reference checked: {ready.commandId}</p>
+          <p className="q-sr">Code checked: {ready.commandId}</p>
         </div>
         : unavailable ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role="alert">
-          <Notice tone="urgent" title={denied ? 'Your session ended' : 'Couldn’t check the receipt.'}
+          <Notice tone="urgent" title={denied ? 'Your session ended' : 'Couldn’t check the code.'}
             action={denied ? <Link className="q-btn q-btn--quiet" href="/login">Sign in</Link> : undefined}>
             {denied ? 'Sign in again before checking this action.' : 'Keep the code and check again when you’re back online.'}</Notice>
         </div> : null}

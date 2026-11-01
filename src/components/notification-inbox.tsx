@@ -106,7 +106,7 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
       </li>;
      })}</ul>
      :onMarkRead?<div className="c-page c-embed q-notif-empty" role="status"><CorpEmpty title={filter==='unread'?'You’re all caught up':'No notifications yet'}
-       body={filter==='unread'?'Nothing unread. Earlier notifications stay under All.':'Requests, changes and alerts for you show up here.'}/></div>
+       body={filter==='unread'?'Nothing unread. Earlier notifications stay under All.':'You’ll see requests and schedule changes here.'}/></div>
      :<p className="q-empty q-first">{filter==='unread'?'You’re all caught up.':'No notifications yet.'}</p>}
     {readNotice&&readNotice.startsWith('We could not')?<p className="q-help" role="status">We couldn’t mark that one read.</p>:null}
     {!onMarkRead&&sorted.length?<p className="q-help">Opening one doesn’t complete it.</p>:null}

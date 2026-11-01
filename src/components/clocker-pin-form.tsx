@@ -79,7 +79,7 @@ export function ClockerPinForm({ employeeId, initialVersion, action,checkStatus,
         <ReturnToNext />
         <PinBoxes id="new-clocker-pin" name="pin" label="New PIN" enterKeyHint="next" filled={lengths[0]} onLength={n => setLengths(current => [n, current[1]])} />
         <PinBoxes id="confirm-clocker-pin" name="confirmPin" label="Confirm PIN" enterKeyHint="done" filled={lengths[1]} onLength={n => setLengths(current => [current[0], n])} />
-        <p id="pin-help" className="q-help" style={{ marginTop: 16 }}>4 digits, different for each person.{configured ? ' The old PIN stops working.' : ''}</p>
+        <p id="pin-help" className="q-help" style={{ marginTop: 16 }}>4 digits. Each person needs their own.{configured ? ' The old PIN stops working.' : ''}</p>
         <button ref={saveButton} type="submit" className="q-sr" tabIndex={-1}>{pending ? 'Saving…' : configured ? 'Reset PIN' : 'Save PIN'}</button>
       </fieldset>
       {pending ? <p role="status" className="q-sr">Saving the PIN.</p> : null}

@@ -40,7 +40,7 @@ it('keeps every company setting as exactly one named row',async()=>{
   '/app/settings/breaks','/app/settings/positions','/app/settings/company-policies',
  ])expect(html.match(new RegExp(`<a href="${path}" class="c-row c-row--one"`,'g'))).toHaveLength(1);
  // Rows are 15/400 (no bold title class), named as their pages are (A3: Clocker tablets).
- for(const label of ['Company profile','Locations','Branding','Features and words','Company policies','Positions','Break types','Clocker tablets'])expect(html).toContain(`<span class="c-row__title">${label}</span>`);
+ for(const label of ['Company profile','Locations','Branding','Features and team terms','Company policies','Positions','Break types','Clocker tablets'])expect(html).toContain(`<span class="c-row__title">${label}</span>`);
  expect(html).not.toContain('c-row__title--b');
  // Your profile and the notification feed are not settings (one profile entry, in More).
  expect(html).not.toContain('href="/app/profile"');expect(html).not.toContain('href="/app/notifications"');
@@ -49,8 +49,8 @@ it('keeps every company setting as exactly one named row',async()=>{
 it('says Set up for a zero count, and counts tablets waiting for setup instead of a bare 0',async()=>{
  reads.devices=[{state:'UNREGISTERED'},{state:'PENDING'}];
  let html=renderToStaticMarkup(await SettingsPage());
- expect(html).toMatch(/Break types<\/span><\/span><span class="c-row__value c-row__value--soft">Set up</);
- expect(html).toMatch(/Clocker tablets<\/span><\/span><span class="c-row__value c-row__value--soft">2 need setup</);
+ expect(html).toMatch(/Break types<\/span><\/span><span class="c-row__value c-row__value--soft">None yet</);
+ expect(html).toMatch(/Clocker tablets<\/span><\/span><span class="c-row__value c-row__value--soft">2 not set up</);
  reads.devices=[{state:'ACTIVE'}];reads.breaks=[{active:true}];
  html=renderToStaticMarkup(await SettingsPage());
  expect(html).toMatch(/Clocker tablets<\/span><\/span><span class="c-row__value c-row__value--soft">1</);
