@@ -31,7 +31,7 @@ it("renders truthful shift status, captured position, lead and next-day ending l
   expect(output).toContain("Captured support");
   expect(output).toContain("Published");
   expect(output).toContain("Draft");
-  expect(output).toContain("12h assigned this week");
+  expect(output).toContain("12 h assigned this week");
   expect(output).toContain("schedule-employee-fictional");
   expect(output).toContain("No assignments this week");
   expect(output).not.toContain("Off duty");
@@ -40,7 +40,7 @@ it("respects an Action Center day focus while keeping full-week totals and contr
   const output = html("2026-10-06");
   expect(output).not.toContain("shiftId=overnight");
   expect(output).toContain("shiftId=midnight");
-  expect(output).toContain("12h assigned this week");
+  expect(output).toContain("12 h assigned this week");
   expect(output).toContain("Full week");
   expect(output).toContain("No assignments on this day");
 });
@@ -64,15 +64,15 @@ it("tints shifts by position name, stably and within six tints", async () => {
 });
 it("shows weekly hours against target and flags hours over the limit", () => {
   const withHours = (hours: RosterEmployee["hours"]) => html(undefined, [{ ...employees[0], hours }]);
-  expect(withHours({ week: 12, target: 30, maximum: 40 })).toContain("12 of 30h target");
-  expect(withHours({ week: 12, target: null, maximum: 40 })).toContain("12 of 40h limit");
-  expect(withHours({ week: 44, target: 30, maximum: 40 })).toContain("4h over the 40h limit");
+  expect(withHours({ week: 12, target: 30, maximum: 40 })).toContain("12 of 30 h target");
+  expect(withHours({ week: 12, target: null, maximum: 40 })).toContain("12 of 40 h limit");
+  expect(withHours({ week: 44, target: 30, maximum: 40 })).toContain("4 h over the 40 h limit");
   // MK3 / PD3: the visible label says how far over and which limit, not "over limit".
-  expect(withHours({ week: 56, target: null, maximum: 40 })).toContain(" · 16h over 40h");
-  expect(withHours({ week: 42.5, target: null, maximum: 40 })).toContain("2.5h over 40h");
+  expect(withHours({ week: 56, target: null, maximum: 40 })).toContain(" · 16 h over 40 h");
+  expect(withHours({ week: 42.5, target: null, maximum: 40 })).toContain("2.5 h over 40 h");
   expect(withHours({ week: 56, target: null, maximum: 40 })).not.toContain("over limit");
   expect(html()).not.toContain("mws-hours");
-  expect(withHours({ week: 12, target: 30, maximum: 40 })).toContain("12h assigned this week");
+  expect(withHours({ week: 12, target: 30, maximum: 40 })).toContain("12 h assigned this week");
 });
 
 it("keeps people without a shift that day one tap away on a single day too (U2)", () => {
@@ -130,7 +130,8 @@ it("corporate (board G-O-Schedule): a week card with the week and its state, the
   expect(output).toContain("Today · Tue, Oct 6");
   expect(output).toContain("2 shifts · 4 h");
   // Owner premium: one time format; midnight reads 12:00 AM.
-  expect(output).toMatch(/c-sched-row__time" aria-hidden="true"><b>8:00\sPM<\/b><span>12:00\sAM<\/span>/);
+  // R2: each end is the kit's time (CorpTime: a quieter AM/PM joined by a narrow no-break space).
+  expect(output).toMatch(/c-sched-row__time" aria-hidden="true"><b><span class="c-time">8:00\s<span class="c-ampm">PM<\/span><\/span><\/b><span><span class="c-time">12:00\s<span class="c-ampm">AM<\/span>/);
   expect(output).toContain('href="/app/schedule/coverage?repair=x"');
   expect(output).toContain(">Find cover</a>");
   expect(output).toContain('href="/app/schedule/new?week=2026-10-05&amp;date=2026-10-06"');
@@ -143,7 +144,8 @@ it("corporate: a shift edited since the week was published says Changed (Publish
   const roster: RosterEmployee[] = [{ id: "e", name: "Dana Kim", role: "Employee", shifts: [{ id: "edited", date: "2026-10-06", startTime: "14:00", endTime: "20:00", location: "Main Office", status: "PUBLISHED", lead: false }] }];
   const out = renderToStaticMarkup(createElement(ManagerWeeklyRoster, { employees: roster, dates: weekDates("2026-10-05"), today: "2026-10-06", timeZone: "America/Puerto_Rico",
     corp: { weekLabel: "Oct 5 – 11", previousHref: "/p", nextHref: "/n", addShiftHref: "/app/schedule/new?week=2026-10-05", changedShiftIds: ["edited"] } }));
-  expect(out).toContain('class="c-pill c-pill--amber">Changed</span>');
+  // Owner premium R3: the row's state is trailing text, amber for Changed (no pill).
+  expect(out).toContain('class="c-meta c-sched-state" data-tone="amber">Changed</span>');
   const plain = renderToStaticMarkup(createElement(ManagerWeeklyRoster, { employees: roster, dates: weekDates("2026-10-05"), today: "2026-10-06", timeZone: "America/Puerto_Rico",
     corp: { weekLabel: "Oct 5 – 11", previousHref: "/p", nextHref: "/n", addShiftHref: "/app/schedule/new?week=2026-10-05" } }));
   expect(plain).not.toContain(">Changed<");

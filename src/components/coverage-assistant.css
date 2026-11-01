@@ -21,3 +21,6 @@
 /* Owner premium: when no one is free, the next steps sit under the reason (one secondary button, one text link). */
 :is(#c-root, html) .c-cover .c-cover__next { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin-top: 14px; }
 :is(#c-root, html) .c-cover .c-cover__empty + .c-line3 { margin-top: 2px; }
+
+/* Owner premium R3: states on Find cover ("Best fit", "Selected", "3 people free", "Covered") are 13/500 grey text. */
+:is(#c-root, html) .c-cover .c-cover__state { flex: none; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--c-grey); white-space: nowrap; }

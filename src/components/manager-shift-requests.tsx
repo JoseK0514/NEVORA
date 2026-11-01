@@ -14,7 +14,8 @@ import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listManagerPendingExchanges, listManagementCoverage, listTeamExchangeActivity, type ExchangeRecord } from "@/lib/data/exchanges";
 import { listPendingCallouts, listTeamCalloutHistory, type CalloutRecord } from "@/lib/data/callouts";
 import { PendingButton } from "./wave-a/pending-button";
-import { agoLabel, initialsOf, QuietHeader, QuietNav, QuietPage, QuietSegments } from "./quiet/quiet";
+import { agoLabel, initialsOf, QuietHeader, QuietNav, QuietPage } from "./quiet/quiet";
+import { CorpSegments } from "./corp/corp";
 import { addDays, formatTime } from "@/lib/date-utils";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import type { ReactNode } from "react";
@@ -157,8 +158,9 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
   return <ScopedReadFrame observation={source}><QuietPage className="q-shiftreq">
     <QuietNav back={{ href: "/app/inbox", label: "Things to do" }} />
     <QuietHeader title="Shift requests" />
-    <QuietSegments label="Shift request sections" items={tabs.map(item => ({ href: `/app/exchange?tab=${item.id}`, current: selected.id === item.id,
-      label: item.id === "pending" && waiting ? `Waiting · ${waiting}` : item.label }))} />
+    {/* R12: the kit's segmented control; counts read "Waiting (1)" (copy table 14). */}
+    <CorpSegments label="Shift request sections" items={tabs.map(item => ({ href: `/app/exchange?tab=${item.id}`, current: selected.id === item.id,
+      label: item.id === "pending" && waiting ? `Waiting (${waiting})` : item.label }))} />
     {error ? <p className="q-error q-first" role="alert">{errors[error] ?? "The request may have changed. Check it and decide again."}</p> : null}
 
     {selected.id === "pending" ? (waiting ? <ul className="q-list q-requests" aria-label="Waiting shift requests">

@@ -26,8 +26,8 @@ export default async function TimeCorrectionsPage(){
     <ScopedReadFrame observation={source}>
       <CorpPage className="c-tcx c-page--narrow" labelledBy="tcx-title">
         <CorpNav back={{href:'/app/timecards',label:'Time'}} title="Time corrections" titleId="tcx-nav-title" phoneOnly/>
-        <CorpTitle id="tcx-title" title="Time corrections" sub="Fixes employees asked for. The original clock record is kept." wide/>
-        <p className="c-phone-sub">Fixes employees asked for. The original clock record is kept.</p>
+        <CorpTitle id="tcx-title" title="Time corrections" sub="Fixes your team asked for. You’ll always see the original time." wide/>
+        <p className="c-phone-sub">Fixes your team asked for. You’ll always see the original time.</p>
         <ManagerTimeCorrections key={authority} actorId={session.id} authority={authority}/>
       </CorpPage>
     </ScopedReadFrame>

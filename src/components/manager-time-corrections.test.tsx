@@ -45,19 +45,19 @@ describe('D2 manager correction surface',()=>{
   it('does not present a cleared, unverified snapshot as a confirmed empty queue',()=>{
     const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={null} loading={false} busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null}/>);
     expect(html).toContain('Updates paused');
-    expect(html).not.toContain('No correction requests');
+    expect(html).not.toContain('Nothing to fix');
     expect(html).not.toContain('✓');
     expect(html).not.toContain('manager-corrections-count');
     expect(html).toContain('role="status"');
   });
   it('announces initial loading without counts or an empty claim',()=>{
     const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={null} loading={true} busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null}/>);
-    expect(html).toContain('Loading correction requests');expect(html).not.toContain('No correction requests');expect(html).not.toContain('manager-corrections-count');
+    expect(html).toContain('Loading correction requests');expect(html).not.toContain('Nothing to fix');expect(html).not.toContain('manager-corrections-count');
   });
   it('keeps the Logic Fixer retry control independent of cleared queue presentation',()=>{
     const retry={operationId:'77777777-7777-4777-8777-777777777777',requestId:ready.requests[0].id,expectedRevision:1,decision:'APPROVE' as const};
     const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={null} loading={false} busyId={null} notice="Outcome unconfirmed" onDecision={vi.fn()} onRetry={vi.fn()} retry={retry}/>);
-    expect(html).toContain('Retry same decision');expect(html).toContain('Updates paused');expect(html).not.toContain('No correction requests');
+    expect(html).toContain('Retry same decision');expect(html).toContain('Updates paused');expect(html).not.toContain('Nothing to fix');
   });
   it('identifies the previous approved missing interval as adjustment evidence',()=>{
     const snapshot={...ready,requests:[{...ready.requests[0],kind:'MISSING_ENTRY' as const}]};
@@ -89,7 +89,7 @@ describe('D2 manager correction surface',()=>{
 
   it('renders a calm empty state and never invents pending work',()=>{
     const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={{...ready,requests:[]}} loading={false} busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null}/>);
-    expect(html).toContain('No correction requests');
+    expect(html).toContain('Nothing to fix');
     expect(html).not.toContain('Approve');
   });
 
@@ -110,13 +110,13 @@ describe('D2 manager correction surface',()=>{
 
 it.each([
  ['offline','unavailable offline'],['reconnecting','Reconnecting'],['access_lost','access ended'],['unavailable','Correction requests unavailable'],['loading','Loading'],['paused','Updates paused'],
-] as const)('UX-04 %s clears an old ready queue without an empty claim',(connection,label)=>{const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={ready} loading={false} connection={connection} busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null}/>);expect(html).toContain(label);expect(html).not.toContain('No correction requests');expect(html).not.toContain('Avery QA');expect(html).not.toContain('manager-corrections-count');});
+] as const)('UX-04 %s clears an old ready queue without an empty claim',(connection,label)=>{const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={ready} loading={false} connection={connection} busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null}/>);expect(html).toContain(label);expect(html).not.toContain('Nothing to fix');expect(html).not.toContain('Avery QA');expect(html).not.toContain('manager-corrections-count');});
 
-it('UX-04 refuses an empty claim even when ready is supplied with a missing snapshot',()=>{const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={null} loading={false} connection="ready" busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null}/>);expect(html).toContain('Correction requests unavailable');expect(html).not.toContain('No correction requests');});
+it('UX-04 refuses an empty claim even when ready is supplied with a missing snapshot',()=>{const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={null} loading={false} connection="ready" busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null}/>);expect(html).toContain('Correction requests unavailable');expect(html).not.toContain('Nothing to fix');});
 
 it('D8 private pause retains only non-identifying operation receipt feedback while clearing names/counts',()=>{
  const confirmed='Correction approved. The original recorded punch remains unchanged.';
  expect(pausedCorrectionNotice(confirmed)).toBe(confirmed);expect(pausedCorrectionNotice('Avery private outcome')).toBeNull();
  const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={ready} loading={false} connection="paused" busyId={null} notice={pausedCorrectionNotice(confirmed)} onDecision={()=>{}} onRetry={()=>{}} retry={null}/>);
- expect(html).toContain(confirmed);expect(html).toContain('Updates paused');expect(html).not.toContain('Avery QA');expect(html).not.toContain('No correction requests');expect(html).not.toContain('manager-corrections-count');
+ expect(html).toContain(confirmed);expect(html).toContain('Updates paused');expect(html).not.toContain('Avery QA');expect(html).not.toContain('Nothing to fix');expect(html).not.toContain('manager-corrections-count');
 });

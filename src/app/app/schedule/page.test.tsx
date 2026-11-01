@@ -149,7 +149,7 @@ vi.mock('@/lib/company-access/operational-read.server',()=>({readSchedulePending
 it('uses the actual scoped schedule DTO without loading the canonical full roster',async()=>{f.role='MANAGER';operationalPageFixture.scoped=true;const output=await html();expect(output).toContain('Local Shift');expect(output).toContain('Recorded position');expect(output).not.toContain('Build and publish');expect(output).not.toContain('Copy previous week');expect(f.managerReads).not.toHaveBeenCalled();});
 
 it.each([
- ['error','INVALID_SHIFT','The shift information is incomplete or outside this week.','alert'],
+ ['error','INVALID_SHIFT','Couldn’t open that shift. Pick it again from this week.','alert'],
  ['error','SHIFT_HAS_EXCHANGE_HISTORY','This shift has scheduling history and cannot be deleted. Edit it instead.','alert'],
  ['warning','OUTSIDE_AVAILABILITY',"Review this shift: it is outside the employee&#x27;s submitted availability.",'status'],
  ['warning','WEEKLY_HOURS','Review this employee’s scheduled hours; they may exceed 40 hours.','status'],
@@ -177,7 +177,7 @@ it('unknown scoped route codes stay generic and cannot manufacture success or ec
 it('preserves the existing Company error and warning messages',async()=>{
  f.role='MANAGER';
  const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',error:'INVALID_SHIFT',warning:'OUTSIDE_AVAILABILITY'})}));
- expect(output).toContain('The shift information is incomplete or outside this week.');expect(output).toContain("Shift saved, but it is outside the employee&#x27;s submitted availability.");
+ expect(output).toContain('Couldn’t open that shift. Pick it again from this week.');expect(output).toContain("Shift saved, but it is outside the employee&#x27;s submitted availability.");
  expect(output).toContain('role="alert"');expect(output).toContain('role="status"');
 });
 it('Corporate: the week card names the week and its state, open shifts offer Find cover, and an unplanned location offers Plan',async()=>{

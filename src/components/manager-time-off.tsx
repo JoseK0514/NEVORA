@@ -8,9 +8,9 @@ import { listPendingTimeOffRequests, listTeamTimeOffRequests } from "@/lib/data/
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
 import { formatTime, weekStartFor } from "@/lib/date-utils";
 import { ActionForm } from "@/components/wave-a/action-form";
-import { agoLabel, dayLabel, initialsOf, QuietHeader, QuietList, QuietNav, QuietPage, QuietRow, QuietSegments } from "@/components/quiet/quiet";
+import { agoLabel, dayLabel, initialsOf, QuietHeader, QuietList, QuietNav, QuietPage, QuietRow } from "@/components/quiet/quiet";
 import { ManagerIssueFocus } from './manager-issue-focus';
-import { CorpAvatar, CorpCard, CorpNav, CorpNote, CorpPage, CorpPill, CorpRow, CorpTitle } from "@/components/corp/corp";
+import { CorpAvatar, CorpCard, CorpNav, CorpNote, CorpPage, CorpRow, CorpSegments, CorpTitle } from "@/components/corp/corp";
 import "./manager-time-off.css";
 import { inboxFilter } from "@/lib/action-center/inbox";
 import { getWorkspace } from "@/lib/data/workspaces";
@@ -84,7 +84,8 @@ function FocusedReview({ request, origin, error, others, timeZone }: { request: 
   const first = request.employeeName.split(/\s+/)[0] || request.employeeName;
   const sent = sentLabel((request as { createdAt?: string }).createdAt, timeZone);
   const offNames = others ? [...new Set(others.filter(other => other.employeeId !== request.employeeId && other.startDate <= request.endDate && other.endDate >= request.startDate).map(other => other.employeeName))] : null;
-  const offLabel = request.startDate === request.endDate ? `Others off ${dayLabel(request.startDate)}` : "Others off these days";
+  // Copy table 15: "Also off that day · No one".
+  const offLabel = request.startDate === request.endDate ? "Also off that day" : "Also off those days";
   return <CorpPage className="c-request c-page--narrow" labelledBy="request-title">
     <CorpNav back={backTo(origin)} title="Time off request" titleId="request-nav-title" phoneOnly />
     <CorpTitle id="request-title" title="Time off request" sub={request.employeeName} wide />
@@ -93,7 +94,6 @@ function FocusedReview({ request, origin, error, others, timeZone }: { request: 
       <div className="c-request__who">
         <CorpAvatar initials={initialsOf(request.employeeName)} large />
         <span className="c-row__main"><span className="c-row__title c-row__title--b">{request.employeeName}</span></span>
-        <CorpPill tone="amber">Waiting</CorpPill>
       </div>
       <div className="c-request__body">
         <span className="c-big">{dates.title}</span>
@@ -103,10 +103,10 @@ function FocusedReview({ request, origin, error, others, timeZone }: { request: 
       </div>
     </CorpCard>
     <CorpCard as="div" ariaLabel="That week">
-      <CorpRow href={`/app/schedule?week=${encodeURIComponent(week)}`} bold title="That week’s schedule" detail="See who’s working that week" chevron />
+      <CorpRow href={`/app/schedule?week=${encodeURIComponent(week)}`} bold title="See that week’s schedule" chevron />
     </CorpCard>
     {offNames ? <CorpCard as="div" ariaLabel={offLabel}>
-      <CorpRow title={offLabel} value={offNames.length ? offNames.join(", ") : "None"} valueTone="soft" />
+      <CorpRow title={offLabel} value={offNames.length ? offNames.join(", ") : "No one"} valueTone="soft" />
     </CorpCard> : null}
     <form action={reviewTimeOffAction} className="c-request__decide" aria-label={`Review time off for ${request.employeeName}`}>
       <input type="hidden" name="requestId" value={request.id} />
@@ -167,9 +167,10 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
   return (<ScopedReadFrame observation={source}>
     <QuietPage className="q-timeoff">
       <QuietNav back={backTo(origin)} />
-      <QuietHeader title="Time off" />
-      <QuietSegments label="Time off sections" items={tabs.map(item => ({ href: `/app/requests?tab=${item.id}`, current: selected.id === item.id,
-        label: item.id === "pending" && waiting ? `Waiting · ${waiting}` : item.label }))} />
+      <QuietHeader title="Time off requests" />
+      {/* R12: the kit's segmented control (its thumb slides once the round-2 kit lands). */}
+      <CorpSegments label="Time off sections" items={tabs.map(item => ({ href: `/app/requests?tab=${item.id}`, current: selected.id === item.id,
+        label: item.id === "pending" && waiting ? `Waiting (${waiting})` : item.label }))} />
       {error ? <p className="q-error q-first" role="alert">That decision wasn’t saved. The request may have changed; check it and decide again.</p> : null}
       {reviewed ? <p className="q-help q-first" role="status">Decision saved.</p> : null}
       {selected.id === "pending" ? (requests.length ? <ul className="q-list q-requests" aria-label="Waiting time off">{requests.map(request => {
