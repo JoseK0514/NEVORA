@@ -9,7 +9,7 @@
     --em-on-action:#FFFFFF; --em-canvas:#F5F6F6; --em-surface:#FFFFFF; --em-ink:#1A1C1E; --em-muted:#6B7075;
     --em-line:#E3E5E6; --em-teal:#0B6E69; --em-press:#084F4B; --em-wash:#E6F1EF;
     --em-edge:#D5D8DA; --em-secondary:#4A4F54; --em-focus:#0B6E69;
-    --em-amber:#8A4B00; --em-amber-wash:#FEF4E6; --em-red:#B42318; --em-red-wash:#FDECEA;
+    --em-amber:#6B7075; --em-amber-wash:transparent; --em-red:#B42318; --em-red-wash:#FDECEA;
     --em-font:Inter,"Inter Fallback",-apple-system,BlinkMacSystemFont,sans-serif;
     --em-size-title:24px; --em-size-section:13px; --em-size-body:15px; --em-size-support:13px; --em-size-nav:11px; --em-size-shift:20px;
     --em-line-shift:1.3; --em-line-title:1.25; --em-line-heading:1.38; --em-line-label:1.33; --em-line-body:1.33;
@@ -48,33 +48,35 @@
   }
   html body #employee-mobile[data-nv-corp] .em-request-body section > h2 {
     display:flex !important; align-items:center !important; min-height:44px !important; margin:0 0 4px !important; padding:0 16px !important; box-shadow:inset 0 -1px 0 #EDEEEF !important;
-    color:#4A4F54 !important; font-size:13px !important; line-height:18px !important; font-weight:600 !important; letter-spacing:0 !important;
+    color:#6B7075 !important; font-size:13px !important; line-height:18px !important; font-weight:500 !important; letter-spacing:-0.04px !important;
   }
   html body #employee-mobile[data-nv-corp] .em-request-body section > :is(p, dl, .em-hours-help, .em-hours-own-note) { margin-left:16px !important; margin-right:16px !important; }
   html body #employee-mobile[data-nv-corp] .em-request-body section > p:last-child { margin-bottom:12px !important; }
   html body #employee-mobile[data-nv-corp] .em-request-body section > .em-request-list { margin:-4px 0 0 !important; }
 
-  /* Lists: kit rows. */
+  /* Lists: kit rows (Nov 1 upscale, kit consistency 3, 4): 60px for two lines, 52px for one; titles 15/500, details 13/400
+   * grey; one hover (#F2F4F4) and pressed (#EDEEEF) fill, 120ms ease-out. */
   html body #employee-mobile[data-nv-corp] .em-request-list { display:block !important; margin:0 !important; padding:0 !important; list-style:none !important; gap:0 !important; background:transparent !important; box-shadow:none !important; border:0 !important; }
   html body #employee-mobile[data-nv-corp] .em-request-list > li { margin:0 !important; padding:0 !important; border:0 !important; background:none !important; box-shadow:inset 0 -1px 0 #EDEEEF !important; }
   html body #employee-mobile[data-nv-corp] .em-request-list > li:last-child { box-shadow:none !important; }
   html body #employee-mobile[data-nv-corp] :is(.em-request-entry, .em-request-links > a, .em-request-list > li > a) {
-    display:flex !important; align-items:center !important; gap:12px !important; min-height:56px !important; margin:0 !important; padding:8px 16px !important;
+    display:flex !important; align-items:center !important; gap:12px !important; min-height:60px !important; margin:0 !important; padding:8px 16px !important;
     border:0 !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; color:#1A1C1E !important; text-decoration:none !important;
+    cursor:pointer; transition:background-color 120ms ease-out; -webkit-tap-highlight-color:transparent;
   }
   html body #employee-mobile[data-nv-corp] :is(.em-request-entry, .em-request-list > li > a) > span:not(.em-request-icon) { flex:1 !important; min-width:0 !important; display:flex !important; flex-direction:column !important; gap:2px !important; }
-  html body #employee-mobile[data-nv-corp] :is(.em-request-entry, .em-request-list > li > a) strong { font-size:15px !important; line-height:20px !important; font-weight:600 !important; color:#1A1C1E !important; }
+  html body #employee-mobile[data-nv-corp] :is(.em-request-entry, .em-request-list > li > a) strong { font-size:15px !important; line-height:20px !important; font-weight:500 !important; color:#1A1C1E !important; }
   html body #employee-mobile[data-nv-corp] :is(.em-request-entry, .em-request-list > li > a) small { font-size:13px !important; line-height:18px !important; color:#6B7075 !important; }
   html body #employee-mobile[data-nv-corp] :is(.em-request-entry, .em-request-list > li > a) > svg { flex:none !important; width:16px !important; height:16px !important; color:#A7ACB1 !important; }
-  html body #employee-mobile[data-nv-corp] :is(.em-request-entry, .em-request-list > li > a):active { background:#F7F8F8 !important; }
+  html body #employee-mobile[data-nv-corp] :is(.em-request-entry, .em-request-links > a, .em-request-list > li > a):active { background:#EDEEEF !important; transition:none; }
 
   /* Facts (dl): label left, value right, on hairlines. */
   html body #employee-mobile[data-nv-corp] .em-hours-facts { display:block !important; margin:0 !important; padding:0 !important; background:none !important; box-shadow:none !important; border:0 !important; }
   html body #employee-mobile[data-nv-corp] section > .em-hours-facts { margin:0 !important; }
   html body #employee-mobile[data-nv-corp] .em-hours-facts > div { display:flex !important; align-items:baseline !important; justify-content:space-between !important; gap:12px !important; min-height:52px !important; margin:0 !important; padding:14px 16px !important; border:0 !important; box-shadow:inset 0 -1px 0 #EDEEEF !important; background:none !important; }
   html body #employee-mobile[data-nv-corp] .em-hours-facts > div:last-child { box-shadow:none !important; }
-  html body #employee-mobile[data-nv-corp] .em-hours-facts dt { font-size:15px !important; line-height:20px !important; font-weight:600 !important; color:#1A1C1E !important; }
-  html body #employee-mobile[data-nv-corp] .em-hours-facts dd { margin:0 !important; text-align:right !important; font-size:15px !important; line-height:20px !important; color:#1A1C1E !important; display:flex; flex-direction:column; align-items:flex-end; }
+  html body #employee-mobile[data-nv-corp] .em-hours-facts dt { font-size:15px !important; line-height:20px !important; font-weight:500 !important; color:#1A1C1E !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours-facts dd { margin:0 !important; text-align:right !important; font-size:15px !important; line-height:20px !important; font-weight:400 !important; color:#6B7075 !important; display:flex; flex-direction:column; align-items:flex-end; }
   html body #employee-mobile[data-nv-corp] .em-hours-facts dd small { font-size:13px !important; line-height:18px !important; color:#6B7075 !important; }
 
   /* Status cards (em-response-status): the state big, then its lines. */
@@ -126,12 +128,12 @@
   /* Disclosures (timecard entries, history): one white card each, 56px summary row. */
   html body #employee-mobile[data-nv-corp] .em-hours-disclosure { margin:0 !important; border:0 !important; border-radius:12px !important; background:#FFFFFF !important; box-shadow:0 0 0 1px #E3E5E6 !important; overflow:hidden; }
   html body #employee-mobile[data-nv-corp] .em-hours-disclosures { display:flex !important; flex-direction:column !important; gap:8px !important; padding:0 12px 12px !important; }
-  html body #employee-mobile[data-nv-corp] .em-hours-disclosure summary { display:flex !important; align-items:center !important; gap:12px !important; min-height:56px !important; padding:8px 16px !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours-disclosure summary { display:flex !important; align-items:center !important; gap:12px !important; min-height:60px !important; padding:8px 16px !important; }
   html body #employee-mobile[data-nv-corp] .em-hours-disclosure summary > span { flex:1; display:flex; flex-direction:column; gap:2px; }
-  html body #employee-mobile[data-nv-corp] .em-hours-disclosure summary strong { font-size:15px !important; line-height:20px !important; font-weight:600 !important; color:#1A1C1E !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours-disclosure summary strong { font-size:15px !important; line-height:20px !important; font-weight:500 !important; color:#1A1C1E !important; }
   html body #employee-mobile[data-nv-corp] .em-hours-disclosure summary small { font-size:13px !important; line-height:18px !important; color:#6B7075 !important; }
   html body #employee-mobile[data-nv-corp] .em-hours-disclosure-body { padding:4px 16px 14px !important; box-shadow:inset 0 1px 0 #EDEEEF !important; }
-  html body #employee-mobile[data-nv-corp] .em-hours-disclosure-body h3 { margin:10px 0 2px !important; color:#6B7075 !important; font-size:13px !important; line-height:18px !important; font-weight:600 !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours-disclosure-body h3 { margin:10px 0 2px !important; color:#6B7075 !important; font-size:13px !important; line-height:18px !important; font-weight:500 !important; }
 
   /* The page footer ("Your information only · Refresh"): one quiet line. */
   html body #employee-mobile[data-nv-corp] .em-request-footer { display:flex !important; align-items:center !important; justify-content:center !important; gap:8px !important; margin:4px 0 0 !important; padding:0 !important; background:none !important; box-shadow:none !important; border:0 !important; color:#6B7075 !important; font-size:13px !important; line-height:18px !important; }
@@ -144,7 +146,7 @@
   html body #employee-mobile[data-nv-corp] .em-request-icon svg { width:20px !important; height:20px !important; }
   /* Link groups (Time-off requests, My shift requests): one card of one-line rows. */
   html body #employee-mobile[data-nv-corp] .em-request-links { display:block !important; margin:0 !important; padding:0 !important; border:0 !important; border-radius:12px !important; background:#FFFFFF !important; box-shadow:0 0 0 1px #E3E5E6 !important; overflow:hidden; }
-  html body #employee-mobile[data-nv-corp] .em-request-links > a { min-height:52px !important; justify-content:space-between !important; font-size:15px !important; line-height:20px !important; font-weight:600 !important; box-shadow:inset 0 -1px 0 #EDEEEF !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-links > a { min-height:52px !important; justify-content:space-between !important; font-size:15px !important; line-height:20px !important; font-weight:500 !important; box-shadow:inset 0 -1px 0 #EDEEEF !important; }
   html body #employee-mobile[data-nv-corp] .em-request-links > a:last-child { box-shadow:none !important; }
   html body #employee-mobile[data-nv-corp] .em-request-links > a > svg { width:16px !important; height:16px !important; color:#A7ACB1 !important; }
   html body #employee-mobile[data-nv-corp] section > .em-request-links { border-radius:0 !important; box-shadow:inset 0 1px 0 #EDEEEF !important; }
@@ -152,8 +154,9 @@
 
   /* A section heading with a count on the right ("Eligible for you · 0 shifts"): the card's label row. */
   html body #employee-mobile[data-nv-corp] .em-request-section-title { display:flex !important; align-items:center !important; justify-content:space-between !important; gap:12px !important; min-height:44px !important; margin:0 !important; padding:0 16px !important; box-shadow:inset 0 -1px 0 #EDEEEF !important; }
-  html body #employee-mobile[data-nv-corp] .em-request-section-title h2 { margin:0 !important; padding:0 !important; min-height:0 !important; box-shadow:none !important; color:#4A4F54 !important; font-size:13px !important; line-height:18px !important; font-weight:600 !important; }
-  html body #employee-mobile[data-nv-corp] .em-request-section-title span { color:#6B7075 !important; font-size:13px !important; line-height:18px !important; }
+  html body #employee-mobile[data-nv-corp] .em-request-section-title h2 { margin:0 !important; padding:0 !important; min-height:0 !important; box-shadow:none !important; color:#6B7075 !important; font-size:13px !important; line-height:18px !important; font-weight:500 !important; }
+  /* The count on the right ("0 shifts"): the kit's count, 13/600 grey. */
+  html body #employee-mobile[data-nv-corp] .em-request-section-title span { color:#6B7075 !important; font-size:13px !important; line-height:18px !important; font-weight:600 !important; font-variant-numeric:tabular-nums; }
   /* Recent requests first on the hub (board G-E-Requests), then the ways to start one. */
   html body #employee-mobile[data-nv-corp] .em-requests[data-requests-state] .em-request-body > section[aria-labelledby="em-recent-heading"] { order:-1 !important; }
 }
@@ -171,7 +174,7 @@
 }
 @media screen and (max-width: 767px), screen and (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
   html body #employee-mobile[data-nv-corp] .em-hours .c-card__head { display:flex !important; align-items:center !important; min-height:44px !important; margin:0 !important; padding:0 16px !important; }
-  html body #employee-mobile[data-nv-corp] .em-hours .c-card__label { margin:0 !important; padding:0 !important; color:#4A4F54 !important; font-size:13px !important; line-height:18px !important; font-weight:600 !important; letter-spacing:0 !important; }
+  html body #employee-mobile[data-nv-corp] .em-hours .c-card__label { margin:0 !important; padding:0 !important; color:#6B7075 !important; font-size:13px !important; line-height:18px !important; font-weight:500 !important; letter-spacing:-0.04px !important; }
   html body #employee-mobile[data-nv-corp] .em-hours .c-stats { margin:0 !important; }
   html body #employee-mobile[data-nv-corp] .em-hours .c-stat { margin:0 !important; }
 }
@@ -180,7 +183,7 @@
 @media screen and (max-width: 767px), screen and (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-body { display:flex !important; flex-direction:column !important; gap:12px !important; padding:12px 16px 24px !important; background:transparent !important; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-section { margin:0 !important; padding:0 !important; border:0 !important; border-radius:12px !important; background:#FFFFFF !important; box-shadow:0 0 0 1px #E3E5E6 !important; overflow:hidden; }
-  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-section > h2 { display:flex !important; align-items:center !important; min-height:44px !important; margin:0 !important; padding:0 16px !important; box-shadow:inset 0 -1px 0 #EDEEEF !important; color:#4A4F54 !important; font-size:13px !important; line-height:18px !important; font-weight:600 !important; letter-spacing:0 !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-section > h2 { display:flex !important; align-items:center !important; min-height:44px !important; margin:0 !important; padding:0 16px !important; box-shadow:inset 0 -1px 0 #EDEEEF !important; color:#6B7075 !important; font-size:13px !important; line-height:18px !important; font-weight:500 !important; letter-spacing:-0.04px !important; }
   html body #employee-mobile[data-nv-corp] .em-pay section[aria-labelledby="pay-hours-title"] { display:none !important; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-next { display:flex !important; gap:12px !important; margin:0 !important; padding:12px 16px 14px !important; border:0 !important; background:none !important; box-shadow:none !important; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-next > svg { flex:none; width:20px !important; height:20px !important; margin-top:1px; color:#4A4F54 !important; }
@@ -193,22 +196,24 @@
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-latest > p { margin:2px 0 0 !important; font-size:13px !important; line-height:18px !important; color:#6B7075 !important; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-latest > :is(.em-pay-chip, .em-pay-relation) { margin-top:8px !important; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-hint { margin:10px 0 0 !important; font-size:13px !important; line-height:18px !important; color:#6B7075 !important; }
-  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-chip { display:inline-flex !important; align-items:center !important; height:22px !important; padding:0 8px !important; border:0 !important; border-radius:11px !important; background:#EAF0FD !important; color:#1D4ED8 !important; font-size:13px !important; line-height:18px !important; font-weight:600 !important; }
+  /* Nov 1 upscale (kit consistency 5, Owner R3 on Employee): a statement's state is grey text, 13/18 500, no fill. */
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-chip { display:inline-flex !important; align-items:center !important; height:auto !important; padding:0 !important; border:0 !important; border-radius:0 !important; background:none !important; color:#6B7075 !important; font-size:13px !important; line-height:18px !important; font-weight:500 !important; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-chip--muted { background:#EDEEEF !important; color:#4A4F54 !important; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-relation { font-size:13px !important; line-height:18px !important; color:#4A4F54 !important; }
   html body #employee-mobile[data-nv-corp] .em-pay :is(.em-pay-actions, .em-pay-latest) :is(.em-request-primary, .em-request-secondary) { width:auto !important; flex:1 !important; height:44px !important; min-height:44px !important; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list { margin:0 !important; padding:0 !important; list-style:none !important; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list > li { margin:0 !important; padding:0 !important; border:0 !important; background:none !important; box-shadow:inset 0 -1px 0 #EDEEEF !important; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list > li:last-child { box-shadow:none !important; }
-  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list summary { display:flex !important; align-items:center !important; gap:12px !important; min-height:56px !important; padding:8px 16px !important; border:0 !important; background:none !important; box-shadow:none !important; cursor:pointer; list-style:none; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list summary { display:flex !important; align-items:center !important; gap:12px !important; min-height:60px !important; padding:8px 16px !important; border:0 !important; background:none !important; box-shadow:none !important; cursor:pointer; list-style:none; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list summary::-webkit-details-marker { display:none; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list summary > span { flex:1; display:flex; flex-wrap:wrap; align-items:center; column-gap:8px; row-gap:2px; }
-  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list summary strong { flex-basis:100%; font-size:15px !important; line-height:20px !important; font-weight:600 !important; color:#1A1C1E !important; }
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list summary strong { flex-basis:100%; font-size:15px !important; line-height:20px !important; font-weight:500 !important; color:#1A1C1E !important; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list summary small { font-size:13px !important; line-height:18px !important; color:#6B7075 !important; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list summary > svg { flex:none; width:16px !important; height:16px !important; color:#A7ACB1 !important; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-list details > div { display:flex; flex-direction:column; gap:10px; padding:0 16px 14px !important; }
   html body #employee-mobile[data-nv-corp] .em-pay :is(.em-pay-notice) { margin:0 !important; padding:14px 16px !important; border:0 !important; border-radius:12px !important; background:#FFFFFF !important; box-shadow:0 0 0 1px #E3E5E6 !important; }
-  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-notice--caution { box-shadow:0 0 0 1px #F4D3A6 !important; background:#FFFBF5 !important; }
+  /* A caution notice is a calm white card like every other notice (no amber ring or wash). */
+  html body #employee-mobile[data-nv-corp] .em-pay .em-pay-notice--caution { box-shadow:0 0 0 1px #E3E5E6 !important; background:#FFFFFF !important; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-notice-heading { display:flex; align-items:center; gap:8px; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-notice-heading h2 { margin:0 !important; font-size:15px !important; line-height:20px !important; font-weight:600 !important; color:#1A1C1E !important; }
   html body #employee-mobile[data-nv-corp] .em-pay .em-pay-notice-heading svg { width:20px !important; height:20px !important; }
@@ -226,3 +231,14 @@
 html body .app-shell[data-nv-corp] .q-mytime > .q-nav { display:none !important; }
 html body #employee-mobile[data-nv-corp] .em-hours .em-hours-past { position:relative; }
 html body #employee-mobile[data-nv-corp] .em-hours .em-hours-past::after { content:""; position:absolute; inset:-6px -2px; }
+
+/* Nov 1 upscale (kit consistency 5): Owner round-2 rule R3 on every Employee page, at every width. A state is grey text,
+ * 13/18 500 #6B7075 with no fill: the kit's amber pills ("Waiting", "On break", "Needs review", "Check") and its retired
+ * blue ones ("Payday …", "Correction") never draw a coloured pill here. Teal stays for the one thing happening now
+ * ("On the clock"); red stays for the one real problem. */
+html body #employee-mobile[data-nv-corp] .c-pill:is(.c-pill--amber, .c-pill--blue) {
+  height:auto; padding:0; gap:0; border-radius:0; background:none; color:#6B7075; font-size:13px; line-height:18px; font-weight:500; letter-spacing:-0.04px;
+}
+html body #employee-mobile[data-nv-corp] .c-pill:is(.c-pill--amber, .c-pill--blue) > .c-pill__dot { display:none; }
+/* The same for a row's amber value ("Due Mon, Nov 2"). */
+html body #employee-mobile[data-nv-corp] .c-row__value--amber { color:#6B7075; }

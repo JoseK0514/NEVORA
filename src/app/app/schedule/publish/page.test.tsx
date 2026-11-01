@@ -74,7 +74,7 @@ it("lists changes to the published week and publishes them once with Publish cha
   f.pending = pendingData();
   const out = await html();
   expect(out).toContain(">2 changes<");
-  expect(out).toContain(">Changes not published (2)<");
+  expect(out).toContain('>Changes not published<span class="c-count c-num">2</span><');
   expect(out).toContain("Tue, Nov 3 · Time changed · 12:00 PM – 8:00 PM → 2:00 PM – 8:00 PM");
   expect(out).toMatch(/Sam Ortiz.*Wed, Nov 4 · Added · 8:00 AM – 4:00 PM.*c-pill--amber">Added/);
   expect(out).toContain(">Publish changes<");

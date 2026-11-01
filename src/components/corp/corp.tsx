@@ -5,17 +5,31 @@ import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { BrandWordmark } from "@/components/brand-mark";
 import { NUVORA_BRAND } from "@/lib/brand";
-import { CorpBackLink } from "./corp-client";
+import { CorpBackLink, CorpLoadFailed } from "./corp-client";
 import { ActionMenu } from "@/components/action-menu";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 
-export { CorpBackLink, CorpRetryButton, leaveRow } from "./corp-client";
+export { CorpBackLink, CorpRetryButton, CorpLoadFailed, leaveRow } from "./corp-client";
 export { RANGE_DASH, periodRange, payDay, daysBetween, hoursText, minutesText } from "./corp-format";
 
 /* NEVORA corporate kit (approved Oct 26, 2026; docs/product/specs/corporate-mockups). Presentation only: callers pass
  * authorized, formatted data and keep their own actions. Each piece reproduces one element of the approved boards. */
 
+/** `blue` is retired (Nov 1 upscale: blue is not in the NEVORA palette); a pill passed it reads as grey text. */
 type Tone = "teal" | "amber" | "blue" | "red" | "neutral";
+
+/* Nov 1 upscale (kit consistency 1): one count style, "Label N" with N at 13/600 #6B7075 and never in parentheses. A label
+ * written the old way ("Team (9)", "Waiting (2)") is split here, so every caller of CorpCard, CorpSection and
+ * CorpSegments gets the new form without a change. */
+const COUNTED = /^(.*\S)\s*\((\d[\d,]*)\)$/;
+/** "Team (9)" becomes "Team" and a kit count; anything else is returned as it is. */
+export function countLabel(label: ReactNode): ReactNode {
+  if (typeof label !== "string") return label;
+  const match = COUNTED.exec(label);
+  return match ? <>{match[1]}<CorpCount>{match[2]}</CorpCount></> : label;
+}
+const withCount = (label: ReactNode, count?: ReactNode) => count === undefined || count === null || count === ""
+  ? countLabel(label) : <>{label}<CorpCount>{count}</CorpCount></>;
 
 /** A page on the grey canvas: 16px gutters, 12px between cards. */
 export function CorpPage({ children, label, labelledBy, className }: { children: ReactNode; label?: string; labelledBy?: string; className?: string }) {
@@ -33,14 +47,17 @@ export function CorpTitle({ title, sub, actions, id, wide, subAside }: { title: 
   </header>;
 }
 
-/** A white card. With a label it opens with a 44px header row (label left; a link, pill or text right). */
-export function CorpCard({ label, aside, children, footer, id, ariaLabel, alert, as = "section" }: {
-  label?: ReactNode; aside?: ReactNode; children?: ReactNode; footer?: ReactNode; id?: string; ariaLabel?: string; alert?: boolean; as?: "section" | "div";
+/** A white card. With a label it opens with a 44px header row (label left; a link, pill or text right). `count` follows the
+ * label as "Label N" (Nov 1 upscale). `failed`: part of the card's data didn't load, so the header's right side says
+ * "Couldn't load · Try again" (Try again refreshes the page's data) in place of `aside`. */
+export function CorpCard({ label, count, aside, children, footer, id, ariaLabel, alert, failed, as = "section" }: {
+  label?: ReactNode; count?: ReactNode; aside?: ReactNode; children?: ReactNode; footer?: ReactNode; id?: string; ariaLabel?: string; alert?: boolean; failed?: boolean; as?: "section" | "div";
 }) {
   const headingId = id && label ? `${id}-label` : undefined;
   const Tag = as;
+  const right = failed ? <CorpLoadFailed /> : aside;
   return <Tag id={id} className={alert ? "c-card c-card--alert" : "c-card"} aria-labelledby={ariaLabel ? undefined : headingId} aria-label={ariaLabel}>
-    {label ? <div className="c-card__head"><h2 className="c-card__label" id={headingId}>{label}</h2>{aside ? <div className="c-card__aside">{aside}</div> : null}</div> : null}
+    {label ? <div className="c-card__head"><h2 className="c-card__label" id={headingId}>{withCount(label, count)}</h2>{right ? <div className="c-card__aside">{right}</div> : null}</div> : null}
     {children}
     {footer ? <div className="c-card__foot">{footer}</div> : null}
   </Tag>;
@@ -54,6 +71,8 @@ export function CorpBody({ children, tight }: { children: ReactNode; tight?: boo
  * words don't already say ("Correction", "Overdue"). A default or expected state ("Published", "Due Mon, Nov 2", "Needs
  * setup", "Live", "Waiting", "Not filled") is grey text: use CorpMeta. Red appears once per screen at most: prefer
  * tone="neutral", and keep "red" for the one real problem. */
+/** Nov 1 upscale (kit consistency 5): on Employee pages amber and blue pills read as grey text too (corp-employee-bridge.css),
+ * and `blue` reads as grey text everywhere. */
 export function CorpPill({ tone = "neutral", dot, children, label }: { tone?: Tone; dot?: boolean; children: ReactNode; label?: string }) {
   return <span className={`c-pill c-pill--${tone}`} aria-label={label}>{dot ? <span className="c-pill__dot" aria-hidden="true" /> : null}{children}</span>;
 }
@@ -76,7 +95,8 @@ export type CorpRowProps = {
   avatar?: ReactNode;
   icon?: ReactNode;
   value?: ReactNode;
-  valueTone?: "soft" | "teal" | "red" | "amber";
+  /** Values are 15/400 #6B7075 (Nov 1 upscale); `ink` is for a key figure that must read as ink. `soft` is the default look. */
+  valueTone?: "soft" | "ink" | "teal" | "red" | "amber";
   /** Trailing pills, badges or controls. */
   trail?: ReactNode;
   href?: string;
@@ -146,16 +166,28 @@ export function CorpLink({ href, children, large, label, prefetch }: { href: str
  * 20/26 600 with tabular figures (R1, R2). Figures are ink: a `tone` is for the screen's one real problem only (R3). */
 /** Round 2 (Home builder's request): a stat with `href` is a link to its list (hover #F7F8F8, press #EDEEEF, an inset
  * teal focus ring); `ariaLabel` names it when the label and figure alone don't ("3 open shifts"). */
+/** Nov 1 upscale (kit consistency 7): a figure that hasn't arrived or couldn't load ("…", "Not available", null) shows
+ * CORP_NO_VALUE, an em dash in #A7ACB1; the reason goes in a 13px line or the card header, never in the figure's slot. */
 export function CorpStats({ items }: { items: { label: ReactNode; value: ReactNode; tone?: "red" | "amber" | "teal"; href?: string; ariaLabel?: string }[] }) {
   return <dl className="c-stats">{items.map((item, index) => {
+    const none = noValue(item.value);
     const inner = <>
       <dt className="c-stat__label">{item.label}</dt>
-      <dd className={item.tone ? `c-stat__value c-stat__value--${item.tone}` : "c-stat__value"}>{item.value}</dd>
+      <dd className={none ? "c-stat__value c-stat__value--none" : item.tone ? `c-stat__value c-stat__value--${item.tone}` : "c-stat__value"}>{none ? CORP_NO_VALUE : item.value}</dd>
     </>;
     return item.href
       ? <div className="c-stat c-stat--link" key={index}><Link className="c-stat__link" href={item.href} aria-label={item.ariaLabel}>{inner}</Link></div>
       : <div className="c-stat" key={index}>{inner}</div>;
   })}</dl>;
+}
+
+/** The figure for a stat that has no value to show (loading or failed): an em dash, drawn #A7ACB1 by .c-stat__value--none. */
+export const CORP_NO_VALUE = "—";
+const noValue = (value: ReactNode) => value === null || value === undefined || value === "" || value === "…" || value === "..." || value === CORP_NO_VALUE;
+
+/** A stat figure with no value (for a page that builds its own stat markup): `<span className="c-stat__value c-stat__value--none">`. */
+export function CorpNoValue({ label = "Not available" }: { label?: string }) {
+  return <span className="c-stat__value c-stat__value--none" aria-label={label}>{CORP_NO_VALUE}</span>;
 }
 
 /** Segmented control made of links (or buttons via `onSelect`). Round 2 (R12): one white thumb slides to the current
@@ -166,8 +198,8 @@ export function CorpSegments({ label, items }: { label: string; items: { key?: s
   const style = { "--n": items.length, "--i": Math.max(0, current) } as CSSProperties;
   return <nav className="c-seg" aria-label={label} data-slide="" data-slide-none={current < 0 ? "" : undefined} style={style}>
     {items.map((item, index) => item.href
-      ? <Link key={item.key ?? item.href} href={item.href} aria-current={item.current ? "page" : undefined} aria-label={item.ariaLabel}>{item.label}</Link>
-      : <button key={item.key ?? index} type="button" aria-pressed={item.current ? "true" : "false"} aria-label={item.ariaLabel} onClick={item.onSelect}>{item.label}</button>)}
+      ? <Link key={item.key ?? item.href} href={item.href} aria-current={item.current ? "page" : undefined} aria-label={item.ariaLabel}>{countLabel(item.label)}</Link>
+      : <button key={item.key ?? index} type="button" aria-pressed={item.current ? "true" : "false"} aria-label={item.ariaLabel} onClick={item.onSelect}>{countLabel(item.label)}</button>)}
   </nav>;
 }
 
@@ -201,16 +233,26 @@ export function CorpLockup({ large, href, label = NUVORA_BRAND.homeAriaLabel }: 
   return href ? <Link href={href} className={cls} aria-label={label}>{inner}</Link> : <span className={cls} role="img" aria-label={`NEVORA ${NUVORA_BRAND.module}`}>{inner}</span>;
 }
 
-/** Owner premium A10 (visual-craft K): the one empty state. A card with a 15/600 line, a 13px line that says what happens
- * next, and at most one secondary action (pass a CorpButtonLink with kind="secondary" size="md"). No icon or illustration. */
-export function CorpEmpty({ title, body, action, label }: { title: ReactNode; body?: ReactNode; action?: ReactNode; label?: string }) {
+/** The one empty state (Owner premium A10; Nov 1 upscale, kit consistency 6). A left-aligned card: a 15/600 title, one
+ * 13px grey line that says what happens next, and an optional teal next-step link (`link`, 13/500 with a caret). `action`
+ * (a secondary button) stays for pages that need a button; prefer `link`. No icon or illustration. Inside a list card use
+ * CorpEmptyRow instead: one 56px row. */
+export function CorpEmpty({ title, body, action, link, label }: { title: ReactNode; body?: ReactNode; action?: ReactNode; link?: { href: string; label: ReactNode }; label?: string }) {
   return <section className="c-card" aria-label={label}>
     <div className="c-empty c-empty--card">
       <span className="c-empty__title">{title}</span>
       {body ? <span className="c-empty__body">{body}</span> : null}
+      {link ? <span className="c-empty__next"><Link className="c-link" href={link.href}>{link.label}<CaretRightIcon className="c-link__chev" weight="bold" aria-hidden="true" /></Link></span> : null}
       {action ? <span className="c-empty__action">{action}</span> : null}
     </div>
   </section>;
+}
+
+/** An empty list inside a list card: one 56px row of 15/400 #6B7075 text ("No decided requests yet"). `as="li"` inside a
+ * CorpRows list. */
+export function CorpEmptyRow({ children, as = "div" }: { children: ReactNode; as?: "div" | "li" }) {
+  const Tag = as;
+  return <Tag className="c-empty c-empty--row">{children}</Tag>;
 }
 
 /** Owner premium P3 (phone-native L3): the one failure style. Title ("Couldn't load timecards"), one 13px line and an
@@ -286,12 +328,14 @@ export function CorpMeta({ children, label }: { children: ReactNode; label?: str
   return <span className="c-meta" aria-label={label}>{children}</span>;
 }
 
-/** R5: a group of cards with its label above them (13/18 500 grey, inset 16px), for list pages (Settings, More, Team, Pay
+/** R5: a group of cards with its label above them (13/18 500 grey, on the card's edge), for list pages (Settings, More, Team, Pay
  * history, Things to do): no 44px header strip. Groups are 32px apart; cards in a group 12px. `aside` sits on the label's
  * line, right (a "See all" link). */
-export function CorpSection({ label, aside, id, children, ariaLabel }: { label?: ReactNode; aside?: ReactNode; id?: string; children: ReactNode; ariaLabel?: string }) {
+/* Nov 1 upscale (kit consistency 2): the label sits on the card's left edge (inset 0), 13/18 500 #6B7075, 8px above the
+ * card and 32px under the previous group; `count` follows it as "Label N". */
+export function CorpSection({ label, count, aside, id, children, ariaLabel }: { label?: ReactNode; count?: ReactNode; aside?: ReactNode; id?: string; children: ReactNode; ariaLabel?: string }) {
   const headingId = id && label ? `${id}-label` : undefined;
-  const heading = label ? <h2 className="c-section__label" id={headingId}>{label}</h2> : null;
+  const heading = label ? <h2 className="c-section__label" id={headingId}>{withCount(label, count)}</h2> : null;
   return <section id={id} className="c-section" aria-labelledby={ariaLabel ? undefined : headingId} aria-label={ariaLabel}>
     {heading && aside ? <div className="c-section__head">{heading}<span className="c-card__aside">{aside}</span></div> : heading}
     {children}
@@ -305,9 +349,9 @@ export function CorpTabs({ label, items }: { label: string; items: { href: strin
   </nav>;
 }
 
-/** A count after a label ("Open shifts  3"): grey 500 with tabular figures, in place of "(3)". */
+/** A count after a label ("Open shifts 3"): 13/600 #6B7075 with tabular figures, 6px after the label, in place of "(3)". */
 export function CorpCount({ children, label }: { children: ReactNode; label?: string }) {
-  return <span className="c-count" aria-label={label}>{children}</span>;
+  return <span className="c-count c-num" aria-label={label}>{children}</span>;
 }
 
 /** A sub-head inside a card, for a second kind of row in the same card ("Missed clock-ins" under "Open shifts"). */
