@@ -1,6 +1,7 @@
 import "./quiet.css";
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
+import { CorpBackLink } from "../corp/corp-client";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
@@ -25,7 +26,8 @@ export function QuietBarIcon({ href, label, children }: { href: string; label: s
 /** A pushed page's bar: back (or Cancel) on the left, an optional title, an optional action on the right. */
 export function QuietNav({ back, left, title, right }: { back?: { href: string; label: string }; left?: ReactNode; title?: ReactNode; right?: ReactNode }) {
   return <div className="q-nav">
-    {back ? <Link className="q-nav__l" href={back.href}><CaretLeftIcon className="q-ic q-ic--s" aria-hidden="true" />{back.label}</Link> : left ?? <span />}
+    {/* Owner premium P6: the back link goes back in history when its page is the previous one (no loop, scroll kept). */}
+    {back ? <CorpBackLink className="q-nav__l" href={back.href}><CaretLeftIcon className="q-ic q-ic--s" aria-hidden="true" />{back.label}</CorpBackLink> : left ?? <span />}
     {title ? <span className="q-nav__t">{title}</span> : <span />}
     {right ?? <span />}
   </div>;

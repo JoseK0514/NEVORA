@@ -18,7 +18,7 @@ const shapes: [RegExp, Props][] = [
   [/^\/app\/settings\/company-policies/, { title: "Company policies", summary: "Set attendance review rules for your company and locations.", label: "company policies", cards: [2, 1, 1, 1] }],
   [/^\/app\/settings\/breaks/, { eyebrow: true, add: "Add break type", title: "Break types", summary: "The breaks your team can start at the Clocker.", label: "break types", cards: [2, 3] }],
   [/^\/app\/settings\/positions/, { eyebrow: true, title: "Positions", summary: "The job qualifications your team brings to each shift.", label: "positions", cards: [1, 4] }],
-  [/^\/app\/settings\/clocker/, { eyebrow: true, add: "Add device", title: "Clocker devices", summary: "A shared tablet at each location, with access you control.", label: "Clocker devices", cards: [1, 2, 3] }],
+  [/^\/app\/settings\/clocker/, { title: "Clocker tablets", summary: "A shared tablet at each location, with access you control.", label: "Clocker tablets", cards: [2, 4] }],
 ];
 const hub: Props = { back: null, eyebrow: true, title: "Settings", summary: "Set up your workspace and the way your team works.", label: "settings", cards: [4, 4], aside: false };
 

@@ -49,7 +49,7 @@ it('gives managers requirement filters rather than claiming a personal review th
  // Quiet (v4): All and Needs reply (the required ones); the + in the bar creates an update.
  expect(html).toContain('aria-label="Needs reply, 1">Needs reply · 1</button>');
  expect(html).not.toContain('To review');
- expect(html).toContain('aria-label="Create update"');
+ expect(html).toContain('href="/app/updates/compose">New update</a>');
 });
 
 it('a signed-out read (401, session_ended) asks to sign in, like a 403, and offers no futile Try again', async () => {

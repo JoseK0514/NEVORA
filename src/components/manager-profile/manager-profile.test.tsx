@@ -57,7 +57,8 @@ describe('Owner and Manager Profile', () => {
 
   it('shows contact and alert switches when ready', () => {
     const html = render(owner, parseManagerProfile(fixture('owner')));
-    expect(html).toContain('787-555-0100');
+    // Formatted as on a person's page, the area code kept with the number (Owner premium, visual-craft Profile).
+    expect(html).toContain('(787)\u00a0555-0100');
     // An address breaks only after the @ or before a dot (TC-02).
     expect(html).toContain('<span class="pmp-part">owner@</span></span><span><wbr/><span class="pmp-part">northside-qa</span>');
     expect(html).toContain('All notifications');
@@ -81,11 +82,11 @@ describe('Owner and Manager Profile', () => {
     expect(ownerEmpty).toContain('href="/app/employees/qa-owner?edit=1"');
   });
 
-  it('places the account rows after Notifications and before Sign out', () => {
+  it('places the account rows after Notifications, with Sign out left to More and the sidebar (Owner premium A9)', () => {
     const html = render(owner, parseManagerProfile(fixture('owner')), { accountCards: <li id="test-account-cards" /> });
-    const notifications = html.indexOf('id="profile-notifications"'), cards = html.indexOf('id="test-account-cards"'), signout = html.indexOf('q-btn q-btn--danger');
+    const notifications = html.indexOf('id="profile-notifications"'), cards = html.indexOf('id="test-account-cards"');
     expect(cards).toBeGreaterThan(notifications);
-    expect(signout).toBeGreaterThan(cards);
+    expect(html).not.toContain('Sign out');
   });
 
   it('keeps a phone extension with its number', () => {

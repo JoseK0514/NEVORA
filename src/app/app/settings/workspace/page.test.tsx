@@ -24,15 +24,16 @@ it("keeps Owner authorization and both editable fields with clear scheduling con
   expect(mocks.requireRoles).toHaveBeenCalledWith(["OWNER"]);
   expect(html).toContain('for="workspace-name"');
   expect(html).toContain('for="workspace-timezone"');
-  // The business name wraps long names (one row that grows); Enter still saves.
-  expect(html).toMatch(/<textarea(?=[^>]*name="name")(?=[^>]*maxLength="160")(?=[^>]*required="")(?=[^>]*rows="1")(?=[^>]*class="q-in wc-wrap")[^>]*>Northside Operations<\/textarea>/);
+  // P9 (F9): the business name is a one-line field; Return moves on and never saves (the top-right Save does).
+  expect(html).toMatch(/<input(?=[^>]*name="name")(?=[^>]*maxLength="160")(?=[^>]*required="")(?=[^>]*autoComplete="organization")(?=[^>]*enterKeyHint="next")(?=[^>]*value="Northside Operations")[^>]*\/>/);
+  expect(html).not.toContain('<textarea');
   expect(html).toContain('value="America/Puerto_Rico"');
   expect(html).not.toMatch(/<input(?=[^>]*name="timeZone")(?=[^>]*disabled="")[^>]*>/);
   // Quiet (v4): the week start is a row; Save sits at the top right and submits the form.
   expect(html).toContain('<span class="q-rv q-rv--l">Monday</span>');
   expect(html).toContain('type="submit" form="company-profile-form"');
   expect(html).toContain(">Save</button>");
-  expect(html).toContain('href="/app/more"');
+  expect(html).toContain('href="/app/settings"');
 });
 
 it("explains a protected timezone without locking the workspace name", async () => {

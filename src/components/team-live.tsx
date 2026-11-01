@@ -25,13 +25,14 @@ export function TeamLiveProvider({ children }: { children: ReactNode }) {
   return <TeamLiveContext.Provider value={{ ready, working, onBreak }}>{children}</TeamLiveContext.Provider>;
 }
 
-/** "Working", "On break" or "Off" for one person; nothing until the reads are ready. */
+/** "Working" or "On break" for one person; nothing until the reads are ready. Off is the normal state, so it shows no
+ * pill (Owner premium A5: a pill only for the exception; the subtitle says how many are working). */
 export function TeamLivePill({ employeeId }: { employeeId: string }) {
   const live = useContext(TeamLiveContext);
   if (!live.ready) return null;
   if (live.working.has(employeeId)) return <CorpPill tone="teal">Working</CorpPill>;
-  if (live.onBreak.has(employeeId)) return <CorpPill tone="blue">On break</CorpPill>;
-  return <CorpPill tone="neutral">Off</CorpPill>;
+  if (live.onBreak.has(employeeId)) return <CorpPill tone="neutral">On break</CorpPill>;
+  return null;
 }
 
 /** " · 7 working now" for the subtitle, once the reads are ready. */

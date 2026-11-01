@@ -1,0 +1,30 @@
+/* Punch photos (Owner premium, visual-craft "Punch photos"): the settings page on the corporate kit. A kit page inside the
+ * Settings frame: 16px gutters on a phone, cards 12px apart, switch rows (51×31), one field card with its footer actions. */
+:is(#c-root, html) .c-page.c-embed.c-photos { min-height: 0; padding: 12px 16px 24px; background: none; }
+:is(#c-root, html) .c-photos .c-photos__form { display: flex; flex-direction: column; gap: 12px; margin: 0; }
+:is(#c-root, html) .c-photos .c-photos__fields { display: flex; flex-direction: column; gap: 12px; min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#c-root, html) .c-photos .c-photos__switch { cursor: pointer; }
+:is(#c-root, html) .c-photos .c-photos__switch .c-row__detail > span:first-child { white-space: normal; }
+:is(#c-root, html) .c-photos .c-photos__state { padding: 14px 16px; }
+:is(#c-root, html) .c-photos .c-field__help { display: block; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-photos .c-field__help strong { font-weight: 600; color: var(--c-ink2); }
+:is(#c-root, html) .c-photos input[type="number"].c-in { max-width: 160px; }
+:is(#c-root, html) .c-photos .c-photos__more { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-photos .c-photos__more > summary { list-style: none; cursor: pointer; }
+:is(#c-root, html) .c-photos .c-photos__more > summary::-webkit-details-marker { display: none; }
+:is(#c-root, html) .c-photos .c-photos__more[open] .c-photos__caret { transform: rotate(180deg); }
+:is(#c-root, html) .c-photos .c-photos__caret { transition: transform 200ms cubic-bezier(.32, .72, 0, 1); }
+:is(#c-root, html) .c-photos .c-photos__moretext { padding: 0 16px 14px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-photos .c-photos__moretext p + p { margin-top: 8px; }
+:is(#c-root, html) .c-photos .c-photos__foot { flex-direction: column-reverse; align-items: stretch; justify-content: flex-end; }
+:is(#c-root, html) .c-photos .c-photos__foot > .c-btn { flex: none; width: 100%; }
+:is(#c-root, html) .c-photos .c-photos__feedback { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-teal); }
+:is(#c-root, html) .c-photos .c-photos__feedback--error { color: var(--c-red); }
+:is(#c-root, html) .c-photos fieldset:disabled .c-btn { opacity: .6; }
+@media (max-width: 767px) { :is(#c-root, html) .c-photos .c-in { font-size: 16px; } }
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-page.c-embed.c-photos { padding: 16px 16px 0; }
+  :is(#c-root, html) .c-photos .c-photos__foot { flex-direction: row; align-items: center; }
+  :is(#c-root, html) .c-photos .c-photos__foot > .c-btn { width: auto; min-width: 120px; }
+}
+@media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-photos .c-photos__caret { transition: none; } }

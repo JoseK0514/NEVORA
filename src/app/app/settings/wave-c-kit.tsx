@@ -12,7 +12,7 @@ export type SettingsFrameProps = {
   title: ReactNode;
   summary?: ReactNode;
   eyebrow?: ReactNode;
-  /** Back names where it goes. Settings pages return to More, where the phone opens them (boards O-Locations, O-Positions). */
+  /** Back names where it goes. Settings pages return to Settings, the one place that lists them (Owner premium A9). */
   back?: { href: string; label: string } | null;
   /** A small control at the top right of the band (an Add link). */
   bandAside?: ReactNode;
@@ -26,7 +26,7 @@ export type SettingsFrameProps = {
   children: ReactNode;
 };
 
-export function SettingsFrame({ title, summary, eyebrow: _eyebrow, back = { href: "/app/more", label: "More" }, bandAside, aside: _aside, width = "wide", settingsCrumb = true, className, save, modal, children }: SettingsFrameProps & {
+export function SettingsFrame({ title, summary, eyebrow: _eyebrow, back = { href: "/app/settings", label: "Settings" }, bandAside, aside: _aside, width = "wide", settingsCrumb = true, className, save, modal, children }: SettingsFrameProps & {
   /** Quiet (v4): the page's Save sits at the top right and submits this form id. */
   save?: { form: string; label?: string; disabled?: boolean };
   /** Quiet (v4): a create page is a sheet: Cancel, the title in the bar, and the submit at the top right. */
@@ -37,7 +37,8 @@ export function SettingsFrame({ title, summary, eyebrow: _eyebrow, back = { href
   // title is for screen readers only; tablets and desktop show the large title with the bar's action beside it.
   void _eyebrow; void _aside;
   return (
-    <div className={className ? `q-page wc-page ${className}` : "q-page wc-page"} data-nv-page="" data-q-sheet={modal ? "" : undefined} data-wc-width={width} data-wc-crumb={settingsCrumb ? "settings" : undefined}>
+    // Owner premium A7: every Settings page is one column, so it takes the kit's 720px desktop width (c-page--narrow).
+    <div className={className ? `q-page wc-page c-page--narrow ${className}` : "q-page wc-page c-page--narrow"} data-nv-page="" data-q-sheet={modal ? "" : undefined} data-wc-width={width} data-wc-crumb={settingsCrumb ? "settings" : undefined}>
       {modal ? <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href={modal.cancelHref}>Cancel</Link>} title={title}
           right={<button type="submit" form={modal.form} className="q-nav__r q-nav__r--b" disabled={modal.disabled}>{modal.submitLabel}</button>} />
         : back ? <QuietNav back={back} title={title} right={save ? <button type="submit" form={save.form} className="q-nav__r q-nav__r--b" disabled={save.disabled}>{save.label ?? "Save"}</button> : bandAside} />

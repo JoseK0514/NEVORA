@@ -1,10 +1,12 @@
 "use client";
 
+import Link from 'next/link';
 import {useRef,useState,type ReactNode} from 'react';
 import type {Location,Position,UserRole} from '@/lib/domain';
 import type {ScopeSelection} from '@/lib/company-access/model';
 import {CorpField} from '@/components/corp/corp';
 import {ChoiceField,FormHead,FormHeadBack,FormHeadLink,PhoneField} from '@/components/team/team-forms';
+import {ReturnToNext} from '@/components/team/return-to-next';
 import {EmployeeAccessForm} from './employee-access-form';
 import {createCommandFromForm} from './commands';
 import {OperationalScopeSelectionFields} from './manager-operational-scope-fields';
@@ -17,8 +19,10 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
  const stepOne=useRef<HTMLDivElement>(null);
  const blocked=!activeLocations.length;
  function next(){
-  // Step 1 must be complete before step 2: each field says what's missing, in order.
-  for(const field of stepOne.current?.querySelectorAll<HTMLInputElement|HTMLSelectElement>('input,select')??[])if(!field.checkValidity()){field.reportValidity();return;}
+  // Step 1 must be complete before step 2. Every missing field says so at once (P10): checkValidity() raises each
+  // field's inline message through the shared form validation, which focuses the first one. No browser bubble.
+  const fields=[...stepOne.current?.querySelectorAll<HTMLInputElement|HTMLSelectElement>('input,select')??[]];
+  if(fields.map(field=>field.checkValidity()).includes(false))return;
   setStep(2);requestAnimationFrame(()=>document.getElementById('new-employee-title')?.focus());
  }
  const activePositions=positions.filter(position=>position.active);
@@ -28,14 +32,15 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
    right={step===1?<button type="button" onClick={next} disabled={blocked}>Next</button>:<button type="submit" form="new-employee-form" disabled={blocked}>Add</button>}/>
   <EmployeeAccessForm id="new-employee-form" action={action} build={(fields,id)=>createCommandFromForm(fields,actorRole,scope,id)} className="c-teamform">
    {notice}
+   <ReturnToNext/>
    <input type="hidden" name="active" value="true"/>
    <div className="c-step" ref={stepOne} hidden={step!==1}>
     <div className="c-field__row">
-     <CorpField label="First name" htmlFor="new-first"><input id="new-first" className="c-in" name="firstName" autoComplete="given-name" required maxLength={160}/></CorpField>
-     <CorpField label="Last name" htmlFor="new-last"><input id="new-last" className="c-in" name="lastName" autoComplete="family-name" required maxLength={160}/></CorpField>
+     <CorpField label="First name" htmlFor="new-first"><input id="new-first" className="c-in" name="firstName" autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160}/></CorpField>
+     <CorpField label="Last name" htmlFor="new-last"><input id="new-last" className="c-in" name="lastName" autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160}/></CorpField>
     </div>
-    <CorpField label="Mobile phone" htmlFor="new-phone"><PhoneField id="new-phone" name="phone" autoComplete="tel-national" required/></CorpField>
-    <CorpField label="Email (optional)" htmlFor="new-email"><input id="new-email" className="c-in" name="email" type="email" autoComplete="email" maxLength={254} placeholder="name@example.com"/></CorpField>
+    <CorpField label="Mobile phone" htmlFor="new-phone"><PhoneField id="new-phone" name="phone" autoComplete="off" enterKeyHint="next" required/></CorpField>
+    <CorpField label="Email (optional)" htmlFor="new-email"><input id="new-email" className="c-in" name="email" type="email" inputMode="email" autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done" maxLength={254} placeholder="name@example.com"/></CorpField>
     <div className="c-field__row">
      <CorpField label="Role" htmlFor="new-role"><select id="new-role" className="c-in" name="role" value={role} onChange={event=>setRole(event.target.value as UserRole)}>
       <option value="EMPLOYEE">Employee</option><option value="LEAD">Lead</option><option value="MANAGER">Manager</option>
@@ -49,11 +54,17 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
     {role==='MANAGER'&&actorRole!=='OWNER'?<p className="c-note">An Owner assigns management access after this.</p>:null}
    </div>
    <div className="c-step" hidden={step!==2}>
-    <CorpField label="Employee ID" htmlFor="new-id" help="It stays the same after it’s created."><input id="new-id" className="c-in" name="id" placeholder="e.g. 10482" autoCapitalize="characters" spellCheck={false} required maxLength={128}/></CorpField>
+    <CorpField label="Employee ID" htmlFor="new-id" help="It stays the same after it’s created."><input id="new-id" className="c-in" name="id" placeholder="e.g. 10482" autoComplete="off" autoCapitalize="characters" autoCorrect="off" spellCheck={false} enterKeyHint="done" required maxLength={128}/></CorpField>
     <ChoiceField label="Positions" name="positionIds" none="None yet" empty="No positions yet" choices={activePositions.map(position=>({value:position.id,label:position.name}))}/>
     <ChoiceField key={primary} label="Locations they can work at" name="eligibleLocationIds" choices={activeLocations.map(location=>({value:location.id,label:location.shortName,checked:location.id===primary,
      help:location.id===primary?'Their location, always included':undefined}))}/>
     {role==='MANAGER'&&actorRole==='OWNER'?<OperationalScopeSelectionFields locations={activeLocations.map(l=>({id:l.id,name:l.name}))} value={scope} onChange={setScope} error={null}/>:null}
+   </div>
+   {/* Tablets and desktop (kit form grammar): the actions sit in the card's footer, Cancel or Back then Next or Add, auto
+    width on the right. Phones keep them in the header. The same handlers and the same submit as the header. */}
+   <div className="c-form-foot">
+    {step===1?<Link className="c-btn c-btn--secondary" href="/app/employees">Cancel</Link>:<button type="button" className="c-btn c-btn--secondary" onClick={()=>setStep(1)}>Back</button>}
+    {step===1?<button type="button" className="c-btn" onClick={next} disabled={blocked}>Next</button>:<button type="submit" className="c-btn" disabled={blocked}>Add</button>}
    </div>
   </EmployeeAccessForm>
  </>;

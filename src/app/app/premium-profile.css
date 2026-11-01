@@ -135,3 +135,34 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 /* The details list takes focus after a successful retry; it shows the ring only for keyboard users, inside the card. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(#profile-details-list, #profile-alerts-list):focus { outline: none; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(#profile-details-list, #profile-alerts-list):focus-visible { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Owner premium (Oct 31): the Owner and Manager Profile in the corporate shell.
+ * ------------------------------------------------------------------------------------------------------------------- */
+/* Face ID and passkeys is a row like its neighbours, not a card inside the card (visual-craft Q): the title and its 13px
+ * line on the left, the teal "Add a passkey" / "Set up Face ID" on the right; a saved passkey list and notices run below. */
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; align-items: center;
+  margin: 0; padding: 12px 20px; border: 0; border-radius: 0; background: none; box-shadow: inset 0 1px 0 #EDEEEF; }
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section > .nv-card__head { grid-column: 1; min-height: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section .nv-card__title { margin: 0; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: 0; text-transform: none; color: #1A1C1E; }
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section > .pk-body { display: contents; }
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section .pk-muted { grid-column: 1; margin: 2px 0 0; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section .pk-add { grid-column: 2; grid-row: 1 / span 2; align-self: center; display: inline-flex; align-items: center;
+  height: 44px; min-height: 44px; margin: 0 -4px 0 0; padding: 0 4px; border: 0; border-radius: 8px; background: none !important; box-shadow: none !important; color: #0B6E69; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; white-space: nowrap; }
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section :is(.pk-list, .pk-notice) { grid-column: 1 / -1; margin-top: 8px; }
+
+/* Tablets and desktop: the page title where every page title sits (22/600 at the column's left edge, no phone avatar), Edit
+ * as the title row's outline button instead of the phone's white "‹ More · Edit" strip, and the content at 720px. */
+@media (min-width: 768px) {
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav { position: absolute; top: 24px; left: 24px; right: auto; z-index: 2; display: flex; justify-content: flex-end; width: 720px; max-width: calc(100% - 48px); height: 44px; padding: 0; background: none; box-shadow: none; pointer-events: none; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav > * { pointer-events: auto; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav > :not(.q-nav__r) { display: none; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav > .q-nav__r { display: inline-flex; align-items: center; justify-content: center; height: 36px; min-height: 36px; margin: 4px 0; padding: 0 14px;
+    border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #0B6E69; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; text-decoration: none; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav > .q-nav__r:hover { background: #E6F1EF; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .pmp-content { max-width: 736px; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .q-who { margin: 0 16px; min-height: 44px; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .q-who > .q-av { display: none; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .q-who h1 { font: 600 22px/28px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: -.3px; color: #1A1C1E; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .q-who p { font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
+}

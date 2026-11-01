@@ -7,6 +7,7 @@
   --c-bg: #F5F6F6; --c-card: #FFFFFF; --c-ring: #E3E5E6; --c-line: #EDEEEF; --c-ink: #1A1C1E; --c-ink2: #4A4F54; --c-grey: #6B7075;
   --c-faint: #A7ACB1; --c-field: #D5D8DA; --c-teal: #0B6E69; --c-teal-hover: #084F4B; --c-tint: #E6F1EF;
   --c-amber-bg: #FEF4E6; --c-amber: #8A4B00; --c-blue-bg: #EAF0FD; --c-blue: #1D4ED8; --c-red-bg: #FDECEA; --c-red: #B42318; --c-neutral-bg: #EDEEEF;
+  --c-badge-neutral-bg: #EDEEEF; --c-badge-neutral-ink: #1A1C1E; --c-av-bg: #EDEEEF; --c-av-ink: #4A4F54;
   display: flex; flex-direction: column; gap: 12px; min-height: 100%; margin: 0; padding: 16px 16px 24px; box-sizing: border-box;
   background: var(--c-bg); color: var(--c-ink); font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 15px; line-height: 20px; font-weight: 400; letter-spacing: 0; font-optical-sizing: auto; font-variant-numeric: tabular-nums;
@@ -86,8 +87,10 @@
 :is(#c-root, html) .c-pill--red { background: var(--c-red-bg); color: var(--c-red); }
 :is(#c-root, html) .c-pill--neutral { background: var(--c-neutral-bg); color: var(--c-ink2); }
 :is(#c-root, html) .c-pill__dot { width: 6px; height: 6px; border-radius: 3px; background: currentColor; }
-:is(#c-root, html) .c-badge { flex: none; display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--c-teal); color: #FFFFFF; font-size: 13px; line-height: 18px; font-weight: 600; }
-:is(#c-root, html) .c-av { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 16px; background: var(--c-tint); color: var(--c-teal); font-size: 13px; line-height: 1; font-weight: 600; }
+/* Owner premium (Jose, Oct 31): in-row counts and avatars are neutral grey; teal stays on the sidebar/tab total and the one
+ * primary action. */
+:is(#c-root, html) .c-badge { flex: none; display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--c-badge-neutral-bg, #EDEEEF); color: var(--c-badge-neutral-ink, #1A1C1E); font-size: 13px; line-height: 18px; font-weight: 600; }
+:is(#c-root, html) .c-av { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 16px; background: var(--c-av-bg, #EDEEEF); color: var(--c-av-ink, #4A4F54); font-size: 13px; line-height: 1; font-weight: 600; }
 :is(#c-root, html) .c-av--grey { background: var(--c-neutral-bg); color: var(--c-ink2); }
 :is(#c-root, html) .c-av--l { width: 36px; height: 36px; border-radius: 18px; }
 :is(#c-root, html) .c-av--open { background: #FFFFFF; border: 1.5px dashed var(--c-red); color: var(--c-red); border-radius: 16px; }
@@ -159,14 +162,14 @@
 :is(#c-root, html) .c-in:focus, :is(#c-root, html) .c-in:focus-within { box-shadow: inset 0 0 0 2px var(--c-teal); }
 :is(#c-root, html) .c-in[aria-invalid="true"] { box-shadow: inset 0 0 0 2px var(--c-red); }
 :is(#c-root, html) textarea.c-in { height: 96px; padding: 12px; resize: none; align-items: flex-start; }
-:is(#c-root, html) select.c-in { padding-right: 36px; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234A4F54' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center; }
+:is(#c-root, html) select.c-in { padding-right: 36px; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 256 256'%3E%3Cpath fill='%234A4F54' d='M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E") no-repeat right 12px center; }
 :is(#c-root, html) .c-in__wrap { position: relative; display: block; }
 :is(#c-root, html) .c-in__suffix { position: absolute; right: 12px; top: 14px; font-size: 15px; line-height: 20px; color: var(--c-grey); pointer-events: none; }
 :is(#c-root, html) .c-in__btn { position: absolute; right: 4px; top: 2px; height: 44px; padding: 0 10px; border: 0; background: none; color: var(--c-teal); font-size: 13px; font-weight: 600; cursor: pointer; }
 
 /* Switch 51×31 */
-:is(#c-root, html) .c-switch { flex: none; position: relative; width: 51px; height: 31px; margin: 0; border: 0; border-radius: 16px; background: var(--c-field); appearance: none; -webkit-appearance: none; cursor: pointer; transition: background-color 160ms ease-out; }
-:is(#c-root, html) .c-switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 14px; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.16); transition: transform 200ms cubic-bezier(.32, .72, 0, 1); }
+:is(#c-root, html) .c-switch { flex: none; position: relative; width: 51px; height: 31px; margin: 0; border: 0; border-radius: 16px; background: var(--c-field); appearance: none; -webkit-appearance: none; cursor: pointer; transition: background-color var(--c-dur-ui, 200ms) ease-out; }
+:is(#c-root, html) .c-switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 14px; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.16); transition: transform var(--c-dur-ui, 200ms) var(--c-ease, cubic-bezier(.32, .72, 0, 1)); }
 :is(#c-root, html) .c-switch:checked, :is(#c-root, html) .c-switch[aria-checked="true"] { background: var(--c-teal); }
 :is(#c-root, html) .c-switch:checked::after, :is(#c-root, html) .c-switch[aria-checked="true"]::after { transform: translateX(20px); }
 :is(#c-root, html) .c-switch:disabled { opacity: .5; cursor: default; }
@@ -283,3 +286,121 @@
 :is(#c-root, html) .c-page .c-card :focus-visible, :is(#c-root, html) .c-sheet .c-card :focus-visible { outline-offset: -2px; }
 :is(#c-root, html) .c-page .c-row:focus-visible, :is(#c-root, html) .c-sheet .c-row:focus-visible { outline: 2px solid var(--c-teal); outline-offset: -2px; border-radius: 12px; position: relative; z-index: 1; }
 :is(#c-root, html) .c-page .c-card .c-btn:focus-visible { outline-offset: calc(2px - var(--c-hit)); }
+
+/* =====================================================================================================================
+ * Owner premium (Oct 31, 2026; docs/product/reviews/owner-premium-2026-10-31, PLAN.md Waves A and A-phone).
+ * Kit-wide values only; pages opt into the new classes (.c-page--narrow, .c-empty__*, .c-error-card, .c-form-foot).
+ * =================================================================================================================== */
+
+/* Motion (visual-craft P): three durations and one easing. Press and hover 120ms; switches, popovers and segments 200ms;
+ * sheets 360ms in and two thirds of that (240ms) out. */
+:root {
+  --c-dur-press: 120ms; --c-dur-ui: 200ms; --c-dur-sheet: 360ms; --c-dur-sheet-out: calc(var(--c-dur-sheet) * 2 / 3);
+  --c-ease: cubic-bezier(.32, .72, 0, 1);
+}
+
+/* Pressed states (P4): every tap answers. Rows darken to #EDEEEF at once and fade back; text links, back links and
+ * header actions dim to .55; icon and select buttons fill; the filled button deepens. Desktop rows get a hover. */
+:is(#c-root, html) :is(a, button).c-row { transition: background-color var(--c-dur-ui) ease-out; -webkit-tap-highlight-color: transparent; }
+@media (hover: hover) and (pointer: fine) {
+  :is(#c-root, html) :is(a, button).c-row:hover { background: #F7F8F8; transition-duration: var(--c-dur-press); }
+}
+:is(#c-root, html) a.c-row:active, :is(#c-root, html) button.c-row:active { background: #EDEEEF; transition: none; }
+:is(#c-root, html) :is(.c-link, .c-nav__back, .c-sheet-head__l, .c-sheet-head__r, .c-sheet__done, .c-back),
+:is(#c-root, html) .c-nav__right :is(a, button):not(.c-btn) { transition: opacity 150ms ease-out; -webkit-tap-highlight-color: transparent; }
+:is(#c-root, html) :is(.c-link, .c-nav__back, .c-sheet-head__l, .c-sheet-head__r, .c-sheet__done, .c-back):active,
+:is(#c-root, html) .c-nav__right :is(a, button):not(.c-btn):active { opacity: .55; transition: none; }
+:is(#c-root, html) .c-page :is(.c-icon-btn, .c-select-btn):active { background-color: #EDEEEF; }
+:is(#c-root, html) .c-seg > :is(a, button):not([aria-current="page"]):not([aria-pressed="true"]):not([aria-selected="true"]):active::before { background: rgba(26, 28, 30, .04); }
+:is(#c-root, html) .c-btn:not(.c-btn--secondary):not(.c-btn--neutral):not(.c-btn--danger):active:not(:disabled):not([aria-disabled="true"]) { background-color: #095C58; }
+:is(#c-root, html) .c-btn { transition: background-color var(--c-dur-press) ease-out, transform var(--c-dur-press) ease-out; -webkit-tap-highlight-color: transparent; }
+/* No link preview or text selection on long-press of controls (T3); content text stays selectable. */
+@media (pointer: coarse) {
+  :is(#c-root, html) :is(a.c-row, button.c-row, .c-btn, .c-seg, .c-link, .c-nav, .c-sheet-head, .c-back) { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+}
+
+/* Fields: 16px on phones so iOS never zooms on focus (P1). */
+@media (max-width: 767px) {
+  :is(#c-root, html) .c-in, :is(#c-root, html) .c-in__suffix { font-size: 16px; }
+}
+
+/* Validation (P10): one voice. 13/18 red under the field, no bullet; one red ring, also while focused. */
+:is(#c-root, html) .c-error { display: block; margin-top: -2px; font-size: 13px; line-height: 18px; font-weight: 400; color: var(--c-red); }
+:is(#c-root, html) .c-in[aria-invalid="true"], :is(#c-root, html) .c-in[aria-invalid="true"]:focus { outline: 0; box-shadow: inset 0 0 0 2px var(--c-red); }
+
+/* Empty state (A10, visual-craft K): a card with one 15/600 line, one 13px line and at most one secondary action. */
+:is(#c-root, html) .c-empty--card { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 32px 16px; text-align: center; }
+:is(#c-root, html) .c-empty__title { display: block; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-empty__body { display: block; max-width: 360px; font-size: 13px; line-height: 18px; font-weight: 400; color: var(--c-grey); }
+:is(#c-root, html) .c-empty__action { margin-top: 14px; }
+
+/* Error card (P3, phone-native L3): the one failure style. A card with a 15/600 title, a 13px line and a neutral "Try again". */
+:is(#c-root, html) .c-error-card { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 16px; }
+:is(#c-root, html) .c-error-card__title { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-error-card__body { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-error-card__action { margin-top: 12px; }
+
+/* A form's footer on tablets and desktop (visual-craft E): destructive text action far left, Cancel and Save right, auto width.
+ * Phones keep the header's Cancel/Save, so the footer is hidden there. */
+:is(#c-root, html) .c-form-foot { display: none; }
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-form-foot { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 12px 16px; box-shadow: inset 0 1px 0 var(--c-line); }
+  :is(#c-root, html) .c-form-foot > .c-btn { flex: none; min-width: 120px; }
+  :is(#c-root, html) .c-form-foot > .c-form-foot__danger { margin-right: auto; min-height: 44px; padding: 0; border: 0; background: none; color: var(--c-red); font-size: 15px; line-height: 20px; font-weight: 600; cursor: pointer; }
+}
+/* Phone-only and wide-only pieces (the phone's Cancel · Title · Save strip is phone-only). */
+@media (min-width: 768px) { :is(#c-root, html) .c-only-phone { display: none !important; } }
+@media (max-width: 767px) { :is(#c-root, html) .c-only-wide { display: none !important; } }
+
+/* One desktop page layout (A7, visual-craft D/E/F/L). */
+@media (min-width: 768px) {
+  /* Single-column pages (lists, settings, details, forms) cap their content at 720px, left-aligned on the same edge as
+   * every other page's title. Two-dimensional pages (Home, the Schedule grid, the Timecards table, Insights) stay 992px. */
+  :is(#c-root, html) .c-page.c-page--narrow > :not(.c-nav):not(.c-nav--phone) { width: 100%; max-width: 720px; }
+  :is(#c-root, html) .c-page.c-page--narrow > .c-nav { max-width: 720px; }
+  /* Buttons never stretch across a desktop column: a full-width phone button is auto width (at least 160px) on the right. */
+  :is(#c-root, html) .c-btn--full { display: flex; width: fit-content; min-width: 160px; align-self: flex-end; margin-left: auto; }
+  :is(#c-root, html) .c-card__foot { justify-content: flex-end; }
+  :is(#c-root, html) .c-card__foot > .c-btn, :is(#c-root, html) .c-btns > .c-btn { flex: none; min-width: 120px; }
+  :is(#c-root, html) .c-btns { justify-content: flex-end; }
+  :is(#c-root, html) .c-btns--stack { align-items: flex-end; }
+  /* Segmented controls on a desktop page stay a control, not a 992px bar. */
+  :is(#c-root, html) .c-page > .c-seg, :is(#c-root, html) .c-page > nav.c-seg { width: 100%; max-width: 480px; }
+  /* A pushed page's header: a 13/600 "‹ Section" back link on its own line, then the 22px title with its actions on the
+   * right. The back link keeps a 44px hit area; its visual line is 20px. */
+  :is(#c-root, html) .c-nav { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "back back" "title right"; align-items: center; row-gap: 4px; column-gap: 12px; }
+  :is(#c-root, html) .c-nav > .c-nav__back { display: inline-flex; grid-area: back; justify-self: start; height: 44px; min-height: 44px; margin: -12px 0 -12px -8px; padding: 0 8px; font-size: 13px; line-height: 18px; font-weight: 600; }
+  :is(#c-root, html) .c-nav > .c-nav__back .c-ic { width: 16px; height: 16px; }
+  :is(#c-root, html) .c-nav > .c-nav__title { grid-area: title; }
+  :is(#c-root, html) .c-nav > .c-nav__right { grid-area: right; }
+}
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  :is(#c-root, html) .c-page :is(.c-icon-btn, .c-select-btn) { transition: background-color var(--c-dur-press) ease-out; }
+}
+
+/* Loading (P7): a page-shaped placeholder on the page's own background. The title is real text at once; the shapes fade
+ * in only after 120ms, so a quick load shows no flash. After 2.5s it becomes the error card (P3). */
+:is(#c-root, html) .c-skel { display: none; }
+:is(#c-root, html) .c-skel__shape { display: block; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-ring); }
+:is(#c-root, html) .c-skel__bar { display: block; height: 12px; border-radius: 6px; background: var(--c-neutral-bg); }
+:is(#c-root, html) .c-skel__shapes { display: flex; flex-direction: column; gap: 12px; opacity: 0; animation: c-skel-in 160ms ease-out 120ms both; }
+:is(#c-root, html) .c-skel__row { display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px; }
+:is(#c-root, html) .c-skel__row + .c-skel__row { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-skel__row > i { flex: none; width: 32px; height: 32px; border-radius: 16px; background: var(--c-neutral-bg); }
+:is(#c-root, html) .c-skel__row > span { flex: 1; display: grid; gap: 8px; }
+:is(#c-root, html) .c-skel__row > span > b { display: block; width: 46%; height: 12px; border-radius: 6px; background: var(--c-neutral-bg); }
+:is(#c-root, html) .c-skel__row > span > b + b { width: 68%; height: 10px; background: #F2F3F4; }
+:is(#c-root, html) .c-skel__seg { display: block; height: 36px; border-radius: 8px; background: var(--c-neutral-bg); }
+@keyframes c-skel-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-skel__shapes { animation-duration: 1ms; } }
+:is(#c-root, html) .c-page.c-skel { min-height: 0; padding: 16px 16px 24px; background: none; }
+:is(#c-root, html) .c-skel__title { display: block; font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.3px; color: var(--c-ink); }
+:is(#c-root, html) .c-skel__bar--title { width: 46%; max-width: 280px; height: 28px; border-radius: 8px; }
+:is(#c-root, html) .c-skel__shape--card { height: 108px; }
+:is(#c-root, html) .c-skel__shape--tall { height: 260px; }
+:is(#c-root, html) .c-skel__shape:has(> .c-skel__row) { overflow: hidden; }
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-page.c-skel { width: 100%; max-width: 1040px; margin: 0 auto; padding: 24px 24px 48px; }
+}
+/* The phone back link is at least 44px wide, even as a chevron alone at 320 (Payroll builder request). */
+:is(#c-root, html) .c-nav__back { min-width: 44px; }

@@ -14,5 +14,5 @@ export default async function AccountRecoveryPage({searchParams}:{searchParams?:
  // Only a prefill; the server still checks the employee and attestation.
  const employee=params?.employee?.trim().slice(0,200)||undefined;
  const {timeZone}=await getWorkspace();
- return <ScopedReadFrame observation={access}><AccountRecovery kind="assisted" actorId={actor.id} employeeId={employee} timeZone={timeZone} from={params?.from==='settings'&&actor.role==='OWNER'?'settings':undefined}/></ScopedReadFrame>;
+ return <ScopedReadFrame observation={access}><AccountRecovery kind="assisted" actorId={actor.id} employeeId={employee} timeZone={timeZone} from={params?.from==='settings'&&actor.role==='OWNER'?'settings':undefined} pins={actor.role==='OWNER'}/></ScopedReadFrame>;
 }

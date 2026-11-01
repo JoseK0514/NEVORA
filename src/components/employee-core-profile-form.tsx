@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import {useState,type ReactNode} from 'react';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
+import { ReturnToNext } from './team/return-to-next';
 import {EmployeeAccessForm} from './company-access/employee-access-form';
 import {coreCommandFromForm} from './company-access/commands';
 import {ManagerOperationalScopeFields} from './company-access/manager-operational-scope-fields';
@@ -59,12 +60,13 @@ function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null
     <EmployeeAccessForm id={formId} action={action} employeeId={employee.id} build={(fields,id)=>coreCommandFromForm(fields,baseline.employee,baseline.ownerScope,actorRole,scope,id)} className="c-teamform employee-core-profile-form">
       <input type="hidden" name="employeeId" value={employee.id} />
       <input type="hidden" name="active" value={active} />
+      <ReturnToNext />
       <div className="c-field__row">
-        <CorpField label="First name" htmlFor="edit-first"><input id="edit-first" className="c-in" name="firstName" defaultValue={employee.firstName} autoComplete="off" required maxLength={160} /></CorpField>
-        <CorpField label="Last name" htmlFor="edit-last"><input id="edit-last" className="c-in" name="lastName" defaultValue={employee.lastName} autoComplete="off" required maxLength={160} /></CorpField>
+        <CorpField label="First name" htmlFor="edit-first"><input id="edit-first" className="c-in" name="firstName" defaultValue={employee.firstName} autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} /></CorpField>
+        <CorpField label="Last name" htmlFor="edit-last"><input id="edit-last" className="c-in" name="lastName" defaultValue={employee.lastName} autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} /></CorpField>
       </div>
-      <CorpField label="Mobile phone" htmlFor="edit-phone"><PhoneField id="edit-phone" name="phone" defaultValue={employee.phone} autoComplete="off" required /></CorpField>
-      <CorpField label="Email (optional)" htmlFor="edit-email"><input id="edit-email" className="c-in" name="email" type="email" defaultValue={employee.email ?? ""} autoComplete="off" maxLength={254} placeholder="name@example.com" /></CorpField>
+      <CorpField label="Mobile phone" htmlFor="edit-phone"><PhoneField id="edit-phone" name="phone" defaultValue={employee.phone} autoComplete="off" enterKeyHint="next" required /></CorpField>
+      <CorpField label="Email (optional)" htmlFor="edit-email"><input id="edit-email" className="c-in" name="email" type="email" inputMode="email" defaultValue={employee.email ?? ""} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done" maxLength={254} placeholder="name@example.com" /></CorpField>
       <div className="c-field__row">
         <CorpField label="Role" htmlFor="edit-role"><select id="edit-role" className="c-in" name="role" value={role} required onChange={event=>setRole(event.target.value as UserRole)}>
           {roleOptions.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}

@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { useFormStatus } from 'react-dom';
 import { BellIcon } from '@phosphor-icons/react/dist/ssr/Bell';
 import { DeviceMobileIcon } from '@phosphor-icons/react/dist/ssr/DeviceMobile';
 import { ReceiptIcon } from '@phosphor-icons/react/dist/ssr/Receipt';
@@ -11,7 +10,7 @@ import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle'
 import { PauseCircleIcon } from '@phosphor-icons/react/dist/ssr/PauseCircle';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { Card, KitLink, Row, Rows, Tile } from '@/components/kit/kit';
-import { PortalSignout } from '@/components/portal-signout';
+import { phoneDisplay } from '@/components/team/phone';
 import { createPrivateSnapshotController, type PrivatePanelState } from '@/lib/private-snapshot-client';
 import { revealFeedback } from '@/lib/reveal-feedback';
 import { ALERT_TOPIC_SIZING, MANAGER_ALERTS_ENDPOINT, MANAGER_PROFILE_ENDPOINT, parseManagerProfile, type ManagerAlertTopic, type ManagerProfileSnapshot } from './contract';
@@ -92,8 +91,9 @@ function Email({ address }: { address: string }) {
   return <Parts parts={[...local, ...domain]} />;
 }
 function Phone({ number }: { number: string }) {
+  // A ten-digit number reads as on a person's page, "(787) 555-0100"; anything else shows as stored.
   // An extension word stays with its number ("ext. 4021" is one part), so the number never sits alone (WR-4).
-  const words = number.split(/\s+/), parts: string[] = [];
+  const words = phoneDisplay(number).replace(/^(\(\d{3}\)) /, '$1\u00a0').split(/ +/), parts: string[] = [];
   for (let index = 0; index < words.length; index++) {
     const word = words[index];
     if (/^(ext\.?|extension|x)$/i.test(word) && index + 1 < words.length) { parts.push(`${word} ${words[++index]}`); continue; }
@@ -118,11 +118,6 @@ function Locations({ snapshot, owner }: { snapshot: Extract<ManagerProfileSnapsh
     <button type="button" className="pmp-text-button" aria-expanded={open} aria-controls="profile-assigned-locations" onClick={() => setOpen(value => !value)}>{open ? 'Show fewer' : `Show all ${names.length}`}</button>
     {list(open ? names : names.slice(0, SHOWN_LOCATIONS))}
   </>;
-}
-
-function SignOutButton() {
-  const { pending } = useFormStatus();
-  return <button type="submit" className="q-btn q-btn--danger" disabled={pending} aria-disabled={pending || undefined}>{pending ? 'Signing out…' : 'Sign out'}</button>;
 }
 
 function saveMessage(error: AlertSave['error']) {
@@ -206,7 +201,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
         : null}
       {accountCards}
     </ul>
-    <PortalSignout><SignOutButton /></PortalSignout>
+    {/* Owner premium A9: Sign out lives once, at the end of More (phone) and in the sidebar (desktop), not here too. */}
   </>;
 }
 

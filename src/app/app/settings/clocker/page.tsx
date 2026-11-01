@@ -25,11 +25,11 @@ export default async function ClockerDevicesPage() {
     };
   } catch { data = null; }
   if (data) return <ClockerDeviceManager initialDevices={data.devices} timeZone={data.timeZone} locations={data.locations} action={manageClockerDeviceAction} />;
-  return <SettingsFrame title="Clocker devices" summary="A shared tablet at each location, with access you control.">
+  return <SettingsFrame title="Clocker tablets" summary="A shared tablet at each location, with access you control.">
     <section className="nv-card" role="alert" aria-labelledby="clocker-unavailable-title">
-      <EmptyState tone="urgent" icon={<WarningCircleIcon size={22} weight="bold" />} titleId="clocker-unavailable-title" title="Couldn’t load Clocker devices."
+      <EmptyState tone="urgent" icon={<WarningCircleIcon size={22} weight="bold" />} titleId="clocker-unavailable-title" title="Couldn’t load Clocker tablets."
         action={<a className="nv-btn" data-kind="primary" href="/app/settings/clocker">Try again</a>}>
-        Clocker device data couldn’t be read. No devices were changed.
+        Tablet details couldn’t be read. No tablets were changed.
       </EmptyState>
     </section>
   </SettingsFrame>;

@@ -5,6 +5,9 @@ import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { BrandWordmark } from "@/components/brand-mark";
 import { NUVORA_BRAND } from "@/lib/brand";
+import { CorpBackLink } from "./corp-client";
+
+export { CorpBackLink, CorpRetryButton } from "./corp-client";
 
 /* NEVORA corporate kit (approved Oct 26, 2026; docs/product/specs/corporate-mockups). Presentation only: callers pass
  * authorized, formatted data and keep their own actions. Each piece reproduces one element of the approved boards. */
@@ -166,7 +169,7 @@ export function CorpNote({ children, center, icon }: { children: ReactNode; cent
 /** `phoneOnly`: shown on a phone only (tablets and desktop have the sidebar, so the page keeps its CorpTitle there). */
 export function CorpNav({ back, title, right, titleId, phoneOnly }: { back?: { href: string; label: string }; title?: ReactNode; right?: ReactNode; titleId?: string; phoneOnly?: boolean }) {
   return <div className={phoneOnly ? "c-nav c-nav--phone" : "c-nav"}>
-    {back ? <Link className="c-nav__back" href={back.href}><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true" />{back.label}</Link> : <span />}
+    {back ? <CorpBackLink className="c-nav__back" href={back.href}><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true" />{back.label}</CorpBackLink> : <span />}
     {title ? <h1 className="c-nav__title" id={titleId}>{title}</h1> : <span />}
     <span className="c-nav__right">{right ?? null}</span>
   </div>;
@@ -177,4 +180,32 @@ export function CorpLockup({ large, href, label = NUVORA_BRAND.homeAriaLabel }: 
   const inner = <><BrandWordmark /><span className="c-lockup__word" aria-hidden="true">{NUVORA_BRAND.module}</span></>;
   const cls = large ? "c-lockup c-lockup--l" : "c-lockup";
   return href ? <Link href={href} className={cls} aria-label={label}>{inner}</Link> : <span className={cls} role="img" aria-label={`NEVORA ${NUVORA_BRAND.module}`}>{inner}</span>;
+}
+
+/** Owner premium A10 (visual-craft K): the one empty state. A card with a 15/600 line, a 13px line that says what happens
+ * next, and at most one secondary action (pass a CorpButtonLink with kind="secondary" size="md"). No icon or illustration. */
+export function CorpEmpty({ title, body, action, label }: { title: ReactNode; body?: ReactNode; action?: ReactNode; label?: string }) {
+  return <section className="c-card" aria-label={label}>
+    <div className="c-empty c-empty--card">
+      <span className="c-empty__title">{title}</span>
+      {body ? <span className="c-empty__body">{body}</span> : null}
+      {action ? <span className="c-empty__action">{action}</span> : null}
+    </div>
+  </section>;
+}
+
+/** Owner premium P3 (phone-native L3): the one failure style. Title ("Couldn't load timecards"), one 13px line and an
+ * action (usually <CorpRetryButton />, which refreshes the page's data). */
+export function CorpErrorCard({ title, body = "Check your connection, then try again.", action, live = true }: { title: ReactNode; body?: ReactNode; action?: ReactNode; live?: boolean }) {
+  return <section className="c-card c-error-card" role={live ? "alert" : undefined}>
+    <span className="c-error-card__title">{title}</span>
+    {body ? <span className="c-error-card__body">{body}</span> : null}
+    {action ? <span className="c-error-card__action">{action}</span> : null}
+  </section>;
+}
+
+/** Owner premium A7 (visual-craft E): a form card's footer on tablets and desktop. Destructive text action far left; Cancel
+ * (secondary) and the primary on the right, auto width. Hidden on phones, where the header's Cancel and Save are used. */
+export function CorpFormFooter({ children, danger }: { children: ReactNode; danger?: ReactNode }) {
+  return <div className="c-form-foot">{danger ?? null}{children}</div>;
 }

@@ -41,7 +41,9 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
   const ready = state?.state === 'ready' ? state : null;
   const denied = state?.state === 'unavailable' && state.reason === 'access_denied';
   const unavailable = state?.state === 'unavailable' && state.reason !== 'no_selection';
-  const back = from === 'settings' ? {href: '/app/settings', label: 'Settings'} : {href: '/app/employees', label: 'Team'};
+  // Clocker recovery lives with the Clocker settings (A2: Team no longer opens it), so Back returns to Settings.
+  const back = {href: '/app/settings', label: 'Settings'};
+  void from;
 
   useEffect(() => {
     const c = createPrivateSnapshotController<RecoveryReview>(value => {
@@ -112,7 +114,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
 
   const errorId = `${inputId}-error`;
   // Quiet (v4, approved Oct 23): the reference, Check, the receipt when there is one, and one row to Timecards.
-  const content = <SettingsFrame back={back} settingsCrumb={false} title="Clocker recovery" summary="Check a clock-in or clock-out someone made on a tablet.">
+  const content = <SettingsFrame back={back} settingsCrumb={false} className="wc-recovery" title="Clocker recovery" summary="Check a clock-in or clock-out someone made on a tablet.">
     <ClockerOwnerRequests actorId={actorId} timeZone={timeZone} onSelect={value=>{setReference(value);setHasSelection(true);setInvalid('');selected.current=value;submitted.current=true;controller.current?.refresh();}}/>
     <form noValidate className="wc-form" aria-label="Check a saved action" data-guard={hydrated ? undefined : ''}
       onInvalidCapture={event => { event.preventDefault(); setInvalid((event.target as HTMLInputElement).validity.valueMissing ? 'Enter the code from the tablet.' : 'Enter the whole code: 32 letters and numbers in five groups, with dashes.'); (event.target as HTMLInputElement).focus(); }}
@@ -136,7 +138,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
           <label className="q-fl__label" htmlFor={inputId}>Code from the tablet</label>
           <input id={inputId} className="q-in" style={{ marginTop: 8 }} required value={reference} onChange={event => changeReference(event.target.value)}
             pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
-            maxLength={36} autoComplete="off" autoCapitalize="none" spellCheck={false} aria-describedby={invalid ? `${errorId} ${helpId}` : helpId} aria-invalid={invalid ? true : undefined}
+            maxLength={36} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="go" aria-describedby={invalid ? `${errorId} ${helpId}` : helpId} aria-invalid={invalid ? true : undefined}
             placeholder="The code shown on the tablet"/>
           {invalid ? <p className="q-fl__error" id={errorId}>{invalid}</p> : null}
           <p id={helpId} className="q-sr">Shown on the employee’s tablet, like 12345678-1234-1234-1234-123456789abc.</p>

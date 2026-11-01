@@ -7,6 +7,7 @@ import type { ConfigurationResult } from "./configuration-form";
 import { lower } from "@/lib/workspace-presentation/words";
 import { Notice } from "@/app/app/settings/wave-c-kit";
 import { ButtonLabel, Field, FieldErrors, FormActions, useFieldErrors } from "@/app/app/settings/wave-c-form";
+import { ReturnToNext } from "./team/return-to-next";
 
 /** Wave C: Add location on the kit form pattern. One request per tap; an unconfirmed save says
  * to check Locations first, so a lost answer never becomes a duplicate. */
@@ -77,17 +78,19 @@ export function NewLocationForm({
 
   return (
     <form ref={form} id="new-location-form" noValidate onSubmit={submit} aria-busy={pending} className="wc-form" aria-label={`Add ${place}`} {...handlers}>
+      {/* P9: Return moves to the next field and never submits; the page's Add submits. */}
+      <ReturnToNext />
       <fieldset disabled={pending || success} className="q-fieldset">
         <FieldErrors errors={errors}>
           {/* Quiet (v4, approved Oct 23): three fields and one line under them. The page's Add (top right) submits. */}
           <Field label="Name" fieldClassName="q-first" inputRef={nameInput} id="new-location-name" name="name" required maxLength={160} value={name} onChange={(event) => setName(event.target.value)}
-            placeholder="e.g. Harbor Point" autoComplete="off" />
+            placeholder="e.g. Harbor Point" autoComplete="off" autoCapitalize="words" enterKeyHint="next" />
           <Field label="Short name" id="new-location-short-name" name="shortName" required maxLength={48} value={shortName} onChange={(event) => setShortName(event.target.value)}
-            placeholder="e.g. Harbor" autoComplete="off" />
+            placeholder="e.g. Harbor" autoComplete="off" autoCapitalize="words" enterKeyHint="next" />
           <Field label="Clocker key" helpId="location-clocker-help"
             help={`The Clocker key can’t be changed later.`}
             id="new-location-clocker-key" name="clockerKey" pattern="[a-z0-9]+(-[a-z0-9]+)*" maxLength={64}
-            placeholder="Created for you" autoComplete="off" autoCapitalize="none" spellCheck={false} />
+            placeholder="Created for you" autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done" />
         </FieldErrors>
       </fieldset>
       <p className="nv-sr" role="status">{pending ? `Saving your ${place}.` : ""}</p>
