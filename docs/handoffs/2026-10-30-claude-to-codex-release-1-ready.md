@@ -1,8 +1,8 @@
 # Claude → Codex: NEVORA Release 1 is ready for inspection, then deploy
 
-Date: 2026-10-30, corrected 2026-10-31 after the independent inspection (Phase 8), 2026-11-01 for the Owner premium upgrade (§1b), and 2026-11-01 for Codex's four-surface inspection fixes (§1c). Branch: `claude-codex-collab-nevora`.
+Date: 2026-10-30, corrected 2026-10-31 after the independent inspection (Phase 8), 2026-11-01 for the Owner premium upgrade (§1b), 2026-11-01 for Codex's four-surface inspection fixes (§1c), and 2026-11-01 evening for Codex's reliability audit and fresh local inspection (§1d). Branch: `claude-codex-collab-nevora`.
 
-**Frozen code candidate: `83397510a83d82420a3b6526c787f43a3092a839`** (Nov 1, after Codex's four-surface inspection). The full local gate (§4) and exact-head CI on draft PR #37 both passed on this exact SHA. Commits after it on `claude-codex-collab-nevora` (this handoff and its gate summary) change only `docs/`; check with `git diff --quiet 83397510a83d82420a3b6526c787f43a3092a839 HEAD -- . ':(exclude)docs'`, which must succeed. Deploy that SHA, or the branch head Claude names with this handoff when that check passes. `2c443138`, `cdb92cea` and `7b14776a` are superseded; do not deploy them. Any later change outside `docs/` makes a new candidate.
+**Frozen code candidate: `9553e7288d9b0791d0ceacfd234a25058cf8d7ac`** (Nov 1 evening, after Codex's reliability audit and fresh local inspection). The full local gate (§4) passed on this exact SHA, and exact-head CI on draft PR #37 passed 18 of 18 check runs on the first attempt (run 41352435657). Commits after it on `claude-codex-collab-nevora` (this handoff, its gate summary and the inspection documents) change only `docs/`; check with `git diff --quiet 9553e7288d9b0791d0ceacfd234a25058cf8d7ac HEAD -- . ':(exclude)docs'`, which must succeed. Deploy that SHA, or the branch head Claude names with this handoff when that check passes. `83397510`, `2c443138`, `cdb92cea` and `7b14776a` are superseded; do not deploy them. Any later change outside `docs/` makes a new candidate.
 
 **Deploy from that SHA only. Do not deploy from `development`:** since Oct 30 it also carries Codex's Owner AI work (migrations `0044_owner_advisor_notebook`, `0045_owner_coverage_actions`), which is not in Release 1. Git deployment is disabled (`vercel.json`); use the explicit Vercel deployment workflow from the frozen SHA (runbook §7). Whether collab is first merged to `main` is Jose's call; the deployed artifact must be built from the frozen SHA either way.
 
@@ -138,6 +138,26 @@ files and evidence: `docs/handoffs/2026-11-01-claude-to-codex-inspection-respons
 
 Codex: please re-review the seven for closure; this handoff does not close them.
 
+## 1d. Codex's reliability audit and fresh local inspection fixes (Nov 1 evening)
+
+Codex closed the seven §1c findings on `83397510` (`docs/handoffs/2026-11-01-codex-to-claude-seven-findings-reinspection.md`)
+and, on `2c443138`, reported six reliability defects and one layout defect
+(`docs/handoffs/2026-11-01-codex-to-claude-reliability-audit.md`, `…-fresh-local-inspection.md`). Fixed in `61124988`;
+`9553e728` adds two Owner review fixes. Each fix, its files and browser evidence (both engines, with the old code shown to
+fail the same check where useful): `docs/handoffs/2026-11-01-claude-to-codex-reliability-response.md`. Summary:
+- R-01 (P1): the Employee shift and availability sheets no longer sit half off the screen on wide screens; the swap, cover
+  and can't-work pages shown in that panel are white top to bottom with their bar at the top.
+- R-02: Back from an intercepted sheet route no longer leaves the page scroll-locked.
+- R-03: Team search keeps what the person is typing while an older results page arrives.
+- R-04: Timecards follows the period in the address (the Time link, browser history), so the screen agrees with a reload.
+- R-05: the Clocker help list keeps the reader's place and focus through routine renewals (still cleared on expiry).
+- N1: the Timecards Status column fits at 768–1024px; long names end in an ellipsis.
+- "Approve N ready" says how many ready cards have no time; the reviewed set shows each card's recorded time.
+- Clocker tablets line up with the title on desktop; past days' open shifts read "Not filled" on the phone Schedule.
+- Planned for Release 1.1 (Jose): R-06, Brand Save's pending state, the WebKit Add-position focus question.
+
+No route, data shape, migration, permission or business rule changed in §1d.
+
 ## 2. Migrations
 
 - **Release 1 is the first production release of this line.** Codex's read-only preflight (Oct 31, `docs/handoffs/2026-10-31-codex-to-claude-release-1-preflight.md` in Codex's workspace) found production's catalog (Neon `rough-fire-63258908`, main branch, us-east-1) structurally identical to an owned local database built from `0001`–`0004`, with no migration ledger. Reconcile again at cutover, by **object presence, not filename prefix** (prefixes repeat, and other lines have used `0043`/`0044` for different files: check `SELECT to_regclass('public.schedule_pending_edits')` for this release's 0043).
@@ -173,11 +193,18 @@ As the runbook table, plus the values below. No env read was added since 9fe8968
 
 ## 4. Evidence on the release SHA (owned local Postgres, fictional data, `DATABASE_URL` unset)
 
-### Gate on the Owner premium candidate (Nov 1)
+### Gate on the release candidate (Nov 1 evening)
 
-The full gate ran in one ordered pass on `83397510a83d82420a3b6526c787f43a3092a839` (Nov 1, 07:49–10:02 AST), clean tree
-throughout, 70 of 70 steps passed. Summary: `docs/handoffs/2026-11-01-release-1-gate-summary.txt`. The earlier pass on
-`cdb92cea` (00:49–03:02) also passed 70 of 70; the counts below are from `83397510`.
+The full gate ran in one ordered pass on `9553e7288d9b0791d0ceacfd234a25058cf8d7ac` (Nov 1, 15:05–17:25 AST), clean tree
+throughout: 70 of 70 steps. `B-phase-e-home` first exited 1 after all 14 cells passed, with "Owned resource cleanup could
+not be proven" while five UI builders were also running on the machine; rerun alone on the same SHA it passed 14/14 with
+cleanup proven. Summary: `docs/handoffs/2026-11-01-release-1-gate-summary.txt`. Counts match the table below except unit
+(10,441 passed, 801 skipped). Earlier passes on `83397510` and `cdb92cea` also passed 70 of 70.
+
+Exact-head CI on `9553e728` (run 41352435657): 18 of 18 check runs green on the first attempt.
+
+Database: Codex's clean-database rehearsal (`codex/release1-db-rehearsal-20261101`) ran on `83397510`; `db/` is byte-identical
+between `83397510` and `9553e728` (`git diff 83397510 9553e728 -- db` is empty), so it applies to this candidate.
 
 | Step | Result |
 |---|---|
